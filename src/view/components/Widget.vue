@@ -21,11 +21,6 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      map: null
-    };
-  },
   created() {
     callHook(this, 'load');
   },
@@ -40,10 +35,7 @@ export default {
       this.parentIsWebMapOrMap = ["smwebmap", "smmap"].includes(
         this.$parent.$options.name && this.$parent.$options.name.toLowerCase()
       );
-      if (this.parentIsWebMapOrMap) {
-        this.$el.classList.add("mapboxgl-ctrl");
-        this.addControl(this.map);
-      }
+      this.parentIsWebMapOrMap && this.addControl(this.map);
 
       callHook(this, 'loaded');
       // 控制与map组件同级的组件的显示加载

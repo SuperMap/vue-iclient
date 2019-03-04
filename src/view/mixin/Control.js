@@ -26,6 +26,7 @@ export default {
             };
         },
         addControl(map) {
+            this.parentIsWebMapOrMap && this.$el.classList.add("mapboxgl-ctrl")
             map.addControl(this.control(), this.position);
         },
         removeControl() {
