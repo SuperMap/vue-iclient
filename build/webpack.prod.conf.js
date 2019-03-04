@@ -42,7 +42,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       commonjs2: 'vue',
       amd: 'vue'
     },
-    'echarts':'function(){try{return echarts}catch(e){return {}}}()',
+    'echarts':'echarts',
     '@libs/mapboxgl/mapbox-gl-enhance': 'mapboxgl',
     '@libs/iclient-mapboxgl/iclient9-mapboxgl-es6':'SuperMap'
   },
