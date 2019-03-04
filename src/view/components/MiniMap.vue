@@ -1,6 +1,6 @@
 
 <template>
-  <div class="mapboxgl-ctrl-minimap" :style="miniMapStyle"></div>
+  <div :style="miniMapStyle"></div>
 </template>
 
 <script>
@@ -23,6 +23,7 @@ export default {
     }
   },
   loaded() {
+    this.$el.classList.add("mapboxgl-ctrl-minimap");
     new MiniMapViewModel(this.$el, this.map);
   }
 };
