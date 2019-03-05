@@ -7,13 +7,13 @@ const merge = require('webpack-merge')
 const baseWebpackConfig = require('./webpack.base.conf')
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
-const OptimizeCSSPlugin = require('optimize-css-assets-webpack-plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
+const outputFileName = 'iclient9-mapboxgl-widgets-vue'
 const env = process.env.NODE_ENV === 'testing'
   ? require('../config/test.env')
   : require('../config/prod.env')
-
+const isMinify = process.argv.includes('-p');
 const webpackConfig = merge(baseWebpackConfig, {
   mode: 'production',
   module: {
@@ -29,11 +29,8 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   output: {
     path: path.resolve(__dirname, '../dist'),
-    filename: 'iclient9-mapboxgl-widgets-vue.js',
-    publicPath: '/dist/',
-    chunkFilename: '[id].js',
+    filename: isMinify ? `${outputFileName}.min.js`:`${outputFileName}.js`,
     libraryTarget: 'umd',
-    umdNamedDefine: true,
   },
   externals: {
     vue: {
@@ -47,16 +44,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     '@libs/iclient-mapboxgl/iclient9-mapboxgl-es6':'SuperMap'
   },
   optimization: {
-
-    minimizer: [
-      new UglifyJsPlugin({
-        cache: true,
-        parallel: true,
-        sourceMap: config.build.productionSourceMap,
-        uglifyOptions: {
-          warnings: false
-        }
-      }) 
+    minimizer:[
     ]
   },
   plugins: [
@@ -67,29 +55,40 @@ const webpackConfig = merge(baseWebpackConfig, {
     new VueLoaderPlugin(),
     // extract css into its own file
     new MiniCssExtractPlugin({
-      filename: 'iclient9-mapboxgl-widgets-vue.css'
+      filename: isMinify ? `${outputFileName}.min.css` : `${outputFileName}.css`
     }),
     new webpack.HashedModuleIdsPlugin()
   ]
 })
 
-if (config.build.productionGzip) {
-  const CompressionWebpackPlugin = require('compression-webpack-plugin')
-
-  webpackConfig.plugins.push(
-    new CompressionWebpackPlugin({
-      asset: '[path].gz[query]',
-      algorithm: 'gzip',
-      test: new RegExp(
-        '\\.(' +
-        config.build.productionGzipExtensions.join('|') +
-        ')$'
-      ),
-      threshold: 10240,
-      minRatio: 0.8
-    })
-  )
+if(isMinify){
+  webpackConfig.optimization.minimizer.push(new OptimizeCSSAssetsPlugin({}),new UglifyJsPlugin({
+    cache: true,
+    parallel: true,
+    sourceMap: config.build.productionSourceMap,
+    uglifyOptions: {
+      warnings: false
+    }
+  }))
 }
+
+// if (config.build.productionGzip) {
+//   const CompressionWebpackPlugin = require('compression-webpack-plugin')
+
+//   webpackConfig.plugins.push(
+//     new CompressionWebpackPlugin({
+//       asset: '[path].gz[query]',
+//       algorithm: 'gzip',
+//       test: new RegExp(
+//         '\\.(' +
+//         config.build.productionGzipExtensions.join('|') +
+//         ')$'
+//       ),
+//       threshold: 10240,
+//       minRatio: 0.8
+//     })
+//   )
+// }
 
 if (config.build.bundleAnalyzerReport) {
   const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin

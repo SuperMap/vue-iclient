@@ -8,7 +8,7 @@
         "unit": "jest --config test/unit/jest.conf.js --coverage",
         "test": "npm run unit",
         "lint": "eslint --ext .js,.vue src test/unit",
-        "build": "node build/build.js"
+        "build": "node build/build.js && node build/build.js -p"
     },
     "dependencies": {
         "@babel/runtime": "^7.3.1",

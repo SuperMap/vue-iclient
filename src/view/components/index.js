@@ -1,9 +1,3 @@
-import 'element-ui/lib/theme-chalk/button.css'
-import 'element-ui/lib/theme-chalk/checkbox.css'
-import 'element-ui/lib/theme-chalk/card.css'
-import 'element-ui/lib/theme-chalk/slider.css'
-import 'element-ui/lib/theme-chalk/icon.css'
-
 export {default as WebMap} from './WebMap.vue'
 export {default as LayerList} from './LayerList.vue'
 export {default as Pan} from './Pan.vue'
@@ -12,4 +6,5 @@ export {default as Scale} from './Scale.vue'
 export {default as Chart} from './Chart.vue'
 export {default as Map} from './Map.vue'
 export {default as MiniMap} from './MiniMap.vue'
-export {Button,Checkbox,Card,Slider} from 'element-ui';
+
+
