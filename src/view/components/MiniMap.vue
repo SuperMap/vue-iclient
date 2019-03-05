@@ -1,6 +1,6 @@
 
 <template>
-  <div :style="miniMapStyle"></div>
+  <div id="miniMap"></div>
 </template>
 
 <script>
@@ -12,18 +12,16 @@ import Widget from "./Widget";
 export default {
   name: "SmMiniMap",
   extends: Widget,
-  computed: {
-    miniMapStyle() {
-      if (this.widgetStyle) {
-        let style = Object.assign(this.widgetStyle.position);
-        style.width = this.widgetStyle.width;
-        style.height = this.widgetStyle.height;
-        return style;
-      }
+  props: {
+    iconClass: {
+      type: String,
+      default: "el-icon-back"
     }
   },
+
   loaded() {
     this.$el.classList.add("mapboxgl-ctrl-minimap");
+    !this.parentIsWebMapOrMap && this.$el.classList.add("mini-map-container");
     new MiniMapViewModel(this.$el, this.map);
   }
 };
@@ -35,6 +33,11 @@ export default {
   background: white;
   width: 220px;
   height: 180px;
+  &.mini-map-container {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  }
 }
 </style>
 

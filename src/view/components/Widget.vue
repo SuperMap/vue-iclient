@@ -1,7 +1,6 @@
 <script>
 // 新创建一个vue实例实时监听获得map对象
 import mapEvent from "../commontypes/mapEvent";
-import { WidgetStyle } from "../commontypes/WidgetStyle";
 import Control from "../mixin/Control";
 
 function callHook (vm, hook) {
@@ -13,14 +12,6 @@ function callHook (vm, hook) {
 export default {
   name: "Widget",
   mixins: [Control],
-  props: {
-    widgetStyle: {
-      type: Object,
-      validator(value) {
-        return value instanceof WidgetStyle;
-      }
-    }
-  },
   created() {
     callHook(this, 'load');
   },

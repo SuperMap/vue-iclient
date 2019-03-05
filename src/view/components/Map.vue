@@ -28,7 +28,7 @@ export default {
   },
   computed: {
     initStyle() {
-      return Object.assign({width: '100%', height: '100%'}, this.widgetStyle);
+      return {width: '100%', height: '100%'};
     }
   },
   mounted() {

@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import WebMapViewModel from '../../viewmodel/WebMapViewModel';
+import WebMapViewModel from "../../viewmodel/WebMapViewModel";
 import mapEvent from "../commontypes/mapEvent";
 import Widget from "./Widget";
 
@@ -29,7 +29,7 @@ export default {
   },
   computed: {
     initStyle() {
-      return Object.assign({width: '100%', height: '100%'}, this.widgetStyle);
+      return { width: "100%", height: "100%" };
     }
   },
   mounted() {

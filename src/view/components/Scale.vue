@@ -29,13 +29,7 @@ export default {
   },
   computed: {
     scaleStyle() {
-      if (this.widgetStyle) {
-        let style = this.widgetStyle.position;
-        style.width = this.width;
-        return style;
-      } else {
-        return { width: this.width };
-      }
+      return { width: this.width };
     }
   },
   methods: {

@@ -21,9 +21,11 @@ class LayerListViewModel extends WidgetViewModel {
     }
     getLayers() {
         this.cacheLayers = [];
-        Object.keys(this.map.style._layers).forEach((layerKey, index) => {
-            this.cacheLayers[index] = new LayerModel(this.map.style._layers[layerKey]);
-        });
+
+        let layers = this.map.getStyle().layers;
+        layers.forEach((layer, index) => {
+            this.cacheLayers[index] = new LayerModel(this.map.getLayer(layer.id));
+        },this);
         return this.cacheLayers;
     }
     setVisibleStatus(source, visibility) {

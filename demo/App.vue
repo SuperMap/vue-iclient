@@ -7,19 +7,14 @@
       <!-- <Pan></Pan>
       <Scale position="bottom-left"></Scale>
       <Zoom :show-zoom-slider="true"></Zoom>-->
-      <!-- <mini-map position="bottom-right"></mini-map> -->
-      
-      <sm-chart :datasets="datasets" :chartOptions="chartOptions" ref="chart"></sm-chart>
+      <sm-layer-list position="top-right" />
+      <sm-mini-map position="bottom-right"></sm-mini-map>
+      <sm-chart :datasets="datasets" :chartOptions="chartOptions"></sm-chart>
     </sm-web-map>
-    <el-button type="success">标签二</el-button>
-    <!-- <Chart :datasets="datasets" :chartOptions="chartOptions" ref="chart" :widgetStyle="chartStyle"></Chart> -->
-    <!-- <layer-list position="top-right"/> -->
-    <!-- <mini-map :widgetStyle="minimapStyle"></mini-map> -->
   </div>
 </template>
 
 <script>
-import { WidgetStyle } from "../src/view/commontypes/WidgetStyle";
 
 export default {
   name: "app",
@@ -49,15 +44,15 @@ export default {
                 "maxzoom": 22
             }]
         },
-        center: [120.143, 30.236], // starting position
-        zoom: 3 // starting zoom
+        center: [120.143, 30.236], 
+        zoom: 3 
       },
       webMapOptions: {
         target: 'map',
         server: "http://support.supermap.com.cn:8092/"
       },
       datasets: {
-        type: "iPortal", //iServer iPortal
+        type: "iPortal", 
         url: "http://support.supermap.com.cn:8092/web/datas/1920557079",
         queryInfo: { attributeFilter: "SmID > 0" }
       },
@@ -68,28 +63,6 @@ export default {
         }
       ],
     };
-  },
-  computed: {
-    minimapStyle() {
-      return new WidgetStyle({
-        position: {
-          position: "absolute",
-          bottom: "10px",
-          left: "10px"
-        },
-        width: "200px",
-        height: "180px"
-      });
-    },
-    chartStyle() {
-      return new WidgetStyle({
-        position: {
-          position: "absolute",
-          bottom: "10px",
-          left: "10px"
-        }
-      });
-    }
   }
 };
 </script>
@@ -108,12 +81,5 @@ body {
   margin: 0 auto;
   width: 100%;
   height: 100%;
-  & .el_select {
-    position: absolute;
-    top: 26px;
-    right: 10px;
-    position: absolute;
-    z-index: 20;
-  }
 }
 </style>

@@ -1,6 +1,7 @@
 
 <template>
-  <div id="chart" :style="chartStyle"></div>
+  <div id="chart">
+  </div>
 </template>
 
 <script>
@@ -11,6 +12,14 @@ export default {
   name: "SmChart",
   extends: Widget,
   props: {
+    iconClass: {
+      type: String,
+      default: "el-icon-back"
+    },
+    collapsed: {
+      type: Boolean,
+      default: false
+    },
     chartType: {
       type: String,
       default: "bar"
@@ -32,14 +41,6 @@ export default {
     }
   },
   computed: {
-    chartStyle() {
-      if (this.widgetStyle) {
-        let style = Object.assign(this.widgetStyle.position);
-        style.width = this.widgetStyle.width || '450px';
-        style.height = this.widgetStyle.height || '350px';
-        return style;
-      }
-    },
     options() {
       return {
         type: this.chartType,
@@ -67,15 +68,20 @@ export default {
     }
   },
   loaded() {
+    !this.parentIsWebMapOrMap && this.$el.classList.add("chart-container");
     this.chartViewModel = new ChartViewModel(this.$el, this.options);
   }
 };
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped  lang="scss">
 #chart {
   width: 450px;
   height: 350px;
+  &.chart-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
 }
 </style>

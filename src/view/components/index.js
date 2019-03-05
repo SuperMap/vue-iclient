@@ -2,6 +2,8 @@ import 'element-ui/lib/theme-chalk/button.css'
 import 'element-ui/lib/theme-chalk/checkbox.css'
 import 'element-ui/lib/theme-chalk/card.css'
 import 'element-ui/lib/theme-chalk/slider.css'
+import 'element-ui/lib/theme-chalk/icon.css'
+
 export {default as WebMap} from './WebMap.vue'
 export {default as LayerList} from './LayerList.vue'
 export {default as Pan} from './Pan.vue'
