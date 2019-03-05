@@ -157,7 +157,7 @@ export default class WebMapViewModel extends WidgetViewModel {
                     }
                 })
             } else {
-                throw Error(Lang.i18n('msg_crsunsupport'));
+                throw Error('不支持当前地图的坐标系');
             }
 
         }).catch(error => {
@@ -313,12 +313,10 @@ export default class WebMapViewModel extends WidgetViewModel {
                         if (matchedScaleDenominator.length !== 0) {
                             isMatched = true;
                         } else {
-                            throw Error(Lang.i18n('msg_tilematrixsetunsupport'))
-
+                            throw Error('不支持传入的 TileMatrixSet')
                         }
                     } else {
-                        throw Error(Lang.i18n('msg_tilematrixsetunsupport'))
-
+                        throw Error('不支持传入的 TileMatrixSet')
                     }
                 }
             }

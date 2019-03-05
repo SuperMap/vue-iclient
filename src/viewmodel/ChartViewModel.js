@@ -250,7 +250,7 @@ export class ChartViewModel extends WidgetViewModel {
                     // 如果是json文件 data.content = {type:'fco', features},格式不固定
                     if (!(data.content.features)) {
                         //json格式解析失败
-                        console.log(Lang.i18n('msg_jsonResolveFiled'));
+                        console.log('JSON 格式解析失败！');
                         return;
                     }
                     let features = this._formatGeoJSON(data.content);
