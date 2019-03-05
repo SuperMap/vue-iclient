@@ -269,7 +269,7 @@ export default class MiniMapViewModel extends WidgetViewModel {
         return latlng;
     }
     _setStyle() {
-        this._miniMap.setStyle(lodash.cloneDeep(this._parentMap.getStyle()));
+        this._miniMap.setStyle(this._parentMap.getStyle());
         this._addRectLayers();
         this._update();
     }
