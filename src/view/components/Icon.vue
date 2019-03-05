@@ -106,19 +106,23 @@ export default {
   z-index: 1111;
   background: #fff;
   border: 1px solid #dcdfe6;
-  padding: 2px 5px;
   visibility: visible;
-  opacity: 1;
   color: #606266;
   cursor: pointer;
   text-align: center;
   box-sizing: border-box;
-  // transition: 0.1s;
-  font-weight: 500;
+  padding: 6px;
+  font-size: 16px !important;
   &:hover {
     background: #fff;
     border-color: #409eff;
     color: #409eff;
+  }
+  & .auto-rotate {
+    transform-origin: 50% 50%;
+  }
+  & div{
+    display: block;
   }
   &.icon-top-left {
     position: absolute;
