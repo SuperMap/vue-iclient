@@ -21,6 +21,11 @@ export default {
   created() {
     callHook(this, 'load');
   },
+  computed: {
+    getMapTarget() {
+      return this.mapTarget || this.$parent.target;
+    }
+  },
   mounted() {
     this.filterDelayLoad = !['smwebmap', 'smmap', 'smminimap'].includes(
       this.$options.name && this.$options.name.toLowerCase()
@@ -33,10 +38,7 @@ export default {
      * 如果子组件和 map 同层级，且没有设置 mapTarget 时，则默认渲染到第一个map上
      *
      */
-
-    const { propsData = {} } = this.$parent.$options;
-    const targetName =
-      this.mapTarget || this.target || propsData.target || mapEvent.firstMapTarget;
+    const targetName = this.getMapTarget || mapEvent.firstMapTarget;
     mapEvent.$on(`initMap-${targetName}`, map => {
       // 每个继承的组件各自对map操作的统一函数名
       this.parentIsWebMapOrMap = ['smwebmap', 'smmap'].includes(

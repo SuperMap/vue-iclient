@@ -27,6 +27,9 @@ export default {
   computed: {
     initStyle() {
       return { width: '100%', height: '100%' };
+    },
+    getMapTarget() {
+      return this.target;
     }
   },
   created() {
