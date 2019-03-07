@@ -1,24 +1,25 @@
 <template>
-  <div
-    :id="(webMapOptions.hasOwnProperty('target') ? webMapOptions.target : 'map')"
-    :style="initStyle"
-  >
+  <div :id="target" :style="initStyle">
     <slot></slot>
   </div>
 </template>
 
 <script>
-import WebMapViewModel from "../../viewmodel/WebMapViewModel";
-import mapEvent from "../commontypes/mapEvent";
-import Widget from "./Widget";
+import WebMapViewModel from '../../viewmodel/WebMapViewModel';
+import mapEvent from '../commontypes/mapEvent';
+import Widget from './Widget';
 
 export default {
-  name: "SmWebMap",
+  name: 'SmWebMap',
   extends: Widget,
   props: {
     mapId: {
       type: String,
       required: true
+    },
+    target: {
+      type: String,
+      default: 'map'
     },
     webMapOptions: {
       type: Object,
@@ -29,7 +30,12 @@ export default {
   },
   computed: {
     initStyle() {
-      return { width: "100%", height: "100%" };
+      return { width: '100%', height: '100%' };
+    }
+  },
+  created() {
+    if (!mapEvent.firstMapTarget) {
+      mapEvent.firstMapTarget = this.target;
     }
   },
   mounted() {
@@ -38,12 +44,13 @@ export default {
   },
   methods: {
     initializeWebMap() {
+      this.webMapOptions.target = this.target;
       const webmap = new WebMapViewModel(this.mapId, this.webMapOptions);
       return webmap;
     },
     registerEvents(webmap) {
-      webmap.on("addlayerssucceeded", e => {
-        mapEvent.$emit("initMap", e.map);
+      webmap.on('addlayerssucceeded', e => {
+        mapEvent.$emit(`initMap-${this.target}`, e.map);
       });
     }
   }

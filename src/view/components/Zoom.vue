@@ -67,8 +67,8 @@ export default {
       return this.ZoomViewModel.setZoom(zoom);
     }
   },
-  loaded() {
-    this.ZoomViewModel = new ZoomViewModel(this.map);
+  loaded(map) {
+    this.ZoomViewModel = new ZoomViewModel(map);
     // 设置slider的最大最小值
     this.min = this.getMinZoom();
     this.max = this.getMaxZoom();

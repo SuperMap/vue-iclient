@@ -1,34 +1,37 @@
 <template>
-  <div
-    :id="(mapOptions.hasOwnProperty('container') ? mapOptions.container : 'map')"
-    :style="initStyle"
-  >
+  <div :id="target" :style="initStyle">
     <slot></slot>
   </div>
 </template>
 
 <script>
-import mapboxgl from "@libs/mapboxgl/mapbox-gl-enhance";
+import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 import mapEvent from '../commontypes/mapEvent';
-import Widget from "./Widget";
+import Widget from './Widget';
 
 export default {
   name: 'SmMap',
   extends: Widget,
   props: {
+    target: {
+      type: String,
+      default: 'map'
+    },
     mapOptions: {
       type: Object,
       default() {
         return {};
       }
-    },
-    accessToken: {
-      type: String
     }
   },
   computed: {
     initStyle() {
-      return {width: '100%', height: '100%'};
+      return { width: '100%', height: '100%' };
+    }
+  },
+  created() {
+    if (!mapEvent.firstMapTarget) {
+      mapEvent.firstMapTarget = this.target;
     }
   },
   mounted() {
@@ -37,18 +40,13 @@ export default {
   },
   methods: {
     initializeMap() {
-      if (this.accessToken) {
-        mapboxgl.accessToken = this.accessToken;
-      }
-      if (!this.mapOptions.hasOwnProperty('container')) {
-        this.mapOptions.container = 'map';
-      }
+      this.mapOptions.container = this.target;
       const map = new mapboxgl.Map(this.mapOptions);
       return map;
     },
     registerEvents(map) {
       map.on('load', () => {
-        mapEvent.$emit('initMap', map);
+        mapEvent.$emit(`initMap-${this.target}`, map);
       });
     }
   }

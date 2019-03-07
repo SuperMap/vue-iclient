@@ -33,8 +33,8 @@ export default {
     }
   },
   methods: {
-    inlitializeScale() {
-      let scaleViewModel = new ScaleViewModel(this.map);
+    inlitializeScale(map) {
+      let scaleViewModel = new ScaleViewModel(map);
       this.scaleViewModel = scaleViewModel;
       this.updateContainer();
       scaleViewModel.onMoveEvt();
@@ -47,8 +47,8 @@ export default {
       });
     }
   },
-  loaded() {
-    this.inlitializeScale();
+  loaded(map) {
+    this.inlitializeScale(map);
   }
 };
 </script>
