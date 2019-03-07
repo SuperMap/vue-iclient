@@ -1,10 +1,12 @@
 @import "./mixins/Mixins.scss";
+@import './common/var.scss';
 
 @include b(minimap) {
   width: 220px;
   height: 180px;
-  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
-  background: white;
+  border: $--border-base;
+  box-shadow: $--box-shadow-base;
+  background: #fff;
   @include m(position) {
     position: absolute;
     bottom: 10px;

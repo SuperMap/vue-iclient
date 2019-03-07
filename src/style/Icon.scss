@@ -1,8 +1,9 @@
 @import "./mixins/Mixins.scss";
+@import "./common/var.scss";
 
 @include b(control) {
   visibility: hidden;
-  transition: all 0.5s;
+  transition: $--all-transition;
   @include when(click-in) {
     transform: scale(0);
   }
@@ -25,10 +26,9 @@
 
 @include b(icon) {
   z-index: 100;
-  background: #fff;
-  border: 1px solid #dcdfe6;
-  visibility: visible;
-  color: #606266;
+  background: $--icon-color-fill-base;
+  border: $--border-base;
+  color: $--color-text-regular;
   cursor: pointer;
   text-align: center;
   box-sizing: border-box;
@@ -36,12 +36,12 @@
   font-size: 16px;
   position: absolute;
   &:hover {
-    background: #fff;
-    border-color: #409eff;
-    color: #409eff;
+    background: #ffffff;
+    border-color: $--border-color-hover;
+    color: $--color-primary;
   }
   @include e(el-icon) {
-    display: block;
+    display: block !important;
     @include when(auto-rotate) {
       transform-origin: 50% 50%;
     }

@@ -1,7 +1,6 @@
 
 <template>
-  <div id="chart" class='sm-chart'>
-  </div>
+  <div id="chart" class="sm-chart"></div>
 </template>
 
 <script>
@@ -70,6 +69,13 @@ export default {
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add("sm-chart--position");
     this.chartViewModel = new ChartViewModel(this.$el, this.options);
+    if (this.parentIsWebMapOrMap) {
+      let icon = this.$el.parentElement.children[1];
+      icon && (icon.style.visibility = "hidden");
+      icon && this.chartViewModel.on("chartinitsucceeded", () => {
+          icon.style.visibility = "visible";
+        });
+    }
   }
 };
 </script>

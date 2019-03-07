@@ -15,16 +15,14 @@
 </template>
 
 <script>
+
 export default {
-  name: 'app',
+  name: "app",
   data() {
-    var host = window.isLocal
-      ? window.server
-      : 'http://support.supermap.com.cn:8090';
-    var attribution =
-      "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox </a>" +
-      " with <span>© <a href='http://iclient.supermap.io' target='_blank'>SuperMap iClient</a> | </span>" +
-      " Map Data <span>© <a href='http://support.supermap.com.cn/product/iServer.aspx' target='_blank'>SuperMap iServer</a></span> ";
+    var host = window.isLocal ? window.server : "http://support.supermap.com.cn:8090";
+    var attribution = "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox </a>" +
+        " with <span>© <a href='http://iclient.supermap.io' target='_blank'>SuperMap iClient</a> | </span>" +
+        " Map Data <span>© <a href='http://support.supermap.com.cn/product/iServer.aspx' target='_blank'>SuperMap iServer</a></span> ";
     return {
       mapOptions: {
         container: 'map', // container id
