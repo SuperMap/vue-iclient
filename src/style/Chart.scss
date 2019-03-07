@@ -1,0 +1,11 @@
+@import "./mixins/Mixins.scss";
+
+@include b(chart) {
+  width: 450px;
+  height: 350px;
+  @include m(position){
+    position: absolute;
+    top: 10px;
+    left: 10px;
+  }
+}

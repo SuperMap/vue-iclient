@@ -1,28 +1,28 @@
 <template>
   <div
-    :class="['ctrl-container', 'ctrl-container-position', panImgClass, mapboxglClass]"
+    :class="['sm-pan', panImgClass, mapboxglClass]"
   >
-    <div class="ctrl-center" @click="panToCenter"></div>
+    <div class="sm-pan__center" @click="panToCenter"></div>
     <div
-      class="ctrl-icon ctrl-pan-left"
+      class="sm-pan__icon is-left"
       @click="panToLeft"
       @mouseleave="setPanImg"
       @mouseenter="setPanWestImg"
     ></div>
     <div
-      class="ctrl-icon ctrl-pan-right"
+      class="sm-pan__icon is-right"
       @click="panToRight"
       @mouseleave="setPanImg"
       @mouseenter="setPanEastImg"
     ></div>
     <div
-      class="ctrl-icon ctrl-pan-top"
+      class="sm-pan__icon is-top"
       @click="panToTop"
       @mouseleave="setPanImg"
       @mouseenter="setPanNorthImg"
     ></div>
     <div
-      class="ctrl-icon ctrl-pan-bottom"
+      class="sm-pan__icon is-bottom"
       @click="panToBottom"
       @mouseleave="setPanImg"
       @mouseenter="setPanSouthImg"
@@ -39,7 +39,7 @@ export default {
   data() {
     return {
       center: null,
-      panImgClass: "ctrl-container-pan",
+      panImgClass: "sm-pan--default",
       mapboxglClass: ""
     };
   },
@@ -82,19 +82,19 @@ export default {
     },
 
     setPanImg() {
-      this.panImgClass = "ctrl-container-pan";
+      this.panImgClass = "sm-pan--default";
     },
     setPanWestImg() {
-      this.panImgClass = "ctrl-container-pan-west";
+      this.panImgClass = "sm-pan--west";
     },
     setPanEastImg() {
-      this.panImgClass = "ctrl-container-pan-east";
+      this.panImgClass = "sm-pan--east";
     },
     setPanNorthImg() {
-      this.panImgClass = "ctrl-container-pan-north";
+      this.panImgClass = "sm-pan--north";
     },
     setPanSouthImg() {
-      this.panImgClass = "ctrl-container-pan-south";
+      this.panImgClass = "sm-pan--south";
     }
   },
   loaded() {
@@ -106,66 +106,3 @@ export default {
   }
 };
 </script>
-<style scoped>
-.ctrl-container-position {
-  position: relative;
-  top: 0;
-  left: 0;
-}
-.ctrl-container {
-  width: 62px;
-  height: 63px;
-}
-.ctrl-container-pan {
-  background-image: url("../../assets/pan.png");
-}
-.ctrl-container-pan-east {
-  background-image: url("../../assets/pan-east.png");
-}
-.ctrl-container-pan-west {
-  background-image: url("../../assets/pan-west.png");
-}
-.ctrl-container-pan-north {
-  background-image: url("../../assets/pan-north.png");
-}
-.ctrl-container-pan-south {
-  background-image: url("../../assets/pan-south.png");
-}
-.ctrl-center {
-  width: 17px;
-  height: 17px;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  background-image: url("../../assets/pan.png");
-  background-size: contain;
-  cursor: pointer;
-}
-.ctrl-icon {
-  width: 21px;
-  height: 21px;
-  padding: 0;
-  /* background-color: transparent; */
-  cursor: pointer;
-}
-.ctrl-pan-left {
-  position: absolute;
-  top: 21px;
-}
-.ctrl-pan-right {
-  position: absolute;
-  top: 21px;
-  right: 0px;
-}
-.ctrl-pan-top {
-  position: absolute;
-  top: 0px;
-  left: 21px;
-}
-.ctrl-pan-bottom {
-  position: absolute;
-  bottom: 0px;
-  left: 21px;
-}
-</style>

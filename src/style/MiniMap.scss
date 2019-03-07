@@ -1,0 +1,13 @@
+@import "./mixins/Mixins.scss";
+
+@include b(minimap) {
+  width: 220px;
+  height: 180px;
+  box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
+  background: white;
+  @include m(position) {
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+  }
+}

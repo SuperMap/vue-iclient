@@ -1,5 +1,5 @@
 <template>
-  <div class="mapboxgl-custom-ctrl-scale" :style="scaleStyle">{{content}}</div>
+  <div class="sm-scale" :style="scaleStyle">{{content}}</div>
 </template>
 <script>
 import ScaleViewModel from "../../viewmodel/ScaleViewModel";
@@ -52,16 +52,5 @@ export default {
   }
 };
 </script>
-<style scoped lang='scss'>
-.mapboxgl-custom-ctrl-scale {
-  background-color: rgba(255, 255, 255, 0.75);
-  font-size: 10px;
-  border-width: medium 2px 2px;
-  border-style: none solid solid;
-  border-color: #333;
-  padding: 0 5px;
-  color: #333;
-  box-sizing: border-box;
-}
-</style>
+
 

@@ -4,9 +4,9 @@
       <Chart :datasets="datasets" :chartOptions="chartOptions" ref="chart"></Chart>
     </Map> -->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
-      <!-- <Pan></Pan>
-      <Scale position="bottom-left"></Scale>
-      <Zoom :show-zoom-slider="true"></Zoom>-->
+      <sm-pan></sm-pan>
+      <sm-zoom :show-zoom-slider="true"></sm-zoom>
+      <sm-scale position="bottom-left"></sm-scale>
       <sm-layer-list position="top-right" />
       <sm-mini-map position="bottom-right"></sm-mini-map>
       <sm-chart :datasets="datasets" :chartOptions="chartOptions"></sm-chart>

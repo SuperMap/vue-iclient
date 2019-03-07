@@ -1,6 +1,6 @@
 
 <template>
-  <div id="chart">
+  <div id="chart" class='sm-chart'>
   </div>
 </template>
 
@@ -68,20 +68,8 @@ export default {
     }
   },
   loaded() {
-    !this.parentIsWebMapOrMap && this.$el.classList.add("chart-container");
+    !this.parentIsWebMapOrMap && this.$el.classList.add("sm-chart--position");
     this.chartViewModel = new ChartViewModel(this.$el, this.options);
   }
 };
 </script>
-
-<style scoped  lang="scss">
-#chart {
-  width: 450px;
-  height: 350px;
-  &.chart-container {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-  }
-}
-</style>

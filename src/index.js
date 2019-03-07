@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import 'element-ui/lib/theme-chalk/icon.css'
+import './style/index.scss';
 import {Button,Checkbox,Card,Slider} from 'element-ui';
 
 import * as components from './view/components';

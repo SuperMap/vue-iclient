@@ -25,10 +25,12 @@ export default {
                 onAdd() {
                     if (self.iconClass) {
                         let div = document.createElement('div');
-                        self.$el.classList.add(`mbgl-ctrl-transform-${self.position}`)
+                        self.$el.classList.add(`sm-control`)
+                        self.$el.classList.add(`is-${self.position}`)
                         div.appendChild(self.$el);
                         div.appendChild(self.addIcon().$el)
                         div.classList.add('mapboxgl-ctrl');
+                        div.classList.add('sm-control-container')
                         return div;
                     }else {return self.$el;}
                 },
