@@ -10,6 +10,7 @@
       <sm-layer-list position="top-right" />
       <sm-mini-map position="bottom-right"></sm-mini-map>
       <sm-chart :datasets="datasets" :chartOptions="chartOptions"></sm-chart>
+      <sm-measure position="top-right"></sm-measure>
     </sm-web-map>
   </div>
 </template>
