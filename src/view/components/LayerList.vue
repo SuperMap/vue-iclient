@@ -1,17 +1,33 @@
 <template>
-  <el-card class="layer-control">
-    <div slot="header" class="clearfix">
-      <span>图层控制</span>
-    </div>
-    <div class="layers-content">
-      <ul>
-        <li v-for="(item,index) in layerList" :key="index">
+  <el-card class="sm-layer-list">
+    <div class="sm-layer-list__content">
+      <el-collapse v-for="(sourceValue,sourceKey,index) in sourceList" :key="index" class='sm-layer-list__collapse'>
+        <el-collapse-item v-if="typeof sourceValue.sourceLayerList === 'object'"
+          class="sm-layer-list__collapseitem">
+          <template slot="title">
+            <i :class="['el-icon-view', sourceValue.visibility === 'visible' ? 'visible':'none']"
+            @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"></i>
+            <div>
+              {{sourceKey}}
+            </div>
+            
+          </template>
           <el-checkbox
-            @change="toggleShowAndHide(item.id,item.visibility)"
-            :checked="item.visibility | isVisible"
-          >{{item.id}}</el-checkbox>
-        </li>
-      </ul>
+            v-for="(sourcelayerValue,sourcelayerKey,index) in sourceValue.sourceLayerList"
+            :key="index"
+            @change="toggleVisibility(sourcelayerKey,sourceKey,sourcelayerValue[0].visibility)"
+            :value="sourcelayerValue[0].visibility | isVisible"
+          >{{sourcelayerKey}}</el-checkbox>
+        </el-collapse-item>
+
+        <el-card v-else class="sm-layer-list__elcarditem">
+          <i :class="['el-icon-view', sourceValue.visibility === 'visible' ? 'visible':'none']"
+          @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"></i>
+          <div class="sm-layer-list__layergroupname">
+            {{sourceKey}}
+          </div>
+        </el-card>
+      </el-collapse>
     </div>
   </el-card>
 </template>
@@ -37,36 +53,47 @@ export default {
   },
   data() {
     return {
-      layerList: []
+      sourceList: {}
     };
   },
   methods: {
-    toggleShowAndHide(sourceLayer, visibility) {
-      visibility = visibility === "visible" ? "none" : "visible";
+    toggleVisibility(sourceLayer, sourceName, visibility) {
       this.layerListViewModel &&
-        (this.layerList = this.layerListViewModel.setVisibleStatus(
+        this.layerListViewModel.changeLayerVisible(
           sourceLayer,
+          sourceName,
           visibility
-        ));
+        );
+    },
+    addNewLayer() {
+      this.layerListViewModel.addNewLayer();
+    },
+    deleteLayer() {
+      this.layerListViewModel.deleteLayer();
+    },
+    toggleLayerGroupVisibility(sourceName, visibility) {
+      this.layerListViewModel &&
+        this.layerListViewModel.changeLayerGroupVisibility(
+          sourceName,
+          visibility
+        );
     }
   },
   filters: {
     isVisible(visibility) {
-      if (visibility === "visible") {
-        return true;
-      } else {
-        return false;
-      }
+      return visibility === "visible" ? true : false
     }
   },
   extends: Widget,
   loaded(map) {
     !this.parentIsWebMapOrMap && this.$el.classList.add("layer-list-container");
+    
     this.layerListViewModel = new layerListViewModel(map);
+    this.sourceList = this.layerListViewModel.getLayers();
+
     this.layerListViewModel.on("layersUpdated", () => {
-      this.layerList = this.layerListViewModel.getLayers();
+      this.sourceList = this.layerListViewModel.getLayers();
     });
   }
 };
 </script>
-
