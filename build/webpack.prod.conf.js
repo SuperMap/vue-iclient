@@ -31,6 +31,8 @@ const webpackConfig = merge(baseWebpackConfig, {
     path: path.resolve(__dirname, '../dist'),
     filename: isMinify ? `${outputFileName}.min.js`:`${outputFileName}.js`,
     libraryTarget: 'umd',
+    libraryExport: 'default',
+    library: 'SmWidgets',
   },
   externals: {
     vue: {

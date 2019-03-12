@@ -1,5 +1,4 @@
 @import "./mixins/Mixins.scss";
-
 @include b(pan) {
   width: 62px;
   height: 63px;
@@ -7,19 +6,19 @@
   top: 0;
   left: 0;
   @include m(default) {
-    background-image: url("../assets/pan.png");
+    background-image: url("#{$--assets-path}/pan.png");
   }
   @include m(east) {
-    background-image: url("../assets/pan-east.png");
+    background-image: url("#{$--assets-path}/pan-east.png");
   }
   @include m(west) {
-    background-image: url("../assets/pan-west.png");
+    background-image: url("#{$--assets-path}/pan-west.png");
   }
   @include m(north) {
-    background-image: url("../assets/pan-north.png");
+    background-image: url("#{$--assets-path}/pan-north.png");
   }
   @include m(south) {
-    background-image: url("../assets/pan-south.png");
+    background-image: url("#{$--assets-path}/pan-south.png");
   }
   @include e(center) {
     width: 17px;
@@ -28,7 +27,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    background-image: url("../assets/pan.png");
+    background-image: url("#{$--assets-path}/pan.png");
     background-size: contain;
     cursor: pointer;
   }

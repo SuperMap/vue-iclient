@@ -1,11 +1,26 @@
 /* eslint-disable */
 import Vue from 'vue';
-import '../src/index.js';
-import App from './App.vue';
+
+import SmWidgets from '../src/index.js';
+import App from './App';
 import '@libs/mapboxgl/mapbox-gl-enhance.css';
+
 Vue.config.productionTip = false;
 
-/* eslint-disable no-new */
+Vue.use(SmWidgets, {
+  // locale: {
+  //   el: {
+  //     messagebox: {
+  //       confirm: '确定SM',
+  //     },
+  //   },
+  //   layerList: {
+  //     title: "MMMMMMMMMMMMM"
+  //   }
+  // },
+  //theme:"dark"
+});
+
 new Vue({
   el: '#app',
   components: {

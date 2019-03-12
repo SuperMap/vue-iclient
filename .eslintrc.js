@@ -8,12 +8,16 @@ module.exports = {
     env: {
         browser: true,
     },
+    globals: {
+        "SuperMap": "readonly",
+        "mapboxgl": "readonly"
+      },
     // https://github.com/vuejs/eslint-plugin-vue#priority-a-essential-error-prevention
     // consider switching to `plugin:vue/strongly-recommended` or `plugin:vue/recommended` for stricter rules.
-    extends: ['plugin:vue/essential', 'airbnb-base'],
+    extends: ['plugin:vue/recommended', "eslint:recommended"],
     // required to lint *.vue files
     plugins: [
-        'vue'
+        'vue','import'
     ],
     // check if imports actually resolve
     settings: {
@@ -32,20 +36,13 @@ module.exports = {
         }],
         // disallow reassignment of function parameters
         // disallow parameter object manipulation except for specific exclusions
-        'no-param-reassign': ['error', {
-            props: true,
-            ignorePropertyModificationsFor: [
-                'state', // for vuex state
-                'acc', // for reduce accumulators
-                'e' // for e.returnvalue
-            ]
-        }],
+        'no-param-reassign': "off",
         // allow optionalDependencies
         'import/no-extraneous-dependencies': ['error', {
             optionalDependencies: ['test/unit/index.js']
         }],
         // allow debugger during development
         'no-debugger': process.env.NODE_ENV === 'production' ? 'error' : 'off',
-        "comma-dangle": ["error", "never"]
+        "comma-dangle": ["error", "never"],
     }
 }
