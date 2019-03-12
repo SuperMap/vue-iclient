@@ -97,11 +97,11 @@ export default {
       this.panImgClass = "sm-pan--south";
     }
   },
-  loaded(map) {
+  loaded() {
     // todo 对map操作
     this.parentIsWebMapOrMap && (this.mapboxglClass = "mapboxgl-ctrl");
-    this.PanViewModel = new PanViewModel(map);
-    this.center = map.getCenter();
+    this.PanViewModel = new PanViewModel(this.map);
+    this.center = this.map.getCenter();
     this.lnglat = this.center;
   }
 };

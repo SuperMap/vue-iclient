@@ -47,8 +47,8 @@ export default {
       });
     }
   },
-  loaded(map) {
-    this.inlitializeScale(map);
+  loaded() {
+    this.inlitializeScale(this.map);
   }
 };
 </script>

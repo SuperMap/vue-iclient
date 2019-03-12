@@ -19,10 +19,10 @@ export default {
     }
   },
 
-  loaded(map) {
+  loaded() {
     this.$el.classList.add("sm-minimap");
     !this.parentIsWebMapOrMap && this.$el.classList.add("sm-minimap--position");
-    new MiniMapViewModel(this.$el, map);
+    new MiniMapViewModel(this.$el, this.map);
   }
 };
 </script>

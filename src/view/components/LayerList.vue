@@ -85,10 +85,10 @@ export default {
     }
   },
   extends: Widget,
-  loaded(map) {
+  loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add("layer-list-container");
     
-    this.layerListViewModel = new layerListViewModel(map);
+    this.layerListViewModel = new layerListViewModel(this.map);
     this.sourceList = this.layerListViewModel.getLayers();
 
     this.layerListViewModel.on("layersUpdated", () => {

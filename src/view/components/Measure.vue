@@ -87,7 +87,7 @@ export default {
         : this.areaDefaultUnit;
     }
   },
-  loaded(map) {
+  loaded() {
     this.draw = new MapboxDraw({
       displayControlsDefault: false,
       controls: {
@@ -95,7 +95,7 @@ export default {
         trash: true
       }
     });
-    map.on('draw.create', this.measureDistance);
+    this.map.on('draw.create', this.measureDistance);
   },
   methods: {
     checkMeasureMode(mode) {
