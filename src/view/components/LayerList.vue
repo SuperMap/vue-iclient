@@ -1,6 +1,7 @@
 <template>
   <el-card class="sm-layer-list">
     <div class="sm-layer-list__content">
+      <span>{{ $tc('layerList.apple',10,{ count: 20 }) }}</span>
       <el-collapse v-for="(sourceValue,sourceKey,index) in sourceList" :key="index" class='sm-layer-list__collapse'>
         <el-collapse-item v-if="typeof sourceValue.sourceLayerList === 'object'"
           class="sm-layer-list__collapseitem">
@@ -40,7 +41,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: "el-icon-tickets"
+      default: "smwidgets-icons-layer-style"
     },
     autoRotate: {
       type: Boolean,
@@ -58,6 +59,7 @@ export default {
   },
   methods: {
     toggleVisibility(sourceLayer, sourceName, visibility) {
+      console.log($tc('layerList.apple',10,{ count: 20 }))
       this.layerListViewModel &&
         this.layerListViewModel.changeLayerVisible(
           sourceLayer,
@@ -72,6 +74,7 @@ export default {
       this.layerListViewModel.deleteLayer();
     },
     toggleLayerGroupVisibility(sourceName, visibility) {
+      console.log(this.$tc('layerList.apple',10,{ count: 20 }))
       this.layerListViewModel &&
         this.layerListViewModel.changeLayerGroupVisibility(
           sourceName,

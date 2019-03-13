@@ -11,6 +11,7 @@ import {
 } from "element-ui";
 import { setLocale } from "../src/lang/index";
 import * as components from "./view/components";
+import "./assets/iconfont/iconfont.css";
 
 const install = function(Vue, opts = {}) {
   if (opts.locale) {
