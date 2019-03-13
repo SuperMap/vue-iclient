@@ -29,7 +29,7 @@ module.exports = {
     '!src/main.js',
     '!**/node_modules/**'
   ],
- 
+  transformIgnorePatterns: ["node_modules/(?!(mapbox-gl)/)"],
   modulePaths: [
     "src",
     "node_modules"

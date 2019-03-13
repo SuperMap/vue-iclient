@@ -7,7 +7,7 @@ module.exports = function (api) {
       {
         // "modules": false,
         "targets": {
-          "node":'current',
+          "node": 'current',
           "browsers": ["> 1%", "last 2 versions", "not ie <= 8"]
         }
       }
@@ -15,13 +15,15 @@ module.exports = function (api) {
   ];
   const plugins = [
     "@babel/plugin-transform-runtime",
-  [
-    "component",
-    {
-      "libraryName": "element-ui",
-      "styleLibraryName": "theme-chalk"
-    }
-  ]];
+    [
+      "component",
+      {
+        "libraryName": "element-ui",
+        "styleLibraryName": "theme-chalk"
+      }
+    ],
+    "transform-flow-strip-types"
+  ];
 
   return {
     presets,

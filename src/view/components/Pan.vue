@@ -75,10 +75,10 @@ export default {
       this.panBy([0, this.panLength]);
     },
     panTo(lnglat) {
-      this.PanViewModel.panTo(lnglat);
+      this.panViewModel.panTo(lnglat);
     },
     panBy(point) {
-      this.PanViewModel.panBy(point);
+      this.panViewModel.panBy(point);
     },
 
     setPanImg() {
@@ -98,9 +98,9 @@ export default {
     }
   },
   loaded() {
-    // todo 对map操作
+
     this.parentIsWebMapOrMap && (this.mapboxglClass = "mapboxgl-ctrl");
-    this.PanViewModel = new PanViewModel(this.map);
+    this.panViewModel = new PanViewModel(this.map);
     this.center = this.map.getCenter();
     this.lnglat = this.center;
   }

@@ -41,8 +41,8 @@ export default {
   methods: {
     initializeMap() {
       this.mapOptions.container = this.target;
-      const map = new mapboxgl.Map(this.mapOptions);
-      return map;
+      this.map = new mapboxgl.Map(this.mapOptions);
+     return this.map;
     },
     registerEvents(map) {
       map.on('load', () => {
