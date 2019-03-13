@@ -18,9 +18,7 @@ export default {
 };
 </script>
 <style lang='scss'>
-.sm-table-popup {
-  & .el-table__body-wrapper {
-    overflow: auto;
-  }
+.el-table__body-wrapper {
+  overflow: auto !important;
 }
 </style>
