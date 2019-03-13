@@ -1,0 +1,6 @@
+@import './mixins/mixins.scss';
+
+@include b(map){
+    width:100%;
+    height:100%
+}

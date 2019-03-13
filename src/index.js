@@ -20,6 +20,7 @@ const install = function(Vue, opts = {}) {
 
   require(`./style/theme/${theme}.scss`);
 
+  //TIP:引入element组件时，需在style/index.scss中引入组件对应的scsss。确保样式变量对elemenet组件生效
   Vue.use(Button);
   Vue.use(Checkbox);
   Vue.use(Card);
