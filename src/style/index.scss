@@ -8,7 +8,10 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 @import "element-ui/packages/theme-chalk/src/select.scss";
 @import "element-ui/packages/theme-chalk/src/collapse.scss";
 @import "element-ui/packages/theme-chalk/src/collapse-item.scss";
-@import 'element-ui/lib/theme-chalk/icon.css';
+@import "element-ui/packages/theme-chalk/src/input.scss";
+@import "element-ui/packages/theme-chalk/src/table.scss";
+@import "element-ui/packages/theme-chalk/src/table-column.scss";
+@import 'element-ui/lib/theme-chalk/message.css';
 
 @import "./common/common.scss";
 @import "./map.scss";
@@ -20,4 +23,4 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 @import "./chart.scss";
 @import './measure.scss';
 @import "./layer-list.scss";
-
+@import "./search.scss";

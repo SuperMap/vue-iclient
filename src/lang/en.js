@@ -30,5 +30,12 @@ export default {
   pan: {},
   scale: {},
   webmap: {},
-  map: {}
+  map: {},
+  search: {
+    noResult: "The result of the search is empty!",
+    noKey: "Search keywords cannot be empty. Please enter your search criteria.",
+    inputPlaceHolder: 'Find an address or location',
+    attribute: 'Attributes',
+    attributeValue: 'Attribute value'
+  }
 }

@@ -1,7 +1,7 @@
 $--assets-path: '../assets' !default;
 /* Transition */
 
-$--all-transition: all 0.5s;
+$--all-transition: all 0.5s !default;
 
 /* color */
 $--color-primary: #409eff !default;
@@ -47,7 +47,7 @@ $--link-hover-color: $--color-primary !default;
 $--border-color-base: #dcdfe6 !default;
 $--border-width-base: 1px !default;
 $--border-style-base: solid !default;
-$--border-color-hover: $--color-primary;
+$--border-color-hover: $--color-primary !default;
 $--border-base: $--border-width-base $--border-style-base $--border-color-base !default;
 /// borderRadius|[大圆角,border radius base,border radius base]|Radius|0
 $--border-radius-base: 4px !default;

@@ -40,9 +40,9 @@ layerList: {
     title: "图层",
     hello: '{msg} world',
     hello1: '{0} world',
-    the_world: 'the world',
+    theWorld: 'the world',
     dio: 'DIO:',
-    linked: '@:(message.dio) @:(message.the_world) !!!!'，
+    linked: '@:(message.dio) @:(message.theWorld) !!!!'，
     apple: 'no apples | one apple | {count} apples'
 },
 vue中调用：

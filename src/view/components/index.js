@@ -7,5 +7,5 @@ export {default as Chart} from './Chart.vue'
 export {default as Map} from './Map.vue'
 export {default as MiniMap} from './MiniMap.vue'
 export {default as Measure} from './Measure.vue'
-
+export {default as Search} from './Search.vue'
 

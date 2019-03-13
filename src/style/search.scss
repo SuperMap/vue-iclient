@@ -1,0 +1,97 @@
+@import "./mixins/Mixins.scss";
+@import "./common/var.scss";
+
+@include b(search){
+  z-index: $--index-top;
+  font-size: 12px;
+  @include e(input){
+    height: 36px;
+    line-height: 36px;
+    background: $--fill-base;
+    box-shadow: $--box-shadow-base;
+    border-radius: $--border-radius-base;
+    @include e(el-input){
+      & .el-input__inner {
+        box-shadow: $--box-shadow-base;
+        border-radius: $--border-radius-base;
+        padding-left: 50px;
+        outline: none;
+        border: unset;
+      }
+      & .el-input__prefix{
+        border-right: 1px solid #e9e9e9;
+        & .el-input__icon {
+          transition: unset;
+          left: 0;
+          padding: 1px 6px 0px 3px;
+          height: unset !important;
+          color: $--icon-color;
+          font-size: 16px;
+        }
+        & .el-icon-search{
+          cursor: pointer;
+          &:hover {
+            color: $--color-primary;
+            border-radius: 4px;
+          }
+        }
+        & .el-icon-loading{
+          color: $--color-primary;
+        }
+      }
+    }
+  }
+  @include e(result){
+    margin-top: 10px;
+    overflow: scroll;
+    background-color: $--fill-base;
+    line-height: normal;
+    max-width: 300px;
+    max-height: 500px;
+    box-shadow: $--box-shadow-base;
+    border-radius: $--border-radius-base;
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+      background-color: $--fill-base;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: $--color-primary;
+    }
+    @include e(panel){
+      padding-left: 4px;
+      @include e(panel-header){
+        display: block;
+        border-bottom: 1px solid $--color-primary;
+        font-size: 14px;
+        font-family: "微软雅黑" ;
+        padding: 6px 0px;
+        background:  $--fill-base;
+        color: $--color-primary;
+        margin: 7px;
+        font-weight: bolder;
+      }
+      @include e(panel-body){
+        & > ul {
+          list-style: none;
+          margin-left: -32px;
+          font-size: 13px;
+          color: rgb(145, 145, 145);
+          & > li {
+            padding: 8px 0;
+            display: block;
+            cursor: pointer;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            &:hover {
+              color: #409eff;
+              background: rgb(245, 245, 245);
+            }
+          }
+        }
+      }
+    }
+  }
+} 
