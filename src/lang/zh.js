@@ -14,11 +14,7 @@ export default {
   error: {
 
   },
-  //包括V VM
-  //微件名{}
-  //Model:{
-  //model名：{}
-  //}
+  //微件
   zoom: {
 
   },
@@ -26,7 +22,7 @@ export default {
 
   },
   layerList: {
-    title: "图层 {0}"
+    title: "图层"
   },
   miniMap: {
 
@@ -34,15 +30,8 @@ export default {
   pan: {},
   scale: {},
   webmap: {},
-  map: {},
-  //Model:{
-  //model名：{}
-  //}
-  model: {
-    layer: {
+  map: {}
 
-    }
-  }
 
 
 }

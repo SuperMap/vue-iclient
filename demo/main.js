@@ -7,7 +7,8 @@ import '@libs/mapboxgl/mapbox-gl-enhance.css';
 
 Vue.config.productionTip = false;
 
-Vue.use(SmWidgets, {
+Vue.use(SmWidgets,
+  //{
   // locale: {
   //   el: {
   //     messagebox: {
@@ -19,7 +20,8 @@ Vue.use(SmWidgets, {
   //   }
   // },
   //theme:"dark"
-});
+  //}
+);
 
 new Vue({
   el: '#app',
