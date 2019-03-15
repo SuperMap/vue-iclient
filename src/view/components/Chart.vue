@@ -1,6 +1,6 @@
 
 <template>
-  <div id="chart" class="sm-chart"></div>
+  <div class="sm-chart"  ref="chart" ></div>
 </template>
 
 <script>
@@ -9,11 +9,16 @@ import { ChartViewModel } from "../../viewmodel/ChartViewModel";
 import Widget from "./Widget";
 export default {
   name: "SmChart",
+  viewModelProps: ["chartType", "datasets", "chartOptions"],
   extends: Widget,
   props: {
+    autoRotate: {
+      type: Boolean,
+      default: false
+    },
     iconClass: {
       type: String,
-      default: "el-icon-back"
+      default: "smwidgets-icons-attribute"
     },
     collapsed: {
       type: Boolean,
@@ -49,9 +54,7 @@ export default {
     }
   },
   methods: {
-    changeType(type) {
-      this.chartViewModel && this.chartViewModel.changeType(type);
-    },
+    
     getStyle() {
       this.chartViewModel && this.chartViewModel.getStyle();
     },
@@ -60,15 +63,11 @@ export default {
     },
     getFeatures() {
       this.chartViewModel && this.chartViewModel.getFeatures();
-    },
-    updateData(datasets, chartOption) {
-      this.chartViewModel &&
-        this.chartViewModel.updateData(datasets, chartOption);
     }
   },
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add("sm-chart--position");
-    this.chartViewModel = new ChartViewModel(this.$el, this.options);
+    this.chartViewModel = new ChartViewModel(this.$refs['chart'], this.options);
     if (this.parentIsWebMapOrMap) {
       let icon = this.$el.parentElement.children[1];
       icon && (icon.style.visibility = "hidden");
@@ -76,6 +75,10 @@ export default {
           icon.style.visibility = "visible";
         });
     }
+    // 在new完vm后，调用基类的方法，设置this.viewModel
+    this.setViewModel(this.chartViewModel);
   }
 };
 </script>
+
+

@@ -42,14 +42,36 @@ export class ChartViewModel extends WidgetViewModel {
         this._initXYField(options.chartOptions);
         this._initChart();
     }
-
-    changeType(type) {
+    setChartType(type) {
         if (type !== this.chartType) {
             this.chartType = type;
             let newOptions = this._updateChartOptions(this.chartType);
             this._updateChart(newOptions);
         }
     }
+    setDatasets(datasets) {
+        this.updateData(datasets, this.chartOptions)
+    }
+    // todo,setChartOptions不该发请求
+    setChartOptions(chartOptions){
+        this.updateData(this.datasets, chartOptions)
+    }
+    resize(){
+      this.echart.resize();
+    }
+    // 获取当前的echart
+    getEchart(){
+        return this.echart;
+    }
+
+
+    // changeType(type) {
+    //     if (type !== this.chartType) {
+    //         this.chartType = type;
+    //         let newOptions = this._updateChartOptions(this.chartType);
+    //         this._updateChart(newOptions);
+    //     }
+    // }
 
     updateData(datasets, chartOption) {
         this.xField = [];
@@ -439,7 +461,7 @@ export class ChartViewModel extends WidgetViewModel {
                 name: this.xField[0].name || "X",
                 data: datas,
                 nameTextStyle: {
-                    color: '#fff',
+                    color: '#34aae6',
                     fontSize: 14
                 },
                 splitLine: {
@@ -447,7 +469,7 @@ export class ChartViewModel extends WidgetViewModel {
                 },
                 axisLine: {
                     lineStyle: {
-                        color: '#eee'
+                        color: '#34aae6'
                     }
                 }
             }
@@ -456,22 +478,23 @@ export class ChartViewModel extends WidgetViewModel {
                 name: this.yFieldName || "Y",
                 data: {},
                 nameTextStyle: {
-                    color: '#fff',
+                    color: '#34aae6',
                     fontSize: 14
                 },
+                splitArea : {show : true},//保留网格区域
                 splitLine: {
                     show: false
                 },
                 axisLine: {
                     lineStyle: {
-                        color: '#eee'
+                        color: '#34aae6'
                     }
                 }
             }
             let tooltip = {
                 formatter: '{b0}: {c0}'
             };
-            let backgroundColor = '#404a59';
+            let backgroundColor = '#f8f7f7';
             if (style) {
                 if (style.grid) {
                     grid = style.grid;
@@ -590,6 +613,7 @@ export class ChartViewModel extends WidgetViewModel {
             }
             let serie = {
                 type: chartType,
+                color: '#a285d9',
                 data: serieData,
                 name: "y"
             };
