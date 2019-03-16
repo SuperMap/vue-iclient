@@ -10,34 +10,34 @@
     background: $--fill-base;
     box-shadow: $--box-shadow-base;
     border-radius: $--border-radius-base;
-    @include e(el-input){
-      & .el-input__inner {
-        box-shadow: $--box-shadow-base;
-        border-radius: $--border-radius-base;
-        padding-left: 50px;
-        outline: none;
-        border: unset;
+  }
+  @include e(el-input){
+    & .el-input__inner {
+      box-shadow: $--box-shadow-base;
+      border-radius: $--border-radius-base;
+      padding-left: 50px;
+      outline: none;
+      border: unset;
+    }
+    & .el-input__prefix{
+      border-right: 1px solid #e9e9e9;
+      & .el-input__icon {
+        transition: unset;
+        left: 0;
+        padding: 1px 6px 0px 3px;
+        height: unset !important;
+        color: $--icon-color;
+        font-size: 16px;
       }
-      & .el-input__prefix{
-        border-right: 1px solid #e9e9e9;
-        & .el-input__icon {
-          transition: unset;
-          left: 0;
-          padding: 1px 6px 0px 3px;
-          height: unset !important;
-          color: $--icon-color;
-          font-size: 16px;
-        }
-        & .el-icon-search{
-          cursor: pointer;
-          &:hover {
-            color: $--color-primary;
-            border-radius: 4px;
-          }
-        }
-        & .el-icon-loading{
+      & .el-icon-search{
+        cursor: pointer;
+        &:hover {
           color: $--color-primary;
+          border-radius: 4px;
         }
+      }
+      & .el-icon-loading{
+        color: $--color-primary;
       }
     }
   }

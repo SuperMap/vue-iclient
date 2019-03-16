@@ -152,7 +152,7 @@ export default class SearchViewModel extends WidgetViewModel {
         let attributeFilter = this._getAttributeFilter(fields);
         let param = new SuperMap.QueryBySQLParameters({
           queryParams: {
-            name: restMapSearch.name,
+            name: restMapSearch.layerName,
             attributeFilter: attributeFilter
           },
           startRecord: 0,
@@ -161,7 +161,7 @@ export default class SearchViewModel extends WidgetViewModel {
         new mapboxgl.supermap.QueryService(restMapSearch.url).queryBySQL(param, serviceResult => {
           if (serviceResult.result) {
             let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, serviceResult.result.recordsets[0].features.features);
-            resultFeatures.length > 0 && this.searchResult.push({ source: restMapSearch.resultName || 'Rest Map Search', result: resultFeatures })
+            resultFeatures.length > 0 && this.searchResult.push({ source: restMapSearch.name || 'Rest Map Search', result: resultFeatures })
             this.searchCount--;
             this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
           } else {
@@ -175,8 +175,8 @@ export default class SearchViewModel extends WidgetViewModel {
 
   _searchFromRestData(restDataSearchs) {
     restDataSearchs.forEach(restDataSearch => {
-      let datasourceName = restDataSearch.name[0].split(":")[0];
-      let datasetName = restDataSearch.name[0].split(":")[1];
+      let datasourceName = restDataSearch.dataName[0].split(":")[0];
+      let datasetName = restDataSearch.dataName[0].split(":")[1];
       let fieldsUrl = restDataSearch.url + `/datasources/${datasourceName}/datasets/${datasetName}/fields.rjson`;
       this._getRestDataFields(fieldsUrl, fields => {
         let attributeFilter = this._getAttributeFilter(fields);
@@ -184,14 +184,14 @@ export default class SearchViewModel extends WidgetViewModel {
           queryParameter: {
             attributeFilter: attributeFilter
           },
-          datasetNames: restDataSearch.name,
+          datasetNames: restDataSearch.dataName,
           fromIndex: 0,
           toIndex: this.maxReturn - 1
         });
         new mapboxgl.supermap.FeatureService(restDataSearch.url).getFeaturesBySQL(param, serviceResult => {
           if (serviceResult.result) {
             let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, serviceResult.result.features.features);
-            resultFeatures.length > 0 && this.searchResult.push({ source: restDataSearch.resultName || "Rest Data Search", result: resultFeatures })
+            resultFeatures.length > 0 && this.searchResult.push({ source: restDataSearch.name || "Rest Data Search", result: resultFeatures })
             this.searchCount--;
             this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
           } else {
@@ -210,6 +210,7 @@ export default class SearchViewModel extends WidgetViewModel {
         return response.json();
       }).then(data => {
         if (data.succeed === false) {
+          this.searchCount--;
           //请求失败
           return;
         }
@@ -380,7 +381,7 @@ export default class SearchViewModel extends WidgetViewModel {
   _getRestMapFields(restMapSearch, callBack) {
     let param = new SuperMap.QueryBySQLParameters({
       queryParams: {
-        name: restMapSearch.name,
+        name: restMapSearch.layerName,
         attributeFilter: "SMID=0"
       }
     });
@@ -415,7 +416,7 @@ export default class SearchViewModel extends WidgetViewModel {
       let geoCodeParam = new SuperMap.GeoCodingParameter(parm);
       this.addressMatchService.code(geoCodeParam, e => {
         if (e.result.length > 0) {
-          e.result.length > 0 && this.searchResult.push({ source: addressMatch.resultName || 'Address Match Search', result: e.result })
+          e.result.length > 0 && this.searchResult.push({ source: addressMatch.name || 'Address Match Search', result: e.result })
           this.searchCount--;
           this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
         } else {

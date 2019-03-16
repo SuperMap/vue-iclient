@@ -32,7 +32,21 @@
 import Widget from "./Widget";
 import SearchViewModel from "../../viewmodel/SearchViewModel";
 import TablePopup from "./TablePopup";
+import IportalDataParameter from "../commontypes/IportalDataParameter";
+import RestDataParameter from "../commontypes/RestDataParameter";
+import RestMapParameter from "../commontypes/RestMapParameter";
+import AddressMatchParameter from '../commontypes/AddressMatchParameter';
 import Vue from "vue";
+
+let validators = (value, propType) => {
+  let valid = true;
+  value.forEach(item => {
+    if (!(item instanceof propType)) {
+      valid = false;
+    }
+  });
+  return valid;
+};
 
 export default {
   name: "SmSearch",
@@ -43,7 +57,7 @@ export default {
       default: 8
     },
     layerSourceNames: {
-      type: [Array]
+      type: Array
     },
     onlineLocalSearch: {
       type: Object,
@@ -53,16 +67,28 @@ export default {
       }
     },
     restMapSearch: {
-      type: [Array]
+      type: Array,
+      validator(value) {
+        return validators(value, RestMapParameter);
+      }
     },
     restDataSearch: {
-      type: [Array]
+      type: Array,
+      validator(value) {
+        return validators(value, RestDataParameter);
+      }
     },
     iportalData: {
-      type: [Array]
+      type: Array,
+      validator(value) {
+        return validators(value, IportalDataParameter);
+      }
     },
     addressMatch: {
-      type: [Array]
+      type: Array,
+      validator(value) {
+        return validators(value, AddressMatchParameter);
+      }
     }
   },
   data() {

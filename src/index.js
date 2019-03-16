@@ -11,7 +11,8 @@ import {
   Input,
   Table,
   TableColumn,
-  Message
+  Message,
+  Loading
 } from "element-ui";
 import { setLocale } from "../src/lang/index";
 import * as components from "./view/components";
@@ -38,7 +39,7 @@ const install = function (Vue, opts = {}) {
   Vue.use(Table)
   Vue.use(TableColumn)
   Vue.prototype.$message = Message;
-
+  Vue.prototype.$loading = Loading;
   for (let component in components) {
     Vue.component(components[component].name, components[component]);
   }

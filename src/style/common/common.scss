@@ -1,11 +1,25 @@
-@import './var.scss';
+@import "./var.scss";
 
-.mapboxgl-ctrl{
-    position: relative;
+.mapboxgl-ctrl {
+  position: relative;
 }
 
-.add-ellipsis{
-    text-overflow: ellipsis;
-    overflow: hidden;
-    white-space: nowrap;
+.add-ellipsis {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.hidden {
+  display: none;
+}
+
+.clearfix:after {
+  content: ".";
+  height: 0;
+  display: block;
+  clear: both;
+}
+
+.disabled {
+  pointer-events: none;
 }

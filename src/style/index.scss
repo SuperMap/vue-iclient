@@ -12,6 +12,7 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 @import "element-ui/packages/theme-chalk/src/table.scss";
 @import "element-ui/packages/theme-chalk/src/table-column.scss";
 @import 'element-ui/packages/theme-chalk/src/message.scss';
+@import 'element-ui/packages/theme-chalk/src/loading.scss';
 
 @import "./common/common.scss";
 @import "./map.scss";
@@ -24,4 +25,5 @@ $--font-path: "~element-ui/lib/theme-chalk/fonts";
 @import './measure.scss';
 @import "./layer-list.scss";
 @import "./search.scss";
-@import "./legend.scss"
+@import "./legend.scss";
+@import "./query.scss";

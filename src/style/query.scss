@@ -1,0 +1,190 @@
+@import "./mixins/Mixins.scss";
+@import "./common/var.scss";
+
+@include b(query) {
+  background: $--fill-base;
+  border-radius: 4px;
+  min-width: 280px;
+  color: #409eff;
+  @include e(header) {
+    box-shadow: $--box-shadow-base;
+    background: #fafafa;
+    border-radius: $--border-radius-base;
+    padding: 6px;
+    & > .smwidgets-icons-more {
+      margin-right: 10px;
+      float: right;
+      transform: rotate(90deg);
+      cursor: pointer;
+    }
+    &.hidden-header {
+      background: white;
+      border-radius: 4px;
+      padding: 5px;
+      width: 18px;
+      float: left;
+    }
+  }
+  @include e(header-icon) {
+    cursor: pointer;
+    float: left;
+  }
+  @include e(header-span) {
+    display: inline-block;
+    padding-left: 10px;
+    font-size: 15px;
+    font-family: "微软雅黑";
+  }
+  @include e(body) {
+    transform-origin: top left;
+    transition: $--all-transition;
+    height: 300px;
+    background: $--fill-base;
+    box-shadow: $--box-shadow-base;
+    border-radius: $--border-radius-base;
+    padding: 10px 15px;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+      background-color: $--fill-base;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgb(245, 245, 245);
+    }
+  }
+  @include e(choose-panel) {
+    font-size: 14px;
+    color: #303133;
+  }
+  @include e((job-button, result-button)) {
+    padding: 0 0 10px 0;
+    text-align: center;
+    width: 50%;
+    border-bottom: 2px solid rgb(228, 231, 237);
+    float: left;
+    cursor: pointer;
+    @include when(active) {
+      color: #409eff;
+      border-bottom: 2px solid;
+      font-weight: bolder;
+    }
+  }
+  @include e(job-info-panel) {
+    margin-top: 4px;
+    border-bottom: 1px solid #ececec;
+  }
+  @include e(job-info-header) {
+    cursor: pointer;
+    color: #303133;
+    padding: 10px 5px;
+    &:hover {
+      color: #409eff;
+      background: rgb(245, 245, 245);
+    }
+    & > .smwidgets-icons-preview {
+      color: #409eff;
+      font-size: 14px;
+    }
+    & > .sm-query__job-info-name {
+      margin-left: 10px;
+      font-size: 13px;
+    }
+    & > .smwidgets-icons-legend-unfold,
+    & > .smwidgets-icons-legend-fold {
+      color: #c0c4cc;
+      font-size: 10px;
+      float: right;
+      margin-right: 3px;
+    }
+  }
+  @include e(job-info-body) {
+    margin-top: 10px;
+    border: 1px solid rgb(228, 231, 237);
+    border-radius: 4px;
+    padding: 5px;
+  }
+  @include e((attribute, spatial-filter)) {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 13px;
+    font-weight: 700;
+  }
+  @include e(attribute-name) {
+    text-align: center;
+    color: #666;
+    font-weight: 700;
+  }
+  @include e(el-select) {
+    margin-top: 10px;
+    margin-left: 7%;
+    font-weight: 100;
+    & .el-select-dropdown__list {
+      padding: 4px 0;
+    }
+    & .el-select-dropdown__item {
+      height: 30px;
+      line-height: 30px;
+      padding: 0 8px;
+      font-size: 12px;
+    }
+  }
+  @include e(el-button) {
+    width: 100%;
+    margin-top: 70px;
+    font-weight: bolder;
+  }
+
+  @include e(result-info) {
+    margin-top: 10px;
+    overflow: scroll;
+    background-color: #fff;
+    line-height: normal;
+    max-width: 300px;
+    height: 86%;
+    &::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+      background-color: #fff;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: rgb(245, 245, 245);
+    }
+  }
+
+  @include e(result-header){
+    display: block;
+    border-bottom: 1px solid #409eff;
+    font-size: 14px;
+    font-family: "微软雅黑";
+    padding: 6px 0px;
+    background: #fff;
+    color: #409eff;
+    margin: 7px;
+    font-weight: bolder;
+  }
+  @include e(no-result){
+    color: #303133;
+  }
+  @include e(result-body){
+    & > ul {
+      list-style: none;
+      margin-left: -32px;
+      font-size: 13px;
+      color: rgb(145, 145, 145);
+      & > li {
+        padding: 8px 0;
+        display: block;
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &:hover {
+          color: #409eff;
+          background: rgb(245, 245, 245);
+        }
+      }
+    }
+  }
+}
