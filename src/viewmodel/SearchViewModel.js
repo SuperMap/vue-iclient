@@ -1,7 +1,7 @@
 import WidgetViewModel from "./WidgetViewModel";
 import "@libs/iclient-mapboxgl/iclient9-mapboxgl-es6";
 import clonedeep from 'lodash.clonedeep';
-import center from 'turf-center';
+import center from '@turf/center';
 
 /**
  * @class SearchViewModel

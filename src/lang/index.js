@@ -22,7 +22,7 @@ const messages = {
 }
 const i18n =
   new VueI18n({
-    locale: Cookies.get('language') || "zh",
+    locale: getLanguage(),
     fallbackLocale: "zh",
     messages
   })
@@ -33,6 +33,26 @@ export function setLocale(locales) {
 ElementLocale.i18n((key, value) => i18n.t(key, value))
 export default i18n
 
+function getLanguage() {
+  var lang = Cookies.get('language');
+  if (!lang) {
+    if (navigator.appName === 'Netscape') {
+      lang = navigator.language;
+    } else {
+      lang = navigator.browserLanguage;
+    }
+  }
+
+  if (lang) {
+    if (lang.indexOf('zh') === 0) {
+      return 'zh';
+    }
+    if (lang.indexOf('en') === 0) {
+      return 'en';
+    }
+  }
+  return 'zh';
+}
 /*
 Example
 假设国际化资源配置为：
@@ -89,8 +109,3 @@ $tc方法：
 日期格式处理（$d）：https://kazupon.github.io/vue-i18n/guide/datetime.html
 数字格式处理（$n）：https://kazupon.github.io/vue-i18n/guide/number.html
 */
-
-
-
-
-
