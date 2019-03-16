@@ -56,27 +56,25 @@ export default {
   methods: {
     
     getStyle() {
-      this.chartViewModel && this.chartViewModel.getStyle();
+      this.viewModel && this.viewModel.getStyle();
     },
     setStyle(style) {
-      this.chartViewModel && this.chartViewModel.setStyle(style);
+      this.viewModel && this.viewModel.setStyle(style);
     },
     getFeatures() {
-      this.chartViewModel && this.chartViewModel.getFeatures();
+      this.viewModel && this.viewModel.getFeatures();
     }
   },
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add("sm-chart--position");
-    this.chartViewModel = new ChartViewModel(this.$refs['chart'], this.options);
+    this.viewModel = new ChartViewModel(this.$refs['chart'], this.options);
     if (this.parentIsWebMapOrMap) {
       let icon = this.$el.parentElement.children[1];
       icon && (icon.style.visibility = "hidden");
-      icon && this.chartViewModel.on("chartinitsucceeded", () => {
+      icon && this.viewModel.on("chartinitsucceeded", () => {
           icon.style.visibility = "visible";
         });
     }
-    // 在new完vm后，调用基类的方法，设置this.viewModel
-    this.setViewModel(this.chartViewModel);
   }
 };
 </script>
