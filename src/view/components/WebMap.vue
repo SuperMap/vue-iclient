@@ -50,7 +50,7 @@ export default {
     },
     registerEvents(webmap) {
       webmap.on('addlayerssucceeded', e => {
-        mapEvent.$emit(`initMap-${this.target}`, e.map);
+        mapEvent.$emit(`initMap-${this.target}`, e.map,webmap);
       });
     }
   }

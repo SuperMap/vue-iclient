@@ -30,6 +30,12 @@ export default {
   pan: {},
   scale: {},
   webmap: {},
+  legend:{
+    themeField:'专题字段',
+    title:'图例',
+    top:'最高',
+    bottom:'最低'
+  },
   map: {},
   search:{
     noResult: "查询结果为空！",

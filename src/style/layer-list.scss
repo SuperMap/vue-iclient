@@ -11,71 +11,76 @@
     @include e(content){
         width: 100%;
         height: 100%;
-        @include e(collapse){
-            border: none;
-            @include e(elcarditem) {
-              position: relative;
-              width: 284px;
-              border: none;
-              @include e(layergroupname){
-                position: absolute;
-                left: 48px;
-                top: 8px;
-              }
-              margin-bottom: 4px;
-              .el-card__body {
-                .el-icon-view {
-                  font-size: 18px;
-                  margin-right: 10px;
-                  vertical-align: -2px
-                }
-                .visible{
-                  color: $--color-primary
-                }
-                .none{
-                  color:#c0c4cc;
-                }
-                height: 32px;
-                line-height: 32px;
-                font-size: 14px;
-                margin-left: 12px;
-              }
+    }
+
+    @include e(collapse){
+      border: none;
+    } 
+
+    @include e(collapseitem){
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      margin-bottom: 4px;
+      .el-collapse-item__header {
+        border-bottom: none;
+        font-size: 14px;
+        padding-left: 20px;
+        .el-icon-view {
+          font-size: 18px;
+          margin-right: 10px;
+          vertical-align: -2px
+        }
+        .visible{
+          color: $--color-primary
+        }
+        .none{
+          color: #c0c4cc;
+        }
+      }
+      .el-collapse-item__wrap {
+        border-bottom: none;
+        .el-collapse-item__content {
+          line-height: 3;
+          overflow: hidden;
+          .el-checkbox {
+            float: left;
+            margin-left: 45px;
+            &:last-child {
+              margin-left: 45px;
             }
-            @include e(collapseitem){
-              box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-              margin-bottom: 4px;
-              .el-collapse-item__header {
-                border-bottom: none;
-                font-size: 14px;
-                padding-left: 20px;
-                .el-icon-view {
-                  font-size: 18px;
-                  margin-right: 10px;
-                  vertical-align: -2px
-                }
-                .visible{
-                  color: $--color-primary
-                }
-                .none{
-                  color: #c0c4cc;
-                }
-              }
-              .el-collapse-item__wrap {
-                border-bottom: none;
-                .el-collapse-item__content {
-                  line-height: 3;
-                  overflow: hidden;
-                  .el-checkbox {
-                    float: left;
-                    margin-left: 45px;
-                    &:last-child {
-                      margin-left: 45px;
-                    }
-                  }
-                }
-              }
-            }
-          } 
+          }
+        }
+      }
+    }
+
+    @include e(elcarditem) {
+      position: relative;
+      width: 284px;
+      border: none;
+    
+      margin-bottom: 4px;
+      .el-card__body {
+        .el-icon-view {
+          font-size: 18px;
+          margin-right: 10px;
+          vertical-align: -2px
+        }
+        .visible{
+          color: $--color-primary
+        }
+        .none{
+          color:#c0c4cc;
+        }
+        height: 32px;
+        line-height: 32px;
+        font-size: 14px;
+        margin-left: 12px;
+      }
+    }
+
+    @include e(layergroupname){
+      position: absolute;
+      left: 48px;
+      top: 8px;
     }
     .el-card__body {
         padding: 8px;

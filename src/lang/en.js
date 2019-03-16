@@ -30,6 +30,12 @@ export default {
   pan: {},
   scale: {},
   webmap: {},
+  legend:{
+    themeField:'themefield',
+    title:'legend',
+    top:'top',
+    bottom:'bottom'
+  },
   map: {},
   search: {
     noResult: "The result of the search is empty!",

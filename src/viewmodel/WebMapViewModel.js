@@ -2,8 +2,9 @@
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
 import WidgetViewModel from './WidgetViewModel';
+import SourceListModel from '../model/SourceListModel'
 import '@libs/iclient-mapboxgl/iclient9-mapboxgl-es6';
-
+import '@libs/geostats/geostats.js'
 import convert from 'xml-js';
 import canvg from 'canvg';
 import jsonsql from 'jsonsql';
@@ -56,6 +57,7 @@ export default class WebMapViewModel extends WidgetViewModel {
         this.credentialValue = options.credentialValue;
         this.withCredentials = options.withCredentials || false;
         this.target = options.target || "map";
+        this.legendList = {};
         this._createWebMap();
     }
 
@@ -846,6 +848,9 @@ export default class WebMapViewModel extends WidgetViewModel {
         }
     }
 
+    getSourceListModel(){    
+        return this.sourceListModel;
+    }
     /**
      * @private
      * @function WebMapViewModel.prototype._createUniqueLayer
@@ -856,13 +861,14 @@ export default class WebMapViewModel extends WidgetViewModel {
     _createUniqueLayer(layerInfo, features) {
         let styleGroup = this._getUniqueStyleGroup(layerInfo, features);
         features = this._getFiterFeatures(layerInfo.filterCondition, features);
-
+        
         let style = layerInfo.style;
         let layerStyle = {};
         let themeField = layerInfo.themeSetting.themeField;
         let type = layerInfo.featureType;
         let expression = ["match", ["get", "index"]];
         let layerID = layerInfo.layerID;
+        
         features.forEach((row) => {
             styleGroup.forEach((item) => {
                 if (item.value === row.properties[themeField]) {
@@ -871,6 +877,10 @@ export default class WebMapViewModel extends WidgetViewModel {
             })
         })
         expression.push('#ffffff');
+        
+        //图例相关
+        this._initLegendConfigInfo(layerInfo,styleGroup)
+        
         layerStyle.style = this._transformStyleToMapBoxGl(style, type, expression);
         let visible = layerInfo.visible;
         layerStyle.layout = { 'visibility': visible }
@@ -1099,7 +1109,9 @@ export default class WebMapViewModel extends WidgetViewModel {
         let color = ["interpolate", ["linear"],
             ["heatmap-density"]
         ]
+    
         let length = layerOption.gradient.length
+        
         let step = (1 / length).toFixed(2);
         layerOption.gradient.forEach((item, index) => {
             color.push(index * step);
@@ -1108,6 +1120,8 @@ export default class WebMapViewModel extends WidgetViewModel {
             }
             color.push(item);
         })
+        //图例相关
+        this._initLegendConfigInfo(layerInfo,layerOption.gradient)
 
         let paint = {
             "heatmap-color": color,
@@ -1120,6 +1134,7 @@ export default class WebMapViewModel extends WidgetViewModel {
                 ]
             }
         }
+        
         if (features[0].weight && features.length >= 4) {
             let weight = [];
             features.forEach(item => {
@@ -1195,6 +1210,7 @@ export default class WebMapViewModel extends WidgetViewModel {
         let style = layerInfo.style;
         let featureType = layerInfo.featureType;
         let styleGroups = this._getRangeStyleGroup(layerInfo, features);
+
         features = this._getFiterFeatures(layerInfo.filterCondition, features);
 
         let source = {
@@ -1217,6 +1233,9 @@ export default class WebMapViewModel extends WidgetViewModel {
             } !tartget && expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
         }, this);
         expression.push('rgba(0, 0, 0, 0)');
+      
+        //图例处理
+        this._initLegendConfigInfo(layerInfo,styleGroups)
 
         // 获取样式
         let layerStyle = { 'layout': {} };
@@ -1468,7 +1487,13 @@ export default class WebMapViewModel extends WidgetViewModel {
              * @property {string} mapParams.description - 地图描述。
              * @property {Array.<Object>} layers - 地图上所有的图层对象
              */
+            this.sourceListModel = new SourceListModel({map:this.map})
+            for(let layerID in this.legendList){
+                this.sourceListModel.addSourceStyle(layerID,this.legendList[layerID]);
+            }
             this.fire('addlayerssucceeded', { 'map': this.map, 'mapparams': this.mapParams, 'layers': this.layers })
+           
+
         }
     }
 
@@ -1814,5 +1839,16 @@ export default class WebMapViewModel extends WidgetViewModel {
             }
         });
         return features;
+    }
+
+    _initLegendConfigInfo(layerInfo,style){
+        if(!this.legendList[layerInfo.layerID]){
+            this.legendList[layerInfo.layerID] = {}
+            this.legendList[layerInfo.layerID]['layerType'] = layerInfo.layerType;
+            this.legendList[layerInfo.layerID]['featureType'] = layerInfo.featureType;
+            this.legendList[layerInfo.layerID]['layerId'] = layerInfo.layerID;
+            this.legendList[layerInfo.layerID]['themeField'] = layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themefield;
+            this.legendList[layerInfo.layerID]['styleGroup'] = style;
+        }
     }
 }

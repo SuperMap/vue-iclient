@@ -8,4 +8,4 @@ export {default as Map} from './Map.vue'
 export {default as MiniMap} from './MiniMap.vue'
 export {default as Measure} from './Measure.vue'
 export {default as Search} from './Search.vue'
-
+export {default as Legend} from './Legend.vue'

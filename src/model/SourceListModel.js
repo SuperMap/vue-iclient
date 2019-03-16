@@ -29,6 +29,12 @@ class SourceListModel extends WidgetModel {
         return this.sourceList[sourceName]['sourceLayerList']
     }
 
+    addSourceStyle(sourceName, sourceStyle){
+        if(this.sourceList[sourceName]){
+            this.sourceList[sourceName]['style'] = sourceStyle
+        }
+    }
+
     _initLayers(){
         this.layers && (this.detailLayers = this.layers.map(layer => {
            return this.map.getLayer(layer.id) 

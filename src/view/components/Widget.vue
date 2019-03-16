@@ -40,12 +40,13 @@ export default {
      *
      */
     const targetName = this.getMapTarget || mapEvent.firstMapTarget;
-    mapEvent.$on(`initMap-${targetName}`, map => {
+    mapEvent.$on(`initMap-${targetName}`, (map,webmap) => {
       // 每个继承的组件各自对map操作的统一函数名
       this.parentIsWebMapOrMap = ["smwebmap", "smmap"].includes(
         this.$parent.$options.name && this.$parent.$options.name.toLowerCase()
       );
       this.map = map;
+      this.webmap = webmap;
       this.parentIsWebMapOrMap && this.addControl(map);
       callHook(this, "loaded");
       // 控制与map组件同级的组件的显示加载

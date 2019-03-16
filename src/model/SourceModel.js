@@ -6,6 +6,7 @@ class SourceModel extends WidgetModel {
         this.id = options.source
         this.sourceLayerList = {}
         this.layers = [];
+        this.type = null;
     }
 
     addLayer(layer, sourceLayer) {
@@ -18,7 +19,7 @@ class SourceModel extends WidgetModel {
                 this.sourceLayerList = undefined;
             }
             this.layers.push(layer)
-
+            this.type = layer.type;
             if([layer.visibility,this.visibility].includes('visible')){
                 this.visibility = 'visible'
             }else{
