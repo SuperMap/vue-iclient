@@ -1,9 +1,8 @@
-@import './mixins/mixins.scss';
+@import "./mixins/mixins.scss";
 
 @include b(measure) {
-
+  width: $--widget-container-width;
   @include e(panel) {
-    width: 212px;
     padding: 0 12px;
     overflow: hidden;
     background-color: #fff;
@@ -15,13 +14,12 @@
   @include e(panelContent) {
     position: relative;
     width: 100%;
-    padding-right: 5px;;
+    padding-right: 5px;
     margin: 10px 0;
     text-align: left;
     font-size: 0;
     overflow: hidden;
     background: #f5f5f5;
-    
   }
 
   @include e(panelTitle) {
@@ -33,7 +31,7 @@
   }
 
   @include e(title) {
-    font-size: 14px;
+    font-size: $--text-primary;
     font-weight: 600;
   }
 
@@ -45,6 +43,11 @@
     text-align: center;
     font-size: 22px;
     vertical-align: middle;
+    & .smwidgets-icons-polygon-layer,
+    & .smwidgets-icons-line-layer {
+      cursor: pointer;
+      font-size: $--text-regular;
+    }
   }
   @include e(iconActive) {
     background-color: #606266;
@@ -65,7 +68,7 @@
       width: 2px;
       height: 16px;
       background: #c0c4cc;
-      content: '';
+      content: "";
     }
     .el-input__inner {
       font-size: 15px;
@@ -76,9 +79,7 @@
       .el-select__caret {
         color: #333;
       }
-
     }
-    
   }
 
   @include e(default) {
@@ -89,6 +90,7 @@
   }
 
   @include e(calcuTitle) {
+    font-size: $--text-regular;
     border-bottom: 1px solid #c0c4cc;
     padding: 5px 0;
     text-align: center;

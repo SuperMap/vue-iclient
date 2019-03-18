@@ -26,7 +26,7 @@ export default class SearchViewModel extends WidgetViewModel {
     } else {
       return new Error(`Cannot find map`);
     }
-    this.searchtType = ['layerSourceNames', 'onlineLocalSearch', 'restMapSearch', 'restDataSearch', 'iportalData', 'addressMatch'];
+    this.searchtType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
   }
 
   search(keyWord) {
@@ -43,11 +43,11 @@ export default class SearchViewModel extends WidgetViewModel {
         }
       }
     }, this)
-    let { layerSourceNames, onlineLocalSearch, restMapSearch, restDataSearch, iportalData, addressMatch } = { ...this.options };
-    layerSourceNames && this._searchFromLayer(layerSourceNames);
+    let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = { ...this.options };
+    layerNames && this._searchFromLayer(layerNames);
     onlineLocalSearch.enable && this._searchFromPOI(onlineLocalSearch);
-    restMapSearch && this._searchFromRestMap(restMapSearch);
-    restDataSearch && this._searchFromRestData(restDataSearch);
+    restMap && this._searchFromRestMap(restMap);
+    restData && this._searchFromRestData(restData);
     iportalData && this._searchFromIportal(iportalData);
     addressMatch && this._searchFromAddressMatch(addressMatch);
     return this.searchTaskId;
@@ -95,9 +95,9 @@ export default class SearchViewModel extends WidgetViewModel {
     return marker;
   }
 
-  _searchFromLayer(layerSourceNames) {
+  _searchFromLayer(layerNames) {
     setTimeout(() => {
-      layerSourceNames.forEach(sourceName => {
+      layerNames.forEach(sourceName => {
         let source = this.map.getSource(sourceName);
         if (source) {
           let features = clonedeep(source._data.features);
@@ -135,7 +135,7 @@ export default class SearchViewModel extends WidgetViewModel {
       }
       if (geocodingResult.poiInfos) {
         const geoJsonResult = this._dataToGeoJson(geocodingResult.poiInfos, this.geoCodeParam);
-        geoJsonResult.length > 0 && this.searchResult.push({ source: "Online Local Search", result: geoJsonResult.slice(0, this.maxReturn) })
+        geoJsonResult.length > 0 && this.searchResult.push({ source: "Online 本地搜索", result: geoJsonResult.slice(0, this.maxReturn) })
         this.searchCount--;
         this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
       }
@@ -146,22 +146,22 @@ export default class SearchViewModel extends WidgetViewModel {
     });
   }
 
-  _searchFromRestMap(restMapSearchs) {
-    restMapSearchs.forEach(restMapSearch => {
-      this._getRestMapFields(restMapSearch, fields => {
+  _searchFromRestMap(restMaps) {
+    restMaps.forEach(restMap => {
+      this._getRestMapFields(restMap, fields => {
         let attributeFilter = this._getAttributeFilter(fields);
         let param = new SuperMap.QueryBySQLParameters({
           queryParams: {
-            name: restMapSearch.layerName,
+            name: restMap.layerName,
             attributeFilter: attributeFilter
           },
           startRecord: 0,
           expectCount: this.maxReturn
         });
-        new mapboxgl.supermap.QueryService(restMapSearch.url).queryBySQL(param, serviceResult => {
+        new mapboxgl.supermap.QueryService(restMap.url).queryBySQL(param, serviceResult => {
           if (serviceResult.result) {
             let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, serviceResult.result.recordsets[0].features.features);
-            resultFeatures.length > 0 && this.searchResult.push({ source: restMapSearch.name || 'Rest Map Search', result: resultFeatures })
+            resultFeatures.length > 0 && this.searchResult.push({ source: restMap.name || 'Rest Map Search', result: resultFeatures })
             this.searchCount--;
             this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
           } else {
@@ -173,25 +173,25 @@ export default class SearchViewModel extends WidgetViewModel {
 
   }
 
-  _searchFromRestData(restDataSearchs) {
-    restDataSearchs.forEach(restDataSearch => {
-      let datasourceName = restDataSearch.dataName[0].split(":")[0];
-      let datasetName = restDataSearch.dataName[0].split(":")[1];
-      let fieldsUrl = restDataSearch.url + `/datasources/${datasourceName}/datasets/${datasetName}/fields.rjson`;
+  _searchFromRestData(restDatas) {
+    restDatas.forEach(restData => {
+      let datasourceName = restData.dataName[0].split(":")[0];
+      let datasetName = restData.dataName[0].split(":")[1];
+      let fieldsUrl = restData.url + `/datasources/${datasourceName}/datasets/${datasetName}/fields.rjson`;
       this._getRestDataFields(fieldsUrl, fields => {
         let attributeFilter = this._getAttributeFilter(fields);
         let param = new SuperMap.GetFeaturesBySQLParameters({
           queryParameter: {
             attributeFilter: attributeFilter
           },
-          datasetNames: restDataSearch.dataName,
+          datasetNames: restData.dataName,
           fromIndex: 0,
           toIndex: this.maxReturn - 1
         });
-        new mapboxgl.supermap.FeatureService(restDataSearch.url).getFeaturesBySQL(param, serviceResult => {
+        new mapboxgl.supermap.FeatureService(restData.url).getFeaturesBySQL(param, serviceResult => {
           if (serviceResult.result) {
             let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, serviceResult.result.features.features);
-            resultFeatures.length > 0 && this.searchResult.push({ source: restDataSearch.name || "Rest Data Search", result: resultFeatures })
+            resultFeatures.length > 0 && this.searchResult.push({ source: restData.name || "Rest Data Search", result: resultFeatures })
             this.searchCount--;
             this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
           } else {
@@ -378,14 +378,14 @@ export default class SearchViewModel extends WidgetViewModel {
     }
     return features;
   }
-  _getRestMapFields(restMapSearch, callBack) {
+  _getRestMapFields(restMap, callBack) {
     let param = new SuperMap.QueryBySQLParameters({
       queryParams: {
-        name: restMapSearch.layerName,
+        name: restMap.layerName,
         attributeFilter: "SMID=0"
       }
     });
-    new mapboxgl.supermap.QueryService(restMapSearch.url).queryBySQL(param, serviceResult => {
+    new mapboxgl.supermap.QueryService(restMap.url).queryBySQL(param, serviceResult => {
       let fields;
       serviceResult.result && (fields = serviceResult.result.recordsets[0].fields);
       fields && callBack(fields);

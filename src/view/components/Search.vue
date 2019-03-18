@@ -35,7 +35,7 @@ import TablePopup from "./TablePopup";
 import IportalDataParameter from "../commontypes/IportalDataParameter";
 import RestDataParameter from "../commontypes/RestDataParameter";
 import RestMapParameter from "../commontypes/RestMapParameter";
-import AddressMatchParameter from '../commontypes/AddressMatchParameter';
+import AddressMatchParameter from "../commontypes/AddressMatchParameter";
 import Vue from "vue";
 
 let validators = (value, propType) => {
@@ -56,23 +56,25 @@ export default {
       type: Number,
       default: 8
     },
-    layerSourceNames: {
+    layerNames: {
       type: Array
     },
     onlineLocalSearch: {
       type: Object,
-      default: {
-        enable: true,
-        city: "北京市"
+      default() {
+        return {
+          enable: true,
+          city: "北京市"
+        };
       }
     },
-    restMapSearch: {
+    restMap: {
       type: Array,
       validator(value) {
         return validators(value, RestMapParameter);
       }
     },
-    restDataSearch: {
+    restData: {
       type: Array,
       validator(value) {
         return validators(value, RestDataParameter);

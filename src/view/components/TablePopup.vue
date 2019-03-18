@@ -18,7 +18,11 @@ export default {
 };
 </script>
 <style lang='scss'>
-.el-table__body-wrapper {
-  overflow: auto !important;
+.el-table {
+  margin-top: 6px;
+  .el-table__body-wrapper {
+    max-height: 250px !important;
+    overflow: auto !important;
+  }
 }
 </style>

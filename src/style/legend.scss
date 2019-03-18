@@ -1,76 +1,75 @@
 @import "./mixins/mixins.scss";
 
-@include b(legend){
-    width: 250px;
-    max-height: 400px;
-    position: absolute;
-    left: 20px;
-    bottom: 20px;
-    background: #fff;
-    .el-card__header {
-        padding: 8px 20px;
-      }
-    .el-collapse-item__content{
-        padding-bottom: 0px;
-        margin-left: 8px;
-        @include e(range){
-            width: 40px;
-            margin-left: 10px;
-           
-        }
-        @include e(range-item){
-            position: relative;
-            height: 30px;
-            span {
-                position: absolute;
-                left: 42px;
-                top: 6px;
-                width: 120px;
-            }
-        }
-        @include e(heat){
-            width: 40px;
-            height: 150px;
-            position: relative;
-            margin-left: 10px;
-           
-        }
+@include b(legend) {
+  width: $--widget-container-width;
+  max-height: 400px;
 
-        @include e(top){
-            position: absolute;
-            left: 44px;
-            top: 0px;
-            width: 50px;
-        }
-        @include e(bottom){
-            position: absolute;
-            left: 44px;
-            bottom: 0px;
-            width: 50px;
-        }
-
-        @include e(point){
-            padding: 0;
-            margin-left: 10px;
-            overflow-y: auto;
-            max-height: 200px;
-          
-        }
-
-        @include e(item){
-            padding-left: 6px;
-            list-style: none;
-            height: 30px;
-           
-        }
-
-        @include e(field-value){
-            margin-left: 20px;
-        }
-
-        @include e(themefield){
-            font-size: 12px;
-            margin-bottom: 8px;
-        }
+  background: $--fill-base;
+  .el-card__header {
+    font-weight: 700;
+    font-size: $--text-primary;
+    padding: 8px 20px;
+  }
+  .el-collapse-item__header{
+    font-size: $--text-regular;
+  }
+  .el-collapse-item__content {
+    padding-bottom: 0px;
+    margin-left: 8px;
+    @include e(range) {
+      width: 40px;
+      margin-left: 10px;
     }
+    @include e(range-item) {
+      position: relative;
+      height: 30px;
+      span {
+        position: absolute;
+        left: 42px;
+        top: 6px;
+        width: 120px;
+      }
+    }
+    @include e(heat) {
+      width: 40px;
+      height: 150px;
+      position: relative;
+      margin-left: 10px;
+    }
+
+    @include e(top) {
+      position: absolute;
+      left: 44px;
+      top: 0px;
+      width: 50px;
+    }
+    @include e(bottom) {
+      position: absolute;
+      left: 44px;
+      bottom: 0px;
+      width: 50px;
+    }
+
+    @include e(point) {
+      padding: 0;
+      margin-left: 10px;
+      overflow-y: auto;
+      max-height: 200px;
+    }
+
+    @include e(item) {
+      padding-left: 6px;
+      list-style: none;
+      height: 30px;
+    }
+
+    @include e(field-value) {
+      margin-left: 20px;
+    }
+
+    @include e(themefield) {
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+  }
 }

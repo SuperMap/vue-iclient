@@ -27,8 +27,19 @@ $--color-text-secondary: #909399 !default;
 /// color|[占位文字颜色,placeholder text color,placeholder text color]|FontColor|2
 $--color-text-placeholder: #c0c4cc !default;
 
-/* icon */
+/* text */
+/// text|[字体样式]
+$--text-font-family: Microsoft YaHei,sans-serif !important !default;
+/// text|[主要文字大小]
+$--text-primary: 15px !default;
+/// text|[常规文字大小]
+$--text-regular: 14px !default;
+/// text|[次要文字颜色]
+$--text-secondary: 14px !default;
 
+$--widget-container-width:280px;
+
+/* icon */
 $--icon-color: #666 !default;
 $--icon-color-info: #909399 !default;;
 $--icon-color-base: $--icon-color-info !default;;

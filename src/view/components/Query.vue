@@ -35,7 +35,7 @@
               <div>{{$t('query.attributeCondition')}}</div>
               <div class="sm-query__attribute-name">{{jobInfo.attributeFilter}}</div>
             </div>
-            <div class="sm-query__spatdivial-filter">
+            <div class="sm-query__spatial-filter">
               <div>{{$t('query.spatialFilter')}}</div>
               <el-select
                 v-model="value"
@@ -53,7 +53,12 @@
               </el-select>
             </div>
             <div class="sm-query__query-button" @click="queryButtonClicked(jobInfo,value)">
-              <el-button type="primary" plain size="mini" class="sm-query__el-button">{{$t('query.applicate')}}</el-button>
+              <el-button
+                type="primary"
+                plain
+                size="mini"
+                class="sm-query__el-button"
+              >{{$t('query.applicate')}}</el-button>
             </div>
           </div>
         </div>
@@ -104,11 +109,11 @@ export default {
       value: "mapBounds",
       selectOptions: [
         {
-          label: this.$t('query.currentMapBounds'),
+          label: this.$t("query.currentMapBounds"),
           value: "currentMapBounds"
         },
         {
-          label: this.$t('query.mapBounds'),
+          label: this.$t("query.mapBounds"),
           value: "mapBounds"
         }
       ],
@@ -129,19 +134,19 @@ export default {
     fillStyle: {
       type: Object
     },
-    iportalDataQuery: {
+    iportalData: {
       type: Array,
       validator(value) {
         return validators(value, IportalDataParameter);
       }
     },
-    restDataQuery: {
+    restData: {
       type: Array,
       validator(value) {
         return validators(value, RestDataParameter);
       }
     },
-    restMapQuery: {
+    restMap: {
       type: Array,
       validator(value) {
         return validators(value, RestMapParameter);
@@ -153,9 +158,9 @@ export default {
       let jobInfos = [];
       Object.keys(this.$props).forEach(key => {
         if (
-          key === "iportalDataQuery" ||
-          key === "restDataQuery" ||
-          key === "restMapQuery"
+          key === "iportalData" ||
+          key === "restData" ||
+          key === "restMap"
         ) {
           this.$props[key] &&
             this.$props[key].forEach(item => {
@@ -180,7 +185,7 @@ export default {
       if (this.jobInfo === jobInfo && this.selectValue === value) {
         this.$message({
           showClose: true,
-          message: this.$t('query.resultAlreadyExists'),
+          message: this.$t("query.resultAlreadyExists"),
           type: "warning",
           duration: 1000
         });
@@ -192,7 +197,7 @@ export default {
       this.loadingInstance = this.$loading.service({
         target: this.resultInfoContainer,
         fullscreen: false,
-        text: this.$t('query.querying'),
+        text: this.$t("query.querying"),
         background: "hsla(0,0%,100%,.9)"
       });
       this.jobButton.classList.add("disabled");
@@ -276,8 +281,12 @@ export default {
       if (featuerInfo.info.length >= 1) {
         let state = {
           columns: [
-            { label:this.$t('query.attribute'),prop: "attribute", width: 80 },
-            { label:this.$t('query.attributeValue'), prop: "attributeValue", minWidth: 100 }
+            { label: this.$t("query.attribute"), prop: "attribute", width: 80 },
+            {
+              label: this.$t("query.attributeValue"),
+              prop: "attributeValue",
+              minWidth: 100
+            }
           ],
           data: featuerInfo.info
         };
@@ -295,6 +304,8 @@ export default {
     },
     hidenContainer(e) {
       this.isHidden = true;
+      // this.$el.style.width = '30px';
+      // this.$el.style.height = '30px';
       this.$el.style.background = "unset";
       this.$el
         .querySelector(".sm-query__header")
@@ -328,3 +339,35 @@ export default {
   }
 };
 </script>
+<style>
+.query-hidden {
+  /* display: none;
+  width: 30px !important;
+  height: 30px !important;
+  overflow: hidden; */
+
+  /* z-index: 100;
+  background: #FFFFFF; */
+  /* border: 1px solid #DCDFE6; */
+  /* color: #409eff;
+  cursor: pointer;
+  text-align: center;
+  box-sizing: border-box;
+  padding: 6px;
+  padding-top: 6px;
+  padding-right: 6px;
+  padding-bottom: 6px;
+  padding-left: 6px;
+  font-size: 16px;
+  position: absolute;
+
+  padding: 4px;
+
+  padding-left: 24px;
+  padding-top: 1px; */
+}
+.query-display {
+  /* display: block;
+  min-width: 280px; */
+}
+</style>

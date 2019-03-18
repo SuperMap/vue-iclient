@@ -1,17 +1,18 @@
 @import "./mixins/Mixins.scss";
 @import "./common/var.scss";
 
-@include b(search){
+@include b(search) {
   z-index: $--index-top;
   font-size: 12px;
-  @include e(input){
+  width: $--widget-container-width;
+  @include e(input) {
     height: 36px;
     line-height: 36px;
     background: $--fill-base;
     box-shadow: $--box-shadow-base;
     border-radius: $--border-radius-base;
   }
-  @include e(el-input){
+  @include e(el-input) {
     & .el-input__inner {
       box-shadow: $--box-shadow-base;
       border-radius: $--border-radius-base;
@@ -19,7 +20,7 @@
       outline: none;
       border: unset;
     }
-    & .el-input__prefix{
+    & .el-input__prefix {
       border-right: 1px solid #e9e9e9;
       & .el-input__icon {
         transition: unset;
@@ -29,19 +30,19 @@
         color: $--icon-color;
         font-size: 16px;
       }
-      & .el-icon-search{
+      & .el-icon-search {
         cursor: pointer;
         &:hover {
           color: $--color-primary;
           border-radius: 4px;
         }
       }
-      & .el-icon-loading{
+      & .el-icon-loading {
         color: $--color-primary;
       }
     }
   }
-  @include e(result){
+  @include e(result) {
     margin-top: 10px;
     overflow: scroll;
     background-color: $--fill-base;
@@ -59,39 +60,40 @@
       border-radius: 10px;
       background-color: $--color-primary;
     }
-    @include e(panel){
-      padding-left: 4px;
-      @include e(panel-header){
+  }
+  @include e(panel) {
+    padding-left: 4px;
+  }
+
+  @include e(panel-header) {
+    display: block;
+    border-bottom: 1px solid $--color-primary;
+    font-size: 14px;
+    font-family: "微软雅黑";
+    padding: 6px 0px;
+    background: $--fill-base;
+    color: $--color-primary;
+    margin: 7px;
+    font-weight: bolder;
+  }
+  @include e(panel-body) {
+    & > ul {
+      list-style: none;
+      margin-left: -32px;
+      font-size: 13px;
+      color: rgb(145, 145, 145);
+      & > li {
+        padding: 8px 0;
         display: block;
-        border-bottom: 1px solid $--color-primary;
-        font-size: 14px;
-        font-family: "微软雅黑" ;
-        padding: 6px 0px;
-        background:  $--fill-base;
-        color: $--color-primary;
-        margin: 7px;
-        font-weight: bolder;
-      }
-      @include e(panel-body){
-        & > ul {
-          list-style: none;
-          margin-left: -32px;
-          font-size: 13px;
-          color: rgb(145, 145, 145);
-          & > li {
-            padding: 8px 0;
-            display: block;
-            cursor: pointer;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            &:hover {
-              color: #409eff;
-              background: rgb(245, 245, 245);
-            }
-          }
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &:hover {
+          color: #409eff;
+          background: rgb(245, 245, 245);
         }
       }
     }
   }
-} 
+}

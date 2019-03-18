@@ -3,6 +3,6 @@ export default class RestDataParameter {
         this.url = options.url;
         this.dataName = options.dataName;
         this.attributeFilter = options.attributeFilter || null;
-        this.name = options.name || 'Rest Data';
+        this.name = options.name || 'Rest 数据服务';
     }
 }

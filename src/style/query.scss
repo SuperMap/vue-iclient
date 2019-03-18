@@ -2,11 +2,15 @@
 @import "./common/var.scss";
 
 @include b(query) {
+  transition: $--all-transition;
   background: $--fill-base;
   border-radius: 4px;
-  min-width: 280px;
+  width: $--widget-container-width;
   color: #409eff;
+  height: 350px;
+  font-family: $--text-font-family;
   @include e(header) {
+    transition: $--all-transition;
     box-shadow: $--box-shadow-base;
     background: #fafafa;
     border-radius: $--border-radius-base;
@@ -32,8 +36,8 @@
   @include e(header-span) {
     display: inline-block;
     padding-left: 10px;
-    font-size: 15px;
-    font-family: "微软雅黑";
+    font-size: $--text-primary;
+    font-weight: 700;
   }
   @include e(body) {
     transform-origin: top left;
@@ -44,6 +48,9 @@
     border-radius: $--border-radius-base;
     padding: 10px 15px;
     overflow-y: auto;
+    & > div{
+      width: 244px;
+    }
     &::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -55,7 +62,7 @@
     }
   }
   @include e(choose-panel) {
-    font-size: 14px;
+    font-size: $--text-regular;
     color: #303133;
   }
   @include e((job-button, result-button)) {
@@ -85,11 +92,11 @@
     }
     & > .smwidgets-icons-preview {
       color: #409eff;
-      font-size: 14px;
+      font-size: $--text-regular;
     }
     & > .sm-query__job-info-name {
       margin-left: 10px;
-      font-size: 13px;
+      font-size: $--text-regular;
     }
     & > .smwidgets-icons-legend-unfold,
     & > .smwidgets-icons-legend-fold {
@@ -107,7 +114,7 @@
   }
   @include e((attribute, spatial-filter)) {
     color: rgba(0, 0, 0, 0.45);
-    font-size: 13px;
+    font-size: $--text-regular;
     font-weight: 700;
   }
   @include e(attribute-name) {
@@ -153,10 +160,10 @@
     }
   }
 
-  @include e(result-header){
+  @include e(result-header) {
     display: block;
     border-bottom: 1px solid #409eff;
-    font-size: 14px;
+    font-size: $--text-regular;
     font-family: "微软雅黑";
     padding: 6px 0px;
     background: #fff;
@@ -164,14 +171,14 @@
     margin: 7px;
     font-weight: bolder;
   }
-  @include e(no-result){
+  @include e(no-result) {
     color: #303133;
   }
-  @include e(result-body){
+  @include e(result-body) {
     & > ul {
       list-style: none;
       margin-left: -32px;
-      font-size: 13px;
+      font-size: $--text-regular;
       color: rgb(145, 145, 145);
       & > li {
         padding: 8px 0;

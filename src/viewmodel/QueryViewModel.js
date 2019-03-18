@@ -26,7 +26,7 @@ export default class QueryViewModel extends WidgetViewModel {
     query(queryParameter, queryBounds) {
         this.strokeLayerID && this.map.removeLayer(this.strokeLayerID);
         this.layerID && this.map.removeLayer(this.layerID);
-        this.layerID = queryParameter.name + new Date();
+        this.layerID = queryParameter.name + new Date().getTime();
 
         this.queryBounds = queryBounds;
         if (queryBounds === 'currentMapBounds') {

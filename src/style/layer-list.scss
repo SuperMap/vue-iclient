@@ -5,7 +5,7 @@
     z-index: 10;
     box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
     max-height: 500px;
-    width: 300px;
+    width: $--widget-container-width;
     background: $--fill-base;
     border-radius: 5px;
     @include e(content){
@@ -54,15 +54,15 @@
 
     @include e(elcarditem) {
       position: relative;
-      width: 284px;
       border: none;
     
       margin-bottom: 4px;
       .el-card__body {
         .el-icon-view {
-          font-size: 18px;
+          font-size: 16px;
           margin-right: 10px;
-          vertical-align: -2px
+          vertical-align: -2px;
+          cursor: pointer;
         }
         .visible{
           color: $--color-primary

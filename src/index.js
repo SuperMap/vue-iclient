@@ -17,6 +17,7 @@ import {
 import { setLocale } from "../src/lang/index";
 import * as components from "./view/components";
 import "./assets/iconfont/iconfont.css";
+import * as commontypes from './view/commontypes/index';
 
 const install = function (Vue, opts = {}) {
   if (opts.locale) {
@@ -48,6 +49,7 @@ if (typeof window !== "undefined" && window.Vue) {
   install(window.Vue);
 }
 export default {
+  commontypes,
   locale: setLocale,
   install
 };
