@@ -1,9 +1,9 @@
 import AddressMatchParameter from './AddressMatchParameter';
-import IportalDataParameter from './IportalDataParameter';
+import iPortalDataParameter from './iPortalDataParameter';
 import RestDataParameter from './RestDataParameter';
 import RestMapParameter from './RestMapParameter';
 
 export {AddressMatchParameter}
-export {IportalDataParameter}
+export {iPortalDataParameter}
 export {RestDataParameter}
 export {RestMapParameter}

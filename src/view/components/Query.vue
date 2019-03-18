@@ -9,12 +9,12 @@
       <div class="sm-query__choose-panel clearfix">
         <div
           class="sm-query__job-button is-active"
-          title="任务"
+          :title="$t('query.queryJob')"
           @click="jobButtonClicked"
         >{{$t('query.queryJob')}}</div>
         <div
           class="sm-query__result-button"
-          title="结果"
+          :title="$t('query.queryReuslt')"
           @click="resultButtonClicked"
         >{{$t('query.queryReuslt')}}</div>
       </div>
@@ -82,7 +82,7 @@
 </template>
 <script>
 import Widget from "./Widget";
-import IportalDataParameter from "../commontypes/IportalDataParameter";
+import iPortalDataParameter from "../commontypes/iPortalDataParameter";
 import RestDataParameter from "../commontypes/RestDataParameter";
 import RestMapParameter from "../commontypes/RestMapParameter";
 import QueryViewModel from "../../viewmodel/QueryViewModel.js";
@@ -137,7 +137,7 @@ export default {
     iportalData: {
       type: Array,
       validator(value) {
-        return validators(value, IportalDataParameter);
+        return validators(value, iPortalDataParameter);
       }
     },
     restData: {

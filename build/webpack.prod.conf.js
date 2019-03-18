@@ -10,9 +10,9 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const outputFileName = 'iclient9-mapboxgl-widgets-vue'
-const env = process.env.NODE_ENV === 'testing'
-  ? require('../config/test.env')
-  : require('../config/prod.env')
+const env = process.env.NODE_ENV === 'testing' ?
+  require('../config/test.env') :
+  require('../config/prod.env')
 const isMinify = process.argv.includes('-p');
 const webpackConfig = merge(baseWebpackConfig, {
   mode: 'production',
@@ -28,10 +28,10 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   output: {
     path: path.resolve(__dirname, '../dist'),
-    filename: isMinify ? `${outputFileName}.min.js`:`${outputFileName}.js`,
+    filename: isMinify ? `${outputFileName}.min.js` : `${outputFileName}.js`,
     libraryTarget: 'umd',
     libraryExport: 'default',
-    library: 'SmWidgets',
+    library: ['SuperMap', 'Widgets'],
   },
   externals: {
     vue: {
@@ -40,13 +40,13 @@ const webpackConfig = merge(baseWebpackConfig, {
       commonjs2: 'vue',
       amd: 'vue'
     },
-    'echarts':'echarts',
+    'echarts': 'echarts',
     '@libs/mapboxgl/mapbox-gl-enhance': 'mapboxgl',
-    '@libs/iclient-mapboxgl/iclient9-mapboxgl-es6':'SuperMap'
+    '@libs/iclient-mapboxgl/iclient9-mapboxgl-es6': 'SuperMap',
+    '@mapbox/mapbox-gl-draw': 'MapboxDraw'
   },
   optimization: {
-    minimizer:[
-    ]
+    minimizer: []
   },
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
@@ -62,8 +62,8 @@ const webpackConfig = merge(baseWebpackConfig, {
   ]
 })
 
-if(isMinify){
-  webpackConfig.optimization.minimizer.push(new OptimizeCSSAssetsPlugin({}),new UglifyJsPlugin({
+if (isMinify) {
+  webpackConfig.optimization.minimizer.push(new OptimizeCSSAssetsPlugin({}), new UglifyJsPlugin({
     cache: true,
     parallel: true,
     sourceMap: config.build.productionSourceMap,
@@ -97,4 +97,3 @@ if (config.build.bundleAnalyzerReport) {
 }
 
 module.exports = webpackConfig
-

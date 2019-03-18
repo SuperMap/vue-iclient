@@ -14,7 +14,10 @@ import {
   Message,
   Loading
 } from "element-ui";
-import { setLocale } from "../src/lang/index";
+import {
+  setLocale,
+  lang
+} from "../src/lang/index";
 import * as components from "./view/components";
 import "./assets/iconfont/iconfont.css";
 import * as commontypes from './view/commontypes/index';
@@ -50,6 +53,7 @@ if (typeof window !== "undefined" && window.Vue) {
 }
 export default {
   commontypes,
+  lang,
   locale: setLocale,
   install
 };

@@ -20,7 +20,6 @@
     "js-cookie": "^2.2.0",
     "jsonsql": "0.2.5",
     "loadsh": "0.0.4",
-    "turf-center": "^3.0.12",
     "vue": "^2.5.21",
     "vue-drag-resize": "^1.3.2",
     "vue-element-admin": "^3.9.3",

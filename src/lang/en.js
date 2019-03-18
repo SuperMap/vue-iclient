@@ -14,6 +14,13 @@ export default {
   error: {
 
   },
+  commontypes:{
+    restData:"SuperMap Rest Data",
+    restMap:"SuperMap Rest Map",
+    addressMatch:"SuperMap AddressMatch",
+    iportalData:"SuperMap iPortal Data",
+    onlineLocalSearch:"SuperMap Online Local Search"
+  },
   //微件
   zoom: {
 

@@ -32,7 +32,7 @@
 import Widget from "./Widget";
 import SearchViewModel from "../../viewmodel/SearchViewModel";
 import TablePopup from "./TablePopup";
-import IportalDataParameter from "../commontypes/IportalDataParameter";
+import iPortalDataParameter from "../commontypes/iPortalDataParameter";
 import RestDataParameter from "../commontypes/RestDataParameter";
 import RestMapParameter from "../commontypes/RestMapParameter";
 import AddressMatchParameter from "../commontypes/AddressMatchParameter";
@@ -83,7 +83,7 @@ export default {
     iportalData: {
       type: Array,
       validator(value) {
-        return validators(value, IportalDataParameter);
+        return validators(value, iPortalDataParameter);
       }
     },
     addressMatch: {

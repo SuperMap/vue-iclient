@@ -26,12 +26,18 @@ const i18n =
     fallbackLocale: "zh",
     messages
   })
+
 export function setLocale(locales) {
   i18n.mergeLocaleMessage(i18n.locale, locales)
 }
 //让element使用vue-i18n
 ElementLocale.i18n((key, value) => i18n.t(key, value))
+export const lang = {
+  en: i18n.enLocale,
+  zh: i18n.zhLocale
+};
 export default i18n
+
 
 function getLanguage() {
   var lang = Cookies.get('language');

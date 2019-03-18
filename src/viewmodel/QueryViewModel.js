@@ -1,9 +1,9 @@
 import WidgetViewModel from "./WidgetViewModel";
 import "@libs/iclient-mapboxgl/iclient9-mapboxgl-es6";
-import IportalDataParameter from "../view/commontypes/IportalDataParameter";
+import iPortalDataParameter from "../view/commontypes/iPortalDataParameter";
 import RestDataParameter from "../view/commontypes/RestDataParameter";
 import RestMapParameter from "../view/commontypes/RestMapParameter";
-import center from 'turf-center';
+import center from '@turf/center';
 
 /**
  * @class QueryViewModel
@@ -33,8 +33,8 @@ export default class QueryViewModel extends WidgetViewModel {
             this.bounds = this.map.getBounds();
         }
         this.queryResult = null;
-        if (queryParameter instanceof IportalDataParameter) {
-            this._queryByIportalData(queryParameter);
+        if (queryParameter instanceof iPortalDataParameter) {
+            this._queryByIportalData(queryParameter); 
         } else if (queryParameter instanceof RestDataParameter) {
             this._queryByRestData(queryParameter);
         } else if (queryParameter instanceof RestMapParameter) {
