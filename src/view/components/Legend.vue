@@ -3,11 +3,12 @@
     <div slot="header">
       <span>{{$t("legend.title")}}</span>
     </div>
-    <div v-for="(layerValue,layerKey,index) in legendList" :key="index">
-      <div>
-        <el-collapse class="sm-legend__table">
-          <el-collapse-item>
-            <template slot="title">
+    <div>
+      
+        <el-collapse class="sm-legend__table" v-model="activeLegend">
+          <el-collapse-item  v-for="(layerValue,layerKey,index) in legendList" :key="index" :name="index+1"> 
+            
+            <template slot="title" >
               <div class="sm-legend__title">{{layerValue.layerId}}</div>
             </template>
             <div v-if="layerValue.layerType === 'UNIQUE'">
@@ -25,7 +26,7 @@
             </div>
 
             <div v-if="layerValue.layerType === 'HEAT'">
-              <div class="sm-legend__themefield add-ellipsis">{{$t("legend.themeField")}}:{{layerValue.themeField}}</div>
+              <div class="sm-legend__themefield add-ellipsis">{{$t("legend.themeField")}}：{{layerValue.themeField}}</div>
               <div
                 class="sm-legend__heat"
                 :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
@@ -58,7 +59,7 @@
           </el-collapse-item>
         </el-collapse>
       </div>
-    </div>
+   
   </el-card>
 </template>
 
@@ -81,14 +82,16 @@ export default {
       type: Boolean,
       default: false
     },
-    layerList: {
+    layerNames: {
       type: Array,
       required: true
     }
   },
   data() {
     return {
-      legendList: {}
+      legendList: {},
+      //控制第一个图例默认展开
+      activeLegend:[1]
     };
   },
   methods: {},
@@ -96,11 +99,11 @@ export default {
     //show用来控制图例列表的显示
     const legendViewModel = new LegendViewModel(this.webmap);
 
-    this.layerList.forEach(layer => {
+    this.layerNames.forEach(layer => {
       let style = legendViewModel.getStyle(layer);
       
       if(!style){
-        throw new Error('没有匹配的source')
+        throw new Error(this.$t('legend.noMatchLayer'))
       }
       if (!this.legendList[layer]) {
           this.$set(this.legendList, layer, style);
