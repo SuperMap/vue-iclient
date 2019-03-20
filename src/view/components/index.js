@@ -15,3 +15,4 @@ export {default as Text} from './Text.vue';
 export {default as TimeText} from './TimeText.vue';
 export {default as Progress} from './Progress.vue';
 export {default as Icon} from './Icon.vue';
+export {default as LiquidFill} from './LiquidFill.vue'
