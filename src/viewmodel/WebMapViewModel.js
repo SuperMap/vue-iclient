@@ -1930,12 +1930,13 @@ export default class WebMapViewModel extends WidgetViewModel {
 
   _initLegendConfigInfo(layerInfo, style) {
     if (!this.legendList[layerInfo.layerID]) {
-      this.legendList[layerInfo.layerID] = {}
-      this.legendList[layerInfo.layerID]['layerType'] = layerInfo.layerType;
-      this.legendList[layerInfo.layerID]['featureType'] = layerInfo.featureType;
-      this.legendList[layerInfo.layerID]['layerId'] = layerInfo.layerID;
-      this.legendList[layerInfo.layerID]['themeField'] = layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themefield;
-      this.legendList[layerInfo.layerID]['styleGroup'] = style;
+      this.legendList[layerInfo.layerID] = {
+        'layerType': layerInfo.layerType,
+        'featureType': layerInfo.featureType,
+        'layerId': layerInfo.layerID,
+        'themeField': layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themeField,
+        'styleGroup': style
+      }
     }
   }
 }

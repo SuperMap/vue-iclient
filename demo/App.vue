@@ -4,11 +4,11 @@
       <Chart :datasets="datasets" :chartOptions="chartOptions" ref="chart"></Chart>
     </Map>-->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
-      <sm-indicator title="人均收入" unit="元" :num="12323412" fontColor="red" titleColor="#595959" fontSize="18px" ></sm-indicator>
+      <!-- <sm-indicator title="人均收入" unit="元" :num="12323412" fontColor="red" titleColor="#595959" fontSize="18px" ></sm-indicator>
       <sm-text title="文本框" :fontStyle='{ fontSize: "18px", lineHeight: "18px", color: "#595959", fontWeight: "700", textAlign: "center" }' ></sm-text>
       <sm-time-text :fontStyle='{ fontSize: "18px", color: "#595959", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
       <sm-icon class-name="edit" size="18px" color="red" weight="700"></sm-icon>
-      <sm-progress type="circle" :percentage="80" status="success"></sm-progress>
+      <sm-progress type="circle" :percentage="80" status="success"></sm-progress> -->
       <sm-search
         position="top-right"
         :layer-names="layerSourceNames"
@@ -31,7 +31,7 @@
       <!-- <sm-chart :chartType="chartType" :datasets="datasets" :chartOptions="chartOptions" position="bottom-right"></sm-chart> -->
       <sm-measure position="top-right"></sm-measure>
       <sm-layer-list position="top-right"/>
-      <sm-legend :layer-list="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
+      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
       <!-- <el-button @click="changeType" style="position:absolute;left:210px;z-index:300">修改图表的type:</el-button>
       <el-button @click="changeChartoption" style="position:absolute;left:350px;z-index:300">修改图表的xy轴:</el-button>
       <el-button @click="changeDatasets" style="position:absolute;left:500px;z-index:300">修改图表的datasets:</el-button>-->

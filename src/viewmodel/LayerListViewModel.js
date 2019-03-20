@@ -20,7 +20,7 @@ class LayerListViewModel extends WidgetViewModel {
     _updateLayers(data) {
         this.fire('layersUpdated')
     }
-    getLayers() {
+    initLayerList() {
         this.sourceListModel = new SourceListModel({
             map: this.map,
         });
