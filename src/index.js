@@ -12,7 +12,8 @@ import {
   Table,
   TableColumn,
   Message,
-  Loading
+  Loading,
+  Progress
 } from "element-ui";
 import {
   setLocale,
@@ -39,9 +40,10 @@ const install = function (Vue, opts = {}) {
   Vue.use(Option);
   Vue.use(Collapse);
   Vue.use(CollapseItem);
-  Vue.use(Input)
-  Vue.use(Table)
-  Vue.use(TableColumn)
+  Vue.use(Input);
+  Vue.use(Table);
+  Vue.use(TableColumn);
+  Vue.use(Progress);
   Vue.prototype.$message = Message;
   Vue.prototype.$loading = Loading;
   for (let component in components) {

@@ -1,0 +1,22 @@
+@import "./mixins/Mixins.scss";
+
+@include b(text) {
+  background: $--fill-base;
+  &.el-textarea {
+    width: auto !important;
+  }
+  & textarea {
+    width: 100px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    text-align: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    text-indent: inherit;
+    font-family: inherit;
+    line-height: inherit;
+    color: inherit;
+    pointer-events: none;
+  }
+}

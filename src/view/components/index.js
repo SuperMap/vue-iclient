@@ -10,4 +10,8 @@ export {default as Measure} from './Measure.vue'
 export {default as Search} from './Search.vue'
 export {default as Legend} from './Legend.vue'
 export {default as Query} from './Query.vue'
-
+export {default as Indicator} from './Indicator.vue'
+export {default as Text} from './Text.vue';
+export {default as TimeText} from './TimeText.vue';
+export {default as Progress} from './Progress.vue';
+export {default as Icon} from './Icon.vue';

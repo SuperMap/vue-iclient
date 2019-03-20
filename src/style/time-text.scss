@@ -1,0 +1,13 @@
+@import "./mixins/Mixins.scss";
+
+@include b(time-text) {
+  background: $--fill-base;
+  display: table;
+  padding: 10px;
+  text-align: center;
+  background: white;
+  & > span {
+    display: table-cell;
+    vertical-align: middle;
+  }
+}

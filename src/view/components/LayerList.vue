@@ -23,7 +23,7 @@
         <el-card v-else class="sm-layer-list__elcarditem">
           <i :class="['el-icon-view', sourceValue.visibility === 'visible' ? 'visible':'none']"
           @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"></i>
-          <div class="sm-layer-list__layergroupname add-ellipsis">
+          <div class="sm-layer-list__layergroupname">
             {{sourceKey}}
           </div>
         </el-card>
@@ -89,10 +89,10 @@ export default {
     !this.parentIsWebMapOrMap && this.$el.classList.add("layer-list-container");
     
     this.layerListViewModel = new layerListViewModel(this.map);
-    this.sourceList = this.layerListViewModel.initLayerList();
+    this.sourceList = this.layerListViewModel.getLayers();
 
     this.layerListViewModel.on("layersUpdated", () => {
-      this.sourceList = this.layerListViewModel.initLayerList();
+      this.sourceList = this.layerListViewModel.getLayers();
     });
   }
 };

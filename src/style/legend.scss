@@ -3,28 +3,22 @@
 @include b(legend) {
   width: $--widget-container-width;
   max-height: 400px;
-  overflow-y: auto;
+
   background: $--fill-base;
   .el-card__header {
     font-weight: 700;
     font-size: $--text-primary;
     padding: 8px 20px;
   }
-  .el-card__body{
-    padding: 0px;
-  }
   .el-collapse-item__header{
     font-size: $--text-regular;
-    @include e(title){
-      margin-left: 35px;
-    }
   }
   .el-collapse-item__content {
     padding-bottom: 0px;
     margin-left: 8px;
     @include e(range) {
       width: 40px;
-      margin-left: 35px;
+      margin-left: 10px;
     }
     @include e(range-item) {
       position: relative;
@@ -40,7 +34,7 @@
       width: 40px;
       height: 150px;
       position: relative;
-      margin-left: 35px;
+      margin-left: 10px;
     }
 
     @include e(top) {
@@ -58,7 +52,7 @@
 
     @include e(point) {
       padding: 0;
-      margin-left: 35px;
+      margin-left: 10px;
       overflow-y: auto;
       max-height: 200px;
     }
@@ -75,8 +69,7 @@
 
     @include e(themefield) {
       font-size: 12px;
-      margin-left: 30px;
-      margin-bottom: 4px;
+      margin-bottom: 8px;
     }
   }
 }

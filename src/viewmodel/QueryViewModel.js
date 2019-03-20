@@ -102,7 +102,6 @@ export default class QueryViewModel extends WidgetViewModel {
     }
     _mapQuerySucceed(serviceResult, restMapParameter) {
         if (serviceResult.result) {
-            console.log(serviceResult.result);
             let resultFeatures = serviceResult.result.recordsets[0].features.features;
             resultFeatures.length > 0 && (this.queryResult = { name: restMapParameter.name, result: resultFeatures })
             this.fire('querysucceeded', { result: this.queryResult }) && this.addResultLayer(this.queryResult);
@@ -113,7 +112,6 @@ export default class QueryViewModel extends WidgetViewModel {
 
     _dataQuerySucceed(serviceResult, restDataParameter) {
         if (serviceResult.result) {
-            console.log(serviceResult.result);
             let resultFeatures = serviceResult.result.features.features;
             resultFeatures.length > 0 && (this.queryResult = { name: restDataParameter.name, result: resultFeatures })
             this.fire('querysucceeded', { result: this.queryResult }) && this.addResultLayer(this.queryResult);

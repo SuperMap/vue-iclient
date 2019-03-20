@@ -1934,7 +1934,7 @@ export default class WebMapViewModel extends WidgetViewModel {
       this.legendList[layerInfo.layerID]['layerType'] = layerInfo.layerType;
       this.legendList[layerInfo.layerID]['featureType'] = layerInfo.featureType;
       this.legendList[layerInfo.layerID]['layerId'] = layerInfo.layerID;
-      this.legendList[layerInfo.layerID]['themeField'] = layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themeField;
+      this.legendList[layerInfo.layerID]['themeField'] = layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themefield;
       this.legendList[layerInfo.layerID]['styleGroup'] = style;
     }
   }

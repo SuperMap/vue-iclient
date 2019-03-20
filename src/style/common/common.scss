@@ -1,4 +1,7 @@
 @import "./var.scss";
+body .mapboxgl-ctrl{
+  font-family: Microsoft YaHei,sans-serif !important;
+}
 
 .mapboxgl-ctrl {
   position: relative;
@@ -14,7 +17,7 @@
 }
 
 .clearfix:after {
-  content: ".";
+  content: " ";
   height: 0;
   display: block;
   clear: both;

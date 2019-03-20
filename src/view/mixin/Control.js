@@ -1,4 +1,4 @@
-import Icon from '../components/Icon.vue';
+import ControlIcon from '../components/ControlIcon.vue';
 import Vue from 'vue';
 export default {
     props: {
@@ -48,7 +48,7 @@ export default {
         },
         addIcon() {
             
-            let iconClz = Vue.extend(Icon);
+            let iconClz = Vue.extend(ControlIcon);
             let icon = new iconClz({
                 propsData: {
                     position: this.position || (this.icon && this.icon.position),
