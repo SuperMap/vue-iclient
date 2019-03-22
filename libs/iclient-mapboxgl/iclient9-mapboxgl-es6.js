@@ -12852,13 +12852,17 @@ SuperMap.iPortalMapsQueryParam = iPortalMapsQueryParam_IPortalMapsQueryParam;
  * @classdesc iPortal 服务基类（有权限限制的类需要实现此类）。
  * @category iPortal/Online
  * @param {string} url - iPortal 服务地址。
+ * @param {Object} options - 可选参数。
+ * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。
  */
 class iPortalServiceBase_IPortalServiceBase {
 
-    constructor(url) {
+    constructor(url, options) {
+        options = options || {};
         this.serviceUrl = url;
         this.serverType = ServerType.iPortal;
         this.CLASS_NAME = "SuperMap.iPortalServiceBase";
+        this.withCredentials = options.withCredentials || false;
     }
 
     /**
@@ -12871,7 +12875,7 @@ class iPortalServiceBase_IPortalServiceBase {
      * @returns {Promise} 返回包含请求结果的 Promise 对象。
      */
 
-    request(method, url, param, requestOptions) {
+    request(method, url, param, requestOptions = { withCredentials: this.withCredentials }) {
         url = this.createCredentialUrl(url);
         return FetchRequest.commit(method, url, param, requestOptions).then(function (response) {
             return response.json();
@@ -13159,7 +13163,6 @@ SuperMap.iPortalMap = iPortalMap_IPortalMap;
  * @category iPortal/Online
  * @extends {SuperMap.iPortalServiceBase}
  * @param {string} iportalUrl - 地址。
- *
  */
 class iPortal_IPortal extends iPortalServiceBase_IPortalServiceBase {
 
