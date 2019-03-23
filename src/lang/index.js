@@ -4,6 +4,8 @@ import Cookies from 'js-cookie';
 import ElementLocale from 'element-ui/lib/locale';
 import enLocale from './en';
 import zhLocale from './zh';
+import clonedeep from 'lodash.clonedeep';
+
 
 Object.defineProperty(Vue.prototype, '$i18n', {
   get: function get() {
@@ -33,8 +35,8 @@ export function setLocale(locales) {
 //让element使用vue-i18n
 ElementLocale.i18n((key, value) => i18n.t(key, value))
 export const lang = {
-  en: i18n.enLocale,
-  zh: i18n.zhLocale
+  en: clonedeep(enLocale),
+  zh: clonedeep(zhLocale)
 };
 export default i18n
 

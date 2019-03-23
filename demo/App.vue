@@ -13,6 +13,14 @@
       <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
       <sm-layer-list position="top-right"/>
       <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/>
+       <sm-chart
+      :style="styleObject"
+      :chartType="chartType"
+      :datasets="datasets"
+      :chartOption="chartOption"
+      position="bottom-right"
+      :collapsed='true'
+    ></sm-chart>
     <!-- 浅色 -->
 
 
@@ -65,6 +73,9 @@ export default {
       " with <span>© <a href='http://iclient.supermap.io' target='_blank'>SuperMap iClient</a> | </span>" +
       " Map Data <span>© <a href='http://support.supermap.com.cn/product/iServer.aspx' target='_blank'>SuperMap iServer</a></span> ";
     return {
+      styleObject: {
+        width: "600px"
+      },
       iportalDataQuery: [
         new widgets.commontypes.iPortalDataParameter({
           url: "http://192.168.12.230:8092/web/datas/1962026684",
@@ -146,17 +157,32 @@ export default {
       },
       chartTitle: "",
       chartType: "bar",
-      datasets: {
-        type: "iPortal",
-        url: "http://support.supermap.com.cn:8092/web/datas/888186112",
+     datasets: {
+        type: "iServer",
+        url:
+          "http://support.supermap.com.cn:8090/iserver/services/data-jingjin/rest/data/datasources/Jingjin/datasets/Landuse_R",
+        //url: "http://support.supermap.com.cn:8092/web/datas/888186112",
         queryInfo: { attributeFilter: "SmID > 0" }
       },
-      chartOptions: [
-        {
-          xAxis: { field: "SmID", name: "SmID" },
-          yAxis: { field: "同比增速%", name: "增速%" }
-        }
-      ]
+     chartOption: {
+        // backgroundColor:"",
+        // axisColor:"",
+        // colorGradient:[],
+        xFieldStatistical: true,
+        xAxisLabelRotate: true,
+        yAxisLabelRotate: true,
+        legendPosition: "top", //none top bottom left right topleft topright bottomleft bottomright
+        xAxisName: "",
+        yAxisName: "",
+        // padding: {
+        //   top: 50,
+        //   bottom: 50,
+        //   left: 50,
+        //   right: 50
+        // },
+        xAxis: "LANDTYPE",
+        yAxis: ["AREA", "AREA_1"]
+      }
     };
   },
   methods: {

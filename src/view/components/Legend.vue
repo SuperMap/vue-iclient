@@ -128,7 +128,7 @@ export default {
   },
   computed:{
     getTitleColor(){
-      return {color:this.themeStyle['colorGroup'][1]}
+      return {color:this['colorGroupsData'][1]}
     }
   },
   extends: Widget

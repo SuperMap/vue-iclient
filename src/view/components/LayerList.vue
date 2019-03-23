@@ -37,6 +37,7 @@ import Widget from "./Widget";
 import layerListViewModel from "../../viewmodel/layerListViewModel";
 export default {
   name: "SmLayerList",
+  relativeMap:true,
   props: {
     iconClass: {
       type: String,

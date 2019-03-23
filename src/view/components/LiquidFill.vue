@@ -70,11 +70,11 @@ export default {
   computed: {
     //根据主题得到波浪背景色
     calcWaveColor() {
-      return this.themeStyle["colorGroup"][0];
+      return this.getColor(0);
     },
     //根据主题得到标注背景色
     calclabelColor() {
-      return this.themeStyle["colorTwo"];
+      return this.getColor(1);
     },
     //根据传入的size计算得到标注的字体大小
     calcFontSize() {
@@ -91,10 +91,10 @@ export default {
   },
   loaded() {
     this.chart = echarts.init(this.$refs.chart);
-    
-    this.$watch('themeStyle',() => {
+    this.updateChart();
+    this.$on('themeStyle',() => {
       this.updateChart();
-    },{immediate:true,deep:true})
+    })
   },
   methods: {
     updateChart() {
@@ -111,7 +111,7 @@ export default {
             data: this.calcData,
             label: {
               fontSize: this.fontSize || this.calcFontSize,
-              color: this.labelColor || this.getColor,
+              color: this.labelColor || this.getTextColor,
               insideColor: this.insideLabelColor
             },
             backgroundStyle: {

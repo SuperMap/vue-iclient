@@ -51,6 +51,7 @@ let validators = (value, propType) => {
 export default {
   name: "SmSearch",
   extends: Widget,
+  relativeMap:true,
   props: {
     maxReturn: {
       type: Number,

@@ -52,7 +52,7 @@ export default {
   },
   computed:{
     progressColor(){
-      return color || this.themeStyle['colorGroup'][0];
+      return this.color || this.getColor(0);
     }
   }
 };

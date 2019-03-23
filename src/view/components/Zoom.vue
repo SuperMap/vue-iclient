@@ -21,6 +21,7 @@ import ZoomViewModel from "../../viewmodel/ZoomViewModel";
 
 export default {
   name: "SmZoom",
+  relativeMap:true,
   extends: Widget,
   data() {
     return {

@@ -47,9 +47,9 @@
                 <el-option
                   v-for="item in selectOptions"
                   :key="item.value"
-                  :label="item.label"
+                  :label="$t('query.mapBounds')"
                   :value="item.value"
-                ></el-option>
+                >{{$t('query.mapBounds')}}</el-option>
               </el-select>
             </div>
             <div class="sm-query__query-button" @click="queryButtonClicked(jobInfo,value)">
@@ -101,6 +101,7 @@ let validators = (value, propType) => {
 
 export default {
   name: "SmQuery",
+  relativeMap:true,
   extends: Widget,
   data() {
     return {

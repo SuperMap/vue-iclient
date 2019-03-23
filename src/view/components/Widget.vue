@@ -12,6 +12,7 @@ function callHook(vm, hook, map) {
 export default {
   name: "Widget",
   mixins: [Control],
+  relativeMap: false,
   viewModelProps: null, //微件需要监听的props
   props: {
     mapTarget: {
@@ -30,7 +31,11 @@ export default {
     this.filterDelayLoad = !["smwebmap", "smmap", "smminimap"].includes(
       this.$options.name && this.$options.name.toLowerCase()
     );
-    this.$el && this.filterDelayLoad && (this.$el.style.display = "none");
+
+    // 每个继承的组件各自对map操作的统一函数名
+    this.parentIsWebMapOrMap = ["smwebmap", "smmap"].includes(
+      this.$parent.$options.name && this.$parent.$options.name.toLowerCase()
+    );
     /**
      * 便于区分存在多个map时，子组件对应的map的渲染；
      * map 和 webmap的props属性是target 其他组件都叫mapTarget
@@ -39,15 +44,21 @@ export default {
      *
      */
     const targetName = this.getMapTarget || mapEvent.firstMapTarget;
-    if (mapEvent.$options.getMap(targetName)) {
-      this.loadMap(targetName);
+    if (!this.$options.relativeMap && !this.parentIsWebMapOrMap) {
+      callHook(this, "loaded");
+      this.$emit("loaded");
     } else {
-      mapEvent.$on(`initMap-${targetName}`, (map, webmap) => {
-        mapEvent.$options.setMap(targetName, map);
-        webmap && mapEvent.$options.setWebMap(targetName, webmap);
-        // 每个继承的组件各自对map操作的统一函数名
+      this.$el && this.filterDelayLoad && (this.$el.style.display = "none");
+      if (mapEvent.$options.getMap(targetName)) {
         this.loadMap(targetName);
-      });
+      } else {
+        mapEvent.$on(`initMap-${targetName}`, (map, webmap) => {
+          mapEvent.$options.setMap(targetName, map);
+          webmap && mapEvent.$options.setWebMap(targetName, webmap);
+          // 每个继承的组件各自对map操作的统一函数名
+          this.loadMap(targetName);
+        });
+      }
     }
 
     // 为vm层的props绑定监听，更新vm层的视图变化
@@ -74,11 +85,10 @@ export default {
     //微件生命周期方法(挂载后调用)，子类实现【组件主要业务逻辑写在这个生命周期里】
   },
   methods: {
+    getTheme() {
+      return this.theme;
+    },
     loadMap(targetName) {
-      // 每个继承的组件各自对map操作的统一函数名
-      this.parentIsWebMapOrMap = ["smwebmap", "smmap"].includes(
-        this.$parent.$options.name && this.$parent.$options.name.toLowerCase()
-      );
       this.map = mapEvent.$options.getMap(targetName);
       this.webmap = mapEvent.$options.getWebMap(targetName);
       this.parentIsWebMapOrMap && this.addControl(this.map);

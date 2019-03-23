@@ -8,6 +8,7 @@ import Widget from "./Widget";
 export default {
   name: "SmScale",
   extends: Widget,
+  relativeMap:true,
   props: {
     unit: {
       type: String,

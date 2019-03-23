@@ -35,6 +35,7 @@ import PanViewModel from "../../viewmodel/PanViewModel.js";
 
 export default {
   name: "SmPan",
+  relativeMap:true,
   extends: Widget,
   data() {
     return {

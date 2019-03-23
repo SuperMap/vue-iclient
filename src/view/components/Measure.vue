@@ -56,6 +56,7 @@ import { reservedDecimal } from "../../utils/formatter";
 
 export default {
   name: "SmMeasure",
+  relativeMap:true,
   extends: Widget,
   props: {
     iconClass: {
