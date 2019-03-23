@@ -4,19 +4,19 @@
       <span class="sm-indicator__title" :style="[unit_titleStyle,getTextColorStyle]">{{title}}</span>
     </div>
     <div class="sm-indicator__content">
-      <span class="sm-indicator__num" :style="[numStyle, getColorStyle(0)]">{{numberSymbol}}</span>
+      <span class="sm-indicator__num" :style="[numStyle, indicatorStyle]">{{numberSymbol}}</span>
       <span class="sm-indicator__unit" :style="[unit_titleStyle,getTextColorStyle]">{{unit}}</span>
     </div>
   </div>
 </template>
 
 <script>
-import Theme from '../mixin/Theme';
+import Theme from "../mixin/Theme";
 import Widget from "./Widget";
 export default {
   name: "SmIndicator",
   extends: Widget,
-  mixins:[Theme],
+  mixins: [Theme],
   props: {
     title: {
       type: String,
@@ -26,10 +26,7 @@ export default {
       type: String,
       default: "单位"
     },
-    fontColor: {
-      type: String
-    },
-    titleColor: {
+    indicatorColor: {
       type: String
     },
     fontSize: {
@@ -55,6 +52,12 @@ export default {
       return {
         fontSize: parseInt(this.fontSize) * 0.66 + "px"
       };
+    },
+    indicatorStyle() {
+      return (
+        (this.indicatorColor && { color: this.indicatorColor }) ||
+        this.getColorStyle(0)
+      );
     }
   },
   methods: {

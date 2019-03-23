@@ -30,6 +30,7 @@ export default {
   computed: {
     timeParam() {
       let { fontStyle} = this.$props;
+      this.initTime(this.timeType);
       return fontStyle;
     }
   },
@@ -45,10 +46,6 @@ export default {
         this.time = CommonUtil.getDateTime("time", timeType);
       }, 1000);
     }
-  },
-
-  mounted(){
-    this.initTime(this.timeType);
   }
 };
 </script>

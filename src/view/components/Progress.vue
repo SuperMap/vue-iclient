@@ -6,7 +6,7 @@
       :stroke-width="strokeWidth"
       :show-text="showText"
       :circle-width="type==='circle'?circleWidth:null"
-      :color="progressColor"
+      :color="color || progressColor"
       :status="status"
     ></el-progress>
   </div>
@@ -52,7 +52,7 @@ export default {
   },
   computed:{
     progressColor(){
-      return this.themeStyle['colorGroup'][0];
+      return color || this.themeStyle['colorGroup'][0];
     }
   }
 };
