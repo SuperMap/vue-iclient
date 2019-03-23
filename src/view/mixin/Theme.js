@@ -4,11 +4,11 @@ export default {
     props:{
         background:{
             type:String,
-            default:"#333"
+            default:"#fff"
         },
         textColor:{
             type:String,
-            default:'#fff'
+            default:'#333'
         }
     },
     data() {

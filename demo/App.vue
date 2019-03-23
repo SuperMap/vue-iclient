@@ -3,13 +3,20 @@
     <!-- <Map :map-options="mapOptions">
       <Chart :datasets="datasets" :chartOptions="chartOptions" ref="chart"></Chart>
     </Map>-->
+    <!-- 深色 -->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
-      <!-- <sm-indicator title="人均收入" unit="元" :num="12323412" fontColor="red" titleColor="#595959" fontSize="18px" ></sm-indicator>
-      <sm-text title="文本框" :fontStyle='{ fontSize: "18px", lineHeight: "18px", color: "#595959", fontWeight: "700", textAlign: "center" }' ></sm-text>
-      <sm-time-text :fontStyle='{ fontSize: "18px", color: "#595959", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
-      <sm-icon class-name="edit" size="18px" color="red" weight="700"></sm-icon>
-      <sm-progress type="circle" :percentage="80" status="success"></sm-progress> -->
-      <sm-search
+      <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18px" ></sm-indicator>
+      <sm-text title="文本框dsfdcsadguasdghjasgdjhasgjdgasjhgdjsagdjsagjdgasjdasj" :fontStyle='{ fontSize: "18px", lineHeight: "18px", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
+      <sm-time-text :fontStyle='{ fontSize: "18px", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
+      <sm-icon class-name="edit" size="20px" weight="800"></sm-icon>
+      <sm-progress type="circle" :percentage="80" status="text"></sm-progress>
+      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
+      <sm-layer-list position="top-right"/>
+      <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/>
+    <!-- 浅色 -->
+
+
+      <!-- <sm-search
         position="top-right"
         :layer-names="layerSourceNames"
         :address-match="addressMatch"
@@ -22,20 +29,25 @@
         :iportal-data="iportalDataQuery"
         :rest-data="restDataQuery"
         :rest-map="restMapQuery"
-      ></sm-query>
+      ></sm-query> -->
       <!-- <sm-tabel :state='state'></sm-tabel> -->
       <!-- <sm-pan></sm-pan> -->
       <!-- <sm-zoom :show-zoom-slider="true"></sm-zoom> -->
       <!-- <sm-scale position="bottom-left"></sm-scale> -->
       <!-- <sm-mini-map position="bottom-right"></sm-mini-map> -->
       <!-- <sm-chart :chartType="chartType" :datasets="datasets" :chartOptions="chartOptions" position="bottom-right"></sm-chart> -->
-      <sm-measure position="top-right"></sm-measure>
-      <sm-layer-list position="top-right"/>
-      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
+      <!-- <sm-measure position="top-right"></sm-measure>
+      <sm-layer-list position="top-right"/>-->
+      
       <!-- <el-button @click="changeType" style="position:absolute;left:210px;z-index:300">修改图表的type:</el-button>
       <el-button @click="changeChartoption" style="position:absolute;left:350px;z-index:300">修改图表的xy轴:</el-button>
       <el-button @click="changeDatasets" style="position:absolute;left:500px;z-index:300">修改图表的datasets:</el-button>-->
+
     </sm-web-map>
+    <div class="changeTheme">
+      <el-button @click="changeStyle" type="primary" size="mini">改变样式</el-button>
+      <el-button @click="changeStyle1" type="success" size="mini">改变样式1</el-button>
+    </div>
   </div>
 </template>
 
@@ -166,6 +178,13 @@ export default {
     //     }
     //   ]
     // }
+
+    changeStyle(){
+      widgets.setTheme({textColor:'#fff',background:'#333',colorGroup:['#dd6b66','#759aa0','#e69d87','#8dc1a9','#ea7e53','#eedd78']});
+    },
+    changeStyle1(){
+      widgets.setTheme({textColor:'#333',background:'#fff',colorGroup:['#3fb1e3','#6be6c1','#626c91','#a0a7e6','#c4ebad','#96dee8']});
+    }
   }
 };
 </script>
@@ -184,5 +203,11 @@ body {
   margin: 0 auto;
   width: 100%;
   height: 100%;
+}
+.changeTheme{
+  position: absolute;
+  left: 50%;
+  transform: translate(-100px);
+  bottom: 20px;
 }
 </style>
