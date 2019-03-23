@@ -1,20 +1,22 @@
 <template>
-  <div class="sm-indicator">
+  <div class="sm-indicator" :style="[getBackgroundStyle]">
     <div class="sm-indicator__head">
-      <span class="sm-indicator__title" :style="unit_titleStyle">{{title}}</span>
+      <span class="sm-indicator__title" :style="[unit_titleStyle,getTextColorStyle]">{{title}}</span>
     </div>
     <div class="sm-indicator__content">
-      <span class="sm-indicator__num" :style="numStyle">{{numberSymbol}}</span>
-      <span class="sm-indicator__unit" :style="unit_titleStyle">{{unit}}</span>
+      <span class="sm-indicator__num" :style="[numStyle, getColorStyle(0)]">{{numberSymbol}}</span>
+      <span class="sm-indicator__unit" :style="[unit_titleStyle,getTextColorStyle]">{{unit}}</span>
     </div>
   </div>
 </template>
 
 <script>
+import Theme from '../mixin/Theme';
 import Widget from "./Widget";
 export default {
   name: "SmIndicator",
   extends: Widget,
+  mixins:[Theme],
   props: {
     title: {
       type: String,
@@ -47,11 +49,10 @@ export default {
       return numberSymbol;
     },
     numStyle() {
-      return { color: this.fontColor, fontSize: this.fontSize };
+      return { fontSize: this.fontSize };
     },
     unit_titleStyle() {
       return {
-        color: this.titleColor,
         fontSize: parseInt(this.fontSize) * 0.66 + "px"
       };
     }

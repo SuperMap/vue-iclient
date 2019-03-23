@@ -6,16 +6,18 @@
       :stroke-width="strokeWidth"
       :show-text="showText"
       :circle-width="type==='circle'?circleWidth:null"
-      :color="color"
+      :color="progressColor"
       :status="status"
     ></el-progress>
   </div>
 </template>
 <script>
+import Theme from '../mixin/Theme';
 import Widget from "./Widget";
 export default {
   name: "SmProgress",
   extends: Widget,
+  mixins:[Theme],
   props: {
     percentage: {
       type: Number,
@@ -42,6 +44,15 @@ export default {
     showText: {
       type: Boolean,
       default: true
+    }
+  },
+  data(){
+    return {
+    }
+  },
+  computed:{
+    progressColor(){
+      return this.themeStyle['colorGroup'][0];
     }
   }
 };

@@ -1,4 +1,5 @@
 import Vue from "vue";
+import mapEvent from './view/commontypes/mapEvent';
 import {
   Button,
   Checkbox,
@@ -23,12 +24,16 @@ import * as components from "./view/components";
 import "./assets/iconfont/iconfont.css";
 import * as commontypes from './view/commontypes/index';
 
+const setTheme = (themeStyle = {}) => {
+  mapEvent.$emit('change-theme',themeStyle);
+}
+
 const install = function (Vue, opts = {}) {
   if (opts.locale) {
     setLocale(opts.locale);
   }
   const theme = opts.theme || "light";
-
+  
   require(`./style/theme/${theme}.scss`);
 
   //TIP:引入element组件时，需在style/index.scss中引入组件对应的scsss。确保样式变量对elemenet组件生效
@@ -51,9 +56,13 @@ const install = function (Vue, opts = {}) {
   }
 };
 if (typeof window !== "undefined" && window.Vue) {
-  install(window.Vue);
+  install(window.Vue,{theme:'dark'});
 }
+
+
+
 export default {
+  setTheme,
   commontypes,
   lang,
   locale: setLocale,

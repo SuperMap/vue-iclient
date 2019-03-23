@@ -4,21 +4,28 @@
   width: $--widget-container-width;
   max-height: 400px;
   overflow-y: auto;
-  background: $--fill-base;
+  border: none;
+  color: #fff;
   .el-card__header {
     font-weight: 700;
     font-size: $--text-primary;
     padding: 8px 20px;
+    border: none;
   }
   .el-card__body{
     padding: 0px;
   }
+  @include e(table){
+    border-top: none;
+  }
   .el-collapse-item__header{
     font-size: $--text-regular;
+    
     @include e(title){
       margin-left: 35px;
     }
   }
+  .el-collapse-item__wrap{
   .el-collapse-item__content {
     padding-bottom: 0px;
     margin-left: 8px;
@@ -78,5 +85,6 @@
       margin-left: 30px;
       margin-bottom: 4px;
     }
+  }
   }
 }

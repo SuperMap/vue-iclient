@@ -3,10 +3,10 @@
 @include b(text) {
   background: $--fill-base;
   &.el-textarea {
-    width: auto !important;
+    //width: auto !important;
   }
   & textarea {
-    width: 100px;
+    //width: 100px;
     padding: 0;
     border: none;
     background: transparent;

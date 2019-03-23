@@ -1,13 +1,15 @@
 <template>
-  <div class="sm-icon" :style="{background}">
-    <i :class="'el-icon-'+className" :style="iconStyle"></i>
+  <div class="sm-icon" >
+    <i :class="'el-icon-'+className" :style="[iconStyle, getBackgroundStyle, getTextColorStyle]"></i>
   </div>
 </template>
 <script>
 import Widget from "./Widget";
+import Theme from '../mixin/Theme';
 export default {
   name: "SmIcon",
   extends: Widget,
+  mixins: [Theme],
   props: {
     className: {
       type: String,
@@ -23,15 +25,13 @@ export default {
       type: String
     },
     background: {
-      type: String,
-      default: "white"
+      type: String
     }
   },
   computed: {
     iconStyle() {
       return {
         fontSize: this.size,
-        color: this.color,
         fontWeight: this.weight
       };
     }
