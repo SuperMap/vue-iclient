@@ -66,7 +66,6 @@ export default {
     }
   },
   loaded() {
-    !this.parentIsWebMapOrMap && this.$el.classList.add("sm-chart--position");
     this.viewModel = new ChartViewModel(this.$refs['chart'], this.options);
     if (this.parentIsWebMapOrMap) {
       let icon = this.$el.parentElement.children[1];

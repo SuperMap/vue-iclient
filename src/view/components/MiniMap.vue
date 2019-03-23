@@ -21,7 +21,6 @@ export default {
 
   loaded() {
     this.$el.classList.add("sm-minimap");
-    !this.parentIsWebMapOrMap && this.$el.classList.add("sm-minimap--position");
     new MiniMapViewModel(this.$el, this.map);
   }
 };

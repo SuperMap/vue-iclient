@@ -7,9 +7,5 @@
   border: $--border-base;
   box-shadow: $--box-shadow-base;
   background: #fff;
-  @include m(position) {
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
-  }
+
 }
