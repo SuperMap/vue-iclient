@@ -17,7 +17,7 @@
       :style="styleObject"
       :chartType="chartType"
       :datasets="datasets"
-      :chartOption="chartOption"
+      :chartOptions="chartOptions"
       position="bottom-right"
       :collapsed='true'
     ></sm-chart>
@@ -53,8 +53,8 @@
 
     </sm-web-map>
     <div class="changeTheme">
-      <el-button @click="changeStyle" type="primary" size="mini">改变样式</el-button>
-      <el-button @click="changeStyle1" type="success" size="mini">改变样式1</el-button>
+      <el-button @click="changeStyle" type="primary" size="mini">深色主题</el-button>
+      <el-button @click="changeStyle1" type="success" size="mini">浅色主题</el-button>
     </div>
   </div>
 </template>
@@ -164,7 +164,7 @@ export default {
         //url: "http://support.supermap.com.cn:8092/web/datas/888186112",
         queryInfo: { attributeFilter: "SmID > 0" }
       },
-     chartOption: {
+     chartOptions: {
         // backgroundColor:"",
         // axisColor:"",
         // colorGradient:[],

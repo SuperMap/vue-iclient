@@ -13,13 +13,13 @@ import tonumber from 'lodash.tonumber';
  * @param {Object} options - 可选参数。
  * @param {string} options.type - 图表类型。
  * @param {SuperMap.Widgets.Chart.Datasets} options.datasets - 数据来源。
- * @param {Array.<Object>} options.chartOption - 图表可选参数。
- * @param {Array.<Object>} options.chartOption.xAxis - 图表X轴。
- * @param {string} options.chartOption.xAxis.field - 图表X轴字段名。
- * @param {string} options.chartOption.xAxis.name - 图表X轴名称。
- * @param {Array.<Object>} options.chartOption.yAxis - 图表Y轴。
- * @param {string} options.chartOption.yAxis.field - 图表Y轴字段名。
- * @param {string} options.chartOption.yAxis.name - 图表Y轴名称。
+ * @param {Array.<Object>} options.chartOptions - 图表可选参数。
+ * @param {Array.<Object>} options.chartOptions.xAxis - 图表X轴。
+ * @param {string} options.chartOptions.xAxis.field - 图表X轴字段名。
+ * @param {string} options.chartOptions.xAxis.name - 图表X轴名称。
+ * @param {Array.<Object>} options.chartOptions.yAxis - 图表Y轴。
+ * @param {string} options.chartOptions.yAxis.field - 图表Y轴字段名。
+ * @param {string} options.chartOptions.yAxis.name - 图表Y轴名称。
  * @fires ChartViewModel#getdatafailed
  */
 
@@ -27,7 +27,7 @@ export class ChartViewModel extends WidgetViewModel {
 
   constructor(chartContainer, options) {
     super();
-    this.chartOption = {
+    this.chartOptions = {
       //x轴是否分类统计
       xFieldStatistical: true,
       //x轴字体是否倾斜
@@ -61,8 +61,8 @@ export class ChartViewModel extends WidgetViewModel {
     this.xField = [];
     this.yField = [];
     this.chartType = options.type || "bar";
-    Object.assign(this.chartOption, options.chartOption);
-    this._initXYField(this.chartOption);
+    Object.assign(this.chartOptions, options.chartOptions);
+    this._initXYField(this.chartOptions);
     this._initChart();
   }
   setChartType(type) {
@@ -73,12 +73,12 @@ export class ChartViewModel extends WidgetViewModel {
     }
   }
   setDatasets(datasets) {
-    this.updateData(datasets, this.chartOption)
+    this.updateData(datasets, this.chartOptions)
   }
   // todo,setChartOptions不该发请求
-  setChartOptions(chartOption) {
-    Object.assign(this.chartOption, chartOption);
-    this.updateData(this.datasets, chartOption)
+  setChartOptions(chartOptions) {
+    Object.assign(this.chartOptions, chartOptions);
+    this.updateData(this.datasets, chartOptions)
   }
   resize() {
     this.echart.resize();
@@ -88,10 +88,10 @@ export class ChartViewModel extends WidgetViewModel {
     return this.echart;
   }
 
-  updateData(datasets, chartOption) {
+  updateData(datasets, chartOptions) {
     this.xField = [];
     this.yField = [];
-    this._initXYField(chartOption);
+    this._initXYField(chartOptions);
     // type的设置默认值
     datasets.type = datasets.type || 'iServer';
     // withCredentials的设置默认值
@@ -106,9 +106,9 @@ export class ChartViewModel extends WidgetViewModel {
    */
   getStyle() {
     let style = {
-      grid: this.chartOption.padding,
-      tooltip: this.chartOption.tooltip,
-      backgroundColor: this.chartOption.backgroundColor
+      grid: this.chartOptions.padding,
+      tooltip: this.chartOptions.tooltip,
+      backgroundColor: this.chartOptions.backgroundColor
     }
     return style;
   }
@@ -152,7 +152,7 @@ export class ChartViewModel extends WidgetViewModel {
 
   _updateChartOptions(type, style) {
     if (this.calculatedData) {
-      let grid = clonedeep(this.chartOption.padding);
+      let grid = clonedeep(this.chartOptions.padding);
       let series = this._createChartSeries(this.calculatedData, type);
       let datas = [];
       for (let i in this.calculatedData.XData) {
@@ -162,31 +162,31 @@ export class ChartViewModel extends WidgetViewModel {
       }
       let xAxis = {
         type: "category",
-        name: this.chartOption.xAxisName,
+        name: this.chartOptions.xAxisName,
         data: datas,
         nameTextStyle: {
-          color: this.chartOption.axisColor,
+          color: this.chartOptions.axisColor,
           fontSize: 14
         },
         splitLine: {
           show: false
         },
         axisLabel: {
-          rotate: this.chartOption.xAxisLabelRotate ? -45 : 0,
+          rotate: this.chartOptions.xAxisLabelRotate ? -45 : 0,
           interval: "auto"
         },
         axisLine: {
           lineStyle: {
-            color: this.chartOption.axisColor
+            color: this.chartOptions.axisColor
           }
         }
       }
       let yAxis = {
         type: "value",
-        name: this.chartOption.yAxisName,
+        name: this.chartOptions.yAxisName,
         data: {},
         nameTextStyle: {
-          color: this.chartOption.axisColor,
+          color: this.chartOptions.axisColor,
           fontSize: 14
         },
         splitArea: {
@@ -196,26 +196,26 @@ export class ChartViewModel extends WidgetViewModel {
           show: false
         },
         axisLabel: {
-          rotate: this.chartOption.yAxisLabelRotate ? 45 : 0,
+          rotate: this.chartOptions.yAxisLabelRotate ? 45 : 0,
           interval: "auto"
         },
         axisLine: {
           lineStyle: {
-            color: this.chartOption.axisColor
+            color: this.chartOptions.axisColor
           }
         }
       }
-      if (this.chartOption.xAxisLabelRotate) {
+      if (this.chartOptions.xAxisLabelRotate) {
         grid['bottom'] += 20;
       }
-      if (this.chartOption.yAxisLabelRotate) {
+      if (this.chartOptions.yAxisLabelRotate) {
         grid['left'] -= 10;
       }
       let legend = null;
       let bottom = "auto";
       let top = "auto"
-      if (this.chartOption.legendPosition != "none") {
-        if (this.chartOption.legendPosition === "bottom") {
+      if (this.chartOptions.legendPosition != "none") {
+        if (this.chartOptions.legendPosition === "bottom") {
           grid['bottom'] += 15
           bottom = 10;
         } else {
@@ -224,26 +224,26 @@ export class ChartViewModel extends WidgetViewModel {
         }
 
         legend = {
-          orient: this.chartOption.legendOrient,
+          orient: this.chartOptions.legendOrient,
           top,
           bottom,
           left: "center",
           data: this.fieldNames,
-          textStyle:{
-            color:this.chartOption.axisColor
+          textStyle: {
+            color: this.chartOptions.axisColor
           }
         }
       }
-      if (this.chartOption.xAxisName) {
+      if (this.chartOptions.xAxisName) {
         grid['top'] += 10;
       }
-      if (this.chartOption.yAxisName) {
+      if (this.chartOptions.yAxisName) {
         //todo 乘以字体大小
-        grid['right'] += this.chartOption.xAxisName.length * 8;
+        grid['right'] += this.chartOptions.xAxisName.length * 8;
       }
 
       return {
-        backgroundColor: this.chartOption.backgroundColor,
+        backgroundColor: this.chartOptions.backgroundColor,
         grid: {
           top: grid.top + "px",
           bottom: grid.bottom + "px",
@@ -254,7 +254,7 @@ export class ChartViewModel extends WidgetViewModel {
         series: series,
         xAxis: xAxis,
         yAxis: yAxis,
-        tooltip: this.chartOption.tooltip
+        tooltip: this.chartOptions.tooltip
       }
     }
   }
@@ -285,7 +285,7 @@ export class ChartViewModel extends WidgetViewModel {
     }
   }
   _initXYField(option) {
-    //chartOption==>this.xField this.yField
+    //chartOptions==>this.xField this.yField
     if (option.xAxis) {
       this.xField.push({
         field: option.xAxis
@@ -322,7 +322,7 @@ export class ChartViewModel extends WidgetViewModel {
     let uniqFieldValues = this._getUniqFieldDatas(data, fieldIndex);
     let fieldDatas = this._getFieldDatas(data, fieldIndex);
     let yDatas = [];
-    if (!this.chartOption.xFieldStatistical && yfieldIndexs.length > 0) {
+    if (!this.chartOptions.xFieldStatistical && yfieldIndexs.length > 0) {
       yfieldIndexs.forEach((yfieldIndex) => {
         let yData = [];
         for (let i in data.fieldValues[yfieldIndex]) {
@@ -332,7 +332,7 @@ export class ChartViewModel extends WidgetViewModel {
         }
         yDatas.push(yData);
       });
-    } else if (this.chartOption.xFieldStatistical) {
+    } else if (this.chartOptions.xFieldStatistical) {
       yfieldIndexs.forEach((yfieldIndex) => {
         const yData = [];
         if (yfieldIndex === -1) {
@@ -342,7 +342,11 @@ export class ChartViewModel extends WidgetViewModel {
         for (const key in uniqFieldValues) {
           const v = 0;
           uniqFieldValues[key].forEach(index => {
-            v += tonumber(fieldValues[index]);
+            let num = fieldValues[index];
+            if (num.replace) {
+              num=num.replace(/,/g,"");
+            }
+            v += tonumber(num);
           });
           yData.push({
             value: v
@@ -396,7 +400,7 @@ export class ChartViewModel extends WidgetViewModel {
       let serie = {
         type: chartType,
         stack: '0',
-        color: this.chartOption.colorGradient[index % this.chartOption.colorGradient.length],
+        color: this.chartOptions.colorGradient[index % this.chartOptions.colorGradient.length],
         data: serieData,
         name: this.fieldNames[index] || 'y'
       };

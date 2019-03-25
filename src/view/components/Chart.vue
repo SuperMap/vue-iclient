@@ -13,7 +13,7 @@ import Widget from "./Widget";
 import Theme from "../mixin/Theme";
 export default {
   name: "SmChart",
-  viewModelProps: ["chartType", "datasets", "chartOption"],
+  viewModelProps: ["chartType", "datasets", "chartOptions"],
   extends: Widget,
   mixins: [Theme],
   props: {
@@ -37,7 +37,7 @@ export default {
       type: Object,
       required: true
     },
-    chartOption: {
+    chartOptions: {
       type: Object,
       validator(options) {
         if (!options.xAxis || !options.yAxis) {
@@ -54,19 +54,19 @@ export default {
   },
   computed: {
     options() {
-      if (!this.chartOption.colorGradient) {
-        this.chartOption.colorGradient = this.colorGroupsData;
+      if (!this.chartOptions.colorGradient) {
+        this.chartOptions.colorGradient = this.colorGroupsData;
       }
-      if (!this.chartOption.backgroundColor) {
-        this.chartOption.backgroundColor = this.backgroundData;
+      if (!this.chartOptions.backgroundColor) {
+        this.chartOptions.backgroundColor = this.backgroundData;
       }
-      if (!this.chartOption.axisColor) {
-        this.chartOption.axisColor = this.textColorsData;
+      if (!this.chartOptions.axisColor) {
+        this.chartOptions.axisColor = this.textColorsData;
       }
       return {
         type: this.chartType,
         datasets: this.datasets,
-        chartOption: this.chartOption
+        chartOptions: this.chartOptions
       };
     }
   },
@@ -87,10 +87,10 @@ export default {
     this.$on(
       "themeStyle",
       () => {
-        this.chartOption.colorGradient = this.colorGroupsData;
-        this.chartOption.backgroundColor = this.backgroundData;
-        this.chartOption.axisColor = this.textColorsData;
-        this.viewModel.setChartOptions(this.chartOption);
+        this.chartOptions.colorGradient = this.colorGroupsData;
+        this.chartOptions.backgroundColor = this.backgroundData;
+        this.chartOptions.axisColor = this.textColorsData;
+        this.viewModel.setChartOptions(this.chartOptions);
       }
     );
     if (this.parentIsWebMapOrMap) {

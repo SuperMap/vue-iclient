@@ -43,7 +43,8 @@ const webpackConfig = merge(baseWebpackConfig, {
     'echarts': 'echarts',
     '@libs/mapboxgl/mapbox-gl-enhance': 'mapboxgl',
     '@libs/iclient-mapboxgl/iclient9-mapboxgl-es6': 'SuperMap',
-    '@mapbox/mapbox-gl-draw': 'MapboxDraw'
+    '@mapbox/mapbox-gl-draw': 'MapboxDraw',
+    "echarts-liquidfill":"echarts-liquidfill"
   },
   optimization: {
     minimizer: []

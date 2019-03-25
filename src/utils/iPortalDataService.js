@@ -127,7 +127,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
 
     }
   }
-  _getDatafromContent(datasetUrl) {
+  _getDatafromContent(datasetUrl, queryInfo) {
     let result = {};
     datasetUrl += '/content.json?pageSize=9999999&currentPage=1';
     // 获取图层数据
@@ -152,7 +152,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
             console.log('JSON 格式解析失败！');
             return;
           }
-          let features = this._formatGeoJSON(data.content);
+          let features = this._formatGeoJSON(data.content, queryInfo);
           result.features = {
             type: data.content.type,
             features
@@ -164,7 +164,9 @@ export default class iPortalDataService extends mapboxgl.Evented {
             features
           };
         }
-        this.iserverService.getFeaturesSucceed({result:result});
+        this.iserverService.getFeaturesSucceed({
+          result: result
+        });
       }
     }).catch(error => {
       console.log(error);
@@ -173,14 +175,17 @@ export default class iPortalDataService extends mapboxgl.Evented {
       });
     });
   }
-  _formatGeoJSON(data) {
+  _formatGeoJSON(data, queryInfo) {
     let features = data.features;
+    if (queryInfo && queryInfo.maxFeatures > 0) {
+      features = features.slice(0, queryInfo.maxFeatures)
+    }
     features.forEach((row, index) => {
       row.properties['index'] = index;
     })
     return features;
   }
-  _excelData2Feature(dataContent) {
+  _excelData2Feature(dataContent, queryInfo) {
     let fieldCaptions = dataContent.colTitles;
     //位置属性处理
     let xfieldIndex = -1,
@@ -197,7 +202,11 @@ export default class iPortalDataService extends mapboxgl.Evented {
     // feature 构建后期支持坐标系 4326/3857
     let features = [];
 
-    for (let i = 0, len = dataContent.rows.length; i < len; i++) {
+    const len = dataContent.rows.length;
+    if (queryInfo && queryInfo.maxFeatures > 0) {
+      len = queryInfo.maxFeatures;
+    }
+    for (let i = 0; i < len; i++) {
       let row = dataContent.rows[i];
 
       let x = Number(row[xfieldIndex]),
