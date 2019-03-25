@@ -6,10 +6,10 @@
     <!-- 深色 -->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
       <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18px" ></sm-indicator>
-      <sm-text title="文本框dsfdcsadguasdghjasgdjhasgjdgasjhgdjsagdjsagjdgasjdasj" :fontStyle='{ fontSize: "18px", lineHeight: "18px", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
+      <sm-text title="文本框" :fontStyle='{ fontSize: "18px", lineHeight: "18px", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
       <sm-time-text :fontStyle='{ fontSize: "18px", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
-      <sm-icon class-name="edit" size="20px" weight="800"></sm-icon>
-      <sm-progress type="circle" :percentage="80" status="text"></sm-progress>
+      <sm-icon class-name="edit" size="20px" weight="800" background='unset' text-color='#333'></sm-icon>
+      <sm-progress type="circle" :percentage="80"></sm-progress>
       <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
       <sm-layer-list position="top-right"/>
       <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/>
@@ -206,10 +206,10 @@ export default {
     // }
 
     changeStyle(){
-      widgets.setTheme({textColor:'#fff',background:'#333',colorGroup:['#dd6b66','#759aa0','#e69d87','#8dc1a9','#ea7e53','#eedd78']});
+      widgets.setTheme({textColor:'#fff',background:'rgb(51, 51, 51,0.6)',colorGroup:['#dd6b66','#759aa0','#e69d87','#8dc1a9','#ea7e53','#eedd78']});
     },
     changeStyle1(){
-      widgets.setTheme({textColor:'#333',background:'#fff',colorGroup:['#3fb1e3','#6be6c1','#626c91','#a0a7e6','#c4ebad','#96dee8']});
+      widgets.setTheme({textColor:'#333',background:'rgba(255, 255, 255,0.6)',colorGroup:['#3fb1e3','#6be6c1','#626c91','#a0a7e6','#c4ebad','#96dee8']});
     }
   }
 };

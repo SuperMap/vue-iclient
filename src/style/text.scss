@@ -2,11 +2,8 @@
 
 @include b(text) {
   background: $--fill-base;
-  &.el-textarea {
-    //width: auto !important;
-  }
+  padding: 4px;
   & textarea {
-    //width: 100px;
     padding: 0;
     border: none;
     background: transparent;

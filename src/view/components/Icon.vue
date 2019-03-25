@@ -1,6 +1,6 @@
 <template>
   <div class="sm-icon">
-    <i :class="'el-icon-'+className" :style="[iconStyle, getBackgroundStyle, iconColor]"></i>
+    <i :class="'el-icon-'+className" :style="[iconStyle, iconBackground, iconColor]"></i>
   </div>
 </template>
 <script>
@@ -37,6 +37,9 @@ export default {
     },
     iconColor() {
       return (this.color && { color: this.color }) || this.getTextColorStyle;
+    },
+    iconBackground(){
+      return (this.background && { background: this.background }) || this.getBackgroundStyle;
     }
   }
 };

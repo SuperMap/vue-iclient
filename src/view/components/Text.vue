@@ -1,5 +1,11 @@
 <template>
-  <el-input :style="[fontStyle, getBackgroundStyle, getTextColorStyle]" type="textarea" class="sm-text" v-model="title"></el-input>
+  <el-input
+    :style="[fontStyle, getBackgroundStyle, getTextColorStyle]"
+    class="sm-text"
+    v-model="content"
+    type="textarea"
+    autosize
+  ></el-input>
 </template>
 
 <script>
@@ -9,6 +15,14 @@ export default {
   name: "SmText",
   extends: Widget,
   mixins: [Theme],
+  data(){
+    return {
+      content:null
+    }
+  },
+  mounted(){
+    this.content = this.title;
+  },
   props: {
     fontStyle: {
       type: Object
