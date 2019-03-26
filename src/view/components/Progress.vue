@@ -5,7 +5,7 @@
       :type="type"
       :stroke-width="strokeWidth"
       :show-text="showText"
-      :circle-width="type==='circle'?circleWidth:null"
+      :width="type==='circle'?circleWidth:null"
       :color="color || progressColor"
       :status="status"
     ></el-progress>
