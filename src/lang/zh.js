@@ -41,7 +41,24 @@ export default {
     themeField:'专题字段',
     title:'图例',
     top:'最高',
-    bottom:'最低'
+    bottom:'最低',
+    noMatchLayer:'没有匹配的图层'
+  },
+  measure:{
+    mapMeasure:'地图量算',
+    measureResult:'测量结果',
+    kilometers:'千米',
+    miles:'英里',
+    meters:'米',
+    yards:'码',
+    feet:'英尺',
+    squarekilometers:'平方千米',
+    squaremiles:'平方英里',
+    squaremeters:'平方米',
+    squareyards:'平方码',
+    squarefeet:'平方英尺',
+    distance:'距离',
+    area:'面积'
   },
   map: {},
   search:{
