@@ -33,7 +33,7 @@ export default {
       type: [String,Number]
     },
     num: {
-      type: Number,
+      type: [Number,String],
       default: 0
     }
   },

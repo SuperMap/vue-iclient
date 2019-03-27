@@ -5,10 +5,10 @@
     </Map>-->
     <!-- 深色 -->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
-      <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18px" ></sm-indicator>
-      <sm-text title="文本框" :fontStyle='{ fontSize: "18px", lineHeight: "18px", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
-      <sm-time-text :fontStyle='{ fontSize: "18px", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
-      <sm-icon class-name="edit" size="20px" weight="800" background='unset' text-color='#333'></sm-icon>
+      <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
+      <sm-text title="文本框" :fontStyle='{ fontSize: "18", lineHeight: "18", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
+      <sm-time-text :fontStyle='{ fontSize: "18", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
+      <sm-icon class-name="edit" size="20" weight="800" background='unset' text-color='#333'></sm-icon>
       <sm-progress type="circle" :percentage="80"></sm-progress>
       <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
       <sm-layer-list position="top-right"/>
