@@ -75,10 +75,11 @@ export class ChartViewModel extends WidgetViewModel {
   setDatasets(datasets) {
     this.updateData(datasets, this.chartOptions)
   }
-  // todo,setChartOptions不该发请求
   setChartOptions(chartOptions) {
     Object.assign(this.chartOptions, chartOptions);
-    this.updateData(this.datasets, chartOptions)
+    this._initXYField(chartOptions);
+    this._updateDataSuccess();
+    //this.updateData(this.datasets, chartOptions)
   }
   resize() {
     this.echart.resize();
@@ -259,16 +260,22 @@ export class ChartViewModel extends WidgetViewModel {
     }
   }
   _updateDataSuccess(data) {
-    this.calculatedData = this._createChartDatas(data);
+    //仅仅更新chartoptions时 调用该方法不传入data，直接使用前一次的this.calculatedData
+    if (data) {
+      this.calculatedData = this._createChartDatas(data);
+    }
     let options = this._updateChartOptions(this.chartType);
     this._updateChart(options);
   }
 
   _createChart(data) {
+    this.dataCache = data;
     this.echart = echarts && echarts.init(this.chartContainer, null, {
       renderer: "canvas"
     })
-    this.calculatedData = this._createChartDatas(data);
+    if (data) {
+      this.calculatedData = this._createChartDatas(data);
+    }
     let options = this._updateChartOptions(this.chartType);
     this.echart.setOption(options);
     this.fire('chartinitsucceeded', {
@@ -344,7 +351,7 @@ export class ChartViewModel extends WidgetViewModel {
           uniqFieldValues[key].forEach(index => {
             let num = fieldValues[index];
             if (num.replace) {
-              num=num.replace(/,/g,"");
+              num = num.replace(/,/g, "");
             }
             v += tonumber(num);
           });
