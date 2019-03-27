@@ -2,9 +2,10 @@
 
 @include b(text) {
   background: $--fill-base;
-  padding: 4px;
+  & .el-textarea {
+    padding: 4px;
+  }
   & textarea {
-    padding: 0;
     border: none;
     background: transparent;
     text-align: inherit;
