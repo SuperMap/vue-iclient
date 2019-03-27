@@ -1,5 +1,5 @@
 import WidgetViewModel from './WidgetViewModel';
-import mapboxgl from 'mapbox-gl';
+import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import length from "@turf/length";
 import area from "@turf/area";
@@ -65,7 +65,6 @@ class MeasureViewModel extends WidgetViewModel {
           this.tipNodes[i] && this.tipNodes[i].setText(`${transValue} ${uniti18n}`);
         }
       }
-
     } else {
       let transValue = convertArea(this.cachePolygonUnit.value, this.cachePolygonUnit.unit, unit);
       let uniti18n = i18n.t(`measure.square${unit}`)
