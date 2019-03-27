@@ -6,12 +6,13 @@
 
 <script>
 import CommonUtil from "../util/CommonUtil";
-import Theme from '../mixin/Theme';
+import Theme from "../mixin/Theme";
 import Widget from "./Widget";
+import { parse } from "path";
 export default {
   name: "SmTimeText",
   extends: Widget,
-  mixins:[Theme],
+  mixins: [Theme],
   data() {
     return {
       time: "",
@@ -29,7 +30,8 @@ export default {
   },
   computed: {
     timeParam() {
-      let { fontStyle} = this.$props;
+      let fontStyle =  JSON.parse(JSON.stringify(this.fontStyle));
+      fontStyle.fontSize && (fontStyle.fontSize = parseFloat(fontStyle.fontSize) + "px");
       this.initTime(this.timeType);
       return fontStyle;
     }

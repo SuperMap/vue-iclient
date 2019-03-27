@@ -1,11 +1,6 @@
 <template>
   <div class="sm-text" :style="getBackgroundStyle">
-    <el-input
-      :style="[fontStyle, getTextColorStyle]"
-      v-model="title"
-      type="textarea"
-      autosize
-    ></el-input>
+    <el-input :style="[formatFontStyle, getTextColorStyle]" v-model="title" type="textarea" autosize></el-input>
   </div>
 </template>
 
@@ -22,6 +17,15 @@ export default {
     },
     title: {
       type: String
+    }
+  },
+  computed: {
+    formatFontStyle() {
+      let fontStyle =  JSON.parse(JSON.stringify(this.fontStyle));
+      fontStyle.fontSize && (fontStyle.fontSize = parseFloat(fontStyle.fontSize) + "px");
+      fontStyle.lineHeight && (fontStyle.lineHeight = parseFloat(fontStyle.lineHeight) + "px");
+      fontStyle.textIndent && (fontStyle.textIndent = parseFloat(fontStyle.textIndent) + "px");
+      return fontStyle;
     }
   }
 };

@@ -30,7 +30,7 @@ export default {
       type: String
     },
     fontSize: {
-      type: String
+      type: [String,Number]
     },
     num: {
       type: Number,
@@ -40,13 +40,13 @@ export default {
   computed: {
     numberSymbol() {
       let numberSymbol = this.num;
-      if (this.isNumber(this.num)) {
+      if (this.isNumber(parseFloat(this.num))) {
         let numberSymbol = this.addNumberSymbol(this.num);
       }
       return numberSymbol;
     },
     numStyle() {
-      return { fontSize: this.fontSize };
+      return { fontSize: this.fontSize + "px" };
     },
     unit_titleStyle() {
       return {

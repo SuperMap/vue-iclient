@@ -6,6 +6,7 @@
 <script>
 import Widget from "./Widget";
 import Theme from "../mixin/Theme";
+import { parse } from "@babel/parser";
 export default {
   name: "SmIcon",
   extends: Widget,
@@ -16,7 +17,7 @@ export default {
       default: "info"
     },
     size: {
-      type: String
+      type: [String, Number]
     },
     color: {
       type: String
@@ -31,15 +32,18 @@ export default {
   computed: {
     iconStyle() {
       return {
-        fontSize: this.size,
+        fontSize: parseFloat(this.size) + "px",
         fontWeight: this.weight
       };
     },
     iconColor() {
       return (this.color && { color: this.color }) || this.getColorStyle(0);
     },
-    iconBackground(){
-      return (this.background && { background: this.background }) || this.getBackgroundStyle;
+    iconBackground() {
+      return (
+        (this.background && { background: this.background }) ||
+        this.getBackgroundStyle
+      );
     }
   }
 };

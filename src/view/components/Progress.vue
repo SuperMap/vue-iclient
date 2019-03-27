@@ -1,11 +1,11 @@
 <template>
   <div class="sm-progress">
     <el-progress
-      :percentage="percentage"
+      :percentage="parseFloat(percentage)"
       :type="type"
-      :stroke-width="strokeWidth"
+      :stroke-width="parseFloat(strokeWidth)"
       :show-text="showText"
-      :width="type==='circle'?circleWidth:null"
+      :width="type==='circle'?parseFloat(circleWidth):null"
       :color="color || progressColor"
       :status="status"
     ></el-progress>
@@ -20,7 +20,7 @@ export default {
   mixins:[Theme],
   props: {
     percentage: {
-      type: Number,
+      type: [Number,String],
       required: true
     },
     type: {
@@ -28,7 +28,7 @@ export default {
       default: "line"
     },
     strokeWidth: {
-      type: Number,
+      type: [Number,String],
       default: 10
     },
     status: {
@@ -38,7 +38,7 @@ export default {
       type: String
     },
     circleWidth: {
-      type: Number,
+      type: [Number,String],
       default: 126
     },
     showText: {
