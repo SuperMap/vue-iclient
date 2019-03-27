@@ -13,12 +13,15 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@libs/(.*)$': '<rootDir>/libs/$1',
-    '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1'
+    '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
+    "\\.(css|less)$": "identity-obj-proxy" 
   },
   transform: {
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
     '.*\\.(vue)$': '<rootDir>/node_modules/vue-jest',
     // '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': '<rootDir>/node_modules/jest-transform-stub'
+   
+   
   },
   snapshotSerializers: ['<rootDir>/node_modules/jest-serializer-vue'],
   setupFiles: ['<rootDir>/test/unit/setup.js'],
@@ -29,7 +32,7 @@ module.exports = {
     '!src/main.js',
     '!**/node_modules/**'
   ],
-  transformIgnorePatterns: ["node_modules/(?!(mapbox-gl)/)"],
+  transformIgnorePatterns: ["node_modules/(?!(mapbox-gl|element-ui)/)"],
   modulePaths: [
     "src",
     "node_modules"
