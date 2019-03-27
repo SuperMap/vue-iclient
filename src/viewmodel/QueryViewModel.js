@@ -1,6 +1,6 @@
 import WidgetViewModel from "./WidgetViewModel";
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
-import "@libs/iclient-mapboxgl/iclient9-mapboxgl-es6";
+import "@libs/iclient-mapboxgl/iclient9-mapboxgl.min";
 import iPortalDataParameter from "../view/commontypes/iPortalDataParameter";
 import RestDataParameter from "../view/commontypes/RestDataParameter";
 import RestMapParameter from "../view/commontypes/RestMapParameter";

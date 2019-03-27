@@ -1,6 +1,6 @@
 import echarts from "echarts";
 import WidgetViewModel from './WidgetViewModel';
-import '@libs/iclient-mapboxgl/iclient9-mapboxgl-es6';
+import '@libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import iServerRestService from '../utils/iServerRestService';
 import iPortalDataService from '../utils/iPortalDataService';
 import clonedeep from 'lodash.clonedeep';

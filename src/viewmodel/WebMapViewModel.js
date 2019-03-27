@@ -3,7 +3,7 @@
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
 import WidgetViewModel from './WidgetViewModel';
 import SourceListModel from '../model/SourceListModel'
-import '@libs/iclient-mapboxgl/iclient9-mapboxgl-es6';
+import '@libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import '@libs/geostats/geostats.js'
 import convert from 'xml-js';
 import canvg from 'canvg';
