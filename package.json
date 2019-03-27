@@ -19,7 +19,7 @@
         "@turf/length": "^6.0.2",
         "canvg": "~1.5.3",
         "element-ui": "^2.4.1",
-  		"echarts-liquidfill": "^2.0.4",
+        "echarts-liquidfill": "^2.0.4",
         "js-cookie": "^2.2.0",
         "jsonsql": "0.2.5",
         "loadsh": "0.0.4",
@@ -98,7 +98,7 @@
         "webpack-bundle-analyzer": "^3.0.3",
         "webpack-cli": "^3.2.1",
         "webpack-dev-server": "^3.1.14",
-        "image-size": "^0.7.2"
+        "webpack-merge": "^4.2.1"
     },
     "engines": {
         "node": ">= 6.0.0",

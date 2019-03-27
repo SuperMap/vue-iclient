@@ -1,5 +1,8 @@
 <template>
-  <div :id="target" class="sm-map">
+  <div
+    :id="target"
+    class="sm-map"
+  >
     <slot></slot>
   </div>
 </template>
@@ -11,6 +14,7 @@ import Widget from "./Widget";
 
 export default {
   name: "SmWebMap",
+  relativeMap: true,
   extends: Widget,
   viewModelProps: ["mapId", "webMapOptions"],
   props: {

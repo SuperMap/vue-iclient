@@ -36,7 +36,7 @@ export default {
       };
     },
     iconColor() {
-      return (this.color && { color: this.color }) || this.getTextColorStyle;
+      return (this.color && { color: this.color }) || this.getColorStyle(0);
     },
     iconBackground(){
       return (this.background && { background: this.background }) || this.getBackgroundStyle;

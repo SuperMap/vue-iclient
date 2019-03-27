@@ -21,7 +21,7 @@ export default {
   props: {
     timeType: {
       type: String,
-      default: "date"
+      default: "date"// "date+second" "date+second+week"
     },
     fontStyle: {
       type: Object

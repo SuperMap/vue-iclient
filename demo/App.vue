@@ -206,10 +206,10 @@ export default {
     // }
 
     changeStyle(){
-      widgets.setTheme({textColor:'#fff',background:'rgb(51, 51, 51,0.6)',colorGroup:['#dd6b66','#759aa0','#e69d87','#8dc1a9','#ea7e53','#eedd78']});
+      widgets.setTheme("dark");
     },
     changeStyle1(){
-      widgets.setTheme({textColor:'#333',background:'rgba(255, 255, 255,0.6)',colorGroup:['#3fb1e3','#6be6c1','#626c91','#a0a7e6','#c4ebad','#96dee8']});
+      widgets.setTheme("light");
     }
   }
 };

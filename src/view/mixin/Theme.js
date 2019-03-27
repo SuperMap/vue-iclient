@@ -4,7 +4,7 @@ export default {
   props: {
     background: {
       type: String,
-      default: "#fff"
+      default: "rgba(255,255,255,0.6)"
     },
     textColor: {
       type: String,

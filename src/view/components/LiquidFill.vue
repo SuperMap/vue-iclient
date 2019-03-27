@@ -67,6 +67,11 @@ export default {
       
     };
   },
+  watch: {
+    value:function(){
+       this.updateChart();
+    }
+  },
   computed: {
     //根据主题得到波浪背景色
     calcWaveColor() {

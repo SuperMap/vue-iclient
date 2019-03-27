@@ -3,9 +3,9 @@
 @include b(time-text) {
   background: $--fill-base;
   display: table;
-  padding: 10px;
   text-align: center;
   & > span {
+    padding: 10px;
     display: table-cell;
     vertical-align: middle;
   }
