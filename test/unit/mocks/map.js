@@ -1,10 +1,11 @@
-require('flow-remove-types/register')({ includes: /.*?\/mapbox-gl\/src\/.*/, excludes: { test: function() { return false; }} });
+require('flow-remove-types/register')({ includes: /.*?\/mapbox-gl\/src\/.*/, excludes: { test: function () { return false; } } });
 
 var union = require('@turf/union');
 var bboxPolygon = require('@turf/bbox-polygon');
 var buffer = require('@turf/buffer');
 
 var LngLat = require('mapbox-gl/src/geo/lng_lat');
+var LngLatBounds = require('mapbox-gl/src/geo/lng_lat_bounds');
 var Evented = require('mapbox-gl/src/util/evented');
 // var Transform = require('mapbox-gl/src/geo/transform');
 var util = require('mapbox-gl/src/util/util');
@@ -16,7 +17,7 @@ var defaultOptions = {
 }
 
 function functor(x) {
-  return function() {
+  return function () {
     return x;
   };
 }
@@ -48,84 +49,91 @@ function _fakeResourceTiming(name) {
   };
 }
 
-var Map = function(options) {
-    var evented = new Evented();
-    this.on = evented.on;
-    this.fire = evented.fire;
-    this.listens = evented.listens;
+var Map = function (options) {
+  var evented = new Evented();
+  this.on = evented.on;
+  this.fire = evented.fire;
+  this.listens = evented.listens;
 
-    this.options = util.extend(options || {}, defaultOptions);
-    this._events = {};
-    this._sources = {};
-    this._collectResourceTiming = !!this.options.collectResourceTiming;
-    this.zoom = this.options.zoom || 0;
-    this.center = this.options.center ? new LngLat(this.options.center[0], this.options.center[1]) : new LngLat(0, 0);
-    // this.style = new Style();
-    // this.transform = new Transform();
-    this._controlCorners = {
-      'top-left': {
-        appendChild: function() {}
-      }
+  this.options = util.extend(options || {}, defaultOptions);
+  this._events = {};
+  this._sources = {};
+  this._collectResourceTiming = !!this.options.collectResourceTiming;
+  this.zoom = this.options.zoom || 0;
+
+  //add by sunxy
+  var sw = new LngLat(-73.9876, 40.7661);
+  var ne = new LngLat(-73.9397, 40.8002);
+  var llb = new LngLatBounds(sw, ne);
+  this.bounds = this.options.bounds || llb;
+
+  this.center = this.options.center ? new LngLat(this.options.center[0], this.options.center[1]) : new LngLat(0, 0);
+  // this.style = new Style();
+  // this.transform = new Transform();
+  this._controlCorners = {
+    'top-left': {
+      appendChild: function () { }
     }
-    setTimeout(function() {
-  
-      this.fire('load');
-    }.bind(this), 0);
+  }
+  setTimeout(function () {
 
- 
-    // setTimeout(fireLoad=function() {
-    //   console.log('load from mock map');
-    //   this.fire('load');
-    // }.bind(this), 0);
+    this.fire('load');
+  }.bind(this), 0);
 
-    var setters = [
-      // Camera options
-      'jumpTo', 'panTo', 'panBy',
-      'setBearing',
-      'setPitch',
-      'setZoom',
-      'fitBounds',
-      'resetNorth',
-      'snapToNorth',
-      // Settings
-      'setMaxBounds', 'setMinZoom', 'setMaxZoom',
-      // Layer properties
-      'setLayoutProperty',
-      'setPaintProperty'
-    ];
-    var genericSetter = functor(this);
-    for (var i = 0; i < setters.length; i++) {
-      this[setters[i]] = genericSetter;
-    }
+
+  // setTimeout(fireLoad=function() {
+  //   console.log('load from mock map');
+  //   this.fire('load');
+  // }.bind(this), 0);
+
+  var setters = [
+    // Camera options
+    'jumpTo', 'panTo', 'panBy',
+    'setBearing',
+    'setPitch',
+    'setZoom',
+    'fitBounds',
+    'resetNorth',
+    'snapToNorth',
+    // Settings
+    'setMaxBounds', 'setMinZoom', 'setMaxZoom',
+    // Layer properties
+    'setLayoutProperty',
+    'setPaintProperty'
+  ];
+  var genericSetter = functor(this);
+  for (var i = 0; i < setters.length; i++) {
+    this[setters[i]] = genericSetter;
+  }
 }
 
-Map.prototype.addControl = function(control) {
+Map.prototype.addControl = function (control) {
   control.onAdd(this);
 }
 
-Map.prototype.getContainer = function() {
+Map.prototype.getContainer = function () {
   var container = {
     parentNode: container,
-    appendChild: function() {},
-    removeChild: function() {},
-    getElementsByClassName: function() {
+    appendChild: function () { },
+    removeChild: function () { },
+    getElementsByClassName: function () {
       return [container]
     },
-    addEventListener: function(name, handle) {},
-    removeEventListener: function(){},
+    addEventListener: function (name, handle) { },
+    removeEventListener: function () { },
     classList: {
-      add: function() {},
-      remove: function(){}
+      add: function () { },
+      remove: function () { }
     }
   };
 
   return container;
 }
 
-Map.prototype.getSource = function(name) {
+Map.prototype.getSource = function (name) {
   if (this._sources[name]) {
     return {
-      setData: function(data) {
+      setData: function (data) {
         this._sources[name].data = data;
         if (this._sources[name].type === 'geojson') {
           const e = {
@@ -138,22 +146,22 @@ Map.prototype.getSource = function(name) {
           };
           // typeof data === 'string' corresponds to an AJAX load
           if (this._collectResourceTiming && data && (typeof data === 'string'))
-            e.resourceTiming = [ _fakeResourceTiming(data) ];
+            e.resourceTiming = [_fakeResourceTiming(data)];
           this.fire('data', e);
         }
       }.bind(this),
-      loadTile: function() {}
+      loadTile: function () { }
     };
   }
 };
 
-Map.prototype.loaded = function() {
- 
+Map.prototype.loaded = function () {
+
   return true;
 };
 
 
-Map.prototype.addSource = function(name, source) {
+Map.prototype.addSource = function (name, source) {
   this._sources[name] = source;
   if (source.type === 'geojson') {
     const e = {
@@ -165,41 +173,43 @@ Map.prototype.addSource = function(name, source) {
       source: source
     };
     if (this._collectResourceTiming && source.data && (typeof source.data === 'string'))
-      e.resourceTiming = [ _fakeResourceTiming(source.data) ];
+      e.resourceTiming = [_fakeResourceTiming(source.data)];
     this.fire('data', e);
   }
 };
 
-Map.prototype.removeSource = function(name) {
+Map.prototype.removeSource = function (name) {
   delete this._sources[name];
 };
 
 Map.prototype.addLayer = function(layer, before) {};
-Map.prototype.removeLayer = function(layerId) {};
-Map.prototype.getLayer = function(layerId) {};
-
-Map.prototype.getZoom = function() { return this.zoom; };
+Map.prototype.removeLayer = function (layerId) { };
+Map.prototype.getLayer = function (layerId) { };
+// add by sunxy
+Map.prototype.getBounds = function () { return this.bounds; };
+Map.prototype.getZoom = function () { return this.zoom; };
 Map.prototype.getBearing = functor(0);
 Map.prototype.getPitch = functor(0);
-Map.prototype.getCenter = function() { return this.center; };
-Map.prototype.setCenter = function(x) { this.center = new LngLat(x[0], x[1])};
+Map.prototype.getCenter = function () { return this.center; };
+Map.prototype.setCenter = function (x) { this.center = new LngLat(x[0], x[1]) };
+
 
 Map.prototype.doubleClickZoom = {
-  disable: function() {},
-  enable: function() {}
+  disable: function () { },
+  enable: function () { }
 }
 
 Map.prototype.boxZoom = {
-  disable: function() {},
-  enable: function() {}
+  disable: function () { },
+  enable: function () { }
 }
 
 Map.prototype.dragPan = {
-  disable: function() {},
-  enable: function() {}
+  disable: function () { },
+  enable: function () { }
 }
 
-Map.prototype.project = function() {}
+Map.prototype.project = function () { }
 
 /**
  * Returns an array of features that overlap with the pointOrBox
@@ -207,7 +217,7 @@ Map.prototype.project = function() {}
  *
  * pointOrBox: either [x, y] pixel coordinates of a point, or [ [x1, y1] , [x2, y2] ]
  */
-Map.prototype.queryRenderedFeatures = function(pointOrBox, queryParams) {
+Map.prototype.queryRenderedFeatures = function (pointOrBox, queryParams) {
   var searchBoundingBox = [];
   if (pointOrBox[0].x !== undefined) {
     // convert point into bounding box
@@ -275,7 +285,7 @@ Map.prototype.queryRenderedFeatures = function(pointOrBox, queryParams) {
   return features;
 }
 
-Map.prototype.remove = function() {
+Map.prototype.remove = function () {
   this._events = [];
   this.sources = [];
 }

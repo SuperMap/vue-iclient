@@ -1,4 +1,5 @@
 import WidgetViewModel from "./WidgetViewModel";
+import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 import "@libs/iclient-mapboxgl/iclient9-mapboxgl-es6";
 import iPortalDataParameter from "../view/commontypes/iPortalDataParameter";
 import RestDataParameter from "../view/commontypes/RestDataParameter";
@@ -66,7 +67,7 @@ export default class QueryViewModel extends WidgetViewModel {
                 startRecord: 0,
                 expectCount: this.maxReturn
             });
-            new mapboxgl.supermap.QueryService(restMapParameter.url).queryBySQL(param, serviceResult => {
+            new mapboxgl.supermap.QueryService(restMapParameter.url).queryBySQL(param, (serviceResult) => {
                 this._mapQuerySucceed(serviceResult, restMapParameter)
             })
         }
@@ -104,7 +105,8 @@ export default class QueryViewModel extends WidgetViewModel {
         if (serviceResult.result) {
             let resultFeatures = serviceResult.result.recordsets[0].features.features;
             resultFeatures.length > 0 && (this.queryResult = { name: restMapParameter.name, result: resultFeatures })
-            this.fire('querysucceeded', { result: this.queryResult }) && this.addResultLayer(this.queryResult);
+            this.addResultLayer(this.queryResult);
+            this.fire('querysucceeded', { originalresult: serviceResult, result: this.queryResult })
         } else {
             this.fire('queryfailed')
         }
@@ -114,7 +116,8 @@ export default class QueryViewModel extends WidgetViewModel {
         if (serviceResult.result) {
             let resultFeatures = serviceResult.result.features.features;
             resultFeatures.length > 0 && (this.queryResult = { name: restDataParameter.name, result: resultFeatures })
-            this.fire('querysucceeded', { result: this.queryResult }) && this.addResultLayer(this.queryResult);
+            this.addResultLayer(this.queryResult);
+            this.fire('querysucceeded', { result: this.queryResult })
         } else {
             this.fire('queryfailed')
         }
