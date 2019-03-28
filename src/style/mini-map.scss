@@ -1,11 +1,8 @@
 @import "./mixins/mixins.scss";
-@import './common/var.scss';
+@import "./common/var.scss";
 
 @include b(minimap) {
-  width: 220px;
-  height: 180px;
-  border: $--border-base;
-  box-shadow: $--box-shadow-base;
-  background: #fff;
-
+  #miniMap{
+    height: 180px;
+  }
 }

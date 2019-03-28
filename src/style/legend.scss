@@ -1,7 +1,6 @@
 @import "./mixins/mixins.scss";
 
 @include b(legend) {
-  width: $--widget-container-width;
   max-height: 400px;
   overflow-y: auto;
   border: none;

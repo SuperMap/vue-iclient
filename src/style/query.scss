@@ -2,33 +2,8 @@
 @import "./common/var.scss";
 
 @include b(query) {
-  transition: $--all-transition;
-  background: $--fill-base;
-  border-radius: 4px;
-  width: $--widget-container-width;
   color: #409eff;
-  height: 350px;
   font-family: $--text-font-family;
-  @include e(header) {
-    transition: $--all-transition;
-    box-shadow: $--box-shadow-base;
-    background: #fafafa;
-    border-radius: $--border-radius-base;
-    padding: 6px;
-    & > .smwidgets-icons-more {
-      margin-right: 10px;
-      float: right;
-      transform: rotate(90deg);
-      cursor: pointer;
-    }
-    &.hidden-header {
-      background: white;
-      border-radius: 4px;
-      padding: 5px;
-      width: 18px;
-      float: left;
-    }
-  }
   @include e(header-icon) {
     cursor: pointer;
     float: left;
@@ -40,12 +15,11 @@
     font-weight: 700;
   }
   @include e(body) {
+    height: 350px;
     transform-origin: top left;
     transition: $--all-transition;
     height: 300px;
     background: $--fill-base;
-    box-shadow: $--box-shadow-base;
-    border-radius: $--border-radius-base;
     padding: 10px 15px;
     overflow-y: auto;
     & > div{

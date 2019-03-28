@@ -1,89 +1,86 @@
 @import "./mixins/mixins.scss";
 
-@include b(layer-list){
-    overflow-y: auto;
-    z-index: 10;
-    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
-    max-height: 500px;
-    width: $--widget-container-width;
-    background: $--fill-base;
-    border-radius: 5px;
-    @include e(content){
-        width: 100%;
-        height: 100%;
-    }
+@include b(layer-list) {
+  overflow-y: auto;
+  z-index: 10;
+  max-height: 500px;
+  width: $--widget-container-width;
+  border-radius: 5px;
+  @include e(content) {
+    width: 100%;
+    height: 100%;
+  }
+  @include e(collapse) {
+    border: none;
+  }
 
-    @include e(collapse){
-      border: none;
-    } 
-
-    @include e(collapseitem){
-      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
-      margin-bottom: 4px;
-      .el-collapse-item__header {
-        border-bottom: none;
-        font-size: 14px;
-        padding-left: 20px;
-        .el-icon-view {
-          font-size: 18px;
-          margin-right: 10px;
-          vertical-align: -2px
-        }
-        .visible{
-          color: $--color-primary
-        }
-        .none{
-          color: #c0c4cc;
-        }
+  @include e(collapseitem) {
+    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 4px;
+    .el-collapse-item__header {
+      border-bottom: none;
+      font-size: 14px;
+      padding-left: 20px;
+      .el-icon-view {
+        font-size: 18px;
+        margin-right: 10px;
+        vertical-align: -2px;
       }
-      .el-collapse-item__wrap {
-        border-bottom: none;
-        .el-collapse-item__content {
-          line-height: 3;
-          overflow: hidden;
-          .el-checkbox {
-            float: left;
+      .visible {
+        color: $--color-primary;
+      }
+      .none {
+        color: #c0c4cc;
+      }
+    }
+    .el-collapse-item__wrap {
+      border-bottom: none;
+      .el-collapse-item__content {
+        line-height: 3;
+        overflow: hidden;
+        .el-checkbox {
+          float: left;
+          margin-left: 45px;
+          &:last-child {
             margin-left: 45px;
-            &:last-child {
-              margin-left: 45px;
-            }
           }
         }
       }
     }
+  }
 
-    @include e(elcarditem) {
-      position: relative;
-      border: none;
-    
-      margin-bottom: 4px;
-      .el-card__body {
-        .el-icon-view {
-          font-size: 16px;
-          margin-right: 10px;
-          vertical-align: -2px;
-          cursor: pointer;
-        }
-        .visible{
-          color: $--color-primary
-        }
-        .none{
-          color:#c0c4cc;
-        }
-        height: 32px;
-        line-height: 32px;
-        font-size: 14px;
-        margin-left: 12px;
-      }
-    }
+  @include e(elcarditem) {
+    position: relative;
+    border: none;
 
-    @include e(layergroupname){
-      position: absolute;
-      left: 48px;
-      top: 8px;
-      width: 200px;
-    }
+    margin-bottom: 4px;
     .el-card__body {
-        padding: 8px;
+      .el-icon-view {
+        font-size: 16px;
+        margin-right: 10px;
+        vertical-align: -2px;
+        cursor: pointer;
+      }
+      .visible {
+        color: $--color-primary;
+      }
+      .none {
+        color: #c0c4cc;
+      }
+      height: 32px;
+      line-height: 32px;
+      font-size: 14px;
+      margin-left: 12px;
     }
+  }
+
+  @include e(layergroupname) {
+    position: absolute;
+    left: 48px;
+    top: 8px;
+    width: 200px;
+  }
+  .el-card__body {
+    padding: 8px;
+  }
 }

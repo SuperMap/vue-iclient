@@ -2,22 +2,43 @@
 // 新创建一个vue实例实时监听获得map对象
 import mapEvent from "../commontypes/mapEvent";
 import Control from "../mixin/Control";
+import Card from "./Card";
 
 function callHook(vm, hook, map) {
   const { options } = vm.constructor;
-  options.extends && options.extends[hook].call(vm, vm.$options.name, map); // 调用基类组件的生命周期
+  options.extends && options.extends[hook].call(vm, vm.$options.name, map); // 调用基类组件的生命周期F
   options[hook] && options[hook].call(vm, map); // 调用子组件的生命周期
 }
 
 export default {
   name: "Widget",
   mixins: [Control],
+  components: { "sm-card": Card },
   relativeMap: false,
   viewModelProps: null, //微件需要监听的props
   props: {
     mapTarget: {
       type: String
+    },
+    iconClass: {
+      type: String
+    },
+    autoRotate: {
+      type: Boolean,
+      default: false
+    },
+    headerName: {
+      type: String
+    },
+    collapsed: {
+      type: Boolean,
+      default: false
     }
+  },
+  data() {
+    return {
+      isShow: null
+    };
   },
   created() {
     callHook(this, "load");
@@ -48,7 +69,7 @@ export default {
       callHook(this, "loaded");
       this.$emit("loaded");
     } else {
-      this.$el && this.filterDelayLoad && (this.$el.style.display = "none");
+      this.$el && this.filterDelayLoad && (this.isShow = false);
       if (mapEvent.$options.getMap(targetName)) {
         this.loadMap(targetName);
       } else {
@@ -94,7 +115,7 @@ export default {
       this.parentIsWebMapOrMap && this.addControl(this.map);
       callHook(this, "loaded");
       // 控制与map组件同级的组件的显示加载
-      this.$el && this.filterDelayLoad && (this.$el.style.display = "block");
+      this.$el && this.filterDelayLoad && (this.isShow = true);
       this.$emit("loaded");
     },
     // 微件设置vm实例

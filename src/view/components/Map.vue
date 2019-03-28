@@ -1,8 +1,5 @@
 <template>
-  <div
-    :id="target"
-    class="sm-map"
-  >
+  <div :id="target" class="sm-map">
     <slot></slot>
   </div>
 </template>

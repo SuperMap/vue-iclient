@@ -1,9 +1,17 @@
 <template>
-  <div class="sm-measure">
+  <sm-card
+    :icon-class="iconClass"
+    :icon-position="position"
+    :header-name="headerName"
+    :auto-rotate="autoRotate"
+    :collapsed="collapsed"
+    class="sm-measure"
+    v-show="isShow"
+  >
     <div class="sm-measure__panel">
-      <div class="sm-measure__panelTitle">
-        <span class="sm-measure__title">{{$t("measure.mapMeasure")}}</span>
-      </div>
+      <!-- <div class="sm-measure__panelTitle">
+          <span class="sm-measure__title">{{$t("measure.mapMeasure")}}</span>
+      </div>-->
       <div class="sm-measure__panelContent">
         <span
           v-for="group in modeGroups"
@@ -39,7 +47,7 @@
         <div class="sm-measure__result">{{getResult}}</div>
       </div>
     </div>
-  </div>
+  </sm-card>
 </template>
 
 <script>
@@ -48,16 +56,16 @@ import MeasureViewModel from "../../viewmodel/MeasureViewModel";
 
 export default {
   name: "SmMeasure",
-  relativeMap:true,
+  relativeMap: true,
   extends: Widget,
   props: {
     iconClass: {
       type: String,
       default: "smwidgets-icons-measure"
     },
-    autoRotate: {
-      type: Boolean,
-      default: false
+    headerName: {
+      type: String,
+      default: "量算"
     },
     showUnitSelect: {
       // 配置单位选择框是否显示，若不显示，则显示对应的默认单位
@@ -108,8 +116,8 @@ export default {
       ],
       activeMode: "",
       activeUnit: "",
-      activeLengthUnit:"",
-      activePolygonUnit:"",
+      activeLengthUnit: "",
+      activePolygonUnit: "",
       result: ""
     };
   },
@@ -141,14 +149,13 @@ export default {
   methods: {
     // 切换量算模式
     changeMeasureMode(mode) {
-      console.log('this.activeDistanceUnit',this.activeDistanceUnit);
-      
+      console.log("this.activeDistanceUnit", this.activeDistanceUnit);
+
       if (mode === "draw_line_string") {
         this.activeUnit = this.activeDistanceUnit;
       } else if (mode === "draw_polygon") {
         this.activeUnit = this.activeAreaUnit;
       }
-
 
       if (this.activeMode !== mode) {
         this.viewModel.openDraw(mode, this.activeUnit);
@@ -170,7 +177,7 @@ export default {
     }
   },
 
-  mounted(){
+  mounted() {
     this.activeDistanceUnit = this.distanceDefaultUnit;
     this.activeAreaUnit = this.areaDefaultUnit;
   }

@@ -1,9 +1,16 @@
 
 <template>
-  <div
+  <sm-card
+    :icon-class="iconClass"
+    :icon-position="position"
+    :header-name="headerName"
+    :auto-rotate="autoRotate"
+    :collapsed="collapsed"
     class="sm-chart"
-    ref="chart"
-  ></div>
+    v-show="isShow"
+  >
+    <div id='chart'></div>
+  </sm-card>
 </template>
 
 <script>
@@ -17,17 +24,9 @@ export default {
   extends: Widget,
   mixins: [Theme],
   props: {
-    autoRotate: {
-      type: Boolean,
-      default: false
-    },
     iconClass: {
       type: String,
       default: "smwidgets-icons-attribute"
-    },
-    collapsed: {
-      type: Boolean,
-      default: false
     },
     chartType: {
       type: String,
@@ -46,11 +45,6 @@ export default {
         return true;
       }
     }
-  },
-  data() {
-    return {
-      a: this.getBackground
-    };
   },
   computed: {
     options() {
@@ -82,25 +76,19 @@ export default {
     }
   },
   loaded() {
-    this.a;
-    this.viewModel = new ChartViewModel(this.$refs["chart"], this.options);
-    this.$on(
-      "themeStyle",
-      () => {
-        this.chartOptions.colorGradient = this.colorGroupsData;
-        this.chartOptions.backgroundColor = this.backgroundData;
-        this.chartOptions.axisColor = this.textColorsData;
-        this.viewModel.setChartOptions(this.chartOptions);
-      }
-    );
-    if (this.parentIsWebMapOrMap) {
-      let icon = this.$el.parentElement.children[1];
-      icon && (icon.style.visibility = "hidden");
-      icon &&
-        this.viewModel.on("chartinitsucceeded", () => {
-          icon.style.visibility = "visible";
-        });
-    }
+    this.viewModel = new ChartViewModel(this.$el.querySelector('#chart'), this.options);
+    this.$on("themeStyle", () => {
+      this.chartOptions.colorGradient = this.colorGroupsData;
+      this.chartOptions.backgroundColor = this.backgroundData;
+      this.chartOptions.axisColor = this.textColorsData;
+      this.viewModel.setChartOptions(this.chartOptions);
+    });
+    let icon = this.$el.children[0]
+    icon && (icon.style.visibility = "hidden");
+    icon &&
+      this.viewModel.on("chartinitsucceeded", () => {
+        icon.style.visibility = "visible";
+      });
   }
 };
 </script>

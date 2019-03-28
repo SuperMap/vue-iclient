@@ -1,10 +1,13 @@
 <template>
-  <div class="sm-query">
-    <div class="sm-query__header">
-      <div class="sm-query__header-icon smwidgets-icons-search" @click="displayContainer"></div>
-      <span class="sm-query__header-span">{{$t('query.query')}}</span>
-      <div class="smwidgets-icons-more" @click="hidenContainer"></div>
-    </div>
+  <sm-card
+    :icon-class="iconClass"
+    :icon-position="position"
+    :header-name="headerName"
+    :auto-rotate="autoRotate"
+    :collapsed="collapsed"
+    class="sm-query"
+    v-show="isShow"
+  >
     <div class="sm-query__body">
       <div class="sm-query__choose-panel clearfix">
         <div
@@ -78,7 +81,7 @@
         </div>
       </div>
     </div>
-  </div>
+  </sm-card>
 </template>
 <script>
 import Widget from "./Widget";
@@ -101,7 +104,7 @@ let validators = (value, propType) => {
 
 export default {
   name: "SmQuery",
-  relativeMap:true,
+  relativeMap: true,
   extends: Widget,
   data() {
     return {
@@ -122,6 +125,14 @@ export default {
     };
   },
   props: {
+    iconClass: {
+      type: String,
+      default: "smwidgets-icons-search"
+    },
+    headerName: {
+      type: String,
+      default: "查询"
+    },
     maxReturn: {
       type: Number,
       default: 200
@@ -158,11 +169,7 @@ export default {
     jobInfos() {
       let jobInfos = [];
       Object.keys(this.$props).forEach(key => {
-        if (
-          key === "iportalData" ||
-          key === "restData" ||
-          key === "restMap"
-        ) {
+        if (key === "iportalData" || key === "restData" || key === "restMap") {
           this.$props[key] &&
             this.$props[key].forEach(item => {
               item.name && jobInfos.push(item);

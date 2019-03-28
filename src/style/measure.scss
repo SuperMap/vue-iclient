@@ -1,7 +1,6 @@
 @import "./mixins/mixins.scss";
 
 @include b(measure) {
-  width: $--widget-container-width;
   @include e(panel) {
     padding: 0 12px;
     overflow: hidden;
@@ -10,7 +9,6 @@
     border-radius: 4px;
     cursor: default;
   }
-
   @include e(panelContent) {
     position: relative;
     width: 100%;
