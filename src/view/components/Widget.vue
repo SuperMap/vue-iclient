@@ -37,7 +37,7 @@ export default {
   },
   data() {
     return {
-      isShow: null
+      isShow: true
     };
   },
   created() {
