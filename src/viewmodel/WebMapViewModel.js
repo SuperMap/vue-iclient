@@ -1834,6 +1834,7 @@ export default class WebMapViewModel extends WidgetViewModel {
           allFeatures[i].properties.lat = coordinate[1];
         }
       }
+      feature.properties['index']=i+'';
       features.push(feature);
     }
     return features;
