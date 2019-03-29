@@ -292,6 +292,8 @@ export class ChartViewModel extends WidgetViewModel {
     }
   }
   _initXYField(option) {
+    this.xField = [];
+    this.yField = []
     //chartOptions==>this.xField this.yField
     if (option.xAxis) {
       this.xField.push({

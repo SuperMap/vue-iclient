@@ -115,11 +115,16 @@ export default class WebMapViewModel extends WidgetViewModel {
     let fontFamilys = fonts.join(',')
 
     // zoom center
-    let oldcenter = mapInfo.center,
-      zoom = mapInfo.level || 0,
-      center;
-    zoom = zoom === 0 ? 0 : zoom - 1
-    center = oldcenter ? this._unproject([oldcenter.x, oldcenter.y]) : new mapboxgl.LngLat(0, 0);
+    let center = mapInfo.center,
+      zoom = mapInfo.level || 0;
+    zoom = zoom === 0 ? 0 : zoom - 1;
+    if (!center) {
+      center = [0, 0];
+    }
+    if (this.baseProjection === "EPSG:3857") {
+      center = this._unproject([center.x, center.y])
+    };
+    center = new mapboxgl.LngLat(center.x, center.y)
     // 初始化 map
     this.map = new mapboxgl.Map({
       container: this.target,
@@ -217,16 +222,16 @@ export default class WebMapViewModel extends WidgetViewModel {
       layerType = layerType.substr(0, 12);
     }
     let mapUrls = {
-      CLOUD: 'http://t2.supermapcloud.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
-      CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp?x={x}&y={y}&z={z}',
-      OSM: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      GOOGLE: 'http://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0',
-      GOOGLE_CN: 'https://mt{0-3}.google.cn/vt/lyrs=m&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
-      JAPAN_STD: 'http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
-      JAPAN_PALE: 'http://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
-      JAPAN_RELIEF: 'http://cyberjapandata.gsi.go.jp/xyz/relief/{z}/{x}/{y}.png',
-      JAPAN_ORT: 'http://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg'
-    },
+        CLOUD: 'http://t2.supermapcloud.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
+        CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp?x={x}&y={y}&z={z}',
+        OSM: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        GOOGLE: 'http://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0',
+        GOOGLE_CN: 'https://mt{0-3}.google.cn/vt/lyrs=m&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
+        JAPAN_STD: 'http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
+        JAPAN_PALE: 'http://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
+        JAPAN_RELIEF: 'http://cyberjapandata.gsi.go.jp/xyz/relief/{z}/{x}/{y}.png',
+        JAPAN_ORT: 'http://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg'
+      },
       url;
     switch (layerType) {
       case "TIANDITU_VEC":
@@ -422,6 +427,9 @@ export default class WebMapViewModel extends WidgetViewModel {
    */
   _createDynamicTiledLayer(layerInfo) {
     let url = layerInfo.url + '/zxyTileImage.png?z={z}&x={x}&y={y}';
+    if (this.map.setCRS) {
+      url = layerInfo.url + '/image.png?viewBounds={viewBounds}&width={width}&height={height}';
+    }
     this._addBaselayer([url], 'tile-layers-' + layerInfo.name);
   }
 
@@ -1300,7 +1308,7 @@ export default class WebMapViewModel extends WidgetViewModel {
           expression.push(row.properties['index'], styleGroups[i].color);
           // return;
         }
-      } !tartget && expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
+      }!tartget && expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
     }, this);
     expression.push('rgba(0, 0, 0, 0)');
 
@@ -1598,7 +1606,10 @@ export default class WebMapViewModel extends WidgetViewModel {
       dphi = Math.PI / 2 - 2 * Math.atan(ts * con) - phi;
       phi += dphi;
     }
-    return new mapboxgl.LngLat(point[0] * d / r, phi * d);
+    return {
+      x: point[0] * d / r,
+      y: phi * d
+    };
   }
 
   /**
@@ -1834,7 +1845,7 @@ export default class WebMapViewModel extends WidgetViewModel {
           allFeatures[i].properties.lat = coordinate[1];
         }
       }
-      feature.properties['index']=i+'';
+      feature.properties['index'] = i + '';
       features.push(feature);
     }
     return features;
