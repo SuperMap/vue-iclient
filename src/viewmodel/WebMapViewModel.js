@@ -427,7 +427,7 @@ export default class WebMapViewModel extends WidgetViewModel {
    */
   _createDynamicTiledLayer(layerInfo) {
     let url = layerInfo.url + '/zxyTileImage.png?z={z}&x={x}&y={y}';
-    if (this.map.setCRS) {
+    if (this.map.setCRS && this.baseProjection !== "EPSG:3857") {
       url = layerInfo.url + '/image.png?viewBounds={viewBounds}&width={width}&height={height}';
     }
     this._addBaselayer([url], 'tile-layers-' + layerInfo.name);
