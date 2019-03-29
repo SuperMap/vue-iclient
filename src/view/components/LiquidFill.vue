@@ -1,5 +1,12 @@
 <template>
-  <div class="chart" id="chart" :style="{width:`${this.size}px`,height:`${this.size}px`}"></div>
+  <div class="liquid-fill" :style="{width:`${this.size}px`,height:`${this.size}px`}">
+    <div
+      class="chart"
+      id="chart"
+      ref="chart"
+      :style="{width:`${this.size}px`,height:`${this.size}px`}"
+    ></div>
+  </div>
 </template>
 <script>
 import echarts from "echarts";
@@ -92,7 +99,7 @@ export default {
     }
   },
   loaded() {
-    this.chart = echarts.init(this.$el);
+    this.chart = echarts.init(this.$refs.chart);
     this.updateChart();
     this.$on("themeStyle", () => {
       this.color = this.getColor(0);
