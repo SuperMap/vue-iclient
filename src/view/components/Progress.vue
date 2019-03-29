@@ -56,11 +56,14 @@ export default {
     color: {
       handler() {
         this.curColor = this.color;
-      }
+      },
+      immediate:true
     },
     colorGroupsData: {
       handler() {
-        this.curColor = this.getColor(0);
+        if(!this.curColor){
+          this.curColor = this.getColor(0);
+        }
       }
     }
   }
