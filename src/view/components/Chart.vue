@@ -8,8 +8,9 @@
     :collapsed="collapsed"
     class="sm-chart"
     v-show="isShow"
+    :id="(!iconClass&&!headerName)&&'chart'"
   >
-    <div id='chart'></div>
+    <div :id="(iconClass||headerName)&&'chart'"></div>
   </sm-card>
 </template>
 
@@ -76,14 +77,14 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new ChartViewModel(this.$el.querySelector('#chart'), this.options);
+    this.viewModel = new ChartViewModel(this.$el, this.options);
     this.$on("themeStyle", () => {
       this.chartOptions.colorGradient = this.colorGroupsData;
       this.chartOptions.backgroundColor = this.backgroundData;
       this.chartOptions.axisColor = this.textColorsData;
       this.viewModel.setChartOptions(this.chartOptions);
     });
-    let icon = this.$el.children[0]
+    let icon = this.$el.children[0];
     icon && (icon.style.visibility = "hidden");
     icon &&
       this.viewModel.on("chartinitsucceeded", () => {
