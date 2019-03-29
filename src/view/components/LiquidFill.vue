@@ -56,10 +56,16 @@ export default {
     }
   },
   data() {
-    return {};
+    return {
+      color: this.waveColor
+    };
   },
   watch: {
     value: function() {
+      this.updateChart();
+    },
+    waveColor() {
+      this.color = this.waveColor;
       this.updateChart();
     }
   },
@@ -86,20 +92,19 @@ export default {
     }
   },
   loaded() {
-    this.liquidChart = echarts.init(this.$el);
+    this.chart = echarts.init(this.$el);
     this.updateChart();
     this.$on("themeStyle", () => {
+      this.color = this.getColor(0);
       this.updateChart();
     });
   },
   methods: {
     updateChart() {
-      let waveColor = this.waveColor ? this.waveColor : this.calcWaveColor;
-
-      this.liquidChart.setOption({
+      this.chart.setOption({
         series: [
           {
-            color: [waveColor],
+            color: [this.color],
             type: "liquidFill",
             waveAnimation: this.waveAnimation,
             animation: false,
@@ -119,7 +124,7 @@ export default {
             outline: {
               borderDistance: 3,
               itemStyle: {
-                borderColor: this.borderColor || waveColor,
+                borderColor: this.borderColor || this.color,
                 borderWidth: 3,
                 shadowBlur: 0,
                 shadowColor: "#fff"

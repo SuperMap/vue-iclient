@@ -6,21 +6,21 @@
       :stroke-width="parseFloat(strokeWidth)"
       :show-text="showText"
       :width="type==='circle'?parseFloat(circleWidth):null"
-      :color="color || progressColor"
+      :color="curColor"
       :status="status"
     ></el-progress>
   </div>
 </template>
 <script>
-import Theme from '../mixin/Theme';
+import Theme from "../mixin/Theme";
 import Widget from "./Widget";
 export default {
   name: "SmProgress",
   extends: Widget,
-  mixins:[Theme],
+  mixins: [Theme],
   props: {
     percentage: {
-      type: [Number,String],
+      type: [Number, String],
       required: true
     },
     type: {
@@ -28,17 +28,18 @@ export default {
       default: "line"
     },
     strokeWidth: {
-      type: [Number,String],
+      type: [Number, String],
       default: 10
     },
     status: {
       type: String
     },
     color: {
-      type: String
+      type: String,
+      default: "#cccccc"
     },
     circleWidth: {
-      type: [Number,String],
+      type: [Number, String],
       default: 126
     },
     showText: {
@@ -46,13 +47,21 @@ export default {
       default: true
     }
   },
-  data(){
+  data() {
     return {
-    }
+      curColor: ""
+    };
   },
-  computed:{
-    progressColor(){
-      return this.color || this.getColor(0);
+  watch: {
+    color: {
+      handler() {
+        this.curColor = this.color;
+      }
+    },
+    colorGroupsData: {
+      handler() {
+        this.curColor = this.getColor(0);
+      }
     }
   }
 };
