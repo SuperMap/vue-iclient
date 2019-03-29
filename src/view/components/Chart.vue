@@ -77,7 +77,7 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new ChartViewModel(this.$el, this.options);
+    this.viewModel = new ChartViewModel(this.$el.querySelector('#chart') || this.$el, this.options);
     this.$on("themeStyle", () => {
       this.chartOptions.colorGradient = this.colorGroupsData;
       this.chartOptions.backgroundColor = this.backgroundData;
@@ -85,11 +85,12 @@ export default {
       this.viewModel.setChartOptions(this.chartOptions);
     });
     let icon = this.$el.children[0];
-    icon && (icon.style.visibility = "hidden");
-    icon &&
+    if(this.iconClass && icon){
+      icon.style.visibility = "hidden";
       this.viewModel.on("chartinitsucceeded", () => {
         icon.style.visibility = "visible";
       });
+    }
   }
 };
 </script>
