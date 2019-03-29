@@ -2,9 +2,9 @@
 
 @include b(chart) {
   & .sm-card__content {
-    width: 450px;
+    width: 600px;
   }
   #chart {
-    height: 350px;
+    height: 300px;
   }
 }

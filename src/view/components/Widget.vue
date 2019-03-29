@@ -142,6 +142,9 @@ export default {
     resize() {
       if (this.viewModel && this.viewModel.resize) {
         this.viewModel.resize();
+        return;
+      }else if(this.liquidChart){
+        this.liquidChart.resize();
       }
     }
   }

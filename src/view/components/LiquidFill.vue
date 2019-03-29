@@ -1,12 +1,5 @@
 <template>
-  <div class="liquid-fill" :style="{width:`${this.size}px`,height:`${this.size}px`}">
-    <div
-      class="chart"
-      id="chart"
-      ref="chart"
-      :style="{width:`${this.size}px`,height:`${this.size}px`}"
-    ></div>
-  </div>
+  <div class="chart" id="chart" :style="{width:`${this.size}px`,height:`${this.size}px`}"></div>
 </template>
 <script>
 import echarts from "echarts";
@@ -63,13 +56,11 @@ export default {
     }
   },
   data() {
-    return {
-      
-    };
+    return {};
   },
   watch: {
-    value:function(){
-       this.updateChart();
+    value: function() {
+      this.updateChart();
     }
   },
   computed: {
@@ -95,17 +86,17 @@ export default {
     }
   },
   loaded() {
-    this.chart = echarts.init(this.$refs.chart);
+    this.liquidChart = echarts.init(this.$el);
     this.updateChart();
-    this.$on('themeStyle',() => {
+    this.$on("themeStyle", () => {
       this.updateChart();
-    })
+    });
   },
   methods: {
     updateChart() {
       let waveColor = this.waveColor ? this.waveColor : this.calcWaveColor;
-      
-      this.chart.setOption({
+
+      this.liquidChart.setOption({
         series: [
           {
             color: [waveColor],
