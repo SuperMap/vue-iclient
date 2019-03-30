@@ -2,6 +2,7 @@
 @import "./common/var.scss";
 
 @include b(card) {
+  position: relative;
   @include e(icon) {
     z-index: 100;
     background: $--icon-color-fill-base;
