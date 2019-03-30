@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-zoom">
+  <div class="sm-zoom" v-show="isShow">
     <div class="sm-zoom__buttons">
       <el-button class="sm-zoom__button" icon="el-icon-plus" plain @click="zoomIn"></el-button>
       <el-button class="sm-zoom__button" icon="el-icon-minus" plain @click="zoomOut"></el-button>

@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-scale" :style="scaleStyle">{{content}}</div>
+  <div  v-show="isShow" class="sm-scale" :style="scaleStyle">{{content}}</div>
 </template>
 <script>
 import ScaleViewModel from "../../viewmodel/ScaleViewModel";
