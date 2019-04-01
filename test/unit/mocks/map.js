@@ -107,6 +107,7 @@ var Map = function (options) {
   }
 }
 
+
 var threeVis = 'visible';
 var twoVis = 'visible';
 Map.prototype.setLayoutProperty = function (layerid) {
@@ -195,8 +196,9 @@ Map.prototype.off = function () { };
 Map.prototype.addLayer = function (layer, before) { };
 Map.prototype.removeLayer = function (layerId) { };
 Map.prototype.getLayer = function (layerId) {
-  console.log("***from map:" + layerId)
+
   if (layerId == 'tile-layers-China') {
+    console.log("***from map:" + layerId)
     return {
       "id": "tile-layers-China",
       "maxzoom": 22,
@@ -206,7 +208,7 @@ Map.prototype.getLayer = function (layerId) {
       "visibility": "visible"
     }
   } else if (layerId == '三级道路L@北京') {
-    console.log("三级");
+    console.log("***from map:" + layerId)
     return {
       "id": "三级道路L@北京",
       "type": "line",
@@ -231,7 +233,7 @@ Map.prototype.getLayer = function (layerId) {
       }
     }
   } else if (layerId == '二级道路L@北京') {
-    console.log("二级");
+    console.log("***from map:" + layerId)
     return {
       "id": "二级道路L@北京",
       "type": "line",
@@ -244,7 +246,7 @@ Map.prototype.getLayer = function (layerId) {
       }
     }
   }else if (layerId == '二级道路L@北京1') {
-    console.log("二级");
+    console.log("***from map:" + layerId)
     return {
       "id": "二级道路L@北京1",
       "type": "line",
@@ -260,8 +262,9 @@ Map.prototype.getLayer = function (layerId) {
 };
 // add by sunxy
 Map.prototype.getBounds = function () { return this.bounds; };
+Map.prototype.getStyle = function () {
   if (this.options.style.layers[0].id == 'simple-tiles') {
-    console.log("***" + this.options.style.layers[0].id);
+
     return {
       "version": 8,
       "sources": {
@@ -342,7 +345,7 @@ Map.prototype.getBounds = function () { return this.bounds; };
     }
   }
   else if (this.options.style.layers[0].id == '三级道路L@北京') {
-    console.log("***" + this.options.style.layers[0].id);
+    console.log("***三级道路L" + this.options.style.layers[0].id);
     return {
       "version": 8,
       "sprite": "http://iclient.supermap.io/web/styles/street/sprite",
