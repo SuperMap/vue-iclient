@@ -15,7 +15,7 @@ localVue.use(ElementUI)
 localVue.prototype.$loading = Loading;
 
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance.js', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl-es6.js', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
 
 
 describe('query', () => {
