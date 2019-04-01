@@ -1,5 +1,9 @@
 <template>
-  <div class="liquid-fill" :style="{width:`${this.size}px`,height:`${this.size}px`}">
+  <div
+    class="liquid-fill"
+    v-show="isShow"
+    :style="{width:`${this.size}px`,height:`${this.size}px`}"
+  >
     <div
       class="chart"
       id="chart"
@@ -51,6 +55,9 @@ export default {
       type: String,
       default: "#626c91"
     },
+    backgroundColor: {
+      type: String
+    },
     //数字在波浪内的颜色
     insideLabelColor: {
       type: String,
@@ -64,7 +71,10 @@ export default {
   },
   data() {
     return {
-      color: this.waveColor
+      waveColorData: "",
+      labelColorData: "",
+      borderColorData: "",
+      backgroundColorData: ""
     };
   },
   watch: {
@@ -72,19 +82,11 @@ export default {
       this.updateChart();
     },
     waveColor() {
-      this.color = this.waveColor;
+      this.waveColorData = this.waveColor;
       this.updateChart();
     }
   },
   computed: {
-    //根据主题得到波浪背景色
-    calcWaveColor() {
-      return this.getColor(0);
-    },
-    //根据主题得到标注背景色
-    calclabelColor() {
-      return this.getColor(1);
-    },
     //根据传入的size计算得到标注的字体大小
     calcFontSize() {
       return (this.size / 4).toFixed(2);
@@ -99,10 +101,17 @@ export default {
     }
   },
   loaded() {
+    this.waveColorData = this.waveColor || this.getColor(0);
+    this.labelColorData = this.labelColor || this.getTextColor;
+    this.borderColorData = this.borderColor || this.waveColorData;
+    this.backgroundColorData = this.backgroundColor || this.getBackground;
     this.chart = echarts.init(this.$refs.chart);
     this.updateChart();
     this.$on("themeStyle", () => {
-      this.color = this.getColor(0);
+      this.waveColorData = this.getColor(0);
+      this.labelColorData = this.getTextColor;
+      this.borderColorData = this.getColor(0);
+      this.backgroundColorData = this.getBackground;
       this.updateChart();
     });
   },
@@ -111,7 +120,7 @@ export default {
       this.chart.setOption({
         series: [
           {
-            color: [this.color],
+            color: [this.waveColorData],
             type: "liquidFill",
             waveAnimation: this.waveAnimation,
             animation: false,
@@ -119,11 +128,11 @@ export default {
             data: this.calcData,
             label: {
               fontSize: this.fontSize || this.calcFontSize,
-              color: this.labelColor || this.getTextColor,
+              color: this.labelColorData,
               insideColor: this.insideLabelColor
             },
             backgroundStyle: {
-              color: "#fff"
+              color: this.backgroundColorData
             },
             itemStyle: {
               shadowColor: "#fff"
@@ -131,7 +140,7 @@ export default {
             outline: {
               borderDistance: 3,
               itemStyle: {
-                borderColor: this.borderColor || this.color,
+                borderColor: this.borderColorData,
                 borderWidth: 3,
                 shadowBlur: 0,
                 shadowColor: "#fff"

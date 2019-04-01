@@ -262,8 +262,9 @@ export class ChartViewModel extends WidgetViewModel {
   _updateDataSuccess(data) {
     //仅仅更新chartoptions时 调用该方法不传入data，直接使用前一次的this.calculatedData
     if (data) {
-      this.calculatedData = this._createChartDatas(data);
+      this.data = data;
     }
+    this.calculatedData = this._createChartDatas(this.data);
     let options = this._updateChartOptions(this.chartType);
     this._updateChart(options);
   }
@@ -274,8 +275,9 @@ export class ChartViewModel extends WidgetViewModel {
       renderer: "canvas"
     })
     if (data) {
-      this.calculatedData = this._createChartDatas(data);
+      this.data = data;
     }
+    this.calculatedData = this._createChartDatas(this.data);
     let options = this._updateChartOptions(this.chartType);
     this.echart.setOption(options);
     this.fire('chartinitsucceeded', {
