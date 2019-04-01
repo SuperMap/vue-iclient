@@ -1,7 +1,9 @@
 @import "./mixins/mixins.scss";
 
 @include b(legend) {
-  max-height: 400px;
+  & .sm-card__content{
+    max-height: 400px;
+  }
   overflow-y: auto;
   border: none;
   color: #fff;
@@ -17,6 +19,13 @@
   @include e(table){
     border-top: none;
   }
+
+  @include e(noBorder){
+    width: 200px;
+    background: none;
+    color: #333;
+    font-weight: 400;
+  }
   .el-collapse-item__header{
     font-size: $--text-regular;
     
@@ -31,6 +40,7 @@
     @include e(range) {
       width: 40px;
       margin-left: 35px;
+      padding-bottom: 10px;
     }
     @include e(range-item) {
       position: relative;
@@ -47,6 +57,7 @@
       height: 150px;
       position: relative;
       margin-left: 35px;
+      padding-bottom: 10px;
     }
 
     @include e(top) {
@@ -65,6 +76,7 @@
     @include e(point) {
       padding: 0;
       margin-left: 35px;
+      padding-bottom: 10px;
       overflow-y: auto;
       max-height: 200px;
     }
