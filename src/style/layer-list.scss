@@ -5,7 +5,10 @@
   z-index: 10;
   max-height: 500px;
   width: $--widget-container-width;
-  border-radius: 5px;
+  .el-card__body {
+    padding: 10px 15px 22px;
+    // background: transparent;
+  }
   @include e(content) {
     width: 100%;
     height: 100%;
@@ -13,14 +16,23 @@
   @include e(collapse) {
     border: none;
   }
+  @include e(el-card ) {
+    border-radius: 0;
+    border: none;
+  }
 
   @include e(collapseitem) {
-    box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
+    // box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     margin-bottom: 4px;
+    background: transparent;
+    .el-card__body {
+      padding: 8px 5px;
+    }
     .el-collapse-item__header {
       border-bottom: none;
       font-size: 14px;
-      padding-left: 20px;
+      // padding-left: 20px;
+      background: transparent;
       .el-icon-view {
         font-size: 18px;
         margin-right: 10px;
@@ -35,6 +47,7 @@
     }
     .el-collapse-item__wrap {
       border-bottom: none;
+      background: transparent;
       .el-collapse-item__content {
         line-height: 3;
         overflow: hidden;
@@ -52,35 +65,26 @@
   @include e(elcarditem) {
     position: relative;
     border: none;
-
-    margin-bottom: 4px;
+    border-bottom: 1px solid #ececec;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none !important;
     .el-card__body {
-      .el-icon-view {
-        font-size: 16px;
-        margin-right: 10px;
-        vertical-align: -2px;
-        cursor: pointer;
-      }
-      .visible {
-        color: $--color-primary;
-      }
-      .none {
-        color: #c0c4cc;
-      }
+      padding: 8px 5px;
       height: 32px;
       line-height: 32px;
       font-size: 14px;
-      margin-left: 12px;
+      display: flex;
+      align-items: center;
+      .el-icon-view {
+        font-size: 16px;
+        margin-right: 12px;
+        cursor: pointer;
+      }
     }
   }
 
   @include e(layergroupname) {
-    position: absolute;
-    left: 48px;
-    top: 8px;
     width: 200px;
-  }
-  .el-card__body {
-    padding: 8px;
   }
 }

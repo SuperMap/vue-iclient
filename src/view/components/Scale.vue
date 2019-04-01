@@ -1,7 +1,8 @@
 <template>
-  <div  v-show="isShow" class="sm-scale" :style="scaleStyle">{{content}}</div>
+  <div  v-show="isShow" class="sm-scale" :style="[scaleStyle, getColorStyle(0)]">{{content}}</div>
 </template>
 <script>
+import Theme from '../mixin/Theme';
 import ScaleViewModel from "../../viewmodel/ScaleViewModel";
 import Widget from "./Widget";
 
@@ -9,6 +10,7 @@ export default {
   name: "SmScale",
   extends: Widget,
   relativeMap:true,
+  mixins: [Theme],
   props: {
     unit: {
       type: String,

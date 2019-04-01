@@ -37,7 +37,7 @@
   }
   @include e(choose-panel) {
     font-size: $--text-regular;
-    color: #303133;
+    // color: #303133;
   }
   @include e((job-button, result-button)) {
     padding: 0 0 10px 0;
@@ -47,7 +47,7 @@
     float: left;
     cursor: pointer;
     @include when(active) {
-      color: #409eff;
+      // color: #409eff;
       border-bottom: 2px solid;
       font-weight: bolder;
     }
@@ -58,14 +58,14 @@
   }
   @include e(job-info-header) {
     cursor: pointer;
-    color: #303133;
+    // color: #303133;
     padding: 10px 5px;
     &:hover {
       color: #409eff;
-      background: rgb(245, 245, 245);
+      // background: rgb(245, 245, 245);
     }
     & > .smwidgets-icons-preview {
-      color: #409eff;
+      // color: #409eff;
       font-size: $--text-regular;
     }
     & > .sm-query__job-info-name {
@@ -87,13 +87,13 @@
     padding: 5px;
   }
   @include e((attribute, spatial-filter)) {
-    color: rgba(0, 0, 0, 0.45);
+    // color: rgba(0, 0, 0, 0.45);
     font-size: $--text-regular;
     font-weight: 700;
   }
   @include e(attribute-name) {
     text-align: center;
-    color: #666;
+    // color: #666;
     font-weight: 700;
   }
   @include e(el-select) {
@@ -114,46 +114,50 @@
     width: 100%;
     margin-top: 70px;
     font-weight: bolder;
+    border-color: transparent;
+    &:hover {
+      border-color: transparent;
+    }
   }
 
   @include e(result-info) {
     margin-top: 10px;
-    overflow: scroll;
-    background-color: #fff;
+    overflow: auto;
+    // background-color: #fff;
     line-height: normal;
     max-width: 300px;
     height: 86%;
     &::-webkit-scrollbar {
       width: 6px;
       height: 6px;
-      background-color: #fff;
+      background-color: rgba(245, 245, 245,0)
     }
     &::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(245, 245, 245);
+      background-color: rgb(128, 128, 128);
     }
   }
 
   @include e(result-header) {
     display: block;
-    border-bottom: 1px solid #409eff;
+    border-bottom: 1px solid;
     font-size: $--text-regular;
     font-family: "微软雅黑";
     padding: 6px 0px;
-    background: #fff;
+    // background: #fff;
     color: #409eff;
     margin: 7px;
     font-weight: bolder;
   }
   @include e(no-result) {
-    color: #303133;
+    // color: #303133;
   }
   @include e(result-body) {
     & > ul {
       list-style: none;
       margin-left: -32px;
       font-size: $--text-regular;
-      color: rgb(145, 145, 145);
+      // color: rgb(145, 145, 145);
       & > li {
         padding: 8px 0;
         display: block;
@@ -163,7 +167,7 @@
         white-space: nowrap;
         &:hover {
           color: #409eff;
-          background: rgb(245, 245, 245);
+          // background: rgb(245, 245, 245);
         }
       }
     }

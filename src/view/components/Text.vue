@@ -8,6 +8,7 @@
       v-model="title"
       type="textarea"
       autosize
+      ref="textareaInfo"
     ></el-input>
   </div>
 </template>

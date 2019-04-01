@@ -3,10 +3,11 @@
     <div
       v-if="iconClass"
       :class="{['sm-card__icon']:true,['is-'+position]:true,[`is-click-${isShow?'out':'in'}`]:true,['is-header']:headerName}"
+      :style="[getBackgroundStyle, getTextColorStyle]"
       @click="iconClicked"
     >
       <div
-        :style="iconStyle"
+        :style="[iconStyle]"
         :class="{[iconClass]:true,['is-auto-rotate']:autoRotate,['sm-card__widget-icon']:true}"
       ></div>
     </div>
@@ -14,8 +15,9 @@
       <div
         :class="{['sm-card__content']:true,['is-header']:headerName,['is-'+position]:true,['is-icon']:iconClass}"
         v-show="isShow"
+        :style="[getCardStyle]"
       >
-        <div class="sm-card__header" v-if="headerName">
+        <div class="sm-card__header" v-if="headerName" :style="[getBackgroundStyle, getTextColorStyle]">
           <span class="sm-card__header-name">{{headerName}}</span>
         </div>
         <slot></slot>
@@ -24,12 +26,14 @@
   </div>
 </template>
 <script>
+import Theme from '../mixin/Theme';
 export default {
-  name: "SmCard",
+  name: 'SmCard',
+  mixins: [Theme],
   props: {
     iconPosition: {
       type: String,
-      default: "top-left"
+      default: 'top-left'
     },
     iconClass: {
       type: String
@@ -60,6 +64,10 @@ export default {
     }
   },
   computed: {
+    getCardStyle() {
+      const style = { background: 'transparent' };
+      return !this.iconClass && !this.headerName ? style : this.getBackgroundStyle;
+    },
     iconStyle() {
       return {
         transform: this.transform
@@ -68,22 +76,22 @@ export default {
     position() {
       let isControl =
         this.$parent.$parent &&
-        ["smwebmap", "smmap"].includes(
+        ['smwebmap', 'smmap'].includes(
           this.$parent.$parent.$options.name &&
             this.$parent.$parent.$options.name.toLowerCase()
         );
       if (this.headerName && !isControl) {
-        return "top-left";
+        return 'top-left';
       } else {
         return this.iconPosition;
       }
     },
     rotateDeg() {
       return {
-        "top-right": ["rotate(-45deg)", "rotate(135deg)"],
-        "top-left": ["rotate(-135deg)", "rotate(45deg)"],
-        "bottom-left": ["rotate(-135deg)", "rotate(45deg)"],
-        "bottom-right": ["rotate(-45deg)", "rotate(135deg)"]
+        'top-right': ['rotate(-45deg)', 'rotate(135deg)'],
+        'top-left': ['rotate(-135deg)', 'rotate(45deg)'],
+        'bottom-left': ['rotate(-135deg)', 'rotate(45deg)'],
+        'bottom-right': ['rotate(-45deg)', 'rotate(135deg)']
       };
     }
   }

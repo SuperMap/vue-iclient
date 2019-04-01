@@ -5,17 +5,15 @@
   z-index: $--index-top;
   font-size: 12px;
   width: $--widget-container-width;
+  // background: #fff;
   @include e(input) {
-    height: 36px;
-    line-height: 36px;
-    background: $--fill-base;
     box-shadow: $--box-shadow-base;
     border-radius: $--border-radius-base;
   }
   @include e(el-input) {
     & .el-input__inner {
       box-shadow: $--box-shadow-base;
-      border-radius: $--border-radius-base;
+      border-radius: 0;
       padding-left: 50px;
       outline: none;
       border: unset;
@@ -34,7 +32,7 @@
         cursor: pointer;
         &:hover {
           color: $--color-primary;
-          border-radius: 4px;
+          // border-radius: 4px;
         }
       }
       & .el-icon-loading {
@@ -43,9 +41,7 @@
     }
   }
   @include e(result) {
-    margin-top: 10px;
-    overflow: scroll;
-    background-color: $--fill-base;
+    overflow: auto;
     line-height: normal;
     max-width: 300px;
     max-height: 500px;
@@ -54,11 +50,6 @@
     &::-webkit-scrollbar {
       width: 6px;
       height: 6px;
-      background-color: $--fill-base;
-    }
-    &::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: $--color-primary;
     }
   }
   @include e(panel) {
@@ -67,12 +58,10 @@
 
   @include e(panel-header) {
     display: block;
-    border-bottom: 1px solid $--color-primary;
+    border-bottom: 1px solid;
     font-size: 14px;
     font-family: "微软雅黑";
     padding: 6px 0px;
-    background: $--fill-base;
-    color: $--color-primary;
     margin: 7px;
     font-weight: bolder;
   }
@@ -81,7 +70,6 @@
       list-style: none;
       margin-left: -32px;
       font-size: 13px;
-      color: rgb(145, 145, 145);
       & > li {
         padding: 8px 0;
         display: block;
@@ -91,7 +79,6 @@
         white-space: nowrap;
         &:hover {
           color: #409eff;
-          background: rgb(245, 245, 245);
         }
       }
     }

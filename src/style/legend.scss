@@ -21,9 +21,9 @@
   }
 
   @include e(noBorder){
-    width: 200px;
+    // width: 200px;
     background: none;
-    color: #333;
+    // color: #333;
     font-weight: 400;
   }
   .el-collapse-item__header{
@@ -79,6 +79,15 @@
       padding-bottom: 10px;
       overflow-y: auto;
       max-height: 200px;
+      &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        background-color: rgba(245, 245, 245,0)
+      }
+      &::-webkit-scrollbar-thumb {
+        border-radius: 10px;
+        background-color: rgb(128, 128, 128);
+      }
     }
 
     @include e(item) {
