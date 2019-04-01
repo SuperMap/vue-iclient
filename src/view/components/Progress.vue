@@ -1,5 +1,8 @@
 <template>
-  <div class="sm-progress">
+  <div
+    class="sm-progress"
+    v-show="isShow"
+  >
     <el-progress
       :percentage="parseFloat(percentage)"
       :type="type"
@@ -35,8 +38,7 @@ export default {
       type: String
     },
     color: {
-      type: String,
-      default: "#cccccc"
+      type: String
     },
     circleWidth: {
       type: [Number, String],
@@ -56,14 +58,16 @@ export default {
     color: {
       handler() {
         this.curColor = this.color;
-      },
-      immediate: true
+      }
     },
     colorGroupsData: {
       handler() {
         this.curColor = this.getColor(0);
       }
     }
+  },
+  loaded() {
+    this.curColor = this.color || this.getColor(0);
   }
 };
 </script>

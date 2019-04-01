@@ -139,8 +139,7 @@ export default {
     },
     getDisabledStyle(isText = true) {
       return {
-        color: '#c0c4cc',
-        'text-decoration': isText ? 'line-through' : 'none'
+        color: '#c0c4cc'
       };
     }
   },

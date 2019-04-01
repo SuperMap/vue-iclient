@@ -9,9 +9,7 @@
     class="sm-legend"
     v-show="isShow"
   >
-    <el-card
-      :style="[mode !== 'simple' ? [getBackgroundStyle, getTextColorStyle, {border: 0, borderRadius: 0}] : {border: 0, borderRadius: 0, background: 'transparent'} ]"
-    >
+    <el-card :style="[mode !== 'simple' ? [getBackgroundStyle, getTextColorStyle, {border: 0, borderRadius: 0}] : {border: 0, borderRadius: 0, background: 'transparent'} ]">
       <el-collapse
         class="sm-legend__table"
         v-model="activeLegend"
@@ -23,7 +21,10 @@
           :name="index+1"
         >
           <template slot="title">
-            <div class="sm-legend__title" :style="[getColorStyle(0)]">{{layerValue.layerId}}</div>
+            <div
+              class="sm-legend__title"
+              :style="[getColorStyle(0)]"
+            >{{layerValue.layerId}}</div>
           </template>
           <div
             v-if="isShowField"
@@ -37,7 +38,10 @@
                 :key="index"
                 class="sm-legend__item"
               >
-                <i :class="layerValue.featureType | selectLayerType" :style="{color:item.color}"></i>
+                <i
+                  :class="layerValue.featureType | selectLayerType"
+                  :style="{color:item.color}"
+                ></i>
                 <span class="sm-legend__field-value">{{item.value}}</span>
               </li>
             </ul>
@@ -101,8 +105,15 @@
 
         <div v-if="layerValue.layerType === 'UNIQUE'">
           <ul class="sm-legend__point">
-            <li v-for="(item,index) in layerValue.styleGroup" :key="index" class="sm-legend__item">
-              <i :class="layerValue.featureType | selectLayerType" :style="{color:item.color}"></i>
+            <li
+              v-for="(item,index) in layerValue.styleGroup"
+              :key="index"
+              class="sm-legend__item"
+            >
+              <i
+                :class="layerValue.featureType | selectLayerType"
+                :style="{color:item.color}"
+              ></i>
               <span class="sm-legend__field-value">{{item.value}}</span>
             </li>
           </ul>
@@ -151,17 +162,17 @@
 </template>
 
 <script>
-import Theme from '../mixin/Theme';
-import Widget from './Widget';
-import LegendViewModel from '../../viewmodel/LegendViewModel';
+import Theme from "../mixin/Theme";
+import Widget from "./Widget";
+import LegendViewModel from "../../viewmodel/LegendViewModel";
 export default {
-  name: 'SmLegend',
+  name: "SmLegend",
   mixins: [Theme],
   relativeMap: true,
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-layer-style'
+      default: "smwidgets-icons-layer-style"
     },
     autoRotate: {
       type: Boolean,
@@ -185,8 +196,9 @@ export default {
     },
     mode: {
       type: String,
+      default: "simple",
       validator(mode) {
-        return ['simple', 'panel'].includes(mode);
+        return ["simple", "panel"].includes(mode);
       }
     }
   },
@@ -208,33 +220,33 @@ export default {
       let style = legendViewModel.getStyle(layer);
 
       if (!style) {
-        throw new Error(this.$t('legend.noMatchLayer'));
+        throw new Error(this.$t("legend.noMatchLayer"));
       }
       if (!this.legendList[layer]) {
         this.$set(this.legendList, layer, style);
       }
     });
-    const cardContent = this.$el.querySelector('.sm-card__content');
-    cardContent.style.width = '200px';
+    const cardContent = this.$el.querySelector(".sm-card__content");
+    cardContent.style.width = "200px";
   },
   filters: {
     selectLayerType(featureType) {
       return {
-        POLYGON: 'smwidgets-icons-polygon-layer',
-        POINT: 'smwidgets-icons-point-layer',
-        LINE: 'smwidgets-icons-line-layer'
+        POLYGON: "smwidgets-icons-polygon-layer",
+        POINT: "smwidgets-icons-point-layer",
+        LINE: "smwidgets-icons-line-layer"
       }[featureType];
     }
   },
   computed: {
     getTitleColor() {
-      return { color: this['colorGroupsData'][1] };
+      return { color: this["colorGroupsData"][1] };
     },
     noBorder() {
-      if (this.mode === 'simple') {
+      if (this.mode === "simple") {
         return {
-          background: 'transparent',
-          'box-shadow': 'none'
+          background: "transparent",
+          "box-shadow": "none"
         };
       }
     }

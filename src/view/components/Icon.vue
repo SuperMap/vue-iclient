@@ -6,7 +6,6 @@
 <script>
 import Widget from "./Widget";
 import Theme from "../mixin/Theme";
-import { parse } from "@babel/parser";
 export default {
   name: "SmIcon",
   extends: Widget,

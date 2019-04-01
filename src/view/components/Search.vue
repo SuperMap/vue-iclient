@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-search" :style="[getTextColorStyle]">
+  <div class="sm-search" :style="[getTextColorStyle]" v-show='isShow'>
     <div class="sm-search__input">
       <el-input
         class="sm-search__el-input"
