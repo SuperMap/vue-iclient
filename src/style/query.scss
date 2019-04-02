@@ -32,7 +32,7 @@
     }
     &::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(245, 245, 245);
+      background-color: #bbb;
     }
   }
   @include e(choose-panel) {
@@ -134,7 +134,7 @@
     }
     &::-webkit-scrollbar-thumb {
       border-radius: 10px;
-      background-color: rgb(128, 128, 128);
+      background-color: #bbb;
     }
   }
 

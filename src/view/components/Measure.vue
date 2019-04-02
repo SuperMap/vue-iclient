@@ -176,7 +176,7 @@ export default {
         if(selectDom) {
           selectDom.style.borderColor = this.getTextColor;
           selectDom.style.color = this.getTextColor;
-          selectDom.style.backgroundColor = this.getBackgroundNoOpacity;  
+          selectDom.style.backgroundColor = this.getBackground;  
         }
     },
     changeChosenStyle(visible) {

@@ -1,5 +1,4 @@
 import mapEvent from '../commontypes/mapEvent'
-import Color from 'colorcolor';
 
 export default {
   props: {
@@ -52,9 +51,6 @@ export default {
     },
     getTextColor() {
       return this.textColorsData
-    },
-    getBackgroundNoOpacity() {
-      return Color(this.getBackground, 'rgb', false);
     }
   },
   methods: {

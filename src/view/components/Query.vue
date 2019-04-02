@@ -73,7 +73,7 @@
                 type="primary"
                 size="mini"
                 class="sm-query__el-button"
-                :style="{backgroundColor: getColorStyle(0).color, color: getBackgroundNoOpacity}"
+                :style="{backgroundColor: getColorStyle(0).color, color: getTextColor}"
                 @click="queryButtonClicked(jobInfo,value)"
               >{{$t('query.applicate')}}</el-button>
             </div>
