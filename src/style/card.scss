@@ -3,6 +3,7 @@
 
 @include b(card) {
   position: relative;
+  overflow: visible;
   @include e(icon) {
     z-index: 100;
     background: $--icon-color-fill-base;
@@ -95,10 +96,13 @@
   }
   @include e(content) {
     width: $--widget-container-width;
-    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
+    // box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
     background: $--fill-base;
     transition: all 0.5s;
     position: relative;
+    .el-card.is-always-shadow {
+      box-shadow: none;
+    }
     &.sm-zoom-in-enter-to,
     &.sm-zoom-in-leave {
       opacity: 1;

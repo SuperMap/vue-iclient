@@ -17,6 +17,15 @@ class SourceListModel extends WidgetModel {
         return this.sourceList;
     }
 
+    getLegendStyle(sourceName){
+        if(sourceName) {
+            return this.sourceList[sourceName] ? this.sourceList[sourceName].style : '';
+        }
+        const sourceList = Object.values(this.sourceList) || [];
+        const styles = sourceList.filter(item => !!item.style);
+        return styles;
+    }
+
     getLayers(){
         return this.detailLayers;
     }

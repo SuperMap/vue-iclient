@@ -128,7 +128,7 @@ export default {
     };
   },
   watch: {
-    activeLengthUnit: function(newVal) {
+    distanceDefaultUnit: function(newVal) {
       this.activeDistanceUnit = newVal;
       this.activeUnit = newVal;
     },

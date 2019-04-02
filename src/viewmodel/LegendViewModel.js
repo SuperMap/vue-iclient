@@ -14,10 +14,7 @@ class LegendViewModel extends WidgetViewModel {
     }
     
     getStyle(layerName){
-        if(!this.sourceListModel.sourceList[layerName]){
-            return false;
-        }
-        return this.sourceListModel.sourceList[layerName].style
+        return this.sourceListModel.getLegendStyle(layerName);
     }
 
     
