@@ -2,7 +2,7 @@
 @import "./common/var.scss";
 
 @include b(search) {
-  z-index: $--index-top;
+  z-index: $--index-normal;
   font-size: 12px;
   width: $--widget-container-width;
   // background: #fff;

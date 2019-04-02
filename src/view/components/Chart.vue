@@ -19,6 +19,7 @@
 import { ChartViewModel } from "../../viewmodel/ChartViewModel";
 import Widget from "./Widget";
 import Theme from "../mixin/Theme";
+import clonedeep from 'lodash.clonedeep';
 export default {
   name: "SmChart",
   viewModelProps: ["chartType", "datasets", "chartOptions"],
@@ -77,7 +78,7 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new ChartViewModel(this.$el.querySelector('#chart') || this.$el, this.options);
+    this.viewModel = new ChartViewModel(this.$el.querySelector('#chart') || this.$el, clonedeep(this.options));
     this.$on("themeStyle", () => {
       this.chartOptions.colorGradient = this.colorGroupsData;
       this.chartOptions.backgroundColor = this.backgroundData;

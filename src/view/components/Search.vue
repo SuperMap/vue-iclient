@@ -41,24 +41,24 @@
 </template>
 <script>
 import Theme from '../mixin/Theme';
-import Widget from './Widget';
-import SearchViewModel from '../../viewmodel/SearchViewModel';
-import TablePopup from './TablePopup';
-import iPortalDataParameter from '../commontypes/iPortalDataParameter';
-import RestDataParameter from '../commontypes/RestDataParameter';
-import RestMapParameter from '../commontypes/RestMapParameter';
-import AddressMatchParameter from '../commontypes/AddressMatchParameter';
-import Vue from 'vue';
+import Widget from "./Widget";
+import SearchViewModel from "../../viewmodel/SearchViewModel";
+import TablePopup from "./TablePopup";
+// import iPortalDataParameter from "../commontypes/iPortalDataParameter";
+// import RestDataParameter from "../commontypes/RestDataParameter";
+// import RestMapParameter from "../commontypes/RestMapParameter";
+// import AddressMatchParameter from "../commontypes/AddressMatchParameter";
+import Vue from "vue";
 
-let validators = (value, propType) => {
-  let valid = true;
-  value.forEach(item => {
-    if (!(item instanceof propType)) {
-      valid = false;
-    }
-  });
-  return valid;
-};
+// let validators = (value, propType) => {
+//   let valid = true;
+//   value.forEach(item => {
+//     if (!(item instanceof propType)) {
+//       valid = false;
+//     }
+//   });
+//   return valid;
+// };
 
 export default {
   name: 'SmSearch',
@@ -83,28 +83,28 @@ export default {
       }
     },
     restMap: {
-      type: Array,
-      validator(value) {
-        return validators(value, RestMapParameter);
-      }
+      type: Array
+      // validator(value) {
+      //   return validators(value, RestMapParameter);
+      // }
     },
     restData: {
-      type: Array,
-      validator(value) {
-        return validators(value, RestDataParameter);
-      }
+      type: Array
+      // validator(value) {
+      //   return validators(value, RestDataParameter);
+      // }
     },
     iportalData: {
-      type: Array,
-      validator(value) {
-        return validators(value, iPortalDataParameter);
-      }
+      type: Array
+      // validator(value) {
+      //   return validators(value, iPortalDataParameter);
+      // }
     },
     addressMatch: {
-      type: Array,
-      validator(value) {
-        return validators(value, AddressMatchParameter);
-      }
+      type: Array
+      // validator(value) {
+      //   return validators(value, AddressMatchParameter);
+      // }
     }
   },
   data() {
