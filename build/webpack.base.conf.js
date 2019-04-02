@@ -24,6 +24,7 @@ module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
     app: './demo/main.js'
+    //app: './demo/disttest/main.js' 测试打包后的dist目录下的widgets
   },
   output: {
     path: config.build.assetsRoot,

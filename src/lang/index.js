@@ -6,12 +6,13 @@ import enLocale from './en';
 import zhLocale from './zh';
 import clonedeep from 'lodash.clonedeep';
 
-
-Object.defineProperty(Vue.prototype, '$i18n', {
-  get: function get() {
-    return i18n
-  }
-});
+if (!Vue.prototype.hasOwnProperty('$i18n')) {
+  Object.defineProperty(Vue.prototype, '$i18n', {
+    get: function get() {
+      return i18n
+    }
+  });
+}
 Vue.use(VueI18n)
 
 const messages = {
