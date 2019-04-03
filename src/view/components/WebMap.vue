@@ -1,9 +1,9 @@
 <template>
-  <div
-    :id="target"
-    class="sm-map"
-  >
+  <div :id="target" class="sm-map">
     <slot></slot>
+    <Pan v-if="panControl" :position="panPosition"/>
+    <Scale v-if="scaleControl" :position="scalePosition"/>
+    <Zoom v-if="zoomControl" :show-zoom-slider="zoomWithSlide" :position="zoomPosition"/>
   </div>
 </template>
 
@@ -11,12 +11,19 @@
 import WebMapViewModel from "../../viewmodel/WebMapViewModel";
 import mapEvent from "../commontypes/mapEvent";
 import Widget from "./Widget";
-
+import Pan from "./Pan";
+import Scale from "./Scale";
+import Zoom from "./Zoom";
 export default {
   name: "SmWebMap",
   relativeMap: true,
   extends: Widget,
-  viewModelProps: ["mapId", "webMapOptions"],
+  viewModelProps: ["mapId", "webMapOptions","mapOptions"],
+  components: {
+    Pan,
+    Scale,
+    Zoom
+  },
   props: {
     mapId: {
       type: String,
@@ -31,6 +38,40 @@ export default {
       default() {
         return {};
       }
+    },
+     mapOptions: {
+      type: Object,
+      default() {
+        return {};
+      }
+    },
+    panControl: {
+      type: Boolean,
+      default: false
+    },
+    scaleControl: {
+      type: Boolean,
+      default: false
+    },
+    zoomControl: {
+      type: Boolean,
+      default: true
+    },
+    zoomWithSlide: {
+      type: Boolean,
+      default: false
+    },
+    panPosition: {
+      type: String,
+      default: "top-left"
+    },
+    scalePosition: {
+      type: String,
+      default: "bottom-left"
+    },
+    zoomPosition: {
+      type: String,
+      default: "top-left"
     }
   },
   computed: {
@@ -60,4 +101,6 @@ export default {
   }
 };
 </script>
+
+
 

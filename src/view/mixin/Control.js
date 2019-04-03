@@ -13,6 +13,12 @@ export default {
             }
         },
     },
+    watch:{
+        position(){
+            this.removeControl(this.map);
+            this.addControl(this.map)
+        }
+    },
     methods: {
         control() {
             var self = this;
@@ -27,7 +33,7 @@ export default {
         },
         addControl(map) {
             map.addControl(this.control(), this.position);
-            this.$el.classList.add("mapboxgl-ctrl");
+            this.$el.classList.add("mapboxgl-ctrl"); 
         },
         removeControl() {
             map.removeControl(this.control());
