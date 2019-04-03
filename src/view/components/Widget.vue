@@ -70,6 +70,7 @@ export default {
       this.$emit("loaded");
     } else {
       this.$el && this.filterDelayLoad && (this.isShow = false);
+      this.$el && this.filterDelayLoad && (this.$el.style.display='none');
       if (mapEvent.$options.getMap(targetName)) {
         this.loadMap(targetName);
       } else {
@@ -116,6 +117,7 @@ export default {
       callHook(this, "loaded");
       // 控制与map组件同级的组件的显示加载
       this.$el && this.filterDelayLoad && (this.isShow = true);
+      this.$el && this.filterDelayLoad && (this.$el.style.display='block');
       this.$emit("loaded");
     },
     // 微件设置vm实例

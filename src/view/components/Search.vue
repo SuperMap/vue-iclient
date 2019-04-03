@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-search" :style="[getTextColorStyle]" v-show='isShow'>
+  <div class="sm-search" :style="[getTextColorStyle]">
     <div class="sm-search__input">
       <el-input
         class="sm-search__el-input"
@@ -61,13 +61,13 @@ import Vue from "vue";
 // };
 
 export default {
-  name: 'SmSearch',
+  name: "SmSearch",
   extends: Widget,
   relativeMap: true,
   mixins: [Theme],
   props: {
     maxReturn: {
-      type: Number,
+      type: [Number,String],
       default: 8
     },
     layerNames: {
@@ -78,7 +78,7 @@ export default {
       default() {
         return {
           enable: true,
-          city: '北京市'
+          city: "北京市"
         };
       }
     },
@@ -151,19 +151,19 @@ export default {
       this.$message.closeAll();
       this.searchResult = [];
       this.marker && this.marker.remove() && (this.marker = null);
-      let icon = this.$el.querySelector('.el-input__icon');
-      icon.classList.add('el-icon-search');
-      icon.classList.remove('el-icon-loading');
+      let icon = this.$el.querySelector(".el-input__icon");
+      icon.classList.add("el-icon-search");
+      icon.classList.remove("el-icon-loading");
     },
     searchButtonClicked() {
       this.search();
     },
     inputKeypressEvent() {
       const self = this;
-      this.$el.querySelector('input').onkeypress = e => {
+      this.$el.querySelector("input").onkeypress = e => {
         if (e.which == 13) {
           !self.searchKey && self.search();
-          self.$el.querySelector('input').onchange = () => {
+          self.$el.querySelector("input").onchange = () => {
             self.search();
           };
         }
@@ -171,19 +171,29 @@ export default {
     },
     search() {
       this.clearResult();
-      if (this.searchKey) {
-        this.searchTaskId = this.viewModel.search(this.searchKey);
-        this.regiterEvents();
-        let icon = this.$el.querySelector('.el-input__icon');
-        icon.classList.remove('el-icon-search');
-        icon.classList.add('el-icon-loading');
-      } else {
+      let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = this.$props;
+      if ( (layerNames && layerNames.length > 0) || onlineLocalSearch.enable || (restMap && restMap.length > 0) || (restData && restData.length > 0) || (iportalData && iportalData.length > 0) || (addressMatch && addressMatch.length > 0) ) {
+        if (this.searchKey) {
+          this.searchTaskId = this.viewModel.search(this.searchKey);
+          this.regiterEvents();
+          let icon = this.$el.querySelector(".el-input__icon");
+          icon.classList.remove("el-icon-search");
+          icon.classList.add("el-icon-loading");
+        } else {
+          this.$message({
+            showClose: true,
+            message: this.$t("search.noKey"),
+            type: "warning",
+            duration: 1000
+          });
+        }
+      }else {
         this.$message({
-          showClose: true,
-          message: this.$t('search.noKey'),
-          type: 'warning',
-          duration: 1000
-        });
+            showClose: true,
+            message: "请设置搜索源！",
+            type: "warning",
+            duration: 1000
+          });
       }
     },
     inputValueCleared() {
@@ -210,13 +220,13 @@ export default {
         let state = {
           columns: [
             {
-              label: this.$t('search.attribute'),
-              prop: 'attribute',
+              label: this.$t("search.attribute"),
+              prop: "attribute",
               width: 80
             },
             {
-              label: this.$t('search.attributeValue'),
-              prop: 'attributeValue',
+              label: this.$t("search.attributeValue"),
+              prop: "attributeValue",
               minWidth: 100
             }
           ],
@@ -236,17 +246,17 @@ export default {
     },
     regiterEvents() {
       this.searchKey >= 1 &&
-        this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1));
-      this.viewModel.on('searchsucceeded' + this.searchTaskId, e => {
+        this.viewModel.off("searchsucceeded" + (this.searchTaskId - 1));
+      this.viewModel.on("searchsucceeded" + this.searchTaskId, e => {
         this.searchResult = e.result;
-        let icon = this.$el.querySelector('.el-input__icon');
-        icon.classList.add('el-icon-search');
-        icon.classList.remove('el-icon-loading');
+        let icon = this.$el.querySelector(".el-input__icon");
+        icon.classList.add("el-icon-search");
+        icon.classList.remove("el-icon-loading");
         this.searchResult.length < 1 &&
           this.$message({
             showClose: true,
-            message: this.$t('search.noResult'),
-            type: 'warning',
+            message: this.$t("search.noResult"),
+            type: "warning",
             duration: 1000
           });
       });

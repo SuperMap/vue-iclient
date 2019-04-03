@@ -1,7 +1,6 @@
 <template>
   <div
     class="liquid-fill"
-    v-show="isShow"
     :style="{width:`${this.size}px`,height:`${this.size}px`}"
   >
     <div

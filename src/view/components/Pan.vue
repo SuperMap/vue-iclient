@@ -1,7 +1,6 @@
 <template>
   <div
     :class="['sm-pan', panImgClass, mapboxglClass]"
-    v-show="isShow"
   >
     <div class="sm-pan__center" @click="panToCenter"></div>
     <div

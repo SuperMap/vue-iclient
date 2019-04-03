@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-zoom" v-show="isShow">
+  <div class="sm-zoom">
     <div class="sm-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
       <el-button
         class="sm-zoom__button"

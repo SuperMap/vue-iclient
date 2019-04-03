@@ -15,7 +15,6 @@ export default class SearchViewModel extends WidgetViewModel {
     super();
     this.options = options || {};
     this.searchTaskId = 0;
-    this.maxReturn = this.options.maxReturn >= 100 ? 100 : this.options.maxReturn || 8
     this.options.cityGeoCodingConfig = {
       addressUrl:
         "http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos",
@@ -33,6 +32,7 @@ export default class SearchViewModel extends WidgetViewModel {
     this.searchCount = 0;
     this.searchResult = [];
     this.keyWord = keyWord;
+    this.maxReturn = parseInt(this.options.maxReturn) >= 100 ? 100 : parseInt(this.options.maxReturn) || 8
     this.searchtType.forEach(item => {
       if (this.options[item]) {
         if (item === 'onlineLocalSearch' && this.options[item].enable) {
@@ -255,7 +255,7 @@ export default class SearchViewModel extends WidgetViewModel {
         }).then(data => {
           datasetName = data.datasetNames[0];
           // 请求restdata服务
-          this._searchFromRestData([{ name: [sourceName + ':' + datasetName], url: `${address}/data`, resultName: iportal.resultName || 'Iportal Data Search' }]);
+          this._searchFromRestData([{ name: [sourceName + ':' + datasetName], url: `${address}/data`, name: iportal.name || 'Iportal Data Search' }]);
         }).catch((error) => {
           console.log(error);
         })
@@ -277,7 +277,7 @@ export default class SearchViewModel extends WidgetViewModel {
         }).then(data => {
           layerName = data[0].subLayers.layers[0].caption;
           // 请求restmap服务
-          this._searchFromRestData([{ name: layerName, url: path, resultName: iportal.resultName || 'Iportal Data Search' }])
+          this._searchFromRestData([{ name: layerName, url: path, name: iportal.name || 'Iportal Data Search' }])
           return layerName;
         }).catch((error) => {
           this.fire("searchfailed", { error });
@@ -320,7 +320,7 @@ export default class SearchViewModel extends WidgetViewModel {
           features = this._excelData2Feature(data.content);
         }
         let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, features);
-        resultFeatures.length > 0 && this.searchResult.push({ source: iportal.resultName || 'Iportal Data Search', result: resultFeatures.slice(0, this.maxReturn) })
+        resultFeatures.length > 0 && this.searchResult.push({ source: iportal.name || 'Iportal Data Search', result: resultFeatures.slice(0, this.maxReturn) })
         this.searchCount--;
         this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
       }
@@ -421,6 +421,8 @@ export default class SearchViewModel extends WidgetViewModel {
           this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
         } else {
           this.searchCount--;
+          this.fire("searchfailed", { e });
+          console.log(e);
         }
       });
     }, this)

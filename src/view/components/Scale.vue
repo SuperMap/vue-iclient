@@ -1,5 +1,5 @@
 <template>
-  <div  v-show="isShow" class="sm-scale" :style="[scaleStyle, getColorStyle(0)]">{{content}}</div>
+  <div class="sm-scale" :style="[scaleStyle, getColorStyle(0)]">{{content}}</div>
 </template>
 <script>
 import Theme from '../mixin/Theme';

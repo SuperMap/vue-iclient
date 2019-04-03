@@ -1,7 +1,6 @@
 <template>
   <div
     class="sm-progress"
-    v-show="isShow"
   >
     <el-progress
       :percentage="parseFloat(percentage)"

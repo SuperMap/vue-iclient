@@ -1,7 +1,7 @@
 @import "./mixins/mixins.scss";
 
 @include b(legend) {
-  & .sm-card__content{
+  & .sm-card__content {
     max-height: 400px;
   }
   overflow-y: auto;
@@ -13,98 +13,101 @@
     padding: 8px 20px;
     border: none;
   }
-  .el-card__body{
+  .sm-card__content {
+    box-shadow: unset;
+  }
+  .el-card__body {
     padding: 0px;
   }
-  @include e(table){
+  @include e(table) {
     border-top: none;
   }
 
-  @include e(noBorder){
+  @include e(noBorder) {
     // width: 200px;
     background: none;
     // color: #333;
     font-weight: 400;
   }
-  .el-collapse-item__header{
+  .el-collapse-item__header {
     font-size: $--text-regular;
-    
-    @include e(title){
+
+    @include e(title) {
       margin-left: 35px;
     }
   }
-  .el-collapse-item__wrap{
-  .el-collapse-item__content {
-    padding-bottom: 0px;
-    margin-left: 8px;
-    @include e(range) {
-      width: 40px;
-      margin-left: 35px;
-      padding-bottom: 10px;
-    }
-    @include e(range-item) {
-      position: relative;
-      height: 30px;
-      span {
+  .el-collapse-item__wrap {
+    .el-collapse-item__content {
+      padding-bottom: 0px;
+      margin-left: 8px;
+      @include e(range) {
+        width: 40px;
+        margin-left: 35px;
+        padding-bottom: 10px;
+      }
+      @include e(range-item) {
+        position: relative;
+        height: 30px;
+        span {
+          position: absolute;
+          left: 42px;
+          top: 6px;
+          width: 120px;
+        }
+      }
+      @include e(heat) {
+        width: 40px;
+        height: 150px;
+        position: relative;
+        margin-left: 35px;
+        padding-bottom: 10px;
+      }
+
+      @include e(top) {
         position: absolute;
-        left: 42px;
-        top: 6px;
-        width: 120px;
+        left: 44px;
+        top: 0px;
+        width: 50px;
+      }
+      @include e(bottom) {
+        position: absolute;
+        left: 44px;
+        bottom: 0px;
+        width: 50px;
+      }
+
+      @include e(point) {
+        padding: 0;
+        margin-left: 35px;
+        padding-bottom: 10px;
+        overflow-y: auto;
+        max-height: 200px;
+        &::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+          background-color: rgba(245, 245, 245, 0);
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          background-color: rgb(128, 128, 128);
+        }
+      }
+
+      @include e(item) {
+        padding-left: 6px;
+        list-style: none;
+        height: 30px;
+      }
+
+      @include e(field-value) {
+        margin-left: 20px;
+      }
+
+      @include e(themefield) {
+        font-size: 12px;
+        margin-left: 30px;
+        margin-bottom: 4px;
       }
     }
-    @include e(heat) {
-      width: 40px;
-      height: 150px;
-      position: relative;
-      margin-left: 35px;
-      padding-bottom: 10px;
-    }
-
-    @include e(top) {
-      position: absolute;
-      left: 44px;
-      top: 0px;
-      width: 50px;
-    }
-    @include e(bottom) {
-      position: absolute;
-      left: 44px;
-      bottom: 0px;
-      width: 50px;
-    }
-
-    @include e(point) {
-      padding: 0;
-      margin-left: 35px;
-      padding-bottom: 10px;
-      overflow-y: auto;
-      max-height: 200px;
-      &::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-        background-color: rgba(245, 245, 245,0)
-      }
-      &::-webkit-scrollbar-thumb {
-        border-radius: 10px;
-        background-color: rgb(128, 128, 128);
-      }
-    }
-
-    @include e(item) {
-      padding-left: 6px;
-      list-style: none;
-      height: 30px;
-    }
-
-    @include e(field-value) {
-      margin-left: 20px;
-    }
-
-    @include e(themefield) {
-      font-size: 12px;
-      margin-left: 30px;
-      margin-bottom: 4px;
-    }
-  }
   }
 }

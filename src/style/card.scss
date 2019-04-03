@@ -96,7 +96,7 @@
   }
   @include e(content) {
     width: $--widget-container-width;
-    // box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
     background: $--fill-base;
     transition: all 0.5s;
     position: relative;
