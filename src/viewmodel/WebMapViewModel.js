@@ -75,7 +75,7 @@ export default class WebMapViewModel extends WidgetViewModel {
 
   setMapOptions(mapOptions) {
     let { center, zoom, maxBounds, minZoom, maxZoom, isWorldCopy, bearing, pitch } = mapOptions;
-    center && this.map.setCenter(center);
+    center && center.length && this.map.setCenter(center);
     zoom && this.map.setZoom(zoom);
     maxBounds && this.map.setMaxBounds(maxBounds);
     minZoom && this.map.setMinZoom(minZoom);
