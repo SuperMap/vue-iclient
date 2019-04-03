@@ -6,8 +6,10 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :id="(!iconClass&&!headerName)&&'miniMap'"
+    class='sm-minimap'
   >
-    <div id="miniMap"></div>
+    <div :id="(iconClass||headerName)&&'miniMap'" ></div>
   </sm-card>
 </template>
 
@@ -32,16 +34,12 @@ export default {
   },
   mounted() {
     this.icon = this.$el.children[0];
-    this.icon && (this.icon.style.visibility = "hidden");
+    this.iconClass && this.icon && (this.icon.style.visibility = "hidden");
   },
   loaded() {
     this.$el.classList.add("sm-minimap");
-    this.viewModel = new MiniMapViewModel(
-      this.$el.querySelector("#miniMap"),
-      this.map
-    );
-    this.icon &&
-      this.viewModel.on("minimapinitialized", () => {
+    this.viewModel = new MiniMapViewModel( this.$el.querySelector("#miniMap") || this.$el, this.map );
+    this.iconClass && this.icon && this.viewModel.on("minimapinitialized", () => {
         this.icon.style.visibility = "visible";
       });
   }
