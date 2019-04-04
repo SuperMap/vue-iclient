@@ -117,9 +117,10 @@ export default {
       callHook(this, "loaded");
       // 控制与map组件同级的组件的显示加载
       this.$el && this.filterDelayLoad && (this.isShow = true);
-      this.$el && this.filterDelayLoad && (this.$el.style.display='block');
-      this.$emit("loaded");
-    },
+      this.$nextTick(() => {
+        this.$emit("loaded");
+      });
+  this.$el && this.filterDelayLoad && (this.$el.style.display='block');    },
     // 微件设置vm实例
     setViewModel(viewModel) {
       this.viewModel = viewModel;
@@ -145,7 +146,7 @@ export default {
       if (this.viewModel && this.viewModel.resize) {
         this.viewModel.resize();
         return;
-      }else if(this.liquidChart){
+      } else if (this.liquidChart) {
         this.liquidChart.resize();
       }
     }
