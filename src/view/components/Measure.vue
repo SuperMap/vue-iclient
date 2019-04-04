@@ -24,11 +24,28 @@
           <i :class="group.iconClass"></i>
         </span>
         <el-select
-          v-model="activeUnit"
+          v-model="activeDistanceUnit"
           placeholder="请选择"
           size="mini"
           class="sm-measure__unit"
-          v-show="showUnitSelect && activeMode"
+          v-show="getDistanceSelect"
+          :popper-append-to-body="false"
+          @change="updateUnit"
+          @visible-change="changeChosenStyle"
+        >
+          <el-option
+            v-for="(value, key, index) in getUnitOptions"
+            :key="index"
+            :label="value"
+            :value="key"
+          ></el-option>
+        </el-select>
+        <el-select
+          v-model="activeAreaUnit"
+          placeholder="请选择"
+          size="mini"
+          class="sm-measure__unit"
+          v-show="getAreaSelect"
           :popper-append-to-body="false"
           @change="updateUnit"
           @visible-change="changeChosenStyle"
@@ -121,20 +138,21 @@ export default {
         }
       ],
       activeMode: '',
-      activeUnit: '',
-      activeLengthUnit: '',
-      activePolygonUnit: '',
-      result: ''
+      result: '',
+      activeDistanceUnit: this.distanceDefaultUnit,
+      activeAreaUnit: this.areaDefaultUnit,
+      modeUnitMap: {
+        'draw_line_string': 'activeDistanceUnit',
+        'draw_polygon': 'activeAreaUnit'
+      }
     };
   },
   watch: {
     distanceDefaultUnit: function(newVal) {
       this.activeDistanceUnit = newVal;
-      this.activeUnit = newVal;
     },
     areaDefaultUnit: function(newVal) {
       this.activeAreaUnit = newVal;
-      this.activeUnit = newVal;
     }
   },
   computed: {
@@ -148,11 +166,20 @@ export default {
       return '';
     },
     getUnitLabel() {
-      let label = this.activeMode
-        ? this.unitOptions[this.activeMode][this.activeUnit]
-        : '';
+      const units = this.getUnitOptions;
+      const modeUnitKey = this.modeUnitMap[this.activeMode];
+      let label = units[this[modeUnitKey]];
       return label;
+    },
+    getAreaSelect() {
+      return this.activeMode === 'draw_polygon' && this.showUnitSelect;
+    },
+    getDistanceSelect() {
+      return this.activeMode === 'draw_line_string' && this.showUnitSelect;
     }
+  },
+  mounted() {
+    this.changeSelectInputStyle();
   },
   loaded() {
     this.viewModel = new MeasureViewModel({
@@ -187,36 +214,20 @@ export default {
     },
     // 切换量算模式
     changeMeasureMode(mode) {
-      if (mode === 'draw_line_string') {
-        this.activeUnit = this.activeDistanceUnit;
-      } else if (mode === 'draw_polygon') {
-        this.activeUnit = this.activeAreaUnit;
-      }
+      let modeUnitKey = this.modeUnitMap[mode];
+      let activeUnit = this[modeUnitKey];
 
       if (this.activeMode !== mode) {
-        this.viewModel.openDraw(mode, this.activeUnit);
+        this.viewModel.openDraw(mode, activeUnit);
         this.activeMode = mode;
       } else {
         this.viewModel.closeDraw();
         this.activeMode = null;
       }
     },
-
     updateUnit(unit) {
       this.viewModel.updateUnit(unit);
-      this.activeUnit = unit;
-      if (this.activeMode === 'draw_line_string') {
-        this.activeDistanceUnit = unit;
-      } else if (this.activeMode === 'draw_polygon') {
-        this.activeAreaUnit = unit;
-      }
     }
-  },
-
-  mounted() {
-    this.activeDistanceUnit = this.distanceDefaultUnit;
-    this.activeAreaUnit = this.areaDefaultUnit;
-    this.changeSelectInputStyle();
   }
 };
 </script>

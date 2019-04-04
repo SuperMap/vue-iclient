@@ -65,7 +65,7 @@ class MeasureViewModel extends WidgetViewModel {
           this.tipNodes[i] && this.tipNodes[i].setText(`${transValue} ${uniti18n}`);
         }
       }
-    } else {
+    } else if(this.cachePolygonUnit.value && this.cachePolygonUnit.unit) {
       let transValue = convertArea(this.cachePolygonUnit.value, this.cachePolygonUnit.unit, unit);
       let uniti18n = i18n.t(`measure.square${unit}`)
       this.tipHoverDiv && this.tipHoverDiv.setText(`${transValue} ${uniti18n}`);
