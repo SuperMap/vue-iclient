@@ -54,6 +54,7 @@ export default {
       type: String,
       default: "#626c91"
     },
+    //背景色
     backgroundColor: {
       type: String
     },
@@ -76,15 +77,6 @@ export default {
       backgroundColorData: ""
     };
   },
-  watch: {
-    value: function() {
-      this.updateChart();
-    },
-    waveColor() {
-      this.waveColorData = this.waveColor;
-      this.updateChart();
-    }
-  },
   computed: {
     //根据传入的size计算得到标注的字体大小
     calcFontSize() {
@@ -100,10 +92,15 @@ export default {
     }
   },
   loaded() {
-    this.waveColorData = this.waveColor || this.getColor(0);
-    this.labelColorData = this.labelColor || this.getTextColor;
-    this.borderColorData = this.borderColor || this.waveColorData;
-    this.backgroundColorData = this.backgroundColor || this.getBackground;
+    Object.keys(this.$props).forEach((watchItem) => {
+      this.$watch(watchItem,() => {
+        //需要筛选继承的那些props
+        if(watchItem === 'size'){
+          this.updateChart(false,true)
+        }
+        this.updateChart();
+      })
+    })
     this.chart = echarts.init(this.$refs.chart);
     this.updateChart();
     this.$on("themeStyle", () => {
@@ -111,11 +108,22 @@ export default {
       this.labelColorData = this.getTextColor;
       this.borderColorData = this.getColor(0);
       this.backgroundColorData = this.getBackground;
-      this.updateChart();
+      this.updateChart(true);
     });
   },
   methods: {
-    updateChart() {
+    updateChart(propsUpdate = false,changeSize) {
+      if (!propsUpdate) {
+        this.waveColorData = this.waveColor || this.getColor(0);
+        this.labelColorData = this.labelColor || this.getTextColor;
+        this.borderColorData = this.borderColor || this.waveColorData;
+        this.backgroundColorData = this.backgroundColor || this.getBackground;
+      }
+
+      if (changeSize) {
+        this.chart.resize(this.size,this.size);
+      }
+
       this.chart.setOption({
         series: [
           {

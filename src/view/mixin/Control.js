@@ -35,7 +35,7 @@ export default {
             map.addControl(this.control(), this.position);
             this.$el.classList.add("mapboxgl-ctrl"); 
         },
-        removeControl() {
+        removeControl(map) {
             map.removeControl(this.control());
         },
     }
