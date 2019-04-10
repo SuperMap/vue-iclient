@@ -103,7 +103,7 @@ export default {
     areaDefaultUnit: {
       // 面积默认单位
       type: String,
-      default: 'meters'
+      default: 'kilometers'
     }
   },
   data() {
@@ -193,6 +193,9 @@ export default {
     this.viewModel.on('measure-start', ({ result }) => {
       this.result = '';
     });
+    this.viewModel.on('update-unit', ({result}) => {
+      this.result = result;
+    })
   },
   updated() {
     this.changeSelectInputStyle();

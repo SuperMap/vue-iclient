@@ -26,7 +26,7 @@ class MeasureViewModel extends WidgetViewModel {
     this._addDrawControl();
   }
 
-  
+
   //开启绘制
   openDraw(mode, activeUnit) {
     this._initDraw();
@@ -47,13 +47,11 @@ class MeasureViewModel extends WidgetViewModel {
     // this.map.off('click', this.measureNodeDistanceBind);
     //this.mode = mode;
     this.activeMode = null;
+    this.draw.trash();
     this.map.off('click', this.continueDrawBind)
   }
 
   updateUnit(unit) {
-    console.log('unit',unit);
-    
-    this.activeUnit = unit;
     if (this.tipNodes.length !== 0) {
       for (let i = 1; i < this.tipNodes.length; i++) {
         let transValue = convertLength(this.cacheLengthUnitList[i - 1].value, this.cacheLengthUnitList[i - 1].unit, unit);
@@ -65,11 +63,16 @@ class MeasureViewModel extends WidgetViewModel {
           this.tipNodes[i] && this.tipNodes[i].setText(`${transValue} ${uniti18n}`);
         }
       }
-    } else if(this.cachePolygonUnit.value && this.cachePolygonUnit.unit) {
+      this.result && (this.result = convertLength(this.result, this.activeUnit, unit));
+    } else if (this.cachePolygonUnit.value && this.cachePolygonUnit.unit) {
       let transValue = convertArea(this.cachePolygonUnit.value, this.cachePolygonUnit.unit, unit);
       let uniti18n = i18n.t(`measure.square${unit}`)
       this.tipHoverDiv && this.tipHoverDiv.setText(`${transValue} ${uniti18n}`);
+      this.result && (this.result = convertArea(this.result, this.activeUnit, unit));
     }
+
+    this.result && this.fire('update-unit', { result: this._getFormatResult(this.result) });
+    this.activeUnit = unit;
   }
 
   _addDrawControl() {
@@ -228,11 +231,16 @@ class MeasureViewModel extends WidgetViewModel {
     this.map.off('click', this.measureNodeDistanceBind);
     switch (this.activeMode) {
       case 'draw_line_string':
-        this.result = length(e.features[0], this.activeUnit);
+      
+        //this.result = length(e.features[0], this.activeUnit);
+        let tempLength = length(e.features[0], 'kilometers');
+        this.result = convertLength(tempLength,'kilometers',this.activeUnit);
         this._resetEvent();
         break;
       case 'draw_polygon':
-        this.result = area(e.features[0]);
+        //this.result = area(e.features[0]);
+        let tempArea = area(e.features[0]);
+        this.result = convertArea(tempArea,'meters',this.activeUnit);
         this._resetEvent(true, false, this.result, e.features[0]);
         break;
     }
@@ -302,10 +310,14 @@ class MeasureViewModel extends WidgetViewModel {
     };
     switch (this.activeMode) {
       case 'draw_line_string':
-        this.result = length(feature, this.activeUnit);
+        //this.result = length(feature, this.activeUnit);
+        let tempLength = length(feature, 'kilometers');
+        this.result = convertLength(tempLength,'kilometers',this.activeUnit);
         break;
       case 'draw_polygon':
-        this.result = area(feature);
+        //this.result = area(feature);
+        let tempArea = area(feature);
+        this.result = convertArea(tempArea,'meters',this.activeUnit);
         break;
     }
     let uniti18n
@@ -338,10 +350,11 @@ class MeasureViewModel extends WidgetViewModel {
         }
       };
       //修改单位！！！！
-      console.log('this.activeUnit',this.activeUnit);
-      
-      let calcValue = length(line, this.activeUnit);
-      let uniti18n
+      //let calcValue = length(line, this.activeUnit);
+      let tempLength = length(line, 'kilometers');
+      let calcValue = convertLength(tempLength,'kilometers',this.activeUnit);
+
+      let uniti18n;
       if (this.activeMode === 'draw_line_string') {
         uniti18n = i18n.t(`measure.${this.activeUnit}`)
       } else if (this.activeMode === "draw_polygon") {
@@ -371,6 +384,7 @@ class MeasureViewModel extends WidgetViewModel {
       // 如果是测量面积，直接利用实时计算生成的popup显示最后结果
       const centerResult = center(feature);
       let uniti18n = i18n.t(`measure.square${this.activeUnit}`)
+      result = this._getFormatResult(result);
       this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
     }
   }
