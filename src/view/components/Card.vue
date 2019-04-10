@@ -59,7 +59,7 @@ export default {
   methods: {
     iconClicked() {
       this.autoRotate &&
-        (this.transform = this.rotateDeg[this.position][!this.isShow ? 0 : 1]);
+        (this.transform = this.rotateDeg[this.position][!this.isShow ? 1 : 0]);
       this.isShow = !this.isShow;
     }
   },

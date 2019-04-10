@@ -46,37 +46,29 @@
     @include when(top-left) {
       top: 0;
       left: 0;
-      @include e(widget-icon) {
-        @include when(auto-rotate) {
-          transform: rotate(45deg);
-        }
+      & .sm-card__widget-icon.is-auto-rotate {
+        transform: rotate(45deg);
       }
     }
     @include when(bottom-left) {
       top: 0;
       left: 0;
-      @include e(widget-icon) {
-        @include when(auto-rotate) {
-          transform: rotate(45deg);
-        }
+      & .sm-card__widget-icon.is-auto-rotate {
+        transform: rotate(45deg);
       }
     }
     @include when(top-right) {
       top: 0;
       right: 0;
-      @include e(widget-icon) {
-        @include when(auto-rotate) {
-          transform: rotate(135deg);
-        }
+      & .sm-card__widget-icon.is-auto-rotate {
+        transform: rotate(135deg);
       }
     }
     @include when(bottom-right) {
       top: 0;
       right: 0;
-      @include e(widget-icon) {
-        @include when(auto-rotate) {
-          transform: rotate(135deg);
-        }
+      & .sm-card__widget-icon.is-auto-rotate {
+        transform: rotate(135deg);
       }
     }
   }

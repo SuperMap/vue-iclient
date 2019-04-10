@@ -55,7 +55,7 @@ export default {
     },
     zoomControl: {
       type: Boolean,
-      default: true
+      default: false
     },
     zoomWithSlide: {
       type: Boolean,
