@@ -54,7 +54,6 @@
               <div>{{$t('query.spatialFilter')}}</div>
               <el-select
                 v-model="value"
-                :placeholder="$t('query.mapBounds')"
                 class="sm-query__el-select"
                 size="mini"
                 :popper-append-to-body="false"
@@ -63,9 +62,9 @@
                 <el-option
                   v-for="item in selectOptions"
                   :key="item.value"
-                  :label="$t('query.mapBounds')"
+                  :label="item.label"
                   :value="item.value"
-                >{{$t('query.mapBounds')}}</el-option>
+                ></el-option>
               </el-select>
             </div>
             <div class="sm-query__query-button">

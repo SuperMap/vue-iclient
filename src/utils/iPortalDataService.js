@@ -55,18 +55,14 @@ export default class iPortalDataService extends mapboxgl.Evented {
     let withCredentials = this.withCredentials;
     if (serviceType === 'RESTDATA') {
       let url = `${address}/data/datasources`,
-        sourceName, datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, {
-        withCredentials
-      }).then(response => {
+      dataSourceName, datasetName; // 请求获取数据源名
+      SuperMap.FetchRequest.get(url, null).then(response => {
         return response.json()
       }).then(data => {
-        sourceName = data.datasourceNames[0];
-        url = `${address}/data/datasources/${sourceName}/datasets`;
+        dataSourceName = data.datasourceNames[0];
+        url = `${address}/data/datasources/${dataSourceName}/datasets`;
         // 请求获取数据集名
-        SuperMap.FetchRequest.get(url, null, {
-          withCredentials
-        }).then(response => {
+        SuperMap.FetchRequest.get(url, null).then(response => {
           return response.json()
         }).then(data => {
           datasetName = data.datasetNames[0];
@@ -74,7 +70,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
           this.iserverService.getDataFeatures({
             datasetName,
             dataSourceName,
-            dataUrl: url
+            dataUrl: url.split("/datasources")[0]
           }, queryInfo)
         }).catch((error) => {
           console.log(error);
@@ -92,18 +88,14 @@ export default class iPortalDataService extends mapboxgl.Evented {
       // 如果是地图服务
       let url = `${address}/maps`,
         mapName, layerName, path; // 请求获取地图名
-      SuperMap.FetchRequest.get(url, null, {
-        withCredentials
-      }).then(response => {
+      SuperMap.FetchRequest.get(url, null).then(response => {
         return response.json()
       }).then(data => {
         mapName = data[0].name;
         path = data[0].path;
         url = url = `${address}/maps/${mapName}/layers`;
         // 请求获取图层名
-        SuperMap.FetchRequest.get(url, null, {
-          withCredentials
-        }).then(response => {
+        SuperMap.FetchRequest.get(url, null).then(response => {
           return response.json()
         }).then(data => {
           layerName = data[0].subLayers.layers[0].caption;

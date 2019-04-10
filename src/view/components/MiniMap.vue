@@ -7,7 +7,6 @@
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     :id="(!iconClass&&!headerName)&&'miniMap'"
-    class='sm-minimap'
   >
     <div :id="(iconClass||headerName)&&'miniMap'" ></div>
   </sm-card>
