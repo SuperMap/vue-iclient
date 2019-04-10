@@ -1,3 +1,4 @@
+import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 import iServerRestService from './iServerRestService'
 export default class iPortalDataService extends mapboxgl.Evented {
   constructor(url, withCredentials) {

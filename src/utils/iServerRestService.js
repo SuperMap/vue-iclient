@@ -1,3 +1,4 @@
+import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 export default class iServerRestService extends mapboxgl.Evented {
   constructor(url) {
     super();
@@ -54,7 +55,7 @@ export default class iServerRestService extends mapboxgl.Evented {
     queryBySQLService = new SuperMap.QueryBySQLService(datasetInfo.dataUrl, {
       eventListeners: {
         "processCompleted": this.getFeaturesSucceed.bind(this),
-        "processFailed": function () {}
+        "processFailed": function () { }
       }
     });
     queryBySQLService.processAsync(queryBySQLParams);
@@ -75,9 +76,10 @@ export default class iServerRestService extends mapboxgl.Evented {
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(datasetInfo.dataUrl, {
       eventListeners: {
         "processCompleted": this.getFeaturesSucceed.bind(this),
-        "processFailed": function () {}
+        "processFailed": function () { }
       }
     });
+
     getFeatureBySQLService.processAsync(getFeatureBySQLParams);
   }
   getFeaturesSucceed(results) {
@@ -128,7 +130,7 @@ export default class iServerRestService extends mapboxgl.Evented {
       data.fieldValues.push(fieldValue);
     }
     //this.getDataSucceedCallback && this.getDataSucceedCallback(data);
-    this.fire('getdatasucceeded',data)
+    this.fire('getdatasucceeded', data)
   }
 
   /**

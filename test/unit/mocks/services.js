@@ -331,4 +331,357 @@ const queryResults = {
     "customResponse": null
 };
 
-module.exports = { fakeDataServiceResult, fakeMapServiceResult, featureResults, datas, datasources, datasets, queryResults };
+const fakeLandUse = {
+    "childUriList": [
+        "http://support.supermap.com.cn:8090/iserver/services/data-jingjin/rest/data/datasources/Jingjin/datasets/Landuse_R/fields",
+        "http://support.supermap.com.cn:8090/iserver/services/data-jingjin/rest/data/datasources/Jingjin/datasets/Landuse_R/features",
+        "http://support.supermap.com.cn:8090/iserver/services/data-jingjin/rest/data/datasources/Jingjin/datasets/Landuse_R/domain"
+    ],
+    "supportAttachments": true,
+    "supportFeatureMetadatas": false,
+    "datasetInfo": {
+        "charset": "GB18030",
+        "recordCount": 101,
+        "isFileCache": false,
+        "description": "",
+        "type": "REGION",
+        "dataSourceName": "Jingjin",
+        "tableName": "Landuse_R",
+        "isReadOnly": false,
+        "encodeType": "NONE",
+        "bounds": {
+            "top": 41.0405421705869,
+            "left": 115.438731076072,
+            "bottom": 38.5673427409879,
+            "leftBottom": {
+                "x": 115.438731076072,
+                "y": 38.5673427409879
+            },
+            "right": 118.071395439998,
+            "rightTop": {
+                "x": 118.071395439998,
+                "y": 41.0405421705869
+            }
+        },
+        "name": "Landuse_R",
+        "prjCoordSys": {
+            "distanceUnit": "METER",
+            "projectionParam": null,
+            "epsgCode": 4326,
+            "coordUnit": "DEGREE",
+            "name": "Longitude / Latitude Coordinate System---GCS_WGS_1984",
+            "projection": null,
+            "type": "PCS_EARTH_LONGITUDE_LATITUDE",
+            "coordSystem": {
+                "datum": {
+                    "name": "D_WGS_1984",
+                    "type": "DATUM_WGS_1984",
+                    "spheroid": {
+                        "flatten": 0.00335281066474748,
+                        "name": "WGS_1984",
+                        "axis": 6378137,
+                        "type": "SPHEROID_WGS_1984"
+                    }
+                },
+                "unit": "DEGREE",
+                "spatialRefType": "SPATIALREF_EARTH_LONGITUDE_LATITUDE",
+                "name": "GCS_WGS_1984",
+                "type": "GCS_WGS_1984",
+                "primeMeridian": {
+                    "longitudeValue": 0,
+                    "name": "Greenwich",
+                    "type": "PRIMEMERIDIAN_GREENWICH"
+                }
+            }
+        },
+        "datasourceConnectionInfo": null
+    }
+}
+
+const chartResult = {
+    "features": {
+        "type": "FeatureCollection",
+        "features": [
+            {
+                "type": "Feature",
+                "properties": {
+                    "SMID": "1",
+                    "SMSDRIW": "116.38831",
+                    "SMSDRIN": "40.980675",
+                    "SMSDRIE": "116.60729",
+                    "SMSDRIS": "40.803284",
+                    "SMUSERID": "4",
+                    "SMAREA": "1.3188454380984211E8",
+                    "SMPERIMETER": "79616.58012922351",
+                    "SMGEOMETRYSIZE": "588",
+                    "LANDTYPE": "用材林",
+                    "AREA": "132.0",
+                    "AREA_1": "132",
+                    "stringID": null,
+                    "ID": 1
+                },
+                "geometry": {
+                    "type": "MultiPolygon",
+                    "coordinates": [
+                        [
+                            [
+                                [
+                                    116.452409755349,
+                                    40.92656164358
+                                ],
+                                [
+                                    116.483357386004,
+                                    40.9069469918439
+                                ],
+
+                                [
+                                    116.442423257771,
+                                    40.9417511118507
+                                ],
+                                [
+                                    116.452409755349,
+                                    40.92656164358
+                                ]
+                            ]
+                        ],
+                        [
+                            [
+                                [
+                                    116.560117987415,
+                                    40.9749988417875
+                                ],
+
+                                [
+                                    116.547892153981,
+                                    40.9705907375336
+                                ],
+                                [
+                                    116.552270926448,
+                                    40.980672910927
+                                ],
+                                [
+                                    116.560117987415,
+                                    40.9749988417875
+                                ]
+                            ]
+                        ]
+                    ]
+                },
+                "id": 1
+            },
+            {
+                "type": "Feature",
+                "properties": {
+                    "SMID": "2",
+                    "SMSDRIW": "116.60084",
+                    "SMSDRIN": "41.040543",
+                    "SMSDRIE": "116.72102",
+                    "SMSDRIS": "40.853382",
+                    "SMUSERID": "4",
+                    "SMAREA": "9.680888002534656E7",
+                    "SMPERIMETER": "50298.305148811625",
+                    "SMGEOMETRYSIZE": "360",
+                    "LANDTYPE": "用材林",
+                    "AREA": "97.0",
+                    "AREA_1": "97",
+                    "stringID": null,
+                    "ID": 2
+                },
+                "geometry": {
+                    "type": "MultiPolygon",
+                    "coordinates": [
+                        [
+                            [
+                                [
+                                    116.656010024549,
+                                    41.036635850958
+                                ],
+
+                                [
+                                    116.656010024549,
+                                    41.036635850958
+                                ]
+                            ]
+                        ]
+                    ]
+                },
+                "id": 2
+            },
+
+
+            {
+                "type": "Feature",
+                "properties": {
+                    "SMID": "101",
+                    "SMSDRIW": "117.33055",
+                    "SMSDRIN": "38.620922",
+                    "SMSDRIE": "117.53431",
+                    "SMSDRIS": "38.56734",
+                    "SMUSERID": "9",
+                    "SMAREA": "4.042988389975608E7",
+                    "SMPERIMETER": "39763.54581827346",
+                    "SMGEOMETRYSIZE": "264",
+                    "LANDTYPE": "水浇地",
+                    "AREA": "40.0",
+                    "AREA_1": "40",
+                    "stringID": null,
+                    "ID": 101
+                },
+                "geometry": {
+                    "type": "MultiPolygon",
+                    "coordinates": [
+                        [
+                            [
+                                [
+                                    117.525891381017,
+                                    38.6144829360722
+                                ],
+
+                                [
+                                    117.525891381017,
+                                    38.6144829360722
+                                ]
+                            ]
+                        ]
+                    ]
+                },
+                "id": 101
+            }
+        ]
+    },
+    "featureUriList": [],
+    "totalCount": 3,
+    "featureCount": 3,
+    "succeed": true
+};
+
+const datas_chart = {
+    "dataMetaInfo": {
+        "firstRowIsHead": false,
+        "previewURL": null,
+        "fileEncoding": "UTF-8",
+        "proxiedServiceType": null,
+        "hasScene": false,
+        "xIndex": null,
+        "yField": null,
+        "yIndex": null,
+        "separator": null,
+        "url": null,
+        "baseLayerType": null,
+        "xField": null,
+        "epsgCode": 0,
+        "realspaceType": null,
+        "releaseTimeMilli": 0,
+        "fieldTypes": null,
+        "bounds": null,
+        "proxiedServiceUrl": null,
+        "providers": null
+    },
+    "lastModfiedTime": 1525947856586,
+    "fileName": "671个气象站观测数据(5).xlsx",
+    "thumbnail": "http://support.supermap.com.cn:8092/services/../web/static/portal/img/map/cloud.png",
+    "dataItemServices": [],
+    "dataCheckResult": {
+        "serviceCheckInfos": [],
+        "dataCheckInfo": null
+    },
+    "publishInfo": null,
+    "authorizeSetting": [
+        {
+            "aliasName": "supermap",
+            "entityRoles": null,
+            "entityType": "USER",
+            "entityName": "supermap",
+            "dataPermissionType": "DELETE",
+            "entityId": null
+        },
+        {
+            "aliasName": "GUEST",
+            "entityRoles": null,
+            "entityType": "USER",
+            "entityName": "GUEST",
+            "dataPermissionType": "DOWNLOAD",
+            "entityId": null
+        }
+    ],
+    "description": null,
+    "userName": "supermap",
+    "type": "EXCEL",
+    "tags": [],
+    "coordType": null,
+    "size": 57719,
+    "createTime": 1525947856586,
+    "serviceStatus": "UNPUBLISHED",
+    "nickname": "supermap",
+    "id": 888186112,
+    "serviceId": null,
+    "downloadCount": 1,
+    "storageId": "hglvnuxh_emz1xllp_5d982d0d_29f0_4ade_96d3_ba8b8d127f74",
+    "status": "OK",
+    "MD5": "b77a03f565df9b17a5bfea85c7ce5d54"
+}
+
+const iportal_content={
+    "fileName": "671个气象站观测数据(5).xlsx",
+    "type": "EXCEL",
+    "lineNumber": 589,
+    "content": {
+        "colTitles": [
+            "区站号",
+            "站台",
+            "省份",
+            "X",
+            "Y",
+            "海拔",
+            "平均最低气温",
+            "最热七天气温",
+            "最高气温",
+            "最低气温",
+            "年均降雨"
+        ],
+        "rows": [
+            [
+                "50136",
+                "漠河",
+                "黑龙江",
+                "122.37",
+                "53.47",
+                "296",
+                "-47",
+                "29",
+                "33",
+                "-53",
+                "366.1"
+            ],
+           
+            [
+                "59446",
+                "灵山",
+                "广西",
+                "109.3",
+                "22.42",
+                "66",
+                "2",
+                "35",
+                "37",
+                "0",
+                "1462.4"
+            ],
+            [
+                "59453",
+                "玉林",
+                "广西",
+                "110.17",
+                "22.65",
+                "81.8",
+                "3",
+                "35",
+                "37",
+                "1",
+                "1637.4"
+            ]
+         
+        ]
+    }
+}
+module.exports = { fakeDataServiceResult, fakeMapServiceResult, featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart,iportal_content };
