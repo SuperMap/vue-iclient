@@ -74,9 +74,7 @@ export default class QueryViewModel extends WidgetViewModel {
   _queryByRestData(restDataParameter) {
     if (this.bounds) {
       var boundsParam = new SuperMap.GetFeaturesByBoundsParameters({
-        queryParameter: {
-          attributeFilter: restDataParameter.attributeFilter
-        },
+        attributeFilter: restDataParameter.attributeFilter,
         datasetNames: restDataParameter.dataName,
         bounds: this.bounds,
         fromIndex: 0,
@@ -269,7 +267,12 @@ export default class QueryViewModel extends WidgetViewModel {
     let featureInfo = {},
       coordinates;
     let geometry = feature.geometry;
-    if (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon' || geometry.type === 'LineString' || geometry.type ==="MultiLineString") {
+    if (
+      geometry.type === 'MultiPolygon' ||
+      geometry.type === 'Polygon' ||
+      geometry.type === 'LineString' ||
+      geometry.type === 'MultiLineString'
+    ) {
       coordinates = center(feature).geometry.coordinates;
     } else {
       coordinates = geometry.coordinates;
