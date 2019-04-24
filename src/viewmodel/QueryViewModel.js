@@ -5,7 +5,7 @@ import iPortalDataParameter from '../view/commontypes/iPortalDataParameter';
 import RestDataParameter from '../view/commontypes/RestDataParameter';
 import RestMapParameter from '../view/commontypes/RestMapParameter';
 import center from '@turf/center';
-
+import i18n from '../lang/index.js'
 /**
  * @class QueryViewModel
  * @classdesc Query ViewModel
@@ -25,9 +25,9 @@ export default class QueryViewModel extends WidgetViewModel {
   }
 
   query(queryParameter, queryBounds) {
+    this.queryParameter = queryParameter;
     this.strokeLayerID && this.map.removeLayer(this.strokeLayerID);
     this.layerID && this.map.removeLayer(this.layerID);
-    this.layerID = queryParameter.name + new Date().getTime();
 
     this.queryBounds = queryBounds;
     if (queryBounds === 'currentMapBounds') {
@@ -98,24 +98,30 @@ export default class QueryViewModel extends WidgetViewModel {
     }
   }
   _mapQuerySucceed(serviceResult, restMapParameter) {
-    if (serviceResult.result) {
-      let resultFeatures = serviceResult.result.recordsets[0].features.features;
+    let result = serviceResult.result;
+    if (result && result.totalCount !== 0) {
+      let resultFeatures = result.recordsets[0].features.features;
       resultFeatures.length > 0 && (this.queryResult = { name: restMapParameter.name, result: resultFeatures });
       this.addResultLayer(this.queryResult);
       this.fire('querysucceeded', { originalresult: serviceResult, result: this.queryResult });
+    } else if (result && result.totalCount === 0) {
+      this.fire('queryfailed', { message: i18n.t("query.noResults")});
     } else {
-      this.fire('queryfailed');
+      this.fire('queryfailed', { message: i18n.t("query.queryFailed") });
     }
   }
 
   _dataQuerySucceed(serviceResult, restDataParameter) {
-    if (serviceResult.result) {
-      let resultFeatures = serviceResult.result.features.features;
+    let result = serviceResult.result;
+    if (result && result.totalCount !== 0) {
+      let resultFeatures = result.features.features;
       resultFeatures.length > 0 && (this.queryResult = { name: restDataParameter.name, result: resultFeatures });
       this.addResultLayer(this.queryResult);
       this.fire('querysucceeded', { result: this.queryResult });
+    } else if (result && result.totalCount === 0) {
+      this.fire('queryfailed', { message: i18n.t("query.noResults")});
     } else {
-      this.fire('queryfailed');
+      this.fire('queryfailed', { message: i18n.t("query.queryFailed") });
     }
   }
 
@@ -142,21 +148,19 @@ export default class QueryViewModel extends WidgetViewModel {
             } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
               resultData = item;
             } else {
-              this.fire('queryfailed');
-              console.log('此服务不支持查询！');
+              this.fire('queryfailed', { message: i18n.t("query.seviceNotSupport") });
               return;
             }
           }, this);
           // 如果有服务，获取数据源和数据集, 然后请求rest服务
           this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);
         } else {
-          this.fire('queryfailed');
-          console.log('此服务不支持查询！');
+          this.fire('queryfailed', { message: i18n.t("query.seviceNotSupport") });
           return;
         }
       })
       .catch(error => {
-        this.fire('searchfailed', { error });
+        this.fire('queryfailed', { message: error });
         console.log(error);
       });
   }
@@ -190,12 +194,12 @@ export default class QueryViewModel extends WidgetViewModel {
               });
             })
             .catch(error => {
-              this.fire('queryfailed');
+              this.fire('queryfailed', { message: error });
               console.log(error);
             });
         })
         .catch(error => {
-          this.fire('queryfailed');
+          this.fire('queryfailed', { message: error });
           console.log(error);
         });
     } else {
@@ -227,18 +231,19 @@ export default class QueryViewModel extends WidgetViewModel {
               return layerName;
             })
             .catch(error => {
-              this.fire('queryfailed');
+              this.fire('queryfailed', { message: error });
               console.log(error);
             });
         })
         .catch(error => {
-          this.fire('queryfailed');
+          this.fire('queryfailed', { message: error });
           console.log(error);
         });
     }
   }
 
   addResultLayer() {
+    this.layerID = this.queryParameter.name + new Date().getTime();
     let type = this.queryResult.result[0].geometry.type;
     let source = {
       type: 'geojson',

@@ -335,6 +335,19 @@ export default {
         this.loadingInstance.close();
         this.jobButton.classList.remove('disabled');
       });
+      this.viewModel.on('queryfailed', e => {
+        this.$el
+          .querySelector('.sm-query__no-result')
+          .classList.remove('hidden');
+          this.$message({
+          showClose: true,
+          message: e.message,
+          type: 'warning',
+          duration: 1000
+        });
+        this.loadingInstance.close();
+        this.jobButton.classList.remove('disabled');
+      });
     },
     addPopupToFeature() {
       this.viewModel.on('getfeatureinfosucceeded', e => {
@@ -369,40 +382,6 @@ export default {
         });
       }
     },
-    hidenContainer(e) {
-      this.isHidden = true;
-      // this.$el.style.width = '30px';
-      // this.$el.style.height = '30px';
-      this.$el.style.background = 'unset';
-      this.$el
-        .querySelector('.sm-query__header')
-        .classList.add('hidden-header');
-      for (let i = 1; i < this.$el.children.length; i++) {
-        this.$el.children[i].style.transform = 'scale(0)';
-        this.$el.children[i].style.display = 'none';
-      }
-      let children = e.target.parentNode.children;
-      for (let i = 1; i < children.length; i++) {
-        children[i].style.display = 'none';
-      }
-    },
-    displayContainer(e) {
-      if (this.isHidden) {
-        this.isHidden = false;
-        this.$el.style.background = '#fff';
-        this.$el
-          .querySelector('.sm-query__header')
-          .classList.remove('hidden-header');
-        for (let i = 1; i < this.$el.children.length; i++) {
-          this.$el.children[i].style.display = 'block';
-          this.$el.children[i].style.transform = 'scale(1)';
-        }
-        let children = e.target.parentNode.children;
-        for (let i = 1; i < children.length; i++) {
-          children[i].style.display = 'inline-block';
-        }
-      }
-    },
     changeHoverStyle(e) {
       const { target } = e;
       target.style.color = this.getColorStyle(0).color;
@@ -414,35 +393,4 @@ export default {
   }
 };
 </script>
-<style>
-.query-hidden {
-  /* display: none;
-  width: 30px !important;
-  height: 30px !important;
-  overflow: hidden; */
 
-  /* z-index: 100;
-  background: #FFFFFF; */
-  /* border: 1px solid #DCDFE6; */
-  /* color: #409eff;
-  cursor: pointer;
-  text-align: center;
-  box-sizing: border-box;
-  padding: 6px;
-  padding-top: 6px;
-  padding-right: 6px;
-  padding-bottom: 6px;
-  padding-left: 6px;
-  font-size: 16px;
-  position: absolute;
-
-  padding: 4px;
-
-  padding-left: 24px;
-  padding-top: 1px; */
-}
-.query-display {
-  /* display: block;
-  min-width: 280px; */
-}
-</style>

@@ -64,6 +64,9 @@ export default {
     resultAlreadyExists:'The current query result already exists!',
     querying:'In the query',
     attribute:'Attribute',
-    attributeValue:'Attribute Value'
+    attributeValue:'Attribute Value',
+    noResults: 'The result of the query is empty!',
+    queryFailed: 'Query failed!',
+    seviceNotSupport: 'This service does not support queries!'
   },
 }
