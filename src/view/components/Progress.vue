@@ -64,9 +64,9 @@ export default {
   },
   loaded() {
     this.curColor = this.color || this.getColor(0);
-    this.circleWidth = this.$parent.$el.offsetWidth * 0.5;
+    this.circleWidth = Math.min(this.$parent.$el.offsetWidth, this.$parent.$el.offsetHeight);
     window.addEventListener('resize', () => {
-      this.circleWidth = this.$parent.$el.offsetWidth * 0.5;
+      this.circleWidth = Math.min(this.$parent.$el.offsetWidth, this.$parent.$el.offsetHeight);
     });
   }
 };

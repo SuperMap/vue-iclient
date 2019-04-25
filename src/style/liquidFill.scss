@@ -1,0 +1,5 @@
+@import "./mixins/Mixins.scss";
+
+@include b(liquidFill) {
+  height: 140px;
+}

@@ -1,14 +1,9 @@
 <template>
-  <div
-    class="liquid-fill"
-  >
     <div
-      class="chart"
+      class="sm-liquidFill"
       id="chart"
       ref="chart"
-      :style="{width: size, height: size, margin: '0 auto'}"
     ></div>
-  </div>
 </template>
 <script>
 import echarts from "echarts";
@@ -90,7 +85,9 @@ export default {
     })
     this.chart = echarts.init(this.$refs.chart);
     this.updateChart();
-    this.size = this.$el.offsetWidth * 0.75 + 'px';
+    this.chart.on('finished', () => {
+      this.chart.resize();
+    });
     this.$on("themeStyle", () => {
       this.waveColorData = this.getColor(0);
       this.labelColorData = this.getTextColor;
@@ -99,10 +96,7 @@ export default {
       this.updateChart(true);
     });
     addEventListener('resize', () => {
-      this.size = this.$el.offsetWidth * 0.75 + 'px';
-      this.$nextTick(function() {
-          this.chart.resize();
-      });
+      this.chart.resize();
     })
   },
   methods: {
