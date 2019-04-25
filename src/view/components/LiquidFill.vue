@@ -1,13 +1,12 @@
 <template>
   <div
     class="liquid-fill"
-    :style="{width:`${this.size}px`,height:`${this.size}px`}"
   >
     <div
       class="chart"
       id="chart"
       ref="chart"
-      :style="{width:`${this.size}px`,height:`${this.size}px`}"
+      :style="{width: size, height: size, margin: '0 auto'}"
     ></div>
   </div>
 </template>
@@ -31,11 +30,6 @@ export default {
     waveCount: {
       type: Number,
       default: 1
-    },
-    //水球大小
-    size: {
-      type: Number,
-      default: 100
     },
     //字体
     fontSize: {
@@ -74,14 +68,11 @@ export default {
       waveColorData: "",
       labelColorData: "",
       borderColorData: "",
-      backgroundColorData: ""
+      backgroundColorData: "",
+      size: '140px'
     };
   },
   computed: {
-    //根据传入的size计算得到标注的字体大小
-    calcFontSize() {
-      return (this.size / 4).toFixed(2);
-    },
     //根据波浪数渲染数据
     calcData() {
       let data = [];
@@ -94,15 +85,12 @@ export default {
   loaded() {
     Object.keys(this.$props).forEach((watchItem) => {
       this.$watch(watchItem,() => {
-        //需要筛选继承的那些props
-        if(watchItem === 'size'){
-          this.updateChart(false,true)
-        }
         this.updateChart();
       })
     })
     this.chart = echarts.init(this.$refs.chart);
     this.updateChart();
+    this.size = this.$el.offsetWidth * 0.75 + 'px';
     this.$on("themeStyle", () => {
       this.waveColorData = this.getColor(0);
       this.labelColorData = this.getTextColor;
@@ -110,18 +98,20 @@ export default {
       this.backgroundColorData = this.getBackground;
       this.updateChart(true);
     });
+    addEventListener('resize', () => {
+      this.size = this.$el.offsetWidth * 0.75 + 'px';
+      this.$nextTick(function() {
+          this.chart.resize();
+      });
+    })
   },
   methods: {
-    updateChart(propsUpdate = false,changeSize) {
+    updateChart(propsUpdate = false) {
       if (!propsUpdate) {
         this.waveColorData = this.waveColor || this.getColor(0);
         this.labelColorData = this.labelColor || this.getTextColor;
         this.borderColorData = this.borderColor || this.waveColorData;
         this.backgroundColorData = this.backgroundColor || this.getBackground;
-      }
-
-      if (changeSize) {
-        this.chart.resize(this.size,this.size);
       }
 
       this.chart.setOption({
@@ -134,7 +124,7 @@ export default {
             radius: "95%",
             data: this.calcData,
             label: {
-              fontSize: this.fontSize || this.calcFontSize,
+              fontSize: this.fontSize,
               color: this.labelColorData,
               insideColor: this.insideLabelColor
             },

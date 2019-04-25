@@ -1,11 +1,11 @@
 <template>
   <div class="sm-indicator" :style="[getBackgroundStyle]">
     <div class="sm-indicator__head">
-      <span class="sm-indicator__title" :style="[unit_titleStyle,getTextColorStyle]">{{title}}</span>
+      <span class="sm-indicator__title" :style="[getTextColorStyle]">{{title}}</span>
     </div>
     <div class="sm-indicator__content">
-      <span class="sm-indicator__num" :style="[numStyle, indicatorStyle]">{{numberSymbol}}</span>
-      <span class="sm-indicator__unit" :style="[unit_titleStyle,getTextColorStyle]">{{unit}}</span>
+      <span class="sm-indicator__num" :style="[indicatorStyle]">{{numberSymbol}}</span>
+      <span class="sm-indicator__unit" :style="[getTextColorStyle]">{{unit}}</span>
     </div>
   </div>
 </template>
@@ -29,9 +29,6 @@ export default {
     indicatorColor: {
       type: String
     },
-    fontSize: {
-      type: [String,Number]
-    },
     num: {
       type: [Number,String],
       default: 0
@@ -44,14 +41,6 @@ export default {
         let numberSymbol = this.addNumberSymbol(this.num);
       }
       return numberSymbol;
-    },
-    numStyle() {
-      return { fontSize: this.fontSize + "px" };
-    },
-    unit_titleStyle() {
-      return {
-        fontSize: parseInt(this.fontSize) * 0.66 + "px"
-      };
     },
     indicatorStyle() {
       return (

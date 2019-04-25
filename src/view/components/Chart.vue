@@ -88,10 +88,15 @@ export default {
     let icon = this.$el.children[0];
     if(this.iconClass && icon){
       icon.style.visibility = "hidden";
-      this.viewModel.on("chartinitsucceeded", () => {
-        icon.style.visibility = "visible";
-      });
     }
+    this.viewModel.on("chartinitsucceeded", () => {
+      if(this.iconClass && icon){
+        icon.style.visibility = "visible";
+      }
+      window.addEventListener('resize', () => {
+        this.viewModel.resize();
+      });
+    });
   }
 };
 </script>

@@ -39,10 +39,6 @@ export default {
     color: {
       type: String
     },
-    circleWidth: {
-      type: [Number, String],
-      default: 126
-    },
     showText: {
       type: Boolean,
       default: true
@@ -50,7 +46,8 @@ export default {
   },
   data() {
     return {
-      curColor: ""
+      curColor: "",
+      circleWidth: 126
     };
   },
   watch: {
@@ -67,6 +64,10 @@ export default {
   },
   loaded() {
     this.curColor = this.color || this.getColor(0);
+    this.circleWidth = this.$parent.$el.offsetWidth * 0.5;
+    window.addEventListener('resize', () => {
+      this.circleWidth = this.$parent.$el.offsetWidth * 0.5;
+    });
   }
 };
 </script>

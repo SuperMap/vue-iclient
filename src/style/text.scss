@@ -2,21 +2,4 @@
 
 @include b(text) {
   background: $--fill-base;
-  & .el-textarea {
-    padding: 4px;
-  }
-  & textarea {
-    border: none;
-    background: transparent;
-    resize: none;
-    padding: 0;
-    text-align: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    text-indent: inherit;
-    font-family: inherit;
-    line-height: inherit;
-    color: inherit;
-    pointer-events: none;
-  }
 }

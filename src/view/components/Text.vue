@@ -1,23 +1,14 @@
 <template>
-  <div
-    class="sm-text"
-    :style="getBackgroundStyle"
-  >
-    <el-input
-      :style="[formatFontStyle, getTextColorStyle]"
-      v-model="title"
-      type="textarea"
-      autosize
-      ref="textareaInfo"
-    ></el-input>
+  <div class="sm-text" :style="[getBackgroundStyle, formatFontStyle, getTextColorStyle]">
+    <span>{{title}}</span>
   </div>
 </template>
 
 <script>
-import Widget from "./Widget";
-import Theme from "../mixin/Theme";
+import Widget from './Widget';
+import Theme from '../mixin/Theme';
 export default {
-  name: "SmText",
+  name: 'SmText',
   extends: Widget,
   mixins: [Theme],
   props: {
@@ -31,19 +22,13 @@ export default {
   computed: {
     formatFontStyle() {
       let fontStyle = JSON.parse(JSON.stringify(this.fontStyle));
-      fontStyle.fontSize &&
-        (fontStyle.fontSize = parseFloat(fontStyle.fontSize) + "px");
+      fontStyle.fontSize && (fontStyle.fontSize = parseFloat(fontStyle.fontSize) + 'px');
       fontStyle.lineHeight &&
-        (fontStyle.lineHeight = parseFloat(fontStyle.lineHeight) + "px");
+        (fontStyle.lineHeight = parseFloat(fontStyle.lineHeight) + 'px');
       fontStyle.textIndent &&
-        (fontStyle.textIndent = parseFloat(fontStyle.textIndent) + "px");
+        (fontStyle.textIndent = parseFloat(fontStyle.textIndent) + 'px');
       return fontStyle;
     }
-  },
-  loaded() {
-    this.$nextTick(function() {
-      this.$refs.textareaInfo.resizeTextarea();
-    });
   }
 };
 </script>
