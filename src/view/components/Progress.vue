@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       curColor: "",
-      circleWidth: 126
+      circleWidth: 110
     };
   },
   watch: {
@@ -64,9 +64,11 @@ export default {
   },
   loaded() {
     this.curColor = this.color || this.getColor(0);
-    this.circleWidth = Math.min(this.$parent.$el.offsetWidth, this.$parent.$el.offsetHeight);
+    this.$nextTick(function() {
+      this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
+    });
     window.addEventListener('resize', () => {
-      this.circleWidth = Math.min(this.$parent.$el.offsetWidth, this.$parent.$el.offsetHeight);
+      this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
     });
   }
 };
