@@ -71,24 +71,24 @@
 </template>
 
 <script>
-import Theme from '../mixin/Theme';
-import Widget from './Widget';
-import MeasureViewModel from '../../viewmodel/MeasureViewModel';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import Theme from "../mixin/Theme";
+import Widget from "./Widget";
+import MeasureViewModel from "../../viewmodel/MeasureViewModel";
+import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 export default {
-  name: 'SmMeasure',
+  name: "SmMeasure",
   relativeMap: true,
   extends: Widget,
   mixins: [Theme],
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-measure'
+      default: "smwidgets-icons-measure"
     },
     headerName: {
       type: String,
-      default: '量算'
+      default: "量算"
     },
     showUnitSelect: {
       // 配置单位选择框是否显示，若不显示，则显示对应的默认单位
@@ -98,52 +98,52 @@ export default {
     distanceDefaultUnit: {
       // 距离默认单位
       type: String,
-      default: 'kilometers'
+      default: "kilometers"
     },
     areaDefaultUnit: {
       // 面积默认单位
       type: String,
-      default: 'kilometers'
+      default: "kilometers"
     }
   },
   data() {
     const unitOptions = {
       draw_line_string: {
-        kilometers: this.$t('measure.kilometers'),
-        miles: this.$t('measure.miles'),
-        meters: this.$t('measure.meters'),
-        feet: this.$t('measure.feet'),
-        yards: this.$t('measure.yards')
+        kilometers: this.$t("measure.kilometers"),
+        miles: this.$t("measure.miles"),
+        meters: this.$t("measure.meters"),
+        feet: this.$t("measure.feet"),
+        yards: this.$t("measure.yards")
       },
       draw_polygon: {
-        kilometers: this.$t('measure.squarekilometers'),
-        miles: this.$t('measure.squaremiles'),
-        meters: this.$t('measure.squaremeters'),
-        feet: this.$t('measure.squarefeet'),
-        yards: this.$t('measure.squareyards')
+        kilometers: this.$t("measure.squarekilometers"),
+        miles: this.$t("measure.squaremiles"),
+        meters: this.$t("measure.squaremeters"),
+        feet: this.$t("measure.squarefeet"),
+        yards: this.$t("measure.squareyards")
       }
     };
     return {
       unitOptions,
       modeGroups: [
         {
-          mode: 'draw_line_string',
-          title: this.$t('measure.distance'),
-          iconClass: 'smwidgets-icons-line-layer'
+          mode: "draw_line_string",
+          title: this.$t("measure.distance"),
+          iconClass: "smwidgets-icons-line-layer"
         },
         {
-          mode: 'draw_polygon',
-          title: this.$t('measure.area'),
-          iconClass: 'smwidgets-icons-polygon-layer'
+          mode: "draw_polygon",
+          title: this.$t("measure.area"),
+          iconClass: "smwidgets-icons-polygon-layer"
         }
       ],
-      activeMode: '',
-      result: '',
+      activeMode: "",
+      result: "",
       activeDistanceUnit: this.distanceDefaultUnit,
       activeAreaUnit: this.areaDefaultUnit,
       modeUnitMap: {
-        'draw_line_string': 'activeDistanceUnit',
-        'draw_polygon': 'activeAreaUnit'
+        draw_line_string: "activeDistanceUnit",
+        draw_polygon: "activeAreaUnit"
       }
     };
   },
@@ -163,7 +163,7 @@ export default {
       if (this.result) {
         return `${this.result} ${this.getUnitLabel}`;
       }
-      return '';
+      return "";
     },
     getUnitLabel() {
       const units = this.getUnitOptions;
@@ -172,10 +172,10 @@ export default {
       return label;
     },
     getAreaSelect() {
-      return this.activeMode === 'draw_polygon' && this.showUnitSelect;
+      return this.activeMode === "draw_polygon" && this.showUnitSelect;
     },
     getDistanceSelect() {
-      return this.activeMode === 'draw_line_string' && this.showUnitSelect;
+      return this.activeMode === "draw_line_string" && this.showUnitSelect;
     }
   },
   mounted() {
@@ -187,32 +187,36 @@ export default {
     });
 
     //控制显示结果的显示
-    this.viewModel.on('measure-finished', ({ result }) => {
+    this.viewModel.on("measure-finished", ({ result }) => {
       this.result = result;
     });
-    this.viewModel.on('measure-start', ({ result }) => {
-      this.result = '';
+    this.viewModel.on("measure-start", ({ result }) => {
+      this.result = "";
     });
-    this.viewModel.on('update-unit', ({result}) => {
+    this.viewModel.on("update-unit", ({ result }) => {
       this.result = result;
-    })
+    });
   },
   updated() {
     this.changeSelectInputStyle();
   },
   methods: {
     changeSelectInputStyle() {
-        const selectDom = this.$el.querySelector('.el-input__inner');
-        if(selectDom) {
-          selectDom.style.borderColor = this.getTextColor;
-          selectDom.style.color = this.getTextColor;
-          selectDom.style.backgroundColor = this.getBackground;  
-        }
+      const selectDom = this.$el.querySelector(".el-input__inner");
+      if (selectDom) {
+        selectDom.style.borderColor = this.getTextColor;
+        selectDom.style.color = this.getTextColor;
+        selectDom.style.backgroundColor = this.getBackground;
+      }
     },
     changeChosenStyle(visible) {
-      const chosenOption = this.$el.querySelector('.el-select-dropdown__item.selected');
-      if(chosenOption) {
-        chosenOption.style.color =  visible ? this.getColorStyle(0).color : '#606266';
+      const chosenOption = this.$el.querySelector(
+        ".el-select-dropdown__item.selected"
+      );
+      if (chosenOption) {
+        chosenOption.style.color = visible
+          ? this.getColorStyle(0).color
+          : "#606266";
       }
     },
     // 切换量算模式
@@ -220,12 +224,14 @@ export default {
       let modeUnitKey = this.modeUnitMap[mode];
       let activeUnit = this[modeUnitKey];
 
-      if (this.activeMode !== mode) {
+      if(this.map.loaded()){
+        if (this.activeMode !== mode) {
         this.viewModel.openDraw(mode, activeUnit);
         this.activeMode = mode;
       } else {
         this.viewModel.closeDraw();
         this.activeMode = null;
+      }
       }
     },
     updateUnit(unit) {

@@ -1,12 +1,12 @@
 import WidgetViewModel from './WidgetViewModel';
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
-import length from "@turf/length";
-import area from "@turf/area";
-import center from "@turf/center";
-import { convertLength, convertArea } from "@turf/helpers";
+import length from '@turf/length';
+import area from '@turf/area';
+import center from '@turf/center';
+import { convertLength, convertArea } from '@turf/helpers';
 import { reservedDecimal } from '../utils/formatter';
-import i18n from '../lang/index.js'
+import i18n from '../lang/index.js';
 /**
  * @class MeasureViewModel
  * @description 量算 viewModel.
@@ -16,16 +16,16 @@ import i18n from '../lang/index.js'
 class MeasureViewModel extends WidgetViewModel {
   constructor(options) {
     super();
-    this.tipNodes = [];// 收集测算长度实时生成的popup，以方便后面销毁
+    this.tipNodes = []; // 收集测算长度实时生成的popup，以方便后面销毁
     this.cacheLengthUnitList = []; //缓存量算长度每个节点的值跟单位，在修改单位时使用
     this.cachePolygonUnit = {};
     this.mode = null;
-    this.result = ''
-    this.activeMode = ''
+    this.result = '';
+    this.activeMode = '';
     this.map = options.map;
     this._addDrawControl();
+    this.isEditing = true;
   }
-
 
   //开启绘制
   openDraw(mode, activeUnit) {
@@ -34,39 +34,43 @@ class MeasureViewModel extends WidgetViewModel {
     this.mode = mode;
     this.activeMode = mode;
     this.activeUnit = activeUnit;
+    this.isEditing = true;
     // 绘画线或面
     this.draw.changeMode(mode);
     this.measureNodeDistanceBind = this._measureNodeDistance.bind(this);
-    this.map.on('click', this.measureNodeDistanceBind);
+    this.map.on('mousedown', this.measureNodeDistanceBind);
   }
 
   closeDraw() {
+    this.isEditing = false;
     this.ids = null;
     this._initDraw();
     this._resetEvent();
-    // this.map.off('click', this.measureNodeDistanceBind);
-    //this.mode = mode;
     this.activeMode = null;
     this.draw.trash();
-    this.map.off('click', this.continueDrawBind)
+    this.map.off('mousedown', this.continueDrawBind);
   }
 
   updateUnit(unit) {
     if (this.tipNodes.length !== 0) {
       for (let i = 1; i < this.tipNodes.length; i++) {
-        let transValue = convertLength(this.cacheLengthUnitList[i - 1].value, this.cacheLengthUnitList[i - 1].unit, unit);
+        let transValue = convertLength(
+          this.cacheLengthUnitList[i - 1].value,
+          this.cacheLengthUnitList[i - 1].unit,
+          unit
+        );
         transValue = this._getFormatResult(transValue);
-        this.cacheLengthUnitList[i - 1].value = transValue
+        this.cacheLengthUnitList[i - 1].value = transValue;
         this.cacheLengthUnitList[i - 1].unit = unit;
         if (this.activeMode === 'draw_line_string') {
-          let uniti18n = i18n.t(`measure.${unit}`)
+          let uniti18n = i18n.t(`measure.${unit}`);
           this.tipNodes[i] && this.tipNodes[i].setText(`${transValue} ${uniti18n}`);
         }
       }
       this.result && (this.result = convertLength(this.result, this.activeUnit, unit));
     } else if (this.cachePolygonUnit.value && this.cachePolygonUnit.unit) {
       let transValue = convertArea(this.cachePolygonUnit.value, this.cachePolygonUnit.unit, unit);
-      let uniti18n = i18n.t(`measure.square${unit}`)
+      let uniti18n = i18n.t(`measure.square${unit}`);
       this.tipHoverDiv && this.tipHoverDiv.setText(`${transValue} ${uniti18n}`);
       this.result && (this.result = convertArea(this.result, this.activeUnit, unit));
     }
@@ -87,11 +91,7 @@ class MeasureViewModel extends WidgetViewModel {
         {
           id: 'gl-draw-line',
           type: 'line',
-          filter: [
-            'all',
-            ['==', '$type', 'LineString'],
-            ['!=', 'mode', 'static']
-          ],
+          filter: ['all', ['==', '$type', 'LineString'], ['!=', 'mode', 'static']],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
@@ -133,12 +133,7 @@ class MeasureViewModel extends WidgetViewModel {
         {
           id: 'gl-draw-polygon-and-line-vertex-halo-active',
           type: 'circle',
-          filter: [
-            'all',
-            ['==', 'meta', 'vertex'],
-            ['==', '$type', 'Point'],
-            ['!=', 'mode', 'static']
-          ],
+          filter: ['all', ['==', 'meta', 'vertex'], ['==', '$type', 'Point'], ['!=', 'mode', 'static']],
           paint: {
             'circle-radius': 5,
             'circle-color': '#FFF'
@@ -148,12 +143,7 @@ class MeasureViewModel extends WidgetViewModel {
         {
           id: 'gl-draw-polygon-and-line-vertex-active',
           type: 'circle',
-          filter: [
-            'all',
-            ['==', 'meta', 'vertex'],
-            ['==', '$type', 'Point'],
-            ['!=', 'mode', 'static']
-          ],
+          filter: ['all', ['==', 'meta', 'vertex'], ['==', '$type', 'Point'], ['!=', 'mode', 'static']],
           paint: {
             'circle-radius': 3,
             'circle-color': '#D20C0C'
@@ -164,11 +154,7 @@ class MeasureViewModel extends WidgetViewModel {
         {
           id: 'gl-draw-line-static',
           type: 'line',
-          filter: [
-            'all',
-            ['==', '$type', 'LineString'],
-            ['==', 'mode', 'static']
-          ],
+          filter: ['all', ['==', '$type', 'LineString'], ['==', 'mode', 'static']],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
@@ -206,16 +192,30 @@ class MeasureViewModel extends WidgetViewModel {
       ]
     });
     this.map.addLayer(this.draw);
-
     this.map.on('draw.create', this._finishDraw.bind(this));
+    this.map.on('draw.modechange', this._resetDraw.bind(this));
   }
+
+  _resetDraw(e) {
+    if (this.isEditing) {
+      this.map.off('mousemove', this.popupFollowMouseBind);
+      this.ids = this.draw.getSelectedIds();
+      this.draw.changeMode(this.mode);
+      this.continueDrawBind = this._continueDraw.bind(this);
+      this.map.on('mousedown', this.continueDrawBind);
+      this.measureNodeDistanceBind = this._measureNodeDistance.bind(this);
+      this.map.on('mousedown', this.measureNodeDistanceBind);
+      this.fire('measure-finished', { result: this._getFormatResult(this.result) });
+    }
+  }
+
   _initDraw() {
     //根据ids只删除上一次量算的数据
     this.ids ? this.draw.delete(this.ids) : this.draw.deleteAll();
-    this.measureNodes = [];// 收集测算长度生成每个点的feature数据, 方便后面计算总长度
+    this.measureNodes = []; // 收集测算长度生成每个点的feature数据, 方便后面计算总长度
     this.tipNodes.length && this.tipNodes.map(tipNode => tipNode.remove());
     this.tipNodes = [];
-    this.cacheLengthUnitList = []
+    this.cacheLengthUnitList = [];
     this.result = 0;
     this.fire('measure-start', { result: this._getFormatResult(this.result) });
   }
@@ -223,37 +223,27 @@ class MeasureViewModel extends WidgetViewModel {
   _continueDraw(e) {
     this._initDraw();
     this._resetEvent(false);
-    this.map.off('click', this.continueDrawBind)
+
+    this.map.off('mousedown', this.continueDrawBind);
   }
 
   // 绘画结束后计算最后的结果
   _finishDraw(e) {
-    this.map.off('click', this.measureNodeDistanceBind);
+    this.time = null;
+    this.map.off('mousedown', this.measureNodeDistanceBind);
     switch (this.activeMode) {
       case 'draw_line_string':
-      
-        //this.result = length(e.features[0], this.activeUnit);
         let tempLength = length(e.features[0], 'kilometers');
-        this.result = convertLength(tempLength,'kilometers',this.activeUnit);
+        this.result = convertLength(tempLength, 'kilometers', this.activeUnit);
         this._resetEvent();
         break;
       case 'draw_polygon':
-        //this.result = area(e.features[0]);
         let tempArea = area(e.features[0]);
-        this.result = convertArea(tempArea,'meters',this.activeUnit);
+        this.result = convertArea(tempArea, 'meters', this.activeUnit);
         this._resetEvent(true, false, this.result, e.features[0]);
         break;
     }
     this.fire('measure-finished', { result: this._getFormatResult(this.result) });
-
-    setTimeout(() => {
-      this.ids = this.draw.getSelectedIds()
-      this.draw.changeMode(this.mode);
-      this.continueDrawBind = this._continueDraw.bind(this)
-      this.map.on('click', this.continueDrawBind)
-      this.measureNodeDistanceBind = this._measureNodeDistance.bind(this);
-      this.map.on('click', this.measureNodeDistanceBind);
-    }, 0);
   }
 
   // 绘画每个点显示tip，同时监听鼠标move事件
@@ -299,43 +289,39 @@ class MeasureViewModel extends WidgetViewModel {
     let feature = {
       type: 'Feature',
       geometry: {
-        type: `${
-          this.activeMode === 'draw_line_string' ? 'LineString' : 'Polygon'
-          }`,
-        coordinates:
-          this.activeMode === 'draw_line_string'
-            ? measureNodeList
-            : [measureNodeList]
+        type: `${this.activeMode === 'draw_line_string' ? 'LineString' : 'Polygon'}`,
+        coordinates: this.activeMode === 'draw_line_string' ? measureNodeList : [measureNodeList]
       }
     };
     switch (this.activeMode) {
       case 'draw_line_string':
-        //this.result = length(feature, this.activeUnit);
         let tempLength = length(feature, 'kilometers');
-        this.result = convertLength(tempLength,'kilometers',this.activeUnit);
+        this.result = convertLength(tempLength, 'kilometers', this.activeUnit);
         break;
       case 'draw_polygon':
-        //this.result = area(feature);
         let tempArea = area(feature);
-        this.result = convertArea(tempArea,'meters',this.activeUnit);
+        this.result = convertArea(tempArea, 'meters', this.activeUnit);
         break;
     }
-    let uniti18n
+    let uniti18n;
     if (this.activeMode === 'draw_line_string') {
-      uniti18n = i18n.t(`measure.${this.activeUnit}`)
-    } else if (this.activeMode === "draw_polygon") {
-      uniti18n = i18n.t(`measure.square${this.activeUnit}`)
+      uniti18n = i18n.t(`measure.${this.activeUnit}`);
+    } else if (this.activeMode === 'draw_polygon') {
+      uniti18n = i18n.t(`measure.square${this.activeUnit}`);
     }
     popup.setText(`${this._getFormatResult(this.result)} ${uniti18n}`);
     popup.addTo(this.map);
     this.cachePolygonUnit['value'] = this.result;
     this.cachePolygonUnit['unit'] = this.activeUnit;
     this.tipHoverDiv = popup;
-
   }
 
   _renderPopupTip(e) {
-    const { point, originalEvent, lngLat: { lng, lat } } = e;
+    const {
+      point,
+      originalEvent,
+      lngLat: { lng, lat }
+    } = e;
     const popup = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: false
@@ -350,19 +336,18 @@ class MeasureViewModel extends WidgetViewModel {
         }
       };
       //修改单位！！！！
-      //let calcValue = length(line, this.activeUnit);
       let tempLength = length(line, 'kilometers');
-      let calcValue = convertLength(tempLength,'kilometers',this.activeUnit);
+      let calcValue = convertLength(tempLength, 'kilometers', this.activeUnit);
 
       let uniti18n;
       if (this.activeMode === 'draw_line_string') {
-        uniti18n = i18n.t(`measure.${this.activeUnit}`)
-      } else if (this.activeMode === "draw_polygon") {
-        uniti18n = i18n.t(`measure.square${this.activeUnit}`)
+        uniti18n = i18n.t(`measure.${this.activeUnit}`);
+      } else if (this.activeMode === 'draw_polygon') {
+        uniti18n = i18n.t(`measure.square${this.activeUnit}`);
       }
       let renderText = `${this._getFormatResult(calcValue)} ${uniti18n}`;
 
-      this.cacheLengthUnitList.push({ value: this._getFormatResult(calcValue), unit: this.activeUnit })
+      this.cacheLengthUnitList.push({ value: this._getFormatResult(calcValue), unit: this.activeUnit });
       popup.setText(renderText);
     } else {
       popup.setText('起点');
@@ -375,7 +360,7 @@ class MeasureViewModel extends WidgetViewModel {
   _resetEvent(isOffEvent = true, isResetHoverTip = true, result, feature) {
     this.isOpenMoveEvent = true;
     this.map.off('mousemove', this.popupFollowMouseBind);
-    isOffEvent && this.map.off('click', this.measureNodeDistanceBind);
+    isOffEvent && this.map.off('mousedown', this.measureNodeDistanceBind);
     if (isResetHoverTip) {
       // 如果是测量长度，销毁实时计算生成的popup
       this.tipHoverDiv && this.tipHoverDiv.remove();
@@ -383,7 +368,7 @@ class MeasureViewModel extends WidgetViewModel {
     } else {
       // 如果是测量面积，直接利用实时计算生成的popup显示最后结果
       const centerResult = center(feature);
-      let uniti18n = i18n.t(`measure.square${this.activeUnit}`)
+      let uniti18n = i18n.t(`measure.square${this.activeUnit}`);
       result = this._getFormatResult(result);
       this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
     }
