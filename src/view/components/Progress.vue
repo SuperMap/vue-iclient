@@ -60,10 +60,19 @@ export default {
       handler() {
         this.curColor = this.getColor(0);
       }
+    },
+    textColorsData: {
+      handler() {
+        if(this.progressTextNode) {
+          this.progressTextNode.style.color = this.getTextColor;
+        }
+      }
     }
   },
   loaded() {
     this.curColor = this.color || this.getColor(0);
+    this.progressTextNode = this.$el.querySelector('.el-progress__text');
+    this.progressTextNode.style.color = this.getTextColor;
     this.$nextTick(function() {
       this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
     });
