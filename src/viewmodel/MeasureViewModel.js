@@ -1,5 +1,4 @@
 import WidgetViewModel from './WidgetViewModel';
-import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import length from '@turf/length';
 import area from '@turf/area';

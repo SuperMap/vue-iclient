@@ -1,4 +1,3 @@
-import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class WidgetViewModel

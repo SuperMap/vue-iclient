@@ -15,7 +15,6 @@
 <script>
 /* eslint-disable */
 import MiniMapViewModel from "../../viewmodel/MiniMapViewModel";
-import mapboxgl from "@libs/mapboxgl/mapbox-gl-enhance";
 import Widget from "./Widget";
 export default {
   name: "SmMiniMap",

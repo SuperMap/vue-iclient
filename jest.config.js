@@ -12,7 +12,7 @@ module.exports = {
   testRegex: "./test/.*\\.spec\\.(js|vue)$",
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
-    '^@libs/(.*)$': '<rootDir>/libs/$1',
+    '^@libs/(.*)$': '<rootDir>/static/libs/$1',
     '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
     "\\.(css|less)$": "identity-obj-proxy" 
   },

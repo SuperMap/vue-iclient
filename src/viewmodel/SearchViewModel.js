@@ -1,5 +1,4 @@
 import WidgetViewModel from "./WidgetViewModel";
-import "@libs/iclient-mapboxgl/iclient9-mapboxgl.min";
 import clonedeep from 'lodash.clonedeep';
 import center from '@turf/center';
 

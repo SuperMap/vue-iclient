@@ -3,7 +3,6 @@ import Vue from 'vue';
 
 import SmWidgets from '../src/index.js';
 import App from './App';
-import '@libs/mapboxgl/mapbox-gl-enhance.css';
 
 Vue.config.productionTip = false;
 

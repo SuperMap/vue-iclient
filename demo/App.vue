@@ -5,28 +5,28 @@
     </Map>-->
     <!-- 深色 -->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
-      <!-- <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
+      <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
       <sm-text title="文本框" :fontStyle='{ fontSize: "18", lineHeight: "18", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
       <sm-time-text :fontStyle='{ fontSize: "18", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
       <sm-icon class-name="edit" size="20" weight="800" background='unset' text-color='#333'></sm-icon>
-      <sm-progress type="circle" :percentage="80"></sm-progress>-->
+      <sm-progress type="circle" :percentage="80"></sm-progress>
       <sm-layer-list position="top-right"/>
-      <!-- <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend> -->
-      <!-- <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/> -->
+      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
+      <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/>
       <sm-chart
         :chartType="chartType"
         :datasets="datasets"
         :chartOptions="chartOptions"
         position="bottom-right"
-      ></sm-chart>
-      <!-- 浅色 -->
+    ></sm-chart>
+    <!-- 浅色 -->
 
-      <sm-query
+    <!-- <sm-query
         :iportal-data="iportalDataQuery"
         :rest-data="restDataQuery"
         :rest-map="restMapQuery"
       ></sm-query>
-      <!-- <sm-search
+      <sm-search
         position="top-right"
         :layer-names="layerSourceNames"
         :address-match="addressMatch"
@@ -34,18 +34,24 @@
         :rest-data="restDataSearch"
         :iportal-data="iportalData"
         :online-local-search="onlineLocalSearch"
-      ></sm-search>-->
-      <!-- <sm-pan></sm-pan> -->
-      <!-- <sm-zoom :show-zoom-slider="true"></sm-zoom> -->
-      <!-- <sm-scale position="bottom-left"></sm-scale> -->
+      ></sm-search>
+      <sm-pan></sm-pan>
+      <sm-zoom :show-zoom-slider="true"></sm-zoom>
+      <sm-scale position="bottom-left"></sm-scale>
       <sm-mini-map position="bottom-right"></sm-mini-map>
-      <sm-measure position="top-right"></sm-measure>
+    <sm-measure position="top-right"></sm-measure>-->
 
-      <!-- <el-button @click="changeType" style="position:absolute;left:210px;z-index:300">修改图表的type:</el-button>
+    <!-- <el-button @click="changeType" style="position:absolute;left:210px;z-index:300">修改图表的type:</el-button>
       <el-button @click="changeChartoption" style="position:absolute;left:350px;z-index:300">修改图表的xy轴:</el-button>
-      <el-button @click="changeDatasets" style="position:absolute;left:500px;z-index:300">修改图表的datasets:</el-button>-->
+    <el-button @click="changeDatasets" style="position:absolute;left:500px;z-index:300">修改图表的datasets:</el-button>-->
     </sm-web-map>
-    
+    <!-- "http://192.168.12.230:8092/iportal/web/scenes/2065175708" -->
+    <!-- <sm-web-scene
+      scene-url="http://support.supermap.com.cn:8090/iserver/services/3D-CBD/rest/realspace"
+      :scan-effect='scanEffect'
+    ></sm-web-scene> -->
+    <!-- <sm-web-scene scene-url = 'http://192.168.12.230:8092/iportal/web/scenes/2065175708'></sm-web-scene> -->
+
     <div class="changeTheme">
       <el-button @click="changeStyle" type="primary" size="mini">深色主题</el-button>
       <el-button @click="changeStyle1" type="success" size="mini">浅色主题</el-button>
@@ -70,6 +76,12 @@ export default {
       styleObject: {
         width: "600px"
       },
+      scanEffect: {
+        status: true, 
+        type: 'line',
+        period: 2000,
+        speed: 500,
+      },
       iportalDataQuery: [
         new widgets.commontypes.iPortalDataParameter({
           url: "http://192.168.12.230:8092/web/datas/1962026684",
@@ -79,7 +91,7 @@ export default {
       restDataQuery: [
         new widgets.commontypes.RestDataParameter({
           url: host + "/iserver/services/data-world/rest/data",
-          attributeFilter: "SmID>0",
+          attributeFilter: "NAME='Huang He'",
           dataName: ["World:Countries"]
         })
       ],

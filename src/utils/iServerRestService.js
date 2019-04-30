@@ -1,4 +1,3 @@
-import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance';
 export default class iServerRestService extends mapboxgl.Evented {
   constructor(url) {
     super();

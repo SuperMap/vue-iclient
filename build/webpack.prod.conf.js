@@ -42,18 +42,6 @@ const webpackConfig = merge(baseWebpackConfig, {
       amd: 'vue'
     },
     'echarts': 'echarts',
-    '@libs/mapboxgl/mapbox-gl-enhance': {
-      root: 'mapboxgl',
-      commonjs: './libs/mapboxgl/mapbox-gl-enhance.js',
-      commonjs2: './libs/mapboxgl/mapbox-gl-enhance.js',
-      amd: './libs/mapboxgl/mapbox-gl-enhance.js'
-    },
-    '@libs/iclient-mapboxgl/iclient9-mapboxgl.min': {
-      root: 'SuperMap',
-      commonjs: './libs/iclient-mapboxgl/iclient9-mapboxgl.min',
-      commonjs2: './libs/iclient-mapboxgl/iclient9-mapboxgl.min',
-      amd: './libs/iclient-mapboxgl/iclient9-mapboxgl.min'
-    },
     "@mapbox/mapbox-gl-draw": {
       root: 'MapboxDraw',
       commonjs: '@mapbox/mapbox-gl-draw',
@@ -76,13 +64,6 @@ const webpackConfig = merge(baseWebpackConfig, {
       filename: isMinify ? `${outputFileName}.min.css` : `${outputFileName}.css`
     }),
     new webpack.HashedModuleIdsPlugin(),
-    new CopyWebpackPlugin([
-      {
-        from: path.resolve(__dirname, '../libs'),
-        to: path.resolve(__dirname, '../dist/libs'),
-        ignore: ['.*']
-      }
-    ]),
   ]
 })
 

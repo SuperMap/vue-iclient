@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import mapboxgl from "@libs/mapboxgl/mapbox-gl-enhance";
 import mapEvent from "../commontypes/mapEvent";
 import Widget from "./Widget";
 
