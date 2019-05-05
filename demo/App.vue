@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <!-- <Map :map-options="mapOptions">
-      <Chart :datasets="datasets" :chartOptions="chartOptions" ref="chart"></Chart>
-    </Map>-->
+   <!-- <sm-map :map-options="mapOptions"> -->
+      <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer> -->
+    <!-- </sm-map> -->
     <!-- 深色 -->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
       <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
@@ -44,6 +44,8 @@
     <!-- <el-button @click="changeType" style="position:absolute;left:210px;z-index:300">修改图表的type:</el-button>
       <el-button @click="changeChartoption" style="position:absolute;left:350px;z-index:300">修改图表的xy轴:</el-button>
     <el-button @click="changeDatasets" style="position:absolute;left:500px;z-index:300">修改图表的datasets:</el-button>-->
+    <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer> -->
+    <sm-vector-tile-layer style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"></sm-vector-tile-layer>
     </sm-web-map>
     <!-- "http://192.168.12.230:8092/iportal/web/scenes/2065175708" -->
     <!-- <sm-web-scene
@@ -102,6 +104,16 @@ export default {
           layerName: "Capitals@World.1"
         })
       ],
+       rasteLayerOptions: {
+        name: "我的栅格图层",
+        opacity: 0.8,
+        visible:true,
+        tiles: [
+          host +
+            "/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}"
+        ],
+        mapUrl: host + "/iserver/services/map-china400/rest/maps/China"
+      },
       layerSourceNames: ["UNIQUE-民航数-0"],
       addressMatch: [
         new widgets.commontypes.AddressMatchParameter({

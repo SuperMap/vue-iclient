@@ -57,6 +57,9 @@ export default {
     this.parentIsWebMapOrMap = ["smwebmap", "smmap"].includes(
       this.$parent.$options.name && this.$parent.$options.name.toLowerCase()
     );
+    this.isLayer = ["smrasterlayer","smvectortilelayer"].includes(
+      this.$options.name && this.$options.name.toLowerCase()
+    );
     /**
      * 便于区分存在多个map时，子组件对应的map的渲染；
      * map 和 webmap的props属性是target 其他组件都叫mapTarget
@@ -70,7 +73,10 @@ export default {
       this.$emit("loaded");
     } else {
       this.$el && this.filterDelayLoad && (this.isShow = false);
-      this.$el && this.filterDelayLoad && (this.$el.style.display='none');
+      this.$el &&
+        this.filterDelayLoad &&
+        this.$el.style &&
+        (this.$el.style.display = "none");
       if (mapEvent.$options.getMap(targetName)) {
         this.loadMap(targetName);
       } else {
@@ -113,14 +119,18 @@ export default {
     loadMap(targetName) {
       this.map = mapEvent.$options.getMap(targetName);
       this.webmap = mapEvent.$options.getWebMap(targetName);
-      this.parentIsWebMapOrMap && this.addControl(this.map);
+      this.parentIsWebMapOrMap && !this.isLayer && this.addControl(this.map);
       callHook(this, "loaded");
       // 控制与map组件同级的组件的显示加载
       this.$el && this.filterDelayLoad && (this.isShow = true);
       this.$nextTick(() => {
         this.$emit("loaded");
       });
-  this.$el && this.filterDelayLoad && (this.$el.style.display='block');    },
+      this.$el &&
+        this.filterDelayLoad &&
+        this.$el.style &&
+        (this.$el.style.display = "block");
+    },
     // 微件设置vm实例
     setViewModel(viewModel) {
       this.viewModel = viewModel;

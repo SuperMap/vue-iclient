@@ -17,3 +17,5 @@ export {default as Progress} from './Progress.vue';
 export {default as Icon} from './Icon.vue';
 export {default as LiquidFill} from './LiquidFill.vue';
 export {default as WebScene} from './WebScene.vue';
+export {default as RasterLayer} from './RasterLayer.vue';
+export {default as VectorTileLayer} from './VectorTileLayer.vue';
