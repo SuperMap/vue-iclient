@@ -51,6 +51,7 @@
     <!-- <sm-web-scene
       scene-url="http://support.supermap.com.cn:8090/iserver/services/3D-CBD/rest/realspace"
       :scan-effect='scanEffect'
+      :navigation='false'
     ></sm-web-scene> -->
     <!-- <sm-web-scene scene-url = 'http://192.168.12.230:8092/iportal/web/scenes/2065175708'></sm-web-scene> -->
 

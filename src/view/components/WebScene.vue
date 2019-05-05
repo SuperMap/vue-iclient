@@ -20,6 +20,10 @@ export default {
     },
     scanEffect: {
       type: Object
+    },
+    navigation:{
+      type:Boolean,
+      default:true
     }
   },
   computed: {
@@ -39,7 +43,8 @@ export default {
       this.sceneViewModel = new WebSceneViewModel(
         this.sceneId,
         this.sceneUrl,
-        this.scanEffect
+        this.scanEffect,
+        this.navigation
       );
       this.sceneViewModel.on("createsceneviewersucceeded", () => {
         this.sceneViewer = this.sceneViewModel.sceneViewer;

@@ -6,11 +6,12 @@ import WidgetViewModel from './WidgetViewModel';
  * @extends WidgetViewModel
  */
 export default class WebSceneViewModel extends WidgetViewModel {
-  constructor(target, serviceUrl,scanEffect) {
+  constructor(target, serviceUrl,scanEffect, navigation) {
     super();
     this.scanEffect = scanEffect || {};
     this.serviceUrl = serviceUrl;
     this.sceneId = target;
+    this.navigation = navigation || true;
     if (this.serviceUrl.indexOf('iserver') >= 0) {
       this.sceneUrl = this.serviceUrl;
       this.createScene();
@@ -80,7 +81,8 @@ export default class WebSceneViewModel extends WidgetViewModel {
     let sceneUrl = sceneParam.sceneUrl;
     sceneUrl = sceneUrl.slice(0, sceneUrl.indexOf('/rest/realspace') + 15);
     this.sceneViewer = new Cesium.Viewer(this.sceneId, {
-      infobox: false
+      infobox: false,
+      navigation:this.navigation
     });
     this.fire('createsceneviewersucceeded');
     this.scene = this.sceneViewer.scene;
