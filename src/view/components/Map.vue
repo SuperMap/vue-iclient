@@ -46,7 +46,7 @@ export default {
       map.on("load", () => {
         mapEvent.$emit(`initMap-${this.target}`, map);
         this.$children.forEach(children => {
-          children.isLayer = ["smrasterlayer", "smvectortilelayer"].includes(
+          children.isLayer = ["smrasterlayer", "smvectortilelayer", "smmapv"].includes(
             children.$options.name && children.$options.name.toLowerCase()
           );
           if (!children.isLayer) {

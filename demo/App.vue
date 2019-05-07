@@ -1,8 +1,9 @@
 <template>
   <div id="app">
-   <!-- <sm-map :map-options="mapOptions"> -->
-      <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer> -->
-    <!-- </sm-map> -->
+    <!-- <sm-map :map-options="mapOptions">
+      <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer>
+      <sm-map-v :data-set="dataSet" :mapv-options="mapvOptions"></sm-map-v>
+    </sm-map> -->
     <!-- 深色 -->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
       <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
@@ -75,12 +76,48 @@ export default {
       "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox </a>" +
       " with <span>© <a href='http://iclient.supermap.io' target='_blank'>SuperMap iClient</a> | </span>" +
       " Map Data <span>© <a href='http://support.supermap.com.cn/product/iServer.aspx' target='_blank'>SuperMap iServer</a></span> ";
+    var randomCount = 1000;
+
+    var data = [];
+
+    var citys = ["北京", "天津", "上海", "重庆", "石家庄", "太原", "呼和浩特", "哈尔滨", "长春", "沈阳", "济南",
+        "南京", "合肥", "杭州", "南昌", "福州", "郑州", "武汉", "长沙", "广州", "南宁", "西安", "银川", "兰州",
+        "西宁", "乌鲁木齐", "成都", "贵阳", "昆明", "拉萨", "海口"];
+
+    // 构造数据
+    while (randomCount--) {
+        var cityCenter = mapv.utilCityCenter.getCenterByCityName(citys[parseInt(Math.random() * citys.length)]);
+        data.push({
+            geometry: {
+                type: 'Point',
+                coordinates: [cityCenter.lng - 2 + Math.random() * 4, cityCenter.lat - 2 + Math.random() * 4]
+            },
+            count: 30 * Math.random()
+        });
+    }
+
+    var dataSet = new mapv.DataSet(data);
+
+    var options = {
+        fillStyle: 'rgba(55, 50, 250, 0.8)',
+        shadowColor: 'rgba(255, 250, 50, 1)',
+        shadowBlur: 20,
+        max: 100,
+        size: 50,
+        label: {
+            show: true,
+            fillStyle: 'white',
+        },
+        globalAlpha: 0.5,
+        gradient: {0.25: "rgb(0,0,255)", 0.55: "rgb(0,255,0)", 0.85: "yellow", 1.0: "rgb(255,0,0)"},
+        draw: 'honeycomb'
+    };
     return {
       styleObject: {
         width: "600px"
       },
       scanEffect: {
-        status: true, 
+        status: true,
         type: 'line',
         period: 2000,
         speed: 500,
@@ -201,7 +238,9 @@ export default {
         // },
         xAxis: "LANDTYPE",
         yAxis: ["AREA", "AREA_1"]
-      }
+      },
+      dataSet,
+      mapvOptions: options
     };
   },
   methods: {
