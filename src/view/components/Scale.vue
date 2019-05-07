@@ -1,16 +1,16 @@
 <template>
-  <div class="sm-scale" :style="[scaleStyle, getColorStyle(0)]">{{content}}</div>
+  <div class="sm-widget-scale" :style="[scaleStyle, getColorStyle(0)]">{{content}}</div>
 </template>
 <script>
-import Theme from '../mixin/Theme';
+import Theme from '../mixin/theme';
+import MapGetter from "../mixin/map-getter";
+
 import ScaleViewModel from "../../viewmodel/ScaleViewModel";
-import Widget from "./Widget";
 
 export default {
   name: "SmScale",
-  extends: Widget,
   relativeMap:true,
-  mixins: [Theme],
+  mixins: [MapGetter,Theme],
   props: {
     unit: {
       type: String,

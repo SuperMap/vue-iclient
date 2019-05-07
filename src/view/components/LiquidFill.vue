@@ -1,20 +1,15 @@
 <template>
-    <div
-      class="sm-liquidFill"
-      id="chart"
-      ref="chart"
-    ></div>
+  <div class="sm-widget-liquidFill" id="chart" ref="chart"></div>
 </template>
 <script>
 import echarts from "echarts";
-import Theme from "../mixin/Theme";
+import Theme from "../mixin/theme";
+import Control from "../mixin/control";
 import "echarts-liquidfill";
-import Widget from "./Widget";
 
 export default {
   name: "SmLiquidFill",
-  extends: Widget,
-  mixins: [Theme],
+  mixins: [Control, Theme],
   props: {
     //百分比的值
     value: {
@@ -64,7 +59,7 @@ export default {
       labelColorData: "",
       borderColorData: "",
       backgroundColorData: "",
-      size: '140px'
+      size: "140px"
     };
   },
   computed: {
@@ -77,29 +72,35 @@ export default {
       return data;
     }
   },
-  loaded() {
-    Object.keys(this.$props).forEach((watchItem) => {
-      this.$watch(watchItem,() => {
-        this.updateChart();
-      })
-    })
-    this.chart = echarts.init(this.$refs.chart);
-    this.updateChart();
-    this.chart.on('finished', () => {
-      this.chart.resize();
-    });
-    this.$on("themeStyle", () => {
-      this.waveColorData = this.getColor(0);
-      this.labelColorData = this.getTextColor;
-      this.borderColorData = this.getColor(0);
-      this.backgroundColorData = this.getBackground;
-      this.updateChart(true);
-    });
-    addEventListener('resize', () => {
-      this.chart.resize();
-    })
+  mounted() {
+    this.initializeChart();
   },
   methods: {
+    resize() {
+      this.chart && this.chart.resize();
+    },
+    initializeChart() {
+      Object.keys(this.$props).forEach(watchItem => {
+        this.$watch(watchItem, () => {
+          this.updateChart();
+        });
+      });
+      this.chart = echarts.init(this.$refs.chart);
+      this.updateChart();
+      // this.chart.on("finished", () => {
+      //   this.chart.resize();
+      // });
+      this.$on("themeStyle", () => {
+        this.waveColorData = this.getColor(0);
+        this.labelColorData = this.getTextColor;
+        this.borderColorData = this.getColor(0);
+        this.backgroundColorData = this.getBackground;
+        this.updateChart(true);
+      });
+      window.addEventListener("resize", () => {
+        this.chart.resize();
+      });
+    },
     updateChart(propsUpdate = false) {
       if (!propsUpdate) {
         this.waveColorData = this.waveColor || this.getColor(0);

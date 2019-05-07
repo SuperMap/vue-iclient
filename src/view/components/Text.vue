@@ -1,16 +1,16 @@
 <template>
-  <div class="sm-text" :style="[getBackgroundStyle, formatFontStyle, getTextColorStyle]">
+  <div class="sm-widget-text" :style="[getBackgroundStyle, formatFontStyle, getTextColorStyle]">
     <span>{{title}}</span>
   </div>
 </template>
 
 <script>
-import Widget from './Widget';
-import Theme from '../mixin/Theme';
+import Theme from "../mixin/theme";
+import Control from "../mixin/control";
+
 export default {
-  name: 'SmText',
-  extends: Widget,
-  mixins: [Theme],
+  name: "SmText",
+  mixins: [Control, Theme],
   props: {
     fontStyle: {
       type: Object
@@ -22,11 +22,12 @@ export default {
   computed: {
     formatFontStyle() {
       let fontStyle = JSON.parse(JSON.stringify(this.fontStyle));
-      fontStyle.fontSize && (fontStyle.fontSize = parseFloat(fontStyle.fontSize) + 'px');
+      fontStyle.fontSize &&
+        (fontStyle.fontSize = parseFloat(fontStyle.fontSize) + "px");
       fontStyle.lineHeight &&
-        (fontStyle.lineHeight = parseFloat(fontStyle.lineHeight) + 'px');
+        (fontStyle.lineHeight = parseFloat(fontStyle.lineHeight) + "px");
       fontStyle.textIndent &&
-        (fontStyle.textIndent = parseFloat(fontStyle.textIndent) + 'px');
+        (fontStyle.textIndent = parseFloat(fontStyle.textIndent) + "px");
       return fontStyle;
     }
   }

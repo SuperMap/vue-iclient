@@ -6,7 +6,7 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    class="sm-chart"
+    class="sm-widget-chart"
     v-show="isShow"
     :id="(!iconClass&&!headerName)&&'chart'"
   >
@@ -17,14 +17,15 @@
 <script>
 /* eslint-disable */
 import { ChartViewModel } from "../../viewmodel/ChartViewModel";
-import Widget from "./Widget";
-import Theme from "../mixin/Theme";
-import clonedeep from 'lodash.clonedeep';
+import VmUpdater from "../mixin/vm-updater";
+import Control from "../mixin/control";
+import Theme from "../mixin/theme";
+import Card from "../mixin/card";
+import clonedeep from "lodash.clonedeep";
 export default {
   name: "SmChart",
   viewModelProps: ["chartType", "datasets", "chartOptions"],
-  extends: Widget,
-  mixins: [Theme],
+  mixins: [Control, Theme, Card, VmUpdater],
   props: {
     iconClass: {
       type: String,
@@ -75,28 +76,34 @@ export default {
     },
     getFeatures() {
       this.viewModel && this.viewModel.getFeatures();
+    },
+    initializeChart() {
+      this.viewModel = new ChartViewModel(
+        this.$el.querySelector("#chart") || this.$el,
+        clonedeep(this.options)
+      );
+      this.$on("themeStyle", () => {
+        this.chartOptions.colorGradient = this.colorGroupsData;
+        this.chartOptions.backgroundColor = this.backgroundData;
+        this.chartOptions.axisColor = this.textColorsData;
+        this.viewModel.setChartOptions(this.chartOptions);
+      });
+      let icon = this.$el.children[0];
+      if (this.iconClass && icon) {
+        icon.style.visibility = "hidden";
+      }
+      this.viewModel.on("chartinitsucceeded", () => {
+        if (this.iconClass && icon) {
+          icon.style.visibility = "visible";
+        }
+        window.addEventListener("resize", () => {
+          this.viewModel.resize();
+        });
+      });
     }
   },
-  loaded() {
-    this.viewModel = new ChartViewModel(this.$el.querySelector('#chart') || this.$el, clonedeep(this.options));
-    this.$on("themeStyle", () => {
-      this.chartOptions.colorGradient = this.colorGroupsData;
-      this.chartOptions.backgroundColor = this.backgroundData;
-      this.chartOptions.axisColor = this.textColorsData;
-      this.viewModel.setChartOptions(this.chartOptions);
-    });
-    let icon = this.$el.children[0];
-    if(this.iconClass && icon){
-      icon.style.visibility = "hidden";
-    }
-    this.viewModel.on("chartinitsucceeded", () => {
-      if(this.iconClass && icon){
-        icon.style.visibility = "visible";
-      }
-      window.addEventListener('resize', () => {
-        this.viewModel.resize();
-      });
-    });
+  mounted() {
+    this.initializeChart();
   }
 };
 </script>

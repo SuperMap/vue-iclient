@@ -1,10 +1,11 @@
 <script>
-import Widget from "./Widget";
+import MapGetter from "../mixin/map-getter";
+
 import RasterLayerViewModel from "../../viewmodel/RasterLayerViewModel";
 export default {
   name: "SmRasterLayer",
-  extends: Widget,
   relativeMap: true,
+  mixins: [MapGetter],
   props: {
     name: {
       type: String

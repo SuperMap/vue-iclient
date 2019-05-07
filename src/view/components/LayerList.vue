@@ -5,20 +5,20 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    class="sm-layer-list"
+    class="sm-widget-layer-list"
     v-show="isShow"
   >
-    <el-card class="sm-layer-list__el-card" :style="[getBackgroundStyle]">
-      <div class="sm-layer-list__content">
+    <el-card class="sm-widget-layer-list__el-card" :style="[getBackgroundStyle]">
+      <div class="sm-widget-layer-list__content">
         <el-collapse
           v-for="(sourceValue,sourceKey,index) in sourceList"
           :key="index"
-          class="sm-layer-list__collapse"
+          class="sm-widget-layer-list__collapse"
           @change="handleCollapseChange"
         >
           <el-collapse-item
             v-if="typeof sourceValue.sourceLayerList === 'object'"
-            class="sm-layer-list__collapseitem"
+            class="sm-widget-layer-list__collapseitem"
             :style="[getTextColorStyle]"
           >
             <template slot="title">
@@ -41,18 +41,14 @@
             >{{sourcelayerKey}}</el-checkbox>
           </el-collapse-item>
 
-          <el-card
-            v-else
-            class="sm-layer-list__elcarditem"
-            :style="[getTextColorStyle]"
-          >
+          <el-card v-else class="sm-widget-layer-list__elcarditem" :style="[getTextColorStyle]">
             <i
               :class="['el-icon-view', sourceValue.visibility === 'visible' ? 'visible':'none']"
               :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
               @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
             ></i>
             <div
-              class="sm-layer-list__layergroupname add-ellipsis"
+              class="sm-widget-layer-list__layergroupname add-ellipsis"
               :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
             >{{sourceKey}}</div>
           </el-card>
@@ -63,29 +59,31 @@
 </template>
 
 <script>
-import Theme from '../mixin/Theme';
-import Widget from './Widget';
-import layerListViewModel from '../../viewmodel/layerListViewModel';
+import Theme from "../mixin/theme";
+import Control from "../mixin/control";
+import MapGetter from "../mixin/map-getter";
+import Card from "../mixin/card";
+import layerListViewModel from "../../viewmodel/layerListViewModel";
 
 export default {
-  name: 'SmLayerList',
+  name: "SmLayerList",
   relativeMap: true,
-  mixins: [Theme],
+  mixins: [MapGetter, Control, Theme, Card],
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-layer-style'
+      default: "smwidgets-icons-layer-style"
     },
     headerName: {
       type: String,
-      default: '图层'
+      default: "图层"
     }
   },
   data() {
     return {
       sourceList: {},
       disabledStyle: {
-        color: '#c0c4cc'
+        color: "#c0c4cc"
       }
     };
   },
@@ -97,18 +95,18 @@ export default {
       this.changCheckStyle();
     },
     changCheckStyle() {
-      const checkBoxsList = this.$el.querySelectorAll('.el-checkbox__input');
+      const checkBoxsList = this.$el.querySelectorAll(".el-checkbox__input");
       checkBoxsList.forEach(item => {
         let childrens = item.childNodes;
         let checkbox = childrens[0];
         let label = item.parentNode.childNodes[1];
-        if(item.classList.contains('is-checked')) {
+        if (item.classList.contains("is-checked")) {
           checkbox.style.borderColor = this.getColorStyle(0).color;
           checkbox.style.backgroundColor = this.getColorStyle(0).color;
           label.style.color = this.getColorStyle(0).color;
         } else {
-          checkbox.style.borderColor = '#DCDFE6';
-          checkbox.style.backgroundColor = '#fff';
+          checkbox.style.borderColor = "#DCDFE6";
+          checkbox.style.backgroundColor = "#fff";
           label.style.color = this.getTextColor;
         }
       });
@@ -139,22 +137,20 @@ export default {
     },
     getDisabledStyle(isText = true) {
       return {
-        color: '#c0c4cc'
+        color: "#c0c4cc"
       };
     }
   },
   filters: {
     isVisible(visibility) {
-      return visibility === 'visible' ? true : false;
+      return visibility === "visible" ? true : false;
     }
   },
-  extends: Widget,
   loaded() {
-    !this.parentIsWebMapOrMap && this.$el.classList.add('layer-list-container');
+    !this.parentIsWebMapOrMap && this.$el.classList.add("layer-list-container");
     this.layerListViewModel = new layerListViewModel(this.map);
     this.sourceList = this.layerListViewModel.initLayerList();
-
-    this.layerListViewModel.on('layersUpdated', () => {
+    this.layerListViewModel.on("layersUpdated", () => {
       this.sourceList = this.layerListViewModel.initLayerList();
     });
   }

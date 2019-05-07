@@ -8,17 +8,20 @@
     :collapsed="collapsed"
     :id="(!iconClass&&!headerName)&&'miniMap'"
   >
-    <div :id="(iconClass||headerName)&&'miniMap'" ></div>
+    <div :id="(iconClass||headerName)&&'miniMap'"></div>
   </sm-card>
 </template>
 
 <script>
 /* eslint-disable */
 import MiniMapViewModel from "../../viewmodel/MiniMapViewModel";
-import Widget from "./Widget";
+import Control from "../mixin/control";
+import Card from "../mixin/card";
+import MapGetter from "../mixin/map-getter";
+
 export default {
   name: "SmMiniMap",
-  extends: Widget,
+  mixins: [MapGetter,Control,Card],
   relativeMap: true,
   props: {
     iconClass: {
@@ -35,11 +38,11 @@ export default {
     this.iconClass && this.icon && (this.icon.style.visibility = "hidden");
   },
   loaded() {
-    this.$el.classList.add("sm-minimap");
+    this.$el.classList.add("sm-widget-minimap");
     this.viewModel = new MiniMapViewModel( this.$el.querySelector("#miniMap") || this.$el, this.map );
     this.iconClass && this.icon && this.viewModel.on("minimapinitialized", () => {
-        this.icon.style.visibility = "visible";
-      });
+      this.icon.style.visibility = "visible";
+    });
   }
 };
 </script>

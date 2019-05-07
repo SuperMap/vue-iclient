@@ -1,28 +1,26 @@
 <template>
-  <div
-    :class="['sm-pan', panImgClass, mapboxglClass]"
-  >
-    <div class="sm-pan__center" @click="panToCenter"></div>
+  <div :class="['sm-widget-pan', panImgClass, mapboxglClass]">
+    <div class="sm-widget-pan__center" @click="panToCenter"></div>
     <div
-      class="sm-pan__icon is-left"
+      class="sm-widget-pan__icon is-left"
       @click="panToLeft"
       @mouseleave="setPanImg"
       @mouseenter="setPanWestImg"
     ></div>
     <div
-      class="sm-pan__icon is-right"
+      class="sm-widget-pan__icon is-right"
       @click="panToRight"
       @mouseleave="setPanImg"
       @mouseenter="setPanEastImg"
     ></div>
     <div
-      class="sm-pan__icon is-top"
+      class="sm-widget-pan__icon is-top"
       @click="panToTop"
       @mouseleave="setPanImg"
       @mouseenter="setPanNorthImg"
     ></div>
     <div
-      class="sm-pan__icon is-bottom"
+      class="sm-widget-pan__icon is-bottom"
       @click="panToBottom"
       @mouseleave="setPanImg"
       @mouseenter="setPanSouthImg"
@@ -30,17 +28,18 @@
   </div>
 </template>
 <script>
-import Widget from "./Widget";
 import PanViewModel from "../../viewmodel/PanViewModel.js";
+import MapGetter from "../mixin/map-getter";
+import Control from "../mixin/control";
 
 export default {
   name: "SmPan",
-  relativeMap:true,
-  extends: Widget,
+  relativeMap: true,
+  mixins: [MapGetter, Control],
   data() {
     return {
       center: null,
-      panImgClass: "sm-pan--default",
+      panImgClass: "sm-widget-pan--default",
       mapboxglClass: ""
     };
   },
@@ -83,23 +82,22 @@ export default {
     },
 
     setPanImg() {
-      this.panImgClass = "sm-pan--default";
+      this.panImgClass = "sm-widget-pan--default";
     },
     setPanWestImg() {
-      this.panImgClass = "sm-pan--west";
+      this.panImgClass = "sm-widget-pan--west";
     },
     setPanEastImg() {
-      this.panImgClass = "sm-pan--east";
+      this.panImgClass = "sm-widget-pan--east";
     },
     setPanNorthImg() {
-      this.panImgClass = "sm-pan--north";
+      this.panImgClass = "sm-widget-pan--north";
     },
     setPanSouthImg() {
-      this.panImgClass = "sm-pan--south";
+      this.panImgClass = "sm-widget-pan--south";
     }
   },
   loaded() {
-
     this.parentIsWebMapOrMap && (this.mapboxglClass = "mapboxgl-ctrl");
     this.panViewModel = new PanViewModel(this.map);
     this.center = this.map.getCenter();

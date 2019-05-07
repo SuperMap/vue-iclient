@@ -1,8 +1,8 @@
 <template>
-  <div class="sm-search" :style="[getTextColorStyle]">
-    <div class="sm-search__input">
+  <div class="sm-widget-search" :style="[getTextColorStyle]">
+    <div class="sm-widget-search__input">
       <el-input
-        class="sm-search__el-input"
+        class="sm-widget-search__el-input"
         :placeholder="$t('search.inputPlaceHolder')"
         v-model="searchKey"
         clearable
@@ -16,14 +16,14 @@
         ></div>
       </el-input>
     </div>
-    <div class="sm-search__result" v-show="getlength" :style="[getBackgroundStyle]">
-      <div v-for="(result,index) in searchResult" :key="index" class="sm-search__panel">
+    <div class="sm-widget-search__result" v-show="getlength" :style="[getBackgroundStyle]">
+      <div v-for="(result,index) in searchResult" :key="index" class="sm-widget-search__panel">
         <span
-          class="sm-search__panel-header"
+          class="sm-widget-search__panel-header"
           v-if="result.source"
           :style="getColorStyle(0)"
         >{{result.source}}</span>
-        <div class="sm-search__panel-body" v-if="result.result">
+        <div class="sm-widget-search__panel-body" v-if="result.result">
           <ul>
             <li
               v-for="(item,index) in result.result"
@@ -40,8 +40,10 @@
   </div>
 </template>
 <script>
-import Theme from '../mixin/Theme';
-import Widget from "./Widget";
+import Theme from "../mixin/theme";
+import MapGetter from "../mixin/map-getter";
+import Control from "../mixin/control";
+
 import SearchViewModel from "../../viewmodel/SearchViewModel";
 import TablePopup from "./TablePopup";
 // import iPortalDataParameter from "../commontypes/iPortalDataParameter";
@@ -62,12 +64,12 @@ import Vue from "vue";
 
 export default {
   name: "SmSearch",
-  extends: Widget,
+
   relativeMap: true,
-  mixins: [Theme],
+  mixins: [Control, MapGetter, Theme],
   props: {
     maxReturn: {
-      type: [Number,String],
+      type: [Number, String],
       default: 8
     },
     layerNames: {
@@ -128,14 +130,14 @@ export default {
   },
   updated() {
     this.changeSearchInputStyle();
-    const results = this.$el.querySelectorAll('.sm-search__panel li');
-    for(let result of results) {
+    const results = this.$el.querySelectorAll(".sm-widget-search__panel li");
+    for (let result of results) {
       result.style.color = this.getTextColor;
     }
   },
   methods: {
     changeSearchInputStyle() {
-      const serachInput = this.$el.querySelector('.el-input__inner');
+      const serachInput = this.$el.querySelector(".el-input__inner");
       serachInput.style.backgroundColor = this.getBackground;
       serachInput.style.color = this.getTextColor;
     },
@@ -171,8 +173,22 @@ export default {
     },
     search() {
       this.clearResult();
-      let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = this.$props;
-      if ( (layerNames && layerNames.length > 0) || onlineLocalSearch.enable || (restMap && restMap.length > 0) || (restData && restData.length > 0) || (iportalData && iportalData.length > 0) || (addressMatch && addressMatch.length > 0) ) {
+      let {
+        layerNames,
+        onlineLocalSearch,
+        restMap,
+        restData,
+        iportalData,
+        addressMatch
+      } = this.$props;
+      if (
+        (layerNames && layerNames.length > 0) ||
+        onlineLocalSearch.enable ||
+        (restMap && restMap.length > 0) ||
+        (restData && restData.length > 0) ||
+        (iportalData && iportalData.length > 0) ||
+        (addressMatch && addressMatch.length > 0)
+      ) {
         if (this.searchKey) {
           this.searchTaskId = this.viewModel.search(this.searchKey);
           this.regiterEvents();
@@ -187,13 +203,13 @@ export default {
             duration: 1000
           });
         }
-      }else {
+      } else {
         this.$message({
-            showClose: true,
-            message: "请设置搜索源！",
-            type: "warning",
-            duration: 1000
-          });
+          showClose: true,
+          message: "请设置搜索源！",
+          type: "warning",
+          duration: 1000
+        });
       }
     },
     inputValueCleared() {

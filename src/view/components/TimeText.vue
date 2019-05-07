@@ -1,18 +1,18 @@
 <template>
-  <div class="sm-time-text" :style="[timeParam, getBackgroundStyle, getTextColorStyle]">
+  <div class="sm-widget-time-text" :style="[timeParam, getBackgroundStyle, getTextColorStyle]">
     <span>{{time}}</span>
   </div>
 </template>
 
 <script>
 import CommonUtil from "../util/CommonUtil";
-import Theme from "../mixin/Theme";
-import Widget from "./Widget";
+import Theme from "../mixin/theme";
+import Control from "../mixin/control";
+
 import { parse } from "path";
 export default {
   name: "SmTimeText",
-  extends: Widget,
-  mixins: [Theme],
+  mixins: [Control,Theme],
   data() {
     return {
       time: "",

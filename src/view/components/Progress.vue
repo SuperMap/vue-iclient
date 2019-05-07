@@ -1,7 +1,5 @@
 <template>
-  <div
-    class="sm-progress"
-  >
+  <div class="sm-widget-progress">
     <el-progress
       :percentage="parseFloat(percentage)"
       :type="type"
@@ -14,12 +12,12 @@
   </div>
 </template>
 <script>
-import Theme from "../mixin/Theme";
-import Widget from "./Widget";
+import Theme from "../mixin/theme";
+import Control from "../mixin/control";
+
 export default {
   name: "SmProgress",
-  extends: Widget,
-  mixins: [Theme],
+  mixins: [Control, Theme],
   props: {
     percentage: {
       type: [Number, String],
@@ -63,7 +61,7 @@ export default {
     },
     textColorsData: {
       handler() {
-        if(this.progressTextNode) {
+        if (this.progressTextNode) {
           this.progressTextNode.style.color = this.getTextColor;
         }
       }
@@ -71,13 +69,13 @@ export default {
   },
   loaded() {
     this.curColor = this.color || this.getColor(0);
-    this.progressTextNode = this.$el.querySelector('.el-progress__text');
+    this.progressTextNode = this.$el.querySelector(".el-progress__text");
     this.progressTextNode.style.color = this.getTextColor;
-    this.$nextTick(function() {
-      this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
+    this.$nextTick(() => {
+      this.circleWidth = Math.min( this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight );
     });
-    window.addEventListener('resize', () => {
-      this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
+    window.addEventListener("resize", () => {
+      this.circleWidth = Math.min( this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight );
     });
   }
 };

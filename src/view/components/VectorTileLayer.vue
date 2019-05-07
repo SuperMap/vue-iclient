@@ -1,9 +1,10 @@
 <script>
-import Widget from "./Widget";
+import MapGetter from "../mixin/map-getter";
+
 export default {
   name: "SmVectorTileLayer",
-  extends: Widget,
   relativeMap: true,
+  mixins: [MapGetter],
   props: {
     styleOptions: {
       type: [String, Object]

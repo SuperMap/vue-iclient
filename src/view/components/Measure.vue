@@ -5,19 +5,19 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    class="sm-measure"
+    class="sm-widget-measure"
     v-show="isShow"
   >
-    <div class="sm-measure__panel" :style="[getBackgroundStyle, getTextColorStyle]">
-      <!-- <div class="sm-measure__panelTitle">
-          <span class="sm-measure__title">{{$t("measure.mapMeasure")}}</span>
+    <div class="sm-widget-measure__panel" :style="[getBackgroundStyle, getTextColorStyle]">
+      <!-- <div class="sm-widget-measure__panelTitle">
+          <span class="sm-widget-measure__title">{{$t("measure.mapMeasure")}}</span>
       </div>-->
-      <div class="sm-measure__panelContent">
+      <div class="sm-widget-measure__panelContent">
         <span
           v-for="group in modeGroups"
           :key="group.mode"
           :style="activeMode === group.mode ? getColorStyle(0) : ''"
-          :class="{'sm-measure__modeIcon': true, 'sm-measure__iconActive': activeMode === group.mode}"
+          :class="{'sm-widget-measure__modeIcon': true, 'sm-widget-measure__iconActive': activeMode === group.mode}"
           :title="group.title"
           @click="changeMeasureMode(group.mode)"
         >
@@ -27,7 +27,7 @@
           v-model="activeDistanceUnit"
           placeholder="请选择"
           size="mini"
-          class="sm-measure__unit"
+          class="sm-widget-measure__unit"
           v-show="getDistanceSelect"
           :popper-append-to-body="false"
           @change="updateUnit"
@@ -44,7 +44,7 @@
           v-model="activeAreaUnit"
           placeholder="请选择"
           size="mini"
-          class="sm-measure__unit"
+          class="sm-widget-measure__unit"
           v-show="getAreaSelect"
           :popper-append-to-body="false"
           @change="updateUnit"
@@ -59,28 +59,29 @@
         </el-select>
         <div
           v-show="!showUnitSelect && activeMode"
-          class="sm-measure__unit sm-measure__default"
+          class="sm-widget-measure__unit sm-widget-measure__default"
         >{{getUnitLabel}}</div>
       </div>
-      <div class="sm-measure__calculateResult" v-show="getResult" :style="getTextColorStyle">
-        <div class="sm-measure__calcuTitle">{{$t("measure.measureResult")}}</div>
-        <div class="sm-measure__result">{{getResult}}</div>
+      <div class="sm-widget-measure__calculateResult" v-show="getResult" :style="getTextColorStyle">
+        <div class="sm-widget-measure__calcuTitle">{{$t("measure.measureResult")}}</div>
+        <div class="sm-widget-measure__result">{{getResult}}</div>
       </div>
     </div>
   </sm-card>
 </template>
 
 <script>
-import Theme from "../mixin/Theme";
-import Widget from "./Widget";
+import Theme from "../mixin/theme";
+import Control from "../mixin/control";
+import Card from "../mixin/card";
+import MapGetter from "../mixin/map-getter";
 import MeasureViewModel from "../../viewmodel/MeasureViewModel";
 import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 export default {
   name: "SmMeasure",
   relativeMap: true,
-  extends: Widget,
-  mixins: [Theme],
+  mixins: [MapGetter, Control, Theme, Card],
   props: {
     iconClass: {
       type: String,
@@ -224,14 +225,14 @@ export default {
       let modeUnitKey = this.modeUnitMap[mode];
       let activeUnit = this[modeUnitKey];
 
-      if(this.map.loaded()){
+      if (this.map.loaded()) {
         if (this.activeMode !== mode) {
-        this.viewModel.openDraw(mode, activeUnit);
-        this.activeMode = mode;
-      } else {
-        this.viewModel.closeDraw();
-        this.activeMode = null;
-      }
+          this.viewModel.openDraw(mode, activeUnit);
+          this.activeMode = mode;
+        } else {
+          this.viewModel.closeDraw();
+          this.activeMode = null;
+        }
       }
     },
     updateUnit(unit) {

@@ -46,28 +46,28 @@
     @include when(top-left) {
       top: 0;
       left: 0;
-      & .sm-card__widget-icon.is-auto-rotate {
+      & .sm-widget-card__widget-icon.is-auto-rotate {
         transform: rotate(45deg);
       }
     }
     @include when(bottom-left) {
       top: 0;
       left: 0;
-      & .sm-card__widget-icon.is-auto-rotate {
+      & .sm-widget-card__widget-icon.is-auto-rotate {
         transform: rotate(45deg);
       }
     }
     @include when(top-right) {
       top: 0;
       right: 0;
-      & .sm-card__widget-icon.is-auto-rotate {
+      & .sm-widget-card__widget-icon.is-auto-rotate {
         transform: rotate(135deg);
       }
     }
     @include when(bottom-right) {
       top: 0;
       right: 0;
-      & .sm-card__widget-icon.is-auto-rotate {
+      & .sm-widget-card__widget-icon.is-auto-rotate {
         transform: rotate(135deg);
       }
     }
@@ -95,19 +95,19 @@
     .el-card.is-always-shadow {
       box-shadow: none;
     }
-    &.sm-zoom-in-enter-to,
-    &.sm-zoom-in-leave {
+    &.sm-widget-zoom-in-enter-to,
+    &.sm-widget-zoom-in-leave {
       opacity: 1;
       transform: scale(1);
     }
-    &.sm-zoom-in-enter,
-    &.sm-zoom-in-leave-active {
+    &.sm-widget-zoom-in-enter,
+    &.sm-widget-zoom-in-leave-active {
       opacity: 0;
       transform: scale(0);
     }
     @include when(top-left) {
       @include when(icon) {
-        & > .sm-card__header {
+        & > .sm-widget-card__header {
           padding-left: 38px;
         }
       }
@@ -115,7 +115,7 @@
     }
     @include when(bottom-left) {
       @include when(icon) {
-        & > .sm-card__header {
+        & > .sm-widget-card__header {
           padding-left: 38px;
         }
       }

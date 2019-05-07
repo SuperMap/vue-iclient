@@ -1,15 +1,15 @@
 <template>
-  <div class="sm-icon">
+  <div class="sm-widget-icon">
     <i :class="'el-icon-'+className" :style="[iconStyle, iconBackground, iconColor]"></i>
   </div>
 </template>
 <script>
-import Widget from "./Widget";
-import Theme from "../mixin/Theme";
+import Theme from "../mixin/theme";
+import Control from "../mixin/control";
+
 export default {
   name: "SmIcon",
-  extends: Widget,
-  mixins: [Theme],
+  mixins: [Control, Theme],
   props: {
     className: {
       type: String,

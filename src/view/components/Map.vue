@@ -1,17 +1,15 @@
 <template>
-  <div :id="target" class="sm-map">
+  <div :id="target" class="sm-widget-map">
     <slot></slot>
   </div>
 </template>
 
 <script>
 import mapEvent from "../commontypes/mapEvent";
-import Widget from "./Widget";
 
 export default {
   name: "SmMap",
   relativeMap: true,
-  extends: Widget,
   props: {
     target: {
       type: String,
@@ -47,6 +45,19 @@ export default {
     registerEvents(map) {
       map.on("load", () => {
         mapEvent.$emit(`initMap-${this.target}`, map);
+        this.$children.forEach(children => {
+          children.isLayer = ["smrasterlayer", "smvectortilelayer"].includes(
+            children.$options.name && children.$options.name.toLowerCase()
+          );
+          if (!children.isLayer) {
+            children.addControl(map);
+            children.$el && children.filterDelayLoad && (children.isShow = true);
+            children.$el && children.filterDelayLoad && children.$el.style && (children.$el.style.display = "block");
+            if(children.$options.name.toLowerCase() === 'smchart'){
+              children.viewModel.resize();
+            }
+          }
+        });
       });
     }
   }

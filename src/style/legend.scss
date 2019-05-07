@@ -1,7 +1,7 @@
 @import "./mixins/mixins.scss";
 
 @include b(legend) {
-  & .sm-card__content {
+  & .sm-widget-card__content {
     max-height: 400px;
   }
   overflow-y: auto;
@@ -13,7 +13,7 @@
     padding: 8px 20px;
     border: none;
   }
-  .sm-card__content {
+  .sm-widget-card__content {
     box-shadow: unset;
   }
   .el-card__body {

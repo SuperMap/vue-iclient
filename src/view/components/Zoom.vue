@@ -1,21 +1,21 @@
 <template>
-  <div class="sm-zoom">
-    <div class="sm-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
+  <div class="sm-widget-zoom">
+    <div class="sm-widget-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
       <el-button
-        class="sm-zoom__button"
+        class="sm-widget-zoom__button"
         icon="el-icon-plus"
         @click="zoomIn"
         :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : ''"
       ></el-button>
       <el-button
-        class="sm-zoom__button"
+        class="sm-widget-zoom__button"
         icon="el-icon-minus"
         @click="zoomOut"
         :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : ''"
       ></el-button>
     </div>
     <el-slider
-      class="sm-zoom__slider"
+      class="sm-widget-zoom__slider"
       v-if="showZoomSlider"
       v-model="zoomPosition"
       @change="sliderChange"
@@ -28,22 +28,23 @@
   </div>
 </template>
 <script>
-import Theme from '../mixin/Theme';
-import Widget from './Widget';
-import ZoomViewModel from '../../viewmodel/ZoomViewModel';
+import Theme from "../mixin/theme";
+import MapGetter from "../mixin/map-getter";
+import Control from "../mixin/control";
+
+import ZoomViewModel from "../../viewmodel/ZoomViewModel";
 import { hexToRgba } from "../util/CommonUtil";
 
 export default {
-  name: 'SmZoom',
+  name: "SmZoom",
   relativeMap: true,
-  extends: Widget,
-  mixins: [Theme],
+  mixins: [MapGetter, Control, Theme],
   data() {
     return {
       zoomPosition: 0,
       min: 0,
       max: 22,
-      activeZoomMode: ''
+      activeZoomMode: ""
     };
   },
   props: {
@@ -56,7 +57,7 @@ export default {
     activieBgColor() {
       const color = this.getColorStyle(0).color;
       return {
-        backgroundColor: hexToRgba(this.getColorStyle(0).color,  0.3),
+        backgroundColor: hexToRgba(this.getColorStyle(0).color, 0.3),
         borderColor: color
       };
     }
@@ -72,7 +73,7 @@ export default {
       this.setZoom(this.zoomPosition);
     },
     zoomIn(e) {
-      this.activeZoomMode = 'zoomInBtn';
+      this.activeZoomMode = "zoomInBtn";
       if (Math.round(this.zoomPosition) < this.max) {
         // slider的默认步长为1
         this.zoomPosition += 1;
@@ -81,7 +82,7 @@ export default {
       }
     },
     zoomOut(e) {
-      this.activeZoomMode = 'zoomOutBtn';
+      this.activeZoomMode = "zoomOutBtn";
       if (Math.round(this.zoomPosition) > this.min) {
         this.zoomPosition -= 1;
         // 地图缩小一级
@@ -101,10 +102,11 @@ export default {
       return this.ZoomViewModel.setZoom(zoom);
     },
     changeSliderStyle() {
-      const sliderBar = document.querySelector('.el-slider__bar');
-      const sliderBtn = document.querySelector('.el-slider__button');
-      sliderBar && (sliderBar.style.backgroundColor = this.getColorStyle(0).color)
-      sliderBtn && (sliderBtn.style.borderColor = this.getColorStyle(0).color)
+      const sliderBar = document.querySelector(".el-slider__bar");
+      const sliderBtn = document.querySelector(".el-slider__button");
+      sliderBar &&
+        (sliderBar.style.backgroundColor = this.getColorStyle(0).color);
+      sliderBtn && (sliderBtn.style.borderColor = this.getColorStyle(0).color);
     }
   },
   loaded() {
