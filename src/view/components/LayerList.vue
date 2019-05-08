@@ -67,7 +67,6 @@ import layerListViewModel from "../../viewmodel/layerListViewModel";
 
 export default {
   name: "SmLayerList",
-  relativeMap: true,
   mixins: [MapGetter, Control, Theme, Card],
   props: {
     iconClass: {

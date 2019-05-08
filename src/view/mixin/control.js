@@ -1,3 +1,5 @@
+import mapEvent from '../commontypes/mapEvent';
+
 export default {
   props: {
     position: {
@@ -10,8 +12,8 @@ export default {
   },
   watch: {
     position() {
-      this.removeControl(this.map);
-      this.addControl(this.map);
+      this.remove(this.map);
+      this.addTo(this.map);
     }
   },
   mounted() {
@@ -21,8 +23,19 @@ export default {
     this.filterDelayLoad = !['smwebmap', 'smmap', 'smminimap'].includes(
       this.$options.name && this.$options.name.toLowerCase()
     );
-    this.$el && this.filterDelayLoad && this.parentIsWebMapOrMap && (this.isShow = false);
-    this.$el && this.filterDelayLoad && this.parentIsWebMapOrMap && this.$el.style && (this.$el.style.display = 'none');
+    if (this.$el && this.parentIsWebMapOrMap && this.filterDelayLoad) {
+      this.isShow = false;
+      this.$el.style && (this.$el.style.display = 'none');
+      const targetName = this.$parent.target || mapEvent.firstMapTarget;
+      mapEvent.$on(`initMap-${targetName}`, map => {
+        this.addTo(map);
+        this.isShow = true;
+        this.$el.style && (this.$el.style.display = 'block');
+        if (this.$options.name.toLowerCase() === 'smchart') {
+          this.viewModel.resize();
+        }
+      });
+    }
   },
   methods: {
     control() {
@@ -36,12 +49,12 @@ export default {
         }
       };
     },
-    addControl(map) {
+    addTo(map) {
       this.map = map;
       map.addControl(this.control(), this.position);
       this.$el.classList.add('mapboxgl-ctrl');
     },
-    removeControl(map) {
+    remove(map) {
       map.removeControl(this.control());
     }
   }

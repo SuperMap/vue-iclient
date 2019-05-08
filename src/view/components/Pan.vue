@@ -34,7 +34,6 @@ import Control from "../mixin/control";
 
 export default {
   name: "SmPan",
-  relativeMap: true,
   mixins: [MapGetter, Control],
   data() {
     return {

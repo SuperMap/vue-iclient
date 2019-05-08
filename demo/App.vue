@@ -2,7 +2,8 @@
   <div id="app">
     <!-- <sm-map :map-options="mapOptions">
       <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer>
-      <sm-map-v :data-set="dataSet" :mapv-options="mapvOptions"></sm-map-v>
+      <sm-mapv-layer :data-set="dataSet" :mapv-options="mapvOptions"></sm-mapv-layer>
+      <sm-deckgl-layer :layer-type-id="layerTypeId" :deckgl-options="deckglOptions"></sm-deckgl-layer>
     </sm-map> -->
     <!-- 深色 -->
     <sm-web-map :web-map-options="webMapOptions" map-id="1649097980">
@@ -240,7 +241,10 @@ export default {
         yAxis: ["AREA", "AREA_1"]
       },
       dataSet,
-      mapvOptions: options
+      mapvOptions: options,
+      layerTypeId: "hexagon-layer",
+      deckglOptions: {
+      }
     };
   },
   methods: {
@@ -269,6 +273,24 @@ export default {
     changeStyle1() {
       widgets.setTheme("light");
     }
+  },
+  created() {
+    $.get('../static/sf-bike-parking.json', res => {
+        this.deckglOptions = {
+          data: res,
+          props: {
+              extruded: true, //是否拉伸要素，默认为 false；
+              radius: 200, //六边形半径值，默认为 1000
+              elevationScale: 4, //高程乘数
+              coverage: 0.8 //六边形半径乘数，介于0 - 1之间。六边形的最终半径通过覆盖半径计算。
+              //还可配置的参数：
+              //colorRange 色带，默认为 [[255,255,178,255],[254,217,118,255],[254,178,76,255],[253,141,60,255],[240,59,32,255],[189,0,38,255]]
+          },
+          callback: {
+              getPosition: d => d.COORDINATES,
+          }
+        }
+      });
   }
 };
 </script>

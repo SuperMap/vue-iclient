@@ -1,11 +1,10 @@
 <script>
 import MapGetter from "../mixin/map-getter";
-
+import Layer from "../mixin/layer";
 import RasterLayerViewModel from "../../viewmodel/RasterLayerViewModel";
 export default {
   name: "SmRasterLayer",
-  relativeMap: true,
-  mixins: [MapGetter],
+  mixins: [MapGetter, Layer],
   props: {
     name: {
       type: String

@@ -81,7 +81,7 @@ export class ChartViewModel extends WidgetViewModel {
     //this.updateData(this.datasets, chartOptions)
   }
   resize() {
-    this.echart.resize();
+    this.echart && this.echart.resize();
   }
   // 获取当前的echart
   getEchart() {

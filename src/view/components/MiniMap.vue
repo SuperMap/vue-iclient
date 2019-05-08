@@ -22,7 +22,6 @@ import MapGetter from "../mixin/map-getter";
 export default {
   name: "SmMiniMap",
   mixins: [MapGetter,Control,Card],
-  relativeMap: true,
   props: {
     iconClass: {
       type: String,

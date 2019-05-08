@@ -127,7 +127,6 @@ let validators = (value, propType) => {
 
 export default {
   name: "SmQuery",
-  relativeMap: true,
   mixins: [MapGetter, Control, Theme, Card],
   data() {
     return {

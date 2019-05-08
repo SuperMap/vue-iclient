@@ -16,7 +16,6 @@ import Scale from "./Scale";
 import Zoom from "./Zoom";
 export default {
   name: "SmWebMap",
-  relativeMap: true,
   viewModelProps: ["mapId", "webMapOptions", "mapOptions"],
   mixins: [VmUpdater],
   components: {
@@ -96,19 +95,6 @@ export default {
     registerEvents() {
       this.viewModel.on("addlayerssucceeded", e => {
         mapEvent.$emit(`initMap-${this.target}`, e.map, this.viewModel);
-        this.$children.forEach(children => {
-          children.isLayer = ["smrasterlayer", "smvectortilelayer"].includes(
-            children.$options.name && children.$options.name.toLowerCase()
-          );
-          if (!children.isLayer) {
-            children.addControl(e.map);
-            children.$el && children.filterDelayLoad && (children.isShow = true);
-            children.$el && children.filterDelayLoad && children.$el.style && (children.$el.style.display = "block");
-            if(children.$options.name.toLowerCase() === 'smchart'){
-              children.viewModel.resize();
-            }
-          }
-        });
       });
     }
   }

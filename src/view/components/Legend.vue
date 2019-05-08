@@ -159,7 +159,6 @@ import LegendViewModel from "../../viewmodel/LegendViewModel";
 export default {
   name: "SmLegend",
   mixins: [MapGetter, Control, Theme, Card],
-  relativeMap: true,
   props: {
     iconClass: {
       type: String,

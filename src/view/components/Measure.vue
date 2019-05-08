@@ -80,7 +80,6 @@ import "@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css";
 
 export default {
   name: "SmMeasure",
-  relativeMap: true,
   mixins: [MapGetter, Control, Theme, Card],
   props: {
     iconClass: {

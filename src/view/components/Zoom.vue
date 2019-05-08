@@ -37,7 +37,6 @@ import { hexToRgba } from "../util/CommonUtil";
 
 export default {
   name: "SmZoom",
-  relativeMap: true,
   mixins: [MapGetter, Control, Theme],
   data() {
     return {

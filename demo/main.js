@@ -1,11 +1,9 @@
 /* eslint-disable */
 import Vue from 'vue';
-import VueResource from 'vue-resource';
 import SmWidgets from '../src/index.js';
 import App from './App';
 
 Vue.config.productionTip = false;
-Vue.use(VueResource);
 Vue.use(SmWidgets,
   //{
   // locale: {

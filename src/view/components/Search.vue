@@ -64,8 +64,6 @@ import Vue from "vue";
 
 export default {
   name: "SmSearch",
-
-  relativeMap: true,
   mixins: [Control, MapGetter, Theme],
   props: {
     maxReturn: {

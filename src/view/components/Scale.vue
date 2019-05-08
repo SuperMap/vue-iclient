@@ -9,7 +9,6 @@ import ScaleViewModel from "../../viewmodel/ScaleViewModel";
 
 export default {
   name: "SmScale",
-  relativeMap:true,
   mixins: [MapGetter,Theme],
   props: {
     unit: {
