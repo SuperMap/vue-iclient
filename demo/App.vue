@@ -10,6 +10,7 @@
       ></sm-data-flow-layer> -->
       <!-- <sm-heatmap-layer :data='heatMapData'></sm-heatmap-layer> -->
       <!-- <sm-echarts-layer :echartsOptions="echartsOptions"></sm-echarts-layer> -->
+      <!-- <sm-cluster-layer :data='clusterLayerData'></sm-cluster-layer> -->
     </sm-map>
     <!-- 深色 -->
     <!-- <sm-web-map :web-map-options="webMapOptions" map-id="1649097980"> -->
@@ -215,39 +216,39 @@ export default {
     };
 
     // 模拟 dataflow 实时数据
-    var featureResult, dataFlowBroadcast, timer;
-    function broadcast() {
-      var features = [];
-      for (var index = 0; index < featureResult.length; index++) {
-        var count = parseInt(Math.random() * featureResult.length);
-        var geometry = featureResult[count].geometry;
-        var feature = {
-          geometry: geometry,
-          type: "Feature",
-          properties: { id: index + 1, time: new Date() }
-        };
-        features.push(feature);
-      }
-      dataFlowBroadcast.broadcast(features);
-    }
+    // var featureResult, dataFlowBroadcast, timer;
+    // function broadcast() {
+    //   var features = [];
+    //   for (var index = 0; index < featureResult.length; index++) {
+    //     var count = parseInt(Math.random() * featureResult.length);
+    //     var geometry = featureResult[count].geometry;
+    //     var feature = {
+    //       geometry: geometry,
+    //       type: "Feature",
+    //       properties: { id: index + 1, time: new Date() }
+    //     };
+    //     features.push(feature);
+    //   }
+    //   dataFlowBroadcast.broadcast(features);
+    // }
 
-    function query() {
-      var param = new SuperMap.QueryBySQLParameters({
-        queryParams: { name: "Capitals@World#3", attributeFilter: "SMID > 0" }
-      });
-      var queryService = new mapboxgl.supermap.QueryService(
-        "http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World"
-      ).queryBySQL(param, function(serviceResult) {
-        featureResult = serviceResult.result.recordsets[0].features.features;
-        dataFlowBroadcast = new mapboxgl.supermap.DataFlowService(
-          "ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow"
-        ).initBroadcast();
-        dataFlowBroadcast.on("broadcastSocketConnected", function(e) {
-          timer = window.setInterval(broadcast, 2000);
-        });
-      });
-    }
-    query();
+    // function query() {
+    //   var param = new SuperMap.QueryBySQLParameters({
+    //     queryParams: { name: "Capitals@World#3", attributeFilter: "SMID > 0" }
+    //   });
+    //   var queryService = new mapboxgl.supermap.QueryService(
+    //     "http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World"
+    //   ).queryBySQL(param, function(serviceResult) {
+    //     featureResult = serviceResult.result.recordsets[0].features.features;
+    //     dataFlowBroadcast = new mapboxgl.supermap.DataFlowService(
+    //       "ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow"
+    //     ).initBroadcast();
+    //     dataFlowBroadcast.on("broadcastSocketConnected", function(e) {
+    //       timer = window.setInterval(broadcast, 2000);
+    //     });
+    //   });
+    // }
+    // query();
 
     return {
       styleObject: {
@@ -405,7 +406,8 @@ export default {
         ],
         'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 9, 20],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 1, 9, 0]
-      }
+      },
+      clusterLayerData:earthquake
     };
   },
   methods: {
