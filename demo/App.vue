@@ -3,14 +3,15 @@
     <sm-map :map-options="mapOptions">
       <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer>
       <sm-mapv-layer :data-set="dataSet" :mapv-options="mapvOptions"></sm-mapv-layer>
-      <sm-deckgl-layer :layer-type-id="layerTypeId" :deckgl-options="deckglOptions"></sm-deckgl-layer> -->
+      <sm-deckgl-layer :layer-type-id="layerTypeId" :deckgl-options="deckglOptions"></sm-deckgl-layer>-->
       <!-- <sm-data-flow-layer
         data-flow-url="ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow"
         register-token="0ra2250-rPu6ZnqHPKqcqDjGkDGDv3bg5HHy1SNNXf79OlN0ArG07bq3cGFz0v-nfBm2RAnYJ3LGBsuiptH43g.."
-      ></sm-data-flow-layer> -->
+      ></sm-data-flow-layer>-->
       <!-- <sm-heatmap-layer :data='heatMapData'></sm-heatmap-layer> -->
       <!-- <sm-echarts-layer :echartsOptions="echartsOptions"></sm-echarts-layer> -->
       <!-- <sm-cluster-layer :data='clusterLayerData'></sm-cluster-layer> -->
+      <sm-theme-layer :data-url="dataUrl" :theme-parameters="themeParameters" :tile-url="tileUrl"></sm-theme-layer>
     </sm-map>
     <!-- 深色 -->
     <!-- <sm-web-map :web-map-options="webMapOptions" map-id="1649097980"> -->
@@ -105,15 +106,15 @@
 </template>
 
 <script>
-import widgets from "../src/index";
+import widgets from '../src/index';
 import demoData from './data/demo.json';
 import earthquake from './data/earthquake.json';
 export default {
-  name: "app",
+  name: 'app',
   data() {
     var host = window.isLocal
       ? window.server
-      : "http://support.supermap.com.cn:8090";
+      : 'http://support.supermap.com.cn:8090';
     var attribution =
       "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox </a>" +
       " with <span>© <a href='http://iclient.supermap.io' target='_blank'>SuperMap iClient</a> | </span>" +
@@ -131,8 +132,11 @@ export default {
       );
       data.push({
         geometry: {
-          type: "Point",
-          coordinates: [ cityCenter.lng - 2 + Math.random() * 4, cityCenter.lat - 2 + Math.random() * 4 ]
+          type: 'Point',
+          coordinates: [
+            cityCenter.lng - 2 + Math.random() * 4,
+            cityCenter.lat - 2 + Math.random() * 4
+          ]
         },
         count: 30 * Math.random()
       });
@@ -141,31 +145,34 @@ export default {
     var dataSet = new mapv.DataSet(data);
 
     var options = {
-      fillStyle: "rgba(55, 50, 250, 0.8)",
-      shadowColor: "rgba(255, 250, 50, 1)",
+      fillStyle: 'rgba(55, 50, 250, 0.8)',
+      shadowColor: 'rgba(255, 250, 50, 1)',
       shadowBlur: 20,
       max: 100,
       size: 50,
-      label: { show: true, fillStyle: "white" },
+      label: { show: true, fillStyle: 'white' },
       globalAlpha: 0.5,
       gradient: {
-        0.25: "rgb(0,0,255)",
-        0.55: "rgb(0,255,0)",
-        0.85: "yellow",
-        1.0: "rgb(255,0,0)"
+        0.25: 'rgb(0,0,255)',
+        0.55: 'rgb(0,255,0)',
+        0.85: 'yellow',
+        1.0: 'rgb(255,0,0)'
       },
-      draw: "honeycomb"
+      draw: 'honeycomb'
     };
 
     var echartsLayerData = demoData.echartsLayerData;
-    var geoCoordMap = demoData.geoCoordMap
+    var geoCoordMap = demoData.geoCoordMap;
 
     var convertData = function(data) {
       var res = [];
       for (var i = 0; i < data.length; i++) {
         var geoCoord = geoCoordMap[data[i].name];
         if (geoCoord) {
-          res.push({ name: data[i].name, value: geoCoord.concat(data[i].value) });
+          res.push({
+            name: data[i].name,
+            value: geoCoord.concat(data[i].value)
+          });
         }
       }
       return res;
@@ -175,41 +182,59 @@ export default {
       animation: false,
       title: {
         text: '11',
-        subtext: "data from PM25.in",
-        sublink: "http://www.pm25.in",
-        left: "center",
-        textStyle: { color: "#fff" } 
+        subtext: 'data from PM25.in',
+        sublink: 'http://www.pm25.in',
+        left: 'center',
+        textStyle: { color: '#fff' }
       },
-      tooltip: { trigger: "item" },
-      legend: { orient: "vertical", y: "bottom", x: "right", data: ["pm2.5"], textStyle: { color: "#fff" } },
+      tooltip: { trigger: 'item' },
+      legend: {
+        orient: 'vertical',
+        y: 'bottom',
+        x: 'right',
+        data: ['pm2.5'],
+        textStyle: { color: '#fff' }
+      },
       GLMap: {},
 
       series: [
         {
-          name: "pm2.5",
-          type: "scatter",
-          coordinateSystem: "GLMap",
+          name: 'pm2.5',
+          type: 'scatter',
+          coordinateSystem: 'GLMap',
           data: convertData(echartsLayerData),
           symbolSize: function(val) {
             return val[2] / 10;
           },
           label: {
-            normal: { formatter: "{b}", position: "right", show: false },
+            normal: { formatter: '{b}', position: 'right', show: false },
             emphasis: { show: true }
           },
-          itemStyle: { normal: { color: "#ddb926" } }
+          itemStyle: { normal: { color: '#ddb926' } }
         },
         {
-          name: "Top 5",
-          type: "effectScatter",
-          coordinateSystem: "GLMap",
-          data: convertData( echartsLayerData .sort(function(a, b) { return b.value - a.value; }) .slice(0, 6) ),
-          symbolSize: function(val) { return val[2] / 10; },
-          showEffectOn: "render",
-          rippleEffect: { brushType: "stroke" },
+          name: 'Top 5',
+          type: 'effectScatter',
+          coordinateSystem: 'GLMap',
+          data: convertData(
+            echartsLayerData
+              .sort(function(a, b) {
+                return b.value - a.value;
+              })
+              .slice(0, 6)
+          ),
+          symbolSize: function(val) {
+            return val[2] / 10;
+          },
+          showEffectOn: 'render',
+          rippleEffect: { brushType: 'stroke' },
           hoverAnimation: true,
-          label: { normal: { formatter: "{b}", position: "right", show: true } },
-          itemStyle: { normal: { color: "#f4e925", shadowBlur: 10, shadowColor: "#333" } },
+          label: {
+            normal: { formatter: '{b}', position: 'right', show: true }
+          },
+          itemStyle: {
+            normal: { color: '#f4e925', shadowBlur: 10, shadowColor: '#333' }
+          },
           zlevel: 1
         }
       ]
@@ -252,92 +277,92 @@ export default {
 
     return {
       styleObject: {
-        width: "600px"
+        width: '600px'
       },
       scanEffect: {
         status: true,
-        type: "line",
+        type: 'line',
         period: 2000,
         speed: 500
       },
       iportalDataQuery: [
         new widgets.commontypes.iPortalDataParameter({
-          url: "http://192.168.12.230:8092/web/datas/1962026684",
-          attributeFilter: "SmID>0"
+          url: 'http://192.168.12.230:8092/web/datas/1962026684',
+          attributeFilter: 'SmID>0'
         })
       ],
       restDataQuery: [
         new widgets.commontypes.RestDataParameter({
-          url: host + "/iserver/services/data-world/rest/data",
+          url: host + '/iserver/services/data-world/rest/data',
           attributeFilter: "NAME='Huang He'",
-          dataName: ["World:Countries"]
+          dataName: ['World:Countries']
         })
       ],
       restMapQuery: [
         new widgets.commontypes.RestMapParameter({
-          url: host + "/iserver/services/map-world/rest/maps/World",
-          attributeFilter: "SmID>0",
-          layerName: "Capitals@World.1"
+          url: host + '/iserver/services/map-world/rest/maps/World',
+          attributeFilter: 'SmID>0',
+          layerName: 'Capitals@World.1'
         })
       ],
       rasteLayerOptions: {
-        name: "我的栅格图层",
+        name: '我的栅格图层',
         opacity: 0.8,
         visible: true,
         tiles: [
           host +
-            "/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}"
+            '/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
         ],
-        mapUrl: host + "/iserver/services/map-china400/rest/maps/China"
+        mapUrl: host + '/iserver/services/map-china400/rest/maps/China'
       },
-      layerSourceNames: ["UNIQUE-民航数-0"],
+      layerSourceNames: ['UNIQUE-民航数-0'],
       addressMatch: [
         new widgets.commontypes.AddressMatchParameter({
           url:
-            host + "/iserver/services/addressmatch-Address/restjsr/v1/address"
+            host + '/iserver/services/addressmatch-Address/restjsr/v1/address'
         })
       ],
       restMapSearch: [
         new widgets.commontypes.RestMapParameter({
-          url: host + "/iserver/services/map-world/rest/maps/World",
-          layerName: "Capitals@World.1"
+          url: host + '/iserver/services/map-world/rest/maps/World',
+          layerName: 'Capitals@World.1'
         })
       ],
       restDataSearch: [
         new widgets.commontypes.RestDataParameter({
-          url: host + "/iserver/services/data-world/rest/data",
-          dataName: ["World:Countries"]
+          url: host + '/iserver/services/data-world/rest/data',
+          dataName: ['World:Countries']
         })
       ],
       iportalData: [
         new widgets.commontypes.iPortalDataParameter({
-          url: "http://192.168.12.230:8092/web/datas/659519047"
+          url: 'http://192.168.12.230:8092/web/datas/659519047'
         })
       ],
       onlineLocalSearch: {
         enable: true,
-        city: "北京市"
+        city: '北京市'
       },
       mapOptions: {
-        container: "map", // container id
+        container: 'map', // container id
         style: {
           version: 8,
           sources: {
-            "raster-tiles": {
+            'raster-tiles': {
               attribution: attribution,
-              type: "raster",
+              type: 'raster',
               tiles: [
                 host +
-                  "/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}"
+                  '/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
               ],
               tileSize: 256
             }
           },
           layers: [
             {
-              id: "simple-tiles",
-              type: "raster",
-              source: "raster-tiles",
+              id: 'simple-tiles',
+              type: 'raster',
+              source: 'raster-tiles',
               minzoom: 0,
               maxzoom: 22
             }
@@ -347,16 +372,16 @@ export default {
         zoom: 3
       },
       webMapOptions: {
-        server: "http://support.supermap.com.cn:8092/"
+        server: 'http://support.supermap.com.cn:8092/'
       },
-      chartTitle: "",
-      chartType: "bar",
+      chartTitle: '',
+      chartType: 'bar',
       datasets: {
-        type: "iServer",
+        type: 'iServer',
         url:
-          "http://support.supermap.com.cn:8090/iserver/services/data-jingjin/rest/data/datasources/Jingjin/datasets/Landuse_R",
+          'http://support.supermap.com.cn:8090/iserver/services/data-jingjin/rest/data/datasources/Jingjin/datasets/Landuse_R',
         //url: "http://support.supermap.com.cn:8092/web/datas/888186112",
-        queryInfo: { attributeFilter: "SmID > 0" }
+        queryInfo: { attributeFilter: 'SmID > 0' }
       },
       chartOptions: {
         // backgroundColor:"",
@@ -365,27 +390,34 @@ export default {
         xFieldStatistical: true,
         xAxisLabelRotate: true,
         yAxisLabelRotate: true,
-        legendPosition: "top", //none top bottom left right topleft topright bottomleft bottomright
-        xAxisName: "",
-        yAxisName: "",
+        legendPosition: 'top', //none top bottom left right topleft topright bottomleft bottomright
+        xAxisName: '',
+        yAxisName: '',
         // padding: {
         //   top: 50,
         //   bottom: 50,
         //   left: 50,
         //   right: 50
         // },
-        xAxis: "LANDTYPE",
-        yAxis: ["AREA", "AREA_1"]
+        xAxis: 'LANDTYPE',
+        yAxis: ['AREA', 'AREA_1']
       },
       dataSet,
       mapvOptions: options,
-      layerTypeId: "hexagon-layer",
-      deckglOptions: {
-      },
-      echartsOptions:echartsOptions,
-      heatMapData:earthquake,
-      heatMapLayerPaint:{
-        'heatmap-weight': ['interpolate', ['linear'], ['get', 'mag'], 0, 0, 6, 1],
+      layerTypeId: 'hexagon-layer',
+      deckglOptions: {},
+      echartsOptions: echartsOptions,
+      heatMapData: earthquake,
+      heatMapLayerPaint: {
+        'heatmap-weight': [
+          'interpolate',
+          ['linear'],
+          ['get', 'mag'],
+          0,
+          0,
+          6,
+          1
+        ],
         'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 9, 3],
         'heatmap-color': [
           'interpolate',
@@ -407,7 +439,10 @@ export default {
         'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 9, 20],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 1, 9, 0]
       },
-      clusterLayerData:earthquake
+      clusterLayerData: earthquake,
+      dataUrl: host + '/iserver/services/map-china400/rest/maps/China',
+      tileUrl: host + '/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}&transparent=true&cacheEnabled=false&layersID=',
+      themeParameters: {}
     };
   },
   methods: {
@@ -431,29 +466,54 @@ export default {
     // }
 
     changeStyle() {
-      widgets.setTheme("dark");
+      widgets.setTheme('dark');
     },
     changeStyle1() {
-      widgets.setTheme("light");
+      widgets.setTheme('light');
+    },
+    createTheme() {
+      var themeGraduatedSymbol = new SuperMap.ThemeGraduatedSymbol({
+        expression: 'SMAREA',
+        baseValue: 3000000000000,
+        graduatedMode: SuperMap.GraduatedMode.CONSTANT,
+        flow: new SuperMap.ThemeFlow({
+          flowEnabled: true
+        }),
+        style: new SuperMap.ThemeGraduatedSymbolStyle({
+          positiveStyle: new SuperMap.ServerStyle({
+            markerSize: 50,
+            markerSymbolID: 0,
+            lineColor: new SuperMap.ServerColor(255, 165, 0),
+            fillBackColor: new SuperMap.ServerColor(255, 0, 0)
+          })
+        })
+      });
+
+    this.themeParameters = new SuperMap.ThemeParameters({
+        themes: [themeGraduatedSymbol],
+        datasetNames: ['China_Province_pg'],
+        dataSourceNames: ['China']
+      });
     }
   },
   created() {
     $.get('../static/sf-bike-parking.json', res => {
-        this.deckglOptions = {
-          data: res,
-          props: {
-              extruded: true, //是否拉伸要素，默认为 false；
-              radius: 200, //六边形半径值，默认为 1000
-              elevationScale: 4, //高程乘数
-              coverage: 0.8 //六边形半径乘数，介于0 - 1之间。六边形的最终半径通过覆盖半径计算。
-              //还可配置的参数：
-              //colorRange 色带，默认为 [[255,255,178,255],[254,217,118,255],[254,178,76,255],[253,141,60,255],[240,59,32,255],[189,0,38,255]]
-          },
-          callback: {
-              getPosition: d => d.COORDINATES,
-          }
+      this.deckglOptions = {
+        data: res,
+        props: {
+          extruded: true, //是否拉伸要素，默认为 false；
+          radius: 200, //六边形半径值，默认为 1000
+          elevationScale: 4, //高程乘数
+          coverage: 0.8 //六边形半径乘数，介于0 - 1之间。六边形的最终半径通过覆盖半径计算。
+          //还可配置的参数：
+          //colorRange 色带，默认为 [[255,255,178,255],[254,217,118,255],[254,178,76,255],[253,141,60,255],[240,59,32,255],[189,0,38,255]]
+        },
+        callback: {
+          getPosition: d => d.COORDINATES
         }
-      });
+      };
+    });
+  this.createTheme();
   }
 };
 </script>

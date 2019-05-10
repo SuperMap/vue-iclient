@@ -25,4 +25,4 @@ export {default as DataFlowLayer} from './DataFlowLayer.vue';
 export {default as EchartsLayer} from './EchartsLayer.vue';
 export {default as HeatmapLayer} from './HeatmapLayer.vue';
 export {default as ClusterLayer} from './ClusterLayer.vue';
-
+export {default as ThemeLayer} from './ThemeLayer.vue';
