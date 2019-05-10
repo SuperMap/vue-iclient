@@ -44,6 +44,7 @@ export default {
     registerEvents(map) {
       map.on("load", () => {
         mapEvent.$emit(`initMap-${this.target}`, map);
+        this.$emit("load", { map: map });
       });
     }
   }

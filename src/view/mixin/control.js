@@ -23,14 +23,18 @@ export default {
     this.filterDelayLoad = !['smwebmap', 'smmap', 'smminimap'].includes(
       this.$options.name && this.$options.name.toLowerCase()
     );
-    if (this.$el && this.parentIsWebMapOrMap && this.filterDelayLoad) {
-      this.isShow = false;
-      this.$el.style && (this.$el.style.display = 'none');
+    if (this.$el && this.parentIsWebMapOrMap) {
+      if(this.filterDelayLoad){
+        this.isShow = false;
+        this.$el.style && (this.$el.style.display = 'none');  
+      }
       const targetName = this.$parent.target || mapEvent.firstMapTarget;
       mapEvent.$on(`initMap-${targetName}`, map => {
         this.addTo(map);
-        this.isShow = true;
-        this.$el.style && (this.$el.style.display = 'block');
+        if(this.filterDelayLoad){
+          this.isShow = true;
+          this.$el.style && (this.$el.style.display = 'block');
+        }
         if (this.$options.name.toLowerCase() === 'smchart') {
           this.viewModel.resize();
         }

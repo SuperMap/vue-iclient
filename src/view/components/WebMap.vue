@@ -95,6 +95,7 @@ export default {
     registerEvents() {
       this.viewModel.on("addlayerssucceeded", e => {
         mapEvent.$emit(`initMap-${this.target}`, e.map, this.viewModel);
+        this.$emit("load", { map: e.map });
       });
     }
   }
