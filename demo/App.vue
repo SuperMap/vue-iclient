@@ -11,7 +11,35 @@
       <!-- <sm-heatmap-layer :data='heatMapData'></sm-heatmap-layer> -->
       <!-- <sm-echarts-layer :echartsOptions="echartsOptions"></sm-echarts-layer> -->
       <!-- <sm-cluster-layer :data='clusterLayerData'></sm-cluster-layer> -->
-      <sm-theme-layer :data-url="dataUrl" :theme-parameters="themeParameters" :tile-url="tileUrl"></sm-theme-layer>
+      <sm-ranksymbol-theme-layer
+        :theme-layer-options="rankThemeLayerOptions"
+        layer-name="RankSymbolLayer"
+        :symbol-type="symbolType"
+        :add-layer-succeeded-callback="rankThemeCallback"
+        :layer-features = "rankFeatures"
+      ></sm-ranksymbol-theme-layer>
+      <!-- <sm-label-theme-layer
+        :theme-layer-options="labelThemeLayerOptions"
+        layer-name="labelThemeLayer"
+        :add-layer-succeeded-callback="lableThemeCallback"
+        :layer-features="labelFeatures"
+      ></sm-label-theme-layer>-->
+      <!-- <sm-range-theme-layer
+        :theme-layer-options="rangeThemeLayerOptions"
+        layer-name="rangeThemeLayer"
+        :layer-features="rangeFeatures"
+      ></sm-range-theme-layer>-->
+      <!-- <sm-unique-theme-layer
+        :theme-layer-options="uniqueThemeLayerOptions"
+        layer-name="uniqueThemeLayer"
+        :layer-features="uniqueFeatures"
+      ></sm-unique-theme-layer>-->
+      <!-- <sm-graph-theme-layer
+        :theme-layer-options="graphThemeLayerOptions"
+        layer-name="graphThemeLayer"
+        :layer-features="graphFeatures"
+        charts-type="Bar"
+      ></sm-graph-theme-layer> -->
     </sm-map>
     <!-- 深色 -->
     <!-- <sm-web-map :web-map-options="webMapOptions" map-id="1649097980"> -->
@@ -109,6 +137,7 @@
 import widgets from '../src/index';
 import demoData from './data/demo.json';
 import earthquake from './data/earthquake.json';
+import themeLayerData from './data/themeLayerData.json';
 export default {
   name: 'app',
   data() {
@@ -275,7 +304,24 @@ export default {
     // }
     // query();
 
+    var rankFeatures = [];
+    for (
+      var i = 0, len = themeLayerData.chinaConsumptionLevel.length;
+      i < len;
+      i++
+    ) {
+      // 省居民消费水平（单位：元）信息
+      var provinceInfo = themeLayerData.chinaConsumptionLevel[i];
+      var geo = new mapboxgl.LngLat(provinceInfo[1], provinceInfo[2]);
+      var attrs = {};
+      attrs.NAME = provinceInfo[0];
+      attrs.CON2009 = provinceInfo[3];
+      var fea = new mapboxgl.supermap.ThemeFeature(geo, attrs);
+      rankFeatures.push(fea);
+    }
+
     return {
+      rankFeatures,
       styleObject: {
         width: '600px'
       },
@@ -440,9 +486,26 @@ export default {
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 1, 9, 0]
       },
       clusterLayerData: earthquake,
-      dataUrl: host + '/iserver/services/map-china400/rest/maps/China',
-      tileUrl: host + '/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}&transparent=true&cacheEnabled=false&layersID=',
-      themeParameters: {}
+      symbolType: 'Circle',
+      rankThemeLayerOptions: {
+        attributions: ' ',
+        themeField: 'CON2009',
+        // 配置图表参数
+        symbolSetting: {
+          //必设参数
+          codomain: [0, 40000], // 允许图形展示的值域范围，此范围外的数据将不制作图图形
+          //圆最大半径 默认100
+          maxR: 100,
+          //圆最小半径 默认0
+          minR: 0,
+          // 圆形样式
+          circleStyle: { fillOpacity: 0.8 },
+          // 符号专题图填充颜色
+          fillColor: '#FFA500',
+          // 专题图hover 样式
+          circleHoverStyle: { fillOpacity: 1 }
+        }
+      }
     };
   },
   methods: {
@@ -471,32 +534,54 @@ export default {
     changeStyle1() {
       widgets.setTheme('light');
     },
-    createTheme() {
-      var themeGraduatedSymbol = new SuperMap.ThemeGraduatedSymbol({
-        expression: 'SMAREA',
-        baseValue: 3000000000000,
-        graduatedMode: SuperMap.GraduatedMode.CONSTANT,
-        flow: new SuperMap.ThemeFlow({
-          flowEnabled: true
-        }),
-        style: new SuperMap.ThemeGraduatedSymbolStyle({
-          positiveStyle: new SuperMap.ServerStyle({
-            markerSize: 50,
-            markerSymbolID: 0,
-            lineColor: new SuperMap.ServerColor(255, 165, 0),
-            fillBackColor: new SuperMap.ServerColor(255, 0, 0)
-          })
-        })
-      });
-
-    this.themeParameters = new SuperMap.ThemeParameters({
-        themes: [themeGraduatedSymbol],
-        datasetNames: ['China_Province_pg'],
-        dataSourceNames: ['China']
-      });
-    }
+    rankThemeCallback(themeLayer, map) {
+      //专题图层 mousemove 事件
+      themeLayer.on('mousemove', e => this.showInfoWin(themeLayer, map, e));
+    },
+    showInfoWin(themeLayer, map, e) {
+      // e.target 是图形对象，即数据的可视化对象。
+      // 图形对象的 refDataID 属性是数据（feature）的 id 属性，它指明图形对象是由那个数据制作而来;
+      // 图形对象的 dataInfo 属性是图形对象表示的具体数据，他有两个属性，field、R 和 value;
+      if (e.target && e.target.refDataID && e.target.dataInfo) {
+        this.closeInfoWin();
+        // 获取图形对应的数据 (feature)
+        var fea = themeLayer.getFeatureById(e.target.refDataID);
+        var info = e.target.dataInfo;
+        // 弹窗内容
+        var contentHTML = "<div style='color: #000; background-color: #fff'>";
+        contentHTML +=
+          '省级行政区名称' + '<br><strong>' + fea.attributes.NAME + '</strong>';
+        contentHTML += "<hr style='margin: 3px'>";
+        switch (info.field) {
+          case 'CON2009':
+            contentHTML +=
+              '09年居民消费水平' +
+              ' <br/><strong>' +
+              info.value +
+              '</strong>（元）';
+            break;
+          default:
+            contentHTML += 'No Data';
+        }
+        contentHTML += '</div>';
+        var tempPoint = map.unproject(
+          new window.mapboxgl.Point(e.event.x, e.event.y)
+        );
+        this.popup = new mapboxgl.Popup({ closeOnClick: false })
+          .setLngLat([tempPoint.lng, tempPoint.lat])
+          .setHTML(contentHTML)
+          .addTo(map);
+        return;
+      }
+      this.closeInfoWin();
+    },
+    closeInfoWin() {
+      if (this.popup) {
+        this.popup.remove();
+      }
+    },
   },
-  created() {
+  beforeMount() {
     $.get('../static/sf-bike-parking.json', res => {
       this.deckglOptions = {
         data: res,
@@ -513,7 +598,6 @@ export default {
         }
       };
     });
-  this.createTheme();
   }
 };
 </script>
