@@ -264,7 +264,6 @@ function sortNav(members) {
     merged.sort(function (a, b) {
         return a.longname.toLowerCase() > b.longname.toLowerCase()
     });
-    console.log(merged);
     return merged;
 }
 
@@ -274,7 +273,8 @@ function buildCategories(members, templatePath) {
     _.each(members, function (v) {
         var category = getCustomTagValue(v, 'category');
         if (!category) {
-            category = "BaseTypes";
+            console.warn(`${v.name} is not define category`)
+            category = "Vue";
         }
         var arr = category.split(" ");
         var aa = categories;
