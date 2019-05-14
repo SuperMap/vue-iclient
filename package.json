@@ -9,7 +9,8 @@
         "test": "npm run unit",
         "lint": "eslint --ext .js,.vue src test/unit",
         "build": "node build/build.js && node build/build.js -p",
-        "e2e": "node test/e2e/runner.js --test "
+        "e2e": "node test/e2e/runner.js --test ",
+        "build-docs": "jsdoc -c ./build/jsdocs/docs.json -R ./build/jsdocs/index.md"
     },
     "dependencies": {
         "@mapbox/mapbox-gl-draw": "^1.1.1",
@@ -73,6 +74,8 @@
         "jest": "^24.1.0",
         "jest-serializer-vue": "^2.0.2",
         "jest-transform-stub": "^2.0.0",
+        "jsdoc": "^3.6.1",
+        "jsdoc-vuejs": "^2.4.3",
         "mapbox-gl": "^0.44.1",
         "mini-css-extract-plugin": "^0.5.0",
         "nightwatch": "^0.9.16",
@@ -88,6 +91,7 @@
         "semver": "^5.6.0",
         "shelljs": "^0.8.3",
         "sinon": "^7.1.1",
+        "socks": "^2.1.6",
         "uglifyjs-webpack-plugin": "^2.1.1",
         "url-loader": "^1.1.2",
         "vue-jest": "^3.0.2",
@@ -98,8 +102,7 @@
         "webpack-bundle-analyzer": "^3.0.3",
         "webpack-cli": "^3.2.1",
         "webpack-dev-server": "^3.1.14",
-        "webpack-merge": "^4.2.1",
-        "socks": "^2.1.6"
+        "webpack-merge": "^4.2.1"
     },
     "engines": {
         "node": ">= 6.0.0",
