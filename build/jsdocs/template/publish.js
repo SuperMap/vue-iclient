@@ -243,6 +243,9 @@ function buildNav(members, view, templatePath) {
     if(members.modules){
         sorted = sorted.concat(members.modules)
     }
+    if(members.mixins){
+        sorted = sorted.concat(members.mixins);
+    }
     view.categories = buildCategories(sorted, templatePath);
     view.navMap = buildNavMap(sorted);
 }
@@ -385,7 +388,31 @@ function buildNavMap(members) {
                 })
             };
         }
-
+        if (v.kind == 'mixin') {
+          nav = {
+              type: 'mixin',
+              longname: v.longname,
+              name: v.name,
+              version: v.version,
+              members: find({
+                  kind: 'member',
+                  memberof: v.longname
+              }),
+              methods: find({
+                  kind: 'function',
+                  memberof: v.longname
+              }),
+              typedefs: find({
+                  kind: 'typedef',
+                  memberof: v.longname
+              }),
+              fires: v.fires,
+              events: find({
+                  kind: 'event',
+                  memberof: v.longname
+              })
+          };
+      }
         navMap[v.longname] = nav;
 
     });

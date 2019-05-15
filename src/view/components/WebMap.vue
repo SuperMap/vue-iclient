@@ -20,7 +20,7 @@ import Scale from "./Scale";
 import Zoom from "./Zoom";
 /**
  * @module WebMap
- * @category Components WebMap
+ * @category Components
  * @desc WebMap 微件。对接 iPortal/Online 地图类。目前支持地图坐标系包括：'EPSG:3857'，'EPSG:4326'，'EPSG:4490'，'EPSG:4214'，'EPSG:4610'。
  * @vue-prop {String} mapId - iPortal|Online 地图 ID。
  * @vue-prop {String} [target='map'] - 地图容器 ID。
@@ -46,6 +46,7 @@ import Zoom from "./Zoom";
  * @vue-prop {Object} [zoomControl] - 缩放控件配置参数。
  * @vue-prop {String} [zoomControl.position="top-left"] - 缩放控件放置位置。
  * @vue-prop {Boolean} [zoomControl.zoomWithSlider="false"] - 缩放控件是否含有滑动条。
+ * @vue-computed {String} getMapTarget - 获取 Map 的 target。
  */
 export default {
   name: "SmWebMap",
@@ -85,6 +86,11 @@ export default {
     },
     zoomControl: {
       type: Object
+    }
+  },
+  computed: {
+    getMapTarget() {
+      return this.target;
     }
   },
   created() {

@@ -3,14 +3,6 @@
         "name": "组件",
         "name_en": "Components",
         "content": {
-            "Map": {
-                "name": "地图",
-                "name_en": "Map"
-            },
-            "WebMap": {
-                "name": "Web 地图",
-                "name_en": "Web Map"
-            },
             "Layer": {
                 "name": "图层",
                 "name_en": "Layer"
@@ -18,11 +10,8 @@
             "Controls": {
                 "name": "控制",
                 "name_en": "Controls"
-            },
-            "DataFlowLayer":{
-                "name": "数据流图层",
-                "name_en": "Data Flow Layer"
             }
+            
         }
     },
     "Mixin":{
@@ -31,17 +20,7 @@
     },
     "ViewModel":{
         "name": "视图-模型",
-        "name_en": "ViewModel",
-        "content": {
-          "WebMapViewModel": {
-            "name": "WebMapViewModel",
-            "name_en": "WebMapViewModel"
-          },
-          "DataFlowLayerViewModel": {
-            "name": "DataFlowLayerViewModel",
-            "name_en": "DataFlowLayerViewModel"
-          }
-        }
+        "name_en": "ViewModel"
     },
     "Model":{
         "name": "模型",

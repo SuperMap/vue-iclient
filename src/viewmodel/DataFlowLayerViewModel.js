@@ -2,7 +2,7 @@ import WidgetViewModel from './WidgetViewModel';
 import cloneDeep from 'lodash.clonedeep';
 /**
  * @class DataFlowLayerViewModel
- * @category ViewModel DataFlowLayerViewModel
+ * @category ViewModel
  * @classdesc 数据流图层功能类。
  * @param {mapboxgl.Map} map - mapboxgl map 对象。
  * @param {String} dataFlowUrl - 数据流服务地址。

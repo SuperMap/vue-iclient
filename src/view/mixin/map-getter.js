@@ -9,7 +9,14 @@ function callHook(vm, hook, map) {
     });
   options[hook] && options[hook].call(vm, map); // 调用子组件的生命周期
 }
-
+/**
+ * Description 
+ * @mixin mapGetter
+ * @desc 监听 WebMap 和 Map load 事件。
+ * @category Mixin
+ * @vue-computed {String} getMapTarget - 获取当前 Map 的 target。 
+ * @vue-event loaded - 组件加载渲染完成之后触发。
+ */
 export default {
   props: {
     mapTarget: {
@@ -51,6 +58,10 @@ export default {
       callHook(this, 'loaded');
       // 控制与map组件同级的组件的显示加载
       this.$nextTick(() => {
+        /**
+         * @event loaded
+         * @desc 组件加载渲染完成之后触发。
+         */
         this.$emit('loaded');
       });
     }

@@ -5,7 +5,7 @@ import DataFlowLayerViewModel from "../../viewmodel/DataFlowLayerViewModel";
 
 /**
  * @module DataFlowLayer
- * @category Components DataFlowLayer
+ * @category Components Layer
  * @desc 数据流图层微件。
  * @vue-prop {mapboxgl.Map} map - Mapboxgl Map 对象。
  * @vue-prop {String} dataFlowUrl - 数据流服务地址。
