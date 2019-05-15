@@ -134,10 +134,12 @@
 </template>
 
 <script>
+import * as mapv from "mapv";
 import widgets from '../src/index';
 import demoData from './data/demo.json';
 import earthquake from './data/earthquake.json';
 import themeLayerData from './data/themeLayerData.json';
+import deckglLayerData from './data/sf-bike-parking.json';
 export default {
   name: 'app',
   data() {
@@ -416,6 +418,8 @@ export default {
         },
         center: [120.143, 30.236],
         zoom: 3
+        // center: [-122.430844, 37.772276],
+        // zoom: 12,
       },
       webMapOptions: {
         server: 'http://support.supermap.com.cn:8092/'
@@ -451,7 +455,20 @@ export default {
       dataSet,
       mapvOptions: options,
       layerTypeId: 'hexagon-layer',
-      deckglOptions: {},
+      deckglOptions: {
+        data: deckglLayerData,
+        props: {
+          extruded: true, //是否拉伸要素，默认为 false；
+          radius: 200, //六边形半径值，默认为 1000
+          elevationScale: 4, //高程乘数
+          coverage: 0.8 //六边形半径乘数，介于0 - 1之间。六边形的最终半径通过覆盖半径计算。
+          //还可配置的参数：
+          //colorRange 色带，默认为 [[255,255,178,255],[254,217,118,255],[254,178,76,255],[253,141,60,255],[240,59,32,255],[189,0,38,255]]
+        },
+        callback: {
+          getPosition: d => d.COORDINATES
+        }
+      },
       echartsOptions: echartsOptions,
       heatMapData: earthquake,
       heatMapLayerPaint: {
@@ -580,24 +597,6 @@ export default {
         this.popup.remove();
       }
     },
-  },
-  beforeMount() {
-    $.get('../static/sf-bike-parking.json', res => {
-      this.deckglOptions = {
-        data: res,
-        props: {
-          extruded: true, //是否拉伸要素，默认为 false；
-          radius: 200, //六边形半径值，默认为 1000
-          elevationScale: 4, //高程乘数
-          coverage: 0.8 //六边形半径乘数，介于0 - 1之间。六边形的最终半径通过覆盖半径计算。
-          //还可配置的参数：
-          //colorRange 色带，默认为 [[255,255,178,255],[254,217,118,255],[254,178,76,255],[253,141,60,255],[240,59,32,255],[189,0,38,255]]
-        },
-        callback: {
-          getPosition: d => d.COORDINATES
-        }
-      };
-    });
   }
 };
 </script>

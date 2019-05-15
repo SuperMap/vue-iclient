@@ -1,6 +1,6 @@
 /* eslint-disable */
 import WidgetViewModel from './WidgetViewModel';
-
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
 /**
  * @class MiniMapViewModel
  * @description mini map viewModel.

@@ -6,7 +6,7 @@
 
 <script>
 import mapEvent from "../commontypes/mapEvent";
-
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance'
 export default {
   name: "SmMap",
   props: {

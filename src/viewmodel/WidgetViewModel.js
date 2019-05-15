@@ -1,4 +1,4 @@
-
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
 /**
  * @class WidgetViewModel
  * @description widget viewModel 基类。

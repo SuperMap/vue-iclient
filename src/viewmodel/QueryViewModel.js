@@ -4,6 +4,8 @@ import RestDataParameter from '../view/commontypes/RestDataParameter';
 import RestMapParameter from '../view/commontypes/RestMapParameter';
 import center from '@turf/center';
 import i18n from '../lang/index.js'
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min'
 /**
  * @class QueryViewModel
  * @classdesc Query ViewModel

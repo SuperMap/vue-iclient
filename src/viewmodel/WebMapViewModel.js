@@ -3,6 +3,8 @@
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
 import WidgetViewModel from './WidgetViewModel';
 import SourceListModel from '../model/SourceListModel'
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min'
 import convert from 'xml-js';
 import canvg from 'canvg';
 import jsonsql from 'jsonsql';

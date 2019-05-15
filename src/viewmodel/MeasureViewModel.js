@@ -1,4 +1,5 @@
 import WidgetViewModel from './WidgetViewModel';
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import length from '@turf/length';
 import area from '@turf/area';
@@ -6,6 +7,7 @@ import center from '@turf/center';
 import { convertLength, convertArea } from '@turf/helpers';
 import { reservedDecimal } from '../utils/formatter';
 import i18n from '../lang/index.js';
+
 /**
  * @class MeasureViewModel
  * @description 量算 viewModel.

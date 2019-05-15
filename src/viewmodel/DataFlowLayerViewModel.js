@@ -1,5 +1,8 @@
 import WidgetViewModel from './WidgetViewModel';
 import cloneDeep from 'lodash.clonedeep';
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min'
+import deckgl from '../../static/libs/deckgl/deck.gl.min'
 /**
  * @class DataFlowLayerViewModel
  * @category ViewModel
