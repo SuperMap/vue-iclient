@@ -9,7 +9,7 @@ import DataFlowLayerViewModel from "../../viewmodel/DataFlowLayerViewModel";
  * @desc 数据流图层微件。
  * @vue-prop {mapboxgl.Map} map - Mapboxgl Map 对象。
  * @vue-prop {String} dataFlowUrl - 数据流服务地址。
- * @vue-prop {DataFlowLayer.options} [options] - 可选参数。
+ * @vue-prop {Object} [options] - 可选参数。
  * @vue-prop {String} [options.layerId] - 图层 ID。
  * @vue-prop {GeoJSONObject} [options.geometry] - 指定几何范围，该范围内的要素才能被订阅。
  * @vue-prop {Object} [options.excludeField] - 排除字段。
