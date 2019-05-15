@@ -2,13 +2,19 @@ import WidgetViewModel from './WidgetViewModel';
 import cloneDeep from 'lodash.clonedeep';
 /**
  * @class DataFlowLayerViewModel
- * @param {mapboxgl.map} map - mapboxgl map 对象。
+ * @category ViewModel DataFlowLayerViewModel
+ * @classdesc 数据流图层功能类。
+ * @param {mapboxgl.Map} map - mapboxgl map 对象。
  * @param {String} dataFlowUrl - 数据流服务地址。
- * @param {Object} options - 加载实时数据可选参数。
- * @param {GeoJSONObject} [options.layerId] - 图层 ID。
+ * @param {Object} [options] - 可选参数。
+ * @param {String} [options.layerId] - 图层 ID。
  * @param {GeoJSONObject} [options.geometry] - 指定几何范围，该范围内的要素才能被订阅。
  * @param {Object} [options.excludeField] - 排除字段。
  * @param {Object} [options.styleOptions] - style OPtion
+ * @fires DataFlowLayerViewModel#subscribesucceeded
+ * @fires DataFlowLayerViewModel#subscribefailed
+ * @fires DataFlowLayerViewModel#dataUpdated
+ * @extends {WidgetViewModel}
  */
 
 export default class DataFlowLayerViewModel extends WidgetViewModel {
@@ -34,7 +40,7 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
   }
 
   /**
-   * @function DataFlowLayerViewModel.setExcludeField
+   * @function DataFlowLayerViewModel.prototype.setExcludeField
    * @description 设置唯一字段。
    * @param {string} excludeField - 唯一字段。
    */
@@ -45,7 +51,7 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
   }
 
   /**
-   * @function DataFlowLayerViewModel.setGeometry
+   * @function DataFlowLayerViewModel.prototype.setGeometry
    * @description 设置集合要素。
    * @param {GeoJSONObject} geometry - 待设置的 GeoJSON 几何要素对象。
    */
@@ -63,8 +69,8 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
 
     dataService.on('subscribeSocketConnected', e => {
       /**
-       * @event subscribeSocketConnected
-       * @description 初始化成功后触发。
+       * @event DataFlowLayerViewModel#subscribesucceeded
+       * @description 数据订阅成功后触发。
        * @property {Object} e  - 事件对象。
        */
       this.fire('subscribesucceeded', e);
@@ -72,8 +78,8 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
 
     dataService.on('subscribeSocketError', e => {
       /**
-       * @event subscribefailed
-       * @description 初始化失败后触发。
+       * @event DataFlowLayerViewModel#subscribefailed
+       * @description 数据订阅失败后触发。
        * @property {Object} e  - 事件对象。
        */
       this.fire('subscribefailed', e);
@@ -149,8 +155,11 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
       this.map.getSource(this.sourceID).setData({ type: 'FeatureCollection', features });
 
       /**
-       * @event dataupdated
-       */
+         * @event DataFlowLayerViewModel#dataUpdated
+         * @description 数据更新成功后触发。
+         * @property {GeoJSONObject} data - 更新的数据。
+         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+         */
       this.fire('dataupdated', { data: feature, map: this.map });
     }
   }

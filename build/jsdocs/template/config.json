@@ -8,7 +8,7 @@
                 "name_en": "Map"
             },
             "WebMap": {
-                "name": "Web地图",
+                "name": "Web 地图",
                 "name_en": "Web Map"
             },
             "Layer": {
@@ -18,6 +18,10 @@
             "Controls": {
                 "name": "控制",
                 "name_en": "Controls"
+            },
+            "DataFlowLayer":{
+                "name": "数据流图层",
+                "name_en": "Data Flow Layer"
             }
         }
     },
@@ -27,7 +31,17 @@
     },
     "ViewModel":{
         "name": "视图-模型",
-        "name_en": "ViewModel"
+        "name_en": "ViewModel",
+        "content": {
+          "WebMapViewModel": {
+            "name": "WebMapViewModel",
+            "name_en": "WebMapViewModel"
+          },
+          "DataFlowLayerViewModel": {
+            "name": "DataFlowLayerViewModel",
+            "name_en": "DataFlowLayerViewModel"
+          }
+        }
     },
     "Model":{
         "name": "模型",

@@ -22,7 +22,7 @@ const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
 
 /**
  * @class WebMapViewModel
- * @category  iPortal/Online
+ * @category ViewModel WebMapViewModel
  * @classdesc 对接 iPortal/Online 地图类。目前支持地图坐标系包括：'EPSG:3857'，'EPSG:4326'，'EPSG:4490'，'EPSG:4214'，'EPSG:4610'。
  * <div style="padding: 20px;border: 1px solid #eee;border-left-width: 5px;border-radius: 3px;border-left-color: #ce4844;">
  *      <p style="color: #ce4844">Notice</p>
@@ -37,12 +37,12 @@ const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
  * @param {string} [options.credentialValue] - 凭证值。
  * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
- * @fires WebMapViewModel#getmapfailed
- * @fires WebMapViewModel#getwmtsfailed
- * @fires WebMapViewModel#getlayersfailed
- * @fires WebMapViewModel#getfeaturesfailed
+ * @fires WebMapViewModel#mapinitialized
+ * @fires WebMapViewModel#getmapinfofailed
+ * @fires WebMapViewModel#getwmtsinfofailed
+ * @fires WebMapViewModel#getlayerdatasourcefailed
  * @fires WebMapViewModel#addlayerssucceeded
- * @extends {mapboxgl.Evented}
+ * @extends {WidgetViewModel}
  */
 export default class WebMapViewModel extends WidgetViewModel {
 
@@ -58,19 +58,52 @@ export default class WebMapViewModel extends WidgetViewModel {
     this.legendList = {};
     this._createWebMap();
   }
+  /**
+   * @function WebMapViewModel.prototype.resize
+   * @description Map 更新大小。
+   */
   resize() {
     this.map.resize();
   }
+  /**
+   * @function WebMapViewModel.prototype.resize
+   * @description 设置地图 ID。
+   * @param {String} mapId - iPortal|Online 地图 ID。
+   */
   setMapId(mapId) {
     this.mapId = mapId;
     this._createWebMap()
   }
+  /**
+   * @function WebMapViewModel.prototype.setWebMapOptions
+   * @description 设置 WebMap 可选参数。
+   * @param {Object} webMapOptions - WebMap 可选参数。
+   * @param {string} [webMapOptions.target] - 地图容器 ID。
+   * @param {string} [webMapOptions.server] - 地图的地址。
+   * @param {string} [webMapOptions.credentialKey] - 凭证密钥。
+   * @param {string} [webMapOptions.credentialValue] - 凭证值。
+   * @param {boolean} [webMapOptions.withCredentials] - 请求是否携带 cookie。
+   * @param {boolean} [webMapOptions.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
+   */
   setWebMapOptions(webMapOptions) {
     this.server = webMapOptions.server;
     this._createWebMap();
 
   }
 
+  /**
+   * @function WebMapViewModel.prototype.setMapOptions
+   * @description 设置 Map 基本配置参数。
+   * @param {Object} mapOptions - WebMap 可选参数。
+   * @param {Array} [mapOptions.center] - 地图中心点。
+   * @param {Number} [mapOptions.zoom] - 地图缩放级别。
+   * @param {Array} [mapOptions.maxBounds] - 地图最大范围。
+   * @param {Number} [mapOptions.minZoom] - 地图最小级别。
+   * @param {Number} [mapOptions.maxZoom] - 地图最大级别。
+   * @param {Boolean} [mapOptions.isWorldCopy] - 地图是否平铺。
+   * @param {Number} [mapOptions.bearing] - 地图的初始方位。
+   * @param {Number} [mapOptions.pitch] - 地图的初始俯仰。
+   */
   setMapOptions(mapOptions) {
     let { center, zoom, maxBounds, minZoom, maxZoom, isWorldCopy, bearing, pitch } = mapOptions;
     center && center.length && this.map.setCenter(center);
@@ -152,7 +185,12 @@ export default class WebMapViewModel extends WidgetViewModel {
       localIdeographFontFamily: fontFamilys || '',
       renderWorldCopies: false
     });
-    this.fire('mapinitialized');
+    /**
+     * @event WebMapViewModel#mapinitialized
+     * @description Map 初始化成功。
+     * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+     */
+    this.fire('mapinitialized',{map: this.map});
   }
 
   /**
@@ -200,13 +238,11 @@ export default class WebMapViewModel extends WidgetViewModel {
 
     }).catch(error => {
       /**
-       * @event WebMapViewModel#getmapfailed
+       * @event WebMapViewModel#getmapinfofailed
        * @description 获取地图信息失败。
        * @property {Object} error - 失败原因。
        */
-      this.fire('getmapfailed', {
-        'error': error
-      });
+      this.fire('getmapinfofailed', { 'error': error });
     });
   }
 
@@ -366,12 +402,12 @@ export default class WebMapViewModel extends WidgetViewModel {
       matchedCallback(isMatched, matchMaxZoom);
     }).catch((error) => {
       /**
-       * @event WebMapViewModel#getwmtsfailed
+       * @event WebMapViewModel#getwmtsinfofailed
        * @description 获取 WMTS 图层信息失败。
        * @property {Object} error - 失败原因。
        * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
        */
-      this.fire('getwmtsfailed', {
+      this.fire('getwmtsinfofailed', {
         'error': error,
         'map': this.map
       });
@@ -596,13 +632,14 @@ export default class WebMapViewModel extends WidgetViewModel {
             layerAdded++;
             this._sendMapToUser(layerAdded, len);
             /**
-             * @event WebMapViewModel#getlayersfailed
-             * @description 获取图层信息失败。
+             * @event WebMapViewModel#getlayerdatasourcefailed
+             * @description 获取图层数据失败。
              * @property {Object} error - 失败原因。
              * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
              */
-            this.fire('getlayersfailed', {
+            this.fire('getlayerdatasourcefailed', {
               'error': data.error,
+              'layer': layer,
               'map': this.map
             });
             return;
@@ -621,8 +658,9 @@ export default class WebMapViewModel extends WidgetViewModel {
         }).catch((error) => {
           layerAdded++;
           this._sendMapToUser(layerAdded, len);
-          this.fire('getlayersfailed', {
+          this.fire('getlayerdatasourcefailed', {
             'error': error,
+            'layer': layer,
             'map': this.map
           });
         })
@@ -648,13 +686,10 @@ export default class WebMapViewModel extends WidgetViewModel {
         }, (err) => {
           layerAdded++;
           this._sendMapToUser(layerAdded, len);
-          /**
-           * @event WebMapViewModel#getfeaturesfailed
-           * @description 获取图层要素失败。
-           * @property {Object} error - 失败原因。
-           */
-          this.fire('getfeaturesfailed', {
-            'error': err
+          this.fire('getlayerdatasourcefailed', {
+            'error': err,
+            'layer': layer,
+            'map': this.map
           });
         });
       } else if (layer.dataSource && layer.dataSource.type === "REST_MAP" && layer.dataSource.url) {
@@ -676,15 +711,17 @@ export default class WebMapViewModel extends WidgetViewModel {
               this._sendMapToUser(layerAdded, len);
             }, err => {
               layerAdded++;
-              this.fire('getfeaturesfailed', {
+              this.fire('getlayerdatasourcefailed', {
                 'error': err,
+                'layer': layer,
                 'map': this.map
-              })
+              });
             });
           }
         }, (err) => {
-          this.fire('getlayersfailed', {
+          this.fire('getlayerdatasourcefailed', {
             'error': err,
+            'layer': layer,
             'map': this.map
           });
         })
@@ -1584,7 +1621,7 @@ export default class WebMapViewModel extends WidgetViewModel {
        * @property {Object} mapparams - 地图信息。
        * @property {string} mapParams.title - 地图标题。
        * @property {string} mapParams.description - 地图描述。
-       * @property {Array.<Object>} layers - 地图上所有的图层对象
+       * @property {Array.<Object>} layers - 地图上所有的图层对象。
        */
       this.sourceListModel = new SourceListModel({
         map: this.map
@@ -1597,9 +1634,6 @@ export default class WebMapViewModel extends WidgetViewModel {
         'mapparams': this.mapParams,
         'layers': this.layers
       })
-
-
-
     }
   }
 
