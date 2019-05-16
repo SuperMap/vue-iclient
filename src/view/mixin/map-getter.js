@@ -25,7 +25,7 @@ export default {
   },
   computed: {
     getMapTarget() {
-      return this.mapTarget || this.$parent.target || mapEvent.firstMapTarget;
+      return this.mapTarget || (this.$parent && this.$parent.target) || mapEvent.firstMapTarget;
     }
   },
   mounted() {

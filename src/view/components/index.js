@@ -30,3 +30,4 @@ export { default as LabelThemeLayer } from './LabelThemeLayer.vue';
 export { default as RangeThemeLayer } from './RangeThemeLayer.vue';
 export { default as UniqueThemeLayer } from './UniqueThemeLayer.vue';
 export { default as GraphThemeLayer } from './GraphThemeLayer.vue';
+export { default as OpenFile } from './OpenFile.vue';

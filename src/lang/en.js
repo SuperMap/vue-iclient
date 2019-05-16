@@ -68,5 +68,10 @@ export default {
     noResults: 'The result of the query is empty!',
     queryFailed: 'Query failed!',
     seviceNotSupport: 'This service does not support queries!'
+  },
+  openFile: {
+    fileSizeExceeded: 'File size exceeded! The file size should not exceed 10M!',
+    fileTypeUnsupported: 'File format is not supported!',
+    openFileFail: 'Failed to open file！'
   }
 };

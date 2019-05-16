@@ -71,5 +71,12 @@ export default {
     noResults: '查询结果为空！',
     queryFailed: '查询失败!',
     seviceNotSupport: '此服务不支持查询！'
+  },
+  openFile: {
+    fileSizeExceeded: '文件大小超限！文件大小不得超过 10M！',
+    fileTypeUnsupported: '不支持该文件格式！',
+    openFileFail: '打开文件失败！',
+    openFileSuccess: '打开文件成功!',
+    selectFile: '选择文件'
   }
 };
