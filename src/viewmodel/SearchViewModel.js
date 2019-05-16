@@ -256,7 +256,7 @@ export default class SearchViewModel extends WidgetViewModel {
         }).then(data => {
           datasetName = data.datasetNames[0];
           // 请求restdata服务
-          this._searchFromRestData([{ name: [sourceName + ':' + datasetName], url: `${address}/data`, name: iportal.name || 'Iportal Data Search' }]);
+          this._searchFromRestData([{ dataName: [sourceName + ':' + datasetName], url: `${address}/data`, name: iportal.name || 'Iportal Data Search' }]);
         }).catch((error) => {
           console.log(error);
         })
@@ -278,7 +278,7 @@ export default class SearchViewModel extends WidgetViewModel {
         }).then(data => {
           layerName = data[0].subLayers.layers[0].caption;
           // 请求restmap服务
-          this._searchFromRestData([{ name: layerName, url: path, name: iportal.name || 'Iportal Data Search' }])
+          this._searchFromRestMap([{ layerName: layerName, url: path, name: iportal.name || 'Iportal Data Search' }])
           return layerName;
         }).catch((error) => {
           this.fire("searchfailed", { error });
