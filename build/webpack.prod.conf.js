@@ -77,14 +77,14 @@ const webpackConfig = merge(baseWebpackConfig, {
           amd: "./static/libs/echarts-layer/EchartsLayer.js"
         });
       }
-      if (/\/static\/libs\/geostats\/geostats/.test(request)) {
-        return callback(null, {
-          root: "geostats",
-          commonjs: "./static/libs/geostats/geostats.js",
-          commonjs2: "./static/libs/geostats/geostats.js",
-          amd: "./static/libs/geostats/geostats.js"
-        });
-      }
+      // if (/\/static\/libs\/geostats\/geostats/.test(request)) {
+      //   return callback(null, {
+      //     root: "geostats",
+      //     commonjs: "./static/libs/geostats/geostats.js",
+      //     commonjs2: "./static/libs/geostats/geostats.js",
+      //     amd: "./static/libs/geostats/geostats.js"
+      //   });
+      // }
       if (/\/static\/libs\/iclient-mapboxgl\/iclient9-mapboxgl/.test(request)) {
         return callback(null, {
           root: "SuperMap",

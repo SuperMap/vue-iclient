@@ -5,6 +5,7 @@ import WidgetViewModel from './WidgetViewModel';
 import SourceListModel from '../model/SourceListModel';
 import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
+import '../../static/libs/geostats/geostats';
 import convert from 'xml-js';
 import canvg from 'canvg';
 import jsonsql from 'jsonsql';
@@ -26,11 +27,6 @@ const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
  * @class WebMapViewModel
  * @category ViewModel
  * @classdesc 对接 iPortal/Online 地图类。目前支持地图坐标系包括：'EPSG:3857'，'EPSG:4326'，'EPSG:4490'，'EPSG:4214'，'EPSG:4610'。
- * <div style="padding: 20px;border: 1px solid #eee;border-left-width: 5px;border-radius: 3px;border-left-color: #ce4844;">
- *      <p style="color: #ce4844">Notice</p>
- *      <p style="font-size: 13px">该功能依赖 <a href='http://iclient.supermap.io/web/libs/geostats/geostats.js'>geostats</a> 插件，请确认引入该插件。</p>
- *      `<script type="text/javascript" src="http://iclient.supermap.io/web/libs/geostats/geostats.js"></script>`
- * </div>
  * @param {number} id - iPortal|Online 地图 ID。
  * @param {Object} options - 参数。
  * @param {string} [options.target='map'] - 地图容器 ID。
