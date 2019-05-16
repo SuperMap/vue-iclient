@@ -5,23 +5,26 @@ export default class iServerRestService extends mapboxgl.Evented {
     this.url = url;
   }
   getData(queryInfo) {
-    if (!(this._checkUrl(this.url))) {
+    if (!this._checkUrl(this.url)) {
       return null;
     }
-    SuperMap.FetchRequest.get(this.url).then((response) => {
-      return response.json();
-    }).then((results) => {
-      if (results.datasetInfo) {
-        const datasetInfo = {
-          dataSourceName: results.datasetInfo.dataSourceName,
-          datasetName: results.datasetInfo.name,
-          mapName: results.name
-        };
-        this._getDatasetInfoSucceed(datasetInfo, queryInfo);
-      }
-    }).catch((error) => {
-      this.fire('getdatafailed', error);
-    });
+    SuperMap.FetchRequest.get(this.url)
+      .then(response => {
+        return response.json();
+      })
+      .then(results => {
+        if (results.datasetInfo) {
+          const datasetInfo = {
+            dataSourceName: results.datasetInfo.dataSourceName,
+            datasetName: results.datasetInfo.name,
+            mapName: results.name
+          };
+          this._getDatasetInfoSucceed(datasetInfo, queryInfo);
+        }
+      })
+      .catch(error => {
+        this.fire('getdatafailed', error);
+      });
   }
   _getDatasetInfoSucceed(datasetInfo, queryInfo) {
     let datasetUrl = this.url;
@@ -33,7 +36,7 @@ export default class iServerRestService extends mapboxgl.Evented {
       if (type === 'maps') {
         let mapIndex = datasetUrl.indexOf('/', index + 1);
         let mapName = datasetUrl.substring(index + 1, mapIndex);
-        datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + '/maps/' + mapName; ;
+        datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + '/maps/' + mapName;
         this.getMapFeatures(datasetInfo, queryInfo);
       } else if (type === 'data') {
         datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + '/data';
@@ -41,47 +44,72 @@ export default class iServerRestService extends mapboxgl.Evented {
       }
     }
   }
+
   getMapFeatures(datasetInfo, queryInfo) {
-    let queryParam, queryBySQLParams, queryBySQLService;
-    let params = {
-      name: datasetInfo.mapName
-    };
-    Object.assign(params, queryInfo);
-    queryParam = new SuperMap.FilterParameter(params);
+    let { dataUrl, mapName } = datasetInfo;
+    queryInfo.name = mapName;
+    if (queryInfo.keyWord) {
+      this._getRestMapFields(dataUrl, mapName, fields => {
+        queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
+        this._getMapFeatureBySql(dataUrl, queryInfo);
+      });
+    } else {
+      this._getMapFeatureBySql(dataUrl, queryInfo);
+    }
+  }
+  getDataFeatures(datasetInfo, queryInfo) {
+    let { datasetName, dataSourceName, dataUrl } = datasetInfo;
+    queryInfo.name = datasetName + '@' + dataSourceName;
+    queryInfo.datasetNames = [dataSourceName + ':' + datasetName];
+    if (queryInfo.keyWord) {
+      let fieldsUrl = dataUrl + `/datasources/${dataSourceName}/datasets/${datasetName}/fields.rjson`;
+      this._getRestDataFields(fieldsUrl, fields => {
+        queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
+        this._getDataFeaturesBySql(dataUrl, queryInfo);
+      });
+    } else {
+      this._getDataFeaturesBySql(dataUrl, queryInfo);
+    }
+  }
+  _getMapFeatureBySql(url, queryInfo) {
+    let queryBySQLParams, queryBySQLService;
     queryBySQLParams = new SuperMap.QueryBySQLParameters({
-      queryParams: [queryParam],
-      expectCount: 100000
+      queryParams: [
+        {
+          name: queryInfo.name,
+          attributeFilter: queryInfo.attributeFilter
+        }
+      ],
+      expectCount: queryInfo.maxFeatures
     });
-    queryBySQLService = new SuperMap.QueryBySQLService(datasetInfo.dataUrl, {
+    queryBySQLService = new SuperMap.QueryBySQLService(url, {
       eventListeners: {
-        'processCompleted': this.getFeaturesSucceed.bind(this),
-        'processFailed': function () { }
+        processCompleted: this.getFeaturesSucceed.bind(this),
+        processFailed: function() {}
       }
     });
     queryBySQLService.processAsync(queryBySQLParams);
   }
-  getDataFeatures(datasetInfo, queryInfo) {
-    let getFeatureParam, getFeatureBySQLParams, getFeatureBySQLService;
-    let params = {
-      name: datasetInfo.datasetName + '@' + datasetInfo.dataSourceName
-    };
-    Object.assign(params, queryInfo);
-    getFeatureParam = new SuperMap.FilterParameter(params);
+  _getDataFeaturesBySql(url, queryInfo) {
+    let getFeatureBySQLParams, getFeatureBySQLService;
     getFeatureBySQLParams = new SuperMap.GetFeaturesBySQLParameters({
-      queryParameter: getFeatureParam,
-      datasetNames: [datasetInfo.dataSourceName + ':' + datasetInfo.datasetName],
+      queryParameter: {
+        name: queryInfo.name,
+        attributeFilter: queryInfo.attributeFilter
+      },
+      datasetNames: queryInfo.datasetNames,
       fromIndex: 0,
-      toIndex: 100000
+      toIndex: queryInfo.maxFeatures - 1
     });
-    getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(datasetInfo.dataUrl, {
+    getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
       eventListeners: {
-        'processCompleted': this.getFeaturesSucceed.bind(this),
-        'processFailed': function () { }
+        processCompleted: this.getFeaturesSucceed.bind(this),
+        processFailed: function() {}
       }
     });
-
     getFeatureBySQLService.processAsync(getFeatureBySQLParams);
   }
+
   getFeaturesSucceed(results) {
     let features;
     let fieldCaptions;
@@ -92,25 +120,30 @@ export default class iServerRestService extends mapboxgl.Evented {
       const recordsets = results.result.recordsets[0];
       this.features = recordsets.features;
       features = this.features.features;
-      if (features.length) {
-        features = recordsets.features;
+      if (features && features.length > 0) {
         fieldCaptions = recordsets.fieldCaptions;
         fieldTypes = recordsets.fieldTypes;
+      } else {
+        this.fire('featureisempty', { results });
       }
-    } else {
+    } else if (results.result) {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features;
       fieldCaptions = [];
       fieldTypes = [];
-      if (features.length) {
+      if (features && features.length > 0) {
         const feature = this.features.features[0];
         // 获取每个字段的名字和类型
         for (let attr in feature.properties) {
           fieldCaptions.push(attr);
           fieldTypes.push(this._getDataType(feature.properties[attr]));
         }
+      } else {
+        this.fire('featureisempty', { results });
       }
+    } else {
+      this.fire('getdatafailed', { results });
     }
     const data = {
       features,
@@ -133,6 +166,40 @@ export default class iServerRestService extends mapboxgl.Evented {
     this.fire('getdatasucceeded', data);
   }
 
+  _getRestDataFields(fieldsUrl, callBack) {
+    SuperMap.FetchRequest.get(fieldsUrl)
+      .then(response => {
+        return response.json();
+      })
+      .then(results => {
+        let fields = results.fieldNames;
+        callBack(fields);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+  _getRestMapFields(url, layerName, callBack) {
+    let param = new SuperMap.QueryBySQLParameters({
+      queryParams: {
+        name: layerName,
+        attributeFilter: 'SMID=0'
+      }
+    });
+    new mapboxgl.supermap.QueryService(url).queryBySQL(param, serviceResult => {
+      let fields;
+      serviceResult.result && (fields = serviceResult.result.recordsets[0].fields);
+      fields && callBack(fields);
+    });
+  }
+  _getAttributeFilterByKeywords(fields, keyWord) {
+    let attributeFilter = '';
+    fields.forEach((field, index) => {
+      attributeFilter +=
+        index !== fields.length - 1 ? `${field} LIKE '%${keyWord}%' ` + 'OR ' : `${field} LIKE '%${keyWord}%'`;
+    }, this);
+    return attributeFilter;
+  }
   /**
    * @function iServerRestService.prototype._checkUrl
    * @description 检查url是否符合要求
@@ -171,7 +238,7 @@ export default class iServerRestService extends mapboxgl.Evented {
    * @param {string} data - 字符串
    */
   _isDate(data) {
-    let reg = /((^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(10|12|0?[13578])([-\/\._])(3[01]|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(11|0?[469])([-\/\._])(30|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(0?2)([-\/\._])(2[0-8]|1[0-9]|0?[1-9])$)|(^([2468][048]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([3579][26]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][13579][26])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][13579][26])([-\/\._])(0?2)([-\/\._])(29)$))/ig;
+    let reg = /((^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(10|12|0?[13578])([-\/\._])(3[01]|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(11|0?[469])([-\/\._])(30|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(0?2)([-\/\._])(2[0-8]|1[0-9]|0?[1-9])$)|(^([2468][048]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([3579][26]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][13579][26])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][13579][26])([-\/\._])(0?2)([-\/\._])(29)$))/gi;
     return reg.test(data);
   }
   /**

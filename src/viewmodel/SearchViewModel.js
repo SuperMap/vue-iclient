@@ -3,7 +3,8 @@ import clonedeep from 'lodash.clonedeep';
 import center from '@turf/center';
 import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
-
+import iPortalDataService from '../utils/iPortalDataService';
+import iServerRestService from '../utils/iServerRestService';
 /**
  * @class SearchViewModel
  * @description search viewModel.
@@ -17,8 +18,7 @@ export default class SearchViewModel extends WidgetViewModel {
     this.options = options || {};
     this.searchTaskId = 0;
     this.options.cityGeoCodingConfig = {
-      addressUrl:
-        'http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
+      addressUrl: 'http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
       key: 'fvV2osxwuZWlY0wJb8FEb2i5'
     };
     if (map) {
@@ -33,7 +33,7 @@ export default class SearchViewModel extends WidgetViewModel {
     this.searchCount = 0;
     this.searchResult = [];
     this.keyWord = keyWord;
-    this.maxReturn = parseInt(this.options.maxReturn) >= 100 ? 100 : parseInt(this.options.maxReturn) || 8;
+    this.maxFeatures = parseInt(this.options.maxFeatures) >= 100 ? 100 : parseInt(this.options.maxFeatures) || 8;
     this.searchtType.forEach(item => {
       if (this.options[item]) {
         if (item === 'onlineLocalSearch' && this.options[item].enable) {
@@ -90,8 +90,14 @@ export default class SearchViewModel extends WidgetViewModel {
     let popup = new mapboxgl.Popup({
       className: 'attributePopup',
       closeOnClick: false
-    }).setLngLat(coordinates).setHTML(popupContainer.innerHTML).addTo(this.map);
-    let marker = new mapboxgl.Marker().setLngLat(coordinates).setPopup(popup).addTo(this.map);
+    })
+      .setLngLat(coordinates)
+      .setHTML(popupContainer.innerHTML)
+      .addTo(this.map);
+    let marker = new mapboxgl.Marker()
+      .setLngLat(coordinates)
+      .setPopup(popup)
+      .addTo(this.map);
     this.map.flyTo({ center: coordinates });
     return marker;
   }
@@ -103,17 +109,24 @@ export default class SearchViewModel extends WidgetViewModel {
         if (source) {
           let features = clonedeep(source._data.features);
           let resultFeature = this._getFeaturesByKeyWord(this.keyWord, features);
-          resultFeature.length > 0 && this.searchResult.push({ source: sourceName, result: resultFeature.slice(0, this.maxReturn) });
-          this.searchCount--;
-          this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
+          this._searchFeaturesSucceed(resultFeature.slice(0, this.maxFeatures), sourceName);
         } else {
-          this.searchCount--;
-          this.fire('searchfailed' + this.searchTaskId, {
-            error: `The ${sourceName} does not exist`
-          });
+          this._searchFeaturesFailed(`The ${sourceName} does not exist`);
         }
       }, this);
     }, 0);
+  }
+  _searchFeaturesFailed(error) {
+    this.searchCount--;
+    this.fire('searchfailed' + this.searchTaskId, { error });
+    console.log(error);
+  }
+  _searchFeaturesSucceed(resultFeature, sourceName) {
+    resultFeature.length > 0 && this.searchResult.push({ source: sourceName, result: resultFeature });
+    this.searchCount--;
+    this.searchCount === 0 &&
+      this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) &&
+      (this.searchTaskId += 1);
   }
 
   _searchFromPOI(onlineLocalSearch) {
@@ -124,280 +137,96 @@ export default class SearchViewModel extends WidgetViewModel {
     };
     this.geoCodeParam.keyWords = this.keyWord;
     let url = this._getSearchUrl(this.geoCodeParam);
-    SuperMap.FetchRequest.get(url).then(response => {
-      return response.json();
-    }).then(geocodingResult => {
-      if (geocodingResult.error || geocodingResult.poiInfos.length === 0) {
-        this.searchCount--;
-        this.fire('searchfailed', {
-          error: 'search from POI failed'
-        });
-        return;
-      }
-      if (geocodingResult.poiInfos) {
-        const geoJsonResult = this._dataToGeoJson(geocodingResult.poiInfos, this.geoCodeParam);
-        geoJsonResult.length > 0 && this.searchResult.push({ source: 'Online 本地搜索', result: geoJsonResult.slice(0, this.maxReturn) });
-        this.searchCount--;
-        this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
-      }
-    }).catch(error => {
-      this.searchCount--;
-      this.fire('searchfailed', { error });
-      console.log(error);
-    });
+    SuperMap.FetchRequest.get(url)
+      .then(response => {
+        return response.json();
+      })
+      .then(geocodingResult => {
+        if (geocodingResult.error || geocodingResult.poiInfos.length === 0) {
+          this._searchFeaturesFailed('search from POI failed');
+          return;
+        }
+        if (geocodingResult.poiInfos) {
+          const geoJsonResult = this._dataToGeoJson(geocodingResult.poiInfos, this.geoCodeParam);
+          this._searchFeaturesSucceed(geoJsonResult.slice(0, this.maxFeatures), 'Online 本地搜索');
+        }
+      })
+      .catch(error => {
+        this._searchFeaturesFailed(error);
+      });
   }
 
   _searchFromRestMap(restMaps) {
     restMaps.forEach(restMap => {
-      this._getRestMapFields(restMap, fields => {
-        let attributeFilter = this._getAttributeFilter(fields);
-        let param = new SuperMap.QueryBySQLParameters({
-          queryParams: {
-            name: restMap.layerName,
-            attributeFilter: attributeFilter
-          },
-          startRecord: 0,
-          expectCount: this.maxReturn
-        });
-        new mapboxgl.supermap.QueryService(restMap.url).queryBySQL(param, serviceResult => {
-          if (serviceResult.result) {
-            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, serviceResult.result.recordsets[0].features.features);
-            resultFeatures.length > 0 && this.searchResult.push({ source: restMap.name || 'Rest Map Search', result: resultFeatures });
-            this.searchCount--;
-            this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
-          } else {
-            this.searchCount--;
-          }
-        });
+      let iserverService = new iServerRestService(restMap.url);
+      iserverService.on('getdatafailed', e => {
+        this._searchFeaturesFailed(e);
       });
+      iserverService.on('featureisempty', e => {
+        this.searchCount--;
+        this.fire('searchresultisempty', e);
+        console.log(e);
+      });
+      iserverService.on('getdatasucceeded', e => {
+        if (e.features) {
+          let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+          this._searchFeaturesSucceed(resultFeatures, restMap.name || 'Rest Map Search');
+        }
+      });
+      iserverService.getMapFeatures(
+        { dataUrl: restMap.url, mapName: restMap.layerName },
+        { maxFeatures: this.maxFeatures, keyWord: this.keyWord }
+      );
     }, this);
   }
 
   _searchFromRestData(restDatas) {
     restDatas.forEach(restData => {
-      let datasourceName = restData.dataName[0].split(':')[0];
-      let datasetName = restData.dataName[0].split(':')[1];
-      let fieldsUrl = restData.url + `/datasources/${datasourceName}/datasets/${datasetName}/fields.rjson`;
-      this._getRestDataFields(fieldsUrl, fields => {
-        let attributeFilter = this._getAttributeFilter(fields);
-        let param = new SuperMap.GetFeaturesBySQLParameters({
-          queryParameter: {
-            attributeFilter: attributeFilter
-          },
-          datasetNames: restData.dataName,
-          fromIndex: 0,
-          toIndex: this.maxReturn - 1
-        });
-        new mapboxgl.supermap.FeatureService(restData.url).getFeaturesBySQL(param, serviceResult => {
-          if (serviceResult.result) {
-            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, serviceResult.result.features.features);
-            resultFeatures.length > 0 && this.searchResult.push({ source: restData.name || 'Rest Data Search', result: resultFeatures });
-            this.searchCount--;
-            this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
-          } else {
-            this.searchCount--;
-          }
-        });
+      let iserverService = new iServerRestService(restData.url);
+      iserverService.on('getdatafailed', e => {
+        this._searchFeaturesFailed(e);
       });
+      iserverService.on('featureisempty', e => {
+        this.searchCount--;
+        this.fire('searchresultisempty', e);
+        console.log(e);
+      });
+      iserverService.on('getdatasucceeded', e => {
+        if (e.features && e.features.length > 0) {
+          let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+          this._searchFeaturesSucceed(resultFeatures, restData.name || 'Rest Data Search');
+        } else {
+          this.searchCount--;
+        }
+      });
+      let dataSourceName = restData.dataName[0].split(':')[0];
+      let datasetName = restData.dataName[0].split(':')[1];
+      iserverService.getDataFeatures(
+        { datasetName, dataSourceName, dataUrl: restData.url },
+        { maxFeatures: this.maxFeatures, keyWord: this.keyWord }
+      );
     }, this);
   }
 
   _searchFromIportal(iportalDatas) {
     iportalDatas.forEach(iportal => {
-      let url = iportal.url;
-      this.withCredentials = iportal.withCredentials || false;
-      SuperMap.FetchRequest.get(url, null, { withCredentials: this.withCredentials || false }).then(response => {
-        return response.json();
-      }).then(data => {
-        if (data.succeed === false) {
-          this.searchCount--;
-          // 请求失败
-          return;
-        }
-        // 是否有rest服务
-        if (data.dataItemServices && data.dataItemServices.length > 0) {
-          let dataItemServices = data.dataItemServices; let resultData;
-          dataItemServices.forEach(item => {
-            if (item.serviceType === 'RESTDATA' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            } else {
-              this._getDatafromContent(iportal);
-            }
-          }, this);
-          // 如果有服务，获取数据源和数据集, 然后请求rest服务
-          this._getDatafromRest(resultData.serviceType, resultData.address, iportal);
-        } else {
-          this._getDatafromContent(iportal);
-        }
-      }).catch(error => {
-        this.fire('searchfailed', { error });
-        console.log(error);
+      let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false);
+      iPortalService.on('getdatafailed', e => {
+        this._searchFeaturesFailed(e);
       });
+      iPortalService.on('featureisempty', e => {
+        this.searchCount--;
+        this.fire('searchresultisempty', e);
+        console.log(e);
+      });
+      iPortalService.on('getdatasucceeded', e => {
+        if (e.features) {
+          let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+          this._searchFeaturesSucceed(resultFeatures, iportal.name || 'Rest Map Search');
+        }
+      });
+      iPortalService.getData({ keyWord: this.keyWord });
     }, this);
-  }
-
-  _getDatafromRest(serviceType, address, iportal) {
-    let withCredentials = this.withCredentials || false;
-    if (serviceType === 'RESTDATA') {
-      let url = `${address}/data/datasources`; let sourceName; let datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, { withCredentials }).then(response => {
-        return response.json();
-      }).then(data => {
-        sourceName = data.datasourceNames[0];
-        url = `${address}/data/datasources/${sourceName}/datasets`;
-        // 请求获取数据集名
-        SuperMap.FetchRequest.get(url, null, { withCredentials }).then(response => {
-          return response.json();
-        }).then(data => {
-          datasetName = data.datasetNames[0];
-          // 请求restdata服务
-          this._searchFromRestData([{ dataName: [sourceName + ':' + datasetName], url: `${address}/data`, name: iportal.name || 'Iportal Data Search' }]);
-        }).catch((error) => {
-          console.log(error);
-        });
-      }).catch((error) => {
-        console.log(error);
-      });
-    } else {
-      // 如果是地图服务
-      let url = `${address}/maps`; let mapName; let layerName; let path; // 请求获取地图名
-      SuperMap.FetchRequest.get(url, null, { withCredentials }).then(response => {
-        return response.json();
-      }).then(data => {
-        mapName = data[0].name;
-        path = data[0].path;
-        url = url = `${address}/maps/${mapName}/layers`;
-        // 请求获取图层名
-        SuperMap.FetchRequest.get(url, null, { withCredentials }).then(response => {
-          return response.json();
-        }).then(data => {
-          layerName = data[0].subLayers.layers[0].caption;
-          // 请求restmap服务
-          this._searchFromRestMap([{ layerName: layerName, url: path, name: iportal.name || 'Iportal Data Search' }]);
-          return layerName;
-        }).catch((error) => {
-          this.fire('searchfailed', { error });
-          console.log(error);
-        });
-      }).catch(error => {
-        this.fire('searchfailed', { error });
-        console.log(error);
-      });
-    }
-  }
-
-  _getDatafromContent(iportal) {
-    let features;
-    let url = iportal.url + '/content.json?pageSize=9999999&currentPage=1';
-    // 获取图层数据
-    SuperMap.FetchRequest.get(url, null, {
-      withCredentials: iportal.withCredentials || false
-    }).then(response => {
-      return response.json();
-    }).then(data => {
-      if (data.succeed === false) {
-        // 请求失败
-        this.searchCount--;
-
-        return;
-      }
-      if (data.type) {
-        if (data.type === 'JSON' || data.type === 'GEOJSON') {
-          data.content = JSON.parse(data.content.trim());
-          // 如果是json文件 data.content = {type:'fco', features},格式不固定
-          if (!(data.content.features)) {
-            // json格式解析失败
-            console.log('JSON 格式解析失败！');
-            return;
-          }
-          features = this._formatGeoJSON(data.content);
-        } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-          features = this._excelData2Feature(data.content);
-        }
-        let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, features);
-        resultFeatures.length > 0 && this.searchResult.push({ source: iportal.name || 'Iportal Data Search', result: resultFeatures.slice(0, this.maxReturn) });
-        this.searchCount--;
-        this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
-      }
-    }).catch(error => {
-      this.searchCount--;
-      console.log(error);
-    });
-  }
-  _formatGeoJSON(data) {
-    let features = data.features;
-    features.forEach((row, index) => {
-      row.properties['index'] = index;
-    });
-    return features;
-  }
-  _excelData2Feature(dataContent) {
-    let fieldCaptions = dataContent.colTitles;
-    // 位置属性处理
-    let xfieldIndex = -1;
-    let yfieldIndex = -1;
-    for (let i = 0, len = fieldCaptions.length; i < len; i++) {
-      if (SuperMap.Widgets.FileReaderUtil.isXField(fieldCaptions[i])) {
-        xfieldIndex = i;
-      }
-      if (SuperMap.Widgets.FileReaderUtil.isYField(fieldCaptions[i])) {
-        yfieldIndex = i;
-      }
-    }
-
-    // feature 构建后期支持坐标系 4326/3857
-    let features = [];
-
-    for (let i = 0, len = dataContent.rows.length; i < len; i++) {
-      let row = dataContent.rows[i];
-
-      let x = Number(row[xfieldIndex]);
-      let y = Number(row[yfieldIndex]);
-      // 属性信息
-      let attributes = {};
-      for (let index in dataContent.colTitles) {
-        let key = dataContent.colTitles[index];
-        attributes[key] = dataContent.rows[i][index];
-      }
-      attributes['index'] = i + '';
-      // 目前csv 只支持处理点，所以先生成点类型的 geojson
-      let feature = {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Point',
-          'coordinates': [x, y]
-        },
-        'properties': attributes
-      };
-      features.push(feature);
-    }
-    return features;
-  }
-  _getRestMapFields(restMap, callBack) {
-    let param = new SuperMap.QueryBySQLParameters({
-      queryParams: {
-        name: restMap.layerName,
-        attributeFilter: 'SMID=0'
-      }
-    });
-    new mapboxgl.supermap.QueryService(restMap.url).queryBySQL(param, serviceResult => {
-      let fields;
-      serviceResult.result && (fields = serviceResult.result.recordsets[0].fields);
-      fields && callBack(fields);
-    });
-  }
-
-  _getRestDataFields(fieldsUrl, callBack) {
-    SuperMap.FetchRequest.get(fieldsUrl).then(response => {
-      return response.json();
-    }).then(results => {
-      let fields = results.fieldNames;
-      callBack(fields);
-    }).catch(error => {
-      console.log(error);
-    });
   }
 
   _searchFromAddressMatch(addressMatches) {
@@ -406,20 +235,16 @@ export default class SearchViewModel extends WidgetViewModel {
       let parm = {
         address: this.keyWord,
         fromIndex: 0,
-        toIndex: this.maxReturn,
-        maxReturn: this.maxReturn,
+        toIndex: this.maxFeatures,
+        maxReturn: this.maxFeatures,
         prjCoordSys: '{epsgcode:4326}'
       };
       let geoCodeParam = new SuperMap.GeoCodingParameter(parm);
       this.addressMatchService.code(geoCodeParam, e => {
         if (e.result.length > 0) {
-          e.result.length > 0 && this.searchResult.push({ source: addressMatch.name || 'Address Match Search', result: e.result });
-          this.searchCount--;
-          this.searchCount === 0 && this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) && (this.searchTaskId += 1);
+          this._searchFeaturesSucceed(e.result, addressMatch.name || 'Address Match Search');
         } else {
-          this.searchCount--;
-          this.fire('searchfailed', { e });
-          console.log(e);
+          this._searchFeaturesFailed(e);
         }
       });
     }, this);
@@ -452,9 +277,9 @@ export default class SearchViewModel extends WidgetViewModel {
   _getSearchUrl(geoCodeParam) {
     let url =
       this.options.cityGeoCodingConfig.addressUrl +
-      `.json?keywords=${geoCodeParam.keyWords}&city=${geoCodeParam.city || '北京市'}&pageSize=${geoCodeParam.pageSize}&pageNum=${geoCodeParam.pageNum}&key=${
-        this.options.cityGeoCodingConfig.key
-      }`;
+      `.json?keywords=${geoCodeParam.keyWords}&city=${geoCodeParam.city || '北京市'}&pageSize=${
+        geoCodeParam.pageSize
+      }&pageNum=${geoCodeParam.pageNum}&key=${this.options.cityGeoCodingConfig.key}`;
     return url;
   }
 
@@ -468,10 +293,7 @@ export default class SearchViewModel extends WidgetViewModel {
       }
       let fAttr = feature.properties;
       operatingAttributeNames.forEach(attributeName => {
-        if (
-          fAttr[attributeName] &&
-          keyReg.test(fAttr[attributeName].toString().toLowerCase())
-        ) {
+        if (fAttr[attributeName] && keyReg.test(fAttr[attributeName].toString().toLowerCase())) {
           let filterAttributeName = attributeName;
           let filterAttributeValue = fAttr[attributeName];
           if (!feature.filterAttribute) {
@@ -491,19 +313,10 @@ export default class SearchViewModel extends WidgetViewModel {
   _getAttributeNames(features) {
     let attributeNames = [];
     let properties = features[0].properties;
-    properties && Object.keys(properties).forEach(field => {
-      attributeNames.push(field);
-    }, this);
+    properties &&
+      Object.keys(properties).forEach(field => {
+        attributeNames.push(field);
+      }, this);
     return attributeNames;
-  }
-
-  _getAttributeFilter(fields) {
-    let attributeFilter = '';
-    fields.forEach((field, index) => {
-      attributeFilter += index !== fields.length - 1
-        ? `${field} LIKE '%${this.keyWord}%' ` + 'OR '
-        : `${field} LIKE '%${this.keyWord}%'`;
-    }, this);
-    return attributeFilter;
   }
 }
