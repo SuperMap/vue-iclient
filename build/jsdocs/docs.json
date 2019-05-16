@@ -4,7 +4,8 @@
         "recurse": true,
         "template": "./template",
         "configPath": "./",
-        "destination": "./docs"
+        "destination": "./docs",
+        "typeLinkExt": "./template/typeLinkExt.js"
     },
     "disqus":"",
     "tags": {
