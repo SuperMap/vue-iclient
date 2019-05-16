@@ -1,6 +1,5 @@
-/* eslint-disable */
 import WidgetViewModel from './WidgetViewModel';
-import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 /**
  * @class MiniMapViewModel
  * @description mini map viewModel.
@@ -180,7 +179,7 @@ export default class MiniMapViewModel extends WidgetViewModel {
     var source = this._trackingRect;
     var data = source._data;
     var bounds = data.properties.bounds;
-    if(bounds){
+    if (bounds) {
       bounds._ne.lat -= offset[1];
       bounds._ne.lng -= offset[0];
       bounds._sw.lat -= offset[1];
@@ -189,7 +188,6 @@ export default class MiniMapViewModel extends WidgetViewModel {
       source.setData(data);
       return bounds;
     }
-    return
   }
 
   _setTrackingRectBounds(bounds) {
@@ -270,9 +268,9 @@ export default class MiniMapViewModel extends WidgetViewModel {
     return latlng;
   }
   _setStyle() {
-      this._miniMap.setStyle(this._parentMap.getStyle());
-      this._addRectLayers();
-      this._update();
+    this._miniMap.setStyle(this._parentMap.getStyle());
+    this._addRectLayers();
+    this._update();
   }
   _addRectLayers() {
     var opts = this.options;

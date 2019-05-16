@@ -7,16 +7,14 @@ import WidgetViewModel from './WidgetViewModel';
  * @extends WidgetViewModel
  */
 class LegendViewModel extends WidgetViewModel {
-    constructor(webmap) {
-        super(map);
-        this.webmap = webmap;
-        this.sourceListModel = this.webmap.getSourceListModel()
-    }
-    
-    getStyle(layerName){
-        return this.sourceListModel.getLegendStyle(layerName);
-    }
+  constructor(webmap) {
+    super(webmap);
+    this.webmap = webmap;
+    this.sourceListModel = this.webmap.getSourceListModel();
+  }
 
-    
+  getStyle(layerName) {
+    return this.sourceListModel.getLegendStyle(layerName);
+  }
 }
 export default LegendViewModel;

@@ -1,14 +1,17 @@
 <template>
   <sm-card
+    v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     class="sm-widget-layer-list"
-    v-show="isShow"
   >
-    <el-card class="sm-widget-layer-list__el-card" :style="[getBackgroundStyle]">
+    <el-card
+      class="sm-widget-layer-list__el-card"
+      :style="[getBackgroundStyle]"
+    >
       <div class="sm-widget-layer-list__content">
         <el-collapse
           v-for="(sourceValue,sourceKey,index) in sourceList"
@@ -22,26 +25,28 @@
             :style="[getTextColorStyle]"
           >
             <template slot="title">
-              <div
-                :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
-              >
+              <div :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()">
                 <i
                   class="el-icon-view"
                   :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
                   @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
                 ></i>
-                <span>{{sourceKey}}</span>
+                <span>{{ sourceKey }}</span>
               </div>
             </template>
             <el-checkbox
-              v-for="(sourcelayerValue,sourcelayerKey,index) in sourceValue.sourceLayerList"
-              :key="index"
-              @change="toggleVisibility(sourcelayerKey,sourceKey,sourcelayerValue[0].visibility)"
+              v-for="(sourcelayerValue,sourcelayerKey,i) in sourceValue.sourceLayerList"
+              :key="i"
               :value="sourcelayerValue[0].visibility | isVisible"
-            >{{sourcelayerKey}}</el-checkbox>
+              @change="toggleVisibility(sourcelayerKey,sourceKey,sourcelayerValue[0].visibility)"
+            >{{ sourcelayerKey }}</el-checkbox>
           </el-collapse-item>
 
-          <el-card v-else class="sm-widget-layer-list__elcarditem" :style="[getTextColorStyle]">
+          <el-card
+            v-else
+            class="sm-widget-layer-list__elcarditem"
+            :style="[getTextColorStyle]"
+          >
             <i
               :class="['el-icon-view', sourceValue.visibility === 'visible' ? 'visible':'none']"
               :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
@@ -50,7 +55,7 @@
             <div
               class="sm-widget-layer-list__layergroupname add-ellipsis"
               :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
-            >{{sourceKey}}</div>
+            >{{ sourceKey }}</div>
           </el-card>
         </el-collapse>
       </div>
@@ -59,30 +64,35 @@
 </template>
 
 <script>
-import Theme from "../mixin/theme";
-import Control from "../mixin/control";
-import MapGetter from "../mixin/map-getter";
-import Card from "../mixin/card";
-import layerListViewModel from "../../viewmodel/layerListViewModel";
+import Theme from '../mixin/theme';
+import Control from '../mixin/control';
+import MapGetter from '../mixin/map-getter';
+import Card from '../mixin/card';
+import LayerListViewModel from '../../viewmodel/LayerListViewModel';
 
 export default {
-  name: "SmLayerList",
+  name: 'SmLayerList',
+  filters: {
+    isVisible(visibility) {
+      return visibility === 'visible';
+    }
+  },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
     iconClass: {
       type: String,
-      default: "smwidgets-icons-layer-style"
+      default: 'smwidgets-icons-layer-style'
     },
     headerName: {
       type: String,
-      default: "图层"
+      default: '图层'
     }
   },
   data() {
     return {
       sourceList: {},
       disabledStyle: {
-        color: "#c0c4cc"
+        color: '#c0c4cc'
       }
     };
   },
@@ -94,29 +104,24 @@ export default {
       this.changCheckStyle();
     },
     changCheckStyle() {
-      const checkBoxsList = this.$el.querySelectorAll(".el-checkbox__input");
+      const checkBoxsList = this.$el.querySelectorAll('.el-checkbox__input');
       checkBoxsList.forEach(item => {
         let childrens = item.childNodes;
         let checkbox = childrens[0];
         let label = item.parentNode.childNodes[1];
-        if (item.classList.contains("is-checked")) {
+        if (item.classList.contains('is-checked')) {
           checkbox.style.borderColor = this.getColorStyle(0).color;
           checkbox.style.backgroundColor = this.getColorStyle(0).color;
           label.style.color = this.getColorStyle(0).color;
         } else {
-          checkbox.style.borderColor = "#DCDFE6";
-          checkbox.style.backgroundColor = "#fff";
+          checkbox.style.borderColor = '#DCDFE6';
+          checkbox.style.backgroundColor = '#fff';
           label.style.color = this.getTextColor;
         }
       });
     },
     toggleVisibility(sourceLayer, sourceName, visibility) {
-      this.layerListViewModel &&
-        this.layerListViewModel.changeLayerVisible(
-          sourceLayer,
-          sourceName,
-          visibility
-        );
+      this.layerListViewModel && this.layerListViewModel.changeLayerVisible(sourceLayer, sourceName, visibility);
       setTimeout(() => {
         this.changCheckStyle();
       }, 0);
@@ -128,28 +133,19 @@ export default {
       this.layerListViewModel.deleteLayer();
     },
     toggleLayerGroupVisibility(sourceName, visibility) {
-      this.layerListViewModel &&
-        this.layerListViewModel.changeLayerGroupVisibility(
-          sourceName,
-          visibility
-        );
+      this.layerListViewModel && this.layerListViewModel.changeLayerGroupVisibility(sourceName, visibility);
     },
     getDisabledStyle(isText = true) {
       return {
-        color: "#c0c4cc"
+        color: '#c0c4cc'
       };
     }
   },
-  filters: {
-    isVisible(visibility) {
-      return visibility === "visible" ? true : false;
-    }
-  },
   loaded() {
-    !this.parentIsWebMapOrMap && this.$el.classList.add("layer-list-container");
-    this.layerListViewModel = new layerListViewModel(this.map);
+    !this.parentIsWebMapOrMap && this.$el.classList.add('layer-list-container');
+    this.layerListViewModel = new LayerListViewModel(this.map);
     this.sourceList = this.layerListViewModel.initLayerList();
-    this.layerListViewModel.on("layersUpdated", () => {
+    this.layerListViewModel.on('layersUpdated', () => {
       this.sourceList = this.layerListViewModel.initLayerList();
     });
   }

@@ -1,4 +1,4 @@
-import echarts from "echarts";
+import echarts from 'echarts';
 import WidgetViewModel from './WidgetViewModel';
 import iServerRestService from '../utils/iServerRestService';
 import iPortalDataService from '../utils/iPortalDataService';
@@ -23,27 +23,24 @@ import tonumber from 'lodash.tonumber';
  */
 
 export class ChartViewModel extends WidgetViewModel {
-
   constructor(chartContainer, options) {
     super();
     this.chartOptions = {
-      //x轴是否分类统计
+      // x轴是否分类统计
       xFieldStatistical: true,
-      //x轴字体是否倾斜
+      // x轴字体是否倾斜
       xAxisLabelRotate: false,
-      //y轴字体是否倾斜
+      // y轴字体是否倾斜
       yAxisLabelRotate: false,
-      legendPosition: "top", //none top bottom (left right topleft topright bottomleft bottomright暂不支持，位置不好算)
-      legendOrient: "horizontal", //'horizontal''vertical'暂不支持,
-      yAxisLabelRotate: false,
-      yAxisLabelRotate: false,
-      xAxisName: "",
-      yAxisName: "",
+      legendPosition: 'top', // none top bottom (left right topleft topright bottomleft bottomright暂不支持，位置不好算)
+      legendOrient: 'horizontal', // 'horizontal''vertical'暂不支持,
+      xAxisName: '',
+      yAxisName: '',
       tooltip: {
         formatter: '{b0}: {c0}'
       },
-      backgroundColor: "#fff",
-      axisColor: "#333",
+      backgroundColor: '#fff',
+      axisColor: '#333',
       colorGradient: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8'],
       padding: {
         top: 30,
@@ -55,11 +52,11 @@ export class ChartViewModel extends WidgetViewModel {
     options.datasets.type = options.datasets.type || 'iServer';
     options.datasets.withCredentials = options.datasets.withCredentials || false;
     this.chartContainer = chartContainer;
-    this.chartType = options.type || "bar";
+    this.chartType = options.type || 'bar';
     this.datasets = options.datasets;
     this.xField = [];
     this.yField = [];
-    this.chartType = options.type || "bar";
+    this.chartType = options.type || 'bar';
     Object.assign(this.chartOptions, options.chartOptions);
     this._initXYField(this.chartOptions);
     this._initChart();
@@ -72,13 +69,13 @@ export class ChartViewModel extends WidgetViewModel {
     }
   }
   setDatasets(datasets) {
-    this.updateData(datasets, this.chartOptions)
+    this.updateData(datasets, this.chartOptions);
   }
   setChartOptions(chartOptions) {
     Object.assign(this.chartOptions, chartOptions);
     this._initXYField(chartOptions);
     this._updateDataSuccess();
-    //this.updateData(this.datasets, chartOptions)
+    // this.updateData(this.datasets, chartOptions)
   }
   resize() {
     this.echart && this.echart.resize();
@@ -109,7 +106,7 @@ export class ChartViewModel extends WidgetViewModel {
       grid: this.chartOptions.padding,
       tooltip: this.chartOptions.tooltip,
       backgroundColor: this.chartOptions.backgroundColor
-    }
+    };
     return style;
   }
 
@@ -140,11 +137,11 @@ export class ChartViewModel extends WidgetViewModel {
     if (this.datasets) {
       if (this.datasets.type === 'iServer') {
         const iServerService = new iServerRestService(this.datasets.url, this.datasets.withCredentials);
-        iServerService.on("getdatasucceeded", this.getDataSucceedCallback.bind(this));
+        iServerService.on('getdatasucceeded', this.getDataSucceedCallback.bind(this));
         iServerService.getData(this.datasets.queryInfo);
       } else if (this.datasets.type === 'iPortal') {
         const iPortalService = new iPortalDataService(this.datasets.url, this.datasets.withCredentials);
-        iPortalService.on("getdatasucceeded", this.getDataSucceedCallback.bind(this));
+        iPortalService.on('getdatasucceeded', this.getDataSucceedCallback.bind(this));
         iPortalService.getData(this.datasets.queryInfo);
       }
     }
@@ -161,7 +158,7 @@ export class ChartViewModel extends WidgetViewModel {
         });
       }
       let xAxis = {
-        type: "category",
+        type: 'category',
         name: this.chartOptions.xAxisName,
         data: datas,
         nameTextStyle: {
@@ -173,16 +170,16 @@ export class ChartViewModel extends WidgetViewModel {
         },
         axisLabel: {
           rotate: this.chartOptions.xAxisLabelRotate ? -45 : 0,
-          interval: "auto"
+          interval: 'auto'
         },
         axisLine: {
           lineStyle: {
             color: this.chartOptions.axisColor
           }
         }
-      }
+      };
       let yAxis = {
-        type: "value",
+        type: 'value',
         name: this.chartOptions.yAxisName,
         data: {},
         nameTextStyle: {
@@ -191,20 +188,20 @@ export class ChartViewModel extends WidgetViewModel {
         },
         splitArea: {
           show: true
-        }, //保留网格区域
+        }, // 保留网格区域
         splitLine: {
           show: false
         },
         axisLabel: {
           rotate: this.chartOptions.yAxisLabelRotate ? 45 : 0,
-          interval: "auto"
+          interval: 'auto'
         },
         axisLine: {
           lineStyle: {
             color: this.chartOptions.axisColor
           }
         }
-      }
+      };
       if (this.chartOptions.xAxisLabelRotate) {
         grid['bottom'] += 20;
       }
@@ -212,14 +209,14 @@ export class ChartViewModel extends WidgetViewModel {
         grid['left'] -= 10;
       }
       let legend = null;
-      let bottom = "auto";
-      let top = "auto"
-      if (this.chartOptions.legendPosition != "none") {
-        if (this.chartOptions.legendPosition === "bottom") {
-          grid['bottom'] += 15
+      let bottom = 'auto';
+      let top = 'auto';
+      if (this.chartOptions.legendPosition !== 'none') {
+        if (this.chartOptions.legendPosition === 'bottom') {
+          grid['bottom'] += 15;
           bottom = 10;
         } else {
-          grid['top'] += 15
+          grid['top'] += 15;
           top = 10;
         }
 
@@ -227,39 +224,39 @@ export class ChartViewModel extends WidgetViewModel {
           orient: this.chartOptions.legendOrient,
           top,
           bottom,
-          left: "center",
+          left: 'center',
           data: this.fieldNames,
           textStyle: {
             color: this.chartOptions.axisColor
           }
-        }
+        };
       }
       if (this.chartOptions.xAxisName) {
         grid['top'] += 10;
       }
       if (this.chartOptions.yAxisName) {
-        //todo 乘以字体大小
+        // todo 乘以字体大小
         grid['right'] += this.chartOptions.xAxisName.length * 8;
       }
 
       return {
         backgroundColor: this.chartOptions.backgroundColor,
         grid: {
-          top: grid.top + "px",
-          bottom: grid.bottom + "px",
-          left: grid.left + "px",
-          right: grid.right + "px"
+          top: grid.top + 'px',
+          bottom: grid.bottom + 'px',
+          left: grid.left + 'px',
+          right: grid.right + 'px'
         },
         legend: legend,
         series: series,
         xAxis: xAxis,
         yAxis: yAxis,
         tooltip: this.chartOptions.tooltip
-      }
+      };
     }
   }
   _updateDataSuccess(data) {
-    //仅仅更新chartoptions时 调用该方法不传入data，直接使用前一次的this.calculatedData
+    // 仅仅更新chartoptions时 调用该方法不传入data，直接使用前一次的this.calculatedData
     if (data) {
       this.data = data;
     }
@@ -271,8 +268,8 @@ export class ChartViewModel extends WidgetViewModel {
   _createChart(data) {
     this.dataCache = data;
     this.echart = echarts && echarts.init(this.chartContainer, null, {
-      renderer: "canvas"
-    })
+      renderer: 'canvas'
+    });
     if (data) {
       this.data = data;
     }
@@ -294,8 +291,8 @@ export class ChartViewModel extends WidgetViewModel {
   }
   _initXYField(option) {
     this.xField = [];
-    this.yField = []
-    //chartOptions==>this.xField this.yField
+    this.yField = [];
+    // chartOptions==>this.xField this.yField
     if (option.xAxis) {
       this.xField.push({
         field: option.xAxis
@@ -305,30 +302,30 @@ export class ChartViewModel extends WidgetViewModel {
       option.yAxis.forEach(y => {
         this.yField.push({
           field: y
-        })
+        });
       });
     }
   }
   _createChartDatas(data) {
-    let fieldIndex = 0,
-      yfieldIndexs = [];
+    let fieldIndex = 0;
+    let yfieldIndexs = [];
     let fieldCaptions = data.fieldCaptions;
     let me = this;
-    //X
+    // X
     if (me.xField[0]) {
-      fieldIndex = fieldCaptions.indexOf(me.xField[0].field)
+      fieldIndex = fieldCaptions.indexOf(me.xField[0].field);
     }
     if (fieldIndex < 0) {
       fieldIndex = 0;
     }
-    //Y
+    // Y
     const fieldNames = [];
     this.yField.forEach((value, index) => {
       fieldNames.push(value.field);
       yfieldIndexs.push(fieldCaptions.indexOf(value.field));
-    })
+    });
     this.fieldNames = fieldNames;
-    //获取x轴字段对应的所有属性值
+    // 获取x轴字段对应的所有属性值
     let uniqFieldValues = this._getUniqFieldDatas(data, fieldIndex);
     let fieldDatas = this._getFieldDatas(data, fieldIndex);
     let yDatas = [];
@@ -350,35 +347,35 @@ export class ChartViewModel extends WidgetViewModel {
         }
         const fieldValues = data.fieldValues[yfieldIndex];
         for (const key in uniqFieldValues) {
-          const v = 0;
+          let v = 0;
           uniqFieldValues[key].forEach(index => {
             let num = fieldValues[index];
             if (num.replace) {
-              num = num.replace(/,/g, "");
+              num = num.replace(/,/g, '');
             }
             v += tonumber(num);
           });
           yData.push({
             value: v
-          })
+          });
         }
         yDatas.push(yData);
         fieldDatas = Object.keys(uniqFieldValues);
-      })
-    } else { //未指定Y字段时，y轴计数
+      });
+    } else { // 未指定Y字段时，y轴计数
       const yData = [];
       for (const key in uniqFieldValues) {
         yData.push({
           value: uniqFieldValues[key].length
-        })
+        });
       }
       fieldDatas = Object.keys(uniqFieldValues);
-      yDatas = [YData];
+      yDatas = [yData];
     }
     return {
       XData: fieldDatas,
       YData: yDatas
-    }
+    };
   }
   _getUniqFieldDatas(datacontent, index) {
     const fieldValues = datacontent.fieldValues[index];
@@ -387,7 +384,7 @@ export class ChartViewModel extends WidgetViewModel {
       if (!uniqFieldValues[value]) {
         uniqFieldValues[value] = [index];
       } else {
-        uniqFieldValues[value].push(index)
+        uniqFieldValues[value].push(index);
       }
     });
     return uniqFieldValues;

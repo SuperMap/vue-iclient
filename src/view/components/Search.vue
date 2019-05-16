@@ -2,37 +2,37 @@
   <div class="sm-widget-search" :style="[getTextColorStyle]">
     <div class="sm-widget-search__input">
       <el-input
+        v-model="searchKey"
         class="sm-widget-search__el-input"
         :placeholder="$t('search.inputPlaceHolder')"
-        v-model="searchKey"
         clearable
         @clear="inputValueCleared"
       >
         <div
           slot="prefix"
           class="el-input__icon el-icon-search"
-          @click="searchButtonClicked"
           :style="getColorStyle(0)"
+          @click="searchButtonClicked"
         ></div>
       </el-input>
     </div>
-    <div class="sm-widget-search__result" v-show="getlength" :style="[getBackgroundStyle]">
+    <div v-show="getlength" class="sm-widget-search__result" :style="[getBackgroundStyle]">
       <div v-for="(result,index) in searchResult" :key="index" class="sm-widget-search__panel">
         <span
-          class="sm-widget-search__panel-header"
           v-if="result.source"
+          class="sm-widget-search__panel-header"
           :style="getColorStyle(0)"
-        >{{result.source}}</span>
-        <div class="sm-widget-search__panel-body" v-if="result.result">
+        >{{ result.source }}</span>
+        <div v-if="result.result" class="sm-widget-search__panel-body">
           <ul>
             <li
-              v-for="(item,index) in result.result"
-              :key="index"
+              v-for="(item,i) in result.result"
+              :key="i"
               :title="item.filterVal || item.address"
               @click="searchResultListClicked"
               @mouseenter="changeChosenResultStyle"
               @mouseleave="resetChosenResultStyle"
-            >{{item.filterVal || item.address}}</li>
+            >{{ item.filterVal || item.address }}</li>
           </ul>
         </div>
       </div>
@@ -40,17 +40,17 @@
   </div>
 </template>
 <script>
-import Theme from "../mixin/theme";
-import MapGetter from "../mixin/map-getter";
-import Control from "../mixin/control";
+import Theme from '../mixin/theme';
+import MapGetter from '../mixin/map-getter';
+import Control from '../mixin/control';
 
-import SearchViewModel from "../../viewmodel/SearchViewModel";
-import TablePopup from "./TablePopup";
+import SearchViewModel from '../../viewmodel/SearchViewModel';
+import TablePopup from './TablePopup';
 // import iPortalDataParameter from "../commontypes/iPortalDataParameter";
 // import RestDataParameter from "../commontypes/RestDataParameter";
 // import RestMapParameter from "../commontypes/RestMapParameter";
 // import AddressMatchParameter from "../commontypes/AddressMatchParameter";
-import Vue from "vue";
+import Vue from 'vue';
 
 // let validators = (value, propType) => {
 //   let valid = true;
@@ -63,7 +63,7 @@ import Vue from "vue";
 // };
 
 export default {
-  name: "SmSearch",
+  name: 'SmSearch',
   mixins: [Control, MapGetter, Theme],
   props: {
     maxReturn: {
@@ -78,7 +78,7 @@ export default {
       default() {
         return {
           enable: true,
-          city: "北京市"
+          city: '北京市'
         };
       }
     },
@@ -113,6 +113,11 @@ export default {
       searchResult: []
     };
   },
+  computed: {
+    getlength() {
+      return this.searchResult.length > 0;
+    }
+  },
   mounted() {
     this.changeSearchInputStyle();
   },
@@ -121,21 +126,16 @@ export default {
     this.oldSearchTaskId = null;
     this.inputKeypressEvent();
   },
-  computed: {
-    getlength() {
-      return this.searchResult.length > 0;
-    }
-  },
   updated() {
     this.changeSearchInputStyle();
-    const results = this.$el.querySelectorAll(".sm-widget-search__panel li");
+    const results = this.$el.querySelectorAll('.sm-widget-search__panel li');
     for (let result of results) {
       result.style.color = this.getTextColor;
     }
   },
   methods: {
     changeSearchInputStyle() {
-      const serachInput = this.$el.querySelector(".el-input__inner");
+      const serachInput = this.$el.querySelector('.el-input__inner');
       serachInput.style.backgroundColor = this.getBackground;
       serachInput.style.color = this.getTextColor;
     },
@@ -151,19 +151,19 @@ export default {
       this.$message.closeAll();
       this.searchResult = [];
       this.marker && this.marker.remove() && (this.marker = null);
-      let icon = this.$el.querySelector(".el-input__icon");
-      icon.classList.add("el-icon-search");
-      icon.classList.remove("el-icon-loading");
+      let icon = this.$el.querySelector('.el-input__icon');
+      icon.classList.add('el-icon-search');
+      icon.classList.remove('el-icon-loading');
     },
     searchButtonClicked() {
       this.search();
     },
     inputKeypressEvent() {
       const self = this;
-      this.$el.querySelector("input").onkeypress = e => {
-        if (e.which == 13) {
+      this.$el.querySelector('input').onkeypress = e => {
+        if (e.which === 13) {
           !self.searchKey && self.search();
-          self.$el.querySelector("input").onchange = () => {
+          self.$el.querySelector('input').onchange = () => {
             self.search();
           };
         }
@@ -190,22 +190,22 @@ export default {
         if (this.searchKey) {
           this.searchTaskId = this.viewModel.search(this.searchKey);
           this.regiterEvents();
-          let icon = this.$el.querySelector(".el-input__icon");
-          icon.classList.remove("el-icon-search");
-          icon.classList.add("el-icon-loading");
+          let icon = this.$el.querySelector('.el-input__icon');
+          icon.classList.remove('el-icon-search');
+          icon.classList.add('el-icon-loading');
         } else {
           this.$message({
             showClose: true,
-            message: this.$t("search.noKey"),
-            type: "warning",
+            message: this.$t('search.noKey'),
+            type: 'warning',
             duration: 1000
           });
         }
       } else {
         this.$message({
           showClose: true,
-          message: "请设置搜索源！",
-          type: "warning",
+          message: '请设置搜索源！',
+          type: 'warning',
           duration: 1000
         });
       }
@@ -234,13 +234,13 @@ export default {
         let state = {
           columns: [
             {
-              label: this.$t("search.attribute"),
-              prop: "attribute",
+              label: this.$t('search.attribute'),
+              prop: 'attribute',
               width: 80
             },
             {
-              label: this.$t("search.attributeValue"),
-              prop: "attributeValue",
+              label: this.$t('search.attributeValue'),
+              prop: 'attributeValue',
               minWidth: 100
             }
           ],
@@ -260,17 +260,17 @@ export default {
     },
     regiterEvents() {
       this.searchKey >= 1 &&
-        this.viewModel.off("searchsucceeded" + (this.searchTaskId - 1));
-      this.viewModel.on("searchsucceeded" + this.searchTaskId, e => {
+        this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1));
+      this.viewModel.on('searchsucceeded' + this.searchTaskId, e => {
         this.searchResult = e.result;
-        let icon = this.$el.querySelector(".el-input__icon");
-        icon.classList.add("el-icon-search");
-        icon.classList.remove("el-icon-loading");
+        let icon = this.$el.querySelector('.el-input__icon');
+        icon.classList.add('el-icon-search');
+        icon.classList.remove('el-icon-loading');
         this.searchResult.length < 1 &&
           this.$message({
             showClose: true,
-            message: this.$t("search.noResult"),
-            type: "warning",
+            message: this.$t('search.noResult'),
+            type: 'warning',
             duration: 1000
           });
       });
@@ -278,4 +278,3 @@ export default {
   }
 };
 </script>
-

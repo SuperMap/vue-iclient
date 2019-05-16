@@ -1,4 +1,4 @@
-import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 export default class iServerRestService extends mapboxgl.Evented {
   constructor(url) {
     super();
@@ -15,7 +15,7 @@ export default class iServerRestService extends mapboxgl.Evented {
         const datasetInfo = {
           dataSourceName: results.datasetInfo.dataSourceName,
           datasetName: results.datasetInfo.name,
-          mapName: results.name,
+          mapName: results.name
         };
         this._getDatasetInfoSucceed(datasetInfo, queryInfo);
       }
@@ -25,18 +25,18 @@ export default class iServerRestService extends mapboxgl.Evented {
   }
   _getDatasetInfoSucceed(datasetInfo, queryInfo) {
     let datasetUrl = this.url;
-    //判断服务为地图服务 或者 数据服务
-    let restIndex = datasetUrl.indexOf("rest");
+    // 判断服务为地图服务 或者 数据服务
+    let restIndex = datasetUrl.indexOf('rest');
     if (restIndex > 0) {
-      let index = datasetUrl.indexOf("/", restIndex + 5);
+      let index = datasetUrl.indexOf('/', restIndex + 5);
       let type = datasetUrl.substring(restIndex + 5, index);
-      if (type === "maps") {
-        let mapIndex = datasetUrl.indexOf("/", index + 1);
+      if (type === 'maps') {
+        let mapIndex = datasetUrl.indexOf('/', index + 1);
         let mapName = datasetUrl.substring(index + 1, mapIndex);
-        datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + "/maps/" + mapName;;
+        datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + '/maps/' + mapName; ;
         this.getMapFeatures(datasetInfo, queryInfo);
-      } else if (type === "data") {
-        datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + "/data";
+      } else if (type === 'data') {
+        datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + '/data';
         this.getDataFeatures(datasetInfo, queryInfo);
       }
     }
@@ -54,8 +54,8 @@ export default class iServerRestService extends mapboxgl.Evented {
     });
     queryBySQLService = new SuperMap.QueryBySQLService(datasetInfo.dataUrl, {
       eventListeners: {
-        "processCompleted": this.getFeaturesSucceed.bind(this),
-        "processFailed": function () { }
+        'processCompleted': this.getFeaturesSucceed.bind(this),
+        'processFailed': function () { }
       }
     });
     queryBySQLService.processAsync(queryBySQLParams);
@@ -63,20 +63,20 @@ export default class iServerRestService extends mapboxgl.Evented {
   getDataFeatures(datasetInfo, queryInfo) {
     let getFeatureParam, getFeatureBySQLParams, getFeatureBySQLService;
     let params = {
-      name: datasetInfo.datasetName + "@" + datasetInfo.dataSourceName
-    }
+      name: datasetInfo.datasetName + '@' + datasetInfo.dataSourceName
+    };
     Object.assign(params, queryInfo);
     getFeatureParam = new SuperMap.FilterParameter(params);
     getFeatureBySQLParams = new SuperMap.GetFeaturesBySQLParameters({
       queryParameter: getFeatureParam,
-      datasetNames: [datasetInfo.dataSourceName + ":" + datasetInfo.datasetName],
+      datasetNames: [datasetInfo.dataSourceName + ':' + datasetInfo.datasetName],
       fromIndex: 0,
       toIndex: 100000
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(datasetInfo.dataUrl, {
       eventListeners: {
-        "processCompleted": this.getFeaturesSucceed.bind(this),
-        "processFailed": function () { }
+        'processCompleted': this.getFeaturesSucceed.bind(this),
+        'processFailed': function () { }
       }
     });
 
@@ -105,7 +105,7 @@ export default class iServerRestService extends mapboxgl.Evented {
       fieldTypes = [];
       if (features.length) {
         const feature = this.features.features[0];
-        //获取每个字段的名字和类型
+        // 获取每个字段的名字和类型
         for (let attr in feature.properties) {
           fieldCaptions.push(attr);
           fieldTypes.push(this._getDataType(feature.properties[attr]));
@@ -117,7 +117,7 @@ export default class iServerRestService extends mapboxgl.Evented {
       fieldCaptions,
       fieldTypes,
       fieldValues: []
-    }
+    };
     for (let m in fieldCaptions) {
       const fieldValue = [];
       for (let j in features) {
@@ -126,11 +126,11 @@ export default class iServerRestService extends mapboxgl.Evented {
         const value = feature.properties[caption];
         fieldValue.push(value);
       }
-      //fieldValues   [[每个字段的所有要素值],[],[]]
+      // fieldValues   [[每个字段的所有要素值],[],[]]
       data.fieldValues.push(fieldValue);
     }
-    //this.getDataSucceedCallback && this.getDataSucceedCallback(data);
-    this.fire('getdatasucceeded', data)
+    // this.getDataSucceedCallback && this.getDataSucceedCallback(data);
+    this.fire('getdatasucceeded', data);
   }
 
   /**
@@ -143,14 +143,13 @@ export default class iServerRestService extends mapboxgl.Evented {
     let match;
     if (url === '' || !this._isMatchUrl(url)) {
       match = false;
+    } else {
+      match = true;
     }
     // else if (/^http[s]?:\/\/localhost/.test(url) || /^http[s]?:\/\/127.0.0.1/.test(url)) {
     //     //不是实际域名
     //     match = false;
-    // } 
-    else {
-      match = true;
-    }
+    // }
     return match;
   }
 
@@ -184,13 +183,13 @@ export default class iServerRestService extends mapboxgl.Evented {
   _getDataType(data) {
     if (data !== null && data !== undefined && data !== '') {
       if (this._isDate(data)) {
-        return "DATE";
+        return 'DATE';
       }
       if (this._isNumber(data)) {
-        return "NUMBER";
+        return 'NUMBER';
       }
     }
-    return "STRING";
+    return 'STRING';
   }
   /**
    * @function iServerRestService.prototype._isNumber
@@ -205,5 +204,4 @@ export default class iServerRestService extends mapboxgl.Evented {
     }
     return !isNaN(mdata);
   }
-
 }

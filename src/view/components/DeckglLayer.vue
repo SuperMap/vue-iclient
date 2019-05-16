@@ -1,6 +1,6 @@
 <script>
 import MapGetter from '../mixin/map-getter';
-import Layer from "../mixin/layer";
+import Layer from '../mixin/layer';
 import DeckglLayerViewModel from '../../viewmodel/DeckglLayerViewModel';
 
 const LAYER_TYPE_ID_LIST = [

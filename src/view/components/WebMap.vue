@@ -12,12 +12,12 @@
 </template>
 
 <script>
-import WebMapViewModel from "../../viewmodel/WebMapViewModel";
-import mapEvent from "../commontypes/mapEvent";
-import VmUpdater from "../mixin/vm-updater";
-import Pan from "./Pan";
-import Scale from "./Scale";
-import Zoom from "./Zoom";
+import WebMapViewModel from '../../viewmodel/WebMapViewModel';
+import mapEvent from '../commontypes/mapEvent';
+import VmUpdater from '../mixin/vm-updater';
+import Pan from './Pan';
+import Scale from './Scale';
+import Zoom from './Zoom';
 /**
  * @module WebMap
  * @category Components
@@ -49,14 +49,14 @@ import Zoom from "./Zoom";
  * @vue-computed {String} getMapTarget - 获取 Map 的 target。
  */
 export default {
-  name: "SmWebMap",
-  viewModelProps: ["mapId", "webMapOptions", "mapOptions"],
-  mixins: [VmUpdater],
+  name: 'SmWebMap',
+  viewModelProps: ['mapId', 'webMapOptions', 'mapOptions'],
   components: {
     Pan,
     Scale,
     Zoom
   },
+  mixins: [VmUpdater],
   props: {
     mapId: {
       type: String,
@@ -64,7 +64,7 @@ export default {
     },
     target: {
       type: String,
-      default: "map"
+      default: 'map'
     },
     webMapOptions: {
       type: Object,
@@ -108,24 +108,24 @@ export default {
       this.viewModel = new WebMapViewModel(this.mapId, this.webMapOptions);
     },
     registerEvents() {
-      this.viewModel.on("addlayerssucceeded", e => {
+      this.viewModel.on('addlayerssucceeded', e => {
         mapEvent.$emit(`initMap-${this.target}`, e.map, this.viewModel);
         /**
          * @event load
          * @desc webmap 加载完成之后触发。
          * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
          */
-        this.$emit("load", { map: e.map });
+        this.$emit('load', { map: e.map });
       });
-      this.viewModel.on("getmapfailed", e => {
+      this.viewModel.on('getmapfailed', e => {
         /**
          * @event getMapFailed
          * @desc 获取 WebMap 地图信息失败。
          * @property {Object} error - 失败原因。
          */
-        this.$emit("get-map-failed", { error: e.error });
+        this.$emit('get-map-failed', { error: e.error });
       });
-      this.viewModel.on("getlayerdatasourcefailed", e => {
+      this.viewModel.on('getlayerdatasourcefailed', e => {
         /**
          * @event getLayerDatasourceFailed
          * @desc 获取图层数据失败。
@@ -133,12 +133,9 @@ export default {
          * @property {Object} layer - 图层信息。
          * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
          */
-        this.$emit("get-layer-datasource-failed", { error: e.error, layer: e.layer, map: e.map });
+        this.$emit('get-layer-datasource-failed', { error: e.error, layer: e.layer, map: e.map });
       });
     }
   }
 };
 </script>
-
-
-

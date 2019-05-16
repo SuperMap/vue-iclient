@@ -1,53 +1,53 @@
 <template>
-  <div class="sm-widget-liquidFill" id="chart" ref="chart"></div>
+  <div id="chart" ref="chart" class="sm-widget-liquidFill"></div>
 </template>
 <script>
-import echarts from "echarts";
-import Theme from "../mixin/theme";
-import Control from "../mixin/control";
-import "echarts-liquidfill";
+import echarts from 'echarts';
+import Theme from '../mixin/theme';
+import Control from '../mixin/control';
+import 'echarts-liquidfill';
 
 export default {
-  name: "SmLiquidFill",
+  name: 'SmLiquidFill',
   mixins: [Control, Theme],
   props: {
-    //百分比的值
+    // 百分比的值
     value: {
       type: Number,
       default: 0
     },
-    //波浪数
+    // 波浪数
     waveCount: {
       type: Number,
       default: 1
     },
-    //字体
+    // 字体
     fontSize: {
       type: Number
     },
-    //波浪颜色
+    // 波浪颜色
     waveColor: {
       type: String
     },
-    //边框颜色
+    // 边框颜色
     borderColor: {
       type: String
     },
-    //数字在波浪外的颜色
+    // 数字在波浪外的颜色
     labelColor: {
       type: String,
-      default: "#626c91"
+      default: '#626c91'
     },
-    //背景色
+    // 背景色
     backgroundColor: {
       type: String
     },
-    //数字在波浪内的颜色
+    // 数字在波浪内的颜色
     insideLabelColor: {
       type: String,
-      default: "#fff"
+      default: '#fff'
     },
-    //是否开启波浪动画
+    // 是否开启波浪动画
     waveAnimation: {
       type: Boolean,
       default: false
@@ -55,15 +55,15 @@ export default {
   },
   data() {
     return {
-      waveColorData: "",
-      labelColorData: "",
-      borderColorData: "",
-      backgroundColorData: "",
-      size: "140px"
+      waveColorData: '',
+      labelColorData: '',
+      borderColorData: '',
+      backgroundColorData: '',
+      size: '140px'
     };
   },
   computed: {
-    //根据波浪数渲染数据
+    // 根据波浪数渲染数据
     calcData() {
       let data = [];
       for (let i = 0; i < this.waveCount; i++) {
@@ -90,14 +90,14 @@ export default {
       // this.chart.on("finished", () => {
       //   this.chart.resize();
       // });
-      this.$on("themeStyle", () => {
+      this.$on('themeStyle', () => {
         this.waveColorData = this.getColor(0);
         this.labelColorData = this.getTextColor;
         this.borderColorData = this.getColor(0);
         this.backgroundColorData = this.getBackground;
         this.updateChart(true);
       });
-      window.addEventListener("resize", () => {
+      window.addEventListener('resize', () => {
         this.chart.resize();
       });
     },
@@ -113,10 +113,10 @@ export default {
         series: [
           {
             color: [this.waveColorData],
-            type: "liquidFill",
+            type: 'liquidFill',
             waveAnimation: this.waveAnimation,
             animation: false,
-            radius: "95%",
+            radius: '95%',
             data: this.calcData,
             label: {
               fontSize: this.fontSize,
@@ -127,7 +127,7 @@ export default {
               color: this.backgroundColorData
             },
             itemStyle: {
-              shadowColor: "#fff"
+              shadowColor: '#fff'
             },
             outline: {
               borderDistance: 3,
@@ -135,7 +135,7 @@ export default {
                 borderColor: this.borderColorData,
                 borderWidth: 3,
                 shadowBlur: 0,
-                shadowColor: "#fff"
+                shadowColor: '#fff'
               }
             }
           }
@@ -145,4 +145,3 @@ export default {
   }
 };
 </script>
-

@@ -1,57 +1,57 @@
 <template>
   <sm-card
+    v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     class="sm-widget-query"
-    v-show="isShow"
   >
     <div class="sm-widget-query__body" :style="[getBackgroundStyle, getTextColorStyle]">
       <div class="sm-widget-query__choose-panel clearfix">
         <div
           class="sm-widget-query__job-button is-active"
           :title="$t('query.queryJob')"
-          @click="jobButtonClicked"
           :style="activeTab === 'job' ? getColorStyle(0) : ''"
-        >{{$t('query.queryJob')}}</div>
+          @click="jobButtonClicked"
+        >{{ $t('query.queryJob') }}</div>
         <div
           class="sm-widget-query__result-button"
           :title="$t('query.queryReuslt')"
-          @click="resultButtonClicked"
           :style="activeTab === 'result' ? getColorStyle(0) : ''"
-        >{{$t('query.queryReuslt')}}</div>
+          @click="resultButtonClicked"
+        >{{ $t('query.queryReuslt') }}</div>
       </div>
       <div class="sm-widget-query__job-info">
         <div
-          class="sm-widget-query__job-info-panel"
-          v-show="jobInfos.length > 0"
           v-for="(jobInfo,index) in jobInfos"
+          v-show="jobInfos.length > 0"
           :key="index"
+          class="sm-widget-query__job-info-panel"
         >
           <div
+            v-if="jobInfo.name"
             class="sm-widget-query__job-info-header"
             :style="getTextColorStyle"
-            v-if="jobInfo.name"
             @click="jobInfoClicked"
             @mouseleave="resetHoverStyle"
             @mouseenter="changeHoverStyle"
           >
             <span class="smwidgets-icons-preview"></span>
-            <span class="sm-widget-query__job-info-name">{{jobInfo.name}}</span>
+            <span class="sm-widget-query__job-info-name">{{ jobInfo.name }}</span>
             <div class="smwidgets-icons-legend-unfold"></div>
           </div>
-          <div class="sm-widget-query__job-info-body hidden" v-if="jobInfo.attributeFilter">
+          <div v-if="jobInfo.attributeFilter" class="sm-widget-query__job-info-body hidden">
             <div class="sm-widget-query__attribute">
-              <div>{{$t('query.attributeCondition')}}</div>
+              <div>{{ $t('query.attributeCondition') }}</div>
               <div
                 class="sm-widget-query__attribute-name"
                 :style="getColorStyle(0)"
-              >{{jobInfo.attributeFilter}}</div>
+              >{{ jobInfo.attributeFilter }}</div>
             </div>
             <div class="sm-widget-query__spatial-filter">
-              <div>{{$t('query.spatialFilter')}}</div>
+              <div>{{ $t('query.spatialFilter') }}</div>
               <el-select
                 v-model="value"
                 class="sm-widget-query__el-select"
@@ -74,19 +74,19 @@
                 class="sm-widget-query__el-button"
                 :style="{backgroundColor: getColorStyle(0).color, color: getTextColor}"
                 @click="queryButtonClicked(jobInfo,value)"
-              >{{$t('query.applicate')}}</el-button>
+              >{{ $t('query.applicate') }}</el-button>
             </div>
           </div>
         </div>
       </div>
       <div class="sm-widget-query__result-info hidden">
-        <div v-show="!queryResult" class="sm-widget-query__no-result">{{$t('query.noResult')}}</div>
+        <div v-show="!queryResult" class="sm-widget-query__no-result">{{ $t('query.noResult') }}</div>
         <span
-          class="sm-widget-query__result-header"
           v-if="queryResult"
+          class="sm-widget-query__result-header"
           :style="getColorStyle(0)"
-        >{{queryResult.name}}</span>
-        <div class="sm-widget-query__result-body" v-if="queryResult">
+        >{{ queryResult.name }}</span>
+        <div v-if="queryResult" class="sm-widget-query__result-body">
           <ul>
             <li
               v-for="(item,index) in queryResult.result"
@@ -95,7 +95,7 @@
               @click="queryResultListClicked"
               @mouseenter="changeChosenResultStyle"
               @mouseleave="resetChosenResultStyle"
-            >{{'SmID：'+(item.properties.SmID || item.properties.SMID)}}</li>
+            >{{ 'SmID：'+(item.properties.SmID || item.properties.SMID) }}</li>
           </ul>
         </div>
       </div>
@@ -103,17 +103,17 @@
   </sm-card>
 </template>
 <script>
-import Theme from "../mixin/theme";
-import Control from "../mixin/control";
-import Card from "../mixin/card";
-import MapGetter from "../mixin/map-getter";
+import Theme from '../mixin/theme';
+import Control from '../mixin/control';
+import Card from '../mixin/card';
+import MapGetter from '../mixin/map-getter';
 
-import iPortalDataParameter from "../commontypes/iPortalDataParameter";
-import RestDataParameter from "../commontypes/RestDataParameter";
-import RestMapParameter from "../commontypes/RestMapParameter";
-import QueryViewModel from "../../viewmodel/QueryViewModel.js";
-import TablePopup from "./TablePopup";
-import Vue from "vue";
+import iPortalDataParameter from '../commontypes/iPortalDataParameter';
+import RestDataParameter from '../commontypes/RestDataParameter';
+import RestMapParameter from '../commontypes/RestMapParameter';
+import QueryViewModel from '../../viewmodel/QueryViewModel.js';
+import TablePopup from './TablePopup';
+import Vue from 'vue';
 
 let validators = (value, propType) => {
   let valid = true;
@@ -126,35 +126,16 @@ let validators = (value, propType) => {
 };
 
 export default {
-  name: "SmQuery",
+  name: 'SmQuery',
   mixins: [MapGetter, Control, Theme, Card],
-  data() {
-    return {
-      isHidden: false,
-      message: null,
-      value: "mapBounds",
-      selectOptions: [
-        {
-          label: this.$t("query.currentMapBounds"),
-          value: "currentMapBounds"
-        },
-        {
-          label: this.$t("query.mapBounds"),
-          value: "mapBounds"
-        }
-      ],
-      queryResult: null,
-      activeTab: "job"
-    };
-  },
   props: {
     iconClass: {
       type: String,
-      default: "smwidgets-icons-search"
+      default: 'smwidgets-icons-search'
     },
     headerName: {
       type: String,
-      default: "查询"
+      default: '查询'
     },
     maxReturn: {
       type: Number,
@@ -188,11 +169,30 @@ export default {
       }
     }
   },
+  data() {
+    return {
+      isHidden: false,
+      message: null,
+      value: 'mapBounds',
+      selectOptions: [
+        {
+          label: this.$t('query.currentMapBounds'),
+          value: 'currentMapBounds'
+        },
+        {
+          label: this.$t('query.mapBounds'),
+          value: 'mapBounds'
+        }
+      ],
+      queryResult: null,
+      activeTab: 'job'
+    };
+  },
   computed: {
     jobInfos() {
       let jobInfos = [];
       Object.keys(this.$props).forEach(key => {
-        if (key === "iportalData" || key === "restData" || key === "restMap") {
+        if (key === 'iportalData' || key === 'restData' || key === 'restMap') {
           this.$props[key] &&
             this.$props[key].forEach(item => {
               item.name && jobInfos.push(item);
@@ -204,16 +204,16 @@ export default {
   },
   loaded() {
     this.viewModel = new QueryViewModel(this.map, this.$props);
-    this.resultButton = this.$el.querySelector(".sm-widget-query__result-button");
-    this.jobButton = this.$el.querySelector(".sm-widget-query__job-button");
-    this.resultInfoContainer = this.$el.querySelector(".sm-widget-query__result-info");
-    this.jobInfoContainer = this.$el.querySelector(".sm-widget-query__job-info");
+    this.resultButton = this.$el.querySelector('.sm-widget-query__result-button');
+    this.jobButton = this.$el.querySelector('.sm-widget-query__job-button');
+    this.resultInfoContainer = this.$el.querySelector('.sm-widget-query__result-info');
+    this.jobInfoContainer = this.$el.querySelector('.sm-widget-query__job-info');
     this.registerEvents();
   },
   updated() {
     this.changeSelectInputStyle();
     this.changeLoadingStyle();
-    const results = this.$el.querySelectorAll(".sm-widget-query__result-body li");
+    const results = this.$el.querySelectorAll('.sm-widget-query__result-body li');
     for (let result of results) {
       result.style.color = this.getTextColor;
     }
@@ -224,8 +224,8 @@ export default {
       if (this.jobInfo === jobInfo && this.selectValue === value) {
         this.$message({
           showClose: true,
-          message: this.$t("query.resultAlreadyExists"),
-          type: "warning",
+          message: this.$t('query.resultAlreadyExists'),
+          type: 'warning',
           duration: 1000
         });
         return;
@@ -235,21 +235,21 @@ export default {
       this.loadingInstance = this.$loading.service({
         target: this.resultInfoContainer,
         fullscreen: false,
-        text: this.$t("query.querying"),
-        background: "transparent"
+        text: this.$t('query.querying'),
+        background: 'transparent'
       });
-      this.jobButton.classList.add("disabled");
+      this.jobButton.classList.add('disabled');
       this.resultButtonClicked();
-      this.$el.querySelector(".sm-widget-query__no-result").classList.add("hidden");
+      this.$el.querySelector('.sm-widget-query__no-result').classList.add('hidden');
       this.jobInfo = jobInfo;
       this.selectValue = value;
       this.query(this.jobInfo, this.selectValue);
       this.changeLoadingStyle();
     },
     changeLoadingStyle() {
-      const spinDom = this.$el.querySelector(".sm-widget-query__result-info .path");
+      const spinDom = this.$el.querySelector('.sm-widget-query__result-info .path');
       const loadingText = this.$el.querySelector(
-        ".sm-widget-query__result-info .el-loading-text"
+        '.sm-widget-query__result-info .el-loading-text'
       );
       spinDom && (spinDom.style.stroke = this.getColorStyle(0).color);
       loadingText && (loadingText.style.color = this.getColorStyle(0).color);
@@ -258,26 +258,26 @@ export default {
       this.viewModel.query(parameter, bounds);
     },
     jobButtonClicked() {
-      this.activeTab = "job";
-      this.resultButton.classList.remove("is-active");
-      this.jobButton.classList.add("is-active");
-      this.jobInfoContainer.classList.remove("hidden");
-      this.resultInfoContainer.classList.add("hidden");
+      this.activeTab = 'job';
+      this.resultButton.classList.remove('is-active');
+      this.jobButton.classList.add('is-active');
+      this.jobInfoContainer.classList.remove('hidden');
+      this.resultInfoContainer.classList.add('hidden');
     },
     resultButtonClicked() {
-      this.activeTab = "result";
-      this.jobButton.classList.remove("is-active");
-      this.resultButton.classList.add("is-active");
-      this.resultInfoContainer.classList.remove("hidden");
-      this.jobInfoContainer.classList.add("hidden");
+      this.activeTab = 'result';
+      this.jobButton.classList.remove('is-active');
+      this.resultButton.classList.add('is-active');
+      this.resultInfoContainer.classList.remove('hidden');
+      this.jobInfoContainer.classList.add('hidden');
     },
     jobInfoClicked(e) {
       let className = e.target.className;
       let parentNode;
       if (
-        className === "smwidgets-icons-preview" ||
-        className === "sm-widget-query__job-info-name" ||
-        className === "smwidgets-icons-legend-unfold"
+        className === 'smwidgets-icons-preview' ||
+        className === 'sm-widget-query__job-info-name' ||
+        className === 'smwidgets-icons-legend-unfold'
       ) {
         parentNode = e.target.parentNode.parentNode;
         e.stopPropagation();
@@ -285,43 +285,43 @@ export default {
         parentNode = e.target.parentNode;
         e.preventDefault();
       }
-      let classList = parentNode.querySelector(".sm-widget-query__job-info-body")
+      let classList = parentNode.querySelector('.sm-widget-query__job-info-body')
         .classList;
-      let foldIcon = parentNode.querySelector(".sm-widget-query__job-info-header")
+      let foldIcon = parentNode.querySelector('.sm-widget-query__job-info-header')
         .children[2];
-      if (classList.contains("hidden")) {
-        classList.remove("hidden");
-        foldIcon.classList.add("smwidgets-icons-legend-fold");
-        foldIcon.classList.remove("smwidgets-icons-legend-unfold");
+      if (classList.contains('hidden')) {
+        classList.remove('hidden');
+        foldIcon.classList.add('smwidgets-icons-legend-fold');
+        foldIcon.classList.remove('smwidgets-icons-legend-unfold');
         this.chosenPanelNode = parentNode;
         this.changeSelectInputStyle();
       } else {
-        classList.add("hidden");
-        foldIcon.classList.add("smwidgets-icons-legend-unfold");
-        foldIcon.classList.remove("smwidgets-icons-legend-fold");
+        classList.add('hidden');
+        foldIcon.classList.add('smwidgets-icons-legend-unfold');
+        foldIcon.classList.remove('smwidgets-icons-legend-fold');
         this.chosenPanelNode = null;
       }
     },
     changeSelectInputStyle() {
       const selectDom =
         this.chosenPanelNode &&
-        this.chosenPanelNode.querySelector(".el-input__inner");
+        this.chosenPanelNode.querySelector('.el-input__inner');
       if (selectDom) {
         selectDom.style.borderColor = this.getTextColor;
         selectDom.style.color = this.getTextColor;
-        selectDom.style.backgroundColor = "transparent";
+        selectDom.style.backgroundColor = 'transparent';
       }
     },
     changeChosenStyle(visible) {
       const chosenOption =
         this.chosenPanelNode &&
         this.chosenPanelNode.querySelector(
-          ".el-select-dropdown__item.selected"
+          '.el-select-dropdown__item.selected'
         );
       if (chosenOption) {
         chosenOption.style.color = visible
           ? this.getColorStyle(0).color
-          : "#606266";
+          : '#606266';
       }
     },
     changeChosenResultStyle(e) {
@@ -340,32 +340,32 @@ export default {
     },
 
     registerEvents() {
-      this.viewModel.on("querysucceeded", e => {
+      this.viewModel.on('querysucceeded', e => {
         this.$el
-          .querySelector(".sm-widget-query__no-result")
-          .classList.remove("hidden");
+          .querySelector('.sm-widget-query__no-result')
+          .classList.remove('hidden');
         this.queryResult = e.result;
         this.viewModel.getPopupFeature();
         this.addPopupToFeature();
         this.loadingInstance.close();
-        this.jobButton.classList.remove("disabled");
+        this.jobButton.classList.remove('disabled');
       });
-      this.viewModel.on("queryfailed", e => {
+      this.viewModel.on('queryfailed', e => {
         this.$el
-          .querySelector(".sm-widget-query__no-result")
-          .classList.remove("hidden");
+          .querySelector('.sm-widget-query__no-result')
+          .classList.remove('hidden');
         this.$message({
           showClose: true,
           message: e.message,
-          type: "warning",
+          type: 'warning',
           duration: 1000
         });
         this.loadingInstance.close();
-        this.jobButton.classList.remove("disabled");
+        this.jobButton.classList.remove('disabled');
       });
     },
     addPopupToFeature() {
-      this.viewModel.on("getfeatureinfosucceeded", e => {
+      this.viewModel.on('getfeatureinfosucceeded', e => {
         let featuerInfo = e.featureInfo;
         this.addPopup(featuerInfo);
       });
@@ -376,10 +376,10 @@ export default {
       if (featuerInfo.info.length >= 1) {
         let state = {
           columns: [
-            { label: this.$t("query.attribute"), prop: "attribute", width: 80 },
+            { label: this.$t('query.attribute'), prop: 'attribute', width: 80 },
             {
-              label: this.$t("query.attributeValue"),
-              prop: "attributeValue",
+              label: this.$t('query.attributeValue'),
+              prop: 'attributeValue',
               minWidth: 100
             }
           ],
@@ -408,4 +408,3 @@ export default {
   }
 };
 </script>
-

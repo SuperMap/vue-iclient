@@ -1,9 +1,9 @@
 <script>
-import MapGetter from "../mixin/map-getter";
-import Layer from "../mixin/layer";
-import MapvLayerViewModel from "../../viewmodel/MapvLayerViewModel";
+import MapGetter from '../mixin/map-getter';
+import Layer from '../mixin/layer';
+import MapvLayerViewModel from '../../viewmodel/MapvLayerViewModel';
 export default {
-  name: "SmMapvLayer",
+  name: 'SmMapvLayer',
   mixins: [MapGetter, Layer],
   props: {
     dataSet: {

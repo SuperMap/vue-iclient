@@ -1,6 +1,9 @@
 <template>
   <div class="sm-table-popup">
-    <el-table :data="state.data" :max-height="300">
+    <el-table
+      :data="state.data"
+      :max-height="300"
+    >
       <el-table-column
         v-for="(column,index) in state.columns"
         :key="index"
@@ -13,8 +16,12 @@
 </template>
 <script>
 export default {
-  props: ["state"],
-  name: "SmTabelPopup"
+  name: 'SmTabelPopup',
+  props: {
+    state: {
+      type: Object
+    }
+  }
 };
 </script>
 <style lang='scss'>

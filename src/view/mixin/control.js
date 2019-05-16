@@ -24,14 +24,14 @@ export default {
       this.$options.name && this.$options.name.toLowerCase()
     );
     if (this.$el && this.parentIsWebMapOrMap) {
-      if(this.filterDelayLoad){
+      if (this.filterDelayLoad) {
         this.isShow = false;
-        this.$el.style && (this.$el.style.display = 'none');  
+        this.$el.style && (this.$el.style.display = 'none');
       }
       const targetName = this.$parent.target || mapEvent.firstMapTarget;
       mapEvent.$on(`initMap-${targetName}`, map => {
         this.addTo(map);
-        if(this.filterDelayLoad){
+        if (this.filterDelayLoad) {
           this.isShow = true;
           this.$el.style && (this.$el.style.display = 'block');
         }

@@ -13,12 +13,12 @@
     </div>
     <transition name="sm-widget-zoom-in">
       <div
-        :class="{['sm-widget-card__content']:true,['is-header']:headerName,['is-'+position]:true,['is-icon']:iconClass}"
         v-show="isShow"
+        :class="{['sm-widget-card__content']:true,['is-header']:headerName,['is-'+position]:true,['is-icon']:iconClass}"
         :style="[getCardStyle]"
       >
-        <div class="sm-widget-card__header" v-if="headerName" :style="[getBackgroundStyle, getTextColorStyle]">
-          <span class="sm-widget-card__header-name">{{headerName}}</span>
+        <div v-if="headerName" class="sm-widget-card__header" :style="[getBackgroundStyle, getTextColorStyle]">
+          <span class="sm-widget-card__header-name">{{ headerName }}</span>
         </div>
         <slot></slot>
       </div>
@@ -56,13 +56,6 @@ export default {
       transform: null
     };
   },
-  methods: {
-    iconClicked() {
-      this.autoRotate &&
-        (this.transform = this.rotateDeg[this.position][!this.isShow ? 1 : 0]);
-      this.isShow = !this.isShow;
-    }
-  },
   computed: {
     getCardStyle() {
       const style = { background: 'transparent' };
@@ -93,6 +86,13 @@ export default {
         'bottom-left': ['rotate(-135deg)', 'rotate(45deg)'],
         'bottom-right': ['rotate(-45deg)', 'rotate(135deg)']
       };
+    }
+  },
+  methods: {
+    iconClicked() {
+      this.autoRotate &&
+        (this.transform = this.rotateDeg[this.position][!this.isShow ? 1 : 0]);
+      this.isShow = !this.isShow;
     }
   }
 };

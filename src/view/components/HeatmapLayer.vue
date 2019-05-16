@@ -1,9 +1,9 @@
 <script>
-import MapGetter from "../mixin/map-getter";
-import Layer from "../mixin/layer";
-import HeatmapLayerViewModel from "../../viewmodel/HeatmapLayerViewModel";
+import MapGetter from '../mixin/map-getter';
+import Layer from '../mixin/layer';
+import HeatmapLayerViewModel from '../../viewmodel/HeatmapLayerViewModel';
 export default {
-  name: "SmHeatmapLayer",
+  name: 'SmHeatmapLayer',
   mixins: [MapGetter, Layer],
   props: {
     data: {
@@ -15,7 +15,7 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new HeatmapLayerViewModel( this.map, this.data, this.paint, { layerId: this.layerId } );
+    this.viewModel = new HeatmapLayerViewModel(this.map, this.data, this.paint, { layerId: this.layerId });
   },
   render() {}
 };

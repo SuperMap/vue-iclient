@@ -1,9 +1,9 @@
 <script>
-import MapGetter from "../mixin/map-getter";
-import Layer from "../mixin/layer";
-import RasterLayerViewModel from "../../viewmodel/RasterLayerViewModel";
+import MapGetter from '../mixin/map-getter';
+import Layer from '../mixin/layer';
+import RasterLayerViewModel from '../../viewmodel/RasterLayerViewModel';
 export default {
-  name: "SmRasterLayer",
+  name: 'SmRasterLayer',
   mixins: [MapGetter, Layer],
   props: {
     name: {
@@ -34,9 +34,9 @@ export default {
     },
     scheme: {
       type: String,
-      default: "xyz",
+      default: 'xyz',
       validator(scheme) {
-        return ["xyz", "tms"].indexOf(scheme) !== -1;
+        return ['xyz', 'tms'].indexOf(scheme) !== -1;
       }
     },
     visible: {

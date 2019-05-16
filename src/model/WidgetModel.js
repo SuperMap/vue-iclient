@@ -1,6 +1,6 @@
-class WidgetModel{
-    constructor(){
-        
-    }
+class WidgetModel {
+  constructor() {
+    ;
+  }
 }
 export default WidgetModel;

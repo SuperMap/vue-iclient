@@ -1,11 +1,11 @@
-import WidgetViewModel from "./WidgetViewModel";
-import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
-import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min'
+import WidgetViewModel from './WidgetViewModel';
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
 export default class DeckglLayerViewModel extends WidgetViewModel {
   constructor(map, deckglProps) {
     super(map);
-    const { layerTypeId, deckglOptions,  layerId } = deckglProps;
+    const { layerTypeId, deckglOptions, layerId } = deckglProps;
     this.layerTypeId = layerTypeId;
     deckglOptions.data = deckglOptions.data || [];
     deckglOptions.layerId = deckglOptions.layerId || layerId;

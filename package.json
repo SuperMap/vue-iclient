@@ -8,7 +8,8 @@
         "start": "npm run dev",
         "unit": "jest --config jest.config.js --coverage",
         "test": "npm run unit",
-        "lint": "eslint --ext .js,.vue src test/unit",
+        "lint": "eslint --ext .js,.vue src",
+        "lint:fix": "eslint --fix --ext .js,.vue src",
         "build": "node build/build.js && node build/build.js -p",
         "e2e": "node test/e2e/runner.js --test ",
         "build-docs": "jsdoc -c ./build/jsdocs/docs.json -R ./build/jsdocs/index.md"
@@ -44,6 +45,7 @@
         "@turf/union": "^5.0.4",
         "@vue/server-test-utils": "1.0.0-beta.29",
         "@vue/test-utils": "1.0.0-beta.29",
+        "@vue/eslint-config-standard": "^4.0.0",
         "autoprefixer": "^9.4.4",
         "babel-core": "^7.0.0-bridge.0",
         "babel-eslint": "^10.0.1",

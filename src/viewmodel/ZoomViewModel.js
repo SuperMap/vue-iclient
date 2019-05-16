@@ -1,4 +1,4 @@
-import WidgetViewModel from "./WidgetViewModel";
+import WidgetViewModel from './WidgetViewModel';
 
 /**
  * @class ZoomViewModel
@@ -21,7 +21,7 @@ export default class ZoomViewModel extends WidgetViewModel {
    * @private
    */
   _initVM() {
-    this.map.on("wheel", e => {
+    this.map.on('wheel', e => {
       // 触发滚轮事件
       this._wheelEventFires(e);
     });
@@ -78,7 +78,7 @@ export default class ZoomViewModel extends WidgetViewModel {
    */
   wheelEventOn(fn) {
     //  监听vm的滚轮事件，回调函数
-    this.on("mouseWheel", e => {
+    this.on('mouseWheel', e => {
       // 滚轮事件的回调fn()
       fn();
     });
@@ -96,7 +96,7 @@ export default class ZoomViewModel extends WidgetViewModel {
      * @property {Object} result - 返回的数据。
      */
     // this的指向是viewModel
-    this.fire("mouseWheel", {
+    this.fire('mouseWheel', {
       result: e
     });
   }

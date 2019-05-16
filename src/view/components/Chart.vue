@@ -1,39 +1,38 @@
 
 <template>
   <sm-card
+    v-show="isShow"
+    :id="(!iconClass&&!headerName)&&'chart'"
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     class="sm-widget-chart"
-    v-show="isShow"
-    :id="(!iconClass&&!headerName)&&'chart'"
   >
     <div :id="(iconClass||headerName)&&'chart'"></div>
   </sm-card>
 </template>
 
 <script>
-/* eslint-disable */
-import { ChartViewModel } from "../../viewmodel/ChartViewModel";
-import VmUpdater from "../mixin/vm-updater";
-import Control from "../mixin/control";
-import Theme from "../mixin/theme";
-import Card from "../mixin/card";
-import clonedeep from "lodash.clonedeep";
+import { ChartViewModel } from '../../viewmodel/ChartViewModel';
+import VmUpdater from '../mixin/vm-updater';
+import Control from '../mixin/control';
+import Theme from '../mixin/theme';
+import Card from '../mixin/card';
+import clonedeep from 'lodash.clonedeep';
 export default {
-  name: "SmChart",
-  viewModelProps: ["chartType", "datasets", "chartOptions"],
+  name: 'SmChart',
+  viewModelProps: ['chartType', 'datasets', 'chartOptions'],
   mixins: [Control, Theme, Card, VmUpdater],
   props: {
     iconClass: {
       type: String,
-      default: "smwidgets-icons-attribute"
+      default: 'smwidgets-icons-attribute'
     },
     chartType: {
       type: String,
-      default: "bar"
+      default: 'bar'
     },
     datasets: {
       type: Object,
@@ -52,13 +51,13 @@ export default {
   computed: {
     options() {
       if (!this.chartOptions.colorGradient) {
-        this.chartOptions.colorGradient = this.colorGroupsData;
+        this.chartOptions.colorGradient = this.colorGroupsData; // eslint-disable-line vue/no-side-effects-in-computed-properties
       }
       if (!this.chartOptions.backgroundColor) {
-        this.chartOptions.backgroundColor = this.backgroundData;
+        this.chartOptions.backgroundColor = this.backgroundData; // eslint-disable-line vue/no-side-effects-in-computed-properties
       }
       if (!this.chartOptions.axisColor) {
-        this.chartOptions.axisColor = this.textColorsData;
+        this.chartOptions.axisColor = this.textColorsData; // eslint-disable-line vue/no-side-effects-in-computed-properties
       }
       return {
         type: this.chartType,
@@ -66,6 +65,9 @@ export default {
         chartOptions: this.chartOptions
       };
     }
+  },
+  mounted() {
+    this.initializeChart();
   },
   methods: {
     getStyle() {
@@ -79,10 +81,10 @@ export default {
     },
     initializeChart() {
       this.viewModel = new ChartViewModel(
-        this.$el.querySelector("#chart") || this.$el,
+        this.$el.querySelector('#chart') || this.$el,
         clonedeep(this.options)
       );
-      this.$on("themeStyle", () => {
+      this.$on('themeStyle', () => {
         this.chartOptions.colorGradient = this.colorGroupsData;
         this.chartOptions.backgroundColor = this.backgroundData;
         this.chartOptions.axisColor = this.textColorsData;
@@ -90,22 +92,17 @@ export default {
       });
       let icon = this.$el.children[0];
       if (this.iconClass && icon) {
-        icon.style.visibility = "hidden";
+        icon.style.visibility = 'hidden';
       }
-      this.viewModel.on("chartinitsucceeded", () => {
+      this.viewModel.on('chartinitsucceeded', () => {
         if (this.iconClass && icon) {
-          icon.style.visibility = "visible";
+          icon.style.visibility = 'visible';
         }
-        window.addEventListener("resize", () => {
+        window.addEventListener('resize', () => {
           this.viewModel.resize();
         });
       });
     }
-  },
-  mounted() {
-    this.initializeChart();
   }
 };
 </script>
-
-

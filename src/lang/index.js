@@ -9,11 +9,11 @@ import clonedeep from 'lodash.clonedeep';
 if (!Vue.prototype.hasOwnProperty('$i18n')) {
   Object.defineProperty(Vue.prototype, '$i18n', {
     get: function get() {
-      return i18n
+      return i18n;
     }
   });
 }
-Vue.use(VueI18n)
+Vue.use(VueI18n);
 
 const messages = {
   en: {
@@ -22,25 +22,24 @@ const messages = {
   zh: {
     ...zhLocale
   }
-}
+};
 const i18n =
   new VueI18n({
     locale: getLanguage(),
-    fallbackLocale: "zh",
+    fallbackLocale: 'zh',
     messages
-  })
+  });
 
 export function setLocale(locales) {
-  i18n.mergeLocaleMessage(i18n.locale, locales)
+  i18n.mergeLocaleMessage(i18n.locale, locales);
 }
-//让element使用vue-i18n
-ElementLocale.i18n((key, value) => i18n.t(key, value))
+// 让element使用vue-i18n
+ElementLocale.i18n((key, value) => i18n.t(key, value));
 export const lang = {
   en: clonedeep(enLocale),
   zh: clonedeep(zhLocale)
 };
-export default i18n
-
+export default i18n;
 
 function getLanguage() {
   var lang = Cookies.get('language');
@@ -79,23 +78,21 @@ this.$tc('layerList.apple',10,{ count: 20 })
 
 文本模板调用：
 $t方法：
-<span>{{$t("layerList.title")}}</span> 
+<span>{{$t("layerList.title")}}</span>
 ==>
-<span>图层</span> 
+<span>图层</span>
 
-<span>{{$t("layerList.hello",{msg:"hello"})}}</span> 
+<span>{{$t("layerList.hello",{msg:"hello"})}}</span>
 ==>
-<span>hello world</span> 
+<span>hello world</span>
 
-
-<span>{{$t("layerList.hello1",["bye"])}}</span> 
+<span>{{$t("layerList.hello1",["bye"])}}</span>
 ==>
-<span>bye world</span> 
+<span>bye world</span>
 
-<span>{{$t("layerList.linked")}}</span> 
+<span>{{$t("layerList.linked")}}</span>
 ==>
-<span>DIO: the world !!!!</span> 
-
+<span>DIO: the world !!!!</span>
 
 $tc方法：
 <p>{{ $tc('layerList.apple', 0) }}</p>
@@ -113,7 +110,6 @@ $tc方法：
 <p>{{ $tc('layerList.apple', 10, { count: 20 }) }}</p>
 ==>
 <p>20 apples</p>
-
 
 日期格式处理（$d）：https://kazupon.github.io/vue-i18n/guide/datetime.html
 数字格式处理（$n）：https://kazupon.github.io/vue-i18n/guide/number.html

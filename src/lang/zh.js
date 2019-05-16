@@ -1,7 +1,7 @@
 import elementZhLocale from 'element-ui/lib/locale/lang/zh-CN'; // element-ui lang
 export default {
   ...elementZhLocale,
-  //messageTemplate
+  // messageTemplate
   warning: {},
   success: {},
   info: {},
@@ -13,7 +13,7 @@ export default {
     iportalData: 'SuperMap iPortal 数据',
     onlineLocalSearch: 'SuperMap Online 本地搜索'
   },
-  //微件
+  // 微件
   zoom: {},
   chart: {},
   layerList: {

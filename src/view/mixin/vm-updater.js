@@ -1,6 +1,6 @@
 
 export default {
-  viewModelProps: null, //微件需要监听的props
+  viewModelProps: null, // 微件需要监听的props
   mounted() {
     // 为vm层的props绑定监听，更新vm层的视图变化
     if (this.$options.viewModelProps) {
@@ -20,7 +20,7 @@ export default {
         this.$watch(
           item,
           function(newVal, oldVal) {
-            let setFun = "set" + item.replace(item[0], item[0].toUpperCase());
+            let setFun = 'set' + item.replace(item[0], item[0].toUpperCase());
             // 子组件的viewModel
             this.viewModel && this.viewModel[setFun](newVal);
           },
@@ -32,9 +32,7 @@ export default {
     resize() {
       if (this.viewModel && this.viewModel.resize) {
         this.viewModel.resize();
-        return;
       }
     }
   }
 };
-

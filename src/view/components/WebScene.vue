@@ -5,14 +5,9 @@
 </template>
 
 <script>
-import WebSceneViewModel from "../../viewmodel/WebSceneViewModel.js";
+import WebSceneViewModel from '../../viewmodel/WebSceneViewModel.js';
 export default {
-  name: "SmWebScene",
-  data() {
-    return {
-      tooltipIsVisable: true
-    };
-  },
+  name: 'SmWebScene',
   props: {
     sceneUrl: {
       type: String,
@@ -21,14 +16,19 @@ export default {
     scanEffect: {
       type: Object
     },
-    navigation:{
-      type:Boolean,
-      default:true
+    navigation: {
+      type: Boolean,
+      default: true
     }
+  },
+  data() {
+    return {
+      tooltipIsVisable: true
+    };
   },
   computed: {
     sceneId() {
-      return "scene" + parseInt(Math.random() * 100);
+      return 'scene' + parseInt(Math.random() * 100);
     }
   },
   mounted() {
@@ -46,20 +46,19 @@ export default {
         this.scanEffect,
         this.navigation
       );
-      this.sceneViewModel.on("createsceneviewersucceeded", () => {
+      this.sceneViewModel.on('createsceneviewersucceeded', () => {
         this.sceneViewer = this.sceneViewModel.sceneViewer;
       });
-      this.sceneViewModel.on('sceneisprivate',()=>{
+      this.sceneViewModel.on('sceneisprivate', () => {
         this.$message.closeAll();
         this.$message({
           showClose: true,
-          message: "当前服务并未公开",
+          message: '当前服务并未公开',
           type: 'error',
           duration: 1000
         });
-      })
+      });
     }
   }
 };
 </script>
-

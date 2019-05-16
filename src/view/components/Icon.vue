@@ -4,16 +4,16 @@
   </div>
 </template>
 <script>
-import Theme from "../mixin/theme";
-import Control from "../mixin/control";
+import Theme from '../mixin/theme';
+import Control from '../mixin/control';
 
 export default {
-  name: "SmIcon",
+  name: 'SmIcon',
   mixins: [Control, Theme],
   props: {
     className: {
       type: String,
-      default: "info"
+      default: 'info'
     },
     size: {
       type: [String, Number]
@@ -31,7 +31,7 @@ export default {
   computed: {
     iconStyle() {
       return {
-        fontSize: parseFloat(this.size) + "px",
+        fontSize: parseFloat(this.size) + 'px',
         fontWeight: this.weight
       };
     },
@@ -47,5 +47,3 @@ export default {
   }
 };
 </script>
-
-

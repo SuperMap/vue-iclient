@@ -1,8 +1,7 @@
 import WidgetViewModel from './WidgetViewModel';
 import cloneDeep from 'lodash.clonedeep';
-import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
-import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min'
-import deckgl from '../../static/libs/deckgl/deck.gl.min'
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 /**
  * @class DataFlowLayerViewModel
  * @category ViewModel
@@ -29,7 +28,7 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
     if (!map) {
       throw new Error('map is requierd');
     }
-    
+
     this.options = options || {};
     this.map = map;
     this.dataFlowUrl = dataFlowUrl;
@@ -149,7 +148,6 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
         if (item.properties.id === feature.properties.id) {
           has = true;
           features[index] = feature;
-          return;
         }
       });
       if (!has) {

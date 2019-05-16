@@ -1,7 +1,7 @@
 <script>
-import MapGetter from "../mixin/map-getter";
-import Layer from "../mixin/layer";
-import DataFlowLayerViewModel from "../../viewmodel/DataFlowLayerViewModel";
+import MapGetter from '../mixin/map-getter';
+import Layer from '../mixin/layer';
+import DataFlowLayerViewModel from '../../viewmodel/DataFlowLayerViewModel';
 
 /**
  * @module DataFlowLayer
@@ -17,7 +17,7 @@ import DataFlowLayerViewModel from "../../viewmodel/DataFlowLayerViewModel";
  */
 
 export default {
-  name: "SmDataFlowLayer",
+  name: 'SmDataFlowLayer',
   mixins: [MapGetter, Layer],
   props: {
     dataFlowUrl: {
@@ -52,11 +52,11 @@ export default {
        * @property {boolean} [withCredentials = false] - 设置请求是否带cookie
        * @property {SuperMap.FilterParameter} queryInfo - 查询条件
        */
-      this.dataFlowLayerViewModel.on("subscribefailed", e => {
+      this.dataFlowLayerViewModel.on('subscribefailed', e => {
         this.$message({
           showClose: true,
-          message: "数据订阅失败！",
-          type: "error",
+          message: '数据订阅失败！',
+          type: 'error',
           duration: 1000
         });
         /**
@@ -64,24 +64,24 @@ export default {
          * @desc 数据订阅失败后触发。
          * @property {Object} e  - 事件对象。
          */
-        this.$emit("subscribe-failed", e);
+        this.$emit('subscribe-failed', e);
       });
-      this.dataFlowLayerViewModel.on("subscribesucceeded", e => {
+      this.dataFlowLayerViewModel.on('subscribesucceeded', e => {
         /**
          * @event subscribeSucceeded
          * @desc 数据订阅失败后触发。
          * @property {Object} e  - 事件对象。
          */
-        this.$emit("subscribe-succeeded", e);
+        this.$emit('subscribe-succeeded', e);
       });
-      this.dataFlowLayerViewModel.on("dataupdated", e => {
+      this.dataFlowLayerViewModel.on('dataupdated', e => {
         /**
          * @event dataUpdated
          * @desc 数据更新成功后触发。
          * @property {GeoJSONObject} data - 更新的数据。
          * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
          */
-        this.$emit("data-updated", e);
+        this.$emit('data-updated', e);
       });
     }
   },

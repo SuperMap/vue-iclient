@@ -5,14 +5,14 @@
 </template>
 
 <script>
-import mapEvent from "../commontypes/mapEvent";
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance'
+import mapEvent from '../commontypes/mapEvent';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 export default {
-  name: "SmMap",
+  name: 'SmMap',
   props: {
     target: {
       type: String,
-      default: "map"
+      default: 'map'
     },
     mapOptions: {
       type: Object,
@@ -42,9 +42,9 @@ export default {
       return this.map;
     },
     registerEvents(map) {
-      map.on("load", () => {
+      map.on('load', () => {
         mapEvent.$emit(`initMap-${this.target}`, map);
-        this.$emit("load", { map: map });
+        this.$emit('load', { map: map });
       });
     }
   }

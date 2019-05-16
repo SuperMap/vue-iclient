@@ -1,4 +1,3 @@
-import Vue from "vue";
 import mapEvent from './view/commontypes/mapEvent';
 import {
   Button,
@@ -17,34 +16,33 @@ import {
   Progress,
   Row,
   Col
-} from "element-ui";
+} from 'element-ui';
 import i18n, {
   setLocale,
   lang
-} from "../src/lang/index";
-import * as themeFactory from "./style/theme";
-import * as components from "./view/components";
-import "./assets/iconfont/iconfont.css";
+} from '../src/lang/index';
+import * as themeFactory from './style/theme';
+import * as components from './view/components';
+import './assets/iconfont/iconfont.css';
 import * as commontypes from './view/commontypes/index';
 
 const setTheme = (themeStyle = {}) => {
-  if (typeof themeStyle == 'string') {
+  if (typeof themeStyle === 'string') {
     themeStyle = themeFactory[themeStyle] || {};
   }
   mapEvent.$emit('change-theme', themeStyle);
-}
+};
 
 const install = function (Vue, opts = {}) {
   if (opts.locale) {
     setLocale(opts.locale);
   }
-  let theme = opts.theme || "light";
+  let theme = opts.theme || 'light';
 
   require(`./style/theme/${theme}.scss`);
   setTheme(theme);
 
-
-  //TIP:引入element组件时，需在style/index.scss中引入组件对应的scsss。确保样式变量对elemenet组件生效
+  // TIP:引入element组件时，需在style/index.scss中引入组件对应的scsss。确保样式变量对elemenet组件生效
   Vue.use(Button);
   Vue.use(Checkbox);
   Vue.use(Card);
@@ -65,13 +63,11 @@ const install = function (Vue, opts = {}) {
     Vue.component(components[component].name, components[component]);
   }
 };
-if (typeof window !== "undefined" && window.Vue) {
+if (typeof window !== 'undefined' && window.Vue) {
   install(window.Vue, {
     theme: 'light'
   });
 }
-
-
 
 export default {
   setTheme,

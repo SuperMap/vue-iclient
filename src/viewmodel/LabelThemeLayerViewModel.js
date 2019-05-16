@@ -1,4 +1,6 @@
 import WidgetViewModel from './WidgetViewModel';
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
 export default class LabelThemeLayerViewModel extends WidgetViewModel {
   constructor(map, themeProps) {

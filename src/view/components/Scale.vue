@@ -1,21 +1,21 @@
 <template>
-  <div class="sm-widget-scale" :style="[scaleStyle, getColorStyle(0)]">{{content}}</div>
+  <div class="sm-widget-scale" :style="[scaleStyle, getColorStyle(0)]">{{ content }}</div>
 </template>
 <script>
 import Theme from '../mixin/theme';
-import MapGetter from "../mixin/map-getter";
+import MapGetter from '../mixin/map-getter';
 
-import ScaleViewModel from "../../viewmodel/ScaleViewModel";
+import ScaleViewModel from '../../viewmodel/ScaleViewModel';
 
 export default {
-  name: "SmScale",
-  mixins: [MapGetter,Theme],
+  name: 'SmScale',
+  mixins: [MapGetter, Theme],
   props: {
     unit: {
       type: String,
-      default: "metric",
+      default: 'metric',
       validator(value) {
-        return ["imperial", "metric", "nautical"].includes(value);
+        return ['imperial', 'metric', 'nautical'].includes(value);
       }
     },
     maxWidth: {
@@ -42,8 +42,7 @@ export default {
       scaleViewModel.onMoveEvt();
     },
     updateContainer() {
-      const self = this;
-      this.scaleViewModel.on("scaleupdated", e => {
+      this.scaleViewModel.on('scaleupdated', e => {
         this.width = e.containerWidth;
         this.content = e.containerContent;
       });
@@ -54,5 +53,3 @@ export default {
   }
 };
 </script>
-
-

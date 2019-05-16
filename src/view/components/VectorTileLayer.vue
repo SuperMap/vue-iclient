@@ -1,9 +1,9 @@
 <script>
-import MapGetter from "../mixin/map-getter";
-import Layer from "../mixin/layer";
+import MapGetter from '../mixin/map-getter';
+import Layer from '../mixin/layer';
 
 export default {
-  name: "SmVectorTileLayer",
+  name: 'SmVectorTileLayer',
   mixins: [MapGetter, Layer],
   props: {
     styleOptions: {

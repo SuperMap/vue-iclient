@@ -6,7 +6,7 @@ import WidgetViewModel from './WidgetViewModel';
  * @extends WidgetViewModel
  */
 export default class WebSceneViewModel extends WidgetViewModel {
-  constructor(target, serviceUrl,scanEffect, navigation) {
+  constructor(target, serviceUrl, scanEffect, navigation) {
     super();
     this.scanEffect = scanEffect || {};
     this.serviceUrl = serviceUrl;
@@ -66,7 +66,7 @@ export default class WebSceneViewModel extends WidgetViewModel {
       position: null,
       fullScreen: true,
       scanEffect: {
-        status: this.scanEffect.status || false, //是否为开启状态
+        status: this.scanEffect.status || false, // 是否为开启状态
         type: this.scanEffect.type || (this.scanEffect.status && 'circle') || 'noScan',
         centerPostion: null,
         _period: this.scanEffect.period || 2000,
@@ -82,7 +82,7 @@ export default class WebSceneViewModel extends WidgetViewModel {
     sceneUrl = sceneUrl.slice(0, sceneUrl.indexOf('/rest/realspace') + 15);
     this.sceneViewer = new Cesium.Viewer(this.sceneId, {
       infobox: false,
-      navigation:this.navigation
+      navigation: this.navigation
     });
     this.fire('createsceneviewersucceeded');
     this.scene = this.sceneViewer.scene;
@@ -93,7 +93,7 @@ export default class WebSceneViewModel extends WidgetViewModel {
     Cesium.when.all(promise, () => {
       let sc = scene.camera;
       scene.camera.setView({
-        //设置三维笛卡尔坐标点
+        // 设置三维笛卡尔坐标点
         destination: Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z),
         orientation: {
           heading: sc.heading,
@@ -101,7 +101,7 @@ export default class WebSceneViewModel extends WidgetViewModel {
           roll: sc.roll
         }
       });
-      //捕获三维场景上的鼠标事件，用于高亮场景组件
+      // 捕获三维场景上的鼠标事件，用于高亮场景组件
       let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
       handler.setInputAction(e => {
         sceneParam.positopn = new Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z);
@@ -112,10 +112,10 @@ export default class WebSceneViewModel extends WidgetViewModel {
           let last = scene.pickPosition(position);
           this.scene.scanEffect.centerPostion = last; // 设置扫描中心点
           sceneParam.scanEffect.centerPostion = last;
-          this.tooltipIsVisable = true; //关闭悬浮提示
+          this.tooltipIsVisable = true; // 关闭悬浮提示
         }
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
-      //恢复状态时，恢复扫描效果,加赞三维场景比较卡，所以延迟2秒后再加载光线效果
+      // 恢复状态时，恢复扫描效果,加赞三维场景比较卡，所以延迟2秒后再加载光线效果
       if (sceneParam.scanEffect.status) {
         setTimeout(() => {
           this.startScan(sceneParam.scanEffect.type);

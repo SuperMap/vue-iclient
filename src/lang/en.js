@@ -1,7 +1,7 @@
-import elementEnLocale from 'element-ui/lib/locale/lang/en' // element-ui lang
+import elementEnLocale from 'element-ui/lib/locale/lang/en'; // element-ui lang
 export default {
   ...elementEnLocale,
-  //messageTemplate
+  // messageTemplate
   warning: {
 
   },
@@ -14,14 +14,14 @@ export default {
   error: {
 
   },
-  commontypes:{
-    restData:"SuperMap Rest Data",
-    restMap:"SuperMap Rest Map",
-    addressMatch:"SuperMap AddressMatch",
-    iportalData:"SuperMap iPortal Data",
-    onlineLocalSearch:"SuperMap Online Local Search"
+  commontypes: {
+    restData: 'SuperMap Rest Data',
+    restMap: 'SuperMap Rest Map',
+    addressMatch: 'SuperMap AddressMatch',
+    iportalData: 'SuperMap iPortal Data',
+    onlineLocalSearch: 'SuperMap Online Local Search'
   },
-  //微件
+  // 微件
   zoom: {
 
   },
@@ -29,7 +29,7 @@ export default {
 
   },
   layerList: {
-    title: "Layers"
+    title: 'Layers'
   },
   miniMap: {
 
@@ -37,36 +37,36 @@ export default {
   pan: {},
   scale: {},
   webmap: {},
-  legend:{
-    themeField:'themefield',
-    title:'legend',
-    top:'top',
-    bottom:'bottom'
+  legend: {
+    themeField: 'themefield',
+    title: 'legend',
+    top: 'top',
+    bottom: 'bottom'
   },
   map: {},
   search: {
-    noResult: "The result of the search is empty!",
-    noKey: "Search keywords cannot be empty. Please enter your search criteria.",
+    noResult: 'The result of the search is empty!',
+    noKey: 'Search keywords cannot be empty. Please enter your search criteria.',
     inputPlaceHolder: 'Find an address or location',
     attribute: 'Attributes',
     attributeValue: 'Attribute value'
   },
-  query:{
+  query: {
     query: 'Query',
     queryJob: 'Task',
     queryReuslt: 'Result',
-    attributeCondition:'Attribute Condition',
-    spatialFilter:'Space Filter',
-    mapBounds:"Returns the features of the map's full extent",
-    currentMapBounds:'Returns the features in the current map bounds',
-    applicate:'Applicate',
-    noResult:'No result',
-    resultAlreadyExists:'The current query result already exists!',
-    querying:'In the query',
-    attribute:'Attribute',
-    attributeValue:'Attribute Value',
+    attributeCondition: 'Attribute Condition',
+    spatialFilter: 'Space Filter',
+    mapBounds: "Returns the features of the map's full extent",
+    currentMapBounds: 'Returns the features in the current map bounds',
+    applicate: 'Applicate',
+    noResult: 'No result',
+    resultAlreadyExists: 'The current query result already exists!',
+    querying: 'In the query',
+    attribute: 'Attribute',
+    attributeValue: 'Attribute Value',
     noResults: 'The result of the query is empty!',
     queryFailed: 'Query failed!',
     seviceNotSupport: 'This service does not support queries!'
-  },
-}
+  }
+};

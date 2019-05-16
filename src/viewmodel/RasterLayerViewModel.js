@@ -1,11 +1,24 @@
-import WidgetViewModel from "./WidgetViewModel";
-import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
-import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min'
+import WidgetViewModel from './WidgetViewModel';
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
 export default class RasterLayerViewModel extends WidgetViewModel {
   constructor(map, rasterLayerOptions) {
     super(map);
-    const { name, tileSize, mapUrl, tiles, bounds, minZoom = 0, maxZoom = 22, attribution, scheme = "xyz", visible = true, opacity = 1, before } = rasterLayerOptions;
+    const {
+      name,
+      tileSize,
+      mapUrl,
+      tiles,
+      bounds,
+      minZoom = 0,
+      maxZoom = 22,
+      attribution,
+      scheme = 'xyz',
+      visible = true,
+      opacity = 1,
+      before
+    } = rasterLayerOptions;
     this.name = name;
     this.tileSize = tileSize;
     this.mapUrl = mapUrl;
@@ -16,10 +29,10 @@ export default class RasterLayerViewModel extends WidgetViewModel {
     this.attribution = attribution;
     this.scheme = scheme;
     this.opacity = opacity;
-    this.visibility = visible ? "visible" : "none";
+    this.visibility = visible ? 'visible' : 'none';
     this.before = before;
-    //enhance扩展，传iserver标识是iserver rest map
-    this.rasterSource = "";
+    // enhance扩展，传iserver标识是iserver rest map
+    this.rasterSource = '';
     this._init();
   }
   _init() {
@@ -40,9 +53,9 @@ export default class RasterLayerViewModel extends WidgetViewModel {
       }
       const bounds = mapObj.bounds;
       if (!this.bounds && bounds) {
-        this.bounds = [bounds.left, bounds.bottom, bounds.right, bottom.top];
+        this.bounds = [bounds.left, bounds.bottom, bounds.right, bounds.top];
       }
-      this.rasterSource = "iserver";
+      this.rasterSource = 'iserver';
       this.tiles = [this.mapUrl];
       this._addLayer(mapObj);
     });
@@ -51,16 +64,16 @@ export default class RasterLayerViewModel extends WidgetViewModel {
     this.map.addLayer(
       {
         id: this.name || `raster-layer-${new Date().getTime()}`,
-        type: "raster",
+        type: 'raster',
         layout: {
           visibility: this.visibility
         },
         paint: {
-          "raster-opacity": this.opacity
+          'raster-opacity': this.opacity
         },
         source: {
           bounds: this.bounds || [-180, -85.051129, 180, 85.051129],
-          type: "raster",
+          type: 'raster',
           tileSize: this.tileSize || 256,
           tiles: this.tiles,
           rasterSource: this.rasterSource,

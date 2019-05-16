@@ -1,7 +1,7 @@
-import WidgetViewModel from "./WidgetViewModel";
-import "mapv";
-import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
-import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min'
+import WidgetViewModel from './WidgetViewModel';
+import 'mapv';
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
 export default class MapvLayerViewModel extends WidgetViewModel {
   constructor(map, mapvProps) {
@@ -19,7 +19,7 @@ export default class MapvLayerViewModel extends WidgetViewModel {
   }
 
   _addMapvLayer() {
-    const mapVLayer = new mapboxgl.supermap.MapvLayer("", this.dataSet, this.mapvOptions);
+    const mapVLayer = new mapboxgl.supermap.MapvLayer('', this.dataSet, this.mapvOptions);
     this.map.addLayer(mapVLayer);
   }
 }

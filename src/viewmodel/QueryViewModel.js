@@ -3,9 +3,9 @@ import iPortalDataParameter from '../view/commontypes/iPortalDataParameter';
 import RestDataParameter from '../view/commontypes/RestDataParameter';
 import RestMapParameter from '../view/commontypes/RestMapParameter';
 import center from '@turf/center';
-import i18n from '../lang/index.js'
-import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
-import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min'
+import i18n from '../lang/index.js';
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 /**
  * @class QueryViewModel
  * @classdesc Query ViewModel
@@ -105,9 +105,9 @@ export default class QueryViewModel extends WidgetViewModel {
       this.addResultLayer(this.queryResult);
       this.fire('querysucceeded', { originalresult: serviceResult, result: this.queryResult });
     } else if (result && result.totalCount === 0) {
-      this.fire('queryfailed', { message: i18n.t("query.noResults")});
+      this.fire('queryfailed', { message: i18n.t('query.noResults') });
     } else {
-      this.fire('queryfailed', { message: i18n.t("query.queryFailed") });
+      this.fire('queryfailed', { message: i18n.t('query.queryFailed') });
     }
   }
 
@@ -119,9 +119,9 @@ export default class QueryViewModel extends WidgetViewModel {
       this.addResultLayer(this.queryResult);
       this.fire('querysucceeded', { result: this.queryResult });
     } else if (result && result.totalCount === 0) {
-      this.fire('queryfailed', { message: i18n.t("query.noResults")});
+      this.fire('queryfailed', { message: i18n.t('query.noResults') });
     } else {
-      this.fire('queryfailed', { message: i18n.t("query.queryFailed") });
+      this.fire('queryfailed', { message: i18n.t('query.queryFailed') });
     }
   }
 
@@ -135,28 +135,26 @@ export default class QueryViewModel extends WidgetViewModel {
       .then(data => {
         if (data.succeed === false) {
           this.queryCount--;
-          //请求失败
+          // 请求失败
           return;
         }
         // 是否有rest服务
         if (data.dataItemServices && data.dataItemServices.length > 0) {
-          let dataItemServices = data.dataItemServices,
-            resultData;
+          let dataItemServices = data.dataItemServices;
+          let resultData;
           dataItemServices.forEach(item => {
             if (item.serviceType === 'RESTDATA' && item.serviceStatus === 'PUBLISHED') {
               resultData = item;
             } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
               resultData = item;
             } else {
-              this.fire('queryfailed', { message: i18n.t("query.seviceNotSupport") });
-              return;
+              this.fire('queryfailed', { message: i18n.t('query.seviceNotSupport') });
             }
           }, this);
           // 如果有服务，获取数据源和数据集, 然后请求rest服务
           this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);
         } else {
-          this.fire('queryfailed', { message: i18n.t("query.seviceNotSupport") });
-          return;
+          this.fire('queryfailed', { message: i18n.t('query.seviceNotSupport') });
         }
       })
       .catch(error => {
@@ -269,8 +267,8 @@ export default class QueryViewModel extends WidgetViewModel {
     return feature;
   }
   getFeatrueInfo(feature) {
-    let featureInfo = {},
-      coordinates;
+    let featureInfo = {};
+    let coordinates;
     let geometry = feature.geometry;
     if (
       geometry.type === 'MultiPolygon' ||

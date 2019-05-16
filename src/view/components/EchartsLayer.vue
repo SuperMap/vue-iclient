@@ -1,15 +1,15 @@
 <script>
-import MapGetter from "../mixin/map-getter";
-import EchatsLayerViewModel from "../../viewmodel/EchatsLayerViewModel";
+import MapGetter from '../mixin/map-getter';
+import EchatsLayerViewModel from '../../viewmodel/EchatsLayerViewModel';
 export default {
-  name: "SmEchartsLayer",
+  name: 'SmEchartsLayer',
   mixins: [MapGetter],
   props: {
     echartsOptions: {
       type: Object,
       required: true,
       validator(value) {
-        return JSON.stringify(value) !== "{}";
+        return JSON.stringify(value) !== '{}';
       }
     }
   },

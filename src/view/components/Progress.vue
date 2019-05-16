@@ -12,11 +12,11 @@
   </div>
 </template>
 <script>
-import Theme from "../mixin/theme";
-import Control from "../mixin/control";
+import Theme from '../mixin/theme';
+import Control from '../mixin/control';
 
 export default {
-  name: "SmProgress",
+  name: 'SmProgress',
   mixins: [Control, Theme],
   props: {
     percentage: {
@@ -25,7 +25,7 @@ export default {
     },
     type: {
       type: String,
-      default: "line"
+      default: 'line'
     },
     strokeWidth: {
       type: [Number, String],
@@ -44,7 +44,7 @@ export default {
   },
   data() {
     return {
-      curColor: "",
+      curColor: '',
       circleWidth: 110
     };
   },
@@ -69,15 +69,14 @@ export default {
   },
   loaded() {
     this.curColor = this.color || this.getColor(0);
-    this.progressTextNode = this.$el.querySelector(".el-progress__text");
+    this.progressTextNode = this.$el.querySelector('.el-progress__text');
     this.progressTextNode.style.color = this.getTextColor;
     this.$nextTick(() => {
-      this.circleWidth = Math.min( this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight );
+      this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
     });
-    window.addEventListener("resize", () => {
-      this.circleWidth = Math.min( this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight );
+    window.addEventListener('resize', () => {
+      this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
     });
   }
 };
 </script>
-

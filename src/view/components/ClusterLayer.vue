@@ -1,9 +1,9 @@
 <script>
-import MapGetter from "../mixin/map-getter";
-import ClusterLayerViewModel from "../../viewmodel/ClusterLayerViewModel";
-import Layer from "../mixin/layer";
+import MapGetter from '../mixin/map-getter';
+import ClusterLayerViewModel from '../../viewmodel/ClusterLayerViewModel';
+import Layer from '../mixin/layer';
 export default {
-  name: "SmClusterLayer",
+  name: 'SmClusterLayer',
   mixins: [MapGetter, Layer],
   props: {
     data: {

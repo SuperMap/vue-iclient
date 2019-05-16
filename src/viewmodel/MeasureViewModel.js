@@ -1,5 +1,5 @@
 import WidgetViewModel from './WidgetViewModel';
-import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance'
+import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import length from '@turf/length';
 import area from '@turf/area';
@@ -18,7 +18,7 @@ class MeasureViewModel extends WidgetViewModel {
   constructor(options) {
     super();
     this.tipNodes = []; // 收集测算长度实时生成的popup，以方便后面销毁
-    this.cacheLengthUnitList = []; //缓存量算长度每个节点的值跟单位，在修改单位时使用
+    this.cacheLengthUnitList = []; // 缓存量算长度每个节点的值跟单位，在修改单位时使用
     this.cachePolygonUnit = {};
     this.mode = null;
     this.result = '';
@@ -28,7 +28,7 @@ class MeasureViewModel extends WidgetViewModel {
     this.isEditing = true;
   }
 
-  //开启绘制
+  // 开启绘制
   openDraw(mode, activeUnit) {
     this._initDraw();
     this._resetEvent();
@@ -211,7 +211,7 @@ class MeasureViewModel extends WidgetViewModel {
   }
 
   _initDraw() {
-    //根据ids只删除上一次量算的数据
+    // 根据ids只删除上一次量算的数据
     this.ids ? this.draw.delete(this.ids) : this.draw.deleteAll();
     this.measureNodes = []; // 收集测算长度生成每个点的feature数据, 方便后面计算总长度
     this.tipNodes.length && this.tipNodes.map(tipNode => tipNode.remove());
@@ -272,8 +272,8 @@ class MeasureViewModel extends WidgetViewModel {
 
   _popupFollowMouse(e) {
     const {
-      point,
-      originalEvent,
+      // point,
+      // originalEvent,
       lngLat: { lng, lat }
     } = e;
     const lastPointPos = [lng, lat];
@@ -319,8 +319,8 @@ class MeasureViewModel extends WidgetViewModel {
 
   _renderPopupTip(e) {
     const {
-      point,
-      originalEvent,
+      // point,
+      // originalEvent,
       lngLat: { lng, lat }
     } = e;
     const popup = new mapboxgl.Popup({
@@ -336,7 +336,7 @@ class MeasureViewModel extends WidgetViewModel {
           coordinates: this.measureNodes
         }
       };
-      //修改单位！！！！
+      // 修改单位！！！！
       let tempLength = length(line, 'kilometers');
       let calcValue = convertLength(tempLength, 'kilometers', this.activeUnit);
 
