@@ -7,7 +7,6 @@ import DataFlowLayerViewModel from '../../viewmodel/DataFlowLayerViewModel';
  * @module DataFlowLayer
  * @category Components Layer
  * @desc 数据流图层微件。
- * @vue-prop {mapboxgl.Map} map - Mapboxgl Map 对象。
  * @vue-prop {String} dataFlowUrl - 数据流服务地址。
  * @vue-prop {Object} [options] - 可选参数。
  * @vue-prop {String} [options.layerId] - 图层 ID。
@@ -45,13 +44,6 @@ export default {
   },
   methods: {
     registerEvents() {
-      /**
-       * @typedef {Object} DataFlowLayer.options - 可选参数。
-       * @property {string} [layerId] - 服务类型 iServer, iPortal。
-       * @property {string} [geometry - 服务url地址。
-       * @property {boolean} [withCredentials = false] - 设置请求是否带cookie
-       * @property {SuperMap.FilterParameter} queryInfo - 查询条件
-       */
       this.dataFlowLayerViewModel.on('subscribefailed', e => {
         this.$message({
           showClose: true,

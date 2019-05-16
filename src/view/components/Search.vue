@@ -16,7 +16,7 @@
         ></div>
       </el-input>
     </div>
-    <div v-show="getlength" class="sm-widget-search__result" :style="[getBackgroundStyle]">
+    <div v-show="getResultLength" class="sm-widget-search__result" :style="[getBackgroundStyle]">
       <div v-for="(result,index) in searchResult" :key="index" class="sm-widget-search__panel">
         <span
           v-if="result.source"
@@ -61,12 +61,26 @@ import Vue from 'vue';
 //   });
 //   return valid;
 // };
-
+/**
+ * @module Search
+ * @category Components
+ * @desc 搜索微件。
+ * @vue-prop {String} dataFlowUrl - 数据流服务地址。
+ * @vue-prop {(Number|String)} [maxFeatures=8] - 最多可返回的要素数量，最大值为 100。
+ * @vue-prop {Array} [layerNames] - 地图图层搜索配置，如：'['UNIQUE-民航数']'。
+ * @vue-prop {RestMapParameter} [restMap] - iServer 地图服务搜索配置。
+ * @vue-prop {RestDataParameter} [restData] - iServer 数据服务搜索配置。
+ * @vue-prop {iPortalDataParameter} [iportalData] - iPortal 数据搜索配置。
+ * @vue-prop {AddressMatchParameter} [addressMatch] - iServer 地址匹配服务搜索配置。
+ * @vue-prop {Object} [onlineLocalSearch] - online 本地搜索配置
+ * @vue-prop {Boolean} [onlineLocalSearch.enable=true] - 是否开启 online 本地搜索。
+ * @vue-computed {Number} getResultLength - 获取结果数据长度。
+ */
 export default {
   name: 'SmSearch',
   mixins: [Control, MapGetter, Theme],
   props: {
-    maxReturn: {
+    maxFeatures: {
       type: [Number, String],
       default: 8
     },
@@ -114,7 +128,7 @@ export default {
     };
   },
   computed: {
-    getlength() {
+    getResultLength() {
       return this.searchResult.length > 0;
     }
   },
@@ -171,14 +185,7 @@ export default {
     },
     search() {
       this.clearResult();
-      let {
-        layerNames,
-        onlineLocalSearch,
-        restMap,
-        restData,
-        iportalData,
-        addressMatch
-      } = this.$props;
+      let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = this.$props;
       if (
         (layerNames && layerNames.length > 0) ||
         onlineLocalSearch.enable ||
@@ -220,15 +227,10 @@ export default {
       this.linkageFeature(filter, e.target);
     },
     linkageFeature(filter, element) {
-      let sourceTarget =
-        element.parentElement.parentElement.previousElementSibling;
+      let sourceTarget = element.parentElement.parentElement.previousElementSibling;
       let sourceName = sourceTarget.innerHTML;
 
-      let popupData = this.viewModel.getFeatureInfo(
-        this.searchResult,
-        filter,
-        sourceName
-      );
+      let popupData = this.viewModel.getFeatureInfo(this.searchResult, filter, sourceName);
 
       if (popupData.info.length >= 1) {
         let state = {
@@ -251,17 +253,19 @@ export default {
         }).$mount();
 
         this.$nextTick(() => {
-          this.marker = this.viewModel.addMarker(
-            popupData.coordinates,
-            popupContainer.$el
-          );
+          this.marker = this.viewModel.addMarker(popupData.coordinates, popupContainer.$el);
         });
       }
     },
     regiterEvents() {
-      this.searchKey >= 1 &&
-        this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1));
+      this.searchKey >= 1 && this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1));
       this.viewModel.on('searchsucceeded' + this.searchTaskId, e => {
+        /**
+         * @event searchSucceeded
+         * @desc 搜索成功后触发。
+         * @property {Object} e  - 事件对象。
+         */
+        this.$emit('search-succeeded', { searchResult: e.result });
         this.searchResult = e.result;
         let icon = this.$el.querySelector('.el-input__icon');
         icon.classList.add('el-icon-search');
@@ -273,6 +277,14 @@ export default {
             type: 'warning',
             duration: 1000
           });
+      });
+      this.viewModel.on('searchfailed', e => {
+        /**
+         * @event searchFailed
+         * @desc 搜索失败后触发。
+         * @property {Object} e  - 事件对象。
+         */
+        this.$emit('search-failed', e);
       });
     }
   }

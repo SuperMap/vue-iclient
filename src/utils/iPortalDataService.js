@@ -1,5 +1,16 @@
 import iServerRestService from './iServerRestService';
 import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
+
+/**
+ * @class iPortalDataService
+ * @classdesc iPortal 数据请求类。
+ * @category  BaseTypes Util
+ * @param {string} url - iPortal 数据地址。
+ * @param {Boolean} [withCredentials=false] - 请求是否携带 cookie。
+ * @fires iPortalDataService#getdatasucceeded
+ * @fires iPortalDataService#getdatafailed
+ * @fires iPortalDataService#featureisempty
+ */
 export default class iPortalDataService extends mapboxgl.Evented {
   constructor(url, withCredentials) {
     super();
@@ -7,12 +18,38 @@ export default class iPortalDataService extends mapboxgl.Evented {
     this.withCredentials = withCredentials || false;
     this.iserverService = new iServerRestService(url, withCredentials);
     this.iserverService.on('getdatasucceeded', e => {
+      /**
+       * @event iPortalDataService#getdatasucceeded
+       * @description 请求数据成功后触发。
+       * @property {Object} e  - 事件对象。
+       */
       this.fire('getdatasucceeded', e);
     });
+    this.iserverService.on('getdatafailed', e => {
+      /**
+       * @event iPortalDataService#getdatafailed
+       * @description 请求数据失败后触发。
+       * @property {Object} e  - 事件对象。
+       */
+      this.fire('getdatafailed', e);
+    });
     this.iserverService.on('featureisempty', e => {
+      /**
+       * @event iPortalDataService#featureisempty
+       * @description 请求数据为空后触发。
+       * @property {Object} e  - 事件对象。
+       */
       this.fire('featureisempty', e);
     });
   }
+  /**
+   * @function iPortalDataService.prototype.getData
+   * @description 请求数据。
+   * @param {Object} queryInfo - 可选参数。
+   * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
+   * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
+   * @param {Object} [queryInfo.keyWord] - 筛选关键字。
+   */
   getData(queryInfo) {
     let datasetUrl = this.url;
     SuperMap.FetchRequest.get(datasetUrl, null, {
@@ -172,7 +209,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
               features
             };
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-            let features = this._excelData2Feature(data.content);
+            let features = this._excelData2Feature(data.content, queryInfo);
             result.features = {
               type: 'FeatureCollection',
               features

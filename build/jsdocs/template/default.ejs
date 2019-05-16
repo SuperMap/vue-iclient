@@ -28,7 +28,7 @@
       <% if(prop.name.split(".").length < 2) { %>
         <tr>
             <td ><code><%- prop.name %></code></td>
-            <td><%- renderType(prop.type) %></td>
+            <td class='type'><%- renderType(prop.type) %></td>
             <td><%- typeof prop.defaultvalue === 'undefined' ? '-' : `<code>${prop.defaultvalue}</code>` %></td>
             <td><span class="optional"><%- prop.optional ? '可选' : '' %></span><%- typeof prop.description === 'undefined' ? '-' : prop.description %>
               <% if(this.objectProps[prop.name] && this.objectProps[prop.name].length>0) { %>
@@ -45,7 +45,7 @@
                     <% this.objectProps[prop.name].forEach(function(prop) { %>
                     <tr>
                         <td ><code><%- prop.name.split(".")[1] %></code></td>
-                        <td><%- renderType(prop.type) %></td>
+                        <td class='type'><%- renderType(prop.type) %></td>
                         <td><%- typeof prop.defaultvalue === 'undefined' ? '-' : `<code>${prop.defaultvalue}</code>` %></td>
                         <td class='description last'><span class="optional"><%- prop.optional ? '可选' : '' %></span><%- typeof prop.description === 'undefined' ? '-' : prop.description %></td>
                     </tr>

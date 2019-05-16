@@ -1,9 +1,26 @@
 import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
+/**
+ * @class iServerRestService
+ * @classdesc iServer 数据请求类。
+ * @category  BaseTypes Util
+ * @param {string} url - iServer 数据服务或地图服务地址。
+ * @fires iServerRestService#getdatasucceeded
+ * @fires iServerRestService#getdatafailed
+ * @fires iServerRestService#featureisempty
+ */
 export default class iServerRestService extends mapboxgl.Evented {
   constructor(url) {
     super();
     this.url = url;
   }
+  /**
+   * @function iServerRestService.prototype.getData
+   * @description 请求数据。
+   * @param {Object} queryInfo - 可选参数。
+   * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
+   * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
+   * @param {Object} [queryInfo.keyWord] - 筛选关键字。
+   */
   getData(queryInfo) {
     if (!this._checkUrl(this.url)) {
       return null;
@@ -23,6 +40,11 @@ export default class iServerRestService extends mapboxgl.Evented {
         }
       })
       .catch(error => {
+        /**
+         * @event iServerRestService#getdatafailed
+         * @description 请求数据失败后触发。
+         * @property {Object} e  - 事件对象。
+         */
         this.fire('getdatafailed', error);
       });
   }
@@ -45,6 +67,17 @@ export default class iServerRestService extends mapboxgl.Evented {
     }
   }
 
+  /**
+   * @function iServerRestService.prototype.getMapFeatures
+   * @description 请求地图服务数据。
+   * @param {Object} datasetInfo - 数据集参数。
+   * @param {Object} datasetInfo.dataUrl - 地图服务地址。
+   * @param {Object} datasetInfo.mapName - 图层名。
+   * @param {Object} queryInfo - 可选参数。
+   * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
+   * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
+   * @param {Object} [queryInfo.keyWord] - 筛选关键字。
+   */
   getMapFeatures(datasetInfo, queryInfo) {
     let { dataUrl, mapName } = datasetInfo;
     queryInfo.name = mapName;
@@ -57,6 +90,18 @@ export default class iServerRestService extends mapboxgl.Evented {
       this._getMapFeatureBySql(dataUrl, queryInfo);
     }
   }
+  /**
+   * @function iServerRestService.prototype.getDataFeatures
+   * @description 请求数据服务数据。
+   * @param {Object} datasetInfo - 数据集参数。
+   * @param {Object} datasetInfo.datasetName - 数据集名。
+   * @param {Object} datasetInfo.dataSourceName - 数据源名。
+   * @param {Object} datasetInfo.dataUrl - 数据服务地址。
+   * @param {Object} queryInfo - 可选参数。
+   * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
+   * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
+   * @param {Object} [queryInfo.keyWord] - 筛选关键字。
+   */
   getDataFeatures(datasetInfo, queryInfo) {
     let { datasetName, dataSourceName, dataUrl } = datasetInfo;
     queryInfo.name = datasetName + '@' + dataSourceName;
@@ -110,7 +155,7 @@ export default class iServerRestService extends mapboxgl.Evented {
     getFeatureBySQLService.processAsync(getFeatureBySQLParams);
   }
 
-  getFeaturesSucceed(results) {
+  _getFeaturesSucceed(results) {
     let features;
     let fieldCaptions;
     let fieldTypes;
@@ -124,6 +169,11 @@ export default class iServerRestService extends mapboxgl.Evented {
         fieldCaptions = recordsets.fieldCaptions;
         fieldTypes = recordsets.fieldTypes;
       } else {
+        /**
+         * @event iServerRestService#featureisempty
+         * @description 请求数据为空后触发。
+         * @property {Object} e  - 事件对象。
+         */
         this.fire('featureisempty', { results });
       }
     } else if (results.result) {
@@ -163,6 +213,11 @@ export default class iServerRestService extends mapboxgl.Evented {
       data.fieldValues.push(fieldValue);
     }
     // this.getDataSucceedCallback && this.getDataSucceedCallback(data);
+    /**
+     * @event iServerRestService#getdatasucceeded
+     * @description 请求数据成功后触发。
+     * @property {Object} e  - 事件对象。
+     */
     this.fire('getdatasucceeded', data);
   }
 

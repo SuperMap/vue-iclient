@@ -7,10 +7,30 @@ import iPortalDataService from '../utils/iPortalDataService';
 import iServerRestService from '../utils/iServerRestService';
 /**
  * @class SearchViewModel
- * @description search viewModel.
- * @param {Object} map - map 对象。
- * @param {Object} options
- * @extends WidgetViewModel
+ * @classdesc 数据搜索功能类。
+ * @category  ViewModel
+ * @param {mapboxgl.Map} map - mapboxgl map 对象。
+ * @param {Object} [options] - 可选参数。
+ * @param {Object} [options.maxFeatures=8] - 最多可返回的要素数量，最大值为 100。
+ * @param {Array.<string>} [options.layerNames] - 地图图层搜索配置，如：'['UNIQUE-民航数']'。
+ * @param {Array.<string>} [options.restMap] - iServer 地图服务搜索配置。
+ * @param {string} options.restMap.url - 地图服务地址。
+ * @param {string} options.restMap.layerName - 搜索图层名。
+ * @param {string} [options.restMap.name] - 搜索结果名称。
+ * @param {Array.<string>} [options.restData] - iServer 数据服务搜索配置。
+ * @param {string} options.restData.url - 数据服务地址。
+ * @param {Array} options.restData.dataName - 搜索数据集名数组。
+ * @param {string} [options.restData.name] - 搜索结果名称。
+ * @param {Array.<string>} [options.iportalData] - iPortal 数据搜索配置。
+ * @param {string} options.iportalData.url - 数据地址。
+ * @param {string} [options.iportalData.name] - 搜索结果名称。
+ * @param {Array.<string>} [options.addressMatch] - iServer 地址匹配服务搜索配置。
+ * @param {string} options.addressMatch.url - 地址匹配服务地址。
+ * @param {string} [options.addressMatch.name] - 搜索结果名称。
+ * @param {Object} [options.onlineLocalSearch] - online 本地搜索配置。
+ * @param {Boolean} [options.onlineLocalSearch.enable=true] - 是否开启 online 本地搜索。
+ * @fires SearchViewModel#searchsucceeded
+ * @fires SearchViewModel#searchfailed
  */
 export default class SearchViewModel extends WidgetViewModel {
   constructor(map, options) {
@@ -28,7 +48,11 @@ export default class SearchViewModel extends WidgetViewModel {
     }
     this.searchtType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
   }
-
+  /**
+   * @function SearchViewModel.prototype.search
+   * @description 开始搜索。
+   * @param {String} keyWord - 搜索关键字。
+   */
   search(keyWord) {
     this.searchCount = 0;
     this.searchResult = [];
@@ -54,6 +78,13 @@ export default class SearchViewModel extends WidgetViewModel {
     return this.searchTaskId;
   }
 
+  /**
+   * @function SearchViewModel.prototype.getFeatureInfo
+   * @description 获取搜索结果的要素信息。
+   * @param {Object} searchResult - 搜索成功返回的结果数据。
+   * @param {String} filter - 过滤条件。
+   * @param {String} sourceName - 要素的来源名称。
+   */
   getFeatureInfo(searchResult, filter, sourceName) {
     let filterValue = filter.indexOf('：') > 0 ? filter.split('：')[1].trim() : filter;
     filterValue = filterValue === 'null' ? filter.split('：')[0].trim() : filterValue;
@@ -85,7 +116,12 @@ export default class SearchViewModel extends WidgetViewModel {
     }, this);
     return data;
   }
-
+  /**
+   * @function SearchViewModel.prototype.addMarker
+   * @description 向地图上添加 Marker。
+   * @param {Array} coordinates - 坐标数组。
+   * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
+   */
   addMarker(coordinates, popupContainer) {
     let popup = new mapboxgl.Popup({
       className: 'attributePopup',
@@ -119,6 +155,12 @@ export default class SearchViewModel extends WidgetViewModel {
   _searchFeaturesFailed(error) {
     this.searchCount--;
     this.fire('searchfailed' + this.searchTaskId, { error });
+    /**
+     * @event SearchViewModel#searchfailed
+     * @description 搜索失败后触发。
+     * @property {Object} e  - 事件对象。
+     */
+    this.fire('searchfailed', { error });
     console.log(error);
   }
   _searchFeaturesSucceed(resultFeature, sourceName) {
@@ -127,6 +169,12 @@ export default class SearchViewModel extends WidgetViewModel {
     this.searchCount === 0 &&
       this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) &&
       (this.searchTaskId += 1);
+    /**
+     * @event SearchViewModel#searchsucceeded
+     * @description 搜索成功后触发。
+     * @property {Object} e  - 事件对象。
+     */
+    this.searchCount === 0 && this.fire('searchsucceeded', { result: this.searchResult });
   }
 
   _searchFromPOI(onlineLocalSearch) {
