@@ -53,7 +53,8 @@ export default {
       transformType: {
         Point: 'circle',
         Polygon: 'fill',
-        LineString: 'line'
+        LineString: 'line',
+        MultiPolygon: 'fill'
       },
       mapboxglClass: ''
     };

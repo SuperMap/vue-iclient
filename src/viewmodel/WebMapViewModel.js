@@ -3,6 +3,7 @@
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import WidgetViewModel from './WidgetViewModel';
 import SourceListModel from '../model/SourceListModel';
+import { handleMultyPolygon } from '../utils/geometry-util';
 import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import '../../static/libs/geostats/geostats';
@@ -10,16 +11,46 @@ import convert from 'xml-js';
 import canvg from 'canvg';
 import jsonsql from 'jsonsql';
 
-const MB_SCALEDENOMINATOR_3857 = ['559082264.0287178', '279541132.0143589', '139770566.0071794', '69885283.00358972',
-  '34942641.50179486', '17471320.75089743', '8735660.375448715', '4367830.1877224357', '2183915.093862179', '1091957.546931089',
-  '545978.7734655447', '272989.7734655447', '272989.3867327723', '136494.6933663862', '68247.34668319309', '34123.67334159654',
-  '17061.83667079827', '8530.918335399136', '4265.459167699568', '2132.729583849784'
+const MB_SCALEDENOMINATOR_3857 = [
+  '559082264.0287178',
+  '279541132.0143589',
+  '139770566.0071794',
+  '69885283.00358972',
+  '34942641.50179486',
+  '17471320.75089743',
+  '8735660.375448715',
+  '4367830.1877224357',
+  '2183915.093862179',
+  '1091957.546931089',
+  '545978.7734655447',
+  '272989.7734655447',
+  '272989.3867327723',
+  '136494.6933663862',
+  '68247.34668319309',
+  '34123.67334159654',
+  '17061.83667079827',
+  '8530.918335399136',
+  '4265.459167699568',
+  '2132.729583849784'
 ];
 const MB_SCALEDENOMINATOR_4326 = [
-  '5.590822640287176E8', '2.795411320143588E8', '1.397705660071794E8', '6.98852830035897E7', '3.494264150179485E7',
-  '1.7471320750897426E7', '8735660.375448713', '4367830.187724357', '2183915.0938621783', '1091957.5469310891',
-  '545978.7734655446', '272989.3867327723', '136494.69336638614', '68247.34668319307', '34123.673341596535',
-  '17061.836670798268', '8530.918335399134'
+  '5.590822640287176E8',
+  '2.795411320143588E8',
+  '1.397705660071794E8',
+  '6.98852830035897E7',
+  '3.494264150179485E7',
+  '1.7471320750897426E7',
+  '8735660.375448713',
+  '4367830.187724357',
+  '2183915.0938621783',
+  '1091957.5469310891',
+  '545978.7734655446',
+  '272989.3867327723',
+  '136494.69336638614',
+  '68247.34668319307',
+  '34123.673341596535',
+  '17061.836670798268',
+  '8530.918335399134'
 ];
 const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
 
@@ -124,7 +155,7 @@ export default class WebMapViewModel extends WidgetViewModel {
     }
     let mapUrl = this.server + 'web/maps/' + this.mapId + '/map';
     if (this.credentialValue && this.credentialKey) {
-      mapUrl += ('?' + this.credentialKey + '=' + this.credentialValue);
+      mapUrl += '?' + this.credentialKey + '=' + this.credentialValue;
     }
     let filter = 'getUrlResource.json?url=';
     if (this.excludePortalProxyUrl && this.server.indexOf(filter) > -1) {
@@ -148,7 +179,7 @@ export default class WebMapViewModel extends WidgetViewModel {
     let layers = mapInfo.layers;
     // 获取 label 图层字体类型
     if (layers && layers.length > 0) {
-      layers.forEach((layer) => {
+      layers.forEach(layer => {
         layer.labelStyle && fonts.push(layer.labelStyle.fontFamily);
       }, this);
     }
@@ -164,7 +195,7 @@ export default class WebMapViewModel extends WidgetViewModel {
     }
     if (this.baseProjection === 'EPSG:3857') {
       center = this._unproject([center.x, center.y]);
-    };
+    }
     center = new mapboxgl.LngLat(center.x, center.y);
     // 初始化 map
     this.map = new mapboxgl.Map({
@@ -172,10 +203,10 @@ export default class WebMapViewModel extends WidgetViewModel {
       center: center,
       zoom: zoom,
       style: {
-        'version': 8,
-        'sources': {},
+        version: 8,
+        sources: {},
         // "glyphs": 'http://iclsvr.supermap.io/iserver/services/map-beijing/rest/maps/beijingMap/tileFeature/sdffonts/{fontstack}/{range}.pbf',
-        'layers': []
+        layers: []
       },
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
@@ -199,46 +230,49 @@ export default class WebMapViewModel extends WidgetViewModel {
     let mapUrl = url.indexOf('.json') === -1 ? `${url}.json` : url;
     SuperMap.FetchRequest.get(mapUrl, null, {
       withCredentials: this.withCredentials
-    }).then(response => {
-      return response.json();
-    }).then(mapInfo => {
-      this.baseProjection = mapInfo.projection;
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(mapInfo => {
+        this.baseProjection = mapInfo.projection;
 
-      // 存储地图的名称以及描述等信息，返回给用户
-      this.mapParams = {
-        title: mapInfo.title,
-        description: mapInfo.description
-      };
-      const projectionMap = {
-        'EPSG:4490': 'EPSG:4490',
-        'EPSG:4214': 'EPSG:4214',
-        'EPSG:4610': 'EPSG:4610',
-        'EPSG:3857': 'EPSG:3857',
-        'EPSG:4326': 'EPSG:4326'
-      }; // 坐标系异常处理
-      if (this.baseProjection in projectionMap) {
-        this._createMap(mapInfo, this.mapSetting);
-        let layers = mapInfo.layers;
-        this.map.on('load', () => {
-          this._addBaseMap(mapInfo);
+        // 存储地图的名称以及描述等信息，返回给用户
+        this.mapParams = {
+          title: mapInfo.title,
+          description: mapInfo.description
+        };
+        const projectionMap = {
+          'EPSG:4490': 'EPSG:4490',
+          'EPSG:4214': 'EPSG:4214',
+          'EPSG:4610': 'EPSG:4610',
+          'EPSG:3857': 'EPSG:3857',
+          'EPSG:4326': 'EPSG:4326'
+        }; // 坐标系异常处理
+        if (this.baseProjection in projectionMap) {
+          this._createMap(mapInfo, this.mapSetting);
+          let layers = mapInfo.layers;
+          this.map.on('load', () => {
+            this._addBaseMap(mapInfo);
 
-          if (!layers || layers.length === 0) {
-            this._sendMapToUser(0, 0);
-          } else {
-            this._addLayers(layers);
-          }
-        });
-      } else {
-        throw Error('不支持当前地图的坐标系');
-      }
-    }).catch(error => {
-      /**
-       * @event WebMapViewModel#getmapinfofailed
-       * @description 获取地图信息失败。
-       * @property {Object} error - 失败原因。
-       */
-      this.fire('getmapinfofailed', { 'error': error });
-    });
+            if (!layers || layers.length === 0) {
+              this._sendMapToUser(0, 0);
+            } else {
+              this._addLayers(layers);
+            }
+          });
+        } else {
+          throw Error('不支持当前地图的坐标系');
+        }
+      })
+      .catch(error => {
+        /**
+         * @event WebMapViewModel#getmapinfofailed
+         * @description 获取地图信息失败。
+         * @property {Object} error - 失败原因。
+         */
+        this.fire('getmapinfofailed', { error: error });
+      });
   }
 
   /**
@@ -260,15 +294,19 @@ export default class WebMapViewModel extends WidgetViewModel {
   _createBaseLayer(mapInfo) {
     let layerInfo = mapInfo.baseLayer || mapInfo;
     let layerType = layerInfo.layerType; // 底图和rest地图兼容
-    if (layerType.indexOf('TIANDITU_VEC') > -1 || layerType.indexOf('TIANDITU_IMG') > -1 ||
-      layerType.indexOf('TIANDITU_TER') > -1) {
+    if (
+      layerType.indexOf('TIANDITU_VEC') > -1 ||
+      layerType.indexOf('TIANDITU_IMG') > -1 ||
+      layerType.indexOf('TIANDITU_TER') > -1
+    ) {
       layerType = layerType.substr(0, 12);
     }
     let mapUrls = {
       CLOUD: 'http://t2.supermapcloud.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
       CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp?x={x}&y={y}&z={z}',
       OSM: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      GOOGLE: 'http://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0',
+      GOOGLE:
+        'http://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0',
       GOOGLE_CN: 'https://mt{0-3}.google.cn/vt/lyrs=m&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
       JAPAN_STD: 'http://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
       JAPAN_PALE: 'http://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
@@ -357,56 +395,68 @@ export default class WebMapViewModel extends WidgetViewModel {
       withoutFormatSuffix: true
     };
 
-    SuperMap.FetchRequest.get(url, null, options).then((response) => {
-      return response.text();
-    }).then((capabilitiesText) => {
-      let converts = convert || window.convert;
-      let tileMatrixSet = JSON.parse(converts.xml2json(capabilitiesText, {
-        compact: true,
-        spaces: 4
-      })).Capabilities.Contents.TileMatrixSet;
-      for (let i = 0; i < tileMatrixSet.length; i++) {
-        if (tileMatrixSet[i]['ows:Identifier'] && tileMatrixSet[i]['ows:Identifier']['_text'] === mapInfo.tileMatrixSet) {
-          if (DEFAULT_WELLKNOWNSCALESET.includes(tileMatrixSet[i]['WellKnownScaleSet']['_text'])) {
-            isMatched = true;
-          } else if (tileMatrixSet[i]['WellKnownScaleSet'] && tileMatrixSet[i]['WellKnownScaleSet']['_text'] === 'Custom') {
-            let matchedScaleDenominator = [];
-            // 坐标系判断
-            let defaultCRSScaleDenominators = this.map.crs === 'EPSG:3857' ? MB_SCALEDENOMINATOR_3857 : MB_SCALEDENOMINATOR_4326;
-
-            for (let j = 0, len = defaultCRSScaleDenominators.length; j < len; j++) {
-              if (!tileMatrixSet[i].TileMatrix[j]) {
-                break;
-              }
-              if (defaultCRSScaleDenominators[j] !== tileMatrixSet[i].TileMatrix[j]['ScaleDenominator']['_text']) {
-                break;
-              }
-              matchedScaleDenominator.push(defaultCRSScaleDenominators[j]);
-            }
-            matchMaxZoom = matchedScaleDenominator.length - 1;
-            if (matchedScaleDenominator.length !== 0) {
+    SuperMap.FetchRequest.get(url, null, options)
+      .then(response => {
+        return response.text();
+      })
+      .then(capabilitiesText => {
+        let converts = convert || window.convert;
+        let tileMatrixSet = JSON.parse(
+          converts.xml2json(capabilitiesText, {
+            compact: true,
+            spaces: 4
+          })
+        ).Capabilities.Contents.TileMatrixSet;
+        for (let i = 0; i < tileMatrixSet.length; i++) {
+          if (
+            tileMatrixSet[i]['ows:Identifier'] &&
+            tileMatrixSet[i]['ows:Identifier']['_text'] === mapInfo.tileMatrixSet
+          ) {
+            if (DEFAULT_WELLKNOWNSCALESET.includes(tileMatrixSet[i]['WellKnownScaleSet']['_text'])) {
               isMatched = true;
+            } else if (
+              tileMatrixSet[i]['WellKnownScaleSet'] &&
+              tileMatrixSet[i]['WellKnownScaleSet']['_text'] === 'Custom'
+            ) {
+              let matchedScaleDenominator = [];
+              // 坐标系判断
+              let defaultCRSScaleDenominators =
+                this.map.crs === 'EPSG:3857' ? MB_SCALEDENOMINATOR_3857 : MB_SCALEDENOMINATOR_4326;
+
+              for (let j = 0, len = defaultCRSScaleDenominators.length; j < len; j++) {
+                if (!tileMatrixSet[i].TileMatrix[j]) {
+                  break;
+                }
+                if (defaultCRSScaleDenominators[j] !== tileMatrixSet[i].TileMatrix[j]['ScaleDenominator']['_text']) {
+                  break;
+                }
+                matchedScaleDenominator.push(defaultCRSScaleDenominators[j]);
+              }
+              matchMaxZoom = matchedScaleDenominator.length - 1;
+              if (matchedScaleDenominator.length !== 0) {
+                isMatched = true;
+              } else {
+                throw Error('不支持传入的 TileMatrixSet');
+              }
             } else {
               throw Error('不支持传入的 TileMatrixSet');
             }
-          } else {
-            throw Error('不支持传入的 TileMatrixSet');
           }
         }
-      }
-      matchedCallback(isMatched, matchMaxZoom);
-    }).catch((error) => {
-      /**
-       * @event WebMapViewModel#getwmtsinfofailed
-       * @description 获取 WMTS 图层信息失败。
-       * @property {Object} error - 失败原因。
-       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
-       */
-      this.fire('getwmtsinfofailed', {
-        'error': error,
-        'map': this.map
+        matchedCallback(isMatched, matchMaxZoom);
+      })
+      .catch(error => {
+        /**
+         * @event WebMapViewModel#getwmtsinfofailed
+         * @description 获取 WMTS 图层信息失败。
+         * @property {Object} error - 失败原因。
+         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+         */
+        this.fire('getwmtsinfofailed', {
+          error: error,
+          map: this.map
+        });
       });
-    });
   }
 
   /**
@@ -415,7 +465,8 @@ export default class WebMapViewModel extends WidgetViewModel {
    * @description 创建 Bing 图层。
    */
   _createBingLayer(layerName) {
-    let bingUrl = 'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
+    let bingUrl =
+      'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
     this.addLayer([bingUrl], 'bing-layers-' + layerName);
   }
 
@@ -501,18 +552,20 @@ export default class WebMapViewModel extends WidgetViewModel {
     let layerStyle = {};
     layerStyle.style = this._transformStyleToMapBoxGl(style, type);
     layerStyle.layout = {
-      'visibility': visible
+      visibility: visible
     };
     let source = {
-      'type': 'geojson',
-      'data': {
-        'type': 'FeatureCollection',
-        'features': features
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: features
       }
     };
     this._addOverlayToMap(type, source, layerID, layerStyle);
     // 如果面有边框
-    type === 'POLYGON' && style.strokeColor && this._addStrokeLineForPoly(style, source, layerID + '-strokeLine', visible);
+    type === 'POLYGON' &&
+      style.strokeColor &&
+      this._addStrokeLineForPoly(style, source, layerID + '-strokeLine', visible);
   }
 
   /**
@@ -530,9 +583,9 @@ export default class WebMapViewModel extends WidgetViewModel {
     let url = 'http://t0.tianditu.com/{layer}_{proj}/wmts?';
     let labelUrl = url;
     let layerLabelMap = {
-      'vec': 'cva',
-      'ter': 'cta',
-      'img': 'cia'
+      vec: 'cva',
+      ter: 'cta',
+      img: 'cia'
     };
     let tilematrixSet = this.baseProjection === 'EPSG:4326' ? 'c' : 'w';
     let options = {
@@ -608,7 +661,8 @@ export default class WebMapViewModel extends WidgetViewModel {
     // 存储地图上所有的图层对象
     this.layers = layers;
 
-    let features; let layerAdded = 0;
+    let features;
+    let layerAdded = 0;
     let len = layers.length;
     layers.forEach((layer, index) => {
       if ((layer.dataSource && layer.dataSource.serverId) || layer.layerType === 'MARKER') {
@@ -616,109 +670,136 @@ export default class WebMapViewModel extends WidgetViewModel {
         let serverId = layer.dataSource ? layer.dataSource.serverId : layer.serverId;
         let url = `${this.server}web/datas/${serverId}/content.json?pageSize=9999999&currentPage=1`;
         // 获取图层数据
-        serverId && SuperMap.FetchRequest.get(url, null, {
-          withCredentials: this.withCredentials
-        }).then(response => {
-          return response.json();
-        }).then(data => {
-          if (data.succeed === false) {
-            // 请求失败
-            layerAdded++;
-            this._sendMapToUser(layerAdded, len);
-            /**
-             * @event WebMapViewModel#getlayerdatasourcefailed
-             * @description 获取图层数据失败。
-             * @property {Object} error - 失败原因。
-             * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
-             */
-            this.fire('getlayerdatasourcefailed', {
-              'error': data.error,
-              'layer': layer,
-              'map': this.map
+        serverId &&
+          SuperMap.FetchRequest.get(url, null, {
+            withCredentials: this.withCredentials
+          })
+            .then(response => {
+              return response.json();
+            })
+            .then(data => {
+              if (data.succeed === false) {
+                // 请求失败
+                layerAdded++;
+                this._sendMapToUser(layerAdded, len);
+                /**
+                 * @event WebMapViewModel#getlayerdatasourcefailed
+                 * @description 获取图层数据失败。
+                 * @property {Object} error - 失败原因。
+                 * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+                 */
+                this.fire('getlayerdatasourcefailed', {
+                  error: data.error,
+                  layer: layer,
+                  map: this.map
+                });
+                return;
+              }
+              if (data.type) {
+                if (data.type === 'JSON' || data.type === 'GEOJSON') {
+                  data.content = JSON.parse(data.content.trim());
+                  features = this._formatGeoJSON(data.content, layer);
+                } else if (data.type === 'EXCEL' || data.type === 'CSV') {
+                  features = this._excelData2Feature(data.content, layer);
+                }
+                this._addLayer(layer, features, index);
+                layerAdded++;
+                this._sendMapToUser(layerAdded, len);
+              }
+            })
+            .catch(error => {
+              layerAdded++;
+              this._sendMapToUser(layerAdded, len);
+              this.fire('getlayerdatasourcefailed', {
+                error: error,
+                layer: layer,
+                map: this.map
+              });
             });
-            return;
-          }
-          if (data.type) {
-            if (data.type === 'JSON' || data.type === 'GEOJSON') {
-              data.content = JSON.parse(data.content.trim());
-              features = this._formatGeoJSON(data.content, layer);
-            } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-              features = this._excelData2Feature(data.content, layer);
-            }
-            this._addLayer(layer, features, index);
-            layerAdded++;
-            this._sendMapToUser(layerAdded, len);
-          }
-        }).catch((error) => {
-          layerAdded++;
-          this._sendMapToUser(layerAdded, len);
-          this.fire('getlayerdatasourcefailed', {
-            'error': error,
-            'layer': layer,
-            'map': this.map
-          });
-        });
-      } else if (layer.layerType === 'SUPERMAP_REST' || layer.layerType === 'TILE' || layer.layerType === 'WMS' || layer.layerType === 'WMTS') {
+      } else if (
+        layer.layerType === 'SUPERMAP_REST' ||
+        layer.layerType === 'TILE' ||
+        layer.layerType === 'WMS' ||
+        layer.layerType === 'WMTS'
+      ) {
         this._createBaseLayer(layer);
         layerAdded++;
         this._sendMapToUser(layerAdded, len);
       } else if (layer.dataSource && layer.dataSource.type === 'REST_DATA') {
         let dataSource = layer.dataSource;
         // 从restData获取数据
-        this._getFeatureBySQL(dataSource.url, [dataSource.dataSourseName || layer.name], (result) => {
-          features = this._parseGeoJsonData2Feature({
-            allDatas: {
-              features: result.result.features.features
-            },
-            fileCode: layer.projection,
-            featureProjection: this.baseProjection
-          });
+        this._getFeatureBySQL(
+          dataSource.url,
+          [dataSource.dataSourseName || layer.name],
+          result => {
+            features = this._parseGeoJsonData2Feature({
+              allDatas: {
+                features: result.result.features.features
+              },
+              fileCode: layer.projection,
+              featureProjection: this.baseProjection
+            });
 
-          this._addLayer(layer, features, index);
-          layerAdded++;
-          this._sendMapToUser(layerAdded, len);
-        }, (err) => {
-          layerAdded++;
-          this._sendMapToUser(layerAdded, len);
-          this.fire('getlayerdatasourcefailed', {
-            'error': err,
-            'layer': layer,
-            'map': this.map
-          });
-        });
-      } else if (layer.dataSource && layer.dataSource.type === 'REST_MAP' && layer.dataSource.url) {
-        this._queryFeatureBySQL(layer.dataSource.url, layer.dataSource.layerName, 'smid=1', null, null, (result) => {
-          let recordsets = result && result.result.recordsets;
-          let recordset = recordsets && recordsets[0];
-          let attributes = recordset.fields;
-          if (recordset && attributes) {
-            let fileterAttrs = [];
-            for (let i in attributes) {
-              let value = attributes[i];
-              if (value.indexOf('Sm') !== 0 || value === 'SmID') {
-                fileterAttrs.push(value);
-              }
-            }
-            this._getFeatures(fileterAttrs, layer, (features) => {
-              this._addLayer(layer, features, index);
-              layerAdded++;
-              this._sendMapToUser(layerAdded, len);
-            }, err => {
-              layerAdded++;
-              this.fire('getlayerdatasourcefailed', {
-                'error': err,
-                'layer': layer,
-                'map': this.map
-              });
+            this._addLayer(layer, features, index);
+            layerAdded++;
+            this._sendMapToUser(layerAdded, len);
+          },
+          err => {
+            layerAdded++;
+            this._sendMapToUser(layerAdded, len);
+            this.fire('getlayerdatasourcefailed', {
+              error: err,
+              layer: layer,
+              map: this.map
             });
           }
-        }, (err) => {
-          this.fire('getlayerdatasourcefailed', {
-            'error': err,
-            'layer': layer,
-            'map': this.map
-          });
-        });
+        );
+      } else if (layer.dataSource && layer.dataSource.type === 'REST_MAP' && layer.dataSource.url) {
+        this._queryFeatureBySQL(
+          layer.dataSource.url,
+          layer.dataSource.layerName,
+          'smid=1',
+          null,
+          null,
+          result => {
+            let recordsets = result && result.result.recordsets;
+            let recordset = recordsets && recordsets[0];
+            let attributes = recordset.fields;
+            if (recordset && attributes) {
+              let fileterAttrs = [];
+              for (let i in attributes) {
+                let value = attributes[i];
+                if (value.indexOf('Sm') !== 0 || value === 'SmID') {
+                  fileterAttrs.push(value);
+                }
+              }
+              this._getFeatures(
+                fileterAttrs,
+                layer,
+                features => {
+                  this._addLayer(layer, features, index);
+                  layerAdded++;
+                  this._sendMapToUser(layerAdded, len);
+                },
+                err => {
+                  layerAdded++;
+                  this.fire('getlayerdatasourcefailed', {
+                    error: err,
+                    layer: layer,
+                    map: this.map
+                  });
+                }
+              );
+            }
+          },
+          err => {
+            this.fire('getlayerdatasourcefailed', {
+              error: err,
+              layer: layer,
+              map: this.map
+            });
+          }
+        );
       }
     }, this);
   }
@@ -733,21 +814,32 @@ export default class WebMapViewModel extends WidgetViewModel {
     let source = layerInfo.dataSource;
     // 示例数据
     let fileCode = layerInfo.projection;
-    this._queryFeatureBySQL(source.url, source.layerName, null, fields, null, (result) => {
-      let recordsets = result.result.recordsets[0];
-      let features = recordsets.features.features;
+    this._queryFeatureBySQL(
+      source.url,
+      source.layerName,
+      null,
+      fields,
+      null,
+      result => {
+        let recordsets = result.result.recordsets[0];
+        let features = recordsets.features.features;
 
-      let featuresObj = this._parseGeoJsonData2Feature({
-        allDatas: {
-          features
-        },
-        fileCode: fileCode,
-        featureProjection: this.baseProjection
-      }, 'JSON');
-      resolve(featuresObj);
-    }, (err) => {
-      reject(err);
-    });
+        let featuresObj = this._parseGeoJsonData2Feature(
+          {
+            allDatas: {
+              features
+            },
+            fileCode: fileCode,
+            featureProjection: this.baseProjection
+          },
+          'JSON'
+        );
+        resolve(featuresObj);
+      },
+      err => {
+        reject(err);
+      }
+    );
   }
 
   /**
@@ -764,7 +856,7 @@ export default class WebMapViewModel extends WidgetViewModel {
     // mbgl 目前不能处理 geojson 复杂面情况
     // mbgl isssue https://github.com/mapbox/mapbox-gl-js/issues/7023
     if (features[0] && features[0].geometry.type === 'Polygon') {
-      features = this._handleMultyPolygon(features);
+      features = handleMultyPolygon(features);
     }
 
     if (layerInfo.style && layerInfo.filterCondition) {
@@ -811,24 +903,24 @@ export default class WebMapViewModel extends WidgetViewModel {
     let labelStyle = layerInfo.labelStyle;
 
     this.map.addLayer({
-      'id': layerInfo.layerID + 'label',
-      'type': 'symbol',
-      'source': {
-        'type': 'geojson',
-        'data': {
-          'type': 'FeatureCollection',
-          'features': features
+      id: layerInfo.layerID + 'label',
+      type: 'symbol',
+      source: {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: features
         }
       },
-      'paint': {
+      paint: {
         'text-color': labelStyle.fill
       },
-      'layout': {
+      layout: {
         'text-field': `{${labelStyle.labelField}}`,
         'text-size': parseFloat(labelStyle.fontSize) || 12,
         'text-offset': labelStyle.offsetX ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0] : [0, -1.5],
         'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
-        'visibility': layerInfo.visible
+        visibility: layerInfo.visible
       }
     });
   }
@@ -850,28 +942,28 @@ export default class WebMapViewModel extends WidgetViewModel {
     let text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
     let layerID = layerInfo.layerID;
     this.map.addSource(layerID + '-source', {
-      'type': 'geojson',
-      'data': {
-        'type': 'FeatureCollection',
-        'features': []
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: []
       }
     });
     this.map.addLayer({
-      'id': layerID,
-      'type': 'symbol',
-      'source': layerID + '-source',
-      'paint': {
+      id: layerID,
+      type: 'symbol',
+      source: layerID + '-source',
+      paint: {
         'text-color': style.fillColor
       },
-      'layout': {
+      layout: {
         'text-field': text,
         'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
-        'visibility': layerInfo.visible
+        visibility: layerInfo.visible
       }
     });
     this.map.getSource(layerID + '-source').setData({
-      'type': 'FeatureCollection',
-      'features': features
+      type: 'FeatureCollection',
+      features: features
     });
   }
 
@@ -887,10 +979,10 @@ export default class WebMapViewModel extends WidgetViewModel {
     let layerStyle = {};
     let layerID = layerInfo.layerID;
     let source = {
-      'type': 'geojson',
-      'data': {
-        'type': 'FeatureCollection',
-        'features': features
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: features
       }
     };
 
@@ -908,13 +1000,13 @@ export default class WebMapViewModel extends WidgetViewModel {
         let iconSize = Number.parseFloat((style.radius / image.height).toFixed(2)) * 2;
         this.map.addImage('imageIcon', image);
         this.map.addLayer({
-          'id': layerID,
-          'type': 'symbol',
-          'source': source,
-          'layout': {
+          id: layerID,
+          type: 'symbol',
+          source: source,
+          layout: {
             'icon-image': 'imageIcon',
             'icon-size': iconSize,
-            'visibility': layerInfo.visible
+            visibility: layerInfo.visible
           }
         });
       });
@@ -924,30 +1016,35 @@ export default class WebMapViewModel extends WidgetViewModel {
         this.svgDiv = document.createElement('div');
         document.body.appendChild(this.svgDiv);
       }
-      this._getCanvasFromSVG(svgUrl, this.svgDiv, (canvas) => {
+      this._getCanvasFromSVG(svgUrl, this.svgDiv, canvas => {
         let imgUrl = canvas.toDataURL('img/png');
-        imgUrl && this.map.loadImage(imgUrl, (error, image) => {
-          if (error) {
-            console.log(error);
-          }
-          let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2));
-          this.map.addImage('imageIcon', image);
-          this.map.addLayer({
-            'id': layerID,
-            'type': 'symbol',
-            'source': source,
-            'layout': {
-              'icon-image': 'imageIcon',
-              'icon-size': iconSize,
-              'visibility': layerInfo.visible
-            }
-          });
-        }, this);
+        imgUrl &&
+          this.map.loadImage(
+            imgUrl,
+            (error, image) => {
+              if (error) {
+                console.log(error);
+              }
+              let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2));
+              this.map.addImage('imageIcon', image);
+              this.map.addLayer({
+                id: layerID,
+                type: 'symbol',
+                source: source,
+                layout: {
+                  'icon-image': 'imageIcon',
+                  'icon-size': iconSize,
+                  visibility: layerInfo.visible
+                }
+              });
+            },
+            this
+          );
       });
     } else {
       layerStyle.style = this._transformStyleToMapBoxGl(style, layerInfo.featureType);
       layerStyle.layout = {
-        'visibility': layerInfo.visible
+        visibility: layerInfo.visible
       };
       this._addOverlayToMap('POINT', source, layerID, layerStyle);
     }
@@ -974,8 +1071,8 @@ export default class WebMapViewModel extends WidgetViewModel {
     let expression = ['match', ['get', 'index']];
     let layerID = layerInfo.layerID;
 
-    features.forEach((row) => {
-      styleGroup.forEach((item) => {
+    features.forEach(row => {
+      styleGroup.forEach(item => {
         if (item.value === row.properties[themeField]) {
           expression.push(row.properties['index'], item.color);
         }
@@ -989,17 +1086,19 @@ export default class WebMapViewModel extends WidgetViewModel {
     layerStyle.style = this._transformStyleToMapBoxGl(style, type, expression);
     let visible = layerInfo.visible;
     layerStyle.layout = {
-      'visibility': visible
+      visibility: visible
     };
     let source = {
-      'type': 'geojson',
-      'data': {
-        'type': 'FeatureCollection',
-        'features': features
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: features
       }
     };
     this._addOverlayToMap(type, source, layerID, layerStyle);
-    type === 'POLYGON' && style.strokeColor && this._addStrokeLineForPoly(style, source, layerID + '-strokeLine', visible);
+    type === 'POLYGON' &&
+      style.strokeColor &&
+      this._addStrokeLineForPoly(style, source, layerID + '-strokeLine', visible);
   }
 
   /**
@@ -1089,92 +1188,110 @@ export default class WebMapViewModel extends WidgetViewModel {
    * @param {Array.<GeoJSON>} features - feature。
    */
   _createMarkerLayer(layerInfo, features) {
-    features && features.forEach((feature) => {
-      let geomType = feature.geometry.type.toUpperCase();
-      let defaultStyle = feature.dv_v5_markerStyle;
-      if (geomType === 'POINT' && defaultStyle.text) {
-        // 说明是文字的feature类型
-        geomType = 'TEXT';
-      }
-      let featureInfo = this.setFeatureInfo(feature);
-      feature.properties['useStyle'] = defaultStyle;
-      feature.properties['featureInfo'] = featureInfo;
-      if (geomType === 'POINT' && defaultStyle.src &&
-        (defaultStyle.src.indexOf('http://') === -1 && defaultStyle.src.indexOf('https://') === -1)) {
-        // 说明地址不完整
-        defaultStyle.src = this.server + defaultStyle.src;
-      }
-
-      let source = {
-        'type': 'geojson',
-        'data': feature
-      };
-      let index = feature.properties.index;
-      let layerID = geomType + '-' + index;
-      // image-marker
-      geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') <= -1 && this.map.loadImage(defaultStyle.src, (error, image) => {
-        if (error) {
-          console.log(error);
+    features &&
+      features.forEach(feature => {
+        let geomType = feature.geometry.type.toUpperCase();
+        let defaultStyle = feature.dv_v5_markerStyle;
+        if (geomType === 'POINT' && defaultStyle.text) {
+          // 说明是文字的feature类型
+          geomType = 'TEXT';
         }
-        this.map.addImage(index + '', image);
-        this.map.addLayer({
-          'id': layerID,
-          'type': 'symbol',
-          'source': source,
-          'layout': {
-            'icon-image': index + '',
-            'icon-size': defaultStyle.scale,
-            'visibility': layerInfo.visible
-          }
-        });
-      }, this);
-
-      // svg-marker
-      if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') > -1) {
-        if (!this.svgDiv) {
-          this.svgDiv = document.createElement('div');
-          document.body.appendChild(this.svgDiv);
+        let featureInfo = this.setFeatureInfo(feature);
+        feature.properties['useStyle'] = defaultStyle;
+        feature.properties['featureInfo'] = featureInfo;
+        if (
+          geomType === 'POINT' &&
+          defaultStyle.src &&
+          (defaultStyle.src.indexOf('http://') === -1 && defaultStyle.src.indexOf('https://') === -1)
+        ) {
+          // 说明地址不完整
+          defaultStyle.src = this.server + defaultStyle.src;
         }
-        this._getCanvasFromSVG(defaultStyle.src, this.svgDiv, (canvas) => {
-          let imgUrl = canvas.toDataURL('img/png');
-          imgUrl && this.map.loadImage(imgUrl, (error, image) => {
-            if (error) {
-              console.log(error);
-            }
-            this.map.addImage(index + '', image);
-            this.map.addLayer({
-              'id': layerID,
-              'type': 'symbol',
-              'source': source,
-              'layout': {
-                'icon-image': index + '',
-                'icon-size': defaultStyle.scale,
-                'visibility': layerInfo.visible
-              }
-            });
-          }, this);
-        });
-      }
-      // point-line-polygon-marker
-      if (!defaultStyle.src) {
-        let layeStyle = {
-          'layout': {}
+
+        let source = {
+          type: 'geojson',
+          data: feature
         };
-        if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
-          geomType = 'LINE';
-          layeStyle.layout = {
-            'line-cap': defaultStyle.lineCap
-          };
+        let index = feature.properties.index;
+        let layerID = geomType + '-' + index;
+        // image-marker
+        geomType === 'POINT' &&
+          defaultStyle.src &&
+          defaultStyle.src.indexOf('svg') <= -1 &&
+          this.map.loadImage(
+            defaultStyle.src,
+            (error, image) => {
+              if (error) {
+                console.log(error);
+              }
+              this.map.addImage(index + '', image);
+              this.map.addLayer({
+                id: layerID,
+                type: 'symbol',
+                source: source,
+                layout: {
+                  'icon-image': index + '',
+                  'icon-size': defaultStyle.scale,
+                  visibility: layerInfo.visible
+                }
+              });
+            },
+            this
+          );
+
+        // svg-marker
+        if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') > -1) {
+          if (!this.svgDiv) {
+            this.svgDiv = document.createElement('div');
+            document.body.appendChild(this.svgDiv);
+          }
+          this._getCanvasFromSVG(defaultStyle.src, this.svgDiv, canvas => {
+            let imgUrl = canvas.toDataURL('img/png');
+            imgUrl &&
+              this.map.loadImage(
+                imgUrl,
+                (error, image) => {
+                  if (error) {
+                    console.log(error);
+                  }
+                  this.map.addImage(index + '', image);
+                  this.map.addLayer({
+                    id: layerID,
+                    type: 'symbol',
+                    source: source,
+                    layout: {
+                      'icon-image': index + '',
+                      'icon-size': defaultStyle.scale,
+                      visibility: layerInfo.visible
+                    }
+                  });
+                },
+                this
+              );
+          });
         }
-        let visible = layerInfo.visible;
-        layeStyle.layout.visibility = visible;
-        // get style
-        layeStyle.style = this._transformStyleToMapBoxGl(defaultStyle, geomType);
-        this._addOverlayToMap(geomType, source, layerID, layeStyle);
-        // 若面有边框
-        geomType === 'POLYGON' && defaultStyle.strokeColor && this._addStrokeLineForPoly(defaultStyle, source, layerID + '-strokeLine', visible);
-      }
-    }, this);
+        // point-line-polygon-marker
+        if (!defaultStyle.src) {
+          let layeStyle = {
+            layout: {}
+          };
+          if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
+            geomType = 'LINE';
+            layeStyle.layout = {
+              'line-cap': defaultStyle.lineCap
+            };
+          }
+          let visible = layerInfo.visible;
+          layeStyle.layout.visibility = visible;
+          // get style
+          layeStyle.style = this._transformStyleToMapBoxGl(defaultStyle, geomType);
+          this._addOverlayToMap(geomType, source, layerID, layeStyle);
+          // 若面有边框
+          geomType === 'POLYGON' &&
+            defaultStyle.strokeColor &&
+            this._addStrokeLineForPoly(defaultStyle, source, layerID + '-strokeLine', visible);
+        }
+      }, this);
   }
 
   /**
@@ -1224,9 +1341,7 @@ export default class WebMapViewModel extends WidgetViewModel {
       this._changeWeight(features, style.weight);
     }
 
-    let color = ['interpolate', ['linear'],
-      ['heatmap-density']
-    ];
+    let color = ['interpolate', ['linear'], ['heatmap-density']];
 
     let length = layerOption.gradient.length;
 
@@ -1245,11 +1360,8 @@ export default class WebMapViewModel extends WidgetViewModel {
       'heatmap-color': color,
       'heatmap-radius': style.radius + 15,
       'heatmap-intensity': {
-        'base': 1,
-        'stops': [
-          [0, 0.8],
-          [22, 1]
-        ]
+        base: 1,
+        stops: [[0, 0.8], [22, 1]]
       }
     };
 
@@ -1260,22 +1372,20 @@ export default class WebMapViewModel extends WidgetViewModel {
       });
       let max = SuperMap.ArrayStatistic.getMax(weight);
       let min = SuperMap.ArrayStatistic.getMin(weight);
-      paint['heatmap-weight'] = ['interpolate', ['linear'],
-        ['get', 'weight'], min, 0, max, 1
-      ];
+      paint['heatmap-weight'] = ['interpolate', ['linear'], ['get', 'weight'], min, 0, max, 1];
     }
 
     this.map.addLayer({
-      'id': layerInfo.layerID,
-      'type': 'heatmap',
-      'source': {
-        'type': 'geojson',
-        'data': {
-          'type': 'FeatureCollection',
-          'features': features
+      id: layerInfo.layerID,
+      type: 'heatmap',
+      source: {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: features
         }
       },
-      'paint': paint
+      paint: paint
     });
   }
 
@@ -1290,7 +1400,7 @@ export default class WebMapViewModel extends WidgetViewModel {
     this.fieldMaxValue = {};
     this._getMaxValue(features, weightFeild);
     let maxValue = this.fieldMaxValue[weightFeild];
-    features.forEach((feature) => {
+    features.forEach(feature => {
       let attributes = feature.properties;
       let value = attributes[weightFeild];
       feature['weight'] = value / maxValue;
@@ -1311,7 +1421,7 @@ export default class WebMapViewModel extends WidgetViewModel {
     if (this.fieldMaxValue[field]) {
       return;
     }
-    features.forEach((feature) => {
+    features.forEach(feature => {
       // 收集当前权重字段对应的所有值
       attributes = feature.properties;
       attributes && parseFloat(attributes[field]) && values.push(parseFloat(attributes[field]));
@@ -1334,23 +1444,24 @@ export default class WebMapViewModel extends WidgetViewModel {
     features = this._getFiterFeatures(layerInfo.filterCondition, features);
 
     let source = {
-      'type': 'geojson',
-      'data': {
-        'type': 'FeatureCollection',
-        'features': features
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: features
       }
     };
 
     // 获取 expression
     let expression = ['match', ['get', 'index']];
-    features.forEach((row) => {
+    features.forEach(row => {
       let tartget = parseFloat(row.properties[fieldName]);
       for (let i = 0; i < styleGroups.length; i++) {
         if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
           expression.push(row.properties['index'], styleGroups[i].color);
           // return;
         }
-      } !tartget && expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
+      }
+      !tartget && expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
     }, this);
     expression.push('rgba(0, 0, 0, 0)');
 
@@ -1359,7 +1470,7 @@ export default class WebMapViewModel extends WidgetViewModel {
 
     // 获取样式
     let layerStyle = {
-      'layout': {}
+      layout: {}
     };
     if (featureType === 'LINE' && style.lineCap) {
       layerStyle.layout = {
@@ -1373,7 +1484,9 @@ export default class WebMapViewModel extends WidgetViewModel {
     let layerID = layerInfo.layerID;
     this._addOverlayToMap(featureType, source, layerID, layerStyle);
     // 如果面有边框
-    featureType === 'POLYGON' && style.strokeColor && this._addStrokeLineForPoly(style, source, layerID + '-strokeline', visible);
+    featureType === 'POLYGON' &&
+      style.strokeColor &&
+      this._addStrokeLineForPoly(style, source, layerID + '-strokeline', visible);
   }
 
   /**
@@ -1416,7 +1529,12 @@ export default class WebMapViewModel extends WidgetViewModel {
    * @param {String} filterString - 过滤条件。
    */
   _replaceFilterCharacter(filterString) {
-    filterString = filterString.replace(/=/g, '==').replace(/AND|and/g, '&&').replace(/or|OR/g, '||').replace(/<==/g, '<=').replace(/>==/g, '>=');
+    filterString = filterString
+      .replace(/=/g, '==')
+      .replace(/AND|and/g, '&&')
+      .replace(/or|OR/g, '||')
+      .replace(/<==/g, '<=')
+      .replace(/>==/g, '>=');
     return filterString;
   }
 
@@ -1438,11 +1556,13 @@ export default class WebMapViewModel extends WidgetViewModel {
     let fieldName = themeSetting.themeField;
     let segmentCount = themeSetting.segmentCount;
 
-    features.forEach((feature) => {
+    features.forEach(feature => {
       attributes = feature.properties || feature.get('Properties');
       if (attributes) {
         // 过滤掉非数值的数据
-        attributes[fieldName] && mapboxgl.supermap.Util.isNumber(attributes[fieldName]) && values.push(parseFloat(attributes[fieldName]));
+        attributes[fieldName] &&
+          mapboxgl.supermap.Util.isNumber(attributes[fieldName]) &&
+          values.push(parseFloat(attributes[fieldName]));
       } else if (feature.get(fieldName) && mapboxgl.supermap.Util.isNumber(feature.get(fieldName))) {
         feature.get(fieldName) && values.push(parseFloat(feature.get(fieldName)));
       }
@@ -1586,12 +1706,12 @@ export default class WebMapViewModel extends WidgetViewModel {
       attributes['index'] = i + '';
       // 目前csv 只支持处理点，所以先生成点类型的 geojson
       let feature = {
-        'type': 'Feature',
-        'geometry': {
-          'type': 'Point',
-          'coordinates': [x, y]
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [x, y]
         },
-        'properties': attributes
+        properties: attributes
       };
       features.push(feature);
     }
@@ -1623,9 +1743,9 @@ export default class WebMapViewModel extends WidgetViewModel {
         this.sourceListModel.addSourceStyle(layerID, this.legendList[layerID]);
       }
       this.fire('addlayerssucceeded', {
-        'map': this.map,
-        'mapparams': this.mapParams,
-        'layers': this.layers
+        map: this.map,
+        mapparams: this.mapParams,
+        layers: this.layers
       });
     }
   }
@@ -1647,7 +1767,7 @@ export default class WebMapViewModel extends WidgetViewModel {
       phi += dphi;
     }
     return {
-      x: point[0] * d / r,
+      x: (point[0] * d) / r,
       y: phi * d
     };
   }
@@ -1662,9 +1782,9 @@ export default class WebMapViewModel extends WidgetViewModel {
   _getParamString(obj, existingUrl, uppercase) {
     var params = [];
     for (var i in obj) {
-      params.push((uppercase ? i.toUpperCase() : i) + '=' + (obj[i]));
+      params.push((uppercase ? i.toUpperCase() : i) + '=' + obj[i]);
     }
-    return ((!existingUrl || existingUrl.indexOf('?') === -1) ? '?' : '&') + params.join('&');
+    return (!existingUrl || existingUrl.indexOf('?') === -1 ? '?' : '&') + params.join('&');
   }
 
   /**
@@ -1674,9 +1794,17 @@ export default class WebMapViewModel extends WidgetViewModel {
    */
   _isXField(data) {
     var lowerdata = data.toLowerCase();
-    return (lowerdata === 'x' || lowerdata === 'smx' ||
-      lowerdata === 'jd' || lowerdata === '经度' || lowerdata === '东经' || lowerdata === 'longitude' ||
-      lowerdata === 'lot' || lowerdata === 'lon' || lowerdata === 'lng');
+    return (
+      lowerdata === 'x' ||
+      lowerdata === 'smx' ||
+      lowerdata === 'jd' ||
+      lowerdata === '经度' ||
+      lowerdata === '东经' ||
+      lowerdata === 'longitude' ||
+      lowerdata === 'lot' ||
+      lowerdata === 'lon' ||
+      lowerdata === 'lng'
+    );
   }
 
   /**
@@ -1686,9 +1814,15 @@ export default class WebMapViewModel extends WidgetViewModel {
    */
   _isYField(data) {
     var lowerdata = data.toLowerCase();
-    return (lowerdata === 'y' || lowerdata === 'smy' ||
-      lowerdata === 'wd' || lowerdata === '纬度' || lowerdata === '北纬' ||
-      lowerdata === 'latitude' || lowerdata === 'lat');
+    return (
+      lowerdata === 'y' ||
+      lowerdata === 'smy' ||
+      lowerdata === 'wd' ||
+      lowerdata === '纬度' ||
+      lowerdata === '北纬' ||
+      lowerdata === 'latitude' ||
+      lowerdata === 'lat'
+    );
   }
 
   /**
@@ -1703,24 +1837,24 @@ export default class WebMapViewModel extends WidgetViewModel {
     let transTable = {};
     if ((style.type === 'POINT' || style.type === 'BASIC_POINT' || type === 'POINT') && type !== 'LINE') {
       transTable = {
-        'fillColor': 'circle-color',
-        'strokeWidth': 'circle-stroke-width',
-        'fillOpacity': 'circle-opacity',
-        'radius': 'circle-radius',
-        'strokeColor': 'circle-stroke-color',
-        'strokeOpacity': 'circle-stroke-opacity'
+        fillColor: 'circle-color',
+        strokeWidth: 'circle-stroke-width',
+        fillOpacity: 'circle-opacity',
+        radius: 'circle-radius',
+        strokeColor: 'circle-stroke-color',
+        strokeOpacity: 'circle-stroke-opacity'
       };
     } else if (type === 'LINE') {
       transTable = {
-        'strokeWidth': 'line-width',
-        'strokeColor': 'line-color',
-        'strokeOpacity': 'line-opacity'
+        strokeWidth: 'line-width',
+        strokeColor: 'line-color',
+        strokeOpacity: 'line-opacity'
       };
     } else if (type === 'POLYGON') {
       transTable = {
-        'fillColor': 'fill-color',
-        'fillOpacity': 'fill-opacity',
-        'strokeColor': 'fill-outline-color'
+        fillColor: 'fill-color',
+        fillOpacity: 'fill-opacity',
+        strokeColor: 'fill-outline-color'
       };
     }
 
@@ -1821,33 +1955,33 @@ export default class WebMapViewModel extends WidgetViewModel {
    */
   _addOverlayToMap(type, source, layerID, layerStyle) {
     let mbglTypeMap = {
-      'POINT': 'circle',
-      'LINE': 'line',
-      'POLYGON': 'fill'
+      POINT: 'circle',
+      LINE: 'line',
+      POLYGON: 'fill'
     };
     type = mbglTypeMap[type];
     if (type === 'circle' || type === 'line' || type === 'fill') {
       this.map.addLayer({
-        'id': layerID,
-        'type': type,
-        'source': source,
-        'paint': layerStyle.style,
-        'layout': layerStyle.layout || {}
+        id: layerID,
+        type: type,
+        source: source,
+        paint: layerStyle.style,
+        layout: layerStyle.layout || {}
       });
     }
   }
 
   _addBaselayer(url, layerID, minzoom = 0, maxzoom = 22) {
     this.map.addLayer({
-      'id': layerID,
-      'type': 'raster',
-      'source': {
-        'type': 'raster',
-        'tiles': url,
-        'tileSize': 256
+      id: layerID,
+      type: 'raster',
+      source: {
+        type: 'raster',
+        tiles: url,
+        tileSize: 256
       },
-      'minzoom': minzoom,
-      'maxzoom': maxzoom
+      minzoom: minzoom,
+      maxzoom: maxzoom
     });
   }
   /**
@@ -1860,7 +1994,7 @@ export default class WebMapViewModel extends WidgetViewModel {
     let lineStyle = {};
     lineStyle.style = this._transformStyleToMapBoxGl(style, 'LINE');
     lineStyle.layout = {
-      'visibility': visible
+      visibility: visible
     };
     this._addOverlayToMap('LINE', source, layerID, lineStyle);
   }
@@ -1928,7 +2062,18 @@ export default class WebMapViewModel extends WidgetViewModel {
    * @function WebMapViewModel.prototype._queryFeatureBySQL
    * @description 通过 sql 方式查询数据。
    */
-  _queryFeatureBySQL(url, layerName, attributeFilter, fields, epsgCode, processCompleted, processFaild, startRecord, recordLength, onlyAttribute) {
+  _queryFeatureBySQL(
+    url,
+    layerName,
+    attributeFilter,
+    fields,
+    epsgCode,
+    processCompleted,
+    processFaild,
+    startRecord,
+    recordLength,
+    onlyAttribute
+  ) {
     var queryParam, queryBySQLParams, queryBySQLService;
     queryParam = new SuperMap.FilterParameter({
       name: layerName,
@@ -1957,37 +2102,14 @@ export default class WebMapViewModel extends WidgetViewModel {
     });
   }
 
-  /**
-   * @private
-   * @function WebMapViewModel.prototype._handleMultyPolygon
-   * @description 处理复杂面情况
-   */
-  _handleMultyPolygon(features) {
-    features.forEach(feature => {
-      if (feature.geometry.type !== 'Polygon') {
-        return;
-      }
-      let coords = feature.geometry.coordinates;
-      if (coords.length > 1) {
-        let coordinates = [];
-        coords.forEach(coord => {
-          coordinates.push([coord]);
-        });
-        feature.geometry.coordinates = coordinates;
-        feature.geometry.type = 'MultiPolygon';
-      }
-    });
-    return features;
-  }
-
   _initLegendConfigInfo(layerInfo, style) {
     if (!this.legendList[layerInfo.layerID]) {
       this.legendList[layerInfo.layerID] = {
-        'layerType': layerInfo.layerType,
-        'featureType': layerInfo.featureType,
-        'layerId': layerInfo.layerID,
-        'themeField': layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themeField,
-        'styleGroup': style
+        layerType: layerInfo.layerType,
+        featureType: layerInfo.featureType,
+        layerId: layerInfo.layerID,
+        themeField: layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themeField,
+        styleGroup: style
       };
     }
   }

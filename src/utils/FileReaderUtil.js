@@ -1,6 +1,8 @@
 import XLSX from 'xlsx';
 import { FileTypes } from '../view/commontypes/FileTypes';
 import { open } from 'shapefile';
+import { handleMultyPolygon } from './geometry-util';
+
 const FileReaderUtil = {
   rABS: typeof FileReader !== 'undefined' && FileReader.prototype && FileReader.prototype.readAsBinaryString,
   rABF: typeof FileReader !== 'undefined' && FileReader.prototype && FileReader.prototype.readAsArrayBuffer,
@@ -114,7 +116,6 @@ const FileReaderUtil = {
     if (type === 'EXCEL' || type === 'CSV') {
       geojson = this.processExcelDataToGeoJson(data);
       geojson = Array.isArray(geojson) ? this.toGeoJSON(geojson) : geojson;
-      success && success.call(context, geojson);
     } else if (type === 'JSON' || type === 'GEOJSON' || type === 'SHP' || type === 'ZIP') {
       let result = data;
       result = Array.isArray(result) ? this.toGeoJSON(result) : result;
@@ -129,13 +130,20 @@ const FileReaderUtil = {
         geojson = result;
       } else {
         // 不支持数据
-
         failed && failed.call(context, '不支持的数据');
+        return;
       }
-      success && success.call(context, geojson);
     } else {
       failed && failed.call(context, '数据格式化错误');
+      return;
     }
+    if (geojson.features[0]) {
+      let geometryType = geojson.features[0].geometry.type;
+      if (geometryType === 'Polygon' || geometryType === 'MultiPolygon') {
+        geojson.features = handleMultyPolygon(geojson.features);
+      }
+    }
+    success && success.call(context, geojson);
   },
 
   toGeoJSON(features) {
