@@ -1,6 +1,7 @@
 import WidgetViewModel from './WidgetViewModel';
 import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
+import '../../static/libs/deckgl/deck.gl.min';
 
 export default class DeckglLayerViewModel extends WidgetViewModel {
   constructor(map, deckglProps) {
