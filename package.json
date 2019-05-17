@@ -12,7 +12,7 @@
         "lint:fix": "eslint --fix --ext .js,.vue src",
         "build": "node build/build.js && node build/build.js -p",
         "e2e": "node test/e2e/runner.js --test ",
-        "build-docs": "jsdoc -c ./build/jsdocs/docs.json -R ./build/jsdocs/index.md"
+        "docs": "jsdoc -c ./build/jsdocs/docs.json -R ./build/jsdocs/index.md"
     },
     "dependencies": {
         "@mapbox/mapbox-gl-draw": "^1.1.1",
@@ -27,6 +27,7 @@
         "element-ui": "^2.4.1",
         "js-cookie": "^2.2.0",
         "jsonsql": "0.2.5",
+        "leaflet-pixi-overlay": "^1.8.1",
         "lodash.clonedeep": "^4.5.0",
         "lodash.tonumber": "^4.0.3",
         "lodash.uniqueid": "^4.0.1",

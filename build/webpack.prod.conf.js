@@ -1,80 +1,87 @@
-"use strict";
-const path = require("path");
-const utils = require("./utils");
-const webpack = require("webpack");
-const config = require("../config");
-const merge = require("webpack-merge");
-const baseWebpackConfig = require("./webpack.base.conf");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const VueLoaderPlugin = require("vue-loader/lib/plugin");
-const OptimizeCSSAssetsPlugin = require("optimize-css-assets-webpack-plugin");
-const CopyWebpackPlugin = require("copy-webpack-plugin");
-const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
-const outputFileName = "iclient9-mapboxgl-widgets-vue";
-const env = process.env.NODE_ENV === "testing" ? require("../config/test.env") : require("../config/prod.env");
-const isMinify = process.argv.includes("-p");
+'use strict';
+const path = require('path');
+const utils = require('./utils');
+const webpack = require('webpack');
+const config = require('../config');
+const merge = require('webpack-merge');
+const baseWebpackConfig = require('./webpack.base.conf');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const VueLoaderPlugin = require('vue-loader/lib/plugin');
+const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const outputFileName = 'iclient9-mapboxgl-widgets-vue';
+const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : require('../config/prod.env');
+const isMinify = process.argv.includes('-p');
 const pkg = require('../package.json');
 const webpackConfig = merge(baseWebpackConfig, {
-  mode: "production",
+  mode: 'production',
   module: {
     rules: utils.styleLoaders({
-      //sourceMap: config.build.productionSourceMap,
+      // sourceMap: config.build.productionSourceMap,
       extract: true
     })
   },
-  //devtool: config.build.productionSourceMap ? config.build.devtool : false,
+  // devtool: config.build.productionSourceMap ? config.build.devtool : false,
   entry: {
-    app: ["./src/index.js"]
+    app: ['./src/index.js']
   },
   output: {
-    path: path.resolve(__dirname, "../dist"),
+    path: path.resolve(__dirname, '../dist'),
     filename: isMinify ? `${outputFileName}.min.js` : `${outputFileName}.js`,
-    libraryTarget: "umd",
-    libraryExport: "default",
-    library: ["SuperMap", "Widgets"]
+    libraryTarget: 'umd',
+    libraryExport: 'default',
+    library: ['SuperMap', 'Widgets']
   },
   externals: [
     {
       vue: {
-        root: "Vue",
-        commonjs: "vue",
-        commonjs2: "vue",
-        amd: "vue"
+        root: 'Vue',
+        commonjs: 'vue',
+        commonjs2: 'vue',
+        amd: 'vue'
       },
-      echarts: "echarts",
-      "echarts-liquidfill": "echarts-liquidfill",
-      mapv: "mapv",
-      "@mapbox/mapbox-gl-draw": {
-        root: "MapboxDraw",
-        commonjs: "@mapbox/mapbox-gl-draw",
-        commonjs2: "@mapbox/mapbox-gl-draw",
-        amd: "@mapbox/mapbox-gl-draw"
+      echarts: 'echarts',
+      xlsx: {
+        root: 'XLSX',
+        commonjs: '@mapbox/mapbox-gl-draw',
+        commonjs2: '@mapbox/mapbox-gl-draw',
+        amd: '@mapbox/mapbox-gl-draw'
+      },
+      shapefile: 'shapefile',
+      'echarts-liquidfill': 'echarts-liquidfill',
+      mapv: 'mapv',
+      '@mapbox/mapbox-gl-draw': {
+        root: 'MapboxDraw',
+        commonjs: '@mapbox/mapbox-gl-draw',
+        commonjs2: '@mapbox/mapbox-gl-draw',
+        amd: '@mapbox/mapbox-gl-draw'
       }
     },
-    ///\/static\/libs\//,
+    /// \/static\/libs\//,
     function(context, request, callback) {
       if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
         return callback(null, {
-          root: "mapboxgl",
-          commonjs: "./static/libs/mapboxgl/mapbox-gl-enhance.js",
-          commonjs2: "./static/libs/mapboxgl/mapbox-gl-enhance.js",
-          amd: "./static/libs/mapboxgl/mapbox-gl-enhance.js"
+          root: 'mapboxgl',
+          commonjs: './static/libs/mapboxgl/mapbox-gl-enhance.js',
+          commonjs2: './static/libs/mapboxgl/mapbox-gl-enhance.js',
+          amd: './static/libs/mapboxgl/mapbox-gl-enhance.js'
         });
       }
       if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
         return callback(null, {
-          root: "DeckGL",
-          commonjs: "./static/libs/deckgl/deck.gl.min.js",
-          commonjs2: "./static/libs/deckgl/deck.gl.min.js",
-          amd: "./static/libs/deckgl/deck.gl.min.js"
+          root: 'DeckGL',
+          commonjs: './static/libs/deckgl/deck.gl.min.js',
+          commonjs2: './static/libs/deckgl/deck.gl.min.js',
+          amd: './static/libs/deckgl/deck.gl.min.js'
         });
       }
       if (/\/static\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
         return callback(null, {
-          root: "EchartsLayer",
-          commonjs: "./static/libs/echarts-layer/EchartsLayer.js",
-          commonjs2: "./static/libs/echarts-layer/EchartsLayer.js",
-          amd: "./static/libs/echarts-layer/EchartsLayer.js"
+          root: 'EchartsLayer',
+          commonjs: './static/libs/echarts-layer/EchartsLayer.js',
+          commonjs2: './static/libs/echarts-layer/EchartsLayer.js',
+          amd: './static/libs/echarts-layer/EchartsLayer.js'
         });
       }
       // if (/\/static\/libs\/geostats\/geostats/.test(request)) {
@@ -87,10 +94,10 @@ const webpackConfig = merge(baseWebpackConfig, {
       // }
       if (/\/static\/libs\/iclient-mapboxgl\/iclient9-mapboxgl/.test(request)) {
         return callback(null, {
-          root: "SuperMap",
-          commonjs: "./static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js",
-          commonjs2: "./static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js",
-          amd: "./static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js"
+          root: 'SuperMap',
+          commonjs: './static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
+          commonjs2: './static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
+          amd: './static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js'
         });
       }
       callback();
@@ -102,7 +109,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   plugins: [
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
-      "process.env": env
+      'process.env': env
     }),
     new VueLoaderPlugin(),
     // extract css into its own file
@@ -115,7 +122,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     Copyright© 2000 - 2019 SuperMap Software Co.Ltd
     license: ${pkg.license}
     version: v${pkg.version}
-   `),
+   `)
   ]
 });
 
@@ -152,7 +159,7 @@ if (isMinify) {
 // }
 
 if (config.build.bundleAnalyzerReport) {
-  const BundleAnalyzerPlugin = require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
+  const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
   webpackConfig.plugins.push(new BundleAnalyzerPlugin());
 }
 
