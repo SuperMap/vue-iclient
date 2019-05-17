@@ -12,9 +12,10 @@
     </tr>
     </thead>
     <tbody>
-    <% this.objectProps={} %>
+    <% // TODO 待优化 %>
+    <% this.objectProps={optionProps:{}} %>
     <% props.forEach(function(prop) { 
-      if(prop.name.split(".").length >= 2){
+      if(prop.name.split(".").length === 2){
         var name = prop.name.split(".")[0];
         if(!this.objectProps[name]){
           this.objectProps[name]=[];
@@ -23,7 +24,16 @@
           this.objectProps[name].push(prop)
         }
       }
-    }) %>
+      if(prop.name.split(".").length > 2){
+        var name = prop.name.split(".").slice(0,2).join('.');
+        if(!this.objectProps.optionProps[name]){
+          this.objectProps.optionProps[name]=[];
+          this.objectProps.optionProps[name].push(prop);
+        }else{
+          this.objectProps.optionProps[name].push(prop)
+        }
+      }
+    },this) %>
     <% props.forEach(function(prop) { %>
       <% if(prop.name.split(".").length < 2) { %>
         <tr>
@@ -47,8 +57,31 @@
                         <td ><code><%- prop.name.split(".")[1] %></code></td>
                         <td class='type'><%- renderType(prop.type) %></td>
                         <td><%- typeof prop.defaultvalue === 'undefined' ? '-' : `<code>${prop.defaultvalue}</code>` %></td>
-                        <td class='description last'><span class="optional"><%- prop.optional ? '可选' : '' %></span><%- typeof prop.description === 'undefined' ? '-' : prop.description %></td>
-                    </tr>
+                        <td class='description last'><span class="optional"><%- prop.optional ? '可选' : '' %></span><%- typeof prop.description === 'undefined' ? '-' : prop.description %>
+                        <% if(this.objectProps.optionProps[prop.name] && this.objectProps.optionProps[prop.name].length>0) { %>
+                          <table class="params" data-jsdoc-vuejs="table-props">
+                            <thead>
+                            <tr>
+                                <th width='110px'>Name</th>
+                                <th width='110px'>Type</th>
+                                <th width='110px'>Default value</th>
+                                <th class="last"> Description</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                              <% this.objectProps.optionProps[prop.name].forEach(function(prop) { %>
+                              <tr>
+                                  <td ><code><%- prop.name.split(".")[2] %></code></td>
+                                  <td class='type'><%- renderType(prop.type) %></td>
+                                  <td><%- typeof prop.defaultvalue === 'undefined' ? '-' : `<code>${prop.defaultvalue}</code>` %></td>
+                                  <td class='description last'><span class="optional"><%- prop.optional ? '可选' : '' %></span><%- typeof prop.description === 'undefined' ? '-' : prop.description %></td>
+                              </tr>
+                              <% }) %>
+                            </tbody>
+                          </table>
+                        <% } %>
+                        </td>
+                      </tr>
                     <% }) %>
                   </tbody>
                 </table>

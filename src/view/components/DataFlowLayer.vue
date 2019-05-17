@@ -2,6 +2,7 @@
 import MapGetter from '../mixin/map-getter';
 import Layer from '../mixin/layer';
 import DataFlowLayerViewModel from '../../viewmodel/DataFlowLayerViewModel';
+import widgets from '../../index.js';
 
 /**
  * @module DataFlowLayer
@@ -11,8 +12,11 @@ import DataFlowLayerViewModel from '../../viewmodel/DataFlowLayerViewModel';
  * @vue-prop {Object} [options] - 可选参数。
  * @vue-prop {String} [options.layerId] - 图层 ID。
  * @vue-prop {GeoJSONObject} [options.geometry] - 指定几何范围，该范围内的要素才能被订阅。
- * @vue-prop {Object} [options.excludeField] - 排除字段。
- * @vue-prop {Object} [options.styleOptions] - style OPtion。
+ * @vue-prop {String} [options.excludeField] - 排除字段。
+ * @vue-prop {Object} [options.layerStyle] - 图层样式配置。
+ * @vue-prop {widgets.commontypes.LineStyle} [options.layerStyle.line] - 线图层样式配置。
+ * @vue-prop {widgets.commontypes.CircleStyle} [options.layerStyle.circle] - 点图层样式配置。
+ * @vue-prop {widgets.commontypes.FillStyle} [options.layerStyle.fill] - 面图层样式配置。
  */
 
 export default {
@@ -31,15 +35,27 @@ export default {
     },
     excludeField: {
       type: Object
+    },
+    layerStyle: {
+      type: Object,
+      default() {
+        return {
+          line: new widgets.commontypes.LineStyle(),
+          circle: new widgets.commontypes.CircleStyle(),
+          fill: new widgets.commontypes.FillStyle()
+        };
+      }
     }
   },
   loaded() {
-    const { layerId, geometry, excludeField, registerToken } = this.$props;
-    this.dataFlowLayerViewModel = new DataFlowLayerViewModel(
-      this.map,
-      this.dataFlowUrl,
-      { layerId, geometry, excludeField, registerToken }
-    );
+    const { layerId, geometry, excludeField, registerToken, layerStyle } = this.$props;
+    this.dataFlowLayerViewModel = new DataFlowLayerViewModel(this.map, this.dataFlowUrl, {
+      layerId,
+      geometry,
+      excludeField,
+      registerToken,
+      layerStyle
+    });
     this.registerEvents();
   },
   methods: {

@@ -12,7 +12,7 @@ function callHook(vm, hook, map) {
 /**
  * Description
  * @mixin mapGetter
- * @desc 监听 WebMap 和 Map load 事件。
+ * @desc 监听 WebMap 和 Map 的 load 事件。
  * @category Mixin
  * @vue-computed {String} getMapTarget - 获取当前 Map 的 target。
  * @vue-event loaded - 组件加载渲染完成之后触发。

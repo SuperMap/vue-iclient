@@ -2,6 +2,7 @@
 import MapGetter from '../mixin/map-getter';
 import Layer from '../mixin/layer';
 import HeatmapLayerViewModel from '../../viewmodel/HeatmapLayerViewModel';
+import widgets from '../../index.js';
 export default {
   name: 'SmHeatmapLayer',
   mixins: [MapGetter, Layer],
@@ -10,12 +11,18 @@ export default {
       type: Object,
       required: true
     },
-    paint: {
-      type: Object
+    heatMapStyle: {
+      type: Object,
+      default() {
+        return new widgets.commontypes.HeatMapStyle();
+      }
     }
   },
   loaded() {
-    this.viewModel = new HeatmapLayerViewModel(this.map, this.data, this.paint, { layerId: this.layerId });
+    this.viewModel = new HeatmapLayerViewModel(this.map, this.data, {
+      layerId: this.layerId,
+      heatMapStyle: this.heatMapStyle
+    });
   },
   render() {}
 };

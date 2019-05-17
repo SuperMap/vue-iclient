@@ -9,7 +9,7 @@ import WidgetViewModel from './WidgetViewModel';
  */
 
 export default class HeatMapLayerViewModel extends WidgetViewModel {
-  constructor(map, data, paint, options) {
+  constructor(map, data, options) {
     super();
 
     if (!map) {
@@ -18,9 +18,10 @@ export default class HeatMapLayerViewModel extends WidgetViewModel {
     options = options || {};
     this.map = map;
     this.data = data;
-    this.paint = paint;
-
     this.layerId = options.layerId || 'heatmap' + new Date().getTime();
+    let heatMapStyle = options.heatMapStyle;
+    this.paint = heatMapStyle && heatMapStyle.paint;
+    this.layout = heatMapStyle && heatMapStyle.layout;
     this._initializeHeatMapLayer();
   }
 
@@ -56,7 +57,8 @@ export default class HeatMapLayerViewModel extends WidgetViewModel {
         ],
         'heatmap-radius': ['interpolate', ['linear'], ['zoom'], 0, 2, 9, 20],
         'heatmap-opacity': ['interpolate', ['linear'], ['zoom'], 7, 1, 9, 0]
-      }
+      },
+      layout: this.layout || {}
     });
 
     this.fire('heatmaplayeraddsucceeded', { map: this.map });

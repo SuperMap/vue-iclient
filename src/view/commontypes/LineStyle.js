@@ -1,3 +1,10 @@
+/**
+ * @class LineStyle
+ * @category BaseTypes Style
+ * @classdesc 线图层样式类。
+ * @param {mapboxgl.LayersLine} paint - MapboxGL 线图层 Paint 配置。
+ * @param {mapboxgl.LayersLine} layout - MapboxGL 线图层 Layout 配置。
+ */
 export default class LineStyle {
   constructor(paint = {}, layout = {}) {
     this.layout = {

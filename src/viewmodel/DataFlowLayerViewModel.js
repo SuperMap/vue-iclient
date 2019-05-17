@@ -10,8 +10,9 @@ import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
  * @param {String} dataFlowUrl - 数据流服务地址。
  * @param {Object} [options] - 可选参数。
  * @param {String} [options.layerId] - 图层 ID。
+ * @param {Object} [options.layerStyle] - 指定图层样式。
  * @param {GeoJSONObject} [options.geometry] - 指定几何范围，该范围内的要素才能被订阅。
- * @param {Object} [options.excludeField] - 排除字段。
+ * @param {String} [options.excludeField] - 排除字段。
  * @param {Object} [options.styleOptions] - style OPtion
  * @fires DataFlowLayerViewModel#subscribesucceeded
  * @fires DataFlowLayerViewModel#subscribefailed
@@ -33,6 +34,7 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
     this.map = map;
     this.dataFlowUrl = dataFlowUrl;
     this.sourceID = options.layerId || 'dataFlow' + new Date().getTime();
+    this.layerStyle = options.layerStyle || {};
 
     if (this.options.registerToken) {
       SuperMap.SecurityManager.registerToken(this.dataFlowUrl, this.options.registerToken);
@@ -100,6 +102,7 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
     }
     let feature = msg.featureResult;
     let type = feature.geometry.type;
+    let layerStyle = this.layerStyle;
     if (!this.map.getSource(this.sourceID)) {
       this.map.addSource(this.sourceID, {
         type: 'geojson',
@@ -112,31 +115,34 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
         this.map.addLayer({
           id: this.sourceID,
           type: 'circle',
-          paint: {
+          paint: (layerStyle.circle && layerStyle.circle.paint) || {
             'circle-radius': 6,
             'circle-color': 'red'
           },
+          layout: (layerStyle.circle && layerStyle.circle.layout) || {},
           source: this.sourceID
         });
       } else if (type === 'MultiPolygon' || type === 'Polygon') {
         this.map.addLayer({
           id: this.sourceID,
           type: 'fill',
-          paint: {
+          paint: (layerStyle.fill && layerStyle.fill.paint) || {
             'fill-color': 'red',
             'fill-opacity': 1
           },
+          layout: (layerStyle.fill && layerStyle.fill.layout) || {},
           source: this.sourceID
         });
       } else if (type === 'LineString' || type === 'Line' || type === 'MultiLineString') {
         this.map.addLayer({
           id: this.sourceID,
           type: 'line',
-          paint: {
+          paint: (layerStyle.line && layerStyle.line.paint) || {
             'line-width': 5,
             'line-color': 'red',
             'line-opacity': 1
           },
+          layout: (layerStyle.line && layerStyle.line.layout) || {},
           source: this.sourceID
         });
       }
@@ -156,11 +162,11 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
       this.map.getSource(this.sourceID).setData({ type: 'FeatureCollection', features });
 
       /**
-         * @event DataFlowLayerViewModel#dataUpdated
-         * @description 数据更新成功后触发。
-         * @property {GeoJSONObject} data - 更新的数据。
-         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
-         */
+       * @event DataFlowLayerViewModel#dataUpdated
+       * @description 数据更新成功后触发。
+       * @property {GeoJSONObject} data - 更新的数据。
+       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+       */
       this.fire('dataupdated', { data: feature, map: this.map });
     }
   }

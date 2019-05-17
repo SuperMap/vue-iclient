@@ -1,6 +1,10 @@
+/**
+ * @class WidgetModel
+ * @description 数据模型基类。
+ * @category Model
+ */
 class WidgetModel {
-  constructor() {
-    ;
-  }
+  /* eslint-disable */
+  constructor() {}
 }
 export default WidgetModel;

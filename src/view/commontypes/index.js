@@ -5,6 +5,7 @@ import RestMapParameter from './RestMapParameter';
 import CircleStyle from './CircleStyle';
 import FillStyle from './FillStyle';
 import LineStyle from './LineStyle';
+import HeatMapStyle from './HeatMapStyle';
 
 export { AddressMatchParameter };
 export { iPortalDataParameter };
@@ -13,3 +14,4 @@ export { RestMapParameter };
 export { CircleStyle };
 export { FillStyle };
 export { LineStyle };
+export { HeatMapStyle };

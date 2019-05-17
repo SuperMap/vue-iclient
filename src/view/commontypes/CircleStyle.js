@@ -1,3 +1,10 @@
+/**
+ * @class CircleStyle
+ * @category BaseTypes Style
+ * @classdesc 点图层样式类。
+ * @param {mapboxgl.LayersCircle} paint - MapboxGL 点图层 Paint 配置。
+ * @param {mapboxgl.LayersCircle} layout - MapboxGL 点图层 Layout 配置。
+ */
 export default class CircleStyle {
   constructor(paint = {}, layout = {}) {
     this.layout = {
