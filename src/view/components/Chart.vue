@@ -34,7 +34,7 @@ import { chartThemeUtil } from '../../style/theme/chart';
 import UniqueId from 'lodash.uniqueid';
 
 /**
- * @module SmChart
+ * @module Chart
  * @category Components
  * @desc Chart微件。对接 iPortal/Online 地图类。目前支持地图坐标系包括：'EPSG:3857'，'EPSG:4326'，'EPSG:4490'，'EPSG:4214'，'EPSG:4610'。
  * @vue-prop {Object} initOptions - 用来初始化 ECharts 实例。
@@ -231,17 +231,17 @@ export default {
   },
   // echarts所有静态方法
   connect(group) {
-    ECharts.connect(group);
+    ECharts && ECharts.connect(group);
   },
   disconnect(group) {
-    ECharts.disConnect(group);
+    ECharts && ECharts.disConnect(group);
   },
   registerMap(mapName, geoJSON, specialAreas) {
-    ECharts.registerMap(mapName, geoJSON, specialAreas);
+    ECharts && ECharts.registerMap(mapName, geoJSON, specialAreas);
   },
   registerTheme(name, theme) {
-    ECharts.registerTheme(name, theme);
+    ECharts && ECharts.registerTheme(name, theme);
   },
-  graphic: ECharts.graphic
+  graphic: ECharts && ECharts.graphic
 };
 </script>

@@ -45,9 +45,9 @@ const webpackConfig = merge(baseWebpackConfig, {
       'vue-echarts': 'VueECharts',
       xlsx: {
         root: 'XLSX',
-        commonjs: '@mapbox/mapbox-gl-draw',
-        commonjs2: '@mapbox/mapbox-gl-draw',
-        amd: '@mapbox/mapbox-gl-draw'
+        commonjs: 'xlsx',
+        commonjs2: 'xlsx',
+        amd: 'xlsx'
       },
       shapefile: 'shapefile',
       'echarts-liquidfill': 'echarts-liquidfill',
