@@ -1,15 +1,17 @@
 export default class FillStyle {
-  constructor(options = {}) {
+  constructor(paint = {}, layout = {}) {
     this.layout = {
-      'visibility': options['visibility'] || 'visible'
+      visibility: 'visible'
     };
     this.paint = {
-      'fill-opacity': options['fill-opacity'] || 1,
-      'fill-color': options['fill-color'] || '#000',
-      'fill-translate': options['fill-translate'] || [0, 0],
-      'fill-antialias': options['fill-antialias'] || true,
-      'fill-outline-color': options['fill-outline-color'] || '#000',
-      'fill-translate-anchor': options['fill-translate-anchor'] || 'map'
+      'fill-opacity': 1,
+      'fill-color': '#000',
+      'fill-translate': [0, 0],
+      'fill-antialias': true,
+      'fill-outline-color': '#000',
+      'fill-translate-anchor': 'map'
     };
+    Object.assign(this.paint, paint);
+    Object.assign(this.layout, layout);
   }
 }
