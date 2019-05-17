@@ -69,7 +69,7 @@ function build(nav,navOrder,level){
 }
 function buildLi(obj){
     ?>
-     <li class="item" data-name="<?js= obj.longname.indexOf('module')>=0 ? obj.longname.split(':')[1]:obj.longname ?>">
+     <li class="item" data-name="<?js= obj.longname.indexOf('module')>=0 ? obj.longname.split(':').join('-'):obj.longname ?>">
             <span class="title">
                 <?js= self.linkto(obj.longname, obj.longname.indexOf('module')>=0 ? obj.longname.split(':')[1]:obj.longname) ?>
             </span>
