@@ -37,8 +37,9 @@ devConfigPromise.then(devConfig => {
     }
     const i = opts.indexOf('--test')
     if (i > -1) {
-      opts[i + 1] = 'test/e2e/specs/' + opts[i + 1] + '.js'
+      opts[i] = opts[i]+'  test/e2e/specs/'+ '*.js' 
     }
+
     const spawn = require('cross-spawn')
     const runner = spawn('./node_modules/.bin/nightwatch', opts, { stdio: 'inherit' })
 

@@ -1,7 +1,7 @@
 import { config } from '@vue/test-utils';
 import SmMap from '@/view/components/Map';
 import SmQuery from '@/view/components/Query';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount, createLocalVue, shallowMount } from '@vue/test-utils';
 import iPortalDataParameter from "@/view/commontypes/iPortalDataParameter";
 import mapEvent from '@/view/commontypes/mapEvent';
 import RestDataParameter from "@/view/commontypes/RestDataParameter";
@@ -28,15 +28,15 @@ describe('query', () => {
         mapEvent.$options.webMapCache = {};
         query = null;
         mapWrapper = null;
-        // jest.restoreAllMocks();
+        jest.restoreAllMocks();
 
     })
 
     afterEach(() => {
-        if (query) {
+        if (query && query !== "undefined") {
             query.destroy();
         }
-        if (mapWrapper) {
+        if (mapWrapper && mapWrapper !== "undefined") {
             mapWrapper.destroy();
         }
 
@@ -61,12 +61,15 @@ describe('query', () => {
             try {
                 expect(query.vm.getMapTarget).toBe('map');
                 const spyAddlayer = jest.spyOn(mapWrapper.vm.map, 'addLayer');
-                query.find('.sm-query__query-button').trigger('click');
+                query.find('.sm-widget-query__job-info-header').trigger('click');
                 query.vm.$nextTick(() => {
-                    expect(spyAddlayer).toBeCalled();
-                    spyAddlayer.mockReset();
-                    spyAddlayer.mockRestore();
-                    done()
+                    query.find('.sm-widget-query__el-button').trigger('click');
+                    query.vm.$nextTick(() => {
+                        expect(spyAddlayer).toBeCalled();
+                        spyAddlayer.mockReset();
+                        spyAddlayer.mockRestore();
+                        done()
+                    })
                 })
             } catch (exception) {
                 console.log("query" + exception.name + ":" + exception.message);
@@ -90,17 +93,14 @@ describe('query', () => {
                         attributeFilter: "SmID>0",
                     })
                 ]
-            }
+            },
+            sync: false
         });
-
+        const spyAddlayer = jest.spyOn(mapWrapper.vm.map, "addLayer");
+        const spyGetBounds = jest.spyOn(mapWrapper.vm.map, "getBounds");
         query.vm.$on("loaded", () => {
             try {
                 expect(query.vm.getMapTarget).toBe('map');
-                // query.vm.value = "currentMapBounds"
-                query.setData({ value: 'currentMapBounds' });
-                const spyAddlayer = jest.spyOn(mapWrapper.vm.map, "addLayer");
-                const spyGetBounds = jest.spyOn(mapWrapper.vm.map, "getBounds");
-                // mapWrapper.update();
                 query.vm.viewModel.on("querysucceeded", () => {
                     //要先选择当前地图，才会调用 
                     expect(spyGetBounds).toBeCalled();
@@ -111,7 +111,22 @@ describe('query', () => {
                     spyGetBounds.mockRestore();
                     done()
                 })
-                query.find('.sm-query__query-button').trigger('click');
+                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.vm.$nextTick(() => {
+                    query.find('.el-input__suffix').trigger("click");
+
+                    // query.findAll('.el-select-dropdown__item').at(0).trigger('mouseenter');
+                    // query.findAll('.el-select-dropdown__item').at(0).trigger('click')
+                    // options[0].trigger('mouseenter')
+                    // triggerEvent(options[0], 'mouseenter');
+                    // options[0].click();
+                    query.vm.$nextTick(() => {
+                        query.findAll('li.el-select-dropdown__item').at(0).trigger("click");
+                        query.vm.$nextTick(() => {
+                            query.find('.sm-widget-query__el-button').trigger('click');
+                        })
+                    })
+                })
             } catch (exception) {
                 console.log("query" + exception.name + ":" + exception.message);
                 expect(false).toBeTruthy();
@@ -137,6 +152,103 @@ describe('query', () => {
                         dataName: ["World:Countries"],
                     })
                 ]
+            },
+        });
+        //监控loaded是为了判断微件加载完成了
+        query.vm.$on("loaded", () => {
+            try {
+                expect(query.vm.getMapTarget).toBe('map');
+                const spyAddlayer = jest.spyOn(mapWrapper.vm.map, 'addLayer');
+                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.vm.$nextTick(() => {
+                    query.find('.sm-widget-query__el-button').trigger('click');
+                    query.vm.$nextTick(() => {
+                        expect(spyAddlayer).toBeCalled();
+                        spyAddlayer.mockReset();
+                        spyAddlayer.mockRestore();
+                        done()
+                    })
+                })
+            } catch (exception) {
+                console.log("query" + exception.name + ":" + exception.message);
+                expect(false).toBeTruthy();
+                spyAddlayer.mockReset();
+                spyAddlayer.mockRestore();
+                done()
+            }
+        })
+    })
+
+
+    it('Rest Data currentMapBounds', (done) => {
+        mapWrapper = mount(SmMap);
+        query = mount(SmQuery, {
+            localVue,
+            propsData: {
+                mapTarget: "map",
+                restData: [
+                    new RestDataParameter({
+                        url: "http://192.168.12.230:8092/iserver/services/data-world/rest/data",
+                        attributeFilter: "SmID>0",
+                        dataName: ["World:Countries"],
+                    })
+                ]
+            },
+            sync: false
+        });
+        query.vm.$on("loaded", () => {
+            try {
+                expect(query.vm.getMapTarget).toBe('map');
+                // query.setData({ value: 'currentMapBounds' });
+                const spyAddlayer = jest.spyOn(mapWrapper.vm.map, "addLayer");
+                const spyGetBounds = jest.spyOn(mapWrapper.vm.map, "getBounds");
+
+                query.vm.viewModel.on("querysucceeded", () => {
+                    //要先选择当前地图，才会调用 
+                    expect(spyGetBounds).toBeCalled();
+                    expect(spyAddlayer).toBeCalledTimes(2);
+                    spyAddlayer.mockReset();
+                    spyAddlayer.mockRestore();
+                    spyGetBounds.mockReset();
+                    spyGetBounds.mockRestore();
+                    done()
+                })
+                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.vm.$nextTick(() => {
+                    query.find('.el-input__suffix').trigger("click");
+
+                    query.vm.$nextTick(() => {
+                        query.findAll('li.el-select-dropdown__item').at(0).trigger("click");
+                        query.vm.$nextTick(() => {
+                            query.find('.sm-widget-query__el-button').trigger('click');
+                        })
+                    })
+                })
+            } catch (exception) {
+                console.log("query" + exception.name + ":" + exception.message);
+                expect(false).toBeTruthy();
+                spyAddlayer.mockReset();
+                spyAddlayer.mockRestore();
+                spyGetBounds.mockReset();
+                spyGetBounds.mockRestore();
+                done()
+            }
+        })
+    })
+
+    it('Rest Map default', (done) => {
+        mapWrapper = mount(SmMap);
+        query = mount(SmQuery, {
+            localVue,
+            propsData: {
+                mapTarget: "map",
+                restMap: [
+                    new RestMapParameter({
+                        url: "http://192.168.12.230:8092/iserver/services/map-world/rest/maps/World",
+                        attributeFilter: "SmID>0",
+                        layerName: "Capitals@World.1",
+                    })
+                ]
             }
         });
         //监控loaded是为了判断微件加载完成了
@@ -144,7 +256,8 @@ describe('query', () => {
             try {
                 expect(query.vm.getMapTarget).toBe('map');
                 const spyAddlayer = jest.spyOn(mapWrapper.vm.map, 'addLayer');
-                query.find('.sm-query__query-button').trigger('click');
+
+                query.find('.sm-widget-query__el-button').trigger('click');
                 query.vm.$nextTick(() => {
                     expect(spyAddlayer).toBeCalled();
                     spyAddlayer.mockReset();
@@ -161,131 +274,57 @@ describe('query', () => {
         })
     })
 
+    it('Rest Map currentMapBounds', (done) => {
+        mapWrapper = mount(SmMap);
+        query = mount(SmQuery, {
+            localVue,
+            propsData: {
+                mapTarget: "map",
+                restMap: [
+                    new RestMapParameter({
+                        url: "http://192.168.12.230:8092/iserver/services/map-world/rest/maps/World",
+                        attributeFilter: "SmID>0",
+                        layerName: "Capitals@World.1",
+                    })
+                ]
+            },
+            sync: false
+        });
+        query.vm.$on("loaded", () => {
+            try {
+                expect(query.vm.getMapTarget).toBe('map');
+                // query.setData({ value: 'currentMapBounds' });
+                const spyAddlayer = jest.spyOn(mapWrapper.vm.map, "addLayer");
+                const spyGetBounds = jest.spyOn(mapWrapper.vm.map, "getBounds");
 
-it('Rest Data currentMapBounds', (done) => {
-    mapWrapper = mount(SmMap);
-    query = mount(SmQuery, {
-        localVue,
-        propsData: {
-            mapTarget: "map",
-            restData: [
-                new RestDataParameter({
-                    url: "http://192.168.12.230:8092/iserver/services/data-world/rest/data",
-                    attributeFilter: "SmID>0",
-                    dataName: ["World:Countries"],
+                query.vm.viewModel.on("querysucceeded", () => {
+                    expect(spyGetBounds).toBeCalled();
+                    expect(spyAddlayer).toBeCalledTimes(2);
+                    spyAddlayer.mockReset();
+                    spyAddlayer.mockRestore();
+                    spyGetBounds.mockReset();
+                    spyGetBounds.mockRestore();
+                    done()
                 })
-            ]
-        }
-    });
-    query.vm.$on("loaded", () => {
-        try {
-            expect(query.vm.getMapTarget).toBe('map');
-            query.setData({ value: 'currentMapBounds' });
-            const spyAddlayer = jest.spyOn(mapWrapper.vm.map, "addLayer");
-            const spyGetBounds = jest.spyOn(mapWrapper.vm.map, "getBounds");
-
-            query.vm.viewModel.on("querysucceeded", () => {
-                //要先选择当前地图，才会调用 
-                expect(spyGetBounds).toBeCalled();
-                expect(spyAddlayer).toBeCalledTimes(2);
+                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.vm.$nextTick(() => {
+                    query.find('.el-input__suffix').trigger("click");
+                    query.vm.$nextTick(() => {
+                        query.findAll('li.el-select-dropdown__item').at(0).trigger("click");
+                        query.vm.$nextTick(() => {
+                            query.find('.sm-widget-query__el-button').trigger('click');
+                        })
+                    })
+                })
+            } catch (exception) {
+                console.log("query" + exception.name + ":" + exception.message);
+                expect(false).toBeTruthy();
                 spyAddlayer.mockReset();
                 spyAddlayer.mockRestore();
                 spyGetBounds.mockReset();
                 spyGetBounds.mockRestore();
                 done()
-            })
-            query.find('.sm-query__query-button').trigger('click');
-        } catch (exception) {
-            console.log("query" + exception.name + ":" + exception.message);
-            expect(false).toBeTruthy();
-            spyAddlayer.mockReset();
-            spyAddlayer.mockRestore();
-            spyGetBounds.mockReset();
-            spyGetBounds.mockRestore();
-            done()
-        }
+            }
+        })
     })
-})
-
-it('Rest Map default', (done) => {
-    mapWrapper = mount(SmMap);
-    query = mount(SmQuery, {
-        localVue,
-        propsData: {
-            mapTarget: "map",
-            restMap: [
-                new RestMapParameter({
-                    url: "http://192.168.12.230:8092/iserver/services/map-world/rest/maps/World",
-                    attributeFilter: "SmID>0",
-                    layerName: "Capitals@World.1",
-                })
-            ]
-        }
-    });
-    //监控loaded是为了判断微件加载完成了
-    query.vm.$on("loaded", () => {
-        try {
-            expect(query.vm.getMapTarget).toBe('map');
-            const spyAddlayer = jest.spyOn(mapWrapper.vm.map, 'addLayer');
-
-            query.find('.sm-query__query-button').trigger('click');
-            query.vm.$nextTick(() => {
-                expect(spyAddlayer).toBeCalled();
-                spyAddlayer.mockReset();
-                spyAddlayer.mockRestore();
-                done()
-            })
-        } catch (exception) {
-            console.log("query" + exception.name + ":" + exception.message);
-            expect(false).toBeTruthy();
-            spyAddlayer.mockReset();
-            spyAddlayer.mockRestore();
-            done()
-        }
-    })
-})
-
-it('Rest Map currentMapBounds', (done) => {
-    mapWrapper = mount(SmMap);
-    query = mount(SmQuery, {
-        localVue,
-        propsData: {
-            mapTarget: "map",
-            restMap: [
-                new RestMapParameter({
-                    url: "http://192.168.12.230:8092/iserver/services/map-world/rest/maps/World",
-                    attributeFilter: "SmID>0",
-                    layerName: "Capitals@World.1",
-                })
-            ]
-        }
-    });
-    query.vm.$on("loaded", () => {
-        try {
-            expect(query.vm.getMapTarget).toBe('map');
-            query.setData({ value: 'currentMapBounds' });
-            const spyAddlayer = jest.spyOn(mapWrapper.vm.map, "addLayer");
-            const spyGetBounds = jest.spyOn(mapWrapper.vm.map, "getBounds");
-
-            query.vm.viewModel.on("querysucceeded", () => {
-                expect(spyGetBounds).toBeCalled();
-                expect(spyAddlayer).toBeCalledTimes(2);
-                spyAddlayer.mockReset();
-                spyAddlayer.mockRestore();
-                spyGetBounds.mockReset();
-                spyGetBounds.mockRestore();
-                done()
-            })
-            query.find('.sm-query__query-button').trigger('click');
-        } catch (exception) {
-            console.log("query" + exception.name + ":" + exception.message);
-            expect(false).toBeTruthy();
-            spyAddlayer.mockReset();
-            spyAddlayer.mockRestore();
-            spyGetBounds.mockReset();
-            spyGetBounds.mockRestore();
-            done()
-        }
-    })
-})
 })

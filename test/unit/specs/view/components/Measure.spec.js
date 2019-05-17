@@ -7,7 +7,7 @@
 import { config } from '@vue/test-utils';
 import SmMap from '@/view/components/Map';
 import SmMeasure from '@/view/components/Measure';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
 import mapEvent from '@/view/commontypes/mapEvent';
 import ElementUI from 'element-ui'
 
@@ -63,10 +63,10 @@ describe('mesure', () => {
 
     afterEach(() => {
         jest.restoreAllMocks();
-        if (measureWrapper) {
+        if (measureWrapper && measureWrapper !== "undefined") {
             measureWrapper.destroy();
         }
-        if (mapWrapper) {
+        if (mapWrapper && measureWrapper !== "undefined") {
             mapWrapper.destroy();
         }
 
@@ -74,13 +74,13 @@ describe('mesure', () => {
 
     it('line default', (done) => {
         mapWrapper = mount(SmMap);
-        measureWrapper = mount(SmMeasure, {
+        measureWrapper = shallowMount(SmMeasure, {
             localVue,
             propsData: {
                 mapTarget: "map"
             },
             // i18n,
-            sync: false
+            // sync: false
         });
 
         measureWrapper.vm.$on("loaded", () => {
@@ -100,7 +100,8 @@ describe('mesure', () => {
                     var data = {
                         lngLat: { lng: 137.92559401751038, lat: 39.972407560141534 }
                     }
-                    mapWrapper.vm.map.fire('click', data)
+                    mapWrapper.vm.map.fire('mousedown', data)
+                    // measureWrapper.vm.map.fire('mousedown',data)
                     expect(measureWrapper.vm.viewModel.tipNodes.length).toBe(1);
                     data = {
                         lngLat: { lng: 147.92559401751038, lat: 42.972407560141534 }
@@ -124,7 +125,7 @@ describe('mesure', () => {
     //ignore 改变prop后，期望得到的默认单位会变成修改后的即meters,但是得到的还是原来的即kilometers
     xit('line change defaultUnit', (done) => {
         mapWrapper = mount(SmMap);
-        measureWrapper = mount(SmMeasure, {
+        measureWrapper = shallowMount(SmMeasure, {
             localVue,
             propsData: {
                 mapTarget: "map",
@@ -144,7 +145,7 @@ describe('mesure', () => {
                 measureWrapper.vm.$nextTick(() => {
                     expect(spyDeleteAll).toBeCalled();
                     expect(spychangeMode).toBeCalled();
-                    expect(measureWrapper.find("div.sm-measure__unit.sm-measure__default").text()).toBe("meters");
+                    expect(measureWrapper.find(".sm-widget-measure__unit.sm-widget-measure__default").text()).toBe("米");
                     measureWrapper.vm.viewModel.on("measure-finished", (measureResult) => {
                         expect(measureResult.result).toBe("1388.1809");
                         done()
@@ -152,13 +153,13 @@ describe('mesure', () => {
                     var data = {
                         lngLat: { lng: 137.92559401751038, lat: 39.972407560141534 }
                     }
-                    mapWrapper.vm.map.fire('click', data)
+                    mapWrapper.vm.map.fire('mousedown', data)
                     expect(measureWrapper.vm.viewModel.tipNodes.length).toBe(1);
                     data = {
                         lngLat: { lng: 147.92559401751038, lat: 42.972407560141534 }
                     };
                     mapWrapper.vm.map.fire('mousemove', data),
-                        expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("896.7302 米");
+                        expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("896.7302 千米");
 
                     var e = {
                         "features": [{ "id": "786c3dc0b07c96d1ac0d1b72614a3697", "type": "Feature", "properties": {}, "geometry": { "coordinates": [[142.93535964243574, 51.313036821416745], [154.00957839243767, 41.405163546980134]], "type": "LineString" } }]
@@ -197,19 +198,19 @@ describe('mesure', () => {
                     measureWrapper.findAll('li.el-select-dropdown__item').at(1).trigger("click");
 
                     measureWrapper.vm.viewModel.on("measure-finished", (measureResult) => {
-                        expect(measureResult.result).toBe("1388.1809");
+                        expect(measureResult.result).toBe("862.5756");
                         done()
                     })
                     var data = {
                         lngLat: { lng: 137.92559401751038, lat: 39.972407560141534 }
                     }
-                    mapWrapper.vm.map.fire('click', data)
+                    mapWrapper.vm.map.fire('mousedown', data)
                     expect(measureWrapper.vm.viewModel.tipNodes.length).toBe(1);
                     data = {
                         lngLat: { lng: 147.92559401751038, lat: 42.972407560141534 }
                     };
                     mapWrapper.vm.map.fire('mousemove', data),
-                        expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("896.7302 英里");
+                        expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("557.2023 英里");
 
                     var e = {
                         "features": [{ "id": "786c3dc0b07c96d1ac0d1b72614a3697", "type": "Feature", "properties": {}, "geometry": { "coordinates": [[142.93535964243574, 51.313036821416745], [154.00957839243767, 41.405163546980134]], "type": "LineString" } }]
@@ -247,28 +248,31 @@ describe('mesure', () => {
                     measureWrapper.findAll('li.el-select-dropdown__item').at(1).trigger("click");
 
                     measureWrapper.vm.viewModel.on("measure-finished", (measureResult) => {
-                        expect(measureResult.result).toBe("1473622696954.9697");
+                        expect(measureResult.result).toBe("568818.3610");
                         measureWrapper.find('.el-input__suffix').trigger("click");
                         measureWrapper.findAll('li.el-select-dropdown__item').at(0).trigger("click");
-                        expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("526844027850.51855 平方千米");
-                        done()
+                        measureWrapper.vm.$nextTick(() => {
+                            expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("568818.3610 平方英里");
+                            done()
+                        })
+                       
                     })
                     var data = {
                         lngLat: { lng: 137.92559401751038, lat: 39.972407560141534 }
                     }
-                    mapWrapper.vm.map.fire('click', data);
+                    mapWrapper.vm.map.fire('mousedown', data);
                     expect(measureWrapper.vm.viewModel.measureNodes.length).toBe(1);
                     data = {
                         lngLat: { lng: 147.92559401751038, lat: 42.972407560141534 }
                     };
                     mapWrapper.vm.map.fire('mousemove', data);
                     expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("0.0000 平方英里");
-                    mapWrapper.vm.map.fire('click', data);
+                    mapWrapper.vm.map.fire('mousedown', data);
                     data = {
                         lngLat: { lng: 149, lat: 48 }
                     };
                     mapWrapper.vm.map.fire('mousemove', data);
-                    expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("203361794750.3002 平方英里");
+                    expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("78497.6528 平方英里");
 
                     var e = {
                         "features": [{ "id": "df9c85399f1f77b19df769345b98f6dd", "type": "Feature", "properties": {}, "geometry": { "coordinates": [[[87.38848464248667, 48.80281323462705], [126.93926589247138, 36.451689761316274], [101.62676589247422, 53.169433033115894], [101.62676589247422, 53.169433033115894], [87.38848464248667, 48.80281323462705]]], "type": "Polygon" } }]
@@ -285,7 +289,7 @@ describe('mesure', () => {
 
     it('area default', (done) => {
         mapWrapper = mount(SmMap);
-        measureWrapper = mount(SmMeasure, {
+        measureWrapper = shallowMount(SmMeasure, {
             localVue,
             propsData: {
                 mapTarget: "map"
@@ -303,25 +307,25 @@ describe('mesure', () => {
                     expect(spyDeleteAll).toBeCalled();
                     expect(spychangeMode).toBeCalled();
                     measureWrapper.vm.viewModel.on("measure-finished", (measureResult) => {
-                        expect(measureResult.result).toBe("1473622696954.9697");
+                        expect(measureResult.result).toBe("1473622.6970");
                         done()
                     })
                     var data = {
                         lngLat: { lng: 137.92559401751038, lat: 39.972407560141534 }
                     }
-                    mapWrapper.vm.map.fire('click', data);
+                    mapWrapper.vm.map.fire('mousedown', data);
                     expect(measureWrapper.vm.viewModel.measureNodes.length).toBe(1);
                     data = {
                         lngLat: { lng: 147.92559401751038, lat: 42.972407560141534 }
                     };
                     mapWrapper.vm.map.fire('mousemove', data);
-                    expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("0.0000 平方米");
-                    mapWrapper.vm.map.fire('click', data);
+                    expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("0.0000 平方千米");
+                    mapWrapper.vm.map.fire('mousedown', data);
                     data = {
                         lngLat: { lng: 149, lat: 48 }
                     };
                     mapWrapper.vm.map.fire('mousemove', data);
-                    expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("203361794750.3002 平方米");
+                    expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe("203361.7948 平方千米");
                     var e = {
                         "features": [{ "id": "df9c85399f1f77b19df769345b98f6dd", "type": "Feature", "properties": {}, "geometry": { "coordinates": [[[87.38848464248667, 48.80281323462705], [126.93926589247138, 36.451689761316274], [101.62676589247422, 53.169433033115894], [101.62676589247422, 53.169433033115894], [87.38848464248667, 48.80281323462705]]], "type": "Polygon" } }]
                     }

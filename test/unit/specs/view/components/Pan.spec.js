@@ -11,10 +11,13 @@ describe('Pan.vue', () => {
 
     beforeEach(() => {
         mapEvent.firstMapTarget = null;
+        mapEvent.$options.mapCache = {};
+        mapEvent.$options.webMapCache = {};
         wrapper = null;
     })
 
     afterEach(() => {
+        jest.restoreAllMocks();
         if (wrapper) {
             wrapper.destroy();
         }
@@ -30,18 +33,20 @@ describe('Pan.vue', () => {
    
         wrapper.vm.$on("loaded", () => {
             try {
-                //expect\(wrapper\.element\)\.toMatchSnapshot\(\);
+                console.log("default")
                 expect(wrapper.vm.getMapTarget).toBe('map');
                 testClick(wrapper, wrapper2.vm.map);
-                testMouseEvent(wrapper, '.is-left', 'sm-pan--west');
-                testMouseEvent(wrapper, '.is-right', 'sm-pan--east');
-                testMouseEvent(wrapper, '.is-top', 'sm-pan--north');
-                testMouseEvent(wrapper, '.is-bottom', 'sm-pan--south');
+                testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
+                testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
+                testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
+                testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
+                wrapper.destroy();
                 wrapper2.destroy();
                 done();
             } catch (exception) {
                 console.log("Pan_default" + exception.name + ":" + exception.message);
                 expect(false).toBeTruthy();
+                wrapper.destroy();
                 wrapper2.destroy();
                 done();
             }
@@ -63,16 +68,15 @@ describe('Pan.vue', () => {
             }
         });
         wrapper.vm.$children[0].$children[0].$on("loaded", () => {
-            //expect\(wrapper\.element\)\.toMatchSnapshot\(\);
-           
+           console.log("isControl smmap")
             expect(wrapper.vm.$children[0].$children[0].getMapTarget).toBe('map');
 
             testClick(wrapper, wrapper.vm.$children[0].map);
 
-            testMouseEvent(wrapper, '.is-left', 'sm-pan--west');
-            testMouseEvent(wrapper, '.is-right', 'sm-pan--east');
-            testMouseEvent(wrapper, '.is-top', 'sm-pan--north');
-            testMouseEvent(wrapper, '.is-bottom', 'sm-pan--south');
+            testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
+            testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
+            testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
+            testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
             done();
         })
     })
@@ -94,10 +98,10 @@ describe('Pan.vue', () => {
             expect(wrapper.vm.$children[1].getMapTarget).toBe('map');
             testClick(wrapper, wrapper.vm.$children[0].map);
 
-            testMouseEvent(wrapper, '.is-left', 'sm-pan--west');
-            testMouseEvent(wrapper, '.is-right', 'sm-pan--east');
-            testMouseEvent(wrapper, '.is-top', 'sm-pan--north');
-            testMouseEvent(wrapper, '.is-bottom', 'sm-pan--south');
+            testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
+            testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
+            testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
+            testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
             done();
         })
     })
@@ -119,10 +123,10 @@ describe('Pan.vue', () => {
             //expect\(wrapper\.element\)\.toMatchSnapshot\(\);
             expect(wrapper.vm.$children[3].getMapTarget).toBe('map1');
             testClick(wrapper, wrapper.vm.$children[0].map);
-            testMouseEvent(wrapper, '.is-left', 'sm-pan--west');
-            testMouseEvent(wrapper, '.is-right', 'sm-pan--east');
-            testMouseEvent(wrapper, '.is-top', 'sm-pan--north');
-            testMouseEvent(wrapper, '.is-bottom', 'sm-pan--south');
+            testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
+            testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
+            testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
+            testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
             done();
         })
     })
@@ -145,21 +149,21 @@ describe('Pan.vue', () => {
             expect(wrapper.vm.$children[3].getMapTarget).toBe('map3');
             testClick(wrapper, wrapper.vm.$children[2].map);
 
-            testMouseEvent(wrapper, '.is-left', 'sm-pan--west');
-            testMouseEvent(wrapper, '.is-right', 'sm-pan--east');
-            testMouseEvent(wrapper, '.is-top', 'sm-pan--north');
-            testMouseEvent(wrapper, '.is-bottom', 'sm-pan--south');
+            testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
+            testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
+            testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
+            testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
             done();
         })
     })
 
     function testMouseEvent(wrapper, cssSelector, expectResult) {
         wrapper.find(cssSelector).trigger('mouseenter');
-        expect(wrapper.find('div.sm-pan').classes()).toContain(expectResult);
+        expect(wrapper.find('div.sm-widget-pan').classes()).toContain(expectResult);
 
         wrapper.find(cssSelector).trigger('mouseleave');
-        expect(wrapper.find('div.sm-pan').classes()).not.toContain(expectResult);
-        expect(wrapper.find('div.sm-pan').classes()).toContain('sm-pan--default');
+        expect(wrapper.find('div.sm-widget-pan').classes()).not.toContain(expectResult);
+        expect(wrapper.find('div.sm-widget-pan').classes()).toContain('sm-widget-pan--default');
     }
 
     /**
@@ -177,21 +181,13 @@ describe('Pan.vue', () => {
         wrapper.find('.is-left').trigger('click');
         //验证点击之后 pan绑定的map组件的map会发生相应变化，即会平移
         expect(spyPanby).toBeCalledWith([-panLength, 0]);
-
         wrapper.find('.is-right').trigger('click');
-
         expect(spyPanby).toBeCalledWith([panLength, 0]);
-
         wrapper.find('.is-top').trigger('click');
-
         expect(spyPanby).toBeCalledWith([0, -panLength]);
-
         wrapper.find('.is-bottom').trigger('click');
-
-
         expect(spyPanby).toBeCalledWith([0, panLength]);
-
-        wrapper.find('.sm-pan__center').trigger('click');
+        wrapper.find('.sm-widget-pan__center').trigger('click');
         expect(spyPanTo).toBeCalledWith({ "lat": 0, "lng": 0 });
 
     }
