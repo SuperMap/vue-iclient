@@ -2,20 +2,23 @@
   <div id="app">
     <sm-map :map-options="mapOptions">
       <sm-open-file :layerStyles="layerStyles"></sm-open-file>
-    </sm-map>
     <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer>
       <sm-mapv-layer :data-set="dataSet" :mapv-options="mapvOptions"></sm-mapv-layer>
     <sm-deckgl-layer :layer-type-id="layerTypeId" :deckgl-options="deckglOptions"></sm-deckgl-layer>-->
     <!-- <sm-data-flow-layer
         data-flow-url="ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow"
         register-token="0ra2250-rPu6ZnqHPKqcqDjGkDGDv3bg5HHy1SNNXf79OlN0ArG07bq3cGFz0v-nfBm2RAnYJ3LGBsuiptH43g.."
-    ></sm-data-flow-layer>-->
-    <!-- <sm-heatmap-layer :data='heatMapData'></sm-heatmap-layer> -->
-    <!-- <sm-echarts-layer :echartsOptions="echartsOptions"></sm-echarts-layer> -->
-    <!-- <sm-cluster-layer :data='clusterLayerData'></sm-cluster-layer> -->
+      ></sm-data-flow-layer>-->
+      <!-- <sm-heatmap-layer :data='heatMapData'></sm-heatmap-layer> -->
+      <!-- <sm-echarts-layer :echartsOptions="echartsOptions"></sm-echarts-layer> -->
+      <!-- <sm-cluster-layer :data='clusterLayerData'></sm-cluster-layer> -->
+      <!-- <sm-theme-layer :data-url="dataUrl" :theme-parameters="themeParameters" :tile-url="tileUrl"></sm-theme-layer> -->
 
-    <!-- <sm-theme-layer :data-url="dataUrl" :theme-parameters="themeParameters" :tile-url="tileUrl"></sm-theme-layer> -->
+    <sm-chart  :options="echartOption"></sm-chart>
+     <sm-chart  :options="echartOption1"></sm-chart>
+      <sm-chart  :options="echartOption2"></sm-chart>
 
+    </sm-map>
     <!-- 深色 -->
 
     <!-- <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
@@ -50,14 +53,8 @@
       <sm-mini-map position="bottom-right"></sm-mini-map>
       <sm-measure position="top-right"></sm-measure>
       <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right" :style='{width:"100px"}'/>
-     
-      <sm-layer-list position="top-right"/>
-      <sm-chart
-        :chartType="chartType"
-        :datasets="datasets"
-        :chartOptions="chartOptions"
-        position="bottom-right"
-    ></sm-chart>-->
+      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
+      <sm-layer-list position="top-right"/>-->
     <!-- 浅色 -->
 
     <!-- <sm-query
@@ -80,19 +77,11 @@
       <sm-mini-map position="bottom-right"></sm-mini-map>
     <sm-measure position="top-right"></sm-measure>-->
 
-    <!-- <el-button @click="changeType" style="position:absolute;left:210px;z-index:300">修改图表的type:</el-button>
-      <el-button @click="changeChartoption" style="position:absolute;left:350px;z-index:300">修改图表的xy轴:</el-button>
-    <el-button @click="changeDatasets" style="position:absolute;left:500px;z-index:300">修改图表的datasets:</el-button>-->
+    
     <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer>
     <sm-vector-tile-layer style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"></sm-vector-tile-layer>-->
     <!-- <sm-data-flow-layer dataFlowUrl='ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow'></sm-data-flow-layer> -->
-
-    <!-- <sm-chart
-        :chartType="chartType"
-        :datasets="datasets"
-        :chartOptions="chartOptions"
-        position="bottom-right"
-    ></sm-chart>-->
+    <!-- </sm-web-map> -->
     <!-- "http://192.168.12.230:8092/iportal/web/scenes/2065175708" -->
     <!-- <sm-web-scene
       scene-url="http://support.supermap.com.cn:8090/iserver/services/3D-CBD/rest/realspace"
@@ -114,11 +103,14 @@
 import widgets from '../src/index';
 import demoData from './data/demo.json';
 import earthquake from './data/earthquake.json';
-
 // import CircleStyle from '../src/view/commontypes/CircleStyle'
 // import FillStyle from '../src/view/commontypes/FillStyle'
 // import LineStyle from '../src/view/commontypes/LineStyle'
-
+import themeLayerData from './data/themeLayerData.json';
+import EchartsDataService from "../src/utils/EchartsDataService";
+// import Chart from '../src/view/components/Chart'
+// import themeJson from "./theme.json";
+// Chart.registerTheme("ovilia-green", themeJson);
 export default {
   name: 'app',
   data() {
@@ -128,7 +120,6 @@ export default {
       " with <span>© <a href='http://iclient.supermap.io' target='_blank'>SuperMap iClient</a> | </span>" +
       " Map Data <span>© <a href='http://support.supermap.com.cn/product/iServer.aspx' target='_blank'>SuperMap iServer</a></span> ";
     var randomCount = 1000;
-
     var data = [];
 
     var citys = demoData.citys;
@@ -346,33 +337,10 @@ export default {
         server: 'http://support.supermap.com.cn:8092/'
       },
       chartTitle: '',
-      chartType: 'bar',
-      datasets: {
-        type: 'iServer',
-        url:
-          'http://support.supermap.com.cn:8090/iserver/services/data-jingjin/rest/data/datasources/Jingjin/datasets/Landuse_R',
-        //url: "http://support.supermap.com.cn:8092/web/datas/888186112",
-        queryInfo: { attributeFilter: 'SmID > 0' }
-      },
-      chartOptions: {
-        // backgroundColor:"",
-        // axisColor:"",
-        // colorGradient:[],
-        xFieldStatistical: true,
-        xAxisLabelRotate: true,
-        yAxisLabelRotate: true,
-        legendPosition: 'top', //none top bottom left right topleft topright bottomleft bottomright
-        xAxisName: '',
-        yAxisName: '',
-        // padding: {
-        //   top: 50,
-        //   bottom: 50,
-        //   left: 50,
-        //   right: 50
-        // },
-        xAxis: 'LANDTYPE',
-        yAxis: ['AREA', 'AREA_1']
-      },
+     
+      echartOption:{},
+      echartOption1:{},
+      echartOption2:{},
       // dataSet,
       mapvOptions: options,
       layerTypeId: 'hexagon-layer',
@@ -410,26 +378,10 @@ export default {
       themeParameters: {}
     };
   },
+  // components:{
+  //   Chart
+  // },
   methods: {
-    // changeDatasets() {
-    //   this.datasets = {
-    //     type: "iPortal",
-    //     url: "http://support.supermap.com.cn:8092/web/datas/1920557079",
-    //     queryInfo: { attributeFilter: "SmID > 0" }
-    //   };
-    // },
-    // changeType(){
-    //   this.chartType="scatter"
-    // },
-    // changeChartoption(){
-    //   this.chartOptions =[
-    //     {
-    //       xAxis: { field: "SmID", name: "我变了" },
-    //       yAxis: { field: "同比增速%", name: "我变了" }
-    //     }
-    //   ]
-    // }
-
     changeStyle() {
       widgets.setTheme('dark');
     },
@@ -479,7 +431,75 @@ export default {
     //   };
     // });
     this.createTheme();
-  }
+  },
+   mounted(){
+      // datasets和dataOptions，echartOptions都是sm-chart组件的props
+        let datasets = {
+          type: "iPortal", //iServer iPortal
+          url: "http://support.supermap.com.cn:8092/web/datas/1920557079",
+          queryInfo: {
+            maxFeatures: 20
+          }
+        },
+        // echarts中涉及到超图数据series和坐标轴的字段的配置
+        dataOptions = [
+          {
+            seriesType: "bar", //图表类型
+            isStastic: true, //是否统计, 默认不统计
+            isStack: true, //是否堆叠, 默认不堆叠
+            xField: "机场", //x坐标轴数据字段
+            yField: "2016起降架次（架次）" //统计的数据，legned默认名字
+          },
+          {
+            seriesType: "bar",
+            isStastic: true,
+            isStack: true,
+            xField: "机场",
+            yField: "2017起降架次（架次）",
+          }
+        ],  dataOptions1 = [
+            {
+              seriesType: "line", //图表类型
+              isStastic: true, //是否统计, 默认不统计
+              isStack: true, //是否堆叠, 默认不堆叠
+              xField: "机场", //x坐标轴数据字段
+              yField: "2016起降架次（架次）" //统计的数据，legned默认名字
+            },
+            {
+              seriesType: "line",
+              isStastic: true,
+              isStack: true,
+              xField: "机场",
+             yField: "2017起降架次（架次）" 
+            }
+          ],
+          dataOptions2 = [
+            {
+              seriesType: "scatter", //图表类型
+              isStastic: true, //是否统计, 默认不统计
+              isStack: false, //是否堆叠, 默认不堆叠
+              xField: "机场", //x坐标轴数据字段
+              yField: "2016起降架次（架次）"  //统计的数据，legned默认名字
+            }
+          ],
+        // 和echarts一样的配置
+        echartOptions = {
+          legend: {data: ['2016起降架次（架次）', '2017起降架次（架次）']}, //与legendName || yField数据一致
+          tooltip: {formatter: "{b0}: {c0}"},
+          grid:{ 
+            top: 30,
+            bottom: 60,
+            left: 60,
+            right: 30
+          }
+        };
+        let echartsDataService = new EchartsDataService();
+        echartsDataService.getDataOption(datasets, dataOptions).then(data => {
+            this.echartOption = Object.assign(data, echartOptions);
+            this.echartOption1  = Object.assign(echartsDataService.formatChartData(dataOptions1), echartOptions);
+            this.echartOption2  = Object.assign(echartsDataService.formatChartData(dataOptions2), echartOptions);
+        });
+      }
 };
 </script>
 <style lang='scss'>

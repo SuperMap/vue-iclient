@@ -25,7 +25,7 @@ import * as themeFactory from './style/theme';
 import * as components from './view/components';
 import './assets/iconfont/iconfont.css';
 import * as commontypes from './view/commontypes/index';
-
+import * as utils from './utils/index';
 const setTheme = (themeStyle = {}) => {
   if (typeof themeStyle === 'string') {
     themeStyle = themeFactory[themeStyle] || {};
@@ -72,6 +72,7 @@ if (typeof window !== 'undefined' && window.Vue) {
 export default {
   setTheme,
   commontypes,
+  utils,
   lang,
   i18n,
   locale: setLocale,

@@ -5,7 +5,7 @@ import length from '@turf/length';
 import area from '@turf/area';
 import center from '@turf/center';
 import { convertLength, convertArea } from '@turf/helpers';
-import { reservedDecimal } from '../utils/formatter';
+import formatterUtil from '../utils/formatter';
 import i18n from '../lang/index.js';
 
 /**
@@ -376,7 +376,7 @@ class MeasureViewModel extends WidgetViewModel {
   }
 
   _getFormatResult(result) {
-    return reservedDecimal(result || this.result, 4);
+    return formatterUtil.reservedDecimal(result || this.result, 4);
   }
 }
 export default MeasureViewModel;

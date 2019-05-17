@@ -42,6 +42,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         amd: 'vue'
       },
       echarts: 'echarts',
+      'vue-echarts': 'VueECharts',
       xlsx: {
         root: 'XLSX',
         commonjs: '@mapbox/mapbox-gl-draw',

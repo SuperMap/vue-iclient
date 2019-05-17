@@ -129,7 +129,7 @@ export default class iServerRestService extends mapboxgl.Evented {
     });
     queryBySQLService = new SuperMap.QueryBySQLService(url, {
       eventListeners: {
-        processCompleted: this.getFeaturesSucceed.bind(this),
+        processCompleted: this._getFeaturesSucceed.bind(this),
         processFailed: function() {}
       }
     });
@@ -148,7 +148,7 @@ export default class iServerRestService extends mapboxgl.Evented {
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
       eventListeners: {
-        processCompleted: this.getFeaturesSucceed.bind(this),
+        processCompleted: this._getFeaturesSucceed.bind(this),
         processFailed: function() {}
       }
     });

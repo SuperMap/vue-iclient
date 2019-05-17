@@ -215,7 +215,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
               features
             };
           }
-          this.iserverService.getFeaturesSucceed({
+          this.iserverService._getFeaturesSucceed({
             result: result
           });
         }

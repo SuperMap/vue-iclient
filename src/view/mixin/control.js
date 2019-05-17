@@ -35,9 +35,9 @@ export default {
           this.isShow = true;
           this.$el.style && (this.$el.style.display = 'block');
         }
-        if (this.$options.name.toLowerCase() === 'smchart') {
-          this.viewModel.resize();
-        }
+        // if (this.$options.name.toLowerCase() === 'smchart') {
+        //   this.viewModel.resize();
+        // }
       });
     }
   },
