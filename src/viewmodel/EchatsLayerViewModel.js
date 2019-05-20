@@ -1,30 +1,30 @@
 import WidgetViewModel from './WidgetViewModel';
-import echarts from 'echarts';
+// import echarts from 'echarts';
 import EchartsLayer from '../../static/libs/echarts-layer/EchartsLayer';
 /**
  * @class EchatsLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。
- * @param {String} echartsOptions - EchartsLayer options。
+ * @param {String} options - EchartsLayer options。
  */
 
 export default class EchatsLayerViewModel extends WidgetViewModel {
-  constructor(map, echartsOptions) {
+  constructor(map, options) {
     super();
-    if (!echartsOptions) {
-      throw new Error('echartsOptions is requierd');
+    if (!options) {
+      throw new Error('echarts options is requierd');
     }
     if (!map) {
       throw new Error('map is requierd');
     }
     this.map = map;
-    this.echartsOptions = echartsOptions;
+    this.options = options;
     this._initializeEchartsLayer();
   }
 
   _initializeEchartsLayer() {
     window.echarts = echarts;
     let echartslayer = new EchartsLayer(this.map);
-    echartslayer.chart.setOption(this.echartsOptions);
+    echartslayer.chart.setOption(this.options);
     /**
      * @event echartslayeraddsucceeded
      * @property {Object} layer  - Echarts Layer.

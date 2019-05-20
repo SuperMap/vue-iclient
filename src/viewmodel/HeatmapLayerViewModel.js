@@ -3,9 +3,9 @@ import WidgetViewModel from './WidgetViewModel';
  * @class HeatMapLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。
  * @param {String} data - 热力图数据。
- * @param {String} paint - mapboxgl paint 对象。
  * @param {Object} options - 可选参数。
  * @param {Object} [options.layerId] - 图层名。
+ * @param {Object} [options.layerStyle] - 图层样式配置。
  */
 
 export default class HeatMapLayerViewModel extends WidgetViewModel {
@@ -19,9 +19,9 @@ export default class HeatMapLayerViewModel extends WidgetViewModel {
     this.map = map;
     this.data = data;
     this.layerId = options.layerId || 'heatmap' + new Date().getTime();
-    let heatMapStyle = options.heatMapStyle;
-    this.paint = heatMapStyle && heatMapStyle.paint;
-    this.layout = heatMapStyle && heatMapStyle.layout;
+    let layerStyle = options.layerStyle;
+    this.paint = layerStyle && layerStyle.paint;
+    this.layout = layerStyle && layerStyle.layout;
     this._initializeHeatMapLayer();
   }
 

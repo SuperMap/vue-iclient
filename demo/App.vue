@@ -9,11 +9,11 @@
       <!-- <sm-mapv-layer :data-set="dataSet" :mapv-options="mapvOptions"></sm-mapv-layer> -->
       <!-- <sm-deckgl-layer :layer-type-id="layerTypeId" :deckgl-options="deckglOptions"></sm-deckgl-layer> -->
       <!-- <sm-data-flow-layer
-        data-flow-url="ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow"
+        service-url="ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow"
         register-token="0ra2250-rPu6ZnqHPKqcqDjGkDGDv3bg5HHy1SNNXf79OlN0ArG07bq3cGFz0v-nfBm2RAnYJ3LGBsuiptH43g.."
       ></sm-data-flow-layer>-->
       <!-- <sm-heatmap-layer :data='heatMapData'></sm-heatmap-layer> -->
-      <!-- <sm-echarts-layer :echartsOptions="echartsOptions"></sm-echarts-layer> -->
+      <!-- <sm-echarts-layer :options="echartsOptions"></sm-echarts-layer> -->
       <!-- <sm-cluster-layer :data='clusterLayerData'></sm-cluster-layer> -->
       <!-- <sm-ranksymbol-theme-layer
         :theme-layer-options="rankThemeLayerOptions"
@@ -148,10 +148,7 @@ import EchartsDataService from "../src/utils/EchartsDataService";
 export default {
   name: 'app',
   data() {
-    
-    var host = window.isLocal
-      ? window.server
-      : 'http://support.supermap.com.cn:8090';
+    var host = window.isLocal ? window.server : 'http://support.supermap.com.cn:8090';
     var attribution =
       "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox </a>" +
       " with <span>© <a href='http://iclient.supermap.io' target='_blank'>SuperMap iClient</a> | </span>" +
@@ -278,6 +275,7 @@ export default {
     };
 
     // 模拟 dataflow 实时数据
+    // SuperMap.SecurityManager.registerToken("ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow", '0ra2250-rPu6ZnqHPKqcqDjGkDGDv3bg5HHy1SNNXf79OlN0ArG07bq3cGFz0v-nfBm2RAnYJ3LGBsuiptH43g..');
     // var featureResult, dataFlowBroadcast, timer;
     // function broadcast() {
     //   var features = [];
@@ -483,15 +481,7 @@ export default {
       echartsOptions: echartsOptions,
       heatMapData: earthquake,
       heatMapLayerPaint: {
-        'heatmap-weight': [
-          'interpolate',
-          ['linear'],
-          ['get', 'mag'],
-          0,
-          0,
-          6,
-          1
-        ],
+        'heatmap-weight': ['interpolate', ['linear'], ['get', 'mag'], 0, 0, 6, 1],
         'heatmap-intensity': ['interpolate', ['linear'], ['zoom'], 0, 1, 9, 3],
         'heatmap-color': [
           'interpolate',

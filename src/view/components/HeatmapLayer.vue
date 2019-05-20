@@ -11,7 +11,7 @@ export default {
       type: Object,
       required: true
     },
-    heatMapStyle: {
+    layerStyle: {
       type: Object,
       default() {
         return new widgets.commontypes.HeatMapStyle();
@@ -21,7 +21,7 @@ export default {
   loaded() {
     this.viewModel = new HeatmapLayerViewModel(this.map, this.data, {
       layerId: this.layerId,
-      heatMapStyle: this.heatMapStyle
+      layerStyle: this.layerStyle
     });
   },
   render() {}

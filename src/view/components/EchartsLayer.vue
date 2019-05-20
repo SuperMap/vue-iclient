@@ -5,7 +5,7 @@ export default {
   name: 'SmEchartsLayer',
   mixins: [MapGetter],
   props: {
-    echartsOptions: {
+    options: {
       type: Object,
       required: true,
       validator(value) {
@@ -14,7 +14,7 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new EchatsLayerViewModel(this.map, this.echartsOptions);
+    this.viewModel = new EchatsLayerViewModel(this.map, this.options);
   },
   render() {}
 };

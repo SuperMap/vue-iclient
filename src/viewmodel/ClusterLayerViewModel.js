@@ -5,11 +5,11 @@ import WidgetViewModel from './WidgetViewModel';
  * @param {Object} data - Cluster layer data。
  * @param {Object} options - 可选参数。
  * @param {String} [options.layerId] - 图层 ID。
- * @param {Object} [options.clusterPointPaint] - 聚合点的 Paint 对象。
- * @param {Object} [options.clusterPointTextLayout] -  聚合点的文本 layout 对象
- * @param {Object} [options.unclusteredPointPaint] - 未聚合的点的 Paint 对象。
- * @param {number} [options.clusterRadius=50] - 图层聚合点半径。
- * @param {number} [options.clusterMaxZoom=14] - 图层最大显示级别。
+ * @param {Object} [options.clusteredPointStyle] - 聚合点的 Paint 对象。
+ * @param {Object} [options.unclusteredPointStyle] - 未聚合的点的 Paint 对象。
+ * @param {Object} [options.clusteredPointTextLayout] -  聚合点的文本 layout 对象
+ * @param {number} [options.radius=50] - 图层聚合点半径。
+ * @param {number} [options.maxZoom=14] - 图层最大显示级别。
  */
 
 export default class ClusterLayerViewModel extends WidgetViewModel {
@@ -33,8 +33,8 @@ export default class ClusterLayerViewModel extends WidgetViewModel {
       type: 'geojson',
       data: this.data,
       cluster: true,
-      clusterMaxZoom: this.options.clusterMaxZoom || 14,
-      clusterRadius: this.options.clusterRadius || 50
+      clusterMaxZoom: this.options.maxZoom || 14,
+      clusterRadius: this.options.radius || 50
     });
 
     this.map.addLayer({
@@ -42,7 +42,7 @@ export default class ClusterLayerViewModel extends WidgetViewModel {
       type: 'circle',
       source: this.layerId,
       filter: ['has', 'point_count'],
-      paint: this.options.clusterPointPaint || {
+      paint: (this.options.clusteredPointStyle && this.options.clusteredPointStyle.paint) || {
         'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 100, '#f1f075', 750, '#f28cb1'],
         'circle-radius': ['step', ['get', 'point_count'], 20, 100, 30, 750, 40]
       }
@@ -54,7 +54,7 @@ export default class ClusterLayerViewModel extends WidgetViewModel {
       type: 'symbol',
       source: this.layerId,
       filter: ['has', 'point_count'],
-      layout: this.options.clusterPointTextLayout || {
+      layout: this.options.clusteredPointTextLayout || {
         'text-field': '{point_count_abbreviated}',
         'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
         'text-size': 12
@@ -67,7 +67,7 @@ export default class ClusterLayerViewModel extends WidgetViewModel {
       type: 'circle',
       source: this.layerId,
       filter: ['!', ['has', 'point_count']],
-      paint: this.options.unclusteredPointPaint || {
+      paint: (this.options.unclusteredPointStyle && this.options.unclusteredPointStyle.paint) || {
         'circle-color': '#11b4da',
         'circle-radius': 4,
         'circle-stroke-width': 1,

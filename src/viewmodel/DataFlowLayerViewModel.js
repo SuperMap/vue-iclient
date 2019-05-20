@@ -7,7 +7,7 @@ import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
  * @category ViewModel
  * @classdesc 数据流图层功能类。
  * @param {mapboxgl.Map} map - mapboxgl map 对象。
- * @param {String} dataFlowUrl - 数据流服务地址。
+ * @param {String} serviceUrl - 数据流服务地址。
  * @param {Object} [options] - 可选参数。
  * @param {String} [options.layerId] - 图层 ID。
  * @param {Object} [options.layerStyle] - 指定图层样式。
@@ -21,10 +21,10 @@ import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
  */
 
 export default class DataFlowLayerViewModel extends WidgetViewModel {
-  constructor(map, dataFlowUrl, options) {
+  constructor(map, serviceUrl, options) {
     super();
-    if (!dataFlowUrl) {
-      throw new Error('dataFlowUrl is requierd');
+    if (!serviceUrl) {
+      throw new Error('serviceUrl is requierd');
     }
     if (!map) {
       throw new Error('map is requierd');
@@ -32,12 +32,12 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
 
     this.options = options || {};
     this.map = map;
-    this.dataFlowUrl = dataFlowUrl;
+    this.serviceUrl = serviceUrl;
     this.sourceID = options.layerId || 'dataFlow' + new Date().getTime();
     this.layerStyle = options.layerStyle || {};
 
     if (this.options.registerToken) {
-      SuperMap.SecurityManager.registerToken(this.dataFlowUrl, this.options.registerToken);
+      SuperMap.SecurityManager.registerToken(this.serviceUrl, this.options.registerToken);
     }
 
     this._initializeDataFlow();
@@ -66,7 +66,7 @@ export default class DataFlowLayerViewModel extends WidgetViewModel {
   }
 
   _initializeDataFlow() {
-    let dataService = new mapboxgl.supermap.DataFlowService(this.dataFlowUrl, {
+    let dataService = new mapboxgl.supermap.DataFlowService(this.serviceUrl, {
       geometry: this.options.geometry,
       excludeField: this.options.excludeField
     }).initSubscribe();
