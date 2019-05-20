@@ -11,9 +11,12 @@ import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
  * @classdesc Query ViewModel
  * @param {Object} map - map 对象。
  * @param {Object} options - 可选参数。
- * @param {Object} options.circleStyle - 点样式。
- * @param {Object} options.lineStyle - 线样式。
- * @param {Object} options.fillStyle - 面样式。
+ * @param {Object} [options.maxFeatures=200] - 查询最大返回要素个数。
+ * @param {Object} [options.layerStyle] - 查询结果图层样式配置。
+ * @param {Object} [options.layerStyle.line] - 线图层样式配置。
+ * @param {Object} [options.layerStyle.circle] - 点图层样式配置。
+ * @param {Object} [options.layerStyle.fill] - 面图层样式配置。
+ * @param {Object} [options.layerStyle.stokeLine] - 面图层样式配置。
  * @extends WidgetViewModel
  */
 export default class QueryViewModel extends WidgetViewModel {
@@ -21,13 +24,14 @@ export default class QueryViewModel extends WidgetViewModel {
     super();
     this.map = map;
     this.options = options || {};
-    this.maxReturn = this.options.maxReturn || 200;
+    this.maxFeatures = this.options.maxFeatures || 200;
+    this.layerStyle = options.layerStyle || {};
   }
 
   query(queryParameter, queryBounds) {
     this.queryParameter = queryParameter;
     this.strokeLayerID && this.map.removeLayer(this.strokeLayerID);
-    this.layerID && this.map.removeLayer(this.layerID);
+    this.layerID && this.map.getLayer(this.layerID) && this.map.removeLayer(this.layerID);
 
     this.queryBounds = queryBounds;
     if (queryBounds === 'currentMapBounds') {
@@ -52,7 +56,7 @@ export default class QueryViewModel extends WidgetViewModel {
         },
         bounds: this.bounds,
         startRecord: 0,
-        expectCount: this.maxReturn
+        expectCount: this.maxFeatures
       });
       new mapboxgl.supermap.QueryService(restMapParameter.url).queryByBounds(param, serviceResult => {
         this._mapQuerySucceed(serviceResult, restMapParameter);
@@ -64,7 +68,7 @@ export default class QueryViewModel extends WidgetViewModel {
           attributeFilter: restMapParameter.attributeFilter
         },
         startRecord: 0,
-        expectCount: this.maxReturn
+        expectCount: this.maxFeatures
       });
       new mapboxgl.supermap.QueryService(restMapParameter.url).queryBySQL(param, serviceResult => {
         this._mapQuerySucceed(serviceResult, restMapParameter);
@@ -78,7 +82,7 @@ export default class QueryViewModel extends WidgetViewModel {
         datasetNames: restDataParameter.dataName,
         bounds: this.bounds,
         fromIndex: 0,
-        toIndex: this.maxReturn - 1
+        toIndex: this.maxFeatures - 1
       });
       new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesByBounds(boundsParam, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
@@ -90,7 +94,7 @@ export default class QueryViewModel extends WidgetViewModel {
         },
         datasetNames: restDataParameter.dataName,
         fromIndex: 0,
-        toIndex: this.maxReturn - 1
+        toIndex: this.maxFeatures - 1
       });
       new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesBySQL(param, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
@@ -303,7 +307,7 @@ export default class QueryViewModel extends WidgetViewModel {
   }
   _addOverlayToMap(type, source, layerID) {
     let mbglStyle = {
-      circle: this.options.circleStyle || {
+      circle: {
         'circle-color': '#409eff',
         'circle-opacity': 0.6,
         'circle-radius': 8,
@@ -311,12 +315,12 @@ export default class QueryViewModel extends WidgetViewModel {
         'circle-stroke-color': '#409eff',
         'circle-stroke-opacity': 1
       },
-      line: this.options.lineStyle || {
+      line: {
         'line-width': 3,
         'line-color': '#409eff',
         'line-opacity': 1
       },
-      fill: this.options.fillStyle || {
+      fill: {
         'fill-color': '#409eff',
         'fill-opacity': 0.6,
         'fill-outline-color': '#409eff'
@@ -331,16 +335,19 @@ export default class QueryViewModel extends WidgetViewModel {
     };
     type = mbglTypeMap[type];
     if (type === 'circle' || type === 'line' || type === 'fill') {
+      let layerStyle = this.layerStyle[type];
       this.map.addLayer({
         id: layerID,
         type: type,
         source: source,
-        paint: mbglStyle[type]
+        paint: (layerStyle && layerStyle.paint) || mbglStyle[type],
+        layout: (layerStyle && layerStyle.layout) || {}
       });
     }
     if (type === 'fill') {
       this.strokeLayerID = layerID + '-StrokeLine';
-      let lineStyle = {
+      let stokeLineStyle = this.layerStyle.stokeLine;
+      let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
         'line-width': 3,
         'line-color': '#409eff',
         'line-opacity': 1
@@ -349,7 +356,8 @@ export default class QueryViewModel extends WidgetViewModel {
         id: this.strokeLayerID,
         type: 'line',
         source: source,
-        paint: lineStyle
+        paint: lineStyle,
+        layout: (stokeLineStyle && stokeLineStyle.layout) || {}
       });
     }
   }

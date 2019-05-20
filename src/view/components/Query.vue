@@ -107,6 +107,7 @@ import Theme from '../mixin/theme';
 import Control from '../mixin/control';
 import Card from '../mixin/card';
 import MapGetter from '../mixin/map-getter';
+import widgets from '../../index.js';
 
 import iPortalDataParameter from '../commontypes/iPortalDataParameter';
 import RestDataParameter from '../commontypes/RestDataParameter';
@@ -137,7 +138,7 @@ export default {
       type: String,
       default: '查询'
     },
-    maxReturn: {
+    maxFeatures: {
       type: Number,
       default: 200
     },
@@ -149,6 +150,36 @@ export default {
     },
     fillStyle: {
       type: Object
+    },
+    layerStyle: {
+      type: Object,
+      default() {
+        return {
+          line: new widgets.commontypes.LineStyle({
+            'line-width': 3,
+            'line-color': '#409eff',
+            'line-opacity': 1
+          }),
+          circle: new widgets.commontypes.CircleStyle({
+            'circle-color': '#409eff',
+            'circle-opacity': 0.6,
+            'circle-radius': 8,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#409eff',
+            'circle-stroke-opacity': 1
+          }),
+          fill: new widgets.commontypes.FillStyle({
+            'fill-color': '#409eff',
+            'fill-opacity': 0.6,
+            'fill-outline-color': '#409eff'
+          }),
+          stokeLine: new widgets.commontypes.LineStyle({
+            'line-width': 3,
+            'line-color': '#409eff',
+            'line-opacity': 1
+          })
+        };
+      }
     },
     iportalData: {
       type: Array,
@@ -248,9 +279,7 @@ export default {
     },
     changeLoadingStyle() {
       const spinDom = this.$el.querySelector('.sm-widget-query__result-info .path');
-      const loadingText = this.$el.querySelector(
-        '.sm-widget-query__result-info .el-loading-text'
-      );
+      const loadingText = this.$el.querySelector('.sm-widget-query__result-info .el-loading-text');
       spinDom && (spinDom.style.stroke = this.getColorStyle(0).color);
       loadingText && (loadingText.style.color = this.getColorStyle(0).color);
     },
@@ -285,10 +314,8 @@ export default {
         parentNode = e.target.parentNode;
         e.preventDefault();
       }
-      let classList = parentNode.querySelector('.sm-widget-query__job-info-body')
-        .classList;
-      let foldIcon = parentNode.querySelector('.sm-widget-query__job-info-header')
-        .children[2];
+      let classList = parentNode.querySelector('.sm-widget-query__job-info-body').classList;
+      let foldIcon = parentNode.querySelector('.sm-widget-query__job-info-header').children[2];
       if (classList.contains('hidden')) {
         classList.remove('hidden');
         foldIcon.classList.add('smwidgets-icons-legend-fold');
@@ -303,9 +330,7 @@ export default {
       }
     },
     changeSelectInputStyle() {
-      const selectDom =
-        this.chosenPanelNode &&
-        this.chosenPanelNode.querySelector('.el-input__inner');
+      const selectDom = this.chosenPanelNode && this.chosenPanelNode.querySelector('.el-input__inner');
       if (selectDom) {
         selectDom.style.borderColor = this.getTextColor;
         selectDom.style.color = this.getTextColor;
@@ -314,14 +339,9 @@ export default {
     },
     changeChosenStyle(visible) {
       const chosenOption =
-        this.chosenPanelNode &&
-        this.chosenPanelNode.querySelector(
-          '.el-select-dropdown__item.selected'
-        );
+        this.chosenPanelNode && this.chosenPanelNode.querySelector('.el-select-dropdown__item.selected');
       if (chosenOption) {
-        chosenOption.style.color = visible
-          ? this.getColorStyle(0).color
-          : '#606266';
+        chosenOption.style.color = visible ? this.getColorStyle(0).color : '#606266';
       }
     },
     changeChosenResultStyle(e) {
@@ -341,9 +361,7 @@ export default {
 
     registerEvents() {
       this.viewModel.on('querysucceeded', e => {
-        this.$el
-          .querySelector('.sm-widget-query__no-result')
-          .classList.remove('hidden');
+        this.$el.querySelector('.sm-widget-query__no-result').classList.remove('hidden');
         this.queryResult = e.result;
         this.viewModel.getPopupFeature();
         this.addPopupToFeature();
@@ -351,9 +369,7 @@ export default {
         this.jobButton.classList.remove('disabled');
       });
       this.viewModel.on('queryfailed', e => {
-        this.$el
-          .querySelector('.sm-widget-query__no-result')
-          .classList.remove('hidden');
+        this.$el.querySelector('.sm-widget-query__no-result').classList.remove('hidden');
         this.$message({
           showClose: true,
           message: e.message,
@@ -390,10 +406,7 @@ export default {
         }).$mount();
 
         this.$nextTick(() => {
-          this.popup = this.viewModel.addPopup(
-            featuerInfo.coordinates,
-            popupContainer.$el
-          );
+          this.popup = this.viewModel.addPopup(featuerInfo.coordinates, popupContainer.$el);
         });
       }
     },

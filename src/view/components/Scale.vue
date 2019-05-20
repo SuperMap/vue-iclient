@@ -4,12 +4,13 @@
 <script>
 import Theme from '../mixin/theme';
 import MapGetter from '../mixin/map-getter';
+import Control from '../mixin/control';
 
 import ScaleViewModel from '../../viewmodel/ScaleViewModel';
 
 export default {
   name: 'SmScale',
-  mixins: [MapGetter, Theme],
+  mixins: [MapGetter, Theme, Control],
   props: {
     unit: {
       type: String,
