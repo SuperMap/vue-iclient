@@ -1,13 +1,8 @@
 @import "./mixins/mixins.scss";
 
 @include b(chart) {
- 
-  &.sm-widget-chart{
+  & .sm-widget-card__content {
     width: 400px;
     height: 200px;
-  }
-  & .sm-widget-card__content {
-    width: 100%;
-    height: 100%;
   }
 }

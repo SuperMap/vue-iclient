@@ -7,10 +7,34 @@ import formatterUtil from './formatter';
 /**
  * @class EchartsDataService
  * @classdesc 图表微件功能类
+ * @param {Chart-dataset} dataset - 请求的参数
+ * @param {Array.<Chart-datasetOption>} datasetOptions - 数据解析的配置。
+ */
+
+/**
+ * @typedef {Object} Chart-dataset  - 数据来源
+ * @property {string} [type = 'iServer'] - 服务类型 iServer, iPortal。
+ * @property {string} url - 服务url地址。
+ * @property {boolean} [withCredentials = false] - 设置请求是否带cookie
+ * @property {SuperMap.FilterParameter} queryInfo - 查询条件
+ */
+/**
+ * @typedef {Object} Chart-datasetOption  - 解析数据的配置
+ * @property {string} seriesType - 图表类型line, bar, scatter, pie, radar, gauge。
+ * @property {boolean} [isStastic = false] - 是否统计数据。
+ * @property {boolean} [isStack = false] - 图表（line, bar, scatter）是否堆叠
+ * @property {string} xField - 数据的字段，坐标值
+ * @property {string} yField - 数据的字段，数据值
  */
 
 export default class EchartsDataService {
-  constructor() {
+  constructor(dataset, datasetOptions) {
+    // 设置默认值
+    dataset.type = dataset.type || 'iServer'; // 服务类型
+    dataset.withCredentials = dataset.withCredentials || false; // 请求认证
+
+    this.dataset = dataset;
+    this.datasetOptions = datasetOptions;
     this.dataCache = null; // 缓存的是请求后的数据
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
@@ -22,37 +46,18 @@ export default class EchartsDataService {
   /**
    * @function EchartsDataService.prototype.getDataOption
    * @description 获取符合echart data数据格式的数据, 入口函数。
-   * @param {SmChart-datasets} datasets - 请求的参数
-   * @param {Array.<SmChart-dataOption>} dataOptions - 数据解析的配置。
-   * @returns {Object}  promise
+   * @returns {Object}  带有请求的数据的promise对象
    */
-  /**
-   * @typedef {Object} SmChart-datasets  - 数据来源
-   * @property {string} [type = 'iServer'] - 服务类型 iServer, iPortal。
-   * @property {string} url - 服务url地址。
-   * @property {boolean} [withCredentials = false] - 设置请求是否带cookie
-   * @property {SuperMap.FilterParameter} queryInfo - 查询条件
-   */
-  /**
-   * @typedef {Object} SmChart-dataOption  - 解析数据的配置
-   * @property {string} seriesType - 图表类型line, bar, scatter, pie, radar, gauge。
-   * @property {boolean} [isStastic = false] - 是否统计数据。
-   * @property {boolean} [isStack = false] - 图表（line, bar, scatter）是否堆叠
-   * @property {string} xField - 数据的字段，坐标值
-   * @property {string} yField - 数据的字段，数据值
-   */
-  getDataOption(datasets, dataOptions) {
+  getDataOption() {
     // 设置datasets的默认配置type，withCredentials
     let promise = new Promise((resolve, reject) => {
-      // 将datasets的缓存为当前datasets
-      datasets = this._setDatasets(datasets);
       // 请求数据，请求成功后，解析数据
-      this._requestData(datasets)
+      this._requestData(this.dataset)
         .then(data => {
           // 设置this.data
           this._setData(data);
           // 解析数据，生成dataOption
-          let options = this.formatChartData(dataOptions, data);
+          let options = this.formatChartData(this.datasetOptions, data);
           resolve(options);
         })
         .catch(e => {
@@ -66,20 +71,22 @@ export default class EchartsDataService {
    * @function EchartsDataService.prototype.formatChartData
    * @description _requestData方法中返回的数据: 设置数据，转换数据格式。
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
-   * @param {Object} dataOptions - 数据解析的配置参数
-   * @returns {Object}  配置好的option
+   * @param {Object} datasetOptions - 数据解析的配置参数
+   * @returns {Object}  符合echart格式的数据
    */
-  formatChartData(dataOptions, data = this.dataCache) {
+  formatChartData(datasetOptions, data = this.dataCache) {
     // 清除数据缓存
     this._clearChartCache();
-    // 设置series Data
-    dataOptions.forEach(dataOption => {
+    // 设置datasetOptions
+    this._setDatasetOptions(datasetOptions);
+    // 生成seriedata
+    datasetOptions.forEach(item => {
       // 生成YData, XData
-      let fieldData = this._fieldsData(data, dataOption);
+      let fieldData = this._fieldsData(data, item);
       // 解析YData, XData，生成EchartsOption的data
-      let serieData = this._createDataOption(fieldData, dataOption);
+      let serieData = this._createDataOption(fieldData, item);
       // 设置坐标
-      this._createAxisData(fieldData, dataOption);
+      this._createAxisData(fieldData, item);
       this.serieDatas.push(serieData);
     });
     let gridAxis = this.gridAxis;
@@ -93,18 +100,14 @@ export default class EchartsDataService {
   }
 
   /**
-   * @function EchartsDataService.prototype._setDatasets
+   * @function EchartsDataService.prototype._setDatasetOptions
    * @private
-   * @description 设置datasets的默认参数，type, withCredentials
-   * @param {datasets} datasets - 请求的参数。
-   * @returns {Object}  默认值的datasets
+   * @description 设置datasetOptions
+   * @param {Array.<Chart-datasetOption>} datasetOptions - 数据解析的配置
    */
 
-  _setDatasets(datasets) {
-    // 设置默认值
-    datasets.type = datasets.type || 'iServer'; // 服务类型
-    datasets.withCredentials = datasets.withCredentials || false; // 请求认证
-    return datasets;
+  _setDatasetOptions(datasetOptions) {
+    this.datasetOptions = datasetOptions;
   }
 
   /**
@@ -163,16 +166,16 @@ export default class EchartsDataService {
    * @private
    * @description 生成chart的serie。
    * @param {Object} fieldData - 解析后的数据{xData,yData}
-   * @param {Object} dataOption - 数据解析的配置
+   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  配置好的serieData
    */
-  _createDataOption(fieldData, dataOption) {
-    let chartType = dataOption.seriesType;
+  _createDataOption(fieldData, datasetOption) {
+    let chartType = datasetOption.seriesType;
     let XData = fieldData.xData;
     let YData = fieldData.yData;
     let serieData = {
       type: chartType,
-      name: dataOption.yField,
+      name: datasetOption.yField,
       data: []
     };
     if (chartType === 'pie') {
@@ -186,7 +189,7 @@ export default class EchartsDataService {
       let yData = [...YData];
       serieData.data.push({
         value: [...YData],
-        name: dataOption.yField
+        name: datasetOption.yField
       });
       // 获取雷达图的max最大值
       let maxValue = max(yData);
@@ -195,7 +198,7 @@ export default class EchartsDataService {
       // line bar scatter gauge
       serieData.data = [...YData];
       // 是否堆叠数据（line,bar,scatter）
-      if (dataOption.isStack) {
+      if (datasetOption.isStack) {
         serieData.stack = '0';
       }
     }
@@ -207,11 +210,11 @@ export default class EchartsDataService {
    * @private
    * @description 生成chart的serie。
    * @param {Object} fieldData - 解析后的数据{xData,yData}
-   * @param {Object} dataOptions - 数据解析的配置
+   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  配置好的坐标data
    */
-  _createAxisData(fieldData, dataOption) {
-    let chartType = dataOption.seriesType;
+  _createAxisData(fieldData, datasetOption) {
+    let chartType = datasetOption.seriesType;
     let XData = fieldData.xData;
     let radarData = [];
     let axisData;
@@ -253,17 +256,17 @@ export default class EchartsDataService {
    * @private
    * @description 将请求回来的数据，转换成适用于chart配置的数据。
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
-   * @param {Object} dataOption - 数据解析的配置
+   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  解析好的Ydata，xdata
    */
-  _fieldsData(data, dataOption) {
+  _fieldsData(data, datasetOption) {
     let fieldCaptions, fieldValues, xFieldIndex, yFieldIndex, fieldValueIndex, xData, yData, result;
     fieldCaptions = data.fieldCaptions; // 所有x字段
-    xFieldIndex = fieldCaptions.indexOf(dataOption.xField); // x字段的下标
-    yFieldIndex = fieldCaptions.indexOf(dataOption.yField); // y字段的下标
+    xFieldIndex = fieldCaptions.indexOf(datasetOption.xField); // x字段的下标
+    yFieldIndex = fieldCaptions.indexOf(datasetOption.yField); // y字段的下标
     fieldValues = data.fieldValues[yFieldIndex]; // y字段的所有feature值
     // 该数据是否需要统计,统计的是数组下标
-    if (dataOption.isStastic) {
+    if (datasetOption.isStastic) {
       fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex);
       // 生成统计后的数据
       xData = this._stasticXData(fieldValueIndex);
