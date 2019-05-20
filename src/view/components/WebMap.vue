@@ -24,12 +24,11 @@ import Zoom from './Zoom';
  * @desc WebMap 微件。对接 iPortal/Online 地图类。目前支持地图坐标系包括：'EPSG:3857'，'EPSG:4326'，'EPSG:4490'，'EPSG:4214'，'EPSG:4610'。
  * @vue-prop {String} mapId - iPortal|Online 地图 ID。
  * @vue-prop {String} [target='map'] - 地图容器 ID。
- * @vue-prop {Object} [webMapOptions] - WebMap 可选参数。
- * @vue-prop {String} [webMapOptions.server='http://www.supermapol.com'] - WebMap 地图地址。
- * @vue-prop {String} [webMapOptions.credentialKey] - 凭证密钥。
- * @vue-prop {String} [webMapOptions.credentialValue] - 凭证值。
- * @vue-prop {String} [webMapOptions.withCredentials=false] - 请求是否携带 cookie。
- * @vue-prop {String} [webMapOptions.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
+ * @vue-prop {String} [serverUrl='http://www.supermapol.com'] - WebMap 地图地址。
+ * @vue-prop {String} [accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。
+ * @vue-prop {String} [accessToken] -Key 用于访问 iPortal 中受保护的服务。
+ * @vue-prop {String} [withCredentials=false] - 请求是否携带 cookie。
+ * @vue-prop {String} [excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
  * @vue-prop {Object} [mapOptions] - 地图可选参数。
  * @vue-prop {Array} [mapOptions.center] - 地图中心点。
  * @vue-prop {Number} [mapOptions.zoom] - 地图缩放级别。
@@ -50,7 +49,7 @@ import Zoom from './Zoom';
  */
 export default {
   name: 'SmWebMap',
-  viewModelProps: ['mapId', 'webMapOptions', 'mapOptions'],
+  viewModelProps: ['mapId', 'serverUrl', 'mapOptions'],
   components: {
     Pan,
     Scale,
@@ -66,11 +65,22 @@ export default {
       type: String,
       default: 'map'
     },
-    webMapOptions: {
-      type: Object,
-      default() {
-        return {};
-      }
+    serverUrl: {
+      type: String,
+      default: 'http://www.supermapol.com'
+    },
+    accessToken: {
+      type: String
+    },
+    accessKey: {
+      type: String
+    },
+    withCredentials: {
+      type: Boolean,
+      default: false
+    },
+    excludePortalProxyUrl: {
+      type: Boolean
     },
     mapOptions: {
       type: Object,
@@ -104,8 +114,15 @@ export default {
   },
   methods: {
     initializeWebMap() {
-      this.webMapOptions.target = this.target;
-      this.viewModel = new WebMapViewModel(this.mapId, this.webMapOptions);
+      let { target, serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl } = this.$props;
+      this.viewModel = new WebMapViewModel(this.mapId, {
+        target,
+        serverUrl,
+        accessToken,
+        accessKey,
+        withCredentials,
+        excludePortalProxyUrl
+      });
     },
     registerEvents() {
       this.viewModel.on('addlayerssucceeded', e => {

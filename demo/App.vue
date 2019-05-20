@@ -46,7 +46,7 @@
       ></sm-graph-theme-layer> -->
     </sm-map>
     <!-- 深色 -->
-    <!-- <sm-web-map :web-map-options="webMapOptions" map-id="1649097980"> -->
+    <!-- <sm-web-map server-url='http://support.supermap.com.cn:8092/' map-id="1649097980"> -->
     <!-- <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
       <sm-text title="文本框" :fontStyle='{ fontSize: "18", lineHeight: "18", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
       <sm-time-text :fontStyle='{ fontSize: "18", fontWeight: "700" }' timeType="date+second" ></sm-time-text>

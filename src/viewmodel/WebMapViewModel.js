@@ -61,9 +61,9 @@ const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
  * @param {number} id - iPortal|Online 地图 ID。
  * @param {Object} options - 参数。
  * @param {string} [options.target='map'] - 地图容器 ID。
- * @param {string} [options.server="http://www.supermapol.com"] - 地图的地址。
- * @param {string} [options.credentialKey] - 凭证密钥。
- * @param {string} [options.credentialValue] - 凭证值。
+ * @param {string} [options.serverUrl="http://www.supermapol.com"] - 地图的地址。
+ * @param {string} [options.accessToken] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。
+ * @param {string} [options.accessKey] - accessKey 用于访问 iPortal 中受保护的服务。
  * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
  * @fires WebMapViewModel#mapinitialized
@@ -78,11 +78,12 @@ export default class WebMapViewModel extends WidgetViewModel {
     super();
     this.mapId = id;
     options = options || {};
-    this.server = options.server || 'http://www.supermapol.com';
-    this.credentialKey = options.credentialKey;
-    this.credentialValue = options.credentialValue;
+    this.serverUrl = options.serverUrl || 'http://www.supermapol.com';
+    this.accessToken = options.accessToken;
+    this.accessKey = options.accessKey;
     this.withCredentials = options.withCredentials || false;
     this.target = options.target || 'map';
+    this.excludePortalProxyUrl = options.excludePortalProxyUrl;
     this.legendList = {};
     this._createWebMap();
   }
@@ -105,16 +106,28 @@ export default class WebMapViewModel extends WidgetViewModel {
   /**
    * @function WebMapViewModel.prototype.setWebMapOptions
    * @description 设置 WebMap 可选参数。
-   * @param {Object} webMapOptions - WebMap 可选参数。
-   * @param {string} [webMapOptions.target] - 地图容器 ID。
-   * @param {string} [webMapOptions.server] - 地图的地址。
-   * @param {string} [webMapOptions.credentialKey] - 凭证密钥。
-   * @param {string} [webMapOptions.credentialValue] - 凭证值。
+   * @param {string} [options.serverUrl] - 地图的地址。
+   * @param {string} [options.accessToken] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。
+   * @param {string} [options.accessKey] - accessKey 用于访问 iPortal 中受保护的服务。
    * @param {boolean} [webMapOptions.withCredentials] - 请求是否携带 cookie。
    * @param {boolean} [webMapOptions.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
    */
   setWebMapOptions(webMapOptions) {
-    this.server = webMapOptions.server;
+    let { serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl } = webMapOptions;
+    serverUrl && (this.serverUrl = serverUrl);
+    accessToken && (this.accessToken = accessToken);
+    accessKey && (this.accessKey = accessKey);
+    withCredentials && (this.withCredentials = withCredentials);
+    excludePortalProxyUrl && (this.excludePortalProxyUrl = excludePortalProxyUrl);
+    this._createWebMap();
+  }
+  /**
+   * @function WebMapViewModel.prototype.setServerUrl
+   * @description 设置地图的地址。
+   * @param {string} [options.serverUrl] - 地图的地址。
+   */
+  setServerUrl(serverUrl) {
+    this.serverUrl = serverUrl;
     this._createWebMap();
   }
 
@@ -149,20 +162,20 @@ export default class WebMapViewModel extends WidgetViewModel {
    * @description 登陆窗口后添加地图图层。
    */
   _createWebMap() {
-    let urlArr = this.server.split('');
+    let urlArr = this.serverUrl.split('');
     if (urlArr[urlArr.length - 1] !== '/') {
-      this.server += '/';
+      this.serverUrl += '/';
     }
-    let mapUrl = this.server + 'web/maps/' + this.mapId + '/map';
-    if (this.credentialValue && this.credentialKey) {
-      mapUrl += '?' + this.credentialKey + '=' + this.credentialValue;
+    let mapUrl = this.serverUrl + 'web/maps/' + this.mapId + '/map';
+    if (this.accessToken || this.accessKey) {
+      mapUrl += '?' + (this.accessToken && !this.accessKey) ? 'token=' + this.accessToken : 'key=' + this.accessKey;
     }
     let filter = 'getUrlResource.json?url=';
-    if (this.excludePortalProxyUrl && this.server.indexOf(filter) > -1) {
+    if (this.excludePortalProxyUrl && this.serverUrl.indexOf(filter) > -1) {
       // 大屏需求,或者有加上代理的
-      let urlArray = this.server.split(filter);
+      let urlArray = this.serverUrl.split(filter);
       if (urlArray.length > 1) {
-        mapUrl = urlArray[0] + filter + this.server + 'web/maps/' + this.mapId + '/map.json';
+        mapUrl = urlArray[0] + filter + this.serverUrl + 'web/maps/' + this.mapId + '/map.json';
       }
     }
     this._getMapInfo(mapUrl);
@@ -668,7 +681,7 @@ export default class WebMapViewModel extends WidgetViewModel {
       if ((layer.dataSource && layer.dataSource.serverId) || layer.layerType === 'MARKER') {
         // 获取 serverID
         let serverId = layer.dataSource ? layer.dataSource.serverId : layer.serverId;
-        let url = `${this.server}web/datas/${serverId}/content.json?pageSize=9999999&currentPage=1`;
+        let url = `${this.serverUrl}web/datas/${serverId}/content.json?pageSize=9999999&currentPage=1`;
         // 获取图层数据
         serverId &&
           SuperMap.FetchRequest.get(url, null, {
@@ -991,7 +1004,7 @@ export default class WebMapViewModel extends WidgetViewModel {
       let imgDom = imageInfo.img;
       if (!imgDom || !imgDom.src) {
         // 要组装成完整的url
-        imageInfo.url = this.server + imageInfo.url;
+        imageInfo.url = this.serverUrl + imageInfo.url;
       }
       this.map.loadImage(imageInfo.url || imgDom.src, (error, image) => {
         if (error) {
@@ -1205,7 +1218,7 @@ export default class WebMapViewModel extends WidgetViewModel {
           (defaultStyle.src.indexOf('http://') === -1 && defaultStyle.src.indexOf('https://') === -1)
         ) {
           // 说明地址不完整
-          defaultStyle.src = this.server + defaultStyle.src;
+          defaultStyle.src = this.serverUrl + defaultStyle.src;
         }
 
         let source = {
