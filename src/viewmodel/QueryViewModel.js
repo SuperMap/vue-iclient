@@ -8,7 +8,8 @@ import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 /**
  * @class QueryViewModel
- * @classdesc Query ViewModel
+ * @classdesc 查询组件功能类。
+ * @category ViewModel
  * @param {Object} map - map 对象。
  * @param {Object} options - 可选参数。
  * @param {Object} [options.maxFeatures=200] - 查询最大返回要素个数。
@@ -18,6 +19,9 @@ import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
  * @param {Object} [options.layerStyle.fill] - 面图层样式配置。
  * @param {Object} [options.layerStyle.stokeLine] - 面图层样式配置。
  * @extends WidgetViewModel
+ * @fires QueryViewModel#querysucceeded
+ * @fires QueryViewModel#queryfailed
+ * @fires QueryViewModel#getfeatureinfosucceeded
  */
 export default class QueryViewModel extends WidgetViewModel {
   constructor(map, options) {
@@ -27,7 +31,12 @@ export default class QueryViewModel extends WidgetViewModel {
     this.maxFeatures = this.options.maxFeatures || 200;
     this.layerStyle = options.layerStyle || {};
   }
-
+  /**
+   * @function QueryViewModel.prototype.query
+   * @desc 开始查询。
+   * @param {iPortalDataParameter|RestDataParameter|RestMapParameter} parameter - 查询配置参数。
+   * @param {String} [queryBounds='mapBounds'] - 查询范围，可选值为 mapBounds（地图全图范围），currentMapBounds（当前地图范围）。
+   */
   query(queryParameter, queryBounds) {
     this.queryParameter = queryParameter;
     this.strokeLayerID && this.map.removeLayer(this.strokeLayerID);
@@ -106,9 +115,19 @@ export default class QueryViewModel extends WidgetViewModel {
     if (result && result.totalCount !== 0) {
       let resultFeatures = result.recordsets[0].features.features;
       resultFeatures.length > 0 && (this.queryResult = { name: restMapParameter.name, result: resultFeatures });
-      this.addResultLayer(this.queryResult);
-      this.fire('querysucceeded', { originalresult: serviceResult, result: this.queryResult });
+      this._addResultLayer(this.queryResult);
+      /**
+       * @event QueryViewModel#querysucceeded
+       * @description 查询成功后触发。
+       * @property {Object} e  - 事件对象。
+       */
+      this.fire('querysucceeded', { result: this.queryResult });
     } else if (result && result.totalCount === 0) {
+      /**
+       * @event QueryViewModel#queryfailed
+       * @description 查询失败后触发。
+       * @property {Object} e  - 事件对象。
+       */
       this.fire('queryfailed', { message: i18n.t('query.noResults') });
     } else {
       this.fire('queryfailed', { message: i18n.t('query.queryFailed') });
@@ -120,7 +139,7 @@ export default class QueryViewModel extends WidgetViewModel {
     if (result && result.totalCount !== 0) {
       let resultFeatures = result.features.features;
       resultFeatures.length > 0 && (this.queryResult = { name: restDataParameter.name, result: resultFeatures });
-      this.addResultLayer(this.queryResult);
+      this._addResultLayer(this.queryResult);
       this.fire('querysucceeded', { result: this.queryResult });
     } else if (result && result.totalCount === 0) {
       this.fire('queryfailed', { message: i18n.t('query.noResults') });
@@ -244,7 +263,7 @@ export default class QueryViewModel extends WidgetViewModel {
     }
   }
 
-  addResultLayer() {
+  _addResultLayer() {
     this.layerID = this.queryParameter.name + new Date().getTime();
     let type = this.queryResult.result[0].geometry.type;
     let source = {
@@ -256,21 +275,28 @@ export default class QueryViewModel extends WidgetViewModel {
     };
     this._addOverlayToMap(type, source, this.layerID);
   }
+
+  /**
+   * @function QueryViewModel.prototype.getFilterFeature
+   * @desc 获取过滤后的要素。
+   * @param {String|Number} filter - 过滤条件，值应为要素的 properties 中的某个值。
+   * @returns {Object} 要素信息。
+   */
   getFilterFeature(filter) {
-    let filterValue = filter.split('：')[1].trim();
     let features = this.queryResult.result;
     let feature;
     for (let i = 0; i < features.length; i++) {
       let propertiesValue = features[i].properties.SmID || features[i].properties.SMID;
-      if (filterValue === propertiesValue) {
-        feature = this.getFeatrueInfo(features[i]);
+      if (filter === propertiesValue) {
+        feature = this._getFeatrueInfo(features[i]);
         break;
       }
     }
     this.map.flyTo({ center: feature.coordinates });
     return feature;
   }
-  getFeatrueInfo(feature) {
+
+  _getFeatrueInfo(feature) {
     let featureInfo = {};
     let coordinates;
     let geometry = feature.geometry;
@@ -292,13 +318,29 @@ export default class QueryViewModel extends WidgetViewModel {
     return featureInfo;
   }
 
+  /**
+   * @function QueryViewModel.prototype.getPopupFeature
+   * @desc 获得地图点击位置的要素信息。调用此方法后，需要监听 'getfeatureinfosucceeded' 事件获得要素。
+   */
   getPopupFeature() {
     this.map.on('click', this.layerID, e => {
       let feature = e.features[0];
-      let featureInfo = this.getFeatrueInfo(feature);
+      let featureInfo = this._getFeatrueInfo(feature);
+      /**
+       * @event QueryViewModel#getfeatureinfosucceeded
+       * @description 获取要素信息成功后触发。
+       * @property {Object} e  - 事件对象。
+       */
       this.fire('getfeatureinfosucceeded', { featureInfo });
     });
   }
+
+  /**
+   * @function QueryViewModel.prototype.addPopup
+   * @desc 添加弹窗。
+   * @param {Array} coordinates - 弹窗坐标。
+   * @param {HTMLElement} el - 弹窗 DOM 对象。
+   */
   addPopup(coordinates, el) {
     return new mapboxgl.Popup()
       .setLngLat(coordinates)
@@ -362,6 +404,3 @@ export default class QueryViewModel extends WidgetViewModel {
     }
   }
 }
-export var dataServiceQueryViewModel = function(dataserviceUrl) {
-  return new dataServiceQueryViewModel(dataserviceUrl);
-};

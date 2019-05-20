@@ -7,7 +7,7 @@ import widgets from '../../index.js';
 /**
  * @module DataFlowLayer
  * @category Components Layer
- * @desc 数据流图层微件。
+ * @desc 数据流图层组件。
  * @vue-prop {String} serviceUrl - 数据流服务地址。
  * @vue-prop {String} [layerId] - 图层 ID。
  * @vue-prop {GeoJSONObject} [geometry] - 指定几何范围，该范围内的要素才能被订阅。

@@ -64,7 +64,7 @@ import Vue from 'vue';
 /**
  * @module Search
  * @category Components
- * @desc 搜索微件。
+ * @desc 搜索组件。
  * @vue-prop {String} dataFlowUrl - 数据流服务地址。
  * @vue-prop {(Number|String)} [maxFeatures=8] - 最多可返回的要素数量，最大值为 100。
  * @vue-prop {Array} [layerNames] - 地图图层搜索配置，如：'['UNIQUE-民航数']'。
@@ -72,7 +72,7 @@ import Vue from 'vue';
  * @vue-prop {RestDataParameter} [restData] - iServer 数据服务搜索配置。
  * @vue-prop {iPortalDataParameter} [iportalData] - iPortal 数据搜索配置。
  * @vue-prop {AddressMatchParameter} [addressMatch] - iServer 地址匹配服务搜索配置。
- * @vue-prop {Object} [onlineLocalSearch] - online 本地搜索配置
+ * @vue-prop {Object} [onlineLocalSearch] - online 本地搜索配置。
  * @vue-prop {Boolean} [onlineLocalSearch.enable=true] - 是否开启 online 本地搜索。
  * @vue-computed {Number} getResultLength - 获取结果数据长度。
  */
@@ -161,6 +161,9 @@ export default {
       const { target } = e;
       target.style.color = this.getTextColor;
     },
+    /**
+     * 清除搜索结果。
+     */
     clearResult() {
       this.$message.closeAll();
       this.searchResult = [];
@@ -183,7 +186,11 @@ export default {
         }
       };
     },
-    search() {
+    /**
+     * 开始搜索。
+     * @param {String} searchKey - 搜索关键字。
+     */
+    search(searchKey) {
       this.clearResult();
       let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = this.$props;
       if (
@@ -194,8 +201,8 @@ export default {
         (iportalData && iportalData.length > 0) ||
         (addressMatch && addressMatch.length > 0)
       ) {
-        if (this.searchKey) {
-          this.searchTaskId = this.viewModel.search(this.searchKey);
+        if (searchKey || this.searchKey) {
+          this.searchTaskId = this.viewModel.search(searchKey || this.searchKey);
           this.regiterEvents();
           let icon = this.$el.querySelector('.el-input__icon');
           icon.classList.remove('el-icon-search');

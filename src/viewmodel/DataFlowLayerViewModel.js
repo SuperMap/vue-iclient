@@ -5,7 +5,7 @@ import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 /**
  * @class DataFlowLayerViewModel
  * @category ViewModel
- * @classdesc 数据流图层功能类。
+ * @classdesc 数据流图层组件功能类。
  * @param {mapboxgl.Map} map - mapboxgl map 对象。
  * @param {String} serviceUrl - 数据流服务地址。
  * @param {Object} [options] - 可选参数。

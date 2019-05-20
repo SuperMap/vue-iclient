@@ -126,6 +126,22 @@ let validators = (value, propType) => {
   return valid;
 };
 
+/**
+ * @module Query
+ * @category Components
+ * @desc 查询组件。
+ * @vue-prop {String} [iconClass='smwidgets-icons-search'] - 组件 icon 的类名。
+ * @vue-prop {String} [headerName='查询'] - 组件标题名。
+ * @vue-prop {Number} [maxFeatures=200] - 最大返回要素个数。
+ * @vue-prop {RestMapParameter} [restMap] - iServer 地图服务查询配置。
+ * @vue-prop {RestDataParameter} [restData] - iServer 数据服务查询配置。
+ * @vue-prop {iPortalDataParameter} [iportalData] - iPortal 数据查询配置。
+ * @vue-prop {Object} [layerStyle] - 图层样式配置。
+ * @vue-prop {widgets.commontypes.LineStyle} [layerStyle.line] - 线图层样式配置。
+ * @vue-prop {widgets.commontypes.CircleStyle} [layerStyle.circle] - 点图层样式配置。
+ * @vue-prop {widgets.commontypes.FillStyle} [layerStyle.fill] - 面图层样式配置。
+ * @vue-prop {widgets.commontypes.LineStyle} [layerStyle.stokeLine] - 面图层边框样式配置。
+ */
 export default {
   name: 'SmQuery',
   mixins: [MapGetter, Control, Theme, Card],
@@ -141,15 +157,6 @@ export default {
     maxFeatures: {
       type: Number,
       default: 200
-    },
-    circleStyle: {
-      type: Object
-    },
-    lineStyle: {
-      type: Object
-    },
-    fillStyle: {
-      type: Object
     },
     layerStyle: {
       type: Object,
@@ -283,6 +290,11 @@ export default {
       spinDom && (spinDom.style.stroke = this.getColorStyle(0).color);
       loadingText && (loadingText.style.color = this.getColorStyle(0).color);
     },
+    /**
+     * 开始查询。
+     * @param {iPortalDataParameter|RestDataParameter|RestMapParameter} parameter - 查询配置参数。
+     * @param {String} [bounds='mapBounds'] - 查询范围，可选值为 mapBounds（地图全图范围），currentMapBounds（当前地图范围）。
+     */
     query(parameter, bounds) {
       this.viewModel.query(parameter, bounds);
     },
@@ -355,7 +367,7 @@ export default {
     queryResultListClicked(e) {
       this.popup && this.popup.remove() && (this.popup = null);
       let filter = e.target.innerHTML;
-      let feature = this.viewModel.getFilterFeature(filter);
+      let feature = this.viewModel.getFilterFeature(filter.split('：')[1].trim());
       this.addPopup(feature);
     },
 
@@ -367,6 +379,12 @@ export default {
         this.addPopupToFeature();
         this.loadingInstance.close();
         this.jobButton.classList.remove('disabled');
+        /**
+         * @event querySucceeded
+         * @desc 查询成功后触发。
+         * @property {Object} e  - 事件对象。
+         */
+        this.$emit('query-succeeded', e);
       });
       this.viewModel.on('queryfailed', e => {
         this.$el.querySelector('.sm-widget-query__no-result').classList.remove('hidden');
@@ -378,6 +396,12 @@ export default {
         });
         this.loadingInstance.close();
         this.jobButton.classList.remove('disabled');
+        /**
+         * @event queryFailed
+         * @desc 查询失败后触发。
+         * @property {Object} e  - 事件对象。
+         */
+        this.$emit('query-failed', e);
       });
     },
     addPopupToFeature() {
