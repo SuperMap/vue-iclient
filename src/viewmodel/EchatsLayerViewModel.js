@@ -1,5 +1,5 @@
 import WidgetViewModel from './WidgetViewModel';
-// import echarts from 'echarts';
+import echarts from 'echarts';
 import EchartsLayer from '../../static/libs/echarts-layer/EchartsLayer';
 /**
  * @class EchatsLayerViewModel
