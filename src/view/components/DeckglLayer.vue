@@ -16,17 +16,17 @@ export default {
   name: 'SmDeckglLayer',
   mixins: [MapGetter, Layer],
   props: {
-    layerTypeId: {
+    layerType: {
       type: String,
       required: true,
-      validator(layerTypeId) {
+      validator(layerType) {
         const matchIndex = LAYER_TYPE_ID_LIST.findIndex(
-          item => item === layerTypeId
+          item => item === layerType
         );
         return matchIndex > -1;
       }
     },
-    deckglOptions: {
+    options: {
       type: Object,
       default() {
         return { data: [] };
@@ -35,7 +35,7 @@ export default {
   },
   loaded() {
     const matchIndex = LAYER_TYPE_ID_LIST.findIndex(
-      item => item === this.layerTypeId
+      item => item === this.layerType
     );
     if (matchIndex > -1) {
       this.viewModel = new DeckglLayerViewModel(this.map, this.$props);

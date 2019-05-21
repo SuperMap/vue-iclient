@@ -8,10 +8,7 @@
     :collapsed="collapsed"
     class="sm-widget-layer-list"
   >
-    <el-card
-      class="sm-widget-layer-list__el-card"
-      :style="[getBackgroundStyle]"
-    >
+    <el-card class="sm-widget-layer-list__el-card" :style="[getBackgroundStyle]">
       <div class="sm-widget-layer-list__content">
         <el-collapse
           v-for="(sourceValue,sourceKey,index) in sourceList"
@@ -25,7 +22,9 @@
             :style="[getTextColorStyle]"
           >
             <template slot="title">
-              <div :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()">
+              <div
+                :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
+              >
                 <i
                   class="el-icon-view"
                   :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
@@ -38,15 +37,12 @@
               v-for="(sourcelayerValue,sourcelayerKey,i) in sourceValue.sourceLayerList"
               :key="i"
               :value="sourcelayerValue[0].visibility | isVisible"
+              :title="sourcelayerKey"
               @change="toggleVisibility(sourcelayerKey,sourceKey,sourcelayerValue[0].visibility)"
             >{{ sourcelayerKey }}</el-checkbox>
           </el-collapse-item>
 
-          <el-card
-            v-else
-            class="sm-widget-layer-list__elcarditem"
-            :style="[getTextColorStyle]"
-          >
+          <el-card v-else class="sm-widget-layer-list__elcarditem" :style="[getTextColorStyle]">
             <i
               :class="['el-icon-view', sourceValue.visibility === 'visible' ? 'visible':'none']"
               :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
@@ -144,9 +140,13 @@ export default {
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add('layer-list-container');
     this.layerListViewModel = new LayerListViewModel(this.map);
-    this.sourceList = this.layerListViewModel.initLayerList();
-    this.layerListViewModel.on('layersUpdated', () => {
+    this.$nextTick(() => {
       this.sourceList = this.layerListViewModel.initLayerList();
+    });
+    this.layerListViewModel.on('layersUpdated', () => {
+      this.$nextTick(() => {
+        this.sourceList = this.layerListViewModel.initLayerList();
+      });
     });
   }
 };

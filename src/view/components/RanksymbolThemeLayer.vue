@@ -12,10 +12,9 @@ export default {
       required: true
     },
     layerName: {
-      type: String,
-      required: true
+      type: String
     },
-    themeLayerOptions: {
+    options: {
       type: Object,
       default() {
         return {};
@@ -24,7 +23,7 @@ export default {
     addLayerSucceededCallback: {
       type: Function
     },
-    layerFeatures: {
+    data: {
       type: Array,
       required: true
     }

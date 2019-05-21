@@ -2,11 +2,11 @@ import WidgetViewModel from './WidgetViewModel';
 import mapboxgl from '../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
-export default class RasterLayerViewModel extends WidgetViewModel {
+export default class RasterTileLayerViewModel extends WidgetViewModel {
   constructor(map, rasterLayerOptions) {
     super(map);
     const {
-      name,
+      layerId,
       tileSize,
       mapUrl,
       tiles,
@@ -19,7 +19,7 @@ export default class RasterLayerViewModel extends WidgetViewModel {
       opacity = 1,
       before
     } = rasterLayerOptions;
-    this.name = name;
+    this.layerId = layerId;
     this.tileSize = tileSize;
     this.mapUrl = mapUrl;
     this.tiles = tiles;
@@ -45,8 +45,8 @@ export default class RasterLayerViewModel extends WidgetViewModel {
   _addRestMapLayer() {
     const service = new mapboxgl.supermap.MapService(this.mapUrl);
     service.getMapInfo(mapObj => {
-      if (!this.name) {
-        this.name = mapObj.name;
+      if (!this.layerId) {
+        this.layerId = mapObj.name;
       }
       if (!this.tileSize && mapObj.viewer) {
         this.tileSize = mapObj.viewer.width;
@@ -63,7 +63,7 @@ export default class RasterLayerViewModel extends WidgetViewModel {
   _addLayer() {
     this.map.addLayer(
       {
-        id: this.name || `raster-layer-${new Date().getTime()}`,
+        id: this.layerId || `raster-layer-${new Date().getTime()}`,
         type: 'raster',
         layout: {
           visibility: this.visibility

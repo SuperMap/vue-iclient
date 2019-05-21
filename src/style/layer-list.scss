@@ -25,7 +25,8 @@
     // box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.1);
     margin-bottom: 4px;
     background: transparent;
-    .el-card__body {
+    border-bottom: 1px solid #ececec;
+    .el-collapse-item__header, .el-card__body {
       padding: 8px 5px;
     }
     .el-collapse-item__header {
@@ -34,9 +35,8 @@
       // padding-left: 20px;
       background: transparent;
       .el-icon-view {
-        font-size: 18px;
-        margin-right: 10px;
-        vertical-align: -2px;
+        font-size: 16px;
+        margin-right: 8px;
       }
       .visible {
         color: $--color-primary;
@@ -53,10 +53,7 @@
         overflow: hidden;
         .el-checkbox {
           float: left;
-          margin-left: 45px;
-          &:last-child {
-            margin-left: 45px;
-          }
+          margin-left: 36px;
         }
       }
     }
