@@ -6,12 +6,9 @@ import i18n from '../lang/index.js';
 
 /**
  * @class OpenFileViewModel
+ * @param {mapboxgl.map} map - mapboxgl map 对象。
  * @description OpenFile viewModel.
  * @extends WidgetViewModel
- * @fires filesizeexceed
- * @fires errorfileformat
- * @fires openfilesucceeded
- * @fires openfilefailed
  */
 class OpenFileViewModel extends WidgetViewModel {
   constructor(map) {
@@ -28,11 +25,11 @@ class OpenFileViewModel extends WidgetViewModel {
     // 文件格式不支持
     if (!fileType) {
       /**
+       * @event errorfileformat
        * @description 文件格式不支持时触发。
        * @property {string} messageType - 警告类型。
        * @property {string} message - 警告内容。
        */
-
       this.fire('errorfileformat', { messageType: 'failure', message: i18n.t(`openFile.fileTypeUnsupported`) });
       return false;
     }
@@ -69,6 +66,7 @@ class OpenFileViewModel extends WidgetViewModel {
           geojson => {
             if (geojson) {
               /**
+               * @event openfilesucceeded
                * @description 打开文件成功。
                * @property {GeoJSONObject} result - GeoJSON 格式数据。
                * @property {string} layerName - 图层名。
@@ -81,12 +79,24 @@ class OpenFileViewModel extends WidgetViewModel {
             }
           },
           e => {
+            /**
+             * @event openfilefailed
+             * @description 打开文件失败。
+             * @property {String} messageType - 信息类型。
+             * @property {Object} message - e。
+             */
             me.fire('openfilefailed', { messageType: 'failure', message: e });
           },
           this
         );
       },
       () => {
+        /**
+         * @event openfilefailed
+         * @description 打开文件失败。
+         * @property {String} messageType - 信息类型。
+         * @property {String} message - 失败信息。
+         */
         me.fire('openfilefailed', { messageType: 'failure', message: i18n.t(`openFile.openFileFail`) });
       },
       this

@@ -1,33 +1,21 @@
 <script>
 import MapGetter from '../mixin/map-getter';
 import Layer from '../mixin/layer';
+import GeojsonLayerViewModel from '../../viewmodel/GeojsonLayerViewModel';
 
 export default {
-  name: 'SmGeoJSONLayer',
+  name: 'SmGeojsonLayer',
   mixins: [MapGetter, Layer],
   props: {
-    layerStyles: {
+    layerStyle: {
       type: Object
     },
     data: {
       type: Object
-    },
-    vectorType: {
-      type: String
     }
   },
   loaded() {
-    let { paint, layout } = this.layerStyles[this.vectorType];
-    this.map.addLayer({
-      id: this.layerId,
-      type: this.vectorType,
-      source: {
-        type: 'geojson',
-        data: this.data
-      },
-      layout,
-      paint
-    });
+    this.viewModel = new GeojsonLayerViewModel(this.map, this.$props);
   },
   render() {}
 };

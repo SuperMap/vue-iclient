@@ -1,13 +1,13 @@
 <template>
   <div :class="['sm-widget-open-file',mapboxglClass]">
     <label for="input_file" class="sm-widget-open-file__title">
-      <span>{{ $t('openFile.selectFile') }}</span>
+      <span>{{ text }}</span>
     </label>
     <input
       id="input_file"
       class="sm-widget-open-file__input"
       type="file"
-      accept=".json, .geojson, .csv, .xlsx, .xls, .shp, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
+      :accept="accept"
       @change="fileSelect($event)"
     >
   </div>
@@ -18,15 +18,14 @@ import Theme from '../mixin/theme';
 import Control from '../mixin/control';
 import MapGetter from '../mixin/map-getter';
 import OpenFileViewModel from '../../viewmodel/OpenFileViewModel';
-import geoJSONLayer from './GeoJSONLayer';
-// import center from '@turf/center';
+import geoJSONLayer from './GeojsonLayer';
 import bbox from '@turf/bbox';
 import Vue from 'vue';
+import UniqueId from 'lodash.uniqueid';
 
 export default {
   name: 'SmOpenFile',
   mixins: [Theme, Control, MapGetter],
-  // relativeMap: true,
   props: {
     iconClass: {
       type: String,
@@ -36,16 +35,39 @@ export default {
       type: Boolean,
       default: true
     },
-    isAddToMap: {
+    addToMap: {
       type: Boolean,
       default: true
+    },
+    text: {
+      type: String,
+      default: '打开文件'
     },
     notify: {
       type: Boolean,
       default: true
     },
-    layerStyles: {
+    layerStyle: {
       type: Object
+    },
+    clearLastLayer: {
+      type: Boolean,
+      default: false
+    },
+    accept: {
+      type: Array,
+      default: function() {
+        return [
+          '.json',
+          '.geojson',
+          '.csv',
+          '.xlsx',
+          '.xls',
+          '.shp',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.ms-excel'
+        ];
+      }
     }
   },
   data() {
@@ -56,12 +78,16 @@ export default {
         LineString: 'line',
         MultiPolygon: 'fill'
       },
-      mapboxglClass: ''
+      mapboxglClass: '',
+      prevLayerId: ''
     };
   },
   methods: {
     fileSelect(e) {
       this.viewModel && this.viewModel.readFile(e);
+    },
+    getUniqueId() {
+      return UniqueId(`layer-${this.$options.name.toLowerCase()}-`);
     }
   },
   loaded() {
@@ -87,15 +113,22 @@ export default {
     });
 
     this.viewModel.on('openfilesucceeded', e => {
-      if (this.isAddToMap) {
+      let layerId = this.getUniqueId();
+
+      if (this.clearLastLayer) {
+        this.prevLayerId && this.map.removeLayer(this.prevLayerId);
+        this.prevLayerId = layerId;
+      }
+
+      if (this.addToMap) {
         let type = this.transformType[e.result.features[0].geometry.type];
 
         const geoJSONLayerExtend = Vue.extend(geoJSONLayer);
         const geoJSONLayerInstance = new geoJSONLayerExtend({
           propsData: {
             data: e.result,
-            layerStyles: this.layerStyles,
-            vectorType: type
+            layerStyle: this.layerStyle[type],
+            layerId
           }
         });
 
@@ -103,7 +136,7 @@ export default {
         this.map.getContainer().appendChild(component.$el);
       }
 
-      if (this.fitBounds && this.isAddToMap) {
+      if (this.fitBounds && this.addToMap) {
         this.map.fitBounds(bbox(e.result), { maxZoom: 12 });
       }
 
