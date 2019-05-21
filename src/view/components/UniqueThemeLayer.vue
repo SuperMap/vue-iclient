@@ -8,10 +8,9 @@ export default {
   mixins: [MapGetter, Layer],
   props: {
     layerName: {
-      type: String,
-      required: true
+      type: String
     },
-    themeLayerOptions: {
+    options: {
       type: Object,
       default() {
         return {};
@@ -20,7 +19,7 @@ export default {
     addLayerSucceededCallback: {
       type: Function
     },
-    layerFeatures: {
+    data: {
       type: Array,
       required: true
     }
@@ -28,9 +27,6 @@ export default {
   loaded() {
     this.viewModel = new UniqueThemeLayerViewModel(this.map, this.$props);
     this.addLayerSucceededCallback && this.addLayerSucceededCallback(this.viewModel.themeLayer, this.map);
-  },
-  update() {
-    console.log(this.layerFeatures);
   },
   render() {}
 };

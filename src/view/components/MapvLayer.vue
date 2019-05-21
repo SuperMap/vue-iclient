@@ -6,13 +6,13 @@ export default {
   name: 'SmMapvLayer',
   mixins: [MapGetter, Layer],
   props: {
-    dataSet: {
+    data: {
       type: Object,
       default() {
         return {};
       }
     },
-    mapvOptions: {
+    options: {
       type: Object,
       default() {
         return {};

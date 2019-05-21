@@ -1,14 +1,11 @@
 <script>
 import MapGetter from '../mixin/map-getter';
 import Layer from '../mixin/layer';
-import RasterLayerViewModel from '../../viewmodel/RasterLayerViewModel';
+import RasterTileLayerViewModel from '../../viewmodel/RasterTileLayerViewModel';
 export default {
-  name: 'SmRasterLayer',
+  name: 'SmRasterTileLayer',
   mixins: [MapGetter, Layer],
   props: {
-    name: {
-      type: String
-    },
     tileSize: {
       type: Number
     },
@@ -20,14 +17,6 @@ export default {
     },
     bounds: {
       type: Array
-    },
-    minZoom: {
-      type: Number,
-      default: 0
-    },
-    maxZoom: {
-      type: Number,
-      default: 22
     },
     attribution: {
       type: String
@@ -49,13 +38,10 @@ export default {
       validator(opacity) {
         return opacity >= 0 && opacity <= 1;
       }
-    },
-    before: {
-      type: String
     }
   },
   loaded() {
-    this.viewModel = new RasterLayerViewModel(this.map, this.$props);
+    this.viewModel = new RasterTileLayerViewModel(this.map, this.$props);
   },
   render() {}
 };

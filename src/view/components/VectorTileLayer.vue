@@ -8,9 +8,6 @@ export default {
   props: {
     styleOptions: {
       type: [String, Object]
-    },
-    before: {
-      type: String
     }
   },
   loaded() {
