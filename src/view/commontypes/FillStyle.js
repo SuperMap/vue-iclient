@@ -11,11 +11,11 @@ export default class FillStyle {
       visibility: 'visible'
     };
     this.paint = {
-      'fill-opacity': 1,
-      'fill-color': '#000',
+      'fill-opacity': 0.8,
+      'fill-color': '#3fb1e3',
       'fill-translate': [0, 0],
       'fill-antialias': true,
-      'fill-outline-color': '#000',
+      'fill-outline-color': '#3fb1e3',
       'fill-translate-anchor': 'map'
     };
     Object.assign(this.paint, paint);

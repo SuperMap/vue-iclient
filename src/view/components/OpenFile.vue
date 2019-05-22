@@ -19,6 +19,7 @@ import Control from '../mixin/control';
 import MapGetter from '../mixin/map-getter';
 import OpenFileViewModel from '../../viewmodel/OpenFileViewModel';
 import geoJSONLayer from './GeojsonLayer';
+import { LineStyle, FillStyle, CircleStyle } from '../commontypes';
 import bbox from '@turf/bbox';
 import Vue from 'vue';
 import UniqueId from 'lodash.uniqueid';
@@ -48,7 +49,14 @@ export default {
       default: true
     },
     layerStyle: {
-      type: Object
+      type: Object,
+      default: function() {
+        return {
+          line: new LineStyle(),
+          circle: new CircleStyle(),
+          fill: new FillStyle()
+        };
+      }
     },
     clearLastLayer: {
       type: Boolean,
@@ -113,6 +121,18 @@ export default {
     });
 
     this.viewModel.on('openfilesucceeded', e => {
+      let result = e.result;
+      if (!result) {
+        return;
+      }
+      if (!e.result.features.length) {
+        this.$message({
+          message: this.$t('openFile.openEmptyFile'),
+          type: 'error'
+        });
+        this.$emit('open-empty-file', result);
+        return;
+      }
       let layerId = this.getUniqueId();
 
       if (this.clearLastLayer) {
@@ -121,12 +141,12 @@ export default {
       }
 
       if (this.addToMap) {
-        let type = this.transformType[e.result.features[0].geometry.type];
+        let type = this.transformType[result.features[0].geometry.type];
 
         const geoJSONLayerExtend = Vue.extend(geoJSONLayer);
         const geoJSONLayerInstance = new geoJSONLayerExtend({
           propsData: {
-            data: e.result,
+            data: result,
             layerStyle: this.layerStyle[type],
             layerId
           }
@@ -137,7 +157,7 @@ export default {
       }
 
       if (this.fitBounds && this.addToMap) {
-        this.map.fitBounds(bbox(e.result), { maxZoom: 12 });
+        this.map.fitBounds(bbox(result), { maxZoom: 12 });
       }
 
       this.notify &&
@@ -145,7 +165,7 @@ export default {
           message: this.$t('openFile.openFileSuccess'),
           type: 'success'
         });
-      this.$emit('open-file-succeeded', e.result);
+      this.$emit('open-file-succeeded', result);
     });
   }
 };

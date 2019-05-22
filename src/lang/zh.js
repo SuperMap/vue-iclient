@@ -77,6 +77,7 @@ export default {
     fileTypeUnsupported: '不支持该文件格式！',
     openFileFail: '打开文件失败！',
     openFileSuccess: '打开文件成功!',
-    selectFile: '选择文件'
+    selectFile: '选择文件',
+    openEmptyFile: '打开文件为空！'
   }
 };

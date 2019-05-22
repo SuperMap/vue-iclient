@@ -11,8 +11,8 @@ export default class CircleStyle {
       visibility: 'visible'
     };
     this.paint = {
-      'circle-radius': 5,
-      'circle-color': '#000',
+      'circle-radius': 6,
+      'circle-color': '#3fb1e3',
       'circle-opacity': 1,
       'circle-blur': 0,
       'circle-translate': [0, 0],

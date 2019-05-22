@@ -14,8 +14,8 @@ export default class LineStyle {
     };
     this.paint = {
       'line-opacity': 1,
-      'line-color': '#000',
-      'line-width': 1,
+      'line-color': '#3fb1e3',
+      'line-width': 3,
       'line-blur': 1
     };
     Object.assign(this.paint, paint);
