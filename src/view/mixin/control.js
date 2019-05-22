@@ -38,7 +38,7 @@ export default {
     }
   },
   methods: {
-    control() {
+    initControl() {
       var self = this;
       return {
         onAdd() {
@@ -49,16 +49,17 @@ export default {
         }
       };
     },
-    addTo(map) {
-      this.map = map;
-      map.addControl(this.control(), this.position);
+    addTo() {
+      this.control = this.initControl();
+      this.map.addControl(this.control, this.position);
       this.$el.classList.add('mapboxgl-ctrl');
     },
     remove() {
-      this.map.removeControl(this.control());
+      this.control && this.map.removeControl(this.control);
     },
     mapLoaded(map) {
-      this.addTo(map);
+      this.map = map;
+      this.addTo();
       if (this.filterDelayLoad) {
         this.isShow = true;
         this.$el.style && (this.$el.style.display = 'block');
