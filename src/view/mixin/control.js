@@ -29,15 +29,11 @@ export default {
         this.$el.style && (this.$el.style.display = 'none');
       }
       const targetName = this.$parent.target || mapEvent.firstMapTarget;
+      if (mapEvent.$options.getMap(targetName)) {
+        this.mapLoaded(mapEvent.$options.getMap(targetName));
+      }
       mapEvent.$on(`initMap-${targetName}`, map => {
-        this.addTo(map);
-        if (this.filterDelayLoad) {
-          this.isShow = true;
-          this.$el.style && (this.$el.style.display = 'block');
-        }
-        // if (this.$options.name.toLowerCase() === 'smchart') {
-        //   this.viewModel.resize();
-        // }
+        this.mapLoaded(map);
       });
     }
   },
@@ -58,8 +54,18 @@ export default {
       map.addControl(this.control(), this.position);
       this.$el.classList.add('mapboxgl-ctrl');
     },
-    remove(map) {
-      map.removeControl(this.control());
+    remove() {
+      this.map.removeControl(this.control());
+    },
+    mapLoaded(map) {
+      this.addTo(map);
+      if (this.filterDelayLoad) {
+        this.isShow = true;
+        this.$el.style && (this.$el.style.display = 'block');
+      }
     }
+  },
+  beforeDestroy() {
+    this.remove();
   }
 };

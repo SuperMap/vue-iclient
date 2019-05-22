@@ -92,13 +92,32 @@ export default {
       }
     },
     panControl: {
-      type: Object
+      type: Object,
+      default() {
+        return {
+          show: false,
+          position: 'top-left'
+        };
+      }
     },
     scaleControl: {
-      type: Object
+      type: Object,
+      default() {
+        return {
+          show: false,
+          position: 'bottom-right'
+        };
+      }
     },
     zoomControl: {
-      type: Object
+      type: Object,
+      default() {
+        return {
+          show: false,
+          position: 'top-left',
+          zoomWithSlider: false
+        };
+      }
     }
   },
   computed: {
