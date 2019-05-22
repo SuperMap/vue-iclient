@@ -13,10 +13,11 @@ import {
   TableColumn,
   Message,
   Loading,
-  Progress,
+  // Progress,
   Row,
   Col
 } from 'element-ui';
+import { Progress } from 'ant-design-vue';
 import i18n, {
   setLocale,
   lang

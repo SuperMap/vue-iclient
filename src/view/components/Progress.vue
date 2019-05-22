@@ -1,14 +1,14 @@
 <template>
   <div class="sm-widget-progress">
-    <el-progress
-      :percentage="parseFloat(percentage)"
+    <a-progress
+      :percent="parseFloat(percentage)"
       :type="type"
       :stroke-width="parseFloat(strokeWidth)"
-      :show-text="showText"
+      :show-info="showText"
       :width="type==='circle'?parseFloat(circleWidth):null"
-      :color="curColor"
+      :stroke-color="curColor"
       :status="status"
-    ></el-progress>
+    ></a-progress>
   </div>
 </template>
 <script>
@@ -29,7 +29,7 @@ export default {
     },
     strokeWidth: {
       type: [Number, String],
-      default: 10
+      default: 6
     },
     status: {
       type: String

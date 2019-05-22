@@ -1,11 +1,11 @@
 <template>
   <div id="app">
-    <sm-map :map-options="mapOptions">
-      <sm-open-file :layerStyles="layerStyles"></sm-open-file>
+    <!-- <sm-map :map-options="mapOptions"> -->
+      <!-- <sm-open-file :layerStyles="layerStyles"></sm-open-file> -->
        <!-- 用于测试<el-button @click="changeOptions" style="position:absolute;left:210px;z-index:300">changeOptions:</el-button>
       <el-button @click="changeDataOtions" style="position:absolute;left:350px;z-index:300">changeDataOtions:</el-button>
     <el-button @click="changeDataSet" style="position:absolute;left:500px;z-index:300">changeDataSet:</el-button> -->
-      <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" headerName="标题"></sm-chart>
+      <!-- <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" headerName="标题"></sm-chart> -->
       <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer> -->
       <!-- <sm-mapv-layer :data-set="dataSet" :mapv-options="mapvOptions"></sm-mapv-layer> -->
       <!-- <sm-deckgl-layer :layer-type-id="layerTypeId" :deckgl-options="deckglOptions"></sm-deckgl-layer> -->
@@ -45,69 +45,41 @@
         :layer-features="graphFeatures"
         charts-type="Bar"
       ></sm-graph-theme-layer> -->
-    </sm-map>
+    <!-- </sm-map> -->
     <!-- 深色 -->
-    <!-- <sm-web-map server-url='http://support.supermap.com.cn:8092/' map-id="1649097980"> -->
-    <!-- <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
-      <sm-text title="文本框" :fontStyle='{ fontSize: "18", lineHeight: "18", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
-      <sm-time-text :fontStyle='{ fontSize: "18", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
-      <sm-icon class-name="edit" size="20" weight="800" background='unset' text-color='#333'></sm-icon>
-      <sm-progress type="circle" :percentage="80"></sm-progress>
-      <sm-layer-list position="top-right"/>
-      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
-    <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/>-->
-    <!-- <sm-zoom :show-zoom-slider="true"></sm-zoom>
-      <sm-text title="文本框" :fontStyle='{ fontSize: "18", lineHeight: "18", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
-      <sm-time-text :fontStyle='{ fontSize: "18", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
-      <sm-icon class-name="edit" size="20" weight="800" background='unset' text-color='#333'></sm-icon>
-      <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
-      <sm-query
-        :iportal-data="iportalDataQuery"
-        :rest-data="restDataQuery"
-        :rest-map="restMapQuery"
-      ></sm-query>
-      <sm-search
-        position="top-right"
-        :layer-names="layerSourceNames"
-        :address-match="addressMatch"
-        :rest-map="restMapSearch"
-        :rest-data="restDataSearch"
-        :iportal-data="iportalData"
-        :online-local-search="onlineLocalSearch"
-      ></sm-search>
-      <sm-pan></sm-pan>
-      <sm-progress type="circle" :percentage="80"></sm-progress>
-      <sm-mini-map position="bottom-right"></sm-mini-map>
-      <sm-measure position="top-right"></sm-measure>
-      <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right" :style='{width:"100px"}'/>
-      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-left" :collapsed="false"></sm-legend>
-      <sm-layer-list position="top-right"/>-->
+    <sm-web-map server-url='http://support.supermap.com.cn:8092/' map-id="1649097980">
+    <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
+    <sm-text title="文本框" :fontStyle='{ fontSize: "18", lineHeight: "18", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
+    <sm-time-text :fontStyle='{ fontSize: "18", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
+    <sm-icon class-name="edit" size="20" weight="800" background='unset' text-color='#333'></sm-icon>
+    <sm-progress type="circle" :percentage="80"></sm-progress>
+    <sm-layer-list position="top-right"/>
+    <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-right" :collapsed="false"></sm-legend>
+    <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/>
+    <sm-zoom :show-zoom-slider="true"></sm-zoom>
+    <sm-query
+      :iportal-data="iportalDataQuery"
+      :rest-data="restDataQuery"
+      :rest-map="restMapQuery"
+    ></sm-query>
+    <sm-search
+      position="top-right"
+      :layer-names="layerSourceNames"
+      :address-match="addressMatch"
+      :rest-map="restMapSearch"
+      :rest-data="restDataSearch"
+      :iportal-data="iportalData"
+      :online-local-search="onlineLocalSearch"
+    ></sm-search>
+    <sm-pan></sm-pan>
+    <!-- <sm-mini-map position="bottom-right"></sm-mini-map> -->
+    <sm-measure position="top-right"></sm-measure>
     <!-- 浅色 -->
-
-    <!-- <sm-query
-        :iportal-data="iportalDataQuery"
-        :rest-data="restDataQuery"
-        :rest-map="restMapQuery"
-      ></sm-query>
-      <sm-search
-        position="top-right"
-        :layer-names="layerSourceNames"
-        :address-match="addressMatch"
-        :rest-map="restMapSearch"
-        :rest-data="restDataSearch"
-        :iportal-data="iportalData"
-        :online-local-search="onlineLocalSearch"
-      ></sm-search>
-      <sm-pan></sm-pan>
-      <sm-zoom :show-zoom-slider="true"></sm-zoom>
-      <sm-scale position="bottom-left"></sm-scale>
-      <sm-mini-map position="bottom-right"></sm-mini-map>
-    <sm-measure position="top-right"></sm-measure>-->
 
     <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer>
     <sm-vector-tile-layer style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"></sm-vector-tile-layer>-->
     <!-- <sm-data-flow-layer dataFlowUrl='ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow'></sm-data-flow-layer> -->
-    <!-- </sm-web-map> -->
+    </sm-web-map>
     <!-- "http://192.168.12.230:8092/iportal/web/scenes/2065175708" -->
     <!-- <sm-web-scene
       scene-url="http://support.supermap.com.cn:8090/iserver/services/3D-CBD/rest/realspace"

@@ -22,7 +22,8 @@ module.exports = function (api) {
         "styleLibraryName": "theme-chalk"
       }
     ],
-    "transform-flow-strip-types"
+    "transform-flow-strip-types",
+    ["import", { "libraryName": "ant-design-vue", "libraryDirectory": "es", "style": "css" }]
   ];
 
   return {
