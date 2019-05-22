@@ -1,10 +1,10 @@
 <template>
   <div :id="target" class="sm-widget-map">
     <slot></slot>
-    <Pan v-if="panControl" :position="panControl.position"/>
-    <Scale v-if="scaleControl" :position="scaleControl.position"/>
+    <Pan v-if="panControl.show" :position="panControl.position"/>
+    <Scale v-if="scaleControl.show" :position="scaleControl.position"/>
     <Zoom
-      v-if="zoomControl"
+      v-if="zoomControl.show"
       :show-zoom-slider="zoomControl.zoomWithSlider"
       :position="zoomControl.position"
     />
@@ -39,10 +39,13 @@ import Zoom from './Zoom';
  * @vue-prop {Number} [mapOptions.bearing=0] - 地图的初始方位。
  * @vue-prop {Number} [mapOptions.pitch=0] - 地图的初始俯仰。
  * @vue-prop {Object} [panControl] - 位移控件配置参数。
+ * @vue-prop {Boolean} [panControl.show=false] - 是否显示位移控件。
  * @vue-prop {String} [panControl.position="top-left"] - 位移控件放置位置。
  * @vue-prop {Object} [scaleControl] - 比例尺控件配置参数。
+ * @vue-prop {Boolean} [scaleControl.show=false] - 是否显示比例尺控件。
  * @vue-prop {String} [scaleControl.position="bottom-left"] - 比例尺控件放置位置。
  * @vue-prop {Object} [zoomControl] - 缩放控件配置参数。
+ * @vue-prop {Boolean} [zoomControl.show=false] - 是否显示缩放控件。
  * @vue-prop {String} [zoomControl.position="top-left"] - 缩放控件放置位置。
  * @vue-prop {Boolean} [zoomControl.zoomWithSlider="false"] - 缩放控件是否含有滑动条。
  * @vue-computed {String} getMapTarget - 获取 Map 的 target。
@@ -126,6 +129,8 @@ export default {
     },
     registerEvents() {
       this.viewModel.on('addlayerssucceeded', e => {
+        mapEvent.$options.setMap(this.target, e.map);
+        this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
         mapEvent.$emit(`initMap-${this.target}`, e.map, this.viewModel);
         /**
          * @event load

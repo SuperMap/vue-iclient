@@ -40,9 +40,7 @@ export default {
     if (mapEvent.$options.getMap(targetName)) {
       this.loadMap(targetName);
     } else {
-      mapEvent.$on(`initMap-${targetName}`, (map, webmap) => {
-        mapEvent.$options.setMap(targetName, map);
-        webmap && mapEvent.$options.setWebMap(targetName, webmap);
+      mapEvent.$on(`initMap-${targetName}`, () => {
         // 每个继承的组件各自对map操作的统一函数名
         this.loadMap(targetName);
       });

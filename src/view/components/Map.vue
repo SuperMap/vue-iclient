@@ -43,6 +43,7 @@ export default {
     },
     registerEvents(map) {
       map.on('load', () => {
+        mapEvent.$options.setMap(this.target, map);
         mapEvent.$emit(`initMap-${this.target}`, map);
         this.$emit('load', { map: map });
       });
