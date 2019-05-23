@@ -31,7 +31,6 @@
           class="sm-widget-query__job-info-panel"
         >
           <div
-            v-if="jobInfo.name"
             class="sm-widget-query__job-info-header"
             :style="getTextColorStyle"
             @click="jobInfoClicked"
@@ -39,48 +38,54 @@
             @mouseenter="changeHoverStyle"
           >
             <span class="smwidgets-icons-preview"></span>
-            <span class="sm-widget-query__job-info-name">{{ jobInfo.name }}</span>
+            <span class="sm-widget-query__job-info-name">{{ jobInfo.queryParameter.name }}</span>
             <div class="smwidgets-icons-legend-unfold"></div>
           </div>
-          <div v-if="jobInfo.attributeFilter" class="sm-widget-query__job-info-body hidden">
+          <div v-if="jobInfo.queryParameter.attributeFilter" class="sm-widget-query__job-info-body hidden">
             <div class="sm-widget-query__attribute">
               <div>{{ $t('query.attributeCondition') }}</div>
               <div
                 class="sm-widget-query__attribute-name"
                 :style="getColorStyle(0)"
-              >{{ jobInfo.attributeFilter }}</div>
+              >{{ jobInfo.queryParameter.attributeFilter }}</div>
             </div>
             <div class="sm-widget-query__spatial-filter">
               <div>{{ $t('query.spatialFilter') }}</div>
-              <el-select
-                v-model="value"
-                class="sm-widget-query__el-select"
-                size="mini"
-                :popper-append-to-body="false"
-                @visible-change="changeChosenStyle"
+              <a-select
+                v-model="jobInfo.spaceFilter"
+                class="sm-widget-query__a-select"
+                :get-popup-container="getPopupContainer"
+                @dropdownVisibleChange="changeChosenStyle"
               >
-                <el-option
+                <a-select-option
                   v-for="item in selectOptions"
                   :key="item.value"
-                  :label="item.label"
                   :value="item.value"
-                ></el-option>
-              </el-select>
+                >{{ item.label }}</a-select-option>
+              </a-select>
             </div>
             <div class="sm-widget-query__query-button">
-              <el-button
+              <a-button
                 type="primary"
-                size="mini"
-                class="sm-widget-query__el-button"
+                size="small"
+                class="sm-widget-query__a-button"
                 :style="{backgroundColor: getColorStyle(0).color, color: getTextColor}"
-                @click="queryButtonClicked(jobInfo,value)"
-              >{{ $t('query.applicate') }}</el-button>
+                @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)"
+              >{{ $t('query.applicate') }}</a-button>
             </div>
           </div>
         </div>
       </div>
       <div class="sm-widget-query__result-info hidden">
-        <div v-show="!queryResult" class="sm-widget-query__no-result">{{ $t('query.noResult') }}</div>
+        <div
+          v-show="!queryResult && !isQuery"
+          class="sm-widget-query__no-result hidden"
+        >{{ $t('query.noResult') }}</div>
+        <div v-if="isQuery && !queryResult" class="sm-widget-query__result-loading">
+          <a-spin :tip="$t('query.querying')">
+            <a-icon slot="indicator" type="loading" style="font-size: 24px" spin/>
+          </a-spin>
+        </div>
         <span
           v-if="queryResult"
           class="sm-widget-query__result-header"
@@ -211,7 +216,6 @@ export default {
     return {
       isHidden: false,
       message: null,
-      value: 'mapBounds',
       selectOptions: [
         {
           label: this.$t('query.currentMapBounds'),
@@ -223,21 +227,25 @@ export default {
         }
       ],
       queryResult: null,
-      activeTab: 'job'
+      activeTab: 'job',
+      isQuery: false,
+      jobInfos: []
     };
   },
-  computed: {
-    jobInfos() {
-      let jobInfos = [];
-      Object.keys(this.$props).forEach(key => {
-        if (key === 'iportalData' || key === 'restData' || key === 'restMap') {
-          this.$props[key] &&
-            this.$props[key].forEach(item => {
-              item.name && jobInfos.push(item);
-            }, this);
+  watch: {
+    colorGroupsData: {
+      handler() {
+        this.changeSelectInputStyle();
+        this.changeLoadingStyle();
+      }
+    },
+    textColorsData: {
+      handler() {
+        const results = this.$el.querySelectorAll('.sm-widget-query__result-body li');
+        for (let result of results) {
+          result.style.color = this.getTextColor;
         }
-      }, this);
-      return jobInfos;
+      }
     }
   },
   loaded() {
@@ -247,48 +255,41 @@ export default {
     this.resultInfoContainer = this.$el.querySelector('.sm-widget-query__result-info');
     this.jobInfoContainer = this.$el.querySelector('.sm-widget-query__job-info');
     this.registerEvents();
-  },
-  updated() {
-    this.changeSelectInputStyle();
-    this.changeLoadingStyle();
-    const results = this.$el.querySelectorAll('.sm-widget-query__result-body li');
-    for (let result of results) {
-      result.style.color = this.getTextColor;
-    }
+    this.formatJobInfos();
   },
   methods: {
+    formatJobInfos() {
+      Object.keys(this.$props).forEach(key => {
+        if (key === 'iportalData' || key === 'restData' || key === 'restMap') {
+          this.$props[key] &&
+            this.$props[key].forEach(item => {
+              item.name && this.jobInfos.push({
+                spaceFilter: 'mapBounds',
+                queryParameter: item
+              });
+            }, this);
+        }
+      }, this);
+    },
     queryButtonClicked(jobInfo, value) {
-      this.$message.closeAll();
+      this.$message.destroy();
       if (this.jobInfo === jobInfo && this.selectValue === value) {
-        this.$message({
-          showClose: true,
-          message: this.$t('query.resultAlreadyExists'),
-          type: 'warning',
-          duration: 1000
-        });
+        this.$message.warning(this.$t('query.resultAlreadyExists'));
         return;
       }
       this.queryResult = null;
       this.popup && this.popup.remove() && (this.popup = null);
-      this.loadingInstance = this.$loading.service({
-        target: this.resultInfoContainer,
-        fullscreen: false,
-        text: this.$t('query.querying'),
-        background: 'transparent'
-      });
       this.jobButton.classList.add('disabled');
       this.resultButtonClicked();
-      this.$el.querySelector('.sm-widget-query__no-result').classList.add('hidden');
       this.jobInfo = jobInfo;
       this.selectValue = value;
       this.query(this.jobInfo, this.selectValue);
       this.changeLoadingStyle();
+      this.isQuery = true;
     },
     changeLoadingStyle() {
-      const spinDom = this.$el.querySelector('.sm-widget-query__result-info .path');
-      const loadingText = this.$el.querySelector('.sm-widget-query__result-info .el-loading-text');
-      spinDom && (spinDom.style.stroke = this.getColorStyle(0).color);
-      loadingText && (loadingText.style.color = this.getColorStyle(0).color);
+      const spinDom = this.$el.querySelector('.ant-spin');
+      spinDom && (spinDom.style.color = this.getColorStyle(0).color);
     },
     /**
      * 开始查询。
@@ -332,29 +333,32 @@ export default {
         classList.remove('hidden');
         foldIcon.classList.add('smwidgets-icons-legend-fold');
         foldIcon.classList.remove('smwidgets-icons-legend-unfold');
-        this.chosenPanelNode = parentNode;
         this.changeSelectInputStyle();
       } else {
         classList.add('hidden');
         foldIcon.classList.add('smwidgets-icons-legend-unfold');
         foldIcon.classList.remove('smwidgets-icons-legend-fold');
-        this.chosenPanelNode = null;
       }
     },
     changeSelectInputStyle() {
-      const selectDom = this.chosenPanelNode && this.chosenPanelNode.querySelector('.el-input__inner');
-      if (selectDom) {
-        selectDom.style.borderColor = this.getTextColor;
-        selectDom.style.color = this.getTextColor;
-        selectDom.style.backgroundColor = 'transparent';
-      }
+      const selectInputList = this.$el.querySelectorAll('.ant-select-selection');
+      selectInputList.forEach(item => {
+        item.style.borderColor = this.getTextColor;
+        item.style.color = this.getTextColor;
+        item.style.backgroundColor = 'transparent';
+      });
     },
-    changeChosenStyle(visible) {
-      const chosenOption =
-        this.chosenPanelNode && this.chosenPanelNode.querySelector('.el-select-dropdown__item.selected');
-      if (chosenOption) {
-        chosenOption.style.color = visible ? this.getColorStyle(0).color : '#606266';
-      }
+    changeChosenStyle(visible, e) {
+      setTimeout(() => {
+        const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
+        optionList.forEach(item => {
+          if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
+            item.style.color = this.getColorStyle(0).color;
+          } else {
+            item.style.color = '#606266';
+          }
+        });
+      }, 0);
     },
     changeChosenResultStyle(e) {
       const { target } = e;
@@ -373,11 +377,11 @@ export default {
 
     registerEvents() {
       this.viewModel.on('querysucceeded', e => {
+        this.isQuery = false;
         this.$el.querySelector('.sm-widget-query__no-result').classList.remove('hidden');
         this.queryResult = e.result;
         this.viewModel.getPopupFeature();
         this.addPopupToFeature();
-        this.loadingInstance.close();
         this.jobButton.classList.remove('disabled');
         /**
          * @event querySucceeded
@@ -387,14 +391,9 @@ export default {
         this.$emit('query-succeeded', e);
       });
       this.viewModel.on('queryfailed', e => {
+        this.isQuery = false;
         this.$el.querySelector('.sm-widget-query__no-result').classList.remove('hidden');
-        this.$message({
-          showClose: true,
-          message: e.message,
-          type: 'warning',
-          duration: 1000
-        });
-        this.loadingInstance.close();
+        this.$message.warning(e.message);
         this.jobButton.classList.remove('disabled');
         /**
          * @event queryFailed
@@ -441,6 +440,9 @@ export default {
     resetHoverStyle(e) {
       const { target } = e;
       target.style.color = this.getTextColorStyle.color;
+    },
+    getPopupContainer(triggerNode) {
+      return triggerNode.parentNode;
     }
   }
 };

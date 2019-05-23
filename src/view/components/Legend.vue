@@ -9,29 +9,32 @@
     :collapsed="collapsed"
     class="sm-widget-legend"
   >
-    <el-card :style="[mode !== 'simple' ? [getBackgroundStyle, getTextColorStyle, {border: 0, borderRadius: 0}] : {border: 0, borderRadius: 0, background: 'transparent'} ]">
-      <el-collapse
-        v-if="(mode === 'panel' || (layerNames.length > 1 && mode !== 'simple'))"
+    <a-card :style="mode !== 'simple' ? [getBackgroundStyle, getTextColorStyle, {border: 0, borderRadius: 0}] : [{border: 0, borderRadius: 0, background: 'transparent'}]" :bordered="false">
+      <a-collapse
+        v-if="(mode === 'panel' || (layerNames.length > 1 && mode !== 'simple')) && JSON.stringify(legendList) !== '{}'"
         v-model="activeLegend"
         class="sm-widget-legend__table"
       >
-        <el-collapse-item
+        <a-collapse-panel
           v-for="(layerValue,layerKey,index) in legendList"
-          :key="index"
-          :name="index+1"
+          :key="`${index+1}`"
+          :showArrow="false"
         >
-          <template slot="title">
-            <div
-              class="sm-widget-legend__title"
-              :style="[getColorStyle(0)]"
-            >{{ layerValue.layerId }}</div>
+          <template slot="header">
+            <div class="header-wrap">
+              <div
+                class="sm-widget-legend__title"
+                :style="[getColorStyle(0)]"
+              >{{ layerValue.layerId }}</div>
+              <a-icon type="right" class="header-arrow"/>
+            </div>
           </template>
           <div
             v-if="isShowField"
             class="sm-widget-legend__themefield add-ellipsis"
             :style="[getColorStyle(0)]"
           >{{ $t("legend.themeField") }}:{{ layerValue.themeField }}</div>
-          <div v-if="layerValue.layerType === 'UNIQUE'">
+          <div v-if="layerValue.layerType === 'UNIQUE'" :style="[getTextColorStyle]">
             <ul class="sm-widget-legend__point">
               <li
                 v-for="(item,i) in layerValue.styleGroup"
@@ -47,7 +50,7 @@
             </ul>
           </div>
 
-          <div v-if="layerValue.layerType === 'HEAT'">
+          <div v-if="layerValue.layerType === 'HEAT'" :style="[getTextColorStyle]">
             <!-- <div
             class="sm-widget-legend__themefield add-ellipsis"
             >{{$t("legend.themeField")}}：{{layerValue.themeField}}</div>-->
@@ -56,17 +59,17 @@
               :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
             >
               <span class="sm-widget-legend__top">
-                <i class="el-icon-caret-left"></i>
+                <i class="c"></i>
                 {{ $t("legend.top") }}
               </span>
               <span class="sm-widget-legend__bottom">
-                <i class="el-icon-caret-left"></i>
+                <a-icon type="caret-left" />
                 {{ $t("legend.bottom") }}
               </span>
             </div>
           </div>
 
-          <div v-if="layerValue.layerType === 'RANGE'">
+          <div v-if="layerValue.layerType === 'RANGE'" :style="[getTextColorStyle]">
             <!-- <div
             class="sm-widget-legend__themefield add-ellipsis"
             >{{$t("legend.themeField")}}:{{layerValue.themeField}}</div>-->
@@ -78,18 +81,19 @@
                 class="sm-widget-legend__range-item"
               >
                 <span class="add-ellipsis">
-                  <i class="el-icon-caret-left"></i>
+                  <a-icon type="caret-left" />
                   {{ item.start }}-{{ item.end }}
                 </span>
               </div>
             </div>
           </div>
-        </el-collapse-item>
-      </el-collapse>
+        </a-collapse-panel>
+      </a-collapse>
       <div
         v-for="(layerValue,layerKey,index) in legendList"
         v-else-if="mode === 'simple' || layerNames.length === 1"
         :key="index"
+        :style="[getTextColorStyle]"
         class="sm-widget-legend__noBorder"
       >
         <div
@@ -128,11 +132,11 @@
             :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
           >
             <span class="sm-widget-legend__top">
-              <i class="el-icon-caret-left"></i>
+              <a-icon type="caret-left" />
               {{ $t("legend.top") }}
             </span>
             <span class="sm-widget-legend__bottom">
-              <i class="el-icon-caret-left"></i>
+              <a-icon type="caret-left" />
               {{ $t("legend.bottom") }}
             </span>
           </div>
@@ -150,14 +154,14 @@
               class="sm-widget-legend__range-item"
             >
               <span class="add-ellipsis">
-                <i class="el-icon-caret-left"></i>
+                <a-icon type="caret-left" />
                 {{ item.start }}-{{ item.end }}
               </span>
             </div>
           </div>
         </div>
       </div>
-    </el-card>
+    </a-card>
   </sm-card>
 </template>
 
@@ -216,7 +220,7 @@ export default {
     return {
       legendList: {},
       // 控制第一个图例默认展开
-      activeLegend: [1],
+      activeLegend: ['1'],
 
       themeStyle: {}
     };

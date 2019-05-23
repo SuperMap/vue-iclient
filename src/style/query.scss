@@ -96,21 +96,12 @@
     // color: #666;
     font-weight: 700;
   }
-  @include e(el-select) {
+  @include e(a-select) {
     margin-top: 10px;
     margin-left: 7%;
     font-weight: 100;
-    & .el-select-dropdown__list {
-      padding: 4px 0;
-    }
-    & .el-select-dropdown__item {
-      height: 30px;
-      line-height: 30px;
-      padding: 0 8px;
-      font-size: 12px;
-    }
   }
-  @include e(el-button) {
+  @include e(a-button) {
     width: 100%;
     margin-top: 70px;
     font-weight: bolder;
@@ -151,6 +142,12 @@
   }
   @include e(no-result) {
     // color: #303133;
+  }
+  @include e(result-loading) {
+    position: relative;
+    top: 50%;
+    margin-top: -25%;
+    text-align: center;
   }
   @include e(result-body) {
     & > ul {

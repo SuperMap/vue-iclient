@@ -1,13 +1,16 @@
 <template>
   <div class="sm-widget-progress">
     <a-progress
-      :percent="parseFloat(percentage)"
+      :percent="parseFloat(percent)"
       :type="type"
       :stroke-width="parseFloat(strokeWidth)"
-      :show-info="showText"
-      :width="type==='circle'?parseFloat(circleWidth):null"
+      :show-info="showInfo"
+      :width="type==='circle' ? parseFloat(circleWidth) : null"
       :stroke-color="curColor"
       :status="status"
+      :gap-degree="type==='circle' ? gapDegree : null"
+      :gap-position="gapPosition"
+      :stroke-linecap="strokeLinecap"
     ></a-progress>
   </div>
 </template>
@@ -19,7 +22,7 @@ export default {
   name: 'SmProgress',
   mixins: [Control, Theme],
   props: {
-    percentage: {
+    percent: {
       type: [Number, String],
       required: true
     },
@@ -34,24 +37,44 @@ export default {
     status: {
       type: String
     },
-    color: {
+    strokeColor: {
       type: String
     },
-    showText: {
+    showInfo: {
       type: Boolean,
       default: true
+    },
+    gapDegree: {
+      type: Number,
+      default: 0
+    },
+    gapPosition: {
+      type: String,
+      default: 'top',
+      validator(gapPosition) {
+        const positionList = ['top', 'bottom', 'left', 'right'];
+        return positionList.includes(gapPosition);
+      }
+    },
+    strokeLinecap: {
+      type: String,
+      default: 'round',
+      validator(strokeLinecap) {
+        const strokeLinecapList = ['round', 'square'];
+        return strokeLinecapList.includes(strokeLinecap);
+      }
     }
   },
   data() {
     return {
       curColor: '',
-      circleWidth: 110
+      circleWidth: 120
     };
   },
   watch: {
-    color: {
+    strokeColor: {
       handler() {
-        this.curColor = this.color;
+        this.curColor = this.strokeColor;
       }
     },
     colorGroupsData: {
@@ -67,15 +90,17 @@ export default {
       }
     }
   },
-  loaded() {
-    this.curColor = this.color || this.getColor(0);
-    this.progressTextNode = this.$el.querySelector('.el-progress__text');
+  mounted() {
+    this.curColor = this.strokeColor || this.getColor(0);
+    this.progressTextNode = this.$el.querySelector('.ant-progress-text');
     this.progressTextNode.style.color = this.getTextColor;
-    this.$nextTick(() => {
-      this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
-    });
+    // this.$nextTick(() => {
+    //   this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
+    // });
     window.addEventListener('resize', () => {
-      this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
+      this.$nextTick(() => {
+        this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
+      });
     });
   }
 };

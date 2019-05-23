@@ -1,20 +1,31 @@
 <template>
-  <div class="sm-widget-search" :style="[getTextColorStyle]">
+  <div class="sm-widget-search" :style="[getTextColorStyle, getBackgroundStyle]">
     <div class="sm-widget-search__input">
-      <el-input
+      <a-input
         v-model="searchKey"
-        class="sm-widget-search__el-input"
+        class="sm-widget-search__a-input"
         :placeholder="$t('search.inputPlaceHolder')"
-        clearable
-        @clear="inputValueCleared"
+        :style="[getBackgroundStyle]"
+        @pressEnter="searchButtonClicked"
+        @mouseenter="handleInputHover"
+        @mouseleave="handleInputHover"
       >
-        <div
+        <a-icon
           slot="prefix"
-          class="el-input__icon el-icon-search"
+          :type="prefixType"
           :style="getColorStyle(0)"
           @click="searchButtonClicked"
-        ></div>
-      </el-input>
+        />
+        <a-icon
+          v-show="isHover && searchKey"
+          slot="suffix"
+          type="close-circle"
+          :style="getColorStyle(0)"
+          @click="inputValueCleared"
+          @mouseenter="handleInputHover"
+          @mouseleave="handleInputHover"
+        />
+      </a-input>
     </div>
     <div v-show="getResultLength" class="sm-widget-search__result" :style="[getBackgroundStyle]">
       <div v-for="(result,index) in searchResult" :key="index" class="sm-widget-search__panel">
@@ -124,12 +135,25 @@ export default {
   data() {
     return {
       searchKey: null,
-      searchResult: []
+      searchResult: [],
+      prefixType: 'search',
+      isHover: false
     };
   },
   computed: {
     getResultLength() {
       return this.searchResult.length > 0;
+    }
+  },
+  watch: {
+    textColorsData: {
+      handler() {
+        this.changeSearchInputStyle();
+        const results = this.$el.querySelectorAll('.sm-widget-search__panel li');
+        for (let result of results) {
+          result.style.color = this.getTextColor;
+        }
+      }
     }
   },
   mounted() {
@@ -138,19 +162,10 @@ export default {
   loaded() {
     this.viewModel = new SearchViewModel(this.map, this.$props);
     this.oldSearchTaskId = null;
-    this.inputKeypressEvent();
-  },
-  updated() {
-    this.changeSearchInputStyle();
-    const results = this.$el.querySelectorAll('.sm-widget-search__panel li');
-    for (let result of results) {
-      result.style.color = this.getTextColor;
-    }
   },
   methods: {
     changeSearchInputStyle() {
-      const serachInput = this.$el.querySelector('.el-input__inner');
-      serachInput.style.backgroundColor = this.getBackground;
+      const serachInput = this.$el.querySelector('.ant-input');
       serachInput.style.color = this.getTextColor;
     },
     changeChosenResultStyle(e) {
@@ -164,27 +179,15 @@ export default {
     /**
      * 清除搜索结果。
      */
-    clearResult() {
-      this.$message.closeAll();
+    clearResult(isClear) {
+      this.$message.destroy();
+      isClear && (this.searchKey = null);
       this.searchResult = [];
       this.marker && this.marker.remove() && (this.marker = null);
-      let icon = this.$el.querySelector('.el-input__icon');
-      icon.classList.add('el-icon-search');
-      icon.classList.remove('el-icon-loading');
+      this.prefixType = 'search';
     },
     searchButtonClicked() {
       this.search();
-    },
-    inputKeypressEvent() {
-      const self = this;
-      this.$el.querySelector('input').onkeypress = e => {
-        if (e.which === 13) {
-          !self.searchKey && self.search();
-          self.$el.querySelector('input').onchange = () => {
-            self.search();
-          };
-        }
-      };
     },
     /**
      * 开始搜索。
@@ -204,28 +207,16 @@ export default {
         if (searchKey || this.searchKey) {
           this.searchTaskId = this.viewModel.search(searchKey || this.searchKey);
           this.regiterEvents();
-          let icon = this.$el.querySelector('.el-input__icon');
-          icon.classList.remove('el-icon-search');
-          icon.classList.add('el-icon-loading');
+          this.prefixType = 'loading';
         } else {
-          this.$message({
-            showClose: true,
-            message: this.$t('search.noKey'),
-            type: 'warning',
-            duration: 1000
-          });
+          this.$message.warning(this.$t('search.noKey'));
         }
       } else {
-        this.$message({
-          showClose: true,
-          message: '请设置搜索源！',
-          type: 'warning',
-          duration: 1000
-        });
+        this.$message.warning('请设置搜索源！');
       }
     },
     inputValueCleared() {
-      this.clearResult();
+      this.clearResult(true);
     },
     searchResultListClicked(e) {
       let filter = e.target.innerHTML;
@@ -274,16 +265,8 @@ export default {
          */
         this.$emit('search-succeeded', { searchResult: e.result });
         this.searchResult = e.result;
-        let icon = this.$el.querySelector('.el-input__icon');
-        icon.classList.add('el-icon-search');
-        icon.classList.remove('el-icon-loading');
-        this.searchResult.length < 1 &&
-          this.$message({
-            showClose: true,
-            message: this.$t('search.noResult'),
-            type: 'warning',
-            duration: 1000
-          });
+        this.prefixType = 'search';
+        this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
       });
       this.viewModel.on('searchfailed', e => {
         /**
@@ -293,6 +276,9 @@ export default {
          */
         this.$emit('search-failed', e);
       });
+    },
+    handleInputHover() {
+      this.isHover = !this.isHover;
     }
   }
 };

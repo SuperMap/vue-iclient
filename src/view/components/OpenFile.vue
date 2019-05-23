@@ -103,20 +103,12 @@ export default {
     this.viewModel = new OpenFileViewModel();
     // 打开失败
     this.viewModel.on('openfilefailed', e => {
-      this.notify &&
-        this.$message({
-          message: e.message,
-          type: 'error'
-        });
+      this.notify && this.$message.error(e.message);
       this.$emit('open-file-failed', e);
     });
 
     this.viewModel.on('errorfileformat', e => {
-      this.notify &&
-        this.$message({
-          message: e.message,
-          type: 'error'
-        });
+      this.notify && this.$message.error(e.message);
       this.$emit('error-file-format', e);
     });
 
@@ -160,11 +152,7 @@ export default {
         this.map.fitBounds(bbox(result), { maxZoom: 12 });
       }
 
-      this.notify &&
-        this.$message({
-          message: this.$t('openFile.openFileSuccess'),
-          type: 'success'
-        });
+      this.notify && this.$message.success(this.$t('openFile.openFileSuccess'));
       this.$emit('open-file-succeeded', result);
     });
   }

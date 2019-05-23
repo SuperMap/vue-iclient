@@ -23,40 +23,38 @@
         >
           <i :class="group.iconClass"></i>
         </span>
-        <el-select
+        <a-select
           v-show="getDistanceSelect"
           v-model="activeDistanceUnit"
           placeholder="请选择"
-          size="mini"
           class="sm-widget-measure__unit"
-          :popper-append-to-body="false"
+          :get-popup-container="getPopupContainer"
           @change="updateUnit"
-          @visible-change="changeChosenStyle"
+          @dropdownVisibleChange="changeChosenStyle"
         >
-          <el-option
+          <a-select-option
             v-for="(value, key, index) in getUnitOptions"
             :key="index"
-            :label="value"
+            :title="value"
             :value="key"
-          ></el-option>
-        </el-select>
-        <el-select
+          >{{ value }}</a-select-option>
+        </a-select>
+        <a-select
           v-show="getAreaSelect"
           v-model="activeAreaUnit"
           placeholder="请选择"
-          size="mini"
           class="sm-widget-measure__unit"
-          :popper-append-to-body="false"
+          :get-popup-container="getPopupContainer"
           @change="updateUnit"
-          @visible-change="changeChosenStyle"
+          @dropdownVisibleChange="changeChosenStyle"
         >
-          <el-option
+          <a-select-option
             v-for="(value, key, index) in getUnitOptions"
             :key="index"
-            :label="value"
+            :title="value"
             :value="key"
-          ></el-option>
-        </el-select>
+          >{{ value }}</a-select-option>
+        </a-select>
         <div
           v-show="!showUnitSelect && activeMode"
           class="sm-widget-measure__unit sm-widget-measure__default"
@@ -176,6 +174,11 @@ export default {
     },
     areaDefaultUnit: function(newVal) {
       this.activeAreaUnit = newVal;
+    },
+    colorGroupsData: {
+      handler() {
+        this.changeSelectInputStyle();
+      }
     }
   },
   mounted() {
@@ -197,12 +200,9 @@ export default {
       this.result = result;
     });
   },
-  updated() {
-    this.changeSelectInputStyle();
-  },
   methods: {
     changeSelectInputStyle() {
-      const selectDom = this.$el.querySelector('.el-input__inner');
+      const selectDom = this.$el.querySelector('.ant-select-selection');
       if (selectDom) {
         selectDom.style.borderColor = this.getTextColor;
         selectDom.style.color = this.getTextColor;
@@ -210,14 +210,16 @@ export default {
       }
     },
     changeChosenStyle(visible) {
-      const chosenOption = this.$el.querySelector(
-        '.el-select-dropdown__item.selected'
-      );
-      if (chosenOption) {
-        chosenOption.style.color = visible
-          ? this.getColorStyle(0).color
-          : '#606266';
-      }
+      setTimeout(() => {
+        const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
+        optionList.forEach(item => {
+          if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
+            item.style.color = this.getColorStyle(0).color;
+          } else {
+            item.style.color = 'rgba(0, 0, 0, 0.65)';
+          }
+        });
+      }, 0);
     },
     // 切换量算模式
     changeMeasureMode(mode) {
@@ -236,6 +238,9 @@ export default {
     },
     updateUnit(unit) {
       this.viewModel.updateUnit(unit);
+    },
+    getPopupContainer() {
+      return this.$el.querySelector('.sm-widget-measure__panelContent');
     }
   }
 };

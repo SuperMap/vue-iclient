@@ -51,8 +51,7 @@
     <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18" ></sm-indicator>
     <sm-text title="文本框" :fontStyle='{ fontSize: "18", lineHeight: "18", color:"#73b9ac", fontWeight: "700", textAlign: "center" }' ></sm-text>
     <sm-time-text :fontStyle='{ fontSize: "18", fontWeight: "700" }' timeType="date+second" ></sm-time-text>
-    <sm-icon class-name="edit" size="20" weight="800" background='unset' text-color='#333'></sm-icon>
-    <sm-progress type="circle" :percentage="80"></sm-progress>
+    <sm-progress type="circle" :percent="80"></sm-progress>
     <sm-layer-list position="top-right"/>
     <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-right" :collapsed="false"></sm-legend>
     <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/>
@@ -76,8 +75,8 @@
     <sm-measure position="top-right"></sm-measure>
     <!-- 浅色 -->
 
-    <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer>
-    <sm-vector-tile-layer style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"></sm-vector-tile-layer>-->
+    <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer> -->
+    <sm-vector-tile-layer style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"></sm-vector-tile-layer>
     <!-- <sm-data-flow-layer dataFlowUrl='ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow'></sm-data-flow-layer> -->
     </sm-web-map>
     <!-- "http://192.168.12.230:8092/iportal/web/scenes/2065175708" -->
@@ -89,8 +88,8 @@
     <!-- <sm-web-scene scene-url = 'http://192.168.12.230:8092/iportal/web/scenes/2065175708'></sm-web-scene> -->
 
     <div class="changeTheme">
-      <el-button @click="changeStyle" type="primary" size="mini">深色主题</el-button>
-      <el-button @click="changeStyle1" type="success" size="mini">浅色主题</el-button>
+      <a-button @click="changeStyle" type="primary">深色主题</a-button>
+      <a-button @click="changeStyle1">浅色主题</a-button>
     </div>
   </div>
 </template>

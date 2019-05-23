@@ -50,13 +50,8 @@ export default {
         this.sceneViewer = this.sceneViewModel.sceneViewer;
       });
       this.sceneViewModel.on('sceneisprivate', () => {
-        this.$message.closeAll();
-        this.$message({
-          showClose: true,
-          message: '当前服务并未公开',
-          type: 'error',
-          duration: 1000
-        });
+        this.$message.destroy();
+        this.$message.error('当前服务并未公开');
       });
     }
   }

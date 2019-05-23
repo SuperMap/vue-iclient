@@ -53,7 +53,7 @@
 
   @include e(unit) {
     vertical-align: middle;
-    width: 120px;
+    width: 140px;
     position: relative;
     padding-left: 14px;
     margin-left: 6px;
@@ -65,9 +65,6 @@
       height: 16px;
       background: #c0c4cc;
       content: "";
-    }
-    .el-input__inner {
-      font-size: 15px;
     }
   }
 

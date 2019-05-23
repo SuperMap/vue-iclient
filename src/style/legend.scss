@@ -1,4 +1,4 @@
-@import "./mixins/mixins.scss";
+@import './mixins/mixins.scss';
 
 @include b(legend) {
   & .sm-widget-card__content {
@@ -16,7 +16,7 @@
   .sm-widget-card__content {
     box-shadow: unset;
   }
-  .el-card__body {
+  .ant-card-body {
     padding: 0px;
   }
   @include e(table) {
@@ -29,17 +29,31 @@
     // color: #333;
     font-weight: 400;
   }
-  .el-collapse-item__header {
+  .ant-collapse-header {
     font-size: $--text-regular;
-
-    @include e(title) {
-      margin-left: 35px;
+    background: transparent;
+    .header-wrap {
+      padding-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
   }
-  .el-collapse-item__wrap {
-    .el-collapse-item__content {
-      padding-bottom: 0px;
-      margin-left: 8px;
+  .ant-collapse {
+    border: 0;
+    background: transparent;
+    .ant-collapse-item {
+      border: 0;
+    }
+  }
+  .ant-collapse-content {
+    background: transparent;
+    &.ant-collapse-content-active {
+      border-top-color: transparent;
+    }
+    .ant-collapse-content-box {
+      padding: 0px;
+      padding-left: 8px;
       @include e(range) {
         width: 40px;
         margin-left: 35px;
@@ -62,7 +76,7 @@
         margin-left: 35px;
         padding-bottom: 10px;
       }
-
+  
       @include e(top) {
         position: absolute;
         left: 44px;
@@ -75,7 +89,7 @@
         bottom: 0px;
         width: 50px;
       }
-
+  
       @include e(point) {
         padding: 0;
         margin-left: 35px;
@@ -92,17 +106,17 @@
           background-color: rgb(128, 128, 128);
         }
       }
-
+  
       @include e(item) {
         padding-left: 6px;
         list-style: none;
         height: 30px;
       }
-
+  
       @include e(field-value) {
         margin-left: 20px;
       }
-
+  
       @include e(themefield) {
         font-size: 12px;
         margin-left: 30px;

@@ -1,27 +1,7 @@
 import mapEvent from './view/commontypes/mapEvent';
-import {
-  Button,
-  Checkbox,
-  Card,
-  Slider,
-  Select,
-  Option,
-  Collapse,
-  CollapseItem,
-  Input,
-  Table,
-  TableColumn,
-  Message,
-  Loading,
-  // Progress,
-  Row,
-  Col
-} from 'element-ui';
-import { Progress } from 'ant-design-vue';
-import i18n, {
-  setLocale,
-  lang
-} from '../src/lang/index';
+import { Table, TableColumn } from 'element-ui';
+import { Progress, Icon, Card, Collapse, Checkbox, Select, Button, Spin, Message, Input, Slider } from 'ant-design-vue';
+import i18n, { setLocale, lang } from '../src/lang/index';
 import * as themeFactory from './style/theme';
 import * as components from './view/components';
 import './assets/iconfont/iconfont.css';
@@ -34,7 +14,7 @@ const setTheme = (themeStyle = {}) => {
   mapEvent.$emit('change-theme', themeStyle);
 };
 
-const install = function (Vue, opts = {}) {
+const install = function(Vue, opts = {}) {
   if (opts.locale) {
     setLocale(opts.locale);
   }
@@ -49,17 +29,14 @@ const install = function (Vue, opts = {}) {
   Vue.use(Card);
   Vue.use(Slider);
   Vue.use(Select);
-  Vue.use(Option);
   Vue.use(Collapse);
-  Vue.use(CollapseItem);
   Vue.use(Input);
   Vue.use(Table);
   Vue.use(TableColumn);
   Vue.use(Progress);
-  Vue.use(Row);
-  Vue.use(Col);
+  Vue.use(Icon);
+  Vue.use(Spin);
   Vue.prototype.$message = Message;
-  Vue.prototype.$loading = Loading;
   for (let component in components) {
     Vue.component(components[component].name, components[component]);
   }

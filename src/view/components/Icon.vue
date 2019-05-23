@@ -1,6 +1,6 @@
 <template>
   <div class="sm-widget-icon">
-    <i :class="'el-icon-'+className" :style="[iconStyle, iconBackground, iconColor]"></i>
+    <a-icon :type="type" :style="[iconStyle, colorStyle]" />
   </div>
 </template>
 <script>
@@ -11,39 +11,28 @@ export default {
   name: 'SmIcon',
   mixins: [Control, Theme],
   props: {
-    className: {
+    type: {
       type: String,
       default: 'info'
     },
-    size: {
-      type: [String, Number]
-    },
-    color: {
-      type: String
-    },
-    weight: {
-      type: String
-    },
-    background: {
-      type: String
+    iconStyle: {
+      type: Object
     }
   },
-  computed: {
-    iconStyle() {
-      return {
-        fontSize: parseFloat(this.size) + 'px',
-        fontWeight: this.weight
-      };
-    },
-    iconColor() {
-      return (this.color && { color: this.color }) || this.getColorStyle(0);
-    },
-    iconBackground() {
-      return (
-        (this.background && { background: this.background }) ||
-        this.getBackgroundStyle
-      );
+  data() {
+    return {
+      colorStyle: {}
+    };
+  },
+  watch: {
+    colorGroupsData: {
+      handler() {
+        this.colorStyle = this.getColorStyle(0);
+      }
     }
+  },
+  mounted() {
+    this.colorStyle = !this.iconStyle || !this.iconStyle.color ? this.getColorStyle(0) : this.colorStyle;
   }
 };
 </script>

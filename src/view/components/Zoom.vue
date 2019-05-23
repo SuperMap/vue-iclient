@@ -1,30 +1,30 @@
 <template>
   <div class="sm-widget-zoom">
     <div class="sm-widget-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
-      <el-button
+      <a-button
         class="sm-widget-zoom__button"
-        icon="el-icon-plus"
+        icon="plus"
         :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : ''"
         @click="zoomIn"
-      ></el-button>
-      <el-button
+      ></a-button>
+      <a-button
         class="sm-widget-zoom__button"
-        icon="el-icon-minus"
+        icon="minus"
         :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : ''"
         @click="zoomOut"
-      ></el-button>
+      ></a-button>
     </div>
-    <el-slider
-      v-if="showZoomSlider"
-      v-model="zoomPosition"
-      class="sm-widget-zoom__slider"
-      :min="min"
-      :max="max"
-      vertical
-      height="200px"
-      :style="getColorStyle(0)"
-      @change="sliderChange"
-    ></el-slider>
+    <div class="sm-widget-zoom__slider">
+      <a-slider
+        v-if="showZoomSlider"
+        v-model="zoomPosition"
+        :min="min"
+        :max="max"
+        vertical
+        :style="getColorStyle(0)"
+        @change="sliderChange"
+      ></a-slider>
+    </div>
   </div>
 </template>
 <script>
@@ -61,10 +61,14 @@ export default {
       };
     }
   },
-  mounted() {
-    this.changeSliderStyle();
+  watch: {
+    colorGroupsData: {
+      handler() {
+        this.changeSliderStyle();
+      }
+    }
   },
-  updated() {
+  mounted() {
     this.changeSliderStyle();
   },
   methods: {
@@ -101,10 +105,9 @@ export default {
       return this.ZoomViewModel.setZoom(zoom);
     },
     changeSliderStyle() {
-      const sliderBar = document.querySelector('.el-slider__bar');
-      const sliderBtn = document.querySelector('.el-slider__button');
-      sliderBar &&
-        (sliderBar.style.backgroundColor = this.getColorStyle(0).color);
+      const sliderBar = document.querySelector('.ant-slider-track');
+      const sliderBtn = document.querySelector('.ant-slider-handle');
+      sliderBar && (sliderBar.style.backgroundColor = this.getColorStyle(0).color);
       sliderBtn && (sliderBtn.style.borderColor = this.getColorStyle(0).color);
     }
   },

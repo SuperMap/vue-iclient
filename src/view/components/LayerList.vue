@@ -8,54 +8,61 @@
     :collapsed="collapsed"
     class="sm-widget-layer-list"
   >
-    <el-card class="sm-widget-layer-list__el-card" :style="[getBackgroundStyle]">
+    <a-card class="sm-widget-layer-list__el-card" :style="[getBackgroundStyle]">
       <div class="sm-widget-layer-list__content">
-        <el-collapse
+        <a-collapse
           v-for="(sourceValue,sourceKey,index) in sourceList"
           :key="index"
+          :bordered="false"
           class="sm-widget-layer-list__collapse"
           @change="handleCollapseChange"
         >
-          <el-collapse-item
+          <a-collapse-panel
             v-if="typeof sourceValue.sourceLayerList === 'object'"
             class="sm-widget-layer-list__collapseitem"
-            :style="[getTextColorStyle]"
+            :showArrow="false"
           >
-            <template slot="title">
+            <template slot="header">
               <div
+                class="header-wrap"
                 :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
               >
-                <i
-                  class="el-icon-view"
-                  :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
-                  @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
-                ></i>
-                <span>{{ sourceKey }}</span>
+                <div class="header-text">
+                  <a-icon
+                    type="eye"
+                    :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
+                    @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
+                  ></a-icon>
+                  <span>{{ sourceKey }}</span>
+                </div>
+                <a-icon type="right" class="header-arrow"/>
               </div>
             </template>
-            <el-checkbox
+            <a-checkbox
               v-for="(sourcelayerValue,sourcelayerKey,i) in sourceValue.sourceLayerList"
               :key="i"
-              :value="sourcelayerValue[0].visibility | isVisible"
+              :checked="sourcelayerValue[0].visibility | isVisible"
               :title="sourcelayerKey"
+              :style="sourcelayerValue[0].visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
               @change="toggleVisibility(sourcelayerKey,sourceKey,sourcelayerValue[0].visibility)"
-            >{{ sourcelayerKey }}</el-checkbox>
-          </el-collapse-item>
+            >{{ sourcelayerKey }}</a-checkbox>
+          </a-collapse-panel>
 
-          <el-card v-else class="sm-widget-layer-list__elcarditem" :style="[getTextColorStyle]">
-            <i
-              :class="['el-icon-view', sourceValue.visibility === 'visible' ? 'visible':'none']"
+          <a-card v-else class="sm-widget-layer-list__elcarditem" :style="[getTextColorStyle]">
+            <a-icon
+              type="eye"
+              :class="[sourceValue.visibility === 'visible' ? 'visible':'none']"
               :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
               @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
-            ></i>
+            ></a-icon>
             <div
               class="sm-widget-layer-list__layergroupname add-ellipsis"
               :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
             >{{ sourceKey }}</div>
-          </el-card>
-        </el-collapse>
+          </a-card>
+        </a-collapse>
       </div>
-    </el-card>
+    </a-card>
   </sm-card>
 </template>
 
@@ -92,35 +99,38 @@ export default {
       }
     };
   },
-  updated() {
-    this.changCheckStyle();
+  watch: {
+    colorGroupsData: {
+      handler() {
+        this.changCheckStyle();
+      }
+    }
   },
   methods: {
     handleCollapseChange() {
       this.changCheckStyle();
     },
     changCheckStyle() {
-      const checkBoxsList = this.$el.querySelectorAll('.el-checkbox__input');
-      checkBoxsList.forEach(item => {
-        let childrens = item.childNodes;
-        let checkbox = childrens[0];
-        let label = item.parentNode.childNodes[1];
-        if (item.classList.contains('is-checked')) {
-          checkbox.style.borderColor = this.getColorStyle(0).color;
-          checkbox.style.backgroundColor = this.getColorStyle(0).color;
-          label.style.color = this.getColorStyle(0).color;
-        } else {
-          checkbox.style.borderColor = '#DCDFE6';
-          checkbox.style.backgroundColor = '#fff';
-          label.style.color = this.getTextColor;
-        }
-      });
+      setTimeout(() => {
+        const checkBoxsList = this.$el.querySelectorAll('.ant-checkbox');
+        checkBoxsList.forEach(item => {
+          let childrens = item.childNodes;
+          let checkbox = childrens[1];
+          // let label = item.parentNode.childNodes[1];
+          if (item.classList.contains('ant-checkbox-checked')) {
+            checkbox.style.borderColor = this.getColorStyle(0).color;
+            checkbox.style.backgroundColor = this.getColorStyle(0).color;
+            // label.style.color = this.getColorStyle(0).color;
+          } else {
+            checkbox.style.borderColor = '#DCDFE6';
+            checkbox.style.backgroundColor = '#fff';
+            // label.style.color = this.getTextColor;
+          }
+        });
+      }, 0);
     },
     toggleVisibility(sourceLayer, sourceName, visibility) {
       this.layerListViewModel && this.layerListViewModel.changeLayerVisible(sourceLayer, sourceName, visibility);
-      setTimeout(() => {
-        this.changCheckStyle();
-      }, 0);
     },
     addNewLayer() {
       this.layerListViewModel.addNewLayer();
@@ -146,6 +156,7 @@ export default {
     this.layerListViewModel.on('layersUpdated', () => {
       this.$nextTick(() => {
         this.sourceList = this.layerListViewModel.initLayerList();
+        this.changCheckStyle();
       });
     });
   }
