@@ -1,27 +1,9 @@
-$--font-path: "~element-ui/lib/theme-chalk/fonts";
-//element css
-@import "element-ui/packages/theme-chalk/src/button.scss";
-@import "element-ui/packages/theme-chalk/src/alert.scss";
-@import "element-ui/packages/theme-chalk/src/checkbox.scss";
-@import "element-ui/packages/theme-chalk/src/card.scss";
-@import "element-ui/packages/theme-chalk/src/slider.scss";
-@import "element-ui/packages/theme-chalk/src/select.scss";
-@import "element-ui/packages/theme-chalk/src/collapse.scss";
-@import "element-ui/packages/theme-chalk/src/collapse-item.scss";
-@import "element-ui/packages/theme-chalk/src/input.scss";
-@import "element-ui/packages/theme-chalk/src/table.scss";
-@import "element-ui/packages/theme-chalk/src/table-column.scss";
-@import "element-ui/packages/theme-chalk/src/message.scss";
-@import "element-ui/packages/theme-chalk/src/loading.scss";
-@import 'element-ui/packages/theme-chalk/src/progress.scss';
-
 @import "./common/common.scss";
 @import "./map.scss";
 @import "./scale.scss";
 @import "./zoom.scss";
 @import "./pan.scss";
 @import "./mini-map.scss";
-@import "./control-icon.scss";
 @import "./chart.scss";
 @import "./measure.scss";
 @import "./layer-list.scss";

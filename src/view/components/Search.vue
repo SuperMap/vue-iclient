@@ -233,21 +233,13 @@ export default {
       if (popupData.info.length >= 1) {
         let state = {
           columns: [
-            {
-              label: this.$t('search.attribute'),
-              prop: 'attribute',
-              width: 80
-            },
-            {
-              label: this.$t('search.attributeValue'),
-              prop: 'attributeValue',
-              minWidth: 100
-            }
+            { title: this.$t('search.attribute'), dataIndex: 'attribute', width: 80 },
+            { title: this.$t('search.attributeValue'), dataIndex: 'attributeValue', width: 150 }
           ],
           data: popupData.info
         };
         let popupContainer = new (Vue.extend(TablePopup))({
-          propsData: { state }
+          propsData: { ...state }
         }).$mount();
 
         this.$nextTick(() => {

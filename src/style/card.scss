@@ -100,9 +100,6 @@
     background: $--fill-base;
     transition: all 0.5s;
     position: relative;
-    .el-card.is-always-shadow {
-      box-shadow: none;
-    }
     &.sm-widget-zoom-in-enter-to,
     &.sm-widget-zoom-in-leave {
       opacity: 1;

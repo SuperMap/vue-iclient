@@ -2,9 +2,6 @@
   <div id="app">
     <!-- <sm-map :map-options="mapOptions"> -->
       <!-- <sm-open-file :layerStyles="layerStyles"></sm-open-file> -->
-       <!-- 用于测试<el-button @click="changeOptions" style="position:absolute;left:210px;z-index:300">changeOptions:</el-button>
-      <el-button @click="changeDataOtions" style="position:absolute;left:350px;z-index:300">changeDataOtions:</el-button>
-    <el-button @click="changeDataSet" style="position:absolute;left:500px;z-index:300">changeDataSet:</el-button> -->
       <!-- <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" headerName="标题"></sm-chart> -->
       <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer> -->
       <!-- <sm-mapv-layer :data-set="dataSet" :mapv-options="mapvOptions"></sm-mapv-layer> -->

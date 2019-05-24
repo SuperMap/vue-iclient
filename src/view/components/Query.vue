@@ -415,17 +415,13 @@ export default {
       if (featuerInfo.info.length >= 1) {
         let state = {
           columns: [
-            { label: this.$t('query.attribute'), prop: 'attribute', width: 80 },
-            {
-              label: this.$t('query.attributeValue'),
-              prop: 'attributeValue',
-              minWidth: 100
-            }
+            { title: this.$t('query.attribute'), dataIndex: 'attribute', width: 80 },
+            { title: this.$t('query.attributeValue'), dataIndex: 'attributeValue', width: 150 }
           ],
           data: featuerInfo.info
         };
         let popupContainer = new popup({
-          propsData: { state }
+          propsData: { ...state }
         }).$mount();
 
         this.$nextTick(() => {

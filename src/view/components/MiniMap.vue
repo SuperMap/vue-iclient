@@ -24,7 +24,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'el-icon-back'
+      default: 'smwidgets-icons-return'
     },
     autoRotate: {
       type: Boolean,

@@ -1,6 +1,4 @@
-import elementZhLocale from 'element-ui/lib/locale/lang/zh-CN'; // element-ui lang
 export default {
-  ...elementZhLocale,
   // messageTemplate
   warning: {},
   success: {},

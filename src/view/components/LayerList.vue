@@ -8,7 +8,7 @@
     :collapsed="collapsed"
     class="sm-widget-layer-list"
   >
-    <a-card class="sm-widget-layer-list__el-card" :style="[getBackgroundStyle]">
+    <a-card class="sm-widget-layer-list__a-card" :style="[getBackgroundStyle]">
       <div class="sm-widget-layer-list__content">
         <a-collapse
           v-for="(sourceValue,sourceKey,index) in sourceList"

@@ -1,6 +1,5 @@
 import mapEvent from './view/commontypes/mapEvent';
-import { Table, TableColumn } from 'element-ui';
-import { Progress, Icon, Card, Collapse, Checkbox, Select, Button, Spin, Message, Input, Slider } from 'ant-design-vue';
+import { Progress, Icon, Card, Collapse, Checkbox, Select, Button, Spin, Message, Input, Slider, Table } from 'ant-design-vue';
 import i18n, { setLocale, lang } from '../src/lang/index';
 import * as themeFactory from './style/theme';
 import * as components from './view/components';
@@ -23,7 +22,6 @@ const install = function(Vue, opts = {}) {
   require(`./style/theme/${theme}.scss`);
   setTheme(theme);
 
-  // TIP:引入element组件时，需在style/index.scss中引入组件对应的scsss。确保样式变量对elemenet组件生效
   Vue.use(Button);
   Vue.use(Checkbox);
   Vue.use(Card);
@@ -32,7 +30,6 @@ const install = function(Vue, opts = {}) {
   Vue.use(Collapse);
   Vue.use(Input);
   Vue.use(Table);
-  Vue.use(TableColumn);
   Vue.use(Progress);
   Vue.use(Icon);
   Vue.use(Spin);

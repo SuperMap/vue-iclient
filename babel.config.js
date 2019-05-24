@@ -15,13 +15,6 @@ module.exports = function (api) {
   ];
   const plugins = [
     "@babel/plugin-transform-runtime",
-    [
-      "component",
-      {
-        "libraryName": "element-ui",
-        "styleLibraryName": "theme-chalk"
-      }
-    ],
     "transform-flow-strip-types",
     ["import", { "libraryName": "ant-design-vue", "libraryDirectory": "es", "style": "css" }]
   ];

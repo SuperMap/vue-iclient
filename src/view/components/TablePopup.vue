@@ -1,35 +1,39 @@
 <template>
   <div class="sm-table-popup">
-    <el-table
-      :data="state.data"
-      :max-height="300"
+    <a-table
+      :data-source="data"
+      :columns="columns"
+      :rowKey="(record, index) => index"
+      :pagination="false"
     >
-      <el-table-column
-        v-for="(column,index) in state.columns"
-        :key="index"
-        :prop="column.prop"
-        :width="column.width || 150"
-        :label="column.label"
-      ></el-table-column>
-    </el-table>
+    </a-table>
   </div>
 </template>
 <script>
 export default {
   name: 'SmTabelPopup',
   props: {
-    state: {
-      type: Object
+    data: {
+      type: Array,
+      default() {
+        return [];
+      }
+    },
+    columns: {
+      type: Array,
+      default() {
+        return [];
+      }
     }
   }
 };
 </script>
 <style lang='scss'>
-.el-table {
-  margin-top: 6px;
-  .el-table__body-wrapper {
-    max-height: 250px !important;
-    overflow: auto !important;
+.ant-table-wrapper {
+  margin: 12px 0;
+  .ant-table-content{
+    max-height: 250px;
+    overflow: auto;
   }
 }
 </style>

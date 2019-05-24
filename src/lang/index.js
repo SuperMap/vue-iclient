@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import VueI18n from 'vue-i18n';
 import Cookies from 'js-cookie';
-import ElementLocale from 'element-ui/lib/locale';
 import enLocale from './en';
 import zhLocale from './zh';
 import clonedeep from 'lodash.clonedeep';
@@ -33,8 +32,6 @@ const i18n =
 export function setLocale(locales) {
   i18n.mergeLocaleMessage(i18n.locale, locales);
 }
-// 让element使用vue-i18n
-ElementLocale.i18n((key, value) => i18n.t(key, value));
 export const lang = {
   en: clonedeep(enLocale),
   zh: clonedeep(zhLocale)

@@ -1,6 +1,4 @@
-import elementEnLocale from 'element-ui/lib/locale/lang/en'; // element-ui lang
 export default {
-  ...elementEnLocale,
   // messageTemplate
   warning: {
 
