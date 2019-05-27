@@ -1,4 +1,4 @@
-import WidgetViewModel from '../_types/WidgetViewModel';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import FileModel from './FileModel';
 import { getFileType } from './FileTypes';
 import FileReaderUtil from './FileReaderUtil';
@@ -8,11 +8,12 @@ import i18n from '../../common/_lang';
  * @class OpenFileViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。
  * @description OpenFile viewModel.
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  */
-class OpenFileViewModel extends WidgetViewModel {
+class OpenFileViewModel extends mapboxgl.Evented {
   constructor(map) {
-    super(map);
+    super();
+    this.map = map;
     this.fileModel = new FileModel();
   }
   readFile(fileEventObject) {

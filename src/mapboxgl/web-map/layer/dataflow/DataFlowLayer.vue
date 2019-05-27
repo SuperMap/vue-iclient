@@ -2,9 +2,9 @@
 import MapGetter from '../../../_mixin/map-getter';
 import Layer from '../../../_mixin/layer';
 import DataFlowLayerViewModel from './DataFlowLayerViewModel';
-import CircleStyle from '../_types/CircleStyle';
-import FillStyle from '../_types/FillStyle';
-import LineStyle from '../_types/LineStyle';
+import CircleStyle from '../../../_types/CircleStyle';
+import FillStyle from '../../../_types/FillStyle';
+import LineStyle from '../../../_types/LineStyle';
 
 /**
  * @module DataFlowLayer

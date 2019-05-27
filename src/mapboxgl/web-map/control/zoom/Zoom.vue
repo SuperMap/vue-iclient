@@ -32,7 +32,7 @@ import Theme from '../../../../common/_mixin/theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
-import { hexToRgba } from '../../../../common/_utils/CommonUtil';
+import { hexToRgba } from '../../../../common/_utils/util';
 
 export default {
   name: 'SmZoom',

@@ -1,13 +1,13 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
+import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class PanViewModel
  * @description pan viewModel（平移控件vm层）.
  * @param {Object} map - 地图对象。
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  */
 
-export default class PanViewModel extends WidgetViewModel {
+export default class PanViewModel extends mapboxgl.Evented {
   constructor(map) {
     super();
     this.map = map || null;

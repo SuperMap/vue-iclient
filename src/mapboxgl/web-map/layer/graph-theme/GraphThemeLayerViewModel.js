@@ -1,12 +1,11 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
-export default class GraphThemeLayerViewModel extends WidgetViewModel {
+export default class GraphThemeLayerViewModel extends mapboxgl.Evented {
   constructor(map, themeProps) {
-    super(map);
-    const { layerName, options, chartsType, layerId, data } = themeProps;
+    super();
     this.map = map;
+    const { layerName, options, chartsType, layerId, data } = themeProps;
     this.layerName = layerName || layerId;
     this.chartsType = chartsType || 'Bar';
     options.id = options.id || layerId;

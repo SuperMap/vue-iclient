@@ -1,4 +1,4 @@
-import mapEvent from '../_types/mapEvent';
+import mapEvent from '../_types/map-event';
 
 export default {
   props: {

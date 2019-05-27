@@ -1,11 +1,11 @@
-import WidgetViewModel from '../_types/WidgetViewModel';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class WebSceneViewModel
  * @description Scene viewModel.
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  */
-export default class WebSceneViewModel extends WidgetViewModel {
+export default class WebSceneViewModel extends mapboxgl.Evented {
   constructor(target, serviceUrl, scanEffect, navigation) {
     super();
     this.scanEffect = scanEffect || {};

@@ -1,7 +1,6 @@
-import WidgetViewModel from '../_types/WidgetViewModel';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import center from '@turf/center';
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import iPortalDataService from '../_utils/iPortalDataService';
 import iServerRestService from '../_utils/iServerRestService';
@@ -32,7 +31,7 @@ import iServerRestService from '../_utils/iServerRestService';
  * @fires SearchViewModel#searchsucceeded
  * @fires SearchViewModel#searchfailed
  */
-export default class SearchViewModel extends WidgetViewModel {
+export default class SearchViewModel extends mapboxgl.Evented {
   constructor(map, options) {
     super();
     this.options = options || {};

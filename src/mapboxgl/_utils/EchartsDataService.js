@@ -3,7 +3,7 @@ import iPortalDataService from './iPortalDataService';
 import tonumber from 'lodash.tonumber';
 import isEqual from 'lodash.isequal';
 import max from 'lodash.max';
-import formatterUtil from './formatter';
+import { clearNumberComma } from '../../common/_utils/util';
 /**
  * @class EchartsDataService
  * @classdesc 图表微件功能类
@@ -310,7 +310,7 @@ export default class EchartsDataService {
       let total = 0;
       fieldValueIndex[key].forEach(index => {
         // 清除字符串型的数字的逗号
-        let num = formatterUtil.clearNumberComma(fieldValues[index]);
+        let num = clearNumberComma(fieldValues[index]);
         total += tonumber(num);
       });
       yData.push(total);

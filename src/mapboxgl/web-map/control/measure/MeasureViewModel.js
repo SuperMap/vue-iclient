@@ -1,20 +1,19 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import length from '@turf/length';
 import area from '@turf/area';
 import center from '@turf/center';
 import { convertLength, convertArea } from '@turf/helpers';
-import formatterUtil from '../../../_utils/formatter';
+import { reservedDecimal } from '../../../../common/_utils/util';
 import i18n from '../../../../common/_lang';
 
 /**
  * @class MeasureViewModel
  * @description 量算 viewModel.
  * @param {Object} webmap - webmap实例对象。
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  */
-class MeasureViewModel extends WidgetViewModel {
+class MeasureViewModel extends mapboxgl.Evented {
   constructor(options) {
     super();
     this.tipNodes = []; // 收集测算长度实时生成的popup，以方便后面销毁
@@ -376,7 +375,7 @@ class MeasureViewModel extends WidgetViewModel {
   }
 
   _getFormatResult(result) {
-    return formatterUtil.reservedDecimal(result || this.result, 4);
+    return reservedDecimal(result || this.result, 4);
   }
 }
 export default MeasureViewModel;

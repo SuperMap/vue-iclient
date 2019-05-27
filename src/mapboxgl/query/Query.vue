@@ -112,14 +112,14 @@ import Theme from '../../common/_mixin/theme';
 import Control from '../_mixin/control';
 import Card from '../../common/_mixin/card';
 import MapGetter from '../_mixin/map-getter';
-import LineStyle from '../web-map/layer/_types/LineStyle';
-import FillStyle from '../web-map/layer/_types/FillStyle';
-import CircleStyle from '../web-map/layer/_types/CircleStyle';
+import LineStyle from '../_types/LineStyle';
+import FillStyle from '../_types/FillStyle';
+import CircleStyle from '../_types/CircleStyle';
 import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
 import RestDataParameter from '../../common/_types/RestDataParameter';
 import RestMapParameter from '../../common/_types/RestMapParameter';
 import QueryViewModel from './QueryViewModel.js';
-import TablePopup from '../../common/table-popup/TablePopup.vue';
+import TablePopup from '../../common/table-popup/TablePopup';
 import Vue from 'vue';
 
 let validators = (value, propType) => {

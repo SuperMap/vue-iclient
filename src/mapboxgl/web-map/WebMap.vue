@@ -13,11 +13,11 @@
 
 <script>
 import WebMapViewModel from './WebMapViewModel';
-import mapEvent from '../_types/mapEvent';
+import mapEvent from '../_types/map-event';
 import VmUpdater from '../../common/_mixin/vm-updater';
-import Pan from './control/pan/Pan.vue';
-import Scale from './control/scale/Scale.vue';
-import Zoom from './control/zoom/Zoom.vue';
+import Pan from './control/pan/Pan';
+import Scale from './control/scale/Scale';
+import Zoom from './control/zoom/Zoom';
 /**
  * @module WebMap
  * @category Components

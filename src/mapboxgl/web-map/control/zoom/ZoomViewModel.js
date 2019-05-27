@@ -1,14 +1,14 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
+import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class ZoomViewModel
  * @description zoom viewModel（缩放控件vm层）.
  * @param {Object} map - 地图对象。
  * @fires ZoomViewModel#mouseWheel
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  */
 
-export default class ZoomViewModel extends WidgetViewModel {
+export default class ZoomViewModel extends mapboxgl.Evented {
   constructor(map) {
     super();
     this.map = map || null;

@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import mapEvent from '../_types/mapEvent';
+import mapEvent from '../_types/map-event';
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
 export default {

@@ -1,8 +1,9 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
+import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
-export default class GeojsonLayerViewModel extends WidgetViewModel {
+export default class GeojsonLayerViewModel extends mapboxgl.Evented {
   constructor(map, GeojsonLayerOptions) {
-    super(map);
+    super();
+    this.map = map;
     const { layerStyle, data, layerId } = GeojsonLayerOptions;
     this.data = data;
     this.layerStyle = layerStyle;

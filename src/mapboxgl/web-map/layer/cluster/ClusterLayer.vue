@@ -2,7 +2,7 @@
 import MapGetter from '../../../_mixin/map-getter';
 import ClusterLayerViewModel from './ClusterLayerViewModel';
 import Layer from '../../../_mixin/layer';
-import CircleStyle from '../_types/CircleStyle';
+import CircleStyle from '../../../_types/CircleStyle';
 
 export default {
   name: 'SmClusterLayer',

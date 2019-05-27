@@ -1,10 +1,10 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
-export default class RasterTileLayerViewModel extends WidgetViewModel {
+export default class RasterTileLayerViewModel extends mapboxgl.Evented {
   constructor(map, rasterLayerOptions) {
-    super(map);
+    super();
+    this.map = map;
     const {
       layerId,
       tileSize,

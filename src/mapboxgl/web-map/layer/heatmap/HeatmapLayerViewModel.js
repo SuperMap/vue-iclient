@@ -1,4 +1,4 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
+import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 /**
  * @class HeatMapLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。
@@ -8,7 +8,7 @@ import WidgetViewModel from '../../../_types/WidgetViewModel';
  * @param {Object} [options.layerStyle] - 图层样式配置。
  */
 
-export default class HeatMapLayerViewModel extends WidgetViewModel {
+export default class HeatMapLayerViewModel extends mapboxgl.Evented {
   constructor(map, data, options) {
     super();
 

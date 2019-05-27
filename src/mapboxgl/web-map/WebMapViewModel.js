@@ -1,10 +1,9 @@
 /* Copyright© 2000 - 2019 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
-import WidgetViewModel from '../_types/WidgetViewModel';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from './SourceListModel';
 import { handleMultyPolygon } from '../_utils/geometry-util';
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import '../../../static/libs/geostats/geostats';
 import convert from 'xml-js';
@@ -73,7 +72,7 @@ const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
  * @fires WebMapViewModel#addlayerssucceeded
  * @extends {WidgetViewModel}
  */
-export default class WebMapViewModel extends WidgetViewModel {
+export default class WebMapViewModel extends mapboxgl.Evented {
   constructor(id, options) {
     super();
     this.mapId = id;

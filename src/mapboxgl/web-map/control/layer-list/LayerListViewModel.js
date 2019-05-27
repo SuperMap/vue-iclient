@@ -1,4 +1,4 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
+import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from '../../SourceListModel';
 
 /**
@@ -6,11 +6,12 @@ import SourceListModel from '../../SourceListModel';
  * @description LayerList viewModel.
  * @param {Object} map - map实例对象。
  * @fires layersUpdated - 图层更新
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  */
-class LayerListViewModel extends WidgetViewModel {
+class LayerListViewModel extends mapboxgl.Evented {
   constructor(map) {
-    super(map);
+    super();
+    this.map = map;
     this.sourceList = {};
     this._init();
   }

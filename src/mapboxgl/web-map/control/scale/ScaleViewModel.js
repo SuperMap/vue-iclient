@@ -1,4 +1,4 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
+import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class ScaleViewModel
@@ -8,9 +8,9 @@ import WidgetViewModel from '../../../_types/WidgetViewModel';
  * @param {string} [options.unit='metric] - 比例尺单位。
  * @param {number} [options.maxWidth=100] - 比例尺单位。
  * @fires ScaleViewModel#scaleupdated
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  */
-export default class ScaleViewModel extends WidgetViewModel {
+export default class ScaleViewModel extends mapboxgl.Evented {
   constructor(map, options) {
     super();
     this._mainMap = map;

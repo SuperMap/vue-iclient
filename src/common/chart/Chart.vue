@@ -245,7 +245,7 @@ export default {
     });
 
     // 切换主题
-    this.$on('themeStyle', () => {
+    this.$on('themeStyleChanged', () => {
       this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
     });
 

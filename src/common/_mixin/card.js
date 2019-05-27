@@ -1,4 +1,4 @@
-import Card from '../card/Card.vue';
+import Card from '../card/Card';
 
 export default {
   components: { 'sm-card': Card },

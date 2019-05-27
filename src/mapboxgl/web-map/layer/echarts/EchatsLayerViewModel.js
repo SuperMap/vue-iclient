@@ -1,4 +1,4 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
+import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import echarts from 'echarts';
 import EchartsLayer from '../../../../../static/libs/echarts-layer/EchartsLayer';
 /**
@@ -7,7 +7,7 @@ import EchartsLayer from '../../../../../static/libs/echarts-layer/EchartsLayer'
  * @param {String} options - EchartsLayer options。
  */
 
-export default class EchatsLayerViewModel extends WidgetViewModel {
+export default class EchatsLayerViewModel extends mapboxgl.Evented {
   constructor(map, options) {
     super();
     if (!options) {

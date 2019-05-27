@@ -1,4 +1,3 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 /**
  * @class MiniMapViewModel
@@ -9,9 +8,9 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  * @fires MiniMapViewModel#minimapmousemove
  * @fires MiniMapViewModel#minimapmouseup
  * @fires MiniMapViewModel#minimapupdated
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  */
-export default class MiniMapViewModel extends WidgetViewModel {
+export default class MiniMapViewModel extends mapboxgl.Evented {
   constructor(container, parentMap) {
     super();
     this.options = {

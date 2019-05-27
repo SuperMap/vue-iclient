@@ -9,17 +9,23 @@ module.exports = {
     SuperMap: 'readonly',
     Cesium: 'readonly'
   },
+  settings: {
+    "import/resolver": {
+      "node": {
+        "extensions": [
+          ".js",
+          ".vue",
+          ".json"
+        ]
+      }
+    }
+  },
   extends: ['plugin:vue/recommended', '@vue/standard'],
   parserOptions: {
     parser: 'babel-eslint'
   },
   plugins: ['vue', 'import'],
-  "settings": {
-    "import/extensions": [
-      ".js",
-      ".vue"
-    ]
-  },
+ 
   rules: {
     'new-cap': 'off',
     'generator-star-spacing': 'off',

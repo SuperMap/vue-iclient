@@ -1,10 +1,9 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
-export default class RangeThemeLayerViewModel extends WidgetViewModel {
+export default class RangeThemeLayerViewModel extends mapboxgl.Evented {
   constructor(map, themeProps) {
-    super(map);
+    super();
     const { layerName, options, layerId, data } = themeProps;
     this.map = map;
     this.layerName = layerName || layerId;

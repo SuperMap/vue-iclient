@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import CommonUtil from '../_utils/CommonUtil';
+import { getDateTime } from '../_utils/util';
 import Theme from '../_mixin/theme';
 import Control from '../../mapboxgl/_mixin/control';
 
@@ -42,9 +42,9 @@ export default {
     // 初始化
     initTime(timeType) {
       clearInterval(this.timeInterval);
-      this.time = CommonUtil.getDateTime('time', timeType);
+      this.time = getDateTime('time', timeType);
       this.timeInterval = setInterval(() => {
-        this.time = CommonUtil.getDateTime('time', timeType);
+        this.time = getDateTime('time', timeType);
       }, 1000);
     }
   }

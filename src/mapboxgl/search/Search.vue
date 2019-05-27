@@ -56,7 +56,7 @@ import MapGetter from '../_mixin/map-getter';
 import Control from '../_mixin/control';
 
 import SearchViewModel from './SearchViewModel';
-import TablePopup from '../../common/table-popup/TablePopup.vue';
+import TablePopup from '../../common/table-popup/TablePopup';
 // import iPortalDataParameter from "../commontypes/iPortalDataParameter";
 // import RestDataParameter from "../commontypes/RestDataParameter";
 // import RestMapParameter from "../commontypes/RestMapParameter";

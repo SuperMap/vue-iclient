@@ -1,10 +1,10 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 
-export default class MapvLayerViewModel extends WidgetViewModel {
+export default class MapvLayerViewModel extends mapboxgl.Evented {
   constructor(map, mapvLayerProps) {
-    super(map);
+    super();
+    this.map = map;
     const { data, options, layerId } = mapvLayerProps;
     this.data = data;
     this.options = options.layerId ? options : { ...options, layerId };

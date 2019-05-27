@@ -2,7 +2,7 @@
 import MapGetter from '../../../_mixin/map-getter';
 import Layer from '../../../_mixin/layer';
 import HeatmapLayerViewModel from './HeatmapLayerViewModel';
-import HeatMapStyle from './HeatMapStyle';
+import HeatMapStyle from '../../../_types/HeatMapStyle';
 
 export default {
   name: 'SmHeatmapLayer',

@@ -90,7 +90,7 @@ export default {
       // this.chart.on("finished", () => {
       //   this.chart.resize();
       // });
-      this.$on('themeStyle', () => {
+      this.$on('themeStyleChanged', () => {
         this.waveColorData = this.getColor(0);
         this.labelColorData = this.getTextColor;
         this.borderColorData = this.getColor(0);

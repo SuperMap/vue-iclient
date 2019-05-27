@@ -1,10 +1,9 @@
-import WidgetViewModel from '../_types/WidgetViewModel';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
 import RestDataParameter from '../../common/_types/RestDataParameter';
 import RestMapParameter from '../../common/_types/RestMapParameter';
 import center from '@turf/center';
 import i18n from '../../common/_lang';
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 /**
  * @class QueryViewModel
@@ -18,12 +17,12 @@ import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
  * @param {Object} [options.layerStyle.circle] - 点图层样式配置。
  * @param {Object} [options.layerStyle.fill] - 面图层样式配置。
  * @param {Object} [options.layerStyle.stokeLine] - 面图层样式配置。
- * @extends WidgetViewModel
+ * @extends mapboxgl.Evented
  * @fires QueryViewModel#querysucceeded
  * @fires QueryViewModel#queryfailed
  * @fires QueryViewModel#getfeatureinfosucceeded
  */
-export default class QueryViewModel extends WidgetViewModel {
+export default class QueryViewModel extends mapboxgl.Evented {
   constructor(map, options) {
     super();
     this.map = map;

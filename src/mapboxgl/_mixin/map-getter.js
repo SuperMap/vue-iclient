@@ -1,5 +1,5 @@
 // 新创建一个vue实例实时监听获得map对象
-import mapEvent from '../_types/mapEvent';
+import mapEvent from '../_types/map-event';
 
 function callHook(vm, hook, map) {
   const { options } = vm.constructor;

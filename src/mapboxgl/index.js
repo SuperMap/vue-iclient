@@ -1,4 +1,4 @@
-import mapEvent from './_types/mapEvent';
+import globalEvent from '../common/_utils/global-event';
 import { Progress, Icon, Card, Collapse, Checkbox, Select, Button, Spin, Message, Input, Slider, Table } from 'ant-design-vue';
 import i18n, { setLocale, lang } from '../common/_lang';
 import * as themeFactory from '../common/_utils/style/theme';
@@ -11,7 +11,7 @@ const setTheme = (themeStyle = {}) => {
   if (typeof themeStyle === 'string') {
     themeStyle = themeFactory[themeStyle] || {};
   }
-  mapEvent.$emit('change-theme', themeStyle);
+  globalEvent.$emit('change-theme', themeStyle);
 };
 
 const install = function(Vue, opts = {}) {

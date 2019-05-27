@@ -2,10 +2,10 @@ import AddressMatchParameter from '../../common/_types/AddressMatchParameter';
 import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
 import RestDataParameter from '../../common/_types/RestDataParameter';
 import RestMapParameter from '../../common/_types/RestMapParameter';
-import CircleStyle from '../web-map/layer/_types/CircleStyle';
-import FillStyle from '../web-map/layer/_types/FillStyle';
-import LineStyle from '../web-map/layer/_types/LineStyle';
-import HeatMapStyle from '../web-map/layer/heatmap/HeatMapStyle';
+import CircleStyle from './CircleStyle';
+import FillStyle from './FillStyle';
+import LineStyle from './LineStyle';
+import HeatMapStyle from './HeatMapStyle';
 
 export { AddressMatchParameter };
 export { iPortalDataParameter };

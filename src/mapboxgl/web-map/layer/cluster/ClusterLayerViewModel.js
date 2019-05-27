@@ -1,4 +1,4 @@
-import WidgetViewModel from '../../../_types/WidgetViewModel';
+import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 /**
  * @class ClusterLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。
@@ -12,7 +12,7 @@ import WidgetViewModel from '../../../_types/WidgetViewModel';
  * @param {number} [options.maxZoom=14] - 图层最大显示级别。
  */
 
-export default class ClusterLayerViewModel extends WidgetViewModel {
+export default class ClusterLayerViewModel extends mapboxgl.Evented {
   constructor(map, data, options) {
     super();
     this.options = options || {};

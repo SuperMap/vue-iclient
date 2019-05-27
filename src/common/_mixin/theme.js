@@ -1,4 +1,4 @@
-import mapEvent from '../../mapboxgl/_types/mapEvent';
+import globalEvent from '../_utils/global-event';
 
 export default {
   props: {
@@ -27,18 +27,17 @@ export default {
     };
   },
   mounted() {
-    mapEvent.$on('change-theme', (themeStyle) => {
+    globalEvent.$on('change-theme', (themeStyle) => {
       this.backgroundData = themeStyle.background;
       this.textColorsData = themeStyle.textColor;
       this.colorGroupsData = themeStyle.colorGroup;
-      this.$emit('themeStyle');
+      this.$emit('themeStyleChanged');
       // this.themeStyle = Object.assign({}, this.themeStyle, themeStyle)
     });
   },
   computed: {
     getBackgroundStyle() {
       return {
-        background: this.backgroundData
       };
     },
     getTextColorStyle() {
