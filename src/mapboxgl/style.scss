@@ -1,0 +1,24 @@
+/** common */
+@import '../common/chart/style/chart.scss';
+@import '../common/indicator/style/indicator.scss';
+@import '../common/text/style/text.scss';
+@import '../common/time-text/style/time-text.scss';
+@import '../common/icon/style/icon.scss';
+@import '../common/card/style/card.scss';
+@import '../common/liquidFill/style/liquidFill.scss';
+@import '../common/progress/style/progress.scss';
+
+/** control */
+@import './web-map/control/scale/style/scale.scss';
+@import './web-map/control/zoom/style/zoom.scss';
+@import './web-map/control/pan/style/pan.scss';
+@import './web-map/control/mini-map/style/mini-map.scss';
+@import './web-map/control/measure/style/measure.scss';
+@import './web-map/control/layer-list/style/layer-list.scss';
+@import './web-map/control/legend/style/legend.scss';
+
+@import './web-map/style/web-map.scss';
+@import './web-scene/style/web-scene.scss';
+@import './search/style/search.scss';
+@import './query/style/query.scss';
+@import './open-file/style/open-file.scss';

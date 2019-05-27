@@ -1,0 +1,8 @@
+@import "../../../../../common/_utils/style/mixins/mixins.scss";
+@import "../../../../../common/_utils/style/common/var.scss";
+
+@include b(minimap) {
+  #miniMap{
+    height: 180px;
+  }
+}

@@ -1,0 +1,5 @@
+@import "../../_utils/style/mixins/mixins.scss";
+
+@include b(icon){
+    padding: 4px;
+}

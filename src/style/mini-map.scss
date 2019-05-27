@@ -1,8 +1,0 @@
-@import "./mixins/mixins.scss";
-@import "./common/var.scss";
-
-@include b(minimap) {
-  #miniMap{
-    height: 180px;
-  }
-}

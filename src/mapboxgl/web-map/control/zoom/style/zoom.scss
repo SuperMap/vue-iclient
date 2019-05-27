@@ -1,0 +1,38 @@
+@import "../../../../../common/_utils/style/mixins/mixins.scss";
+@import "../../../../../common/_utils/style/common/var.scss";
+
+@include b(zoom) {
+  width: 38px; /*因为slider的总宽度为38px,无法重置居中，所以父元素设为38px*/
+  @include e(buttons) {
+    width: 30px;
+    height: 60px;
+    margin: 0 auto;
+    border-radius: $--border-radius-base;
+    box-shadow: $--box-shadow-base;
+    // background: $--fill-base;
+    overflow: hidden;
+  }
+  @include e(button) {
+    width: 100%;
+    height: 50%;
+    padding: 0;
+    border-radius: 0;
+    margin-left: 0 !important;
+    &:hover {
+      border-color: transparent;
+      color: rgba(0, 0, 0, 0.65);
+    }
+  }
+  @include e(slider) {
+    height: 300px;
+    margin-top: 20px;
+    .ant-slider {
+      .ant-slider-step, .ant-slider-track {
+        width: 6px;
+      }
+      .ant-slider-handle {
+        margin-left: -4px;
+      }
+    }
+  }
+}

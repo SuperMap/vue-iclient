@@ -1,0 +1,7 @@
+@import "../../_utils/style/mixins/mixins.scss";
+
+@include b(text) {
+  background: $--fill-base;
+  line-height: 1.5;
+  padding: 4px;
+}

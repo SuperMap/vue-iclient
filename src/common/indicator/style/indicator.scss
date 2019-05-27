@@ -1,0 +1,42 @@
+@import "../../_utils/style/mixins/mixins.scss";
+
+@include b(indicator) {
+  background: $--fill-base;
+  display: flex;
+  flex-flow: column nowrap;
+  justify-content: flex-start;
+  color: #595959;
+  @include e(head) {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-start;
+    height: 30%;
+    padding-left: 5px;
+    margin-right: 5px;
+  }
+  @include e(title) {
+    font-size: 16px;
+    line-height: 30px;
+    font-weight: bolder;
+  }
+  @include e(content) {
+    height: 50%;
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: flex-end;
+    font-weight: bolder;
+    padding-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+  }
+  @include e(num) {
+    text-indent: 5px;
+    font-weight: bolder;
+    color: rgb(73, 155, 255);
+    font-size: 22px;
+  }
+  @include e(unit) {
+    text-indent: 5px;
+    font-size: 16px;
+  }
+}

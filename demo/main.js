@@ -1,6 +1,6 @@
 /* eslint-disable */
 import Vue from 'vue';
-import SmWidgets from '../src/index.js';
+import SmWidgets from '../src/mapboxgl';
 import App from './App';
 
 Vue.config.productionTip = false;

@@ -1,0 +1,6 @@
+@import "../../_utils/style/mixins/mixins.scss";
+
+@include b(progress) {
+  text-align: center;
+  width: 100%;
+}

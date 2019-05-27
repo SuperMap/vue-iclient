@@ -1,0 +1,121 @@
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+
+@include b(legend) {
+  & .sm-widget-card__content {
+    max-height: 400px;
+  }
+  overflow-y: auto;
+  border: none;
+  color: #fff;
+  .sm-widget-card__content {
+    box-shadow: unset;
+  }
+  .ant-card-body {
+    padding: 0px;
+  }
+  @include e(table) {
+    border-top: none;
+  }
+
+  @include e(noBorder) {
+    // width: 200px;
+    background: none;
+    // color: #333;
+    font-weight: 400;
+  }
+  .ant-collapse-header {
+    font-size: $--text-regular;
+    background: transparent;
+    .header-wrap {
+      padding-right: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+  .ant-collapse {
+    border: 0;
+    background: transparent;
+    .ant-collapse-item {
+      border: 0;
+    }
+  }
+  .ant-collapse-content {
+    background: transparent;
+    &.ant-collapse-content-active {
+      border-top-color: transparent;
+    }
+    .ant-collapse-content-box {
+      padding: 0px;
+      padding-left: 8px;
+      @include e(range) {
+        width: 40px;
+        margin-left: 35px;
+        padding-bottom: 10px;
+      }
+      @include e(range-item) {
+        position: relative;
+        height: 30px;
+        span {
+          position: absolute;
+          left: 42px;
+          top: 6px;
+          width: 120px;
+        }
+      }
+      @include e(heat) {
+        width: 40px;
+        height: 150px;
+        position: relative;
+        margin-left: 35px;
+        padding-bottom: 10px;
+      }
+  
+      @include e(top) {
+        position: absolute;
+        left: 44px;
+        top: 0px;
+        width: 50px;
+      }
+      @include e(bottom) {
+        position: absolute;
+        left: 44px;
+        bottom: 0px;
+        width: 50px;
+      }
+  
+      @include e(point) {
+        padding: 0;
+        margin-left: 35px;
+        padding-bottom: 10px;
+        overflow-y: auto;
+        max-height: 200px;
+        &::-webkit-scrollbar {
+          width: 6px;
+          height: 6px;
+          background-color: rgba(245, 245, 245, 0);
+        }
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          background-color: rgb(128, 128, 128);
+        }
+      }
+  
+      @include e(item) {
+        padding-left: 6px;
+        list-style: none;
+        height: 30px;
+      }
+  
+      @include e(field-value) {
+        margin-left: 20px;
+      }
+  
+      @include e(themefield) {
+        font-size: 12px;
+        margin-left: 30px;
+        margin-bottom: 4px;
+      }
+    }
+  }
+}

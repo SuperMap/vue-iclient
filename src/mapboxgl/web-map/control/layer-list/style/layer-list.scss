@@ -1,0 +1,95 @@
+@import "../../../../../common/_utils/style/mixins/mixins.scss";
+
+@include b(layer-list) {
+  overflow-y: auto;
+  z-index: 10;
+  max-height: 500px;
+  width: $--widget-container-width;
+  .ant-card-body {
+    padding: 10px 15px 22px;
+  }
+  @include e(content) {
+    width: 100%;
+    height: 100%;
+  }
+  @include e(a-card ) {
+    border-radius: 0;
+    border: none;
+  }
+
+  @include e(collapse) {
+    background: transparent;
+    .ant-collapse-item {
+      &.ant-collapse-no-arrow {
+        .ant-collapse-header {
+          padding: 8px 5px;
+        }
+      }
+    }
+    .ant-collapse-header {
+      border-bottom: none;
+      font-size: 14px;
+      // padding-left: 20px;
+      background: transparent;
+      .anticon-eye {
+        font-size: 16px;
+        margin-right: 8px;
+      }
+      .visible {
+        color: $--color-primary;
+      }
+      .none {
+        color: #c0c4cc;
+      }
+      .header-wrap {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+    }
+    .ant-collapse-content  {
+      .ant-collapse-content-box {
+        line-height: 3;
+        overflow: hidden;
+        padding-left: 36px;
+        padding-top: 0;
+        .ant-checkbox-wrapper {
+          margin-left: 0;
+          white-space: nowrap;
+        }
+      }
+    }
+  }
+
+  @include e(collapseitem) {
+    .ant-collapse-header {
+      padding: 8px 5px;
+    }
+  }
+
+  @include e(elcarditem) {
+    position: relative;
+    border: none;
+    border-bottom: 1px solid #ececec;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none !important;
+    .ant-collapse-body {
+      padding: 8px 5px;
+      // height: 32px;
+      // line-height: 32px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      .anticon-eye {
+        font-size: 16px;
+        margin-right: 12px;
+        cursor: pointer;
+      }
+    }
+  }
+
+  @include e(layergroupname) {
+    width: 200px;
+  }
+}

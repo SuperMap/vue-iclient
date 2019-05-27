@@ -67,13 +67,13 @@
       :iportal-data="iportalData"
       :online-local-search="onlineLocalSearch"
     ></sm-search>
-    <sm-pan></sm-pan>
+    <!-- <sm-pan></sm-pan> -->
     <!-- <sm-mini-map position="bottom-right"></sm-mini-map> -->
-    <sm-measure position="top-right"></sm-measure>
+    <!-- <sm-measure position="top-right"></sm-measure> -->
     <!-- 浅色 -->
 
     <!-- <sm-raster-layer v-bind="rasteLayerOptions"></sm-raster-layer> -->
-    <sm-vector-tile-layer style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"></sm-vector-tile-layer>
+    <!-- <sm-vector-tile-layer style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"></sm-vector-tile-layer> -->
     <!-- <sm-data-flow-layer dataFlowUrl='ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow'></sm-data-flow-layer> -->
     </sm-web-map>
     <!-- "http://192.168.12.230:8092/iportal/web/scenes/2065175708" -->
@@ -93,7 +93,7 @@
 
 <script>
 import * as mapv from "mapv";
-import widgets from '../src/index';
+import widgets from '../src/mapboxgl';
 import demoData from './data/demo.json';
 import earthquake from './data/earthquake.json';
 import themeLayerData from './data/themeLayerData.json';
