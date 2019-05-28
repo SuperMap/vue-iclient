@@ -15,9 +15,9 @@ import LineStyle from '../../../_types/LineStyle';
  * @vue-prop {GeoJSONObject} [geometry] - 指定几何范围，该范围内的要素才能被订阅。
  * @vue-prop {String} [excludeField] - 排除字段。
  * @vue-prop {Object} [layerStyle] - 图层样式配置。
- * @vue-prop {widgets.commontypes.LineStyle} [layerStyle.line] - 线图层样式配置。
- * @vue-prop {widgets.commontypes.CircleStyle} [layerStyle.circle] - 点图层样式配置。
- * @vue-prop {widgets.commontypes.FillStyle} [layerStyle.fill] - 面图层样式配置。
+ * @vue-prop {SuperMap.Components.commontypes.LineStyle} [layerStyle.line] - 线图层样式配置。
+ * @vue-prop {SuperMap.Components.commontypes.CircleStyle} [layerStyle.circle] - 点图层样式配置。
+ * @vue-prop {SuperMap.Components.commontypes.FillStyle} [layerStyle.fill] - 面图层样式配置。
  */
 
 export default {

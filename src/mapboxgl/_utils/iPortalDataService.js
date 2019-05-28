@@ -1,4 +1,5 @@
 import iServerRestService from './iServerRestService';
+import { isXField, isYField } from '../../common/_utils/util';
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import '../../../static/libs/deckgl/deck.gl.min';
@@ -245,10 +246,10 @@ export default class iPortalDataService extends mapboxgl.Evented {
     let xfieldIndex = -1;
     let yfieldIndex = -1;
     for (let i = 0, len = fieldCaptions.length; i < len; i++) {
-      if (SuperMap.Widgets.FileReaderUtil.isXField(fieldCaptions[i])) {
+      if (isXField(fieldCaptions[i])) {
         xfieldIndex = i;
       }
-      if (SuperMap.Widgets.FileReaderUtil.isYField(fieldCaptions[i])) {
+      if (isYField(fieldCaptions[i])) {
         yfieldIndex = i;
       }
     }

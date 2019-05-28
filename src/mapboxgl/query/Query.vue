@@ -37,9 +37,9 @@
             @mouseleave="resetHoverStyle"
             @mouseenter="changeHoverStyle"
           >
-            <span class="smwidgets-icons-preview"></span>
+            <span class="sm-components-icons-preview"></span>
             <span class="sm-widget-query__job-info-name">{{ jobInfo.queryParameter.name }}</span>
-            <div class="smwidgets-icons-legend-unfold"></div>
+            <div class="sm-components-icons-legend-unfold"></div>
           </div>
           <div v-if="jobInfo.queryParameter.attributeFilter" class="sm-widget-query__job-info-body hidden">
             <div class="sm-widget-query__attribute">
@@ -136,17 +136,17 @@ let validators = (value, propType) => {
  * @module Query
  * @category Components
  * @desc 查询组件。
- * @vue-prop {String} [iconClass='smwidgets-icons-search'] - 组件 icon 的类名。
+ * @vue-prop {String} [iconClass='sm-components-icons-search'] - 组件 icon 的类名。
  * @vue-prop {String} [headerName='查询'] - 组件标题名。
  * @vue-prop {Number} [maxFeatures=200] - 最大返回要素个数。
  * @vue-prop {RestMapParameter} [restMap] - iServer 地图服务查询配置。
  * @vue-prop {RestDataParameter} [restData] - iServer 数据服务查询配置。
  * @vue-prop {iPortalDataParameter} [iportalData] - iPortal 数据查询配置。
  * @vue-prop {Object} [layerStyle] - 图层样式配置。
- * @vue-prop {widgets.commontypes.LineStyle} [layerStyle.line] - 线图层样式配置。
- * @vue-prop {widgets.commontypes.CircleStyle} [layerStyle.circle] - 点图层样式配置。
- * @vue-prop {widgets.commontypes.FillStyle} [layerStyle.fill] - 面图层样式配置。
- * @vue-prop {widgets.commontypes.LineStyle} [layerStyle.stokeLine] - 面图层边框样式配置。
+ * @vue-prop {SuperMap.Components.commontypes.LineStyle} [layerStyle.line] - 线图层样式配置。
+ * @vue-prop {SuperMap.Components.commontypes.CircleStyle} [layerStyle.circle] - 点图层样式配置。
+ * @vue-prop {SuperMap.Components.commontypes.FillStyle} [layerStyle.fill] - 面图层样式配置。
+ * @vue-prop {SuperMap.Components.commontypes.LineStyle} [layerStyle.stokeLine] - 面图层边框样式配置。
  */
 export default {
   name: 'SmQuery',
@@ -154,7 +154,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-search'
+      default: 'sm-components-icons-search'
     },
     headerName: {
       type: String,
@@ -318,9 +318,9 @@ export default {
       let className = e.target.className;
       let parentNode;
       if (
-        className === 'smwidgets-icons-preview' ||
+        className === 'sm-components-icons-preview' ||
         className === 'sm-widget-query__job-info-name' ||
-        className === 'smwidgets-icons-legend-unfold'
+        className === 'sm-components-icons-legend-unfold'
       ) {
         parentNode = e.target.parentNode.parentNode;
         e.stopPropagation();
@@ -332,13 +332,13 @@ export default {
       let foldIcon = parentNode.querySelector('.sm-widget-query__job-info-header').children[2];
       if (classList.contains('hidden')) {
         classList.remove('hidden');
-        foldIcon.classList.add('smwidgets-icons-legend-fold');
-        foldIcon.classList.remove('smwidgets-icons-legend-unfold');
+        foldIcon.classList.add('sm-components-icons-legend-fold');
+        foldIcon.classList.remove('sm-components-icons-legend-unfold');
         this.changeSelectInputStyle();
       } else {
         classList.add('hidden');
-        foldIcon.classList.add('smwidgets-icons-legend-unfold');
-        foldIcon.classList.remove('smwidgets-icons-legend-fold');
+        foldIcon.classList.add('sm-components-icons-legend-unfold');
+        foldIcon.classList.remove('sm-components-icons-legend-fold');
       }
     },
     changeSelectInputStyle() {

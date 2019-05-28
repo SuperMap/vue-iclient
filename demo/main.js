@@ -1,10 +1,10 @@
 /* eslint-disable */
 import Vue from 'vue';
-import SmWidgets from '../src/mapboxgl';
+import SmComponents from '../src/mapboxgl';
 import App from './App';
 
 Vue.config.productionTip = false;
-Vue.use(SmWidgets,
+Vue.use(SmComponents,
   //{
   // locale: {
   //   el: {

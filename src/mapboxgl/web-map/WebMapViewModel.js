@@ -4,6 +4,7 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from './SourceListModel';
 import { handleMultyPolygon } from '../_utils/geometry-util';
+import { isXField, isYField } from '../../common/_utils/util';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import '../../../static/libs/geostats/geostats';
 import convert from 'xml-js';
@@ -1679,10 +1680,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let xfieldIndex = -1;
     let yfieldIndex = -1;
     for (let i = 0, len = fieldCaptions.length; i < len; i++) {
-      if (this._isXField(fieldCaptions[i])) {
+      if (isXField(fieldCaptions[i])) {
         xfieldIndex = i;
       }
-      if (this._isYField(fieldCaptions[i])) {
+      if (isYField(fieldCaptions[i])) {
         yfieldIndex = i;
       }
     }
@@ -1797,44 +1798,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       params.push((uppercase ? i.toUpperCase() : i) + '=' + obj[i]);
     }
     return (!existingUrl || existingUrl.indexOf('?') === -1 ? '?' : '&') + params.join('&');
-  }
-
-  /**
-   * @private
-   * @description 判断是否地理X坐标
-   * @param data
-   */
-  _isXField(data) {
-    var lowerdata = data.toLowerCase();
-    return (
-      lowerdata === 'x' ||
-      lowerdata === 'smx' ||
-      lowerdata === 'jd' ||
-      lowerdata === '经度' ||
-      lowerdata === '东经' ||
-      lowerdata === 'longitude' ||
-      lowerdata === 'lot' ||
-      lowerdata === 'lon' ||
-      lowerdata === 'lng'
-    );
-  }
-
-  /**
-   * @private
-   * @description 判断是否地理Y坐标
-   * @param data
-   */
-  _isYField(data) {
-    var lowerdata = data.toLowerCase();
-    return (
-      lowerdata === 'y' ||
-      lowerdata === 'smy' ||
-      lowerdata === 'wd' ||
-      lowerdata === '纬度' ||
-      lowerdata === '北纬' ||
-      lowerdata === 'latitude' ||
-      lowerdata === 'lat'
-    );
   }
 
   /**

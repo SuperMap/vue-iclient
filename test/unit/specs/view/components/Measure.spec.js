@@ -88,7 +88,7 @@ describe('mesure', () => {
                 expect(measureWrapper.vm.getMapTarget).toBe('map');
                 const spyDeleteAll = jest.spyOn(measureWrapper.vm.viewModel.draw, 'deleteAll');
                 const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
-                measureWrapper.find('i.smwidgets-icons-line-layer').trigger('click');
+                measureWrapper.find('i.sm-components-icons-line-layer').trigger('click');
 
                 measureWrapper.vm.$nextTick(() => {
                     expect(spyDeleteAll).toBeCalled();
@@ -140,7 +140,7 @@ describe('mesure', () => {
                 expect(measureWrapper.vm.getMapTarget).toBe('map');
                 const spyDeleteAll = jest.spyOn(measureWrapper.vm.viewModel.draw, 'deleteAll');
                 const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
-                measureWrapper.find('i.smwidgets-icons-line-layer').trigger('click');
+                measureWrapper.find('i.sm-components-icons-line-layer').trigger('click');
 
                 measureWrapper.vm.$nextTick(() => {
                     expect(spyDeleteAll).toBeCalled();
@@ -189,7 +189,7 @@ describe('mesure', () => {
                 expect(measureWrapper.vm.getMapTarget).toBe('map');
                 const spyDeleteAll = jest.spyOn(measureWrapper.vm.viewModel.draw, 'deleteAll');
                 const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
-                measureWrapper.find('i.smwidgets-icons-line-layer').trigger('click');
+                measureWrapper.find('i.sm-components-icons-line-layer').trigger('click');
 
                 measureWrapper.vm.$nextTick(() => {
                     expect(spyDeleteAll).toBeCalled();
@@ -239,7 +239,7 @@ describe('mesure', () => {
                 expect(measureWrapper.vm.getMapTarget).toBe('map');
                 const spyDeleteAll = jest.spyOn(measureWrapper.vm.viewModel.draw, 'deleteAll');
                 const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
-                measureWrapper.find('i.smwidgets-icons-polygon-layer').trigger('click');
+                measureWrapper.find('i.sm-components-icons-polygon-layer').trigger('click');
 
                 measureWrapper.vm.$nextTick(() => {
                     expect(spyDeleteAll).toBeCalled();
@@ -301,7 +301,7 @@ describe('mesure', () => {
                 expect(measureWrapper.vm.getMapTarget).toBe('map');
                 const spyDeleteAll = jest.spyOn(measureWrapper.vm.viewModel.draw, 'deleteAll');
                 const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
-                measureWrapper.find('i.smwidgets-icons-polygon-layer').trigger('click');
+                measureWrapper.find('i.sm-components-icons-polygon-layer').trigger('click');
 
                 measureWrapper.vm.$nextTick(() => {
                     expect(spyDeleteAll).toBeCalled();

@@ -93,7 +93,7 @@
 
 <script>
 import * as mapv from "mapv";
-import widgets from '../src/mapboxgl';
+import smcomponents from '../src/mapboxgl';
 import demoData from './data/demo.json';
 import earthquake from './data/earthquake.json';
 import themeLayerData from './data/themeLayerData.json';
@@ -281,9 +281,9 @@ export default {
 
     return {
       layerStyles: {
-        line: new widgets.commontypes.LineStyle({ 'line-width': 3, 'line-color': '#3fb1e3' }),
-        circle: new widgets.commontypes.CircleStyle({ 'circle-color': '#3fb1e3', 'circle-radius': 6 }),
-        fill: new widgets.commontypes.FillStyle({ 'fill-color': '#3fb1e3', 'fill-opacity': 0.8 })
+        line: new smcomponents.commontypes.LineStyle({ 'line-width': 3, 'line-color': '#3fb1e3' }),
+        circle: new smcomponents.commontypes.CircleStyle({ 'circle-color': '#3fb1e3', 'circle-radius': 6 }),
+        fill: new smcomponents.commontypes.FillStyle({ 'fill-color': '#3fb1e3', 'fill-opacity': 0.8 })
       },
       rankFeatures,
       styleObject: {
@@ -296,20 +296,20 @@ export default {
         speed: 500
       },
       iportalDataQuery: [
-        new widgets.commontypes.iPortalDataParameter({
+        new smcomponents.commontypes.iPortalDataParameter({
           url: 'http://192.168.12.230:8092/web/datas/1962026684',
           attributeFilter: 'SmID>0'
         })
       ],
       restDataQuery: [
-        new widgets.commontypes.RestDataParameter({
+        new smcomponents.commontypes.RestDataParameter({
           url: host + '/iserver/services/data-world/rest/data',
           attributeFilter: "NAME='Huang He'",
           dataName: ['World:Countries']
         })
       ],
       restMapQuery: [
-        new widgets.commontypes.RestMapParameter({
+        new smcomponents.commontypes.RestMapParameter({
           url: host + '/iserver/services/map-world/rest/maps/World',
           attributeFilter: 'SmID>0',
           layerName: 'Capitals@World.1'
@@ -327,25 +327,25 @@ export default {
       },
       layerSourceNames: ['UNIQUE-民航数-0'],
       addressMatch: [
-        new widgets.commontypes.AddressMatchParameter({
+        new smcomponents.commontypes.AddressMatchParameter({
           url:
             host + '/iserver/services/addressmatch-Address/restjsr/v1/address'
         })
       ],
       restMapSearch: [
-        new widgets.commontypes.RestMapParameter({
+        new smcomponents.commontypes.RestMapParameter({
           url: host + '/iserver/services/map-world/rest/maps/World',
           layerName: 'Capitals@World.1'
         })
       ],
       restDataSearch: [
-        new widgets.commontypes.RestDataParameter({
+        new smcomponents.commontypes.RestDataParameter({
           url: host + '/iserver/services/data-world/rest/data',
           dataName: ['World:Countries']
         })
       ],
       iportalData: [
-        new widgets.commontypes.iPortalDataParameter({
+        new smcomponents.commontypes.iPortalDataParameter({
           url: 'http://192.168.12.230:8092/web/datas/659519047'
         })
       ],
@@ -534,10 +534,10 @@ export default {
     //   this.echartOption = {};
     // },
     changeStyle() {
-      widgets.setTheme('dark');
+      smcomponents.setTheme('dark');
     },
     changeStyle1() {
-      widgets.setTheme('light');
+      smcomponents.setTheme('light');
     },
     rankThemeCallback(themeLayer, map) {
       //专题图层 mousemove 事件

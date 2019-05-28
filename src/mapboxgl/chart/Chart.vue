@@ -131,7 +131,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-attribute'
+      default: 'sm-components-icons-attribute'
     },
     dataset: {
       type: Object,

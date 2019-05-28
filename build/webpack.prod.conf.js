@@ -10,7 +10,7 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const outputFileName = 'iclient9-mapboxgl-widgets-vue';
+const outputFileName = 'iclient9-mapboxgl-vue';
 const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : require('../config/prod.env');
 const isMinify = process.argv.includes('-p');
 const pkg = require('../package.json');
@@ -24,14 +24,14 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   // devtool: config.build.productionSourceMap ? config.build.devtool : false,
   entry: {
-    app: ['./src/index.js']
+    app: ['./src/mapboxgl/index.js']
   },
   output: {
     path: path.resolve(__dirname, '../dist'),
     filename: isMinify ? `${outputFileName}.min.js` : `${outputFileName}.js`,
     libraryTarget: 'umd',
     libraryExport: 'default',
-    library: ['SuperMap', 'Widgets']
+    library: ['SuperMap', 'Components']
   },
   externals: [
     {

@@ -1,5 +1,5 @@
 import globalEvent from '../common/_utils/global-event';
-import { Progress, Icon, Card, Collapse, Checkbox, Select, Button, Spin, Message, Input, Slider, Table } from 'ant-design-vue';
+import { Progress, Icon, Card, Collapse, Checkbox, Select, Button, Spin, Input, Slider, Table } from 'ant-design-vue';
 import i18n, { setLocale, lang } from '../common/_lang';
 import * as themeFactory from '../common/_utils/style/theme';
 import * as components from './components';
@@ -35,7 +35,6 @@ const install = function(Vue, opts = {}) {
   Vue.use(Progress);
   Vue.use(Icon);
   Vue.use(Spin);
-  Vue.prototype.$message = Message;
   for (let component in components) {
     Vue.component(components[component].name, components[component]);
   }

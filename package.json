@@ -1,7 +1,7 @@
 {
-    "name": "vue-iclient-widgets",
+    "name": "vue-iclient",
     "version": "9.1.2",
-    "description": "SuperMap iClient Widgets for Vue.js",
+    "description": "SuperMap iClient for Vue.js",
     "homepage": "http://iclient.supermap.io",
     "scripts": {
         "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
@@ -127,7 +127,7 @@
     "author": "SuperMap_FE",
     "repository": {
         "type": "git",
-        "url": "https://github.com/SuperMap/vue-iclient-widgets.git"
+        "url": "https://github.com/SuperMap/vue-iclient.git"
     },
     "keywords": [
         "SuperMap",

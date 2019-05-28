@@ -1,2 +1,2 @@
-# vue-iclient-widgets
-SuperMap iClient Widgets for Vue.js
+# vue-iclient
+SuperMap iClient for Vue.js

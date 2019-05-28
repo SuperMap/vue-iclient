@@ -2,6 +2,7 @@ import XLSX from 'xlsx';
 import { FileTypes } from './FileTypes';
 import { open } from 'shapefile';
 import { handleMultyPolygon } from '../_utils/geometry-util';
+import { isXField, isYField } from '../../common/_utils/util';
 
 const FileReaderUtil = {
   rABS: typeof FileReader !== 'undefined' && FileReader.prototype && FileReader.prototype.readAsBinaryString,
@@ -9,7 +10,7 @@ const FileReaderUtil = {
   rAT: typeof FileReader !== 'undefined' && FileReader.prototype && FileReader.prototype.readAsText,
 
   /**
-   * @function SuperMap.Widgets.FileReaderUtil.prototype.readFile
+   * @function SuperMap.Components.FileReaderUtil.prototype.readFile
    * @description 读取文件
    * @param {string} fileType - 当前读取的文件类型
    *
@@ -101,7 +102,7 @@ const FileReaderUtil = {
   },
 
   /**
-   * @function SuperMap.Widgets.FileReaderUtil.prototype.processDataToGeoJson
+   * @function SuperMap.Components.FileReaderUtil.prototype.processDataToGeoJson
    * @description 将读取回来得数据统一处理为 GeoJSON 格式
    * @param {string} type - 文件类型
    * @param {Object} data - 读取返回的数据对象
@@ -153,7 +154,7 @@ const FileReaderUtil = {
     };
   },
   /**
-   * @function SuperMap.Widgets.FileReaderUtil.prototype.processExcelDataToGeoJson
+   * @function SuperMap.Components.FileReaderUtil.prototype.processExcelDataToGeoJson
    * @description 表格文件数据处理
    * @param {Object} data - 读取的表格文件数据
    * @returns {GeoJSONObject} 返回标准 GeoJSON 规范格式数据
@@ -169,10 +170,10 @@ const FileReaderUtil = {
     let xfieldIndex = -1;
     let yfieldIndex = -1;
     for (let i = 0, len = fieldCaptions.length; i < len; i++) {
-      if (this.isXField(fieldCaptions[i])) {
+      if (isXField(fieldCaptions[i])) {
         xfieldIndex = i;
       }
-      if (this.isYField(fieldCaptions[i])) {
+      if (isYField(fieldCaptions[i])) {
         yfieldIndex = i;
       }
     }
@@ -203,43 +204,6 @@ const FileReaderUtil = {
       features.push(feature);
     }
     return features;
-  },
-  /**
-   * 判断是否地理X坐标
-   * @param data
-   */
-  isXField(data) {
-    var lowerdata = data.toLowerCase();
-    return (
-      lowerdata === 'x' ||
-      lowerdata === 'smx' ||
-      lowerdata === 'jd' ||
-      lowerdata === '经度' ||
-      lowerdata === '东经' ||
-      lowerdata === 'longitude' ||
-      lowerdata === 'lot' ||
-      lowerdata === 'lon' ||
-      lowerdata === 'lng' ||
-      lowerdata === 'x坐标'
-    );
-  },
-
-  /**
-   * 判断是否地理Y坐标
-   * @param data
-   */
-  isYField(data) {
-    var lowerdata = data.toLowerCase();
-    return (
-      lowerdata === 'y' ||
-      lowerdata === 'smy' ||
-      lowerdata === 'wd' ||
-      lowerdata === '纬度' ||
-      lowerdata === '北纬' ||
-      lowerdata === 'latitude' ||
-      lowerdata === 'lat' ||
-      lowerdata === 'y坐标'
-    );
   },
   /**
    * 字符串转为dataEditor 支持的csv格式数据

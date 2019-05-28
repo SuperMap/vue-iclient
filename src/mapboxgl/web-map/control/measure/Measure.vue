@@ -82,7 +82,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-measure'
+      default: 'sm-components-icons-measure'
     },
     headerName: {
       type: String,
@@ -127,12 +127,12 @@ export default {
         {
           mode: 'draw_line_string',
           title: this.$t('measure.distance'),
-          iconClass: 'smwidgets-icons-line-layer'
+          iconClass: 'sm-components-icons-line-layer'
         },
         {
           mode: 'draw_polygon',
           title: this.$t('measure.area'),
-          iconClass: 'smwidgets-icons-polygon-layer'
+          iconClass: 'sm-components-icons-polygon-layer'
         }
       ],
       activeMode: '',

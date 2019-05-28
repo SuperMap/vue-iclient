@@ -24,7 +24,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-return'
+      default: 'sm-components-icons-return'
     },
     autoRotate: {
       type: Boolean,

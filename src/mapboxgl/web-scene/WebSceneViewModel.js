@@ -25,7 +25,6 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
         return response.json();
       })
       .then(result => {
-        console.log(result);
         let { thumbnail, name, url, id } = result;
         this.sceneInfo = { thumbnail, name, url, id };
         // 检查是否公开or私有

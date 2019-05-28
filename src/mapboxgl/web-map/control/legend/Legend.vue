@@ -177,9 +177,9 @@ export default {
   filters: {
     selectLayerType(featureType) {
       return {
-        POLYGON: 'smwidgets-icons-polygon-layer',
-        POINT: 'smwidgets-icons-point-layer',
-        LINE: 'smwidgets-icons-line-layer'
+        POLYGON: 'sm-components-icons-polygon-layer',
+        POINT: 'sm-components-icons-point-layer',
+        LINE: 'sm-components-icons-line-layer'
       }[featureType];
     }
   },
@@ -187,7 +187,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-layer-style'
+      default: 'sm-components-icons-layer-style'
     },
     autoRotate: {
       type: Boolean,

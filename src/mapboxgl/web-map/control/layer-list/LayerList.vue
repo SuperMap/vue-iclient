@@ -84,7 +84,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'smwidgets-icons-layer-style'
+      default: 'sm-components-icons-layer-style'
     },
     headerName: {
       type: String,

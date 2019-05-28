@@ -90,3 +90,40 @@ export function clearNumberComma(num) {
   }
   return num;
 }
+/**
+ * 判断是否地理X坐标
+ * @param data
+ */
+export function isXField(data) {
+  var lowerdata = data.toLowerCase();
+  return (
+    lowerdata === 'x' ||
+    lowerdata === 'smx' ||
+    lowerdata === 'jd' ||
+    lowerdata === '经度' ||
+    lowerdata === '东经' ||
+    lowerdata === 'longitude' ||
+    lowerdata === 'lot' ||
+    lowerdata === 'lon' ||
+    lowerdata === 'lng' ||
+    lowerdata === 'x坐标'
+  );
+}
+
+/**
+ * 判断是否地理Y坐标
+ * @param data
+ */
+export function isYField(data) {
+  var lowerdata = data.toLowerCase();
+  return (
+    lowerdata === 'y' ||
+    lowerdata === 'smy' ||
+    lowerdata === 'wd' ||
+    lowerdata === '纬度' ||
+    lowerdata === '北纬' ||
+    lowerdata === 'latitude' ||
+    lowerdata === 'lat' ||
+    lowerdata === 'y坐标'
+  );
+}

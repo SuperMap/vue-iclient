@@ -39,8 +39,8 @@
     text-align: center;
     font-size: 22px;
     vertical-align: middle;
-    & .smwidgets-icons-polygon-layer,
-    & .smwidgets-icons-line-layer {
+    & .sm-components-icons-polygon-layer,
+    & .sm-components-icons-line-layer {
       cursor: pointer;
       font-size: $--text-regular;
     }

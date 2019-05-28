@@ -64,7 +64,7 @@
       color: #409eff;
       // background: rgb(245, 245, 245);
     }
-    & > .smwidgets-icons-preview {
+    & > .sm-components-icons-preview {
       // color: #409eff;
       font-size: $--text-regular;
     }
@@ -72,8 +72,8 @@
       margin-left: 10px;
       font-size: $--text-regular;
     }
-    & > .smwidgets-icons-legend-unfold,
-    & > .smwidgets-icons-legend-fold {
+    & > .sm-components-icons-legend-unfold,
+    & > .sm-components-icons-legend-fold {
       color: #c0c4cc;
       font-size: 10px;
       float: right;

@@ -1,6 +1,6 @@
 var SuperMap = window.SuperMap = window.SuperMap || {};
-SuperMap.Widgets = window.SuperMap.Widgets || {};
-SuperMap.Widgets.FileReaderUtil = {};
+SuperMap.Components = window.SuperMap.Components || {};
+SuperMap.Components.FileReaderUtil = {};
 
 import { featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart, iportal_content } from "./services"
 
@@ -9,8 +9,8 @@ var GetFeaturesBySQLParameters = SuperMap.GetFeaturesByBoundsParameters = jest.f
 var QueryBySQLParameters = SuperMap.QueryBySQLParameters = jest.fn();
 var FilterParameter = SuperMap.FilterParameter = jest.fn();
 var QueryByBoundsParameters = SuperMap.QueryByBoundsParameters = jest.fn();
-var isXField = SuperMap.Widgets.FileReaderUtil.isXField = jest.fn();
-var isYField = SuperMap.Widgets.FileReaderUtil.isYField = jest.fn();
+var isXField = SuperMap.Components.FileReaderUtil.isXField = jest.fn();
+var isYField = SuperMap.Components.FileReaderUtil.isYField = jest.fn();
 
 
 var FetchRequest = SuperMap.FetchRequest = {
