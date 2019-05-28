@@ -28,6 +28,8 @@ export default {
   },
   mounted() {
     globalEvent.$on('change-theme', (themeStyle) => {
+      console.log('onchange-theme');
+      console.log(themeStyle);
       this.backgroundData = themeStyle.background;
       this.textColorsData = themeStyle.textColor;
       this.colorGroupsData = themeStyle.colorGroup;
@@ -38,6 +40,7 @@ export default {
   computed: {
     getBackgroundStyle() {
       return {
+        background: this.backgroundData
       };
     },
     getTextColorStyle() {

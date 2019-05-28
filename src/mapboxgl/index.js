@@ -21,6 +21,7 @@ const install = function(Vue, opts = {}) {
   let theme = opts.theme || 'light';
 
   require(`../common/_utils/style/theme/${theme}.scss`);
+  require('./style.scss');
   setTheme(theme);
 
   Vue.use(Button);

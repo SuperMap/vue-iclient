@@ -13,7 +13,7 @@ export function getDateTime(source, timeType) {
   let s = myDate.getSeconds();
   s = s < 10 ? '0' + s : s;
   let W = myDate.getDay();
-  W = this.getWeek(W);
+  W = getWeek(W);
   if (source === 'time') {
     let date = Y + '年' + M + '月' + D + '日';
     let dataSecond = date + ' ' + h + '时' + m + '分' + s + '秒';

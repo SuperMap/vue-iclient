@@ -1,3 +1,5 @@
+$--assets-path: './web-map/control/pan/assets' !default;
+@import "../common/_utils/style/common/common.scss";
 /** common */
 @import '../common/chart/style/chart.scss';
 @import '../common/indicator/style/indicator.scss';

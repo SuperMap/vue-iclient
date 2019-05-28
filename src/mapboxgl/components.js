@@ -1,5 +1,4 @@
 /** common */
-export { default as Chart } from '../common/chart/Chart';
 export { default as Icon } from '../common/icon/Icon';
 export { default as Indicator } from '../common/indicator/Indicator';
 export { default as LiquidFill } from '../common/liquidfill/LiquidFill';
@@ -32,6 +31,7 @@ export { default as Pan } from './web-map/control/pan/Pan';
 export { default as Scale } from './web-map/control/scale/Scale';
 export { default as Zoom } from './web-map/control/zoom/Zoom';
 
+export { default as Chart } from './chart/Chart';
 export { default as WebMap } from './web-map/WebMap';
 export { default as WebScene } from './web-scene/WebScene';
 export { default as OpenFile } from './open-file/OpenFile';

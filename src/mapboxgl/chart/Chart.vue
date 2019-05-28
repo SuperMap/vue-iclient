@@ -24,11 +24,11 @@
 <script>
 import ECharts from 'vue-echarts';
 import Control from '../../mapboxgl/_mixin/control';
-import Card from '../_mixin/card';
-import Theme from '../_mixin/theme';
-import { chartThemeUtil } from '../_utils/style/theme/chart';
+import Card from '../../common/_mixin/card';
+import Theme from '../../common/_mixin/theme';
+import { chartThemeUtil } from '../../common/_utils/style/theme/chart';
 import UniqueId from 'lodash.uniqueid';
-import EchartsDataService from '../../mapboxgl/_utils/EchartsDataService';
+import EchartsDataService from '../_utils/EchartsDataService';
 
 /**
  * @module Chart
