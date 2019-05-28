@@ -7,11 +7,10 @@
 <script>
 import { getDateTime } from '../_utils/util';
 import Theme from '../_mixin/theme';
-import Control from '../../mapboxgl/_mixin/control';
 
 export default {
   name: 'SmTimeText',
-  mixins: [Control, Theme],
+  mixins: [Theme],
   props: {
     timeType: {
       type: String,

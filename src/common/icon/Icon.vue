@@ -5,11 +5,10 @@
 </template>
 <script>
 import Theme from '../_mixin/theme';
-import Control from '../../mapboxgl/_mixin/control';
 
 export default {
   name: 'SmIcon',
-  mixins: [Control, Theme],
+  mixins: [Theme],
   props: {
     type: {
       type: String,

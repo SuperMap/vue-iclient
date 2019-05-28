@@ -1,10 +1,6 @@
 @import "./var.scss";
-body .mapboxgl-ctrl{
-  font-family: Microsoft YaHei,sans-serif !important;
-}
-
-.mapboxgl-ctrl {
-  position: relative;
+body {
+  font-family: Microsoft YaHei, sans-serif !important;
 }
 
 .add-ellipsis {

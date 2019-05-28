@@ -6,11 +6,10 @@
 
 <script>
 import Theme from '../_mixin/theme';
-import Control from '../../mapboxgl/_mixin/control';
 
 export default {
   name: 'SmText',
-  mixins: [Control, Theme],
+  mixins: [Theme],
   props: {
     fontStyle: {
       type: Object

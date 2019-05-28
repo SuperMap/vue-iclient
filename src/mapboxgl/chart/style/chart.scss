@@ -1,4 +1,4 @@
-@import "../../_utils/style/mixins/mixins.scss";
+@import "../../../common/_utils/style/mixins/mixins.scss";
 
 @include b(chart) {
   & .sm-widget-card__content {

@@ -4,12 +4,11 @@
 <script>
 import echarts from 'echarts';
 import Theme from '../_mixin/theme';
-import Control from '../../mapboxgl/_mixin/control';
 import 'echarts-liquidfill';
 
 export default {
   name: 'SmLiquidFill',
-  mixins: [Control, Theme],
+  mixins: [Theme],
   props: {
     // 百分比的值
     value: {

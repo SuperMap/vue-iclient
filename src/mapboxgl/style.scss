@@ -1,7 +1,6 @@
 $--assets-path: './web-map/control/pan/assets' !default;
 @import "../common/_utils/style/common/common.scss";
 /** common */
-@import '../common/chart/style/chart.scss';
 @import '../common/indicator/style/indicator.scss';
 @import '../common/text/style/text.scss';
 @import '../common/time-text/style/time-text.scss';
@@ -24,3 +23,4 @@ $--assets-path: './web-map/control/pan/assets' !default;
 @import './search/style/search.scss';
 @import './query/style/query.scss';
 @import './open-file/style/open-file.scss';
+@import './chart/style/chart.scss';
