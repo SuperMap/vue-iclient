@@ -12,7 +12,7 @@ export default {
   props: {
     // 百分比的值
     value: {
-      type: Number,
+      type: [Number, String],
       default: 0
     },
     // 波浪数
@@ -65,8 +65,9 @@ export default {
     // 根据波浪数渲染数据
     calcData() {
       let data = [];
+      const formatValue = isNaN(this.value) ? 0 : parseFloat(this.value);
       for (let i = 0; i < this.waveCount; i++) {
-        data.push(this.value - i * 0.05);
+        data.push(formatValue - i * 0.05);
       }
       return data;
     }

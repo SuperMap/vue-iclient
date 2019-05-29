@@ -1,6 +1,21 @@
 <template>
   <div class="sm-widget-icon">
-    <a-icon :type="type" :style="[iconStyle, colorStyle]" />
+    <i
+      v-if="!!iconClass"
+      :class="'sm-components-icons-' + iconClass"
+      :style="[formatIconStyle, colorStyle]"
+      :theme="theme"
+      :twoToneColor="twoToneColor"
+      :component="component"
+    />
+    <a-icon
+      v-else
+      :type="type"
+      :style="[formatIconStyle, colorStyle]"
+      :theme="theme"
+      :twoToneColor="twoToneColor"
+      :component="component"
+    />
   </div>
 </template>
 <script>
@@ -16,12 +31,33 @@ export default {
     },
     iconStyle: {
       type: Object
+    },
+    theme: {
+      type: String,
+      default: 'outlined'
+    },
+    twoToneColor: {
+      type: String
+    },
+    iconClass: {
+      type: String
+    },
+    component: {
+      type: Object
     }
   },
   data() {
     return {
       colorStyle: {}
     };
+  },
+  computed: {
+    formatIconStyle() {
+      let iconStyle = Object.assign({}, this.iconStyle);
+      const fontSize = iconStyle.fontSize;
+      fontSize && (iconStyle.fontSize = parseInt(fontSize) + 'px');
+      return iconStyle;
+    }
   },
   watch: {
     colorGroupsData: {

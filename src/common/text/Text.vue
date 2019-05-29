@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-widget-text" :style="[getBackgroundStyle, formatFontStyle, getTextColorStyle]">
+  <div class="sm-widget-text" :style="[formatFontStyle, getBackgroundStyle, getTextColorStyle]">
     <span>{{ title }}</span>
   </div>
 </template>

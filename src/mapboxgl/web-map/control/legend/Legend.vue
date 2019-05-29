@@ -241,19 +241,30 @@ export default {
       }
     }
   },
-  methods: {},
+  watch: {
+    layerNames: function(newVal) {
+      this.layerNames = newVal;
+      this.initLegendList();
+    }
+  },
+  methods: {
+    initLegendList() {
+      this.legendList = {};
+      this.layerNames.forEach(layer => {
+        let style = this.legendViewModel.getStyle(layer);
+        if (!style) {
+          throw new Error(this.$t('legend.noMatchLayer'));
+        }
+        if (!this.legendList[layer]) {
+          this.$set(this.legendList, layer, style);
+        }
+      });
+    }
+  },
   loaded() {
     // show用来控制图例列表的显示
-    const legendViewModel = new LegendViewModel(this.webmap);
-    this.layerNames.forEach(layer => {
-      let style = legendViewModel.getStyle(layer);
-      if (!style) {
-        throw new Error(this.$t('legend.noMatchLayer'));
-      }
-      if (!this.legendList[layer]) {
-        this.$set(this.legendList, layer, style);
-      }
-    });
+    this.legendViewModel = new LegendViewModel(this.webmap);
+    this.initLegendList();
     const cardContent = this.$el.querySelector('.sm-widget-card__content');
     cardContent.style.width = '200px';
   }

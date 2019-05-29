@@ -171,9 +171,11 @@ export default {
   watch: {
     distanceDefaultUnit: function(newVal) {
       this.activeDistanceUnit = newVal;
+      this.updateUnit(newVal);
     },
     areaDefaultUnit: function(newVal) {
       this.activeAreaUnit = newVal;
+      this.updateUnit(newVal);
     },
     colorGroupsData: {
       handler() {
