@@ -41,9 +41,9 @@ export default {
     // 初始化
     initTime(timeType) {
       clearInterval(this.timeInterval);
-      this.time = getDateTime('time', timeType);
+      this.time = getDateTime(timeType);
       this.timeInterval = setInterval(() => {
-        this.time = getDateTime('time', timeType);
+        this.time = getDateTime(timeType);
       }, 1000);
     }
   }

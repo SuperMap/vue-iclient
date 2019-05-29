@@ -2,6 +2,7 @@
 
 @include b(text) {
   background: $--fill-base;
+  display: inline-block;
   line-height: 1.5;
   padding: 4px;
 }

@@ -2,7 +2,7 @@
 
 @include b(indicator) {
   background: $--fill-base;
-  display: flex;
+  display: inline-block;
   flex-flow: column nowrap;
   justify-content: flex-start;
   color: #595959;

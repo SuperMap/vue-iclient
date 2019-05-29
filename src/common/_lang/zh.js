@@ -1,4 +1,28 @@
 export default {
+  dateTimeFormat: {
+    date: {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    },
+    date_second: {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric'
+    },
+    date_second_week: {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      weekday: 'long',
+      hour: 'numeric',
+      minute: 'numeric',
+      second: 'numeric'
+    }
+  },
   // messageTemplate
   warning: {},
   success: {},
@@ -12,6 +36,14 @@ export default {
     onlineLocalSearch: 'SuperMap Online 本地搜索'
   },
   // 微件
+  timeText: {
+    Year: '年',
+    Month: '月',
+    Day: '日',
+    hour: '时',
+    minute: '分',
+    second: '秒'
+  },
   zoom: {},
   chart: {},
   layerList: {

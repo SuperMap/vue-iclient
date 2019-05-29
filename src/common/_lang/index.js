@@ -5,6 +5,11 @@ import enLocale from './en';
 import zhLocale from './zh';
 import clonedeep from 'lodash.clonedeep';
 
+const dateTimeFormats = {
+  en: enLocale.dateTimeFormat,
+  zh: zhLocale.dateTimeFormat
+};
+
 if (!Vue.prototype.hasOwnProperty('$i18n')) {
   Object.defineProperty(Vue.prototype, '$i18n', {
     get: function get() {
@@ -22,12 +27,12 @@ const messages = {
     ...zhLocale
   }
 };
-const i18n =
-  new VueI18n({
-    locale: getLanguage(),
-    fallbackLocale: 'zh',
-    messages
-  });
+const i18n = new VueI18n({
+  dateTimeFormats,
+  locale: getLanguage(),
+  fallbackLocale: 'zh',
+  messages
+});
 
 export function setLocale(locales) {
   i18n.mergeLocaleMessage(i18n.locale, locales);
@@ -38,7 +43,7 @@ export const lang = {
 };
 export default i18n;
 
-function getLanguage() {
+export function getLanguage() {
   var lang = Cookies.get('language');
   if (!lang) {
     if (navigator.appName === 'Netscape') {

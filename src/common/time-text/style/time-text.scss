@@ -2,7 +2,7 @@
 
 @include b(time-text) {
   background: $--fill-base;
-  display: table;
+  display: inline-block;
   text-align: center;
   & > span {
     padding: 10px;
