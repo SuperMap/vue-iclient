@@ -36,7 +36,9 @@ import EchartsDataService from '../_utils/EchartsDataService';
  * @desc Chart微件。除了prop: dataset和datasetOptions，其他的所有prop,event,computed, methods都是ECharts的配置，参考https://echarts.baidu.com/api.html#echartsInstance.dispose
  * @vue-prop {Object} dataset - 用来请求的dataset配置。
  * @vue-prop {Object} datasetOptions - 和请求dataset数据相关的配置。
- *
+ * @vue-prop {String} [background] - 图表背景颜色。
+ * @vue-prop {String} [textColor] - 图表字体颜色。
+ * @vue-prop {Array} [colorGroup] - 图表颜色数组。
  * @vue-prop {Object} theme - 当前 ECharts 实例使用的主题。
  * @vue-prop {Object} initOptions - 用来初始化 ECharts 实例。
  * @vue-prop {Object} options - ECharts 实例的数据。修改这个 prop 会触发 ECharts 实例的 setOption 方法。如果直接修改 options 绑定的数据而对象引用保持不变，setOption 方法调用时将带有参数 notMerge: false。否则，如果为 options 绑定一个新的对象，setOption 方法调用时则将带有参数 notMerge: true。
@@ -133,6 +135,15 @@ export default {
       type: String,
       default: 'sm-components-icons-attribute'
     },
+    background: {
+      type: String
+    },
+    textColor: {
+      type: String
+    },
+    colorGroup: {
+      type: Array
+    },
     dataset: {
       type: Object,
       default() {
@@ -173,7 +184,7 @@ export default {
     return {
       chartId: UniqueId(`${this.$options.name.toLowerCase()}-`),
       smChart: null, // echarts实例
-      chartTheme: chartThemeUtil(), // 图表的主题
+      chartTheme: {}, // 图表的主题
       echartOptions: {}, // 最后生成的echart数据
       echartsDataService: null, // 请求数据的实例，保存请求回来的数据
       datasetChange: false, // dataset是否改变
@@ -205,6 +216,11 @@ export default {
   watch: {
     theme() {
       this.chartTheme = null;
+    },
+    colorGroup() {
+      if (!this.theme) {
+        this.chartTheme = chartThemeUtil(this.background, this.textColor, this.colorGroup);
+      }
     },
     dataset() {
       this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -243,7 +259,7 @@ export default {
         this.$emit(event, params);
       });
     });
-
+    this.chartTheme = chartThemeUtil(this.background, this.textColor, this.colorGroup);
     // 切换主题
     this.$on('themeStyleChanged', () => {
       this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
@@ -260,6 +276,13 @@ export default {
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         this.dataSeriesCache = Object.assign({}, options);
         // 设置echartOptions
+        if (echartOptions && echartOptions.length > 0) {
+          echartOptions.forEach((option, index) => {
+            echartOptions[index].xAxis = Object.assign({}, options[0].xAxis || {}, option.xAxis);
+          });
+        } else {
+          echartOptions.xAxis = Object.assign({}, options.xAxis[0], echartOptions.xAxis);
+        }
         this.echartOptions = Object.assign({}, options, echartOptions);
       });
     },
