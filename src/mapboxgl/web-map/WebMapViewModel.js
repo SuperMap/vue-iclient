@@ -140,18 +140,18 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Array} [mapOptions.maxBounds] - 地图最大范围。
    * @param {Number} [mapOptions.minZoom] - 地图最小级别。
    * @param {Number} [mapOptions.maxZoom] - 地图最大级别。
-   * @param {Boolean} [mapOptions.isWorldCopy] - 地图是否平铺。
+   * @param {Boolean} [mapOptions.renderWorldCopies] - 地图是否平铺。
    * @param {Number} [mapOptions.bearing] - 地图的初始方位。
    * @param {Number} [mapOptions.pitch] - 地图的初始俯仰。
    */
   setMapOptions(mapOptions) {
-    let { center, zoom, maxBounds, minZoom, maxZoom, isWorldCopy, bearing, pitch } = mapOptions;
+    let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch } = mapOptions;
     center && center.length && this.map.setCenter(center);
     zoom && this.map.setZoom(zoom);
     maxBounds && this.map.setMaxBounds(maxBounds);
     minZoom && this.map.setMinZoom(minZoom);
     maxZoom && this.map.setMaxZoom(maxZoom);
-    isWorldCopy && this.map.setRenderWorldCopies(isWorldCopy);
+    renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
     bearing && this.map.setBearing(bearing);
     pitch && this.map.setPitch(pitch);
   }

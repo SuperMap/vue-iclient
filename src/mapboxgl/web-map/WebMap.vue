@@ -18,26 +18,19 @@ import VmUpdater from '../../common/_mixin/vm-updater';
 import Pan from './control/pan/Pan';
 import Scale from './control/scale/Scale';
 import Zoom from './control/zoom/Zoom';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 /**
  * @module WebMap
  * @category Components
- * @desc WebMap 微件。对接 iPortal/Online 地图类。目前支持地图坐标系包括：'EPSG:3857'，'EPSG:4326'，'EPSG:4490'，'EPSG:4214'，'EPSG:4610'。
- * @vue-prop {String} mapId - iPortal|Online 地图 ID。
+ * @desc web 地图组件。支持MapboxGL map，和对接 iPortal/Online 地图。目前支持地图坐标系包括：'EPSG:3857'，'EPSG:4326'，'EPSG:4490'，'EPSG:4214'，'EPSG:4610'。
+ * @vue-prop {Object} [mapOptions] - {@link MapboxGL map options[https://docs.mapbox.com/mapbox-gl-js/api/#map]} 对象。
+ * @vue-prop {String} [mapId] - iPortal|Online 地图 ID。当设置 `mapId` 时为加载iPortal/Online 地图，mapOptions中仅 `mapOptions.center` `mapOptions.zoom` `mapOptions.maxBounds` `mapOptions.minZoom` `mapOptions.maxZoom` `mapOptions.renderWorldCopies` `mapOptions.bearing` `mapOptions.pitch` 有效。
  * @vue-prop {String} [target='map'] - 地图容器 ID。
- * @vue-prop {String} [serverUrl='http://www.supermapol.com'] - WebMap 地图地址。
- * @vue-prop {String} [accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。
- * @vue-prop {String} [accessToken] -Key 用于访问 iPortal 中受保护的服务。
- * @vue-prop {String} [withCredentials=false] - 请求是否携带 cookie。
- * @vue-prop {String} [excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
- * @vue-prop {Object} [mapOptions] - 地图可选参数。
- * @vue-prop {Array} [mapOptions.center] - 地图中心点。
- * @vue-prop {Number} [mapOptions.zoom] - 地图缩放级别。
- * @vue-prop {Array} [mapOptions.maxBounds] - 地图最大范围。
- * @vue-prop {Number} [mapOptions.minZoom] - 地图最小级别。
- * @vue-prop {Number} [mapOptions.maxZoom] - 地图最大级别。
- * @vue-prop {Boolean} [mapOptions.isWorldCopy] - 地图是否平铺。
- * @vue-prop {Number} [mapOptions.bearing=0] - 地图的初始方位。
- * @vue-prop {Number} [mapOptions.pitch=0] - 地图的初始俯仰。
+ * @vue-prop {String} [serverUrl='http://www.supermapol.com'] - iPortal/Online 服务器地址。当设置 `mapId` 时有效。
+ * @vue-prop {String} [accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `mapId` 时有效。
+ * @vue-prop {String} [accessToken] -Key 用于访问 iPortal 中受保护的服务。当设置 `mapId` 时有效。
+ * @vue-prop {String} [withCredentials=false] - 请求是否携带 cookie。当设置 `mapId` 时有效。
+ * @vue-prop {String} [excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `mapId` 时有效。
  * @vue-prop {Object} [panControl] - 位移控件配置参数。
  * @vue-prop {Boolean} [panControl.show=false] - 是否显示位移控件。
  * @vue-prop {String} [panControl.position="top-left"] - 位移控件放置位置。
@@ -61,8 +54,7 @@ export default {
   mixins: [VmUpdater],
   props: {
     mapId: {
-      type: String,
-      required: true
+      type: String
     },
     target: {
       type: String,
@@ -131,10 +123,20 @@ export default {
     }
   },
   mounted() {
-    this.initializeWebMap();
-    this.registerEvents();
+    if (!this.mapId) {
+      const map = this.initializeMap();
+      this.registerMapEvents(map);
+    } else {
+      this.initializeWebMap();
+      this.registerEvents();
+    }
   },
   methods: {
+    initializeMap() {
+      this.mapOptions.container = this.target;
+      this.map = new mapboxgl.Map(this.mapOptions);
+      return this.map;
+    },
     initializeWebMap() {
       let { target, serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl } = this.$props;
       this.viewModel = new WebMapViewModel(this.mapId, {
@@ -144,6 +146,13 @@ export default {
         accessKey,
         withCredentials,
         excludePortalProxyUrl
+      });
+    },
+    registerMapEvents(map) {
+      map.on('load', () => {
+        mapEvent.$options.setMap(this.target, map);
+        mapEvent.$emit(`initMap-${this.target}`, map);
+        this.$emit('load', { map: map });
       });
     },
     registerEvents() {

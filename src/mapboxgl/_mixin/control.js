@@ -17,10 +17,8 @@ export default {
     }
   },
   mounted() {
-    this.parentIsWebMapOrMap = ['smwebmap', 'smmap'].includes(
-      this.$parent.$options.name && this.$parent.$options.name.toLowerCase()
-    );
-    this.filterDelayLoad = !['smwebmap', 'smmap', 'smminimap'].includes(
+    this.parentIsWebMapOrMap = this.$parent.$options.name && this.$parent.$options.name.toLowerCase() === 'smwebmap'
+    this.filterDelayLoad = !['smwebmap', 'smminimap'].includes(
       this.$options.name && this.$options.name.toLowerCase()
     );
     if (this.$el && this.parentIsWebMapOrMap) {
