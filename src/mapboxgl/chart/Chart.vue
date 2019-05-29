@@ -22,6 +22,7 @@
   </sm-card>
 </template>
 <script>
+import 'echarts';
 import ECharts from 'vue-echarts';
 import Control from '../../mapboxgl/_mixin/control';
 import Card from '../../common/_mixin/card';
