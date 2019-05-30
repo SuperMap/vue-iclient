@@ -11,23 +11,20 @@ export default {
       type: String,
       required: true
     },
-    themeLayerOptions: {
+    options: {
       type: Object,
       default() {
         return {};
       }
     },
-    addLayerSucceededCallback: {
-      type: Function
-    },
-    layerFeatures: {
+    data: {
       type: Array,
       required: true
     }
   },
   loaded() {
     this.viewModel = new LabelThemeLayerViewModel(this.map, this.$props);
-    this.addLayerSucceededCallback && this.addLayerSucceededCallback(this.viewModel.themeLayer, this.map);
+    this.$emit('load', this.viewModel.themeLayer, this.map);
   },
   render() {}
 };

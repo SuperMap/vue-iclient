@@ -17,7 +17,11 @@
         :class="{['sm-widget-card__content']:true,['is-header']:headerName,['is-'+position]:true,['is-icon']:iconClass}"
         :style="[getCardStyle]"
       >
-        <div v-if="headerName" class="sm-widget-card__header" :style="[getBackgroundStyle, getTextColorStyle]">
+        <div
+          v-if="headerName"
+          class="sm-widget-card__header"
+          :style="[getBackgroundStyle, getTextColorStyle]"
+        >
           <span class="sm-widget-card__header-name">{{ headerName }}</span>
         </div>
         <slot></slot>
@@ -70,10 +74,8 @@ export default {
     position() {
       let isControl =
         this.$parent.$parent &&
-        ['smwebmap', 'smmap'].includes(
-          this.$parent.$parent.$options.name &&
-            this.$parent.$parent.$options.name.toLowerCase()
-        );
+        this.$parent.$parent.$options.name &&
+        this.$parent.$parent.$options.name.toLowerCase() === 'smwebmap';
       if (this.headerName && !isControl) {
         return 'top-left';
       } else {
@@ -91,8 +93,7 @@ export default {
   },
   methods: {
     iconClicked() {
-      this.autoRotate &&
-        (this.transform = this.rotateDeg[this.position][!this.isShow ? 1 : 0]);
+      this.autoRotate && (this.transform = this.rotateDeg[this.position][!this.isShow ? 1 : 0]);
       this.isShow = !this.isShow;
     }
   }

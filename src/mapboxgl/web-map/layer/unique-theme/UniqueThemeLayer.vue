@@ -16,9 +16,6 @@ export default {
         return {};
       }
     },
-    addLayerSucceededCallback: {
-      type: Function
-    },
     data: {
       type: Array,
       required: true
@@ -26,7 +23,7 @@ export default {
   },
   loaded() {
     this.viewModel = new UniqueThemeLayerViewModel(this.map, this.$props);
-    this.addLayerSucceededCallback && this.addLayerSucceededCallback(this.viewModel.themeLayer, this.map);
+    this.$emit('load', this.viewModel.themeLayer, this.map);
   },
   render() {}
 };

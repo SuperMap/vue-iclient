@@ -20,9 +20,6 @@ export default {
         return {};
       }
     },
-    addLayerSucceededCallback: {
-      type: Function
-    },
     data: {
       type: Object,
       required: true
@@ -30,7 +27,7 @@ export default {
   },
   loaded() {
     this.viewModel = new GraphThemeLayerViewModel(this.map, this.$props);
-    this.addLayerSucceededCallback && this.addLayerSucceededCallback(this.viewModel.themeLayer, this.map);
+    this.$emit('load', this.viewModel.themeLayer, this.map);
   },
   render() {}
 };

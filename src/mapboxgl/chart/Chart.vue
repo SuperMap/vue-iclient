@@ -277,12 +277,14 @@ export default {
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         this.dataSeriesCache = Object.assign({}, options);
         // 设置echartOptions
-        if (echartOptions && echartOptions.length > 0) {
-          echartOptions.forEach((option, index) => {
-            echartOptions[index].xAxis = Object.assign({}, options[0].xAxis || {}, option.xAxis);
-          });
-        } else {
-          echartOptions.xAxis = Object.assign({}, options.xAxis[0], echartOptions.xAxis);
+        if (echartOptions && options.xAxis) {
+          if (echartOptions.length > 0) {
+            echartOptions.forEach((option, index) => {
+              echartOptions[index].xAxis = Object.assign({}, options[index].xAxis || {}, option.xAxis);
+            });
+          } else {
+            echartOptions.xAxis = Object.assign({}, options.xAxis[0], echartOptions.xAxis);
+          }
         }
         this.echartOptions = Object.assign({}, options, echartOptions);
       });
