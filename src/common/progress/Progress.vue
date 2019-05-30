@@ -39,6 +39,9 @@ export default {
     strokeColor: {
       type: String
     },
+    size: {
+      type: [Number] // fix 其父元素宽高都很大的时候，需要传一个合适的size, 这时候不会自适应, 如需自适应则不传size
+    },
     showInfo: {
       type: Boolean,
       default: true
@@ -67,7 +70,7 @@ export default {
   data() {
     return {
       curColor: '',
-      circleWidth: 120
+      circleWidth: ''
     };
   },
   watch: {
@@ -93,14 +96,21 @@ export default {
     this.curColor = this.strokeColor || this.getColor(0);
     this.progressTextNode = this.$el.querySelector('.ant-progress-text');
     this.progressTextNode.style.color = this.getTextColor;
-    // this.$nextTick(() => {
-    //   this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
-    // });
+    this.resize();
     window.addEventListener('resize', () => {
-      this.$nextTick(() => {
-        this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
-      });
+      this.resize();
     });
+  },
+  methods: {
+    resize() {
+      if (this.type === 'circle' && !this.size) {
+        setTimeout(() => {
+          if (this.type === 'circle' && !this.size) {
+            this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
+          }
+        }, 0);
+      }
+    }
   }
 };
 </script>

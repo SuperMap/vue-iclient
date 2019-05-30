@@ -57,8 +57,7 @@ export default {
       waveColorData: '',
       labelColorData: '',
       borderColorData: '',
-      backgroundColorData: '',
-      size: '140px'
+      backgroundColorData: ''
     };
   },
   computed: {
@@ -73,11 +72,16 @@ export default {
     }
   },
   mounted() {
-    this.initializeChart();
+    setTimeout(() => {
+      this.initializeChart();
+      this.resize();
+    }, 0);
   },
   methods: {
     resize() {
-      this.chart && this.chart.resize();
+      setTimeout(() => {
+        this.chart && this.chart.resize();
+      }, 0);
     },
     initializeChart() {
       Object.keys(this.$props).forEach(watchItem => {
@@ -87,9 +91,6 @@ export default {
       });
       this.chart = echarts.init(this.$refs.chart);
       this.updateChart();
-      // this.chart.on("finished", () => {
-      //   this.chart.resize();
-      // });
       this.$on('themeStyleChanged', () => {
         this.waveColorData = this.getColor(0);
         this.labelColorData = this.getTextColor;
@@ -98,7 +99,7 @@ export default {
         this.updateChart(true);
       });
       window.addEventListener('resize', () => {
-        this.chart.resize();
+        this.resize();
       });
     },
     updateChart(propsUpdate = false) {
