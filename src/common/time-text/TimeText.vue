@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-widget-time-text" :style="[timeParam, getBackgroundStyle, getTextColorStyle]">
+  <div class="sm-component-time-text" :style="[timeParam, getBackgroundStyle, getTextColorStyle]">
     <span>{{ time }}</span>
   </div>
 </template>

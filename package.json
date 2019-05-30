@@ -132,7 +132,7 @@
     "keywords": [
         "SuperMap",
         "Mapbox GL",
-        "Widget"
+        "Vue"
     ],
     "license": "Apache-2.0"
 }

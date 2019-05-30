@@ -36,10 +36,10 @@ describe('Pan.vue', () => {
                 console.log("default")
                 expect(wrapper.vm.getMapTarget).toBe('map');
                 testClick(wrapper, wrapper2.vm.map);
-                testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
-                testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
-                testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
-                testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
+                testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
+                testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
+                testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
+                testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
                 wrapper.destroy();
                 wrapper2.destroy();
                 done();
@@ -73,10 +73,10 @@ describe('Pan.vue', () => {
 
             testClick(wrapper, wrapper.vm.$children[0].map);
 
-            testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
-            testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
-            testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
-            testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
+            testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
+            testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
+            testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
+            testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
             done();
         })
     })
@@ -98,10 +98,10 @@ describe('Pan.vue', () => {
             expect(wrapper.vm.$children[1].getMapTarget).toBe('map');
             testClick(wrapper, wrapper.vm.$children[0].map);
 
-            testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
-            testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
-            testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
-            testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
+            testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
+            testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
+            testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
+            testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
             done();
         })
     })
@@ -123,10 +123,10 @@ describe('Pan.vue', () => {
             //expect\(wrapper\.element\)\.toMatchSnapshot\(\);
             expect(wrapper.vm.$children[3].getMapTarget).toBe('map1');
             testClick(wrapper, wrapper.vm.$children[0].map);
-            testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
-            testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
-            testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
-            testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
+            testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
+            testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
+            testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
+            testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
             done();
         })
     })
@@ -149,21 +149,21 @@ describe('Pan.vue', () => {
             expect(wrapper.vm.$children[3].getMapTarget).toBe('map3');
             testClick(wrapper, wrapper.vm.$children[2].map);
 
-            testMouseEvent(wrapper, '.is-left', 'sm-widget-pan--west');
-            testMouseEvent(wrapper, '.is-right', 'sm-widget-pan--east');
-            testMouseEvent(wrapper, '.is-top', 'sm-widget-pan--north');
-            testMouseEvent(wrapper, '.is-bottom', 'sm-widget-pan--south');
+            testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
+            testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
+            testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
+            testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
             done();
         })
     })
 
     function testMouseEvent(wrapper, cssSelector, expectResult) {
         wrapper.find(cssSelector).trigger('mouseenter');
-        expect(wrapper.find('div.sm-widget-pan').classes()).toContain(expectResult);
+        expect(wrapper.find('div.sm-component-pan').classes()).toContain(expectResult);
 
         wrapper.find(cssSelector).trigger('mouseleave');
-        expect(wrapper.find('div.sm-widget-pan').classes()).not.toContain(expectResult);
-        expect(wrapper.find('div.sm-widget-pan').classes()).toContain('sm-widget-pan--default');
+        expect(wrapper.find('div.sm-component-pan').classes()).not.toContain(expectResult);
+        expect(wrapper.find('div.sm-component-pan').classes()).toContain('sm-component-pan--default');
     }
 
     /**
@@ -187,7 +187,7 @@ describe('Pan.vue', () => {
         expect(spyPanby).toBeCalledWith([0, -panLength]);
         wrapper.find('.is-bottom').trigger('click');
         expect(spyPanby).toBeCalledWith([0, panLength]);
-        wrapper.find('.sm-widget-pan__center').trigger('click');
+        wrapper.find('.sm-component-pan__center').trigger('click');
         expect(spyPanTo).toBeCalledWith({ "lat": 0, "lng": 0 });
 
     }

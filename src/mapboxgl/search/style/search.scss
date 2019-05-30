@@ -4,7 +4,7 @@
 @include b(search) {
   z-index: $--index-normal;
   font-size: 12px;
-  width: $--widget-container-width;
+  width: $--component-container-width;
   // background: #fff;
   @include e(input) {
     box-shadow: $--box-shadow-base;

@@ -16,7 +16,6 @@ import '../../../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
  * @fires DataFlowLayerViewModel#subscribesucceeded
  * @fires DataFlowLayerViewModel#subscribefailed
  * @fires DataFlowLayerViewModel#dataUpdated
- * @extends {WidgetViewModel}
  */
 
 export default class DataFlowLayerViewModel extends mapboxgl.Evented {

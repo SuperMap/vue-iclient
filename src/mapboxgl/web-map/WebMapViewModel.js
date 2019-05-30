@@ -71,7 +71,6 @@ const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
  * @fires WebMapViewModel#getwmtsinfofailed
  * @fires WebMapViewModel#getlayerdatasourcefailed
  * @fires WebMapViewModel#addlayerssucceeded
- * @extends {WidgetViewModel}
  */
 export default class WebMapViewModel extends mapboxgl.Evented {
   constructor(id, options) {

@@ -1,5 +1,5 @@
 <template>
-  <div :id="target" class="sm-widget-web-map">
+  <div :id="target" class="sm-component-web-map">
     <slot></slot>
     <Pan v-if="panControl.show" :position="panControl.position"/>
     <Scale v-if="scaleControl.show" :position="scaleControl.position"/>

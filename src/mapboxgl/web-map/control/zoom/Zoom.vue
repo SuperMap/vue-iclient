@@ -1,20 +1,20 @@
 <template>
-  <div class="sm-widget-zoom">
-    <div class="sm-widget-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
+  <div class="sm-component-zoom">
+    <div class="sm-component-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
       <a-button
-        class="sm-widget-zoom__button"
+        class="sm-component-zoom__button"
         icon="plus"
         :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : ''"
         @click="zoomIn"
       ></a-button>
       <a-button
-        class="sm-widget-zoom__button"
+        class="sm-component-zoom__button"
         icon="minus"
         :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : ''"
         @click="zoomOut"
       ></a-button>
     </div>
-    <div class="sm-widget-zoom__slider">
+    <div class="sm-component-zoom__slider">
       <a-slider
         v-if="showZoomSlider"
         v-model="zoomPosition"

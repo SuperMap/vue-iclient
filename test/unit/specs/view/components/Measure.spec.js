@@ -145,7 +145,7 @@ describe('mesure', () => {
                 measureWrapper.vm.$nextTick(() => {
                     expect(spyDeleteAll).toBeCalled();
                     expect(spychangeMode).toBeCalled();
-                    expect(measureWrapper.find(".sm-widget-measure__unit.sm-widget-measure__default").text()).toBe("米");
+                    expect(measureWrapper.find(".sm-component-measure__unit.sm-component-measure__default").text()).toBe("米");
                     measureWrapper.vm.viewModel.on("measure-finished", (measureResult) => {
                         expect(measureResult.result).toBe("1388.1809");
                         done()

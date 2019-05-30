@@ -1,28 +1,28 @@
 <template>
-  <div class="sm-widget-card">
+  <div class="sm-component-card">
     <div
       v-if="iconClass"
-      :class="{['sm-widget-card__icon']:true,['is-'+position]:true,[`is-click-${isShow?'out':'in'}`]:true,['is-header']:headerName}"
+      :class="{['sm-component-card__icon']:true,['is-'+position]:true,[`is-click-${isShow?'out':'in'}`]:true,['is-header']:headerName}"
       :style="[getBackgroundStyle, getTextColorStyle]"
       @click="iconClicked"
     >
       <div
         :style="[iconStyle]"
-        :class="{[iconClass]:true,['is-auto-rotate']:autoRotate,['sm-widget-card__widget-icon']:true}"
+        :class="{[iconClass]:true,['is-auto-rotate']:autoRotate,['sm-component-card__component-icon']:true}"
       ></div>
     </div>
-    <transition name="sm-widget-zoom-in">
+    <transition name="sm-component-zoom-in">
       <div
         v-show="isShow"
-        :class="{['sm-widget-card__content']:true,['is-header']:headerName,['is-'+position]:true,['is-icon']:iconClass}"
+        :class="{['sm-component-card__content']:true,['is-header']:headerName,['is-'+position]:true,['is-icon']:iconClass}"
         :style="[getCardStyle]"
       >
         <div
           v-if="headerName"
-          class="sm-widget-card__header"
+          class="sm-component-card__header"
           :style="[getBackgroundStyle, getTextColorStyle]"
         >
-          <span class="sm-widget-card__header-name">{{ headerName }}</span>
+          <span class="sm-component-card__header-name">{{ headerName }}</span>
         </div>
         <slot></slot>
       </div>

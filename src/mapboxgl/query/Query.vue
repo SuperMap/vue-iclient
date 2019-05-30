@@ -6,54 +6,54 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    class="sm-widget-query"
+    class="sm-component-query"
   >
-    <div class="sm-widget-query__body" :style="[getBackgroundStyle, getTextColorStyle]">
-      <div class="sm-widget-query__choose-panel clearfix">
+    <div class="sm-component-query__body" :style="[getBackgroundStyle, getTextColorStyle]">
+      <div class="sm-component-query__choose-panel clearfix">
         <div
-          class="sm-widget-query__job-button is-active"
+          class="sm-component-query__job-button is-active"
           :title="$t('query.queryJob')"
           :style="activeTab === 'job' ? getColorStyle(0) : ''"
           @click="jobButtonClicked"
         >{{ $t('query.queryJob') }}</div>
         <div
-          class="sm-widget-query__result-button"
+          class="sm-component-query__result-button"
           :title="$t('query.queryReuslt')"
           :style="activeTab === 'result' ? getColorStyle(0) : ''"
           @click="resultButtonClicked"
         >{{ $t('query.queryReuslt') }}</div>
       </div>
-      <div class="sm-widget-query__job-info">
+      <div class="sm-component-query__job-info">
         <div
           v-for="(jobInfo,index) in jobInfos"
           v-show="jobInfos.length > 0"
           :key="index"
-          class="sm-widget-query__job-info-panel"
+          class="sm-component-query__job-info-panel"
         >
           <div
-            class="sm-widget-query__job-info-header"
+            class="sm-component-query__job-info-header"
             :style="getTextColorStyle"
             @click="jobInfoClicked"
             @mouseleave="resetHoverStyle"
             @mouseenter="changeHoverStyle"
           >
             <span class="sm-components-icons-preview"></span>
-            <span class="sm-widget-query__job-info-name">{{ jobInfo.queryParameter.name }}</span>
+            <span class="sm-component-query__job-info-name">{{ jobInfo.queryParameter.name }}</span>
             <div class="sm-components-icons-legend-unfold"></div>
           </div>
-          <div v-if="jobInfo.queryParameter.attributeFilter" class="sm-widget-query__job-info-body hidden">
-            <div class="sm-widget-query__attribute">
+          <div v-if="jobInfo.queryParameter.attributeFilter" class="sm-component-query__job-info-body hidden">
+            <div class="sm-component-query__attribute">
               <div>{{ $t('query.attributeCondition') }}</div>
               <div
-                class="sm-widget-query__attribute-name"
+                class="sm-component-query__attribute-name"
                 :style="getColorStyle(0)"
               >{{ jobInfo.queryParameter.attributeFilter }}</div>
             </div>
-            <div class="sm-widget-query__spatial-filter">
+            <div class="sm-component-query__spatial-filter">
               <div>{{ $t('query.spatialFilter') }}</div>
               <a-select
                 v-model="jobInfo.spaceFilter"
-                class="sm-widget-query__a-select"
+                class="sm-component-query__a-select"
                 :get-popup-container="getPopupContainer"
                 @dropdownVisibleChange="changeChosenStyle"
               >
@@ -64,11 +64,11 @@
                 >{{ item.label }}</a-select-option>
               </a-select>
             </div>
-            <div class="sm-widget-query__query-button">
+            <div class="sm-component-query__query-button">
               <a-button
                 type="primary"
                 size="small"
-                class="sm-widget-query__a-button"
+                class="sm-component-query__a-button"
                 :style="{backgroundColor: getColorStyle(0).color, color: getTextColor}"
                 @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)"
               >{{ $t('query.applicate') }}</a-button>
@@ -76,22 +76,22 @@
           </div>
         </div>
       </div>
-      <div class="sm-widget-query__result-info hidden">
+      <div class="sm-component-query__result-info hidden">
         <div
           v-show="!queryResult && !isQuery"
-          class="sm-widget-query__no-result hidden"
+          class="sm-component-query__no-result hidden"
         >{{ $t('query.noResult') }}</div>
-        <div v-if="isQuery && !queryResult" class="sm-widget-query__result-loading">
+        <div v-if="isQuery && !queryResult" class="sm-component-query__result-loading">
           <a-spin :tip="$t('query.querying')">
             <a-icon slot="indicator" type="loading" style="font-size: 24px" spin/>
           </a-spin>
         </div>
         <span
           v-if="queryResult"
-          class="sm-widget-query__result-header"
+          class="sm-component-query__result-header"
           :style="getColorStyle(0)"
         >{{ queryResult.name }}</span>
-        <div v-if="queryResult" class="sm-widget-query__result-body">
+        <div v-if="queryResult" class="sm-component-query__result-body">
           <ul>
             <li
               v-for="(item,index) in queryResult.result"
@@ -242,7 +242,7 @@ export default {
     },
     textColorsData: {
       handler() {
-        const results = this.$el.querySelectorAll('.sm-widget-query__result-body li');
+        const results = this.$el.querySelectorAll('.sm-component-query__result-body li');
         for (let result of results) {
           result.style.color = this.getTextColor;
         }
@@ -251,10 +251,10 @@ export default {
   },
   loaded() {
     this.viewModel = new QueryViewModel(this.map, this.$props);
-    this.resultButton = this.$el.querySelector('.sm-widget-query__result-button');
-    this.jobButton = this.$el.querySelector('.sm-widget-query__job-button');
-    this.resultInfoContainer = this.$el.querySelector('.sm-widget-query__result-info');
-    this.jobInfoContainer = this.$el.querySelector('.sm-widget-query__job-info');
+    this.resultButton = this.$el.querySelector('.sm-component-query__result-button');
+    this.jobButton = this.$el.querySelector('.sm-component-query__job-button');
+    this.resultInfoContainer = this.$el.querySelector('.sm-component-query__result-info');
+    this.jobInfoContainer = this.$el.querySelector('.sm-component-query__job-info');
     this.registerEvents();
     this.formatJobInfos();
   },
@@ -319,7 +319,7 @@ export default {
       let parentNode;
       if (
         className === 'sm-components-icons-preview' ||
-        className === 'sm-widget-query__job-info-name' ||
+        className === 'sm-component-query__job-info-name' ||
         className === 'sm-components-icons-legend-unfold'
       ) {
         parentNode = e.target.parentNode.parentNode;
@@ -328,8 +328,8 @@ export default {
         parentNode = e.target.parentNode;
         e.preventDefault();
       }
-      let classList = parentNode.querySelector('.sm-widget-query__job-info-body').classList;
-      let foldIcon = parentNode.querySelector('.sm-widget-query__job-info-header').children[2];
+      let classList = parentNode.querySelector('.sm-component-query__job-info-body').classList;
+      let foldIcon = parentNode.querySelector('.sm-component-query__job-info-header').children[2];
       if (classList.contains('hidden')) {
         classList.remove('hidden');
         foldIcon.classList.add('sm-components-icons-legend-fold');
@@ -379,7 +379,7 @@ export default {
     registerEvents() {
       this.viewModel.on('querysucceeded', e => {
         this.isQuery = false;
-        this.$el.querySelector('.sm-widget-query__no-result').classList.remove('hidden');
+        this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.queryResult = e.result;
         this.viewModel.getPopupFeature();
         this.addPopupToFeature();
@@ -393,7 +393,7 @@ export default {
       });
       this.viewModel.on('queryfailed', e => {
         this.isQuery = false;
-        this.$el.querySelector('.sm-widget-query__no-result').classList.remove('hidden');
+        this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.$message.warning(e.message);
         this.jobButton.classList.remove('disabled');
         /**

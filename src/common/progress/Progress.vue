@@ -1,11 +1,11 @@
 <template>
-  <div class="sm-widget-progress">
+  <div class="sm-component-progress">
     <a-progress
       :percent="parseFloat(percent)"
       :type="type"
       :stroke-width="parseFloat(strokeWidth)"
       :show-info="showInfo"
-      :width="type==='circle' ? parseFloat(circleWidth) : null"
+      :width="calWidth"
       :stroke-color="curColor"
       :status="status"
       :gap-degree="type==='circle' ? gapDegree : null"
@@ -73,6 +73,14 @@ export default {
       circleWidth: ''
     };
   },
+  computed: {
+    calWidth() {
+      if (this.size) {
+        return this.size;
+      }
+      return this.circleWidth;
+    }
+  },
   watch: {
     strokeColor: {
       handler() {
@@ -103,13 +111,9 @@ export default {
   },
   methods: {
     resize() {
-      if (this.type === 'circle' && !this.size) {
-        setTimeout(() => {
-          if (this.type === 'circle' && !this.size) {
-            this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
-          }
-        }, 0);
-      }
+      setTimeout(() => {
+        this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
+      }, 0);
     }
   }
 };

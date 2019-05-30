@@ -1,6 +1,6 @@
 <template>
-  <div class="sm-widget-web-scene">
-    <div :id="sceneId" class="sm-widget-web-scene__wrap"></div>
+  <div class="sm-component-web-scene">
+    <div :id="sceneId" class="sm-component-web-scene__wrap"></div>
   </div>
 </template>
 

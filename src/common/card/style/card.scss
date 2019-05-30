@@ -46,28 +46,28 @@
     @include when(top-left) {
       top: 0;
       left: 0;
-      & .sm-widget-card__widget-icon.is-auto-rotate {
+      & .sm-component-card__component-icon.is-auto-rotate {
         transform: rotate(45deg);
       }
     }
     @include when(bottom-left) {
       top: 0;
       left: 0;
-      & .sm-widget-card__widget-icon.is-auto-rotate {
+      & .sm-component-card__component-icon.is-auto-rotate {
         transform: rotate(45deg);
       }
     }
     @include when(top-right) {
       top: 0;
       right: 0;
-      & .sm-widget-card__widget-icon.is-auto-rotate {
+      & .sm-component-card__component-icon.is-auto-rotate {
         transform: rotate(135deg);
       }
     }
     @include when(bottom-right) {
       top: 0;
       right: 0;
-      & .sm-widget-card__widget-icon.is-auto-rotate {
+      & .sm-component-card__component-icon.is-auto-rotate {
         transform: rotate(135deg);
       }
     }
@@ -93,24 +93,24 @@
     font-weight: 700;
   }
   @include e(content) {
-    width: $--widget-container-width;
+    width: $--component-container-width;
     box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
     background: $--fill-base;
     transition: all 0.5s;
     position: relative;
-    &.sm-widget-zoom-in-enter-to,
-    &.sm-widget-zoom-in-leave {
+    &.sm-component-zoom-in-enter-to,
+    &.sm-component-zoom-in-leave {
       opacity: 1;
       transform: scale(1);
     }
-    &.sm-widget-zoom-in-enter,
-    &.sm-widget-zoom-in-leave-active {
+    &.sm-component-zoom-in-enter,
+    &.sm-component-zoom-in-leave-active {
       opacity: 0;
       transform: scale(0);
     }
     @include when(top-left) {
       @include when(icon) {
-        & > .sm-widget-card__header {
+        & > .sm-component-card__header {
           padding-left: 38px;
         }
       }
@@ -118,7 +118,7 @@
     }
     @include when(bottom-left) {
       @include when(icon) {
-        & > .sm-widget-card__header {
+        & > .sm-component-card__header {
           padding-left: 38px;
         }
       }

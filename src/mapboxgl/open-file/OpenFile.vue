@@ -1,11 +1,11 @@
 <template>
-  <div :class="['sm-widget-open-file',mapboxglClass]">
-    <label for="input_file" class="sm-widget-open-file__title">
+  <div :class="['sm-component-open-file',mapboxglClass]">
+    <label for="input_file" class="sm-component-open-file__title">
       <span>{{ text }}</span>
     </label>
     <input
       id="input_file"
-      class="sm-widget-open-file__input"
+      class="sm-component-open-file__input"
       type="file"
       :accept="accept"
       @change="fileSelect($event)"

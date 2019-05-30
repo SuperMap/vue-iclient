@@ -6,7 +6,7 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    class="sm-widget-chart"
+    class="sm-component-chart"
   >
     <v-chart
       :id="chartId"

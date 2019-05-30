@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-widget-icon">
+  <div class="sm-component-icon">
     <i
       v-if="!!iconClass"
       :class="'sm-components-icons-' + iconClass"

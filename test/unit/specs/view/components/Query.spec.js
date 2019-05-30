@@ -61,9 +61,9 @@ describe('query', () => {
             try {
                 expect(query.vm.getMapTarget).toBe('map');
                 const spyAddlayer = jest.spyOn(mapWrapper.vm.map, 'addLayer');
-                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.find('.sm-component-query__job-info-header').trigger('click');
                 query.vm.$nextTick(() => {
-                    query.find('.sm-widget-query__el-button').trigger('click');
+                    query.find('.sm-component-query__el-button').trigger('click');
                     query.vm.$nextTick(() => {
                         expect(spyAddlayer).toBeCalled();
                         spyAddlayer.mockReset();
@@ -111,7 +111,7 @@ describe('query', () => {
                     spyGetBounds.mockRestore();
                     done()
                 })
-                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.find('.sm-component-query__job-info-header').trigger('click');
                 query.vm.$nextTick(() => {
                     query.find('.el-input__suffix').trigger("click");
 
@@ -123,7 +123,7 @@ describe('query', () => {
                     query.vm.$nextTick(() => {
                         query.findAll('li.el-select-dropdown__item').at(0).trigger("click");
                         query.vm.$nextTick(() => {
-                            query.find('.sm-widget-query__el-button').trigger('click');
+                            query.find('.sm-component-query__el-button').trigger('click');
                         })
                     })
                 })
@@ -159,9 +159,9 @@ describe('query', () => {
             try {
                 expect(query.vm.getMapTarget).toBe('map');
                 const spyAddlayer = jest.spyOn(mapWrapper.vm.map, 'addLayer');
-                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.find('.sm-component-query__job-info-header').trigger('click');
                 query.vm.$nextTick(() => {
-                    query.find('.sm-widget-query__el-button').trigger('click');
+                    query.find('.sm-component-query__el-button').trigger('click');
                     query.vm.$nextTick(() => {
                         expect(spyAddlayer).toBeCalled();
                         spyAddlayer.mockReset();
@@ -213,14 +213,14 @@ describe('query', () => {
                     spyGetBounds.mockRestore();
                     done()
                 })
-                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.find('.sm-component-query__job-info-header').trigger('click');
                 query.vm.$nextTick(() => {
                     query.find('.el-input__suffix').trigger("click");
 
                     query.vm.$nextTick(() => {
                         query.findAll('li.el-select-dropdown__item').at(0).trigger("click");
                         query.vm.$nextTick(() => {
-                            query.find('.sm-widget-query__el-button').trigger('click');
+                            query.find('.sm-component-query__el-button').trigger('click');
                         })
                     })
                 })
@@ -257,7 +257,7 @@ describe('query', () => {
                 expect(query.vm.getMapTarget).toBe('map');
                 const spyAddlayer = jest.spyOn(mapWrapper.vm.map, 'addLayer');
 
-                query.find('.sm-widget-query__el-button').trigger('click');
+                query.find('.sm-component-query__el-button').trigger('click');
                 query.vm.$nextTick(() => {
                     expect(spyAddlayer).toBeCalled();
                     spyAddlayer.mockReset();
@@ -306,13 +306,13 @@ describe('query', () => {
                     spyGetBounds.mockRestore();
                     done()
                 })
-                query.find('.sm-widget-query__job-info-header').trigger('click');
+                query.find('.sm-component-query__job-info-header').trigger('click');
                 query.vm.$nextTick(() => {
                     query.find('.el-input__suffix').trigger("click");
                     query.vm.$nextTick(() => {
                         query.findAll('li.el-select-dropdown__item').at(0).trigger("click");
                         query.vm.$nextTick(() => {
-                            query.find('.sm-widget-query__el-button').trigger('click');
+                            query.find('.sm-component-query__el-button').trigger('click');
                         })
                     })
                 })

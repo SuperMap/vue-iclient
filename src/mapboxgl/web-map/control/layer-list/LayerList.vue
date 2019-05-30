@@ -6,20 +6,20 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    class="sm-widget-layer-list"
+    class="sm-component-layer-list"
   >
-    <a-card class="sm-widget-layer-list__a-card" :style="[getBackgroundStyle]">
-      <div class="sm-widget-layer-list__content">
+    <a-card class="sm-component-layer-list__a-card" :style="[getBackgroundStyle]">
+      <div class="sm-component-layer-list__content">
         <a-collapse
           v-for="(sourceValue,sourceKey,index) in sourceList"
           :key="index"
           :bordered="false"
-          class="sm-widget-layer-list__collapse"
+          class="sm-component-layer-list__collapse"
           @change="handleCollapseChange"
         >
           <a-collapse-panel
             v-if="typeof sourceValue.sourceLayerList === 'object'"
-            class="sm-widget-layer-list__collapseitem"
+            class="sm-component-layer-list__collapseitem"
             :showArrow="false"
           >
             <template slot="header">
@@ -48,7 +48,7 @@
             >{{ sourcelayerKey }}</a-checkbox>
           </a-collapse-panel>
 
-          <a-card v-else class="sm-widget-layer-list__elcarditem" :style="[getTextColorStyle]">
+          <a-card v-else class="sm-component-layer-list__elcarditem" :style="[getTextColorStyle]">
             <a-icon
               type="eye"
               :class="[sourceValue.visibility === 'visible' ? 'visible':'none']"
@@ -56,7 +56,7 @@
               @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
             ></a-icon>
             <div
-              class="sm-widget-layer-list__layergroupname add-ellipsis"
+              class="sm-component-layer-list__layergroupname add-ellipsis"
               :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
             >{{ sourceKey }}</div>
           </a-card>

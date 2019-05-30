@@ -1,7 +1,7 @@
 @import "../../../common/_utils/style/mixins/mixins.scss";
 
 @include b(chart) {
-  & .sm-widget-card__content {
+  & .sm-component-card__content {
     width: 400px;
     height: 200px;
   }

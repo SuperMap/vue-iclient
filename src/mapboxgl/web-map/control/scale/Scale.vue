@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-widget-scale" :style="[scaleStyle, getColorStyle(0)]">{{ content }}</div>
+  <div class="sm-component-scale" :style="[scaleStyle, getColorStyle(0)]">{{ content }}</div>
 </template>
 <script>
 import Theme from '../../../../common/_mixin/theme';

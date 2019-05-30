@@ -36,7 +36,7 @@ export default {
     this.iconClass && this.icon && (this.icon.style.visibility = 'hidden');
   },
   loaded() {
-    this.$el.classList.add('sm-widget-minimap');
+    this.$el.classList.add('sm-component-minimap');
     this.viewModel = new MiniMapViewModel(this.$el.querySelector('#miniMap') || this.$el, this.map);
     this.iconClass && this.icon && this.viewModel.on('minimapinitialized', () => {
       this.icon.style.visibility = 'visible';

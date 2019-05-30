@@ -6,18 +6,18 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    class="sm-widget-measure"
+    class="sm-component-measure"
   >
-    <div class="sm-widget-measure__panel" :style="[getBackgroundStyle, getTextColorStyle]">
-      <!-- <div class="sm-widget-measure__panelTitle">
-          <span class="sm-widget-measure__title">{{$t("measure.mapMeasure")}}</span>
+    <div class="sm-component-measure__panel" :style="[getBackgroundStyle, getTextColorStyle]">
+      <!-- <div class="sm-component-measure__panelTitle">
+          <span class="sm-component-measure__title">{{$t("measure.mapMeasure")}}</span>
       </div>-->
-      <div class="sm-widget-measure__panelContent">
+      <div class="sm-component-measure__panelContent">
         <span
           v-for="group in modeGroups"
           :key="group.mode"
           :style="activeMode === group.mode ? getColorStyle(0) : ''"
-          :class="{'sm-widget-measure__modeIcon': true, 'sm-widget-measure__iconActive': activeMode === group.mode}"
+          :class="{'sm-component-measure__modeIcon': true, 'sm-component-measure__iconActive': activeMode === group.mode}"
           :title="group.title"
           @click="changeMeasureMode(group.mode)"
         >
@@ -27,7 +27,7 @@
           v-show="getDistanceSelect"
           v-model="activeDistanceUnit"
           placeholder="请选择"
-          class="sm-widget-measure__unit"
+          class="sm-component-measure__unit"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
           @dropdownVisibleChange="changeChosenStyle"
@@ -43,7 +43,7 @@
           v-show="getAreaSelect"
           v-model="activeAreaUnit"
           placeholder="请选择"
-          class="sm-widget-measure__unit"
+          class="sm-component-measure__unit"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
           @dropdownVisibleChange="changeChosenStyle"
@@ -57,12 +57,12 @@
         </a-select>
         <div
           v-show="!showUnitSelect && activeMode"
-          class="sm-widget-measure__unit sm-widget-measure__default"
+          class="sm-component-measure__unit sm-component-measure__default"
         >{{ getUnitLabel }}</div>
       </div>
-      <div v-show="getResult" class="sm-widget-measure__calculateResult" :style="getTextColorStyle">
-        <div class="sm-widget-measure__calcuTitle">{{ $t("measure.measureResult") }}</div>
-        <div class="sm-widget-measure__result">{{ getResult }}</div>
+      <div v-show="getResult" class="sm-component-measure__calculateResult" :style="getTextColorStyle">
+        <div class="sm-component-measure__calcuTitle">{{ $t("measure.measureResult") }}</div>
+        <div class="sm-component-measure__result">{{ getResult }}</div>
       </div>
     </div>
   </sm-card>
@@ -242,7 +242,7 @@ export default {
       this.viewModel.updateUnit(unit);
     },
     getPopupContainer() {
-      return this.$el.querySelector('.sm-widget-measure__panelContent');
+      return this.$el.querySelector('.sm-component-measure__panelContent');
     }
   }
 };

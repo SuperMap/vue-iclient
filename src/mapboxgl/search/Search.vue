@@ -1,9 +1,9 @@
 <template>
-  <div class="sm-widget-search" :style="[getTextColorStyle, getBackgroundStyle]">
-    <div class="sm-widget-search__input">
+  <div class="sm-component-search" :style="[getTextColorStyle, getBackgroundStyle]">
+    <div class="sm-component-search__input">
       <a-input
         v-model="searchKey"
-        class="sm-widget-search__a-input"
+        class="sm-component-search__a-input"
         :placeholder="$t('search.inputPlaceHolder')"
         :style="[getBackgroundStyle]"
         @pressEnter="searchButtonClicked"
@@ -27,14 +27,14 @@
         />
       </a-input>
     </div>
-    <div v-show="getResultLength" class="sm-widget-search__result" :style="[getBackgroundStyle]">
-      <div v-for="(result,index) in searchResult" :key="index" class="sm-widget-search__panel">
+    <div v-show="getResultLength" class="sm-component-search__result" :style="[getBackgroundStyle]">
+      <div v-for="(result,index) in searchResult" :key="index" class="sm-component-search__panel">
         <span
           v-if="result.source"
-          class="sm-widget-search__panel-header"
+          class="sm-component-search__panel-header"
           :style="getColorStyle(0)"
         >{{ result.source }}</span>
-        <div v-if="result.result" class="sm-widget-search__panel-body">
+        <div v-if="result.result" class="sm-component-search__panel-body">
           <ul>
             <li
               v-for="(item,i) in result.result"
@@ -149,7 +149,7 @@ export default {
     textColorsData: {
       handler() {
         this.changeSearchInputStyle();
-        const results = this.$el.querySelectorAll('.sm-widget-search__panel li');
+        const results = this.$el.querySelectorAll('.sm-component-search__panel li');
         for (let result of results) {
           result.style.color = this.getTextColor;
         }

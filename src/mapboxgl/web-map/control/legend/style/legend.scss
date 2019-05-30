@@ -1,13 +1,13 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 
 @include b(legend) {
-  & .sm-widget-card__content {
+  & .sm-component-card__content {
     max-height: 400px;
   }
   overflow-y: auto;
   border: none;
   color: #fff;
-  .sm-widget-card__content {
+  .sm-component-card__content {
     box-shadow: unset;
   }
   .ant-card-body {

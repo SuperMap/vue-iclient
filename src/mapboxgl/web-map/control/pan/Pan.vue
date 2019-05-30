@@ -1,26 +1,26 @@
 <template>
-  <div :class="['sm-widget-pan', panImgClass, mapboxglClass]">
-    <div class="sm-widget-pan__center" @click="panToCenter"></div>
+  <div :class="['sm-component-pan', panImgClass, mapboxglClass]">
+    <div class="sm-component-pan__center" @click="panToCenter"></div>
     <div
-      class="sm-widget-pan__icon is-left"
+      class="sm-component-pan__icon is-left"
       @click="panToLeft"
       @mouseleave="setPanImg"
       @mouseenter="setPanWestImg"
     ></div>
     <div
-      class="sm-widget-pan__icon is-right"
+      class="sm-component-pan__icon is-right"
       @click="panToRight"
       @mouseleave="setPanImg"
       @mouseenter="setPanEastImg"
     ></div>
     <div
-      class="sm-widget-pan__icon is-top"
+      class="sm-component-pan__icon is-top"
       @click="panToTop"
       @mouseleave="setPanImg"
       @mouseenter="setPanNorthImg"
     ></div>
     <div
-      class="sm-widget-pan__icon is-bottom"
+      class="sm-component-pan__icon is-bottom"
       @click="panToBottom"
       @mouseleave="setPanImg"
       @mouseenter="setPanSouthImg"
@@ -44,7 +44,7 @@ export default {
   data() {
     return {
       center: null,
-      panImgClass: 'sm-widget-pan--default',
+      panImgClass: 'sm-component-pan--default',
       mapboxglClass: ''
     };
   },
@@ -81,19 +81,19 @@ export default {
     },
 
     setPanImg() {
-      this.panImgClass = 'sm-widget-pan--default';
+      this.panImgClass = 'sm-component-pan--default';
     },
     setPanWestImg() {
-      this.panImgClass = 'sm-widget-pan--west';
+      this.panImgClass = 'sm-component-pan--west';
     },
     setPanEastImg() {
-      this.panImgClass = 'sm-widget-pan--east';
+      this.panImgClass = 'sm-component-pan--east';
     },
     setPanNorthImg() {
-      this.panImgClass = 'sm-widget-pan--north';
+      this.panImgClass = 'sm-component-pan--north';
     },
     setPanSouthImg() {
-      this.panImgClass = 'sm-widget-pan--south';
+      this.panImgClass = 'sm-component-pan--south';
     }
   },
   loaded() {

@@ -1,11 +1,11 @@
 <template>
-  <div class="sm-widget-indicator" :style="[getBackgroundStyle]">
-    <div class="sm-widget-indicator__head">
-      <span class="sm-widget-indicator__title" :style="[getTextColorStyle]">{{ title }}</span>
+  <div class="sm-component-indicator" :style="[getBackgroundStyle]">
+    <div class="sm-component-indicator__head">
+      <span class="sm-component-indicator__title" :style="[getTextColorStyle]">{{ title }}</span>
     </div>
-    <div class="sm-widget-indicator__content">
-      <span class="sm-widget-indicator__num" :style="[indicatorStyle]">{{ numberSymbol }}</span>
-      <span class="sm-widget-indicator__unit" :style="[getTextColorStyle]">{{ unit }}</span>
+    <div class="sm-component-indicator__content">
+      <span class="sm-component-indicator__num" :style="[indicatorStyle]">{{ numberSymbol }}</span>
+      <span class="sm-component-indicator__unit" :style="[getTextColorStyle]">{{ unit }}</span>
     </div>
   </div>
 </template>
