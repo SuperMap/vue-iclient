@@ -9,11 +9,15 @@ module.exports = {
     'json',
     'vue'
   ],
-  testRegex: "./test/.*\\.spec\\.(js|vue)$",
+  // testRegex: "./test/.*\\.spec\\.(js|vue)$",
+  testRegex:    '.*\\.spec\\.js$',
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@libs/(.*)$': '<rootDir>/static/libs/$1',
     '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
+    '^@types/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
+    '^@types_common/(.*)$': '<rootDir>/src/common/_types/$1',
+    '^@mixin/(.*)$': '<rootDir>/src/mapboxgl/_mixin/$1',
     "\\.(css|less)$": "identity-obj-proxy" 
   },
   transform: {
@@ -30,9 +34,10 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.{js,vue}',
     '!src/main.js',
-    '!**/node_modules/**'
+    '!**/node_modules/**',
+    '!mapboxgl/*/__tests__/**/type.{js,jsx}'
   ],
-  transformIgnorePatterns: ["node_modules/(?!(mapbox-gl|element-ui)/)"],
+  transformIgnorePatterns: ["node_modules/(?!(mapbox-gl|element-ui|ant-design-vue)/)"],
   modulePaths: [
     "src",
     "node_modules"

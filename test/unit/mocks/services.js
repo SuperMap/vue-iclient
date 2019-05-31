@@ -251,6 +251,81 @@ const datas = {
     "MD5": "c1e4a265e355de9a4aa2d5e40612285d"
 };
 
+
+const datas_mapjson={
+    "extent": {
+        "leftBottom": {
+            "x": -20037508.3427892,
+            "y": -20037508.3427891
+        },
+        "rightTop": {
+            "x": 20037508.3427892,
+            "y": 20037508.3427891
+        }
+    },
+    "level": 5,
+    "center": {
+        "x": 11810617.9363554,
+        "y": 4275239.3340175
+    },
+    "baseLayer": {
+        "layerType": "TILE",
+        "name": "China",
+        "url": "http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China"
+    },
+    "layers": [
+        {
+            "layerType": "UNIQUE",
+            "visible": true,
+            "themeSetting": {
+                "themeField": "2016起降架次（架次）",
+                "customSettings": {},
+                "colors": [
+                    "#D53E4F",
+                    "#FC8D59",
+                    "#FEE08B",
+                    "#FFFFBF",
+                    "#E6F598",
+                    "#99D594",
+                    "#3288BD"
+                ]
+            },
+            "name": "民航数",
+            "featureType": "POINT",
+            "style": {
+                "strokeWidth": 1,
+                "fillColor": "#3288bd",
+                "fillOpacity": 0.9,
+                "radius": 7,
+                "strokeColor": "#ffffff",
+                "type": "BASIC_POINT",
+                "strokeOpacity": 1
+            },
+            "projection": "EPSG:4326",
+            "enableFields": [
+                "机场",
+                "X坐标",
+                "Y坐标",
+                "名次",
+                "2017旅客吞吐量（人次）",
+                "2016旅客吞吐量（人次）",
+                "同比增速%",
+                "2017货邮吞吐量（吨）",
+                "2016货邮吞吐量（吨）",
+                "2017起降架次（架次）",
+                "2016起降架次（架次）"
+            ],
+            "dataSource": {
+                "type": "PORTAL_DATA",
+                "serverId": "1920557079"
+            }
+        }
+    ],
+    "description": "",
+    "projection": "EPSG:3857",
+    "title": "unique_民航数据",
+    "version": "1.0"
+};
 const datasources = {
     "datasourceNames": [
         "supermap1_pg"
@@ -684,4 +759,4 @@ const iportal_content={
         ]
     }
 }
-module.exports = { fakeDataServiceResult, fakeMapServiceResult, featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart,iportal_content };
+module.exports = { fakeDataServiceResult, fakeMapServiceResult, featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart,iportal_content ,datas_mapjson};

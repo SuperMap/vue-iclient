@@ -1,16 +1,16 @@
 var SuperMap = window.SuperMap = window.SuperMap || {};
-SuperMap.Components = window.SuperMap.Components || {};
-SuperMap.Components.FileReaderUtil = {};
+SuperMap.Widgets = window.SuperMap.Widgets || {};
+SuperMap.Widgets.FileReaderUtil = {};
 
-import { featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart, iportal_content } from "./services"
+import { featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart, iportal_content,datas_mapjson } from "./services"
 
 var GetFeaturesBySQLParameters = SuperMap.GetFeaturesBySQLParameters = jest.fn();
 var GetFeaturesBySQLParameters = SuperMap.GetFeaturesByBoundsParameters = jest.fn();
 var QueryBySQLParameters = SuperMap.QueryBySQLParameters = jest.fn();
 var FilterParameter = SuperMap.FilterParameter = jest.fn();
 var QueryByBoundsParameters = SuperMap.QueryByBoundsParameters = jest.fn();
-var isXField = SuperMap.Components.FileReaderUtil.isXField = jest.fn();
-var isYField = SuperMap.Components.FileReaderUtil.isYField = jest.fn();
+var isXField = SuperMap.Widgets.FileReaderUtil.isXField = jest.fn();
+var isYField = SuperMap.Widgets.FileReaderUtil.isYField = jest.fn();
 
 
 var FetchRequest = SuperMap.FetchRequest = {
@@ -22,6 +22,11 @@ var FetchRequest = SuperMap.FetchRequest = {
             if (url.indexOf("1962026684") > -1) {
                 process.nextTick(() =>
                     resolve(new Response(JSON.stringify(datas)))
+                )
+            }
+            if (url.indexOf("1649097980/map.json") > -1) {
+                process.nextTick(() =>
+                    resolve(new Response(JSON.stringify(datas_mapjson)))
                 )
             }
             else if (url.indexOf("content.json?pageSize=9999999&currentPage=1") > -1) {
