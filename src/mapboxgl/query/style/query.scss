@@ -15,10 +15,8 @@
     font-weight: 700;
   }
   @include e(body) {
-    height: 350px;
     transform-origin: top left;
     transition: $--all-transition;
-    height: 300px;
     background: $--fill-base;
     padding: 10px 15px;
     overflow-y: auto;
