@@ -4,6 +4,20 @@ import Cookies from 'js-cookie';
 import enLocale from './en';
 import zhLocale from './zh';
 import clonedeep from 'lodash.clonedeep';
+
+const dateTimeFormats = {
+  en: enLocale.dateTimeFormat,
+  zh: zhLocale.dateTimeFormat
+};
+
+if (!Vue.prototype.hasOwnProperty('$i18n')) {
+  Object.defineProperty(Vue.prototype, '$i18n', {
+    get: function get() {
+      return i18n;
+    }
+  });
+}
+
 Vue.use(VueI18n);
 
 const messages = {
@@ -14,23 +28,13 @@ const messages = {
     ...zhLocale
   }
 };
-const dateTimeFormats = {
-  en: enLocale.dateTimeFormat,
-  zh: zhLocale.dateTimeFormat
-};
 const i18n = new VueI18n({
   dateTimeFormats,
   locale: getLanguage(),
   fallbackLocale: 'zh',
   messages
 });
-if (!Vue.prototype.hasOwnProperty('$i18n')) {
-  Object.defineProperty(Vue.prototype, '$i18n', {
-    get: function get() {
-      return i18n;
-    }
-  });
-}
+
 export function setLocale(locales) {
   i18n.mergeLocaleMessage(i18n.locale, locales);
 }

@@ -16,6 +16,7 @@
 </template>
 <script>
 import Theme from '../_mixin/theme';
+import { ResizeSensor } from 'css-element-queries';
 
 export default {
   name: 'SmProgress',
@@ -104,16 +105,13 @@ export default {
     this.curColor = this.strokeColor || this.getColor(0);
     this.progressTextNode = this.$el.querySelector('.ant-progress-text');
     this.progressTextNode.style.color = this.getTextColor;
-    this.resize();
-    window.addEventListener('resize', () => {
+    this.resizeObsever = new ResizeSensor(this.$el, () => {
       this.resize();
     });
   },
   methods: {
     resize() {
-      setTimeout(() => {
-        this.circleWidth = Math.min(this.$el.parentNode.offsetWidth, this.$el.parentNode.offsetHeight);
-      }, 0);
+      this.circleWidth = Math.min(this.$el.offsetWidth, this.$el.offsetHeight);
     }
   }
 };

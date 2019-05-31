@@ -23,6 +23,7 @@
         "@turf/length": "^6.0.2",
         "ant-design-vue": "^1.3.8",
         "canvg": "~1.5.3",
+        "css-element-queries": "^1.2.0",
         "echarts": "^4.2.1",
         "echarts-liquidfill": "^2.0.4",
         "js-cookie": "^2.2.0",

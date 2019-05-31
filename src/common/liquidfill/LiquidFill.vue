@@ -5,6 +5,7 @@
 import echarts from 'echarts';
 import Theme from '../_mixin/theme';
 import 'echarts-liquidfill';
+import { ResizeSensor } from 'css-element-queries';
 
 export default {
   name: 'SmLiquidFill',
@@ -79,9 +80,7 @@ export default {
   },
   methods: {
     resize() {
-      setTimeout(() => {
-        this.chart && this.chart.resize();
-      }, 0);
+      this.chart && this.chart.resize();
     },
     initializeChart() {
       Object.keys(this.$props).forEach(watchItem => {
@@ -98,7 +97,7 @@ export default {
         this.backgroundColorData = this.getBackground;
         this.updateChart(true);
       });
-      window.addEventListener('resize', () => {
+      this.resizeObsever = new ResizeSensor(this.$el, () => {
         this.resize();
       });
     },
