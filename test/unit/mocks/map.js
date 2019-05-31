@@ -73,14 +73,19 @@ var Map = function (options) {
   var llb = new LngLatBounds(sw, ne);
   this.bounds = this.options.bounds || llb;
 
-  this.center = this.options.center ? new LngLat(this.options.center.lng, this.options.center.lat) : new LngLat(0, 0);
+
+  try {
+    this.center = this.options.center ? new LngLat(this.options.center.lng, this.options.center.lat) : new LngLat(0, 0);
+  } catch (e) {
+    this.center = this.options.center ? new LngLat(this.options.center[0], this.options.center[1]) : new LngLat(0, 0);
+  }
+
   // this.style = new Style();
   this.style = options.style;
   this.setStyle = function (style, options) {
-
     console.log("set Style");
     // this.style = new Style(this, options || {});
-    for (var i = 0, list = this.style.layers; i < list.length; i += 1) {
+    for (var i = 0, list = style.layers; i < list.length; i += 1) {
       var layer = list[i];
       this._layers[layer.id] = layer;
     }
@@ -98,11 +103,6 @@ var Map = function (options) {
     this.fire('load');
   }.bind(this), 0);
 
-
-  // setTimeout(fireLoad=function() {
-  //   console.log('load from mock map');
-  //   this.fire('load');
-  // }.bind(this), 0);
 
   var setters = [
     // Camera options
@@ -251,6 +251,7 @@ var Map = function (options) {
     }
     // return this.style.getLayer(id);
     if (this._layers[id]) {
+      console.log(this._layers[id]);
       return this._layers[id];
     }
   };

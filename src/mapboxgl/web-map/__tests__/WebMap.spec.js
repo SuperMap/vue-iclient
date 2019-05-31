@@ -82,7 +82,7 @@ describe('WebMap.vue', () => {
         expect(wrapper.vm.panControl.show).toBe(true);
         expect(wrapper.vm.scaleControl.position).toBe('bottom-right');
         expect(wrapper.vm.zoomControl.zoomWithSlider).toBe(false);
-        expect(wrapper.find('.sm-widget-pan').exists()).toBe(true)
+        expect(wrapper.find('.sm-component-pan').exists()).toBe(true)
         expect(wrapper.element.outerHTML).toContain("pan")
         expect(wrapper.element.outerHTML).toContain("zoom")
         expect(wrapper.element.outerHTML).toContain("scale")
@@ -97,15 +97,13 @@ describe('WebMap.vue', () => {
       }
     })
   })
-})
 
-xit('initial_mapObject', (done) => {
+
+it('initial_mapObject', (done) => {
   const spy = jest.spyOn(mapboxgl, "Map");
   const wrapper = mount(SmWebMap,
     {
       propsData: {
-        serverUrl: 'http://support.supermap.com.cn:8092/',
-        mapId: '1649097980',
         mapOptions: {
           container: 'map', // container id
           style: {
@@ -152,4 +150,5 @@ xit('initial_mapObject', (done) => {
       done()
     }
   })
+})
 })
