@@ -91,7 +91,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description Map 更新大小。
    */
   resize() {
-    this.map.resize();
+    this.map && this.map.resize();
   }
   /**
    * @function WebMapViewModel.prototype.resize
