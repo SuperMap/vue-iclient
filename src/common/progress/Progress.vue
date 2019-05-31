@@ -70,7 +70,7 @@ export default {
   data() {
     return {
       curColor: '',
-      circleWidth: ''
+      circleWidth: 0
     };
   },
   computed: {
