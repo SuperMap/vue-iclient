@@ -6,7 +6,7 @@
   max-height: 500px;
   width: $--component-container-width;
   .ant-card-body {
-    padding: 10px 15px 22px;
+    padding: 10px 15px 8px;
   }
   @include e(content) {
     width: 100%;
@@ -19,6 +19,11 @@
 
   @include e(collapse) {
     background: transparent;
+    &:last-child{
+      & .sm-component-layer-list__elcarditem{
+        border-bottom: unset;
+      }
+    }
     .ant-collapse-item {
       &.ant-collapse-no-arrow {
         .ant-collapse-header {
