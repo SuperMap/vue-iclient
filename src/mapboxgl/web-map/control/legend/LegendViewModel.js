@@ -10,7 +10,7 @@ class LegendViewModel extends mapboxgl.Evented {
   constructor(webmap) {
     super(webmap);
     this.webmap = webmap;
-    this.sourceListModel = this.webmap.getSourceListModel();
+    this.sourceListModel = this.webmap.getSourceListModel;
   }
 
   getStyle(layerName) {

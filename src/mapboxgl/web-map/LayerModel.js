@@ -17,7 +17,7 @@ class LayerModel {
     this.minzoom = options.minzoom;
     this.source = options.source;
     this.type = options.type;
-    this.visibility = options.visibility;
+    this.visibility = options.visibility || 'visible';
   }
 }
 export default LayerModel;

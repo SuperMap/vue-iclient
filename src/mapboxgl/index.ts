@@ -1,5 +1,18 @@
 import globalEvent from '../common/_utils/global-event';
-import { Progress, Icon, Card, Collapse, Checkbox, Select, Button, Spin, Input, Slider, Table, message } from 'ant-design-vue';
+import {
+  Progress,
+  Icon,
+  Card,
+  Collapse,
+  Checkbox,
+  Select,
+  Button,
+  Spin,
+  Input,
+  Slider,
+  Table,
+  message
+} from 'ant-design-vue';
 import i18n, { setLocale, lang } from '../common/_lang';
 import * as themeFactory from '../common/_utils/style/theme';
 import * as components from './components';
@@ -14,7 +27,7 @@ const setTheme = (themeStyle = {}) => {
   globalEvent.$emit('change-theme', themeStyle);
 };
 
-const install = function(Vue, opts = {}) {
+const install = function(Vue, opts: any = {}) {
   if (opts.locale) {
     setLocale(opts.locale);
   }

@@ -24,7 +24,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   // devtool: config.build.productionSourceMap ? config.build.devtool : false,
   entry: {
-    app: ['./src/mapboxgl/index.js']
+    app: ['./src/mapboxgl/index.ts']
   },
   output: {
     path: path.resolve(__dirname, '../dist'),

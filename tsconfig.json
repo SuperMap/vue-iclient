@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    // 编译目标平台
+    "target": "es6",
+    // 输出目录
+    "outDir": "./dist/",
+    // 添加需要的解析的语法，否则TS会检测出错。
+    "lib": ["es2015", "es2016", "dom"],
+    // 模块的解析
+    "moduleResolution": "node",
+    // 指定生成哪个模块系统代码
+    "module": "es2015",
+    // 在表达式和声明上有隐含的any类型时报错
+    "noImplicitAny": false,
+    // 把 ts 文件编译成 js 文件的时候，同时生成对应的 map 文件
+    "sourceMap": true,
+    // 允许编译javascript文件
+    "allowJs": true,
+    // 指定基础目录
+    "baseUrl": "./",
+    // 启用装饰器
+    "experimentalDecorators": true,
+    // 移除注释
+    "removeComments": true,
+    "pretty": true,
+    // 函数返回值
+    "noImplicitReturns": true,
+    // 是相对于"baseUrl"进行解析
+    "paths": {
+      "vue": ["node_modules/vue/types"],
+      "@/*": ["src/*"],
+      "geojson": ["node_modules/@types/geojson"]
+    }
+  },
+  "include": ["src/**/*", "demo/main.ts"],
+  "exclude": ["node_modules"]
+}

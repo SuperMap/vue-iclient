@@ -1,13 +1,13 @@
 /* Copyright© 2000 - 2019 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from './SourceListModel';
 import { handleMultyPolygon } from '../_utils/geometry-util';
 import { isXField, isYField } from '../../common/_utils/util';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import '../../../static/libs/geostats/geostats';
-import convert from 'xml-js';
+import * as convert from 'xml-js';
 import canvg from 'canvg';
 import jsonsql from 'jsonsql';
 
@@ -72,34 +72,86 @@ const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
  * @fires WebMapViewModel#getlayerdatasourcefailed
  * @fires WebMapViewModel#addlayerssucceeded
  */
+interface webMapOptions {
+  target?: string;
+  serverUrl?: string;
+  accessToken?: string;
+  accessKey?: string;
+  withCredentials?: boolean;
+  excludePortalProxyUrl?: boolean;
+}
+
+interface mapOptions {
+  center?: [number, number] | mapboxgl.LngLatLike | { lon: number; lat: number };
+  zoom?: number;
+  maxBounds?: [[number, number], [number, number]] | mapboxgl.LngLatBoundsLike;
+  minZoom?: number;
+  maxZoom?: number;
+  renderWorldCopies?: boolean;
+  bearing?: number;
+  pitch?: number;
+}
+
+type layerType = 'POINT' | 'LINE' | 'POLYGON';
+
 export default class WebMapViewModel extends mapboxgl.Evented {
-  constructor(id, options) {
+  map: mapboxgl.Map;
+
+  mapId: string;
+
+  serverUrl: string;
+
+  accessToken: string;
+
+  accessKey: string;
+
+  withCredentials: boolean;
+
+  target: string;
+
+  excludePortalProxyUrl: boolean;
+
+  mapParams: { title?: string; description?: string };
+
+  baseProjection: string;
+
+  private _sourceListModel: SourceListModel;
+
+  private _legendList: any;
+
+  private _layers: any;
+
+  private _svgDiv: HTMLElement;
+
+  private _fieldMaxValue: any;
+
+  constructor(id, options: webMapOptions = {}) {
     super();
     this.mapId = id;
-    options = options || {};
     this.serverUrl = options.serverUrl || 'http://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
     this.withCredentials = options.withCredentials || false;
     this.target = options.target || 'map';
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
-    this.legendList = {};
+    this._legendList = {};
     this._createWebMap();
   }
   /**
    * @function WebMapViewModel.prototype.resize
    * @description Map 更新大小。
    */
-  resize() {
+  resize(): void {
     this.map && this.map.resize();
   }
   /**
-   * @function WebMapViewModel.prototype.resize
+   * @function WebMapViewModel.prototype.setMapId
    * @description 设置地图 ID。
    * @param {String} mapId - iPortal|Online 地图 ID。
    */
-  setMapId(mapId) {
+  setMapId(mapId: string): void {
     this.mapId = mapId;
+    this.map && this.map.remove();
     this._createWebMap();
   }
   /**
@@ -111,7 +163,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {boolean} [webMapOptions.withCredentials] - 请求是否携带 cookie。
    * @param {boolean} [webMapOptions.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
    */
-  setWebMapOptions(webMapOptions) {
+  setWebMapOptions(webMapOptions: webMapOptions): void {
     let { serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl } = webMapOptions;
     serverUrl && (this.serverUrl = serverUrl);
     accessToken && (this.accessToken = accessToken);
@@ -120,12 +172,13 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     excludePortalProxyUrl && (this.excludePortalProxyUrl = excludePortalProxyUrl);
     this._createWebMap();
   }
+
   /**
    * @function WebMapViewModel.prototype.setServerUrl
    * @description 设置地图的地址。
-   * @param {string} [options.serverUrl] - 地图的地址。
+   * @param {string} options.serverUrl - 地图的地址。
    */
-  setServerUrl(serverUrl) {
+  setServerUrl(serverUrl: string): void {
     this.serverUrl = serverUrl;
     this._createWebMap();
   }
@@ -133,7 +186,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   /**
    * @function WebMapViewModel.prototype.setMapOptions
    * @description 设置 Map 基本配置参数。
-   * @param {Object} mapOptions - WebMap 可选参数。
+   * @param {Object} mapOptions - Map 可选参数。
    * @param {Array} [mapOptions.center] - 地图中心点。
    * @param {Number} [mapOptions.zoom] - 地图缩放级别。
    * @param {Array} [mapOptions.maxBounds] - 地图最大范围。
@@ -143,9 +196,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Number} [mapOptions.bearing] - 地图的初始方位。
    * @param {Number} [mapOptions.pitch] - 地图的初始俯仰。
    */
-  setMapOptions(mapOptions) {
+  setMapOptions(mapOptions: mapOptions): void {
     let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch } = mapOptions;
-    center && center.length && this.map.setCenter(center);
+    center && this.map.setCenter(center);
     zoom && this.map.setZoom(zoom);
     maxBounds && this.map.setMaxBounds(maxBounds);
     minZoom && this.map.setMinZoom(minZoom);
@@ -155,13 +208,17 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     pitch && this.map.setPitch(pitch);
   }
 
+  get getSourceListModel(): SourceListModel {
+    return this._sourceListModel;
+  }
+
   /**
    * @private
    * @function WebMapViewModel.prototype._createWebMap
    * @description 登陆窗口后添加地图图层。
    */
-  _createWebMap() {
-    let urlArr = this.serverUrl.split('');
+  private _createWebMap(): void {
+    let urlArr: string[] = this.serverUrl.split('');
     if (urlArr[urlArr.length - 1] !== '/') {
       this.serverUrl += '/';
     }
@@ -172,7 +229,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let filter = 'getUrlResource.json?url=';
     if (this.excludePortalProxyUrl && this.serverUrl.indexOf(filter) > -1) {
       // 大屏需求,或者有加上代理的
-      let urlArray = this.serverUrl.split(filter);
+      let urlArray: string[] = this.serverUrl.split(filter);
       if (urlArray.length > 1) {
         mapUrl = urlArray[0] + filter + this.serverUrl + 'web/maps/' + this.mapId + '/map.json';
       }
@@ -185,9 +242,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @function WebMapViewModel.prototype._createMap
    * @description 创建地图。
    */
-  _createMap(mapInfo) {
+  private _createMap(mapInfo: any): void {
     // 获取字体样式
-    let fonts = [];
+    let fonts: string[] = [];
     let layers = mapInfo.layers;
     // 获取 label 图层字体类型
     if (layers && layers.length > 0) {
@@ -196,20 +253,28 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       }, this);
     }
     fonts.push("'supermapol-icons'");
-    let fontFamilys = fonts.join(',');
+    let fontFamilys: string = fonts.join(',');
 
-    // zoom center
-    let center = mapInfo.center;
+    // zoom
+    type coordinateObj = { x: number; y: number };
+    let center: number[] | coordinateObj | mapboxgl.LngLat;
+    center = mapInfo.center;
+
+    // center
     let zoom = mapInfo.level || 0;
     zoom = zoom === 0 ? 0 : zoom - 1;
+
     if (!center) {
       center = [0, 0];
     }
     if (this.baseProjection === 'EPSG:3857') {
-      center = this._unproject([center.x, center.y]);
+      center = this._unproject([(<coordinateObj>center).x, (<coordinateObj>center).y]);
     }
-    center = new mapboxgl.LngLat(center.x, center.y);
+
+    center = new mapboxgl.LngLat((<coordinateObj>center).x, (<coordinateObj>center).y);
+
     // 初始化 map
+
     this.map = new mapboxgl.Map({
       container: this.target,
       center: center,
@@ -220,6 +285,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         // "glyphs": 'http://iclsvr.supermap.io/iserver/services/map-beijing/rest/maps/beijingMap/tileFeature/sdffonts/{fontstack}/{range}.pbf',
         layers: []
       },
+      // @ts-ignore -------- crs 为 enhance 新加属性
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
       renderWorldCopies: false
@@ -238,8 +304,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 获取地图的 JSON 信息。
    * @param {string} url - 请求地图的 url。
    */
-  _getMapInfo(url) {
-    let mapUrl = url.indexOf('.json') === -1 ? `${url}.json` : url;
+  private _getMapInfo(url: string): void {
+    let mapUrl: string = url.indexOf('.json') === -1 ? `${url}.json` : url;
+
     SuperMap.FetchRequest.get(mapUrl, null, {
       withCredentials: this.withCredentials
     })
@@ -260,13 +327,15 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           'EPSG:4610': 'EPSG:4610',
           'EPSG:3857': 'EPSG:3857',
           'EPSG:4326': 'EPSG:4326'
-        }; // 坐标系异常处理
+        };
+        // 坐标系异常处理
         if (this.baseProjection in projectionMap) {
-          this._createMap(mapInfo, this.mapSetting);
+          this._createMap(mapInfo);
+
           let layers = mapInfo.layers;
+
           this.map.on('load', () => {
             this._addBaseMap(mapInfo);
-
             if (!layers || layers.length === 0) {
               this._sendMapToUser(0, 0);
             } else {
@@ -293,7 +362,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 添加底图。
    * @param {Object} mapInfo - map 信息。
    */
-  _addBaseMap(mapInfo) {
+  private _addBaseMap(mapInfo: any): void {
     this._createBaseLayer(mapInfo);
   }
 
@@ -303,9 +372,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 创建底图。
    * @param {Object} mapInfo - map 信息。
    */
-  _createBaseLayer(mapInfo) {
+  private _createBaseLayer(mapInfo: any): void {
     let layerInfo = mapInfo.baseLayer || mapInfo;
     let layerType = layerInfo.layerType; // 底图和rest地图兼容
+
     if (
       layerType.indexOf('TIANDITU_VEC') > -1 ||
       layerType.indexOf('TIANDITU_IMG') > -1 ||
@@ -313,6 +383,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     ) {
       layerType = layerType.substr(0, 12);
     }
+
     let mapUrls = {
       CLOUD: 'http://t2.supermapcloud.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
       CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp?x={x}&y={y}&z={z}',
@@ -325,7 +396,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       JAPAN_RELIEF: 'http://cyberjapandata.gsi.go.jp/xyz/relief/{z}/{x}/{y}.png',
       JAPAN_ORT: 'http://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg'
     };
-    let url;
+
+    let url: string;
+
     switch (layerType) {
       case 'TIANDITU_VEC':
       case 'TIANDITU_IMG':
@@ -368,23 +441,23 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 创建天地图底图。
    * @param {Object} mapInfo - map 信息。
    */
-  _createTiandituLayer(mapInfo) {
+  private _createTiandituLayer(mapInfo: any): void {
     let tiandituUrls = this._getTiandituUrl(mapInfo);
     let layerType = mapInfo.baseLayer.layerType;
     let isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
     let labelUrl = tiandituUrls['labelUrl'];
     let tiandituUrl = tiandituUrls['tiandituUrl'];
     this._addBaselayer(tiandituUrl, 'tianditu-layers-' + layerType);
-    isLabel && this._addBaselayer([labelUrl], 'tianditu-label-layers-' + layerType);
+    isLabel && this._addBaselayer(labelUrl, 'tianditu-label-layers-' + layerType);
   }
 
   /**
    * @private
    * @function WebMapViewModel.prototype._createWMTSLayer
    * @description 创建 WMTS 底图。
-   * @param {Object} mapInfo - map 信息。
+   * @param {Object} layerInfo - 地图信息。
    */
-  _createWMTSLayer(layerInfo) {
+  private _createWMTSLayer(layerInfo: any): void {
     let wmtsUrl = this._getWMTSUrl(layerInfo);
     this._filterWMTSIsMatched(layerInfo, (isMatched, matchMaxZoom) => {
       isMatched && this._addBaselayer([wmtsUrl], 'wmts-layers' + layerInfo.name, 0, matchMaxZoom);
@@ -398,7 +471,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} mapInfo - map 信息。
    * @callback matchedCallback
    */
-  _filterWMTSIsMatched(mapInfo, matchedCallback) {
+  private _filterWMTSIsMatched(mapInfo: any, matchedCallback: Function): void {
     let isMatched = false;
     let matchMaxZoom = 22;
     let url = mapInfo.url;
@@ -433,6 +506,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
               let matchedScaleDenominator = [];
               // 坐标系判断
               let defaultCRSScaleDenominators =
+                // @ts-ignore -------- crs 为 enhance 新加属性
                 this.map.crs === 'EPSG:3857' ? MB_SCALEDENOMINATOR_3857 : MB_SCALEDENOMINATOR_4326;
 
               for (let j = 0, len = defaultCRSScaleDenominators.length; j < len; j++) {
@@ -476,10 +550,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @function WebMapViewModel.prototype._createBingLayer
    * @description 创建 Bing 图层。
    */
-  _createBingLayer(layerName) {
+  private _createBingLayer(layerName: string): void {
     let bingUrl =
       'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
-    this.addLayer([bingUrl], 'bing-layers-' + layerName);
+    // @ts-ignore
+    this._addBaselayer([bingUrl], 'bing-layers-' + layerName);
   }
 
   /**
@@ -488,8 +563,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 创建 XYZ 底图。
    * @param {String} url - url 地址。
    */
-  _createXYZLayer(layerInfo, url) {
-    let urlArr = [];
+  private _createXYZLayer(layerInfo: any, url: string): void {
+    let urlArr: string[] = [];
+
     if (layerInfo.layerType === 'OSM') {
       let res = url.match(/\w\-\w/g)[0];
       let start = res[0];
@@ -511,11 +587,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       }
     } else if (layerInfo.layerType === 'GOOGLE_CN') {
       let res = url.match(/\d\-\d/g)[0];
-      let start = res[0];
-      let end = res[2];
+      let start = parseInt(res[0]);
+      let end = parseInt(res[2]);
 
       for (let i = start; i <= end; i++) {
-        let replaceRes = url.replace(/{\d\-\d}/g, i);
+        let replaceRes = url.replace(/{\d\-\d}/g, i.toString());
         urlArr.push(replaceRes);
       }
     } else {
@@ -530,8 +606,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 创建 iserver 底图。
    * @param {Object} layerInfo - 图层信息。
    */
-  _createDynamicTiledLayer(layerInfo) {
+  private _createDynamicTiledLayer(layerInfo: any): void {
     let url = layerInfo.url + '/zxyTileImage.png?z={z}&x={x}&y={y}';
+    // @ts-ignore -------- setCRS 为 enhance 新加属性
     if (this.map.setCRS && this.baseProjection !== 'EPSG:3857') {
       url = layerInfo.url + '/image.png?viewBounds={viewBounds}&width={width}&height={height}';
     }
@@ -542,9 +619,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @private
    * @function WebMapViewModel.prototype._createWMSLayer
    * @description 创建 WMS 图层。
-   * @param {Object} mapInfo - map 信息。
+   * @param {Object} layerInfo - 图层信息。
    */
-  _createWMSLayer(layerInfo) {
+  private _createWMSLayer(layerInfo: any): void {
     let WMSUrl = this._getWMSUrl(layerInfo);
     this._addBaselayer([WMSUrl], 'WMS-layers-' + layerInfo.name);
   }
@@ -556,17 +633,18 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} layerInfo - map 信息。
    * @param {Array} features - 属性 信息。
    */
-  _createVectorLayer(layerInfo, features) {
+  private _createVectorLayer(layerInfo: any, features: any): void {
     let style = layerInfo.style;
     let type = layerInfo.featureType;
     let layerID = layerInfo.layerID;
     let visible = layerInfo.visible;
-    let layerStyle = {};
-    layerStyle.style = this._transformStyleToMapBoxGl(style, type);
-    layerStyle.layout = {
-      visibility: visible
+    let layerStyle = {
+      style: this._transformStyleToMapBoxGl(style, type),
+      layout: {
+        visibility: visible
+      }
     };
-    let source = {
+    let source: mapboxgl.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -586,19 +664,23 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 创建天地图url;
    * @param {Object} mapInfo - map 信息。
    */
-  _getTiandituUrl(mapInfo) {
-    let re = /t0/gi;
-    let tiandituUrls = {};
+  private _getTiandituUrl(mapInfo: any): { tiandituUrl: Array<string>; labelUrl: Array<string> } {
+    let re: RegExp = /t0/gi;
+    type urlArr = Array<string>;
+    let tiandituUrls: { tiandituUrl: urlArr; labelUrl: urlArr };
+
     let layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
     let isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
-    // let isLabel = true;
+
     let url = 'http://t0.tianditu.com/{layer}_{proj}/wmts?';
     let labelUrl = url;
+
     let layerLabelMap = {
       vec: 'cva',
       ter: 'cta',
       img: 'cia'
     };
+
     let tilematrixSet = this.baseProjection === 'EPSG:4326' ? 'c' : 'w';
     let options = {
       service: 'WMTS',
@@ -613,8 +695,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     };
 
     url += this._getParamString(options, url) + '&tilematrix={z}&tilerow={y}&tilecol={x}';
+
     let tiandituUrl = url.replace('{layer}', layerType).replace('{proj}', tilematrixSet);
-    let tiandituUrlArr = [];
+    let tiandituUrlArr: string[] = [];
+
     for (let i = 0; i < 8; i++) {
       tiandituUrlArr.push(tiandituUrl.replace(re, `t${i}`));
     }
@@ -642,7 +726,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 创建 WMS url;
    * @param {Object} mapInfo - map 信息。
    */
-  _getWMSUrl(mapInfo) {
+  private _getWMSUrl(mapInfo: any): string {
     let url = mapInfo.url;
     url = url.split('?')[0];
     let strArr = url.split('/');
@@ -669,9 +753,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 添加叠加图层。
    * @param {Object} mapInfo - 图层信息。
    */
-  _addLayers(layers) {
+  private _addLayers(layers: any): void {
     // 存储地图上所有的图层对象
-    this.layers = layers;
+    this._layers = layers;
 
     let features;
     let layerAdded = 0;
@@ -710,9 +794,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
               if (data.type) {
                 if (data.type === 'JSON' || data.type === 'GEOJSON') {
                   data.content = JSON.parse(data.content.trim());
-                  features = this._formatGeoJSON(data.content, layer);
+                  features = this._formatGeoJSON(data.content);
                 } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-                  features = this._excelData2Feature(data.content, layer);
+                  features = this._excelData2Feature(data.content);
                 }
                 this._addLayer(layer, features, index);
                 layerAdded++;
@@ -770,15 +854,12 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         this._queryFeatureBySQL(
           layer.dataSource.url,
           layer.dataSource.layerName,
-          'smid=1',
-          null,
-          null,
           result => {
             let recordsets = result && result.result.recordsets;
             let recordset = recordsets && recordsets[0];
             let attributes = recordset.fields;
             if (recordset && attributes) {
-              let fileterAttrs = [];
+              let fileterAttrs: string[] = [];
               for (let i in attributes) {
                 let value = attributes[i];
                 if (value.indexOf('Sm') !== 0 || value === 'SmID') {
@@ -810,7 +891,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
               layer: layer,
               map: this.map
             });
-          }
+          },
+          'smid=1'
         );
       }
     }, this);
@@ -818,39 +900,30 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   /**
    * @private
    * @function WebMapViewModel.prototype._getFeatures
-   * @description 将单个图层添加到地图上。
-   * @param layerInfo  某个图层的图层信息
-   * @param {Array.<GeoJSON>} features - feature。
    */
-  _getFeatures(fields, layerInfo, resolve, reject) {
+  private _getFeatures(fields: string[], layerInfo: any, resolve: Function, reject: Function): void {
     let source = layerInfo.dataSource;
     // 示例数据
     let fileCode = layerInfo.projection;
     this._queryFeatureBySQL(
       source.url,
       source.layerName,
-      null,
-      fields,
-      null,
       result => {
         let recordsets = result.result.recordsets[0];
         let features = recordsets.features.features;
 
-        let featuresObj = this._parseGeoJsonData2Feature(
-          {
-            allDatas: {
-              features
-            },
-            fileCode: fileCode,
-            featureProjection: this.baseProjection
-          },
-          'JSON'
-        );
+        let featuresObj = this._parseGeoJsonData2Feature({
+          allDatas: { features },
+          fileCode: fileCode,
+          featureProjection: this.baseProjection
+        });
         resolve(featuresObj);
       },
       err => {
         reject(err);
-      }
+      },
+      null,
+      fields
     );
   }
 
@@ -861,7 +934,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  某个图层的图层信息
    * @param {Array.<GeoJSON>} features - feature。
    */
-  _addLayer(layerInfo, features, index) {
+  private _addLayer(layerInfo: any, features: any, index: number | string): void {
     let layerType = layerInfo.layerType;
     layerInfo.layerID = layerType + '-' + layerInfo.name + '-' + index;
     layerInfo.visible = layerInfo.visible ? 'visible' : 'none';
@@ -911,7 +984,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  某个图层的图层信息。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  _addLabelLayer(layerInfo, features) {
+  private _addLabelLayer(layerInfo: any, features: any): void {
     let labelStyle = layerInfo.labelStyle;
 
     this.map.addLayer({
@@ -944,7 +1017,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  某个图层的图层信息。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  _createSymbolLayer(layerInfo, features) {
+  private _createSymbolLayer(layerInfo: any, features: any): void {
     // 用来请求symbol_point字体文件
     let target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
@@ -973,6 +1046,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         visibility: layerInfo.visible
       }
     });
+    // @ts-ignore
     this.map.getSource(layerID + '-source').setData({
       type: 'FeatureCollection',
       features: features
@@ -986,11 +1060,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} layerInfo - map 信息。
    * @param {Array} features - 属性 信息。
    */
-  _createGraphicLayer(layerInfo, features) {
+  private _createGraphicLayer(layerInfo: any, features: any) {
     let style = layerInfo.style;
-    let layerStyle = {};
     let layerID = layerInfo.layerID;
-    let source = {
+    let source: mapboxgl.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1024,47 +1097,42 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       });
     } else if (style.type === 'SVG_POINT') {
       let svgUrl = style.url;
-      if (!this.svgDiv) {
-        this.svgDiv = document.createElement('div');
-        document.body.appendChild(this.svgDiv);
+      if (!this._svgDiv) {
+        this._svgDiv = document.createElement('div');
+        document.body.appendChild(this._svgDiv);
       }
-      this._getCanvasFromSVG(svgUrl, this.svgDiv, canvas => {
+      this._getCanvasFromSVG(svgUrl, this._svgDiv, canvas => {
         let imgUrl = canvas.toDataURL('img/png');
         imgUrl &&
-          this.map.loadImage(
-            imgUrl,
-            (error, image) => {
-              if (error) {
-                console.log(error);
+          this.map.loadImage(imgUrl, (error, image) => {
+            if (error) {
+              console.log(error);
+            }
+            let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2));
+            this.map.addImage('imageIcon', image);
+            this.map.addLayer({
+              id: layerID,
+              type: 'symbol',
+              source: source,
+              layout: {
+                'icon-image': 'imageIcon',
+                'icon-size': iconSize,
+                visibility: layerInfo.visible
               }
-              let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2));
-              this.map.addImage('imageIcon', image);
-              this.map.addLayer({
-                id: layerID,
-                type: 'symbol',
-                source: source,
-                layout: {
-                  'icon-image': 'imageIcon',
-                  'icon-size': iconSize,
-                  visibility: layerInfo.visible
-                }
-              });
-            },
-            this
-          );
+            });
+          });
       });
     } else {
-      layerStyle.style = this._transformStyleToMapBoxGl(style, layerInfo.featureType);
-      layerStyle.layout = {
-        visibility: layerInfo.visible
+      let layerStyle = {
+        style: this._transformStyleToMapBoxGl(style, layerInfo.featureType),
+        layout: {
+          visibility: layerInfo.visible
+        }
       };
       this._addOverlayToMap('POINT', source, layerID, layerStyle);
     }
   }
 
-  getSourceListModel() {
-    return this.sourceListModel;
-  }
   /**
    * @private
    * @function WebMapViewModel.prototype._createUniqueLayer
@@ -1072,12 +1140,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  某个图层的图层信息
    * @param features   图层上的 feature
    */
-  _createUniqueLayer(layerInfo, features) {
+  private _createUniqueLayer(layerInfo: any, features: any): void {
     let styleGroup = this._getUniqueStyleGroup(layerInfo, features);
     features = this._getFiterFeatures(layerInfo.filterCondition, features);
 
     let style = layerInfo.style;
-    let layerStyle = {};
     let themeField = layerInfo.themeSetting.themeField;
     let type = layerInfo.featureType;
     let expression = ['match', ['get', 'index']];
@@ -1095,12 +1162,15 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     // 图例相关
     this._initLegendConfigInfo(layerInfo, styleGroup);
 
-    layerStyle.style = this._transformStyleToMapBoxGl(style, type, expression);
     let visible = layerInfo.visible;
-    layerStyle.layout = {
-      visibility: visible
+    let layerStyle = {
+      style: this._transformStyleToMapBoxGl(style, type, expression),
+      layout: {
+        visibility: visible
+      }
     };
-    let source = {
+
+    let source: mapboxgl.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1120,7 +1190,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  某个图层的图层信息
    * @param features   图层上的 feature
    */
-  _getUniqueStyleGroup(parameters, features) {
+  private _getUniqueStyleGroup(parameters: any, features:any): Array<{ color: string; value: string }> {
     // 找出所有的单值
     let featureType = parameters.featureType;
     let style = parameters.style;
@@ -1146,11 +1216,15 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     }
 
     // 获取一定量的颜色
-    let curentColors = colors || this.defaultParameters.colors;
+    let curentColors = colors;
     curentColors = SuperMap.ColorsPickerUtil.getGradientColors(curentColors, names.length);
 
     // 生成styleGroup
-    let styleGroup = [];
+    type style = {
+      color: string;
+      value: string;
+    };
+    let styleGroup: Array<style> = [];
     names.forEach((name, index) => {
       let color = curentColors[index];
       if (name in customSettings) {
@@ -1176,7 +1250,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 根据传入的配置信息拼接wmts url。
    * @param options 配置对象
    */
-  _getWMTSUrl(options) {
+  private _getWMTSUrl(options: any): string {
     let obj = {
       service: 'WMTS',
       request: 'GetTile',
@@ -1199,7 +1273,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 添加标记图层。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  _createMarkerLayer(layerInfo, features) {
+  private _createMarkerLayer(layerInfo: any, features:any): void {
     features &&
       features.forEach(feature => {
         let geomType = feature.geometry.type.toUpperCase();
@@ -1208,7 +1282,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           // 说明是文字的feature类型
           geomType = 'TEXT';
         }
-        let featureInfo = this.setFeatureInfo(feature);
+        let featureInfo = this._setFeatureInfo(feature);
         feature.properties['useStyle'] = defaultStyle;
         feature.properties['featureInfo'] = featureInfo;
         if (
@@ -1220,7 +1294,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           defaultStyle.src = this.serverUrl + defaultStyle.src;
         }
 
-        let source = {
+        let source: mapboxgl.GeoJSONSourceRaw = {
           type: 'geojson',
           data: feature
         };
@@ -1230,61 +1304,53 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         geomType === 'POINT' &&
           defaultStyle.src &&
           defaultStyle.src.indexOf('svg') <= -1 &&
-          this.map.loadImage(
-            defaultStyle.src,
-            (error, image) => {
-              if (error) {
-                console.log(error);
+          this.map.loadImage(defaultStyle.src, (error, image) => {
+            if (error) {
+              console.log(error);
+            }
+            this.map.addImage(index + '', image);
+            this.map.addLayer({
+              id: layerID,
+              type: 'symbol',
+              source: source,
+              layout: {
+                'icon-image': index + '',
+                'icon-size': defaultStyle.scale,
+                visibility: layerInfo.visible
               }
-              this.map.addImage(index + '', image);
-              this.map.addLayer({
-                id: layerID,
-                type: 'symbol',
-                source: source,
-                layout: {
-                  'icon-image': index + '',
-                  'icon-size': defaultStyle.scale,
-                  visibility: layerInfo.visible
-                }
-              });
-            },
-            this
-          );
+            });
+          });
 
         // svg-marker
         if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') > -1) {
-          if (!this.svgDiv) {
-            this.svgDiv = document.createElement('div');
-            document.body.appendChild(this.svgDiv);
+          if (!this._svgDiv) {
+            this._svgDiv = document.createElement('div');
+            document.body.appendChild(this._svgDiv);
           }
-          this._getCanvasFromSVG(defaultStyle.src, this.svgDiv, canvas => {
+          this._getCanvasFromSVG(defaultStyle.src, this._svgDiv, canvas => {
             let imgUrl = canvas.toDataURL('img/png');
             imgUrl &&
-              this.map.loadImage(
-                imgUrl,
-                (error, image) => {
-                  if (error) {
-                    console.log(error);
+              this.map.loadImage(imgUrl, (error, image) => {
+                if (error) {
+                  console.log(error);
+                }
+                this.map.addImage(index + '', image);
+                this.map.addLayer({
+                  id: layerID,
+                  type: 'symbol',
+                  source: source,
+                  layout: {
+                    'icon-image': index + '',
+                    'icon-size': defaultStyle.scale,
+                    visibility: layerInfo.visible
                   }
-                  this.map.addImage(index + '', image);
-                  this.map.addLayer({
-                    id: layerID,
-                    type: 'symbol',
-                    source: source,
-                    layout: {
-                      'icon-image': index + '',
-                      'icon-size': defaultStyle.scale,
-                      visibility: layerInfo.visible
-                    }
-                  });
-                },
-                this
-              );
+                });
+              });
           });
         }
         // point-line-polygon-marker
         if (!defaultStyle.src) {
-          let layeStyle = {
+          let layeStyle: any = {
             layout: {}
           };
           if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
@@ -1308,11 +1374,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   /**
    * @private
-   * @function WebMapViewModel.prototype.setFeatureInfo
+   * @function WebMapViewModel.prototype._setFeatureInfo
    * @description 设置 feature 信息。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  setFeatureInfo(feature) {
+  private _setFeatureInfo(feature: any): any {
     let featureInfo;
     let info = feature.dv_v5_markerInfo;
     if (info && info.dataViz_title) {
@@ -1338,11 +1404,13 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 添加热力图。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  _createHeatLayer(layerInfo, features) {
+  private _createHeatLayer(layerInfo: any, features:any): void {
     let style = layerInfo.themeSetting;
-    let layerOption = {};
-    layerOption.gradient = style.colors.slice();
-    layerOption.radius = parseInt(style.radius);
+    let layerOption = {
+      gradient: style.colors.slice(),
+      radius: parseInt(style.radius)
+    };
+
     // 自定义颜色
     let customSettings = style.customSettings;
     for (let i in customSettings) {
@@ -1353,22 +1421,22 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       this._changeWeight(features, style.weight);
     }
 
-    let color = ['interpolate', ['linear'], ['heatmap-density']];
+    let color: string | mapboxgl.StyleFunction | mapboxgl.Expression = ['interpolate', ['linear'], ['heatmap-density']];
 
     let length = layerOption.gradient.length;
 
-    let step = (1 / length).toFixed(2);
+    let step = parseFloat((1 / length).toFixed(2));
     layerOption.gradient.forEach((item, index) => {
-      color.push(index * step);
+      (<mapboxgl.Expression>color).push(index * step + '');
       if (index === 0) {
         item = mapboxgl.supermap.Util.hexToRgba(item, 0);
       }
-      color.push(item);
+      (<mapboxgl.Expression>color).push(item);
     });
     // 图例相关
     this._initLegendConfigInfo(layerInfo, layerOption.gradient);
 
-    let paint = {
+    let paint: mapboxgl.HeatmapPaint = {
       'heatmap-color': color,
       'heatmap-radius': style.radius + 15,
       'heatmap-intensity': {
@@ -1408,10 +1476,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    * @param {String} weightFeild - 权重字段
    */
-  _changeWeight(features, weightFeild) {
-    this.fieldMaxValue = {};
+  private _changeWeight(features:any, weightFeild: string): void {
+    this._fieldMaxValue = {};
     this._getMaxValue(features, weightFeild);
-    let maxValue = this.fieldMaxValue[weightFeild];
+    let maxValue = this._fieldMaxValue[weightFeild];
     features.forEach(feature => {
       let attributes = feature.properties;
       let value = attributes[weightFeild];
@@ -1426,11 +1494,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    * @param {String} weightFeild - 权重字段
    */
-  _getMaxValue(features, weightField) {
+  private _getMaxValue(features:any, weightField: string): void {
     let values = [];
     let attributes;
     let field = weightField;
-    if (this.fieldMaxValue[field]) {
+    if (this._fieldMaxValue[field]) {
       return;
     }
     features.forEach(feature => {
@@ -1438,7 +1506,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       attributes = feature.properties;
       attributes && parseFloat(attributes[field]) && values.push(parseFloat(attributes[field]));
     });
-    this.fieldMaxValue[field] = SuperMap.ArrayStatistic.getArrayStatistic(values, 'Maximum');
+    this._fieldMaxValue[field] = SuperMap.ArrayStatistic.getArrayStatistic(values, 'Maximum');
   }
 
   /**
@@ -1447,7 +1515,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 添加分段专题图。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  _createRangeLayer(layerInfo, features) {
+  private _createRangeLayer(layerInfo: any, features: any): void {
     let fieldName = layerInfo.themeSetting.themeField;
     let style = layerInfo.style;
     let featureType = layerInfo.featureType;
@@ -1455,7 +1523,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
     features = this._getFiterFeatures(layerInfo.filterCondition, features);
 
-    let source = {
+    let source: mapboxgl.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1467,10 +1535,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let expression = ['match', ['get', 'index']];
     features.forEach(row => {
       let tartget = parseFloat(row.properties[fieldName]);
-      for (let i = 0; i < styleGroups.length; i++) {
-        if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
-          expression.push(row.properties['index'], styleGroups[i].color);
-          // return;
+      if (styleGroups) {
+        for (let i = 0; i < styleGroups.length; i++) {
+          if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
+            expression.push(row.properties['index'], styleGroups[i].color);
+          }
         }
       }
       !tartget && expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
@@ -1481,7 +1550,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this._initLegendConfigInfo(layerInfo, styleGroups);
 
     // 获取样式
-    let layerStyle = {
+    let layerStyle: any = {
       layout: {}
     };
     if (featureType === 'LINE' && style.lineCap) {
@@ -1508,7 +1577,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {String} filterCondition - 过滤条件。
    * @param {array} allFeatures - 图层上的 feature 集合
    */
-  _getFiterFeatures(filterCondition, allFeatures) {
+  private _getFiterFeatures(filterCondition: string, allFeatures): any {
     if (!filterCondition) {
       return allFeatures;
     }
@@ -1518,7 +1587,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let filterFeatures = [];
     for (let i = 0; i < allFeatures.length; i++) {
       let feature = allFeatures[i];
-      let filterResult = false;
+      let filterResult: any;
       try {
         filterResult = jsonsqls.query(sql, {
           properties: feature.properties
@@ -1540,7 +1609,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 获取过滤字符串。
    * @param {String} filterString - 过滤条件。
    */
-  _replaceFilterCharacter(filterString) {
+  private _replaceFilterCharacter(filterString: string): string {
     filterString = filterString
       .replace(/=/g, '==')
       .replace(/AND|and/g, '&&')
@@ -1556,7 +1625,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 获取分段样式。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  _getRangeStyleGroup(layerInfo, features) {
+  private _getRangeStyleGroup(layerInfo: any, features:any): Array<any> | void {
     // 找出分段值
     let featureType = layerInfo.featureType;
     let style = layerInfo.style;
@@ -1589,10 +1658,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       }
 
       // 保留两位有效数
-      for (let key in segements) {
-        let value = segements[key];
-        value = key === 0 ? Math.floor(value * 100) / 100 : Math.ceil(value * 100) / 100 + 0.1; // 加0.1 解决最大值没有样式问题
-        segements[key] = Number(value.toFixed(2));
+      for (let i = 0; i < segements.length; i++) {
+        let value = segements[i];
+        value = i === 0 ? Math.floor(value * 100) / 100 : Math.ceil(value * 100) / 100 + 0.1; // 加0.1 解决最大值没有样式问题
+        segements[i] = Number(value.toFixed(2));
       }
 
       // 获取一定量的颜色
@@ -1644,7 +1713,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 格式 GeoJSON。
    * @param {GeoJSON} data - GeoJSON 数据。
    */
-  _formatGeoJSON(data) {
+  private _formatGeoJSON(data):any {
     let features = data.features;
     features.forEach((row, index) => {
       row.properties['index'] = index;
@@ -1672,7 +1741,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  图层信息
    * @returns {Array}  feature的数组集合
    */
-  _excelData2Feature(dataContent) {
+  private _excelData2Feature(dataContent: any): any {
     let fieldCaptions = dataContent.colTitles;
     // let fileCode = layerInfo.projection;
     // 位置属性处理
@@ -1737,7 +1806,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param count
    * @param layersLen
    */
-  _sendMapToUser(count, layersLen) {
+  private _sendMapToUser(count: number, layersLen: number): void {
     if (count === layersLen) {
       /**
        * @event WebMapViewModel#addlayerssucceeded
@@ -1748,16 +1817,16 @@ export default class WebMapViewModel extends mapboxgl.Evented {
        * @property {string} mapParams.description - 地图描述。
        * @property {Array.<Object>} layers - 地图上所有的图层对象。
        */
-      this.sourceListModel = new SourceListModel({
+      this._sourceListModel = new SourceListModel({
         map: this.map
       });
-      for (let layerID in this.legendList) {
-        this.sourceListModel.addSourceStyle(layerID, this.legendList[layerID]);
+      for (let layerID in this._legendList) {
+        this._sourceListModel.addSourceStyle(layerID, this._legendList[layerID]);
       }
       this.fire('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams,
-        layers: this.layers
+        layers: this._layers
       });
     }
   }
@@ -1768,7 +1837,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 墨卡托转经纬度。
    * @param {} point - 待转换的点。
    */
-  _unproject(point) {
+  private _unproject(point: Array<number>): { x: number; y: number } {
     var d = 180 / Math.PI;
     var r = 6378137;
     var ts = Math.exp(-point[1] / r);
@@ -1791,7 +1860,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {string} existingUrl - 待添加参数的 url。
    * @param {Boolean} [uppercase] - 参数是否转换为大写。
    */
-  _getParamString(obj, existingUrl, uppercase) {
+  private _getParamString(obj: any, existingUrl: string, uppercase = false): string {
     var params = [];
     for (var i in obj) {
       params.push((uppercase ? i.toUpperCase() : i) + '=' + obj[i]);
@@ -1807,7 +1876,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {String} type - 图层类型
    * @param {Array} [expression] - 存储颜色值得表达式
    */
-  _transformStyleToMapBoxGl(style, type, expression) {
+  private _transformStyleToMapBoxGl(style: any, type: layerType, expression?): any {
     let transTable = {};
     if ((style.type === 'POINT' || style.type === 'BASIC_POINT' || type === 'POINT') && type !== 'LINE') {
       transTable = {
@@ -1860,7 +1929,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} style - 样式参数。
    * @param {number} widthFactor - 宽度系数。
    */
-  _dashStyle(style) {
+  private _dashStyle(style: any): Array<number> {
     if (!style) {
       return [];
     }
@@ -1899,7 +1968,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param divDom
    * @param callBack
    */
-  _getCanvasFromSVG(svgUrl, divDom, callBack) {
+  private _getCanvasFromSVG(svgUrl: string, divDom: HTMLElement, callBack: Function): void {
     // 一个图层对应一个canvas
     let canvas = document.createElement('canvas');
     canvas.id = 'dataviz-canvas-' + mapboxgl.supermap.Util.newGuid(8);
@@ -1927,17 +1996,17 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} style - mabgl style
    * @param {String} type - 图层类型
    */
-  _addOverlayToMap(type, source, layerID, layerStyle) {
+  private _addOverlayToMap(type: layerType, source: mapboxgl.GeoJSONSourceRaw, layerID: string, layerStyle: any): void {
     let mbglTypeMap = {
       POINT: 'circle',
       LINE: 'line',
       POLYGON: 'fill'
     };
-    type = mbglTypeMap[type];
-    if (type === 'circle' || type === 'line' || type === 'fill') {
+    let mbglType = mbglTypeMap[type];
+    if (mbglType === 'circle' || mbglType === 'line' || mbglType === 'fill') {
       this.map.addLayer({
         id: layerID,
-        type: type,
+        type: mbglType,
         source: source,
         paint: layerStyle.style,
         layout: layerStyle.layout || {}
@@ -1945,15 +2014,16 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     }
   }
 
-  _addBaselayer(url, layerID, minzoom = 0, maxzoom = 22) {
+  private _addBaselayer(url: Array<string>, layerID: string, minzoom = 0, maxzoom = 22): void {
+    let source: mapboxgl.RasterSource = {
+      type: 'raster',
+      tiles: url,
+      tileSize: 256
+    };
     this.map.addLayer({
       id: layerID,
       type: 'raster',
-      source: {
-        type: 'raster',
-        tiles: url,
-        tileSize: 256
-      },
+      source: source,
       minzoom: minzoom,
       maxzoom: maxzoom
     });
@@ -1964,11 +2034,12 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 添加面的边框。
    * @param {Object} style - mabgl style
    */
-  _addStrokeLineForPoly(style, source, layerID, visible) {
-    let lineStyle = {};
-    lineStyle.style = this._transformStyleToMapBoxGl(style, 'LINE');
-    lineStyle.layout = {
-      visibility: visible
+  private _addStrokeLineForPoly(style: any, source: any, layerID: string, visible: boolean): void {
+    let lineStyle = {
+      style: this._transformStyleToMapBoxGl(style, 'LINE'),
+      layout: {
+        visibility: visible
+      }
     };
     this._addOverlayToMap('LINE', source, layerID, lineStyle);
   }
@@ -1977,9 +2048,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @function WebMapViewModel.prototype._parseGeoJsonData2Feature
    * @description 将从restData地址上获取的json转换成feature（从iserver中获取的json转换成feature）
    * @param {object} metaData - json内容
-   * @returns {Array}  ol.feature的数组集合
    */
-  _parseGeoJsonData2Feature(metaData) {
+  private _parseGeoJsonData2Feature(metaData: any): any {
     let allFeatures = metaData.allDatas.features;
     let features = [];
     for (let i = 0, len = allFeatures.length; i < len; i++) {
@@ -2004,7 +2074,12 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @function WebMapViewModel.prototype._getFeatureBySQL
    * @description 通过 sql 方式查询数据。
    */
-  _getFeatureBySQL(url, datasetNames, processCompleted, processFaild) {
+  private _getFeatureBySQL(
+    url: string,
+    datasetNames: Array<string>,
+    processCompleted: Function,
+    processFaild: Function
+  ): void {
     let getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
     getFeatureParam = new SuperMap.FilterParameter({
       name: datasetNames.join().replace(':', '@'),
@@ -2036,27 +2111,26 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @function WebMapViewModel.prototype._queryFeatureBySQL
    * @description 通过 sql 方式查询数据。
    */
-  _queryFeatureBySQL(
-    url,
-    layerName,
-    attributeFilter,
-    fields,
-    epsgCode,
-    processCompleted,
-    processFaild,
-    startRecord,
-    recordLength,
-    onlyAttribute
-  ) {
-    var queryParam, queryBySQLParams, queryBySQLService;
-    queryParam = new SuperMap.FilterParameter({
+  private _queryFeatureBySQL(
+    url: string,
+    layerName: string,
+    processCompleted: Function,
+    processFaild: Function,
+    attributeFilter?: string,
+    fields?: Array<string>,
+    epsgCode?: string,
+    startRecord?,
+    recordLength?,
+    onlyAttribute?
+  ): void {
+    let queryParam = new SuperMap.FilterParameter({
       name: layerName,
       attributeFilter: attributeFilter
     });
     if (fields) {
       queryParam.fields = fields;
     }
-    var params = {
+    let params: any = {
       queryParams: [queryParam]
     };
     if (onlyAttribute) {
@@ -2069,16 +2143,16 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         epsgCode: epsgCode
       };
     }
-    queryBySQLParams = new SuperMap.QueryBySQLParameters(params);
-    queryBySQLService = new mapboxgl.supermap.QueryService(url);
+    let queryBySQLParams = new SuperMap.QueryBySQLParameters(params);
+    let queryBySQLService = new mapboxgl.supermap.QueryService(url);
     queryBySQLService.queryBySQL(queryBySQLParams, data => {
       data.type === 'processCompleted' ? processCompleted(data) : processFaild(data);
     });
   }
 
-  _initLegendConfigInfo(layerInfo, style) {
-    if (!this.legendList[layerInfo.layerID]) {
-      this.legendList[layerInfo.layerID] = {
+  private _initLegendConfigInfo(layerInfo: any, style: any): void {
+    if (!this._legendList[layerInfo.layerID]) {
+      this._legendList[layerInfo.layerID] = {
         layerType: layerInfo.layerType,
         featureType: layerInfo.featureType,
         layerId: layerInfo.layerID,
