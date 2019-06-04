@@ -30,6 +30,7 @@ import Theme from '../../common/_mixin/theme';
 import { chartThemeUtil } from '../../common/_utils/style/theme/chart';
 import UniqueId from 'lodash.uniqueid';
 import EchartsDataService from '../_utils/EchartsDataService';
+import merge from 'lodash.merge';
 
 /**
  * @module Chart
@@ -279,14 +280,13 @@ export default {
         // 设置echartOptions
         if (echartOptions && options.xAxis) {
           if (echartOptions.length > 0) {
-            echartOptions.forEach((option, index) => {
-              echartOptions[index].xAxis = Object.assign({}, options[index].xAxis || {}, option.xAxis);
-            });
+            this.echartOptions = merge(options, JSON.parse(JSON.stringify(echartOptions)));
+            return;
           } else {
             echartOptions.xAxis = Object.assign({}, options.xAxis[0], echartOptions.xAxis);
           }
         }
-        this.echartOptions = Object.assign({}, options, echartOptions);
+        this.echartOptions = merge(options, JSON.parse(JSON.stringify(echartOptions)));
       });
     },
     // 当datasetUrl不变，datasetOptions改变时
