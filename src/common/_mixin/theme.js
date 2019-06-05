@@ -12,22 +12,23 @@ export default {
     }
   },
   watch: {
-    background: function (newValue) {
+    background: function(newValue) {
       this.backgroundData = newValue;
     },
-    textColor: function (newValue) {
+    textColor: function(newValue) {
       this.textColorsData = newValue;
     }
   },
   data() {
+    let theme = globalEvent.theme;
     return {
-      backgroundData: this.background,
-      textColorsData: this.textColor,
-      colorGroupsData: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
+      backgroundData: (theme && theme.background) || this.background,
+      textColorsData: (theme && theme.textColor) || this.textColor,
+      colorGroupsData: (theme && theme.colorGroup) || ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
     };
   },
   mounted() {
-    globalEvent.$on('change-theme', (themeStyle) => {
+    globalEvent.$on('change-theme', themeStyle => {
       this.backgroundData = themeStyle.background;
       this.textColorsData = themeStyle.textColor;
       this.colorGroupsData = themeStyle.colorGroup;

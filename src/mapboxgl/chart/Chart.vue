@@ -137,15 +137,6 @@ export default {
       type: String,
       default: 'sm-components-icons-attribute'
     },
-    background: {
-      type: String
-    },
-    textColor: {
-      type: String
-    },
-    colorGroup: {
-      type: Array
-    },
     dataset: {
       type: Object,
       default() {
@@ -221,7 +212,7 @@ export default {
     },
     colorGroup() {
       if (!this.theme) {
-        this.chartTheme = chartThemeUtil(this.background, this.textColor, this.colorGroup);
+        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
       }
     },
     dataset() {
@@ -261,7 +252,7 @@ export default {
         this.$emit(event, params);
       });
     });
-    this.chartTheme = chartThemeUtil(this.background, this.textColor, this.colorGroup);
+    this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
     // 切换主题
     this.$on('themeStyleChanged', () => {
       this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
