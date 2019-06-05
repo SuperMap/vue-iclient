@@ -3,7 +3,7 @@
     <i
       v-if="!!iconClass"
       :class="'sm-components-icons-' + iconClass"
-      :style="[formatIconStyle, colorStyle]"
+      :style="[iconStyle, colorStyle]"
       :theme="theme"
       :twoToneColor="twoToneColor"
       :component="component"
@@ -11,7 +11,7 @@
     <a-icon
       v-else
       :type="type"
-      :style="[formatIconStyle, colorStyle]"
+      :style="[iconStyle, colorStyle]"
       :theme="theme"
       :twoToneColor="twoToneColor"
       :component="component"
@@ -50,14 +50,6 @@ export default {
     return {
       colorStyle: {}
     };
-  },
-  computed: {
-    formatIconStyle() {
-      let iconStyle = Object.assign({}, this.iconStyle);
-      const fontSize = iconStyle.fontSize;
-      fontSize && (iconStyle.fontSize = parseInt(fontSize) + 'px');
-      return iconStyle;
-    }
   },
   watch: {
     colorGroupsData: {

@@ -1,11 +1,20 @@
 <template>
   <div class="sm-component-indicator" :style="[getBackgroundStyle]">
     <div class="sm-component-indicator__head">
-      <span class="sm-component-indicator__title" :style="[getTextColorStyle]">{{ title }}</span>
+      <span
+        class="sm-component-indicator__title"
+        :style="[unit_titleStyle, getTextColorStyle]"
+      >{{ title }}</span>
     </div>
     <div class="sm-component-indicator__content">
-      <span class="sm-component-indicator__num" :style="[indicatorStyle]">{{ numberSymbol }}</span>
-      <span class="sm-component-indicator__unit" :style="[getTextColorStyle]">{{ unit }}</span>
+      <span
+        class="sm-component-indicator__num"
+        :style="[numStyle, indicatorStyle]"
+      >{{ numberSymbol }}</span>
+      <span
+        class="sm-component-indicator__unit"
+        :style="[unit_titleStyle, getTextColorStyle]"
+      >{{ unit }}</span>
     </div>
   </div>
 </template>
@@ -28,6 +37,9 @@ export default {
     indicatorColor: {
       type: String
     },
+    fontSize: {
+      type: [String, Number]
+    },
     num: {
       type: [Number, String],
       default: 0
@@ -41,11 +53,18 @@ export default {
       }
       return numberSymbol;
     },
+    numStyle() {
+      return { fontSize: this.fontSize };
+    },
+    unit_titleStyle() {
+      const reg = /\d+(\.\d+)?([a-z]+)/gi;
+      const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
+      return {
+        fontSize: parseFloat(this.fontSize) * 0.66 + fontUnit
+      };
+    },
     indicatorStyle() {
-      return (
-        (this.indicatorColor && { color: this.indicatorColor }) ||
-        this.getColorStyle(0)
-      );
+      return (this.indicatorColor && { color: this.indicatorColor }) || this.getColorStyle(0);
     }
   },
   methods: {

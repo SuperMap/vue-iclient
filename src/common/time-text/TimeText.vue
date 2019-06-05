@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-time-text" :style="[timeParam, getBackgroundStyle, getTextColorStyle]">
+  <div class="sm-component-time-text" :style="[fontStyle, getBackgroundStyle, getTextColorStyle]">
     <span>{{ time }}</span>
   </div>
 </template>
@@ -14,7 +14,7 @@ export default {
   props: {
     timeType: {
       type: String,
-      default: 'date'// "date+second" "date+second+week"
+      default: 'date' // "date+second" "date+second+week"
     },
     fontStyle: {
       type: Object
@@ -26,13 +26,13 @@ export default {
       timeInterval: null
     };
   },
-  computed: {
-    timeParam() {
-      let fontStyle = JSON.parse(JSON.stringify(this.fontStyle));
-      fontStyle.fontSize && (fontStyle.fontSize = parseFloat(fontStyle.fontSize) + 'px');
+  watch: {
+    timeType() {
       this.initTime(this.timeType);
-      return fontStyle;
     }
+  },
+  mounted() {
+    this.initTime(this.timeType);
   },
   destroyed() {
     clearInterval(this.timeInterval);

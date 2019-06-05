@@ -198,14 +198,16 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    */
   setMapOptions(mapOptions: mapOptions): void {
     let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch } = mapOptions;
-    center && this.map.setCenter(center);
-    zoom && this.map.setZoom(zoom);
-    maxBounds && this.map.setMaxBounds(maxBounds);
-    minZoom && this.map.setMinZoom(minZoom);
-    maxZoom && this.map.setMaxZoom(maxZoom);
-    renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
-    bearing && this.map.setBearing(bearing);
-    pitch && this.map.setPitch(pitch);
+    if(this.map) {
+      center && this.map.setCenter(center);
+      zoom && this.map.setZoom(zoom);
+      maxBounds && this.map.setMaxBounds(maxBounds);
+      minZoom && this.map.setMinZoom(minZoom);
+      maxZoom && this.map.setMaxZoom(maxZoom);
+      renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
+      bearing && this.map.setBearing(bearing);
+      pitch && this.map.setPitch(pitch);
+    }
   }
 
   get getSourceListModel(): SourceListModel {
