@@ -5,10 +5,8 @@
  * 而在代码中导入 *.vue 文件的时候，需要写上 .vue 后缀。
  * 原因还是因为 TypeScript 默认只识别 *.ts 文件，不识别 *.vue 文件
  */
-/// <reference types="mapbox-gl"/>
-
-// ignore warning---mapboxgl 建议模块引入声明 TODO
-declare var mapboxgl;
+//给配置文件中types：['mapbox-gl']引入的namespace mapboxgl起个别名
+import mapboxglTypes = mapboxgl;
 
 declare module '*.vue' {
   import Vue from 'vue';

@@ -1,7 +1,7 @@
 /* Copyright© 2000 - 2019 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
-import '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from './SourceListModel';
 import { handleMultyPolygon } from '../_utils/geometry-util';
 import { isXField, isYField } from '../../common/_utils/util';
@@ -82,9 +82,9 @@ interface webMapOptions {
 }
 
 interface mapOptions {
-  center?: [number, number] | mapboxgl.LngLatLike | { lon: number; lat: number };
+  center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
   zoom?: number;
-  maxBounds?: [[number, number], [number, number]] | mapboxgl.LngLatBoundsLike;
+  maxBounds?: [[number, number], [number, number]] | mapboxglTypes.LngLatBoundsLike;
   minZoom?: number;
   maxZoom?: number;
   renderWorldCopies?: boolean;
@@ -95,7 +95,7 @@ interface mapOptions {
 type layerType = 'POINT' | 'LINE' | 'POLYGON';
 
 export default class WebMapViewModel extends mapboxgl.Evented {
-  map: mapboxgl.Map;
+  map: mapboxglTypes.Map;
 
   mapId: string;
 
@@ -259,7 +259,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
     // zoom
     type coordinateObj = { x: number; y: number };
-    let center: number[] | coordinateObj | mapboxgl.LngLat;
+    let center: number[] | coordinateObj | mapboxglTypes.LngLat;
     center = mapInfo.center;
 
     // center
@@ -295,7 +295,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     /**
      * @event WebMapViewModel#mapinitialized
      * @description Map 初始化成功。
-     * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+     * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
      */
     this.fire('mapinitialized', { map: this.map });
   }
@@ -538,7 +538,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
          * @event WebMapViewModel#getwmtsinfofailed
          * @description 获取 WMTS 图层信息失败。
          * @property {Object} error - 失败原因。
-         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+         * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
          */
         this.fire('getwmtsinfofailed', {
           error: error,
@@ -646,7 +646,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         visibility: visible
       }
     };
-    let source: mapboxgl.GeoJSONSourceRaw = {
+    let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -784,7 +784,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
                  * @event WebMapViewModel#getlayerdatasourcefailed
                  * @description 获取图层数据失败。
                  * @property {Object} error - 失败原因。
-                 * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+                 * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
                  */
                 this.fire('getlayerdatasourcefailed', {
                   error: data.error,
@@ -1065,7 +1065,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   private _createGraphicLayer(layerInfo: any, features: any) {
     let style = layerInfo.style;
     let layerID = layerInfo.layerID;
-    let source: mapboxgl.GeoJSONSourceRaw = {
+    let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1172,7 +1172,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       }
     };
 
-    let source: mapboxgl.GeoJSONSourceRaw = {
+    let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1296,7 +1296,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           defaultStyle.src = this.serverUrl + defaultStyle.src;
         }
 
-        let source: mapboxgl.GeoJSONSourceRaw = {
+        let source: mapboxglTypes.GeoJSONSourceRaw = {
           type: 'geojson',
           data: feature
         };
@@ -1423,22 +1423,22 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       this._changeWeight(features, style.weight);
     }
 
-    let color: string | mapboxgl.StyleFunction | mapboxgl.Expression = ['interpolate', ['linear'], ['heatmap-density']];
+    let color: string | mapboxglTypes.StyleFunction | mapboxglTypes.Expression = ['interpolate', ['linear'], ['heatmap-density']];
 
     let length = layerOption.gradient.length;
 
     let step = parseFloat((1 / length).toFixed(2));
     layerOption.gradient.forEach((item, index) => {
-      (<mapboxgl.Expression>color).push(index * step + '');
+      (<mapboxglTypes.Expression>color).push(index * step + '');
       if (index === 0) {
         item = mapboxgl.supermap.Util.hexToRgba(item, 0);
       }
-      (<mapboxgl.Expression>color).push(item);
+      (<mapboxglTypes.Expression>color).push(item);
     });
     // 图例相关
     this._initLegendConfigInfo(layerInfo, layerOption.gradient);
 
-    let paint: mapboxgl.HeatmapPaint = {
+    let paint: mapboxglTypes.HeatmapPaint = {
       'heatmap-color': color,
       'heatmap-radius': style.radius + 15,
       'heatmap-intensity': {
@@ -1525,7 +1525,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
     features = this._getFiterFeatures(layerInfo.filterCondition, features);
 
-    let source: mapboxgl.GeoJSONSourceRaw = {
+    let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1644,7 +1644,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       if (attributes) {
         // 过滤掉非数值的数据
         attributes[fieldName] &&
-          mapboxgl.supermap.Util.isNumber(attributes[fieldName]) &&
+        mapboxgl.supermap.Util.isNumber(attributes[fieldName]) &&
           values.push(parseFloat(attributes[fieldName]));
       } else if (feature.get(fieldName) && mapboxgl.supermap.Util.isNumber(feature.get(fieldName))) {
         feature.get(fieldName) && values.push(parseFloat(feature.get(fieldName)));
@@ -1813,7 +1813,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       /**
        * @event WebMapViewModel#addlayerssucceeded
        * @description 添加图层成功。
-       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+       * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
        * @property {Object} mapparams - 地图信息。
        * @property {string} mapParams.title - 地图标题。
        * @property {string} mapParams.description - 地图描述。
@@ -1873,7 +1873,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   /**
    * @private
    * @function WebMapViewModel.prototype._transformStyleToMapBoxGl
-   * @description 根据图层类型将 layerInfo 中的 style 属性格式转换为 mapboxgl 中的 style 格式。
+   * @description 根据图层类型将 layerInfo 中的 style 属性格式转换为 mapboxglTypes 中的 style 格式。
    * @param {Object} style - layerInfo中的style属性
    * @param {String} type - 图层类型
    * @param {Array} [expression] - 存储颜色值得表达式
@@ -1998,7 +1998,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} style - mabgl style
    * @param {String} type - 图层类型
    */
-  private _addOverlayToMap(type: layerType, source: mapboxgl.GeoJSONSourceRaw, layerID: string, layerStyle: any): void {
+  private _addOverlayToMap(type: layerType, source: mapboxglTypes.GeoJSONSourceRaw, layerID: string, layerStyle: any): void {
     let mbglTypeMap = {
       POINT: 'circle',
       LINE: 'line',
@@ -2017,7 +2017,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   }
 
   private _addBaselayer(url: Array<string>, layerID: string, minzoom = 0, maxzoom = 22): void {
-    let source: mapboxgl.RasterSource = {
+    let source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,
       tileSize: 256

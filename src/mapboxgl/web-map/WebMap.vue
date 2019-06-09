@@ -18,7 +18,7 @@ import VmUpdater from '../../common/_mixin/vm-updater';
 import Pan from './control/pan/Pan.vue';
 import Scale from './control/scale/Scale.vue';
 import Zoom from './control/zoom/Zoom.vue';
-import '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';
 
 /**
@@ -63,7 +63,7 @@ interface zoomParam extends commonControlParam {
 })
 class SmWebMap extends Mixins(VmUpdater) {
   // eslint-disable-next-line
-  map: mapboxgl.Map;
+  map: mapboxglTypes.Map;
   viewModel: WebMapViewModel;
 
   @Prop() mapId: string;
