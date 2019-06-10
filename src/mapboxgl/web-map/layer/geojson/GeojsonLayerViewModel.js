@@ -12,26 +12,25 @@ export default class GeojsonLayerViewModel extends mapboxgl.Evented {
   }
 
   _addLayer() {
-    let type = this._transformType(this.data.features[0].geometry.type);
+    if (!(this.layerStyle instanceof Object)) throw new Error('layerStyle 不能为空');
     let { paint, layout } = this.layerStyle;
     this.map.addLayer({
       id: this.layerId,
-      type,
+      type: this._getLayerType(paint),
       source: {
         type: 'geojson',
         data: this.data
       },
-      layout,
-      paint
+      layout: layout || {},
+      paint: paint || {}
     });
   }
 
-  _transformType(type) {
-    return {
-      Point: 'circle',
-      Polygon: 'fill',
-      LineString: 'line',
-      MultiPolygon: 'fill'
-    }[type];
+  _getLayerType(paint = {}) {
+    const keys = Object.keys(paint).join(' ');
+    const reg = /circle-|line-|fill-extrusion-|fill-+/i;
+    const matchType = keys.match(reg);
+    const type = matchType ? matchType[0] : '';
+    return type.substr(0, type.length - 1);
   }
 }
