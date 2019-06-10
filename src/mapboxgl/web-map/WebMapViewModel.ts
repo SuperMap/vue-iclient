@@ -115,6 +115,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   baseProjection: string;
 
+  on: any;
+
+  fire: any;
+
   private _sourceListModel: SourceListModel;
 
   private _legendList: any;
@@ -198,7 +202,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    */
   setMapOptions(mapOptions: mapOptions): void {
     let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch } = mapOptions;
-    if(this.map) {
+    if (this.map) {
       center && this.map.setCenter(center);
       zoom && this.map.setZoom(zoom);
       maxBounds && this.map.setMaxBounds(maxBounds);
@@ -1192,7 +1196,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  某个图层的图层信息
    * @param features   图层上的 feature
    */
-  private _getUniqueStyleGroup(parameters: any, features:any): Array<{ color: string; value: string }> {
+  private _getUniqueStyleGroup(parameters: any, features: any): Array<{ color: string; value: string }> {
     // 找出所有的单值
     let featureType = parameters.featureType;
     let style = parameters.style;
@@ -1275,7 +1279,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 添加标记图层。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  private _createMarkerLayer(layerInfo: any, features:any): void {
+  private _createMarkerLayer(layerInfo: any, features: any): void {
     features &&
       features.forEach(feature => {
         let geomType = feature.geometry.type.toUpperCase();
@@ -1406,7 +1410,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 添加热力图。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  private _createHeatLayer(layerInfo: any, features:any): void {
+  private _createHeatLayer(layerInfo: any, features: any): void {
     let style = layerInfo.themeSetting;
     let layerOption = {
       gradient: style.colors.slice(),
@@ -1423,7 +1427,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       this._changeWeight(features, style.weight);
     }
 
-    let color: string | mapboxglTypes.StyleFunction | mapboxglTypes.Expression = ['interpolate', ['linear'], ['heatmap-density']];
+    let color: string | mapboxglTypes.StyleFunction | mapboxglTypes.Expression = [
+      'interpolate',
+      ['linear'],
+      ['heatmap-density']
+    ];
 
     let length = layerOption.gradient.length;
 
@@ -1478,7 +1486,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    * @param {String} weightFeild - 权重字段
    */
-  private _changeWeight(features:any, weightFeild: string): void {
+  private _changeWeight(features: any, weightFeild: string): void {
     this._fieldMaxValue = {};
     this._getMaxValue(features, weightFeild);
     let maxValue = this._fieldMaxValue[weightFeild];
@@ -1496,7 +1504,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    * @param {String} weightFeild - 权重字段
    */
-  private _getMaxValue(features:any, weightField: string): void {
+  private _getMaxValue(features: any, weightField: string): void {
     let values = [];
     let attributes;
     let field = weightField;
@@ -1627,7 +1635,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 获取分段样式。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  private _getRangeStyleGroup(layerInfo: any, features:any): Array<any> | void {
+  private _getRangeStyleGroup(layerInfo: any, features: any): Array<any> | void {
     // 找出分段值
     let featureType = layerInfo.featureType;
     let style = layerInfo.style;
@@ -1644,7 +1652,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       if (attributes) {
         // 过滤掉非数值的数据
         attributes[fieldName] &&
-        mapboxgl.supermap.Util.isNumber(attributes[fieldName]) &&
+          mapboxgl.supermap.Util.isNumber(attributes[fieldName]) &&
           values.push(parseFloat(attributes[fieldName]));
       } else if (feature.get(fieldName) && mapboxgl.supermap.Util.isNumber(feature.get(fieldName))) {
         feature.get(fieldName) && values.push(parseFloat(feature.get(fieldName)));
@@ -1715,7 +1723,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 格式 GeoJSON。
    * @param {GeoJSON} data - GeoJSON 数据。
    */
-  private _formatGeoJSON(data):any {
+  private _formatGeoJSON(data): any {
     let features = data.features;
     features.forEach((row, index) => {
       row.properties['index'] = index;
@@ -1998,7 +2006,12 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} style - mabgl style
    * @param {String} type - 图层类型
    */
-  private _addOverlayToMap(type: layerType, source: mapboxglTypes.GeoJSONSourceRaw, layerID: string, layerStyle: any): void {
+  private _addOverlayToMap(
+    type: layerType,
+    source: mapboxglTypes.GeoJSONSourceRaw,
+    layerID: string,
+    layerStyle: any
+  ): void {
     let mbglTypeMap = {
       POINT: 'circle',
       LINE: 'line',
