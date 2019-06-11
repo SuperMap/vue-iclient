@@ -54,6 +54,9 @@ export default class iPortalDataService extends mapboxgl.Evented {
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
    */
   getData(queryInfo) {
+    if (!this.url) {
+      return;
+    }
     let datasetUrl = this.url;
     SuperMap.FetchRequest.get(datasetUrl, null, {
       withCredentials: this.withCredentials

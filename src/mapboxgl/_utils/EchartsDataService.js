@@ -141,7 +141,7 @@ export default class EchartsDataService {
    */
   _requestData(datasets) {
     let promise = new Promise((resolve, reject) => {
-      if (datasets) {
+      if (datasets && datasets.url) {
         let superMapService;
         let queryInfo = {
           maxFeatures: datasets.maxFeatures,
@@ -329,7 +329,7 @@ export default class EchartsDataService {
       let total = 0;
       fieldValueIndex[key].forEach(index => {
         // 清除字符串型的数字的逗号
-        let num = clearNumberComma(fieldValues[index]);
+        let num = fieldValues[index] && clearNumberComma(fieldValues[index]);
         total += tonumber(num);
       });
       yData.push(total);
