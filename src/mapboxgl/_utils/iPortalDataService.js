@@ -19,7 +19,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
     super();
     this.url = url;
     this.withCredentials = withCredentials || false;
-    this.iserverService = new iServerRestService(url, withCredentials);
+    this.iserverService = new iServerRestService(url);
     this.iserverService.on('getdatasucceeded', e => {
       /**
        * @event iPortalDataService#getdatasucceeded
@@ -96,12 +96,11 @@ export default class iPortalDataService extends mapboxgl.Evented {
       });
   }
   _getDatafromRest(serviceType, address, queryInfo) {
-    let withCredentials = this.withCredentials;
     if (serviceType === 'RESTDATA') {
       let url = `${address}/data/datasources`;
       let dataSourceName;
       let datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, { withCredentials })
+      SuperMap.FetchRequest.get(url, null, { withCredentials: false })
         .then(response => {
           return response.json();
         })
@@ -109,7 +108,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
           dataSourceName = data.datasourceNames[0];
           url = `${address}/data/datasources/${dataSourceName}/datasets`;
           // 请求获取数据集名
-          SuperMap.FetchRequest.get(url, null, { withCredentials })
+          SuperMap.FetchRequest.get(url, null, { withCredentials: false })
             .then(response => {
               return response.json();
             })

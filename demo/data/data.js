@@ -279,13 +279,10 @@ export default {
         server: 'http://support.supermap.com.cn:8092/'
       },
       chartTitle: '',
-      dataset: {
-        type: 'iPortal', // iServer iPortal
+      dataset: new smcomponents.commontypes.iPortalDataParameter({
         url: 'http://support.supermap.com.cn:8092/web/datas/1920557079',
-        queryInfo: {
-          maxFeatures: 20
-        }
-      },
+        maxFeatures: 20
+      }),
       // echarts中涉及到超图数据series和坐标轴的字段的配置
       datasetOptions: [
         {

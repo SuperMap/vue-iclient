@@ -5,6 +5,7 @@ export default class RestDataParameter {
     this.url = options.url;
     this.dataName = options.dataName;
     this.attributeFilter = options.attributeFilter || null;
+    this.maxFeatures = options.maxFeatures || 20;
     this.name = options.name || i18n.t('commontypes.restData');
   }
 }

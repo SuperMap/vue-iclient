@@ -30,7 +30,6 @@ import { clearNumberComma } from '../../common/_utils/util';
 export default class EchartsDataService {
   constructor(dataset, datasetOptions) {
     // 设置默认值
-    dataset.type = dataset.type || 'iServer'; // 服务类型
     dataset.withCredentials = dataset.withCredentials || false; // 请求认证
 
     this.dataset = dataset;
@@ -144,12 +143,32 @@ export default class EchartsDataService {
     let promise = new Promise((resolve, reject) => {
       if (datasets) {
         let superMapService;
-        if (datasets.type === 'iServer') {
-          superMapService = new iServerRestService(datasets.url, datasets.withCredentials);
-        } else if (datasets.type === 'iPortal') {
+        let queryInfo = {
+          maxFeatures: datasets.maxFeatures,
+          attributeFilter: datasets.attributeFilter
+        };
+        if (datasets.dataName || datasets.layerName) {
+          let datasetInfo;
+          superMapService = new iServerRestService(datasets.url);
+          if (datasets.dataName) {
+            let arr = datasets.dataName[0].split(':');
+            datasetInfo = {
+              datasetName: arr[1],
+              dataSourceName: arr[0],
+              dataUrl: datasets.url
+            };
+          } else {
+            datasetInfo = {
+              mapName: datasets.layerName,
+              dataUrl: datasets.url
+            };
+          }
+          superMapService.getData(datasetInfo, queryInfo);
+        } else {
+          queryInfo.withCredentials = datasets.withCredentials;
           superMapService = new iPortalDataService(datasets.url, datasets.withCredentials);
+          superMapService.getData(queryInfo);
         }
-        superMapService.getData(datasets.queryInfo);
         superMapService.on('getdatafailed', function(e) {
           reject(e);
         });

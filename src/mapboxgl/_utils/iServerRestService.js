@@ -15,6 +15,13 @@ export default class iServerRestService extends mapboxgl.Evented {
     super();
     this.url = url;
   }
+
+  getData(datasetInfo, queryInfo) {
+    if (!this._checkUrl(this.url)) {
+      return null;
+    }
+    this._getDatasetInfoSucceed(datasetInfo, queryInfo);
+  }
   /**
    * @function iServerRestService.prototype.getData
    * @description 请求数据。
@@ -23,50 +30,11 @@ export default class iServerRestService extends mapboxgl.Evented {
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
    */
-  getData(queryInfo) {
-    if (!this._checkUrl(this.url)) {
-      return null;
-    }
-    SuperMap.FetchRequest.get(this.url)
-      .then(response => {
-        return response.json();
-      })
-      .then(results => {
-        if (results.datasetInfo) {
-          const datasetInfo = {
-            dataSourceName: results.datasetInfo.dataSourceName,
-            datasetName: results.datasetInfo.name,
-            mapName: results.name
-          };
-          this._getDatasetInfoSucceed(datasetInfo, queryInfo);
-        }
-      })
-      .catch(error => {
-        /**
-         * @event iServerRestService#getdatafailed
-         * @description 请求数据失败后触发。
-         * @property {Object} e  - 事件对象。
-         */
-        this.fire('getdatafailed', error);
-      });
-  }
   _getDatasetInfoSucceed(datasetInfo, queryInfo) {
-    let datasetUrl = this.url;
+    datasetInfo.dataUrl = this.url;
     // 判断服务为地图服务 或者 数据服务
-    let restIndex = datasetUrl.indexOf('rest');
-    if (restIndex > 0) {
-      let index = datasetUrl.indexOf('/', restIndex + 5);
-      let type = datasetUrl.substring(restIndex + 5, index);
-      if (type === 'maps') {
-        let mapIndex = datasetUrl.indexOf('/', index + 1);
-        let mapName = datasetUrl.substring(index + 1, mapIndex);
-        datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + '/maps/' + mapName;
-        this.getMapFeatures(datasetInfo, queryInfo);
-      } else if (type === 'data') {
-        datasetInfo.dataUrl = datasetUrl.substring(0, restIndex + 4) + '/data';
-        this.getDataFeatures(datasetInfo, queryInfo);
-      }
-    }
+    this.url.indexOf('/rest/maps') > -1 && this.getMapFeatures(datasetInfo, queryInfo);
+    this.url.indexOf('/rest/data') > -1 && this.getDataFeatures(datasetInfo, queryInfo);
   }
 
   /**
@@ -230,7 +198,7 @@ export default class iServerRestService extends mapboxgl.Evented {
       })
       .then(results => {
         let fields = results.fieldNames;
-        callBack(fields);
+        callBack(fields, results);
       })
       .catch(error => {
         console.log(error);
@@ -245,8 +213,8 @@ export default class iServerRestService extends mapboxgl.Evented {
     });
     new mapboxgl.supermap.QueryService(url).queryBySQL(param, serviceResult => {
       let fields;
-      serviceResult.result && (fields = serviceResult.result.recordsets[0].fields);
-      fields && callBack(fields);
+      serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);
+      fields && callBack(fields, serviceResult.result.recordsets[0]);
     });
   }
   _getAttributeFilterByKeywords(fields, keyWord) {
