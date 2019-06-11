@@ -12,7 +12,7 @@ module.exports = {
     '^@/(.*)$': '<rootDir>/src/$1',
     '^@libs/(.*)$': '<rootDir>/static/libs/$1',
     '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
-    '^@types/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
+    '^@types_mapboxgl/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
     '^@types_common/(.*)$': '<rootDir>/src/common/_types/$1',
     '^@mixin/(.*)$': '<rootDir>/src/mapboxgl/_mixin/$1',
     '\\.(css|less)$': 'identity-obj-proxy'
