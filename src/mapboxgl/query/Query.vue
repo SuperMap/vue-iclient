@@ -81,7 +81,7 @@
           v-show="!queryResult && !isQuery"
           class="sm-component-query__no-result hidden"
         >{{ $t('query.noResult') }}</div>
-        <div v-if="isQuery && !queryResult" class="sm-component-query__result-loading">
+        <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
           <a-spin :tip="$t('query.querying')">
             <a-icon slot="indicator" type="loading" style="font-size: 24px" spin/>
           </a-spin>

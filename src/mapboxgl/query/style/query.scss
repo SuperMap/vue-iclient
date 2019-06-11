@@ -138,14 +138,11 @@
     margin: 7px;
     font-weight: bolder;
   }
-  @include e(no-result) {
-    // color: #303133;
-  }
-  @include e(result-loading) {
-    position: relative;
-    top: 50%;
-    margin-top: -25%;
-    text-align: center;
+  @include e(no-result result-loading) {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   @include e(result-body) {
     & > ul {
