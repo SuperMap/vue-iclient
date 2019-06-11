@@ -3,7 +3,7 @@ import { config } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap';
 import SmMeasure from '../Measure';
 import { mount, shallowMount, createLocalVue } from '@vue/test-utils';
-import mapEvent from '@types/map-event';
+import mapEvent from '@types_mapboxgl/map-event';
 import { Icon, Card, Collapse, Checkbox, Select } from 'ant-design-vue';
 
 config.stubs.transition = false
@@ -21,7 +21,7 @@ jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min.js', () => require('@moc
 describe('mesure', () => {
     let mapWrapper;
     let measureWrapper;
-
+    let host = "test";
     beforeEach(() => {
         mapEvent.firstMapTarget = null;
         mapEvent.$options.mapCache = {};
@@ -29,6 +29,34 @@ describe('mesure', () => {
         measureWrapper = null;
         mapWrapper = null;
         jest.restoreAllMocks();
+        mapWrapper = mount(SmWebMap,
+            {
+                propsData: {
+                    mapOptions:
+                    {
+                        style: {
+                            version: 8,
+                            sources: {
+                                "raster-tiles": {
+                                    type: "raster",
+                                    tiles: [
+                                        host +
+                                        "/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}"
+                                    ],
+                                    tileSize: 256
+                                }
+                            },
+                            layers: [
+                                {
+                                    id: "simple-tiles",
+                                    type: "raster",
+                                    source: "raster-tiles"
+                                }
+                            ]
+                        }
+                    }
+                }
+            });
 
     })
 
@@ -44,7 +72,7 @@ describe('mesure', () => {
     })
 
     it('line default', (done) => {
-        mapWrapper = mount(SmWebMap);
+
         measureWrapper = shallowMount(SmMeasure, {
             localVue,
             propsData: {
@@ -93,7 +121,7 @@ describe('mesure', () => {
 
     // 改变prop后，期望得到的默认单位会变成修改后的即meters,但是得到的还是原来的即kilometers
     it('line change defaultUnit', (done) => {
-        mapWrapper = mount(SmWebMap);
+
         measureWrapper = shallowMount(SmMeasure, {
             localVue,
             propsData: {
@@ -101,7 +129,7 @@ describe('mesure', () => {
             },
             sync: false
         });
-       
+
         measureWrapper.vm.$on("loaded", () => {
             try {
                 measureWrapper.setProps({ distanceDefaultUnit: 'meters' });
@@ -144,7 +172,7 @@ describe('mesure', () => {
 
 
     it('line mile', (done) => {
-        mapWrapper = mount(SmWebMap);
+
         measureWrapper = mount(SmMeasure, {
             localVue,
             propsData: {
@@ -164,7 +192,7 @@ describe('mesure', () => {
                     expect(spychangeMode).toBeCalled();
                     //change unit 
                     measureWrapper.find('.ant-select-selection__rendered').trigger('click');
-                  
+
                     measureWrapper.vm.$nextTick(() => {
                         measureWrapper.find('i.ant-select-arrow-icon').trigger('click');
                         measureWrapper.vm.$nextTick(() => {
@@ -200,7 +228,7 @@ describe('mesure', () => {
     })
 
     it('area default', (done) => {
-        mapWrapper = mount(SmWebMap);
+
         measureWrapper = shallowMount(SmMeasure, {
             localVue,
             propsData: {
@@ -250,9 +278,9 @@ describe('mesure', () => {
             }
         })
     })
-    
+
     it('area mile', (done) => {
-        mapWrapper = mount(SmWebMap);
+
         measureWrapper = mount(SmMeasure, {
             localVue,
             propsData: {
@@ -276,10 +304,10 @@ describe('mesure', () => {
                         measureWrapper.find('i.ant-select-arrow-icon').trigger('click');
                         measureWrapper.vm.$nextTick(() => {
                             measureWrapper.findAll('.ant-select-dropdown-menu li').at(1).trigger('click');
-                           
+
                             measureWrapper.vm.viewModel.on("measure-finished", (measureResult) => {
                                 expect(measureResult.result).toBe("568818.3610");
-                                 // 得到分析结果后修改单位为千米
+                                // 得到分析结果后修改单位为千米
                                 measureWrapper.find('.ant-select-selection__rendered').trigger('click');
                                 measureWrapper.vm.$nextTick(() => {
                                     measureWrapper.find('i.ant-select-arrow-icon').trigger('click');
@@ -325,5 +353,5 @@ describe('mesure', () => {
         })
     })
 
-    
+
 })
