@@ -157,6 +157,7 @@ class SmWebMap extends Mixins(VmUpdater) {
     map.on('load', () => {
       mapEvent.$options.setMap(this.target, map);
       mapEvent.$emit(`initMap-${this.target}`, map);
+      map.resize();
       this.load({ map });
     });
   }
@@ -166,6 +167,7 @@ class SmWebMap extends Mixins(VmUpdater) {
       mapEvent.$options.setMap(this.target, e.map);
       this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
       mapEvent.$emit(`initMap-${this.target}`, e.map, this.viewModel);
+      e.map.resize();
       /**
        * @event load
        * @desc webmap 加载完成之后触发。
