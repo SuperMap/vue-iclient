@@ -149,6 +149,9 @@ export default {
         return null;
       }
     },
+    colorGroup: {
+      type: Array
+    },
     options: {
       type: Object,
       default() {
@@ -212,7 +215,7 @@ export default {
     },
     colorGroup() {
       if (!this.theme) {
-        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
+        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroup);
       }
     },
     dataset() {
