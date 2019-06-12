@@ -9,7 +9,10 @@
     :collapsed="collapsed"
     class="sm-component-legend"
   >
-    <a-card :style="mode !== 'simple' ? [getBackgroundStyle, getTextColorStyle, {border: 0, borderRadius: 0}] : [{border: 0, borderRadius: 0, background: 'transparent'}]" :bordered="false">
+    <a-card
+      :style="mode !== 'simple' ? [getBackgroundStyle, getTextColorStyle, {border: 0, borderRadius: 0}] : [{border: 0, borderRadius: 0, background: 'transparent'}]"
+      :bordered="false"
+    >
       <a-collapse
         v-if="(mode === 'panel' || (layerNames.length > 1 && mode !== 'simple')) && JSON.stringify(legendList) !== '{}'"
         v-model="activeLegend"
@@ -21,11 +24,8 @@
           :showArrow="false"
         >
           <template slot="header">
-            <div class="header-wrap">
-              <div
-                class="sm-component-legend__title"
-                :style="[getColorStyle(0)]"
-              >{{ layerValue.layerId }}</div>
+            <div class="header-wrap" :style="[getColorStyle(0)]">
+              <div class="sm-component-legend__title">{{ layerValue.layerId }}</div>
               <a-icon type="right" class="header-arrow"/>
             </div>
           </template>
@@ -41,10 +41,7 @@
                 :key="i"
                 class="sm-component-legend__item"
               >
-                <i
-                  :class="layerValue.featureType | selectLayerType"
-                  :style="{color:item.color}"
-                ></i>
+                <i :class="layerValue.featureType | selectLayerType" :style="{color:item.color}"></i>
                 <span class="sm-component-legend__field-value">{{ item.value }}</span>
               </li>
             </ul>
@@ -63,7 +60,7 @@
                 {{ $t("legend.top") }}
               </span>
               <span class="sm-component-legend__bottom">
-                <a-icon type="caret-left" />
+                <a-icon type="caret-left"/>
                 {{ $t("legend.bottom") }}
               </span>
             </div>
@@ -81,7 +78,7 @@
                 class="sm-component-legend__range-item"
               >
                 <span class="add-ellipsis">
-                  <a-icon type="caret-left" />
+                  <a-icon type="caret-left"/>
                   {{ item.start }}-{{ item.end }}
                 </span>
               </div>
@@ -114,10 +111,7 @@
               :key="k"
               class="sm-component-legend__item"
             >
-              <i
-                :class="layerValue.featureType | selectLayerType"
-                :style="{color:item.color}"
-              ></i>
+              <i :class="layerValue.featureType | selectLayerType" :style="{color:item.color}"></i>
               <span class="sm-component-legend__field-value">{{ item.value }}</span>
             </li>
           </ul>
@@ -132,11 +126,11 @@
             :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
           >
             <span class="sm-component-legend__top">
-              <a-icon type="caret-left" />
+              <a-icon type="caret-left"/>
               {{ $t("legend.top") }}
             </span>
             <span class="sm-component-legend__bottom">
-              <a-icon type="caret-left" />
+              <a-icon type="caret-left"/>
               {{ $t("legend.bottom") }}
             </span>
           </div>
@@ -154,7 +148,7 @@
               class="sm-component-legend__range-item"
             >
               <span class="add-ellipsis">
-                <a-icon type="caret-left" />
+                <a-icon type="caret-left"/>
                 {{ item.start }}-{{ item.end }}
               </span>
             </div>
@@ -188,14 +182,6 @@ export default {
     iconClass: {
       type: String,
       default: 'sm-components-icons-layer-style'
-    },
-    autoRotate: {
-      type: Boolean,
-      default: false
-    },
-    collapsed: {
-      type: Boolean,
-      default: false
     },
     layerNames: {
       type: Array,
@@ -252,6 +238,7 @@ export default {
       this.legendList = {};
       this.layerNames.forEach(layer => {
         let style = this.legendViewModel.getStyle(layer);
+        console.log(layer, style);
         if (!style) {
           throw new Error(this.$t('legend.noMatchLayer'));
         }

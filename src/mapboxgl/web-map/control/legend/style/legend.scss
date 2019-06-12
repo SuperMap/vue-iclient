@@ -37,12 +37,14 @@
     border: 0;
     background: transparent;
     .ant-collapse-item {
-      border: 0;
+      &:last-child {
+        border-bottom-color: transparent;
+      }
     }
   }
   .ant-collapse-content {
     background: transparent;
-    &.ant-collapse-content-active {
+    &.ant-collapse-content {
       border-top-color: transparent;
     }
     .ant-collapse-content-box {
