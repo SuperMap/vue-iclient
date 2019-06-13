@@ -37,7 +37,7 @@ export default class EchartsDataService {
     this.dataCache = null; // 缓存的是请求后的数据
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
-    this.gridAxis = {}; // 直角坐标系
+    this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
     this.radarAxis = {}; // 雷达图坐标系
     this.radarMax = 0; // 雷达图坐标最大值
   }
@@ -129,7 +129,7 @@ export default class EchartsDataService {
   _clearChartCache() {
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
-    this.gridAxis = {}; // 直角坐标系
+    this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
   }
 
   /**

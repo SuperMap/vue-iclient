@@ -11,7 +11,7 @@
     <v-chart
       :id="chartId"
       :ref="chartId"
-      :options="(_isRequestData && echartOptions) || options"
+      :options="_chartOptions"
       :autoresize="autoresize"
       :initOptions="initOptions"
       :group="group"
@@ -34,7 +34,8 @@ import merge from 'lodash.merge';
 
 /**
  * @module Chart
- * @category Components
+ * @caimport { isArray } from 'util';
+tegory Components
  * @desc Chart微件。除了prop: dataset和datasetOptions，其他的所有prop,event,computed, methods都是ECharts的配置，参考https://echarts.baidu.com/api.html#echartsInstance.dispose
  * @vue-prop {Object} dataset - 用来请求的dataset配置。
  * @vue-prop {Object} datasetOptions - 和请求dataset数据相关的配置。
@@ -204,9 +205,12 @@ export default {
         height: this.headerName ? 'calc(100% - 30px)' : '100%'
       };
     },
+    _chartOptions() {
+      return (this._isRequestData && this.echartOptions) || this.options;
+    },
     // 是否传入dataset和datasetOptions
     _isRequestData() {
-      return this.dataset && this.datasetOptions;
+      return this.dataset && Object.keys(this.dataset).length > 0 && this.datasetOptions;
     }
   },
   watch: {
@@ -230,7 +234,7 @@ export default {
       }
     },
     options() {
-      this.echartOptions = Object.assign({}, this.dataSeriesCache, this.options);
+      this.echartOptions = Object.assign({}, this.options, this.dataSeriesCache);
     },
     // 以下为echart的配置参数
     width() {
@@ -272,15 +276,23 @@ export default {
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         this.dataSeriesCache = Object.assign({}, options);
         // 设置echartOptions
-        if (echartOptions && options.xAxis) {
-          if (echartOptions.length > 0) {
-            this.echartOptions = merge(options, JSON.parse(JSON.stringify(echartOptions)));
-            return;
-          } else {
-            echartOptions.xAxis = Object.assign({}, options.xAxis[0], echartOptions.xAxis);
+        if (echartOptions && echartOptions.xAxis && options.xAxis) {
+          if (options.series.length === 0) {
+            echartOptions.xAxis = [{}];
+          } else if(!Array.isArray(echartOptions.xAxis)) {
+            echartOptions.xAxis = [Object.assign({}, echartOptions.xAxis, options.xAxis[0])];
           }
         }
-        this.echartOptions = merge(options, JSON.parse(JSON.stringify(echartOptions)));
+        if (echartOptions && echartOptions.series && options.series) {
+          if (options.series.length === 0) {
+            echartOptions.series = [];
+          } else {
+            echartOptions.series = options.series.map((element, index) => {
+              return Object.assign({}, echartOptions.series[index] || {}, element);
+            });
+          }
+        }
+        this.echartOptions = merge(JSON.parse(JSON.stringify(echartOptions)), options);
       });
     },
     // 当datasetUrl不变，datasetOptions改变时
@@ -289,7 +301,7 @@ export default {
       // 缓存dataSeriesCache，格式化成echart的数据
       this.dataSeriesCache = Object.assign({}, options);
       // 设置echartOptions
-      this.echartOptions = Object.assign({}, options, echartOptions);
+      this.echartOptions = Object.assign({}, echartOptions, options);
     },
     // 获取echart实例
     _getEchart() {
