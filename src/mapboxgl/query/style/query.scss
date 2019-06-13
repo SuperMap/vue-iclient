@@ -21,7 +21,7 @@
     padding: 10px 15px;
     overflow-y: auto;
     & > div{
-      width: 244px;
+      width: 100%;
     }
     &::-webkit-scrollbar {
       width: 6px;
@@ -98,6 +98,7 @@
     margin-top: 10px;
     margin-left: 7%;
     font-weight: 100;
+    width: 84%;
   }
   @include e(a-button) {
     width: 100%;

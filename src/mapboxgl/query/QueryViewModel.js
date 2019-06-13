@@ -1,7 +1,7 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
-import RestDataParameter from '../../common/_types/RestDataParameter';
-import RestMapParameter from '../../common/_types/RestMapParameter';
+// import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
+// import RestDataParameter from '../../common/_types/RestDataParameter';
+// import RestMapParameter from '../../common/_types/RestMapParameter';
 import center from '@turf/center';
 import i18n from '../../common/_lang';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
@@ -46,13 +46,22 @@ export default class QueryViewModel extends mapboxgl.Evented {
       this.bounds = this.map.getBounds();
     }
     this.queryResult = null;
-    if (queryParameter instanceof iPortalDataParameter) {
-      this._queryByIportalData(queryParameter);
-    } else if (queryParameter instanceof RestDataParameter) {
-      this._queryByRestData(queryParameter);
-    } else if (queryParameter instanceof RestMapParameter) {
-      this._queryByRestMap(queryParameter);
+    if (queryParameter) {
+      if (queryParameter.dataName) {
+        this._queryByRestData(queryParameter);
+      } else if (queryParameter.layerName) {
+        this._queryByRestMap(queryParameter);
+      } else {
+        this._queryByIportalData(queryParameter);
+      }
     }
+    // if (queryParameter instanceof iPortalDataParameter) {
+    //   this._queryByIportalData(queryParameter);
+    // } else if (queryParameter instanceof RestDataParameter) {
+    //   this._queryByRestData(queryParameter);
+    // } else if (queryParameter instanceof RestMapParameter) {
+    //   this._queryByRestMap(queryParameter);
+    // }
   }
 
   _queryByRestMap(restMapParameter) {
@@ -64,7 +73,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
         },
         bounds: this.bounds,
         startRecord: 0,
-        expectCount: this.maxFeatures
+        expectCount: restMapParameter.maxFeatures || this.maxFeatures
       });
       new mapboxgl.supermap.QueryService(restMapParameter.url).queryByBounds(param, serviceResult => {
         this._mapQuerySucceed(serviceResult, restMapParameter);
@@ -76,7 +85,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
           attributeFilter: restMapParameter.attributeFilter
         },
         startRecord: 0,
-        expectCount: this.maxFeatures
+        expectCount: restMapParameter.maxFeatures || this.maxFeatures
       });
       new mapboxgl.supermap.QueryService(restMapParameter.url).queryBySQL(param, serviceResult => {
         this._mapQuerySucceed(serviceResult, restMapParameter);
@@ -90,7 +99,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
         datasetNames: restDataParameter.dataName,
         bounds: this.bounds,
         fromIndex: 0,
-        toIndex: this.maxFeatures - 1
+        toIndex: restDataParameter.maxFeatures - 1 || this.maxFeatures - 1
       });
       new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesByBounds(boundsParam, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
@@ -102,7 +111,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
         },
         datasetNames: restDataParameter.dataName,
         fromIndex: 0,
-        toIndex: this.maxFeatures - 1
+        toIndex: restDataParameter.maxFeatures - 1 || this.maxFeatures - 1
       });
       new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesBySQL(param, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
@@ -210,7 +219,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
                 dataName: [sourceName + ':' + datasetName],
                 url: `${address}/data`,
                 name: iportalDataParameter.name,
-                attributeFilter: iportalDataParameter.attributeFilter
+                attributeFilter: iportalDataParameter.attributeFilter,
+                maxFeatures: iportalDataParameter.maxFeatures
               });
             })
             .catch(error => {
@@ -246,7 +256,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
                 layerName,
                 url: path,
                 name: iportalDataParameter.name,
-                attributeFilter: iportalDataParameter.attributeFilter
+                attributeFilter: iportalDataParameter.attributeFilter,
+                maxFeatures: iportalDataParameter.maxFeatures
               });
               return layerName;
             })

@@ -41,7 +41,10 @@
             <span class="sm-component-query__job-info-name">{{ jobInfo.queryParameter.name }}</span>
             <div class="sm-components-icons-legend-unfold"></div>
           </div>
-          <div v-if="jobInfo.queryParameter.attributeFilter" class="sm-component-query__job-info-body hidden">
+          <div
+            v-if="jobInfo.queryParameter.attributeFilter"
+            class="sm-component-query__job-info-body hidden"
+          >
             <div class="sm-component-query__attribute">
               <div>{{ $t('query.attributeCondition') }}</div>
               <div
@@ -115,22 +118,22 @@ import MapGetter from '../_mixin/map-getter';
 import LineStyle from '../_types/LineStyle';
 import FillStyle from '../_types/FillStyle';
 import CircleStyle from '../_types/CircleStyle';
-import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
-import RestDataParameter from '../../common/_types/RestDataParameter';
-import RestMapParameter from '../../common/_types/RestMapParameter';
+// import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
+// import RestDataParameter from '../../common/_types/RestDataParameter';
+// import RestMapParameter from '../../common/_types/RestMapParameter';
 import QueryViewModel from './QueryViewModel.js';
 import TablePopup from '../../common/table-popup/TablePopup';
 import Vue from 'vue';
 
-let validators = (value, propType) => {
-  let valid = true;
-  value.forEach(item => {
-    if (!(item instanceof propType)) {
-      valid = false;
-    }
-  });
-  return valid;
-};
+// let validators = (value, propType) => {
+//   let valid = true;
+//   value.forEach(item => {
+//     if (!(item instanceof propType)) {
+//       valid = false;
+//     }
+//   });
+//   return valid;
+// };
 
 /**
  * @module Query
@@ -195,22 +198,22 @@ export default {
       }
     },
     iportalData: {
-      type: Array,
-      validator(value) {
-        return validators(value, iPortalDataParameter);
-      }
+      type: Array
+      // validator(value) {
+      //   return validators(value, iPortalDataParameter);
+      // }
     },
     restData: {
-      type: Array,
-      validator(value) {
-        return validators(value, RestDataParameter);
-      }
+      type: Array
+      // validator(value) {
+      //   return validators(value, RestDataParameter);
+      // }
     },
     restMap: {
-      type: Array,
-      validator(value) {
-        return validators(value, RestMapParameter);
-      }
+      type: Array
+      // validator(value) {
+      //   return validators(value, RestMapParameter);
+      // }
     }
   },
   data() {
@@ -234,6 +237,15 @@ export default {
     };
   },
   watch: {
+    iportalData() {
+      this.formatJobInfos();
+    },
+    restData() {
+      this.formatJobInfos();
+    },
+    restMap() {
+      this.formatJobInfos();
+    },
     colorGroupsData: {
       handler() {
         this.changeSelectInputStyle();
@@ -249,25 +261,29 @@ export default {
       }
     }
   },
-  loaded() {
-    this.viewModel = new QueryViewModel(this.map, this.$props);
+  mounted() {
     this.resultButton = this.$el.querySelector('.sm-component-query__result-button');
     this.jobButton = this.$el.querySelector('.sm-component-query__job-button');
     this.resultInfoContainer = this.$el.querySelector('.sm-component-query__result-info');
     this.jobInfoContainer = this.$el.querySelector('.sm-component-query__job-info');
-    this.registerEvents();
     this.formatJobInfos();
+  },
+  loaded() {
+    this.viewModel = new QueryViewModel(this.map, this.$props);
+    this.registerEvents();
   },
   methods: {
     formatJobInfos() {
+      this.jobInfos = [];
       Object.keys(this.$props).forEach(key => {
         if (key === 'iportalData' || key === 'restData' || key === 'restMap') {
           this.$props[key] &&
             this.$props[key].forEach(item => {
-              item.name && this.jobInfos.push({
-                spaceFilter: 'mapBounds',
-                queryParameter: item
-              });
+              item.name &&
+                this.jobInfos.push({
+                  spaceFilter: 'mapBounds',
+                  queryParameter: item
+                });
             }, this);
         }
       }, this);
