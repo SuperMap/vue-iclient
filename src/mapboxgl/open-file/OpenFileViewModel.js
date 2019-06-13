@@ -20,7 +20,7 @@ class OpenFileViewModel extends mapboxgl.Evented {
     let inputDom = fileEventObject.target;
     let file = inputDom.files[0];
     let filePath = inputDom.value;
-    let fileName = file.name;
+    let fileName = file && file.name;
     let fileType = getFileType(fileName);
 
     // 文件格式不支持

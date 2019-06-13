@@ -238,7 +238,6 @@ export default {
       this.legendList = {};
       this.layerNames.forEach(layer => {
         let style = this.legendViewModel.getStyle(layer);
-        console.log(layer, style);
         if (!style) {
           throw new Error(this.$t('legend.noMatchLayer'));
         }

@@ -1,5 +1,5 @@
 <template>
-  <div :class="['sm-component-open-file',mapboxglClass]">
+  <div :class="['sm-component-open-file', mapboxglClass]" :style="[fontStyle, { background: getColor(0) }, getTextColorStyle]">
     <label for="input_file" class="sm-component-open-file__title">
       <span>{{ text }}</span>
     </label>
@@ -30,10 +30,6 @@ export default {
   name: 'SmOpenFile',
   mixins: [Theme, Control, MapGetter],
   props: {
-    iconClass: {
-      type: String,
-      default: 'sm-components-icons-layer-style'
-    },
     fitBounds: {
       type: Boolean,
       default: true
@@ -78,6 +74,9 @@ export default {
           'application/vnd.ms-excel'
         ];
       }
+    },
+    fontStyle: {
+      type: Object
     }
   },
   data() {

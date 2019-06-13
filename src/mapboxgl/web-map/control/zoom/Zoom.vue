@@ -14,9 +14,8 @@
         @click="zoomOut"
       ></a-button>
     </div>
-    <div class="sm-component-zoom__slider">
+    <div v-show="showZoomSlider" class="sm-component-zoom__slider">
       <a-slider
-        v-if="showZoomSlider"
         v-model="zoomPosition"
         :min="min"
         :max="max"
