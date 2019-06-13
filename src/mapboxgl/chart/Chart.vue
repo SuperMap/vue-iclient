@@ -223,7 +223,7 @@ export default {
       this.datasetChange = true;
     },
     datasetOptions() {
-      if (!this.datasetChange) {
+      if (!this.datasetChange || (this.dataset && !this.dataset.url)) {
         this.echartsDataService && this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
       } else {
         this.datasetChange = false;
