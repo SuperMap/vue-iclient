@@ -399,7 +399,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
     if (type === 'fill') {
       this.strokeLayerID = layerID + '-StrokeLine';
       let stokeLineStyle = this.layerStyle.stokeLine;
-      let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
+      let lineStyle = stokeLineStyle || {
         'line-width': 3,
         'line-color': '#409eff',
         'line-opacity': 1
@@ -408,8 +408,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
         id: this.strokeLayerID,
         type: 'line',
         source: source,
-        paint: lineStyle,
-        layout: (stokeLineStyle && stokeLineStyle.layout) || {}
+        paint: lineStyle
       });
     }
   }

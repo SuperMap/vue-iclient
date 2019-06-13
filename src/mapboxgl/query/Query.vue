@@ -259,6 +259,9 @@ export default {
           result.style.color = this.getTextColor;
         }
       }
+    },
+    layerStyle() {
+      this.viewModel && (this.viewModel.layerStyle = this.$props.layerStyle);
     }
   },
   mounted() {
