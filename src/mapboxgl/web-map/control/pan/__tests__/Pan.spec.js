@@ -51,10 +51,8 @@ describe('Pan.vue', () => {
                 mapTarget: "map"
             }
         });
-        console.log("default")
         wrapper.vm.$on("loaded", () => {
             try {
-                console.log("default")
                 expect(wrapper.vm.getMapTarget).toBe('map');
                 testClick(wrapper, wrapper.vm.map);
                 testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');

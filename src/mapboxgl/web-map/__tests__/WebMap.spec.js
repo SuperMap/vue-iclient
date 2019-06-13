@@ -78,7 +78,6 @@ describe('WebMap.vue', () => {
 
     wrapper.vm.$on("load", () => {
       try {
-        console.log("")
         expect(spy).toBeCalled();
         expect(wrapper.element.id).toEqual('map');
         expect(wrapper.vm.serverUrl).toBe("http://www.supermapol.com");

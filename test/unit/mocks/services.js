@@ -252,7 +252,7 @@ const datas = {
 };
 
 
-const datas_mapjson={
+const datas_mapjson = {
     "extent": {
         "leftBottom": {
             "x": -20037508.3427892,
@@ -630,73 +630,73 @@ const chartResult = {
     "succeed": true
 };
 
-const datas_chart = {
-    "dataMetaInfo": {
-        "firstRowIsHead": false,
-        "previewURL": null,
-        "fileEncoding": "UTF-8",
-        "proxiedServiceType": null,
-        "hasScene": false,
-        "xIndex": null,
-        "yField": null,
-        "yIndex": null,
-        "separator": null,
-        "url": null,
-        "baseLayerType": null,
-        "xField": null,
-        "epsgCode": 0,
-        "realspaceType": null,
-        "releaseTimeMilli": 0,
-        "fieldTypes": null,
-        "bounds": null,
-        "proxiedServiceUrl": null,
-        "providers": null
-    },
-    "lastModfiedTime": 1525947856586,
-    "fileName": "671个气象站观测数据(5).xlsx",
-    "thumbnail": "http://support.supermap.com.cn:8092/services/../web/static/portal/img/map/cloud.png",
-    "dataItemServices": [],
-    "dataCheckResult": {
-        "serviceCheckInfos": [],
-        "dataCheckInfo": null
-    },
-    "publishInfo": null,
-    "authorizeSetting": [
-        {
-            "aliasName": "supermap",
-            "entityRoles": null,
-            "entityType": "USER",
-            "entityName": "supermap",
-            "dataPermissionType": "DELETE",
-            "entityId": null
-        },
-        {
-            "aliasName": "GUEST",
-            "entityRoles": null,
-            "entityType": "USER",
-            "entityName": "GUEST",
-            "dataPermissionType": "DOWNLOAD",
-            "entityId": null
-        }
-    ],
-    "description": null,
-    "userName": "supermap",
-    "type": "EXCEL",
-    "tags": [],
-    "coordType": null,
-    "size": 57719,
-    "createTime": 1525947856586,
-    "serviceStatus": "UNPUBLISHED",
-    "nickname": "supermap",
-    "id": 888186112,
-    "serviceId": null,
-    "downloadCount": 1,
-    "storageId": "hglvnuxh_emz1xllp_5d982d0d_29f0_4ade_96d3_ba8b8d127f74",
-    "status": "OK",
-    "MD5": "b77a03f565df9b17a5bfea85c7ce5d54"
-}
+// const datas_chart = {
+//     "dataMetaInfo": {
+//         "firstRowIsHead": false,
+//         "previewURL": null,
+//         "fileEncoding": "UTF-8",
+//         "proxiedServiceType": null,
+//         "hasScene": false,
+//         "xIndex": null,
+//         "yField": null,
+//         "yIndex": null,
+//         "separator": null,
+//         "url": null,
+//         "baseLayerType": null,
+//         "xField": null,
+//         "epsgCode": 0,
+//         "realspaceType": null,
+//         "releaseTimeMilli": 0,
+//         "fieldTypes": null,
+//         "bounds": null,
+//         "proxiedServiceUrl": null,
+//         "providers": null
+//     },
+//     "lastModfiedTime": 1525947856586,
+//     "fileName": "671个气象站观测数据(5).xlsx",
+//     "thumbnail": "http://support.supermap.com.cn:8092/services/../web/static/portal/img/map/cloud.png",
+//     "dataItemServices": [],
+//     "dataCheckResult": {
+//         "serviceCheckInfos": [],
+//         "dataCheckInfo": null
+//     },
+//     "publishInfo": null,
+//     "authorizeSetting": [
+//         {
+//             "aliasName": "supermap",
+//             "entityRoles": null,
+//             "entityType": "USER",
+//             "entityName": "supermap",
+//             "dataPermissionType": "DELETE",
+//             "entityId": null
+//         },
+//         {
+//             "aliasName": "GUEST",
+//             "entityRoles": null,
+//             "entityType": "USER",
+//             "entityName": "GUEST",
+//             "dataPermissionType": "DOWNLOAD",
+//             "entityId": null
+//         }
+//     ],
+//     "description": null,
+//     "userName": "supermap",
+//     "type": "EXCEL",
+//     "tags": [],
+//     "coordType": null,
+//     "size": 57719,
+//     "createTime": 1525947856586,
+//     "serviceStatus": "UNPUBLISHED",
+//     "nickname": "supermap",
+//     "id": 888186112,
+//     "serviceId": null,
+//     "downloadCount": 1,
+//     "storageId": "hglvnuxh_emz1xllp_5d982d0d_29f0_4ade_96d3_ba8b8d127f74",
+//     "status": "OK",
+//     "MD5": "b77a03f565df9b17a5bfea85c7ce5d54"
+// }
 
-const iportal_content={
+const iportal_content = {
     "fileName": "671个气象站观测数据(5).xlsx",
     "type": "EXCEL",
     "lineNumber": 589,
@@ -728,7 +728,7 @@ const iportal_content={
                 "-53",
                 "366.1"
             ],
-           
+
             [
                 "59446",
                 "灵山",
@@ -755,8 +755,99 @@ const iportal_content={
                 "1",
                 "1637.4"
             ]
-         
+
         ]
     }
 }
-module.exports = { fakeDataServiceResult, fakeMapServiceResult, featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart,iportal_content ,datas_mapjson};
+
+const localSearch = {
+    "totalHits": 0,
+    "poiInfos": [
+        {
+            "uid": "1f062db5bf2e12b5b04c49e6",
+            "score": 0,
+            "address": null,
+            "name": "北京市",
+            "telephone": null,
+            "location": {
+                "x": 116.406994190889,
+                "y": 39.9045955858681
+            }
+        }
+    ]
+}
+
+const datas_chart = {
+    "dataMetaInfo": {
+        "firstRowIsHead": false,
+        "previewURL": null,
+        "fileEncoding": "UTF-8",
+        "proxiedServiceType": null,
+        "hasScene": false,
+        "xIndex": null,
+        "yField": null,
+        "yIndex": null,
+        "separator": null,
+        "url": null,
+        "baseLayerType": null,
+        "xField": null,
+        "epsgCode": 0,
+        "realspaceType": null,
+        "releaseTimeMilli": 0,
+        "fieldTypes": null,
+        "bounds": null,
+        "proxiedServiceUrl": null,
+        "providers": null
+    },
+    "lastModfiedTime": 1546929306737,
+    "fileName": "民航数据CSV",
+    "thumbnail": "http://support.supermap.com.cn:8092/services/../web/static/portal/img/map/cloud.png",
+    "dataItemServices": [],
+    "dataCheckResult": {
+        "serviceCheckInfos": [],
+        "dataCheckInfo": null
+    },
+    "publishInfo": null,
+    "authorizeSetting": [
+        {
+            "aliasName": "iclient",
+            "entityRoles": null,
+            "entityType": "USER",
+            "entityName": "iclient",
+            "dataPermissionType": "DELETE",
+            "entityId": null
+        },
+        {
+            "aliasName": "GUEST",
+            "entityRoles": null,
+            "entityType": "USER",
+            "entityName": "GUEST",
+            "dataPermissionType": "DOWNLOAD",
+            "entityId": null
+        }
+    ],
+    "description": null,
+    "userName": "iclient",
+    "type": "GEOJSON",
+    "tags": [],
+    "coordType": null,
+    "size": 104585,
+    "createTime": 1546929306737,
+    "serviceStatus": "UNPUBLISHED",
+    "nickname": "iclient",
+    "id": 1920557079,
+    "serviceId": null,
+    "downloadCount": 4,
+    "storageId": "hglvnuxh_emz1xllp_115ad214_e6a8_4c83_ba78_8307bdd6a893",
+    "status": "OK",
+    "MD5": "ade13dacc34d7401bdc8ccf44152ad11"
+}
+
+const charts_content = {
+    "fileName": "民航数据CSV",
+    "type": "GEOJSON",
+    "lineNumber": null,
+    "content": "{\"type\":\"FeatureCollection\",\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"urn:ogc:def:crs:OGC:1.3:CRS84\"}},\"features\":[{\"type\":\"Feature\",\"properties\":{\"机场\":\"北京/首都\",\"X坐标\":\"116.588918\",\"Y坐标\":\"40.071080\",\"名次\":\"1\",\"2017旅客吞吐量（人次）\":\"95,786,296\",\"2016旅客吞吐量（人次）\":\"94,393,454\",\"同比增速%\":\"-1.5\",\"2017货邮吞吐量（吨）\":\"2,029,583.6\",\"2016货邮吞吐量（吨）\":\"1,943,159.7\",\"2017起降架次（架次）\":\"597,259\",\"2016起降架次（架次）\":\"606,081\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[116.58891800000002,40.071079999999995]}},{\"type\":\"Feature\",\"properties\":{\"机场\":\"上海/浦东\",\"X坐标\":\"121.812361 \",\"Y坐标\":\"31.093992 \",\"名次\":\"2\",\"2017旅客吞吐量（人次）\":\"70,001,237 \",\"2016旅客吞吐量（人次）\":\"66,002,414 \",\"同比增速%\":\"3.5 \",\"2017货邮吞吐量（吨）\":\"3,824,279.9 \",\"2016货邮吞吐量（吨）\":\"3,440,279.7 \",\"2017起降架次（架次）\":\"496,774 \",\"2016起降架次（架次）\":\"479,902 \"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[121.812361,31.093992000000014]}}]}"
+}
+
+module.exports = { fakeDataServiceResult, fakeMapServiceResult, featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart, iportal_content, datas_mapjson, localSearch, charts_content };

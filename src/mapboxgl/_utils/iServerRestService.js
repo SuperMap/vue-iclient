@@ -1,6 +1,6 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
-import '../../../static/libs/deckgl/deck.gl.min';
+
 /**
  * @class iServerRestService
  * @classdesc iServer 数据请求类。
