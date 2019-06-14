@@ -76,7 +76,6 @@ import Vue from 'vue';
  * @module Search
  * @category Components
  * @desc 搜索组件。
- * @vue-prop {String} dataFlowUrl - 数据流服务地址。
  * @vue-prop {(Number|String)} [maxFeatures=8] - 最多可返回的要素数量，最大值为 100。
  * @vue-prop {Array} [layerNames] - 地图图层搜索配置，如：'['UNIQUE-民航数']'。
  * @vue-prop {RestMapParameter} [restMap] - iServer 地图服务搜索配置。

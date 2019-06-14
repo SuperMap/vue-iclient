@@ -19,6 +19,28 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
       this.getSceneInfo();
     }
   }
+
+  setSceneUrl(url) {
+    this.serviceUrl = url;
+    if (this.serviceUrl.indexOf('iserver') >= 0) {
+      this.sceneUrl = this.serviceUrl;
+      this.createScene();
+    } else {
+      this.getSceneInfo();
+    }
+  }
+
+  setScanEffect(scanEffect) {
+    this.scanEffect = scanEffect;
+    if (scanEffect.type === 'noScan') {
+      this.scene && (this.scene.scanEffect.show = false);
+    } else {
+      setTimeout(() => {
+        this.startScan(scanEffect.type);
+      }, 100);
+    }
+  }
+
   getSceneInfo() {
     SuperMap.FetchRequest.get(this.serviceUrl + '.json')
       .then(response => {
@@ -76,6 +98,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     };
   }
   createScene() {
+    this.scene = null;
     let sceneParam = this.getSceneParam();
     let sceneUrl = sceneParam.sceneUrl;
     sceneUrl = sceneUrl.slice(0, sceneUrl.indexOf('/rest/realspace') + 15);
@@ -104,18 +127,17 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
       let handler = new Cesium.ScreenSpaceEventHandler(scene.canvas);
       handler.setInputAction(e => {
         sceneParam.positopn = new Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z);
-        this.heightLight = true;
         if (sceneParam.scanEffect.status) {
           // 获取鼠标屏幕坐标,并将其转化成笛卡尔坐标
           let position = e.position;
           let last = scene.pickPosition(position);
           this.scene.scanEffect.centerPostion = last; // 设置扫描中心点
           sceneParam.scanEffect.centerPostion = last;
-          this.tooltipIsVisable = true; // 关闭悬浮提示
+          this.scanEffect.centerPostion = last;
         }
       }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
       // 恢复状态时，恢复扫描效果,加赞三维场景比较卡，所以延迟2秒后再加载光线效果
-      if (sceneParam.scanEffect.status) {
+      if (sceneParam.scanEffect.status && sceneParam.scanEffect.type !== 'noScan') {
         setTimeout(() => {
           this.startScan(sceneParam.scanEffect.type);
         }, 3000);
@@ -127,15 +149,15 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     let sc = this.scene.camera;
     this.scene.scanEffect.show = false;
     this.scene.scanEffect.mode = type === 'line' ? Cesium.ScanEffectMode.LINE : Cesium.ScanEffectMode.CIRCLE;
-    if (this.sceneParam.scanEffect.centerPostion) {
-      this.scene.scanEffect.centerPostion = this.sceneParam.scanEffect.centerPostion;
+    if (this.sceneParam.scanEffect.centerPostion || this.scanEffect.centerPostion) {
+      this.scene.scanEffect.centerPostion = this.scanEffect.centerPostion || this.sceneParam.scanEffect.centerPostion;
     } else {
       this.sceneParam.scanEffect.centerPostion = new Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z);
       this.scene.scanEffect.centerPostion = new Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z);
     }
     this.scene.scanEffect.color = Cesium.Color.CORNFLOWERBLUE;
-    this.scene.scanEffect._period = this.sceneParam.scanEffect._period;
-    this.scene.scanEffect.speed = this.sceneParam.scanEffect.speed;
+    this.scene.scanEffect._period = parseFloat(this.scanEffect.period);
+    this.scene.scanEffect.speed = parseFloat(this.scanEffect.speed);
     this.scene.scanEffect.show = true;
   }
 }

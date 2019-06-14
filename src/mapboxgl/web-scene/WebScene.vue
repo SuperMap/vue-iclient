@@ -9,6 +9,7 @@ import WebSceneViewModel from './WebSceneViewModel';
 
 export default {
   name: 'SmWebScene',
+  // viewModelProps: ['sceneUrl', 'scanEffect', 'navigation'],
   props: {
     sceneUrl: {
       type: String,
@@ -32,6 +33,14 @@ export default {
       return 'scene' + parseInt(Math.random() * 100);
     }
   },
+  watch: {
+    sceneUrl() {
+      this.sceneViewModel && this.sceneViewModel.setSceneUrl(this.sceneUrl);
+    },
+    scanEffect() {
+      this.sceneViewModel && this.sceneViewModel.setScanEffect(this.scanEffect);
+    }
+  },
   mounted() {
     this.createdScene();
   },
@@ -41,12 +50,7 @@ export default {
   methods: {
     // 创建场景
     createdScene() {
-      this.sceneViewModel = new WebSceneViewModel(
-        this.sceneId,
-        this.sceneUrl,
-        this.scanEffect,
-        this.navigation
-      );
+      this.sceneViewModel = new WebSceneViewModel(this.sceneId, this.sceneUrl, this.scanEffect, this.navigation);
       this.sceneViewModel.on('createsceneviewersucceeded', () => {
         this.sceneViewer = this.sceneViewModel.sceneViewer;
       });
