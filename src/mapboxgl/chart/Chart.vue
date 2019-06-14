@@ -31,6 +31,7 @@ import { chartThemeUtil } from '../../common/_utils/style/theme/chart';
 import UniqueId from 'lodash.uniqueid';
 import EchartsDataService from '../_utils/EchartsDataService';
 import merge from 'lodash.merge';
+import isEqual from 'lodash.isequal';
 
 /**
  * @module Chart
@@ -210,7 +211,9 @@ export default {
     },
     // 是否传入dataset和datasetOptions
     _isRequestData() {
-      return this.dataset && Object.keys(this.dataset).length > 0;
+      return (
+        this.dataset && Object.keys(this.dataset).length > 0 && this.datasetOptions && this.datasetOptions.length > 0
+      );
     }
   },
   watch: {
@@ -222,21 +225,37 @@ export default {
         this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroup);
       }
     },
-    dataset() {
-      if (this.dataset && this.dataset.url) {
-        this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
-        this.datasetChange = true;
+    dataset: {
+      handler: function(newVal, oldVal) {
+        if (!isEqual(newVal, oldVal)) {
+          this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+          this.datasetChange = true;
+        }
       }
     },
-    datasetOptions() {
-      if (!this.datasetChange || (this.dataset && !this.dataset.url)) {
-        this.echartsDataService && this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
-      } else {
-        this.datasetChange = false;
+    datasetOptions: {
+      handler: function(newVal, oldVal) {
+        if (!isEqual(newVal, oldVal)) {
+          if (!this.datasetChange || (this.dataset && !this.dataset.url)) {
+            this.echartsDataService &&
+              this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
+          } else {
+            this.datasetChange = false;
+          }
+        }
       }
     },
-    options() {
-      this.echartOptions = Object.assign({}, this.options, this.dataSeriesCache);
+    options: {
+      handler: function(newVal, oldVal) {
+        if (!isEqual(newVal, oldVal)) {
+          if (this.dataSeriesCache) {
+            this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
+          } else {
+            this.echartOptions = Object.assign({}, this.options, this.dataSeriesCache);
+          }
+        }
+      },
+      deep: true
     },
     // 以下为echart的配置参数
     width() {
@@ -280,24 +299,27 @@ export default {
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         this.dataSeriesCache = Object.assign({}, options);
         // 设置echartOptions
-        if (echartOptions && echartOptions.xAxis && options.xAxis) {
-          if (options.series.length === 0) {
-            echartOptions.xAxis = [{}];
-          } else if (!Array.isArray(echartOptions.xAxis)) {
-            echartOptions.xAxis = [Object.assign({}, echartOptions.xAxis, options.xAxis[0])];
-          }
-        }
-        if (echartOptions && echartOptions.series && options.series) {
-          if (options.series.length === 0) {
-            echartOptions.series = [];
-          } else {
-            echartOptions.series = options.series.map((element, index) => {
-              return Object.assign({}, echartOptions.series[index] || {}, element);
-            });
-          }
-        }
-        this.echartOptions = merge(JSON.parse(JSON.stringify(echartOptions)), options);
+        this.echartOptions = this._optionsHandler(echartOptions, options);
       });
+    },
+    _optionsHandler(options, dataOptions) {
+      if (options && options.xAxis && dataOptions.xAxis) {
+        if (dataOptions.series.length === 0) {
+          options.xAxis = [{}];
+        } else if (!Array.isArray(options.xAxis)) {
+          options.xAxis = [Object.assign({}, options.xAxis, dataOptions.xAxis[0])];
+        }
+      }
+      if (options && options.series && dataOptions.series) {
+        if (dataOptions.series.length === 0) {
+          options.series = [];
+        } else {
+          options.series = dataOptions.series.map((element, index) => {
+            return Object.assign({}, options.series[index] || {}, element);
+          });
+        }
+      }
+      return merge(JSON.parse(JSON.stringify(options)), dataOptions);
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
