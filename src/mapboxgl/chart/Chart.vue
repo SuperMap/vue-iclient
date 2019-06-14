@@ -210,7 +210,7 @@ export default {
     },
     // 是否传入dataset和datasetOptions
     _isRequestData() {
-      return this.dataset && Object.keys(this.dataset).length > 0 && this.datasetOptions;
+      return this.dataset && Object.keys(this.dataset).length > 0;
     }
   },
   watch: {
@@ -223,8 +223,10 @@ export default {
       }
     },
     dataset() {
-      this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
-      this.datasetChange = true;
+      if (this.dataset && this.dataset.url) {
+        this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+        this.datasetChange = true;
+      }
     },
     datasetOptions() {
       if (!this.datasetChange || (this.dataset && !this.dataset.url)) {
@@ -247,6 +249,13 @@ export default {
       return this.smChart && this.smChart.computedOptions;
     }
   },
+  created() {
+    this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
+    // 切换主题
+    this.$on('themeStyleChanged', () => {
+      this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
+    });
+  },
   mounted() {
     // 设置echarts实例
     let chartId = this.chartId;
@@ -258,11 +267,6 @@ export default {
       smChart.$on(event, params => {
         this.$emit(event, params);
       });
-    });
-    this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
-    // 切换主题
-    this.$on('themeStyleChanged', () => {
-      this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
     });
 
     // 请求数据, 合并echartopiton, 设置echartOptions
@@ -279,7 +283,7 @@ export default {
         if (echartOptions && echartOptions.xAxis && options.xAxis) {
           if (options.series.length === 0) {
             echartOptions.xAxis = [{}];
-          } else if(!Array.isArray(echartOptions.xAxis)) {
+          } else if (!Array.isArray(echartOptions.xAxis)) {
             echartOptions.xAxis = [Object.assign({}, echartOptions.xAxis, options.xAxis[0])];
           }
         }
