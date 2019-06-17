@@ -1,0 +1,171 @@
+[
+  {
+    "title": "经典深色",
+    "label": "dark",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#dd6b66",
+      "#759aa0",
+      "#e69d87",
+      "#8dc1a9",
+      "#ea7e53"
+    ]
+  },
+  {
+    "title": "经典浅色",
+    "label": "light",
+    "textColor": "#333",
+    "background": "rgba(255, 255, 255,0.6)",
+    "colorGroup": [
+      "#3fb1e3",
+      "#6be6c1",
+      "#626c91",
+      "#a0a7e6",
+      "#c4ebad"
+    ]
+  },
+  {
+    "title": "绿色渐变",
+    "label": "green-g",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#064049",
+      "#165A65",
+      "#1F717F",
+      "#3097AB",
+      "#9AEAF4"
+    ]
+  },
+  {
+    "title": "蓝色渐变",
+    "label": "blue-g",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#243BCC",
+      "#1C55FF",
+      "#0C75FF",
+      "#338FFF",
+      "#00CDF1"
+    ]
+  },
+  {
+    "title": "橙红渐变",
+    "label": "red-g",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#770000",
+      "#882241",
+      "#BE3144",
+      "#F05940",
+      "#FF8417"
+    ]
+  },
+  {
+    "title": "紫色渐变",
+    "label": "purple-g",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#2F2AA4",
+      "#5432D3",
+      "#8B3B86",
+      "#9740B1",
+      "#7B6CF5"
+    ]
+  },
+  {
+    "title": "深蓝黑色",
+    "label": "bluedark-dark",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#15D1F2",
+      "#499BFF",
+      "#2C61FF",
+      "#243BCC",
+      "#67A9FF"
+    ]
+  },
+  {
+    "title": "墨绿黑色",
+    "label": "green-dark",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#2D808D",
+      "#53A8B6",
+      "#7AC2D0",
+      "#BCE4E9",
+      "#F1FDFF"
+    ]
+  },
+  {
+    "title": "浅蓝黑色",
+    "label": "blue-dark",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#00E9FF",
+      "#BBE7FF",
+      "#6AE5C1",
+      "#46ABFF",
+      "#363EFF"
+    ]
+  },
+  {
+    "title": "浅灰黑色",
+    "label": "grey-dark",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#52606D",
+      "#8894A0",
+      "#BACBDB",
+      "#D3DDE8",
+      "#F2F5F8"
+    ]
+  },
+  {
+    "title": "深紫黑色",
+    "label": "purple-dark",
+    "textColor": "#fff",
+    "background": "rgba(0,0,0,0.6)",
+    "colorGroup": [
+      "#7B6CF6",
+      "#5432D3",
+      "#241F92",
+      "#8B3B86",
+      "#E6A5FF"
+    ]
+  },
+  {
+    "title": "深蓝白色",
+    "label": "blue-light",
+    "textColor": "#000",
+    "background": "rgba(255,255,255,0.6)",
+    "colorGroup": [
+      "#243BCC",
+      "#2C61FF",
+      "#499BFF",
+      "#15D1F2",
+      "#67A9FF"
+    ]
+  },
+  {
+    "title": "深红白色",
+    "label": "red-light",
+    "textColor": "#000",
+    "background": "rgba(255,255,255,0.6)",
+    "colorGroup": [
+      "#F05940",
+      "#BE3144",
+      "#882241",
+      "#770000",
+      "#FF8418"
+    ]
+  }
+]

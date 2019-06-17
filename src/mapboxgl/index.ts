@@ -14,7 +14,7 @@ import {
   message
 } from 'ant-design-vue';
 import i18n, { setLocale, lang } from '../common/_lang';
-import * as themeFactory from '../common/_utils/style/theme';
+import themeFactory from '../common/_utils/style/theme/theme.json';
 import * as components from './components';
 import '../common/_assets/iconfont/iconfont.css';
 import * as commontypes from './_types';
@@ -22,7 +22,7 @@ import * as utils from './_utils';
 
 const setTheme = (themeStyle = {}) => {
   if (typeof themeStyle === 'string') {
-    themeStyle = themeFactory[themeStyle] || {};
+    themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
   }
   globalEvent.$emit('change-theme', themeStyle);
 };
