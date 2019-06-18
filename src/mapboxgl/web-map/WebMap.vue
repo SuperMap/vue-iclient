@@ -55,7 +55,7 @@ interface zoomParam extends commonControlParam {
 
 @Component({
   name: 'SmWebMap',
-  viewModelProps: ['mapId', 'serverUrl', 'mapOptions'],
+  viewModelProps: ['mapId', 'serverUrl', 'mapOptions', 'withCredentials'],
   components: {
     Pan,
     Scale,

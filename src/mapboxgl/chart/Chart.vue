@@ -237,6 +237,9 @@ export default {
       handler: function(newVal, oldVal) {
         if (!isEqual(newVal, oldVal)) {
           if (!this.datasetChange || (this.dataset && !this.dataset.url)) {
+            !this.echartsDataService &&
+              this._isRequestData &&
+              this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
             this.echartsDataService &&
               this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
           } else {

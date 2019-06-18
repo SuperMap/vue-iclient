@@ -138,7 +138,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this.withCredentials = options.withCredentials || false;
     this.target = options.target || 'map';
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
-    this._legendList = {};
     this._createWebMap();
   }
   /**
@@ -184,9 +183,12 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    */
   setServerUrl(serverUrl: string): void {
     this.serverUrl = serverUrl;
-    this._createWebMap();
+    // this._createWebMap();
   }
-
+  
+  setWithCredentials(withCredentials){
+    this.withCredentials = withCredentials;
+  }
   /**
    * @function WebMapViewModel.prototype.setMapOptions
    * @description 设置 Map 基本配置参数。
@@ -224,6 +226,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 登陆窗口后添加地图图层。
    */
   private _createWebMap(): void {
+    this._legendList = {};
     let urlArr: string[] = this.serverUrl.split('');
     if (urlArr[urlArr.length - 1] !== '/') {
       this.serverUrl += '/';
