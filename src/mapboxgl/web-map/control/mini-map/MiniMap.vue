@@ -1,14 +1,13 @@
 
 <template>
   <sm-card
-    :id="(!iconClass&&!headerName)&&'miniMap'"
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
   >
-    <div :id="(iconClass||headerName)&&'miniMap'"></div>
+    <div id="miniMap" class="miniMap"></div>
   </sm-card>
 </template>
 
@@ -38,9 +37,11 @@ export default {
   loaded() {
     this.$el.classList.add('sm-component-minimap');
     this.viewModel = new MiniMapViewModel(this.$el.querySelector('#miniMap') || this.$el, this.map);
-    this.iconClass && this.icon && this.viewModel.on('minimapinitialized', () => {
-      this.icon.style.visibility = 'visible';
-    });
+    this.iconClass &&
+      this.icon &&
+      this.viewModel.on('minimapinitialized', () => {
+        this.icon.style.visibility = 'visible';
+      });
   }
 };
 </script>

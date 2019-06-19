@@ -155,7 +155,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   setMapId(mapId: string): void {
     this.mapId = mapId;
     this.map && this.map.remove();
-    this._createWebMap();
+    setTimeout(()=>{
+      this._createWebMap();
+    },0)
   }
   /**
    * @function WebMapViewModel.prototype.setWebMapOptions

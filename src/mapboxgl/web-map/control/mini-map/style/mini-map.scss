@@ -2,7 +2,7 @@
 @import "../../../../../common/_utils/style/common/var.scss";
 
 @include b(minimap) {
-  #miniMap{
+  .miniMap{
     height: 180px;
   }
 }
