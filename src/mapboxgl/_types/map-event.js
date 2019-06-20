@@ -12,6 +12,9 @@ export default new Vue({
   setMap: function (mapTarget, map) {
     this.mapCache[mapTarget] = map;
   },
+  deleteMap: function (mapTarget) {
+    delete this.mapCache[mapTarget];
+  },
   getWebMap: function (webmapTarget) {
     return this.webMapCache[webmapTarget];
   },
