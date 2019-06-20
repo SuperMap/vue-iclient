@@ -239,7 +239,9 @@ var GetFeaturesBySQLService = SuperMap.GetFeaturesBySQLService = (url, options) 
     }
 }
 var processAsync = SuperMap.GetFeaturesBySQLService.processAsync = (getFeatureBySQLParams) => {
-    getFeatureEvent.emit('processCompleted', results);
+    setTimeout(() => {
+        getFeatureEvent.emit('processCompleted', results);
+    }, 0);
 }
 
 

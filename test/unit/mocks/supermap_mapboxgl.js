@@ -3,21 +3,21 @@ const supermap = {}
 
 supermap.FeatureService = () => {
     return {
-        getFeaturesBySQL: (param, callback) => callback(fakeDataServiceResult),
-        getFeaturesByBounds: (param, callback) => callback(fakeDataServiceResult)
+        getFeaturesBySQL: (param, callback) => setTimeout(() => { callback(fakeDataServiceResult) }, 0),
+        getFeaturesByBounds: (param, callback) => setTimeout(() => { callback(fakeDataServiceResult) }, 0)
     }
 }
 
 supermap.QueryService = () => {
     return {
-        queryBySQL: (param, callback) => callback(fakeMapServiceResult),
-        queryByBounds: (param, callback) => callback(fakeMapServiceResult)
+        queryBySQL: (param, callback) => setTimeout(() => { callback(fakeMapServiceResult) }, 0),
+        queryByBounds: (param, callback) => setTimeout(() => { callback(fakeMapServiceResult) }, 0)
     }
 };
 
 supermap.AddressMatchService = () => {
     return {
-        code: (param, callback) => callback(fakeAddressMatch)
+        code: (param, callback) => setTimeout(() => { callback(fakeAddressMatch) }, 0)
         // queryByBounds: (param, callback) => callback(fakeMapServiceResult)
     }
 };

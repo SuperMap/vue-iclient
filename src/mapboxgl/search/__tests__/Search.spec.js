@@ -102,7 +102,7 @@ describe('Search.vue', () => {
         });
     });
 
-    xit('restMap', (done) => {
+    it('restMap', (done) => {
         var host = 'http://support.supermap.com.cn:8090';
         wrapper = mount(SmSearch, {
             localVue,
@@ -126,8 +126,8 @@ describe('Search.vue', () => {
                     //需要确认下是否是bug
                     wrapper.vm.$on('search-succeeded', result => {
                     // wrapper.vm.viewModel.on('searchsucceeded', result => {
-                        expect(result.result[0].source).toEqual("SuperMap Rest Map");
-                        expect(result.result[0].result[0].properties.NAME).toEqual("四川省");
+                        expect(result.searchResult[0].source).toEqual("SuperMap Rest Map");
+                        expect(result.searchResult[0].result[0].properties.NAME).toEqual("四川省");
                         done();
                     });
                     wrapper.vm.search('四川');
@@ -140,7 +140,7 @@ describe('Search.vue', () => {
         });
     });
 
-    it('restData', (done) => {
+    xit('restData', (done) => {
         var host = 'http://support.supermap.com.cn:8090';
         wrapper = mount(SmSearch, {
             localVue,
@@ -215,7 +215,7 @@ describe('Search.vue', () => {
         });
     });
 
-    xit('addressMatch', (done) => {
+    it('addressMatch', (done) => {
         var host = 'http://support.supermap.com.cn:8090';
         wrapper = mount(SmSearch, {
             localVue,
@@ -238,8 +238,8 @@ describe('Search.vue', () => {
                     wrapper.vm.$on('search-succeeded', result => {
                     // 没有触发 search-succeeded 需要确认下是否是bug
                     // wrapper.vm.viewModel.on('searchsucceeded', result => {
-                        expect(result.result[0].source).toEqual("SuperMap AddressMatch");
-                        expect(result.result[0].result[0].address).toEqual("北京市海淀区中关村大街59号中国人民大学");
+                        expect(result.searchResult[0].source).toEqual("SuperMap AddressMatch");
+                        expect(result.searchResult[0].result[0].address).toEqual("北京市海淀区中关村大街59号中国人民大学");
                         done();
                     });
                     wrapper.vm.search('中国');
