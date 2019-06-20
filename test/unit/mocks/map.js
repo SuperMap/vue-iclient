@@ -79,7 +79,9 @@ var Map = function (options) {
   } catch (e) {
     this.center = this.options.center ? new LngLat(this.options.center[0], this.options.center[1]) : new LngLat(0, 0);
   }
-
+  this.resize = function () {
+   
+  }
   // this.style = new Style();
   this.style = options.style;
   this.setStyle = function (style, options) {
@@ -173,6 +175,48 @@ var Map = function (options) {
   }
 
   this.getSource = function (name) {
+
+    console.log("get source from map" + name);
+    if (name === 'UNIQUE-民航数-0') {
+      let chartResult = {
+        // "features": {
+        //   "type": "FeatureCollection",
+          "features": [
+            {
+              "type": "Feature",
+              "properties": {
+                "机场": "北京/首都",
+                "X坐标": "116.588918",
+                "Y坐标": "40.071080",
+                "名次": "1",
+                "2017旅客吞吐量（人次）": "95,786,296",
+                "2016旅客 吞吐量（人次）": "94,393,454",
+                "同比增速%": "-1.5",
+                "2017货邮吞吐量（吨）": "2,029,583.6",
+                "2016货邮吞吐量（吨）": "1,943,159.7",
+                "2017起降架次（架 次）": "597,259",
+                "2016起降架次（架次）": "606,081",
+                "index": 0
+              },
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  116.588918,
+                  40.07108
+                ]
+              }
+            }
+          ]
+        // },
+        // "featureUriList": [],
+        // "totalCount": 1,
+        // "featureCount": 1,
+        // "succeed": true
+      }
+      return {
+        _data: chartResult
+      };
+    }
     if (this._sources[name]) {
       return {
         setData: function (data) {
@@ -236,7 +280,6 @@ var Map = function (options) {
 
     // this._layers[id] = layer;
     console.log("map addlayer")
-    console.log(JSON.stringify(layer));
     console.log("mapboxgl addlayer");
     return this;
   };

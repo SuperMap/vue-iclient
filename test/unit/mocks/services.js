@@ -39,69 +39,127 @@ const fakeDataServiceResult = {
     }
 };
 
-
+const fakeAddressMatch = {
+    "result": [
+        {
+            "score": 80,
+            "address": "北京市海淀区中关村大街59号中国人民大学",
+            "location": {
+                "x": 116.318029039223,
+                "y": 39.969365325535
+            },
+            "filters": [
+                "北京市",
+                "海淀区"
+            ]
+        },
+    ]
+};
 
 const fakeMapServiceResult = {
     "result": {
-        "recordsets": [
-            {
-                "datasetName": "Capitals@World#1",
-                "features": {
-                    "type": "FeatureCollection",
-                    "features": [
-                        {
-                            "type": "Feature",
-                            "properties": {
-                                "SMID": "1",
-                                "NAME": "四川省",
-                            },
-                            "geometry": {
-                                "type": "MultiPolygon",
-                                "coordinates": [
-                                    [
+        "recordsets":
+
+            [
+                {
+                    "datasetName": "Capitals@World#1",
+                    "features": {
+                        "type": "FeatureCollection",
+                        "features": [
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "SMID": "1",
+                                    "NAME": "四川省",
+                                },
+                                "geometry": {
+                                    "type": "MultiPolygon",
+                                    "coordinates": [
                                         [
                                             [
-                                                101.84004968,
-                                                26.0859968692659
-                                            ],
+                                                [
+                                                    101.84004968,
+                                                    26.0859968692659
+                                                ],
 
-                                            [
-                                                101.95654423,
-                                                26.0888446242659
-                                            ],
-                                            [
-                                                101.84004968,
-                                                26.0859968692659
+                                                [
+                                                    101.95654423,
+                                                    26.0888446242659
+                                                ],
+                                                [
+                                                    101.84004968,
+                                                    26.0859968692659
+                                                ]
                                             ]
                                         ]
                                     ]
-                                ]
-                            },
-                        }
-                    ],
+                                },
+                            }
+                        ],
+                    },
                     "fieldCaptions": [
                         "SmID",
                         "SmX",
-                        "SmY"
+                        "SmY",
+                        "SmLibTileID",
+                        "SmUserID",
+                        "SmGeometrySize",
+                        "USERID",
+                        "POP",
+                        "CAPITAL_LO",
+                        "CAPITAL_CH",
+                        "COUNTRY_CH",
+                        "CAPITAL_EN",
+                        "COUNTRY_EN",
+                        "COUNTRY",
+                        "CAP_POP",
+                        "CAPITAL"
                     ],
                     "fieldTypes": [
                         "INT32",
                         "DOUBLE",
-                        "DOUBLE"
+                        "DOUBLE",
+                        "INT32",
+                        "INT32",
+                        "INT32",
+                        "INT32",
+                        "DOUBLE",
+                        "WTEXT",
+                        "WTEXT",
+                        "WTEXT",
+                        "WTEXT",
+                        "WTEXT",
+                        "WTEXT",
+                        "DOUBLE",
+                        "WTEXT"
                     ],
                     "fields": [
                         "SmID",
                         "SmX",
-                        "SmY"
+                        "SmY",
+                        "SmLibTileID",
+                        "SmUserID",
+                        "SmGeometrySize",
+                        "USERID",
+                        "POP",
+                        "CAPITAL_LO",
+                        "CAPITAL_CH",
+                        "COUNTRY_CH",
+                        "CAPITAL_EN",
+                        "COUNTRY_EN",
+                        "COUNTRY",
+                        "CAP_POP",
+                        "CAPITAL"
                     ]
                 }
-            }
-        ],
+            ],
         "totalCount": 1,
         "currentCount": 1,
-        "customResponse": null
+        "customResponse": null,
+        "succeed": true
     }
 };
+
 
 const featureResults = {
     "features": [
@@ -326,6 +384,7 @@ const datas_mapjson = {
     "title": "unique_民航数据",
     "version": "1.0"
 };
+
 const datasources = {
     "datasourceNames": [
         "supermap1_pg"
@@ -850,4 +909,245 @@ const charts_content = {
     "content": "{\"type\":\"FeatureCollection\",\"crs\":{\"type\":\"name\",\"properties\":{\"name\":\"urn:ogc:def:crs:OGC:1.3:CRS84\"}},\"features\":[{\"type\":\"Feature\",\"properties\":{\"机场\":\"北京/首都\",\"X坐标\":\"116.588918\",\"Y坐标\":\"40.071080\",\"名次\":\"1\",\"2017旅客吞吐量（人次）\":\"95,786,296\",\"2016旅客吞吐量（人次）\":\"94,393,454\",\"同比增速%\":\"-1.5\",\"2017货邮吞吐量（吨）\":\"2,029,583.6\",\"2016货邮吞吐量（吨）\":\"1,943,159.7\",\"2017起降架次（架次）\":\"597,259\",\"2016起降架次（架次）\":\"606,081\"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[116.58891800000002,40.071079999999995]}},{\"type\":\"Feature\",\"properties\":{\"机场\":\"上海/浦东\",\"X坐标\":\"121.812361 \",\"Y坐标\":\"31.093992 \",\"名次\":\"2\",\"2017旅客吞吐量（人次）\":\"70,001,237 \",\"2016旅客吞吐量（人次）\":\"66,002,414 \",\"同比增速%\":\"3.5 \",\"2017货邮吞吐量（吨）\":\"3,824,279.9 \",\"2016货邮吞吐量（吨）\":\"3,440,279.7 \",\"2017起降架次（架次）\":\"496,774 \",\"2016起降架次（架次）\":\"479,902 \"},\"geometry\":{\"type\":\"Point\",\"coordinates\":[121.812361,31.093992000000014]}}]}"
 }
 
-module.exports = { fakeDataServiceResult, fakeMapServiceResult, featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart, iportal_content, datas_mapjson, localSearch, charts_content };
+
+const datas_beijing = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "geometry": {
+                "coordinates": [
+                    [
+                        [
+                            116.720245265,
+                            39.6245367190853
+                        ],
+                        [
+                            116.716514385,
+                            39.6241937840854
+                        ],
+                        [
+                            116.71657379,
+                            39.6229782990854
+                        ],
+                        [
+                            116.716596995,
+                            39.6225376940854
+                        ],
+                        [
+                            116.716593475,
+                            39.6222269590853
+                        ],
+                        [
+                            116.70582801,
+                            39.6187705190854
+                        ],
+                        [
+                            116.720245265,
+                            39.6245367190853
+                        ]
+                    ]
+                ],
+                "type": "Polygon"
+            },
+            "properties": {
+                "Field_SmUserID": 0,
+                "Name": "北京市",
+                "UserID": 0
+            },
+            "type": "Feature"
+        }
+    ]
+}
+const searchGeocoding = [
+    {
+        "score": 85,
+        "address": "北京市西城区槐柏树街9号北京小学",
+        "location": {
+            "x": 116.360603320322,
+            "y": 39.89671784607
+        },
+        "filters": [
+            "北京市",
+            "西城区"
+        ]
+    },
+    {
+        "score": 82,
+        "address": "北京市昌平区回龙观镇农学院社区居委会北京农学院",
+        "location": {
+            "x": 116.308601712659,
+            "y": 40.0932558374159
+        },
+        "filters": [
+            "北京市",
+            "昌平区"
+        ]
+    },
+    {
+        "score": 80,
+        "address": "北京市顺义区空港开发区裕东路3号北京人文大学",
+        "location": {
+            "x": 116.55819420026,
+            "y": 40.099386412776
+        },
+        "filters": [
+            "北京市",
+            "顺义区"
+        ]
+    },
+    {
+        "score": 80,
+        "address": "北京市通州区富河大街1号北京物资学院",
+        "location": {
+            "x": 116.638298326162,
+            "y": 39.9277205046446
+        },
+        "filters": [
+            "北京市",
+            "通州区"
+        ]
+    },
+    {
+        "score": 80,
+        "address": "北京市通州区宋庄镇丛林庄园北京中加学校",
+        "location": {
+            "x": 116.693505769065,
+            "y": 39.9457949533308
+        },
+        "filters": [
+            "北京市",
+            "通州区"
+        ]
+    },
+    {
+        "score": 80,
+        "address": "北京市通州区马厂97号北京胸科医院",
+        "location": {
+            "x": 116.652862974063,
+            "y": 39.9228297488784
+        },
+        "filters": [
+            "北京市",
+            "通州区"
+        ]
+    },
+]
+///web/maps/1649097980/map.json 
+const search_mapjson = {
+    "extent": {
+        "leftBottom": {
+            "x": -20037508.3427892,
+            "y": -20037508.3427891
+        },
+        "rightTop": {
+            "x": 20037508.3427892,
+            "y": 20037508.3427891
+        }
+    },
+    "level": 5,
+    "center": {
+        "x": 11810617.9363554,
+        "y": 4275239.3340175
+    },
+    "baseLayer": {
+        "layerType": "TILE",
+        "name": "China",
+        "url": "http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China"
+    },
+    "layers": [
+        {
+            "layerType": "UNIQUE",
+            "visible": true,
+            "themeSetting": {
+                "themeField": "2016起降架次（架次）",
+                "customSettings": {},
+                "colors": [
+                    "#D53E4F",
+                    "#FC8D59",
+                    "#FEE08B",
+                    "#FFFFBF",
+                    "#E6F598",
+                    "#99D594",
+                    "#3288BD"
+                ]
+            },
+            "name": "民航数",
+            "featureType": "POINT",
+            "style": {
+                "strokeWidth": 1,
+                "fillColor": "#3288bd",
+                "fillOpacity": 0.9,
+                "radius": 7,
+                "strokeColor": "#ffffff",
+                "type": "BASIC_POINT",
+                "strokeOpacity": 1
+            },
+            "projection": "EPSG:4326",
+            "enableFields": [
+                "机场",
+                "X坐标",
+                "Y坐标",
+                "名次",
+                "2017旅客吞吐量（人次）",
+                "2016旅客吞吐量（人次）",
+                "同比增速%",
+                "2017货邮吞吐量（吨）",
+                "2016货邮吞吐量（吨）",
+                "2017起降架次（架次）",
+                "2016起降架次（架次）"
+            ],
+            "dataSource": {
+                "type": "PORTAL_DATA",
+                "serverId": "1920557079"
+            }
+        }
+    ],
+    "description": "",
+    "projection": "EPSG:3857",
+    "title": "unique_民航数据",
+    "version": "1.0"
+}
+
+
+const fieldsJson = {
+    "fieldNames": [
+        "SmID",
+        // "SmSdriW",
+        // "SmSdriN",
+        // "SmSdriE",
+        // "SmSdriS",
+        // "SmUserID",
+        // "SmArea",
+        // "SmPerimeter",
+        // "SmGeometrySize",
+        // "SQKM",
+        // "SQMI",
+        // "COLOR_MAP",
+        "CAPITAL",
+        "COUNTRY",
+        // "POP_1994",
+        "ColorID",
+        "CONTINENT"
+    ],
+    "childUriList": [
+        "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmID",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmSdriW",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmSdriN",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmSdriE",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmSdriS",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmUserID",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmArea",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmPerimeter",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SmGeometrySize",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SQKM",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/SQMI",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/COLOR_MAP",
+        "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/CAPITAL",
+        "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/COUNTRY",
+        // "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/POP_1994",
+        "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/ColorID",
+        "http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson/CONTINENT"
+    ]
+}
+
+module.exports = { fakeDataServiceResult, fakeMapServiceResult, fakeAddressMatch, featureResults, datas, datasources, datasets, queryResults, fakeLandUse, chartResult, datas_chart, iportal_content, datas_mapjson, localSearch, charts_content, searchGeocoding, search_mapjson, fieldsJson, datas_beijing };
