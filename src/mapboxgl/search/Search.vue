@@ -1,5 +1,9 @@
 <template>
-  <div class="sm-component-search" :style="[getTextColorStyle, getBackgroundStyle]">
+  <div
+    id="sm-component-search"
+    class="sm-component-search"
+    :style="[getTextColorStyle, getBackgroundStyle]"
+  >
     <div class="sm-component-search__input">
       <a-input
         v-model="searchKey"
@@ -48,6 +52,7 @@
         </div>
       </div>
     </div>
+    <TablePopup v-show="false" ref="searchTablePopup" v-bind="tablePopupProps" />
   </div>
 </template>
 <script>
@@ -61,7 +66,6 @@ import TablePopup from '../../common/table-popup/TablePopup';
 // import RestDataParameter from "../commontypes/RestDataParameter";
 // import RestMapParameter from "../commontypes/RestMapParameter";
 // import AddressMatchParameter from "../commontypes/AddressMatchParameter";
-import Vue from 'vue';
 
 // let validators = (value, propType) => {
 //   let valid = true;
@@ -88,6 +92,9 @@ import Vue from 'vue';
  */
 export default {
   name: 'SmSearch',
+  components: {
+    TablePopup
+  },
   mixins: [Control, MapGetter, Theme],
   props: {
     maxFeatures: {
@@ -136,7 +143,8 @@ export default {
       searchKey: null,
       searchResult: [],
       prefixType: 'search',
-      isHover: false
+      isHover: false,
+      tablePopupProps: {}
     };
   },
   computed: {
@@ -237,12 +245,10 @@ export default {
           ],
           data: popupData.info
         };
-        let popupContainer = new (Vue.extend(TablePopup))({
-          propsData: { ...state }
-        }).$mount();
+        this.tablePopupProps = { ...state };
 
         this.$nextTick(() => {
-          this.marker = this.viewModel.addMarker(popupData.coordinates, popupContainer.$el);
+          this.marker = this.viewModel.addMarker(popupData.coordinates, this.$refs.searchTablePopup.$el);
         });
       }
     },

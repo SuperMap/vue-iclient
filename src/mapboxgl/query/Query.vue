@@ -108,6 +108,7 @@
         </div>
       </div>
     </div>
+    <TablePopup v-show="false" ref="queryTablePopup" v-bind="tablePopupProps"/>
   </sm-card>
 </template>
 <script>
@@ -123,7 +124,6 @@ import CircleStyle from '../_types/CircleStyle';
 // import RestMapParameter from '../../common/_types/RestMapParameter';
 import QueryViewModel from './QueryViewModel.js';
 import TablePopup from '../../common/table-popup/TablePopup';
-import Vue from 'vue';
 
 // let validators = (value, propType) => {
 //   let valid = true;
@@ -153,6 +153,9 @@ import Vue from 'vue';
  */
 export default {
   name: 'SmQuery',
+  components: {
+    TablePopup
+  },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
     iconClass: {
@@ -233,7 +236,8 @@ export default {
       queryResult: null,
       activeTab: 'job',
       isQuery: false,
-      jobInfos: []
+      jobInfos: [],
+      tablePopupProps: {}
     };
   },
   watch: {
@@ -431,7 +435,6 @@ export default {
     },
     addPopup(featuerInfo) {
       this.popup && this.popup.remove() && (this.popup = null);
-      let popup = Vue.extend(TablePopup);
       if (featuerInfo.info.length >= 1) {
         let state = {
           columns: [
@@ -440,12 +443,11 @@ export default {
           ],
           data: featuerInfo.info
         };
-        let popupContainer = new popup({
-          propsData: { ...state }
-        }).$mount();
+
+        this.tablePopupProps = { ...state };
 
         this.$nextTick(() => {
-          this.popup = this.viewModel.addPopup(featuerInfo.coordinates, popupContainer.$el);
+          this.popup = this.viewModel.addPopup(featuerInfo.coordinates, this.$refs.queryTablePopup.$el);
         });
       }
     },
