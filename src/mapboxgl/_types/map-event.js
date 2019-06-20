@@ -24,6 +24,9 @@ export default new Vue({
   setWebMap: function (webmapTarget, webmap) {
     this.webMapCache[webmapTarget] = webmap;
   },
+  deleteWebMap: function (webmapTarget) {
+    delete this.webMapCache[webmapTarget];
+  },
   getAllWebMapSource: function () {
     let maps = this.getAllWebMap();
     let sources = [];
