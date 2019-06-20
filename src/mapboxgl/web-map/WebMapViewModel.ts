@@ -155,9 +155,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   setMapId(mapId: string): void {
     this.mapId = mapId;
     this.map && this.map.remove();
-    setTimeout(()=>{
+    setTimeout(() => {
       this._createWebMap();
-    },0)
+    }, 0);
   }
   /**
    * @function WebMapViewModel.prototype.setWebMapOptions
@@ -187,8 +187,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this.serverUrl = serverUrl;
     // this._createWebMap();
   }
-  
-  setWithCredentials(withCredentials){
+
+  setWithCredentials(withCredentials) {
     this.withCredentials = withCredentials;
   }
   /**
@@ -207,9 +207,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   setMapOptions(mapOptions: mapOptions): void {
     let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch } = mapOptions;
     if (this.map) {
-      center && this.map.setCenter(center);
+      center && (<[number, number]>center).length > 0 && this.map.setCenter(center);
       zoom && this.map.setZoom(zoom);
-      maxBounds && this.map.setMaxBounds(maxBounds);
+      maxBounds && (<[[number, number], [number, number]]>maxBounds).length > 0 && this.map.setMaxBounds(maxBounds);
       minZoom && this.map.setMinZoom(minZoom);
       maxZoom && this.map.setMaxZoom(maxZoom);
       renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
