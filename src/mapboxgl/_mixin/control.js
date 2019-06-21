@@ -1,4 +1,5 @@
 import mapEvent from '../_types/map-event';
+import globalEvent from '../../common/_utils/global-event';
 
 export default {
   props: {
@@ -24,13 +25,11 @@ export default {
         this.isShow = false;
         this.$el.style && (this.$el.style.display = 'none');
       }
-      const targetName = this.$parent.target || mapEvent.firstMapTarget;
-      if (mapEvent.$options.getMap(targetName)) {
-        this.mapLoaded(mapEvent.$options.getMap(targetName));
+      if (mapEvent.$options.getMap(this.controlMap)) {
+        this.mapLoaded(mapEvent.$options.getMap(this.controlMap));
       }
-      mapEvent.$on(`initMap-${targetName}`, map => {
-        this.mapLoaded(map);
-      });
+      mapEvent.$on('load-map', this.controlLoadMapSucceed);
+      globalEvent.$on('delete-map', this.deleteMapSucceed);
     }
   },
   methods: {
@@ -53,6 +52,21 @@ export default {
     remove() {
       this.control && this.map.removeControl(this.control);
     },
+    getControlMapName() {
+      const selfParent = this.$parent;
+      const parentTarget =
+        selfParent &&
+        selfParent.$options.name &&
+        selfParent.$options.name.toLowerCase() === 'smwebmap' &&
+        selfParent.target;
+      return parentTarget || mapEvent.firstMapTarget;
+    },
+    controlLoadMapSucceed(map, target) {
+      const targetName = this.getControlMapName();
+      if (target === targetName) {
+        this.mapLoaded(map);
+      }
+    },
     mapLoaded(map) {
       this.map = map;
       this.addTo();
@@ -60,9 +74,18 @@ export default {
         this.isShow = true;
         this.$el.style && (this.$el.style.display = 'block');
       }
+    },
+    deleteMapSucceed(target) {
+      const targetName = this.getControlMapName();
+      if (target === targetName) {
+        this.map = null;
+        this.destoryViewModal && this.destoryViewModal();
+      }
     }
   },
   beforeDestroy() {
     this.remove();
+    mapEvent.$off('load-map');
+    globalEvent.$off('delete-map');
   }
 };

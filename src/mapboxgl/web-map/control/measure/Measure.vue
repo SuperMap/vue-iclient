@@ -60,7 +60,11 @@
           class="sm-component-measure__unit sm-component-measure__default"
         >{{ getUnitLabel }}</div>
       </div>
-      <div v-show="getResult" class="sm-component-measure__calculateResult" :style="getTextColorStyle">
+      <div
+        v-show="getResult"
+        class="sm-component-measure__calculateResult"
+        :style="getTextColorStyle"
+      >
         <div class="sm-component-measure__calcuTitle">{{ $t("measure.measureResult") }}</div>
         <div class="sm-component-measure__result">{{ getResult }}</div>
       </div>
@@ -225,10 +229,9 @@ export default {
     },
     // 切换量算模式
     changeMeasureMode(mode) {
-      let modeUnitKey = this.modeUnitMap[mode];
-      let activeUnit = this[modeUnitKey];
-
-      if (this.map.loaded()) {
+      if (this.map && this.map.loaded()) {
+        let modeUnitKey = this.modeUnitMap[mode];
+        let activeUnit = this[modeUnitKey];
         if (this.activeMode !== mode) {
           this.viewModel.openDraw(mode, activeUnit);
           this.activeMode = mode;
@@ -236,6 +239,8 @@ export default {
           this.viewModel.closeDraw();
           this.activeMode = null;
         }
+      } else {
+        this.nonMapTip && this.nonMapTip();
       }
     },
     updateUnit(unit) {
@@ -243,6 +248,9 @@ export default {
     },
     getPopupContainer() {
       return this.$el.querySelector('.sm-component-measure__panelContent');
+    },
+    destoryViewModal() {
+      this.viewModel = null;
     }
   }
 };

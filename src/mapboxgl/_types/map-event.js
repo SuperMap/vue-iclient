@@ -1,4 +1,5 @@
 import Vue from 'vue';
+import globalEvent from '../../common/_utils/global-event';
 
 export default new Vue({
   mapCache: {},
@@ -12,8 +13,9 @@ export default new Vue({
   setMap: function (mapTarget, map) {
     this.mapCache[mapTarget] = map;
   },
-  deleteMap: function (mapTarget) {
+  deleteMap: function(mapTarget) {
     delete this.mapCache[mapTarget];
+    globalEvent.$emit('delete-map', mapTarget);
   },
   getWebMap: function (webmapTarget) {
     return this.webMapCache[webmapTarget];

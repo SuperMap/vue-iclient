@@ -236,20 +236,26 @@ export default {
   methods: {
     initLegendList() {
       this.legendList = {};
-      this.layerNames.forEach(layer => {
-        let style = this.legendViewModel.getStyle(layer);
-        if (!style) {
-          throw new Error(this.$t('legend.noMatchLayer'));
-        }
-        if (!this.legendList[layer]) {
-          this.$set(this.legendList, layer, style);
-        }
-      });
+      if (this.viewModel) {
+        this.layerNames.forEach(layer => {
+          let style = this.viewModel.getStyle(layer);
+          if (!style) {
+            throw new Error(this.$t('legend.noMatchLayer'));
+          }
+          if (!this.legendList[layer]) {
+            this.$set(this.legendList, layer, style);
+          }
+        });
+      }
+    },
+    destoryViewModal() {
+      this.viewModel = null;
+      this.legendList = {};
     }
   },
   loaded() {
     // show用来控制图例列表的显示
-    this.legendViewModel = new LegendViewModel(this.webmap);
+    this.viewModel = new LegendViewModel(this.webmap);
     this.initLegendList();
     const cardContent = this.$el.querySelector('.sm-component-card__content');
     cardContent.style.width = '200px';

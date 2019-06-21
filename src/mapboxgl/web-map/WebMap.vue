@@ -157,7 +157,7 @@ class SmWebMap extends Mixins(VmUpdater) {
   registerMapEvents(map: any): void {
     map.on('load', () => {
       mapEvent.$options.setMap(this.target, map);
-      mapEvent.$emit(`initMap-${this.target}`, map);
+      mapEvent.$emit('load-map', map, this.target);
       map.resize();
       this.load({ map });
     });
@@ -167,7 +167,7 @@ class SmWebMap extends Mixins(VmUpdater) {
     this.viewModel.on('addlayerssucceeded', e => {
       mapEvent.$options.setMap(this.target, e.map);
       this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
-      mapEvent.$emit(`initMap-${this.target}`, e.map, this.viewModel);
+      mapEvent.$emit('load-map', e.map, this.target);
       e.map.resize();
       /**
        * @event load
