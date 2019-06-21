@@ -88,7 +88,7 @@ export default class EchartsDataService {
       this._createAxisData(fieldData, item);
       this.serieDatas.push(serieData);
     });
-    let gridAxis = this.gridAxis;
+    let gridAxis = (this.gridAxis.xAxis.length > 0 || JSON.stringify(this.gridAxis.yAxis) !== '{}') && this.gridAxis;
     let radarAxis = this.radarAxis;
     let series = this.serieDatas;
     return {
@@ -252,7 +252,7 @@ export default class EchartsDataService {
       };
       axisData = this.radarAxis;
     } else if (chartType === 'bar' || chartType === 'line' || chartType === 'scatter') {
-      let data = [...XData];
+      let data = XData && [...XData];
       if (!this.gridAxis.xAxis) {
         this.gridAxis.xAxis = [];
         this.gridAxis.yAxis = {};
