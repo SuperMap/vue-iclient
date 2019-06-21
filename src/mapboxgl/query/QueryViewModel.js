@@ -30,6 +30,11 @@ export default class QueryViewModel extends mapboxgl.Evented {
     this.maxFeatures = this.options.maxFeatures || 200;
     this.layerStyle = options.layerStyle || {};
   }
+
+  clearResultLayer() {
+    this.strokeLayerID && this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
+    this.layerID && this.map.getLayer(this.layerID) && this.map.removeLayer(this.layerID);
+  }
   /**
    * @function QueryViewModel.prototype.query
    * @desc 开始查询。
@@ -38,9 +43,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
    */
   query(queryParameter, queryBounds) {
     this.queryParameter = queryParameter;
-    this.strokeLayerID && this.map.removeLayer(this.strokeLayerID);
-    this.layerID && this.map.getLayer(this.layerID) && this.map.removeLayer(this.layerID);
-
+    this.clearResultLayer();
     this.queryBounds = queryBounds;
     if (queryBounds === 'currentMapBounds') {
       this.bounds = this.map.getBounds();

@@ -41,6 +41,10 @@ export default class DataFlowLayerViewModel extends mapboxgl.Evented {
     this._initializeDataFlow();
   }
 
+  setLaterStyle(layerStyle) {
+    this.layerStyle = layerStyle;
+  }
+
   /**
    * @function DataFlowLayerViewModel.prototype.setExcludeField
    * @description 设置唯一字段。

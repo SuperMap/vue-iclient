@@ -89,11 +89,10 @@
             <a-icon slot="indicator" type="loading" style="font-size: 24px" spin/>
           </a-spin>
         </div>
-        <span
-          v-if="queryResult"
-          class="sm-component-query__result-header"
-          :style="getColorStyle(0)"
-        >{{ queryResult.name }}</span>
+        <div v-if="queryResult" class="sm-component-query__result-header" :style="getColorStyle(0)">
+          <span>{{ queryResult.name }}</span>
+          <span class="sm-components-icons-close" @click="clearResult"></span>
+        </div>
         <div v-if="queryResult" class="sm-component-query__result-body">
           <ul>
             <li
@@ -279,6 +278,9 @@ export default {
     this.viewModel = new QueryViewModel(this.map, this.$props);
     this.registerEvents();
   },
+  beforeDestroy() {
+    this.clearResult();
+  },
   methods: {
     formatJobInfos() {
       this.jobInfos = [];
@@ -461,6 +463,12 @@ export default {
     },
     getPopupContainer(triggerNode) {
       return triggerNode.parentNode;
+    },
+    clearResult() {
+      this.queryResult = null;
+      this.popup && this.popup.remove() && (this.popup = null);
+      this.jobInfo = null;
+      this.viewModel.clearResultLayer();
     }
   }
 };

@@ -52,7 +52,7 @@
         </div>
       </div>
     </div>
-    <TablePopup v-show="false" ref="searchTablePopup" v-bind="tablePopupProps" />
+    <TablePopup v-show="false" ref="searchTablePopup" v-bind="tablePopupProps"/>
   </div>
 </template>
 <script>
@@ -169,6 +169,10 @@ export default {
   loaded() {
     this.viewModel = new SearchViewModel(this.map, this.$props);
     this.oldSearchTaskId = null;
+  },
+  beforeDestroy() {
+    this.$message.destroy();
+    this.marker && this.marker.remove() && (this.marker = null);
   },
   methods: {
     changeSearchInputStyle() {

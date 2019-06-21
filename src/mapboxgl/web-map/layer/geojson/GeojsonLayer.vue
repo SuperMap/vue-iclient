@@ -25,7 +25,7 @@ export default {
           }
           if (key === 'layout' && this.layerStyle.layout) {
             for (let prop of Object.keys(this.layerStyle.layout)) {
-              this.map.setPaintProperty(this.layerId, prop, this.layerStyle.layout[prop]);
+              this.map.setLayoutProperty(this.layerId, prop, this.layerStyle.layout[prop]);
             }
           }
         }

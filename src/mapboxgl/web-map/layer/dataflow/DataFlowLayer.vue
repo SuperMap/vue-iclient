@@ -23,6 +23,7 @@ import LineStyle from '../../../_types/LineStyle';
 export default {
   name: 'SmDataFlowLayer',
   mixins: [MapGetter, Layer],
+  viewModelProps: ['layerStyle'],
   props: {
     serviceUrl: {
       type: String,
