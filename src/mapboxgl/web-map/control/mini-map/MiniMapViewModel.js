@@ -1,4 +1,6 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import clonedeep from 'lodash.clonedeep'
+
 /**
  * @class MiniMapViewModel
  * @description mini map viewModel.
@@ -47,13 +49,14 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._miniMap = new mapboxgl.Map({
       attributionControl: false,
       container: _this._container,
-      style: _this._parentMap.getStyle(),
+      style: clonedeep(_this._parentMap.getStyle()),
       zoom: 1,
       center: [0, 0],
       renderWorldCopies: false
     });
     this._miniMap.on('load', () => {
       this.fire('minimapinitialized', { miniMap: this._miniMap });
+      this._miniMap.resize();
       this.loadMiniMap();
     });
   }
@@ -109,6 +112,11 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._miniMapCanvas.addEventListener('wheel', this._preventDefault);
     this._miniMapCanvas.addEventListener('mousewheel', this._preventDefault);
   }
+
+  resize(){
+    this._miniMap && this._miniMap.resize();
+  }
+  
   _mouseDown(e) {
     if (this._isCursorOverFeature) {
       this._isDragging = true;

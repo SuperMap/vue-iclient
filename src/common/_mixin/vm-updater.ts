@@ -38,10 +38,4 @@ export default class VmUpdater extends Vue {
       );
     });
   }
-  // 图表的重绘和地图等的重绘方法，需要在vm中写resize
-  resize() {
-    if (this.viewModel && this.viewModel.resize) {
-      this.viewModel.resize();
-    }
-  }
 }

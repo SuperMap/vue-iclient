@@ -45,6 +45,13 @@ export default {
   },
   removed() {
     this.viewModel && this.viewModel.removeMap();
+  },
+  methods:{
+    resize() {
+      if (this.viewModel && this.viewModel.resize) {
+        this.viewModel.resize();
+      }
+    }
   }
 };
 </script>
