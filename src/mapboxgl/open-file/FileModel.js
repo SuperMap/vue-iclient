@@ -1,7 +1,7 @@
 import { FileTypes, FileConfig } from './FileTypes';
 /**
  * @class FileModel
- * @description 文件数据微件数据模型，用于存储一些文件数据或状态，todo 结构待完善
+ * @description 文件数据组件数据模型，用于存储一些文件数据或状态，todo 结构待完善
  * @category Components OpenFile
  * @private
  */

@@ -6,7 +6,7 @@ import max from 'lodash.max';
 import { clearNumberComma } from '../../common/_utils/util';
 /**
  * @class EchartsDataService
- * @classdesc 图表微件功能类
+ * @classdesc 图表组件功能类
  * @param {Chart-dataset} dataset - 请求的参数
  * @param {Array.<Chart-datasetOption>} datasetOptions - 数据解析的配置。
  */

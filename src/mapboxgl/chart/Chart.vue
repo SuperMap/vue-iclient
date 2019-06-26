@@ -32,12 +32,12 @@ import UniqueId from 'lodash.uniqueid';
 import EchartsDataService from '../_utils/EchartsDataService';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
+import colorcolor from 'colorcolor';
 
 /**
  * @module Chart
- * @caimport { isArray } from 'util';
-tegory Components
- * @desc Chart微件。除了prop: dataset和datasetOptions，其他的所有prop,event,computed, methods都是ECharts的配置，参考https://echarts.baidu.com/api.html#echartsInstance.dispose
+ * @category Components
+ * @desc Chart 组件。除了prop: dataset和datasetOptions，其他的所有prop,event,computed, methods都是ECharts的配置，参考https://echarts.baidu.com/api.html#echartsInstance.dispose
  * @vue-prop {Object} dataset - 用来请求的dataset配置。
  * @vue-prop {Object} datasetOptions - 和请求dataset数据相关的配置。
  * @vue-prop {String} [background] - 图表背景颜色。
@@ -220,9 +220,11 @@ export default {
     theme() {
       this.chartTheme = null;
     },
-    colorGroup() {
-      if (!this.theme) {
-        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroup);
+    colorGroup(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        if (!this.theme) {
+          this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroup);
+        }
       }
     },
     dataset: {
@@ -231,30 +233,31 @@ export default {
           this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
           this.datasetChange = true;
         }
-      }
+      },
+      deep: true
     },
     datasetOptions: {
       handler: function(newVal, oldVal) {
         if (!isEqual(newVal, oldVal)) {
-          if (!this.datasetChange || (this.dataset && !this.dataset.url)) {
-            !this.echartsDataService &&
-              this._isRequestData &&
-              this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
-            this.echartsDataService &&
-              this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
-          } else {
-            this.datasetChange = false;
-          }
+          !this.echartsDataService &&
+            this._isRequestData &&
+            this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+          this.echartsDataService &&
+            this.dataSeriesCache &&
+            this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
         }
       }
     },
     options: {
       handler: function(newVal, oldVal) {
         if (!isEqual(newVal, oldVal)) {
+          if (this.datasetChange && !this.dataSeriesCache) {
+            return;
+          }
           if (this.dataSeriesCache) {
             this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
           } else {
-            this.echartOptions = Object.assign({}, this.options, this.dataSeriesCache);
+            this.echartOptions = Object.assign({}, this.options);
           }
         }
       },
@@ -297,10 +300,21 @@ export default {
   methods: {
     // 请求数据,设置echartOptions
     _setEchartOptions(dataset, datasetOptions, echartOptions) {
+      this.echartsDataService = null;
+      this.dataSeriesCache = null;
+      this.showLoading('default', {
+        text: '加载中',
+        color: this.colorGroupsData[0],
+        textColor: this.textColorsData,
+        maskColor: this._setColorOpacity(this.backgroundData, '0.8'),
+        zlevel: 0
+      });
       this.echartsDataService = new EchartsDataService(dataset, datasetOptions);
       this.echartsDataService.getDataOption().then(options => {
+        this.hideLoading();
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         this.dataSeriesCache = Object.assign({}, options);
+        this.datasetChange = false;
         // 设置echartOptions
         this.echartOptions = this._optionsHandler(echartOptions, options);
       });
@@ -335,6 +349,10 @@ export default {
     // 获取echart实例
     _getEchart() {
       return this.smChart;
+    },
+    _setColorOpacity(color, opacity) {
+      color = colorcolor(color, 'rgba', true).substring(0, 11) + opacity + ')';
+      return color;
     },
     // 以下全是同名调用echart的方法
     /**

@@ -6,7 +6,7 @@ export default {
       type: String
     },
     textColor: {
-      type: String,
+      type: String
     },
     colorGroup: {
       type: Array
@@ -26,7 +26,7 @@ export default {
   data() {
     let theme = globalEvent.theme;
     return {
-      backgroundData: this.background || (theme && theme.background) ,
+      backgroundData: this.background || (theme && theme.background),
       textColorsData: this.textColor || (theme && theme.textColor),
       colorGroupsData: this.colorGroup || (theme && theme.colorGroup)
     };
