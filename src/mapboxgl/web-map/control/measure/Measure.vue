@@ -247,7 +247,7 @@ export default {
     // 切换量算模式
     changeMeasureMode(mode) {
       setTimeout(() => {
-        if (this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) {
+        if (this.mapTarget && !mapEvent.$options.getMap(this.mapTarget) || this.map && !this.map.loaded()) {
           this.$message.destroy();
           this.$message.warning('关联的地图尚未加载完整，请稍后！');
         } else if (this.map && this.map.loaded()) {
@@ -260,10 +260,10 @@ export default {
             this.viewModel.closeDraw();
             this.activeMode = null;
           }
-        } else if (!this.map) {
+        } else {
           this.nonMapTip();
         }
-      }, 100);
+      }, 0);
     },
     updateUnit(unit) {
       this.viewModel && this.viewModel.updateUnit(unit);
