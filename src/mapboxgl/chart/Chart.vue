@@ -32,7 +32,6 @@ import UniqueId from 'lodash.uniqueid';
 import EchartsDataService from '../_utils/EchartsDataService';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
-import colorcolor from 'colorcolor';
 
 /**
  * @module Chart
@@ -306,7 +305,7 @@ export default {
         text: '加载中',
         color: this.colorGroupsData[0],
         textColor: this.textColorsData,
-        maskColor: this._setColorOpacity(this.backgroundData, '0.8'),
+        maskColor: 'rgba(0,0,0,0.8)',
         zlevel: 0
       });
       this.echartsDataService = new EchartsDataService(dataset, datasetOptions);
@@ -349,10 +348,6 @@ export default {
     // 获取echart实例
     _getEchart() {
       return this.smChart;
-    },
-    _setColorOpacity(color, opacity) {
-      color = colorcolor(color, 'rgba', true).substring(0, 11) + opacity + ')';
-      return color;
     },
     // 以下全是同名调用echart的方法
     /**
