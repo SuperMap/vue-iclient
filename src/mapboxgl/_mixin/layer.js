@@ -139,5 +139,11 @@ export default {
       this.$_emitEvent('layer-removed');
       this.$destroy();
     }
+  },
+  removed() {
+    if (this.layerId && this.map) {
+      this.remove();
+      this.layerId = null;
+    }
   }
 };

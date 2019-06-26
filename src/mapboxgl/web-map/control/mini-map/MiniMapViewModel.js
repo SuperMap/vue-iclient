@@ -312,4 +312,8 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
 
     this._trackingRect = this._miniMap.getSource('trackingRect');
   }
+
+  removeMap() {
+    this._miniMap && this._miniMap.remove();
+  }
 }

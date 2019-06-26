@@ -24,7 +24,7 @@ export default {
     }
   },
   data() {
-    let theme = globalEvent.theme;
+    let theme = globalEvent.$options.theme;
     return {
       backgroundData: this.background || (theme && theme.background),
       textColorsData: this.textColor || (theme && theme.textColor),

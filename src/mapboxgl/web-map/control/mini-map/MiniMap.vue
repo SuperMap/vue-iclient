@@ -42,6 +42,9 @@ export default {
       this.viewModel.on('minimapinitialized', () => {
         this.icon.style.visibility = 'visible';
       });
+  },
+  removed() {
+    this.viewModel && this.viewModel.removeMap();
   }
 };
 </script>

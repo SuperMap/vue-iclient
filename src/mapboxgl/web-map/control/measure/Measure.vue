@@ -78,6 +78,8 @@ import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import Card from '../../../../common/_mixin/card';
 import MeasureViewModel from './MeasureViewModel';
+import UniqueId from 'lodash.uniqueid';
+import mapEvent from '../../../_types/map-event';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 export default {
@@ -146,7 +148,8 @@ export default {
       modeUnitMap: {
         draw_line_string: 'activeDistanceUnit',
         draw_polygon: 'activeAreaUnit'
-      }
+      },
+      layerId: ''
     };
   },
   computed: {
@@ -190,9 +193,14 @@ export default {
   mounted() {
     this.changeSelectInputStyle();
   },
+  beforeDestroy() {
+    this.$options.removed();
+  },
   loaded() {
+    this.layerId = UniqueId(`${this.$options.name.toLowerCase()}-`);
     this.viewModel = new MeasureViewModel({
-      map: this.map
+      map: this.map,
+      layerId: this.layerId
     });
 
     // 控制显示结果的显示
@@ -205,6 +213,15 @@ export default {
     this.viewModel.on('update-unit', ({ result }) => {
       this.result = result;
     });
+  },
+  removed() {
+    this.activeMode = null;
+    this.result = '';
+    if (this.layerId && this.map) {
+      this.viewModel && this.viewModel.closeDraw();
+      this.map.removeLayer(this.layerId);
+      this.layerId = null;
+    }
   },
   methods: {
     changeSelectInputStyle() {
@@ -229,28 +246,30 @@ export default {
     },
     // 切换量算模式
     changeMeasureMode(mode) {
-      if (this.map && this.map.loaded()) {
-        let modeUnitKey = this.modeUnitMap[mode];
-        let activeUnit = this[modeUnitKey];
-        if (this.activeMode !== mode) {
-          this.viewModel.openDraw(mode, activeUnit);
-          this.activeMode = mode;
-        } else {
-          this.viewModel.closeDraw();
-          this.activeMode = null;
+      setTimeout(() => {
+        if (this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) {
+          this.$message.destroy();
+          this.$message.warning('关联的地图尚未加载完整，请稍后！');
+        } else if (this.map && this.map.loaded()) {
+          let modeUnitKey = this.modeUnitMap[mode];
+          let activeUnit = this[modeUnitKey];
+          if (this.activeMode !== mode) {
+            this.viewModel.openDraw(mode, activeUnit);
+            this.activeMode = mode;
+          } else {
+            this.viewModel.closeDraw();
+            this.activeMode = null;
+          }
+        } else if (!this.map) {
+          this.nonMapTip();
         }
-      } else {
-        this.nonMapTip && this.nonMapTip();
-      }
+      }, 100);
     },
     updateUnit(unit) {
-      this.viewModel.updateUnit(unit);
+      this.viewModel && this.viewModel.updateUnit(unit);
     },
     getPopupContainer() {
       return this.$el.querySelector('.sm-component-measure__panelContent');
-    },
-    destoryViewModal() {
-      this.viewModel = null;
     }
   }
 };

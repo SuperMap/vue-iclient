@@ -25,8 +25,14 @@ export default {
     }
   },
   watch: {
-    mapTarget(newVal) {
-      this.loadMap(newVal);
+    mapTarget(newVal, oldVal) {
+      if (newVal && oldVal && newVal !== oldVal) {
+        // 多个map切换的时候，需要删除该组件与前一个map的图层绑定
+        callHook(this, 'removed');
+        if (mapEvent.$options.getMap(newVal)) {
+          this.loadMap(newVal);
+        }
+      }
     }
   },
   mounted() {
@@ -37,9 +43,9 @@ export default {
     mapEvent.$on('load-map', this.loadMapSucceed);
     globalEvent.$on('delete-map', this.deleteMapSucceed);
   },
-  beforeDestroy () {
-    mapEvent.$off('load-map');
-    globalEvent.$off('delete-map');
+  beforeDestroy() {
+    mapEvent.$off('load-map', this.loadMapSucceed);
+    globalEvent.$off('delete-map', this.deleteMapSucceed);
   },
   loaded() {
     // 微件生命周期方法(挂载后调用)，子类实现【组件主要业务逻辑写在这个生命周期里】
@@ -60,8 +66,12 @@ export default {
        *
        */
       const selfParent = this.$parent;
-      const parentTarget = selfParent.$options.name && selfParent.$options.name.toLowerCase() === 'smwebmap' && selfParent.target;
-      return this.mapTarget || parentTarget || mapEvent.firstMapTarget;
+      const parentTarget =
+        selfParent &&
+        selfParent.$options.name &&
+        selfParent.$options.name.toLowerCase() === 'smwebmap' &&
+        selfParent.target;
+      return this.mapTarget || parentTarget || Object.keys(mapEvent.$options.getAllMaps())[0];
     },
     loadMap(targetName) {
       this.map = mapEvent.$options.getMap(targetName);
@@ -79,14 +89,15 @@ export default {
     deleteMapSucceed(target) {
       const targetName = this.getTargetName();
       if (target === targetName) {
+        callHook(this, 'removed');
         this.map = null;
         this.webmap = null;
-        this.destoryViewModal && this.destoryViewModal();
+        this.viewModel && (this.viewModel = null);
       }
     },
     nonMapTip() {
       this.$message.destroy();
-      this.$message.warning('当前没有已加载完整的地图！');
+      this.$message.warning('您需要配置关联地图！');
     }
   }
 };

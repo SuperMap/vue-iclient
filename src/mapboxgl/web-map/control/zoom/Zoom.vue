@@ -54,7 +54,7 @@ export default {
     activieBgColor() {
       const color = this.getColorStyle(0).color;
       return {
-        backgroundColor: hexToRgba(this.getColorStyle(0).color, 0.3),
+        backgroundColor: hexToRgba(color, 0.3),
         borderColor: color
       };
     }

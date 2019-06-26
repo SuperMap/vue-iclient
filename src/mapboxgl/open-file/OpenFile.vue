@@ -9,6 +9,7 @@
       type="file"
       :accept="accept"
       @change="fileSelect($event)"
+      @click="preventDefault"
     >
   </div>
 </template>
@@ -25,6 +26,7 @@ import LineStyle from '../_types/LineStyle';
 import bbox from '@turf/bbox';
 import Vue from 'vue';
 import UniqueId from 'lodash.uniqueid';
+import mapEvent from '../_types/map-event';
 
 export default {
   name: 'SmOpenFile',
@@ -97,6 +99,16 @@ export default {
     },
     getUniqueId() {
       return UniqueId(`layer-${this.$options.name.toLowerCase()}-`);
+    },
+    preventDefault(e) {
+      if (this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) {
+        this.$message.destroy();
+        this.$message.warning('关联的地图尚未加载完整，请稍后');
+        e.preventDefault();
+      } else if (!this.viewModel) {
+        this.nonMapTip();
+        e.preventDefault();
+      }
     }
   },
   loaded() {

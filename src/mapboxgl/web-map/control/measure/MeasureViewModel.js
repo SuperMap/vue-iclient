@@ -23,6 +23,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     this.result = '';
     this.activeMode = '';
     this.map = options.map;
+    this.layerId = options.layerId;
     this._addDrawControl();
     this.isEditing = true;
   }
@@ -191,6 +192,10 @@ class MeasureViewModel extends mapboxgl.Evented {
         }
       ]
     });
+    this.draw.id = this.layerId;
+    this.draw.removeFromMap = function() {
+      this.onRemove();
+    };
     this.map.addLayer(this.draw);
     this.map.on('draw.create', this._finishDraw.bind(this));
     this.map.on('draw.modechange', this._resetDraw.bind(this));

@@ -14,7 +14,13 @@ class SourceListModel {
   }
 
   getSourceList() {
-    return this.sourceList;
+    let sourceList = {};
+    for (let key in this.sourceList) {
+      if (key && key.indexOf('mapbox-gl-draw') < 0 && key.indexOf('smmeasure') < 0) {
+        sourceList[key] = this.sourceList[key];
+      }
+    }
+    return sourceList;
   }
 
   getLegendStyle(sourceName) {

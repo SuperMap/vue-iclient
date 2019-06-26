@@ -272,30 +272,34 @@ export default {
     this.jobButton = this.$el.querySelector('.sm-component-query__job-button');
     this.resultInfoContainer = this.$el.querySelector('.sm-component-query__result-info');
     this.jobInfoContainer = this.$el.querySelector('.sm-component-query__job-info');
-    this.formatJobInfos();
   },
   loaded() {
     this.viewModel = new QueryViewModel(this.map, this.$props);
+    this.formatJobInfos();
     this.registerEvents();
   },
-  beforeDestroy() {
+  removed() {
     this.clearResult();
+    this.jobInfos = [];
+    this.jobButtonClicked();
   },
   methods: {
     formatJobInfos() {
-      this.jobInfos = [];
-      Object.keys(this.$props).forEach(key => {
-        if (key === 'iportalData' || key === 'restData' || key === 'restMap') {
-          this.$props[key] &&
-            this.$props[key].forEach(item => {
-              item.name &&
-                this.jobInfos.push({
-                  spaceFilter: 'mapBounds',
-                  queryParameter: item
-                });
-            }, this);
-        }
-      }, this);
+      if (this.viewModel) {
+        this.jobInfos = [];
+        Object.keys(this.$props).forEach(key => {
+          if (key === 'iportalData' || key === 'restData' || key === 'restMap') {
+            this.$props[key] &&
+              this.$props[key].forEach(item => {
+                item.name &&
+                  this.jobInfos.push({
+                    spaceFilter: 'mapBounds',
+                    queryParameter: item
+                  });
+              }, this);
+          }
+        }, this);
+      }
     },
     queryButtonClicked(jobInfo, value) {
       this.$message.destroy();

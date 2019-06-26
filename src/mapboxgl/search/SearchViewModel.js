@@ -288,7 +288,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       };
       let geoCodeParam = new SuperMap.GeoCodingParameter(parm);
       this.addressMatchService.code(geoCodeParam, e => {
-        if (e.result.length > 0) {
+        if (e.result && e.result.length > 0) {
           this._searchFeaturesSucceed(e.result, addressMatch.name || 'Address Match Search');
         } else {
           this._searchFeaturesFailed(e);

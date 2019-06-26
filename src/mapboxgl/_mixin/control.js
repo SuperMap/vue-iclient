@@ -1,5 +1,4 @@
 import mapEvent from '../_types/map-event';
-import globalEvent from '../../common/_utils/global-event';
 
 export default {
   props: {
@@ -25,11 +24,11 @@ export default {
         this.isShow = false;
         this.$el.style && (this.$el.style.display = 'none');
       }
-      if (mapEvent.$options.getMap(this.controlMap)) {
-        this.mapLoaded(mapEvent.$options.getMap(this.controlMap));
+      const targetName = this.getControlMapName();
+      if (mapEvent.$options.getMap(targetName)) {
+        this.mapLoaded(mapEvent.$options.getMap(targetName));
       }
       mapEvent.$on('load-map', this.controlLoadMapSucceed);
-      globalEvent.$on('delete-map', this.deleteMapSucceed);
     }
   },
   methods: {
@@ -50,7 +49,7 @@ export default {
       this.$el.classList.add('mapboxgl-ctrl');
     },
     remove() {
-      this.control && this.map.removeControl(this.control);
+      this.control && this.map && this.map.removeControl(this.control);
     },
     getControlMapName() {
       const selfParent = this.$parent;
@@ -59,7 +58,7 @@ export default {
         selfParent.$options.name &&
         selfParent.$options.name.toLowerCase() === 'smwebmap' &&
         selfParent.target;
-      return parentTarget || mapEvent.firstMapTarget;
+      return this.mapTarget || parentTarget || Object.keys(mapEvent.$options.getAllMaps())[0];
     },
     controlLoadMapSucceed(map, target) {
       const targetName = this.getControlMapName();
@@ -74,18 +73,10 @@ export default {
         this.isShow = true;
         this.$el.style && (this.$el.style.display = 'block');
       }
-    },
-    deleteMapSucceed(target) {
-      const targetName = this.getControlMapName();
-      if (target === targetName) {
-        this.map = null;
-        this.destoryViewModal && this.destoryViewModal();
-      }
     }
   },
   beforeDestroy() {
     this.remove();
-    mapEvent.$off('load-map');
-    globalEvent.$off('delete-map');
+    mapEvent.$off('load-map', this.controlLoadMapSucceed);
   }
 };

@@ -130,16 +130,16 @@ export default {
       }, 0);
     },
     toggleVisibility(sourceLayer, sourceName, visibility) {
-      this.layerListViewModel && this.layerListViewModel.changeLayerVisible(sourceLayer, sourceName, visibility);
+      this.viewModel && this.viewModel.changeLayerVisible(sourceLayer, sourceName, visibility);
     },
     addNewLayer() {
-      this.layerListViewModel.addNewLayer();
+      this.viewModel.addNewLayer();
     },
     deleteLayer() {
-      this.layerListViewModel.deleteLayer();
+      this.viewModel.deleteLayer();
     },
     toggleLayerGroupVisibility(sourceName, visibility) {
-      this.layerListViewModel && this.layerListViewModel.changeLayerGroupVisibility(sourceName, visibility);
+      this.viewModel && this.viewModel.changeLayerGroupVisibility(sourceName, visibility);
     },
     getDisabledStyle(isText = true) {
       return {
@@ -149,16 +149,19 @@ export default {
   },
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add('layer-list-container');
-    this.layerListViewModel = new LayerListViewModel(this.map);
+    this.viewModel = new LayerListViewModel(this.map);
     this.$nextTick(() => {
-      this.sourceList = this.layerListViewModel.initLayerList();
+      this.sourceList = this.viewModel.initLayerList();
     });
-    this.layerListViewModel.on('layersUpdated', () => {
+    this.viewModel.on('layersUpdated', () => {
       this.$nextTick(() => {
-        this.sourceList = this.layerListViewModel.initLayerList();
+        this.sourceList = this.viewModel.initLayerList();
         this.changCheckStyle();
       });
     });
+  },
+  removed() {
+    this.sourceList = {};
   }
 };
 </script>

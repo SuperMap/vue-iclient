@@ -96,13 +96,6 @@ class SmWebMap extends Mixins(VmUpdater) {
   })
   zoomControl: zoomParam;
 
-  /* hooks */
-  created() {
-    if (!mapEvent.firstMapTarget) {
-      mapEvent.firstMapTarget = this.target;
-    }
-  }
-
   mounted() {
     if (!this.mapId) {
       const map = this.initializeMap();

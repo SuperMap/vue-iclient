@@ -170,6 +170,9 @@ export default {
     this.viewModel = new SearchViewModel(this.map, this.$props);
     this.oldSearchTaskId = null;
   },
+  removed() {
+    this.clearResult(true);
+  },
   beforeDestroy() {
     this.$message.destroy();
     this.marker && this.marker.remove() && (this.marker = null);
@@ -198,6 +201,10 @@ export default {
       this.prefixType = 'search';
     },
     searchButtonClicked() {
+      if (!this.viewModel) {
+        this.nonMapTip();
+        return;
+      }
       this.search();
     },
     /**

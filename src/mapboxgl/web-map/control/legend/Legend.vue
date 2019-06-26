@@ -247,10 +247,6 @@ export default {
           }
         });
       }
-    },
-    destoryViewModal() {
-      this.viewModel = null;
-      this.legendList = {};
     }
   },
   loaded() {
@@ -259,6 +255,9 @@ export default {
     this.initLegendList();
     const cardContent = this.$el.querySelector('.sm-component-card__content');
     cardContent.style.width = '200px';
+  },
+  removed() {
+    this.legendList = {};
   }
 };
 </script>
