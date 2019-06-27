@@ -99,6 +99,8 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   }
   createScene() {
     this.scene = null;
+    this.sceneViewer && this.sceneViewer.destroy();
+    this.sceneViewer = null;
     let sceneParam = this.getSceneParam();
     let sceneUrl = sceneParam.sceneUrl;
     sceneUrl = sceneUrl.slice(0, sceneUrl.indexOf('/rest/realspace') + 15);

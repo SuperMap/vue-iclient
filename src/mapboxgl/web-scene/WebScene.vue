@@ -45,6 +45,7 @@ export default {
     this.createdScene();
   },
   beforeDestroy() {
+    this.sceneViewer && this.sceneViewer.destroy();
     this.sceneViewer = null;
   },
   methods: {
