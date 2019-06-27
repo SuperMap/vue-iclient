@@ -70,7 +70,6 @@ export default {
   },
   data() {
     return {
-      curColor: '',
       circleWidth: 0
     };
   },
@@ -80,19 +79,12 @@ export default {
         return this.size;
       }
       return this.circleWidth;
+    },
+    curColor() {
+      return this.strokeColor || this.getColor(0);
     }
   },
   watch: {
-    strokeColor: {
-      handler() {
-        this.curColor = this.strokeColor;
-      }
-    },
-    colorGroupsData: {
-      handler() {
-        this.curColor = this.getColor(0);
-      }
-    },
     textColorsData: {
       handler() {
         if (this.progressTextNode) {
@@ -102,7 +94,6 @@ export default {
     }
   },
   mounted() {
-    this.curColor = this.strokeColor || this.getColor(0);
     this.progressTextNode = this.$el.querySelector('.ant-progress-text');
     this.progressTextNode.style.color = this.getTextColor;
     this.resizeObsever = new ResizeSensor(this.$el, () => {

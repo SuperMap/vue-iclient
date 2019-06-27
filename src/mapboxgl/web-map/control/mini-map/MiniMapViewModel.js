@@ -1,5 +1,5 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import clonedeep from 'lodash.clonedeep'
+import clonedeep from 'lodash.clonedeep';
 
 /**
  * @class MiniMapViewModel
@@ -113,10 +113,10 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._miniMapCanvas.addEventListener('mousewheel', this._preventDefault);
   }
 
-  resize(){
+  resize() {
     this._miniMap && this._miniMap.resize();
   }
-  
+
   _mouseDown(e) {
     if (this._isCursorOverFeature) {
       this._isDragging = true;

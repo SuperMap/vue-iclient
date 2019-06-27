@@ -46,20 +46,10 @@ export default {
       type: Object
     }
   },
-  data() {
-    return {
-      colorStyle: {}
-    };
-  },
-  watch: {
-    colorGroupsData: {
-      handler() {
-        this.colorStyle = this.getColorStyle(0);
-      }
+  computed: {
+    colorStyle() {
+      return !this.iconStyle || !this.iconStyle.color ? this.getColorStyle(0) : { color: this.iconStyle.color };
     }
-  },
-  mounted() {
-    this.colorStyle = !this.iconStyle || !this.iconStyle.color ? this.getColorStyle(0) : this.colorStyle;
   }
 };
 </script>

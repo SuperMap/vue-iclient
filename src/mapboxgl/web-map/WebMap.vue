@@ -155,7 +155,7 @@ class SmWebMap extends Mixins(VmUpdater) {
       this.load({ map });
     });
   }
-  
+
   resize() {
     if (this.viewModel && this.viewModel.resize) {
       this.viewModel.resize();

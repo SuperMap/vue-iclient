@@ -55,16 +55,18 @@ export default {
     },
     getTextColor() {
       return this.textColorsData;
-    }
-  },
-  methods: {
-    getColorStyle(index) {
-      return {
-        color: this.colorGroupsData[index]
+    },
+    getColorStyle() {
+      return function(index) {
+        return {
+          color: this.colorGroupsData[index]
+        };
       };
     },
-    getColor(index) {
-      return this.colorGroupsData[index];
+    getColor() {
+      return function(index) {
+        return this.colorGroupsData[index];
+      };
     }
   }
 };
