@@ -106,6 +106,11 @@ class SmWebMap extends Mixins(VmUpdater) {
     }
   }
 
+  beforeDestroy() {
+    mapEvent.$options.deleteMap(this.target);
+    mapEvent.$options.deleteWebMap(this.target);
+  }
+
   /* emit */
   @Emit()
   load(value) {
@@ -136,14 +141,16 @@ class SmWebMap extends Mixins(VmUpdater) {
   }
 
   initializeWebMap(): void {
-    let { target, serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl } = this.$props;
+    let { target, serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl, mapOptions = {} } = this.$props;
     this.viewModel = new WebMapViewModel(this.mapId, {
       target,
       serverUrl,
       accessToken,
       accessKey,
       withCredentials,
-      excludePortalProxyUrl
+      excludePortalProxyUrl,
+      center: mapOptions.center,
+      zoom: mapOptions.zoom
     });
   }
 

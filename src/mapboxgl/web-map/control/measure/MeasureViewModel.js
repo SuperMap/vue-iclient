@@ -375,7 +375,7 @@ class MeasureViewModel extends mapboxgl.Evented {
       const centerResult = center(feature);
       let uniti18n = i18n.t(`measure.square${this.activeUnit}`);
       result = this._getFormatResult(result);
-      this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
+      this.tipHoverDiv && this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
     }
   }
 

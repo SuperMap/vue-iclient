@@ -42,7 +42,7 @@ export default new Vue({
         if (key) {
           let layers = sourceList[key].layers || [];
           layers.forEach(item => {
-            if (item.source && layers[item].type !== 'raster') {
+            if (item.source && item.type !== 'raster') {
               sources.push(item.source);
             }
           });

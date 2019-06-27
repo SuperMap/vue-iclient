@@ -194,7 +194,7 @@ export default {
     this.changeSelectInputStyle();
   },
   beforeDestroy() {
-    this.$options.removed();
+    this.$options.removed.call(this);
   },
   loaded() {
     this.layerId = UniqueId(`${this.$options.name.toLowerCase()}-`);
