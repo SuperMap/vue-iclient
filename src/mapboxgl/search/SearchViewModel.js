@@ -94,7 +94,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
           let geometry, coordinates;
           let properties = feature.properties || feature;
           let propertiesValue = properties.address || feature.filterAttribute.filterAttributeValue || properties.name;
-          if (propertiesValue.trim() === filterValue) {
+          if (propertiesValue.toString().trim() === filterValue) {
             geometry = feature.geometry || [feature.location.x, feature.location.y];
             if (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon' || geometry.type === 'LineString') {
               coordinates = center(feature).geometry.coordinates;
