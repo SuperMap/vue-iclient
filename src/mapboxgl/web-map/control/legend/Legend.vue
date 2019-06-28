@@ -240,7 +240,7 @@ export default {
         this.layerNames.forEach(layer => {
           let style = this.viewModel.getStyle(layer);
           if (!style) {
-            throw new Error(this.$t('legend.noMatchLayer'));
+            return;
           }
           if (!this.legendList[layer]) {
             this.$set(this.legendList, layer, style);
