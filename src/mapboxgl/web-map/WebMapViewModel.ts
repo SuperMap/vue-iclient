@@ -218,13 +218,13 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch } = mapOptions;
     if (this.map) {
       center && (<[number, number]>center).length > 0 && this.map.setCenter(center);
-      !isNaN(zoom) && this.map.setZoom(zoom);
+      (zoom || zoom === 0) && this.map.setZoom(zoom);
       maxBounds && (<[[number, number], [number, number]]>maxBounds).length > 0 && this.map.setMaxBounds(maxBounds);
-      !isNaN(minZoom) && this.map.setMinZoom(minZoom);
-      !isNaN(maxZoom) && this.map.setMaxZoom(maxZoom);
+      (minZoom || minZoom === 0) && this.map.setMinZoom(minZoom);
+      (maxZoom || maxZoom === 0) && this.map.setMaxZoom(maxZoom);
       renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
-      !isNaN(bearing) && this.map.setBearing(bearing);
-      !isNaN(pitch) && this.map.setPitch(pitch);
+      (bearing || bearing === 0) && this.map.setBearing(bearing);
+      (pitch || pitch === 0)  && this.map.setPitch(pitch);
     }
   }
 
