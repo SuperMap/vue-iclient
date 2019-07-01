@@ -56,18 +56,21 @@
             :style="[getTextColorStyle]"
             class="sm-component-legend__wrap"
           >
-            <div
-              class="sm-component-legend__heat"
-              :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
-            >
-              <span class="sm-component-legend__top">
-                <i class="c"></i>
-                {{ $t("legend.top") }}
-              </span>
-              <span class="sm-component-legend__bottom">
-                <a-icon type="caret-left" />
-                {{ $t("legend.bottom") }}
-              </span>
+            <div class="sm-component-legend__heatbox">
+              <div
+                class="sm-component-legend__heat"
+                :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
+              ></div>
+              <div class="sm-component-legend__heatText">
+                <span class="sm-component-legend__top">
+                  <a-icon type="caret-left" />
+                  {{ $t("legend.top") }}
+                </span>
+                <span class="sm-component-legend__bottom">
+                  <a-icon type="caret-left" />
+                  {{ $t("legend.bottom") }}
+                </span>
+              </div>
             </div>
           </div>
 
