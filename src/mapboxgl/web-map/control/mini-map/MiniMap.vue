@@ -38,9 +38,8 @@ export default {
     this.$el.classList.add('sm-component-minimap');
     this.viewModel = new MiniMapViewModel(this.$el.querySelector('#miniMap') || this.$el, this.map);
     this.iconClass &&
-      this.icon &&
       this.viewModel.on('minimapinitialized', () => {
-        this.icon.style.visibility = 'visible';
+        this.icon && (this.icon.style.visibility = 'visible');
       });
   },
   removed() {

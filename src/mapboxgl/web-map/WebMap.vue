@@ -8,6 +8,26 @@
       :show-zoom-slider="zoomControl.zoomWithSlider"
       :position="zoomControl.position"
     />
+    <mini-map v-if="miniMapControl.show" :position="miniMapControl.position" :collapsed="miniMapControl.collapsed"></mini-map>
+    <layer-list v-if="layerListControl.show" :position="layerListControl.position" :collapsed="layerListControl.collapsed"></layer-list>
+    <Measure
+      v-if="measureControl.show"
+      :position="measureControl.position"
+      :collapsed="measureControl.collapsed"
+      :showUnitSelect="measureControl.showUnitSelect"
+      :distanceDefaultUnit="measureControl.distanceDefaultUnit"
+      :areaDefaultUnit="measureControl.areaDefaultUnit"
+    ></Measure>
+    <Legend
+      v-if="legendControl.show"
+      :position="legendControl.position"
+      :collapsed="legendControl.collapsed"
+      :layerNames="legendControl.layerNames"
+      :headerName="legendControl.headerName"
+      :mode="legendControl.mode"
+      :isShowTitle="legendControl.isShowTitle"
+      :isShowField="legendControl.isShowField"
+    ></Legend>
   </div>
 </template>
 
@@ -18,6 +38,10 @@ import VmUpdater from '../../common/_mixin/vm-updater';
 import Pan from './control/pan/Pan.vue';
 import Scale from './control/scale/Scale.vue';
 import Zoom from './control/zoom/Zoom.vue';
+import MiniMap from './control/mini-map/MiniMap.vue';
+import LayerList from './control/layer-list/LayerList.vue';
+import Measure from './control/measure/Measure.vue';
+import Legend from './control/legend/Legend.vue';
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';
 
@@ -49,8 +73,26 @@ interface commonControlParam {
   show?: boolean;
   position?: string;
 }
-interface zoomParam extends commonControlParam {
+
+interface cardCommonParam extends commonControlParam{
+  collapsed?: false;
+}
+
+interface zoomParam extends cardCommonParam {
   zoomWithSlider?: boolean;
+}
+
+interface measureParam extends cardCommonParam {
+  showUnitSelect?: boolean;
+  distanceDefaultUnit?: string;
+  areaDefaultUnit?: string;
+}
+
+interface legendParam extends cardCommonParam {
+  layerNames: Array<string>;
+  isShowTitle?: boolean;
+  isShowField?: boolean;
+  mode?: string;
 }
 
 @Component({
@@ -59,7 +101,11 @@ interface zoomParam extends commonControlParam {
   components: {
     Pan,
     Scale,
-    Zoom
+    Zoom,
+    MiniMap,
+    LayerList,
+    Measure,
+    Legend
   }
 })
 class SmWebMap extends Mixins(VmUpdater) {
@@ -76,25 +122,66 @@ class SmWebMap extends Mixins(VmUpdater) {
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() mapOptions: any;
   @Prop({
-    default: () => () => {
+    default: () => {
       return { show: false, position: 'top-left' };
     }
   })
   panControl: commonControlParam;
 
   @Prop({
-    default: () => () => {
+    default: () => {
       return { show: false, position: 'bottom-left' };
     }
   })
   scaleControl: commonControlParam;
 
   @Prop({
-    default: () => () => {
+    default: () => {
       return { show: false, position: 'top-left' };
     }
   })
   zoomControl: zoomParam;
+
+  @Prop({
+    default: () => {
+      return { show: false, position: 'bottom-right' };
+    }
+  })
+  miniMapControl: cardCommonParam;
+
+  @Prop({
+    default: () => {
+      return { show: false, position: 'top-right' };
+    }
+  })
+  layerListControl: cardCommonParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: false,
+        position: 'top-left',
+        showUnitSelect: true,
+        distanceDefaultUnit: 'kilometers',
+        areaDefaultUnit: 'kilometers'
+      };
+    }
+  })
+  measureControl: measureParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: false,
+        position: 'bottom-left',
+        layerNames: [],
+        isShowTitle: false,
+        isShowField: false,
+        mode: 'simple'
+      };
+    }
+  })
+  legendControl: legendParam;
 
   mounted() {
     if (!this.mapId) {
@@ -141,7 +228,15 @@ class SmWebMap extends Mixins(VmUpdater) {
   }
 
   initializeWebMap(): void {
-    let { target, serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl, mapOptions = {} } = this.$props;
+    let {
+      target,
+      serverUrl,
+      accessToken,
+      accessKey,
+      withCredentials,
+      excludePortalProxyUrl,
+      mapOptions = {}
+    } = this.$props;
     this.viewModel = new WebMapViewModel(this.mapId, {
       target,
       serverUrl,

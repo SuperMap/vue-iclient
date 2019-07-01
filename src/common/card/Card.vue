@@ -91,6 +91,10 @@ export default {
       };
     }
   },
+  created() {
+    this.iconClass && (this.isShow = this.collapsed);
+    this.autoRotate && (this.transform = this.rotateDeg[this.position][this.isShow ? 1 : 0]);
+  },
   methods: {
     iconClicked() {
       this.autoRotate && (this.transform = this.rotateDeg[this.position][!this.isShow ? 1 : 0]);
