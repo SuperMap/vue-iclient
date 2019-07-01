@@ -7,11 +7,24 @@
   overflow-y: auto;
   border: none;
   color: #fff;
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: rgba(245, 245, 245, 0);
+  }
+  &::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    background-color: rgb(128, 128, 128);
+  }
   .sm-component-card__content {
     box-shadow: unset;
   }
+  .ant-card {
+    height: 100%;
+  }
   .ant-card-body {
     padding: 0px;
+    height: 100%;
   }
   @include e(table) {
     border-top: none;
@@ -22,6 +35,7 @@
     background: none;
     // color: #333;
     font-weight: 400;
+    height: 100%;
   }
   .ant-collapse-header {
     font-size: $--text-regular;
@@ -50,69 +64,64 @@
     .ant-collapse-content-box {
       padding: 0px;
       padding-left: 8px;
-      @include e(range) {
-        width: 40px;
-        margin-left: 35px;
-        padding-bottom: 10px;
-      }
-      @include e(range-item) {
-        position: relative;
-        height: 30px;
-        span {
-          position: absolute;
-          left: 42px;
-          top: 6px;
-          width: 120px;
+      @include e(wrap) {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        min-width: 160px;
+        min-width: max-content;
+        & > div, & > ul {
+          display: inline-block;
         }
       }
+      @include e(range-item) {
+        height: 30px;
+        & > div, & > span {
+          display: inline-block;
+          vertical-align: middle;
+        }
+        & > div {
+          width: 40px;
+          height: 100%;
+        }
+        & > span {
+          margin-left: 2px;
+          // min-width: 110px;
+        }
+      }
+
+      @include e(heatbox) {
+        display: flex !important;
+        overflow: hidden;
+      }
+
       @include e(heat) {
         width: 40px;
         height: 150px;
-        position: relative;
-        margin-left: 35px;
-        padding-bottom: 10px;
       }
-  
-      @include e(top) {
-        position: absolute;
-        left: 44px;
-        top: 0px;
-        width: 50px;
+
+      @include e(heatText) {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        flex: 1;
       }
-      @include e(bottom) {
-        position: absolute;
-        left: 44px;
-        bottom: 0px;
-        width: 50px;
-      }
-  
+
       @include e(point) {
         padding: 0;
-        margin-left: 35px;
-        padding-bottom: 10px;
-        overflow-y: auto;
         max-height: 200px;
-        &::-webkit-scrollbar {
-          width: 6px;
-          height: 6px;
-          background-color: rgba(245, 245, 245, 0);
-        }
-        &::-webkit-scrollbar-thumb {
-          border-radius: 10px;
-          background-color: rgb(128, 128, 128);
-        }
       }
-  
+
       @include e(item) {
-        padding-left: 6px;
         list-style: none;
         height: 30px;
       }
-  
+
       @include e(field-value) {
         margin-left: 20px;
       }
-  
+
       @include e(themefield) {
         font-size: 12px;
         margin-left: 30px;

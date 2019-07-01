@@ -26,7 +26,7 @@
           <template slot="header">
             <div class="header-wrap" :style="[getColorStyle(0)]">
               <div class="sm-component-legend__title">{{ layerValue.layerId }}</div>
-              <a-icon type="right" class="header-arrow"/>
+              <a-icon type="right" class="header-arrow" />
             </div>
           </template>
           <div
@@ -34,7 +34,11 @@
             class="sm-component-legend__themefield add-ellipsis"
             :style="[getColorStyle(0)]"
           >{{ $t("legend.themeField") }}:{{ layerValue.themeField }}</div>
-          <div v-if="layerValue.layerType === 'UNIQUE'" :style="[getTextColorStyle]">
+          <div
+            v-if="layerValue.layerType === 'UNIQUE'"
+            :style="[getTextColorStyle]"
+            class="sm-component-legend__wrap"
+          >
             <ul class="sm-component-legend__point">
               <li
                 v-for="(item,i) in layerValue.styleGroup"
@@ -47,10 +51,11 @@
             </ul>
           </div>
 
-          <div v-if="layerValue.layerType === 'HEAT'" :style="[getTextColorStyle]">
-            <!-- <div
-            class="sm-component-legend__themefield add-ellipsis"
-            >{{$t("legend.themeField")}}：{{layerValue.themeField}}</div>-->
+          <div
+            v-if="layerValue.layerType === 'HEAT'"
+            :style="[getTextColorStyle]"
+            class="sm-component-legend__wrap"
+          >
             <div
               class="sm-component-legend__heat"
               :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
@@ -60,25 +65,26 @@
                 {{ $t("legend.top") }}
               </span>
               <span class="sm-component-legend__bottom">
-                <a-icon type="caret-left"/>
+                <a-icon type="caret-left" />
                 {{ $t("legend.bottom") }}
               </span>
             </div>
           </div>
 
-          <div v-if="layerValue.layerType === 'RANGE'" :style="[getTextColorStyle]">
-            <!-- <div
-            class="sm-component-legend__themefield add-ellipsis"
-            >{{$t("legend.themeField")}}:{{layerValue.themeField}}</div>-->
+          <div
+            v-if="layerValue.layerType === 'RANGE'"
+            :style="[getTextColorStyle]"
+            class="sm-component-legend__wrap"
+          >
             <div class="sm-component-legend__range">
               <div
                 v-for="(item,j) in layerValue.styleGroup"
                 :key="j"
-                :style="{background:item.color}"
                 class="sm-component-legend__range-item"
               >
-                <span class="add-ellipsis">
-                  <a-icon type="caret-left"/>
+                <div :style="{background: item.color}"></div>
+                <span>
+                  <a-icon type="caret-left" />
                   {{ item.start }}-{{ item.end }}
                 </span>
               </div>
@@ -104,7 +110,7 @@
           :style="[getColorStyle(0)]"
         >{{ $t("legend.themeField") }}:{{ layerValue.themeField }}</div>
 
-        <div v-if="layerValue.layerType === 'UNIQUE'">
+        <div v-if="layerValue.layerType === 'UNIQUE'" class="sm-component-legend__wrap">
           <ul class="sm-component-legend__point">
             <li
               v-for="(item,k) in layerValue.styleGroup"
@@ -117,38 +123,35 @@
           </ul>
         </div>
 
-        <div v-if="layerValue.layerType === 'HEAT'">
-          <!-- <div
-            class="sm-component-legend__themefield add-ellipsis"
-          >{{$t("legend.themeField")}}：{{layerValue.themeField}}</div>-->
-          <div
-            class="sm-component-legend__heat"
-            :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
-          >
-            <span class="sm-component-legend__top">
-              <a-icon type="caret-left"/>
-              {{ $t("legend.top") }}
-            </span>
-            <span class="sm-component-legend__bottom">
-              <a-icon type="caret-left"/>
-              {{ $t("legend.bottom") }}
-            </span>
+        <div v-if="layerValue.layerType === 'HEAT'" class="sm-component-legend__wrap">
+          <div class="sm-component-legend__heatbox">
+            <div
+              class="sm-component-legend__heat"
+              :style="{background:`linear-gradient(to top,${layerValue.styleGroup.join(',')})`}"
+            ></div>
+            <div class="sm-component-legend__heatText">
+              <span class="sm-component-legend__top">
+                <a-icon type="caret-left" />
+                {{ $t("legend.top") }}
+              </span>
+              <span class="sm-component-legend__bottom">
+                <a-icon type="caret-left" />
+                {{ $t("legend.bottom") }}
+              </span>
+            </div>
           </div>
         </div>
 
-        <div v-if="layerValue.layerType === 'RANGE'">
-          <!-- <div
-            class="sm-component-legend__themefield add-ellipsis"
-          >{{$t("legend.themeField")}}:{{layerValue.themeField}}</div>-->
+        <div v-if="layerValue.layerType === 'RANGE'" class="sm-component-legend__wrap">
           <div class="sm-component-legend__range">
             <div
               v-for="(item,l) in layerValue.styleGroup"
               :key="l"
-              :style="{background:item.color}"
               class="sm-component-legend__range-item"
             >
-              <span class="add-ellipsis">
-                <a-icon type="caret-left"/>
+              <div :style="{background: item.color}"></div>
+              <span>
+                <a-icon type="caret-left" />
                 {{ item.start }}-{{ item.end }}
               </span>
             </div>
