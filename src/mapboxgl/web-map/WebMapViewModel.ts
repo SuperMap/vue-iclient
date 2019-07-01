@@ -137,6 +137,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   private _taskID: Date;
 
+  private layerAdded: number;
+
   constructor(id, options: webMapOptions = {}) {
     super();
     this.mapId = id;
@@ -224,7 +226,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       (maxZoom || maxZoom === 0) && this.map.setMaxZoom(maxZoom);
       renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
       (bearing || bearing === 0) && this.map.setBearing(bearing);
-      (pitch || pitch === 0)  && this.map.setPitch(pitch);
+      (pitch || pitch === 0) && this.map.setPitch(pitch);
     }
   }
 
@@ -771,6 +773,198 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   /**
    * @private
+   * @function WebMapViewModel.prototype._checkUploadToRelationship
+   * @description 检查是否上传到关系型
+   * @param {String} fileId - 文件的id
+   *  @returns {Promise<T | never>} 关系型文件一些参数
+   */
+  _checkUploadToRelationship(fileId) {
+    return SuperMap.FetchRequest.get(`${this.serverUrl}web/datas/${fileId}/datasets.json`, null, {
+      withCredentials: this.withCredentials
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(result => {
+        return result;
+      });
+  }
+
+  /**
+   * @private
+   * @function ol.supermap.WebMap.prototype._getDataService
+   * @description 获取上传的数据信息
+   * @param {String} fileId - 文件id
+   * @param {String} datasetName 数据服务的数据集名称
+   *  @returns {Promise<T | never>} 数据的信息
+   */
+  _getDataService(fileId, datasetName) {
+    return SuperMap.FetchRequest.get(`${this.serverUrl}web/datas/${fileId}.json`, null, {
+      withCredentials: this.withCredentials
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(result => {
+        result.fileId = fileId;
+        result.datasetName = datasetName;
+        return result;
+      });
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._getService
+   * @description 获取当前数据发布的服务中的某种类型服务
+   * @param {Array} services 服务集合
+   * @param {String} type 服务类型，RESTDATA, RESTMAP
+   * @returns {Object} 服务
+   */
+  _getService(services, type) {
+    let service = services.filter(info => {
+      return info && info.serviceType === type;
+    });
+    return service[0];
+  }
+
+  _getServiceInfoFromLayer(layerIndex, len, layer, dataItemServices, datasetName, featureType, accessType, info?: any) {
+    let isMapService = info ? !info.isMvt : layer.layerType === 'HOSTED_TILE',
+      isAdded = false;
+    dataItemServices.forEach((service, index) => {
+      if (isAdded) {
+        return;
+      }
+      //有服务了，就不需要循环
+      if (service && isMapService && service.serviceType === 'RESTMAP') {
+        isAdded = true;
+        //地图服务,判断使用mvt还是tile
+        this._getTileLayerInfo(service.address).then(restMaps => {
+          restMaps.forEach(restMapInfo => {
+            let bounds = restMapInfo.bounds;
+            layer.layerType = 'TILE';
+            layer.orginEpsgCode = this.baseProjection;
+            layer.units = restMapInfo.coordUnit && restMapInfo.coordUnit.toLowerCase();
+            layer.extent = [bounds.left, bounds.bottom, bounds.right, bounds.top];
+            layer.visibleScales = restMapInfo.visibleScales;
+            layer.url = restMapInfo.url;
+            layer.sourceType = 'TILE';
+            this._createBaseLayer(layer);
+            this.layerAdded++;
+            this._sendMapToUser(this.layerAdded, len);
+          });
+        });
+      } // TODO 对接 MVT
+      else if (accessType !== service.serviceType) {
+        return;
+      } else {
+        //数据服务
+        isAdded = true;
+        //关系型文件发布的数据服务
+        this._getDatasources(service.address).then(datasourceName => {
+          layer.dataSource.dataSourceName = datasourceName + ':' + datasetName;
+          layer.dataSource.url = `${service.address}/data`;
+          this._getFeatureBySQL(
+            layer.dataSource.url,
+            [layer.dataSource.dataSourceName || layer.name],
+            result => {
+              let features = this._parseGeoJsonData2Feature({
+                allDatas: {
+                  features: result.result.features.features
+                },
+                fileCode: layer.projection,
+                featureProjection: this.baseProjection
+              });
+              this._addLayer(layer, features, layerIndex);
+              this.layerAdded++;
+              this._sendMapToUser(this.layerAdded, len);
+            },
+            err => {
+              this.layerAdded++;
+              this._sendMapToUser(this.layerAdded, len);
+              this.fire('getlayerdatasourcefailed', {
+                error: err,
+                layer: layer,
+                map: this.map
+              });
+            }
+          );
+        });
+      }
+    }, this);
+    if (!isAdded) {
+      //循环完成了，也没有找到合适的服务。有可能服务被删除
+      this.layerAdded++;
+      this._sendMapToUser(this.layerAdded, len);
+      this.fire('getlayerdatasourcefailed', {
+        error: null,
+        layer: layer,
+        map: this.map
+      });
+    }
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._getDatasources
+   * @description 获取关系型文件发布的数据服务中数据源的名称
+   * @param {String} url - 获取数据源信息的url
+   *  @returns {Promise<T | never>} 数据源名称
+   */
+  _getDatasources(url) {
+    return SuperMap.FetchRequest.get(`${url}/data/datasources.json`)
+      .then(response => {
+        return response.json();
+      })
+      .then(datasource => {
+        let datasourceNames = datasource.datasourceNames;
+        return datasourceNames[0];
+      });
+  }
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._getTileLayerInfo
+   * @description 获取地图服务的信息
+   * @param {String} url 地图服务的url（没有地图名字）
+   * @returns {Promise<T | never>} 地图服务信息
+   */
+  _getTileLayerInfo(url) {
+    let proxyUrl = this.serverUrl + 'apps/viewer/getUrlResource.json?url=';
+    let requestUrl = proxyUrl + encodeURIComponent(url);
+    let epsgCode = this.baseProjection.split('EPSG:')[1];
+    return SuperMap.FetchRequest.get(`${requestUrl}/maps.json`, null, {
+      withCredentials: this.withCredentials
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(mapInfo => {
+        let promises = [];
+        if (mapInfo) {
+          mapInfo.forEach(info => {
+            let promise = SuperMap.FetchRequest.get(
+              `${proxyUrl}${info.path}.json?prjCoordSys=${JSON.stringify({ epsgCode: epsgCode })}`,
+              null,
+              {
+                withCredentials: this.withCredentials
+              }
+            )
+              .then(response => {
+                return response.json();
+              })
+              .then(restMapInfo => {
+                restMapInfo.url = info.path;
+                return restMapInfo;
+              });
+            promises.push(promise);
+          });
+        }
+        return Promise.all(promises).then(allRestMaps => {
+          return allRestMaps;
+        });
+      });
+  }
+  /**
+   * @private
    * @function WebMapViewModel.prototype._addLayers
    * @description 添加叠加图层。
    * @param {Object} mapInfo - 图层信息。
@@ -780,147 +974,227 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this._layers = layers;
 
     let features;
-    let layerAdded = 0;
+    this.layerAdded = 0;
     let len = layers.length;
-    layers.forEach((layer, index) => {
-      if ((layer.dataSource && layer.dataSource.serverId) || layer.layerType === 'MARKER') {
-        // 获取 serverID
-        let serverId = layer.dataSource ? layer.dataSource.serverId : layer.serverId;
-        let url = `${this.serverUrl}web/datas/${serverId}/content.json?pageSize=9999999&currentPage=1`;
-        // 获取图层数据
-        serverId &&
-          SuperMap.FetchRequest.get(url, null, {
-            withCredentials: this.withCredentials
-          })
-            .then(response => {
-              return response.json();
+    if (len > 0) {
+      layers.forEach((layer, index) => {
+        if (
+          (layer.dataSource && layer.dataSource.serverId) ||
+          layer.layerType === 'MARKER' ||
+          layer.layerType === 'HOSTED_TILE'
+        ) {
+          //数据存储到iportal上了
+          let dataSource = layer.dataSource,
+            serverId = dataSource ? dataSource.serverId : layer.serverId;
+          if (!serverId) {
+            this._addLayer(layer, null, index);
+            this.layerAdded++;
+            this._sendMapToUser(this.layerAdded, len);
+            return;
+          }
+          if (
+            layer.layerType === 'MARKER' ||
+            (dataSource && (!dataSource.accessType || dataSource.accessType === 'DIRECT'))
+          ) {
+            //原来二进制文件
+            let url = `${this.serverUrl}web/datas/${serverId}/content.json?pageSize=9999999&currentPage=1`;
+            if (this.accessToken) {
+              url = `${url}&${this.accessKey}=${this.accessToken}`;
+            }
+            SuperMap.FetchRequest.get(url, null, {
+              withCredentials: this.withCredentials
             })
-            .then(data => {
-              if (_taskID !== this._taskID) {
-                return;
-              }
-              if (data.succeed === false) {
-                // 请求失败
-                layerAdded++;
-                this._sendMapToUser(layerAdded, len);
-                /**
-                 * @event WebMapViewModel#getlayerdatasourcefailed
-                 * @description 获取图层数据失败。
-                 * @property {Object} error - 失败原因。
-                 * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
-                 */
+              .then(response => {
+                return response.json();
+              })
+              .then(data => {
+                if (_taskID !== this._taskID) {
+                  return;
+                }
+                if (data.succeed === false) {
+                  //请求失败
+                  this.layerAdded++;
+                  this._sendMapToUser(this.layerAdded, len);
+                  // -----------------------todo-----------------
+                  this.fire('getlayerdatasourcefailed', {
+                    error: data.error,
+                    layer: layer,
+                    map: this.map
+                  });
+                  return;
+                }
+                if (data && data.type) {
+                  if (data.type === 'JSON' || data.type === 'GEOJSON') {
+                    data.content = JSON.parse(data.content.trim());
+                    features = this._formatGeoJSON(data.content);
+                  } else if (data.type === 'EXCEL' || data.type === 'CSV') {
+                    features = this._excelData2Feature(data.content);
+                  }
+                  this._addLayer(layer, features, index);
+                  this.layerAdded++;
+                  this._sendMapToUser(this.layerAdded, len);
+                }
+              })
+              .catch(error => {
+                this.layerAdded++;
+                this._sendMapToUser(this.layerAdded, len);
                 this.fire('getlayerdatasourcefailed', {
-                  error: data.error,
+                  error: error,
                   layer: layer,
                   map: this.map
                 });
-                return;
-              }
-              if (data.type) {
-                if (data.type === 'JSON' || data.type === 'GEOJSON') {
-                  data.content = JSON.parse(data.content.trim());
-                  features = this._formatGeoJSON(data.content);
-                } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-                  features = this._excelData2Feature(data.content);
-                }
-                this._addLayer(layer, features, index);
-                layerAdded++;
-                this._sendMapToUser(layerAdded, len);
-              }
-            })
-            .catch(error => {
-              layerAdded++;
-              this._sendMapToUser(layerAdded, len);
-              this.fire('getlayerdatasourcefailed', {
-                error: error,
-                layer: layer,
-                map: this.map
               });
-            });
-      } else if (
-        layer.layerType === 'SUPERMAP_REST' ||
-        layer.layerType === 'TILE' ||
-        layer.layerType === 'WMS' ||
-        layer.layerType === 'WMTS'
-      ) {
-        this._createBaseLayer(layer);
-        layerAdded++;
-        this._sendMapToUser(layerAdded, len);
-      } else if (layer.dataSource && layer.dataSource.type === 'REST_DATA') {
-        let dataSource = layer.dataSource;
-        // 从restData获取数据
-        this._getFeatureBySQL(
-          dataSource.url,
-          [dataSource.dataSourseName || layer.name],
-          result => {
-            features = this._parseGeoJsonData2Feature({
-              allDatas: {
-                features: result.result.features.features
-              },
-              fileCode: layer.projection,
-              featureProjection: this.baseProjection
-            });
-
-            this._addLayer(layer, features, index);
-            layerAdded++;
-            this._sendMapToUser(layerAdded, len);
-          },
-          err => {
-            layerAdded++;
-            this._sendMapToUser(layerAdded, len);
-            this.fire('getlayerdatasourcefailed', {
-              error: err,
-              layer: layer,
-              map: this.map
-            });
-          }
-        );
-      } else if (layer.dataSource && layer.dataSource.type === 'REST_MAP' && layer.dataSource.url) {
-        this._queryFeatureBySQL(
-          layer.dataSource.url,
-          layer.dataSource.layerName,
-          result => {
-            let recordsets = result && result.result.recordsets;
-            let recordset = recordsets && recordsets[0];
-            let attributes = recordset.fields;
-            if (recordset && attributes) {
-              let fileterAttrs: string[] = [];
-              for (let i in attributes) {
-                let value = attributes[i];
-                if (value.indexOf('Sm') !== 0 || value === 'SmID') {
-                  fileterAttrs.push(value);
-                }
-              }
-              this._getFeatures(
-                fileterAttrs,
-                layer,
-                features => {
-                  this._addLayer(layer, features, index);
-                  layerAdded++;
-                  this._sendMapToUser(layerAdded, len);
-                },
-                err => {
-                  layerAdded++;
+          } else {
+            //关系型文件
+            let isMapService = layer.layerType === 'HOSTED_TILE',
+              serverId = dataSource ? dataSource.serverId : layer.serverId;
+            this._checkUploadToRelationship(serverId)
+              .then(result => {
+                if (result && result.length > 0) {
+                  let datasetName = result[0].name,
+                    featureType = result[0].type.toUpperCase();
+                  this._getDataService(serverId, datasetName).then(data => {
+                    let dataItemServices = data.dataItemServices;
+                    if (dataItemServices.length === 0) {
+                      this.layerAdded++;
+                      this._sendMapToUser(this.layerAdded, len);
+                      this.fire('getlayerdatasourcefailed', {
+                        error: null,
+                        layer: layer,
+                        map: this.map
+                      });
+                      return;
+                    }
+                    if (isMapService) {
+                      // TODO !! 需要判断是使用tile还是mvt服务
+                      this._getServiceInfoFromLayer(
+                        index,
+                        len,
+                        layer,
+                        dataItemServices,
+                        datasetName,
+                        featureType,
+                        dataSource.accessType === 'REST_DATA' ? 'RESTDATA' : 'RESTMAP'
+                      );
+                    } else {
+                      this._getServiceInfoFromLayer(
+                        index,
+                        len,
+                        layer,
+                        dataItemServices,
+                        datasetName,
+                        featureType,
+                        dataSource.accessType === 'REST_DATA' ? 'RESTDATA' : 'RESTMAP'
+                      );
+                    }
+                  });
+                } else {
+                  this.layerAdded++;
+                  this._sendMapToUser(this.layerAdded, len);
                   this.fire('getlayerdatasourcefailed', {
-                    error: err,
+                    error: null,
                     layer: layer,
                     map: this.map
                   });
                 }
-              );
+              })
+              .catch(error => {
+                this.layerAdded++;
+                this._sendMapToUser(this.layerAdded, len);
+                this.fire('getlayerdatasourcefailed', {
+                  error: error,
+                  layer: layer,
+                  map: this.map
+                });
+              });
+          }
+        } else if (
+          layer.layerType === 'SUPERMAP_REST' ||
+          layer.layerType === 'TILE' ||
+          layer.layerType === 'WMS' ||
+          layer.layerType === 'WMTS'
+        ) {
+          this._createBaseLayer(layer);
+          this.layerAdded++;
+          this._sendMapToUser(this.layerAdded, len);
+        } else if (layer.dataSource && layer.dataSource.type === 'REST_DATA') {
+          //从restData获取数据
+          let dataSource = layer.dataSource;
+          this._getFeatureBySQL(
+            dataSource.url,
+            [dataSource.dataSourseName || layer.name],
+            result => {
+              features = this._parseGeoJsonData2Feature({
+                allDatas: {
+                  features: result.result.features.features
+                },
+                fileCode: layer.projection,
+                featureProjection: this.baseProjection
+              });
+
+              this._addLayer(layer, features, index);
+              this.layerAdded++;
+              this._sendMapToUser(this.layerAdded, len);
+            },
+            err => {
+              this.layerAdded++;
+              this._sendMapToUser(this.layerAdded, len);
+              this.fire('getlayerdatasourcefailed', {
+                error: err,
+                layer: layer,
+                map: this.map
+              });
             }
-          },
-          err => {
-            this.fire('getlayerdatasourcefailed', {
-              error: err,
-              layer: layer,
-              map: this.map
-            });
-          },
-          'smid=1'
-        );
-      }
-    }, this);
+          );
+        } else if (layer.dataSource && layer.dataSource.type === 'REST_MAP' && layer.dataSource.url) {
+          this._queryFeatureBySQL(
+            layer.dataSource.url,
+            layer.dataSource.layerName,
+            result => {
+              let recordsets = result && result.result.recordsets;
+              let recordset = recordsets && recordsets[0];
+              let attributes = recordset.fields;
+              if (recordset && attributes) {
+                let fileterAttrs: string[] = [];
+                for (let i in attributes) {
+                  let value = attributes[i];
+                  if (value.indexOf('Sm') !== 0 || value === 'SmID') {
+                    fileterAttrs.push(value);
+                  }
+                }
+                this._getFeatures(
+                  fileterAttrs,
+                  layer,
+                  features => {
+                    this._addLayer(layer, features, index);
+                    this.layerAdded++;
+                    this._sendMapToUser(this.layerAdded, len);
+                  },
+                  err => {
+                    this.layerAdded++;
+                    this.fire('getlayerdatasourcefailed', {
+                      error: err,
+                      layer: layer,
+                      map: this.map
+                    });
+                  }
+                );
+              }
+            },
+            err => {
+              this.fire('getlayerdatasourcefailed', {
+                error: err,
+                layer: layer,
+                map: this.map
+              });
+            },
+            'smid=1'
+          );
+        } // TODO  待对接 DataFlow!
+        else if (layer.layerType === 'DATAFLOW_POINT_TRACK' || layer.layerType === 'DATAFLOW_HEAT') {
+        }
+      }, this);
+    }
   }
   /**
    * @private
