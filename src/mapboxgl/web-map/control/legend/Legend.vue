@@ -25,7 +25,7 @@
         >
           <template slot="header">
             <div class="header-wrap" :style="[getColorStyle(0)]">
-              <div class="sm-component-legend__title">{{ layerValue.layerId }}</div>
+              <div class="sm-component-legend__title add-ellipsis">{{ layerValue.layerId }}</div>
               <a-icon type="right" class="header-arrow" />
             </div>
           </template>
@@ -104,7 +104,7 @@
       >
         <div
           v-if="isShowTitle"
-          class="sm-component-legend__title"
+          class="sm-component-legend__title add-ellipsis"
           :style="[getColorStyle(0)]"
         >{{ layerValue.layerId }}</div>
         <div
