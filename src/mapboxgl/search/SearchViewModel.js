@@ -312,9 +312,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
         },
         filterAttribute: {
           filterAttributeName: data[i].name || geoCodeParam.keyWords,
-          filterAttributeValue: data[i].formatedAddress || data[i].address
+          filterAttributeValue: data[i].formatedAddress || data[i].address || '空'
         },
-        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address}`
+        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address || '空'}`
       };
       features.push(feature);
     }
@@ -342,7 +342,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       operatingAttributeNames.forEach(attributeName => {
         if (fAttr[attributeName] && keyReg.test(fAttr[attributeName].toString().toLowerCase())) {
           let filterAttributeName = attributeName;
-          let filterAttributeValue = fAttr[attributeName];
+          let filterAttributeValue = fAttr[attributeName] || '空';
           if (!feature.filterAttribute) {
             feature.filterAttribute = {
               filterAttributeName: filterAttributeName,
