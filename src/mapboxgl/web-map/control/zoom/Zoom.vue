@@ -2,14 +2,18 @@
   <div class="sm-component-zoom">
     <div class="sm-component-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
       <a-button
-        class="sm-component-zoom__button"
+        autofocus="false"
+        class="sm-component-zoom__button sm-component-zoom__button--zoomin"
         icon="plus"
-        :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : ''"
+        :disabled="!canZoomIn"
+        :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] :''"
         @click="zoomIn"
       ></a-button>
       <a-button
-        class="sm-component-zoom__button"
+        autofocus="false"
+        class="sm-component-zoom__button sm-component-zoom__button--zoomout"
         icon="minus"
+        :disabled="!canZoomOut"
         :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : ''"
         @click="zoomOut"
       ></a-button>
@@ -47,7 +51,9 @@ export default {
       zoomPosition: 0,
       min: 0,
       max: 22,
-      activeZoomMode: ''
+      activeZoomMode: '',
+      canZoomIn: true,
+      canZoomOut: true
     };
   },
   computed: {
@@ -79,7 +85,7 @@ export default {
         // slider的默认步长为1
         this.zoomPosition += 1;
         // 地图放大一级
-        this.ZoomViewModel.zoomIn();
+        this.viewModel.zoomIn();
       }
     },
     zoomOut(e) {
@@ -87,20 +93,20 @@ export default {
       if (Math.round(this.zoomPosition) > this.min) {
         this.zoomPosition -= 1;
         // 地图缩小一级
-        this.ZoomViewModel.zoomOut();
+        this.viewModel.zoomOut();
       }
     },
     getMaxZoom() {
-      return this.ZoomViewModel.getMaxZoom();
+      return this.viewModel && this.viewModel.getMaxZoom();
     },
     getMinZoom() {
-      return this.ZoomViewModel.getMinZoom();
+      return this.viewModel && this.viewModel.getMinZoom();
     },
     getZoom() {
-      return this.ZoomViewModel.getZoom();
+      return this.viewModel && this.viewModel.getZoom();
     },
     setZoom(zoom) {
-      return this.ZoomViewModel.setZoom(zoom);
+      return this.viewModel && this.viewModel.setZoom(zoom);
     },
     changeSliderStyle() {
       const sliderBar = document.querySelector('.ant-slider-track');
@@ -110,7 +116,23 @@ export default {
     }
   },
   loaded() {
-    this.ZoomViewModel = new ZoomViewModel(this.map);
+    this.viewModel = new ZoomViewModel(this.map);
+    this.canZoomIn = this.getMaxZoom() > this.getZoom();
+    this.canZoomOut = this.getMinZoom() < this.getZoom();
+    let me = this;
+    this.map.on('zoomend', () => {
+      this.activeZoomMode = '';
+      if (this.getMaxZoom() <= Math.ceil(this.getZoom())) {
+        me.canZoomIn = false;
+      } else {
+        me.canZoomIn = true;
+      }
+      if (this.getMinZoom() >= Math.floor(this.getZoom())) {
+        me.canZoomOut = false;
+      } else {
+        me.canZoomOut = true;
+      }
+    });
     // 设置slider的最大最小值
     this.min = this.getMinZoom();
     this.max = this.getMaxZoom();
@@ -119,10 +141,10 @@ export default {
     this.zoomPosition = Math.ceil(this.getZoom());
 
     // ZoomViewModel中监听滚轮事件(滚轮缩放地图)，改变slider的值
-    this.ZoomViewModel.wheelEventOn(() => {
+    this.viewModel.wheelEventOn(() => {
       this.zoomPosition = Math.ceil(this.getZoom());
     });
-    // this.ZoomViewModel.on('mouseWheel', () => {
+    // this.viewModel.on('mouseWheel', () => {
     //   this.zoomPosition = Math.ceil(this.getZoom());
     // });
   }
