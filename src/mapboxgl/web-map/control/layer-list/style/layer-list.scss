@@ -33,6 +33,9 @@
       }
     }
     .ant-collapse-item {
+      &:last-child {
+        border-bottom-color: transparent;
+      }
       &.ant-collapse-no-arrow {
         .ant-collapse-header {
           padding: 8px 5px;

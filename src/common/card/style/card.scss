@@ -1,5 +1,5 @@
-@import "../../_utils/style/mixins/mixins.scss";
-@import "../../_utils/style/common/var.scss";
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/common/var.scss';
 
 @include b(card) {
   position: relative;
@@ -15,29 +15,34 @@
     font-size: 16px;
     width: 30px;
     height: 30px;
-    position: absolute;
     &:hover {
       background: #ffffff;
       border-color: var(--icon-color--hover) !important;
       color: var(--icon-color--hover) !important;
     }
+    @include when(not-header) {
+      @include when(bottom-right) {
+        bottom: 0;
+        top:unset;
+      }
+      @include when(bottom-left) {
+        bottom: 0;
+        top:unset;
+      }
+    }
     @include when(click-in) {
       border-radius: 4px;
       border: $--border-base;
       @include when(top-right) {
-        position: relative;
         float: right;
       }
       @include when(bottom-right) {
-        position: relative;
         float: right;
       }
       @include when(top-left) {
-        position: relative;
         float: left !important;
       }
       @include when(bottom-left) {
-        position: relative;
         float: left !important;
       }
     }
@@ -134,6 +139,14 @@
         }
       }
       transform-origin: top left;
+    }
+    @include when(not-header){
+      @include when(bottom-right) {
+        transform-origin: bottom right;
+      }
+      @include when(bottom-left) {
+        transform-origin: bottom left;
+      }
     }
     @include when(bottom-right) {
       transform-origin: top right;

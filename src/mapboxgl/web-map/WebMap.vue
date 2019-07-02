@@ -1,15 +1,23 @@
 <template>
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
-    <Pan v-if="panControl.show" :position="panControl.position"/>
-    <Scale v-if="scaleControl.show" :position="scaleControl.position"/>
+    <Pan v-if="panControl.show" :position="panControl.position" />
+    <Scale v-if="scaleControl.show" :position="scaleControl.position" />
     <Zoom
       v-if="zoomControl.show"
       :show-zoom-slider="zoomControl.zoomWithSlider"
       :position="zoomControl.position"
     />
-    <mini-map v-if="miniMapControl.show" :position="miniMapControl.position" :collapsed="miniMapControl.collapsed"></mini-map>
-    <layer-list v-if="layerListControl.show" :position="layerListControl.position" :collapsed="layerListControl.collapsed"></layer-list>
+    <mini-map
+      v-if="miniMapControl.show"
+      :position="miniMapControl.position"
+      :collapsed="miniMapControl.collapsed"
+    ></mini-map>
+    <layer-list
+      v-if="layerListControl.show"
+      :position="layerListControl.position"
+      :collapsed="layerListControl.collapsed"
+    ></layer-list>
     <Measure
       v-if="measureControl.show"
       :position="measureControl.position"
@@ -28,6 +36,7 @@
       :isShowTitle="legendControl.isShowTitle"
       :isShowField="legendControl.isShowField"
     ></Legend>
+    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
@@ -43,7 +52,7 @@ import LayerList from './control/layer-list/LayerList.vue';
 import Measure from './control/measure/Measure.vue';
 import Legend from './control/legend/Legend.vue';
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';
+import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
 
 /**
  * @module WebMap
@@ -74,7 +83,7 @@ interface commonControlParam {
   position?: string;
 }
 
-interface cardCommonParam extends commonControlParam{
+interface cardCommonParam extends commonControlParam {
   collapsed?: false;
 }
 
@@ -109,6 +118,8 @@ interface legendParam extends cardCommonParam {
   }
 })
 class SmWebMap extends Mixins(VmUpdater) {
+  spinning = true;
+
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
   viewModel: WebMapViewModel;
@@ -183,6 +194,11 @@ class SmWebMap extends Mixins(VmUpdater) {
   })
   legendControl: legendParam;
 
+  @Watch('mapId')
+  mapIdChanged() {
+    this.spinning = true;
+  }
+
   mounted() {
     if (!this.mapId) {
       const map = this.initializeMap();
@@ -251,6 +267,7 @@ class SmWebMap extends Mixins(VmUpdater) {
 
   registerMapEvents(map: any): void {
     map.on('load', () => {
+      this.spinning = false;
       mapEvent.$options.setMap(this.target, map);
       mapEvent.$emit('load-map', map, this.target);
       map.resize();
@@ -266,6 +283,7 @@ class SmWebMap extends Mixins(VmUpdater) {
 
   registerEvents(): void {
     this.viewModel.on('addlayerssucceeded', e => {
+      this.spinning = false;
       mapEvent.$options.setMap(this.target, e.map);
       this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
       mapEvent.$emit('load-map', e.map, this.target);

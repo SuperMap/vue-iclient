@@ -52,7 +52,9 @@ export default {
   miniMap: {},
   pan: {},
   scale: {},
-  webmap: {},
+  webmap: {
+    loadingTip: '地图加载中...'
+  },
   legend: {
     themeField: '专题字段',
     title: '图例',

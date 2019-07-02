@@ -58,7 +58,9 @@ export default {
   },
   pan: {},
   scale: {},
-  webmap: {},
+  webmap: {
+    loadingTip: 'The map is loading...'
+  },
   legend: {
     themeField: 'themefield',
     title: 'legend',

@@ -2,7 +2,7 @@
   <div class="sm-component-card">
     <div
       v-if="iconClass"
-      :class="{['sm-component-card__icon']:true,['is-'+position]:true,[`is-click-${isShow?'out':'in'}`]:true,['is-header']:headerName}"
+      :class="{['sm-component-card__icon']:true,['is-'+position]:true,[`is-click-${isShow?'out':'in'}`]:true,['is-not-header']:!headerName}"
       :style="[getBackgroundStyle, getTextColorStyle, iconStyleObject]"
       @click="iconClicked"
     >
@@ -11,10 +11,14 @@
         :class="{[iconClass]:true,['is-auto-rotate']:autoRotate,['sm-component-card__component-icon']:true}"
       ></div>
     </div>
-    <transition name="sm-component-zoom-in">
+    <transition
+      name="sm-component-zoom-in"
+      @after-leave="toggleTransition('leave')"
+      @enter="toggleTransition('enter')"
+    >
       <div
         v-show="isShow"
-        :class="{['sm-component-card__content']:true,['is-header']:headerName,['is-'+position]:true,['is-icon']:iconClass}"
+        :class="{['sm-component-card__content']:true,['is-not-header']:!headerName,['is-'+position]:true,['is-icon']:iconClass}"
         :style="[getCardStyle]"
       >
         <div
@@ -91,6 +95,14 @@ export default {
       return {
         'top-right': ['rotate(-45deg)', 'rotate(135deg)'],
         'top-left': ['rotate(-135deg)', 'rotate(45deg)'],
+        'bottom-left': ['rotate(135deg)', 'rotate(-45deg)'],
+        'bottom-right': ['rotate(45deg)', 'rotate(-135deg)']
+      };
+    },
+    hasHeaderRotateDeg() {
+      return {
+        'top-right': ['rotate(-45deg)', 'rotate(135deg)'],
+        'top-left': ['rotate(-135deg)', 'rotate(45deg)'],
         'bottom-left': ['rotate(-135deg)', 'rotate(45deg)'],
         'bottom-right': ['rotate(-45deg)', 'rotate(135deg)']
       };
@@ -98,12 +110,23 @@ export default {
   },
   created() {
     this.iconClass && (this.isShow = this.collapsed);
-    this.autoRotate && (this.transform = this.rotateDeg[this.position][this.isShow ? 1 : 0]);
+    let rotateDeg = this.headerName ? this.hasHeaderRotateDeg : this.rotateDeg;
+    this.autoRotate && (this.transform = rotateDeg[this.position][this.isShow ? 1 : 0]);
+  },
+  mounted() {
+    this.toggleTransition(this.collapsed ? 'enter' : 'leave');
   },
   methods: {
     iconClicked() {
-      this.autoRotate && (this.transform = this.rotateDeg[this.position][!this.isShow ? 1 : 0]);
+      let rotateDeg = this.headerName ? this.hasHeaderRotateDeg : this.rotateDeg;
+      this.autoRotate && (this.transform = rotateDeg[this.position][!this.isShow ? 1 : 0]);
       this.isShow = !this.isShow;
+    },
+    toggleTransition(type) {
+      const iconDom = this.$el.querySelector('.sm-component-card__icon');
+      if (iconDom) {
+        iconDom.style.position = type === 'leave' ? 'relative' : 'absolute';
+      }
     }
   }
 };
