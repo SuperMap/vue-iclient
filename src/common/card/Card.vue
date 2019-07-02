@@ -3,7 +3,7 @@
     <div
       v-if="iconClass"
       :class="{['sm-component-card__icon']:true,['is-'+position]:true,[`is-click-${isShow?'out':'in'}`]:true,['is-header']:headerName}"
-      :style="[getBackgroundStyle, getTextColorStyle]"
+      :style="[getBackgroundStyle, getTextColorStyle, iconStyleObject]"
       @click="iconClicked"
     >
       <div
@@ -65,6 +65,11 @@ export default {
     getCardStyle() {
       const style = { background: 'transparent' };
       return !this.iconClass && !this.headerName ? style : this.getBackgroundStyle;
+    },
+    iconStyleObject() {
+      return {
+        '--icon-color--hover': this.colorGroupsData[0]
+      };
     },
     iconStyle() {
       return {
