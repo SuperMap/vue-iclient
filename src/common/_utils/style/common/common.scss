@@ -2,7 +2,12 @@
 body {
   font-family: Microsoft YaHei, sans-serif !important;
 }
-
+.mapboxgl-ctrl-top-left .mapboxgl-ctrl {
+  margin: 10px 0 0 16px;
+}
+.mapboxgl-ctrl-top-right .mapboxgl-ctrl {
+  margin: 10px 16px 0 0;
+}
 .add-ellipsis {
   text-overflow: ellipsis;
   overflow: hidden;

@@ -2,7 +2,7 @@
 @import "../../../../../common/_utils/style/common/var.scss";
 
 @include b(zoom) {
-  width: 38px; /*因为slider的总宽度为38px,无法重置居中，所以父元素设为38px*/
+  // width: 38px; /*因为slider的总宽度为38px,无法重置居中，所以父元素设为38px*/
   @include e(buttons) {
     width: 30px;
     height: 60px;
@@ -39,7 +39,11 @@
     height: 300px;
     margin-top: 20px;
     .ant-slider {
-      .ant-slider-step, .ant-slider-track {
+      &.ant-slider-vertical {
+        margin: 6px 9px;
+      }
+      .ant-slider-step,
+      .ant-slider-track {
         width: 6px;
       }
       .ant-slider-handle {
