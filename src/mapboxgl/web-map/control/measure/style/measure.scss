@@ -86,6 +86,9 @@
     padding: 10px 0 20px 4px;
     font-size: 14px;
   }
+  .ant-select-dropdown-menu-item-selected, .ant-select-dropdown-menu-item-selected:hover {
+    background: transparent;
+  }
 }
 .mapboxgl-popup-content{
   padding: 6px 10px 6px !important;

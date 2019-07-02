@@ -259,8 +259,6 @@ export default {
     // show用来控制图例列表的显示
     this.viewModel = new LegendViewModel(this.webmap);
     this.initLegendList();
-    const cardContent = this.$el.querySelector('.sm-component-card__content');
-    cardContent.style.width = '200px';
   },
   removed() {
     this.legendList = {};

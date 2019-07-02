@@ -225,21 +225,31 @@ export default {
   },
   methods: {
     changeSelectInputStyle() {
-      const selectDom = this.$el.querySelector('.ant-select-selection');
-      if (selectDom) {
-        selectDom.style.borderColor = this.getTextColor;
-        selectDom.style.color = this.getTextColor;
-        selectDom.style.backgroundColor = this.getBackground;
-      }
+      const selectDoms = this.$el.querySelectorAll('.ant-select-selection');
+      selectDoms.forEach(selectDom => {
+        if (selectDom) {
+          selectDom.style.borderColor = this.getTextColor;
+          selectDom.style.color = this.getTextColor;
+          selectDom.style.backgroundColor = this.getBackground;
+        }
+      });
     },
     changeChosenStyle(visible) {
       setTimeout(() => {
         const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
+        const dropdownDoms = this.$el.querySelectorAll('.ant-select-dropdown');
         optionList.forEach(item => {
           if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
             item.style.color = this.getColorStyle(0).color;
+            item.style.backgroundColor = this.getBackground;
           } else {
-            item.style.color = 'rgba(0, 0, 0, 0.65)';
+            item.style.color = this.getTextColor;
+            item.style.backgroundColor = 'transparent';
+          }
+        });
+        dropdownDoms.forEach(dropdownDom => {
+          if (dropdownDom) {
+            dropdownDom.style.backgroundColor = this.getBackground;
           }
         });
       }, 0);

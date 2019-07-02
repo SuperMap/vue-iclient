@@ -1,12 +1,10 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 
 @include b(legend) {
-  & .sm-component-card__content {
-    max-height: 400px;
-  }
   overflow-y: auto;
   border: none;
   color: #fff;
+  padding-right: 30px;
   &::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -18,6 +16,7 @@
   }
   .sm-component-card__content {
     box-shadow: unset;
+    max-height: 400px;
   }
   .ant-card {
     height: 100%;
