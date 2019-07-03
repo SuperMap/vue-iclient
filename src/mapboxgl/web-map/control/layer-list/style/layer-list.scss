@@ -63,6 +63,13 @@
         justify-content: space-between;
         .header-text {
           margin-right: 5px;
+          & > i, & > span {
+            vertical-align: middle;
+          }
+          & > span {
+            max-width: 200px;
+            display: inline-block;
+          }
         }
       }
     }
@@ -107,5 +114,8 @@
         cursor: pointer;
       }
     }
+  }
+  @include e(layergroupname) {
+    max-width: 200px;
   }
 }

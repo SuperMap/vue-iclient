@@ -33,7 +33,7 @@
                     :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
                     @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
                   ></a-icon>
-                  <span>{{ sourceKey }}</span>
+                  <span class="add-ellipsis">{{ sourceKey }}</span>
                 </div>
                 <a-icon type="right" class="header-arrow"/>
               </div>

@@ -1,7 +1,6 @@
 @import "../../_utils/style/mixins/mixins.scss";
 
 @include b(time-text) {
-  background: $--fill-base;
   display: inline-block;
   text-align: center;
   & > span {
