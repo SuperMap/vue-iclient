@@ -15,6 +15,7 @@
     font-weight: 700;
   }
   @include e(body) {
+    min-width: 200px;
     transform-origin: top left;
     transition: $--all-transition;
     background: $--fill-base;

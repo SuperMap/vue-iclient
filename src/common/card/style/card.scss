@@ -1,5 +1,5 @@
-@import '../../_utils/style/mixins/mixins.scss';
-@import '../../_utils/style/common/var.scss';
+@import "../../_utils/style/mixins/mixins.scss";
+@import "../../_utils/style/common/var.scss";
 
 @include b(card) {
   position: relative;
@@ -23,11 +23,11 @@
     @include when(not-header) {
       @include when(bottom-right) {
         bottom: 0;
-        top:unset;
+        top: unset;
       }
       @include when(bottom-left) {
         bottom: 0;
-        top:unset;
+        top: unset;
       }
     }
     @include when(click-in) {
@@ -47,7 +47,6 @@
       }
     }
     @include when(click-out) {
-      position: absolute;
       border: unset;
       height: 29px;
       background: unset !important;
@@ -140,7 +139,7 @@
       }
       transform-origin: top left;
     }
-    @include when(not-header){
+    @include when(not-header) {
       @include when(bottom-right) {
         transform-origin: bottom right;
       }

@@ -1,0 +1,46 @@
+@import "../../_utils/style/mixins/mixins.scss";
+@include b(table-popup) {
+  background-color: var(--table-popup-color--background);
+  @include e(table) {
+    background-color: var(--table-popup-color--background);
+    color: var(--table-popup-color--text);
+    &.ant-table-wrapper {
+      padding: 18px 5px 5px 8px;
+      .ant-table-content {
+        max-height: 250px;
+        overflow: auto;
+      }
+    }
+    .ant-table {
+      color: inherit;
+    }
+    .ant-table-thead > tr > th {
+      background-color: transparent;
+      color: var(--table-popup-active-color--text);
+      border-bottom: 1px solid var(--table-popup-active-color--text);
+      padding: 0px 10px 10px 16px;
+    }
+    .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
+      background-color: transparent !important;
+    }
+    .ant-table-tbody > tr > td {
+      transition: all 0s, height 0s;
+    }
+    .ant-table-row {
+      &:hover {
+        transition: all 0s, height 0s !important;
+        color: var(--table-popup-active-color--text);
+      }
+    }
+    overflow: scroll;
+  }
+  ::-webkit-scrollbar {
+    display: none;
+    -ms-overflow-style: none;
+  }
+}
+.sm-mapboxgl-tabel-popup {
+  .mapboxgl-popup-content {
+    padding: 0;
+  }
+}

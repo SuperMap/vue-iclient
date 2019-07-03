@@ -352,12 +352,13 @@ export default class QueryViewModel extends mapboxgl.Evented {
    * @function QueryViewModel.prototype.addPopup
    * @desc 添加弹窗。
    * @param {Array} coordinates - 弹窗坐标。
-   * @param {HTMLElement} el - 弹窗 DOM 对象。
+   * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
    */
-  addPopup(coordinates, el) {
-    return new mapboxgl.Popup()
+  addPopup(coordinates, popupContainer) {
+    popupContainer = popupContainer && popupContainer.outerHTML.replace(/display:\s*none/, 'display: block');
+    return new mapboxgl.Popup({ className: 'sm-mapboxgl-tabel-popup', closeOnClick: false })
       .setLngLat(coordinates)
-      .setHTML(el.innerHTML)
+      .setHTML(popupContainer)
       .addTo(this.map);
   }
   _addOverlayToMap(type, source, layerID) {

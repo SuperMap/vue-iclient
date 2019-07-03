@@ -122,12 +122,13 @@ export default class SearchViewModel extends mapboxgl.Evented {
    * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
    */
   addMarker(coordinates, popupContainer) {
+    popupContainer = popupContainer && popupContainer.outerHTML.replace(/display:\s*none/, 'display: block');
     let popup = new mapboxgl.Popup({
-      className: 'attributePopup',
+      className: 'sm-mapboxgl-tabel-popup',
       closeOnClick: false
     })
       .setLngLat(coordinates)
-      .setHTML(popupContainer.innerHTML)
+      .setHTML(popupContainer)
       .addTo(this.map);
     let marker = new mapboxgl.Marker()
       .setLngLat(coordinates)

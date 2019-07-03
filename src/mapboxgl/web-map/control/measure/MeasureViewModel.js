@@ -329,7 +329,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     } = e;
     const popup = new mapboxgl.Popup({
       closeButton: false,
-      closeOnClick: false
+      className: 'sm-component-measure__popup'
     });
     popup.setLngLat([lng, lat]);
     if (this.measureNodes.length > 1) {

@@ -1,17 +1,20 @@
 <template>
-  <div class="sm-table-popup">
+  <div class="sm-component-table-popup" :style="styleObject">
     <a-table
+      class="sm-component-table-popup__table"
       :data-source="data"
       :columns="columns"
       :rowKey="(record, index) => index"
       :pagination="false"
-    >
-    </a-table>
+    ></a-table>
   </div>
 </template>
 <script>
+import Theme from '../_mixin/theme';
+
 export default {
   name: 'SmTabelPopup',
+  mixins: [Theme],
   props: {
     data: {
       type: Array,
@@ -25,15 +28,15 @@ export default {
         return [];
       }
     }
+  },
+  computed: {
+    styleObject() {
+      return {
+        '--table-popup-color--background': this.backgroundData,
+        '--table-popup-color--text': this.textColorsData,
+        '--table-popup-active-color--text': this.colorGroupsData[0]
+      };
+    }
   }
 };
 </script>
-<style lang='scss'>
-.ant-table-wrapper {
-  margin: 12px 0;
-  .ant-table-content{
-    max-height: 250px;
-    overflow: auto;
-  }
-}
-</style>
