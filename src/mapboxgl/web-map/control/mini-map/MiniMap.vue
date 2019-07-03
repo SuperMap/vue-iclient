@@ -6,8 +6,11 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    @content-show-state="handleMinimapResize"
   >
-    <div id="miniMap" class="miniMap"></div>
+    <div id="miniMap" class="miniMap">
+      <a-spin v-if="spinning" size="small" :tip="$t('webmap.loadingTip')" :spinning="spinning"/>
+    </div>
   </sm-card>
 </template>
 
@@ -30,22 +33,30 @@ export default {
       default: true
     }
   },
-  mounted() {
-    this.icon = this.$el.children[0];
-    this.iconClass && this.icon && (this.icon.style.visibility = 'hidden');
+  data() {
+    return {
+      spinning: true
+    };
   },
   loaded() {
+    this.spinning = true;
+    this.miniMap && this.miniMap.remove();
     this.$el.classList.add('sm-component-minimap');
     this.viewModel = new MiniMapViewModel(this.$el.querySelector('#miniMap') || this.$el, this.map);
-    this.iconClass &&
-      this.viewModel.on('minimapinitialized', () => {
-        this.icon && (this.icon.style.visibility = 'visible');
-      });
+    this.viewModel.on('minimaploaded', e => {
+      this.miniMap = e.miniMap;
+      this.spinning = false;
+    });
   },
   removed() {
     this.viewModel && this.viewModel.removeMap();
   },
   methods: {
+    handleMinimapResize(state) {
+      this.$nextTick(() => {
+        state && this.resize();
+      });
+    },
     resize() {
       if (this.viewModel && this.viewModel.resize) {
         this.viewModel.resize();

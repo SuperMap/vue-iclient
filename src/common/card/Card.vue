@@ -121,6 +121,7 @@ export default {
       let rotateDeg = this.headerName ? this.hasHeaderRotateDeg : this.rotateDeg;
       this.autoRotate && (this.transform = rotateDeg[this.position][!this.isShow ? 1 : 0]);
       this.isShow = !this.isShow;
+      this.$emit('content-show-state', this.isShow);
     },
     toggleTransition(type) {
       const iconDom = this.$el.querySelector('.sm-component-card__icon');

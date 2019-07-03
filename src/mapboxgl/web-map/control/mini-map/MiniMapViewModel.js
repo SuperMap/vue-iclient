@@ -55,7 +55,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
       renderWorldCopies: false
     });
     this._miniMap.on('load', () => {
-      this.fire('minimapinitialized', { miniMap: this._miniMap });
+      this.fire('minimaploaded', { miniMap: this._miniMap });
       this._miniMap.resize();
       this.loadMiniMap();
     });
