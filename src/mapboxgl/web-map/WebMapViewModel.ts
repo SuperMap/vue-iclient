@@ -101,6 +101,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   mapId: string;
 
+  mapOptions: any;
+
   serverUrl: string;
 
   accessToken: string;
@@ -139,17 +141,18 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   private layerAdded: number;
 
-  constructor(id, options: webMapOptions = {}) {
+  constructor(id, options: webMapOptions = {}, mapOptions: any = { version: 8, sources: {}, layers: [] }) {
     super();
     this.mapId = id;
+    this.mapOptions = mapOptions;
     this.serverUrl = options.serverUrl || 'http://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
     this.withCredentials = options.withCredentials || false;
     this.target = options.target || 'map';
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
-    this.center = options.center || [];
-    this.zoom = options.zoom;
+    this.center = mapOptions.center || [];
+    this.zoom = mapOptions.zoom;
     this._createWebMap();
   }
   /**
@@ -166,28 +169,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    */
   setMapId(mapId: string): void {
     this.mapId = mapId;
-    this.map && this.map.remove();
     setTimeout(() => {
       this._createWebMap();
     }, 0);
-  }
-  /**
-   * @function WebMapViewModel.prototype.setWebMapOptions
-   * @description 设置 WebMap 可选参数。
-   * @param {string} [options.serverUrl] - 地图的地址。
-   * @param {string} [options.accessToken] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。
-   * @param {string} [options.accessKey] - accessKey 用于访问 iPortal 中受保护的服务。
-   * @param {boolean} [webMapOptions.withCredentials] - 请求是否携带 cookie。
-   * @param {boolean} [webMapOptions.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
-   */
-  setWebMapOptions(webMapOptions: webMapOptions): void {
-    let { serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl } = webMapOptions;
-    serverUrl && (this.serverUrl = serverUrl);
-    accessToken && (this.accessToken = accessToken);
-    accessKey && (this.accessKey = accessKey);
-    withCredentials && (this.withCredentials = withCredentials);
-    excludePortalProxyUrl && (this.excludePortalProxyUrl = excludePortalProxyUrl);
-    this._createWebMap();
   }
 
   /**
@@ -240,6 +224,21 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 登陆窗口后添加地图图层。
    */
   private _createWebMap(): void {
+    this.map && this.map.remove();
+    this.center = [];
+    this.zoom = null;
+    if (!this.mapId || !this.serverUrl) {
+      this.mapOptions.container = this.target;
+      this.map = new mapboxgl.Map(this.mapOptions);
+      this.map.on('load', () => {
+        this.fire('addlayerssucceeded', {
+          map: this.map,
+          mapparams: {},
+          layers: []
+        });
+      });
+      return;
+    }
     this._legendList = {};
     this._taskID = new Date();
     let urlArr: string[] = this.serverUrl.split('');

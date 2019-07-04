@@ -9,18 +9,16 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   constructor(target, serviceUrl, scanEffect, navigation) {
     super();
     this.scanEffect = scanEffect || {};
-    this.serviceUrl = serviceUrl;
     this.sceneId = target;
     this.navigation = navigation || true;
-    if (this.serviceUrl.indexOf('iserver') >= 0) {
-      this.sceneUrl = this.serviceUrl;
-      this.createScene();
-    } else {
-      this.getSceneInfo();
-    }
+    this.sceneId = target;
+    this.setSceneUrl(serviceUrl);
   }
 
   setSceneUrl(url) {
+    if (!url) {
+      return;
+    }
     this.serviceUrl = url;
     if (this.serviceUrl.indexOf('iserver') >= 0) {
       this.sceneUrl = this.serviceUrl;

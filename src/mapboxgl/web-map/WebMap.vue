@@ -31,7 +31,6 @@ import Measure from './control/measure/Measure.vue';
 import Legend from './control/legend/Legend.vue';
 import Query from '../query/Query.vue';
 import Search from '../search/Search.vue';
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
 
 /**
@@ -221,13 +220,8 @@ class SmWebMap extends Mixins(VmUpdater) {
   }
 
   mounted() {
-    if (!this.mapId) {
-      const map = this.initializeMap();
-      this.registerMapEvents(map);
-    } else {
-      this.initializeWebMap();
-      this.registerEvents();
-    }
+    this.initializeWebMap();
+    this.registerEvents();
   }
 
   beforeDestroy() {
@@ -257,43 +251,20 @@ class SmWebMap extends Mixins(VmUpdater) {
   }
 
   /* methods */
-  initializeMap(): any {
-    this.mapOptions.container = this.target;
-    // eslint-disable-next-line
-    this.map = new mapboxgl.Map(this.mapOptions);
-    return this.map;
-  }
-
   initializeWebMap(): void {
-    let {
-      target,
-      serverUrl,
-      accessToken,
-      accessKey,
-      withCredentials,
-      excludePortalProxyUrl,
-      mapOptions = {}
-    } = this.$props;
-    this.viewModel = new WebMapViewModel(this.mapId, {
-      target,
-      serverUrl,
-      accessToken,
-      accessKey,
-      withCredentials,
-      excludePortalProxyUrl,
-      center: mapOptions.center,
-      zoom: mapOptions.zoom
-    });
-  }
-
-  registerMapEvents(map: any): void {
-    map.on('load', () => {
-      this.spinning = false;
-      mapEvent.$options.setMap(this.target, map);
-      mapEvent.$emit('load-map', map, this.target);
-      map.resize();
-      this.load({ map });
-    });
+    let { target, serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl, mapOptions } = this.$props;
+    this.viewModel = new WebMapViewModel(
+      this.mapId,
+      {
+        target,
+        serverUrl,
+        accessToken,
+        accessKey,
+        withCredentials,
+        excludePortalProxyUrl
+      },
+      mapOptions
+    );
   }
 
   resize() {
