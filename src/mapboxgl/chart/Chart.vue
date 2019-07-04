@@ -335,6 +335,9 @@ export default {
           });
         }
       }
+      if (options && options.radar && dataOptions.radar) {
+        options.radar.indicator = Object.assign({}, dataOptions.radar.indicator || {});
+      }
       return merge(JSON.parse(JSON.stringify(options)), dataOptions);
     },
     // 当datasetUrl不变，datasetOptions改变时

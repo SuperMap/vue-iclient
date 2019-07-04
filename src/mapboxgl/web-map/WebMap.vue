@@ -171,7 +171,7 @@ class SmWebMap extends Mixins(VmUpdater) {
     default: () => {
       return {
         show: false,
-        position: 'top-left',
+        position: 'top-right',
         showUnitSelect: true,
         distanceDefaultUnit: 'kilometers',
         areaDefaultUnit: 'kilometers'
@@ -197,8 +197,8 @@ class SmWebMap extends Mixins(VmUpdater) {
   @Prop({
     default: () => {
       return {
-        show: true,
-        position: 'bottom-left'
+        show: false,
+        position: 'top-right'
       };
     }
   })
@@ -207,8 +207,8 @@ class SmWebMap extends Mixins(VmUpdater) {
   @Prop({
     default: () => {
       return {
-        show: true,
-        position: 'bottom-left'
+        show: false,
+        position: 'top-right'
       };
     }
   })
