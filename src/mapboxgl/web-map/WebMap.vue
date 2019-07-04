@@ -1,42 +1,20 @@
 <template>
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
-    <Pan v-if="panControl.show" :position="panControl.position" />
-    <Scale v-if="scaleControl.show" :position="scaleControl.position" />
+    <Pan v-if="panControl.show" :position="panControl.position"/>
+    <Scale v-if="scaleControl.show" :position="scaleControl.position"/>
     <Zoom
       v-if="zoomControl.show"
       :show-zoom-slider="zoomControl.zoomWithSlider"
       :position="zoomControl.position"
     />
-    <mini-map
-      v-if="miniMapControl.show"
-      :position="miniMapControl.position"
-      :collapsed="miniMapControl.collapsed"
-    ></mini-map>
-    <layer-list
-      v-if="layerListControl.show"
-      :position="layerListControl.position"
-      :collapsed="layerListControl.collapsed"
-    ></layer-list>
-    <Measure
-      v-if="measureControl.show"
-      :position="measureControl.position"
-      :collapsed="measureControl.collapsed"
-      :showUnitSelect="measureControl.showUnitSelect"
-      :distanceDefaultUnit="measureControl.distanceDefaultUnit"
-      :areaDefaultUnit="measureControl.areaDefaultUnit"
-    ></Measure>
-    <Legend
-      v-if="legendControl.show"
-      :position="legendControl.position"
-      :collapsed="legendControl.collapsed"
-      :layerNames="legendControl.layerNames"
-      :headerName="legendControl.headerName"
-      :mode="legendControl.mode"
-      :isShowTitle="legendControl.isShowTitle"
-      :isShowField="legendControl.isShowField"
-    ></Legend>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
+    <mini-map v-if="miniMapControl.show" v-bind="miniMapControl"></mini-map>
+    <layer-list v-if="layerListControl.show" v-bind="layerListControl"></layer-list>
+    <Measure v-if="measureControl.show" v-bind="measureControl"></Measure>
+    <Legend v-if="legendControl.show" v-bind="legendControl"></Legend>
+    <Query v-if="queryControl.show" v-bind="queryControl"></Query>
+    <Search v-if="searchControl.show" v-bind="searchControl"></Search>
+    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning"/>
   </div>
 </template>
 
@@ -51,6 +29,8 @@ import MiniMap from './control/mini-map/MiniMap.vue';
 import LayerList from './control/layer-list/LayerList.vue';
 import Measure from './control/measure/Measure.vue';
 import Legend from './control/legend/Legend.vue';
+import Query from '../query/Query.vue';
+import Search from '../search/Search.vue';
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
 
@@ -84,10 +64,11 @@ interface commonControlParam {
 }
 
 interface cardCommonParam extends commonControlParam {
-  collapsed?: false;
+  collapsed?: boolean;
+  headerName?: string;
 }
 
-interface zoomParam extends cardCommonParam {
+interface zoomParam extends commonControlParam {
   zoomWithSlider?: boolean;
 }
 
@@ -104,6 +85,24 @@ interface legendParam extends cardCommonParam {
   mode?: string;
 }
 
+interface queryParam extends cardCommonParam {
+  maxFeatures?: number;
+  layerStyle?: Object;
+  iportalData?: Array<Object>;
+  restData?: Array<Object>;
+  restMap?: Array<Object>;
+}
+
+interface searchParam extends commonControlParam {
+  maxFeatures?: number;
+  layerNames?: Array<string>;
+  onlineLocalSearch?: Object;
+  iportalData?: Array<Object>;
+  restData?: Array<Object>;
+  restMap?: Array<Object>;
+  addressMatch?: Array<string>;
+}
+
 @Component({
   name: 'SmWebMap',
   viewModelProps: ['mapId', 'serverUrl', 'mapOptions', 'withCredentials'],
@@ -114,7 +113,9 @@ interface legendParam extends cardCommonParam {
     MiniMap,
     LayerList,
     Measure,
-    Legend
+    Legend,
+    Query,
+    Search
   }
 })
 class SmWebMap extends Mixins(VmUpdater) {
@@ -193,6 +194,26 @@ class SmWebMap extends Mixins(VmUpdater) {
     }
   })
   legendControl: legendParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: true,
+        position: 'bottom-left'
+      };
+    }
+  })
+  queryControl: queryParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: true,
+        position: 'bottom-left'
+      };
+    }
+  })
+  searchControl: searchParam;
 
   @Watch('mapId')
   mapIdChanged() {
