@@ -91,14 +91,14 @@ class OpenFileViewModel extends mapboxgl.Evented {
           this
         );
       },
-      () => {
+      (e) => {
         /**
          * @event openfilefailed
          * @description 打开文件失败。
          * @property {String} messageType - 信息类型。
          * @property {String} message - 失败信息。
          */
-        me.fire('openfilefailed', { messageType: 'failure', message: i18n.t(`openFile.openFileFail`) });
+        me.fire('openfilefailed', { messageType: 'failure', message: `${i18n.t(`openFile.openFileFail`)} ${e.message}` });
       },
       this
     );
