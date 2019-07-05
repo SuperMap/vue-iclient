@@ -16,6 +16,7 @@
   }
   @include e(body) {
     min-width: 200px;
+    max-height: 400px;
     transform-origin: top left;
     transition: $--all-transition;
     background: $--fill-base;
@@ -61,7 +62,7 @@
   @include e(job-info-header) {
     cursor: pointer;
     // color: #303133;
-    padding: 10px 5px;
+    padding: 10px 5px 2px;
     &:hover {
       color: #409eff;
       // background: rgb(245, 245, 245);
@@ -69,10 +70,17 @@
     & > .sm-components-icons-preview {
       // color: #409eff;
       font-size: $--text-regular;
+      position: relative;
+      top: -5px;
     }
     & > .sm-component-query__job-info-name {
       margin-left: 10px;
+      margin-right: 10px;
       font-size: $--text-regular;
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     & > .sm-components-icons-legend-unfold,
     & > .sm-components-icons-legend-fold {
@@ -148,6 +156,13 @@
       margin-top: 5px;
       cursor: pointer;
     }
+  }
+  @include e(header-name) {
+    display: inline-block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 90%;
   }
   @include e(no-result result-loading) {
     height: 100%;

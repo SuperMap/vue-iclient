@@ -38,7 +38,10 @@
             @mouseenter="changeHoverStyle"
           >
             <span class="sm-components-icons-preview"></span>
-            <span class="sm-component-query__job-info-name">{{ jobInfo.queryParameter.name }}</span>
+            <span
+              :title="jobInfo.queryParameter.name"
+              class="sm-component-query__job-info-name"
+            >{{ jobInfo.queryParameter.name }}</span>
             <div class="sm-components-icons-legend-unfold"></div>
           </div>
           <div
@@ -90,7 +93,10 @@
           </a-spin>
         </div>
         <div v-if="queryResult" class="sm-component-query__result-header" :style="getColorStyle(0)">
-          <span>{{ queryResult.name }}</span>
+          <span
+            :title="queryResult.name"
+            class="sm-component-query__header-name"
+          >{{ queryResult.name }}</span>
           <span class="sm-components-icons-close" @click="clearResult"></span>
         </div>
         <div v-if="queryResult" class="sm-component-query__result-body">

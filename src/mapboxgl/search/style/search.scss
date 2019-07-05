@@ -52,6 +52,7 @@
   }
   @include e(panel) {
     padding-left: 4px;
+    padding-right: 4px;
   }
 
   @include e(panel-header) {
@@ -62,6 +63,10 @@
     padding: 6px 0px;
     margin: 7px;
     font-weight: bolder;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 96%;
   }
   @include e(panel-body) {
     & > ul {
