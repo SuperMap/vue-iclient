@@ -125,7 +125,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     popupContainer = popupContainer && popupContainer.outerHTML.replace(/display:\s*none/, 'display: block');
     let popup = new mapboxgl.Popup({
       className: 'sm-mapboxgl-tabel-popup',
-      closeOnClick: false
+      closeOnClick: true
     })
       .setLngLat(coordinates)
       .setHTML(popupContainer)

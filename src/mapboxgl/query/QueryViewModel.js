@@ -356,7 +356,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
    */
   addPopup(coordinates, popupContainer) {
     popupContainer = popupContainer && popupContainer.outerHTML.replace(/display:\s*none/, 'display: block');
-    return new mapboxgl.Popup({ className: 'sm-mapboxgl-tabel-popup', closeOnClick: false })
+    return new mapboxgl.Popup({ className: 'sm-mapboxgl-tabel-popup', closeOnClick: true })
       .setLngLat(coordinates)
       .setHTML(popupContainer)
       .addTo(this.map);
