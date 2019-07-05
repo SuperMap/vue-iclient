@@ -57,6 +57,7 @@
             ></a-icon>
             <div
               class="sm-component-layer-list__layergroupname add-ellipsis"
+              :title="sourceKey"
               :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
             >{{ sourceKey }}</div>
           </a-card>

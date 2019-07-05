@@ -108,6 +108,13 @@ export default {
       };
     }
   },
+  watch: {
+    iconClass(newVal, oldVal) {
+      if (newVal && !oldVal) {
+        this.toggleTransition(this.collapsed ? 'enter' : 'leave');
+      }
+    }
+  },
   created() {
     this.iconClass && (this.isShow = this.collapsed);
     let rotateDeg = this.headerName ? this.hasHeaderRotateDeg : this.rotateDeg;

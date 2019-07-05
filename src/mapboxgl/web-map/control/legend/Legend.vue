@@ -46,7 +46,7 @@
                 class="sm-component-legend__item"
               >
                 <i :class="layerValue.featureType | selectLayerType" :style="{color:item.color}"></i>
-                <span class="sm-component-legend__field-value">{{ item.value }}</span>
+                <span class="sm-component-legend__field-value add-ellipsis">{{ item.value }}</span>
               </li>
             </ul>
           </div>
@@ -86,7 +86,7 @@
                 class="sm-component-legend__range-item"
               >
                 <div :style="{background: item.color}"></div>
-                <span>
+                <span class="add-ellipsis">
                   <a-icon type="caret-left" />
                   {{ item.start }}-{{ item.end }}
                 </span>
@@ -121,7 +121,7 @@
               class="sm-component-legend__item"
             >
               <i :class="layerValue.featureType | selectLayerType" :style="{color:item.color}"></i>
-              <span class="sm-component-legend__field-value">{{ item.value }}</span>
+              <span class="sm-component-legend__field-value add-ellipsis">{{ item.value }}</span>
             </li>
           </ul>
         </div>
@@ -153,7 +153,7 @@
               class="sm-component-legend__range-item"
             >
               <div :style="{background: item.color}"></div>
-              <span>
+              <span class="add-ellipsis">
                 <a-icon type="caret-left" />
                 {{ item.start }}-{{ item.end }}
               </span>

@@ -4,7 +4,6 @@
   overflow-y: auto;
   border: none;
   color: #fff;
-  padding-right: 30px;
   &::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -24,6 +23,18 @@
   .ant-card-body {
     padding: 0px;
     height: 100%;
+  }
+  .sm-component-card__icon + .sm-component-card__content {
+    .ant-collapse-item {
+      &:last-child {
+        .header-wrap {
+          margin-bottom: 10px;
+        }
+      }
+    }
+    .ant-collapse-content-box {
+      padding-right: 30px;
+    }
   }
   @include e(table) {
     border-top: none;
@@ -62,7 +73,7 @@
     }
     .ant-collapse-content-box {
       padding: 0px;
-      padding-left: 8px;
+      padding: 0 8px;
       @include e(wrap) {
         display: flex;
         justify-content: center;
@@ -86,7 +97,7 @@
         }
         & > span {
           margin-left: 2px;
-          // min-width: 110px;
+          max-width: 200px;
         }
       }
 
@@ -119,12 +130,21 @@
 
       @include e(field-value) {
         margin-left: 20px;
+        max-width: 200px;
       }
 
       @include e(themefield) {
         font-size: 12px;
         margin-left: 30px;
         margin-bottom: 4px;
+        max-width: 250px;
+      }
+
+      @include e(title) {
+        max-width: 250px;
+        & + i {
+         margin-left: 5px;
+        }
       }
     }
   }
