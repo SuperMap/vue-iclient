@@ -120,10 +120,10 @@
         "vue-property-decorator": "^8.1.1",
         "vue-style-loader": "^4.1.2",
         "vue-template-compiler": "2.5.17",
-        "webpack": "^4.28.4",
+        "webpack": "^4.35.3",
         "webpack-bundle-analyzer": "^3.0.3",
-        "webpack-cli": "^3.2.1",
-        "webpack-dev-server": "^3.1.14",
+        "webpack-cli": "^3.3.5",
+        "webpack-dev-server": "^3.7.2",
         "webpack-merge": "^4.2.1"
     },
     "engines": {
@@ -133,7 +133,7 @@
     "browserslist": [
         "> 1%",
         "last 2 versions",
-        "not ie <= 8"
+        "not ie <= 9"
     ],
     "author": "SuperMap_FE",
     "repository": {

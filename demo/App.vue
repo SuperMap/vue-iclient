@@ -45,9 +45,9 @@
     <sm-time-text :fontStyle="{ fontSize: '18', fontWeight: '700' }" timeType="date+second+week"></sm-time-text>
     <sm-progress type="circle" :percent="80"></sm-progress>
     <div class="changeTheme">
-      <a-button @click="changeStyle" type="primary">深色主题</a-button>
+      <a-button @click="changeStyle">深色主题</a-button>
       <a-button @click="changeStyle1">浅色主题</a-button>
-      <a-button @click="changeMapID">changeMapID</a-button>
+      <!-- <a-button @click="changeMapID">changeMapID</a-button> -->
     </div>
   </div>
 </template>
