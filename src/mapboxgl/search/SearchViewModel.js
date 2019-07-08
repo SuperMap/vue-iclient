@@ -161,7 +161,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
      * @property {Object} e  - 事件对象。
      */
     this.fire('searchfailed', { error });
-    console.log(error);
+    error && console.log(error);
   }
   _searchFeaturesSucceed(resultFeature, sourceName) {
     resultFeature.length > 0 && this.searchResult.push({ source: sourceName, result: resultFeature });
@@ -190,8 +190,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
         return response.json();
       })
       .then(geocodingResult => {
-        if (geocodingResult.poiInfos.length === 0) {
-          this._searchFeaturesFailed('search from POI failed');
+        if (geocodingResult.error) {
+          this._searchFeaturesFailed(geocodingResult.error);
+          return;
+        }
+        if (geocodingResult.poiInfos && geocodingResult.poiInfos.length === 0) {
+          this._searchFeaturesFailed();
           return;
         }
         if (geocodingResult.poiInfos) {
@@ -208,10 +212,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     restMaps.forEach(restMap => {
       let iserverService = new iServerRestService(restMap.url);
       iserverService.on('getdatafailed', e => {
-        this._searchFeaturesFailed(e);
+        this._searchFeaturesFailed();
       });
       iserverService.on('featureisempty', e => {
-        this._searchFeaturesFailed(e);
+        this._searchFeaturesFailed();
       });
       iserverService.on('getdatasucceeded', e => {
         if (e.features) {
@@ -230,10 +234,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     restDatas.forEach(restData => {
       let iserverService = new iServerRestService(restData.url);
       iserverService.on('getdatafailed', e => {
-        this._searchFeaturesFailed(e);
+        this._searchFeaturesFailed();
       });
       iserverService.on('featureisempty', e => {
-        this._searchFeaturesFailed(e);
+        this._searchFeaturesFailed();
       });
       iserverService.on('getdatasucceeded', e => {
         if (e.features && e.features.length > 0) {
@@ -256,10 +260,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     iportalDatas.forEach(iportal => {
       let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false);
       iPortalService.on('getdatafailed', e => {
-        this._searchFeaturesFailed(e);
+        this._searchFeaturesFailed();
       });
       iPortalService.on('featureisempty', e => {
-        this._searchFeaturesFailed(e);
+        this._searchFeaturesFailed();
       });
       iPortalService.on('getdatasucceeded', e => {
         if (e.features) {
@@ -286,7 +290,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         if (e.result && e.result.length > 0) {
           this._searchFeaturesSucceed(e.result, addressMatch.name || 'Address Match Search');
         } else {
-          this._searchFeaturesFailed(e);
+          this._searchFeaturesFailed();
         }
       });
     }, this);
