@@ -211,9 +211,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         this._searchFeaturesFailed(e);
       });
       iserverService.on('featureisempty', e => {
-        this.searchCount--;
-        this.fire('searchresultisempty', e);
-        console.log(e);
+        this._searchFeaturesFailed(e);
       });
       iserverService.on('getdatasucceeded', e => {
         if (e.features) {
@@ -235,9 +233,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         this._searchFeaturesFailed(e);
       });
       iserverService.on('featureisempty', e => {
-        this.searchCount--;
-        this.fire('searchresultisempty', e);
-        console.log(e);
+        this._searchFeaturesFailed(e);
       });
       iserverService.on('getdatasucceeded', e => {
         if (e.features && e.features.length > 0) {
@@ -263,9 +259,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         this._searchFeaturesFailed(e);
       });
       iPortalService.on('featureisempty', e => {
-        this.searchCount--;
-        this.fire('searchresultisempty', e);
-        console.log(e);
+        this._searchFeaturesFailed(e);
       });
       iPortalService.on('getdatasucceeded', e => {
         if (e.features) {
