@@ -154,7 +154,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
   _searchFeaturesFailed(error) {
     this.searchCount--;
-    this.fire('searchfailed' + this.searchTaskId, { error });
+    this.searchCount === 0 && this.fire('searchfailed' + this.searchTaskId, { error }) && (this.searchTaskId += 1);
     /**
      * @event SearchViewModel#searchfailed
      * @description 搜索失败后触发。
@@ -190,7 +190,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         return response.json();
       })
       .then(geocodingResult => {
-        if (geocodingResult.error || geocodingResult.poiInfos.length === 0) {
+        if (geocodingResult.poiInfos.length === 0) {
           this._searchFeaturesFailed('search from POI failed');
           return;
         }

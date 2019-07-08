@@ -276,12 +276,14 @@ export default {
         this.prefixType = 'search';
         this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
       });
-      this.viewModel.on('searchfailed', e => {
+      this.viewModel.on('searchfailed' + this.searchTaskId, e => {
         /**
          * @event searchFailed
          * @desc 搜索失败后触发。
          * @property {Object} e  - 事件对象。
          */
+        this.prefixType = 'search';
+        this.$message.warning(this.$t('search.noResult'));
         this.$emit('search-failed', e);
       });
     },
