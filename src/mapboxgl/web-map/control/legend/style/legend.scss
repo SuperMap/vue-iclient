@@ -16,6 +16,9 @@
   .sm-component-card__content {
     box-shadow: unset;
     max-height: 400px;
+    @include when(not-header) {
+      padding-right: 15px;
+    }
   }
   .ant-card {
     height: 100%;

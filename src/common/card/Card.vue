@@ -131,10 +131,12 @@ export default {
       this.$emit('content-show-state', this.isShow);
     },
     toggleTransition(type) {
-      const iconDom = this.$el.querySelector('.sm-component-card__icon');
-      if (iconDom) {
-        iconDom.style.position = type === 'leave' ? 'relative' : 'absolute';
-      }
+      this.$nextTick(() => {
+        const iconDom = this.$el.querySelector('.sm-component-card__icon');
+        if (iconDom) {
+          iconDom.style.position = type === 'leave' ? 'relative' : 'absolute';
+        }
+      });
     }
   }
 };
