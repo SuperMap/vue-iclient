@@ -50,7 +50,8 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Spin);
   Vue.prototype.$message = message;
   for (let component in components) {
-    Vue.component(components[component].name, components[component]);
+    const com = components[component];
+    Vue.component(com.options ? com.options.name : com.name, com);
   }
 };
 if (typeof window !== 'undefined' && window.Vue) {

@@ -40,7 +40,7 @@
     <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18"></sm-indicator>
     <sm-text
       title="文本框"
-      :fontStyle="{ fontSize: '18', lineHeight: '18', color:'#73b9ac', fontWeight: '700', textAlign: 'center' }"
+      :fontStyle="{ fontSize: '18px', lineHeight: '18px', color:'#73b9ac', fontWeight: '700', textAlign: 'center' }"
     ></sm-text>
     <sm-time-text :fontStyle="{ fontSize: '18', fontWeight: '700' }" timeType="date+second+week"></sm-time-text>
     <sm-progress type="circle" :percent="80"></sm-progress>
@@ -53,11 +53,11 @@
 </template>
 
 <script lang='ts'>
-import { Vue } from 'vue-property-decorator';
+import Vue from 'vue';
 import smcomponents from '../src/mapboxgl';
 import data from './data/data.js';
 
-var host = window.isLocal ? window.server : 'http://support.supermap.com.cn:8090';
+var host = 'http://support.supermap.com.cn:8090';
 export default Vue.extend({
   name: 'App',
   mixins: [data]  // demo data
