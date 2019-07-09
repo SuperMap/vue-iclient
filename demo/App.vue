@@ -36,14 +36,17 @@
       :style="{height:'700px'}"
       @load="mapLoaded"
     ></sm-web-map>-->
-    <sm-liquid-fill :value="0.3" :waveCount="1" position="bottom-right"/>
+    
     <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18"></sm-indicator>
     <sm-text
       title="文本框"
       :fontStyle="{ fontSize: '18px', lineHeight: '18px', color:'#73b9ac', fontWeight: '700', textAlign: 'center' }"
     ></sm-text>
     <sm-time-text :fontStyle="{ fontSize: '18', fontWeight: '700' }" timeType="date+second+week"></sm-time-text>
-    <sm-progress type="circle" :percent="80"></sm-progress>
+    <sm-chart :style="{display:'inline-block'}" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart>
+    <sm-liquid-fill :style="{width:'10%',display:'inline-block'}" :value="0.3" :waveCount="1" position="bottom-right"/>
+    <sm-progress :style="{width:'10%',display:'inline-block'}" type="circle" :percent="80"></sm-progress>
+   
     <div class="changeTheme">
       <a-button @click="changeStyle">深色主题</a-button>
       <a-button @click="changeStyle1">浅色主题</a-button>
