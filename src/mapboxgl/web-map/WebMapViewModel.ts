@@ -224,9 +224,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 登陆窗口后添加地图图层。
    */
   private _createWebMap(): void {
-    this.map && this.map.remove();
-    this.center = [];
-    this.zoom = null;
+    if (this.map) {
+      this.map.remove();
+      this.center = [];
+      this.zoom = null;
+    }
     if (!this.mapId || !this.serverUrl) {
       this.mapOptions.container = this.target;
       this.map = new mapboxgl.Map(this.mapOptions);
