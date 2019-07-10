@@ -33,14 +33,25 @@ export const chartThemeUtil = (background = 'rgba(255, 255, 255, 0.6)', textColo
       'smooth': false
     },
     'radar': {
-      'itemStyle': {
-        'normal': {
-          'borderWidth': '2'
+      'name': {
+        'textStyle': {
+          'color': textColor
         }
       },
       'lineStyle': {
         'normal': {
-          'width': '3'
+          'width': '3',
+          'color': textColor
+        }
+      },
+      'splitLine': {
+        'lineStyle': {
+          'color': textColor
+        }
+      },
+      'axisLine': {
+        'lineStyle': {
+          'color': textColor
         }
       },
       'symbolSize': '8',
