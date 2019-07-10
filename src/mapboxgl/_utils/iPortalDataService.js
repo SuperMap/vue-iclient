@@ -84,8 +84,12 @@ export default class iPortalDataService extends mapboxgl.Evented {
               this._getDatafromContent(datasetUrl, queryInfo);
             }
           }, this);
-          // 如果有服务，获取数据源和数据集, 然后请求rest服务
-          this._getDatafromRest(resultData.serviceType, resultData.address, queryInfo);
+          if (resultData) {
+            // 如果有服务，获取数据源和数据集, 然后请求rest服务
+            this._getDatafromRest(resultData.serviceType, resultData.address, queryInfo);
+          } else {
+            this._getDatafromContent(datasetUrl, queryInfo);
+          }
         } else {
           this._getDatafromContent(datasetUrl, queryInfo);
         }
@@ -259,30 +263,32 @@ export default class iPortalDataService extends mapboxgl.Evented {
     let features = [];
 
     let len = dataContent.rows.length;
-    if (queryInfo && queryInfo.maxFeatures > 0) {
+    if (queryInfo && queryInfo.maxFeatures > 0 && len > queryInfo.maxFeatures) {
       len = queryInfo.maxFeatures;
     }
     for (let i = 0; i < len; i++) {
       let row = dataContent.rows[i];
 
-      let x = Number(row[xfieldIndex]);
-      let y = Number(row[yfieldIndex]);
+      let x = xfieldIndex !== -1 && Number(row[xfieldIndex]);
+      let y = yfieldIndex !== -1 && Number(row[yfieldIndex]);
       // 属性信息
       let attributes = {};
       for (let index in dataContent.colTitles) {
         let key = dataContent.colTitles[index];
         attributes[key] = dataContent.rows[i][index];
       }
-      attributes['index'] = i + '';
-      // 目前csv 只支持处理点，所以先生成点类型的 geojson
       let feature = {
         type: 'Feature',
-        geometry: {
-          type: 'Point',
-          coordinates: [x, y]
-        },
         properties: attributes
       };
+      if (x && y) {
+        attributes['index'] = i + '';
+        feature.geometry = {
+          type: 'Point',
+          coordinates: [x, y]
+        };
+      }
+      // 目前csv 只支持处理点，所以先生成点类型的 geojson
       features.push(feature);
     }
     return features;
