@@ -21,6 +21,7 @@ export { default as RanksymbolThemeLayer } from './web-map/layer/ranksymbol-them
 export { default as RasterTileLayer } from './web-map/layer/raster-tile/RasterTileLayer';
 export { default as UniqueThemeLayer } from './web-map/layer/unique-theme/UniqueThemeLayer';
 export { default as VectorTileLayer } from './web-map/layer/vector-tile/VectorTileLayer';
+export { default as FireLayer } from './web-map/layer/fire/FireLayer';
 
 /** control */
 export { default as Legend } from './web-map/control/legend/Legend';

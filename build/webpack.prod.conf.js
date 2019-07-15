@@ -10,10 +10,13 @@ const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 const outputFileName = 'iclient9-mapboxgl-vue';
 const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : require('../config/prod.env');
+
 const isMinify = process.argv.includes('-p');
 const pkg = require('../package.json');
+
 const webpackConfig = merge(baseWebpackConfig, {
   mode: 'production',
   module: {
@@ -57,6 +60,12 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs: '@mapbox/mapbox-gl-draw',
         commonjs2: '@mapbox/mapbox-gl-draw',
         amd: '@mapbox/mapbox-gl-draw'
+      },
+      three: {
+        root: 'THREE',
+        commonjs: 'three',
+        commonjs2: 'three',
+        amd: 'three'
       }
     },
     /// \/static\/libs\//,

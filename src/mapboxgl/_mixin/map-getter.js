@@ -2,13 +2,13 @@
 import mapEvent from '../_types/map-event';
 import globalEvent from '../../common/_utils/global-event';
 
-function callHook(vm, hook, map) {
+function callHook(vm, hook) {
   const { options } = vm.constructor;
   options.mixins &&
     options.mixins.forEach(mixin => {
-      mixin[hook] && mixin[hook].call(vm, vm.$options.name, map);
+      mixin[hook] && mixin[hook].call(vm, vm.$options.name);
     });
-  options[hook] && options[hook].call(vm, map); // 调用子组件的生命周期
+  options[hook] && options[hook].call(vm, vm); // 调用子组件的生命周期
 }
 /**
  * Description
