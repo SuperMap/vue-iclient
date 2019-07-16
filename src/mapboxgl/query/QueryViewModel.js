@@ -69,16 +69,17 @@ export default class QueryViewModel extends mapboxgl.Evented {
 
   _queryByRestMap(restMapParameter) {
     if (this.bounds) {
-      let param = new SuperMap.QueryByBoundsParameters({
+      let param = new SuperMap.QueryByGeometryParameters({
         queryParams: {
           name: restMapParameter.layerName,
           attributeFilter: restMapParameter.attributeFilter
         },
-        bounds: this.bounds,
+        spatialQueryMode: SuperMap.SpatialQueryMode.INTERSECT,
+        geometry: this.bounds,
         startRecord: 0,
         expectCount: restMapParameter.maxFeatures || this.maxFeatures
       });
-      new mapboxgl.supermap.QueryService(restMapParameter.url).queryByBounds(param, serviceResult => {
+      new mapboxgl.supermap.QueryService(restMapParameter.url).queryByGeometry(param, serviceResult => {
         this._mapQuerySucceed(serviceResult, restMapParameter);
       });
     } else {
@@ -100,11 +101,12 @@ export default class QueryViewModel extends mapboxgl.Evented {
       var boundsParam = new SuperMap.GetFeaturesByBoundsParameters({
         attributeFilter: restDataParameter.attributeFilter,
         datasetNames: restDataParameter.dataName,
-        bounds: this.bounds,
+        spatialQueryMode: 'INTERSECT',
+        geometry: this.bounds,
         fromIndex: 0,
         toIndex: restDataParameter.maxFeatures - 1 || this.maxFeatures - 1
       });
-      new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesByBounds(boundsParam, serviceResult => {
+      new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesByGeometry(boundsParam, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
       });
     } else {
