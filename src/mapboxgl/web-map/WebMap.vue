@@ -41,8 +41,9 @@ import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
  * @vue-prop {String} [mapId] - iPortal|Online 地图 ID。当设置 `mapId` 时为加载iPortal/Online 地图，mapOptions中仅 `mapOptions.center` `mapOptions.zoom` `mapOptions.maxBounds` `mapOptions.minZoom` `mapOptions.maxZoom` `mapOptions.renderWorldCopies` `mapOptions.bearing` `mapOptions.pitch` 有效。
  * @vue-prop {String} [target='map'] - 地图容器 ID。
  * @vue-prop {String} [serverUrl='http://www.supermapol.com'] - iPortal/Online 服务器地址。当设置 `mapId` 时有效。
- * @vue-prop {String} [accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `mapId` 时有效。
- * @vue-prop {String} [accessToken] -Key 用于访问 iPortal 中受保护的服务。当设置 `mapId` 时有效。
+ * @vue-prop {String} [accessKey] - 用于访问 SuperMap iPortal、SuperMap Online 中受保护的服务。当设置 `mapId` 时有效。
+ * @vue-prop {String} [accessToken] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `mapId` 时有效。
+ * @vue-prop {String} [tiandituKey] - 用于访问天地图的服务。当设置 `mapId` 时有效。
  * @vue-prop {String} [withCredentials=false] - 请求是否携带 cookie。当设置 `mapId` 时有效。
  * @vue-prop {String} [excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `mapId` 时有效。
  * @vue-prop {Object} [panControl] - 位移控件配置参数。
@@ -129,6 +130,7 @@ class SmWebMap extends Mixins(VmUpdater) {
   @Prop({ default: 'http://www.supermapol.com' }) serverUrl: string;
   @Prop() accessToken: string;
   @Prop() accessKey: string;
+  @Prop() tiandituKey: string;
   @Prop({ default: false }) withCredentials: boolean;
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() mapOptions: any;
@@ -252,7 +254,7 @@ class SmWebMap extends Mixins(VmUpdater) {
 
   /* methods */
   initializeWebMap(): void {
-    let { target, serverUrl, accessToken, accessKey, withCredentials, excludePortalProxyUrl, mapOptions } = this.$props;
+    let { target, serverUrl, accessToken, accessKey, tiandituKey, withCredentials, excludePortalProxyUrl, mapOptions } = this.$props;
     this.viewModel = new WebMapViewModel(
       this.mapId,
       {
@@ -260,6 +262,7 @@ class SmWebMap extends Mixins(VmUpdater) {
         serverUrl,
         accessToken,
         accessKey,
+        tiandituKey,
         withCredentials,
         excludePortalProxyUrl
       },

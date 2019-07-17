@@ -61,11 +61,12 @@ const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
  * @param {number} id - iPortal|Online 地图 ID。
  * @param {Object} options - 参数。
  * @param {string} [options.target='map'] - 地图容器 ID。
- * @param {string} [options.serverUrl="http://www.supermapol.com"] - 地图的地址。
- * @param {string} [options.accessToken] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。
- * @param {string} [options.accessKey] - accessKey 用于访问 iPortal 中受保护的服务。
- * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。
- * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。
+ * @param {string} [options.serverUrl="http://www.supermapol.com"] - SuperMap iPortal/Online 服务器地址。当设置 `id` 时有效。
+ * @param {string} [options.accessToken] - 用于访问 SuperMap iPortal 、SuperMap Online 中受保护的服务。当设置 `id` 时有效。
+ * @param {string} [options.accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `id` 时有效。
+ * @param {String} [options.tiandituKey] - 用于访问天地图的服务。当设置 `id` 时有效。
+ * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。当设置 `id` 时有效。
+ * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
  * @fires WebMapViewModel#mapinitialized
  * @fires WebMapViewModel#getmapinfofailed
  * @fires WebMapViewModel#getwmtsinfofailed
@@ -77,6 +78,7 @@ interface webMapOptions {
   serverUrl?: string;
   accessToken?: string;
   accessKey?: string;
+  tiandituKey?: string;
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
   center?: number[];
@@ -108,6 +110,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   accessToken: string;
 
   accessKey: string;
+
+  tiandituKey: string;
 
   withCredentials: boolean;
 
@@ -148,6 +152,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this.serverUrl = options.serverUrl || 'http://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
+    this.tiandituKey = options.tiandituKey || '';
     this.withCredentials = options.withCredentials || false;
     this.target = options.target || 'map';
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
@@ -692,12 +697,12 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   private _getTiandituUrl(mapInfo: any): { tiandituUrl: Array<string>; labelUrl: Array<string> } {
     let re: RegExp = /t0/gi;
     type urlArr = Array<string>;
-    let tiandituUrls: { tiandituUrl: urlArr; labelUrl: urlArr };
+    let tiandituUrls: { tiandituUrl: urlArr; labelUrl: urlArr } = { tiandituUrl: [], labelUrl: [] };
 
     let layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
     let isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
 
-    let url = 'http://t0.tianditu.com/{layer}_{proj}/wmts?';
+    let url = `http://t0.tianditu.com/{layer}_{proj}/wmts?tk=${this.tiandituKey}`;
     let labelUrl = url;
 
     let layerLabelMap = {
