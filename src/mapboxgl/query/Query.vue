@@ -299,7 +299,7 @@ export default {
               this.$props[key].forEach(item => {
                 item.name &&
                   this.jobInfos.push({
-                    spaceFilter: 'mapBounds',
+                    spaceFilter: 'currentMapBounds',
                     queryParameter: item
                   });
               }, this);
@@ -429,6 +429,7 @@ export default {
       this.viewModel.on('queryfailed', e => {
         this.isQuery = false;
         this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
+        this.clearResult();
         this.$message.warning(e.message);
         this.jobButton.classList.remove('disabled');
         /**
