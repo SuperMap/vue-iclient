@@ -32,6 +32,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
   }
 
   clearResultLayer() {
+    this.bounds = null;
     this.strokeLayerID && this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
     this.layerID && this.map.getLayer(this.layerID) && this.map.removeLayer(this.layerID);
   }
