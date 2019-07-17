@@ -13,6 +13,7 @@ class LayerListViewModel extends mapboxgl.Evented {
     super();
     this.map = map;
     this.sourceList = {};
+    this.sourceNames = [];
     this._init();
   }
   _init() {
@@ -26,8 +27,11 @@ class LayerListViewModel extends mapboxgl.Evented {
       map: this.map
     });
     this.sourceList = this.sourceListModel.getSourceList();
-
+    this.sourceNames = this.sourceListModel.getSourceNames().reverse();
     return this.sourceList;
+  }
+  getSourceNames() {
+    return this.sourceNames;
   }
   changeLayerVisible(sourcelayer, sourceName, visibility) {
     this.sourceListModel.getLayersBySourceLayer(sourceName, sourcelayer).forEach(layer => {

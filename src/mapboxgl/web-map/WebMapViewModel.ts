@@ -2137,6 +2137,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       for (let layerID in this._legendList) {
         this._sourceListModel.addSourceStyle(layerID, this._legendList[layerID]);
       }
+      for (let index = this._layers.length - 2; index > -1; index--) {
+        const targetlayerId = this._layers[index].layerID;
+        const beforLayerId = this._layers[index + 1].layerID;
+        this.map.moveLayer(targetlayerId, beforLayerId);
+      }
       this.fire('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams,

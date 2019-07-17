@@ -11,55 +11,55 @@
     <a-card class="sm-component-layer-list__a-card" :style="[getBackgroundStyle]">
       <div class="sm-component-layer-list__content">
         <a-collapse
-          v-for="(sourceValue,sourceKey,index) in sourceList"
+          v-for="(name, index) in sourceNames"
           :key="index"
           :bordered="false"
           class="sm-component-layer-list__collapse"
           @change="handleCollapseChange"
         >
           <a-collapse-panel
-            v-if="typeof sourceValue.sourceLayerList === 'object'"
+            v-if="typeof sourceList[name].sourceLayerList === 'object'"
             class="sm-component-layer-list__collapseitem"
             :showArrow="false"
           >
             <template slot="header">
               <div
                 class="header-wrap"
-                :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
+                :style="sourceList[name].visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
               >
                 <div class="header-text">
                   <a-icon
                     type="eye"
-                    :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
-                    @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
+                    :style="sourceList[name].visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
+                    @click.stop="toggleLayerGroupVisibility(name,sourceList[name].visibility)"
                   ></a-icon>
-                  <span class="add-ellipsis">{{ sourceKey }}</span>
+                  <span class="add-ellipsis">{{ name }}</span>
                 </div>
-                <a-icon type="right" class="header-arrow"/>
+                <a-icon type="right" class="header-arrow" />
               </div>
             </template>
             <a-checkbox
-              v-for="(sourcelayerValue,sourcelayerKey,i) in sourceValue.sourceLayerList"
+              v-for="(sourcelayerValue,sourcelayerKey,i) in sourceList[name].sourceLayerList"
               :key="i"
               :checked="sourcelayerValue[0].visibility | isVisible"
               :title="sourcelayerKey"
               :style="sourcelayerValue[0].visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
-              @change="toggleVisibility(sourcelayerKey,sourceKey,sourcelayerValue[0].visibility)"
+              @change="toggleVisibility(sourcelayerKey,name,sourcelayerValue[0].visibility)"
             >{{ sourcelayerKey }}</a-checkbox>
           </a-collapse-panel>
 
           <a-card v-else class="sm-component-layer-list__elcarditem" :style="[getTextColorStyle]">
             <a-icon
               type="eye"
-              :class="[sourceValue.visibility === 'visible' ? 'visible':'none']"
-              :style="sourceValue.visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
-              @click.stop="toggleLayerGroupVisibility(sourceKey,sourceValue.visibility)"
+              :class="[sourceList[name].visibility === 'visible' ? 'visible':'none']"
+              :style="sourceList[name].visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
+              @click.stop="toggleLayerGroupVisibility(name,sourceList[name].visibility)"
             ></a-icon>
             <div
               class="sm-component-layer-list__layergroupname add-ellipsis"
-              :title="sourceKey"
-              :style="sourceValue.visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
-            >{{ sourceKey }}</div>
+              :title="name"
+              :style="sourceList[name].visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
+            >{{ name }}</div>
           </a-card>
         </a-collapse>
       </div>
@@ -94,6 +94,7 @@ export default {
   },
   data() {
     return {
+      sourceNames: [],
       sourceList: {},
       disabledStyle: {
         color: '#c0c4cc'
@@ -153,16 +154,19 @@ export default {
     this.viewModel = new LayerListViewModel(this.map);
     this.$nextTick(() => {
       this.sourceList = this.viewModel.initLayerList();
+      this.sourceNames = this.viewModel.getSourceNames();
     });
     this.viewModel.on('layersUpdated', () => {
       this.$nextTick(() => {
         this.sourceList = this.viewModel.initLayerList();
+        this.sourceNames = this.viewModel.getSourceNames();
         this.changCheckStyle();
       });
     });
   },
   removed() {
     this.sourceList = {};
+    this.sourceNames = [];
   }
 };
 </script>

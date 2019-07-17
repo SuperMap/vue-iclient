@@ -9,6 +9,7 @@ class SourceListModel {
     this.overlayLayers = this.map.overlayLayersManager;
     this.detailLayers = null;
     this.sourceList = {};
+    this.sourceNames = [];
     this._initLayers();
     this._initSource();
   }
@@ -22,7 +23,9 @@ class SourceListModel {
     }
     return sourceList;
   }
-
+  getSourceNames() {
+    return [].concat(this.sourceNames);
+  }
   getLegendStyle(sourceName) {
     if (sourceName) {
       return this.sourceList[sourceName] ? this.sourceList[sourceName].style : '';
@@ -74,6 +77,7 @@ class SourceListModel {
           this.sourceList[layer['source']] = new SourceModel({
             source: layer['source']
           });
+          this.sourceNames.push(layer['source']);
         }
         this.sourceList[layer['source']].addLayer(new LayerModel(layer), layer['sourceLayer']);
       });
