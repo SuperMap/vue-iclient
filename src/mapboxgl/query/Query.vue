@@ -144,12 +144,12 @@ import TablePopup from '../../common/table-popup/TablePopup';
  * @module Query
  * @category Components
  * @desc 查询组件。
- * @vue-prop {String} [iconClass='sm-components-icons-search'] - 组件 icon 的类名。
+ * @vue-prop {String} [iconClass='sm-components-icons-search'] - 设置组件图标的类名。
  * @vue-prop {String} [headerName='查询'] - 组件标题名。
  * @vue-prop {Number} [maxFeatures=200] - 最大返回要素个数。
- * @vue-prop {RestMapParameter} [restMap] - iServer 地图服务查询配置。
- * @vue-prop {RestDataParameter} [restData] - iServer 数据服务查询配置。
- * @vue-prop {iPortalDataParameter} [iportalData] - iPortal 数据查询配置。
+ * @vue-prop {Array} [restMap] - iServer 地图服务查询配置。
+ * @vue-prop {Array} [restData] - iServer 数据服务查询配置。
+ * @vue-prop {Array} [iportalData] - iPortal 数据查询配置。
  * @vue-prop {Object} [layerStyle] - 图层样式配置。
  * @vue-prop {SuperMap.Components.commontypes.LineStyle} [layerStyle.line] - 线图层样式配置。
  * @vue-prop {SuperMap.Components.commontypes.CircleStyle} [layerStyle.circle] - 点图层样式配置。

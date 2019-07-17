@@ -11,7 +11,7 @@ import LineStyle from '../../../_types/LineStyle';
  * @category Components Layer
  * @desc 数据流图层组件。
  * @vue-prop {String} serviceUrl - 数据流服务地址。
- * @vue-prop {String} [layerId] - 图层 ID。
+ * @vue-prop {String} [registerToken] -  SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。
  * @vue-prop {GeoJSONObject} [geometry] - 指定几何范围，该范围内的要素才能被订阅。
  * @vue-prop {String} [excludeField] - 排除字段。
  * @vue-prop {Object} [layerStyle] - 图层样式配置。
