@@ -25,3 +25,6 @@ $--assets-path: './web-map/control/pan/assets' !default;
 @import './query/style/query.scss';
 @import './open-file/style/open-file.scss';
 @import './chart/style/chart.scss';
+
+/* layer */
+@import './web-map/layer/dynamicMarker/style/dynamic-marker-layer.scss';

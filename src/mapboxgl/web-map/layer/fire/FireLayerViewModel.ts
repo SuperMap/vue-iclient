@@ -82,7 +82,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
     }
     this.features.features.forEach((feature, index) => {
       let geometry = feature.geometry;
-      if (geometry.type === 'Point' && index <=5 ) {
+      if (geometry.type === 'Point') {
         this._initializeFireLayer(geometry.coordinates, index);
       }
     });

@@ -7,7 +7,7 @@ import FireLayerViewModel from './FireLayerViewModel';
 // eslint-disable-next-line
 import { FeatureCollection } from 'geojson';
 /**
- * @module ThreeLayer
+ * @module FireLayer
  */
 // @ts-ignore   TODO mixins 待重写
 @Component({
