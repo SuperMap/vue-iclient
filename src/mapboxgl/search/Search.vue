@@ -82,12 +82,13 @@ import TablePopup from '../../common/table-popup/TablePopup';
  * @desc 搜索组件。
  * @vue-prop {(Number|String)} [maxFeatures=8] - 最多可返回的要素数量，最大值为 100。
  * @vue-prop {Array} [layerNames] - 地图图层搜索配置，如：'['UNIQUE-民航数']'。
- * @vue-prop {RestMapParameter} [restMap] - iServer 地图服务搜索配置。
- * @vue-prop {RestDataParameter} [restData] - iServer 数据服务搜索配置。
- * @vue-prop {iPortalDataParameter} [iportalData] - iPortal 数据搜索配置。
- * @vue-prop {AddressMatchParameter} [addressMatch] - iServer 地址匹配服务搜索配置。
+ * @vue-prop {Array} [restMap] - SuperMap iServer 地图服务搜索配置。
+ * @vue-prop {Array} [restData] - SuperMap iServer 数据服务搜索配置。
+ * @vue-prop {Array} [iportalData] - SuperMap iPortal 数据搜索配置。
+ * @vue-prop {Array} [addressMatch] - SuperMap iServer 地址匹配服务搜索配置。
  * @vue-prop {Object} [onlineLocalSearch] - online 本地搜索配置。
  * @vue-prop {Boolean} [onlineLocalSearch.enable=true] - 是否开启 online 本地搜索。
+ * @vue-prop {String} [onlineLocalSearch.city='北京市'] - 搜索的城市。
  * @vue-computed {Number} getResultLength - 获取结果数据长度。
  */
 export default {
