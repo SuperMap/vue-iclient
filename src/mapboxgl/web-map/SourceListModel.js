@@ -24,7 +24,13 @@ class SourceListModel {
     return sourceList;
   }
   getSourceNames() {
-    return [].concat(this.sourceNames);
+    const names = [];
+    this.sourceNames.forEach(element => {
+      if (element && element.indexOf('mapbox-gl-draw') < 0 && element.indexOf('smmeasure') < 0) {
+        names.push(element);
+      }
+    });
+    return names;
   }
   getLegendStyle(sourceName) {
     if (sourceName) {
