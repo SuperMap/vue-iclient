@@ -195,7 +195,7 @@ export default {
     computedOptions() {
       return this.smChart && this.smChart.computedOptions;
     },
- 
+
     _chartStyle() {
       return {
         width: '100%',
