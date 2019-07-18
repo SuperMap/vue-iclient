@@ -111,17 +111,22 @@
   @include e(content) {
     box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
     background: $--fill-base;
-    transition: all 0.5s;
     position: relative;
-    &.sm-component-zoom-in-enter-to,
-    &.sm-component-zoom-in-leave {
-      opacity: 1;
-      transform: scale(1);
+    &.sm-component-zoom-in-enter-active {
+      animation: zoom-in .5s;
     }
-    &.sm-component-zoom-in-enter,
     &.sm-component-zoom-in-leave-active {
-      opacity: 0;
-      transform: scale(0);
+      animation: zoom-in .5s reverse;
+    }
+    @keyframes zoom-in {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
     @include when(top-left) {
       @include when(icon) {

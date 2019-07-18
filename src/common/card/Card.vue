@@ -111,6 +111,7 @@ export default {
   watch: {
     iconClass(newVal, oldVal) {
       if (newVal && !oldVal) {
+        this.isShow = this.collapsed;
         this.toggleTransition(this.collapsed ? 'enter' : 'leave');
       }
     }
