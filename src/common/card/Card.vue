@@ -113,6 +113,9 @@ export default {
       if (newVal && !oldVal) {
         this.isShow = this.collapsed;
         this.toggleTransition(this.collapsed ? 'enter' : 'leave');
+      } else if(!newVal) {
+        // 如果iconClass 为空 则默认显示内容
+        this.isShow = true;
       }
     }
   },
