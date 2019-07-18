@@ -10,6 +10,7 @@
   @include e(panelContent) {
     position: relative;
     width: 100%;
+    text-align: center;
     // overflow: hidden;
   }
   @include e(modeWrap) {
@@ -44,11 +45,6 @@
       cursor: pointer;
       font-size: $--text-regular;
     }
-  }
-  @include e(iconActive) {
-    // background-color: #606266;
-    border-radius: 4px;
-    color: #fff;
   }
 
   @include e(unit) {

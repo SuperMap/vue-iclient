@@ -76,7 +76,8 @@ export default {
     squareyards: '平方码',
     squarefeet: '平方英尺',
     distance: '距离',
-    area: '面积'
+    area: '面积',
+    delete: '清空'
   },
   map: {},
   search: {

@@ -213,7 +213,7 @@ export default {
     return {
       legendList: {},
       // 控制第一个图例默认展开
-      activeLegend: ['1'],
+      activeLegend: [],
 
       themeStyle: {}
     };

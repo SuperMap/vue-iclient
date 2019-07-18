@@ -15,10 +15,11 @@
       <div class="sm-component-measure__panelContent">
         <span
           v-for="group in modeGroups"
+          v-show="group.mode !== 'delete' || (!continueDraw && group.mode === 'delete')"
           :key="group.mode"
           :style="activeMode === group.mode ? getColorStyle(0) : ''"
-          :class="{'sm-component-measure__modeIcon': true, 'sm-component-measure__iconActive': activeMode === group.mode}"
           :title="group.title"
+          class="sm-component-measure__modeIcon"
           @click="changeMeasureMode(group.mode)"
         >
           <i :class="group.iconClass"></i>
@@ -78,8 +79,8 @@ import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import Card from '../../../../common/_mixin/card';
 import MeasureViewModel from './MeasureViewModel';
-import UniqueId from 'lodash.uniqueid';
 import mapEvent from '../../../_types/map-event';
+import drawEvent from '../../../_types/draw-event';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
 export default {
@@ -108,6 +109,11 @@ export default {
       // 面积默认单位
       type: String,
       default: 'kilometers'
+    },
+    continueDraw: {
+      // 是否开启多绘制
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -139,6 +145,11 @@ export default {
           mode: 'draw_polygon',
           title: this.$t('measure.area'),
           iconClass: 'sm-components-icons-polygon-layer'
+        },
+        {
+          mode: 'delete',
+          title: this.$t('measure.delete'),
+          iconClass: 'sm-components-icons-delete'
         }
       ],
       activeMode: '',
@@ -157,8 +168,10 @@ export default {
       return this.unitOptions[this.activeMode] || [];
     },
     getResult() {
-      if (this.result) {
-        return `${this.result} ${this.getUnitLabel}`;
+      if (this.result && this.measureFinished) {
+        const result = `${this.result} ${this.getUnitLabel}`;
+        this.resetActiveMode();
+        return result;
       }
       return '';
     },
@@ -197,31 +210,37 @@ export default {
     this.$options.removed.call(this);
   },
   loaded() {
-    this.layerId = UniqueId(`${this.$options.name.toLowerCase()}-`);
+    const mapTarget = this.getTargetName();
     this.viewModel = new MeasureViewModel({
       map: this.map,
-      layerId: this.layerId
+      mapTarget,
+      continueDraw: this.continueDraw
     });
 
     // 控制显示结果的显示
     this.viewModel.on('measure-finished', ({ result }) => {
       this.result = result;
+      this.measureFinished = true;
     });
     this.viewModel.on('measure-start', ({ result }) => {
       this.result = '';
+      this.measureFinished = false;
     });
     this.viewModel.on('update-unit', ({ result }) => {
       this.result = result;
+    });
+    drawEvent.$on('draw-reset', ({ componentName }) => {
+      if (componentName !== this.$options.name) {
+        this.activeMode = null;
+        this.result = '';
+        this.viewModel.pauseDraw();
+      }
     });
   },
   removed() {
     this.activeMode = null;
     this.result = '';
-    if (this.layerId && this.map) {
-      this.viewModel && this.viewModel.closeDraw();
-      this.map.removeLayer(this.layerId);
-      this.layerId = null;
-    }
+    this.viewModel && this.viewModel.clear();
   },
   methods: {
     changeSelectInputStyle() {
@@ -257,17 +276,23 @@ export default {
     // 切换量算模式
     changeMeasureMode(mode) {
       setTimeout(() => {
-        if (this.mapTarget && !mapEvent.$options.getMap(this.mapTarget) || this.map && !this.map.loaded()) {
+        if ((this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) || (this.map && !this.map.loaded())) {
           this.$message.destroy();
           this.$message.warning('关联的地图尚未加载完整，请稍后！');
         } else if (this.map && this.map.loaded()) {
           let modeUnitKey = this.modeUnitMap[mode];
           let activeUnit = this[modeUnitKey];
-          if (this.activeMode !== mode) {
+          if (mode === 'delete') {
+            this.viewModel.removeDraw();
+            this.activeMode = null;
+            this.result = '';
+            return;
+          }
+          if (this.activeMode !== mode || !this.continueDraw) {
             this.viewModel.openDraw(mode, activeUnit);
             this.activeMode = mode;
           } else {
-            this.viewModel.closeDraw();
+            this.viewModel.removeDraw();
             this.activeMode = null;
           }
         } else {
@@ -280,6 +305,13 @@ export default {
     },
     getPopupContainer() {
       return this.$el.querySelector('.sm-component-measure__panelContent');
+    },
+    resetActiveMode() {
+      !this.activeModeCache && (this.activeModeCache = this.activeMode);
+      this.measureFinished && !this.continueDraw && (this.activeMode = null);
+      if (!this.measureFinished && this.continueDraw) {
+        this.activeMode = this.activeModeCache;
+      }
     }
   }
 };

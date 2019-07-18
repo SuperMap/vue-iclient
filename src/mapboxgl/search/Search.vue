@@ -1,58 +1,86 @@
 <template>
-  <div
-    id="sm-component-search"
-    class="sm-component-search"
-    :style="[getTextColorStyle, getBackgroundStyle]"
-  >
-    <div class="sm-component-search__input">
-      <a-input
-        v-model="searchKey"
-        class="sm-component-search__a-input"
-        :placeholder="$t('search.inputPlaceHolder')"
-        :style="[getBackgroundStyle]"
-        @pressEnter="searchButtonClicked"
-        @mouseenter="handleInputHover"
-        @mouseleave="handleInputHover"
-      >
-        <a-icon
-          slot="prefix"
-          :type="prefixType"
-          :style="getColorStyle(0)"
-          @click="searchButtonClicked"
-        />
-        <a-icon
-          v-show="isHover && searchKey"
-          slot="suffix"
-          type="close-circle"
-          :style="getColorStyle(0)"
-          @click="inputValueCleared"
-          @mouseenter="handleInputHover"
-          @mouseleave="handleInputHover"
-        />
-      </a-input>
+  <div id="sm-component-search" class="sm-component-search" :style="getTextColorStyle">
+    <div
+      v-if="showIcon"
+      class="sm-component-search__toggle-icon"
+      :style="[{'--icon-color--hover': colorGroupsData[0]}, getBackgroundStyle]"
+      @click="showSearch = !showSearch; showIcon = !showIcon"
+    >
+      <a-icon type="search" />
     </div>
-    <div v-show="getResultLength" class="sm-component-search__result" :style="[getBackgroundStyle]">
-      <div v-for="(result,index) in searchResult" :key="index" class="sm-component-search__panel">
-        <span
-          v-if="result.source"
-          class="sm-component-search__panel-header"
-          :style="getColorStyle(0)"
-        >{{ result.source }}</span>
-        <div v-if="result.result" class="sm-component-search__panel-body">
-          <ul>
-            <li
-              v-for="(item,i) in result.result"
-              :key="i"
-              :title="item.filterVal || item.address"
-              @click="searchResultListClicked"
-              @mouseenter="changeChosenResultStyle"
-              @mouseleave="resetChosenResultStyle"
-            >{{ item.filterVal || item.address }}</li>
-          </ul>
+    <transition name="sm-component-zoom-in" @after-leave="showIcon = !showIcon">
+      <div
+        v-show="showSearch"
+        class="sm-component-search__content"
+        :style="[{'transform-origin': position.includes('left') ? 'top left' : 'top right'}, getBackgroundStyle]"
+      >
+        <div class="sm-component-search__input">
+          <div
+            class="sm-component-search__arrow-icon"
+            :style="{ float: position.includes('left') ? 'right' : 'left'}"
+            @click="showSearch = !showSearch"
+          >
+            <a-icon :type="position.includes('left') ? 'double-left' : 'double-right'" />
+          </div>
+          <div
+            :class="['sm-component-search__search-icon', { 'right': position.includes('right') }]"
+            :style="[getBackgroundStyle, getColorStyle(0)]"
+            @click="searchButtonClicked"
+          >
+            <a-icon :type="prefixType" />
+          </div>
+          <a-input
+            v-model="searchKey"
+            class="sm-component-search__a-input"
+            :placeholder="$t('search.inputPlaceHolder')"
+            :style="[getBackgroundStyle]"
+            @pressEnter="searchButtonClicked"
+            @mouseenter="handleInputHover"
+            @mouseleave="handleInputHover"
+          >
+            <a-icon
+              v-show="isHover && searchKey"
+              slot="suffix"
+              type="close-circle"
+              :style="getColorStyle(0)"
+              @click="inputValueCleared"
+              @mouseenter="handleInputHover"
+              @mouseleave="handleInputHover"
+            />
+          </a-input>
+        </div>
+        <div
+          v-show="getResultLength"
+          class="sm-component-search__result"
+          :style="[getBackgroundStyle]"
+        >
+          <div
+            v-for="(result,index) in searchResult"
+            :key="index"
+            class="sm-component-search__panel"
+          >
+            <span
+              v-if="result.source"
+              class="sm-component-search__panel-header"
+              :style="getColorStyle(0)"
+            >{{ result.source }}</span>
+            <div v-if="result.result" class="sm-component-search__panel-body">
+              <ul>
+                <li
+                  v-for="(item,i) in result.result"
+                  :key="i"
+                  :title="item.filterVal || item.address"
+                  @click="searchResultListClicked"
+                  @mouseenter="changeChosenResultStyle"
+                  @mouseleave="resetChosenResultStyle"
+                >{{ item.filterVal || item.address }}</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-    <TablePopup v-show="false" ref="searchTablePopup" v-bind="tablePopupProps"/>
+    </transition>
+    <TablePopup v-show="false" ref="searchTablePopup" v-bind="tablePopupProps" />
   </div>
 </template>
 <script>
@@ -145,7 +173,9 @@ export default {
       searchResult: [],
       prefixType: 'search',
       isHover: false,
-      tablePopupProps: {}
+      tablePopupProps: {},
+      showSearch: false,
+      showIcon: true
     };
   },
   computed: {
