@@ -59,7 +59,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
     this.layerId = layerId;
     this.features = features;
     this.modelScale = modelScale;
-    this._addFireLayer();
+    this.features && this._addFireLayer();
   }
 
   public setFeatures(features: any): void {

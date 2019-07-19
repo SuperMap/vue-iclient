@@ -22,7 +22,7 @@ export { default as RasterTileLayer } from './web-map/layer/raster-tile/RasterTi
 export { default as UniqueThemeLayer } from './web-map/layer/unique-theme/UniqueThemeLayer';
 export { default as VectorTileLayer } from './web-map/layer/vector-tile/VectorTileLayer';
 export { default as FireLayer } from './web-map/layer/fire/FireLayer';
-export { default as DynamicMarkerLayer } from './web-map/layer/dynamicMarker/DynamicMarkerLayer';
+export { default as AnimateMarkerLayer } from './web-map/layer/animate-marker/AnimateMarkerLayer';
 
 /** control */
 export { default as Legend } from './web-map/control/legend/Legend';
