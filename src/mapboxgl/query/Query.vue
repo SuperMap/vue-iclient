@@ -355,7 +355,8 @@ export default {
       if (
         className === 'sm-components-icons-preview' ||
         className === 'sm-component-query__job-info-name' ||
-        className === 'sm-components-icons-legend-unfold'
+        className === 'sm-components-icons-legend-unfold' ||
+        className === 'sm-components-icons-legend-fold'
       ) {
         parentNode = e.target.parentNode.parentNode;
         e.stopPropagation();
