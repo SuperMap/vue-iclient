@@ -80,8 +80,6 @@ export default class iPortalDataService extends mapboxgl.Evented {
               resultData = item;
             } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
               resultData = item;
-            } else {
-              this._getDatafromContent(datasetUrl, queryInfo);
             }
           }, this);
           if (resultData) {
