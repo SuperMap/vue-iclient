@@ -135,7 +135,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   private _legendList: any;
 
-  private _layers: any;
+  private _layers: any = [];
 
   private _svgDiv: HTMLElement;
 

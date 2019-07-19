@@ -1,7 +1,7 @@
 <template>
-  <div :ref="borderId" :style="borderStyle" class="borders">
+  <div :ref="borderId" :style="borderStyle" class="sm-component-border">
     <!-- 组件 -->
-    <div :style="contentStyle" class="content">
+    <div :style="contentStyle" class="sm-component-border__content">
       <slot></slot>
     </div>
   </div>
@@ -98,38 +98,3 @@ export default {
   }
 };
 </script>
-<style>
-.borders {
-  /* 默认的宽高 */
-  /* width: 400px;
-  height: 260px; */
-  position: relative;
-  box-sizing: border-box;
-  border-style: solid;
-  /* border-image-width: 1;
-  border-image-outset: 0; */
-  /* border-image-width: 1;
-  border-image-outset: 0;
-  border-image-repeat: stretch;
-  border-width: 88px 138px 134px 130px;
-  border-image: url(./image/border7.png);
-  border-image-slice: 88 138 134 130; */
-}
-.content {
-  position: absolute;
-}
-/* 选择content的后代 E>F */
-.content > * {
-  width: 100% !important;
-  height: 100% !important;
-}
-
-.sm-component-chart .sm-component-card__content {
-  width: 100% !important;
-  height: 100% !important;
-}
-/* 去除阴影效果 */
-.sm-component-card__content {
-  box-shadow: none !important;
-}
-</style>
