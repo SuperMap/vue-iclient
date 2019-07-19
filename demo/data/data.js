@@ -195,7 +195,7 @@ export default {
       },
       iportalDataQuery: [
         new smcomponents.commontypes.iPortalDataParameter({
-          url: 'http://192.168.12.230:8092/web/datas/1962026684',
+          url: 'http://192.168.12.28:8092/web/datas/1962026684',
           attributeFilter: 'SmID>0'
         })
       ],
@@ -240,7 +240,7 @@ export default {
       ],
       iportalData: [
         new smcomponents.commontypes.iPortalDataParameter({
-          url: 'http://192.168.12.230:8092/web/datas/659519047'
+          url: 'http://192.168.12.28:8092/web/datas/659519047'
         })
       ],
       onlineLocalSearch: {
@@ -391,9 +391,20 @@ export default {
   methods: {
     changeStyle() {
       smcomponents.setTheme('dark');
+      document.getElementsByTagName('body')[0].style.background = '#fff';
     },
     changeStyle1() {
       smcomponents.setTheme('light');
+      document.getElementsByTagName('body')[0].style.background = '#fff';
+    },
+    changeStyle2() {
+      let transparent = {
+        textColor: '#eee',
+        background: 'rgba(0,0,0,0)',
+        colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
+      };
+      smcomponents.setTheme(transparent);
+      document.getElementsByTagName('body')[0].style.background = 'rgba(0, 0, 0, 0.9)';
     },
     mapLoaded(e) {
       console.log(e);

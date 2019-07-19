@@ -124,7 +124,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
   addMarker(coordinates, popupContainer) {
     popupContainer = popupContainer && popupContainer.outerHTML.replace(/display:\s*none/, 'display: block');
     let popup = new mapboxgl.Popup({
-      className: 'sm-mapboxgl-tabel-popup',
+      className: 'sm-mapboxgl-table-popup',
       closeOnClick: true
     })
       .setLngLat(coordinates)

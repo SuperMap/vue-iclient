@@ -5,6 +5,7 @@ export { default as LiquidFill } from '../common/liquidfill/LiquidFill';
 export { default as Progress } from '../common/progress/Progress';
 export { default as Text } from '../common/text/Text';
 export { default as TimeText } from '../common/time-text/TimeText';
+export { default as Border } from '../common/border/Border';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

@@ -13,7 +13,7 @@
 import Theme from '../_mixin/theme';
 
 export default {
-  name: 'SmTabelPopup',
+  name: 'SmTablePopup',
   mixins: [Theme],
   props: {
     data: {

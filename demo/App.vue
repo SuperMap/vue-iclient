@@ -14,6 +14,7 @@
         :iportal-data="iportalDataQuery"
         :rest-data="restDataQuery"
         :rest-map="restMapQuery"
+        position="top-right"
       ></sm-query>
       <sm-search
         position="top-right"
@@ -43,13 +44,22 @@
       :fontStyle="{ fontSize: '18px', lineHeight: '18px', color:'#73b9ac', fontWeight: '700', textAlign: 'center' }"
     ></sm-text>
     <sm-time-text :fontStyle="{ fontSize: '18', fontWeight: '700' }" timeType="date+second+week"></sm-time-text>
-    <sm-chart :style="{display:'inline-block'}" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart>
+    <!-- <sm-chart :style="{display:'inline-block'}" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> -->
     <sm-liquid-fill :style="{width:'10%',display:'inline-block'}" :value="0.3" :waveCount="1" position="bottom-right"/>
     <sm-progress :style="{width:'10%',display:'inline-block'}" type="circle" :percent="80"></sm-progress>
-   
+
+    <sm-border type="border12" style="width: 460px; height: 260px; float:left">
+        <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
+    </sm-border>
+     
+     <sm-border type="border1" style="width: 460px; height: 260px; float:left">
+        <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
+    </sm-border>
+
     <div class="changeTheme">
       <a-button @click="changeStyle">深色主题</a-button>
       <a-button @click="changeStyle1">浅色主题</a-button>
+      <a-button @click="changeStyle2">透明主题</a-button>
       <!-- <a-button @click="changeMapID">changeMapID</a-button> -->
     </div>
   </div>
