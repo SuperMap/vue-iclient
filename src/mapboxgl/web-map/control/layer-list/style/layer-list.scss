@@ -1,9 +1,9 @@
 @import "../../../../../common/_utils/style/mixins/mixins.scss";
 
 @include b(layer-list) {
-  overflow-y: auto;
+  // overflow-y: auto;
   z-index: 10;
-  max-height: 500px;
+  // max-height: 500px;
   &::-webkit-scrollbar {
     width: 6px;
     height: 6px;
