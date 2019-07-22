@@ -4,5 +4,7 @@
   & .sm-component-card__content {
     width: 400px;
     height: 200px;
+    /* 去除阴影效果 */
+    box-shadow: none;
   }
 }
