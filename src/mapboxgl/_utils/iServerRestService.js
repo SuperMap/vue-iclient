@@ -136,7 +136,7 @@ export default class iServerRestService extends mapboxgl.Evented {
       this.features = recordsets.features;
       features = this.features.features;
       if (features && features.length > 0) {
-        fieldCaptions = recordsets.fieldCaptions;
+        fieldCaptions = recordsets.fields;
         fieldTypes = recordsets.fieldTypes;
       } else {
         /**
