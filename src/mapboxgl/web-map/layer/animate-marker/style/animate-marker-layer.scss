@@ -3,10 +3,10 @@
 
 @include b(animate-marker) {
   @include m(rotating-aperture) {
-    --container-width: 232px;
+    --container-width: 50px;
     --color: rgb(18, 28, 141);
     --light-color: #14c8ff;
-    --line-color: rgba(18, 28, 141, 0.2);
+    --line-color: rgba(18, 28, 141, 0.4);
     width: var(--container-width);
   }
 
@@ -65,14 +65,14 @@
 
   @include m(diffused-aperture) {
     --container-width: 20px;
-    --background-color: rgb(24, 144, 255) ;
+    --background-color: rgb(24, 144, 255);
     --box-shadow-color: rgba(24, 144, 255, 0.73);
   }
 
   @include e(dot-point) {
     background: #009fd9;
     position: absolute;
-    left: 0;
+    left: -5px;
     top: -5px;
     width: 10px;
     height: 10px;
@@ -103,18 +103,18 @@
     background: 0 0;
     border-color: #009fd9;
     top: -44px;
-    left: -39px;
+    left: -44px;
     height: 88px;
     width: 88px;
     box-shadow: 0 0 12px #0080d9, 0 0 20px #0080d9 inset;
   }
 
   @include e(name-container) {
-    position: relative;
+    position: absolute;
     color: #ccc;
-    left: 2px;
+    left: 0;
     height: 0;
-    top: 0;
+    top: -10px;
     width: 11px;
     font-size: 14px;
     transition: all 0.5s ease-in-out;
@@ -122,12 +122,30 @@
     & > span {
       width: 80px;
       position: absolute;
-      left: 8px;
-      top: -11px;
-      padding: 6px 10px;
+      left: 0;
+      top: 0;
       border-radius: 2px;
-      text-align: center;
+      // text-align: center;
       white-space: nowrap;
+      padding-left: 14px;
+    }
+    @include m(breathing-aperture-name) {
+      padding: 6px 10px;
+      & > span {
+        padding-left: 20px;
+      }
+    }
+    @include m(halo-ring-name) {
+      top: -10px;
+      left: calc(var(--halo-width) / 2);
+    }
+    @include m(rotating-aperture-name) {
+      left: var(--container-width);
+      top: -10px;
+    }
+    @include m(diffused-aperture-name) {
+      left: var(--container-width);
+      top: calc(var(--container-width) / 2 - 10px);
     }
   }
 
@@ -291,8 +309,8 @@
       left: 0;
       right: 0;
     }
-    &{
-      left: var(--text-left-position)
+    & {
+      left: var(--text-left-position);
     }
     &::before,
     &::after {
