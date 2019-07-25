@@ -2,11 +2,10 @@
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
     <Pan v-if="panControl.show" :position="panControl.position"/>
-    <Scale v-if="scaleControl.show" :position="scaleControl.position"/>
+    <Scale v-if="scaleControl.show" v-bind="scaleControl"/>
     <Zoom
       v-if="zoomControl.show"
-      :show-zoom-slider="zoomControl.zoomWithSlider"
-      :position="zoomControl.position"
+      v-bind="zoomControl"
     />
     <mini-map v-if="miniMapControl.show" v-bind="miniMapControl"></mini-map>
     <layer-list v-if="layerListControl.show" v-bind="layerListControl"></layer-list>
@@ -55,7 +54,7 @@ import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
  * @vue-prop {Object} [zoomControl] - 缩放组件配置参数。
  * @vue-prop {Boolean} [zoomControl.show=false] - 是否显示缩放组件。
  * @vue-prop {String} [zoomControl.position="top-left"] - 缩放组件放置位置。
- * @vue-prop {Boolean} [zoomControl.zoomWithSlider="false"] - 缩放组件是否含有滑动条。
+ * @vue-prop {Boolean} [zoomControl.showZoomSlider="false"] - 缩放组件是否含有滑动条。
  * @vue-prop {Object} [miniMapControl] - 鹰眼组件配置参数。
  * @vue-prop {Boolean} [miniMapControl.show=false] - 是否显示鹰眼组件。
  * @vue-prop {String} [miniMapControl.position="bottom-right"] - 鹰眼组件放置位置。
@@ -79,6 +78,8 @@ import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
 interface commonControlParam {
   show?: boolean;
   position?: string;
+  background?: string;
+  textColor?: string;
 }
 
 interface cardCommonParam extends commonControlParam {
@@ -87,7 +88,7 @@ interface cardCommonParam extends commonControlParam {
 }
 
 interface zoomParam extends commonControlParam {
-  zoomWithSlider?: boolean;
+  showZoomSlider?: boolean;
 }
 
 interface measureParam extends cardCommonParam {

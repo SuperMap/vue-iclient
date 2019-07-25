@@ -7,6 +7,8 @@
     :header-name="mode === 'simple' ? '' : headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     class="sm-component-legend"
   >
     <a-card

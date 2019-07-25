@@ -1,5 +1,5 @@
 <template>
-  <div id="chart" ref="chart" class="sm-component-liquidFill"></div>
+  <div id="chart" ref="chart" class="sm-component-liquidFill" :style="[background && getBackgroundStyle]"></div>
 </template>
 <script>
 import echarts from 'echarts';

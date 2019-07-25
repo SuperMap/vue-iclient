@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-icon">
+  <div class="sm-component-icon" :style="[background && getBackgroundStyle]">
     <i
       v-if="!!iconClass"
       :class="'sm-components-icons-' + iconClass"

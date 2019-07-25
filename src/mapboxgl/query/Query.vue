@@ -6,6 +6,8 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     class="sm-component-query"
   >
     <div class="sm-component-query__body" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -89,7 +91,7 @@
         >{{ $t('query.noResult') }}</div>
         <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
           <a-spin :tip="$t('query.querying')">
-            <a-icon slot="indicator" type="loading" style="font-size: 24px" spin/>
+            <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
           </a-spin>
         </div>
         <div v-if="queryResult" class="sm-component-query__result-header" :style="getColorStyle(0)">
@@ -113,7 +115,13 @@
         </div>
       </div>
     </div>
-    <TablePopup v-show="false" ref="queryTablePopup" v-bind="tablePopupProps"/>
+    <TablePopup
+      v-show="false"
+      ref="queryTablePopup"
+      v-bind="tablePopupProps"
+      :background="background"
+      :textColor="textColor"
+    />
   </sm-card>
 </template>
 <script>
@@ -387,13 +395,26 @@ export default {
     },
     changeChosenStyle(visible, e) {
       setTimeout(() => {
+        const optionListContainer = this.$el.querySelectorAll('.ant-select-dropdown-content');
+        optionListContainer.forEach(item => {
+          item.style.background = this.backgroundData;
+        });
         const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
         optionList.forEach(item => {
           if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
             item.style.color = this.getColorStyle(0).color;
+            item.style.background = this.backgroundData;
           } else {
-            item.style.color = '#606266';
+            item.style.color = this.textColorsData;
+            item.style.background = 'transparent';
           }
+          item.addEventListener('mouseover', () => {
+            item.style.color = this.getColorStyle(0).color;
+          });
+          item.addEventListener('mouseout', () => {
+            !item.classList.contains('ant-select-dropdown-menu-item-selected') &&
+              (item.style.color = this.textColorsData);
+          });
         });
       }, 0);
     },

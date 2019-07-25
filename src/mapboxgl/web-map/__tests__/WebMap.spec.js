@@ -70,7 +70,7 @@ describe('WebMap.vue', () => {
           zoomControl: {
             show: true,
             position: 'top-left',
-            zoomWithSlider: false
+            showZoomSlider: false
           }
         }
       }
@@ -84,7 +84,7 @@ describe('WebMap.vue', () => {
         expect(wrapper.vm.mapId).toBe("1649097980");
         expect(wrapper.vm.panControl.show).toBe(true);
         expect(wrapper.vm.scaleControl.position).toBe('bottom-right');
-        expect(wrapper.vm.zoomControl.zoomWithSlider).toBe(false);
+        expect(wrapper.vm.zoomControl.showZoomSlider).toBe(false);
         expect(wrapper.find('.sm-component-pan').exists()).toBe(true)
         expect(wrapper.element.outerHTML).toContain("pan")
         expect(wrapper.element.outerHTML).toContain("zoom")

@@ -6,6 +6,8 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     class="sm-component-layer-list"
   >
     <a-card class="sm-component-layer-list__a-card" :style="[getBackgroundStyle]">

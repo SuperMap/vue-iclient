@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-progress">
+  <div class="sm-component-progress" :style="[background && getBackgroundStyle]">
     <a-progress
       :percent="parseFloat(percent)"
       :type="type"

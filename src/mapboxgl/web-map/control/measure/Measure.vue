@@ -6,6 +6,8 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     class="sm-component-measure"
   >
     <div class="sm-component-measure__panel" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -197,7 +199,12 @@ export default {
       this.activeAreaUnit = newVal;
       this.updateUnit(newVal);
     },
-    colorGroupsData: {
+    textColorsData: {
+      handler() {
+        this.changeSelectInputStyle();
+      }
+    },
+    backgroundData: {
       handler() {
         this.changeSelectInputStyle();
       }

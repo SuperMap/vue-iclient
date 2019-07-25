@@ -6,7 +6,7 @@
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
         icon="plus"
         :disabled="!canZoomIn"
-        :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] :''"
+        :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, activieBgColor]"
         @click="zoomIn"
       ></a-button>
       <a-button
@@ -14,7 +14,7 @@
         class="sm-component-zoom__button sm-component-zoom__button--zoomout"
         icon="minus"
         :disabled="!canZoomOut"
-        :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : ''"
+        :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, activieBgColor]"
         @click="zoomOut"
       ></a-button>
     </div>

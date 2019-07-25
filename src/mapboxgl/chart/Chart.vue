@@ -218,9 +218,17 @@ export default {
     },
     colorGroup(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
-        if (!this.theme) {
-          this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroup);
-        }
+        this._setChartTheme();
+      }
+    },
+    textColor(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this._setChartTheme();
+      }
+    },
+    background(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this._setChartTheme();
       }
     },
     dataset: {
@@ -271,10 +279,10 @@ export default {
     }
   },
   created() {
-    this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
+    this._setChartTheme();
     // 切换主题
     this.$on('themeStyleChanged', () => {
-      this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
+      this._setChartTheme();
     });
   },
   mounted() {
@@ -344,6 +352,11 @@ export default {
       this.dataSeriesCache = Object.assign({}, options);
       // 设置echartOptions
       this.echartOptions = Object.assign({}, echartOptions, options);
+    },
+    _setChartTheme() {
+      if (!this.theme) {
+        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroup);
+      }
     },
     // 获取echart实例
     _getEchart() {

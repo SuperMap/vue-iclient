@@ -1,5 +1,5 @@
 <template>
-  <div :class="['sm-component-open-file', mapboxglClass]" :style="[fontStyle, { background: getColor(0) }, getTextColorStyle]">
+  <div :class="['sm-component-open-file', mapboxglClass]" :style="[fontStyle, (background && getBackgroundStyle) || { background: getColor(0) }, getTextColorStyle]">
     <label for="input_file" class="sm-component-open-file__title">
       <span>{{ text }}</span>
     </label>
