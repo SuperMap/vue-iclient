@@ -25,6 +25,7 @@ export default class MapGetter extends Vue {
   map: mapboxglTypes.Map;
   webmap: any;
   viewModel: any;
+  $message: any;
 
   @Prop() mapTarget: String;
 

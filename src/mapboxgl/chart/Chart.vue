@@ -216,17 +216,17 @@ export default {
     theme() {
       this.chartTheme = null;
     },
-    colorGroup(newVal, oldVal) {
+    colorGroupsData(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this._setChartTheme();
       }
     },
-    textColor(newVal, oldVal) {
+    textColorsData(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this._setChartTheme();
       }
     },
-    background(newVal, oldVal) {
+    backgroundData(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this._setChartTheme();
       }
@@ -355,7 +355,7 @@ export default {
     },
     _setChartTheme() {
       if (!this.theme) {
-        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroup);
+        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
       }
     },
     // 获取echart实例
