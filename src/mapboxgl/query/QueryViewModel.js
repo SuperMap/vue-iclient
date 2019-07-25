@@ -98,6 +98,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
   }
   _queryByRestData(restDataParameter) {
+    let maxFeatures = restDataParameter.maxFeatures || this.maxFeatures;
+    let toIndex = maxFeatures === 1 ? 0 : maxFeatures - 1;
     if (this.bounds) {
       var boundsParam = new SuperMap.GetFeaturesByBoundsParameters({
         attributeFilter: restDataParameter.attributeFilter,
@@ -105,7 +107,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
         spatialQueryMode: 'INTERSECT',
         geometry: this.bounds,
         fromIndex: 0,
-        toIndex: restDataParameter.maxFeatures - 1 || this.maxFeatures - 1
+        toIndex
       });
       new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesByGeometry(boundsParam, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
@@ -117,7 +119,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
         },
         datasetNames: restDataParameter.dataName,
         fromIndex: 0,
-        toIndex: restDataParameter.maxFeatures - 1 || this.maxFeatures - 1
+        toIndex
       });
       new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesBySQL(param, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
@@ -405,8 +407,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
     if (type === 'fill') {
       this.strokeLayerID = layerID + '-StrokeLine';
-      let stokeLineStyle = this.layerStyle.stokeLine;
-      let lineStyle = stokeLineStyle.paint || {
+      let stokeLineStyle = this.layerStyle.stokeLine || {};
+      let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
         'line-width': 3,
         'line-color': '#409eff',
         'line-opacity': 1
