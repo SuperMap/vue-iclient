@@ -36,6 +36,10 @@
       & + .ant-input-affix-wrapper {
         margin-left: 18px;
         margin-right: 30px;
+        &.toolBar-input {
+          margin-left: 0;
+          margin-right: 30px;
+        }
       }
     }
   }
@@ -50,7 +54,7 @@
     cursor: pointer;
   }
   @include e(content) {
-    transform-origin: top left; 
+    transform-origin: top left;
     overflow: hidden;
     box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
     &.sm-component-zoom-in-enter-active {
@@ -76,6 +80,9 @@
       padding-right: 25px;
       margin-left: 30px;
       margin-right: 18px;
+      &.toolBar-input {
+        margin-right: 0;
+      }
       display: block;
       &:hover {
         .ant-input {
@@ -103,10 +110,10 @@
       height: 6px;
     }
   }
-  @include e(panel) {
-    padding-left: 4px;
-    padding-right: 4px;
-  }
+  // @include e(panel) {
+  //   padding-left: 4px;
+  //   padding-right: 4px;
+  // }
 
   @include e(panel-header) {
     display: block;
@@ -124,10 +131,12 @@
   @include e(panel-body) {
     & > ul {
       list-style: none;
-      margin-left: -32px;
+      // margin-left: -32px;
+      padding: 0;
       font-size: 13px;
       & > li {
         padding: 8px 0;
+        padding-left: 10px;
         display: block;
         cursor: pointer;
         overflow: hidden;
@@ -135,6 +144,9 @@
         white-space: nowrap;
         &:hover {
           color: #409eff;
+        }
+        &.active {
+          background: #f2f2f2;
         }
       }
     }
