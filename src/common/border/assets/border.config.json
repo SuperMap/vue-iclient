@@ -1,32 +1,32 @@
 {
   "border1": {
     "type": "1",
-    "borderWidth": [40, 40, 40, 40],
+    "borderWidth": [12, 12, 12, 12],
     "borderEdge":{"top": 12, "left": 12, "right": 12, "bottom": 12}
   },
   "border2": {
     "type": "2",
-    "borderWidth": [40, 40, 40, 40],
+    "borderWidth": [12, 12, 12, 12],
     "borderEdge":{"top": 12, "left": 12, "right": 12, "bottom": 12}
   },
   "border3": {
     "type": "3",
-    "borderWidth": [40, 40, 40, 40],
+    "borderWidth": [19, 19, 19, 19],
     "borderEdge":{"top": 19, "left": 19, "right": 19, "bottom": 19}
   },
   "border4": {
     "type": "4",
-    "borderWidth": [40, 56, 40, 56],
+    "borderWidth": [20, 40, 20, 40],
     "borderEdge":{"top": 20, "left": 20, "right": 20, "bottom": 20}
   },
   "border5": {
     "type": "5",
-    "borderWidth": [32, 136, 32, 168],
+    "borderWidth": [12, 135, 12, 160],
     "borderEdge":{"top": 12, "left": 12, "right": 12, "bottom": 12}
   },
   "border6": {
     "type": "6",
-    "borderWidth": [40, 40, 40, 40],
+    "borderWidth": [12, 12, 12, 12],
     "borderEdge":{"top": 12, "left": 12, "right": 12, "bottom": 12}
   },
   "border7": {
@@ -36,22 +36,22 @@
   },
   "border8": {
     "type": "8",
-    "borderWidth": [36, 104, 36, 104],
+    "borderWidth": [24, 100, 24, 100],
     "borderEdge":{"top": 17, "left": 17, "right": 17, "bottom": 17}
   },
   "border9": {
     "type": "9",
-    "borderWidth": [107, 96, 75, 81],
+    "borderWidth": [100, 90, 70, 75],
     "borderEdge":{"top": 32, "left": 32, "right": 32, "bottom": 32}
   },
   "border10": {
     "type": "10",
-    "borderWidth": [32, 110, 100, 56],
+    "borderWidth": [27, 104, 100, 52],
     "borderEdge":{"top": 27, "left": 23, "right": 60, "bottom": 44}
   },
   "border11": {
     "type": "11",
-    "borderWidth": [32, 56, 32, 56],
+    "borderWidth": [26, 52, 26, 52],
     "borderEdge":{"top": 12, "left": 12, "right": 12, "bottom": 12}
   },
   "border12": {
@@ -61,7 +61,7 @@
   },
   "border13": {
     "type": "13",
-    "borderWidth": [40, 40, 40, 40],
-    "borderEdge":{"top": 20, "left": 22, "right": 24, "bottom": 24}
+    "borderWidth": [20, 24, 20, 24],
+    "borderEdge":{"top": 20, "left": 22, "right": 24, "bottom": 20}
   }
 }
