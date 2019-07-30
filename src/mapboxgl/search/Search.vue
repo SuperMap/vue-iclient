@@ -177,6 +177,8 @@ export default {
       default() {
         return {
           enable: true,
+          url: 'http://api.tianditu.gov.cn/search',
+          tk: '',
           data: null
         };
       }

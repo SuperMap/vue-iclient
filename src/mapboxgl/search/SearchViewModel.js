@@ -4,7 +4,7 @@ import turfCenter from '@turf/center';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import iPortalDataService from '../_utils/iPortalDataService';
 import iServerRestService from '../_utils/iServerRestService';
-import * as searchApi from '../../common/api/search';
+import * as tiandituApi from '../../common/api/tiandituSearch';
 /**
  * @class SearchViewModel
  * @classdesc 数据搜索功能类。
@@ -39,7 +39,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.searchTaskId = 0;
     this.options.cityGeoCodingConfig = {
       addressUrl: 'http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
-      key: 'fvV2osxwuZWlY0wJb8FEb2i5'
+      key: options.onlineLocalSearch.key || 'fvV2osxwuZWlY0wJb8FEb2i5'
     };
     if (map) {
       this.map = map;
@@ -447,17 +447,18 @@ export default class SearchViewModel extends mapboxgl.Evented {
       queryType: '4',
       start: '0',
       count: '10',
-      level: Math.round(this.map.getZoom()),
+      level: Math.round(this.map.getZoom()) + 1,
       mapBound: this._toBBoxString()
     };
     if (this.searchNormalOfTianditu) {
       commonData.queryType = '1';
       commonData.queryTerminal = 10000;
     }
-    return searchApi
-      .tiandituSearch({
+    return tiandituApi
+      .tiandituSearch(tiandituSearch.url, {
         postStr: JSON.stringify(Object.assign({}, commonData, tiandituSearch.data)),
-        type: 'query'
+        type: 'query',
+        tk: tiandituSearch.tk
       })
       .then(res => {
         const dataCollection = res.suggests || res.pois || (res.statistics && [res.statistics]);
@@ -476,7 +477,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
         } else {
           this._searchFeaturesFailed('', sourceName);
         }
-        this.searchNormalOfTianditu && results && this.fire('search-selected-info' + this.searchTaskId, { data: { type, data: res } });
+        this.searchNormalOfTianditu &&
+          results &&
+          this.fire('search-selected-info' + this.searchTaskId, { data: { type, data: res } });
         !this.searchNormalOfTianditu && results && this._searchFeaturesSucceed(results, sourceName);
         return { type, data: res };
       })
@@ -490,13 +493,13 @@ export default class SearchViewModel extends mapboxgl.Evented {
   _toBBoxString() {
     const bounds = this.map.getBounds();
     return (
-      +bounds._sw.lng.toFixed(5) +
+      bounds.getWest().toFixed(5) +
       ',' +
-      +bounds._sw.lat.toFixed(5) +
+      bounds.getSouth().toFixed(5) +
       ',' +
-      +bounds._ne.lng.toFixed(5) +
+      bounds.getEast().toFixed(5) +
       ',' +
-      +bounds._ne.lat.toFixed(5)
+      bounds.getNorth().toFixed(5)
     );
   }
 
@@ -614,8 +617,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.searchTaskId = 0;
     this.searchResult = {};
     this.errorSourceList = {};
-    this._clearSearchResultLayer();
-    this._clearMarkers();
-    this._clearPopups();
+    if (this.options.addToMap) {
+      this._clearSearchResultLayer();
+      this._clearMarkers();
+      this._clearPopups();
+    }
   }
 }

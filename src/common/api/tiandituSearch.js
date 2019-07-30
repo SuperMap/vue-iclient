@@ -3,7 +3,6 @@ import axios from 'axios';
 const CancelToken = axios.CancelToken;
 const axiosService = axios.create();
 
-const tiandituTk = '1d109683f4d84198e37a38c442d68311';
 let cancelSourceList = {};
 
 axiosService.interceptors.request.use(
@@ -36,15 +35,11 @@ axiosService.interceptors.response.use(
   }
 );
 
-function request({ url, params = {}, method = 'get', origin = 'tianditu' }) {
+function request({ url, params = {}, method = 'get' }) {
   const options = {
     url,
     method
   };
-  if (origin === 'tianditu') {
-    options.baseURL = 'http://api.tianditu.gov.cn';
-    params.tk = params.tk || tiandituTk;
-  }
   if (method.toLowerCase() === 'get') {
     options.params = params;
   } else {
@@ -68,10 +63,10 @@ function cancelRequest(sourceName) {
   }
 }
 
-export const tiandituSearch = params => {
-  return request({ url: '/search', params });
+export const tiandituSearch = (url, params) => {
+  return request({ url, params });
 };
 
-export const tiandituTransit = params => {
-  return request({ url: '/transit', params });
+export const tiandituTransit = (url, params) => {
+  return request({ url, params });
 };
