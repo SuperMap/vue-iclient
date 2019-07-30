@@ -1,7 +1,7 @@
 {
   "border1": {
     "type": "1",
-    "borderWidth": [12, 12, 12, 13],
+    "borderWidth": [12, 12, 12, 12],
     "borderEdge":{"top": 12, "left": 12, "right": 12, "bottom": 12}
   },
   "border2": {
