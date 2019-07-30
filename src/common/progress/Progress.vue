@@ -1,7 +1,7 @@
 <template>
   <div class="sm-component-progress" :style="[background && getBackgroundStyle]">
     <a-progress
-      :percent="parseFloat(percent)"
+      :percent="parseFloat(finalPercent)"
       :type="type"
       :stroke-width="parseFloat(strokeWidth)"
       :show-info="showInfo"
@@ -17,10 +17,12 @@
 <script>
 import Theme from '../_mixin/theme';
 import { ResizeSensor } from 'css-element-queries';
+import Timer from '../_mixin/timer';
+import RestService from '../../mapboxgl/_utils/RestService';
 
 export default {
   name: 'SmProgress',
-  mixins: [Theme],
+  mixins: [Theme, Timer],
   props: {
     percent: {
       type: [Number, String],
@@ -66,11 +68,15 @@ export default {
         const strokeLinecapList = ['round', 'square'];
         return strokeLinecapList.includes(strokeLinecap);
       }
+    },
+    url: {
+      type: String
     }
   },
   data() {
     return {
-      circleWidth: 0
+      circleWidth: 0,
+      finalPercent: this.percent
     };
   },
   computed: {
@@ -91,6 +97,15 @@ export default {
           this.progressTextNode.style.color = this.getTextColor;
         }
       }
+    },
+    percent(val) {
+      this.finalPercent = val;
+    },
+    url: {
+      handler() {
+        this.getData();
+      },
+      immediate: true
     }
   },
   mounted() {
@@ -99,10 +114,24 @@ export default {
     this.resizeObsever = new ResizeSensor(this.$el, () => {
       this.resize();
     });
+    this.restService = new RestService();
+    this.restService.on('getdatasucceeded', this.fetchData);
+  },
+  beforeDestroy() {
+    this.restService.off('getdatasucceeded', this.fetchData);
   },
   methods: {
     resize() {
       this.circleWidth = Math.min(this.$el.offsetWidth, this.$el.offsetHeight);
+    },
+    timing() {
+      this.getData();
+    },
+    fetchData(data) {
+      this.finalPercent = data.data;
+    },
+    getData() {
+      this.restService && this.restService.getData(this.url);
     }
   }
 };

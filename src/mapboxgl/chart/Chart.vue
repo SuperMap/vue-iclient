@@ -27,6 +27,7 @@ import ECharts from 'vue-echarts';
 import Control from '../../mapboxgl/_mixin/control';
 import Card from '../../common/_mixin/card';
 import Theme from '../../common/_mixin/theme';
+import Timer from '../../common/_mixin/timer';
 import { chartThemeUtil } from '../../common/_utils/style/theme/chart';
 import UniqueId from 'lodash.uniqueid';
 import EchartsDataService from '../_utils/EchartsDataService';
@@ -129,7 +130,7 @@ export default {
   components: {
     'v-chart': ECharts
   },
-  mixins: [Control, Theme, Card],
+  mixins: [Control, Theme, Card, Timer],
   props: {
     iconClass: {
       type: String,
@@ -208,7 +209,11 @@ export default {
     // 是否传入dataset和datasetOptions
     _isRequestData() {
       return (
-        this.dataset && Object.keys(this.dataset).length > 0 && this.datasetOptions && this.datasetOptions.length > 0
+        this.dataset &&
+        Object.keys(this.dataset).length > 0 &&
+        this.dataset.url &&
+        this.datasetOptions &&
+        this.datasetOptions.length > 0
       );
     }
   },
@@ -242,7 +247,7 @@ export default {
     },
     datasetOptions: {
       handler: function(newVal, oldVal) {
-        if (!isEqual(newVal, oldVal)) {
+        if (!isEqual(newVal, oldVal) && newVal.length) {
           !this.echartsDataService &&
             this._isRequestData &&
             this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -258,6 +263,7 @@ export default {
           if (this.datasetChange && !this.dataSeriesCache) {
             return;
           }
+
           if (this.dataSeriesCache) {
             this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
           } else {
@@ -302,6 +308,17 @@ export default {
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
   },
   methods: {
+    timing() {
+      this.echartsDataService &&
+        this.echartsDataService.getDataOption(this.dataset).then(options => {
+          this.hideLoading();
+          // 缓存dataSeriesCache，请求后格式化成echart的数据
+          this.dataSeriesCache = Object.assign({}, options);
+          this.datasetChange = false;
+          // 设置echartOptions
+          this.echartOptions = this._optionsHandler(this.options, options);
+        });
+    },
     // 请求数据,设置echartOptions
     _setEchartOptions(dataset, datasetOptions, echartOptions) {
       this.echartsDataService = null;
@@ -313,8 +330,9 @@ export default {
         maskColor: 'rgba(0,0,0,0.8)',
         zlevel: 0
       });
+
       this.echartsDataService = new EchartsDataService(dataset, datasetOptions);
-      this.echartsDataService.getDataOption().then(options => {
+      this.echartsDataService.getDataOption(dataset).then(options => {
         this.hideLoading();
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         this.dataSeriesCache = Object.assign({}, options);
@@ -347,7 +365,13 @@ export default {
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
-      let options = echartsDataService.formatChartData(datasetOptions);
+      let options;
+      if (this.dataset.type === 'rest') {
+        options = echartsDataService.formatThridRestChartData(datasetOptions);
+      } else if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer') {
+        options = echartsDataService.formatChartData(datasetOptions);
+      }
+
       // 缓存dataSeriesCache，格式化成echart的数据
       this.dataSeriesCache = Object.assign({}, options);
       // 设置echartOptions

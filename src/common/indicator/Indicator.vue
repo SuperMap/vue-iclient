@@ -4,7 +4,7 @@
       <span
         class="sm-component-indicator__title"
         :style="[unit_titleStyle, getTextColorStyle]"
-      >{{ title }}</span>
+      >{{ titleData }}</span>
     </div>
     <div class="sm-component-indicator__content">
       <span
@@ -14,17 +14,19 @@
       <span
         class="sm-component-indicator__unit"
         :style="[unit_titleStyle, getTextColorStyle]"
-      >{{ unit }}</span>
+      >{{ unitData }}</span>
     </div>
   </div>
 </template>
 
 <script>
 import Theme from '../_mixin/theme';
+import Timer from '../_mixin/timer';
+import RestService from '../../mapboxgl/_utils/RestService';
 
 export default {
   name: 'SmIndicator',
-  mixins: [Theme],
+  mixins: [Theme, Timer],
   props: {
     title: {
       type: String,
@@ -43,13 +45,23 @@ export default {
     num: {
       type: [Number, String],
       default: 0
+    },
+    url: {
+      type: String
     }
+  },
+  data() {
+    return {
+      titleData: this.title,
+      unitData: this.unit,
+      numData: this.num
+    };
   },
   computed: {
     numberSymbol() {
-      let numberSymbol = this.num;
-      if (this.isNumber(parseFloat(this.num))) {
-        numberSymbol = this.addNumberSymbol(this.num);
+      let numberSymbol = this.numData;
+      if (this.isNumber(parseFloat(this.numData))) {
+        numberSymbol = this.addNumberSymbol(this.numData);
       }
       return numberSymbol;
     },
@@ -66,6 +78,30 @@ export default {
     indicatorStyle() {
       return (this.indicatorColor && { color: this.indicatorColor }) || this.getColorStyle(0);
     }
+  },
+  watch: {
+    url: {
+      handler() {
+        this.getData();
+      },
+      immediate: true
+    },
+    title(val) {
+      this.titleData = val;
+    },
+    unit(val) {
+      this.unitData = val;
+    },
+    num(val) {
+      this.numData = val;
+    }
+  },
+  mounted() {
+    this.restService = new RestService();
+    this.restService.on('getdatasucceeded', this.fetchData);
+  },
+  beforeDestroy() {
+    this.restService.off('getdatasucceeded', this.fetchData);
   },
   methods: {
     // 给数字添加千位符并对.N个0的小数取整
@@ -89,6 +125,17 @@ export default {
     // 判断是纯数字
     isNumber(str) {
       return /^\d+$/.test(str);
+    },
+    timing() {
+      this.getData();
+    },
+    fetchData(data) {
+      this.unitData = data.data.unit;
+      this.numData = data.data.num;
+      this.titleData = data.data.title;
+    },
+    getData() {
+      this.restService && this.restService.getData(this.url);
     }
   }
 };

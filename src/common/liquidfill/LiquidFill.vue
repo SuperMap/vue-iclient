@@ -1,15 +1,22 @@
 <template>
-  <div id="chart" ref="chart" class="sm-component-liquidFill" :style="[background && getBackgroundStyle]"></div>
+  <div
+    id="chart"
+    ref="chart"
+    class="sm-component-liquidFill"
+    :style="[background && getBackgroundStyle]"
+  ></div>
 </template>
 <script>
 import echarts from 'echarts';
 import Theme from '../_mixin/theme';
 import 'echarts-liquidfill';
 import { ResizeSensor } from 'css-element-queries';
+import Timer from '../_mixin/timer';
+import RestService from '../../mapboxgl/_utils/RestService';
 
 export default {
   name: 'SmLiquidFill',
-  mixins: [Theme],
+  mixins: [Theme, Timer],
   props: {
     // 百分比的值
     value: {
@@ -51,6 +58,9 @@ export default {
     waveAnimation: {
       type: Boolean,
       default: false
+    },
+    url: {
+      type: String
     }
   },
   data() {
@@ -58,25 +68,45 @@ export default {
       waveColorData: '',
       labelColorData: '',
       borderColorData: '',
-      backgroundColorData: ''
+      backgroundColorData: '',
+      finalValue: this.value
     };
   },
   computed: {
     // 根据波浪数渲染数据
     calcData() {
       let data = [];
-      const formatValue = isNaN(this.value) ? 0 : parseFloat(this.value);
+      const formatValue = isNaN(this.finalValue) ? 0 : parseFloat(this.finalValue);
       for (let i = 0; i < this.waveCount; i++) {
         data.push(formatValue - i * 0.05);
       }
       return data;
     }
   },
+  watch: {
+    url: {
+      handler() {
+        this.getData();
+      },
+      immediate: true
+    },
+    finalValue() {
+      this.updateChart();
+    },
+    value(val) {
+      this.finalValue = val;
+    }
+  },
   mounted() {
+    this.restService = new RestService();
+    this.restService.on('getdatasucceeded', this.fetchData);
     setTimeout(() => {
       this.initializeChart();
       this.resize();
     }, 0);
+  },
+  beforeDestroy() {
+    this.restService.off('getdatasucceeded', this.fetchData);
   },
   methods: {
     resize() {
@@ -141,6 +171,15 @@ export default {
           }
         ]
       });
+    },
+    timing() {
+      this.getData();
+    },
+    fetchData(data) {
+      this.finalValue = data.data;
+    },
+    getData() {
+      this.restService && this.restService.getData(this.url);
     }
   }
 };

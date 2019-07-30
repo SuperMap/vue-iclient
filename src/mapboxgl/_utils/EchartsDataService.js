@@ -1,5 +1,6 @@
 import iServerRestService from './iServerRestService';
 import iPortalDataService from './iPortalDataService';
+import RestService from './RestService';
 import tonumber from 'lodash.tonumber';
 import isEqual from 'lodash.isequal';
 import max from 'lodash.max';
@@ -47,16 +48,22 @@ export default class EchartsDataService {
    * @description 获取符合echart data数据格式的数据, 入口函数。
    * @returns {Object}  带有请求的数据的promise对象
    */
-  getDataOption() {
+  getDataOption(dataset) {
     // 设置datasets的默认配置type，withCredentials
     let promise = new Promise((resolve, reject) => {
       // 请求数据，请求成功后，解析数据
-      this._requestData(this.dataset)
+      this._requestData(dataset)
         .then(data => {
           // 设置this.data
           this._setData(data);
           // 解析数据，生成dataOption
-          let options = this.formatChartData(this.datasetOptions, data);
+          let options;
+          if (this.dataset.type === 'rest') {
+            options = this.formatThridRestChartData(this.datasetOptions, data);
+          } else if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer') {
+            options = this.formatChartData(this.datasetOptions, data);
+          }
+
           resolve(options);
         })
         .catch(e => {
@@ -96,6 +103,72 @@ export default class EchartsDataService {
       ...radarAxis,
       series
     };
+  }
+
+  formatThridRestChartData(datasetOptions, data = this.dataCache) {
+    let datas = data.data;
+    let xData = Object.keys(datas);
+    let sData = Object.values(datas);
+    let options;
+    let { seriesType, xField, yField } = datasetOptions[0];
+    switch (seriesType) {
+      case 'pie':
+        let pieData = [];
+        for (let [key, value] of Object.entries(datas)) {
+          pieData.push({ value, name: key });
+        }
+        options = {
+          series: [
+            {
+              type: seriesType,
+              data: pieData
+            }
+          ]
+        };
+        break;
+      case 'radar':
+        let maxValue = Math.max.apply(this, sData);
+        let indicator = [];
+        for (let key of Object.keys(datas)) {
+          indicator.push({ name: key, max: maxValue });
+        }
+        options = {
+          radar: {
+            indicator
+          },
+          series: [
+            {
+              type: seriesType,
+              data: [
+                {
+                  value: sData
+                }
+              ]
+            }
+          ]
+        };
+        break;
+      default:
+        options = {
+          xAxis: [
+            {
+              data: xData,
+              name: xField
+            }
+          ],
+          yAxis: {
+            name: yField
+          },
+          series: [
+            {
+              data: sData,
+              type: seriesType
+            }
+          ]
+        };
+        break;
+    }
+    return options;
   }
 
   /**
@@ -141,13 +214,13 @@ export default class EchartsDataService {
    */
   _requestData(datasets) {
     let promise = new Promise((resolve, reject) => {
-      if (datasets && datasets.url) {
+      if (datasets && datasets.url && datasets.type) {
         let superMapService;
         let queryInfo = {
           maxFeatures: datasets.maxFeatures,
           attributeFilter: datasets.attributeFilter
         };
-        if (datasets.dataName || datasets.layerName) {
+        if (datasets.type === 'iServer') {
           let datasetInfo;
           superMapService = new iServerRestService(datasets.url);
           if (datasets.dataName) {
@@ -164,10 +237,13 @@ export default class EchartsDataService {
             };
           }
           superMapService.getData(datasetInfo, queryInfo);
-        } else {
+        } else if (datasets.type === 'iPortal') {
           queryInfo.withCredentials = datasets.withCredentials;
           superMapService = new iPortalDataService(datasets.url, datasets.withCredentials);
           superMapService.getData(queryInfo);
+        } else if (datasets.type === 'rest') {
+          superMapService = new RestService();
+          superMapService.getData(datasets.url);
         }
         superMapService.on('getdatafailed', function(e) {
           reject(e);
