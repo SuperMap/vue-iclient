@@ -474,6 +474,8 @@ export default class SearchViewModel extends mapboxgl.Evented {
         } else if (dataCollection) {
           type = 'Point';
           results = dataCollection;
+        } else if (res.prompt && !(+res.count)) {
+          results = [];
         } else {
           this._searchFeaturesFailed('', sourceName);
         }
