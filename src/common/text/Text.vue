@@ -33,8 +33,12 @@ export default {
       this.finalTitle = val;
     },
     url: {
-      handler() {
-        this.getData();
+      handler(val) {
+        if (val) {
+          this.getData();
+        } else {
+          this.finalTitle = this.title;
+        }
       },
       immediate: true
     }

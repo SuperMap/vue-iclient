@@ -102,8 +102,12 @@ export default {
       this.finalPercent = val;
     },
     url: {
-      handler() {
-        this.getData();
+      handler(val) {
+        if (val) {
+          this.getData();
+        } else {
+          this.finalPercent = this.percent;
+        }
       },
       immediate: true
     }

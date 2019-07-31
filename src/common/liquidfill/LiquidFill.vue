@@ -85,8 +85,12 @@ export default {
   },
   watch: {
     url: {
-      handler() {
-        this.getData();
+      handler(val) {
+        if (val) {
+          this.getData();
+        } else {
+          this.finalValue = this.value;
+        }
       },
       immediate: true
     },

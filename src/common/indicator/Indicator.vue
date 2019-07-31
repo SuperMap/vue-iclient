@@ -81,8 +81,14 @@ export default {
   },
   watch: {
     url: {
-      handler() {
-        this.getData();
+      handler(val) {
+        if (val) {
+          this.getData();
+        } else {
+          this.unitData = this.unit;
+          this.numData = this.num;
+          this.titleData = this.title;
+        }
       },
       immediate: true
     },

@@ -10,7 +10,7 @@ export default class RestService extends mapboxgl.Evented {
     if (!url) {
       return;
     }
-    SuperMap.FetchRequest.get(url)
+    SuperMap.FetchRequest.get(url, null, { withoutFormatSuffix: true })
       .then(response => {
         return response.json();
       })
