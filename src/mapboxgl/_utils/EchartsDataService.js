@@ -294,7 +294,9 @@ export default class EchartsDataService {
       serieData.data = [...YData];
       // 是否堆叠数据（line,bar,scatter）
       if (datasetOption.isStack) {
-        serieData.stack = '0';
+        serieData.stack = 1;
+      } else {
+        serieData.stack = 0;
       }
     }
     return serieData;

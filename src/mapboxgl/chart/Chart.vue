@@ -264,7 +264,7 @@ export default {
             return;
           }
 
-          if (this.dataSeriesCache) {
+          if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
             this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
           } else {
             this.echartOptions = Object.assign({}, this.options);
@@ -375,7 +375,7 @@ export default {
       // 缓存dataSeriesCache，格式化成echart的数据
       this.dataSeriesCache = Object.assign({}, options);
       // 设置echartOptions
-      this.echartOptions = Object.assign({}, echartOptions, options);
+      this.echartOptions = this._optionsHandler(echartOptions, options);
     },
     _setChartTheme() {
       if (!this.theme) {
