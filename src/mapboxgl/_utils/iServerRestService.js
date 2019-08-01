@@ -114,7 +114,8 @@ export default class iServerRestService extends mapboxgl.Evented {
       },
       datasetNames: queryInfo.datasetNames,
       fromIndex: 0,
-      toIndex: queryInfo.maxFeatures - 1
+      toIndex: queryInfo.maxFeatures >= 1000 ? -1 : queryInfo.maxFeatures - 1,
+      maxFeatures: -1
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
       eventListeners: {

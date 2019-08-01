@@ -10,7 +10,10 @@ import '../../../static/libs/geostats/geostats';
 import * as convert from 'xml-js';
 import canvg from 'canvg';
 import jsonsql from 'jsonsql';
-
+import echarts from 'echarts';
+import EchartsLayer from '../../../static/libs/echarts-layer/EchartsLayer';
+import provincialCenterData from './config/ProvinceCenter.json'; // eslint-disable-line import/extensions
+import municipalCenterData from './config/MunicipalCenter.json'; // eslint-disable-line import/extensions
 const MB_SCALEDENOMINATOR_3857 = [
   '559082264.0287178',
   '279541132.0143589',
@@ -53,7 +56,8 @@ const MB_SCALEDENOMINATOR_4326 = [
   '8530.918335399134'
 ];
 const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
-
+// 迁徙图最大支持要素数量
+const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 /**
  * @class WebMapViewModel
  * @category ViewModel
@@ -365,7 +369,13 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           let layers = mapInfo.layers;
 
           this.map.on('load', () => {
-            this._addBaseMap(mapInfo);
+            if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'MAPBOXSTYLE') {
+              // 添加矢量瓦片服务作为底图
+              this._addMVTBaseMap(mapInfo).then(() => {
+              });
+            }else{
+              this._addBaseMap(mapInfo);
+            }
             if (!layers || layers.length === 0) {
               this._sendMapToUser(0, 0);
             } else {
@@ -1251,7 +1261,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
     if (layerInfo.style && layerInfo.filterCondition) {
       // 将 feature 根据过滤条件进行过滤, 分段专题图和单值专题图因为要计算 styleGroup 所以暂时不过滤
-      if (layerType !== 'RANGE' && layerType !== 'UNIQUE') {
+      if (layerType !== 'RANGE' && layerType !== 'UNIQUE' && layerType !== 'RANK_SYMBOL') {
         features = this._getFiterFeatures(layerInfo.filterCondition, features);
       }
     }
@@ -1275,13 +1285,350 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       this._createHeatLayer(layerInfo, features);
     } else if (layerType === 'MARKER') {
       this._createMarkerLayer(layerInfo, features);
+    } else if (layerInfo.layerType === 'MIGRATION') {
+      this._createMigrationLayer(layerInfo, features);
+    } else if (layerInfo.layerType === 'RANK_SYMBOL') {
+      this._createRankSymbolLayer(layerInfo, features);
     }
     if (layerInfo.labelStyle && layerInfo.labelStyle.labelField) {
       // 存在标签专题图
       this._addLabelLayer(layerInfo, features);
     }
   }
+  private _createMigrationLayer(layerInfo, features) {
+    window['echarts'] = echarts;
+    let properties = this._getFeatureProperties(features);
+    let lineData = this._createLinesData(layerInfo, properties);
+    let pointData = this._createPointsData(lineData, layerInfo, properties);
+    let options = this._createOptions(layerInfo, lineData, pointData);
+    let echartslayer = new EchartsLayer(this.map);
+    echartslayer.chart.setOption(options);
+  }
 
+  private _createOptions(layerInfo, lineData, pointData) {
+    let series;
+    let lineSeries = this._createLineSeries(layerInfo, lineData);
+    if (pointData && pointData.length) {
+      let pointSeries: any = this._createPointSeries(layerInfo, pointData);
+      series = lineSeries.concat(pointSeries);
+    } else {
+      series = lineSeries.slice();
+    }
+    let options = {
+      GLMap: {
+        roam: true
+      },
+      // geo: {
+      //   map: 'GLMap',
+      //   label: {
+      //     emphasis: {
+      //       show: false
+      //     }
+      //   },
+      //   roam: true,
+      //   itemStyle: {
+      //     normal: {
+      //       areaColor: '#323c48',
+      //       borderColor: '#404a59'
+      //     },
+      //     emphasis: {
+      //       areaColor: '#2a333d'
+      //     }
+      //   }
+      // },
+      series
+    };
+    return options;
+  }
+
+  private _createPointSeries(layerInfo, pointData) {
+    let lineSetting = layerInfo.lineSetting;
+    let animationSetting = layerInfo.animationSetting;
+    let labelSetting = layerInfo.labelSetting;
+    let pointSeries = [
+      {
+        name: 'point-series',
+        coordinateSystem: 'GLMap',
+        zlevel: 2,
+        label: {
+          normal: {
+            show: labelSetting.show,
+            position: 'right',
+            formatter: '{b}',
+            color: labelSetting.color,
+            fontFamily: labelSetting.fontFamily
+          }
+        },
+        itemStyle: {
+          normal: {
+            color: lineSetting.color || labelSetting.color
+          }
+        },
+        data: pointData
+      }
+    ];
+
+    if (animationSetting.show) {
+      // 开启动画
+      // @ts-ignore
+      pointSeries[0].type = 'effectScatter';
+      // @ts-ignore
+      pointSeries[0].rippleEffect = {
+        brushType: 'stroke'
+      };
+    } else {
+      // 关闭动画
+      // @ts-ignore
+      pointSeries[0].type = 'scatter';
+    }
+
+    return pointSeries;
+  }
+  private _createLineSeries(layerInfo, lineData) {
+    let lineSetting = layerInfo.lineSetting;
+    let animationSetting = layerInfo.animationSetting;
+    let linesSeries = [
+      // 轨迹线样式
+      {
+        name: 'line-series',
+        coordinateSystem: 'GLMap',
+        type: 'lines',
+        zlevel: 1,
+        effect: {
+          show: animationSetting.show,
+          constantSpeed: animationSetting.constantSpeed,
+          trailLength: 0,
+          symbol: animationSetting.symbol,
+          symbolSize: animationSetting.symbolSize
+        },
+        lineStyle: {
+          normal: {
+            color: lineSetting.color,
+            type: lineSetting.type,
+            width: lineSetting.width,
+            opacity: lineSetting.opacity,
+            curveness: lineSetting.curveness
+          }
+        },
+        data: lineData
+      }
+    ];
+
+    if (lineData.length >= MAX_MIGRATION_ANIMATION_COUNT) {
+      // @ts-ignore
+      linesSeries[0].large = true;
+      // @ts-ignore
+      linesSeries[0].largeThreshold = 100;
+      // @ts-ignore
+      linesSeries[0].blendMode = 'lighter';
+    }
+
+    return linesSeries;
+  }
+  private _createLinesData(layerInfo, properties) {
+    let data = [];
+    if (properties && properties.length) {
+      // 重新获取数据
+      let from = layerInfo.from,
+        to = layerInfo.to,
+        fromCoord,
+        toCoord;
+      if (from.type === 'XY_FIELD' && from['xField'] && from['yField'] && to['xField'] && to['yField']) {
+        properties.forEach(property => {
+          let fromX = property[from['xField']],
+            fromY = property[from['yField']],
+            toX = property[to['xField']],
+            toY = property[to['yField']];
+          if (!fromX || !fromY || !toX || !toY) {
+            return;
+          }
+
+          fromCoord = [property[from['xField']], property[from['yField']]];
+          toCoord = [property[to['xField']], property[to['yField']]];
+          data.push({
+            coords: [fromCoord, toCoord]
+          });
+        });
+      } else if (from.type === 'PLACE_FIELD' && from['field'] && to['field']) {
+        const centerDatas = provincialCenterData.concat(municipalCenterData);
+
+        properties.forEach(property => {
+          let fromField = property[from['field']],
+            toField = property[to['field']];
+          fromCoord = centerDatas.find(item => {
+            return mapboxgl.supermap.Util.isMatchAdministrativeName(item.name, fromField);
+          });
+          toCoord = centerDatas.find(item => {
+            return mapboxgl.supermap.Util.isMatchAdministrativeName(item.name, toField);
+          });
+          if (!fromCoord || !toCoord) {
+            return;
+          }
+          data.push({
+            coords: [fromCoord.coord, toCoord.coord]
+          });
+        });
+      }
+    }
+    return data;
+  }
+  private _createPointsData(lineData, layerInfo, properties) {
+    let data = [],
+      labelSetting = layerInfo.labelSetting;
+    // 标签隐藏则直接返回
+    if (!labelSetting.show || !lineData.length) {
+      return data;
+    }
+    let fromData = [],
+      toData = [];
+    lineData.forEach((item, idx) => {
+      let coords = item.coords,
+        fromCoord = coords[0],
+        toCoord = coords[1],
+        fromProperty = properties[idx][labelSetting.from],
+        toProperty = properties[idx][labelSetting.to];
+      // 起始字段去重
+      let f = fromData.find(d => {
+        return d.value[0] === fromCoord[0] && d.value[1] === fromCoord[1];
+      });
+      !f &&
+        fromData.push({
+          name: fromProperty,
+          value: fromCoord
+        });
+      // 终点字段去重
+      let t = toData.find(d => {
+        return d.value[0] === toCoord[0] && d.value[1] === toCoord[1];
+      });
+      !t &&
+        toData.push({
+          name: toProperty,
+          value: toCoord
+        });
+    });
+    data = fromData.concat(toData);
+    return data;
+  }
+  private _createRankSymbolLayer(layerInfo, features) {
+    let fieldName = layerInfo.themeSetting.themeField;
+    let style = layerInfo.style;
+    let featureType = layerInfo.featureType;
+    let styleSource: any = this._createRankStyleSource(layerInfo, features, layerInfo.featureType);
+    let styleGroups = styleSource.styleGroups;
+    features = this._getFiterFeatures(layerInfo.filterCondition, features);
+    // 获取 expression
+    let expression = ['match', ['get', 'index']];
+    features.forEach(row => {
+      let tartget = parseFloat(row.properties[fieldName]);
+      if (styleGroups) {
+        for (let i = 0; i < styleGroups.length; i++) {
+          if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
+            let radius =
+              style.type === 'SYMBOL_POINT' || style.type === 'IMAGE_POINT'
+                ? style.type === 'SYMBOL_POINT'
+                  ? styleGroups[i].radius * 2
+                  : Number.parseFloat((styleGroups[i].radius / style.imageInfo.size.h).toFixed(2)) * 2
+                : styleGroups[i].radius;
+            expression.push(row.properties['index'], radius);
+          }
+        }
+      }
+      // @ts-ignore
+      !tartget && expression.push(row.properties['index'], 1);
+    }, this);
+    // @ts-ignore
+    expression.push(1);
+    if (style.type === 'SYMBOL_POINT') {
+      this._createSymbolLayer(layerInfo, features, expression);
+    } else if (style.type === 'IMAGE_POINT') {
+      this._createGraphicLayer(layerInfo, features, expression);
+    } else {
+      let source: mapboxglTypes.GeoJSONSourceRaw = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: features
+        }
+      };
+      // 获取样式
+      let layerStyle: any = {
+        layout: {
+          visibility: layerInfo.visible
+        }
+      };
+      layerStyle.style = this._transformStyleToMapBoxGl(style, featureType, expression, 'circle-radius');
+      let layerID = layerInfo.layerID;
+      this._addOverlayToMap(featureType, source, layerID, layerStyle);
+    }
+  }
+  private _createRankStyleSource(parameters, features, featureType) {
+    let themeSetting = parameters.themeSetting,
+      themeField = themeSetting.themeField;
+    let styleGroups = this._getRankStyleGroup(themeField, features, parameters, featureType);
+    // @ts-ignore
+    return styleGroups ? { parameters, styleGroups } : false;
+  }
+  private _getRankStyleGroup(themeField, features, parameters, featureType) {
+    // 找出所有的单值
+    let values = [],
+      segements = [],
+      style = parameters.style,
+      themeSetting = parameters.themeSetting,
+      segmentMethod = themeSetting.segmentMethod,
+      segmentCount = themeSetting.segmentCount,
+      customSettings = themeSetting.customSettings,
+      minR = parameters.themeSetting.minRadius,
+      maxR = parameters.themeSetting.maxRadius;
+    features.forEach(feature => {
+      let properties = feature.properties,
+        value = properties[themeField];
+      // 过滤掉空值和非数值
+      if (value == null || !mapboxgl.supermap.Util.isNumber(value)) {
+        return;
+      }
+      values.push(Number(value));
+    });
+    try {
+      segements = SuperMap.ArrayStatistic.getArraySegments(values, segmentMethod, segmentCount);
+    } catch (error) {
+      console.error(error);
+    }
+
+    // 处理自定义 分段
+    for (let i = 0; i < segmentCount; i++) {
+      if (i in customSettings) {
+        let startValue = customSettings[i]['segment']['start'],
+          endValue = customSettings[i]['segment']['end'];
+        startValue != null && (segements[i] = startValue);
+        endValue != null && (segements[i + 1] = endValue);
+      }
+    }
+
+    //生成styleGroup
+    let styleGroup = [];
+    if (segements && segements.length) {
+      let len = segements.length,
+        incrementR = (maxR - minR) / (len - 1), // 半径增量
+        start,
+        end,
+        radius = Number(((maxR + minR) / 2).toFixed(2));
+      for (let i = 0; i < len - 1; i++) {
+        start = Number(segements[i].toFixed(2));
+        end = Number(segements[i + 1].toFixed(2));
+        // 这里特殊处理以下分段值相同的情况（即所有字段值相同）
+        radius = start === end ? radius : minR + Math.round(incrementR * i);
+        // 最后一个分段时将end+0.01，避免取不到最大值
+        end = i === len - 2 ? end + 0.01 : end;
+        // 处理自定义 半径
+        radius = customSettings[i] && customSettings[i].radius ? customSettings[i].radius : radius;
+        style.radius = radius;
+        styleGroup.push({ radius, start, end });
+      }
+      return styleGroup;
+    } else {
+      return false;
+    }
+  }
   /**
    * @private
    * @function WebMapViewModel.prototype._addLabelLayer
@@ -1303,12 +1650,14 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         }
       },
       paint: {
-        'text-color': labelStyle.fill
+        'text-color': labelStyle.fill,
+        'text-halo-color': 'rgba(255,255,255,0.8)',
+        'text-halo-width': parseFloat(labelStyle.fontSize) || 12
       },
       layout: {
         'text-field': `{${labelStyle.labelField}}`,
         'text-size': parseFloat(labelStyle.fontSize) || 12,
-        'text-offset': labelStyle.offsetX ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0] : [0, -1.5],
+        'text-offset': labelStyle.offsetX ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0] : [0, -2.5],
         'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
         visibility: layerInfo.visible
       }
@@ -1322,7 +1671,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  某个图层的图层信息。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  private _createSymbolLayer(layerInfo: any, features: any): void {
+  private _createSymbolLayer(layerInfo: any, features: any, textSize?): void {
     // 用来请求symbol_point字体文件
     let target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
@@ -1347,6 +1696,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       },
       layout: {
         'text-field': text,
+        'text-size': textSize || 12,
         'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
         visibility: layerInfo.visible
       }
@@ -1365,7 +1715,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} layerInfo - map 信息。
    * @param {Array} features - 属性 信息。
    */
-  private _createGraphicLayer(layerInfo: any, features: any) {
+  private _createGraphicLayer(layerInfo: any, features: any, iconSizeExpression?) {
     let style = layerInfo.style;
     let layerID = layerInfo.layerID;
     let source: mapboxglTypes.GeoJSONSourceRaw = {
@@ -1378,12 +1728,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
     if (style.type === 'IMAGE_POINT') {
       let imageInfo = style.imageInfo;
-      let imgDom = imageInfo.img;
-      if (!imgDom || !imgDom.src) {
-        // 要组装成完整的url
-        imageInfo.url = this.serverUrl + imageInfo.url;
-      }
-      this.map.loadImage(imageInfo.url || imgDom.src, (error, image) => {
+      this.map.loadImage(imageInfo.url, (error, image) => {
         if (error) {
           console.log(error);
         }
@@ -1395,7 +1740,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           source: source,
           layout: {
             'icon-image': 'imageIcon',
-            'icon-size': iconSize,
+            'icon-size': iconSizeExpression || iconSize,
             visibility: layerInfo.visible
           }
         });
@@ -1421,7 +1766,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
               source: source,
               layout: {
                 'icon-image': 'imageIcon',
-                'icon-size': iconSize,
+                'icon-size': iconSizeExpression || iconSize,
                 visibility: layerInfo.visible
               }
             });
@@ -2195,7 +2540,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {String} type - 图层类型
    * @param {Array} [expression] - 存储颜色值得表达式
    */
-  private _transformStyleToMapBoxGl(style: any, type: layerType, expression?): any {
+  private _transformStyleToMapBoxGl(style: any, type: layerType, expression?, expressionType?): any {
     let transTable = {};
     if ((style.type === 'POINT' || style.type === 'BASIC_POINT' || type === 'POINT') && type !== 'LINE') {
       transTable = {
@@ -2227,7 +2572,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       }
     }
     if (expression) {
-      if (newObj['circle-color']) {
+      if (expressionType) {
+        newObj[expressionType] = expression;
+      } else if (newObj['circle-color']) {
         newObj['circle-color'] = expression;
       } else if (newObj['line-color']) {
         newObj['line-color'] = expression;
@@ -2413,7 +2760,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       queryParameter: getFeatureParam,
       datasetNames: datasetNames,
       fromIndex: 0,
-      toIndex: 100000,
+      toIndex: -1,
+      maxFeatures: -1,
       returnContent: true
     });
     let options = {
@@ -2484,5 +2832,16 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         styleGroup: style
       };
     }
+  }
+
+  _getFeatureProperties(features) {
+    let properties = [];
+    if (features && features.length) {
+      features.forEach(feature => {
+        let property = feature.properties;
+        property && properties.push(property);
+      });
+    }
+    return properties;
   }
 }
