@@ -290,9 +290,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let fontFamilys: string = fonts.join(',');
 
     // zoom
-    type coordinateObj = { x: number; y: number };
-    let center: number[] | coordinateObj | mapboxglTypes.LngLat;
-    center = mapInfo.center;
+    let center: [number, number] | mapboxglTypes.LngLat;
+    center = mapInfo.center && [mapInfo.center.x, mapInfo.center.y];
 
     // center
     let zoom = mapInfo.level || 0;
@@ -302,10 +301,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       center = [0, 0];
     }
     if (this.baseProjection === 'EPSG:3857') {
-      center = this._unproject([(<coordinateObj>center).x, (<coordinateObj>center).y]);
+      center = this._unproject(center);
     }
 
-    center = new mapboxgl.LngLat((<coordinateObj>center).x, (<coordinateObj>center).y);
+    center = new mapboxgl.LngLat(center[0], center[1]);
 
     // 初始化 map
 
@@ -355,15 +354,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           title: mapInfo.title,
           description: mapInfo.description
         };
-        const projectionMap = {
-          'EPSG:4490': 'EPSG:4490',
-          'EPSG:4214': 'EPSG:4214',
-          'EPSG:4610': 'EPSG:4610',
-          'EPSG:3857': 'EPSG:3857',
-          'EPSG:4326': 'EPSG:4326'
-        };
         // 坐标系异常处理
-        if (this.baseProjection in projectionMap) {
+        if (mapboxgl.CRS.get(this.baseProjection)) {
           this._createMap(mapInfo);
 
           let layers = mapInfo.layers;
@@ -371,9 +363,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           this.map.on('load', () => {
             if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'MAPBOXSTYLE') {
               // 添加矢量瓦片服务作为底图
-              this._addMVTBaseMap(mapInfo).then(() => {
-              });
-            }else{
+              this._addMVTBaseMap(mapInfo);
+            } else {
               this._addBaseMap(mapInfo);
             }
             if (!layers || layers.length === 0) {
@@ -394,6 +385,13 @@ export default class WebMapViewModel extends mapboxgl.Evented {
          */
         this.fire('getmapinfofailed', { error: error });
       });
+  }
+
+  private _addMVTBaseMap(mapInfo) {
+    let baseLayer = mapInfo.baseLayer,
+      url = baseLayer.dataSource.url;
+    // @ts-ignore
+    this.map.addStyle(url);
   }
 
   /**
@@ -843,7 +841,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     return service[0];
   }
 
-  _getServiceInfoFromLayer(layerIndex, len, layer, dataItemServices, datasetName, featureType, accessType, info?: any) {
+  _getServiceInfoFromLayer(layerIndex, len, layer, dataItemServices, datasetName, featureType, info?: any) {
     let isMapService = info ? !info.isMvt : layer.layerType === 'HOSTED_TILE',
       isAdded = false;
     dataItemServices.forEach((service, index) => {
@@ -870,41 +868,45 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           });
         });
       } // TODO 对接 MVT
-      else if (accessType !== service.serviceType) {
-        return;
-      } else {
-        //数据服务
-        isAdded = true;
-        //关系型文件发布的数据服务
-        this._getDatasources(service.address).then(datasourceName => {
-          layer.dataSource.dataSourceName = datasourceName + ':' + datasetName;
-          layer.dataSource.url = `${service.address}/data`;
-          this._getFeatureBySQL(
-            layer.dataSource.url,
-            [layer.dataSource.dataSourceName || layer.name],
-            result => {
-              let features = this._parseGeoJsonData2Feature({
-                allDatas: {
-                  features: result.result.features.features
-                },
-                fileCode: layer.projection,
-                featureProjection: this.baseProjection
-              });
-              this._addLayer(layer, features, layerIndex);
-              this.layerAdded++;
-              this._sendMapToUser(this.layerAdded, len);
-            },
-            err => {
-              this.layerAdded++;
-              this._sendMapToUser(this.layerAdded, len);
-              this.fire('getlayerdatasourcefailed', {
-                error: err,
-                layer: layer,
-                map: this.map
-              });
-            }
-          );
-        });
+      else if (service && !isMapService && service.serviceType === 'RESTDATA') {
+        if (info && info.isMvt) {
+          this._addVectorLayer(info, layer, featureType);
+          this.layerAdded++;
+          this._sendMapToUser(this.layerAdded, len);
+        } else {
+          //数据服务
+          isAdded = true;
+          //关系型文件发布的数据服务
+          this._getDatasources(service.address).then(datasourceName => {
+            layer.dataSource.dataSourceName = datasourceName + ':' + datasetName;
+            layer.dataSource.url = `${service.address}/data`;
+            this._getFeatureBySQL(
+              layer.dataSource.url,
+              [layer.dataSource.dataSourceName || layer.name],
+              result => {
+                let features = this._parseGeoJsonData2Feature({
+                  allDatas: {
+                    features: result.result.features.features
+                  },
+                  fileCode: layer.projection,
+                  featureProjection: this.baseProjection
+                });
+                this._addLayer(layer, features, layerIndex);
+                this.layerAdded++;
+                this._sendMapToUser(this.layerAdded, len);
+              },
+              err => {
+                this.layerAdded++;
+                this._sendMapToUser(this.layerAdded, len);
+                this.fire('getlayerdatasourcefailed', {
+                  error: err,
+                  layer: layer,
+                  map: this.map
+                });
+              }
+            );
+          });
+        }
       }
     }, this);
     if (!isAdded) {
@@ -1082,26 +1084,27 @@ export default class WebMapViewModel extends mapboxgl.Evented {
                       return;
                     }
                     if (isMapService) {
-                      // TODO !! 需要判断是使用tile还是mvt服务
-                      this._getServiceInfoFromLayer(
-                        index,
-                        len,
-                        layer,
-                        dataItemServices,
-                        datasetName,
-                        featureType,
-                        dataSource.accessType === 'REST_DATA' ? 'RESTDATA' : 'RESTMAP'
-                      );
+                      let dataService = dataItemServices.filter(info => {
+                        return info && info.serviceType === 'RESTDATA';
+                      })[0];
+                      this._isMvt(dataService.address, datasetName)
+                        .then(info => {
+                          this._getServiceInfoFromLayer(
+                            index,
+                            len,
+                            layer,
+                            dataItemServices,
+                            datasetName,
+                            featureType,
+                            info
+                          );
+                        })
+                        .catch(() => {
+                          //判断失败就走之前逻辑，>数据量用tile
+                          this._getServiceInfoFromLayer(index, len, layer, dataItemServices, datasetName, featureType);
+                        });
                     } else {
-                      this._getServiceInfoFromLayer(
-                        index,
-                        len,
-                        layer,
-                        dataItemServices,
-                        datasetName,
-                        featureType,
-                        dataSource.accessType === 'REST_DATA' ? 'RESTDATA' : 'RESTMAP'
-                      );
+                      this._getServiceInfoFromLayer(index, len, layer, dataItemServices, datasetName, featureType);
                     }
                   });
                 } else {
@@ -1264,6 +1267,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       if (layerType !== 'RANGE' && layerType !== 'UNIQUE' && layerType !== 'RANK_SYMBOL') {
         features = this._getFiterFeatures(layerInfo.filterCondition, features);
       }
+    }
+
+    if (layerInfo.projection !== 'EPSG:4326') {
+      this._transformFeatures(features);
     }
 
     if (layerType === 'VECTOR') {
@@ -2501,7 +2508,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @description 墨卡托转经纬度。
    * @param {} point - 待转换的点。
    */
-  private _unproject(point: Array<number>): { x: number; y: number } {
+  private _unproject(point: [number, number]): [number, number] {
     var d = 180 / Math.PI;
     var r = 6378137;
     var ts = Math.exp(-point[1] / r);
@@ -2511,10 +2518,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       dphi = Math.PI / 2 - 2 * Math.atan(ts * con) - phi;
       phi += dphi;
     }
-    return {
-      x: (point[0] * d) / r,
-      y: phi * d
-    };
+    return [(point[0] * d) / r, phi * d];
   }
 
   /**
@@ -2551,13 +2555,13 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         strokeColor: 'circle-stroke-color',
         strokeOpacity: 'circle-stroke-opacity'
       };
-    } else if (type === 'LINE') {
+    } else if (['LINE', 'LINESTRING', 'MULTILINESTRING'].includes(type)) {
       transTable = {
         strokeWidth: 'line-width',
         strokeColor: 'line-color',
         strokeOpacity: 'line-opacity'
       };
-    } else if (type === 'POLYGON') {
+    } else if (['REGION', 'POLYGON', 'MULTIPOLYGON'].includes(type)) {
       transTable = {
         fillColor: 'fill-color',
         fillOpacity: 'fill-opacity',
@@ -2843,5 +2847,115 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       });
     }
     return properties;
+  }
+
+  _addVectorLayer(info, layerInfo, featureType) {
+    let style = this._transformStyleToMapBoxGl(this._getDataVectorTileStyle(featureType), featureType);
+    let url = info.url + '/tileFeature.mvt';
+
+    let origin = mapboxgl.CRS.get(this.baseProjection).getOrigin();
+
+    url += `?&returnAttributes=true&width=512&height=512&x={x}&y={y}&scale={scale}&origin={x:${origin[0]},y:${
+      origin[1]
+    }}`;
+    this.map.addLayer({
+      id: 'terrain-data',
+      type: 'circle',
+      source: {
+        type: 'vector',
+        tiles: [url]
+      },
+      'source-layer': `${info.datasetName}@${info.datasourceName}`,
+      paint: style,
+      layout: {
+        visibility: layerInfo.visible ? 'visible' : 'none'
+      }
+    });
+  }
+
+  _isMvt(serviceUrl, datasetName) {
+    return this._getDatasetsInfo(serviceUrl, datasetName).then(info => {
+      //判断是否和底图坐标系一直
+      if (info.epsgCode == this.baseProjection.split('EPSG:')[1]) {
+        return SuperMap.FetchRequest.get(`${info.url}/tilefeature.mvt`)
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(result) {
+            info.isMvt = result.error && result.error.code === 400;
+            return info;
+          })
+          .catch(() => {
+            return info;
+          });
+      }
+      return info;
+    });
+  }
+
+  _getDatasetsInfo(serviceUrl, datasetName) {
+    return this._getDatasources(serviceUrl).then(datasourceName => {
+      //判断mvt服务是否可用
+      let url = `${serviceUrl}/data/datasources/${datasourceName}/datasets/${datasetName}`;
+      return SuperMap.FetchRequest.get(url)
+        .then(response => {
+          return response.json();
+        })
+        .then(datasetsInfo => {
+          return {
+            epsgCode: datasetsInfo.datasetInfo.prjCoordSys.epsgCode,
+            bounds: datasetsInfo.datasetInfo.bounds,
+            datasourceName,
+            datasetName,
+            url //返回的是原始url，没有代理。因为用于请求mvt
+          };
+        });
+    });
+  }
+
+  _getDataVectorTileStyle(featureType) {
+    let styleParameters = {
+      radius: 8, //圆点半径
+      fillColor: '#EE4D5A', //填充色
+      fillOpacity: 0.9,
+      strokeColor: '#ffffff', //边框颜色
+      strokeWidth: 1,
+      strokeOpacity: 1,
+      lineDash: 'solid',
+      type: 'BASIC_POINT'
+    };
+    if (['LINE', 'LINESTRING', 'MULTILINESTRING'].includes(featureType)) {
+      styleParameters.strokeColor = '#4CC8A3';
+      styleParameters.strokeWidth = 2;
+    } else if (['REGION', 'POLYGON', 'MULTIPOLYGON'].includes(featureType)) {
+      styleParameters.fillColor = '#826DBA';
+    }
+    return styleParameters;
+  }
+
+  _transformFeatures(features) {
+    features &&
+      features.forEach((feature, index) => {
+        let geometryType = feature.geometry.type;
+        let coordinates = feature.geometry.coordinates;
+        if (geometryType === 'LineString') {
+          coordinates.forEach(coordinate => {
+            coordinate = this._unproject(coordinate);
+            return coordinate;
+          }, this);
+        } else if (geometryType === 'Point') {
+          coordinates = this._unproject(coordinates);
+        } else if (geometryType === 'MultiPolygon' || geometryType === 'Polygon') {
+          coordinates.forEach((coordinate, index) => {
+            let coords = geometryType === 'MultiPolygon' ? coordinate[0] : coordinate;
+            coords.forEach((latlng, index) => {
+              latlng = this._unproject(latlng);
+              coords[index] = latlng;
+            });
+            coordinates[index] = coordinate;
+          });
+        }
+        features[index] = feature;
+      }, this);
   }
 }
