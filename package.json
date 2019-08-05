@@ -33,6 +33,7 @@
         "echarts-liquidfill": "^2.0.5",
         "js-cookie": "^2.2.0",
         "leaflet-pixi-overlay": "^1.8.1",
+        "lodash.assignin": "^4.2.0",
         "lodash.clonedeep": "^4.5.0",
         "lodash.max": "^4.0.1",
         "lodash.merge": "^4.6.1",

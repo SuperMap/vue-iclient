@@ -240,14 +240,14 @@ export default {
       if (componentName !== this.$options.name) {
         this.activeMode = null;
         this.result = '';
-        this.viewModel.pauseDraw();
+        this.viewModel && this.viewModel.pauseDraw();
       }
     });
   },
-  removed() {
+  removed(deleteState) {
     this.activeMode = null;
     this.result = '';
-    this.viewModel && this.viewModel.clear();
+    this.viewModel && this.viewModel.clear(deleteState);
   },
   methods: {
     changeSelectInputStyle() {
@@ -290,7 +290,7 @@ export default {
           let modeUnitKey = this.modeUnitMap[mode];
           let activeUnit = this[modeUnitKey];
           if (mode === 'delete') {
-            this.viewModel.removeDraw();
+            this.viewModel.trash();
             this.activeMode = null;
             this.result = '';
             return;
@@ -319,6 +319,10 @@ export default {
       if (!this.measureFinished && this.continueDraw) {
         this.activeMode = this.activeModeCache;
       }
+    },
+    // 提供对外方法：清空features
+    clear() {
+      this.$options.removed.call(this, false);
     }
   }
 };
