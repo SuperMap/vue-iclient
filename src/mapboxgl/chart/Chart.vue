@@ -346,6 +346,9 @@ export default {
         if (dataOptions.series.length === 0) {
           options.xAxis = [{}];
         } else if (!Array.isArray(options.xAxis)) {
+          if (dataOptions.xAxis[0].data.length) {
+            options.xAxis.data = [];
+          }
           options.xAxis = [Object.assign({}, dataOptions.xAxis[0], options.xAxis)];
         }
       }
