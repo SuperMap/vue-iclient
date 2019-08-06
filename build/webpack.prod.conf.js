@@ -45,7 +45,12 @@ const webpackConfig = merge(baseWebpackConfig, {
         amd: 'vue'
       },
       echarts: 'echarts',
-      'vue-echarts': 'VueECharts',
+      'vue-echarts': {
+        root: 'VueEcharts',
+        commonjs: 'vue-echarts',
+        commonjs2: 'vue-echarts',
+        amd: 'vue-echarts'
+      },
       xlsx: {
         root: 'XLSX',
         commonjs: 'xlsx',
@@ -132,7 +137,14 @@ const webpackConfig = merge(baseWebpackConfig, {
     Copyright© 2000 - 2019 SuperMap Software Co.Ltd
     license: ${pkg.license}
     version: v${pkg.version}
-   `)
+   `),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../static'),
+        to: config.build.assetsSubDirectory,
+        ignore: ['libs/Cesium/**/*']
+      }
+    ])
   ]
 });
 
