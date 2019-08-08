@@ -7,13 +7,15 @@ import { handleMultyPolygon } from '../_utils/geometry-util';
 import { isXField, isYField } from '../../common/_utils/util';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import '../../../static/libs/geostats/geostats';
+import '../../../static/libs/json-sql/jsonsql';
 import * as convert from 'xml-js';
 import canvg from 'canvg';
-import jsonsql from 'jsonsql';
 import echarts from 'echarts';
 import EchartsLayer from '../../../static/libs/echarts-layer/EchartsLayer';
 import provincialCenterData from './config/ProvinceCenter.json'; // eslint-disable-line import/extensions
 import municipalCenterData from './config/MunicipalCenter.json'; // eslint-disable-line import/extensions
+import UniqueId from 'lodash.uniqueid';
+import cloneDeep from 'lodash.clonedeep';
 const MB_SCALEDENOMINATOR_3857 = [
   '559082264.0287178',
   '279541132.0143589',
@@ -1209,8 +1211,19 @@ export default class WebMapViewModel extends mapboxgl.Evented {
             },
             'smid=1'
           );
-        } // TODO  待对接 DataFlow!
-        else if (layer.layerType === 'DATAFLOW_POINT_TRACK' || layer.layerType === 'DATAFLOW_HEAT') {
+        } else if (layer.layerType === 'DATAFLOW_POINT_TRACK' || layer.layerType === 'DATAFLOW_HEAT') {
+          this._getDataflowInfo(
+            layer,
+            () => {
+              this._addLayer(layer, null, index);
+              this.layerAdded++;
+              this._sendMapToUser(this.layerAdded, len);
+            },
+            e => {
+              this.layerAdded++;
+              // TODO  fire faild
+            }
+          );
         }
       }, this);
     }
@@ -1258,7 +1271,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     layerInfo.visible = layerInfo.visible ? 'visible' : 'none';
     // mbgl 目前不能处理 geojson 复杂面情况
     // mbgl isssue https://github.com/mapbox/mapbox-gl-js/issues/7023
-    if (features[0] && features[0].geometry.type === 'Polygon') {
+    if (features && features[0] && features[0].geometry.type === 'Polygon') {
       features = handleMultyPolygon(features);
     }
 
@@ -1269,7 +1282,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       }
     }
 
-    if (layerInfo.projection !== 'EPSG:4326') {
+    if (features && layerInfo.projection !== 'EPSG:4326') {
       this._transformFeatures(features);
     }
 
@@ -1296,12 +1309,202 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       this._createMigrationLayer(layerInfo, features);
     } else if (layerInfo.layerType === 'RANK_SYMBOL') {
       this._createRankSymbolLayer(layerInfo, features);
+    } else if (layerInfo.layerType === 'DATAFLOW_POINT_TRACK' || layerInfo.layerType === 'DATAFLOW_HEAT') {
+      this._createDataflowLayer(layerInfo);
     }
-    if (layerInfo.labelStyle && layerInfo.labelStyle.labelField) {
+    if (layerInfo.labelStyle && layerInfo.labelStyle.labelField && layerInfo.layerType !== 'DATAFLOW_POINT_TRACK') {
       // 存在标签专题图
       this._addLabelLayer(layerInfo, features);
     }
   }
+  private _createDataflowLayer(layerInfo) {
+    let dataflowService = new mapboxgl.supermap.DataFlowService(layerInfo.wsUrl).initSubscribe();
+    dataflowService.on('messageSucceeded', e => {
+      let features = JSON.parse(e.data);
+      // this._transformFeatures([features]); // TODO 坐标系
+      this.fire('dataflowfeatureupdated', {
+        features,
+        identifyField: layerInfo.identifyField,
+        layerID: layerInfo.layerID
+      });
+      if (layerInfo.filterCondition) {
+        //过滤条件
+        let condition = this._replaceFilterCharacter(layerInfo.filterCondition);
+        let sql = 'select * from json where (' + condition + ')';
+        let filterResult = window['jsonsql'].query(sql, {
+          attributes: features.properties
+        });
+        if (filterResult && filterResult.length > 0) {
+          this._addDataflowLayer(layerInfo, features);
+        }
+      } else {
+        this._addDataflowLayer(layerInfo, features);
+      }
+    });
+  }
+
+  private _getDataFlowRotateStyle(features, directionField, identifyField) {
+    let iconRotateExpression = ['match', ['get', identifyField]];
+    features.forEach(feature => {
+      let value;
+      if (directionField !== undefined && directionField !== '未设置' && directionField !== 'None') {
+        value = feature.properties[directionField];
+      } else {
+        value = 0;
+      }
+      if (value > 360 || value < 0) {
+        return null;
+      }
+      // @ts-ignore
+      iconRotateExpression.push(feature.properties[identifyField], parseInt(value));
+    });
+    // @ts-ignore
+    iconRotateExpression.push(0);
+    return iconRotateExpression;
+  }
+
+  private _addDataflowLayer(layerInfo, feature) {
+    let layerID = layerInfo.layerID;
+    if (layerInfo.layerType === 'DATAFLOW_HEAT') {
+      if (!this.map.getSource(layerID)) {
+        this._createHeatLayer(layerInfo, [feature]);
+      } else {
+        this._updateDataFlowFeature(layerID, feature, layerInfo);
+      }
+    } else {
+      let layerStyle = layerInfo.pointStyle;
+      layerInfo.style = layerStyle;
+      if (!this.map.getSource(layerID)) {
+        let iconRotateExpression = this._getDataFlowRotateStyle(
+          [feature],
+          layerInfo.directionField,
+          layerInfo.identifyField
+        );
+        if (['BASIC_POINT', 'SVG_POINT', 'IMAGE_POINT'].includes(layerStyle.type)) {
+          this._createGraphicLayer(layerInfo, [feature], null, iconRotateExpression);
+        } else {
+          this._createSymbolLayer(layerInfo, [feature], null, iconRotateExpression);
+        }
+      } else {
+        this._updateDataFlowFeature(layerID, feature, layerInfo, 'point');
+      }
+      if (layerInfo.labelStyle && layerInfo.visible) {
+        if (!this.map.getSource(layerID + 'label')) {
+          this._addLabelLayer(layerInfo, [feature]);
+        } else {
+          this._updateDataFlowFeature(layerID + 'label', feature, layerInfo);
+        }
+      }
+      if (layerInfo.lineStyle && layerInfo.visible) {
+        if (!this.map.getSource(layerID + '-line')) {
+          let geometry = feature.geometry.coordinates;
+          let lineFeature = {
+            type: 'Feature',
+            properties: feature.properties,
+            geometry: {
+              type: 'LineString',
+              coordinates: [geometry]
+            }
+          };
+          this._createVectorLayer(
+            { style: layerInfo.lineStyle, featureType: 'LINE', visible: 'visible', layerID: layerID + '-line' },
+            [lineFeature]
+          );
+        } else {
+          this._updateDataFlowFeature(layerID + '-line', feature, layerInfo, 'line');
+        }
+      }
+    }
+  }
+
+  private _updateDataFlowFeature(sourceID, newFeature, layerInfo, type?) {
+    let { identifyField, maxPointCount, directionField } = layerInfo;
+    // @ts-ignore
+    let features = cloneDeep(this.map.getSource(sourceID)._data.features);
+    let has = false;
+    features.map((item, index) => {
+      if (item.properties[identifyField] === newFeature.properties[identifyField]) {
+        has = true;
+        if (type === 'line') {
+          let coordinates = item.geometry.coordinates;
+          coordinates.push(newFeature.geometry.coordinates);
+          if (maxPointCount && coordinates.length > maxPointCount) {
+            coordinates.splice(0, coordinates.length - maxPointCount);
+          }
+          features[index].geometry.coordinates = coordinates;
+        } else {
+          features[index] = newFeature;
+        }
+      }
+    });
+    if (!has) {
+      if (type === 'line') {
+        features.push({
+          type: 'Feature',
+          properties: newFeature.properties,
+          geometry: {
+            type: 'LineString',
+            coordinates: [newFeature.geometry.coordinates]
+          }
+        });
+      } else {
+        features.push(newFeature);
+      }
+    }
+    // @ts-ignore
+    this.map.getSource(sourceID).setData({ type: 'FeatureCollection', features });
+    if (type === 'point') {
+      let type = layerInfo.pointStyle.type;
+      let iconRotateExpression = this._getDataFlowRotateStyle(features, directionField, identifyField);
+      if (['SVG_POINT', 'IMAGE_POINT'].includes(type)) {
+        this.map.setLayoutProperty(sourceID, 'icon-rotate', iconRotateExpression);
+      } else if (type === 'SYMBOL_POINT') {
+        this.map.setLayoutProperty(sourceID, 'text-rotate', iconRotateExpression);
+      }
+    }
+  }
+
+  private _getDataflowInfo(layerInfo, success, faild?) {
+    let url = layerInfo.url,
+      token;
+    let requestUrl = `${url}.json`;
+    if (layerInfo.credential && layerInfo.credential.token) {
+      token = layerInfo.credential.token;
+      requestUrl += `?token=${token}`;
+    }
+    SuperMap.FetchRequest.get(requestUrl)
+      .then(function(response) {
+        return response.json();
+      })
+      .then(function(result) {
+        if (result && result.featureMetaData) {
+          layerInfo.featureType = result.featureMetaData.featureType.toUpperCase();
+          layerInfo.dataSource = { dataTypes: {} };
+          if (result.featureMetaData.fieldInfos && result.featureMetaData.fieldInfos.length > 0) {
+            result.featureMetaData.fieldInfos.forEach(function(data) {
+              let name = data.name.trim();
+              if (data.type === 'TEXT') {
+                layerInfo.dataSource.dataTypes[name] = 'STRING';
+              } else if (['DOUBLE', 'INT', 'FLOAT', 'LONG', 'SHORT'].includes(data.type)) {
+                layerInfo.dataSource.dataTypes[name] = 'NUMBER';
+              } else {
+                layerInfo.dataSource.dataTypes[name] = 'UNKNOWN';
+              }
+            });
+          }
+          layerInfo.wsUrl = result.urls[0].url;
+          layerInfo.name = result.urls[0].url.split('iserver/services/')[1].split('/dataflow')[0];
+          success();
+        } else {
+          //失败也要到成功会调函数中，否则不会继续执行
+          faild();
+        }
+      })
+      .catch(function() {
+        faild();
+      });
+  }
+
   private _createMigrationLayer(layerInfo, features) {
     window['echarts'] = echarts;
     let properties = this._getFeatureProperties(features);
@@ -1678,7 +1881,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param layerInfo  某个图层的图层信息。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  private _createSymbolLayer(layerInfo: any, features: any, textSize?): void {
+  private _createSymbolLayer(layerInfo: any, features: any, textSize?, textRotateExpresion?): void {
     // 用来请求symbol_point字体文件
     let target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
@@ -1687,7 +1890,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let unicode = layerInfo.style.unicode;
     let text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
     let layerID = layerInfo.layerID;
-    this.map.addSource(layerID + '-source', {
+    this.map.addSource(layerID, {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1697,19 +1900,20 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this.map.addLayer({
       id: layerID,
       type: 'symbol',
-      source: layerID + '-source',
+      source: layerID,
       paint: {
         'text-color': style.fillColor
       },
       layout: {
         'text-field': text,
-        'text-size': textSize || 12,
+        'text-size': textSize || (style.fontSize && parseFloat(style.fontSize)) || 12,
         'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
+        'text-rotate': textRotateExpresion || 0,
         visibility: layerInfo.visible
       }
     });
     // @ts-ignore
-    this.map.getSource(layerID + '-source').setData({
+    this.map.getSource(layerID).setData({
       type: 'FeatureCollection',
       features: features
     });
@@ -1722,7 +1926,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} layerInfo - map 信息。
    * @param {Array} features - 属性 信息。
    */
-  private _createGraphicLayer(layerInfo: any, features: any, iconSizeExpression?) {
+  private _createGraphicLayer(layerInfo: any, features: any, iconSizeExpression?, iconRotateExpression?) {
     let style = layerInfo.style;
     let layerID = layerInfo.layerID;
     let source: mapboxglTypes.GeoJSONSourceRaw = {
@@ -1748,7 +1952,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
           layout: {
             'icon-image': 'imageIcon',
             'icon-size': iconSizeExpression || iconSize,
-            visibility: layerInfo.visible
+            visibility: layerInfo.visible,
+            'icon-rotate': iconRotateExpression || 0
           }
         });
       });
@@ -1774,7 +1979,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
               layout: {
                 'icon-image': 'imageIcon',
                 'icon-size': iconSizeExpression || iconSize,
-                visibility: layerInfo.visible
+                visibility: layerInfo.visible,
+                'icon-rotate': iconRotateExpression || 0
               }
             });
           });
@@ -2247,7 +2453,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     if (!filterCondition) {
       return allFeatures;
     }
-    let jsonsqls = jsonsql || window.jsonsql;
     let condition = this._replaceFilterCharacter(filterCondition);
     let sql = 'select * from json where (' + condition + ')';
     let filterFeatures = [];
@@ -2255,7 +2460,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       let feature = allFeatures[i];
       let filterResult: any;
       try {
-        filterResult = jsonsqls.query(sql, {
+        filterResult = window['jsonsql'].query(sql, {
           properties: feature.properties
         });
       } catch (err) {
@@ -2383,18 +2588,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let features = data.features;
     features.forEach((row, index) => {
       row.properties['index'] = index;
-      // TODO 待优化 坐标转换
-      // if (fileCode !== 'EPSG:4326') {
-      //     if(row.geometry.coordinates[0] instanceof Array){
-      //         row.geometry.coordinates.forEach((coords, index) => {
-      //             let lnglat = this._unproject(coords);
-      //             row.geometry.coordinates[index] = [lnglat.lng, lnglat.lat];
-      //         }, this)
-      //         return;
-      //     }
-      //     let lnglat = this._unproject(row.geometry.coordinates);
-      //     row.geometry.coordinates = [lnglat.lng, lnglat.lat];
-      // }
     });
     return features;
   }
@@ -2409,7 +2602,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    */
   private _excelData2Feature(dataContent: any): any {
     let fieldCaptions = dataContent.colTitles;
-    // let fileCode = layerInfo.projection;
     // 位置属性处理
     let xfieldIndex = -1;
     let yfieldIndex = -1;
@@ -2430,19 +2622,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
       let x = Number(row[xfieldIndex]);
       let y = Number(row[yfieldIndex]);
-      // let coordinates = [x, y];
-      // TODO 待优化 坐标转换
-      // if (fileCode !== 'EPSG:4326') {
-      //     if(row.geometry.coordinates[0] instanceof Array){
-      //         row.geometry.coordinates.forEach((coords, index) => {
-      //             let lnglat = this._unproject(coords);
-      //             row.geometry.coordinates[index] = [lnglat.lng, lnglat.lat];
-      //         }, this)
-      //         return;
-      //     }
-      //     let lnglat = this._unproject(row.geometry.coordinates);
-      //     row.geometry.coordinates = [lnglat.lng, lnglat.lat];
-      // }
 
       // 属性信息
       let attributes = {};
@@ -2728,7 +2907,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let allFeatures = metaData.allDatas.features;
     let features = [];
     for (let i = 0, len = allFeatures.length; i < len; i++) {
-      // TODO 坐标转换
       let feature = allFeatures[i];
       let coordinate = feature.geometry.coordinates;
       if (allFeatures[i].geometry.type === 'Point') {
@@ -2850,23 +3028,23 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   }
 
   _addVectorLayer(info, layerInfo, featureType) {
-    let style = this._transformStyleToMapBoxGl(this._getDataVectorTileStyle(featureType), featureType);
+    let style = this._getDataVectorTileStyle(featureType);
+    let paint = this._transformStyleToMapBoxGl(style, featureType);
     let url = info.url + '/tileFeature.mvt';
-
     let origin = mapboxgl.CRS.get(this.baseProjection).getOrigin();
-
     url += `?&returnAttributes=true&width=512&height=512&x={x}&y={y}&scale={scale}&origin={x:${origin[0]},y:${
       origin[1]
     }}`;
     this.map.addLayer({
-      id: 'terrain-data',
-      type: 'circle',
+      id: UniqueId(layerInfo.name + '-'),
+      // @ts-ignore
+      type: style.mbglType,
       source: {
         type: 'vector',
         tiles: [url]
       },
       'source-layer': `${info.datasetName}@${info.datasourceName}`,
-      paint: style,
+      paint,
       layout: {
         visibility: layerInfo.visible ? 'visible' : 'none'
       }
@@ -2922,13 +3100,16 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       strokeWidth: 1,
       strokeOpacity: 1,
       lineDash: 'solid',
-      type: 'BASIC_POINT'
+      type: 'BASIC_POINT',
+      mbglType: 'circle'
     };
     if (['LINE', 'LINESTRING', 'MULTILINESTRING'].includes(featureType)) {
       styleParameters.strokeColor = '#4CC8A3';
       styleParameters.strokeWidth = 2;
+      styleParameters.mbglType = 'line';
     } else if (['REGION', 'POLYGON', 'MULTIPOLYGON'].includes(featureType)) {
       styleParameters.fillColor = '#826DBA';
+      styleParameters.mbglType = 'fill';
     }
     return styleParameters;
   }
@@ -2939,12 +3120,13 @@ export default class WebMapViewModel extends mapboxgl.Evented {
         let geometryType = feature.geometry.type;
         let coordinates = feature.geometry.coordinates;
         if (geometryType === 'LineString') {
-          coordinates.forEach(coordinate => {
+          coordinates.forEach((coordinate, index) => {
             coordinate = this._unproject(coordinate);
-            return coordinate;
+            coordinates[index] = coordinate;
           }, this);
         } else if (geometryType === 'Point') {
           coordinates = this._unproject(coordinates);
+          feature.geometry.coordinates = coordinates;
         } else if (geometryType === 'MultiPolygon' || geometryType === 'Polygon') {
           coordinates.forEach((coordinate, index) => {
             let coords = geometryType === 'MultiPolygon' ? coordinate[0] : coordinate;

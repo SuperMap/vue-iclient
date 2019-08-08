@@ -26,7 +26,7 @@
           :showArrow="false"
         >
           <template slot="header">
-            <div class="header-wrap" :style="[getColorStyle(0)]">
+            <div class="header-wrap" :style="[getTextColorStyle]">
               <div class="sm-component-legend__title add-ellipsis">{{ layerValue.layerId }}</div>
               <a-icon type="right" class="header-arrow" />
             </div>
@@ -34,7 +34,7 @@
           <div
             v-if="isShowField"
             class="sm-component-legend__themefield add-ellipsis"
-            :style="[getColorStyle(0)]"
+            :style="[getTextColorStyle]"
           >{{ $t("legend.themeField") }}:{{ layerValue.themeField }}</div>
           <div
             v-if="layerValue.layerType === 'UNIQUE'"
@@ -107,12 +107,12 @@
         <div
           v-if="isShowTitle"
           class="sm-component-legend__title add-ellipsis"
-          :style="[getColorStyle(0)]"
+          :style="[getTextColorStyle]"
         >{{ layerValue.layerId }}</div>
         <div
           v-if="isShowField"
           class="sm-component-legend__themefield add-ellipsis"
-          :style="[getColorStyle(0)]"
+          :style="[getTextColorStyle]"
         >{{ $t("legend.themeField") }}:{{ layerValue.themeField }}</div>
 
         <div v-if="layerValue.layerType === 'UNIQUE'" class="sm-component-legend__wrap">
