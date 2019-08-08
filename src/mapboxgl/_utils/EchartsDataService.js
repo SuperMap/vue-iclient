@@ -243,7 +243,7 @@ export default class EchartsDataService {
           superMapService.getData(queryInfo);
         } else if (datasets.type === 'rest') {
           superMapService = new RestService();
-          superMapService.getData(datasets.url);
+          superMapService.getData(datasets.url, queryInfo);
         }
         superMapService.on('getdatafailed', function(e) {
           reject(e);
