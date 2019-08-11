@@ -50,6 +50,7 @@ export const lang = {
   zh: clonedeep(zhLocale)
 };
 export function initi18n(Vue, config) {
+  config = config || {};
   if (config.i18n) {
     i18n = config.i18n;
     if (!i18n.getDateTimeFormat().hasOwnProperty()) {
