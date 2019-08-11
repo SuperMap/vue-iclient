@@ -1,7 +1,7 @@
 <template>
   <div class="sm-component-image" :style="[getBackgroundStyle]">
     <div v-if="src" class="sm-component-image__content" :style="[repeatStyle,imgUrl]"></div>
-    <i v-else class="sm-components-icons-layers sm-component-image__defaultImg"></i>
+    <i v-else class="sm-components-icons-x-bmp sm-component-image__defaultImg"></i>
   </div>
 </template>
 

@@ -173,7 +173,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'sm-components-icons-search'
+      default: 'sm-components-icons-ditusousuo'
     },
     headerName: {
       type: String,
