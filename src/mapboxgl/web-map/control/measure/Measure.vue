@@ -3,7 +3,7 @@
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
-    :header-name="headerName"
+    :header-name="headerName || $t('measure.mapMeasure')"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     :background="background"
@@ -94,8 +94,8 @@ export default {
       default: 'sm-components-icons-measure'
     },
     headerName: {
-      type: String,
-      default: '量算'
+      type: String
+      // default: geti18n().t('commontypes.iportalData') // '量算'
     },
     showUnitSelect: {
       // 配置单位选择框是否显示，若不显示，则显示对应的默认单位
@@ -252,19 +252,19 @@ export default {
   methods: {
     changeSelectInputStyle() {
       const selectDoms = this.$el.querySelectorAll('.ant-select-selection');
-      selectDoms.forEach(selectDom => {
+      for (let selectDom of selectDoms) {
         if (selectDom) {
           selectDom.style.borderColor = this.getTextColor;
           selectDom.style.color = this.getTextColor;
           selectDom.style.backgroundColor = this.getBackground;
         }
-      });
+      };
     },
     changeChosenStyle(visible) {
       setTimeout(() => {
         const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
         const dropdownDoms = this.$el.querySelectorAll('.ant-select-dropdown');
-        optionList.forEach(item => {
+        for (let item of optionList) {
           if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
             item.style.color = this.getColorStyle(0).color;
             item.style.backgroundColor = this.getBackground;
@@ -272,12 +272,12 @@ export default {
             item.style.color = this.getTextColor;
             item.style.backgroundColor = 'transparent';
           }
-        });
-        dropdownDoms.forEach(dropdownDom => {
+        };
+        for (let dropdownDom of dropdownDoms) {
           if (dropdownDom) {
             dropdownDom.style.backgroundColor = this.getBackground;
           }
-        });
+        };
       }, 0);
     },
     // 切换量算模式

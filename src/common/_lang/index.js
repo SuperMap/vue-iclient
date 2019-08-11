@@ -1,24 +1,15 @@
-import Vue from 'vue';
-import VueI18n from 'vue-i18n';
+// import Vue from 'vue';
 import Cookies from 'js-cookie';
 import enLocale from './en';
 import zhLocale from './zh';
 import clonedeep from 'lodash.clonedeep';
+import VueI18n from 'vue-i18n';
 
 const dateTimeFormats = {
   en: enLocale.dateTimeFormat,
   zh: zhLocale.dateTimeFormat
 };
-
-if (!Vue.prototype.hasOwnProperty('$i18n')) {
-  Object.defineProperty(Vue.prototype, '$i18n', {
-    get: function get() {
-      return i18n;
-    }
-  });
-}
-
-Vue.use(VueI18n);
+let i18n = {};
 
 const messages = {
   en: {
@@ -28,22 +19,6 @@ const messages = {
     ...zhLocale
   }
 };
-const i18n = new VueI18n({
-  dateTimeFormats,
-  locale: getLanguage(),
-  fallbackLocale: 'zh',
-  messages
-});
-
-export function setLocale(locales) {
-  i18n.mergeLocaleMessage(i18n.locale, locales);
-}
-export const lang = {
-  en: clonedeep(enLocale),
-  zh: clonedeep(zhLocale)
-};
-export default i18n;
-
 export function getLanguage() {
   var lang = Cookies.get('language');
   if (!lang) {
@@ -64,6 +39,45 @@ export function getLanguage() {
   }
   return 'zh';
 }
+export function geti18n(n) {
+  return i18n;
+}
+export function setLocale(locales) {
+  i18n.mergeLocaleMessage && i18n.mergeLocaleMessage(i18n.locale, locales);
+}
+export const lang = {
+  en: clonedeep(enLocale),
+  zh: clonedeep(zhLocale)
+};
+export function initi18n(Vue, config) {
+  if (config.i18n) {
+    i18n = config.i18n;
+    if (!i18n.getDateTimeFormat().hasOwnProperty()) {
+      i18n.setDateTimeFormat('en', enLocale.dateTimeFormat);
+      i18n.setDateTimeFormat('zh', zhLocale.dateTimeFormat);
+    }
+  } else if (!Vue.prototype.hasOwnProperty('$i18n')) {
+    Object.defineProperty(Vue.prototype, '$i18n', {
+      get: function get() {
+        return i18n;
+      }
+    });
+    Vue.use(VueI18n);
+    i18n = new VueI18n({
+      dateTimeFormats,
+      locale: getLanguage(),
+      fallbackLocale: 'zh',
+      messages
+    });
+  }
+  if (config.locale) {
+    setLocale(config.locale);
+  } else {
+    setLocale(lang[getLanguage()]);
+  }
+}
+
+export default i18n;
 /*
 Example
 假设国际化资源配置为：

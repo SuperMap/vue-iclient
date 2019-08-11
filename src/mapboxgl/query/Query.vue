@@ -387,20 +387,20 @@ export default {
     },
     changeSelectInputStyle() {
       const selectInputList = this.$el.querySelectorAll('.ant-select-selection');
-      selectInputList.forEach(item => {
+      for (let item of selectInputList) {
         item.style.borderColor = this.getTextColor;
         item.style.color = this.getTextColor;
         item.style.backgroundColor = 'transparent';
-      });
+      };
     },
     changeChosenStyle(visible, e) {
       setTimeout(() => {
         const optionListContainer = this.$el.querySelectorAll('.ant-select-dropdown-content');
-        optionListContainer.forEach(item => {
+        for (let item of optionListContainer) {
           item.style.background = this.backgroundData;
-        });
+        };
         const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
-        optionList.forEach(item => {
+        for (let item of optionList) {
           if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
             item.style.color = this.getColorStyle(0).color;
             item.style.background = this.backgroundData;
@@ -415,7 +415,7 @@ export default {
             !item.classList.contains('ant-select-dropdown-menu-item-selected') &&
               (item.style.color = this.textColorsData);
           });
-        });
+        };
       }, 0);
     },
     changeChosenResultStyle(e) {

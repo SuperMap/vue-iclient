@@ -13,7 +13,7 @@ import {
   Table,
   message
 } from 'ant-design-vue';
-import i18n, { setLocale, lang } from '../common/_lang';
+import { lang, setLocale, initi18n } from '../common/_lang';
 import themeFactory from '../common/_utils/style/theme/theme.json';
 import * as components from './components';
 import '../common/_assets/iconfont/iconfont.css';
@@ -28,9 +28,6 @@ const setTheme = (themeStyle = {}) => {
 };
 
 const install = function(Vue, opts: any = {}) {
-  if (opts.locale) {
-    setLocale(opts.locale);
-  }
   let theme = opts.theme || 'light';
 
   require(`../common/_utils/style/theme/${theme}.scss`);
@@ -49,6 +46,7 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Icon);
   Vue.use(Spin);
   Vue.prototype.$message = message;
+  initi18n(Vue, opts);
   for (let component in components) {
     const com = components[component];
     Vue.component(com.options ? com.options.name : com.name, com);
@@ -65,7 +63,6 @@ export default {
   commontypes,
   utils,
   lang,
-  i18n,
   locale: setLocale,
   install
 };

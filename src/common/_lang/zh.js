@@ -63,7 +63,7 @@ export default {
     noMatchLayer: '没有匹配的图层'
   },
   measure: {
-    mapMeasure: '地图量算',
+    mapMeasure: '量算',
     measureResult: '测量结果',
     kilometers: '千米',
     miles: '英里',

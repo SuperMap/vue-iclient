@@ -1,8 +1,8 @@
 // 获取当前时间返回置顶格式
-import i18n, { getLanguage } from '../../common/_lang';
+import { getLanguage, geti18n } from '../../common/_lang';
 
 export function getDateTime(timeType) {
-  return i18n.d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
+  return geti18n().d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
 }
 // hex -> rgba
 export function hexToRgba(hex, opacity) {

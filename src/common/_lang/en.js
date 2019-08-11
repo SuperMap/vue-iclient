@@ -97,5 +97,8 @@ export default {
     fileSizeExceeded: 'File size exceeded! The file size should not exceed 10M!',
     fileTypeUnsupported: 'File format is not supported!',
     openFileFail: 'Failed to open file！'
+  },
+  measure: {
+    mapMeasure: 'Measure'
   }
 };

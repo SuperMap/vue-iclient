@@ -3,7 +3,7 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 // import RestDataParameter from '../../common/_types/RestDataParameter';
 // import RestMapParameter from '../../common/_types/RestMapParameter';
 import center from '@turf/center';
-import i18n from '../../common/_lang';
+import { geti18n } from '../../common/_lang';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 /**
  * @class QueryViewModel
@@ -144,9 +144,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
        * @description 查询失败后触发。
        * @property {Object} e  - 事件对象。
        */
-      this.fire('queryfailed', { message: i18n.t('query.noResults') });
+      this.fire('queryfailed', { message: geti18n().t('query.noResults') });
     } else {
-      this.fire('queryfailed', { message: i18n.t('query.queryFailed') });
+      this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
     }
   }
 
@@ -158,9 +158,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
       this._addResultLayer(this.queryResult);
       this.fire('querysucceeded', { result: this.queryResult });
     } else if (result && result.totalCount === 0) {
-      this.fire('queryfailed', { message: i18n.t('query.noResults') });
+      this.fire('queryfailed', { message: geti18n().t('query.noResults') });
     } else {
-      this.fire('queryfailed', { message: i18n.t('query.queryFailed') });
+      this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
     }
   }
 
@@ -187,13 +187,13 @@ export default class QueryViewModel extends mapboxgl.Evented {
             } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
               resultData = item;
             } else {
-              this.fire('queryfailed', { message: i18n.t('query.seviceNotSupport') });
+              this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
             }
           }, this);
           // 如果有服务，获取数据源和数据集, 然后请求rest服务
           this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);
         } else {
-          this.fire('queryfailed', { message: i18n.t('query.seviceNotSupport') });
+          this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
         }
       })
       .catch(error => {

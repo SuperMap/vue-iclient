@@ -1,4 +1,4 @@
-import i18n from '../_lang';
+import { geti18n } from '../_lang';
 
 export default class RestMapParameter {
   constructor(options) {
@@ -6,6 +6,6 @@ export default class RestMapParameter {
     this.layerName = options.layerName;
     this.attributeFilter = options.attributeFilter || null;
     this.maxFeatures = options.maxFeatures || 20;
-    this.name = options.name || i18n.t('commontypes.restMap');
+    this.name = options.name || geti18n().t('commontypes.restMap');
   }
 }

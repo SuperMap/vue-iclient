@@ -4,7 +4,7 @@ import area from '@turf/area';
 import center from '@turf/center';
 import { convertLength, convertArea } from '@turf/helpers';
 import { reservedDecimal } from '../../../../common/_utils/util';
-import i18n from '../../../../common/_lang';
+import { geti18n } from '../../../../common/_lang';
 import drawEvent from '../../../_types/draw-event';
 
 /**
@@ -103,7 +103,7 @@ class MeasureViewModel extends mapboxgl.Evented {
             this.cacheLengthUnitList[id][i - 1].value = transValue;
             this.cacheLengthUnitList[id][i - 1].unit = unit;
             if (this.activeMode === 'draw_line_string') {
-              let uniti18n = i18n.t(`measure.${unit}`);
+              let uniti18n = geti18n().t(`measure.${unit}`);
               tipNodes[i] && tipNodes[i].setText(`${transValue} ${uniti18n}`);
             }
           }
@@ -112,7 +112,7 @@ class MeasureViewModel extends mapboxgl.Evented {
       this.result && (this.result = convertLength(this.result, this.activeUnit, unit));
     } else if (this.cachePolygonUnit.value && this.cachePolygonUnit.unit) {
       let transValue = convertArea(this.cachePolygonUnit.value, this.cachePolygonUnit.unit, unit);
-      let uniti18n = i18n.t(`measure.square${unit}`);
+      let uniti18n = geti18n().t(`measure.square${unit}`);
       this.tipHoverDiv && this.tipHoverDiv.setText(`${transValue} ${uniti18n}`);
       this.result && (this.result = convertArea(this.result, this.activeUnit, unit));
     }
@@ -206,9 +206,9 @@ class MeasureViewModel extends mapboxgl.Evented {
       }
       let uniti18n;
       if (this.activeMode === 'draw_line_string') {
-        uniti18n = i18n.t(`measure.${this.activeUnit}`);
+        uniti18n = geti18n().t(`measure.${this.activeUnit}`);
       } else if (this.activeMode === 'draw_polygon') {
-        uniti18n = i18n.t(`measure.square${this.activeUnit}`);
+        uniti18n = geti18n().t(`measure.square${this.activeUnit}`);
       }
       popup.setText(`${this._getFormatResult(this.result)} ${uniti18n}`);
       popup.addTo(this.map);
@@ -243,9 +243,9 @@ class MeasureViewModel extends mapboxgl.Evented {
 
       let uniti18n;
       if (this.activeMode === 'draw_line_string') {
-        uniti18n = i18n.t(`measure.${this.activeUnit}`);
+        uniti18n = geti18n().t(`measure.${this.activeUnit}`);
       } else if (this.activeMode === 'draw_polygon') {
-        uniti18n = i18n.t(`measure.square${this.activeUnit}`);
+        uniti18n = geti18n().t(`measure.square${this.activeUnit}`);
       }
       let renderText = `${this._getFormatResult(calcValue)} ${uniti18n}`;
 
@@ -290,7 +290,7 @@ class MeasureViewModel extends mapboxgl.Evented {
   _updateAreaPopupNodes(popupResult, feature) {
     // 如果是测量面积，直接利用实时计算生成的popup显示最后结果
     const centerResult = center(feature);
-    let uniti18n = i18n.t(`measure.square${this.activeUnit}`);
+    let uniti18n = geti18n().t(`measure.square${this.activeUnit}`);
     const result = this._getFormatResult(popupResult);
     if (this.continueDraw) {
       this.tipHoverDiv &&

@@ -117,7 +117,7 @@ export default {
     changCheckStyle() {
       setTimeout(() => {
         const checkBoxsList = this.$el.querySelectorAll('.ant-checkbox');
-        checkBoxsList.forEach(item => {
+        for (let item of checkBoxsList) {
           let childrens = item.childNodes;
           let checkbox = childrens[1];
           // let label = item.parentNode.childNodes[1];
@@ -130,7 +130,7 @@ export default {
             checkbox.style.backgroundColor = '#fff';
             // label.style.color = this.getTextColor;
           }
-        });
+        };
       }, 0);
     },
     toggleVisibility(sourceLayer, sourceName, visibility) {
