@@ -19,6 +19,7 @@ import * as components from './components';
 import '../common/_assets/iconfont/iconfont.css';
 import * as commontypes from './_types';
 import * as utils from './_utils';
+import VueCesium from 'vue-cesium';
 
 const setTheme = (themeStyle = {}) => {
   if (typeof themeStyle === 'string') {
@@ -45,6 +46,9 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Progress);
   Vue.use(Icon);
   Vue.use(Spin);
+  Vue.use(VueCesium, {
+    cesiumPath: '../../static/libs/Cesium/Cesium.js'
+  });
   Vue.prototype.$message = message;
   initi18n(Vue, opts);
   for (let component in components) {
