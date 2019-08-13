@@ -30,6 +30,8 @@ export default class RestService extends mapboxgl.Evented {
                 .forEach(item => {
                   res[item[0]] = item[1];
                 });
+            }else {
+              res = data.data;
             }
           } else {
             res = data.data;

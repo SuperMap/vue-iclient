@@ -342,6 +342,9 @@ export default {
       });
     },
     _optionsHandler(options, dataOptions) {
+      if (options && options.legend && !options.legend.type) {
+        options.legend.type = 'scroll';
+      }
       if (options && options.xAxis && dataOptions.xAxis) {
         if (dataOptions.series.length === 0) {
           options.xAxis = [{}];
@@ -359,6 +362,11 @@ export default {
           options.series = dataOptions.series.map((element, index) => {
             return Object.assign({}, options.series[index] || {}, element);
           });
+          if (options.legend && options.series.length === 1 && options.series[0].type === 'pie') {
+            options.legend.data = options.series[0].data.map(item => {
+              return item.name;
+            });
+          }
         }
       }
       if (options && options.radar && dataOptions.radar) {

@@ -424,6 +424,9 @@ export const chartThemeUtil = (background = 'rgba(255, 255, 255, 0.6)', textColo
     'legend': {
       'textStyle': {
         'color': textColor
+      },
+      'pageTextStyle':{
+        'color': textColor
       }
     },
     'tooltip': {
