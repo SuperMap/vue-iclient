@@ -21,14 +21,16 @@ export default class RestService extends mapboxgl.Evented {
             data
           });
         } else if (data && data.success === true && data.code === 200) {
-          let length = queryInfo.maxFeatures;
           let res = {};
-          if (queryInfo && queryInfo.maxFeatures && Object.keys(data.data).length > length) {
-            Object.entries(data.data)
-              .slice(0, length)
-              .forEach(item => {
-                res[item[0]] = item[1];
-              });
+          if (queryInfo && queryInfo.maxFeatures) {
+            let length = queryInfo.maxFeatures;
+            if (Object.keys(data.data).length > length) {
+              Object.entries(data.data)
+                .slice(0, length)
+                .forEach(item => {
+                  res[item[0]] = item[1];
+                });
+            }
           } else {
             res = data.data;
           }
