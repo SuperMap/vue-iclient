@@ -362,9 +362,15 @@ export default {
           options.series = dataOptions.series.map((element, index) => {
             return Object.assign({}, options.series[index] || {}, element);
           });
-          if (options.legend && options.series.length === 1 && options.series[0].type === 'pie') {
-            options.legend.data = options.series[0].data.map(item => {
-              return item.name;
+          // pie的图例需要一个扇形是一个图例
+          if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
+            options.legend.data = [];
+            options.series.forEach(element => {
+              options.legend.data.push(
+                ...element.data.map(item => {
+                  return item.name;
+                })
+              );
             });
           }
         }
