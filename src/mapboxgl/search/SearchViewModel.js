@@ -115,13 +115,18 @@ export default class SearchViewModel extends mapboxgl.Evented {
    * @param {String} sourceName - 要素的来源名称。
    */
   getFeatureInfo(searchKey, data, sourceName) {
+    const { resultRender } = this.options;
     this.keyWord = searchKey;
     this._reset();
     if (sourceName === 'Tianditu Search') {
       this._searchFromTianditu().then(res => {
         const { data: info = {} } = res;
         let data = info.lineData || info.pois || (info.area && [info.area]);
-        if (!this.options.addToMap || !data || (data && !data.length)) return;
+        if (resultRender && typeof resultRender === 'function') {
+          resultRender(data);
+          return;
+        }
+        if (!data || data.length) return;
         if (res.type === 'Point' || res.type === 'Polygon') {
           data.forEach((item, index) => {
             const feature = {
@@ -141,7 +146,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
       return;
     }
     this.fire('search-selected-info' + this.searchTaskId, { data });
-    this.options.addToMap && this._showResultToMap(data, sourceName);
+    if (resultRender && typeof resultRender === 'function') {
+      resultRender(data);
+      return;
+    }
+    this._showResultToMap(data, sourceName);
   }
 
   _showResultToMap(feature, sourceName) {
@@ -474,14 +483,14 @@ export default class SearchViewModel extends mapboxgl.Evented {
         } else if (dataCollection) {
           type = 'Point';
           results = dataCollection;
-        } else if (res.prompt && !(+res.count)) {
+        } else if (res.prompt && !+res.count) {
           results = [];
         } else {
           this._searchFeaturesFailed('', sourceName);
         }
         this.searchNormalOfTianditu &&
           results &&
-          this.fire('search-selected-info' + this.searchTaskId, { data: { type, data: res } });
+          this.fire('search-selected-info' + this.searchTaskId, { data: res });
         !this.searchNormalOfTianditu && results && this._searchFeaturesSucceed(results, sourceName);
         return { type, data: res };
       })
@@ -619,7 +628,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.searchTaskId = 0;
     this.searchResult = {};
     this.errorSourceList = {};
-    if (this.options.addToMap) {
+    if (this.options.resultRender) {
       this._clearSearchResultLayer();
       this._clearMarkers();
       this._clearPopups();

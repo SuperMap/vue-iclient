@@ -27,6 +27,7 @@
       ></sm-search>
       <sm-mini-map position="bottom-right"></sm-mini-map>
       <sm-measure position="top-right"></sm-measure>
+      <sm-draw position="top-right"></sm-draw>
       <sm-raster-tile-layer v-bind="rasteLayerOptions"></sm-raster-tile-layer>
       <sm-vector-tile-layer
         style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"

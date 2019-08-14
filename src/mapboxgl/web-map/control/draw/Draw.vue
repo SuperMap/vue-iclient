@@ -44,6 +44,9 @@ export default {
     headerName: {
       type: String,
       default: '绘制'
+    },
+    layerStyle: {
+      type: Object
     }
   },
   data() {
@@ -57,14 +60,22 @@ export default {
       activeMode: null
     };
   },
+  watch: {
+    layerStyle: {
+      handler() {
+        this.viewModel && this.viewModel.setLayerStyle(this.layerStyle);
+      },
+      deep: true
+    }
+  },
   loaded() {
     const mapTarget = this.getTargetName();
     this.viewModel = new DrawViewModel(this.map, mapTarget);
     this.initEvent();
   },
-  removed() {
+  removed(deleteState) {
     this.activeMode = null;
-    this.viewModel && this.viewModel.clear();
+    this.viewModel && this.viewModel.clear(deleteState);
   },
   beforeDestroy() {
     this.$options.removed.call(this);
@@ -86,6 +97,7 @@ export default {
           if (mode === 'trash') {
             this.viewModel.trash();
             this.activeMode = null;
+            this.$emit('draw-removed', {});
             return;
           }
           this.viewModel.openDraw(mode);
@@ -94,6 +106,10 @@ export default {
           this.nonMapTip();
         }
       }, 0);
+    },
+    // 提供对外方法：清空features
+    clear() {
+      this.$options.removed.call(this, false);
     }
   }
 };

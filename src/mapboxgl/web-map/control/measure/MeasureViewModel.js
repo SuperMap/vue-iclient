@@ -83,11 +83,6 @@ class MeasureViewModel extends mapboxgl.Evented {
     this.map.on('mousedown', this.measureNodeDistanceBind);
   }
 
-  closeDraw() {
-    this._resetDraw();
-    this._clearEvent();
-  }
-
   updateUnit(unit) {
     if (Object.values(this.lenTipNodesList).length) {
       for (let id in this.lenTipNodesList) {
@@ -343,14 +338,26 @@ class MeasureViewModel extends mapboxgl.Evented {
     this.tipHoverDiv = null;
   }
 
+  trash() {
+    const selectedIds = this.draw.getSelectedIds();
+    selectedIds.forEach(item => {
+      const matchIndex = this.ids.findIndex(id => id === item);
+      if (matchIndex > -1) {
+        this.ids.splice(matchIndex, 1);
+        // 现在关闭多选 所以在保留原有逻辑下 selectedIds的长度最多为1 所以能调用以下方法
+        this._removePopups();
+        this._removeHoverPopup();
+      }
+    });
+    this.draw.trash();
+  }
+
   removeDraw() {
     this.isEditing = false;
-    if (this.ids) {
-      this.draw.delete(this.ids);
-      this.ids = null;
-    }
-    this.draw.trash();
-    this.closeDraw();
+    this.ids = [];
+    this.draw.deleteAll();
+    this._resetDraw();
+    this._clearEvent();
     this._removePopups();
     this._removeHoverPopup();
   }
@@ -359,12 +366,16 @@ class MeasureViewModel extends mapboxgl.Evented {
     this._clearEvent();
   }
 
-  clear() {
-    const map = drawEvent.$options.getDraw(this.mapTarget);
-    if (this.draw && map) {
-      this.closeDraw();
+  clear(deleteState = true) {
+    if (drawEvent.$options.getDraw(this.mapTarget, false)) {
       this.removeDraw();
-      drawEvent.$options.deleteDrawingState(this.mapTarget, this.componentName);
+      deleteState && drawEvent.$options.deleteDrawingState(this.mapTarget, this.componentName);
+    } else {
+      this.isEditing = false;
+      this.ids = [];
+      this._clearEvent();
+      this._removePopups();
+      this._removeHoverPopup();
     }
   }
 }

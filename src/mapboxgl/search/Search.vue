@@ -206,9 +206,8 @@ export default {
       type: Boolean,
       default: true
     },
-    addToMap: {
-      type: Boolean,
-      default: true
+    resultRender: {
+      type: Function
     }
   },
   data() {
@@ -291,6 +290,10 @@ export default {
       this.searchResult = [];
       this.marker && this.marker.remove() && (this.marker = null);
       this.prefixType = 'search';
+      this.keyupHoverInfo = {
+        groupIndex: undefined,
+        hoverIndex: undefined
+      };
     },
     searchInput(e) {
       if (this.openSearchSuggestion && !this.isInputing) {
