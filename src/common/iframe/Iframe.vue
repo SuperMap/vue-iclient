@@ -1,5 +1,5 @@
 <template>
-  <iframe :src="src" scrolling="auto"></iframe>
+  <iframe :src="src" scrolling="auto" class="sm-component-iframe"></iframe>
 </template>
 
 <script>
