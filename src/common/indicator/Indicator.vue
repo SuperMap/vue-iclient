@@ -42,6 +42,10 @@ export default {
     fontSize: {
       type: [String, Number]
     },
+    fontWeight: {
+      type: [String, Number],
+      default: 'border'
+    },
     num: {
       type: [Number, String],
       default: 0
@@ -72,7 +76,8 @@ export default {
       const reg = /\d+(\.\d+)?([a-z]+)/gi;
       const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
       return {
-        fontSize: parseFloat(this.fontSize) * 0.66 + fontUnit
+        fontSize: parseFloat(this.fontSize) * 0.66 + fontUnit,
+        fontWeight: this.fontWeight
       };
     },
     indicatorStyle() {
