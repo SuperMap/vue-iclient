@@ -1,5 +1,5 @@
 $--assets-path: './web-map/control/pan/assets' !default;
-@import "../common/_utils/style/common/common.scss";
+@import '../common/_utils/style/common/common.scss';
 /** common */
 @import '../common/indicator/style/indicator.scss';
 @import '../common/text/style/text.scss';
@@ -11,6 +11,7 @@ $--assets-path: './web-map/control/pan/assets' !default;
 @import '../common/table-popup/style/tablePopup.scss';
 @import '../common/border/style/border.scss';
 @import '../common/image/style/image.scss';
+@import '../common/video-player/style/video-player.scss';
 /** control */
 @import './web-map/control/scale/style/scale.scss';
 @import './web-map/control/zoom/style/zoom.scss';

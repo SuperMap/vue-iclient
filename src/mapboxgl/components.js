@@ -7,6 +7,8 @@ export { default as Text } from '../common/text/Text';
 export { default as TimeText } from '../common/time-text/TimeText';
 export { default as Border } from '../common/border/Border';
 export { default as Image } from '../common/image/Image';
+export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
+
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
 export { default as DataFlowLayer } from './web-map/layer/dataflow/DataFlowLayer';

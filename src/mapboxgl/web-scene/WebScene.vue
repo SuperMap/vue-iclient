@@ -12,7 +12,7 @@ import isEqual from 'lodash.isequal';
 @Component({
   name: 'SmWebScene'
 })
-class VueCesium extends Vue {
+class SmWebScene extends Vue {
   WebSceneViewModel: WebSceneViewModel;
 
   @Prop() sceneUrl: string;
@@ -74,5 +74,5 @@ class VueCesium extends Vue {
     });
   }
 }
-export default VueCesium;
+export default SmWebScene;
 </script>

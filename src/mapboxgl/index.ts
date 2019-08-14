@@ -11,7 +11,8 @@ import {
   Input,
   Slider,
   Table,
-  message
+  message,
+  Modal
 } from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
 import themeFactory from '../common/_utils/style/theme/theme.json';
@@ -46,6 +47,7 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Progress);
   Vue.use(Icon);
   Vue.use(Spin);
+  Vue.use(Modal);
   Vue.use(VueCesium, {
     cesiumPath: '../../static/libs/Cesium/Cesium.js'
   });
