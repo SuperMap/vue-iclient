@@ -8,6 +8,7 @@ export { default as TimeText } from '../common/time-text/TimeText';
 export { default as Border } from '../common/border/Border';
 export { default as Image } from '../common/image/Image';
 export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
+export { default as Iframe } from '../common/iframe/Iframe';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

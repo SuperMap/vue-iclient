@@ -12,6 +12,7 @@ $--assets-path: './web-map/control/pan/assets' !default;
 @import '../common/border/style/border.scss';
 @import '../common/image/style/image.scss';
 @import '../common/video-player/style/video-player.scss';
+@import '../common/iframe/style/iframe.scss';
 /** control */
 @import './web-map/control/scale/style/scale.scss';
 @import './web-map/control/zoom/style/zoom.scss';
