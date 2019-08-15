@@ -123,7 +123,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         const { data: info = {} } = res;
         let data = info.lineData || info.pois || (info.area && [info.area]);
         if (resultRender && typeof resultRender === 'function') {
-          resultRender(data);
+          resultRender(info);
           return;
         }
         if (!data || data.length) return;
