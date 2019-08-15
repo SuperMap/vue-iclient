@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-indicator" :style="[getBackgroundStyle]">
+  <div class="sm-component-indicator" :style="[getBackgroundStyle,{'flex-direction':direction}]">
     <div class="sm-component-indicator__head">
       <span
         class="sm-component-indicator__title"
@@ -7,10 +7,15 @@
       >{{ titleData }}</span>
     </div>
     <div class="sm-component-indicator__content">
-      <span
-        class="sm-component-indicator__num"
-        :style="[numStyle, indicatorStyle]"
-      >{{ numberSymbol }}</span>
+      <span class="sm-component-indicator__num" :style="[numStyle, indicatorStyle]">
+        <countTo
+          ref="countTo"
+          :startVal="startData"
+          :endVal="numData"
+          :duration="Number(duration) || 1000"
+          :separator="separator"
+        ></countTo>
+      </span>
       <span
         class="sm-component-indicator__unit"
         :style="[unit_titleStyle, getTextColorStyle]"
@@ -23,9 +28,13 @@
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
 import RestService from '../../mapboxgl/_utils/RestService';
+import countTo from 'vue-count-to';
 
 export default {
   name: 'SmIndicator',
+  components: {
+    countTo
+  },
   mixins: [Theme, Timer],
   props: {
     title: {
@@ -52,23 +61,36 @@ export default {
     },
     url: {
       type: String
+    },
+    animated: {
+      type: Boolean,
+      default: false
+    },
+    duration: {
+      type: [Number, String],
+      default: 1000
+    },
+    mode: {
+      type: String,
+      default: 'vertical',
+      validator: function(val) {
+        return ['vertical', 'horizontal'];
+      }
+    },
+    separator: {
+      type: String,
+      default: ','
     }
   },
   data() {
     return {
       titleData: this.title,
       unitData: this.unit,
-      numData: this.num
+      numData: this.num,
+      startData: 0
     };
   },
   computed: {
-    numberSymbol() {
-      let numberSymbol = this.numData;
-      if (this.isNumber(parseFloat(this.numData))) {
-        numberSymbol = this.addNumberSymbol(this.numData);
-      }
-      return numberSymbol;
-    },
     numStyle() {
       return { fontSize: this.fontSize };
     },
@@ -82,6 +104,9 @@ export default {
     },
     indicatorStyle() {
       return (this.indicatorColor && { color: this.indicatorColor }) || this.getColorStyle(0);
+    },
+    direction() {
+      return { vertical: 'column', horizon: 'row' }[this.mode];
     }
   },
   watch: {
@@ -91,7 +116,7 @@ export default {
           this.getData();
         } else {
           this.unitData = this.unit;
-          this.numData = this.num;
+          this.changeNumData(this.num);
           this.titleData = this.title;
         }
       },
@@ -104,7 +129,13 @@ export default {
       this.unitData = val;
     },
     num(val) {
-      this.numData = val;
+      this.changeNumData(val);
+    },
+    separator() {
+      this.$nextTick(() => {
+        this.startData = this.numData;
+        this.$refs.countTo.start();
+      });
     }
   },
   mounted() {
@@ -115,38 +146,20 @@ export default {
     this.restService.off('getdatasucceeded', this.fetchData);
   },
   methods: {
-    // 给数字添加千位符并对.N个0的小数取整
-    addNumberSymbol(num) {
-      num = num.toString();
-      let index = num.lastIndexOf('.');
-      let integer = num;
-      let decimal = '';
-      if (index > 0) {
-        integer = num.substring(0, index);
-        decimal = num.substring(index);
-      }
-      integer = integer.replace(/(\d{1,3})(?=(\d{3})+$)/g, '$1,');
-      num = integer + decimal; // 整数 + .小数
-      if (/\.0+$/.test(decimal)) {
-        // 判断 小数 是否为.N个0的形式
-        num = integer;
-      }
-      return num;
-    },
-    // 判断是纯数字
-    isNumber(str) {
-      return /^\d+$/.test(str);
-    },
     timing() {
       this.getData();
     },
     fetchData(data) {
       this.unitData = data.data.unit;
-      this.numData = data.data.num;
+      this.changeNumData(data.data.num);
       this.titleData = data.data.title;
     },
     getData() {
       this.restService && this.restService.getData(this.url);
+    },
+    changeNumData(newData) {
+      this.startData = this.animated ? +this.numData : +newData;
+      this.numData = +newData;
     }
   }
 };
