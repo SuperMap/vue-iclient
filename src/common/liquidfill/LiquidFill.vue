@@ -30,7 +30,7 @@ export default {
     },
     // 字体
     fontSize: {
-      type: Number
+      type: [Number, String]
     },
     // 波浪颜色
     waveColor: {
@@ -153,7 +153,7 @@ export default {
             radius: '95%',
             data: this.calcData,
             label: {
-              fontSize: this.fontSize,
+              fontSize: parseFloat(this.fontSize),
               color: this.labelColorData,
               insideColor: this.insideLabelColor
             },

@@ -86,7 +86,7 @@ export default {
     return {
       titleData: this.title,
       unitData: this.unit,
-      numData: this.num,
+      numData: 0,
       startData: 0
     };
   },
@@ -128,8 +128,11 @@ export default {
     unit(val) {
       this.unitData = val;
     },
-    num(val) {
-      this.changeNumData(val);
+    num: {
+      handler(val) {
+        this.changeNumData(val);
+      },
+      immediate: true
     },
     separator() {
       this.$nextTick(() => {
