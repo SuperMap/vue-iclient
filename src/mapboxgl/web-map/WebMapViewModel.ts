@@ -137,6 +137,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   fire: any;
 
+  echartslayer: any = [];
+
   private _sourceListModel: SourceListModel;
 
   private _legendList: any;
@@ -164,6 +166,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
     this.center = mapOptions.center || [];
     this.zoom = mapOptions.zoom;
+    this.echartslayer = [];
     this._createWebMap();
   }
   /**
@@ -172,7 +175,18 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    */
   resize(): void {
     this.map && this.map.resize();
+    this.echartsLayerResize();
   }
+  /**
+   * @function WebMapViewModel.prototype.EchartsLayerResize
+   * @description echartslayer 更新大小。
+   */
+  echartsLayerResize(): void {
+    this.echartslayer.forEach(echartslayer => {
+      echartslayer.chart.resize();
+    });
+  }
+
   /**
    * @function WebMapViewModel.prototype.setMapId
    * @description 设置地图 ID。
@@ -1513,6 +1527,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let options = this._createOptions(layerInfo, lineData, pointData);
     let echartslayer = new EchartsLayer(this.map);
     echartslayer.chart.setOption(options);
+    this.echartslayer.push(echartslayer);
   }
 
   private _createOptions(layerInfo, lineData, pointData) {
