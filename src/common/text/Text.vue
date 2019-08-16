@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-text" :style="[fontStyle, getBackgroundStyle, getTextColorStyle]">
+  <div class="sm-component-text" :style="[customStyle, getBackgroundStyle, getTextColorStyle]">
     <span>{{ finalTitle }}</span>
   </div>
 </template>
@@ -27,6 +27,17 @@ export default {
     return {
       finalTitle: this.title
     };
+  },
+  computed: {
+    customStyle() {
+      let style = Object.assign({}, this.fontStyle);
+      if (style.textAlign && !style.justifyContent) {
+        const textAlign = style.textAlign;
+        style.justifyContent = textAlign === 'left' ? 'flex-start' : textAlign === 'right' ? 'flex-end' : 'center';
+        delete style.textAlign;
+      }
+      return style;
+    }
   },
   watch: {
     title(val) {
