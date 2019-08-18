@@ -2,21 +2,28 @@
   <div class="sm-component-indicator" :style="[getBackgroundStyle,{'flex-direction':direction}]">
     <div class="sm-component-indicator__head">
       <span
+        v-show="showTitleUnit"
         class="sm-component-indicator__title"
         :style="[unit_titleStyle, getTextColorStyle]"
       >{{ titleData }}</span>
     </div>
     <div class="sm-component-indicator__content">
-      <span class="sm-component-indicator__num" :style="[numStyle, indicatorStyle]">
+      <span class="sm-component-indicator__num" :style="[indicatorStyle]">
         <countTo
           ref="countTo"
+          :decimals="numData.toString().split('.')[1]?numData.toString().split('.')[1].length:0"
           :startVal="startData"
           :endVal="numData"
           :duration="Number(duration) || 1000"
           :separator="separator"
+          :numBackground="numBackground"
+          :numSpacing="numSpacing"
+          :separatorBackground="separatorBackground"
+          :fontSize="fontSize"
         ></countTo>
       </span>
       <span
+        v-show="showTitleUnit"
         class="sm-component-indicator__unit"
         :style="[unit_titleStyle, getTextColorStyle]"
       >{{ unitData }}</span>
@@ -28,12 +35,12 @@
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
 import RestService from '../../mapboxgl/_utils/RestService';
-import countTo from 'vue-count-to';
+import CountTo from './CountTo';
 
 export default {
   name: 'SmIndicator',
   components: {
-    countTo
+    countTo: CountTo
   },
   mixins: [Theme, Timer],
   props: {
@@ -80,6 +87,21 @@ export default {
     separator: {
       type: String,
       default: ','
+    },
+    numSpacing: {
+      type: Number,
+      default: 0
+    },
+    numBackground: {
+      type: Object
+    },
+    separatorBackground: {
+      type: Boolean,
+      default: false
+    },
+    showTitleUnit: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -91,9 +113,6 @@ export default {
     };
   },
   computed: {
-    numStyle() {
-      return { fontSize: this.fontSize };
-    },
     unit_titleStyle() {
       const reg = /\d+(\.\d+)?([a-z]+)/gi;
       const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
@@ -106,7 +125,7 @@ export default {
       return (this.indicatorColor && { color: this.indicatorColor }) || this.getColorStyle(0);
     },
     direction() {
-      return { vertical: 'column', horizon: 'row' }[this.mode];
+      return { vertical: 'column', horizontal: 'row' }[this.mode];
     }
   },
   watch: {
@@ -141,12 +160,8 @@ export default {
       });
     }
   },
-  mounted() {
-    this.restService = new RestService();
-    this.restService.on('getdatasucceeded', this.fetchData);
-  },
   beforeDestroy() {
-    this.restService.off('getdatasucceeded', this.fetchData);
+    this.restService && this.restService.off('getdatasucceeded', this.fetchData);
   },
   methods: {
     timing() {
@@ -158,11 +173,18 @@ export default {
       this.titleData = data.data.title;
     },
     getData() {
-      this.restService && this.restService.getData(this.url);
+      this.getRestService().getData(this.url);
     },
     changeNumData(newData) {
       this.startData = this.animated ? +this.numData : +newData;
       this.numData = +newData;
+    },
+    getRestService() {
+      if (!this.restService) {
+        this.restService = new RestService();
+        this.restService.on('getdatasucceeded', this.fetchData);
+      }
+      return this.restService;
     }
   }
 };
