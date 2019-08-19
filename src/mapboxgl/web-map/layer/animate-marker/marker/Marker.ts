@@ -31,10 +31,19 @@ export default abstract class Marker {
   }
 
   public setMarkersTextField(textField: string): void {
+    if (!this.features || JSON.stringify(this.features) === '{}') {
+      return;
+    }
     this.options.textField = textField;
     let name = document.getElementsByClassName('sm-component-animate-marker__name');
+
     for (let i = 0; i < name.length; i++) {
-      name[i].innerHTML = this.features.features[i].properties[textField];
+      let properties = this.features.features[i] && this.features.features[i].properties;
+      if (properties && properties[textField]) {
+        name[i].innerHTML = properties[textField];
+      } else {
+        name[i].innerHTML = '';
+      }
     }
   }
 
@@ -62,8 +71,11 @@ export default abstract class Marker {
     if (color.indexOf('rgba') > -1) {
       return color.substring(0, color.lastIndexOf(',') + 1) + opacity + ')';
     }
-    const newColor = colorcolor(color, 'rgba', true);
-    return newColor.substring(0, newColor.length - 2) + opacity + ')';
+    let newColor = colorcolor(color, 'rgba', true);
+    let colorArr = newColor.split(',');
+    colorArr[3] = `${opacity})`;
+    newColor = colorArr.join(',');
+    return newColor;
   }
 
   protected _getTextContainer(point: Feature, className: string): HTMLElement {

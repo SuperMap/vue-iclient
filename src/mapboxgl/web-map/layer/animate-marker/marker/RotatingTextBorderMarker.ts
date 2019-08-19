@@ -39,10 +39,18 @@ export default class RotatingTextBorderMarker extends Marker {
   }
 
   public setMarkersTextField(textField) {
+    if (!this.features || JSON.stringify(this.features) === '{}') {
+      return;
+    }
     this.options.textField = textField;
     let name = document.getElementsByClassName('sm-component-animate-marker__text');
     for (let i = 0; i < name.length; i++) {
-      name[i].innerHTML = this.features.features[i].properties[textField];
+      let properties = this.features.features[i] && this.features.features[i].properties;
+      if (properties && properties[textField]) {
+        name[i].innerHTML = properties[textField];
+      }else{
+        name[i].innerHTML = '';
+      }
     }
   }
 

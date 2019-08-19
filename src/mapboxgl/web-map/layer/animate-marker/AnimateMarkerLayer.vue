@@ -7,6 +7,7 @@ import DiffusedApertureMarker from './marker/DiffusedApertureMarker';
 import HaloRingMarker from './marker/HaloRingMarker';
 import RotatingApertureMarker from './marker/RotatingApertureMarker';
 import RotatingTextBorderMarker from './marker/RotatingTextBorderMarker';
+import isEqual from 'lodash.isequal';
 
 // eslint-disable-next-line
 import { FeatureCollection } from 'geojson';
@@ -53,11 +54,11 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   @Prop() textField: string;
 
   @Watch('features')
-  featuresChanged() {
-    if (this.viewModel) {
+  featuresChanged(newVal, oldVal) {
+    if (this.viewModel && !isEqual(newVal, oldVal)) {
       this._markersElement = [];
       this._getMarkerElement();
-      this.viewModel.setFeatures(this.features, this._markersElement);
+      this.features && this.viewModel.setFeatures(this.features, this._markersElement);
     }
   }
 
@@ -115,10 +116,19 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   mounted() {
     this._markersElement = [];
   }
+
+  beforeDestroy() {
+    this.viewModel && this.viewModel.clearMarkerLayer();
+  }
+
   /* methods */
   _getMarkerElement(): void {
     this.marker = null;
     let { features, width, height, colors, textFontSize, textColor, textField } = this;
+    if (!this.features || JSON.stringify(this.features) === '{}' || !this.features.features) {
+      this.viewModel && this.viewModel.clearMarkerLayer();
+      return;
+    }
     switch (this.type) {
       case 'rotatingAperture':
         this.marker = new RotatingApertureMarker(features, { width, colors, textField, textColor, textFontSize });

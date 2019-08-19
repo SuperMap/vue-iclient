@@ -1,4 +1,7 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import envelope from '@turf/envelope';
+import bbox from '@turf/bbox';
+import transformScale from '@turf/transform-scale';
 import { FeatureCollection } from 'geojson';
 
 export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
@@ -34,7 +37,10 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
   }
 
   private _initalizeMarkerLayer() {
-    this._clearMarkerLayer();
+    if (!this.features || JSON.stringify(this.features) === '{}') {
+      return;
+    }
+    this.clearMarkerLayer();
     this._createMarker();
   }
   private _createMarker() {
@@ -45,9 +51,12 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
         .addTo(this.map);
       this.markers.push(marker);
     }, this);
+    // @ts-ignore
+    const bounds = bbox(transformScale(envelope(this.features), 1.7));
+    this.map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], { maxZoom: 17 });
   }
 
-  private _clearMarkerLayer() {
+  public clearMarkerLayer() {
     this.markers.length > 0 &&
       this.markers.forEach(marker => {
         marker && marker.remove();
