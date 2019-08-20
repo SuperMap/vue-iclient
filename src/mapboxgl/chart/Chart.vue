@@ -48,6 +48,7 @@ import isEqual from 'lodash.isequal';
  * @vue-prop {Boolean} [autoresize = true] - 用来指定 ECharts 实例在组件根元素尺寸变化时是否需要自动进行重绘。
  * @vue-prop {String} group - 实例的分组，会自动绑定到 ECharts 组件的同名属性上。
  * @vue-prop {Boolean} [manualUpdate = false] - 在性能敏感（数据量很大）的场景下，我们最好对于 options prop 绕过 Vue 的响应式系统。当将 manual-update prop 指定为 true 且不传入 options prop 时，数据将不会被监听。然后，你需要用 ref 获取组件实例以后手动调用 mergeOptions 方法来更新图表。
+ * @vue-prop {Boolean} [autoPlay = false] - 是否自动播放，图表类型为 pie 时生效。
  * @vue-computed {String} computedOptions - 用来读取 ECharts 更新内部 options 后的实际数据。
  * @vue-event {Object} legendselectchanged - 切换图例选中状态后的事件。
  * @vue-event {Object} legendselected - 图例选中后的事件。
@@ -173,6 +174,10 @@ export default {
     manualUpdate: {
       type: Boolean,
       default: false
+    },
+    autoPlay: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -282,6 +287,9 @@ export default {
     },
     computedOptions() {
       return this.smChart && this.smChart.computedOptions;
+    },
+    autoPlay() {
+      this._handlePieAutoPlay();
     }
   },
   created() {
@@ -303,11 +311,62 @@ export default {
         this.$emit(event, params);
       });
     });
-
+    !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
   },
+  updated() {
+    this._handlePieAutoPlay(); // 更新自动播放
+  },
+  beforeDestroy() {
+    clearInterval(this.pieAutoPlay); // clear 自动播放
+  },
   methods: {
+    _handlePieAutoPlay() {
+      let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
+      let echartsNode = this.smChart.chart;
+      if (
+        this._chartOptions.legend &&
+        this._chartOptions.legend.data &&
+        this._chartOptions.legend.data.length &&
+        echartsNode &&
+        seriesType === 'pie'
+      ) {
+        this.clearPieAutoPlay(echartsNode);
+        if (this.autoPlay) {
+          this.setPieAutoPlay(echartsNode);
+        }
+      }
+    },
+    setPieAutoPlay(echartsNode) {
+      let i = -1;
+      this.pieAutoPlay = setInterval(() => {
+        echartsNode.dispatchAction({
+          type: 'downplay',
+          seriesIndex: 0,
+          dataIndex: i
+        });
+        i++;
+        if (i >= this._chartOptions.legend.data.length) {
+          i = 0;
+        }
+        echartsNode.dispatchAction({
+          type: 'highlight',
+          seriesIndex: 0,
+          dataIndex: i
+        });
+      }, 2000);
+    },
+    clearPieAutoPlay(echartsNode) {
+      clearInterval(this.pieAutoPlay);
+      for (let i = 0; i < this._chartOptions.legend.data.length; i++) {
+        echartsNode.dispatchAction({
+          type: 'downplay',
+          seriesIndex: 0,
+          dataIndex: i
+        });
+      }
+    },
     timing() {
       this.echartsDataService &&
         this.echartsDataService.getDataOption(this.dataset).then(options => {
