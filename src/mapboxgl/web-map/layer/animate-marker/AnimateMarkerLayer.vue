@@ -7,6 +7,7 @@ import DiffusedApertureMarker from './marker/DiffusedApertureMarker';
 import HaloRingMarker from './marker/HaloRingMarker';
 import RotatingApertureMarker from './marker/RotatingApertureMarker';
 import RotatingTextBorderMarker from './marker/RotatingTextBorderMarker';
+import FluorescenceMarker from './marker/FluorescenceMarker';
 import isEqual from 'lodash.isequal';
 
 // eslint-disable-next-line
@@ -146,6 +147,15 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
         this.marker = new RotatingTextBorderMarker(features, {
           width,
           height,
+          colors,
+          textField,
+          textColor,
+          textFontSize
+        });
+        break;
+      case 'fluorescence':
+        this.marker = new FluorescenceMarker(features, {
+          width,
           colors,
           textField,
           textColor,

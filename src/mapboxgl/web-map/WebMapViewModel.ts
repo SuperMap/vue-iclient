@@ -153,6 +153,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
 
   private layerAdded: number;
 
+  private _handleDataflowFeaturesCallback: Function;
+
+  private _dataflowService: any;
+
   constructor(id, options: webMapOptions = {}, mapOptions: any = { version: 8, sources: {}, layers: [] }) {
     super();
     this.mapId = id;
@@ -253,6 +257,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       this.map.remove();
       this.center = [];
       this.zoom = null;
+      this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
     }
     if (!this.mapId || !this.serverUrl) {
       this.mapOptions.container = this.target;
@@ -1333,28 +1338,32 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   }
   private _createDataflowLayer(layerInfo) {
     let dataflowService = new mapboxgl.supermap.DataFlowService(layerInfo.wsUrl).initSubscribe();
-    dataflowService.on('messageSucceeded', e => {
-      let features = JSON.parse(e.data);
-      // this._transformFeatures([features]); // TODO 坐标系
-      this.fire('dataflowfeatureupdated', {
-        features,
-        identifyField: layerInfo.identifyField,
-        layerID: layerInfo.layerID
+    this._handleDataflowFeaturesCallback = this._handleDataflowFeatures.bind(this, layerInfo);
+    dataflowService.on('messageSucceeded', this._handleDataflowFeaturesCallback);
+    this._dataflowService = dataflowService;
+  }
+
+  private _handleDataflowFeatures(layerInfo, e) {
+    let features = JSON.parse(e.data);
+    // this._transformFeatures([features]); // TODO 坐标系
+    this.fire('dataflowfeatureupdated', {
+      features,
+      identifyField: layerInfo.identifyField,
+      layerID: layerInfo.layerID
+    });
+    if (layerInfo.filterCondition) {
+      //过滤条件
+      let condition = this._replaceFilterCharacter(layerInfo.filterCondition);
+      let sql = 'select * from json where (' + condition + ')';
+      let filterResult = window['jsonsql'].query(sql, {
+        attributes: features.properties
       });
-      if (layerInfo.filterCondition) {
-        //过滤条件
-        let condition = this._replaceFilterCharacter(layerInfo.filterCondition);
-        let sql = 'select * from json where (' + condition + ')';
-        let filterResult = window['jsonsql'].query(sql, {
-          attributes: features.properties
-        });
-        if (filterResult && filterResult.length > 0) {
-          this._addDataflowLayer(layerInfo, features);
-        }
-      } else {
+      if (filterResult && filterResult.length > 0) {
         this._addDataflowLayer(layerInfo, features);
       }
-    });
+    } else {
+      this._addDataflowLayer(layerInfo, features);
+    }
   }
 
   private _getDataFlowRotateStyle(features, directionField, identifyField) {

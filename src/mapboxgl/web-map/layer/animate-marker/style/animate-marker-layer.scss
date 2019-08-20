@@ -69,6 +69,25 @@
     --box-shadow-color: rgba(24, 144, 255, 0.73);
   }
 
+  @include m(fluorescence) {
+    --container-width: 6px;
+    --box-shadow-width: 18px;
+    --box-shadow-color: rgb(126, 214, 223);
+    --light-color: white;
+    .sm-component-animate-marker__name-container > span {
+      padding-left: 30px;
+    }
+  }
+
+  @include e(fluorescence) {
+    width: var(--container-width);
+    height: var(--container-width);
+    border-radius: 100%;
+    background-color: var(--light-color);
+    box-shadow: var(--light-color) 0px 0px var(--container-width) var(--container-width),
+      var(--box-shadow-color) 0px 0px var(--box-shadow-width) var(--box-shadow-width);
+  }
+
   @include e(dot-point) {
     background: #009fd9;
     position: absolute;
