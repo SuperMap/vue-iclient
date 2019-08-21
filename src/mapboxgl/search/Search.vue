@@ -302,7 +302,7 @@ export default {
           this.viewModel && this.viewModel.setTiandituSearchNormal(false);
           this.search();
         } else {
-          this.inputValueCleared();
+          this.inputValueCleared(false);
         }
       }
     },
@@ -340,10 +340,10 @@ export default {
         this.$message.warning('请设置搜索源！');
       }
     },
-    inputValueCleared() {
+    inputValueCleared(emitEvent = true) {
       this.clearResult(true);
       this.viewModel && this.viewModel.clear();
-      this.$emit('clear-search-result', {});
+      emitEvent && this.$emit('clear-search-result');
     },
     searchResultListClicked(data, sourceName, event) {
       const searchKey = event.target.innerHTML;

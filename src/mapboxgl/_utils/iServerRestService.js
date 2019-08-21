@@ -213,9 +213,13 @@ export default class iServerRestService extends mapboxgl.Evented {
       }
     });
     new mapboxgl.supermap.QueryService(url).queryBySQL(param, serviceResult => {
-      let fields;
-      serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);
-      fields && callBack(fields, serviceResult.result.recordsets[0]);
+      if (serviceResult.type === 'processCompleted') {
+        let fields;
+        serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);
+        fields && callBack(fields, serviceResult.result.recordsets[0]);
+      } else {
+        callBack(serviceResult);
+      }
     });
   }
   _getAttributeFilterByKeywords(fields, keyWord) {

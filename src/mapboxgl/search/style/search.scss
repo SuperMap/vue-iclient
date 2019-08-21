@@ -76,7 +76,7 @@
   }
   @include e(a-input) {
     &.ant-input-affix-wrapper {
-      width: unset;
+      width: auto;
       padding-right: 25px;
       margin-left: 30px;
       margin-right: 18px;
