@@ -46,7 +46,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       },
       echarts: 'echarts',
       'vue-echarts': {
-        root: 'VueEcharts',
+        root: 'VueECharts',
         commonjs: 'vue-echarts',
         commonjs2: 'vue-echarts',
         amd: 'vue-echarts'

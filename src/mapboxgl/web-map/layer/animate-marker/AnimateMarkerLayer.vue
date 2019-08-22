@@ -20,7 +20,7 @@ import { FeatureCollection } from 'geojson';
   name: 'SmAnimateMarkerLayer',
   loaded: vm => {
     vm.features && vm._getMarkerElement();
-    vm.viewModel = new AnimateMarkerLayerViewModel(vm.map, vm.features, vm._markersElement);
+    vm.viewModel = new AnimateMarkerLayerViewModel(vm.map, vm.features, vm._markersElement, vm.fitBounds);
   }
 })
 class AnimateMarkerLayer extends Mixins(MapGetter) {
@@ -53,6 +53,8 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   @Prop() textColor: string;
 
   @Prop() textField: string;
+
+  @Prop() fitBounds: Boolean;
 
   @Watch('features')
   featuresChanged(newVal, oldVal) {

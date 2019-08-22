@@ -401,18 +401,32 @@ export default {
       });
     },
     _optionsHandler(options, dataOptions) {
+      dataOptions = dataOptions && JSON.parse(JSON.stringify(dataOptions)); // clone 避免引起重复刷新
+      options = options && JSON.parse(JSON.stringify(options)); // clone 避免引起重复刷新
       if (options && options.legend && !options.legend.type) {
         options.legend.type = 'scroll';
       }
-      if (options && options.xAxis && dataOptions.xAxis) {
-        if (dataOptions.series.length === 0) {
-          options.xAxis = [{}];
-        } else if (!Array.isArray(options.xAxis)) {
-          if (dataOptions.xAxis[0].data.length) {
-            options.xAxis.data = [];
-          }
-          options.xAxis = [Object.assign({}, dataOptions.xAxis[0], options.xAxis)];
+      let yAxis = options.yAxis;
+      let xAxis = options.xAxis;
+      if (xAxis && dataOptions.xAxis) {
+        let axis = xAxis;
+        let axisData = dataOptions.xAxis[0];
+        let type = 'xAxis';
+        if (yAxis && yAxis.type === 'category') { // 处理条形图
+          type = 'yAxis';
+          axis = yAxis;
+          dataOptions.yAxis = dataOptions.xAxis;
+          delete dataOptions.xAxis;
         }
+        if (dataOptions.series.length === 0) {
+          axis = [{}];
+        } else if (!Array.isArray(axis)) {
+          if (axisData.data.length) {
+            axis.data = [];
+          }
+          axis = [Object.assign({}, axisData, axis)];
+        }
+        options[type] = axis;
       }
       if (options && options.series && dataOptions.series) {
         if (dataOptions.series.length === 0) {

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import MapboxDraw, { modes } from '@mapbox/mapbox-gl-draw';
 import mapEvent from './map-event';
 import assignIn from 'lodash.assignin';
 
@@ -12,33 +12,6 @@ import assignIn from 'lodash.assignin';
  * }
  */
 
-const NewSimpleSelect = assignIn(MapboxDraw.modes.simple_select, {
-  dragMove() {},
-  clickOnVertex() {},
-  clickOnFeature(state, e) {
-    this.stopExtendedInteractions(state);
-
-    const isShiftClick = e.originalEvent && e.originalEvent.shiftKey;
-    const selectedFeatureIds = this.getSelectedIds();
-    const featureId = e.featureTarget.properties.id;
-    const isFeatureSelected = this.isSelected(featureId);
-
-    // Shift-click on an unselected feature
-    if (!isFeatureSelected && !isShiftClick) {
-      // Make it the only selected feature
-      selectedFeatureIds.forEach(id => this.doRender(id));
-      this.setSelected(featureId);
-    }
-
-    // No matter what, re-render the clicked feature
-    this.doRender(featureId);
-  }
-});
-
-const NewDirectSelect = assignIn(MapboxDraw.modes.direct_select, {
-  dragFeature() {}
-});
-
 export default new Vue({
   drawList: {},
   drawStates: {},
@@ -48,9 +21,32 @@ export default new Vue({
       touchEnabled: false,
       boxSelect: false,
       modes: {
-        ...MapboxDraw.modes,
-        simple_select: NewSimpleSelect,
-        direct_select: NewDirectSelect
+        ...modes,
+        simple_select: assignIn(modes.simple_select, {
+          dragMove() {},
+          clickOnVertex() {},
+          clickOnFeature(state, e) {
+            this.stopExtendedInteractions(state);
+
+            const isShiftClick = e.originalEvent && e.originalEvent.shiftKey;
+            const selectedFeatureIds = this.getSelectedIds();
+            const featureId = e.featureTarget.properties.id;
+            const isFeatureSelected = this.isSelected(featureId);
+
+            // Shift-click on an unselected feature
+            if (!isFeatureSelected && !isShiftClick) {
+              // Make it the only selected feature
+              selectedFeatureIds.forEach(id => this.doRender(id));
+              this.setSelected(featureId);
+            }
+
+            // No matter what, re-render the clicked feature
+            this.doRender(featureId);
+          }
+        }),
+        direct_select: assignIn(modes.direct_select, {
+          dragFeature() {}
+        })
       },
       styles: [
         // line stroke
