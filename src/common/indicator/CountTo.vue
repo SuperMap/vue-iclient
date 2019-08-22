@@ -13,6 +13,7 @@
 
 <script>
 import countTo from 'vue-count-to';
+import { isTransparent } from '../_utils/util';
 
 export default {
   name: 'SmCountTo',
@@ -22,7 +23,10 @@ export default {
       type: [String, Number]
     },
     numBackground: {
-      type: Object
+      type: Object,
+      default: function() {
+        return { color: 'rgba(0, 0, 0, 0)', image: '' };
+      }
     },
     numSpacing: {
       type: Number,
@@ -44,13 +48,26 @@ export default {
         }
         const reg = /\d+(\.\d+)?([a-z]+)/gi;
         const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
-        return {
-          backgroundImage: `url(${this.numBackground.image})`,
-          backgroundSize: '100% 100%',
-          backgroundColor: this.numBackground.color,
-          textIndent: `${parseFloat(this.fontSize) * 0.15}${fontUnit}`,
-          letterSpacing: `${parseFloat(this.fontSize) * 0.15}${fontUnit}`
-        };
+        let styleObj = { backgroundColor: this.numBackground.color };
+        if (this.numBackground.image) {
+          styleObj = Object.assign(styleObj, {
+            backgroundImage: `url(${this.numBackground.image})`,
+            backgroundSize: '100% 100%'
+          });
+        }
+        if (this.numBackground.image || !isTransparent(this.numBackground.color)) {
+          styleObj = Object.assign(styleObj, {
+            textIndent: `${parseFloat(this.fontSize) * 0.16}${fontUnit}`,
+            letterSpacing: `${parseFloat(this.fontSize) * 0.16}${fontUnit}`
+          });
+        } else {
+          styleObj = Object.assign(styleObj, {
+            textIndent: `${parseFloat(this.fontSize) * 0.06}${fontUnit}`,
+            letterSpacing: `${parseFloat(this.fontSize) * 0.06}${fontUnit}`
+          });
+        }
+
+        return styleObj;
       };
     },
     numInterval() {
@@ -61,6 +78,14 @@ export default {
     },
     numDataList() {
       return this.displayValue.split('').map(num => num);
+    }
+  },
+  watch: {
+    separator() {
+      this.start();
+    },
+    decimals() {
+      this.start();
     }
   }
 };

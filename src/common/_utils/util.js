@@ -1,5 +1,6 @@
 // 获取当前时间返回置顶格式
 import { getLanguage, geti18n } from '../../common/_lang';
+import colorcolor from 'colorcolor';
 
 export function getDateTime(timeType) {
   return geti18n().d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
@@ -17,6 +18,10 @@ export function hexToRgba(hex, opacity) {
     opacity +
     ')'
   );
+}
+export function isTransparent(color) {
+  const rgba = colorcolor(color, 'rgba');
+  return +rgba.match(/(\d(\.\d+)?)+/g)[3] === 0;
 }
 // 保留指定位数的小数
 export function reservedDecimal(val, precise) {

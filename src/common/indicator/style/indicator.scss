@@ -27,7 +27,6 @@
     margin-right: 10px;
   }
   @include e(num) {
-    text-indent: 5px;
     font-weight: bolder;
     color: rgb(73, 155, 255);
     font-size: 22px;

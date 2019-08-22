@@ -10,8 +10,7 @@
     <div class="sm-component-indicator__content">
       <span class="sm-component-indicator__num" :style="[indicatorStyle]">
         <countTo
-          ref="countTo"
-          :decimals="numData.toString().split('.')[1]?numData.toString().split('.')[1].length:0"
+          :decimals="calDecimals"
           :startVal="startData"
           :endVal="numData"
           :duration="Number(duration) || 1000"
@@ -77,6 +76,10 @@ export default {
       type: [Number, String],
       default: 1000
     },
+    decimals: {
+      type: Number,
+      default: -1
+    },
     mode: {
       type: String,
       default: 'vertical',
@@ -93,7 +96,10 @@ export default {
       default: 0
     },
     numBackground: {
-      type: Object
+      type: Object,
+      default: function() {
+        return { color: 'rgba(0, 0, 0, 0)', image: '' };
+      }
     },
     separatorBackground: {
       type: Boolean,
@@ -126,6 +132,15 @@ export default {
     },
     direction() {
       return { vertical: 'column', horizontal: 'row' }[this.mode];
+    },
+    calDecimals() {
+      if (this.decimals > 0) {
+        return this.decimals;
+      }
+      if (this.numData.toString().split('.')[1]) {
+        return this.numData.toString().split('.')[1].length;
+      }
+      return 0;
     }
   },
   watch: {
@@ -152,12 +167,6 @@ export default {
         this.changeNumData(val);
       },
       immediate: true
-    },
-    separator() {
-      this.$nextTick(() => {
-        this.startData = this.numData;
-        this.$refs.countTo.start();
-      });
     }
   },
   beforeDestroy() {
