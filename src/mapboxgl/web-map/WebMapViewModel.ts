@@ -342,7 +342,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       // @ts-ignore -------- crs 为 enhance 新加属性
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
-      renderWorldCopies: false
+      renderWorldCopies: false,
+      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false
     });
     /**
      * @event WebMapViewModel#mapinitialized
