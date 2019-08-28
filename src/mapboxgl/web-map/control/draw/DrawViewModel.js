@@ -128,6 +128,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
 
   trash(id) {
     if (id) {
+      // 给外部调用的API 如天地图传入一个id 删除指定点线面
       this.draw.delete(id);
       for (let key in this.layerStyleList) {
         if (this.layerStyleList[key] && this.layerStyleList[key][id]) {
@@ -144,9 +145,9 @@ export default class DrawViewModel extends mapboxgl.Evented {
       const matchIndex = this.featureIds.findIndex(id => id === item);
       if (matchIndex > -1) {
         this.featureIds.splice(matchIndex, 1);
+        this.draw.delete(item);
       }
     });
-    this.draw.trash();
   }
 
   setLayerStyle(layerStyle) {
@@ -260,7 +261,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
   }
 
   removeDraw() {
-    this.draw.deleteAll();
+    this.featureIds && this.draw.delete(this.featureIds);
     this.featureIds = [];
     this.activeFeature = {};
     this.dashedLayerIds = [];
@@ -280,6 +281,6 @@ export default class DrawViewModel extends mapboxgl.Evented {
   }
 
   _isDrawing() {
-    return drawEvent.$options.getDrawingState(this.mapTarget, this.componentName);
+    return this.draw && drawEvent.$options.getDrawingState(this.mapTarget, this.componentName);
   }
 }

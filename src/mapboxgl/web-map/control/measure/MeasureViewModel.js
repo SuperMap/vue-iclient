@@ -344,18 +344,18 @@ class MeasureViewModel extends mapboxgl.Evented {
       const matchIndex = this.ids.findIndex(id => id === item);
       if (matchIndex > -1) {
         this.ids.splice(matchIndex, 1);
-        // 现在关闭多选 所以在保留原有逻辑下 selectedIds的长度最多为1 所以能调用以下方法
-        this._removePopups();
-        this._removeHoverPopup();
+        this.draw.delete(item);
+        const tipNodes = this.lenTipNodesList[item] || this.areaTipNodesList[item];
+        Array.isArray(tipNodes) ? tipNodes.forEach(tipNode => tipNode.remove()) : tipNodes.remove();
       }
     });
-    this.draw.trash();
   }
 
   removeDraw() {
     this.isEditing = false;
+    this.ids && this.draw.delete(this.ids);
     this.ids = [];
-    this.draw.deleteAll();
+    this.draw.changeMode('simple_select');
     this._resetDraw();
     this._clearEvent();
     this._removePopups();

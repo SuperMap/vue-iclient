@@ -258,7 +258,7 @@ export default {
           selectDom.style.color = this.getTextColor;
           selectDom.style.backgroundColor = this.getBackground;
         }
-      };
+      }
     },
     changeChosenStyle(visible) {
       setTimeout(() => {
@@ -272,12 +272,12 @@ export default {
             item.style.color = this.getTextColor;
             item.style.backgroundColor = 'transparent';
           }
-        };
+        }
         for (let dropdownDom of dropdownDoms) {
           if (dropdownDom) {
             dropdownDom.style.backgroundColor = this.getBackground;
           }
-        };
+        }
       }, 0);
     },
     // 切换量算模式
