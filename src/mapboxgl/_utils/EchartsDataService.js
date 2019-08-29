@@ -1,6 +1,4 @@
-import iServerRestService from './iServerRestService';
-import iPortalDataService from './iPortalDataService';
-import RestService from './RestService';
+import getFeatures from './get-features';
 import tonumber from 'lodash.tonumber';
 import isEqual from 'lodash.isequal';
 import max from 'lodash.max';
@@ -52,7 +50,7 @@ export default class EchartsDataService {
     // 设置datasets的默认配置type，withCredentials
     let promise = new Promise((resolve, reject) => {
       // 请求数据，请求成功后，解析数据
-      this._requestData(dataset)
+      getFeatures(dataset)
         .then(data => {
           // 设置this.data
           this._setData(data);
@@ -203,57 +201,6 @@ export default class EchartsDataService {
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
     this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
-  }
-
-  /**
-   * @function EchartsDataService.prototype._requestData
-   * @private
-   * @description 从superMap的iserver,iportal中请求数据(datasets)。
-   * @param {datasets}
-   * @returns {Object}  data的promise
-   */
-  _requestData(datasets) {
-    let promise = new Promise((resolve, reject) => {
-      if (datasets && datasets.url && datasets.type) {
-        let superMapService;
-        let queryInfo = {
-          maxFeatures: datasets.maxFeatures,
-          attributeFilter: datasets.attributeFilter
-        };
-        if (datasets.type === 'iServer') {
-          let datasetInfo;
-          superMapService = new iServerRestService(datasets.url);
-          if (datasets.dataName) {
-            let arr = datasets.dataName[0].split(':');
-            datasetInfo = {
-              datasetName: arr[1],
-              dataSourceName: arr[0],
-              dataUrl: datasets.url
-            };
-          } else {
-            datasetInfo = {
-              mapName: datasets.layerName,
-              dataUrl: datasets.url
-            };
-          }
-          superMapService.getData(datasetInfo, queryInfo);
-        } else if (datasets.type === 'iPortal') {
-          queryInfo.withCredentials = datasets.withCredentials;
-          superMapService = new iPortalDataService(datasets.url, datasets.withCredentials);
-          superMapService.getData(queryInfo);
-        } else if (datasets.type === 'rest') {
-          superMapService = new RestService();
-          superMapService.getData(datasets.url, queryInfo);
-        }
-        superMapService.on('getdatafailed', function(e) {
-          reject(e);
-        });
-        superMapService.on('getdatasucceeded', function(data) {
-          resolve(data);
-        });
-      }
-    });
-    return promise;
   }
 
   /**

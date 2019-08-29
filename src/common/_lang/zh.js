@@ -24,9 +24,28 @@ export default {
     }
   },
   // messageTemplate
-  warning: {},
+  warning: {
+    unsupportedVideoAddress: '视频地址不合法',
+    unavailableVideo: '此视频暂无法播放，请稍后再试',
+    mapNotLoaded: '关联的地图尚未加载完整，请稍后'
+  },
   success: {},
-  info: {},
+  info: {
+    loading: '加载中',
+    pressEscToExit: '按下 ESC 键或点击关闭按钮退出'
+  },
+  unit: {
+    kilometers: '千米',
+    miles: '英里',
+    meters: '米',
+    yards: '码',
+    feet: '英尺',
+    squarekilometers: '平方千米',
+    squaremiles: '平方英里',
+    squaremeters: '平方米',
+    squareyards: '平方码',
+    squarefeet: '平方英尺'
+  },
   error: {},
   commontypes: {
     restData: 'SuperMap Rest 数据服务',
@@ -65,19 +84,11 @@ export default {
   measure: {
     mapMeasure: '量算',
     measureResult: '测量结果',
-    kilometers: '千米',
-    miles: '英里',
-    meters: '米',
-    yards: '码',
-    feet: '英尺',
-    squarekilometers: '平方千米',
-    squaremiles: '平方英里',
-    squaremeters: '平方米',
-    squareyards: '平方码',
-    squarefeet: '平方英尺',
     distance: '距离',
     area: '面积',
-    delete: '清空'
+    delete: '清空',
+    selectPlaceholder: '请选择',
+    startingPoint: '起点'
   },
   map: {},
   search: {
@@ -85,7 +96,10 @@ export default {
     noKey: '搜索关键字不能为空，请输入搜索条件。',
     inputPlaceHolder: '查找地址或地点',
     attribute: '属性',
-    attributeValue: '属性值'
+    attributeValue: '属性值',
+    setSearchSource: '请设置搜索源！',
+    address: '地址',
+    null: '空'
   },
   query: {
     query: '查询',
@@ -111,6 +125,18 @@ export default {
     openFileFail: '打开文件失败！',
     openFileSuccess: '打开文件成功!',
     selectFile: '选择文件',
-    openEmptyFile: '打开文件为空！'
+    openEmptyFile: '打开文件为空！',
+    openFile: '打开文件'
+  },
+  draw: {
+    draw: '绘制'
+  },
+  indicator: {
+    title: '指标标题',
+    unit: '单位'
+  },
+  // layer
+  dataFlow: {
+    dataSubscriptionFailed: '数据订阅失败！'
   }
 };
