@@ -117,7 +117,7 @@ class SmVideoPlayer extends Vue {
       return;
     }
     if (!this.checkUrl(this.url)) {
-      this.$message.warning('视频地址不合法', 1);
+      this.$message.warning(this.$t('warning.unsupportedVideoAddress'), 1);
       if (this.playerOptions.sources) {
         this.playerOptions.sources[0].src = '';
         this.modalPlayerOptions.sources[0].src = '';
@@ -148,7 +148,7 @@ class SmVideoPlayer extends Vue {
         remainingTimeDisplay: false,
         fullscreenToggle: true
       },
-      notSupportedMessage: '此视频暂无法播放，请稍后再试'
+      notSupportedMessage: this.$t('warning.unavailableVideo')
     };
     this.playerOptions = cloneDeep(commonOptions);
     this.modalPlayerOptions = cloneDeep(commonOptions);
@@ -163,7 +163,7 @@ class SmVideoPlayer extends Vue {
       return;
     }
     if (this.isFirst && this.options.popupToPlay) {
-      this.$message.info('按下 ESC 键或点击关闭按钮退出', 3);
+      this.$message.info(this.$t('info.pressEscToExit'), 3);
     }
     if (this.isFirst && !this.options.popupToPlay && !this.options.autoplay) {
       // 重置默认振

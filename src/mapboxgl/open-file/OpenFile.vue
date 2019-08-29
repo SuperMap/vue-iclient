@@ -1,5 +1,8 @@
 <template>
-  <div :class="['sm-component-open-file', mapboxglClass]" :style="[fontStyle, (background && getBackgroundStyle) || { background: getColor(0) }, getTextColorStyle]">
+  <div
+    :class="['sm-component-open-file', mapboxglClass]"
+    :style="[fontStyle, (background && getBackgroundStyle) || { background: getColor(0) }, getTextColorStyle]"
+  >
     <label for="input_file" class="sm-component-open-file__title">
       <span>{{ text }}</span>
     </label>
@@ -10,7 +13,7 @@
       :accept="accept"
       @change="fileSelect($event)"
       @click="preventDefault"
-    >
+    />
   </div>
 </template>
 
@@ -42,7 +45,9 @@ export default {
     },
     text: {
       type: String,
-      default: '打开文件'
+      default() {
+        return this.$t('openFile.openFile');
+      }
     },
     notify: {
       type: Boolean,
@@ -103,7 +108,7 @@ export default {
     preventDefault(e) {
       if (this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) {
         this.$message.destroy();
-        this.$message.warning('关联的地图尚未加载完整，请稍后');
+        this.$message.warning(this.$t('warning.mapNotLoaded'));
         e.preventDefault();
       } else if (!this.viewModel) {
         this.nonMapTip();

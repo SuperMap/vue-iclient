@@ -177,7 +177,9 @@ export default {
     },
     headerName: {
       type: String,
-      default: '查询'
+      default() {
+        return this.$t('query.query');
+      }
     },
     maxFeatures: {
       type: Number,
@@ -391,14 +393,14 @@ export default {
         item.style.borderColor = this.getTextColor;
         item.style.color = this.getTextColor;
         item.style.backgroundColor = 'transparent';
-      };
+      }
     },
     changeChosenStyle(visible, e) {
       setTimeout(() => {
         const optionListContainer = this.$el.querySelectorAll('.ant-select-dropdown-content');
         for (let item of optionListContainer) {
           item.style.background = this.backgroundData;
-        };
+        }
         const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
         for (let item of optionList) {
           if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
@@ -415,7 +417,7 @@ export default {
             !item.classList.contains('ant-select-dropdown-menu-item-selected') &&
               (item.style.color = this.textColorsData);
           });
-        };
+        }
       }, 0);
     },
     changeChosenResultStyle(e) {

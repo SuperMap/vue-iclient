@@ -11,7 +11,7 @@
     @content-show-state="handleMinimapResize"
   >
     <div id="miniMap" class="miniMap">
-      <a-spin v-if="spinning" size="small" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
+      <a-spin v-if="spinning" size="small" :tip="$t('info.loading')" :spinning="spinning" />
     </div>
   </sm-card>
 </template>

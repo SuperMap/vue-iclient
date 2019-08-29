@@ -248,7 +248,7 @@ class MeasureViewModel extends mapboxgl.Evented {
       this.cacheLengthUnitList.id.push({ value: this._getFormatResult(calcValue), unit: this.activeUnit });
       popup.setText(renderText);
     } else {
-      popup.setText('起点');
+      popup.setText(geti18n().t('measure.startingPoint'));
       this.cacheLengthUnitList.id = this.cacheLengthUnitList.id || [];
     }
     popup.setLngLat([lng, lat]);

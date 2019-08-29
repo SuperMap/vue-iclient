@@ -1,6 +1,5 @@
 import { FeatureCollection, Feature } from 'geojson';
-import colorcolor from 'colorcolor';
-
+import { getColorWithOpacity } from '../../../../../common/_utils/util';
 interface markerOptions {
   width?: number;
   colors?: [string, string];
@@ -68,14 +67,7 @@ export default abstract class Marker {
   abstract _createMarker(): void;
 
   protected _getColorWithOpacity(color: string, opacity: number | string): string {
-    if (color.indexOf('rgba') > -1) {
-      return color.substring(0, color.lastIndexOf(',') + 1) + opacity + ')';
-    }
-    let newColor = colorcolor(color, 'rgba', true);
-    let colorArr = newColor.split(',');
-    colorArr[3] = `${opacity})`;
-    newColor = colorArr.join(',');
-    return newColor;
+    return getColorWithOpacity(color, opacity);
   }
 
   protected _getTextContainer(point: Feature, className: string): HTMLElement {

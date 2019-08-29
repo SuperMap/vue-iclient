@@ -337,7 +337,7 @@ export default {
           this.$message.warning(this.$t('search.noKey'));
         }
       } else {
-        this.$message.warning('请设置搜索源！');
+        this.$message.warning(this.$t('search.setSearchSource'));
       }
     },
     inputValueCleared(emitEvent = true) {

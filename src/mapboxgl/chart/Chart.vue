@@ -383,7 +383,7 @@ export default {
       this.echartsDataService = null;
       this.dataSeriesCache = null;
       this.showLoading('default', {
-        text: '加载中',
+        text: this.$t('info.loading'),
         color: this.colorGroupsData[0],
         textColor: this.textColorsData,
         maskColor: 'rgba(0,0,0,0.8)',

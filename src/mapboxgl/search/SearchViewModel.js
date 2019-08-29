@@ -183,7 +183,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         pointData.coordinates = geometry.coordinates || geometry;
       }
       if (this.keyWord.indexOf('：') < 0) {
-        pointData.info.push({ attribute: '地址', attributeValue: propertiesValue });
+        pointData.info.push({ attribute: this.$t('search.address'), attributeValue: propertiesValue });
       } else {
         for (let key in properties) {
           properties[key] && pointData.info.push({ attribute: key, attributeValue: properties[key] });
@@ -488,9 +488,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         } else {
           this._searchFeaturesFailed('', sourceName);
         }
-        this.searchNormalOfTianditu &&
-          results &&
-          this.fire('search-selected-info' + this.searchTaskId, { data: res });
+        this.searchNormalOfTianditu && results && this.fire('search-selected-info' + this.searchTaskId, { data: res });
         !this.searchNormalOfTianditu && results && this._searchFeaturesSucceed(results, sourceName);
         return { type, data: res };
       })
@@ -529,9 +527,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
         },
         filterAttribute: {
           filterAttributeName: data[i].name || geoCodeParam.keyWords,
-          filterAttributeValue: data[i].formatedAddress || data[i].address || '空'
+          filterAttributeValue: data[i].formatedAddress || data[i].address || this.$t('search.null')
         },
-        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address || '空'}`
+        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address || this.$t('search.null')}`
       };
       features.push(feature);
     }
@@ -559,7 +557,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       operatingAttributeNames.forEach(attributeName => {
         if (fAttr[attributeName] && keyReg.test(fAttr[attributeName].toString().toLowerCase())) {
           let filterAttributeName = attributeName;
-          let filterAttributeValue = fAttr[attributeName] || '空';
+          let filterAttributeValue = fAttr[attributeName] || this.$t('search.null');
           if (!feature.filterAttribute) {
             feature.filterAttribute = {
               filterAttributeName: filterAttributeName,

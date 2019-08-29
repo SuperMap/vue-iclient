@@ -45,11 +45,15 @@ export default {
   props: {
     title: {
       type: String,
-      default: '指标标题'
+      default() {
+        return this.$t('indicator.title');
+      }
     },
     unit: {
       type: String,
-      default: '单位'
+      default() {
+        return this.$t('indicator.unit');
+      }
     },
     indicatorColor: {
       type: String

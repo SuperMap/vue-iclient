@@ -91,7 +91,9 @@ export default {
     },
     headerName: {
       type: String,
-      default: '图层'
+      default() {
+        return this.$t('layerList.title');
+      }
     }
   },
   data() {
@@ -130,7 +132,7 @@ export default {
             checkbox.style.backgroundColor = '#fff';
             // label.style.color = this.getTextColor;
           }
-        };
+        }
       }, 0);
     },
     toggleVisibility(sourceLayer, sourceName, visibility) {

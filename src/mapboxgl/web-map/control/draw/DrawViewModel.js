@@ -3,6 +3,7 @@ import turfArea from '@turf/area';
 import { convertArea } from '@turf/helpers';
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import drawEvent from '../../../_types/draw-event';
+import { geti18n } from '../../../../common/_lang';
 
 /**
  * @class DrawViewModel
@@ -74,12 +75,12 @@ export default class DrawViewModel extends mapboxgl.Evented {
       coordinateOfMaxLatitude = coordinates;
     } else if (geometry.type === 'LineString') {
       result = turfLength(feature, 'kilometers');
-      unit = '千米';
+      unit = geti18n().t('unit.kilometers');
       coordinateOfMaxLatitude = this._calcMaxLatitudeInCoordinate(coordinates);
     } else if (geometry.type === 'Polygon') {
       let area = turfArea(feature);
       result = convertArea(area, 'meters', 'kilometers');
-      unit = '平方千米';
+      unit = geti18n().t('unit.squarekilometers');
       coordinateOfMaxLatitude = this._calcMaxLatitudeInCoordinate(coordinates[0]);
     }
     const layerStyle = this._getFetureStyle(feature.id);

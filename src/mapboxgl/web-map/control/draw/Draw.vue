@@ -43,7 +43,9 @@ export default {
     },
     headerName: {
       type: String,
-      default: '绘制'
+      default() {
+        return this.$t('draw.draw');
+      }
     },
     layerStyle: {
       type: Object
@@ -91,7 +93,7 @@ export default {
       setTimeout(() => {
         if ((this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) || (this.map && !this.map.loaded())) {
           this.$message.destroy();
-          this.$message.warning('关联的地图尚未加载完整，请稍后！');
+          this.$message.warning(this.$t('warning.mapNotLoaded'));
         } else if (this.map && this.map.loaded()) {
           this.activeMode = mode;
           if (mode === 'trash') {

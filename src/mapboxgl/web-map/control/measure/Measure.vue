@@ -29,7 +29,7 @@
         <a-select
           v-show="getDistanceSelect"
           v-model="activeDistanceUnit"
-          placeholder="请选择"
+          :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
@@ -45,7 +45,7 @@
         <a-select
           v-show="getAreaSelect"
           v-model="activeAreaUnit"
-          placeholder="请选择"
+          :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
@@ -121,18 +121,18 @@ export default {
   data() {
     const unitOptions = {
       draw_line_string: {
-        kilometers: this.$t('measure.kilometers'),
-        miles: this.$t('measure.miles'),
-        meters: this.$t('measure.meters'),
-        feet: this.$t('measure.feet'),
-        yards: this.$t('measure.yards')
+        kilometers: this.$t('unit.kilometers'),
+        miles: this.$t('unit.miles'),
+        meters: this.$t('unit.meters'),
+        feet: this.$t('unit.feet'),
+        yards: this.$t('unit.yards')
       },
       draw_polygon: {
-        kilometers: this.$t('measure.squarekilometers'),
-        miles: this.$t('measure.squaremiles'),
-        meters: this.$t('measure.squaremeters'),
-        feet: this.$t('measure.squarefeet'),
-        yards: this.$t('measure.squareyards')
+        kilometers: this.$t('unit.squarekilometers'),
+        miles: this.$t('unit.squaremiles'),
+        meters: this.$t('unit.squaremeters'),
+        feet: this.$t('unit.squarefeet'),
+        yards: this.$t('unit.squareyards')
       }
     };
     return {
@@ -285,7 +285,7 @@ export default {
       setTimeout(() => {
         if ((this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) || (this.map && !this.map.loaded())) {
           this.$message.destroy();
-          this.$message.warning('关联的地图尚未加载完整，请稍后！');
+          this.$message.warning(this.$t('warning.mapNotLoaded'));
         } else if (this.map && this.map.loaded()) {
           let modeUnitKey = this.modeUnitMap[mode];
           let activeUnit = this[modeUnitKey];
