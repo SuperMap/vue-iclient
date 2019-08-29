@@ -13,19 +13,68 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  */
 
 export default class ClusterLayerViewModel extends mapboxgl.Evented {
-  constructor(map, data, options) {
+  constructor(map, data, options = {}) {
     super();
-    this.options = options || {};
+    this.options = options;
     if (!map) {
       throw new Error('map is requierd');
-    }
-    if (!data) {
-      throw new Error('data is requierd');
     }
     this.map = map;
     this.data = data;
     this.layerId = options.layerId || 'clusterLayer' + new Date().getTime();
-    this._initializeClusterLayer();
+    this.data && this._initializeClusterLayer();
+  }
+
+  setData(data) {
+    if (!data) {
+      return;
+    }
+    this.data = data;
+    if (this.layerId && !this.map.getSource(this.layerId)) {
+      this._initializeClusterLayer();
+    } else {
+      this.map.getSource(this.layerId).setData(data);
+    }
+  }
+
+  setClusteredPointStyle(clusteredPointStyle) {
+    if (!clusteredPointStyle || (this.layerId && !this.map.getSource(this.layerId))) {
+      return;
+    }
+    this.options.clusteredPointStyle = clusteredPointStyle;
+    this._setPaintProperty(clusteredPointStyle.paint, this.layerId);
+    this._setLayoutProperty(clusteredPointStyle.layout, this.layerId);
+  }
+
+  setUnclusteredPointStyle(unclusteredPointStyle) {
+    let layerId = 'unclustered_point' + this.layerId;
+    if (!unclusteredPointStyle || !this.map.getSource(layerId)) {
+      return;
+    }
+    this.options.unclusteredPointStyle = unclusteredPointStyle;
+    this._setPaintProperty(unclusteredPointStyle.paint, layerId);
+    this._setLayoutProperty(unclusteredPointStyle.layout, layerId);
+  }
+
+  setClusteredPointTextLayout(clusteredPointTextLayout) {
+    let layerId = 'count_' + this.layerId;
+    if (!clusteredPointTextLayout || !this.map.getSource(layerId)) {
+      return;
+    }
+    this.options.clusteredPointTextLayout = clusteredPointTextLayout;
+    this._setLayoutProperty(clusteredPointTextLayout, layerId);
+  }
+
+  _setPaintProperty(paint, layerId) {
+    Object.keys(paint).forEach(key => {
+      this.map.setPaintProperty(layerId, key, paint[key]);
+    });
+  }
+
+  _setLayoutProperty(layout, layerId) {
+    Object.keys(layout).forEach(key => {
+      this.map.setLayoutProperty(layerId, key, layout[key]);
+    });
   }
 
   _initializeClusterLayer() {

@@ -70,6 +70,8 @@ class SmVideoPlayer extends Vue {
 
   $message: any;
 
+  $t: any;
+
   @Prop() url: string; // 视频地址
 
   @Prop({

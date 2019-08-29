@@ -3,12 +3,43 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 export default class GeojsonLayerViewModel extends mapboxgl.Evented {
   constructor(map, GeojsonLayerOptions) {
     super();
+    if (!map) {
+      throw new Error('map is requierd');
+    }
     this.map = map;
     const { layerStyle, data, layerId } = GeojsonLayerOptions;
     this.data = data;
     this.layerStyle = layerStyle;
     this.layerId = layerId;
-    this._addLayer();
+    this.data && this._addLayer();
+  }
+
+  setData(data) {
+    if (!data || !this.map.getSource(this.layerId)) {
+      return;
+    }
+    this.data = data;
+    if (this.layerId && !this.map.getSource(this.layerId)) {
+      this._addLayer();
+    } else {
+      this.map.getSource(this.layerId).setData(data);
+    }
+  }
+
+  setLayerStyle(layerStyle) {
+    if (!layerStyle || !this.map.getSource(this.layerId)) {
+      return;
+    }
+
+    let { paint, layout } = layerStyle;
+    for (let prop of Object.keys(paint)) {
+      this.map.setPaintProperty(this.layerId, prop, paint[prop]);
+    }
+    for (let prop of Object.keys(layout)) {
+      this.map.setLayoutProperty(this.layerId, prop, layout[prop]);
+    }
+
+    this.layerStyle = layerStyle;
   }
 
   _addLayer() {
