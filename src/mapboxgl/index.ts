@@ -58,8 +58,8 @@ const install = function(Vue, opts: any = {}) {
     Vue.component(com.options ? com.options.name : com.name, com);
   }
 };
-if (typeof window !== 'undefined' && window.Vue) {
-  install(window.Vue, {
+if (typeof window !== 'undefined' && window['Vue']) {
+  install(window['Vue'], {
     theme: 'light'
   });
 }

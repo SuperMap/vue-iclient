@@ -209,6 +209,10 @@ export default {
       validator(mode) {
         return ['simple', 'panel'].includes(mode);
       }
+    },
+    position: {
+      type: String,
+      default: 'bottom-left' 
     }
   },
   data() {
