@@ -12,7 +12,8 @@
         "lint:fix": "eslint --fix --ext .js,.vue src",
         "build": "node build/build.js && node build/build.js -p",
         "e2e": "node test/e2e/runner.js --test ",
-        "docs": "jsdoc -c ./build/jsdocs/docs.json -R ./build/jsdocs/index.md"
+        "docs:dev": "vuepress dev docs",
+        "docs:build": "vuepress build docs"
     },
     "dependencies": {
         "@mapbox/mapbox-gl-draw": "^1.1.1",
@@ -93,8 +94,6 @@
         "jest-canvas-mock": "^2.1.0",
         "jest-serializer-vue": "^2.0.2",
         "jest-transform-stub": "^2.0.0",
-        "jsdoc": "^3.6.1",
-        "jsdoc-vuejs": "git+https://github.com/SuperMap/jsdoc-vuejs.git",
         "mapbox-gl": "0.44.1",
         "mini-css-extract-plugin": "^0.5.0",
         "nightwatch": "^0.9.16",
@@ -119,9 +118,11 @@
         "vue-class-component": "^7.1.0",
         "vue-jest": "^3.0.2",
         "vue-loader": "^15.5.1",
+        "vuepress": "^1.0.3",
         "vue-property-decorator": "^8.2.1",
         "vue-style-loader": "^4.1.2",
         "vue-template-compiler": "2.5.17",
+        "vue-server-renderer": "2.5.17",
         "webpack": "^4.35.3",
         "webpack-bundle-analyzer": "^3.0.3",
         "webpack-cli": "^3.3.5",
