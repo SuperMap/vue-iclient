@@ -81,7 +81,6 @@ import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import Card from '../../../../common/_mixin/card';
 import MeasureViewModel from './MeasureViewModel';
-import mapEvent from '../../../_types/map-event';
 import drawEvent from '../../../_types/draw-event';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
@@ -283,10 +282,9 @@ export default {
     // 切换量算模式
     changeMeasureMode(mode) {
       setTimeout(() => {
-        if ((this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) || (this.map && !this.map.loaded())) {
-          this.$message.destroy();
-          this.$message.warning(this.$t('warning.mapNotLoaded'));
-        } else if (this.map && this.map.loaded()) {
+        const mapNotLoaded = this.mapNotLoadedTip();
+        if (mapNotLoaded) return;
+        if (this.map && this.map.loaded()) {
           let modeUnitKey = this.modeUnitMap[mode];
           let activeUnit = this[modeUnitKey];
           if (mode === 'delete') {
@@ -302,8 +300,6 @@ export default {
             this.viewModel.removeDraw();
             this.activeMode = null;
           }
-        } else {
-          this.nonMapTip();
         }
       }, 0);
     },

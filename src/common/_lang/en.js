@@ -100,5 +100,8 @@ export default {
   },
   measure: {
     mapMeasure: 'Measure'
+  },
+  tdtRoute: {
+    title: 'Route'
   }
 };

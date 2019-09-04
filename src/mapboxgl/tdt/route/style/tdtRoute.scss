@@ -1,0 +1,164 @@
+@import '../../../../common/_utils/style/mixins/mixins.scss';
+
+@include b(tdtRoute) {
+  @include e(header) {
+    background: #f2f2f2;
+    .route-navbar {
+      overflow: hidden;
+      .car-icon,
+      .bus-icon {
+        width: 30px;
+        height: 30px;
+        float: left;
+        cursor: pointer;
+        margin-top: 3px;
+        margin-left: 30px;
+        &.active {
+          background: #3385ff;
+          border-radius: 15px;
+        }
+        i {
+          display: block;
+          background-image: url('../../static/images/sprite.png');
+          background-repeat: no-repeat;
+          margin: 0 auto;
+        }
+      }
+      .car-icon {
+        padding-top: 7px;
+        &.active {
+          i {
+            background-position: -89px -183px;
+          }
+        }
+        i {
+          width: 21px;
+          height: 16px;
+          background-position: -32px -180px;
+        }
+      }
+      .bus-icon {
+        padding-top: 5px;
+        &.active {
+          i {
+            background-position: -118px -178px;
+          }
+        }
+        i {
+          width: 20px;
+          height: 22px;
+          background-position: -62px -178px;
+        }
+      }
+      .clear-route {
+        height: 36px;
+        line-height: 36px;
+        float: right;
+        margin-right: 20px;
+        font-style: italic;
+        color: #000;
+        cursor: pointer;
+        font-size: 13px;
+      }
+    }
+
+    .route-panel {
+      padding: 20px;
+      padding-left: 34px;
+      text-align: center;
+      position: relative;
+
+      .start-route,
+      .end-route {
+        .icon,
+        .content {
+          display: inline-block;
+          vertical-align: middle;
+        }
+        .icon {
+          width: 16px;
+          height: 16px;
+          border-radius: 8px;
+          background: #fff;
+          border: 2px solid;
+        }
+        .content {
+          display: inline-block;
+          vertical-align: middle;
+          width: 250px;
+          margin-left: 10px;
+          .ant-input-suffix {
+            font-size: 16px;
+            right: 6px;
+          }
+        }
+      }
+      .start-route {
+        .icon {
+          border-color: rgb(50, 188, 95);
+        }
+      }
+      .end-route {
+        margin-top: 20px;
+        .icon {
+          border-color: rgb(250, 89, 106);
+        }
+      }
+      .switch-route {
+        position: absolute;
+        top: 52px;
+        left: 40px;
+        i {
+          transform: rotateX(180deg) rotate(90deg);
+        }
+      }
+    }
+
+    .search-btn {
+      padding-right: 24px;
+      padding-bottom: 20px;
+      text-align: right;
+    }
+  }
+
+  @include e(content) {
+    .route-result {
+      width: 300px;
+      margin: auto;
+      .start-point,
+      .end-point {
+        & > .title {
+          margin: 15px auto;
+          height: 30px;
+          line-height: 30px;
+          background-color: #f2f8ff;
+          i,
+          span {
+            display: inline-block;
+            vertical-align: middle;
+          }
+          i {
+            color: #fa596a;
+            font-size: 17px;
+            margin: 0 10px;
+          }
+          span {
+            color: #000;
+            font-size: 12px;
+            cursor: pointer;
+          }
+        }
+  
+        .content {
+          .route-results-container {
+            .route-info {
+              span {
+                max-width: 185px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

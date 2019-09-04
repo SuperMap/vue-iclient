@@ -135,6 +135,9 @@ export default {
     title: '指标标题',
     unit: '单位'
   },
+  tdtRoute: {
+    title: '路线'
+  },
   // layer
   dataFlow: {
     dataSubscriptionFailed: '数据订阅失败！'

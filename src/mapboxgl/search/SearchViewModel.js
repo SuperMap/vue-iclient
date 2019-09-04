@@ -4,7 +4,7 @@ import turfCenter from '@turf/center';
 import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
 import iPortalDataService from '../_utils/iPortalDataService';
 import iServerRestService from '../_utils/iServerRestService';
-import * as tiandituApi from '../../common/api/tiandituSearch';
+import { geti18n } from '../../common/_lang';
 /**
  * @class SearchViewModel
  * @classdesc 数据搜索功能类。
@@ -52,22 +52,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
       'restMap',
       'restData',
       'iportalData',
-      'addressMatch',
-      'tiandituSearch'
+      'addressMatch'
     ];
     this.markerList = [];
     this.popupList = [];
     this.errorSourceList = {};
-    this.searchNormalOfTianditu = false;
-  }
-
-  /**
-   * @function SearchViewModel.prototype.setTiandituSearchNormal
-   * @description 用于判断天地图搜索是普通搜索(queryType: 1)或者普通建议搜索(queryType: 4)。
-   * @param {String} keyWord - 搜索关键字。
-   */
-  setTiandituSearchNormal(value) {
-    this.searchNormalOfTianditu = value;
   }
 
   /**
@@ -83,10 +72,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.maxFeatures = parseInt(this.options.maxFeatures) >= 100 ? 100 : parseInt(this.options.maxFeatures) || 8;
     this.searchtType.forEach(item => {
       if (this.options[item]) {
-        if (
-          (item === 'onlineLocalSearch' && this.options[item].enable) ||
-          (item === 'tiandituSearch' && this.options[item].enable)
-        ) {
+        if (item === 'onlineLocalSearch' && this.options[item].enable) {
           this.searchCount += 1;
         } else if (item !== 'onlineLocalSearch') {
           let len = this.options[item].length;
@@ -94,7 +80,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         }
       }
     }, this);
-    let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch, tiandituSearch } = {
+    let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = {
       ...this.options
     };
     layerNames && this._searchFromLayer(layerNames);
@@ -103,7 +89,6 @@ export default class SearchViewModel extends mapboxgl.Evented {
     restData && this._searchFromRestData(restData);
     iportalData && this._searchFromIportal(iportalData);
     addressMatch && this._searchFromAddressMatch(addressMatch);
-    tiandituSearch.enable && this._searchFromTianditu();
     return this.searchTaskId;
   }
 
@@ -112,82 +97,44 @@ export default class SearchViewModel extends mapboxgl.Evented {
    * @description 获取搜索结果的要素信息。
    * @param {String} searchKey - 搜索关键字。
    * @param {String} data - 过滤数据。
-   * @param {String} sourceName - 要素的来源名称。
    */
-  getFeatureInfo(searchKey, data, sourceName) {
+  getFeatureInfo(searchKey, data) {
     const { resultRender } = this.options;
     this.keyWord = searchKey;
     this._reset();
-    if (sourceName === 'Tianditu Search') {
-      this._searchFromTianditu().then(res => {
-        const { data: info = {} } = res;
-        let data = info.lineData || info.pois || (info.area && [info.area]);
-        if (resultRender && typeof resultRender === 'function') {
-          resultRender(info);
-          return;
-        }
-        if (!data || data.length) return;
-        if (res.type === 'Point' || res.type === 'Polygon') {
-          data.forEach((item, index) => {
-            const feature = {
-              geometry: {},
-              properties: {}
-            };
-            const center = (item.lonlat || '').split(/\s|,/);
-            feature.geometry.type = res.type;
-            feature.geometry.coordinates = [+center[0], +center[1]];
-            feature.properties = item;
-            this._showResultToMap(feature, sourceName, index + 1);
-          });
-        } else {
-          console.log('线需要二次请求');
-        }
-      });
-      return;
-    }
     this.fire('search-selected-info' + this.searchTaskId, { data });
-    if (resultRender && typeof resultRender === 'function') {
-      resultRender(data);
+    if (resultRender) {
       return;
     }
-    this._showResultToMap(data, sourceName);
+    this._showResultToMap(data);
   }
 
-  _showResultToMap(feature, sourceName) {
+  _showResultToMap(feature) {
     const geometry = feature.geometry || [feature.location.x, feature.location.y];
     if (!this.options.alwaysCenter && (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon')) {
-      this._addPolygon(feature, sourceName);
+      this._addPolygon(feature);
     } else if (!this.options.alwaysCenter && geometry.type === 'LineString') {
-      this._addLine(feature, sourceName);
+      this._addLine(feature);
     } else {
-      this._addPoint(feature, sourceName);
+      this._addPoint(feature);
     }
   }
 
-  _addPoint(feature, sourceName) {
+  _addPoint(feature) {
     const properties = feature.properties || feature;
     const geometry = feature.geometry || [feature.location.x, feature.location.y];
     let pointData = { coordinates: null, info: [] };
-    if (sourceName === 'Tianditu Search') {
-      pointData.coordinates = geometry.coordinates;
-      for (let key in properties) {
-        if ((key === 'name' || key === 'address' || key === 'phone') && properties[key]) {
-          pointData.info.push({ attribute: key, attributeValue: properties[key] });
-        }
-      }
+    const propertiesValue = properties.address || feature.filterAttribute.filterAttributeValue || properties.name;
+    if (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon' || geometry.type === 'LineString') {
+      pointData.coordinates = turfCenter(feature).geometry.coordinates;
     } else {
-      const propertiesValue = properties.address || feature.filterAttribute.filterAttributeValue || properties.name;
-      if (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon' || geometry.type === 'LineString') {
-        pointData.coordinates = turfCenter(feature).geometry.coordinates;
-      } else {
-        pointData.coordinates = geometry.coordinates || geometry;
-      }
-      if (this.keyWord.indexOf('：') < 0) {
-        pointData.info.push({ attribute: this.$t('search.address'), attributeValue: propertiesValue });
-      } else {
-        for (let key in properties) {
-          properties[key] && pointData.info.push({ attribute: key, attributeValue: properties[key] });
-        }
+      pointData.coordinates = geometry.coordinates || geometry;
+    }
+    if (this.keyWord.indexOf('：') < 0) {
+      pointData.info.push({ attribute: geti18n().t('search.address'), attributeValue: propertiesValue });
+    } else {
+      for (let key in properties) {
+        properties[key] && pointData.info.push({ attribute: key, attributeValue: properties[key] });
       }
     }
     this.fire('set-popup-content' + this.searchTaskId, { popupData: pointData });
@@ -197,34 +144,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
     console.log('draw line here');
   }
 
-  _addPolygon(feature, sourceName) {
+  _addPolygon(feature) {
     if (feature && this.map) {
-      const properties = feature.properties || feature;
-      let coordinates = feature.geometry.coordinates;
       let center = turfCenter(feature).geometry.coordinates;
-      if (sourceName === 'Tianditu Search') {
-        const { points = [], lonlat } = properties;
-        const region = (points[0] || {}).region || '';
-        const data = region.split(',');
-        coordinates = [
-          data.map(item => {
-            const items = item.split(' ');
-            items[0] = +items[0];
-            items[1] = +items[1];
-            return items;
-          })
-        ];
-        const centerData = lonlat.split(',');
-        center = [+centerData[0], +centerData[1]];
-      }
       const source = this.map.getSource('searchResultLayer');
-      const sourceData = {
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates
-        }
-      };
+      const sourceData = feature;
       if (source) {
         source.setData(sourceData);
       } else {
@@ -445,72 +369,6 @@ export default class SearchViewModel extends mapboxgl.Evented {
       });
     }, this);
   }
-  // queryType: '1' 表示搜索，queryType: '4' 表示普通建议词搜索
-  _searchFromTianditu() {
-    const sourceName = 'Tianditu Search';
-    const tiandituSearch = this.options.tiandituSearch || {};
-    const commonData = {
-      // yingjiType: 1,
-      // sourceType: 0,
-      keyWord: this.keyWord,
-      queryType: '4',
-      start: '0',
-      count: '10',
-      level: Math.round(this.map.getZoom()) + 1,
-      mapBound: this._toBBoxString()
-    };
-    if (this.searchNormalOfTianditu) {
-      commonData.queryType = '1';
-      commonData.queryTerminal = 10000;
-    }
-    return tiandituApi
-      .tiandituSearch(tiandituSearch.url, {
-        postStr: JSON.stringify(Object.assign({}, commonData, tiandituSearch.data)),
-        type: 'query',
-        tk: tiandituSearch.tk
-      })
-      .then(res => {
-        const dataCollection = res.suggests || res.pois || (res.statistics && [res.statistics]);
-        let type;
-        let results;
-        if (res.area) {
-          const result = [res.area];
-          type = 'Polygon';
-          results = result;
-        } else if (res.lineData) {
-          type = 'LineString';
-          results = res.lineData;
-        } else if (dataCollection) {
-          type = 'Point';
-          results = dataCollection;
-        } else if (res.prompt && !+res.count) {
-          results = [];
-        } else {
-          this._searchFeaturesFailed('', sourceName);
-        }
-        this.searchNormalOfTianditu && results && this.fire('search-selected-info' + this.searchTaskId, { data: res });
-        !this.searchNormalOfTianditu && results && this._searchFeaturesSucceed(results, sourceName);
-        return { type, data: res };
-      })
-      .catch(error => {
-        if (!error.isCancel) {
-          this._searchFeaturesFailed(error, sourceName);
-        }
-      });
-  }
-
-  _toBBoxString() {
-    const bounds = this.map.getBounds();
-    return (
-      bounds.getWest().toFixed(5) +
-      ',' +
-      bounds.getSouth().toFixed(5) +
-      ',' +
-      bounds.getEast().toFixed(5) +
-      ',' +
-      bounds.getNorth().toFixed(5)
-    );
-  }
 
   _dataToGeoJson(data, geoCodeParam) {
     let features = [];
@@ -527,9 +385,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
         },
         filterAttribute: {
           filterAttributeName: data[i].name || geoCodeParam.keyWords,
-          filterAttributeValue: data[i].formatedAddress || data[i].address || this.$t('search.null')
+          filterAttributeValue: data[i].formatedAddress || data[i].address || geti18n().t('search.null')
         },
-        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address || this.$t('search.null')}`
+        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address || geti18n().t('search.null')}`
       };
       features.push(feature);
     }
@@ -557,7 +415,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       operatingAttributeNames.forEach(attributeName => {
         if (fAttr[attributeName] && keyReg.test(fAttr[attributeName].toString().toLowerCase())) {
           let filterAttributeName = attributeName;
-          let filterAttributeValue = fAttr[attributeName] || this.$t('search.null');
+          let filterAttributeValue = fAttr[attributeName] || geti18n().t('search.null');
           if (!feature.filterAttribute) {
             feature.filterAttribute = {
               filterAttributeName: filterAttributeName,
@@ -626,7 +484,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.searchTaskId = 0;
     this.searchResult = {};
     this.errorSourceList = {};
-    if (this.options.resultRender) {
+    if (!this.options.resultRender) {
       this._clearSearchResultLayer();
       this._clearMarkers();
       this._clearPopups();

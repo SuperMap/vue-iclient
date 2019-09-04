@@ -104,8 +104,13 @@ export default class MapGetter extends Vue {
       this.viewModel && (this.viewModel = null);
     }
   }
-  nonMapTip() {
-    this.$message.destroy();
-    this.$message.warning('您需要配置关联地图！');
+  mapNotLoadedTip() {
+    const mapTarget = this.getTargetName();
+    if (!mapEvent.$options.getMap(mapTarget) || (this.map && !this.map.loaded())) {
+      this.$message.destroy();
+      this.$message.warning(this.$t('warning.mapNotLoaded'));
+      return true;
+    }
+    return false;
   }
 }

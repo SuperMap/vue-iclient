@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import mapEvent from '../../../_types/map-event';
 import drawEvent from '../../../_types/draw-event';
 import Theme from '../../../../common/_mixin/theme';
 import Card from '../../../../common/_mixin/card';
@@ -91,10 +90,9 @@ export default {
     },
     updateMode(mode) {
       setTimeout(() => {
-        if ((this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) || (this.map && !this.map.loaded())) {
-          this.$message.destroy();
-          this.$message.warning(this.$t('warning.mapNotLoaded'));
-        } else if (this.map && this.map.loaded()) {
+        const mapNotLoaded = this.mapNotLoadedTip();
+        if (mapNotLoaded) return;
+        if (this.map && this.map.loaded()) {
           this.activeMode = mode;
           if (mode === 'trash') {
             this.viewModel.trash();
@@ -104,8 +102,6 @@ export default {
           }
           this.viewModel.openDraw(mode);
           drawEvent.$emit('draw-reset', { componentName: this.$options.name });
-        } else {
-          this.nonMapTip();
         }
       }, 0);
     },

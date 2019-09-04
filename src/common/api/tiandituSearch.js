@@ -35,7 +35,7 @@ axiosService.interceptors.response.use(
   }
 );
 
-function request({ url, params = {}, method = 'get' }) {
+export function request({ url, params = {}, method = 'get' }) {
   const options = {
     url,
     method
@@ -63,10 +63,64 @@ function cancelRequest(sourceName) {
   }
 }
 
+export const config = {
+  HOME_URL: 'http://www.tianditu.gov.cn',
+  feedbackIp: 'http://www.tianditu.gov.cn/feedback',
+  T_URL: 'https://map.tianditu.gov.cn',
+  T_SSO_URL: 'https://sso.tianditu.gov.cn',
+  T_UMS_URL: 'https://uums.tianditu.gov.cn',
+  SEARCH_URL: 'https://api.tianditu.gov.cn/search',
+  DRIVE_URL: 'https://api.tianditu.gov.cn/drive',
+  BUS_URL: 'https://api.tianditu.gov.cn/transit',
+  GEOCODE_URL: 'https://api.tianditu.gov.cn/geocoder',
+  API_URL: 'http://lbs.tianditu.gov.cn/'
+};
+
 export const tiandituSearch = (url, params) => {
   return request({ url, params });
 };
 
 export const tiandituTransit = (url, params) => {
   return request({ url, params });
+};
+
+export const getStatisticsResult = data => {
+  let result = {
+    priorityCitys: data.priorityCitys,
+    allAdmins: data.allAdmins.map((parent, index) => {
+      let parentKey = `0-${index}`;
+      let item = {
+        key: parentKey,
+        title: parent.name,
+        info: parent,
+        children: [],
+        scopedSlots: { title: 'title', info: 'info' }
+      };
+      parent.childAdmins &&
+        parent.childAdmins.forEach((child, key) => {
+          let childKey = `${parentKey}-${key}`;
+          let subItem = {
+            key: childKey,
+            title: child.name,
+            info: child,
+            children: [],
+            scopedSlots: { title: 'title', info: 'info' }
+          };
+          child.childAdmins &&
+            child.childAdmins.forEach((grandSon, subKey) => {
+              let grandKey = `${childKey}-${subKey}`;
+              let grandItem = {
+                key: grandKey,
+                title: grandSon.name,
+                info: grandSon,
+                scopedSlots: { title: 'title', info: 'info' }
+              };
+              subItem.children.push(grandItem);
+            });
+          item.children.push(subItem);
+        });
+      return item;
+    })
+  };
+  return result;
 };

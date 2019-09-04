@@ -29,7 +29,6 @@ import LineStyle from '../_types/LineStyle';
 import bbox from '@turf/bbox';
 import Vue from 'vue';
 import UniqueId from 'lodash.uniqueid';
-import mapEvent from '../_types/map-event';
 
 export default {
   name: 'SmOpenFile',
@@ -106,14 +105,8 @@ export default {
       return UniqueId(`layer-${this.$options.name.toLowerCase()}-`);
     },
     preventDefault(e) {
-      if (this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) {
-        this.$message.destroy();
-        this.$message.warning(this.$t('warning.mapNotLoaded'));
-        e.preventDefault();
-      } else if (!this.viewModel) {
-        this.nonMapTip();
-        e.preventDefault();
-      }
+      const mapNotLoaded = this.mapNotLoadedTip();
+      mapNotLoaded && e.preventDefault();
     }
   },
   loaded() {

@@ -6,16 +6,19 @@
       :style="{height:'700px'}"
       @load="mapLoaded"
     >
-      <sm-pan></sm-pan>
+      <!-- <sm-pan></sm-pan>
       <sm-zoom :show-zoom-slider="true"></sm-zoom>
       <sm-layer-list position="top-right"/>
-      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-right" :collapsed="false"></sm-legend>
+      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-right" :collapsed="false"></sm-legend> -->
       <sm-query
         :iportal-data="iportalDataQuery"
         :rest-data="restDataQuery"
         :rest-map="restMapQuery"
         position="top-right"
       ></sm-query>
+      <sm-tdt-route
+        position="top-right"
+      ></sm-tdt-route>
       <sm-search
         position="top-right"
         :layer-names="layerSourceNames"
@@ -24,14 +27,18 @@
         :rest-data="restDataSearch"
         :iportal-data="iportalData"
         :online-local-search="onlineLocalSearch"
+        :alwaysCenter="false"
       ></sm-search>
-      <sm-mini-map position="bottom-right"></sm-mini-map>
+      <sm-tdt-search
+        position="top-right"
+      ></sm-tdt-search>
+      <!-- <sm-mini-map position="bottom-right"></!-->
       <sm-measure position="top-right"></sm-measure>
       <sm-draw position="top-right"></sm-draw>
       <sm-raster-tile-layer v-bind="rasteLayerOptions"></sm-raster-tile-layer>
       <sm-vector-tile-layer
         style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"
-      ></sm-vector-tile-layer>
+      ></sm-vector-tile-layer> -->
     </sm-web-map>
     <!-- <sm-web-map
       :mapOptions='mapOptions'

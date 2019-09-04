@@ -22,6 +22,8 @@ $--assets-path: './web-map/control/pan/assets' !default;
 @import './web-map/control/layer-list/style/layer-list.scss';
 @import './web-map/control/legend/style/legend.scss';
 @import './web-map/control/draw/style/draw.scss';
+@import './tdt/search/style/tdtSearch.scss';
+@import './tdt/route/style/tdtRoute.scss';
 
 @import './web-map/style/web-map.scss';
 @import './web-scene/style/web-scene.scss';

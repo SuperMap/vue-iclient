@@ -76,7 +76,7 @@
                   :key="i"
                   :title="item.filterVal || item.name || item.address"
                   :class="{'active': keyupHoverInfo.groupIndex === index && keyupHoverInfo.hoverIndex === i }"
-                  @click="searchResultListClicked(item, result.source, $event)"
+                  @click="searchResultListClicked(item, $event)"
                   @mouseenter="changeChosenResultStyle"
                   @mouseleave="resetChosenResultStyle"
                 >{{ item.filterVal || item.name || item.address }}</li>
@@ -172,17 +172,6 @@ export default {
       //   return validators(value, AddressMatchParameter);
       // }
     },
-    tiandituSearch: {
-      type: Object,
-      default() {
-        return {
-          enable: true,
-          url: 'http://api.tianditu.gov.cn/search',
-          tk: '',
-          data: null
-        };
-      }
-    },
     mode: {
       type: String,
       default: 'control',
@@ -244,12 +233,6 @@ export default {
           result.style.color = this.getTextColor;
         }
       }
-    },
-    tiandituSearch: {
-      handler() {
-        this.searchButtonClicked();
-      },
-      deep: true
     }
   },
   mounted() {
@@ -299,7 +282,6 @@ export default {
       if (this.openSearchSuggestion && !this.isInputing) {
         if (this.searchKey) {
           this.isSuggestion = true;
-          this.viewModel && this.viewModel.setTiandituSearchNormal(false);
           this.search();
         } else {
           this.inputValueCleared(false);
@@ -308,26 +290,20 @@ export default {
     },
     searchButtonClicked() {
       this.isSuggestion = false;
-      if (this.tiandituSearch.enable) {
-        this.viewModel && this.viewModel.setTiandituSearchNormal(true);
-      }
       this.search();
     },
     search() {
       this.clearResult();
-      if (!this.viewModel) {
-        this.nonMapTip();
-        return;
-      }
-      let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch, tiandituSearch } = this.$props;
+      const mapNotLoaded = this.mapNotLoadedTip();
+      if (mapNotLoaded) return;
+      let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = this.$props;
       if (
         (layerNames && layerNames.length > 0) ||
         onlineLocalSearch.enable ||
         (restMap && restMap.length > 0) ||
         (restData && restData.length > 0) ||
         (iportalData && iportalData.length > 0) ||
-        (addressMatch && addressMatch.length > 0) ||
-        tiandituSearch.enable
+        (addressMatch && addressMatch.length > 0)
       ) {
         if (this.searchKey) {
           this.searchTaskId = this.viewModel.search(this.searchKey);
@@ -345,13 +321,10 @@ export default {
       this.viewModel && this.viewModel.clear();
       emitEvent && this.$emit('clear-search-result');
     },
-    searchResultListClicked(data, sourceName, event) {
+    searchResultListClicked(data, event) {
       const searchKey = event.target.innerHTML;
       this.isSuggestion = false;
-      if (this.tiandituSearch.enable) {
-        this.viewModel && this.viewModel.setTiandituSearchNormal(true);
-      }
-      this.viewModel.getFeatureInfo(searchKey, data, sourceName);
+      this.viewModel.getFeatureInfo(searchKey, data);
     },
     resetLastEvent() {
       if (/\d/.test(this.searchTaskId)) {
@@ -429,6 +402,7 @@ export default {
     },
     searchSelectedInfo({ data }) {
       this.prefixType = 'search';
+      this.resultRender && this.resultRender(data);
       this.$emit('search-selected-info', data);
     },
     isNumber(num) {
