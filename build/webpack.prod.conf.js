@@ -71,6 +71,12 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs: 'three',
         commonjs2: 'three',
         amd: 'three'
+      },
+      'video.js': {
+        root: '_videojs',
+        commonjs: 'video.js',
+        commonjs2: 'video.js',
+        amd: 'video.js'
       }
     },
     /// \/static\/libs\//,
