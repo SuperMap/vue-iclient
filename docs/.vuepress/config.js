@@ -85,8 +85,8 @@ module.exports = {
     }
   },
   themeConfig: {
-    activeHeaderLinks: false,
-    base: '/',
+    lastUpdated: '最后更新时间',
+    activeHeaderLinks: true,
     locales: {
       '/': {
         label: '简体中文',
