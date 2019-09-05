@@ -7,12 +7,12 @@ module.exports = {
       lang: 'zh-CN',
       title: 'Vue-iClient',
       description: 'Vue-iClient'
-    },
-    '/en/': {
-      lang: 'en-US', // 这个值会被设置在 <html> 的 lang 属性上
-      title: 'Vue-iClient',
-      description: 'Vue components'
     }
+    // '/en/': {
+    //   lang: 'en-US', // 这个值会被设置在 <html> 的 lang 属性上
+    //   title: 'Vue-iClient',
+    //   description: 'Vue components'
+    // }
   },
   title: 'vue components by supermap',
   description: 'vue components',
@@ -87,6 +87,7 @@ module.exports = {
   themeConfig: {
     lastUpdated: '最后更新时间',
     activeHeaderLinks: true,
+    repo: 'SuperMap/vue-iclient',
     locales: {
       '/': {
         label: '简体中文',
