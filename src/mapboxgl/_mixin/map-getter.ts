@@ -26,6 +26,7 @@ export default class MapGetter extends Vue {
   webmap: any;
   viewModel: any;
   $message: any;
+  $t: any;
 
   @Prop() mapTarget: String;
 
@@ -106,7 +107,11 @@ export default class MapGetter extends Vue {
   }
   mapNotLoadedTip() {
     const mapTarget = this.getTargetName();
-    if (!mapEvent.$options.getMap(mapTarget) || (this.map && !this.map.loaded())) {
+    if(!this.viewModel) {
+      this.$message.destroy();
+      this.$message.warning(this.$t('warning.unassociatedMap'));
+      return true;
+    } else if (!mapEvent.$options.getMap(mapTarget) || (this.map && !this.map.loaded())) {
       this.$message.destroy();
       this.$message.warning(this.$t('warning.mapNotLoaded'));
       return true;
