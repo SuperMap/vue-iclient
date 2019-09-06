@@ -100,6 +100,8 @@ interface mapOptions {
   renderWorldCopies?: boolean;
   bearing?: number;
   pitch?: number;
+  style?: any;
+  container?: string;
 }
 
 type layerType = 'POINT' | 'LINE' | 'POLYGON';
@@ -210,7 +212,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    */
   setServerUrl(serverUrl: string): void {
     this.serverUrl = serverUrl;
-    // this._createWebMap();
   }
 
   setWithCredentials(withCredentials) {
@@ -230,16 +231,19 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Number} [mapOptions.pitch] - 地图的初始俯仰。
    */
   setMapOptions(mapOptions: mapOptions): void {
-    let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch } = mapOptions;
+    let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch, style } = mapOptions;
     if (this.map) {
-      center && (<[number, number]>center).length > 0 && this.map.setCenter(center);
+      this.mapOptions = mapOptions;
       (zoom || zoom === 0) && this.map.setZoom(zoom);
+      center && (<[number, number]>center).length > 0 && this.map.setCenter(center);
+
       maxBounds && (<[[number, number], [number, number]]>maxBounds).length > 0 && this.map.setMaxBounds(maxBounds);
       (minZoom || minZoom === 0) && this.map.setMinZoom(minZoom);
       (maxZoom || maxZoom === 0) && this.map.setMaxZoom(maxZoom);
       renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
       (bearing || bearing === 0) && this.map.setBearing(bearing);
       (pitch || pitch === 0) && this.map.setPitch(pitch);
+      style && style.layers.length && Object.keys(style.sources).length && this.map.setStyle(style);
     }
   }
 
@@ -261,14 +265,17 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     }
     if (!this.mapId || !this.serverUrl) {
       this.mapOptions.container = this.target;
-      this.map = new mapboxgl.Map(this.mapOptions);
-      this.map.on('load', () => {
-        this.fire('addlayerssucceeded', {
-          map: this.map,
-          mapparams: {},
-          layers: []
+      setTimeout(() => {
+        this.map = new mapboxgl.Map(this.mapOptions);
+        this.map.on('load', () => {
+          this.fire('addlayerssucceeded', {
+            map: this.map,
+            mapparams: {},
+            layers: []
+          });
         });
-      });
+      }, 0);
+
       return;
     }
     this._legendList = {};
