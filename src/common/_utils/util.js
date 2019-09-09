@@ -76,9 +76,6 @@ export function getColorWithOpacity(color, opacity) {
   if (color.indexOf('rgba') > -1) {
     return color.substring(0, color.lastIndexOf(',') + 1) + opacity + ')';
   }
-  let newColor = colorcolor(color, 'rgba', true);
-  let colorArr = newColor.split(',');
-  colorArr[3] = `${opacity})`;
-  newColor = colorArr.join(',');
-  return newColor;
+  let newColor = colorcolor(color, 'rgb');
+  return 'rgba' + newColor.substring(3, newColor.length - 1) + `,${opacity})`;
 }

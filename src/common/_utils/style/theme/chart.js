@@ -1,3 +1,5 @@
+import { getColorWithOpacity } from '../../util';
+
 export const chartThemeUtil = (
   background = 'rgba(255, 255, 255, 0.6)',
   textColor = '#333',
@@ -44,12 +46,19 @@ export const chartThemeUtil = (
       },
       splitLine: {
         lineStyle: {
-          color: textColor
+          color: [
+            getColorWithOpacity(textColor, 1),
+            getColorWithOpacity(textColor, 0.8),
+            getColorWithOpacity(textColor, 0.6),
+            getColorWithOpacity(textColor, 0.4),
+            getColorWithOpacity(textColor, 0.2),
+            getColorWithOpacity(textColor, 0.1)
+          ]
         }
       },
       axisLine: {
         lineStyle: {
-          color: textColor
+          color: getColorWithOpacity(textColor, 0.3)
         }
       },
       symbolSize: '8',
