@@ -10,6 +10,7 @@
     <div class="sm-component-indicator__content">
       <span class="sm-component-indicator__num" :style="[indicatorStyle]">
         <countTo
+          v-if="typeof num !== 'string'"
           :decimals="calDecimals"
           :startVal="startData"
           :endVal="numData"
@@ -20,6 +21,7 @@
           :separatorBackground="separatorBackground"
           :fontSize="fontSize"
         ></countTo>
+        {{ typeof num === 'string' && num }}
       </span>
       <span
         v-show="showTitleUnit"
@@ -124,15 +126,20 @@ export default {
   },
   computed: {
     unit_titleStyle() {
-      const reg = /\d+(\.\d+)?([a-z]+)/gi;
-      const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
       return {
-        fontSize: parseFloat(this.fontSize) * 0.66 + fontUnit,
+        fontSize: parseFloat(this.fontSize) * 0.66 + this.fontUnit,
         fontWeight: this.fontWeight
       };
     },
+    fontUnit() {
+      const reg = /\d+(\.\d+)?([a-z]+)/gi;
+      const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
+      return fontUnit;
+    },
     indicatorStyle() {
-      return (this.indicatorColor && { color: this.indicatorColor }) || this.getColorStyle(0);
+      let style = (this.indicatorColor && { color: this.indicatorColor }) || this.getColorStyle(0);
+      typeof this.num === 'string' && (style.fontSize = parseFloat(this.fontSize) + this.fontUnit);
+      return style;
     },
     direction() {
       return { vertical: 'column', horizontal: 'row' }[this.mode];
