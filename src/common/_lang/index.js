@@ -57,6 +57,8 @@ export function initi18n(Vue, config) {
       i18n.setDateTimeFormat('en', enLocale.dateTimeFormat);
       i18n.setDateTimeFormat('zh', zhLocale.dateTimeFormat);
     }
+    i18n.mergeLocaleMessage && i18n.mergeLocaleMessage('en', enLocale);
+    i18n.mergeLocaleMessage && i18n.mergeLocaleMessage('zh', zhLocale);
   } else if (!Vue.prototype.hasOwnProperty('$i18n')) {
     Object.defineProperty(Vue.prototype, '$i18n', {
       get: function get() {
