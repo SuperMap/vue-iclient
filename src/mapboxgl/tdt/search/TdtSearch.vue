@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-tdtSearch sm-component-search" :style="getTextColorStyle">
+  <div class="sm-component-search sm-component-tdtSearch" :style="getTextColorStyle">
     <div
       v-if="showIcon && mode === 'control'"
       class="sm-component-search__toggle-icon"
@@ -11,7 +11,7 @@
     <transition name="sm-component-zoom-in" @after-leave="showIcon = !showIcon">
       <div
         v-show="showSearch || mode === 'toolBar'"
-        class="sm-component-search__content"
+        class="sm-component-search__content sm-component-tdtSearch__content"
         :style="[{'transform-origin': position.includes('left') ? 'top left' : 'top right'}, getBackgroundStyle]"
       >
         <div class="sm-component-search__input">
@@ -54,21 +54,24 @@
             />
           </a-input>
         </div>
-        <div class="sm-component-search__result" :style="[getBackgroundStyle]">
-          <ul v-if="resultSuggestions" class="sm-component-tdtSearch__suggestions">
-            <li
-              v-for="(item, i) in searchResult"
-              :key="i"
-              :title="item.name"
-              :class="{'active': hoverIndex === i }"
-              @click="searchResultListClicked(item.name)"
-              @mouseenter="changeChosenResultStyle"
-              @mouseleave="resetChosenResultStyle"
-            >
-              <span class="name">{{ item.name }}</span>
-              <span v-if="showAddress(item.name, item.address)" class="address">{{ item.address }}</span>
-            </li>
-          </ul>
+        <div :style="[getBackgroundStyle]">
+          <div v-if="resultSuggestions" class="sm-component-search__result">
+            <ul class="sm-component-tdtSearch__suggestions">
+              <li
+                v-for="(item, i) in searchResult"
+                :key="i"
+                :title="item.name"
+                :class="{'active': hoverIndex === i }"
+                @click="searchResultListClicked(item.name)"
+                @mouseenter="changeChosenResultStyle"
+                @mouseleave="resetChosenResultStyle"
+              >
+                <span class="name">{{ item.name }}</span>
+                <span v-if="showAddress(item.name, item.address)" class="address">{{ item.address }}</span>
+              </li>
+            </ul>
+          </div>
+
           <component :is="componentId" v-else v-bind="componentProps" v-on="componentListeners"></component>
         </div>
       </div>
@@ -85,6 +88,7 @@ import LinesResult from '../results/LinesResult';
 import AreaResult from '../results/AreaResult';
 import StatisticsResult from '../results/StatisticsResult';
 import NothingResult from '../results/NothingResult';
+import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmTdtSearch',
@@ -101,9 +105,8 @@ export default {
       type: Object,
       default() {
         return {
-          url: 'http://api.tianditu.gov.cn/search',
-          tk: '979370626f38396281484293eb175e2e',
-          params: null
+          searchUrl: 'http://api.tianditu.gov.cn/search',
+          tk: '1d109683f4d84198e37a38c442d68311'
         };
       }
     },
@@ -157,6 +160,11 @@ export default {
           result.style.color = this.getTextColor;
         }
       }
+    },
+    data(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.viewModel && this.viewModel.setData(this.data);
+      }
     }
   },
   mounted() {
@@ -167,6 +175,7 @@ export default {
     this.viewModel.on('get-transit-data-succeeded', ({ data }) => {
       this.$set(this.componentProps, 'busData', Object.assign({}, data));
     });
+    this.viewModel.on('search-selected-info', this.searchSelectedInfo);
   },
   removed() {
     this.clearResult(true);
@@ -313,6 +322,7 @@ export default {
     },
     searchSelectedInfo({ data }) {
       this.prefixType = 'search';
+      this.resultRender && this.resultRender(data);
       this.$emit('search-selected-info', data);
     },
     isNumber(num) {

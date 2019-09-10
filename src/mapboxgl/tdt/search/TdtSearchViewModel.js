@@ -1,9 +1,21 @@
 import mapboxgl from '../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import { config, request, tiandituSearch, tiandituTransit, getStatisticsResult } from '../../../common/api/tiandituSearch';
-import { featureCollection } from '@turf/helpers';
-import envelope from '@turf/envelope';
+import {
+  config,
+  request,
+  tiandituSearch,
+  tiandituTransit,
+  sourceNames,
+  getStatisticsResult,
+  tdtSetHighlightIcon,
+  resetSearchSourceData,
+  toBBoxString,
+  addPoints,
+  clearSearchResultLayer,
+  generatePointsFeatures
+} from '../_utils/service';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
+import { geti18n } from '../../../common/_lang';
 
 export default class TdtSearchViewModel extends mapboxgl.Evented {
   constructor(map, options) {
@@ -16,6 +28,11 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     }
     this.groupLineList = {};
     this.registerEvents();
+    this.data = options.data;
+    this.searchResultPoints = sourceNames.searchResultPoints;
+    this.searchResultLine = sourceNames.searchResultLine;
+    this.searchResultPolygon = sourceNames.searchResultPolygon;
+    this.searchResultPointsOfLine = sourceNames.searchResultPointsOfLine;
   }
 
   registerEvents() {
@@ -24,31 +41,31 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
   }
 
   registerPointsEvent() {
-    this.map.on('click', 'searchResultPoints', e => {
+    this.map.on('click', this.searchResultPoints, e => {
       const properties = e.features[0].properties;
       this.showPointPopup(e.lngLat, properties);
     });
 
-    this.map.on('mouseenter', 'searchResultPoints', () => {
+    this.map.on('mouseenter', this.searchResultPoints, () => {
       this.map.getCanvas().style.cursor = 'pointer';
     });
 
-    this.map.on('mouseleave', 'searchResultPoints', () => {
+    this.map.on('mouseleave', this.searchResultPoints, () => {
       this.map.getCanvas().style.cursor = '';
     });
   }
 
   registerLinesEvent() {
-    this.map.on('click', 'searchResultPointsOfLine-stroke', e => {
+    this.map.on('click', `${this.searchResultPointsOfLine}-stroke`, e => {
       const properties = e.features[0].properties;
       this.showPointPopup(e.lngLat, properties, 'LineString');
     });
-    this.map.on('mouseenter', 'searchResultPointsOfLine-stroke', e => {
+    this.map.on('mouseenter', `${this.searchResultPointsOfLine}-stroke`, e => {
       this.map.getCanvas().style.cursor = 'pointer';
       this.showLineHoverPopup(e);
     });
 
-    this.map.on('mouseleave', 'searchResultPointsOfLine-stroke', () => {
+    this.map.on('mouseleave', `${this.searchResultPointsOfLine}-stroke`, () => {
       this.map.getCanvas().style.cursor = '';
       this._removeHoverPopup();
     });
@@ -74,7 +91,9 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     const coordinates = e.features[0].geometry.coordinates.slice();
     const properties = e.features[0].properties;
     const popDom = `<div style='padding: 5px;'>
-    <div style='background: #0099ff; line-height: 28px; padding: 0 10px; font-size: 12px; color: #fff'>${properties.name}</div>
+    <div style='background: #0099ff; line-height: 28px; padding: 0 10px; font-size: 12px; color: #fff'>${
+  properties.name
+}</div>
     </div>`;
     this.hoverPopup = new mapboxgl.Popup({
       closeButton: false,
@@ -86,6 +105,10 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
       .addTo(this.map);
   }
 
+  setData(data) {
+    this.data = Object.assign(this.data, data);
+    this.style = 0;
+  }
   _getPopupContent(from, data) {
     const container = document.createElement('div');
     container.className = 'popup-container';
@@ -97,13 +120,23 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     const content = document.createElement('div');
     content.className = 'content';
     content.innerHTML = `
-      ${from === 'Point' ? `<div>
-          <div class="phone">电话： ${data.phone || '暂无'}</div>
-          <div class="address">地址： ${data.address || '暂无'}</div>
-        </div>` : ''}
-      ${from === 'LineString' ? `<div>
-        <div class="address">交通： ${data.address || '暂无'}</div>
-      </div>` : ''}
+      ${
+  from === 'Point'
+    ? `<div>
+          <div class="phone">${geti18n().t('tdtSearch.phone')}： ${data.phone || geti18n().t('tdtSearch.noData')}</div>
+          <div class="address">${geti18n().t('tdtSearch.address')}： ${data.address ||
+              geti18n().t('tdtSearch.noData')}</div>
+        </div>`
+    : ''
+}
+      ${
+  from === 'LineString'
+    ? `<div>
+        <div class="address">${geti18n().t('tdtSearch.transport')}： ${data.address ||
+              geti18n().t('tdtSearch.noData')}</div>
+      </div>`
+    : ''
+}
     `;
     const group = document.createElement('div');
     group.className = 'operate-group';
@@ -117,7 +150,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     endItem.innerHTML = '<span>设为终点</span>';
     group.appendChild(startItem);
     group.appendChild(endItem);
-    content.appendChild(group);
+    // content.appendChild(group);
     container.appendChild(content);
     return container;
   }
@@ -205,33 +238,24 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
       level: Math.round(this.map.getZoom()) + 1,
       mapBound: this._toBBoxString()
     };
-    return tiandituSearch(data.url, {
+    return tiandituSearch(data.searchUrl, {
       postStr: JSON.stringify(Object.assign({}, commonData, params)),
       type: 'query',
       tk: data.tk
     })
       .then(res => {
-        if (+res.count || !+res.count && res.prompt) {
+        if (+res.count || (!+res.count && res.prompt)) {
           return res;
         }
       })
       .catch(error => {
-        const err = error.isCancel ? null : error;
+        const err = error && error.isCancel ? null : error;
         return Promise.reject(err);
       });
   }
 
   _toBBoxString() {
-    const bounds = this.map.getBounds();
-    return (
-      bounds.getWest().toFixed(5) +
-      ',' +
-      bounds.getSouth().toFixed(5) +
-      ',' +
-      bounds.getEast().toFixed(5) +
-      ',' +
-      bounds.getNorth().toFixed(5)
-    );
+    return toBBoxString(this.map);
   }
 
   getFeatureInfo(searchKey, params) {
@@ -240,6 +264,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     this.groupLineList = {};
     this.reset();
     return this._searchFromTianditu(params).then(data => {
+      this.fire('search-selected-info', { data });
       if (resultRender) return;
       const result = this._showResultToMap(data);
       return result;
@@ -254,7 +279,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     if (data.pois && data.pois.length) {
       type = 'Point';
       result = data.pois;
-      features = this._generatePointsFeatures(data.pois);
+      features = this._generatePointsFeatures(result);
       this._addPoints(features);
     } else if (data.lineData && data.lineData.length) {
       type = 'LineString';
@@ -276,23 +301,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
   }
 
   _generatePointsFeatures(data, splitFlag = ' ') {
-    const result = [];
-    for (let index = data.length - 1; index >= 0; index--) {
-      const item = data[index];
-      const feature = {
-        type: 'Feature',
-        geometry: {
-          type: 'Point'
-        },
-        properties: {}
-      };
-      const center = (item.lonlat || '').split(splitFlag);
-      feature.geometry.coordinates = [+center[0], +center[1]];
-      feature.properties = Object.assign(item, { serialNum: index + 1 });
-      result.push(feature);
-    }
-    const featureList = featureCollection(result);
-    return featureList;
+    return generatePointsFeatures(data, splitFlag);
   }
 
   _generateLinesFeatures(data) {
@@ -364,68 +373,34 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
   }
 
   _addPoints(features) {
-    const map = this.map;
-    if (features && map) {
-      const source = map.getSource('searchResultPoints');
-      const sourceData = features;
-      if (source) {
-        source.setData(sourceData);
-      } else {
-        map.addSource('searchResultPoints', {
-          type: 'geojson',
-          data: sourceData
-        });
-        map.style.addSprite('searchResultPoints', `${window.location.origin}/static/images/sprite`);
-        map.addLayer({
-          id: 'searchResultPoints',
-          type: 'symbol',
-          source: 'searchResultPoints',
-          layout: {
-            'icon-image': 'buoy-icon-{serialNum}',
-            'icon-allow-overlap': true
-          }
-        });
-        map.addLayer({
-          id: 'searchResultPoints-highlight',
-          type: 'symbol',
-          source: 'searchResultPoints',
-          layout: {
-            'icon-image': 'buoy-icon-active-{serialNum}',
-            'icon-allow-overlap': true
-          },
-          filter: ['==', 'hotPointID', '']
-        });
-      }
-      const bounds = bbox(transformScale(envelope(features), 1.7));
-      map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], { maxZoom: 17 });
-    }
+    addPoints(this.map, this.searchResultPoints, features);
   }
 
   _addPointsOfLine(features) {
     if (features && this.map) {
-      const source = this.map.getSource('searchResultPointsOfLine');
+      const source = this.map.getSource(this.searchResultPointsOfLine);
       const sourceData = features;
       if (source) {
         source.setData(sourceData);
       } else {
-        this.map.addSource('searchResultPointsOfLine', {
+        this.map.addSource(this.searchResultPointsOfLine, {
           type: 'geojson',
           data: sourceData
         });
 
         this.map.addLayer({
-          id: 'searchResultPointsOfLine-fill',
+          id: `${this.searchResultPointsOfLine}-fill`,
           type: 'circle',
-          source: 'searchResultPointsOfLine',
+          source: this.searchResultPointsOfLine,
           paint: {
             'circle-radius': 6,
             'circle-color': '#3385ff'
           }
         });
         this.map.addLayer({
-          id: 'searchResultPointsOfLine-stroke',
+          id: `${this.searchResultPointsOfLine}-stroke`,
           type: 'circle',
-          source: 'searchResultPointsOfLine',
+          source: this.searchResultPointsOfLine,
           paint: {
             'circle-radius': 4,
             'circle-color': '#fff'
@@ -437,21 +412,21 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
 
   _addLines(feature) {
     if (feature && this.map) {
-      const source = this.map.getSource('searchResultLine');
+      const source = this.map.getSource(this.searchResultLine);
       const sourceData = feature;
       this._addPointsOfLine(this._generatePointsFeatures(feature.properties.station || [], ','));
       if (source) {
         source.setData(sourceData);
       } else {
-        this.map.addSource('searchResultLine', {
+        this.map.addSource(this.searchResultLine, {
           type: 'geojson',
           data: sourceData
         });
         this.map.addLayer(
           {
-            id: 'searchResultLine',
+            id: this.searchResultLine,
             type: 'line',
-            source: 'searchResultLine',
+            source: this.searchResultLine,
             layout: {
               'line-cap': 'round'
             },
@@ -474,19 +449,19 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     if (feature && this.map) {
       const map = this.map;
       if (feature && map) {
-        const source = map.getSource('searchResultPolygon');
+        const source = map.getSource(this.searchResultPolygon);
         const sourceData = feature;
         if (source) {
           source.setData(sourceData);
         } else {
-          map.addSource('searchResultPolygon', {
+          map.addSource(this.searchResultPolygon, {
             type: 'geojson',
             data: sourceData
           });
           map.addLayer({
-            id: 'searchResultPolygon-stroke',
+            id: `${this.searchResultPolygon}-stroke`,
             type: 'line',
-            source: 'searchResultPolygon',
+            source: this.searchResultPolygon,
             layout: { 'line-cap': 'round', 'line-join': 'round' },
             paint: {
               'line-width': 3,
@@ -495,9 +470,9 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
             }
           });
           map.addLayer({
-            id: 'searchResultPolygon',
+            id: this.searchResultPolygon,
             type: 'fill',
-            source: 'searchResultPolygon',
+            source: this.searchResultPolygon,
             layout: {},
             paint: {
               'fill-color': 'rgb(0, 0, 255)',
@@ -513,42 +488,11 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
   }
 
   setHighlightIcon(hotPointID) {
-    if (this.map.getLayer('searchResultPoints-highlight')) {
-      if (hotPointID) {
-        this.map.setFilter('searchResultPoints-highlight', ['==', 'hotPointID', hotPointID]);
-        return;
-      }
-      this.map.setFilter('searchResultPoints-highlight', ['==', 'hotPointID', '']);
-    }
+    tdtSetHighlightIcon(this.map, this.searchResultPoints, hotPointID);
   }
 
   _resetSearchSourceData() {
-    if (!this.map) return;
-
-    if (this.map.getSource('searchResultPoints')) {
-      this.map.getSource('searchResultPoints').setData({
-        type: 'FeatureCollection',
-        features: []
-      });
-    }
-    if (this.map.getSource('searchResultPointsOfLine')) {
-      this.map.getSource('searchResultPointsOfLine').setData({
-        type: 'FeatureCollection',
-        features: []
-      });
-    }
-    if (this.map.getSource('searchResultLine')) {
-      this.map.getSource('searchResultLine').setData({
-        type: 'FeatureCollection',
-        features: []
-      });
-    }
-    if (this.map.getSource('searchResultPolygon')) {
-      this.map.getSource('searchResultPolygon').setData({
-        type: 'FeatureCollection',
-        features: []
-      });
-    }
+    resetSearchSourceData(this.map);
   }
 
   _removeHoverPopup() {
@@ -567,27 +511,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
   }
 
   _clearSearchResultLayer() {
-    if (!this.map) return;
-
-    if (this.map.getSource('searchResultPoints')) {
-      this.map.removeLayer('searchResultPoints');
-      this.map.removeLayer('searchResultPoints-highlight');
-      this.map.removeSource('searchResultPoints');
-    }
-    if (this.map.getSource('searchResultPointsOfLine')) {
-      this.map.removeLayer('searchResultPointsOfLine-fill');
-      this.map.removeLayer('searchResultPointsOfLine-stroke');
-      this.map.removeSource('searchResultPointsOfLine');
-    }
-    if (this.map.getSource('searchResultLine')) {
-      this.map.removeLayer('searchResultLine');
-      this.map.removeSource('searchResultLine');
-    }
-    if (this.map.getSource('searchResultPolygon')) {
-      this.map.removeLayer('searchResultPolygon');
-      this.map.removeLayer('searchResultPolygon-stroke');
-      this.map.removeSource('searchResultPolygon');
-    }
+    clearSearchResultLayer(this.map);
   }
 
   clear() {

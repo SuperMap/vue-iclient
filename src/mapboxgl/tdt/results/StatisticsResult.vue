@@ -1,9 +1,9 @@
 <template>
-  <div v-if="data" class="statistics-results-container">
+  <div v-if="data" class="statistics-results-container sm-component-tdtStatisticsResults">
     <div class="title">
-      在
+      {{ $t('tdtResults.on') }}
       <span v-if="prompt" class="region">{{ prompt.name }}</span>
-      以下城市有结果，请您选择
+      {{ $t('tdtResults.cityHadResults') }}
     </div>
     <div class="content">
       <div class="priority-cities">
@@ -20,7 +20,7 @@
         </div>
       </div>
       <div class="more-cities" @click="showMore = !showMore">
-        <span>更多城市</span>
+        <span>{{ $t('tdtResults.moreCity') }}</span>
         <a-icon :type="showMore ? 'caret-up' : 'caret-down'" />
       </div>
       <div v-show="showMore" class="cities-group">
@@ -98,7 +98,6 @@ export default {
     searchDetail(info) {
       if (info.lon && info.lat && !info.childAdmins) {
         const center = [+info.lon, +info.lat];
-        console.log(this.$parent.$parent.map);
         const map = this.$parent.map || this.$parent.$parent.map;
         map.easeTo({
           center
@@ -110,80 +109,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss">
-.statistics-results-container {
-  padding-bottom: 10px;
-  .content {
-    .ant-tree {
-      &.ant-tree-show-line {
-        ul {
-          list-style: none;
-        }
-        li {
-          &:not(:last-child):before {
-            border-left-color: transparent;
-          }
-          .ant-tree-switcher {
-            background: transparent;
-          }
-          .ant-tree-node-content-wrapper {
-            &:hover {
-              background: transparent;
-            }
-          }
-        }
-        .ant-tree-switcher-line-icon {
-          color: var(--icon-color);
-        }
-      }
-    }
-    .city-item {
-      a {
-        white-space: nowrap;
-        &:link,
-        &:visited,
-        &:hover,
-        &:active {
-          text-decoration: none;
-        }
-      }
-    }
-    .priority-cities {
-      overflow: hidden;
-      .city-item {
-        float: left;
-        padding: 6px 20px;
-        width: 106px;
-        box-sizing: content-box;
-      }
-    }
-
-    .more-cities {
-      padding: 5px 20px;
-      cursor: pointer;
-      i {
-        margin-left: 2px;
-      }
-    }
-
-    .cities-group {
-      width: 95%;
-      margin: 0 auto;
-      .results {
-        padding: 0 20px;
-        ul {
-          li {
-            font-size: 12px;
-            padding-top: 0;
-            padding-bottom: 0;
-          }
-          .ant-tree-node-content-wrapper.ant-tree-node-selected {
-            background-color: transparent;
-          }
-        }
-      }
-    }
-  }
-}
-</style>

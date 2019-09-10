@@ -1,30 +1,29 @@
 <template>
-  <div v-if="data" class="search-results-container nothing-results-container">
+  <div v-if="data" class="search-results-container nothing-results-container sm-component-tdtNoResults">
     <div class="title">
-      在
-      <span v-if="prompt" class="region">{{ prompt.name }}</span>
-      没有查询到相关结果
+      <span v-if="prompt" class="region">{{ $t('tdtResults.on') }}{{ prompt.name }}</span>
+      {{ $t('tdtResults.searchNoResult') }}
     </div>
     <div class="content">
       <div class="data-content">
         <div v-if="!noResultInfo.DidYouMean" class="try-content">
-          <p class="label">您可以尝试：</p>
+          <p class="label">{{ $t('tdtResults.youCanTry') }}：</p>
           <div class="data-list">
-            <p>1、检查输入是否正确</p>
-            <p>2、输入其他关键字进行搜索</p>
+            <p>1、{{ $t('tdtResults.enterCorrect') }}</p>
+            <p>2、{{ $t('tdtResults.enterOtherKeyWords') }}</p>
             <p>
-              3、在天地图上
+              3、{{ $t('tdtResults.onTdtMap') }}
               <a
                 href="http://www.tianditu.gov.cn/feedback/#/newPlace"
                 target="_bank"
                 :style="getColorStyle(0)"
-              >添加该地点</a>
+              >{{ $t('tdtResults.addThisAddress') }}</a>
             </p>
           </div>
         </div>
         <div v-if="noResultInfo.DidYouMean" class="didyoumean-content">
           <p>
-            您是否要找：
+            {{ $t('tdtResults.uWantTo') }}：
             <a
               href="javascript:void(0)"
               :style="getColorStyle(0)"
@@ -70,7 +69,7 @@ export default {
     };
   },
   mounted() {
-    this.noResultInfo = this.data.find(item => +item.type === 2);
+    this.noResultInfo = this.data.find(item => +item.type === 2) || {};
   },
   methods: {
     searchResult() {
@@ -90,25 +89,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.nothing-results-container {
-  .data-content {
-    padding: 10px 20px;
-
-    .data-list {
-      a {
-        font-weight: 700;
-        text-decoration: underline;
-      }
-    }
-  }
-
-  .didyoumean-content {
-    a {
-      font-weight: 700;
-      text-decoration: underline;
-    }
-  }
-}
-</style>

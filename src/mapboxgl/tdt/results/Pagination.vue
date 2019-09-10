@@ -1,15 +1,15 @@
 <template>
-  <div v-if="showComponent" class="pagination-container">
-    <ul @click="handleClick">
-      <li type="home">首页</li>
-      <li v-if="realPage !== 1" type="prevPage">上一页</li>
+  <div v-if="showComponent" class="sm-component-pagination pagination-container">
+    <ul id="paginationUl" @click="handleClick" >
+      <li type="home">{{ $t('tdtResults.homePage') }}</li>
+      <li v-if="realPage !== 1" type="prevPage">{{ $t('tdtResults.prevPage') }}</li>
       <li
         v-for="(page, index) in pageList"
         :key="page"
         :type="attrType(index)"
         :style="index === activePage && `background: ${getColor(0)}; border-color: ${getColor(0)}; color: ${getTextColor}`"
       >{{ page }}</li>
-      <li v-if="realPage !== totalPage" type="nextPage">下一页</li>
+      <li v-if="realPage !== totalPage" type="nextPage">{{ $t('tdtResults.nextPage') }}</li>
     </ul>
   </div>
 </template>
@@ -138,25 +138,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.pagination-container {
-  ul {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 50px;
-    text-align: center;
-    color: #000;
-    font-size: 12px;
-    padding-top: 11px;
-    li {
-      display: inline-block;
-      padding: 4px 8px;
-      border: 1px solid #ccc;
-      margin: 0 1px;
-      cursor: pointer;
-    }
-  }
-}
-</style>

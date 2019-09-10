@@ -1,5 +1,16 @@
 import mapboxgl from '../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import { config, request, tiandituSearch, getStatisticsResult } from '../../../common/api/tiandituSearch';
+import {
+  config,
+  request,
+  tiandituSearch,
+  getStatisticsResult,
+  tdtSetHighlightIcon,
+  resetSearchSourceData,
+  toBBoxString,
+  clearSearchResultLayer,
+  addPoints,
+  generatePointsFeatures
+} from '../_utils/service';
 import convert from 'xml-js';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
@@ -7,6 +18,7 @@ import startPng from './assets/start.png';
 import destPng from './assets/dest.png';
 import busPng from './assets/bus.png';
 import metroPng from './assets/metro.png';
+import { geti18n } from '../../../common/_lang';
 
 export default class TdtRouteViewModel extends mapboxgl.Evented {
   constructor(options) {
@@ -15,10 +27,12 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this.map = options.map;
     this.appConfig = config;
     this.token = options.data.tk;
+    this.data = Object.assign({}, options.data);
     this.style = 0;
+    this.sourceName = { tdtRoutePoints: 'tdt-route-searchRoutePoints', tdtRoutes: 'tdt-route-routes', tdtDrawRoutes: 'tdt-route-routes' };
   }
 
-  searchPoints(keyWord, params) {
+  searchPoints(keyWord, params, searchUrl = this.data.searchUrl) {
     const map = this.map;
     const commonData = {
       keyWord,
@@ -28,7 +42,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       level: Math.round(map.getZoom()),
       mapBound: this._toBBoxString()
     };
-    return tiandituSearch(this.appConfig.SEARCH_URL, {
+    return tiandituSearch(searchUrl, {
       postStr: JSON.stringify(Object.assign({}, commonData, params)),
       type: 'query',
       tk: this.token
@@ -43,12 +57,12 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       });
   }
 
-  search(orig, dest) {
-    if (!this.map) return Promise.reject(new Error('地图加载失败'));
+  search(orig, dest, carUrl = this.data.carUrl, busUrl = this.data.busUrl) {
+    if (!this.map) return Promise.reject(new Error(geti18n().t('tdtRoute.mapLoadedFiled')));
     this.orig = orig;
     this.dest = dest;
     let type = this.type === 'car' ? 'search' : 'busline';
-    let url = this.type === 'car' ? this.appConfig.DRIVE_URL : this.appConfig.BUS_URL;
+    let url = this.type === 'car' ? carUrl : busUrl;
     let params = {
       postStr: {
         orig: this.orig && this.orig.join(','),
@@ -68,12 +82,11 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this._clearMarkers();
     this.addStartMarker();
     this.addDestMarker();
-    return request(url, params, 'get')
+    return request({ url, params })
       .then(res => {
-        // TODO  待重构
         if (this.type === 'car') {
           let result = this._handleXmlData(res);
-          let source = this.map.getSource('routes');
+          let source = this.map.getSource(this.sourceName.tdtDrawRoutes);
           source ? source.setData(result.features) : this._addRouteLayer(result.features);
           source && this.setHighlightRoute('');
           const bounds = bbox(transformScale(result.features, 1.7));
@@ -88,8 +101,8 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
         } else {
           let result = this._handleBusLineData(res);
           this.result = result;
-          let source = this.map.getSource('routes');
-          this.busFeatures = this.result[0].features;
+          let source = this.map.getSource(this.sourceName.tdtDrawRoutes);
+          this.busFeatures = this.result && this.result[0].features;
           source ? source.setData(this.busFeatures) : this._addRouteLayer(this.busFeatures);
           this._addMarker(this.busFeatures.features);
           source && this.setHighlightRoute('');
@@ -102,7 +115,8 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
         }
         return this.result;
       })
-      .catch(() => {
+      .catch(error => {
+        console.log(error);
         this.remainPosMarker = true;
       });
   }
@@ -114,6 +128,8 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     if (data.pois && data.pois.length) {
       type = 'Point';
       result = data.pois;
+      let features = this._generatePointsFeatures(result);
+      this._addPoints(features);
     } else if (data.statistics) {
       type = 'Statistics';
       result = getStatisticsResult(data.statistics);
@@ -124,16 +140,11 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
   }
 
   _toBBoxString() {
-    const bounds = this.map.getBounds();
-    return (
-      bounds.getWest().toFixed(5) +
-      ',' +
-      bounds.getSouth().toFixed(5) +
-      ',' +
-      bounds.getEast().toFixed(5) +
-      ',' +
-      bounds.getNorth().toFixed(5)
-    );
+    return toBBoxString(this.map);
+  }
+
+  _generatePointsFeatures(data, splitFlag = ' ') {
+    return generatePointsFeatures(data, splitFlag);
   }
 
   setSearchStyle(style) {
@@ -145,9 +156,14 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this.style = 0;
     // this.search(this.orig, this.dest);
   }
+  setData(data) {
+    this.token = data.tk;
+    this.data = Object.assign(this.data, data);
+    this.style = 0;
+  }
 
   setLayerFeatures(id, show) {
-    let source = this.map.getSource('routes');
+    let source = this.map.getSource(this.sourceName.tdtDrawRoutes);
     this.busFeatures = this.result[id].features;
     if (show) {
       if (source) {
@@ -167,13 +183,14 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     }
   }
   clear() {
-    let source = this.map.getSource('routes');
+    let source = this.map.getSource(this.sourceName.tdtDrawRoutes);
     source &&
       source.setData({
         type: 'FeatureCollection',
         features: []
       });
     this._clearMarkers();
+    this._clearSearchResultLayer();
   }
   _clearMarkers() {
     if (!this.remainPosMarker) {
@@ -230,11 +247,13 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
               .setHTML(
                 `<div class="tdt_popup_content">
                 <div class="info_container" popupshow="true">
-                <div class="title"><span title="${feature.properties.stationStart.name}">${feature.properties.stationStart.name}</span></div>
+                <div class="title"><span title="${feature.properties.stationStart.name}">${
+  feature.properties.stationStart.name
+}</span></div>
                 <div class="props">
                 <p ><span>${feature.properties.direction}</span></p>
-                <p><span >共${feature.properties.segmentStationCount}站</span></p>
-                <p ><span >首末班车时间：</span>
+                <p><span >${geti18n().t('tdtRoute.total')}${feature.properties.segmentStationCount}${geti18n().t('tdtRoute.station')}</span></p>
+                <p ><span >${geti18n().t('tdtRoute.busEndTime')}：</span>
                 <span>${feature.properties.SEndTime}</span></p>
                 </div></div></div>`
               )
@@ -254,14 +273,14 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
   }
 
   _addRouteLayer(features) {
-    this.map.addSource('routes', {
+    this.map.addSource(this.sourceName.tdtDrawRoutes, {
       type: 'geojson',
       data: features
     });
     this.map.addLayer({
       id: 'routes-plan',
       type: 'line',
-      source: 'routes',
+      source: this.sourceName.tdtDrawRoutes,
       paint: {
         'line-width': 8,
         'line-color': 'rgb(51, 133, 255)',
@@ -279,7 +298,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this.map.addLayer({
       id: 'routes-plan-highlighted',
       type: 'line',
-      source: 'routes',
+      source: this.sourceName.tdtDrawRoutes,
       paint: {
         'line-width': 8,
         'line-color': 'rgb(254, 86, 24)',
@@ -294,7 +313,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this.map.addLayer({
       id: 'routes-plan-line-dot',
       type: 'line',
-      source: 'routes',
+      source: this.sourceName.tdtDrawRoutes,
       paint: {
         'line-width': 3,
         'line-color': 'rgb(8, 140, 40)',
@@ -386,7 +405,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
 
   _handleBusLineData(data) {
     let results = [];
-    let lines = data.results[0].lines;
+    let lines = data.results && data.results[0].lines || [];
     lines.forEach(line => {
       let lineName = line.lineName;
       let segments = line.segments;
@@ -439,9 +458,9 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       distance = (distance * 0.001).toFixed(2);
       let hour = parseInt(time / 60);
       let minutes = time % 60;
-      time = '约';
-      hour && (time += `${hour}小时`);
-      minutes && (time += `${minutes}分钟`);
+      time = geti18n().t('tdtRoute.about');
+      hour && (time += `${hour}${geti18n().t('tdtRoute.hour')}`);
+      minutes && (time += `${minutes}${geti18n().t('tdtRoute.minutes')}`);
       results.push({
         features: {
           type: 'FeatureCollection',
@@ -470,5 +489,21 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       coordinates = [parseFloat(coordinatesString[0]), parseFloat(coordinatesString[1])];
     }
     return coordinates;
+  }
+
+  setHighlightIcon(hotPointID) {
+    tdtSetHighlightIcon(this.map, this.sourceName.tdtRoutePoints, hotPointID);
+  }
+
+  _resetSearchSourceData() {
+    resetSearchSourceData(this.map, this.sourceName.tdtRoutePoints);
+  }
+
+  _clearSearchResultLayer() {
+    clearSearchResultLayer(this.map, this.sourceName.tdtRoutePoints);
+  }
+
+  _addPoints(features) {
+    addPoints(this.map, this.sourceName.tdtRoutePoints, features);
   }
 }

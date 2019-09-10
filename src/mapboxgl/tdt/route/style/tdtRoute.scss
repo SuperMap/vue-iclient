@@ -1,10 +1,18 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 
 @include b(tdtRoute) {
+  width: 310px;
   @include e(header) {
-    background: #f2f2f2;
+    width: 90%;
+    margin: auto;
     .route-navbar {
+      width: 100%;
+      justify-content: space-between;
+      margin: auto;
       overflow: hidden;
+      .car-icon {
+        margin-right: 20px;
+      }
       .car-icon,
       .bus-icon {
         width: 30px;
@@ -12,7 +20,6 @@
         float: left;
         cursor: pointer;
         margin-top: 3px;
-        margin-left: 30px;
         &.active {
           background: #3385ff;
           border-radius: 15px;
@@ -28,7 +35,7 @@
         padding-top: 7px;
         &.active {
           i {
-            background-position: -89px -183px;
+            background-position: -88px -183px;
           }
         }
         i {
@@ -41,7 +48,7 @@
         padding-top: 5px;
         &.active {
           i {
-            background-position: -118px -178px;
+            background-position: -117px -178px;
           }
         }
         i {
@@ -54,7 +61,6 @@
         height: 36px;
         line-height: 36px;
         float: right;
-        margin-right: 20px;
         font-style: italic;
         color: #000;
         cursor: pointer;
@@ -63,17 +69,22 @@
     }
 
     .route-panel {
-      padding: 20px;
-      padding-left: 34px;
-      text-align: center;
       position: relative;
-
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-top: 10px;
+      text-align: center;
       .start-route,
       .end-route {
-        .icon,
-        .content {
-          display: inline-block;
-          vertical-align: middle;
+        display: flex;
+        align-items: center;
+        .icon-wrapper {
+          width: 30px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .icon {
           width: 16px;
@@ -83,10 +94,29 @@
           border: 2px solid;
         }
         .content {
-          display: inline-block;
-          vertical-align: middle;
-          width: 250px;
-          margin-left: 10px;
+          display: flex;
+          align-items: center;
+          width: 100%;
+          .ant-input-affix-wrapper {
+            width: 100%;
+            padding-right: 25px;
+            margin-left: 14px;
+            display: block;
+            border: 1px solid #e1dcdc;
+            &:hover {
+              .ant-input {
+                border-color: transparent;
+              }
+            }
+            .ant-input {
+              background: transparent;
+              border-color: transparent;
+              padding-left: 11px;
+              &:focus {
+                box-shadow: none;
+              }
+            }
+          }
           .ant-input-suffix {
             font-size: 16px;
             right: 6px;
@@ -106,32 +136,35 @@
       }
       .switch-route {
         position: absolute;
-        top: 52px;
-        left: 40px;
+        top: 26px;
+        width: 30px;
+        height: 30px;
         i {
           transform: rotateX(180deg) rotate(90deg);
+          margin-top: 11px;
         }
       }
     }
 
     .search-btn {
-      padding-right: 24px;
-      padding-bottom: 20px;
+      padding: 10px 0;
       text-align: right;
     }
   }
-
   @include e(content) {
+    max-height: 200px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
     .route-result {
-      width: 300px;
+      width: 100%;
       margin: auto;
       .start-point,
       .end-point {
         & > .title {
-          margin: 15px auto;
           height: 30px;
           line-height: 30px;
-          background-color: #f2f8ff;
           i,
           span {
             display: inline-block;
@@ -143,12 +176,15 @@
             margin: 0 10px;
           }
           span {
-            color: #000;
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
             font-size: 12px;
             cursor: pointer;
           }
         }
-  
+
         .content {
           .route-results-container {
             .route-info {

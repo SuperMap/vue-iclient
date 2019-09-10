@@ -136,8 +136,81 @@ export default {
     title: '指标标题',
     unit: '单位'
   },
+  tdtResults: {
+    on: '在',
+    station: '站',
+    total: '共',
+    about: '约',
+    // pagination
+    homePage: '首页',
+    prevPage: '上一页',
+    nextPage: '下一页',
+    // nothingResult
+    searchNoResult: '没有查询到相关结果',
+    youCanTry: '您可以尝试',
+    enterCorrect: '检查输入是否正确',
+    enterOtherKeyWords: '输入其他关键字进行搜索',
+    onTdtMap: '在天地图上',
+    addThisAddress: '添加该地点',
+    uWantTo: '您是否要找',
+    // pointResults
+    totalFind: '共找到',
+    piecesResults: '条结果',
+    phone: '电话',
+    address: '地址',
+    setStartPonint: '设为起点',
+    setEndPonint: '设为终点',
+    // routePlan
+    totalMiles: '总里程',
+    distance: '约{distance}公里',
+    showDetails: '显示全部详情',
+    switchTimes: '换乘{switchTimes}次',
+    noSwitch: '无换乘',
+    walk: '步行至',
+    getOff: '下车',
+    getOn: '上车',
+    take: '乘坐',
+    noSearchResults: '没有查询到线路信息',
+    fastRoute: '最快线路',
+    shortRoute: '最短线路',
+    walkRoute: '少走高速',
+    fast: '较快捷',
+    noSubway: '不做地铁',
+    lessSwitch: '少换乘',
+    lessWalk: '少步行',
+    // staticResult
+    cityHadResults: '以下城市有结果，请您选择',
+    moreCity: '更多城市',
+    // LineResult
+    allFound: '共为您找到',
+    piecesBusRoute: '条公交线路',
+    showDetail: '展开详情',
+    busEndTime: '首末车时间',
+    relateAdress: '点击此处查看 "{keyWord}" 的相关地点',
+    // areaResult
+    switchTo: '已切换到'
+  },
   tdtRoute: {
-    title: '路线'
+    title: '路线',
+    clearRoute: '清除路线',
+    pleaseEnterStartPoint: '请输入起点',
+    pleaseEnterEndPoint: '请输入终点',
+    search: '搜索',
+    startPoint: '起点',
+    endPoint: '终点',
+    mapLoadedFiled: '地图加载失败',
+    busEndTime: '首末车时间',
+    about: '约',
+    station: '站',
+    total: '共',
+    hour: '小时',
+    minutes: '分钟'
+  },
+  tdtSearch: {
+    phone: '电话',
+    address: '地址',
+    noData: '暂无',
+    transport: '交通'
   },
   // layer
   dataFlow: {

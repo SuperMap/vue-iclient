@@ -1,6 +1,8 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 
 @include b(tdtSearch) {
+  max-height: 300px;
+  
   @include e(suggestions) {
     li {
       max-width: 95%;
@@ -14,7 +16,17 @@
       }
     }
   }
+  @include e(content) {
+    width: 310px;
+    height: 100%;
+    overflow: auto;
+    max-height: 300px;
+    &::-webkit-scrollbar{
+      display: none;
+    }
+  }
   .sm-component-search__result {
+    max-height: 200px;
     &::-webkit-scrollbar {
       display: none;
     }

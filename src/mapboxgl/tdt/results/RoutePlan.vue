@@ -1,7 +1,8 @@
 <template>
   <a-tabs
     v-model="activeTab"
-    :class="['route-plan', {'route-bus-plan': searchType == 'bus'}]"
+    :class="['sm-component-tdtRoutePlan', 'route-plan', {'route-bus-plan': searchType == 'bus'}]"
+    :style="themeStyle"
     type="card"
     size="small"
     @change="styleChanged"
@@ -9,12 +10,18 @@
     <template v-for="(item,index) in tabMap[searchType]">
       <a-tab-pane :key="index" :tab="item">
         <template v-if="routePlan && searchType==='car'">
-          <div class="distance">总里程：约{{ routePlan.distance }}公里</div>
+          <div
+            class="distance"
+          >{{ $t('tdtResults.totalMiles') }}：{{ $t('tdtResults.distance', {'distance': routePlan.distance}) }}</div>
           <div class="route-plan-container">
             <div class="start-label">
               <div class="icon"></div>
               <span class="name" :title="start.name">{{ start.name }}</span>
-              <a-checkbox class="show-all-info" @change="checkboxChanged">显示全部详情</a-checkbox>
+              <a-checkbox
+                class="show-all-info"
+                :style="themeStyle"
+                @change="checkboxChanged"
+              >{{ $t('tdtResults.showDetails') }}</a-checkbox>
             </div>
             <ul class="level-1">
               <template v-for="(route,idx) in (routePlan.features.features.slice(1))">
@@ -42,11 +49,7 @@
           <div class="route-plan-container">
             <ul class="level-1">
               <template v-for="(route, idx) in routePlan">
-                <li
-                  :key="idx"
-                  :class="['bus-info', { expand: expandDetail[idx] }]"
-                  @click="busInfoClicked($event, idx)"
-                >
+                <li :key="idx" :class="['bus-info']" @click="busInfoClicked($event, idx)">
                   <div class="line-header">
                     <div class="line-name">
                       <template v-for="(lineName, i) in route.lineNames">
@@ -58,8 +61,8 @@
                       </template>
                     </div>
                     <div class="line-info">
-                      <span>{{ `${route.switchTimes ? `换乘${route.switchTimes}次` : '无换乘'}` }}</span>
-                      <span>/约{{ route.distance }}公里</span>
+                      <span>{{ `${route.switchTimes ? $t('tdtResults.switchTimes', {'switchTimes': route.switchTimes}) : $t('tdtResults.noSwitch')}` }}</span>
+                      <span>/{{ $t('tdtResults.distance', {'distance': route.distance}) }}</span>
                       <span class="time">{{ route.time }}</span>
                     </div>
                   </div>
@@ -74,7 +77,7 @@
                         <li :key="j" @click="busPlanClicked($event, j, idx)">
                           <i :class="[line.properties.type,'route-icon']"></i>
                           <template v-if="!line.properties.lineName">
-                            <span>从{{ line.properties.stationStart.name||start.name }}步行至</span>
+                            <span>从{{ line.properties.stationStart.name||start.name }}{{ $t('tdtResults.walk') }}</span>
                             <span>
                               <a
                                 href="javascript:void(0)"
@@ -82,12 +85,15 @@
                             </span>
                           </template>
                           <template v-else>
-                            <span>乘坐{{ line.properties.lineName }}在</span>
+                            <span>{{ $t('tdtResults.take') }}{{ line.properties.lineName }}{{ $t('tdtResults.on') }}</span>
                             <span>
                               <a href="javascript:void(0)">{{ line.properties.stationEnd.name }}</a>
-                              下车
+                              {{ line.properties.segmentStationCount ? $t('tdtResults.getOff'):$t('tdtResults.getOn') }}
                             </span>
-                            <span class="time">{{ line.properties.segmentStationCount }}站</span>
+                            <span
+                              v-if="line.properties.segmentStationCount"
+                              class="time"
+                            >{{ line.properties.segmentStationCount }}{{ $t('tdtResults.station') }}</span>
                           </template>
                           <i class="route-point route-icon"></i>
                         </li>
@@ -105,7 +111,7 @@
         </template>
         <div v-if="!routePlan" style="text-align:center">
           <a-spin :spinning="spinning" size="large"></a-spin>
-          <div v-if="isError">没有查询到线路信息</div>
+          <div v-if="isError">{{ $t('tdtResults.noSearchResults') }}</div>
         </div>
       </a-tab-pane>
     </template>
@@ -126,14 +132,25 @@ export default {
     isError: {
       type: Boolean,
       default: false
+    },
+    themeStyle: {
+      type: Array,
+      default() {
+        return [];
+      }
     }
   },
   data() {
     return {
       activeTab: 0,
       tabMap: {
-        car: ['最快线路', '最短线路', '少走高速'],
-        bus: ['较快捷', '不做地铁', '少换乘', '少步行']
+        car: [this.$t('tdtResults.fastRoute'), this.$t('tdtResults.shortRoute'), this.$t('tdtResults.walkRoute')],
+        bus: [
+          this.$t('tdtResults.fast'),
+          this.$t('tdtResults.noSubway'),
+          this.$t('tdtResults.lessSwitch'),
+          this.$t('tdtResults.lessWalk')
+        ]
       },
       expandDetail: []
     };
@@ -144,9 +161,20 @@ export default {
       handler() {
         this.searchType === 'bus' && (this.expandDetail = [true]);
       }
+    },
+    textColorsData: {
+      handler() {
+        this.changeSearchInputStyle();
+      }
     }
   },
   methods: {
+    changeSearchInputStyle() {
+      const serachInput = this.$el.querySelectorAll('.show-all-info');
+      serachInput.forEach(item => {
+        item.style.color = this.getTextColor;
+      });
+    },
     styleChanged(val) {
       this.expandDetail = val === 'car' ? [] : [true];
       this.$emit('style-changed', val);
@@ -177,268 +205,4 @@ export default {
 };
 </script>
 <style lang='scss'>
-.route-plan-popup {
-  background: #fff;
-  min-width: 371px;
-  z-index: 5;
-  box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
-  color: rgb(0, 0, 0);
-  .tdt_popup_content {
-    padding: 20px 20px 0 20px;
-  }
-  .info_container {
-    p {
-      font-size: 12px;
-      margin-top: 10px;
-    }
-    cursor: default;
-    word-wrap: break-word;
-    width: 330px;
-    .title {
-      font-weight: 700;
-      font-size: 14px;
-      border-bottom: 1px solid #ccc;
-      padding: 5px 0;
-      span {
-        display: inline-block;
-        width: 240px;
-        height: 20px;
-        overflow: hidden;
-        white-space: nowrap;
-      }
-    }
-  }
-}
-.route-plan {
-  font-size: 12px;
-  padding: 0 18.5px;
-  color: rgb(0, 0, 0);
-  .route-icon {
-    width: 16px;
-    height: 16px;
-    background: url('../../../../static/images/sprite.png');
-    background-repeat: no-repeat;
-    display: inline-block;
-    margin-top: 4px;
-    margin-right: 5px;
-  }
-  .icon {
-    display: inline-block;
-    vertical-align: middle;
-    width: 16px;
-    height: 16px;
-    border-radius: 8px;
-    background: #fff;
-    border: 2px solid;
-    margin-right: 2px;
-    margin-top: -4px;
-  }
-  &.route-bus-plan {
-    .ant-tabs-tab {
-      width: 25% !important;
-    }
-  }
-  &.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab {
-    padding: 0;
-    width: 33%;
-    text-align: center;
-    margin-right: 0;
-    line-height: 26px;
-    font-size: 12px;
-    border-bottom: 1px solid #e8e8e8;
-    border-right-color: transparent;
-    border-radius: 0;
-    &:last-child {
-      border-right-color: #e8e8e8;
-    }
-    &.ant-tabs-tab-active {
-      background: #f0f7ff;
-    }
-  }
-  &.ant-tabs .ant-tabs-small-bar .ant-tabs-tab {
-    padding: 0;
-  }
-  .ant-tabs-nav {
-    width: 100%;
-  }
-  .ant-tabs-bar {
-    margin: 20px 0;
-    border-bottom: none;
-  }
-  &.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-nav-container {
-    height: 28px;
-  }
-  .distance {
-    text-align: left;
-    background: #f0f7ff;
-    padding: 10px;
-  }
-  .start-label,
-  .dest-label {
-    padding: 10px;
-  }
-  .start-label {
-    overflow: hidden;
-    .icon {
-      border-color: rgb(50, 188, 95);
-      vertical-align: unset;
-    }
-    .name {
-      display: inline-block;
-      max-width: 130px;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    border-color: rgb(50, 188, 95);
-    width: 100%;
-    line-height: 16px;
-  }
-  .show-all-info {
-    float: right;
-    color: rgb(0, 0, 0);
-  }
-  .ant-checkbox-wrapper {
-    font-size: 12px;
-    & + span {
-      padding-right: 0;
-    }
-  }
-  li,
-  ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    line-height: 22px;
-  }
-  .line-details {
-    position: relative;
-    & > .route-point {
-      left: 15px;
-      margin-top: 6px;
-    }
-    .level-2 {
-      margin-top: 6px;
-    }
-    .start-label,
-    .dest-label {
-      .icon {
-        vertical-align: middle;
-        margin-right: 5px;
-      }
-    }
-  }
-  .route-point {
-    position: absolute;
-    left: 3px;
-    top: 24px;
-    width: 4px;
-    height: 12px;
-    background-repeat: no-repeat;
-    background-position: -335px -188px;
-  }
-  .walk {
-    margin-left: 2px;
-    margin-right: 5px;
-    width: 9px;
-    height: 16px;
-    background-position: -242px -184px;
-  }
-  .bus {
-    width: 14px;
-    height: 16px;
-    background-position: -148px -183px;
-  }
-  .metro {
-    width: 12px;
-    height: 16px;
-    background-position: -220px -184px;
-  }
-  .line-info {
-    span {
-      color: #999;
-    }
-  }
-  .line-name {
-    & > div {
-      display: inline-block;
-      height: 24px;
-      line-height: 24px;
-      span {
-        display: inline-block;
-        vertical-align: top;
-      }
-    }
-  }
-  .right-direction {
-    margin-right: 8px;
-    font-weight: 700;
-  }
-  span.time {
-    float: right;
-    margin-right: 10px;
-    color: #999;
-  }
-  .level-1 {
-    & > li {
-      &.expand {
-        .line-header {
-          background: #f0f7ff;
-        }
-      }
-      .line-header {
-        cursor: pointer;
-        padding-left: 10px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-      }
-      &:not(.expand):hover {
-        background: #f2f2f2;
-      }
-      padding: 15px 10px;
-      border-top: 1px solid #e5e5e5;
-      cursor: pointer;
-      & > span:nth-child(1) {
-        color: #2f87eb;
-      }
-      &.bus-info {
-        .level-2 {
-          li {
-            height: 44px;
-            span {
-              display: inline-block;
-              vertical-align: top;
-            }
-          }
-        }
-      }
-    }
-  }
-  .level-2 {
-    margin-left: 10px;
-    li {
-      position: relative;
-      cursor: pointer;
-      a {
-        text-decoration: none;
-        color: #2f87eb;
-      }
-    }
-    .route-icon {
-      margin-right: 10px;
-      margin-left: 1px;
-    }
-  }
-
-  .dest-label {
-    .icon {
-      border-color: rgb(250, 89, 106);
-    }
-  }
-  .route-plan-container {
-    overflow: scroll;
-    max-height: 480px;
-    overflow-x: hidden;
-  }
-}
 </style>
