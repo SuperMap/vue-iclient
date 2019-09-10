@@ -203,12 +203,11 @@ export default class QueryViewModel extends mapboxgl.Evented {
   }
 
   _getDatafromRest(serviceType, address, iportalDataParameter) {
-    let withCredentials = iportalDataParameter.withCredentials || false;
     if (serviceType === 'RESTDATA') {
       let url = `${address}/data/datasources`;
 
       let sourceName, datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, { withCredentials })
+      SuperMap.FetchRequest.get(url, null, { withCredentials: false })
         .then(response => {
           return response.json();
         })
@@ -216,7 +215,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
           sourceName = data.datasourceNames[0];
           url = `${address}/data/datasources/${sourceName}/datasets`;
           // 请求获取数据集名
-          SuperMap.FetchRequest.get(url, null, { withCredentials })
+          SuperMap.FetchRequest.get(url, null, { withCredentials: false })
             .then(response => {
               return response.json();
             })
@@ -244,7 +243,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       // 如果是地图服务
       let url = `${address}/maps`;
       let mapName, layerName, path; // 请求获取地图名
-      SuperMap.FetchRequest.get(url, null, { withCredentials })
+      SuperMap.FetchRequest.get(url, null, { withCredentials: false })
         .then(response => {
           return response.json();
         })
@@ -253,7 +252,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
           path = data[0].path;
           url = url = `${address}/maps/${mapName}/layers`;
           // 请求获取图层名
-          SuperMap.FetchRequest.get(url, null, { withCredentials })
+          SuperMap.FetchRequest.get(url, null, { withCredentials: false })
             .then(response => {
               return response.json();
             })
