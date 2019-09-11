@@ -10,7 +10,7 @@
     <div class="sm-component-indicator__content">
       <span class="sm-component-indicator__num" :style="[indicatorStyle]">
         <countTo
-          v-if="typeof num !== 'string'"
+          v-if="isNumber(num)"
           :decimals="calDecimals"
           :startVal="startData"
           :endVal="numData"
@@ -21,7 +21,7 @@
           :separatorBackground="separatorBackground"
           :fontSize="fontSize"
         ></countTo>
-        {{ typeof num === 'string' && num }}
+        {{ isNumber(num) ? '' : num }}
       </span>
       <span
         v-show="showTitleUnit"
@@ -184,6 +184,9 @@ export default {
     this.restService && this.restService.off('getdatasucceeded', this.fetchData);
   },
   methods: {
+    isNumber(str) {
+      return /^\d+$/.test(str);
+    },
     timing() {
       this.getData();
     },

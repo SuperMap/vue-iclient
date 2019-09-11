@@ -30,7 +30,7 @@ export default function getFeatures(dataset) {
       } else if (dataset.type === 'iPortal') {
         queryInfo.withCredentials = dataset.withCredentials;
         superMapService = new iPortalDataService(dataset.url, dataset.withCredentials);
-        superMapService.getData(queryInfo);
+        superMapService.getData(queryInfo, !!dataset.preferContent);
       } else if (dataset.type === 'rest') {
         superMapService = new RestService();
         superMapService.getData(dataset.url, queryInfo);

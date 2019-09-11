@@ -52,11 +52,15 @@ export default class iPortalDataService extends mapboxgl.Evented {
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
    */
-  getData(queryInfo) {
+  getData(queryInfo, preferContent = false) {
     if (!this.url) {
       return;
     }
     let datasetUrl = this.url;
+    if (preferContent) {
+      this._getDatafromContent(datasetUrl, queryInfo);
+      return;
+    }
     SuperMap.FetchRequest.get(datasetUrl, null, {
       withCredentials: this.withCredentials
     })
