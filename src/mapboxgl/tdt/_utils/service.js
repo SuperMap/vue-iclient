@@ -3,6 +3,7 @@ import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
 import envelope from '@turf/envelope';
 import { featureCollection } from '@turf/helpers';
+import spriteJson from '../../../../static/images/sprite.json';
 
 const CancelToken = axios.CancelToken;
 const axiosService = axios.create();
@@ -171,26 +172,30 @@ export const addPoints = (map, sourceName, features) => {
         type: 'geojson',
         data: sourceData
       });
-      map.style.addSprite(sourceName, './static/images/sprite');
-      map.addLayer({
-        id: sourceName,
-        type: 'symbol',
-        source: sourceName,
-        layout: {
-          'icon-image': 'buoy-icon-{serialNum}',
-          'icon-allow-overlap': true
-        }
-      });
-      map.addLayer({
-        id: `${sourceName}-highlight`,
-        type: 'symbol',
-        source: sourceName,
-        layout: {
-          'icon-image': 'buoy-icon-active-{serialNum}',
-          'icon-allow-overlap': true
-        },
-        filter: ['==', 'hotPointID', '']
-      });
+      const image = new Image();
+      image.src = '../../../../static/images/sprite.png';
+      image.onload = () => {
+        map.style.addSpriteObject(sourceName, image, spriteJson);
+        map.addLayer({
+          id: sourceName,
+          type: 'symbol',
+          source: sourceName,
+          layout: {
+            'icon-image': 'buoy-icon-{serialNum}',
+            'icon-allow-overlap': true
+          }
+        });
+        map.addLayer({
+          id: `${sourceName}-highlight`,
+          type: 'symbol',
+          source: sourceName,
+          layout: {
+            'icon-image': 'buoy-icon-active-{serialNum}',
+            'icon-allow-overlap': true
+          },
+          filter: ['==', 'hotPointID', '']
+        });
+      };
     }
     const bounds = bbox(transformScale(envelope(features), 1.7));
     map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], { maxZoom: 17 });
