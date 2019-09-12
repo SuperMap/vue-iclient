@@ -29,7 +29,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this.token = options.data.tk;
     this.data = Object.assign({}, options.data);
     this.style = 0;
-    this.sourceName = { tdtRoutePoints: 'tdt-route-searchRoutePoints', tdtRoutes: 'tdt-route-routes', tdtDrawRoutes: 'tdt-route-routes' };
+    this.sourceName = { tdtRoutePoints: 'tdt-route-searchRoutePoints', tdtDrawRoutes: 'tdt-route-routes' };
   }
 
   searchPoints(keyWord, params, searchUrl = this.data.searchUrl) {

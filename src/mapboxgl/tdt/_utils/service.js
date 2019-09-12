@@ -225,27 +225,27 @@ export const clearSearchResultLayer = (map, searchRoutePoints) => {
   for (let sourceName in sourceNames) {
     if (searchRoutePoints && map.getSource(searchRoutePoints)) {
       map.getLayer(searchRoutePoints) && map.removeLayer(searchRoutePoints);
-      map.removeLayer(`${searchRoutePoints}-highlight`);
+      map.getLayer(`${searchRoutePoints}-highlight`) && map.removeLayer(`${searchRoutePoints}-highlight`);
       map.removeSource(searchRoutePoints);
       break;
     }
-    if (map.getSource(sourceName)) {
-      map.getLayer(sourceName) && map.removeLayer(sourceName);
-      switch (sourceName) {
-        case 'searchResultPoints':
-          map.removeLayer(`${sourceName}-highlight`);
+    if (map.getSource(sourceNames[sourceName])) {
+      map.getLayer(sourceNames[sourceName]) && map.removeLayer(sourceNames[sourceName]);
+      switch (sourceNames[sourceName]) {
+        case 'tdt-search-searchResultPoints':
+          map.removeLayer(`${sourceNames[sourceName]}-highlight`);
           break;
-        case 'searchResultPointsOfLine':
-          map.removeLayer(`${sourceName}-fill`);
-          map.removeLayer(`${sourceName}-stroke`);
+        case 'tdt-search-searchResultPointsOfLine':
+          map.removeLayer(`${sourceNames[sourceName]}-fill`);
+          map.removeLayer(`${sourceNames[sourceName]}-stroke`);
           break;
-        case 'searchResultPolygon':
-          map.removeLayer(`${sourceName}-stroke`);
+        case 'tdt-search-searchResultPolygon':
+          map.removeLayer(`${sourceNames[sourceName]}-stroke`);
           break;
         default:
           break;
       }
-      map.removeSource(sourceName);
+      map.removeSource(sourceNames[sourceName]);
     }
   }
 };
