@@ -199,10 +199,16 @@ export const addPoints = (map, sourceName, features) => {
 // 清空search， route图层
 export const resetSearchSourceData = (map, searchRoutePoints) => {
   if (!map) return;
+  // 清除route
+  if (searchRoutePoints && map.getSource(searchRoutePoints)) {
+    map.getSource(searchRoutePoints).setData({
+      type: 'FeatureCollection',
+      features: []
+    });
+    return;
+  }
+  // 清除search
   for (let sourceName in sourceNames) {
-    if (searchRoutePoints && map.getSource(searchRoutePoints)) {
-      break;
-    }
     if (map.getSource(sourceName)) {
       map.getSource(sourceName).setData({
         type: 'FeatureCollection',

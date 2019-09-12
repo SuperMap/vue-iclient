@@ -58,6 +58,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
   }
 
   search(orig, dest, carUrl = this.data.carUrl, busUrl = this.data.busUrl) {
+    this._clearMarkers();
     if (!this.map) return Promise.reject(new Error(geti18n().t('tdtRoute.mapLoadedFiled')));
     this.orig = orig;
     this.dest = dest;
@@ -79,7 +80,6 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     if (this.type !== 'car') {
       params.postStr.linetype = this.style === 1 ? 8 : this.style + 1;
     }
-    this._clearMarkers();
     this.addStartMarker();
     this.addDestMarker();
     return request({ url, params })
@@ -203,6 +203,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       });
     this.busMarkers = [];
     this.remainPosMarker = false;
+    this._resetSearchSourceData();
   }
 
   addStartMarker(coordinates) {
