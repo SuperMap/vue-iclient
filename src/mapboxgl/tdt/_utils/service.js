@@ -171,7 +171,7 @@ export const addPoints = (map, sourceName, features) => {
         type: 'geojson',
         data: sourceData
       });
-      map.style.addSprite(sourceName, `${window.location.origin}/static/images/sprite`);
+      map.style.addSprite(sourceName, './static/images/sprite');
       map.addLayer({
         id: sourceName,
         type: 'symbol',
