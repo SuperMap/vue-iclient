@@ -414,6 +414,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     if (feature && this.map) {
       const source = this.map.getSource(this.searchResultLine);
       const sourceData = feature;
+      const lineFill = `${this.searchResultPointsOfLine}-fill`;
       this._addPointsOfLine(this._generatePointsFeatures(feature.properties.station || [], ','));
       if (source) {
         source.setData(sourceData);
@@ -436,7 +437,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
               'line-opacity': 1
             }
           },
-          'searchResultPointsOfLine-fill'
+          lineFill
         );
       }
 
