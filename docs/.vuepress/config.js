@@ -1,4 +1,5 @@
 module.exports = {
+  base: '/web/apis/vue/',
   locales: {
     // 每个语言对象的键(key)，是语言的访问路径。
     // 然而，一种特例是将 '/' 作为默认语言的访问路径。
@@ -6,12 +7,12 @@ module.exports = {
       lang: 'zh-CN',
       title: 'Vue-iClient',
       description: 'Vue-iClient'
-    },
-    '/en/': {
-      lang: 'en-US', // 这个值会被设置在 <html> 的 lang 属性上
-      title: 'Vue-iClient',
-      description: 'Vue components'
     }
+    // '/en/': {
+    //   lang: 'en-US', // 这个值会被设置在 <html> 的 lang 属性上
+    //   title: 'Vue-iClient',
+    //   description: 'Vue components'
+    // }
   },
   title: 'vue components by supermap',
   description: 'vue components',
@@ -84,8 +85,9 @@ module.exports = {
     }
   },
   themeConfig: {
-    activeHeaderLinks: false,
-    base: '/',
+    lastUpdated: '最后更新时间',
+    activeHeaderLinks: true,
+    repo: 'SuperMap/vue-iclient',
     locales: {
       '/': {
         label: '简体中文',

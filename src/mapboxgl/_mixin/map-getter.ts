@@ -56,7 +56,7 @@ export default class MapGetter extends Vue {
   }
 
   // loaded() {
-  //   // 微件生命周期方法(挂载后调用)，子类实现【组件主要业务逻辑写在这个生命周期里】
+  //   // 组件生命周期方法(挂载后调用)，子类实现【组件主要业务逻辑写在这个生命周期里】
   // },
   loadMapSucceed(map, target) {
     const targetName = this.getTargetName();

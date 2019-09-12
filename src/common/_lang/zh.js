@@ -55,7 +55,7 @@ export default {
     iportalData: 'SuperMap iPortal 数据',
     onlineLocalSearch: 'SuperMap Online 本地搜索'
   },
-  // 微件
+  // 组件
   timeText: {
     Year: '年',
     Month: '月',

@@ -43,7 +43,7 @@ export default {
     iportalData: 'SuperMap iPortal Data',
     onlineLocalSearch: 'SuperMap Online Local Search'
   },
-  // 微件
+  // 组件
   zoom: {
 
   },
