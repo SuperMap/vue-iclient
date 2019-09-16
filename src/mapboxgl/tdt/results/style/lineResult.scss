@@ -30,7 +30,7 @@
           vertical-align: top;
         }
         .line-icon {
-          background: url('../../static/images/sprite.png') no-repeat -148px -183px;
+          background: url("#{$--tdt-assets-path}/sprite.png") no-repeat -148px -183px;
           width: 14px;
           height: 16px;
           margin-top: 5px;

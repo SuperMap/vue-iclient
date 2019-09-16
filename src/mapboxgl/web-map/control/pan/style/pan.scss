@@ -11,19 +11,19 @@
   background-repeat: no-repeat;
   background-size: contain;
   @include m(default) {
-    background-image: url("#{$--assets-path}/pan.png");
+    background-image: url("#{$--pan-assets-path}/pan.png");
   }
   @include m(east) {
-    background-image: url("#{$--assets-path}/pan-east.png");
+    background-image: url("#{$--pan-assets-path}/pan-east.png");
   }
   @include m(west) {
-    background-image: url("#{$--assets-path}/pan-west.png");
+    background-image: url("#{$--pan-assets-path}/pan-west.png");
   }
   @include m(north) {
-    background-image: url("#{$--assets-path}/pan-north.png");
+    background-image: url("#{$--pan-assets-path}/pan-north.png");
   }
   @include m(south) {
-    background-image: url("#{$--assets-path}/pan-south.png");
+    background-image: url("#{$--pan-assets-path}/pan-south.png");
   }
   @include e(center) {
     width: 17px;
@@ -32,7 +32,7 @@
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    background-image: url("#{$--assets-path}/pan.png");
+    background-image: url("#{$--pan-assets-path}/pan.png");
     background-size: contain;
     cursor: pointer;
   }

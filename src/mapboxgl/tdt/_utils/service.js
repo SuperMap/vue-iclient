@@ -3,7 +3,8 @@ import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
 import envelope from '@turf/envelope';
 import { featureCollection } from '@turf/helpers';
-import spriteJson from '../../../../static/images/sprite.json';
+import spriteJson from '../_assets/sprite.json';
+import spritePng from '../_assets/sprite.png';
 
 const CancelToken = axios.CancelToken;
 const axiosService = axios.create();
@@ -173,7 +174,7 @@ export const addPoints = (map, sourceName, features) => {
         data: sourceData
       });
       const image = new Image();
-      image.src = '../../../../static/images/sprite.png';
+      image.src = spritePng;
       image.onload = () => {
         map.style.addSpriteObject(sourceName, image, spriteJson);
         map.addLayer({

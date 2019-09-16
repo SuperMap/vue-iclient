@@ -1,7 +1,7 @@
 /* Mapbox GL JS is licensed under the 3-Clause BSD License. Full text of license: https://github.com/mapbox/mapbox-gl-js/blob/v1.2.0/LICENSE.txt 
 * Copyright (c) 2016, Mapbox
 * Copyright© 2000 - 2019 SuperMap Software Co. Ltd
-* 20190912
+* 20190916
 */
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :

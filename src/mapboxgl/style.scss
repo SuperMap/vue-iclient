@@ -1,4 +1,5 @@
-$--assets-path: './web-map/control/pan/assets' !default;
+$--pan-assets-path: './web-map/control/pan/assets' !default;
+$--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/_utils/style/common/common.scss';
 /** common */
 @import '../common/indicator/style/indicator.scss';

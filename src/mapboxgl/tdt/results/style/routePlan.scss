@@ -40,7 +40,7 @@
   .route-icon {
     width: 16px;
     height: 16px;
-    background: url('../../static/images/sprite.png');
+    background: url("#{$--tdt-assets-path}/sprite.png");
     background-repeat: no-repeat;
     display: inline-block;
     margin-top: 4px;

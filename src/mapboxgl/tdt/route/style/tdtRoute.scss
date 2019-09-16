@@ -26,7 +26,7 @@
         }
         i {
           display: block;
-          background-image: url('../../static/images/sprite.png');
+          background-image: url("#{$--tdt-assets-path}/sprite.png");
           background-repeat: no-repeat;
           margin: 0 auto;
         }

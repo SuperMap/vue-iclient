@@ -89,7 +89,7 @@
             position: absolute;
             left: 0;
             top: 0;
-            background-image: url('../../static/images/sprite.png');
+            background-image: url("#{$--tdt-assets-path}/sprite.png");
             background-repeat: no-repeat;
             width: 17px;
             height: 17px;
