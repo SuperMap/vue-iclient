@@ -24,6 +24,7 @@
         <div
           v-if="from === 'Route' && resultBelongTo === 'start'"
           class="set-start-point"
+          :title="$t('tdtResults.setStartPonint')"
           :style="getColorStyle(0)"
           @click="resetStartPoint(item)"
         >{{ $t('tdtResults.setStartPonint') }}</div>
@@ -31,6 +32,7 @@
           v-if="from === 'Route' && resultBelongTo === 'end'"
           class="set-start-point"
           :style="getColorStyle(0)"
+          :title="$t('tdtResults.setEndPonint')"
           @click="resetEndPoint(item)"
         >{{ $t('tdtResults.setEndPonint') }}</div>
       </li>

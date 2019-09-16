@@ -111,6 +111,9 @@
         line-height: 24px;
         float: right;
         padding-right: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
   }

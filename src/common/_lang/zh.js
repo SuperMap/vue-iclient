@@ -175,7 +175,7 @@ export default {
     shortRoute: '最短线路',
     walkRoute: '少走高速',
     fast: '较快捷',
-    noSubway: '不做地铁',
+    noSubway: '不坐地铁',
     lessSwitch: '少换乘',
     lessWalk: '少步行',
     // staticResult

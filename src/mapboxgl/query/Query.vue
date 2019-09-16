@@ -454,7 +454,7 @@ export default {
         this.isQuery = false;
         this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.clearResult();
-        this.$message.warning(e.message);
+        this.$message.warning(e.message.toString());
         this.jobButton.classList.remove('disabled');
         /**
          * @event queryFailed

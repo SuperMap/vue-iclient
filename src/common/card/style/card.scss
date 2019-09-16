@@ -101,6 +101,7 @@
   @include e(header-name) {
     display: inline-block;
     text-align: center;
+    padding-right: 30px;
   }
   @include e(header-span) {
     display: inline-block;

@@ -42,6 +42,7 @@
               <a-input
                 v-model="start"
                 :placeholder="$t('tdtRoute.pleaseEnterStartPoint')"
+                :title="$t('tdtRoute.pleaseEnterStartPoint')"
                 :style="[getBackgroundStyle, getTextColorStyle]"
                 @keyup.13="searchClicked"
               >
@@ -62,6 +63,7 @@
               <a-input
                 v-model="end"
                 :placeholder="$t('tdtRoute.pleaseEnterEndPoint')"
+                :title="$t('tdtRoute.pleaseEnterEndPoint')"
                 :style="[getBackgroundStyle, getTextColorStyle]"
                 @keyup.13="searchClicked"
               >

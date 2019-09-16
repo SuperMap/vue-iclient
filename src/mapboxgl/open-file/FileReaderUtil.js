@@ -3,6 +3,7 @@ import { FileTypes } from './FileTypes';
 import { open } from 'shapefile';
 import { handleMultyPolygon } from '../_utils/geometry-util';
 import { isXField, isYField } from '../../common/_utils/util';
+import { geti18n } from '../../common/_lang';
 
 const FileReaderUtil = {
   rABS: typeof FileReader !== 'undefined' && FileReader.prototype && FileReader.prototype.readAsBinaryString,
@@ -131,7 +132,7 @@ const FileReaderUtil = {
         geojson = result;
       } else {
         // 不支持数据
-        failed && failed.call(context, '不支持的数据');
+        failed && failed.call(context, geti18n().t(`openFile.fileTypeUnsupported`));
         return;
       }
     } else {
