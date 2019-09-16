@@ -149,7 +149,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'sm-components-icons-preview'
+      default: 'sm-components-icons-luxian'
     },
     headerName: {
       type: String,

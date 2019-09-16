@@ -19,7 +19,7 @@ import {
 import { lang, setLocale, initi18n } from '../common/_lang';
 import themeFactory from '../common/_utils/style/theme/theme.json';
 import * as components from './components';
-import '../common/_assets/iconfont/iconfont.css';
+import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
