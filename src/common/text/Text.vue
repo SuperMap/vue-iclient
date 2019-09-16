@@ -1,6 +1,14 @@
 <template>
   <div class="sm-component-text" :style="[customStyle, getBackgroundStyle, getTextColorStyle]">
-    <span>{{ finalTitle }}</span>
+    <span v-if="href">
+      <a
+        :target="target"
+        :href="href"
+        class="sm-component-text__href"
+        :style="[getTextColorStyle]"
+      >{{ finalTitle }}</a>
+    </span>
+    <span v-else>{{ finalTitle }}</span>
   </div>
 </template>
 
@@ -21,6 +29,14 @@ export default {
     },
     url: {
       type: String
+    },
+    href: {
+      type: String,
+      default: ''
+    },
+    target: {
+      type: String,
+      default: '_self'
     }
   },
   data() {

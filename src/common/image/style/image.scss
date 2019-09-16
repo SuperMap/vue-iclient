@@ -6,6 +6,14 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  @include e(link) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    &:hover{
+      cursor: pointer;
+    }
+  }
   @include e(content) {
     width: 100%;
     height: 100%;

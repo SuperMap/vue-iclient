@@ -3,7 +3,7 @@
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
-    :header-name="headerName || $t('measure.mapMeasure')"
+    :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     :background="background"
@@ -154,7 +154,7 @@ export default {
     headerName: {
       type: String,
       default() {
-        return this.$t('tdtRoute.title');
+        return this.$t('tdtRoutetitle.');
       }
     },
     data: {
@@ -216,6 +216,7 @@ export default {
     textColorsData: {
       handler() {
         this.changeSearchInputStyle();
+        this.componentProps = Object.assign({}, this.componentProps, this.$props);
       }
     }
   },
@@ -269,7 +270,8 @@ export default {
             keyWord,
             count: result.count,
             from: 'Route',
-            pageSize: 4
+            pageSize: 4,
+            ...this.$props
           };
           let componentListeners = {};
           switch (type) {

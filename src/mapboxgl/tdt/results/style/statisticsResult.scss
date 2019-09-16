@@ -26,6 +26,7 @@
         }
         .ant-tree-switcher-line-icon {
           color: var(--icon-color);
+          svg { fill: var(--icon-color); }
         }
       }
     }

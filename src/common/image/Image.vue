@@ -1,7 +1,9 @@
 <template>
   <div class="sm-component-image" :style="[getBackgroundStyle]">
-    <div v-if="src" class="sm-component-image__content" :style="[repeatStyle,imgUrl]"></div>
-    <i v-else class="sm-components-icons-x-bmp sm-component-image__defaultImg"></i>
+    <a class="sm-component-image__link" :href="href" :target="target">
+      <div v-if="src" class="sm-component-image__content" :style="[repeatStyle,imgUrl]"></div>
+      <i v-else class="sm-components-icons-x-bmp sm-component-image__defaultImg"></i>
+    </a>
   </div>
 </template>
 
@@ -18,6 +20,14 @@ export default {
     repeat: {
       type: String,
       default: 'center'
+    },
+    href: {
+      type: String,
+      default: ''
+    },
+    target: {
+      type: String,
+      default: '_self'
     }
   },
   data() {
