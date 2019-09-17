@@ -41,9 +41,9 @@ export default {
     meters: 'm',
     yards: 'yd',
     feet: 'ft',
-    squarekilometers: 'km2',
+    squarekilometers: 'sq km',
     squaremiles: 'sq mi',
-    squaremeters: 'm2',
+    squaremeters: 'sq m',
     squareyards: 'sq yd',
     squarefeet: 'sq ft'
   },
