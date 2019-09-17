@@ -1,0 +1,87 @@
+@import '../../../../common/_utils/style/mixins/mixins.scss';
+
+@include b(map-switch) {
+  @include e(panel) {
+    @include e(layers-wrap) {
+      padding: 0;
+      overflow: hidden;
+      &.sm-component-zoom-in-enter-active {
+        animation: zoom-in 0.5s;
+      }
+      &.sm-component-zoom-in-leave-active {
+        animation: zoom-in 0.5s reverse;
+      }
+      @keyframes zoom-in {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      @include e(content-holder) {
+        max-width: 246px;
+        padding: 10px 10px 5px;
+        border-radius: 4px;
+        overflow: hidden;
+        box-sizing: border-box;
+      }
+
+      @include e(layers) {
+        overflow: hidden;
+        .layer-item {
+          width: 64px;
+          height: 64px;
+          position: relative;
+          margin-right: 4px;
+          display: inline-block;
+          background: url("#{$--tdt-assets-path}/sprite.png") no-repeat;
+          &.map-item {
+            background-position: -240px -53px;
+          }
+          &.image-item {
+            background-position: -6px -51px;
+          }
+          &.landform-item {
+            background-position: -84px -51px;
+          }
+          &.threed-item {
+            background-position: -162px -51px;
+          }
+          &:last-of-type {
+            margin-right: 0;
+          }
+
+          img {
+            width: 100%;
+            height: 100%;
+          }
+
+          @include e(layer-name) {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.65);
+            color: #fff;
+            font-size: 14px;
+          }
+        }
+      }
+
+      @include e(labelSetting) {
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-top: 1px solid #eee;
+        font-size: 14px;
+        color: #fff;
+      }
+    }
+  }
+}

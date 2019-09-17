@@ -39,6 +39,7 @@ export { default as Zoom } from './web-map/control/zoom/Zoom';
 export { default as Draw } from './web-map/control/draw/Draw';
 export { default as TdtSearch } from './tdt/search/TdtSearch';
 export { default as TdtRoute } from './tdt/route/TdtRoute';
+export { default as TdtMapSwitcher } from './tdt/mapSwitcher/TdtMapSwitcher';
 
 export { default as Chart } from './chart/Chart';
 export { default as WebMap } from './web-map/WebMap';

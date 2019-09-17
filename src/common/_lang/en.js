@@ -212,6 +212,18 @@ export default {
     noData: 'null',
     transport: 'traffic'
   },
+  tdtMapSwitcher: {
+    image: 'image',
+    vector: 'vector',
+    terrain: 'terrain',
+    placeName: 'placeName',
+    TiandituVec: 'TiandituVecLayer',
+    TiandituTer: 'TiandituTerLayer',
+    TiandituImg: 'TiandituImgLayer',
+    TiandituCva: 'TiandituCvaLabel',
+    TiandituCta: 'TiandituCtaLabel',
+    TiandituCia: 'TiandituCiaLabel'
+  },
   // layer
   dataFlow: {
     dataSubscriptionFailed: 'Data subscription failed!'

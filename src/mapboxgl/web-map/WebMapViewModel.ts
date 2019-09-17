@@ -16,6 +16,7 @@ import provincialCenterData from './config/ProvinceCenter.json'; // eslint-disab
 import municipalCenterData from './config/MunicipalCenter.json'; // eslint-disable-line import/extensions
 import UniqueId from 'lodash.uniqueid';
 import cloneDeep from 'lodash.clonedeep';
+
 const MB_SCALEDENOMINATOR_3857 = [
   '559082264.0287178',
   '279541132.0143589',
@@ -102,6 +103,7 @@ interface mapOptions {
   pitch?: number;
   style?: any;
   container?: string;
+  crs: string;
 }
 
 type layerType = 'POINT' | 'LINE' | 'POLYGON';
@@ -218,32 +220,114 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this.withCredentials = withCredentials;
   }
   /**
-   * @function WebMapViewModel.prototype.setMapOptions
-   * @description 设置 Map 基本配置参数。
-   * @param {Object} mapOptions - Map 可选参数。
-   * @param {Array} [mapOptions.center] - 地图中心点。
-   * @param {Number} [mapOptions.zoom] - 地图缩放级别。
-   * @param {Array} [mapOptions.maxBounds] - 地图最大范围。
-   * @param {Number} [mapOptions.minZoom] - 地图最小级别。
-   * @param {Number} [mapOptions.maxZoom] - 地图最大级别。
-   * @param {Boolean} [mapOptions.renderWorldCopies] - 地图是否平铺。
-   * @param {Number} [mapOptions.bearing] - 地图的初始方位。
-   * @param {Number} [mapOptions.pitch] - 地图的初始俯仰。
+   * @function WebMapViewModel.prototype.setCRS
+   * @description 设置地图的投影。
+   * @param {Number} crs - 地图投影。
    */
-  setMapOptions(mapOptions: mapOptions): void {
-    let { center, zoom, maxBounds, minZoom, maxZoom, renderWorldCopies, bearing, pitch, style } = mapOptions;
+  setCrs(crs): void {
     if (this.map) {
-      this.mapOptions = mapOptions;
+      this.mapOptions.crs = crs;
+      //@ts-ignore
+      crs && this.map.setCRS(mapboxgl.CRS.get(crs));
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setZoom
+   * @description 设置地图的缩放级别。
+   * @param {Number} zoom - 地图缩放级别。
+   */
+  setZoom(zoom): void {
+    if (this.map) {
+      this.mapOptions.zoom = zoom;
       (zoom || zoom === 0) && this.map.setZoom(zoom);
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setCenter
+   * @description 设置地图的中心点。
+   * @param {Array} center - 地图中心点。
+   */
+  setCenter(center): void {
+    if (this.map) {
+      this.mapOptions.center = center;
       center && (<[number, number]>center).length > 0 && this.map.setCenter(center);
-
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setMaxBounds
+   * @description 设置地图的最大范围。
+   * @param {Array} maxBounds - 地图最大范围。
+   */
+  setMaxBounds(maxBounds): void {
+    if (this.map) {
+      this.mapOptions.maxBounds = maxBounds;
       maxBounds && (<[[number, number], [number, number]]>maxBounds).length > 0 && this.map.setMaxBounds(maxBounds);
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setMinZoom
+   * @description 设置地图的最小级别。
+   * @param {Number} minZoom - 地图最小级别。
+   */
+  setMinZoom(minZoom): void {
+    if (this.map) {
+      this.mapOptions.minZoom = minZoom;
       (minZoom || minZoom === 0) && this.map.setMinZoom(minZoom);
-      (maxZoom || maxZoom === 0) && this.map.setMaxZoom(maxZoom);
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setMaxZoom
+   * @description 设置地图的最大级别。
+   * @param {Number} maxZoom - 地图最大级别。
+   */
+  setMaxZoom(maxZoom): void {
+    if (this.map) {
+      this.mapOptions.maxZoom = maxZoom;
+      (maxZoom || maxZoom === 0) && this.map.setMinZoom(maxZoom);
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setRenderWorldCopies
+   * @description 设置地图的平铺。
+   * @param {Boolean} renderWorldCopies - 地图是否平铺。
+   */
+  setRenderWorldCopies(renderWorldCopies): void {
+    if (this.map) {
+      this.mapOptions.renderWorldCopies = renderWorldCopies;
       renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setBearing
+   * @description 设置地图的方位。
+   * @param {Number} bearing - 地图的初始方位。
+   */
+  setBearing(bearing): void {
+    if (this.map) {
+      this.mapOptions.bearing = bearing;
       (bearing || bearing === 0) && this.map.setBearing(bearing);
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setPitch
+   * @description 设置地图的俯仰。
+   * @param {Number} pitch - 地图的初始俯仰。
+   */
+  setPitch(pitch): void {
+    if (this.map) {
+      this.mapOptions.pitch = pitch;
       (pitch || pitch === 0) && this.map.setPitch(pitch);
-      style && style.layers.length && Object.keys(style.sources).length && this.map.setStyle(style);
+    }
+  }
+  /**
+   * @function WebMapViewModel.prototype.setStyle
+   * @description 设置地图的样式。
+   * @param {Object} style - 地图的样式。
+   */
+  setStyle(style): void {
+    if (this.map) {
+      this.mapOptions.style = style;
+      style && this.map.setStyle(style);
     }
   }
 

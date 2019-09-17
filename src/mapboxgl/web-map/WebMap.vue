@@ -1,16 +1,16 @@
 <template>
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
-    <Pan v-if="panControl.show" :position="panControl.position" />
-    <Scale v-if="scaleControl.show" v-bind="scaleControl" />
-    <Zoom v-if="zoomControl.show" v-bind="zoomControl" />
+    <Pan v-if="panControl.show" :position="panControl.position"/>
+    <Scale v-if="scaleControl.show" v-bind="scaleControl"/>
+    <Zoom v-if="zoomControl.show" v-bind="zoomControl"/>
     <mini-map v-if="miniMapControl.show" v-bind="miniMapControl"></mini-map>
     <layer-list v-if="layerListControl.show" v-bind="layerListControl"></layer-list>
     <Measure v-if="measureControl.show" v-bind="measureControl"></Measure>
     <Legend v-if="legendControl.show" v-bind="legendControl"></Legend>
     <Query v-if="queryControl.show" v-bind="queryControl"></Query>
     <Search v-if="searchControl.show" v-bind="searchControl"></Search>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
+    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning"/>
   </div>
 </template>
 
@@ -124,7 +124,21 @@ interface searchParam extends commonControlParam {
 
 @Component({
   name: 'SmWebMap',
-  viewModelProps: ['mapId', 'serverUrl', 'mapOptions', 'withCredentials'],
+  viewModelProps: [
+    'mapId',
+    'serverUrl',
+    'mapOptions.center',
+    'mapOptions.zoom',
+    'mapOptions.style',
+    'mapOptions.crs',
+    'mapOptions.minZoom',
+    'mapOptions.maxZoom',
+    'mapOptions.maxBounds',
+    'mapOptions.renderWorldCopies',
+    'mapOptions.bearing',
+    'mapOptions.pitch',
+    'withCredentials'
+  ],
   components: {
     Pan,
     Scale,

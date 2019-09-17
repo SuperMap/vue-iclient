@@ -212,6 +212,18 @@ export default {
     noData: '暂无',
     transport: '交通'
   },
+  tdtMapSwitcher: {
+    image: '影像',
+    vector: '矢量',
+    terrain: '地形',
+    placeName: '地名',
+    TiandituVec: '天地图矢量底图',
+    TiandituTer: '天地图地形底图',
+    TiandituImg: '天地图影像底图',
+    TiandituCva: '天地图矢量注记',
+    TiandituCta: '天地图地形注记',
+    TiandituCia: '天地图影像注记'
+  },
   // layer
   dataFlow: {
     dataSubscriptionFailed: '数据订阅失败！'
