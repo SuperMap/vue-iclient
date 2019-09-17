@@ -1,5 +1,5 @@
 module.exports = {
-  base: '/dev/web/apis/vue/',
+  base: process.argv[4] || '/',
   locales: {
     // 每个语言对象的键(key)，是语言的访问路径。
     // 然而，一种特例是将 '/' 作为默认语言的访问路径。
