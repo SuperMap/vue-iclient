@@ -14,6 +14,7 @@ module.exports = {
     //   description: 'Vue components'
     // }
   },
+  dest: process.argv[5],
   title: 'vue components by supermap',
   description: 'vue components',
   configureWebpack: {
