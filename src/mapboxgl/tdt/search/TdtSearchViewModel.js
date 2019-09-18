@@ -27,12 +27,12 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
       return new Error(`Cannot find map`);
     }
     this.groupLineList = {};
-    this.registerEvents();
     this.data = options.data;
     this.searchResultPoints = sourceNames.searchResultPoints;
     this.searchResultLine = sourceNames.searchResultLine;
     this.searchResultPolygon = sourceNames.searchResultPolygon;
     this.searchResultPointsOfLine = sourceNames.searchResultPointsOfLine;
+    this.registerEvents();
   }
 
   registerEvents() {
