@@ -58,7 +58,7 @@ const MB_SCALEDENOMINATOR_4326 = [
   '17061.836670798268',
   '8530.918335399134'
 ];
-const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
+const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible', 'GlobalCRS84Scale'];
 // 迁徙图最大支持要素数量
 const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 /**
