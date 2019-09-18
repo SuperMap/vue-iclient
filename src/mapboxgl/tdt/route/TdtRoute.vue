@@ -156,7 +156,7 @@ export default {
     headerName: {
       type: String,
       default() {
-        return this.$t('tdtRoutetitle.');
+        return this.$t('tdtRoute.title');
       }
     },
     data: {
