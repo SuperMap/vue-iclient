@@ -2,8 +2,8 @@ import mapboxgl from '../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import { geti18n } from '../../../common/_lang';
 
 const tileUrlTemplate =
-  'http://support.supermap.com.cn:8092/apps/viewer/getUrlResource.png?url=http%3A%2F%2Ft{s}.tianditu.com%2F{type}_{proj}%2Fwmts%3Ftk%3D{tk}%26service%3DWMTS%26request%3DGetTile%26version%3D1.0.0%26style%3Ddefault%26tilematrixSet%3D{proj}%26format%3Dtiles%26width%3D256%26height%3D256%26layer%3D{type}%26tilematrix%3D{z}%26tilerow%3D{y}%26tilecol%3D{x}';
-const Token = '979370626f38396281484293eb175e2e';
+  'http://t{s}.tianditu.com/{type}_{proj}/wmts?tk={tk}&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet={proj}&format=tiles&width=256&height=256&layer={type}&tilematrix={z}&tilerow={y}&tilecol={x}';
+const Token = '1d109683f4d84198e37a38c442d68311';
 const LABELLIST = {
   vec: 'cva',
   img: 'cia',
