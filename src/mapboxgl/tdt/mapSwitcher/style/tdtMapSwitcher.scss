@@ -3,7 +3,7 @@
 @include b(map-switch) {
   @include e(panel) {
     @include e(layers-wrap) {
-      padding: 0;
+      padding: 15px;
       overflow: hidden;
       &.sm-component-zoom-in-enter-active {
         animation: zoom-in 0.5s;
