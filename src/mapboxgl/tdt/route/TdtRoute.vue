@@ -267,13 +267,13 @@ export default {
           if (!res) return;
           const { type, result } = res;
           let componentProps = {
+            ...this.$props,
             data: result.data,
             prompt: result.prompt,
             keyWord,
             count: result.count,
             from: 'Route',
-            pageSize: 4,
-            ...this.$props
+            pageSize: 4
           };
           let componentListeners = {};
           switch (type) {
