@@ -3,7 +3,7 @@
   "version": "10.0.0",
   "description": "SuperMap iClient for Vue.js",
   "homepage": "http://iclient.supermap.io",
-  "main": "dist/iclient9-mapboxgl-vue",
+  "main": "dist/index",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",

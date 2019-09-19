@@ -1,7 +1,0 @@
-@import url(@supermap/vue-iclient/dist/libs/mapboxgl/mapbox-gl-enhance.css);
-
-@import url(@supermap/vue-iclient/dist/iclient9-mapboxgl-vue.css);
-
-@import url(@supermap/vue-iclient/dist/libs/iclient-mapboxgl/iclient9-mapboxgl.min.css);
-
-@import url(ant-design-vue/dist/antd.css);

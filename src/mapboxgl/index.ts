@@ -28,6 +28,7 @@ const setTheme = (themeStyle = {}) => {
   if (typeof themeStyle === 'string') {
     themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
   }
+  globalEvent.$options.theme = themeStyle;
   globalEvent.$emit('change-theme', themeStyle);
 };
 
