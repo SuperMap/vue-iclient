@@ -322,6 +322,7 @@ class SmWebMap extends Mixins(VmUpdater) {
         100,
         { leading: true }
       );
+      // @ts-ignore
       addListener(this.$el, this.__resizeHandler);
     }
   }
@@ -368,6 +369,7 @@ class SmWebMap extends Mixins(VmUpdater) {
 
   destory(): void {
     if (this.autoresize) {
+      // @ts-ignore
       removeListener(this.$el, this.__resizeHandler);
     }
   }

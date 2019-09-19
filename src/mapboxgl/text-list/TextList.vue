@@ -178,17 +178,20 @@ class SmTextList extends Mixins(Theme) {
         () => {
           if (this.$el) {
             clearInterval(this.startInter);
+            // @ts-ignore
             this.containerHeight = this.$el.offsetHeight;
           }
         },
         500,
         { leading: true }
       );
+      // @ts-ignore
       addListener(this.$el, this.resizeHandler);
     }
 
     // 等待元素渲染好 获取高度 计算 list 高度
     setTimeout(() => {
+      // @ts-ignore
       this.containerHeight = this.$el.offsetHeight;
     }, 0);
   }
@@ -298,6 +301,7 @@ class SmTextList extends Mixins(Theme) {
 
   destory(): void {
     if (this.autoResize) {
+      // @ts-ignore
       removeListener(this.$el, this.resizeHandler);
     }
   }
