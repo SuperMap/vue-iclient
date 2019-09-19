@@ -94,6 +94,22 @@ export default {
       },
       immediate: true
     },
+    waveColor(val) {
+      this.waveColorData = val;
+      this.updateChart();
+    },
+    labelColor(val) {
+      this.labelColorData = val;
+      this.updateChart();
+    },
+    borderColor(val) {
+      this.borderColorData = val;
+      this.updateChart();
+    },
+    backgroundColor(val) {
+      this.backgroundColorData = val;
+      this.updateChart();
+    },
     finalValue() {
       this.updateChart();
     },
@@ -102,6 +118,10 @@ export default {
     }
   },
   mounted() {
+    this.waveColorData = this.waveColor || this.getColor(0);
+    this.labelColorData = this.labelColor || this.getTextColor;
+    this.borderColorData = this.borderColor || this.waveColorData;
+    this.backgroundColorData = this.backgroundColor || this.getBackground;
     this.restService = new RestService();
     this.restService.on('getdatasucceeded', this.fetchData);
     setTimeout(() => {
@@ -117,14 +137,9 @@ export default {
       this.chart && this.chart.resize();
     },
     initializeChart() {
-      Object.keys(this.$props).forEach(watchItem => {
-        this.$watch(watchItem, () => {
-          this.updateChart();
-        });
-      });
       this.chart = echarts.init(this.$refs.chart);
       this.updateChart();
-      this.$on('themeStyleChanged', () => {
+      this.$on('theme-style-changed', () => {
         this.waveColorData = this.getColor(0);
         this.labelColorData = this.getTextColor;
         this.borderColorData = this.getColor(0);
@@ -136,13 +151,6 @@ export default {
       });
     },
     updateChart(propsUpdate = false) {
-      if (!propsUpdate) {
-        this.waveColorData = this.waveColor || this.getColor(0);
-        this.labelColorData = this.labelColor || this.getTextColor;
-        this.borderColorData = this.borderColor || this.waveColorData;
-        this.backgroundColorData = this.backgroundColor || this.getBackground;
-      }
-
       this.chart.setOption({
         series: [
           {

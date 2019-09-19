@@ -32,13 +32,12 @@
       <sm-tdt-search
         position="top-right"
       ></sm-tdt-search>
-      <!-- <sm-mini-map position="bottom-right"></!-->
       <sm-measure position="top-right"></sm-measure>
       <sm-draw position="top-right"></sm-draw>
       <sm-raster-tile-layer v-bind="rasteLayerOptions"></sm-raster-tile-layer>
       <sm-vector-tile-layer
         style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"
-      ></sm-vector-tile-layer> -->
+      ></sm-vector-tile-layer>
     </sm-web-map>
     <!-- <sm-web-map
       :mapOptions='mapOptions'
@@ -46,22 +45,23 @@
       @load="mapLoaded"
     ></sm-web-map>-->
     
-    <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18"></sm-indicator>
+    <sm-indicator title="人均收入" unit="元" indicatorColor='red' textColor='red' :num="12323412" fontSize="18"></sm-indicator>
     <sm-text
       title="文本框"
-      :fontStyle="{ fontSize: '18px', lineHeight: '18px', color:'#73b9ac', fontWeight: '700', textAlign: 'center' }"
+      textColor='red'
+      :fontStyle="{ fontSize: '18px', lineHeight: '18px', fontWeight: '700', textAlign: 'center' }"
     ></sm-text>
     <sm-time-text :fontStyle="{ fontSize: '18', fontWeight: '700' }" timeType="date+second+week"></sm-time-text>
     <!-- <sm-chart :style="{display:'inline-block'}" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> -->
-    <sm-liquid-fill :style="{width:'10%',display:'inline-block'}" :value="0.3" :waveCount="1" position="bottom-right"/>
-    <sm-progress :style="{width:'10%',display:'inline-block'}" type="circle" :percent="80"></sm-progress>
+    <sm-liquid-fill borderColor='blue' waveColor='red' :style="{width:'10%',display:'inline-block'}" :value="0.3" :waveCount="1" position="bottom-right"/>
+    <sm-progress strokeColor='red' :style="{width:'10%',display:'inline-block'}" type="circle" :percent="80"></sm-progress>
 
     <sm-border type="border12" style="width: 460px; height: 260px; float:left">
-        <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
+        <sm-chart :colorGroup="['red','blue']" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
     </sm-border>
      
      <sm-border type="border1" style="width: 460px; height: 260px; float:left">
-        <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
+        <sm-chart :colorGroup="['red','blue']" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
     </sm-border>
 
     <div class="changeTheme">

@@ -118,6 +118,7 @@ export default {
   },
   data() {
     return {
+      indicatorColorData: '',
       titleData: this.title,
       unitData: this.unit,
       numData: 0,
@@ -137,7 +138,7 @@ export default {
       return fontUnit;
     },
     indicatorStyle() {
-      let style = (this.indicatorColor && { color: this.indicatorColor }) || this.getColorStyle(0);
+      let style = { color: this.indicatorColorData };
       typeof this.num === 'string' && (style.fontSize = parseFloat(this.fontSize) + this.fontUnit);
       return style;
     },
@@ -167,6 +168,9 @@ export default {
       },
       immediate: true
     },
+    indicatorColor(val) {
+      this.indicatorColorData = val;
+    },
     title(val) {
       this.titleData = val;
     },
@@ -179,6 +183,12 @@ export default {
       },
       immediate: true
     }
+  },
+  mounted() {
+    this.$on('theme-style-changed', () => {
+      this.indicatorColorData = this.getColor(0);
+    });
+    this.indicatorColorData = this.indicatorColor || this.getColor(0);
   },
   beforeDestroy() {
     this.restService && this.restService.off('getdatasucceeded', this.fetchData);

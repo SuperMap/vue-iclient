@@ -6,7 +6,7 @@
       :stroke-width="parseFloat(strokeWidth)"
       :show-info="showInfo"
       :width="calWidth"
-      :stroke-color="curColor"
+      :stroke-color="colorData"
       :status="status"
       :gap-degree="type==='circle' ? gapDegree : null"
       :gap-position="gapPosition"
@@ -75,6 +75,7 @@ export default {
   },
   data() {
     return {
+      colorData: '',
       circleWidth: 0,
       finalPercent: this.percent
     };
@@ -85,12 +86,12 @@ export default {
         return this.size;
       }
       return this.circleWidth;
-    },
-    curColor() {
-      return this.strokeColor || this.getColor(0);
     }
   },
   watch: {
+    strokeColor(val) {
+      this.colorData = val;
+    },
     textColorsData: {
       handler() {
         if (this.progressTextNode) {
@@ -113,6 +114,10 @@ export default {
     }
   },
   mounted() {
+    this.colorData = this.strokeColor || this.getColor(0);
+    this.$on('theme-style-changed', () => {
+      this.colorData = this.getColor(0);
+    });
     this.progressTextNode = this.$el.querySelector('.ant-progress-text');
     this.progressTextNode.style.color = this.getTextColor;
     this.resizeObsever = new ResizeSensor(this.$el, () => {

@@ -294,10 +294,10 @@ export default {
   },
   created() {
     this._setChartTheme();
-    // 切换主题
-    this.$on('themeStyleChanged', () => {
-      this._setChartTheme();
-    });
+    // // 切换主题
+    // this.$on('theme-style-changed', () => {
+    //   this._setChartTheme();
+    // });
   },
   mounted() {
     // 设置echarts实例

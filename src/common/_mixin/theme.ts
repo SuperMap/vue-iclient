@@ -14,7 +14,7 @@ export default class Theme extends Vue {
 
   @Prop() textColor: string;
 
-  @Prop() colorGroup: string;
+  @Prop() colorGroup: Array<string>;
 
   @Watch('background')
   backgroundChanged(newValue) {
