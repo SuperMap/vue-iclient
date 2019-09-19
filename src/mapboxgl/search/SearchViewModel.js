@@ -176,11 +176,12 @@ export default class SearchViewModel extends mapboxgl.Evented {
    * @description 向地图上添加 Marker。
    * @param {Array} coordinates - 坐标数组。
    * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
+   * @param {Function} callback - 弹窗生成后的回调事件。
    */
-  setPopupContent(coordinates, popupContainer) {
-    popupContainer = popupContainer && popupContainer.outerHTML.replace(/display:\s*none/, 'display: block');
+  setPopupContent(coordinates, popupContainer, callback) {
+    popupContainer.style.display = 'block';
     const popup = new mapboxgl.Popup({
-      className: 'sm-mapboxgl-tabel-popup',
+      className: 'sm-mapboxgl-tabel-popup sm-component-search-result-popup',
       closeOnClick: true
     });
     const marker = new mapboxgl.Marker();
@@ -188,8 +189,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.markerList.push(marker);
     popup
       .setLngLat(coordinates)
-      .setHTML(popupContainer)
+      .setDOMContent(popupContainer)
       .addTo(this.map);
+    popup.on('open', () => {
+      callback && callback();
+    });
     marker
       .setLngLat(coordinates)
       .setPopup(popup)

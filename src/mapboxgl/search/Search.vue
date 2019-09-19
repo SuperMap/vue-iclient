@@ -86,7 +86,13 @@
         </div>
       </div>
     </transition>
-    <TablePopup v-show="false" ref="searchTablePopup" v-bind="tablePopupProps" />
+    <TablePopup
+      v-show="false"
+      ref="searchTablePopup"
+      v-bind="tablePopupProps"
+      :text-color="textColor"
+      :background="background"
+    />
   </div>
 </template>
 <script>
@@ -233,6 +239,9 @@ export default {
           result.style.color = this.getTextColor;
         }
       }
+    },
+    backgroundData() {
+      this.changeResultPopupArrowStyle();
     }
   },
   mounted() {
@@ -262,6 +271,10 @@ export default {
     resetChosenResultStyle(e) {
       const { target } = e;
       target.style.color = this.getTextColor;
+    },
+    changeResultPopupArrowStyle() {
+      const searchResultPopupArrow = document.querySelector('.sm-component-search-result-popup .mapboxgl-popup-tip');
+      searchResultPopupArrow && (searchResultPopupArrow.style.borderTopColor = this.backgroundData);
     },
     /**
      * 清除搜索结果。
@@ -397,7 +410,11 @@ export default {
         this.tablePopupProps = { ...state };
       }
       this.$nextTick(() => {
-        this.viewModel.setPopupContent(popupData.coordinates, this.$refs.searchTablePopup.$el);
+        this.viewModel.setPopupContent(
+          popupData.coordinates,
+          this.$refs.searchTablePopup.$el,
+          this.changeResultPopupArrowStyle
+        );
       });
     },
     searchSelectedInfo({ data }) {
@@ -417,8 +434,8 @@ export default {
         groupIndex < len - 1 && hoverIndex >= subLen - 1
           ? Math.min(len - 1, groupIndex + 1)
           : groupIndex === len - 1 && hoverIndex === subLen - 1
-            ? 0
-            : groupIndex;
+          ? 0
+          : groupIndex;
       if (this.isNumber(hoverIndex) && hoverIndex < subLen - 1) {
         this.keyupHoverInfo.hoverIndex = hoverIndex + 1;
       } else {

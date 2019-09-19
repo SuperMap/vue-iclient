@@ -279,6 +279,9 @@ export default {
         }
       }
     },
+    backgroundData() {
+      this.changeResultPopupArrowStyle();
+    },
     layerStyle() {
       this.viewModel && (this.viewModel.layerStyle = this.$props.layerStyle);
     }
@@ -289,6 +292,9 @@ export default {
     this.resultInfoContainer = this.$el.querySelector('.sm-component-query__result-info');
     this.jobInfoContainer = this.$el.querySelector('.sm-component-query__job-info');
   },
+  beforeDestroy() {
+    this.$options.removed.call(this);
+  },
   loaded() {
     this.viewModel = new QueryViewModel(this.map, this.$props);
     this.formatJobInfos();
@@ -298,6 +304,7 @@ export default {
     this.clearResult();
     this.jobInfos = [];
     this.jobButtonClicked();
+    this.popup && this.popup.remove() && (this.popup = null);
   },
   methods: {
     formatJobInfos() {
@@ -428,6 +435,10 @@ export default {
       const { target } = e;
       target.style.color = this.getTextColor;
     },
+    changeResultPopupArrowStyle() {
+      const searchResultPopupArrow = this.popup && this.popup['_tip'];
+      searchResultPopupArrow && (searchResultPopupArrow.style.borderTopColor = this.backgroundData);
+    },
     queryResultListClicked(e) {
       this.popup && this.popup.remove() && (this.popup = null);
       let filter = e.target.innerHTML;
@@ -485,6 +496,7 @@ export default {
 
         this.$nextTick(() => {
           this.popup = this.viewModel.addPopup(featuerInfo.coordinates, this.$refs.queryTablePopup.$el);
+          this.changeResultPopupArrowStyle();
         });
       }
     },
@@ -503,7 +515,7 @@ export default {
       this.queryResult = null;
       this.popup && this.popup.remove() && (this.popup = null);
       this.jobInfo = null;
-      this.viewModel.clearResultLayer();
+      this.viewModel && this.viewModel.clearResultLayer();
     }
   }
 };

@@ -1,9 +1,6 @@
 @import "../../_utils/style/mixins/mixins.scss";
 @include b(table-popup) {
-  background-color: var(--table-popup-color--background);
   @include e(table) {
-    background-color: var(--table-popup-color--background);
-    color: var(--table-popup-color--text);
     &.ant-table-wrapper {
       padding: 18px 5px 5px 8px;
       .ant-table-content {

@@ -1,11 +1,12 @@
 <template>
-  <div class="sm-component-table-popup" :style="styleObject">
+  <div class="sm-component-table-popup" :style="[getBackgroundStyle, getTextColorStyle, styleObject]">
     <a-table
       class="sm-component-table-popup__table"
       :data-source="data"
       :columns="columns"
       :rowKey="(record, index) => index"
       :pagination="false"
+      :style="getBackgroundStyle"
     ></a-table>
   </div>
 </template>
@@ -32,8 +33,6 @@ export default {
   computed: {
     styleObject() {
       return {
-        '--table-popup-color--background': this.backgroundData,
-        '--table-popup-color--text': this.textColorsData,
         '--table-popup-active-color--text': this.colorGroupsData[0]
       };
     }
