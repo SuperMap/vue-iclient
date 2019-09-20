@@ -106,7 +106,7 @@ export default {
       default() {
         return {
           searchUrl: 'http://api.tianditu.gov.cn/search',
-          tk: '1d109683f4d84198e37a38c442d68311'
+          tk: ''
         };
       }
     },

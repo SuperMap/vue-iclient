@@ -113,6 +113,15 @@ export default {
     finalValue() {
       this.updateChart();
     },
+    fontSize() {
+      this.updateChart();
+    },
+    waveCount() {
+      this.updateChart();
+    },
+    waveAnimation() {
+      this.updateChart();
+    },
     value(val) {
       this.finalValue = val;
     }

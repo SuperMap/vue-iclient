@@ -166,7 +166,7 @@ export default {
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',
           searchUrl: 'https://api.tianditu.gov.cn/search',
-          tk: '1d109683f4d84198e37a38c442d68311'
+          tk: ''
         };
       }
     }
