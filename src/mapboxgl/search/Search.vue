@@ -434,8 +434,8 @@ export default {
         groupIndex < len - 1 && hoverIndex >= subLen - 1
           ? Math.min(len - 1, groupIndex + 1)
           : groupIndex === len - 1 && hoverIndex === subLen - 1
-          ? 0
-          : groupIndex;
+            ? 0
+            : groupIndex;
       if (this.isNumber(hoverIndex) && hoverIndex < subLen - 1) {
         this.keyupHoverInfo.hoverIndex = hoverIndex + 1;
       } else {

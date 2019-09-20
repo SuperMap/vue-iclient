@@ -106,14 +106,9 @@ export default class MapGetter extends Vue {
     }
   }
   mapNotLoadedTip() {
-    const mapTarget = this.getTargetName();
-    if(!this.viewModel) {
+    if (!this.map) {
       this.$message.destroy();
       this.$message.warning(this.$t('warning.unassociatedMap'));
-      return true;
-    } else if (!mapEvent.$options.getMap(mapTarget) || (this.map && !this.map.loaded())) {
-      this.$message.destroy();
-      this.$message.warning(this.$t('warning.mapNotLoaded'));
       return true;
     }
     return false;

@@ -283,8 +283,13 @@ export default {
     changeMeasureMode(mode) {
       setTimeout(() => {
         const mapNotLoaded = this.mapNotLoadedTip();
-        if (mapNotLoaded) return;
-        if (this.map && this.map.loaded()) {
+        if (mapNotLoaded) {
+          return;
+        }
+        if (!this.map.loaded()) {
+          this.$message.destroy();
+          this.$message.warning(this.$t('warning.mapNotLoaded'));
+        } else {
           let modeUnitKey = this.modeUnitMap[mode];
           let activeUnit = this[modeUnitKey];
           if (mode === 'delete') {
