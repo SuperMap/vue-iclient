@@ -220,6 +220,9 @@ export default {
         this.datasetOptions &&
         this.datasetOptions.length > 0
       );
+    },
+    xBar() {
+      return this.options && this.options.yAxis && this.options.yAxis.type === 'category';
     }
   },
   watch: {
@@ -256,6 +259,7 @@ export default {
           !this.echartsDataService &&
             this._isRequestData &&
             this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+          this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
           this.echartsDataService &&
             this.dataSeriesCache &&
             this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
@@ -389,9 +393,8 @@ export default {
         maskColor: 'rgba(0,0,0,0.8)',
         zlevel: 0
       });
-
       this.echartsDataService = new EchartsDataService(dataset, datasetOptions);
-      this.echartsDataService.getDataOption(dataset).then(options => {
+      this.echartsDataService.getDataOption(dataset, this.xBar).then(options => {
         this.hideLoading();
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         this.dataSeriesCache = Object.assign({}, options);
@@ -412,7 +415,8 @@ export default {
         let axis = xAxis;
         let axisData = dataOptions.xAxis[0];
         let type = 'xAxis';
-        if (yAxis && yAxis.type === 'category') { // 处理条形图
+        if (yAxis && yAxis.type === 'category') {
+          // 处理条形图
           type = 'yAxis';
           axis = yAxis;
           dataOptions.yAxis = dataOptions.xAxis;
@@ -457,9 +461,9 @@ export default {
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
       let options;
       if (this.dataset.type === 'rest') {
-        options = echartsDataService.formatThridRestChartData(datasetOptions);
+        options = echartsDataService.formatThridRestChartData(datasetOptions, this.xBar);
       } else if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer') {
-        options = echartsDataService.formatChartData(datasetOptions);
+        options = echartsDataService.formatChartData(datasetOptions, this.xBar);
       }
 
       // 缓存dataSeriesCache，格式化成echart的数据

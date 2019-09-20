@@ -52,7 +52,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         amd: 'vue-echarts'
       },
       'ant-design-vue': {
-        root: 'Antd',
+        root: 'antd',
         commonjs: 'ant-design-vue',
         commonjs2: 'ant-design-vue',
         amd: 'ant-design-vue'

@@ -2,6 +2,7 @@ import getFeatures from './get-features';
 import tonumber from 'lodash.tonumber';
 import isEqual from 'lodash.isequal';
 import max from 'lodash.max';
+import orderBy from 'lodash.orderby';
 import { clearNumberComma } from '../../common/_utils/util';
 /**
  * @class EchartsDataService
@@ -46,7 +47,7 @@ export default class EchartsDataService {
    * @description 获取符合echart data数据格式的数据, 入口函数。
    * @returns {Object}  带有请求的数据的promise对象
    */
-  getDataOption(dataset) {
+  getDataOption(dataset, xBar = false) {
     // 设置datasets的默认配置type，withCredentials
     let promise = new Promise((resolve, reject) => {
       // 请求数据，请求成功后，解析数据
@@ -57,9 +58,9 @@ export default class EchartsDataService {
           // 解析数据，生成dataOption
           let options;
           if (this.dataset.type === 'rest') {
-            options = this.formatThridRestChartData(this.datasetOptions, data);
+            options = this.formatThridRestChartData(this.datasetOptions, xBar, data);
           } else if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer') {
-            options = this.formatChartData(this.datasetOptions, data);
+            options = this.formatChartData(this.datasetOptions, xBar, data);
           }
 
           resolve(options);
@@ -78,15 +79,15 @@ export default class EchartsDataService {
    * @param {Object} datasetOptions - 数据解析的配置参数
    * @returns {Object}  符合echart格式的数据
    */
-  formatChartData(datasetOptions, data = this.dataCache) {
+  formatChartData(datasetOptions, xBar = false, data = this.dataCache) {
     // 清除数据缓存
     this._clearChartCache();
     // 设置datasetOptions
-    this._setDatasetOptions(datasetOptions);
+    this.setDatasetOptions(datasetOptions);
     // 生成seriedata
     datasetOptions.forEach(item => {
       // 生成YData, XData
-      let fieldData = this._fieldsData(data, item);
+      let fieldData = this._fieldsData(data, item, xBar);
       // 解析YData, XData，生成EchartsOption的data
       let serieData = this._createDataOption(fieldData, item);
       // 设置坐标
@@ -103,12 +104,12 @@ export default class EchartsDataService {
     };
   }
 
-  formatThridRestChartData(datasetOptions, data = this.dataCache) {
+  formatThridRestChartData(datasetOptions, xBar = false, data = this.dataCache) {
     let datas = data.data;
     let xData = Object.keys(datas);
     let sData = Object.values(datas);
     let options;
-    let { seriesType, xField, yField } = datasetOptions[0];
+    let { seriesType, xField, yField, sort } = datasetOptions[0];
     switch (seriesType) {
       case 'pie':
         let pieData = [];
@@ -147,10 +148,11 @@ export default class EchartsDataService {
         };
         break;
       default:
+        let result = sort && sort !== 'unsort' ? this._resortData(xData, sData, sort, xBar) : { xData, yData: sData };
         options = {
           xAxis: [
             {
-              data: xData,
+              data: result.xData,
               name: xField
             }
           ],
@@ -159,7 +161,7 @@ export default class EchartsDataService {
           },
           series: [
             {
-              data: sData,
+              data: result.yData,
               type: seriesType
             }
           ]
@@ -170,13 +172,13 @@ export default class EchartsDataService {
   }
 
   /**
-   * @function EchartsDataService.prototype._setDatasetOptions
+   * @function EchartsDataService.prototype.setDatasetOptions
    * @private
    * @description 设置datasetOptions
    * @param {Array.<Chart-datasetOption>} datasetOptions - 数据解析的配置
    */
 
-  _setDatasetOptions(datasetOptions) {
+  setDatasetOptions(datasetOptions) {
     this.datasetOptions = datasetOptions;
   }
 
@@ -303,28 +305,50 @@ export default class EchartsDataService {
    * @param {Chart-datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  解析好的Ydata，xdata
    */
-  _fieldsData(data, datasetOption) {
+  _fieldsData(data, datasetOption, xBar = false) {
     let fieldCaptions, fieldValues, xFieldIndex, yFieldIndex, fieldValueIndex, xData, yData, result;
+    let { sort, yField, xField, isStastic } = datasetOption;
     fieldCaptions = data.fieldCaptions; // 所有x字段
-    xFieldIndex = fieldCaptions.indexOf(datasetOption.xField); // x字段的下标
-    yFieldIndex = fieldCaptions.indexOf(datasetOption.yField); // y字段的下标
+    xFieldIndex = fieldCaptions.indexOf(xField); // x字段的下标
+    yFieldIndex = fieldCaptions.indexOf(yField); // y字段的下标
     fieldValues = data.fieldValues[yFieldIndex]; // y字段的所有feature值
     // 该数据是否需要统计,统计的是数组下标
-    if (datasetOption.isStastic) {
-      fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex);
+    if (isStastic) {
+      fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex, sort);
       // 生成统计后的数据
-      xData = this._stasticXData(fieldValueIndex);
-      yData = this._stasticYData(fieldValues, fieldValueIndex);
+      xData = this._stasticXData(fieldValueIndex, sort);
+      yData = this._stasticYData(fieldValues, fieldValueIndex, sort);
     } else {
       // 如果不是统计图表
       xData = this._getFieldDatas(data, xFieldIndex);
       yData = [...fieldValues];
     }
-    result = {
-      xData,
-      yData
-    };
+    result = sort && sort !== 'unsort' ? this._resortData(xData, yData, sort, xBar) : { xData, yData };
     return result;
+  }
+
+  _resortData(xData, yData, sort, xBar = false) {
+    let obj = [];
+    yData.forEach((item, index) => {
+      obj.push({ y: item, x: xData[index] });
+    });
+    obj = orderBy(
+      obj,
+      o => {
+        return o.y;
+      },
+      sort === 'ascending' ? [xBar ? 'desc' : 'asc'] : [xBar ? 'asc' : 'desc']
+    );
+    let x = [];
+    let y = [];
+    obj.forEach(item => {
+      x.push(item.x);
+      y.push(item.y);
+    });
+    return {
+      xData: x,
+      yData: y
+    };
   }
 
   /**

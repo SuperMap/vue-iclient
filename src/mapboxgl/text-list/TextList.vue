@@ -141,6 +141,7 @@ class SmTextList extends Mixins(Theme) {
   @Watch('containerHeight')
   containerHeightChanged(newVal, oldVal) {
     if (newVal !== oldVal) {
+      clearInterval(this.startInter);
       this.getListHeightStyle();
     }
   }
@@ -177,7 +178,6 @@ class SmTextList extends Mixins(Theme) {
       this.resizeHandler = debounce(
         () => {
           if (this.$el) {
-            clearInterval(this.startInter);
             // @ts-ignore
             this.containerHeight = this.$el.offsetHeight;
           }
@@ -301,6 +301,7 @@ class SmTextList extends Mixins(Theme) {
 
   destory(): void {
     if (this.autoResize) {
+      clearInterval(this.startInter);
       // @ts-ignore
       removeListener(this.$el, this.resizeHandler);
     }
