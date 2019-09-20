@@ -54,17 +54,21 @@ export default {
       type: String,
       default: 'sm-components-icons-baselayer'
     },
-    select: {
-      type: String
-    },
-    label: {
-      type: Boolean
+    data: {
+      type: Object,
+      default() {
+        return {
+          select: '',
+          label: false,
+          tk: ''
+        };
+      }
     }
   },
   data() {
     return {
       labelChecked: true,
-      currentSelect: this.select
+      currentSelect: this.data.select
     };
   },
   methods: {
@@ -81,11 +85,11 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new TdtMapSwitcherViewModel(this.map);
-    if (this.select) {
-      this.viewModel.changeBaseLayer(this.select);
+    this.viewModel = new TdtMapSwitcherViewModel(this.map, this.data.tk);
+    if (this.data.select) {
+      this.viewModel.changeBaseLayer(this.data.select);
+      this.togglerLabelLayer(this.data.label);
     }
-    this.togglerLabelLayer(this.label);
   }
 };
 </script>

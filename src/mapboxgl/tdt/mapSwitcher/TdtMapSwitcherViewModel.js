@@ -3,7 +3,7 @@ import { geti18n } from '../../../common/_lang';
 
 const tileUrlTemplate =
   'http://t{s}.tianditu.com/{type}_{proj}/wmts?tk={tk}&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet={proj}&format=tiles&width=256&height=256&layer={type}&tilematrix={z}&tilerow={y}&tilecol={x}';
-const Token = '1d109683f4d84198e37a38c442d68311';
+
 const LABELLIST = {
   vec: 'cva',
   img: 'cia',
@@ -11,9 +11,10 @@ const LABELLIST = {
 };
 
 export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
-  constructor(map) {
+  constructor(map, tk) {
     super();
     this.map = map;
+    this.tk = tk;
     this.proj = 'w';
   }
   changeBaseLayer(type) {
@@ -36,7 +37,8 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
   togglerLabelLayer(isChecked) {
     const visible = isChecked ? 'visible' : 'none';
     const labelLayer = this.map && this.map.getLayer(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`));
-    labelLayer && this.map.setLayoutProperty(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`), 'visibility', visible);
+    labelLayer &&
+      this.map.setLayoutProperty(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`), 'visibility', visible);
   }
   removeLayer() {
     const sourceList = this.map.getStyle().sources;
@@ -87,17 +89,6 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
       tileSize: 256
     };
     return sources;
-    // return {
-    //   smbaseLayer: {
-    //     type: 'raster',
-    //     tiles: this.listUrls(type),
-    //     tileSize: 256
-    //   },
-    //   smlabelLayer: {
-    //     type: 'raster',
-    //     tiles: this.listUrls(LABELLIST[type]),
-    //     tileSize: 256
-    //   }
   }
   listUrls(type) {
     const urls = [];
@@ -105,7 +96,7 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
       for (let index = 0; index < 8; index++) {
         urls.push(
           tileUrlTemplate
-            .replace('{tk}', Token)
+            .replace('{tk}', this.tk)
             .replace('{s}', index)
             .replace(/{proj}/g, this.proj)
             .replace(/{type}/g, type)
