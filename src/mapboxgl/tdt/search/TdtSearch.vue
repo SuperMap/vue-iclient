@@ -232,6 +232,10 @@ export default {
       }
     },
     searchButtonClicked() {
+      if (!this.searchKey) {
+        this.$message.warning(this.$t('search.noKey'));
+        return;
+      }
       this.getResultDetail(this.searchKey);
     },
     /**
