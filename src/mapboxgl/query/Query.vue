@@ -437,7 +437,10 @@ export default {
     },
     changeResultPopupArrowStyle() {
       const searchResultPopupArrow = this.popup && this.popup['_tip'];
-      searchResultPopupArrow && (searchResultPopupArrow.style.borderTopColor = this.backgroundData);
+      if (searchResultPopupArrow) {
+        searchResultPopupArrow.style.borderTopColor = this.backgroundData;
+        searchResultPopupArrow.style.borderBottomColor = this.backgroundData;
+      }
     },
     queryResultListClicked(e) {
       this.popup && this.popup.remove() && (this.popup = null);

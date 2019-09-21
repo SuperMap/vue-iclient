@@ -275,6 +275,10 @@ export default {
     changeResultPopupArrowStyle() {
       const searchResultPopupArrow = document.querySelector('.sm-component-search-result-popup .mapboxgl-popup-tip');
       searchResultPopupArrow && (searchResultPopupArrow.style.borderTopColor = this.backgroundData);
+      if (searchResultPopupArrow) {
+        searchResultPopupArrow.style.borderTopColor = this.backgroundData;
+        searchResultPopupArrow.style.borderBottomColor = this.backgroundData;
+      }
     },
     /**
      * 清除搜索结果。
