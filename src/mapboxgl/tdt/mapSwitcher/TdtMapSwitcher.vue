@@ -54,6 +54,12 @@ export default {
       type: String,
       default: 'sm-components-icons-baselayer'
     },
+    headerName: {
+      type: String,
+      default() {
+        return this.$t('tdtMapSwitcher.title');
+      }
+    },
     data: {
       type: Object,
       default() {

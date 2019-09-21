@@ -213,6 +213,7 @@ export default {
     transport: '交通'
   },
   tdtMapSwitcher: {
+    title: '地图切换',
     image: '影像',
     vector: '矢量',
     terrain: '地形',
