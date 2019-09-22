@@ -8,7 +8,8 @@ yarn-error.log*
 /build/
 /config/
 /demo/
-/static/libs/Cesium/
+/docs/
+/static/
 .git
 .editorconfig
 .eslintignore
