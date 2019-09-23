@@ -54,7 +54,7 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Tree);
   Vue.use(Tabs);
   Vue.use(VueCesium, {
-    cesiumPath: '../../static/libs/Cesium/Cesium.js'
+    cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
   });
   Vue.prototype.$message = message;
   initi18n(Vue, opts);
