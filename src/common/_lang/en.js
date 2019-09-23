@@ -216,6 +216,7 @@ export default {
     transport: 'traffic'
   },
   tdtMapSwitcher: {
+    title: 'Map Switcher',
     image: 'image',
     vector: 'vector',
     terrain: 'terrain',
