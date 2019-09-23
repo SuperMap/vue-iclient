@@ -238,7 +238,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
       level: Math.round(this.map.getZoom()) + 1,
       mapBound: this._toBBoxString()
     };
-    return tiandituSearch(data.searchUrl, {
+    return tiandituSearch(data.searchUrl || 'http://api.tianditu.gov.cn/search', {
       postStr: JSON.stringify(Object.assign({}, commonData, params)),
       type: 'query',
       tk: data.tk
