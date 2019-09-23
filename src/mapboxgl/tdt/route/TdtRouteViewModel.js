@@ -32,7 +32,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this.sourceName = { tdtRoutePoints: 'tdt-route-searchRoutePoints', tdtDrawRoutes: 'tdt-route-routes' };
   }
 
-  searchPoints(keyWord, params, searchUrl = this.data.searchUrl) {
+  searchPoints(keyWord, params, searchUrl = this.data.searchUrl || 'http://api.tianditu.gov.cn/search') {
     const map = this.map;
     const commonData = {
       keyWord,
@@ -57,7 +57,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       });
   }
 
-  search(orig, dest, carUrl = this.data.carUrl, busUrl = this.data.busUrl) {
+  search(orig, dest, carUrl = this.data.carUrl || 'https://api.tianditu.gov.cn/drive', busUrl = this.data.busUrl || 'https://api.tianditu.gov.cn/transit') {
     this._clearMarkers();
     if (!this.map) return Promise.reject(new Error(geti18n().t('tdtRoute.mapLoadedFiled')));
     this.orig = orig;
