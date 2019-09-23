@@ -1,16 +1,16 @@
 <template>
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
-    <Pan v-if="panControl.show" :position="panControl.position"/>
-    <Scale v-if="scaleControl.show" v-bind="scaleControl"/>
-    <Zoom v-if="zoomControl.show" v-bind="zoomControl"/>
+    <Pan v-if="panControl.show" :position="panControl.position" />
+    <Scale v-if="scaleControl.show" v-bind="scaleControl" />
+    <Zoom v-if="zoomControl.show" v-bind="zoomControl" />
     <mini-map v-if="miniMapControl.show" v-bind="miniMapControl"></mini-map>
     <layer-list v-if="layerListControl.show" v-bind="layerListControl"></layer-list>
     <Measure v-if="measureControl.show" v-bind="measureControl"></Measure>
     <Legend v-if="legendControl.show" v-bind="legendControl"></Legend>
     <Query v-if="queryControl.show" v-bind="queryControl"></Query>
     <Search v-if="searchControl.show" v-bind="searchControl"></Search>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning"/>
+    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
@@ -347,13 +347,15 @@ class SmWebMap extends Mixins(VmUpdater) {
        */
       this.load({ map: e.map });
     });
-    this.viewModel.on('getmapfailed', e => {
+    this.viewModel.on('getmapinfofailed', e => {
       /**
        * @event getMapFailed
        * @desc 获取 WebMap 地图信息失败。
        * @property {Object} error - 失败原因。
        */
       this.getMapFailed({ error: e.error });
+      this.$message.error(e.error.message);
+      this.spinning = false;
     });
     this.viewModel.on('getlayerdatasourcefailed', e => {
       /**
@@ -364,6 +366,7 @@ class SmWebMap extends Mixins(VmUpdater) {
        * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
        */
       this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
+      this.$message.error(this.$t('webmap.getLayerInfoFailed'));
     });
   }
 

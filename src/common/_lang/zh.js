@@ -73,7 +73,10 @@ export default {
   pan: {},
   scale: {},
   webmap: {
-    loadingTip: '地图加载中...'
+    loadingTip: '地图加载中...',
+    crsNotSupport: '不支持当前地图的坐标系！',
+    TileMatrixSetNotSuppport: '不支持传入的 TileMatrixSet！',
+    getLayerInfoFailed: '获取图层信息失败！'
   },
   legend: {
     themeField: '专题字段',
@@ -213,7 +216,6 @@ export default {
     transport: '交通'
   },
   tdtMapSwitcher: {
-    title: '地图切换',
     image: '影像',
     vector: '矢量',
     terrain: '地形',

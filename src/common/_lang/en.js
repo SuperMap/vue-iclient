@@ -73,7 +73,10 @@ export default {
   pan: {},
   scale: {},
   webmap: {
-    loadingTip: 'Map is loading...'
+    loadingTip: 'Map is loading...',
+    crsNotSupport: 'The coordinate system of the current map is not supported!',
+    TileMatrixSetNotSuppport: 'Incoming TileMatrixSet is not supported!',
+    getLayerInfoFailed: 'Failed to get layer information!'
   },
   legend: {
     themeField: 'Thematic Field',
@@ -213,7 +216,6 @@ export default {
     transport: 'traffic'
   },
   tdtMapSwitcher: {
-    title: 'Map Switcher',
     image: 'image',
     vector: 'vector',
     terrain: 'terrain',

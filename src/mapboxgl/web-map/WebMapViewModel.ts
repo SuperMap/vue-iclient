@@ -16,6 +16,7 @@ import provincialCenterData from './config/ProvinceCenter.json'; // eslint-disab
 import municipalCenterData from './config/MunicipalCenter.json'; // eslint-disable-line import/extensions
 import UniqueId from 'lodash.uniqueid';
 import cloneDeep from 'lodash.clonedeep';
+import { geti18n } from '../../common/_lang';
 
 const MB_SCALEDENOMINATOR_3857 = [
   '559082264.0287178',
@@ -58,7 +59,7 @@ const MB_SCALEDENOMINATOR_4326 = [
   '17061.836670798268',
   '8530.918335399134'
 ];
-const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible', 'GlobalCRS84Scale'];
+const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
 // 迁徙图最大支持要素数量
 const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 /**
@@ -487,7 +488,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
             }
           });
         } else {
-          throw Error('不支持当前地图的坐标系');
+          throw Error(geti18n().t('webmap.crsNotSupport'));
         }
       })
       .catch(error => {
@@ -673,10 +674,10 @@ export default class WebMapViewModel extends mapboxgl.Evented {
               if (matchedScaleDenominator.length !== 0) {
                 isMatched = true;
               } else {
-                throw Error('不支持传入的 TileMatrixSet');
+                throw Error(geti18n().t('webmap.TileMatrixSetNotSuppport'));
               }
             } else {
-              throw Error('不支持传入的 TileMatrixSet');
+              throw Error(geti18n().t('webmap.TileMatrixSetNotSuppport'));
             }
           }
         }
@@ -684,15 +685,11 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       })
       .catch(error => {
         /**
-         * @event WebMapViewModel#getwmtsinfofailed
-         * @description 获取 WMTS 图层信息失败。
+         * @event WebMapViewModel#getmapinfofailed
+         * @description 获取地图信息失败。
          * @property {Object} error - 失败原因。
-         * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
          */
-        this.fire('getwmtsinfofailed', {
-          error: error,
-          map: this.map
-        });
+        this.fire('getmapinfofailed', { error: error });
       });
   }
 
