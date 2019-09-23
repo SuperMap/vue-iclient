@@ -755,12 +755,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
    * @param {Object} layerInfo - 图层信息。
    */
   private _createDynamicTiledLayer(layerInfo: any): void {
-    let url = layerInfo.url + '/zxyTileImage.png?z={z}&x={x}&y={y}';
-    // @ts-ignore -------- setCRS 为 enhance 新加属性
-    if (this.map.setCRS && this.baseProjection !== 'EPSG:3857') {
-      url = layerInfo.url + '/image.png?viewBounds={viewBounds}&width={width}&height={height}';
-    }
-    this._addBaselayer([url], 'tile-layers-' + layerInfo.name);
+    let url = layerInfo.url;
+    this._addBaselayer([url], 'tile-layers-' + layerInfo.name, null, null, true);
   }
 
   /**
@@ -2244,7 +2240,6 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     let url = options.url;
 
     url += this._getParamString(obj, url) + '&tilematrix={z}&tilerow={y}&tilecol={x}';
-
     return url;
   }
 
@@ -2981,18 +2976,20 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     }
   }
 
-  private _addBaselayer(url: Array<string>, layerID: string, minzoom = 0, maxzoom = 22): void {
+  private _addBaselayer(url: Array<string>, layerID: string, minzoom = 0, maxzoom = 22, isIserver = false): void {
     let source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,
-      tileSize: 256
+      tileSize: 256,
+      // @ts-ignore
+      rasterSource: isIserver ? 'iserver' : ''
     };
     this.map.addLayer({
       id: layerID,
       type: 'raster',
       source: source,
-      minzoom: minzoom,
-      maxzoom: maxzoom
+      minzoom: minzoom || 0,
+      maxzoom: maxzoom || 22
     });
   }
   /**
