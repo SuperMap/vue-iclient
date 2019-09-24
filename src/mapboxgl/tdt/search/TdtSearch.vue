@@ -119,6 +119,10 @@ export default {
     },
     resultRender: {
       type: Function
+    },
+    collapsed: { // 是否折叠组件
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -127,8 +131,8 @@ export default {
       searchResult: [],
       prefixType: 'search',
       isHover: false,
-      showSearch: false,
-      showIcon: true,
+      showSearch: true,
+      showIcon: false,
       isInputing: false,
       isSuggestion: false,
       hoverIndex: undefined,
@@ -166,6 +170,10 @@ export default {
         this.viewModel && this.viewModel.setData(this.data);
       }
     }
+  },
+  created() {
+    this.showSearch = !this.collapsed;
+    this.showIcon = this.collapsed;
   },
   mounted() {
     this.changeSearchInputStyle();
@@ -286,6 +294,7 @@ export default {
           case 'Point':
             this.componentId = 'PointsResult';
             componentProps.openPurePoiSearch = this.openPurePoiSearch;
+            componentProps.specifyAdminSearch = params && !!params.specifyAdminCode;
             componentListeners['show-point-popup'] = this.generatePopup;
             componentListeners['set-highlight-icon'] = this.setHighlightIcon;
             componentListeners['change-pagination'] = this.getResultDetail;

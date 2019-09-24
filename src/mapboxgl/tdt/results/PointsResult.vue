@@ -87,6 +87,12 @@ export default {
       type: Object
     },
     openPurePoiSearch: {
+      // 是否开启纯POI搜索
+      type: Boolean,
+      default: false
+    },
+    specifyAdminSearch: {
+      // 是否指定行政区查询
       type: Boolean,
       default: false
     },
@@ -143,6 +149,8 @@ export default {
       };
       if (this.openPurePoiSearch) {
         params.queryType = '7';
+      }
+      if (this.specifyAdminSearch) {
         params.specifyAdminCode = this.prompt.adminCode;
       }
       this.$emit('change-pagination', this.keyWord, params, this.openPurePoiSearch);
