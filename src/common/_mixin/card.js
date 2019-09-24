@@ -26,7 +26,7 @@ export default {
       type: String
     },
     collapsed: {
-      type: Boolean,
+      type: Boolean, // 是否折叠
       default: false
     }
   }
