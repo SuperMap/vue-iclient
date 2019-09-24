@@ -105,7 +105,7 @@ export default {
       const { target, srcElement } = e;
       if (target.nodeName.toLowerCase() === 'li') {
         const value = target.innerHTML - 1;
-        switch (srcElement.type) {
+        switch (srcElement.getAttribute('type')) {
           case 'home':
             this.activePage = 0;
             this.realPage = 1;
