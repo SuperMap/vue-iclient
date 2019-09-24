@@ -282,6 +282,7 @@ export default {
             case 'Point':
               this.componentId = 'PointsResult';
               componentProps.openPurePoiSearch = true;
+              componentProps.specifyAdminSearch = params && !!params.specifyAdminCode;
               componentProps.resultBelongTo = this.status === 'toSetStart' ? 'start' : 'end';
               componentListeners['reset-start-point'] = this.resetStartPoint;
               componentListeners['reset-end-point'] = this.resetEndPoint;

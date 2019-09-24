@@ -203,6 +203,10 @@ export default {
     },
     resultRender: {
       type: Function
+    },
+    collapsed: { // 是否折叠组件
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -212,8 +216,8 @@ export default {
       prefixType: 'search',
       isHover: false,
       tablePopupProps: {},
-      showSearch: false,
-      showIcon: true,
+      showSearch: true,
+      showIcon: false,
       isInputing: false,
       isSuggestion: false,
       keyupHoverInfo: {
@@ -243,6 +247,10 @@ export default {
     backgroundData() {
       this.changeResultPopupArrowStyle();
     }
+  },
+  created() {
+    this.showSearch = !this.collapsed;
+    this.showIcon = this.collapsed;
   },
   mounted() {
     this.changeSearchInputStyle();
