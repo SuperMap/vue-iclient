@@ -6,7 +6,7 @@
       :style="[{'--icon-color--hover': colorGroupsData[0]}, getBackgroundStyle]"
       @click="showSearch = !showSearch; showIcon = !showIcon"
     >
-      <a-icon type="search" />
+      <i class="sm-components-icons-preview"></i>
     </div>
     <transition name="sm-component-zoom-in" @after-leave="showIcon = !showIcon">
       <div
@@ -28,7 +28,7 @@
             :style="[getBackgroundStyle, getColorStyle(0)]"
             @click="searchButtonClicked"
           >
-            <a-icon :type="prefixType" />
+            <i class="sm-components-icons-preview "></i>
           </div>
           <a-input
             v-model="searchKey"
