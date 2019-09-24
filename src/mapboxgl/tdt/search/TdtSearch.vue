@@ -28,7 +28,8 @@
             :style="[getBackgroundStyle, getColorStyle(0)]"
             @click="searchButtonClicked"
           >
-            <i class="sm-components-icons-preview "></i>
+            <i v-if="prefixType==='search'" class="sm-components-icons-preview"></i>
+            <a-icon v-else :type="prefixType"></a-icon>
           </div>
           <a-input
             v-model="searchKey"
@@ -120,7 +121,8 @@ export default {
     resultRender: {
       type: Function
     },
-    collapsed: { // 是否折叠组件
+    collapsed: {
+      // 是否折叠组件
       type: Boolean,
       default: false
     }
