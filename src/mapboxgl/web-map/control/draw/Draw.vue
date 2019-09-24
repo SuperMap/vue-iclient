@@ -46,6 +46,10 @@ export default {
         return this.$t('draw.draw');
       }
     },
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
     layerStyle: {
       type: Object
     }

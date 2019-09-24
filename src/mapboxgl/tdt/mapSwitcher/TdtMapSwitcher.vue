@@ -45,6 +45,10 @@ export default {
   name: 'SmTdtMapSwitcher',
   mixins: [Control, MapGetter, Card, Theme],
   props: {
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
     iconClass: {
       type: String,
       default: 'sm-components-icons-baselayer'

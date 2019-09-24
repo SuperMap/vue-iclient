@@ -27,6 +27,10 @@ export default {
   name: 'SmMiniMap',
   mixins: [MapGetter, Control, Card, Theme],
   props: {
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
     iconClass: {
       type: String,
       default: 'sm-components-icons-return'
