@@ -5,21 +5,6 @@
     @include e(layers-wrap) {
       padding: 15px;
       overflow: hidden;
-      &.sm-component-zoom-in-enter-active {
-        animation: zoom-in 0.5s;
-      }
-      &.sm-component-zoom-in-leave-active {
-        animation: zoom-in 0.5s reverse;
-      }
-      @keyframes zoom-in {
-        0% {
-          opacity: 0;
-        }
-        100% {
-          opacity: 1;
-        }
-      }
-
       @include e(content-holder) {
         max-width: 246px;
         padding: 10px 10px 5px;

@@ -11,30 +11,25 @@
     class="sm-component-map-switch"
   >
     <div class="sm-component-map-switch__panel" :style="[getBackgroundStyle, getTextColorStyle]">
-      <transition name="sm-component-zoom-in">
-        <div class="sm-component-map-switch__layers-wrap">
-          <div class="sm-component-map-switch__content-holder">
-            <div class="sm-component-map-switch__layers">
-              <div class="layer-item map-item" @click="changeBaseLayer('vec')">
-                <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.vector') }}</div>
-              </div>
-              <div class="layer-item image-item" @click="changeBaseLayer('img')">
-                <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.image') }}</div>
-              </div>
-              <div class="layer-item landform-item" @click="changeBaseLayer('ter')">
-                <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.terrain') }}</div>
-              </div>
+      <div class="sm-component-map-switch__layers-wrap">
+        <div class="sm-component-map-switch__content-holder">
+          <div class="sm-component-map-switch__layers">
+            <div class="layer-item map-item" @click="changeBaseLayer('vec')">
+              <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.vector') }}</div>
             </div>
-            <div v-if="currentSelect" class="sm-component-map-switch__labelSetting">
-              <span>{{ $t('tdtMapSwitcher.placeName') }}</span>
-              <a-checkbox
-                :checked="labelChecked"
-                @change="togglerLabelLayer($event.target.checked)"
-              />
+            <div class="layer-item image-item" @click="changeBaseLayer('img')">
+              <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.image') }}</div>
+            </div>
+            <div class="layer-item landform-item" @click="changeBaseLayer('ter')">
+              <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.terrain') }}</div>
             </div>
           </div>
+          <div v-if="currentSelect" class="sm-component-map-switch__labelSetting">
+            <span>{{ $t('tdtMapSwitcher.placeName') }}</span>
+            <a-checkbox :checked="labelChecked" @change="togglerLabelLayer($event.target.checked)" />
+          </div>
         </div>
-      </transition>
+      </div>
     </div>
   </sm-card>
 </template>
