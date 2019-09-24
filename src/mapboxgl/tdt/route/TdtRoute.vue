@@ -261,6 +261,7 @@ export default {
       });
     },
     getResultDetail(keyWord, params) {
+      let mapBound = (params ? params.mapBound : '') || this.viewModel._toBBoxString();
       this.viewModel
         .searchPoints(keyWord, params)
         .then(res => {
@@ -273,7 +274,8 @@ export default {
             keyWord,
             count: result.count,
             from: 'Route',
-            pageSize: 4
+            pageSize: 4,
+            mapBound
           };
           let componentListeners = {};
           switch (type) {

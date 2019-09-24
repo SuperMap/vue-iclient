@@ -265,6 +265,9 @@ export default {
         queryType: '1',
         queryTerminal: 10000
       };
+      if (!params.mapBound) {
+        params.mapBound = this.viewModel._toBBoxString();
+      }
       const searchKeyWord = searchKey || this.searchKey;
       searchKey && (this.searchKey = searchKey);
       this.changeOpenPurePoiSearch(openPurePoiSearch);
@@ -275,7 +278,8 @@ export default {
           data: result.data,
           prompt: result.prompt,
           keyWord: searchKeyWord,
-          count: result.count
+          count: result.count,
+          mapBound: params.mapBound
         };
         let componentListeners = {};
         switch (type) {

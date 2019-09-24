@@ -19,7 +19,10 @@
         <div class="route-info">
           <span class="name" :title="item.name" :style="getColorStyle(0)">{{ item.name }}</span>
           <span v-if="item.phone" class="phone">{{ $t('tdtResults.phone') }}：{{ item.phone }}</span>
-          <span class="address" :title="item.address">{{ $t('tdtResults.address') }}：{{ item.address }}</span>
+          <span
+            class="address"
+            :title="item.address"
+          >{{ $t('tdtResults.address') }}：{{ item.address }}</span>
         </div>
         <div
           v-if="from === 'Route' && resultBelongTo === 'start'"
@@ -86,6 +89,10 @@ export default {
     openPurePoiSearch: {
       type: Boolean,
       default: false
+    },
+    mapBound: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -131,7 +138,8 @@ export default {
         queryType: '1',
         queryTerminal: 10000,
         start: `${(page - 1) * pageSize}`,
-        count: `${pageSize}`
+        count: `${pageSize}`,
+        mapBound: this.mapBound
       };
       if (this.openPurePoiSearch) {
         params.queryType = '7';

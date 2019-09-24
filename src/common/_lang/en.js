@@ -212,7 +212,7 @@ export default {
   tdtSearch: {
     phone: 'Tell',
     address: 'Address',
-    noData: 'null',
+    noData: 'No data',
     transport: 'traffic'
   },
   tdtMapSwitcher: {
