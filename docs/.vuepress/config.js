@@ -128,10 +128,16 @@ module.exports = {
                     'control/legend',
                     'control/mini-map',
                     'control/pan',
-                    // 'control/zoom',
-                    // 'control/scale',
-                    // 'control/measure'
+                    'control/zoom',
+                    'control/scale',
+                    'control/measure',
+                    'control/draw'
                   ]
+                },
+                {
+                  title: '天地图子组件',
+                  collapsable: false,
+                  children: ['tdt/tdt-route', 'tdt/tdt-search']
                 },
                 {
                   title: '可视化组件',
