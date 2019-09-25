@@ -137,17 +137,17 @@ module.exports = {
                   title: '可视化组件',
                   collapsable: false,
                   children: ['layer/animate-marker']
+                },
+                {
+                  title: '图表组件',
+                  collapsable: false,
+                  children: ['chart/echart', 'chart/liquid', 'chart/progress']
+                },
+                {
+                  title: '基础组件',
+                  collapsable: false,
+                  children: ['common/time-text', 'common/text', 'common/indicator', 'common/icon']
                 }
-                // {
-                //   title: '图表组件',
-                //   collapsable: false,
-                //   children: ['chart/echart', 'chart/liquid', 'chart/progress']
-                // },
-                // {
-                //   title: '基础组件',
-                //   collapsable: false,
-                //   children: ['common/time-text', 'common/text', 'common/indicator', 'common/icon']
-                // }
               ]
             }
           ]

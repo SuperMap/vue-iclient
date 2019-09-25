@@ -10,14 +10,14 @@
 
 ### Attributes
 
-| 参数         | 说明       | 类型              | 可选值                                                                          | 默认值            |
-| :----------- | :--------- | :---------------- | :------------------------------------------------------------------------------ | :---------------- |
-| features     | 图层数据   | FeatureCollection | -                                                                               | -                 |
-| type         | 图层类型   | string            | rotatingAperture/haloRing/breathingAperture/diffusedAperture/rotatingTextBorder | breathingAperture |
-| width        | 点宽度     | number            | -                                                                               | -                 |
-| height       | 点高度     | number            | -                                                                               | -                 |
-| colors       | 颜色       | [string, string]  | -                                                                               | -                 |
-| textFontSize | 字体大小   | number            | -                                                                               | 14                |
-| textColor    | 字体颜色   | string            | -                                                                               | #fff              |
-| textField    | 显示字段   | string            | -                                                                               | -                 |
-| fitBounds    | 是否自适应 | boolean           | -                                                                               | false             |
+| 参数         | 说明       | 类型              | 可选值                                                                                                | 默认值              |
+| :----------- | :--------- | :---------------- | :---------------------------------------------------------------------------------------------------- | :------------------ |
+| features     | 图层数据   | FeatureCollection | -                                                                                                     | -                   |
+| type         | 图层类型   | string            | 'rotatingAperture' \| 'haloRing' \| 'breathingAperture' \| 'diffusedAperture' \| 'rotatingTextBorder' | 'breathingAperture' |
+| width        | 点宽度     | number            | -                                                                                                     | -                   |
+| height       | 点高度     | number            | -                                                                                                     | -                   |
+| colors       | 颜色       | [string, string]  | -                                                                                                     | -                   |
+| textFontSize | 字体大小   | number            | -                                                                                                     | 14                  |
+| textColor    | 字体颜色   | string            | -                                                                                                     | '#fff'                |
+| textField    | 显示字段   | string            | -                                                                                                     | -                   |
+| fitBounds    | 是否自适应 | boolean           | -                                                                                                     | false               |

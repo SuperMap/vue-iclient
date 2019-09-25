@@ -69,7 +69,7 @@ export default {
 
 | 参数       | 说明                                                                       | 类型    | 可选值 | 默认值 |
 | :--------- | :------------------------------------------------------------------------- | :------ | :----- | :----- |
-| mapOptions | [MapboxGL map options 对象](https://docs.mapbox.com/mapbox-gl-js/api/#map) | Object  | -      | -      |
+| mapOptions | [MapboxGL map options 对象](https://docs.mapbox.com/mapbox-gl-js/api/#map) | object  | -      | -      |
 | autoresize | 用来指定 webMap 实例在组件根元素尺寸变化时是否需要自动进行重绘             | boolean | -      | true   |
 
 <!-- ## 子组件
