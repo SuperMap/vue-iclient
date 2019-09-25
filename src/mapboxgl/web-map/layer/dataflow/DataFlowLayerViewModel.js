@@ -1,6 +1,6 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import cloneDeep from 'lodash.clonedeep';
-import '../../../../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min';
+import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 /**
  * @class DataFlowLayerViewModel
  * @category ViewModel

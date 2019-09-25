@@ -12,7 +12,7 @@ localVue.use(Icon);
 localVue.use(Button);
 
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient10-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
 
 describe('Pan.vue', () => {
 

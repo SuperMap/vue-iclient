@@ -11,7 +11,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const outputFileName = 'iclient10-mapboxgl-vue';
+const outputFileName = 'iclient-mapboxgl-vue';
 const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : require('../config/prod.env');
 
 const isMinify = process.argv.includes('-p');
@@ -111,12 +111,12 @@ const webpackConfig = merge(baseWebpackConfig, {
           amd: '../static/libs/echarts-layer/EchartsLayer.js'
         });
       }
-      if (/\/static\/libs\/iclient-mapboxgl\/iclient10-mapboxgl/.test(request)) {
+      if (/\/static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
         return callback(null, {
           root: 'SuperMap',
-          commonjs: '../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js',
-          commonjs2: '../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js',
-          amd: '../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js'
+          commonjs: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+          commonjs2: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+          amd: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
         });
       }
       callback();

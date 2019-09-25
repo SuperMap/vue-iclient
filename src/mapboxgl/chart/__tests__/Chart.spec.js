@@ -4,7 +4,7 @@ import SmChart from '../Chart.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 config.stubs.transition = false
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance.js', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient10-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
 
 
 describe('Chart', () => {

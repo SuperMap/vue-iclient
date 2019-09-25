@@ -1,5 +1,5 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min';
+import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class LabelThemeLayerViewModel extends mapboxgl.Evented {
   constructor(map, themeProps) {

@@ -1,7 +1,7 @@
 import iServerRestService from './iServerRestService';
 import { isXField, isYField } from '../../common/_utils/util';
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 /**
  * @class iPortalDataService
