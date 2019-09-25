@@ -152,7 +152,7 @@ module.exports = {
                 {
                   title: '基础组件',
                   collapsable: false,
-                  children: ['common/time-text', 'common/text', 'common/indicator', 'common/icon']
+                  children: ['common/time-text', 'common/text', 'common/indicator', 'common/icon', 'common/image', 'common/iframe', 'common/text-list']
                 }
               ]
             }
