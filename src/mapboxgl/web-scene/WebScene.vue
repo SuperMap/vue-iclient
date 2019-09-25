@@ -18,6 +18,7 @@ class SmWebScene extends Vue {
   @Prop() sceneUrl: string;
 
   @Prop() options: {
+    withCredentials: boolean;
     position?: { x: number; y: number; z: number };
     scanEffect?: {
       status?: boolean;

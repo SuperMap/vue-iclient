@@ -9,6 +9,7 @@ interface scanEffect {
   speed?: number;
 }
 interface cesiumOptions {
+  withCredentials?: boolean;
   position?: { x: number; y: number; z: number };
   scanEffect?: scanEffect;
 }
@@ -23,13 +24,15 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
 
   scanEffect: scanEffect;
 
+  withCredentials: boolean;
+
   fire: any;
 
   on: any;
 
   position: any;
 
-  viewer:any;
+  viewer: any;
 
   constructor(Cesium, viewer, sceneUrl, options: cesiumOptions = {}) {
     super();
@@ -49,6 +52,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
       period: 2000,
       speed: 500
     };
+    this.withCredentials = options.withCredentials || false;
     this.position = options.position || {};
     this.setSceneUrl(sceneUrl);
   }
@@ -98,7 +102,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   }
 
   private _getSceneInfo(url) {
-    SuperMap.FetchRequest.get(url + '.json')
+    SuperMap.FetchRequest.get(url + '.json', {}, { withCredentials: this.withCredentials })
       .then(response => {
         return response.json();
       })
