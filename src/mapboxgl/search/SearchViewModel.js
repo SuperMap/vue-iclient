@@ -1,7 +1,7 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
-import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
+import '../../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min';
 import iPortalDataService from '../_utils/iPortalDataService';
 import iServerRestService from '../_utils/iServerRestService';
 import { geti18n } from '../../common/_lang';

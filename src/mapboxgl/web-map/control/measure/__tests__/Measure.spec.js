@@ -16,7 +16,7 @@ localVue.use(Select);
 
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance.js', () => require('@mocks/mapboxgl').mapboxgl);
 jest.mock('@mapbox/mapbox-gl-draw', () => require('@mocks/mapboxgl_draw').MapboxDraw);
-jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient10-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
 
 describe('mesure', () => {
     let mapWrapper;

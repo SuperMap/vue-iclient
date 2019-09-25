@@ -3,7 +3,7 @@ import SmWebMap from '../WebMap';
 import mapboxgl from "@libs/mapboxgl/mapbox-gl-enhance.js";
 // jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl)
-jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient10-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
 import { Icon, Card, Collapse, Button } from 'ant-design-vue';
 
 const localVue = createLocalVue()

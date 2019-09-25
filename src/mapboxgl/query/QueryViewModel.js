@@ -4,7 +4,7 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 // import RestMapParameter from '../../common/_types/RestMapParameter';
 import center from '@turf/center';
 import { geti18n } from '../../common/_lang';
-import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
+import '../../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min';
 /**
  * @class QueryViewModel
  * @classdesc 查询组件功能类。

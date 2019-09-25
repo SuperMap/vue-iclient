@@ -47,12 +47,12 @@ module.exports = {
             amd: '../../static/libs/echarts-layer/EchartsLayer.js'
           });
         }
-        if (/\/static\/libs\/iclient-mapboxgl\/iclient9-mapboxgl/.test(request)) {
+        if (/\/static\/libs\/iclient-mapboxgl\/iclient10-mapboxgl/.test(request)) {
           return callback(null, {
             root: 'SuperMap',
-            commonjs: '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
-            commonjs2: '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
-            amd: '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js'
+            commonjs: '../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js',
+            commonjs2: '../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js',
+            amd: '../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js'
           });
         }
         callback();

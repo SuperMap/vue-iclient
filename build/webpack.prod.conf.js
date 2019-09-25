@@ -11,7 +11,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const outputFileName = 'iclient9-mapboxgl-vue';
+const outputFileName = 'iclient10-mapboxgl-vue';
 const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : require('../config/prod.env');
 
 const isMinify = process.argv.includes('-p');
@@ -90,33 +90,33 @@ const webpackConfig = merge(baseWebpackConfig, {
       if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
         return callback(null, {
           root: 'mapboxgl',
-          commonjs: './libs/mapboxgl/mapbox-gl-enhance.js',
-          commonjs2: './libs/mapboxgl/mapbox-gl-enhance.js',
-          amd: './libs/mapboxgl/mapbox-gl-enhance.js'
+          commonjs: './static/libs/mapboxgl/mapbox-gl-enhance.js',
+          commonjs2: './static/libs/mapboxgl/mapbox-gl-enhance.js',
+          amd: './static/libs/mapboxgl/mapbox-gl-enhance.js'
         });
       }
       if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
         return callback(null, {
           root: 'DeckGL',
-          commonjs: './libs/deckgl/deck.gl.min.js',
-          commonjs2: './libs/deckgl/deck.gl.min.js',
-          amd: './libs/deckgl/deck.gl.min.js'
+          commonjs: './static/libs/deckgl/deck.gl.min.js',
+          commonjs2: './static/libs/deckgl/deck.gl.min.js',
+          amd: './static/libs/deckgl/deck.gl.min.js'
         });
       }
       if (/\/static\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
         return callback(null, {
           root: 'EchartsLayer',
-          commonjs: './libs/echarts-layer/EchartsLayer.js',
-          commonjs2: './libs/echarts-layer/EchartsLayer.js',
-          amd: './libs/echarts-layer/EchartsLayer.js'
+          commonjs: './static/libs/echarts-layer/EchartsLayer.js',
+          commonjs2: './static/libs/echarts-layer/EchartsLayer.js',
+          amd: './static/libs/echarts-layer/EchartsLayer.js'
         });
       }
-      if (/\/static\/libs\/iclient-mapboxgl\/iclient9-mapboxgl/.test(request)) {
+      if (/\/static\/libs\/iclient-mapboxgl\/iclient10-mapboxgl/.test(request)) {
         return callback(null, {
           root: 'SuperMap',
-          commonjs: './libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
-          commonjs2: './libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
-          amd: './libs/iclient-mapboxgl/iclient9-mapboxgl.min.js'
+          commonjs: './static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js',
+          commonjs2: './static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js',
+          amd: './static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js'
         });
       }
       callback();
@@ -144,7 +144,7 @@ const webpackConfig = merge(baseWebpackConfig, {
    `),
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../static'),
+        from: path.resolve(__dirname, '../static/index.js'),
         to: config.build.assetsSubDirectory,
         ignore: ['libs/Cesium/**/*']
       }
