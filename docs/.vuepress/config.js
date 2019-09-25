@@ -47,12 +47,12 @@ module.exports = {
             amd: '../../static/libs/echarts-layer/EchartsLayer.js'
           });
         }
-        if (/\/static\/libs\/iclient-mapboxgl\/iclient10-mapboxgl/.test(request)) {
+        if (/\/static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
           return callback(null, {
             root: 'SuperMap',
-            commonjs: '../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js',
-            commonjs2: '../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js',
-            amd: '../../static/libs/iclient-mapboxgl/iclient10-mapboxgl.min.js'
+            commonjs: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+            commonjs2: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+            amd: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
           });
         }
         callback();
@@ -108,12 +108,7 @@ module.exports = {
             {
               title: '开发指南',
               collapsable: false,
-              children: [
-                'guide/installation',
-                'guide/quick-start'
-                // 'guide/i18n',
-                // 'guide/custom-theme'
-              ]
+              children: ['guide/installation', 'guide/quick-start', 'guide/i18n', 'guide/custom-theme']
             },
             {
               title: '组件',
@@ -142,7 +137,7 @@ module.exports = {
                 {
                   title: '可视化组件',
                   collapsable: false,
-                  children: ['layer/animate-marker']
+                  children: ['layer/geojson', 'layer/raster-tile', 'layer/vector-tile', 'layer/animate-marker']
                 },
                 {
                   title: '图表组件',
@@ -152,7 +147,15 @@ module.exports = {
                 {
                   title: '基础组件',
                   collapsable: false,
-                  children: ['common/time-text', 'common/text', 'common/indicator', 'common/icon', 'common/image', 'common/iframe', 'common/text-list']
+                  children: [
+                    'common/time-text',
+                    'common/text',
+                    'common/indicator',
+                    'common/icon',
+                    'common/image',
+                    'common/iframe',
+                    'common/text-list'
+                  ]
                 }
               ]
             }
