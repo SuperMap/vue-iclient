@@ -10,7 +10,7 @@ const dateTimeFormats = {
   zh: zhLocale.dateTimeFormat
 };
 let i18n = {};
-
+let rooti18n;
 const messages = {
   en: {
     ...enLocale
@@ -40,7 +40,7 @@ export function getLanguage() {
   return 'zh';
 }
 export function geti18n(n) {
-  return i18n;
+  return rooti18n || i18n;
 }
 export function setLocale(locales) {
   i18n.mergeLocaleMessage && i18n.mergeLocaleMessage(i18n.locale, locales);
@@ -62,7 +62,10 @@ export function initi18n(Vue, config) {
   } else if (!Vue.prototype.hasOwnProperty('$i18n')) {
     Object.defineProperty(Vue.prototype, '$i18n', {
       get: function get() {
-        return i18n;
+        if (!rooti18n && this.$root && this.$root.$options.i18n) {
+          rooti18n = this.$root.$options.i18n;
+        }
+        return rooti18n || i18n;
       }
     });
     Vue.use(VueI18n);
@@ -75,8 +78,6 @@ export function initi18n(Vue, config) {
   }
   if (config.locale) {
     setLocale(config.locale);
-  } else {
-    setLocale(lang[getLanguage()]);
   }
 }
 
