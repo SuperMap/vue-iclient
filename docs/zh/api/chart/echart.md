@@ -1,4 +1,12 @@
+---
+pageClass: chart
+---
+
 # ECharts 图表
+
+::: tip
+该组件是基于 [vue-echarts](https://github.com/ecomfe/vue-echarts)
+:::
 
 <sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_chart_vue.html"></sm-iframe>
 
@@ -28,8 +36,6 @@
 | group          | 实例的分组，会自动绑定到 ECharts 组件的同名属性上                                                                                                                                                                                          | string           | -                                                            | -                                                         |
 | manualUpdate   | 在性能敏感（数据量很大）的场景下，我们最好对于 options prop 绕过 Vue 的响应式系统。当将 manual-update prop 指定为 true 且不传入 options prop 时，数据将不会被监听。然后，你需要用 ref 获取组件实例以后手动调用 mergeOptions 方法来更新图表 | boolean          | -                                                            | false                                                     |
 | autoPlay       | 是否自动播放。图表类型为 pie 时生效                                                                                                                                                                                                        | boolean          | -                                                            | false                                                     |
-
-> 该组件是基于 [vue-echarts](https://github.com/ecomfe/vue-echarts) 二次开发
 
 ### dataset
 

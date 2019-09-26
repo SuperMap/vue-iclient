@@ -115,6 +115,7 @@ module.exports = {
               collapsable: false,
               children: [
                 'web-map/map',
+                'web-scene/scene',
                 {
                   title: '地图子组件',
                   collapsable: false,
@@ -126,7 +127,9 @@ module.exports = {
                     'control/zoom',
                     'control/scale',
                     'control/measure',
-                    'control/draw'
+                    'control/draw',
+                    'control/query',
+                    'control/search'
                   ]
                 },
                 {
