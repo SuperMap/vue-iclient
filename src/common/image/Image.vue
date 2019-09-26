@@ -1,6 +1,10 @@
 <template>
-  <div class="sm-component-image" :style="[getBackgroundStyle]">
-    <a class="sm-component-image__link" :href="href" :target="target">
+  <div class="sm-component-image" :style="[getBackgroundStyle, getTextColorStyle]">
+    <a
+      :class="['sm-component-image__link', realHref ? '': 'sm-component-image__noLink']"
+      :href="realHref"
+      :target="target"
+    >
       <div v-if="src" class="sm-component-image__content" :style="[repeatStyle,imgUrl]"></div>
       <i v-else class="sm-components-icons-x-bmp sm-component-image__defaultImg"></i>
     </a>
@@ -9,6 +13,7 @@
 
 <script>
 import Theme from '../_mixin/theme';
+import { parseUrl } from '../_utils/util';
 
 export default {
   name: 'SmImage',
@@ -64,6 +69,13 @@ export default {
       return {
         backgroundImage: `url(${this.src})`
       };
+    },
+    realHref() {
+      let href = this.href.replace(/ /g, '');
+      if (href && !parseUrl(href)) {
+        return `http://${href}`;
+      }
+      return href;
     }
   }
 };

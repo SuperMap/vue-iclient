@@ -79,3 +79,8 @@ export function getColorWithOpacity(color, opacity) {
   let newColor = colorcolor(color, 'rgb');
   return 'rgba' + newColor.substring(3, newColor.length - 1) + `,${opacity})`;
 }
+
+export function parseUrl(url) {
+  const urlRe = /^(\w+):\/\/([^/?]*)(\/[^?]+)?\??(.+)?/;
+  return url.match(urlRe);
+}
