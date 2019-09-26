@@ -8,7 +8,7 @@
   :value="0.3"
   :waveCount="1"
   position="bottom-right"
-/>
+></sm-liquid-fill>
 ```
 
 ### Attributes

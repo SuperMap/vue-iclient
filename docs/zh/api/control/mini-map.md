@@ -10,7 +10,8 @@
 
 ### Attributes
 
-| 参数       | 说明               | 类型    | 可选值 | 默认值                       |
-| :--------- | :----------------- | :------ | :----- | :--------------------------- |
-| iconClass  | 收缩按钮 Icon 类名 | string  | -      | 'sm-components-icons-return' |
-| autoRotate | 是否自动旋转       | boolean | -      | true                         |
+| 参数       | 说明                              | 类型    | 可选值                                                       | 默认值                       |
+| :--------- | :-------------------------------- | :------ | :----------------------------------------------------------- | :--------------------------- |
+| iconClass  | 收缩按钮 Icon 类名                | string  | -                                                            | 'sm-components-icons-return' |
+| autoRotate | 是否自动旋转                      | boolean | -                                                            | true                         |
+| position   | 显示位置（添加成 control 时生效） | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | -                            |

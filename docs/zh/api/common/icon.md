@@ -1,14 +1,7 @@
 # 图标
 
 ```vue
-<sm-icon
-  title="人均收入"
-  unit="元"
-  indicatorColor="red"
-  textColor="red"
-  :num="12323412"
-  fontSize="18"
-></sm-indicator>
+<sm-icon icon-class="marker-layer" style="color: rgb(63, 177, 227;"></sm-icon>
 ```
 
 ### Attributes
