@@ -132,7 +132,7 @@ module.exports = {
                 {
                   title: '天地图子组件',
                   collapsable: false,
-                  children: ['tdt/tdt-route', 'tdt/tdt-search']
+                  children: ['tdt/tdt-route', 'tdt/tdt-search', 'tdt/tdt-map-switcher']
                 },
                 {
                   title: '可视化组件',

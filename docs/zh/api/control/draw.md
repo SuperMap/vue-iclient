@@ -14,6 +14,7 @@
 | :--------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ | :------ | :----------------------------------------------------------- | :------------------------- |
 | iconClass  | 收缩按钮 Icon 类名                                                                                                                                      | string  | -                                                            | 'sm-components-icons-edit' |
 | collapsed  | 是否折叠                                                                                                                                                | boolean | -                                                            | true                       |
+| headerName | 标题名                            | string  | -                                           | '绘制'     |
 | position   | 显示位置（添加成 control 时生效）                                                                                                                       | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | -                          |
 | layerStyle | 绘制图层的样式 | [CircleStyle](/zh/api/common-types/common-types.md#circlestyle) \| [LineStyle](/zh/api/common-types/common-types.md#linestyle) \| [FillStyle](/zh/api/common-types/common-types.md#fillstyle)  | -                                                            | -                          |
 
