@@ -13,7 +13,7 @@
 | 参数         | 说明       | 类型              | 可选值                                                                                                | 默认值              |
 | :----------- | :--------- | :---------------- | :---------------------------------------------------------------------------------------------------- | :------------------ |
 | features     | 图层数据   | FeatureCollection | -                                                                                                     | -                   |
-| type         | 图层类型   | string            | 'rotatingAperture' \| 'haloRing' \| 'breathingAperture' \| 'diffusedAperture' \| 'rotatingTextBorder' | 'breathingAperture' |
+| type         | 图层类型   | string            | 'rotatingAperture' \| 'haloRing' \| 'breathingAperture' \| 'diffusedAperture' \| 'rotatingTextBorder' \| 'fluorescence' | 'breathingAperture' |
 | width        | 点宽度     | number            | -                                                                                                     | -                   |
 | height       | 点高度     | number            | -                                                                                                     | -                   |
 | colors       | 颜色       | [string, string]  | -                                                                                                     | -                   |

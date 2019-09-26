@@ -10,11 +10,11 @@
 
 ### Attributes
 
-| 参数       | 说明                              | 类型    | 可选值                                                       | 默认值                             |
-| :--------- | :-------------------------------- | :------ | :----------------------------------------------------------- | :--------------------------------- |
-| iconClass           | 收缩按钮 Icon 类名                                     | string  | -                                                            | 'sm-components-icons-baselayer' |
-| collapsed           | 是否折叠                                               | boolean | -                                                            | true                        |
-| autoRotate          | 是否自动旋转                                           | boolean | -                                                            | false                        |
-| headerName          | 标题名                                                 | string  | -                                                            | '地图切换'                      |
-| position            | 显示位置（添加成 control 时生效）                      | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left'                          |
-| data       | 地图切换配置                      | object  | -                                                            | {select: '', label: false, tk: ''} |
+| 参数       | 说明                                                                            | 类型    | 可选值                                                       | 默认值                             |
+| :--------- | :------------------------------------------------------------------------------ | :------ | :----------------------------------------------------------- | :--------------------------------- |
+| iconClass  | 收缩按钮 Icon 类名                                                              | string  | -                                                            | 'sm-components-icons-baselayer'    |
+| collapsed  | 是否折叠                                                                        | boolean | -                                                            | true                               |
+| autoRotate | 是否自动旋转                                                                    | boolean | -                                                            | false                              |
+| headerName | 标题名                                                                          | string  | -                                                            | '地图切换'                         |
+| position   | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left'                         |
+| data       | 地图切换配置                                                                    | object  | -                                                            | {select: '', label: false, tk: ''} |

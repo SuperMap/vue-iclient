@@ -39,10 +39,7 @@ npm install @supermap/vue-iclient
 
 ```html
 <link href="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css" rel="stylesheet" />
-<script
-  type="text/javascript"
-  src="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js"
-></script>
+<script type="text/javascript" src="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js" ></script>
 ```
 
 - 引入 iclient-mapboxgl JS 和 CSS 文件
@@ -70,26 +67,14 @@ npm install @supermap/vue-iclient
     <meta charset="UTF-8" />
     <title>vue-iclient example</title>
     <link href="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.css" rel="stylesheet" />
-    <link
-      href="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css"
-      rel="stylesheet"
-    />
+    <link href="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css" rel="stylesheet" />
     <link href="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
     <link href="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.js"></script>
-    <script
-      type="text/javascript"
-      src="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-es6.min.js"
-    ></script>
-    <script
-      type="text/javascript"
-      src="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-vue.min.js"
-    ></script>
+    <script type="text/javascript" src="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js" ></script>
+    <script type="text/javascript" src="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-es6.min.js" ></script>
+    <script type="text/javascript" src="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-vue.min.js" ></script>
     <style>
       #main {
         margin: 0 auto;
@@ -98,7 +83,7 @@ npm install @supermap/vue-iclient
       }
     </style>
   </head>
-  <body style=" margin: 0; overflow: hidden; background: #fff; width: 100%; height:100%; position: absolute; top: 0;">
+  <body style="margin: 0; overflow: hidden; background: #fff; width: 100%; height:100%; position: absolute; top: 0;">
     <div id="main">
       <sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980"></sm-web-map>
     </div>

@@ -21,13 +21,21 @@ VueiClient.setTheme({ theme: 'light' });
 
 ### 使用自定义主题
 
-你需要定义一个 theme 对象，包含 `textColor` `background` `colorGroup` 三个属性。如下所示：
+你需要定义一个 theme 对象，包含 `textColor` `background` `colorGroup` 三个属性。
+
+| 参数       | 说明     | 类型      | 可选值 | 默认值 |
+| :--------- | :------- | :-------- | :----- | :----- |
+| textColor  | 字体颜色 | string    | -      | -      |
+| background | 背景颜色 | string    | -      | -      |
+| colorGroup | 颜色数组 | string[ ] | -      | -      |
+
+如下例所示：
 
 ```js
 let theme = {
   textColor: '#eee',
   background: 'rgba(0,0,0,0)',
-  colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
+  colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad']
 };
 
 Vue.use(VueiClient, { theme });

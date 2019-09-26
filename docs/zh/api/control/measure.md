@@ -10,14 +10,14 @@
 
 ### Attributes
 
-| 参数                | 说明                                                   | 类型    | 可选值                                                       | 默认值                      |
-| :------------------ | :----------------------------------------------------- | :------ | :----------------------------------------------------------- | :-------------------------- |
-| iconClass           | 收缩按钮 Icon 类名                                     | string  | -                                                            | 'sm-components-icons-measure' |
-| collapsed           | 是否折叠                                               | boolean | -                                                            | true                        |
-| autoRotate          | 是否自动旋转                                           | boolean | -                                                            | true                        |
-| headerName          | 标题名                                                 | string  | -                                                            | '量算'                      |
-| position            | 显示位置（添加成 control 时生效）                      | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | -                           |
-| showUnitSelect      | 配置单位选择框是否显示，若不显示，则显示对应的默认单位 | boolean | -                                                            | true                        |
-| distanceDefaultUnit | 距离默认单位                                           | string  | -                                                            | 'kilometers'                  |
-| areaDefaultUnit     | 面积默认单位                                           | string  | -                                                            | 'kilometers'                  |
-| continueDraw        | 是否开启多绘制                                         | boolean | -                                                            | true                        |
+| 参数                | 说明                                                                            | 类型    | 可选值                                                       | 默认值                        |
+| :------------------ | :------------------------------------------------------------------------------ | :------ | :----------------------------------------------------------- | :---------------------------- |
+| iconClass           | 收缩按钮 Icon 类名                                                              | string  | -                                                            | 'sm-components-icons-measure' |
+| collapsed           | 是否折叠                                                                        | boolean | -                                                            | true                          |
+| autoRotate          | 是否自动旋转                                                                    | boolean | -                                                            | true                          |
+| headerName          | 标题名                                                                          | string  | -                                                            | '量算'                        |
+| position            | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | -                             |
+| showUnitSelect      | 配置单位选择框是否显示，若不显示，则显示对应的默认单位                          | boolean | -                                                            | true                          |
+| distanceDefaultUnit | 距离默认单位                                                                    | string  | -                                                            | 'kilometers'                  |
+| areaDefaultUnit     | 面积默认单位                                                                    | string  | -                                                            | 'kilometers'                  |
+| continueDraw        | 是否开启多绘制                                                                  | boolean | -                                                            | true                          |
