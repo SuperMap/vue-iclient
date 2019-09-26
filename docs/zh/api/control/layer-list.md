@@ -14,5 +14,5 @@
 | :--------- | :-------------------------------- | :------ | :----------------------------------------------------------- | :-------------------------------- |
 | iconClass  | 收缩按钮 Icon 类名                | string  | -                                                            | 'sm-components-icons-layer-style' |
 | headerName | 标题名                            | string  | -                                                            | '图层'                            |
-| autoRotate | 收缩按钮是否自动旋转              | boolean | -                                                            | false                             |
+| collapsed  | 是否折叠                          | boolean | -                                                            | true                              |
 | position   | 显示位置（添加成 control 时生效） | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | -                                 |
