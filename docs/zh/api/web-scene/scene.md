@@ -4,7 +4,7 @@ pageClass: web-scene
 
 # 三维场景
 
-三维场景组件，支持加载 iPortal/iServer 三维场景。
+三维场景组件，支持加载 SuperMap iPortal 三维场景和 SuperMap iServer 三维场景。
 
 ::: tip
 该组件基于 [vue-cesium](https://github.com/zouyaoji/vue-cesium)
@@ -27,10 +27,10 @@ Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路�
 
 ### Attributes
 
-| 参数     | 说明                     | 类型                | 可选值 | 默认值 |
-| :------- | :----------------------- | :------------------ | :----- | :----- |
-| sceneUrl | iPortal/iServer 场景地址 | string              | -      | -      |
-| options  | 可选参数                 | [options](#options) | -      | -      |
+| 参数     | 说明                                              | 类型                | 可选值 | 默认值 |
+| :------- | :------------------------------------------------ | :------------------ | :----- | :----- |
+| sceneUrl | SuperMap iPortal 场景或 SuperMap iServer 场景地址 | string              | -      | -      |
+| options  | 可选参数                                          | [options](#options) | -      | -      |
 
 ### options
 
