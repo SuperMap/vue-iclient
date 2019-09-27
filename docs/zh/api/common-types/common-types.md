@@ -39,6 +39,15 @@ let CircleStyle = new VueiClient.commontypes.CircleStyle();
 | paint  | MapboxGL 点图层 Paint 配置  | [pain](https://docs.mapbox.com/mapbox-gl-js/style-spec/#paint-property)    | -      | -      |
 | layout | MapboxGL 点图层 Layout 配置 | [layout](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
 
+## HeatMapStyle
+
+热力图样式
+
+| 参数   | 说明                        | 类型                                                                       | 可选值 | 默认值 |
+| :----- | :-------------------------- | :------------------------------------------------------------------------- | :----- | :----- |
+| paint  | MapboxGL 点图层 Paint 配置  | [pain](https://docs.mapbox.com/mapbox-gl-js/style-spec/#paint-property)    | -      | -      |
+| layout | MapboxGL 点图层 Layout 配置 | [layout](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
+
 ## RestMapParameter
 
 | 参数            | 说明           | 类型   | 可选值 | 默认值                   |

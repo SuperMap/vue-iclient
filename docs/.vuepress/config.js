@@ -129,7 +129,8 @@ module.exports = {
                     'control/measure',
                     'control/draw',
                     'control/query',
-                    'control/search'
+                    'control/search',
+                    'control/open-file'
                   ]
                 },
                 {
@@ -140,7 +141,24 @@ module.exports = {
                 {
                   title: '可视化组件',
                   collapsable: false,
-                  children: ['layer/geojson', 'layer/raster-tile', 'layer/vector-tile', 'layer/animate-marker']
+                  children: [
+                    'layer/geojson',
+                    'layer/raster-tile',
+                    'layer/vector-tile',
+                    'layer/animate-marker',
+                    'layer/fire',
+                    'layer/heatmap',
+                    'layer/cluster',
+                    'layer/unique-theme',
+                    'layer/range-theme',
+                    'layer/rank-symbol-theme',
+                    'layer/label-theme',
+                    'layer/graph-theme',
+                    'layer/mapv',
+                    'layer/echarts',
+                    'layer/deckgl',
+                    'layer/dataflow'
+                  ]
                 },
                 {
                   title: '图表组件',
