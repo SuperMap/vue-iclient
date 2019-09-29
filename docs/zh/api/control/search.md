@@ -2,7 +2,7 @@
 
 POI 搜索组件，搜索源支持 SuperMap online 本地搜索服务、SuperMap iServer 地图服务、SuperMap iServer 数据服务、SuperMap iServer 地址匹配服务、SuperMap iPortal 资源中心数据、地图矢量叠加图层。
 
-<sm-iframe src="http://iclient.supermap.io/dev/examples/component/components_search_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_search_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980">

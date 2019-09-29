@@ -1,6 +1,6 @@
 # 图表专题图
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_graph_theme_layer_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_graph_theme_layer_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map server-url='http://support.supermap.com.cn:8092/' map-id="676816598" @load="mapIsLoaded">

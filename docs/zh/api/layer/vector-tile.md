@@ -1,6 +1,6 @@
 # 矢量瓦片图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_vector_tile_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_vector_tile_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="676816598">

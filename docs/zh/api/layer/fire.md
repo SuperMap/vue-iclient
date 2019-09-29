@@ -1,6 +1,6 @@
 # 动态火焰图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_fire_layer_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_fire_layer_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map :map-options="mapOptions" style="background:black">

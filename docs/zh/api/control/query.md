@@ -2,7 +2,7 @@
 
 数据查询组件，支持从 SuperMap iServer 地图服务，SuperMap iServer 数据服务，SuperMap iPortal 资源中心数据（该数据需要发布成服务）中查询数据。
 
-<sm-iframe src="http://iclient.supermap.io/dev/examples/component/components_query_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_query_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980">

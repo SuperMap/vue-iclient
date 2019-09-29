@@ -1,6 +1,6 @@
 # MapV 图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_mapv_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_mapv_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map :map-options="mapOptions" @load="addPopup">

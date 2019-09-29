@@ -45,20 +45,20 @@ npm install @supermap/vue-iclient
 - 引入 iclient-mapboxgl JS 和 CSS 文件
 
 ```html
-<link href="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
-<script type="text/javascript" src="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-es6.min.js"></script>
+<link href="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
+<script type="text/javascript" src="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-es6.min.js"></script>
 ```
 
 - 引入 Vue-iClient JS 和 CSS 文件
 
 ```html
-<link href="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
-<script type="text/javascript" src="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-vue.min.js"></script>
+<link href="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
+<script type="text/javascript" src="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.min.js"></script>
 ```
 
 #### 示例
 
-通过引入文件方式可以快速使用 Vue-iClient 写出一个示例，您可以复制下面代码或参考此在线[示例](http://iclient.supermap.io/dev/examples/component/editor.html#components_webmap_vue)。
+通过引入文件方式可以快速使用 Vue-iClient 写出一个示例，您可以复制下面代码或参考此在线[示例](http://iclient.supermap.io/examples/component/editor.html#components_webmap_vue)。
 
 ```html
 <!DOCTYPE html>
@@ -68,13 +68,13 @@ npm install @supermap/vue-iclient
     <title>vue-iclient example</title>
     <link href="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.css" rel="stylesheet" />
     <link href="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css" rel="stylesheet" />
-    <link href="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
-    <link href="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
+    <link href="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
+    <link href="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.js"></script>
     <script type="text/javascript" src="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js" ></script>
-    <script type="text/javascript" src="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-es6.min.js" ></script>
-    <script type="text/javascript" src="http://iclient.supermap.io/dev/dist/mapboxgl/iclient-mapboxgl-vue.min.js" ></script>
+    <script type="text/javascript" src="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-es6.min.js" ></script>
+    <script type="text/javascript" src="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.min.js" ></script>
     <style>
       #main {
         margin: 0 auto;

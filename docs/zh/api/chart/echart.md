@@ -8,7 +8,7 @@ pageClass: chart
 该组件是基于 [vue-echarts](https://github.com/ecomfe/vue-echarts)
 :::
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_chart_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_chart_vue.html"></sm-iframe>
 
 ```vue
 <sm-chart

@@ -1,6 +1,6 @@
 # 等级符号专题图
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_ranksymboltheme_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_ranksymboltheme_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map :map-options="mapOptions" @load="mapIsLoaded">

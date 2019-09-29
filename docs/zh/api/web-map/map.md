@@ -7,7 +7,7 @@ Web Map 地图组件。支持 MapboxGL Map，和对接 iPortal/Online 地图。<
 
 ## 加载 iPortal 地图
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_webmap_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_webmap_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980"></sm-web-map>
@@ -28,7 +28,7 @@ Web Map 地图组件。支持 MapboxGL Map，和对接 iPortal/Online 地图。<
 
 ## 加载 iServer 地图
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_map_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_map_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map :map-options="mapOptions"></sm-web-map>

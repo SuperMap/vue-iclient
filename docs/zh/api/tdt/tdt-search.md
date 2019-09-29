@@ -1,6 +1,6 @@
 # POI 搜索
 
-<!-- <sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_webmap_vue.html"></sm-iframe> -->
+<!-- <sm-iframe src="http://iclient.supermap.io/examples/component/components_webmap_vue.html"></sm-iframe> -->
 
 ```vue
 <sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980">
