@@ -1,38 +1,61 @@
 <template>
-  <div class="sm-component-indicator" :style="[getBackgroundStyle]">
+  <div class="sm-component-indicator" :style="[getBackgroundStyle,{'flex-direction':direction}]">
     <div class="sm-component-indicator__head">
       <span
+        v-show="showTitleUnit"
         class="sm-component-indicator__title"
         :style="[unit_titleStyle, getTextColorStyle]"
-      >{{ title }}</span>
+      >{{ titleData }}</span>
     </div>
     <div class="sm-component-indicator__content">
+      <span class="sm-component-indicator__num" :style="[indicatorStyle]">
+        <countTo
+          v-if="isNumber(num)"
+          :decimals="calDecimals"
+          :startVal="startData"
+          :endVal="numData"
+          :duration="Number(duration) || 1000"
+          :separator="separator"
+          :numBackground="numBackground"
+          :numSpacing="numSpacing"
+          :separatorBackground="separatorBackground"
+          :fontSize="fontSize"
+        ></countTo>
+        {{ isNumber(num) ? '' : num }}
+      </span>
       <span
-        class="sm-component-indicator__num"
-        :style="[numStyle, indicatorStyle]"
-      >{{ numberSymbol }}</span>
-      <span
+        v-show="showTitleUnit"
         class="sm-component-indicator__unit"
         :style="[unit_titleStyle, getTextColorStyle]"
-      >{{ unit }}</span>
+      >{{ unitData }}</span>
     </div>
   </div>
 </template>
 
 <script>
 import Theme from '../_mixin/theme';
+import Timer from '../_mixin/timer';
+import RestService from '../../mapboxgl/_utils/RestService';
+import CountTo from './CountTo';
 
 export default {
   name: 'SmIndicator',
-  mixins: [Theme],
+  components: {
+    countTo: CountTo
+  },
+  mixins: [Theme, Timer],
   props: {
     title: {
       type: String,
-      default: '指标标题'
+      default() {
+        return this.$t('indicator.title');
+      }
     },
     unit: {
       type: String,
-      default: '单位'
+      default() {
+        return this.$t('indicator.unit');
+      }
     },
     indicatorColor: {
       type: String
@@ -40,55 +63,161 @@ export default {
     fontSize: {
       type: [String, Number]
     },
+    fontWeight: {
+      type: [String, Number],
+      default: 'border'
+    },
     num: {
       type: [Number, String],
       default: 0
+    },
+    url: {
+      type: String
+    },
+    animated: {
+      type: Boolean,
+      default: false
+    },
+    duration: {
+      type: [Number, String],
+      default: 1000
+    },
+    decimals: {
+      type: Number,
+      default: -1
+    },
+    mode: {
+      type: String,
+      default: 'vertical',
+      validator: function(val) {
+        return ['vertical', 'horizontal'];
+      }
+    },
+    separator: {
+      type: String,
+      default: ','
+    },
+    numSpacing: {
+      type: Number,
+      default: 0
+    },
+    numBackground: {
+      type: Object,
+      default: function() {
+        return { color: 'rgba(0, 0, 0, 0)', image: '' };
+      }
+    },
+    separatorBackground: {
+      type: Boolean,
+      default: false
+    },
+    showTitleUnit: {
+      type: Boolean,
+      default: true
     }
+  },
+  data() {
+    return {
+      indicatorColorData: '',
+      titleData: this.title,
+      unitData: this.unit,
+      numData: 0,
+      startData: 0
+    };
   },
   computed: {
-    numberSymbol() {
-      let numberSymbol = this.num;
-      if (this.isNumber(parseFloat(this.num))) {
-        numberSymbol = this.addNumberSymbol(this.num);
-      }
-      return numberSymbol;
-    },
-    numStyle() {
-      return { fontSize: this.fontSize };
-    },
     unit_titleStyle() {
-      const reg = /\d+(\.\d+)?([a-z]+)/gi;
-      const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
       return {
-        fontSize: parseFloat(this.fontSize) * 0.66 + fontUnit
+        fontSize: parseFloat(this.fontSize) * 0.66 + this.fontUnit,
+        fontWeight: this.fontWeight
       };
     },
+    fontUnit() {
+      const reg = /\d+(\.\d+)?([a-z]+)/gi;
+      const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
+      return fontUnit;
+    },
     indicatorStyle() {
-      return (this.indicatorColor && { color: this.indicatorColor }) || this.getColorStyle(0);
+      let style = { color: this.indicatorColorData };
+      typeof this.num === 'string' && (style.fontSize = parseFloat(this.fontSize) + this.fontUnit);
+      return style;
+    },
+    direction() {
+      return { vertical: 'column', horizontal: 'row' }[this.mode];
+    },
+    calDecimals() {
+      if (this.decimals > 0) {
+        return this.decimals;
+      }
+      if (this.numData.toString().split('.')[1]) {
+        return this.numData.toString().split('.')[1].length;
+      }
+      return 0;
     }
   },
-  methods: {
-    // 给数字添加千位符并对.N个0的小数取整
-    addNumberSymbol(num) {
-      num = num.toString();
-      let index = num.lastIndexOf('.');
-      let integer = num;
-      let decimal = '';
-      if (index > 0) {
-        integer = num.substring(0, index);
-        decimal = num.substring(index);
-      }
-      integer = integer.replace(/(\d{1,3})(?=(\d{3})+$)/g, '$1,');
-      num = integer + decimal; // 整数 + .小数
-      if (/\.0+$/.test(decimal)) {
-        // 判断 小数 是否为.N个0的形式
-        num = integer;
-      }
-      return num;
+  watch: {
+    url: {
+      handler(val) {
+        if (val) {
+          this.getData();
+        } else {
+          this.unitData = this.unit;
+          this.changeNumData(this.num);
+          this.titleData = this.title;
+        }
+      },
+      immediate: true
     },
-    // 判断是纯数字
+    indicatorColor(val) {
+      this.indicatorColorData = val;
+    },
+    title(val) {
+      this.titleData = val;
+    },
+    unit(val) {
+      this.unitData = val;
+    },
+    num: {
+      handler(val) {
+        this.changeNumData(val);
+      },
+      immediate: true
+    }
+  },
+  mounted() {
+    this.$on('theme-style-changed', () => {
+      this.indicatorColorData = this.getColor(0);
+    });
+    this.indicatorColorData = this.indicatorColor || this.getColor(0);
+  },
+  beforeDestroy() {
+    this.restService && this.restService.off('getdatasucceeded', this.fetchData);
+  },
+  methods: {
     isNumber(str) {
       return /^\d+$/.test(str);
+    },
+    timing() {
+      this.getData();
+    },
+    fetchData(data) {
+      this.unitData = data.data.unit;
+      this.changeNumData(data.data.num);
+      this.titleData = data.data.title;
+    },
+    getData() {
+      this.getRestService().getData(this.url);
+    },
+    changeNumData(newData) {
+      this.startData = this.animated ? +this.numData : +newData;
+      this.numData = +newData;
+    },
+    getRestService() {
+      if (!this.restService) {
+        this.restService = new RestService();
+        this.restService.on('getdatasucceeded', this.fetchData);
+      }
+      return this.restService;
     }
   }
 };

@@ -1,10 +1,13 @@
 @import "../../_utils/style/mixins/mixins.scss";
+@import "./countTo.scss";
 
 @include b(indicator) {
   display: inline-flex;
-  flex-flow: column nowrap;
+  flex-wrap: nowrap;
+  flex-direction: column;
   justify-content: center;
   color: #595959;
+  padding-left: 10px; 
   @include e(head) {
     display: flex;
     flex-flow: row nowrap;
@@ -14,18 +17,17 @@
   }
   @include e(title) {
     font-size: 16px;
-    line-height: 30px;
+    line-height: 2.3;
     font-weight: bolder;
   }
   @include e(content) {
     display: flex;
     flex-flow: row nowrap;
-    align-items: flex-end;
+    align-items: flex-start;
     font-weight: bolder;
     margin-right: 10px;
   }
   @include e(num) {
-    text-indent: 5px;
     font-weight: bolder;
     color: rgb(73, 155, 255);
     font-size: 22px;
@@ -33,5 +35,6 @@
   @include e(unit) {
     text-indent: 5px;
     font-size: 16px;
+    line-height: 2.3;
   }
 }

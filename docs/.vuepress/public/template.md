@@ -7,7 +7,7 @@
 ## 二级标题
 
 <!-- // 目前用 iframe 加载组件， 后续会直接使用组件加载 -->
-<!-- <sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_webmap_vue.html"></sm-iframe> -->
+<!-- <sm-iframe src="http://iclient.supermap.io/examples/component/components_webmap_vue.html"></sm-iframe> -->
 
 <!-- // 代码使用范例 -->
 <!--

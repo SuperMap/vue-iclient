@@ -1,7 +1,7 @@
 <template>
   <div id="sm-component-search" class="sm-component-search" :style="getTextColorStyle">
     <div
-      v-if="showIcon"
+      v-if="showIcon && mode === 'control'"
       class="sm-component-search__toggle-icon"
       :style="[{'--icon-color--hover': colorGroupsData[0]}, getBackgroundStyle]"
       @click="showSearch = !showSearch; showIcon = !showIcon"
@@ -10,12 +10,13 @@
     </div>
     <transition name="sm-component-zoom-in" @after-leave="showIcon = !showIcon">
       <div
-        v-show="showSearch"
+        v-show="showSearch || mode === 'toolBar'"
         class="sm-component-search__content"
         :style="[{'transform-origin': position.includes('left') ? 'top left' : 'top right'}, getBackgroundStyle]"
       >
         <div class="sm-component-search__input">
           <div
+            v-if="mode === 'control'"
             class="sm-component-search__arrow-icon"
             :style="{ float: position.includes('left') ? 'right' : 'left'}"
             @click="showSearch = !showSearch"
@@ -31,12 +32,16 @@
           </div>
           <a-input
             v-model="searchKey"
-            class="sm-component-search__a-input"
+            :class="['sm-component-search__a-input', { 'toolBar-input': mode === 'toolBar' }]"
             :placeholder="$t('search.inputPlaceHolder')"
             :style="[getBackgroundStyle]"
+            @input="searchInput"
+            @compositionstart="isInputing = true"
+            @compositionend="isInputing = false"
             @pressEnter="searchButtonClicked"
-            @mouseenter="handleInputHover"
-            @mouseleave="handleInputHover"
+            @mouseenter="isHover = !isHover"
+            @mouseleave="isHover = !isHover"
+            @keyup="changeResultHover"
           >
             <a-icon
               v-show="isHover && searchKey"
@@ -44,13 +49,13 @@
               type="close-circle"
               :style="getColorStyle(0)"
               @click="inputValueCleared"
-              @mouseenter="handleInputHover"
-              @mouseleave="handleInputHover"
+              @mouseenter="isHover = !isHover"
+              @mouseleave="isHover = !isHover"
             />
           </a-input>
         </div>
         <div
-          v-show="getResultLength"
+          v-show="resultSuggestions"
           class="sm-component-search__result"
           :style="[getBackgroundStyle]"
         >
@@ -60,27 +65,34 @@
             class="sm-component-search__panel"
           >
             <span
-              v-if="result.source"
+              v-if="result.source && showTitle && result.result.length"
               class="sm-component-search__panel-header"
               :style="getColorStyle(0)"
             >{{ result.source }}</span>
             <div v-if="result.result" class="sm-component-search__panel-body">
-              <ul>
+              <ul :class="{'noMarginBottom': !showTitle}">
                 <li
                   v-for="(item,i) in result.result"
                   :key="i"
-                  :title="item.filterVal || item.address"
-                  @click="searchResultListClicked"
+                  :title="item.filterVal || item.name || item.address"
+                  :class="{'active': keyupHoverInfo.groupIndex === index && keyupHoverInfo.hoverIndex === i }"
+                  @click="searchResultListClicked(item, $event)"
                   @mouseenter="changeChosenResultStyle"
                   @mouseleave="resetChosenResultStyle"
-                >{{ item.filterVal || item.address }}</li>
+                >{{ item.filterVal || item.name || item.address }}</li>
               </ul>
             </div>
           </div>
         </div>
       </div>
     </transition>
-    <TablePopup v-show="false" ref="searchTablePopup" v-bind="tablePopupProps" />
+    <TablePopup
+      v-show="false"
+      ref="searchTablePopup"
+      v-bind="tablePopupProps"
+      :text-color="textColor"
+      :background="background"
+    />
   </div>
 </template>
 <script>
@@ -117,7 +129,7 @@ import TablePopup from '../../common/table-popup/TablePopup';
  * @vue-prop {Object} [onlineLocalSearch] - online 本地搜索配置。
  * @vue-prop {Boolean} [onlineLocalSearch.enable=true] - 是否开启 online 本地搜索。
  * @vue-prop {String} [onlineLocalSearch.city='北京市'] - 搜索的城市。
- * @vue-computed {Number} getResultLength - 获取结果数据长度。
+ * @vue-computed {Number} resultSuggestions - 获取结果数据长度。
  */
 export default {
   name: 'SmSearch',
@@ -165,6 +177,36 @@ export default {
       // validator(value) {
       //   return validators(value, AddressMatchParameter);
       // }
+    },
+    mode: {
+      type: String,
+      default: 'control',
+      validator(mode) {
+        return ['control', 'toolBar'].includes(mode);
+      }
+    },
+    openSearchSuggestion: {
+      type: Boolean,
+      default: false
+    },
+    alwaysCenter: {
+      type: Boolean,
+      default: true
+    },
+    showTitle: {
+      type: Boolean,
+      default: true
+    },
+    showResult: {
+      type: Boolean,
+      default: true
+    },
+    resultRender: {
+      type: Function
+    },
+    collapsed: { // 是否折叠组件
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -174,12 +216,21 @@ export default {
       prefixType: 'search',
       isHover: false,
       tablePopupProps: {},
-      showSearch: false,
-      showIcon: true
+      showSearch: true,
+      showIcon: false,
+      isInputing: false,
+      isSuggestion: false,
+      keyupHoverInfo: {
+        groupIndex: undefined,
+        hoverIndex: undefined
+      }
     };
   },
   computed: {
-    getResultLength() {
+    resultSuggestions() {
+      if (!this.isSuggestion && !this.showResult) {
+        return false;
+      }
       return this.searchResult.length > 0;
     }
   },
@@ -192,21 +243,29 @@ export default {
           result.style.color = this.getTextColor;
         }
       }
+    },
+    backgroundData() {
+      this.changeResultPopupArrowStyle();
     }
+  },
+  created() {
+    this.showSearch = !this.collapsed;
+    this.showIcon = this.collapsed;
   },
   mounted() {
     this.changeSearchInputStyle();
   },
   loaded() {
     this.viewModel = new SearchViewModel(this.map, this.$props);
-    this.oldSearchTaskId = null;
   },
   removed() {
     this.clearResult(true);
+    this.viewModel && this.viewModel.clear();
   },
   beforeDestroy() {
     this.$message.destroy();
     this.marker && this.marker.remove() && (this.marker = null);
+    this.$options.removed.call(this);
   },
   methods: {
     changeSearchInputStyle() {
@@ -221,29 +280,47 @@ export default {
       const { target } = e;
       target.style.color = this.getTextColor;
     },
+    changeResultPopupArrowStyle() {
+      const searchResultPopupArrow = document.querySelector('.sm-component-search-result-popup .mapboxgl-popup-tip');
+      searchResultPopupArrow && (searchResultPopupArrow.style.borderTopColor = this.backgroundData);
+      if (searchResultPopupArrow) {
+        searchResultPopupArrow.style.borderTopColor = this.backgroundData;
+        searchResultPopupArrow.style.borderBottomColor = this.backgroundData;
+      }
+    },
     /**
      * 清除搜索结果。
      */
     clearResult(isClear) {
       this.$message.destroy();
       isClear && (this.searchKey = null);
+      isClear && this.resetLastEvent();
       this.searchResult = [];
       this.marker && this.marker.remove() && (this.marker = null);
       this.prefixType = 'search';
+      this.keyupHoverInfo = {
+        groupIndex: undefined,
+        hoverIndex: undefined
+      };
+    },
+    searchInput(e) {
+      if (this.openSearchSuggestion && !this.isInputing) {
+        if (this.searchKey) {
+          this.isSuggestion = true;
+          this.search();
+        } else {
+          this.inputValueCleared(false);
+        }
+      }
     },
     searchButtonClicked() {
-      if (!this.viewModel) {
-        this.nonMapTip();
-        return;
-      }
+      this.isSuggestion = false;
       this.search();
     },
-    /**
-     * 开始搜索。
-     * @param {String} searchKey - 搜索关键字。
-     */
-    search(searchKey) {
+    search() {
       this.clearResult();
+      const mapNotLoaded = this.mapNotLoadedTip();
+      if (mapNotLoaded) return;
       let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = this.$props;
       if (
         (layerNames && layerNames.length > 0) ||
@@ -253,33 +330,88 @@ export default {
         (iportalData && iportalData.length > 0) ||
         (addressMatch && addressMatch.length > 0)
       ) {
-        if (searchKey || this.searchKey) {
-          this.searchTaskId = this.viewModel.search(searchKey || this.searchKey);
+        if (this.searchKey) {
+          this.searchTaskId = this.viewModel.search(this.searchKey);
           this.regiterEvents();
           this.prefixType = 'loading';
         } else {
           this.$message.warning(this.$t('search.noKey'));
         }
       } else {
-        this.$message.warning('请设置搜索源！');
+        this.$message.warning(this.$t('search.setSearchSource'));
       }
     },
-    inputValueCleared() {
+    inputValueCleared(emitEvent = true) {
       this.clearResult(true);
+      this.viewModel && this.viewModel.clear();
+      emitEvent && this.$emit('clear-search-result');
     },
-    searchResultListClicked(e) {
-      let filter = e.target.innerHTML;
-      this.marker && this.marker.remove();
-      this.marker = null;
-      this.linkageFeature(filter, e.target);
+    searchResultListClicked(data, event) {
+      const searchKey = event.target.innerHTML;
+      this.isSuggestion = false;
+      this.viewModel.getFeatureInfo(searchKey, data);
     },
-    linkageFeature(filter, element) {
-      let sourceTarget = element.parentElement.parentElement.previousElementSibling;
-      let sourceName = sourceTarget.innerHTML;
-
-      let popupData = this.viewModel.getFeatureInfo(this.searchResult, filter, sourceName);
-
-      if (popupData.info.length >= 1) {
+    resetLastEvent() {
+      if (/\d/.test(this.searchTaskId)) {
+        this.viewModel.off('searchsucceeded' + this.searchTaskId);
+        this.viewModel.off('searchfailed' + this.searchTaskId);
+        this.viewModel.off('set-popup-content' + this.searchTaskId);
+        this.viewModel.off('search-selected-info' + this.searchTaskId);
+        this.searchTaskId = undefined;
+      }
+    },
+    registerSuccessEvent(searchTaskId) {
+      this.viewModel.on('searchsucceeded' + searchTaskId, this.searchSucceeded);
+    },
+    registerFailedEvent(searchTaskId) {
+      this.viewModel.on('searchfailed' + searchTaskId, this.searchFailed);
+    },
+    regiterEvents() {
+      if (this.isNumber(this.searchTaskId)) {
+        this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1), this.searchSucceeded);
+        this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1), this.searchFailed);
+        this.viewModel.off('set-popup-content' + (this.searchTaskId - 1), this.setPopupContent);
+        this.viewModel.off('search-selected-info' + (this.searchTaskId - 1), this.searchSelectedInfo);
+      }
+      const onTaskId = this.searchTaskId || 0;
+      this.registerSuccessEvent(onTaskId);
+      this.registerFailedEvent(onTaskId);
+      this.viewModel.on('set-popup-content' + onTaskId, this.setPopupContent);
+      this.viewModel.on('search-selected-info' + onTaskId, this.searchSelectedInfo);
+    },
+    searchSucceeded({ result }) {
+      /**
+       * @event searchSucceeded
+       * @desc 搜索成功后触发。
+       * @property {Object} e  - 事件对象。
+       */
+      this.$message.destroy();
+      this.searchResult = result;
+      this.$emit('search-succeeded', { searchResult: this.searchResult });
+      this.prefixType = 'search';
+      this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
+      if (this.isNumber(this.searchTaskId)) {
+        this.searchTaskId += 1;
+        this.regiterEvents();
+      }
+    },
+    searchFailed(e) {
+      /**
+       * @event searchFailed
+       * @desc 搜索失败后触发。
+       * @property {Object} e  - 事件对象。
+       */
+      this.clearResult();
+      this.prefixType = 'search';
+      this.$message.warning(this.$t('search.noResult'));
+      this.$emit('search-failed', e);
+      if (this.isNumber(this.searchTaskId)) {
+        this.searchTaskId += 1;
+        this.regiterEvents();
+      }
+    },
+    setPopupContent({ popupData }) {
+      if (popupData && popupData.info.length) {
         let state = {
           columns: [
             { title: this.$t('search.attribute'), dataIndex: 'attribute', width: 80 },
@@ -288,38 +420,64 @@ export default {
           data: popupData.info
         };
         this.tablePopupProps = { ...state };
-
-        this.$nextTick(() => {
-          this.marker = this.viewModel.addMarker(popupData.coordinates, this.$refs.searchTablePopup.$el);
-        });
       }
-    },
-    regiterEvents() {
-      this.searchKey >= 1 && this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1));
-      this.viewModel.on('searchsucceeded' + this.searchTaskId, e => {
-        /**
-         * @event searchSucceeded
-         * @desc 搜索成功后触发。
-         * @property {Object} e  - 事件对象。
-         */
-        this.$emit('search-succeeded', { searchResult: e.result });
-        this.searchResult = e.result;
-        this.prefixType = 'search';
-        this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
-      });
-      this.viewModel.on('searchfailed' + this.searchTaskId, e => {
-        /**
-         * @event searchFailed
-         * @desc 搜索失败后触发。
-         * @property {Object} e  - 事件对象。
-         */
-        this.prefixType = 'search';
-        this.$message.warning(this.$t('search.noResult'));
-        this.$emit('search-failed', e);
+      this.$nextTick(() => {
+        this.viewModel.setPopupContent(
+          popupData.coordinates,
+          this.$refs.searchTablePopup.$el,
+          this.changeResultPopupArrowStyle
+        );
       });
     },
-    handleInputHover() {
-      this.isHover = !this.isHover;
+    searchSelectedInfo({ data }) {
+      this.prefixType = 'search';
+      this.resultRender && this.resultRender(data);
+      this.$emit('search-selected-info', data);
+    },
+    isNumber(num) {
+      return /\d/.test(num);
+    },
+    downChoose() {
+      const len = this.searchResult.filter(item => item.result.length).length;
+      let { groupIndex = 0, hoverIndex } = this.keyupHoverInfo;
+      const groupResult = groupIndex ? this.searchResult[groupIndex].result : this.searchResult[0].result;
+      const subLen = groupResult.length;
+      groupIndex =
+        groupIndex < len - 1 && hoverIndex >= subLen - 1
+          ? Math.min(len - 1, groupIndex + 1)
+          : groupIndex === len - 1 && hoverIndex === subLen - 1
+            ? 0
+            : groupIndex;
+      if (this.isNumber(hoverIndex) && hoverIndex < subLen - 1) {
+        this.keyupHoverInfo.hoverIndex = hoverIndex + 1;
+      } else {
+        this.keyupHoverInfo.groupIndex = groupIndex;
+        this.keyupHoverInfo.hoverIndex = 0;
+      }
+      const selectedItem = this.searchResult[groupIndex].result[this.keyupHoverInfo.hoverIndex];
+      this.searchKey = (selectedItem.filterVal || selectedItem.name || selectedItem.address).split('：')[0];
+    },
+    upChoose() {
+      const len = this.searchResult.filter(item => item.result.length).length;
+      let { groupIndex = 0, hoverIndex } = this.keyupHoverInfo;
+      groupIndex =
+        groupIndex > 0 && !hoverIndex ? Math.max(0, groupIndex - 1) : !groupIndex && !hoverIndex ? len - 1 : groupIndex;
+      if (this.isNumber(hoverIndex) && hoverIndex > 0) {
+        this.keyupHoverInfo.hoverIndex = hoverIndex - 1;
+      } else {
+        this.keyupHoverInfo.groupIndex = groupIndex;
+        this.keyupHoverInfo.hoverIndex = Math.max(this.searchResult[groupIndex].result.length - 1, 0);
+      }
+      const selectedItem = this.searchResult[groupIndex].result[this.keyupHoverInfo.hoverIndex];
+      this.searchKey = (selectedItem.filterVal || selectedItem.name || selectedItem.address).split('：')[0];
+    },
+    changeResultHover(e) {
+      const { keyCode } = e;
+      if (keyCode === 38) {
+        this.upChoose();
+      } else if (keyCode === 40) {
+        this.downChoose();
+      }
     }
   }
 };

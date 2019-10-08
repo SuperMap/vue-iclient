@@ -1,4 +1,4 @@
-@import "../../../common/_utils/style/mixins/mixins.scss";
+@import '../../../common/_utils/style/mixins/mixins.scss';
 
 @include b(web-map) {
   width: 100%;
@@ -15,5 +15,14 @@
     flex-direction: column;
     z-index: 100;
     background: rgba(0, 0, 0, 0.8);
+  }
+  // 为了echarts的resize
+  .echartMap {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  .mapboxgl-canvas-container {
+    width: 100% !important;
+    height: 100% !important;
   }
 }

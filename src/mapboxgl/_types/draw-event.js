@@ -1,6 +1,7 @@
 import Vue from 'vue';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import MapboxDraw, { modes } from '@mapbox/mapbox-gl-draw';
 import mapEvent from './map-event';
+import assignIn from 'lodash.assignin';
 
 /**
  * drawList 结构为 { [mapTarget1]: [draw1], [mapTarget2]: [draw2] }
@@ -10,147 +11,143 @@ import mapEvent from './map-event';
  *  [mapTarget2]: {[component1]: true/false, [component2]: true/false}
  * }
  */
+
 export default new Vue({
   drawList: {},
   drawStates: {},
   _createDraw: function(mapTarget) {
     const drawOptions = {
       displayControlsDefault: false,
-      controls: {
-        line_string: true,
-        trash: false
+      touchEnabled: false,
+      boxSelect: false,
+      modes: {
+        ...modes,
+        simple_select: assignIn(modes.simple_select, {
+          dragMove() {},
+          clickOnVertex() {},
+          clickOnFeature(state, e) {
+            this.stopExtendedInteractions(state);
+
+            const isShiftClick = e.originalEvent && e.originalEvent.shiftKey;
+            const selectedFeatureIds = this.getSelectedIds();
+            const featureId = e.featureTarget.properties.id;
+            const isFeatureSelected = this.isSelected(featureId);
+
+            // Shift-click on an unselected feature
+            if (!isFeatureSelected && !isShiftClick) {
+              // Make it the only selected feature
+              selectedFeatureIds.forEach(id => this.doRender(id));
+              this.setSelected(featureId);
+            }
+
+            // No matter what, re-render the clicked feature
+            this.doRender(featureId);
+          }
+        }),
+        direct_select: assignIn(modes.direct_select, {
+          dragFeature() {}
+        })
       },
       styles: [
         // line stroke
         {
-          id: 'gl-draw-line',
+          id: 'draw-line-static',
           type: 'line',
-          filter: ['all', ['==', '$type', 'LineString'], ['!=', 'mode', 'static']],
+          filter: [
+            'any',
+            ['==', 'active', 'false'],
+            ['all', ['==', 'active', 'true'], ['==', 'mode', 'simple_select']]
+          ],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
           },
           paint: {
-            'line-color': '#D20C0C',
-            'line-dasharray': [0.2, 2],
-            'line-width': 2
+            'line-color': '#f75564',
+            'line-width': 3
+          }
+        },
+        {
+          id: 'draw-line-hover',
+          type: 'line',
+          filter: ['all', ['==', '$type', 'LineString'], ['==', 'id', '']],
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          },
+          paint: {
+            'line-color': '#f75564',
+            'line-width': 33,
+            'line-opacity': 0.2
+          }
+        },
+        {
+          id: 'draw-line-drawing',
+          type: 'line',
+          filter: ['all', ['==', 'active', 'true'], ['!=', 'mode', 'simple_select']],
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          },
+          paint: {
+            'line-color': '#f75564',
+            'line-dasharray': [0.4, 2],
+            'line-width': 3
+          }
+        },
+        {
+          id: 'draw-line-dashed',
+          type: 'line',
+          filter: ['all', ['==', 'id', '']],
+          layout: {
+            'line-cap': 'round',
+            'line-join': 'round'
+          },
+          paint: {
+            'line-color': '#f75564',
+            'line-dasharray': [0.4, 2],
+            'line-width': 3
           }
         },
         // polygon fill
         {
-          id: 'gl-draw-polygon-fill',
+          id: 'draw-polygon-static',
           type: 'fill',
-          filter: ['all', ['==', '$type', 'Polygon'], ['!=', 'mode', 'static']],
+          filter: ['all', ['==', '$type', 'Polygon']],
           paint: {
-            'fill-color': '#D20C0C',
-            'fill-outline-color': '#D20C0C',
-            'fill-opacity': 0.1
-          }
-        },
-        // polygon outline stroke
-        // This doesn't style the first edge of the polygon, which uses the line stroke styling instead
-        {
-          id: 'gl-draw-polygon-stroke-active',
-          type: 'line',
-          filter: ['all', ['==', '$type', 'Polygon'], ['!=', 'mode', 'static']],
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          },
-          paint: {
-            'line-color': '#D20C0C',
-            'line-dasharray': [0.2, 2],
-            'line-width': 2
+            'fill-color': '#f75564',
+            'fill-outline-color': '#f75564',
+            'fill-opacity': 0.4
           }
         },
         // vertex point halos
         {
-          id: 'gl-draw-polygon-and-line-vertex-halo-active',
+          id: 'draw-vertex-halo-active',
           type: 'circle',
-          filter: ['all', ['==', 'meta', 'vertex'], ['==', '$type', 'Point'], ['!=', 'mode', 'static']],
+          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex']],
           paint: {
-            'circle-radius': 5,
+            'circle-radius': 6,
             'circle-color': '#FFF'
           }
         },
         // vertex points
         {
-          id: 'gl-draw-polygon-and-line-vertex-active',
+          id: 'draw-vertex-active',
           type: 'circle',
-          filter: ['all', ['==', 'meta', 'vertex'], ['==', '$type', 'Point'], ['!=', 'mode', 'static']],
+          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex']],
           paint: {
-            'circle-radius': 3,
-            'circle-color': '#D20C0C'
-          }
-        },
-        // INACTIVE (static, already drawn)
-        // line stroke
-        {
-          id: 'gl-draw-line-static',
-          type: 'line',
-          filter: ['all', ['==', '$type', 'LineString'], ['==', 'mode', 'static']],
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          },
-          paint: {
-            'line-color': '#000',
-            'line-width': 3
-          }
-        },
-        // polygon fill
-        {
-          id: 'gl-draw-polygon-fill-static',
-          type: 'fill',
-          filter: ['all', ['==', '$type', 'Polygon'], ['==', 'mode', 'static']],
-          paint: {
-            'fill-color': '#000',
-            'fill-outline-color': '#000',
-            'fill-opacity': 0.1
-          }
-        },
-        // polygon outline
-        {
-          id: 'gl-draw-polygon-stroke-static',
-          type: 'line',
-          filter: ['all', ['==', '$type', 'Polygon'], ['==', 'mode', 'static']],
-          layout: {
-            'line-cap': 'round',
-            'line-join': 'round'
-          },
-          paint: {
-            'line-color': '#000',
-            'line-width': 3
-          }
-        },
-        // point outline
-        {
-          id: 'gl-draw-point-stroke-active',
-          type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature'], ['==', 'active', 'true']],
-          paint: {
-            'circle-radius': 7,
-            'circle-color': '#fff'
-          }
-        },
-        // point fill
-        {
-          id: 'gl-draw-point-fill-active',
-          type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature'], ['==', 'active', 'true']],
-          paint: {
-            'circle-radius': 5,
-            'circle-color': '#D20C0C'
+            'circle-radius': 4,
+            'circle-color': '#f75564'
           }
         },
         // point
         {
-          id: 'gl-draw-point-static',
+          id: 'draw-point-static',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature'], ['==', 'active', 'false']],
+          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature']],
           paint: {
-            'circle-radius': 7,
-            'circle-color': '#D20C0C'
+            'circle-radius': 6,
+            'circle-color': '#f75564'
           }
         }
       ]
@@ -159,10 +156,10 @@ export default new Vue({
     this.drawList[mapTarget] = draw;
     return draw;
   },
-  getDraw: function(mapTarget) {
+  getDraw: function(mapTarget, create = true) {
     let draw = this.drawList[mapTarget];
     const map = mapEvent.$options.getMap(mapTarget);
-    if (map && !draw) {
+    if (map && !draw && create) {
       draw = this._createDraw(mapTarget);
       draw.onAdd(map);
     }

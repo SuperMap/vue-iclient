@@ -12,26 +12,38 @@ class SourceListModel {
     this.sourceNames = [];
     this._initLayers();
     this._initSource();
+    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw'];
   }
 
   getSourceList() {
     let sourceList = {};
     for (let key in this.sourceList) {
-      if (key && key.indexOf('mapbox-gl-draw') < 0 && key.indexOf('smmeasure') < 0) {
+      if (key && this.excludeSource(key)) {
         sourceList[key] = this.sourceList[key];
       }
     }
     return sourceList;
   }
+
   getSourceNames() {
     const names = [];
     this.sourceNames.forEach(element => {
-      if (element && element.indexOf('mapbox-gl-draw') < 0 && element.indexOf('smmeasure') < 0) {
+      if (element && this.excludeSource(element)) {
         names.push(element);
       }
     });
     return names;
   }
+
+  excludeSource(key) {
+    for (let i = 0; i < this.excludeSourceNames.length; i++) {
+      if (key.indexOf(this.excludeSourceNames[i]) >= 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   getLegendStyle(sourceName) {
     if (sourceName) {
       return this.sourceList[sourceName] ? this.sourceList[sourceName].style : '';

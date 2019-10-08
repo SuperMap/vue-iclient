@@ -6,6 +6,8 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     class="sm-component-query"
   >
     <div class="sm-component-query__body" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -89,7 +91,7 @@
         >{{ $t('query.noResult') }}</div>
         <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
           <a-spin :tip="$t('query.querying')">
-            <a-icon slot="indicator" type="loading" style="font-size: 24px" spin/>
+            <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
           </a-spin>
         </div>
         <div v-if="queryResult" class="sm-component-query__result-header" :style="getColorStyle(0)">
@@ -113,7 +115,13 @@
         </div>
       </div>
     </div>
-    <TablePopup v-show="false" ref="queryTablePopup" v-bind="tablePopupProps"/>
+    <TablePopup
+      v-show="false"
+      ref="queryTablePopup"
+      v-bind="tablePopupProps"
+      :background="background"
+      :textColor="textColor"
+    />
   </sm-card>
 </template>
 <script>
@@ -163,13 +171,19 @@ export default {
   },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
     iconClass: {
       type: String,
-      default: 'sm-components-icons-search'
+      default: 'sm-components-icons-ditusousuo'
     },
     headerName: {
       type: String,
-      default: '查询'
+      default() {
+        return this.$t('query.query');
+      }
     },
     maxFeatures: {
       type: Number,
@@ -269,6 +283,9 @@ export default {
         }
       }
     },
+    backgroundData() {
+      this.changeResultPopupArrowStyle();
+    },
     layerStyle() {
       this.viewModel && (this.viewModel.layerStyle = this.$props.layerStyle);
     }
@@ -279,6 +296,9 @@ export default {
     this.resultInfoContainer = this.$el.querySelector('.sm-component-query__result-info');
     this.jobInfoContainer = this.$el.querySelector('.sm-component-query__job-info');
   },
+  beforeDestroy() {
+    this.$options.removed.call(this);
+  },
   loaded() {
     this.viewModel = new QueryViewModel(this.map, this.$props);
     this.formatJobInfos();
@@ -288,6 +308,7 @@ export default {
     this.clearResult();
     this.jobInfos = [];
     this.jobButtonClicked();
+    this.popup && this.popup.remove() && (this.popup = null);
   },
   methods: {
     formatJobInfos() {
@@ -379,22 +400,35 @@ export default {
     },
     changeSelectInputStyle() {
       const selectInputList = this.$el.querySelectorAll('.ant-select-selection');
-      selectInputList.forEach(item => {
+      for (let item of selectInputList) {
         item.style.borderColor = this.getTextColor;
         item.style.color = this.getTextColor;
         item.style.backgroundColor = 'transparent';
-      });
+      }
     },
     changeChosenStyle(visible, e) {
       setTimeout(() => {
+        const optionListContainer = this.$el.querySelectorAll('.ant-select-dropdown-content');
+        for (let item of optionListContainer) {
+          item.style.background = this.backgroundData;
+        }
         const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
-        optionList.forEach(item => {
+        for (let item of optionList) {
           if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
             item.style.color = this.getColorStyle(0).color;
+            item.style.background = this.backgroundData;
           } else {
-            item.style.color = '#606266';
+            item.style.color = this.textColorsData;
+            item.style.background = 'transparent';
           }
-        });
+          item.addEventListener('mouseover', () => {
+            item.style.color = this.getColorStyle(0).color;
+          });
+          item.addEventListener('mouseout', () => {
+            !item.classList.contains('ant-select-dropdown-menu-item-selected') &&
+              (item.style.color = this.textColorsData);
+          });
+        }
       }, 0);
     },
     changeChosenResultStyle(e) {
@@ -404,6 +438,13 @@ export default {
     resetChosenResultStyle(e) {
       const { target } = e;
       target.style.color = this.getTextColor;
+    },
+    changeResultPopupArrowStyle() {
+      const searchResultPopupArrow = this.popup && this.popup['_tip'];
+      if (searchResultPopupArrow) {
+        searchResultPopupArrow.style.borderTopColor = this.backgroundData;
+        searchResultPopupArrow.style.borderBottomColor = this.backgroundData;
+      }
     },
     queryResultListClicked(e) {
       this.popup && this.popup.remove() && (this.popup = null);
@@ -431,7 +472,7 @@ export default {
         this.isQuery = false;
         this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.clearResult();
-        this.$message.warning(e.message);
+        this.$message.warning(e.message.toString());
         this.jobButton.classList.remove('disabled');
         /**
          * @event queryFailed
@@ -462,6 +503,7 @@ export default {
 
         this.$nextTick(() => {
           this.popup = this.viewModel.addPopup(featuerInfo.coordinates, this.$refs.queryTablePopup.$el);
+          this.changeResultPopupArrowStyle();
         });
       }
     },
@@ -480,7 +522,7 @@ export default {
       this.queryResult = null;
       this.popup && this.popup.remove() && (this.popup = null);
       this.jobInfo = null;
-      this.viewModel.clearResultLayer();
+      this.viewModel && this.viewModel.clearResultLayer();
     }
   }
 };

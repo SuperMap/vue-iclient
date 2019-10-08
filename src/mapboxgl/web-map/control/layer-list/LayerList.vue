@@ -6,6 +6,8 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     class="sm-component-layer-list"
   >
     <a-card class="sm-component-layer-list__a-card" :style="[getBackgroundStyle]">
@@ -83,13 +85,19 @@ export default {
   },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
     iconClass: {
       type: String,
       default: 'sm-components-icons-layer-style'
     },
     headerName: {
       type: String,
-      default: '图层'
+      default() {
+        return this.$t('layerList.title');
+      }
     }
   },
   data() {
@@ -115,7 +123,7 @@ export default {
     changCheckStyle() {
       setTimeout(() => {
         const checkBoxsList = this.$el.querySelectorAll('.ant-checkbox');
-        checkBoxsList.forEach(item => {
+        for (let item of checkBoxsList) {
           let childrens = item.childNodes;
           let checkbox = childrens[1];
           // let label = item.parentNode.childNodes[1];
@@ -128,7 +136,7 @@ export default {
             checkbox.style.backgroundColor = '#fff';
             // label.style.color = this.getTextColor;
           }
-        });
+        }
       }, 0);
     },
     toggleVisibility(sourceLayer, sourceName, visibility) {

@@ -3,7 +3,7 @@ import SmWebMap from '../WebMap';
 import mapboxgl from "@libs/mapboxgl/mapbox-gl-enhance.js";
 // jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl)
-jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
 import { Icon, Card, Collapse, Button } from 'ant-design-vue';
 
 const localVue = createLocalVue()
@@ -70,7 +70,7 @@ describe('WebMap.vue', () => {
           zoomControl: {
             show: true,
             position: 'top-left',
-            zoomWithSlider: false
+            showZoomSlider: false
           }
         }
       }
@@ -84,7 +84,7 @@ describe('WebMap.vue', () => {
         expect(wrapper.vm.mapId).toBe("1649097980");
         expect(wrapper.vm.panControl.show).toBe(true);
         expect(wrapper.vm.scaleControl.position).toBe('bottom-right');
-        expect(wrapper.vm.zoomControl.zoomWithSlider).toBe(false);
+        expect(wrapper.vm.zoomControl.showZoomSlider).toBe(false);
         expect(wrapper.find('.sm-component-pan').exists()).toBe(true)
         expect(wrapper.element.outerHTML).toContain("pan")
         expect(wrapper.element.outerHTML).toContain("zoom")

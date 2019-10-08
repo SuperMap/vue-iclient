@@ -1,5 +1,8 @@
 <template>
-  <div :class="['sm-component-open-file', mapboxglClass]" :style="[fontStyle, { background: getColor(0) }, getTextColorStyle]">
+  <div
+    :class="['sm-component-open-file', mapboxglClass]"
+    :style="[fontStyle, (background && getBackgroundStyle) || { background: getColor(0) }, getTextColorStyle]"
+  >
     <label for="input_file" class="sm-component-open-file__title">
       <span>{{ text }}</span>
     </label>
@@ -10,7 +13,7 @@
       :accept="accept"
       @change="fileSelect($event)"
       @click="preventDefault"
-    >
+    />
   </div>
 </template>
 
@@ -26,7 +29,6 @@ import LineStyle from '../_types/LineStyle';
 import bbox from '@turf/bbox';
 import Vue from 'vue';
 import UniqueId from 'lodash.uniqueid';
-import mapEvent from '../_types/map-event';
 
 export default {
   name: 'SmOpenFile',
@@ -42,7 +44,9 @@ export default {
     },
     text: {
       type: String,
-      default: '打开文件'
+      default() {
+        return this.$t('openFile.openFile');
+      }
     },
     notify: {
       type: Boolean,
@@ -101,14 +105,8 @@ export default {
       return UniqueId(`layer-${this.$options.name.toLowerCase()}-`);
     },
     preventDefault(e) {
-      if (this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) {
-        this.$message.destroy();
-        this.$message.warning('关联的地图尚未加载完整，请稍后');
-        e.preventDefault();
-      } else if (!this.viewModel) {
-        this.nonMapTip();
-        e.preventDefault();
-      }
+      const mapNotLoaded = this.mapNotLoadedTip();
+      mapNotLoaded && e.preventDefault();
     }
   },
   loaded() {

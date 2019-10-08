@@ -1,0 +1,30 @@
+@import '../../_utils/style/mixins/mixins.scss';
+
+@include b(image) {
+  width: 100%;
+  height: 100%;
+  @include e(link) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover{
+      cursor: pointer;
+    }
+  }
+  @include e(noLink){
+    pointer-events: none;
+  }
+  @include e(content) {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transform: translateZ(0px);
+  }
+  @include e(defaultImg) {
+    color: #fff;
+    font-size: 60px;
+  }
+}

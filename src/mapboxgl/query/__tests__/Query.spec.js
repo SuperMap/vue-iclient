@@ -22,7 +22,7 @@ localVue.use(Button);
 localVue.prototype.$message = message;
 
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
 
 
 describe('query', () => {
@@ -72,7 +72,7 @@ describe('query', () => {
                 ]
             }
         });
-        //监控loaded是为了判断微件加载完成了
+        //监控loaded是为了判断组件加载完成了
         query.vm.$on("loaded", () => {
             try {
                 expect(query.vm.getMapTarget).toBe('map');
@@ -169,7 +169,7 @@ describe('query', () => {
                 ]
             },
         });
-        //监控loaded是为了判断微件加载完成了
+        //监控loaded是为了判断组件加载完成了
         query.vm.$on("loaded", () => {
             try {
                 expect(query.vm.getMapTarget).toBe('map');
@@ -210,7 +210,7 @@ describe('query', () => {
                 ]
             }
         });
-        //监控loaded是为了判断微件加载完成了
+        //监控loaded是为了判断组件加载完成了
         query.vm.$on("loaded", () => {
             try {
                 expect(query.vm.getMapTarget).toBe('map');

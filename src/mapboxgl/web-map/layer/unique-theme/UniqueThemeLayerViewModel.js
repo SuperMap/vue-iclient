@@ -1,5 +1,5 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
+import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class UniqueThemeLayerViewModel extends mapboxgl.Evented {
   constructor(map, themeProps) {

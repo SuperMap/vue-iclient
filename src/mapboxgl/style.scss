@@ -1,5 +1,6 @@
-$--assets-path: './web-map/control/pan/assets' !default;
-@import "../common/_utils/style/common/common.scss";
+$--pan-assets-path: './web-map/control/pan/assets' !default;
+$--tdt-assets-path: './tdt/_assets' !default;
+@import '../common/_utils/style/common/common.scss';
 /** common */
 @import '../common/indicator/style/indicator.scss';
 @import '../common/text/style/text.scss';
@@ -10,7 +11,9 @@ $--assets-path: './web-map/control/pan/assets' !default;
 @import '../common/progress/style/progress.scss';
 @import '../common/table-popup/style/tablePopup.scss';
 @import '../common/border/style/border.scss';
-
+@import '../common/image/style/image.scss';
+@import '../common/video-player/style/video-player.scss';
+@import '../common/iframe/style/iframe.scss';
 /** control */
 @import './web-map/control/scale/style/scale.scss';
 @import './web-map/control/zoom/style/zoom.scss';
@@ -20,6 +23,16 @@ $--assets-path: './web-map/control/pan/assets' !default;
 @import './web-map/control/layer-list/style/layer-list.scss';
 @import './web-map/control/legend/style/legend.scss';
 @import './web-map/control/draw/style/draw.scss';
+@import './tdt/results/style/areaResult.scss';
+@import './tdt/results/style/lineResult.scss';
+@import './tdt/results/style/nothingResult.scss';
+@import './tdt/results/style/pagination.scss';
+@import './tdt/results/style/pointsResult.scss';
+@import './tdt/results/style/routePlan.scss';
+@import './tdt/results/style/statisticsResult.scss';
+@import './tdt/search/style/tdtSearch.scss';
+@import './tdt/route/style/tdtRoute.scss';
+@import './tdt/mapSwitcher/style/tdtMapSwitcher.scss';
 
 @import './web-map/style/web-map.scss';
 @import './web-scene/style/web-scene.scss';
@@ -27,6 +40,10 @@ $--assets-path: './web-map/control/pan/assets' !default;
 @import './query/style/query.scss';
 @import './open-file/style/open-file.scss';
 @import './chart/style/chart.scss';
+@import './text-list/style/text-list.scss';
 
 /* layer */
 @import './web-map/layer/animate-marker/style/animate-marker-layer.scss';
+/* tdt */
+@import './tdt/route/style/tdtRoute.scss';
+@import './tdt/search/style/tdtSearch.scss';

@@ -3,9 +3,11 @@
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
-    :header-name="headerName"
+    :header-name="headerName || $t('measure.mapMeasure')"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     class="sm-component-measure"
   >
     <div class="sm-component-measure__panel" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -27,7 +29,7 @@
         <a-select
           v-show="getDistanceSelect"
           v-model="activeDistanceUnit"
-          placeholder="请选择"
+          :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
@@ -43,7 +45,7 @@
         <a-select
           v-show="getAreaSelect"
           v-model="activeAreaUnit"
-          placeholder="请选择"
+          :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
@@ -79,7 +81,6 @@ import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import Card from '../../../../common/_mixin/card';
 import MeasureViewModel from './MeasureViewModel';
-import mapEvent from '../../../_types/map-event';
 import drawEvent from '../../../_types/draw-event';
 import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 
@@ -87,13 +88,17 @@ export default {
   name: 'SmMeasure',
   mixins: [MapGetter, Control, Theme, Card],
   props: {
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
     iconClass: {
       type: String,
       default: 'sm-components-icons-measure'
     },
     headerName: {
-      type: String,
-      default: '量算'
+      type: String
+      // default: geti18n().t('commontypes.iportalData') // '量算'
     },
     showUnitSelect: {
       // 配置单位选择框是否显示，若不显示，则显示对应的默认单位
@@ -119,18 +124,18 @@ export default {
   data() {
     const unitOptions = {
       draw_line_string: {
-        kilometers: this.$t('measure.kilometers'),
-        miles: this.$t('measure.miles'),
-        meters: this.$t('measure.meters'),
-        feet: this.$t('measure.feet'),
-        yards: this.$t('measure.yards')
+        kilometers: this.$t('unit.kilometers'),
+        miles: this.$t('unit.miles'),
+        meters: this.$t('unit.meters'),
+        feet: this.$t('unit.feet'),
+        yards: this.$t('unit.yards')
       },
       draw_polygon: {
-        kilometers: this.$t('measure.squarekilometers'),
-        miles: this.$t('measure.squaremiles'),
-        meters: this.$t('measure.squaremeters'),
-        feet: this.$t('measure.squarefeet'),
-        yards: this.$t('measure.squareyards')
+        kilometers: this.$t('unit.squarekilometers'),
+        miles: this.$t('unit.squaremiles'),
+        meters: this.$t('unit.squaremeters'),
+        feet: this.$t('unit.squarefeet'),
+        yards: this.$t('unit.squareyards')
       }
     };
     return {
@@ -197,7 +202,12 @@ export default {
       this.activeAreaUnit = newVal;
       this.updateUnit(newVal);
     },
-    colorGroupsData: {
+    textColorsData: {
+      handler() {
+        this.changeSelectInputStyle();
+      }
+    },
+    backgroundData: {
       handler() {
         this.changeSelectInputStyle();
       }
@@ -233,31 +243,31 @@ export default {
       if (componentName !== this.$options.name) {
         this.activeMode = null;
         this.result = '';
-        this.viewModel.pauseDraw();
+        this.viewModel && this.viewModel.pauseDraw();
       }
     });
   },
-  removed() {
+  removed(deleteState) {
     this.activeMode = null;
     this.result = '';
-    this.viewModel && this.viewModel.clear();
+    this.viewModel && this.viewModel.clear(deleteState);
   },
   methods: {
     changeSelectInputStyle() {
       const selectDoms = this.$el.querySelectorAll('.ant-select-selection');
-      selectDoms.forEach(selectDom => {
+      for (let selectDom of selectDoms) {
         if (selectDom) {
           selectDom.style.borderColor = this.getTextColor;
           selectDom.style.color = this.getTextColor;
           selectDom.style.backgroundColor = this.getBackground;
         }
-      });
+      }
     },
     changeChosenStyle(visible) {
       setTimeout(() => {
         const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
         const dropdownDoms = this.$el.querySelectorAll('.ant-select-dropdown');
-        optionList.forEach(item => {
+        for (let item of optionList) {
           if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
             item.style.color = this.getColorStyle(0).color;
             item.style.backgroundColor = this.getBackground;
@@ -265,25 +275,29 @@ export default {
             item.style.color = this.getTextColor;
             item.style.backgroundColor = 'transparent';
           }
-        });
-        dropdownDoms.forEach(dropdownDom => {
+        }
+        for (let dropdownDom of dropdownDoms) {
           if (dropdownDom) {
             dropdownDom.style.backgroundColor = this.getBackground;
           }
-        });
+        }
       }, 0);
     },
     // 切换量算模式
     changeMeasureMode(mode) {
       setTimeout(() => {
-        if ((this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) || (this.map && !this.map.loaded())) {
+        const mapNotLoaded = this.mapNotLoadedTip();
+        if (mapNotLoaded) {
+          return;
+        }
+        if (!this.map.loaded()) {
           this.$message.destroy();
-          this.$message.warning('关联的地图尚未加载完整，请稍后！');
-        } else if (this.map && this.map.loaded()) {
+          this.$message.warning(this.$t('warning.mapNotLoaded'));
+        } else {
           let modeUnitKey = this.modeUnitMap[mode];
           let activeUnit = this[modeUnitKey];
           if (mode === 'delete') {
-            this.viewModel.removeDraw();
+            this.viewModel.trash();
             this.activeMode = null;
             this.result = '';
             return;
@@ -295,8 +309,6 @@ export default {
             this.viewModel.removeDraw();
             this.activeMode = null;
           }
-        } else {
-          this.nonMapTip();
         }
       }, 0);
     },
@@ -312,6 +324,10 @@ export default {
       if (!this.measureFinished && this.continueDraw) {
         this.activeMode = this.activeModeCache;
       }
+    },
+    // 提供对外方法：清空features
+    clear() {
+      this.$options.removed.call(this, false);
     }
   }
 };

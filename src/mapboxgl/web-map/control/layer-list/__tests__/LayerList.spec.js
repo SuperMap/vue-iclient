@@ -13,7 +13,7 @@ localVue.use(Icon);
 localVue.use(Checkbox);
 
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance.js', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
 describe('LayerList.vue', () => {
 
     let wrapper;

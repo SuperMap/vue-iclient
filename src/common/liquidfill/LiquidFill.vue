@@ -1,15 +1,22 @@
 <template>
-  <div id="chart" ref="chart" class="sm-component-liquidFill"></div>
+  <div
+    id="chart"
+    ref="chart"
+    class="sm-component-liquidFill"
+    :style="[background && getBackgroundStyle]"
+  ></div>
 </template>
 <script>
 import echarts from 'echarts';
 import Theme from '../_mixin/theme';
 import 'echarts-liquidfill';
 import { ResizeSensor } from 'css-element-queries';
+import Timer from '../_mixin/timer';
+import RestService from '../../mapboxgl/_utils/RestService';
 
 export default {
   name: 'SmLiquidFill',
-  mixins: [Theme],
+  mixins: [Theme, Timer],
   props: {
     // 百分比的值
     value: {
@@ -23,7 +30,7 @@ export default {
     },
     // 字体
     fontSize: {
-      type: Number
+      type: [Number, String]
     },
     // 波浪颜色
     waveColor: {
@@ -51,6 +58,9 @@ export default {
     waveAnimation: {
       type: Boolean,
       default: false
+    },
+    url: {
+      type: String
     }
   },
   data() {
@@ -58,39 +68,87 @@ export default {
       waveColorData: '',
       labelColorData: '',
       borderColorData: '',
-      backgroundColorData: ''
+      backgroundColorData: '',
+      finalValue: this.value
     };
   },
   computed: {
     // 根据波浪数渲染数据
     calcData() {
       let data = [];
-      const formatValue = isNaN(this.value) ? 0 : parseFloat(this.value);
+      const formatValue = isNaN(this.finalValue) ? 0 : parseFloat(this.finalValue);
       for (let i = 0; i < this.waveCount; i++) {
         data.push(formatValue - i * 0.05);
       }
       return data;
     }
   },
+  watch: {
+    url: {
+      handler(val) {
+        if (val) {
+          this.getData();
+        } else {
+          this.finalValue = this.value;
+        }
+      },
+      immediate: true
+    },
+    waveColor(val) {
+      this.waveColorData = val;
+      this.updateChart();
+    },
+    labelColor(val) {
+      this.labelColorData = val;
+      this.updateChart();
+    },
+    borderColor(val) {
+      this.borderColorData = val;
+      this.updateChart();
+    },
+    backgroundColor(val) {
+      this.backgroundColorData = val;
+      this.updateChart();
+    },
+    finalValue() {
+      this.updateChart();
+    },
+    fontSize() {
+      this.updateChart();
+    },
+    waveCount() {
+      this.updateChart();
+    },
+    waveAnimation() {
+      this.updateChart();
+    },
+    value(val) {
+      this.finalValue = val;
+    }
+  },
   mounted() {
+    this.waveColorData = this.waveColor || this.getColor(0);
+    this.labelColorData = this.labelColor || this.getTextColor;
+    this.borderColorData = this.borderColor || this.waveColorData;
+    this.backgroundColorData = this.backgroundColor || this.getBackground;
+    this.restService = new RestService();
+    this.restService.on('getdatasucceeded', this.fetchData);
     setTimeout(() => {
       this.initializeChart();
       this.resize();
     }, 0);
+  },
+  beforeDestroy() {
+    this.restService.off('getdatasucceeded', this.fetchData);
   },
   methods: {
     resize() {
       this.chart && this.chart.resize();
     },
     initializeChart() {
-      Object.keys(this.$props).forEach(watchItem => {
-        this.$watch(watchItem, () => {
-          this.updateChart();
-        });
-      });
       this.chart = echarts.init(this.$refs.chart);
       this.updateChart();
-      this.$on('themeStyleChanged', () => {
+      this.$on('theme-style-changed', () => {
         this.waveColorData = this.getColor(0);
         this.labelColorData = this.getTextColor;
         this.borderColorData = this.getColor(0);
@@ -102,13 +160,6 @@ export default {
       });
     },
     updateChart(propsUpdate = false) {
-      if (!propsUpdate) {
-        this.waveColorData = this.waveColor || this.getColor(0);
-        this.labelColorData = this.labelColor || this.getTextColor;
-        this.borderColorData = this.borderColor || this.waveColorData;
-        this.backgroundColorData = this.backgroundColor || this.getBackground;
-      }
-
       this.chart.setOption({
         series: [
           {
@@ -119,7 +170,7 @@ export default {
             radius: '95%',
             data: this.calcData,
             label: {
-              fontSize: this.fontSize,
+              fontSize: parseFloat(this.fontSize),
               color: this.labelColorData,
               insideColor: this.insideLabelColor
             },
@@ -141,6 +192,15 @@ export default {
           }
         ]
       });
+    },
+    timing() {
+      this.getData();
+    },
+    fetchData(data) {
+      this.finalValue = data.data;
+    },
+    getData() {
+      this.restService && this.restService.getData(this.url);
     }
   }
 };

@@ -1,5 +1,5 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 /**
  * @class iServerRestService
@@ -114,7 +114,8 @@ export default class iServerRestService extends mapboxgl.Evented {
       },
       datasetNames: queryInfo.datasetNames,
       fromIndex: 0,
-      toIndex: queryInfo.maxFeatures - 1
+      toIndex: queryInfo.maxFeatures >= 1000 ? -1 : queryInfo.maxFeatures - 1,
+      maxFeatures: -1
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
       eventListeners: {
@@ -212,9 +213,13 @@ export default class iServerRestService extends mapboxgl.Evented {
       }
     });
     new mapboxgl.supermap.QueryService(url).queryBySQL(param, serviceResult => {
-      let fields;
-      serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);
-      fields && callBack(fields, serviceResult.result.recordsets[0]);
+      if (serviceResult.type === 'processCompleted') {
+        let fields;
+        serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);
+        fields && callBack(fields, serviceResult.result.recordsets[0]);
+      } else {
+        callBack(serviceResult);
+      }
     });
   }
   _getAttributeFilterByKeywords(fields, keyWord) {

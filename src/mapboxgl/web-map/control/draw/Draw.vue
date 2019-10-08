@@ -24,7 +24,6 @@
 </template>
 
 <script>
-import mapEvent from '../../../_types/map-event';
 import drawEvent from '../../../_types/draw-event';
 import Theme from '../../../../common/_mixin/theme';
 import Card from '../../../../common/_mixin/card';
@@ -43,7 +42,16 @@ export default {
     },
     headerName: {
       type: String,
-      default: '绘制'
+      default() {
+        return this.$t('draw.draw');
+      }
+    },
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
+    layerStyle: {
+      type: Object
     }
   },
   data() {
@@ -57,14 +65,22 @@ export default {
       activeMode: null
     };
   },
+  watch: {
+    layerStyle: {
+      handler() {
+        this.viewModel && this.viewModel.setLayerStyle(this.layerStyle);
+      },
+      deep: true
+    }
+  },
   loaded() {
     const mapTarget = this.getTargetName();
     this.viewModel = new DrawViewModel(this.map, mapTarget);
     this.initEvent();
   },
-  removed() {
+  removed(deleteState) {
     this.activeMode = null;
-    this.viewModel && this.viewModel.clear();
+    this.viewModel && this.viewModel.clear(deleteState);
   },
   beforeDestroy() {
     this.$options.removed.call(this);
@@ -78,22 +94,24 @@ export default {
     },
     updateMode(mode) {
       setTimeout(() => {
-        if ((this.mapTarget && !mapEvent.$options.getMap(this.mapTarget)) || (this.map && !this.map.loaded())) {
-          this.$message.destroy();
-          this.$message.warning('关联的地图尚未加载完整，请稍后！');
-        } else if (this.map && this.map.loaded()) {
+        const mapNotLoaded = this.mapNotLoadedTip();
+        if (mapNotLoaded) return;
+        if (this.map && this.map.loaded()) {
           this.activeMode = mode;
           if (mode === 'trash') {
             this.viewModel.trash();
             this.activeMode = null;
+            this.$emit('draw-removed', {});
             return;
           }
           this.viewModel.openDraw(mode);
           drawEvent.$emit('draw-reset', { componentName: this.$options.name });
-        } else {
-          this.nonMapTip();
         }
       }, 0);
+    },
+    // 提供对外方法：清空features
+    clear() {
+      this.$options.removed.call(this, false);
     }
   }
 };

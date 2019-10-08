@@ -1,0 +1,78 @@
+@import '../../../../common/_utils/style/mixins/mixins.scss';
+
+@include b(tdtLineResults) {
+  .link-to-points {
+    display: block;
+    font-weight: 700;
+    text-decoration: underline;
+    line-height: 36px;
+    padding: 0 20px;
+  }
+  .title {
+    height: 30px;
+    line-height: 30px;
+    padding-left: 20px
+  }
+  .content {
+    overflow: auto;
+    max-height: 300px;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .line-groups {
+      padding: 0 20px;
+      list-style: none;
+      .line-item {
+        margin-bottom: 10px;
+        .line-icon,
+        .line-info {
+          display: inline-block;
+          vertical-align: top;
+        }
+        .line-icon {
+          background: url("#{$--tdt-assets-path}/sprite.png") no-repeat -148px -183px;
+          width: 14px;
+          height: 16px;
+          margin-top: 5px;
+        }
+        .line-info {
+          margin-left: 10px;
+          p {
+            padding: 3px 2px;
+            margin: 0;
+            &.name {
+              overflow: hidden;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              max-width: 200px;
+            }
+            &.count {
+              span {
+                font-weight: 700;
+              }
+            }
+            &.show-details {
+              cursor: pointer;
+            }
+          }
+          .detail-info {
+            .time {
+              span {
+                font-weight: 700;
+              }
+            }
+            .lines {
+              list-style: none;
+              margin: 5px 0;
+              padding: 0;
+              li {
+                padding: 4px 20px;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

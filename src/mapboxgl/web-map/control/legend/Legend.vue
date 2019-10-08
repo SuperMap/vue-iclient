@@ -7,6 +7,8 @@
     :header-name="mode === 'simple' ? '' : headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     class="sm-component-legend"
   >
     <a-card
@@ -24,7 +26,7 @@
           :showArrow="false"
         >
           <template slot="header">
-            <div class="header-wrap" :style="[getColorStyle(0)]">
+            <div class="header-wrap" :style="[getTextColorStyle]">
               <div class="sm-component-legend__title add-ellipsis">{{ layerValue.layerId }}</div>
               <a-icon type="right" class="header-arrow" />
             </div>
@@ -32,7 +34,7 @@
           <div
             v-if="isShowField"
             class="sm-component-legend__themefield add-ellipsis"
-            :style="[getColorStyle(0)]"
+            :style="[getTextColorStyle]"
           >{{ $t("legend.themeField") }}:{{ layerValue.themeField }}</div>
           <div
             v-if="layerValue.layerType === 'UNIQUE'"
@@ -105,12 +107,12 @@
         <div
           v-if="isShowTitle"
           class="sm-component-legend__title add-ellipsis"
-          :style="[getColorStyle(0)]"
+          :style="[getTextColorStyle]"
         >{{ layerValue.layerId }}</div>
         <div
           v-if="isShowField"
           class="sm-component-legend__themefield add-ellipsis"
-          :style="[getColorStyle(0)]"
+          :style="[getTextColorStyle]"
         >{{ $t("legend.themeField") }}:{{ layerValue.themeField }}</div>
 
         <div v-if="layerValue.layerType === 'UNIQUE'" class="sm-component-legend__wrap">
@@ -185,6 +187,10 @@ export default {
   },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
     iconClass: {
       type: String,
       default: 'sm-components-icons-layer-style'
@@ -207,6 +213,10 @@ export default {
       validator(mode) {
         return ['simple', 'panel'].includes(mode);
       }
+    },
+    position: {
+      type: String,
+      default: 'bottom-left'
     }
   },
   data() {

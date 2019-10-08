@@ -13,10 +13,12 @@
     height: 36px;
     line-height: 36px;
     text-align: center;
-    font-size: 22px;
     cursor: pointer;
     &:hover {
       color: var(--icon-color--hover);
+    }
+    i {
+      font-size: $--text-regular;
     }
   }
 

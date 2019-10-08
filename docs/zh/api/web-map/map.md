@@ -7,7 +7,7 @@ Web Map 地图组件。支持 MapboxGL Map，和对接 iPortal/Online 地图。<
 
 ## 加载 iPortal 地图
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_webmap_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_webmap_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980"></sm-web-map>
@@ -28,7 +28,7 @@ Web Map 地图组件。支持 MapboxGL Map，和对接 iPortal/Online 地图。<
 
 ## 加载 iServer 地图
 
-<sm-iframe src="http://iclient.supermap.io/examples/mapboxgl/components_map_vue.html"></sm-iframe>
+<sm-iframe src="http://iclient.supermap.io/examples/component/components_map_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map :map-options="mapOptions"></sm-web-map>
@@ -69,7 +69,7 @@ export default {
 
 | 参数       | 说明                                                                       | 类型    | 可选值 | 默认值 |
 | :--------- | :------------------------------------------------------------------------- | :------ | :----- | :----- |
-| mapOptions | [MapboxGL map options 对象](https://docs.mapbox.com/mapbox-gl-js/api/#map) | Object  | -      | -      |
+| mapOptions | [MapboxGL map options 对象](https://docs.mapbox.com/mapbox-gl-js/api/#map) | object  | -      | -      |
 | autoresize | 用来指定 webMap 实例在组件根元素尺寸变化时是否需要自动进行重绘             | boolean | -      | true   |
 
 <!-- ## 子组件

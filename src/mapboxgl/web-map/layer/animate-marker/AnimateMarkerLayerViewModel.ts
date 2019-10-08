@@ -1,4 +1,7 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import envelope from '@turf/envelope';
+import bbox from '@turf/bbox';
+import transformScale from '@turf/transform-scale';
 import { FeatureCollection } from 'geojson';
 
 export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
@@ -10,7 +13,9 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
 
   markersElement: HTMLElement[];
 
-  constructor(map: mapboxglTypes.Map, features: FeatureCollection, markersElement: HTMLElement[]) {
+  fitBounds: Boolean;
+
+  constructor( map: mapboxglTypes.Map, features: FeatureCollection, markersElement: HTMLElement[], fitBounds: Boolean = true ) {
     super();
     if (!map) {
       throw new Error('map is requierd');
@@ -19,6 +24,7 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     this.features = features;
     this.markers = [];
     this.markersElement = markersElement;
+    this.fitBounds = fitBounds;
     this.features && this._initalizeMarkerLayer();
   }
 
@@ -34,7 +40,10 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
   }
 
   private _initalizeMarkerLayer() {
-    this._clearMarkerLayer();
+    if (!this.features || JSON.stringify(this.features) === '{}') {
+      return;
+    }
+    this.clearMarkerLayer();
     this._createMarker();
   }
   private _createMarker() {
@@ -45,9 +54,14 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
         .addTo(this.map);
       this.markers.push(marker);
     }, this);
+    if (this.fitBounds) {
+      // @ts-ignore
+      const bounds = bbox(transformScale(envelope(this.features), 1.7));
+      this.fitBounds && this.map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], { maxZoom: 17 });
+    }
   }
 
-  private _clearMarkerLayer() {
+  public clearMarkerLayer() {
     this.markers.length > 0 &&
       this.markers.forEach(marker => {
         marker && marker.remove();

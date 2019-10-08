@@ -10,7 +10,7 @@ import AddressMatchParameter from '@types_common/AddressMatchParameter';
 import { Icon, Input, message } from 'ant-design-vue';
 
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
 const localVue = createLocalVue();
 localVue.use(Input);
 localVue.use(Icon);

@@ -6,7 +6,7 @@
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
         icon="plus"
         :disabled="!canZoomIn"
-        :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] :''"
+        :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]"
         @click="zoomIn"
       ></a-button>
       <a-button
@@ -14,7 +14,7 @@
         class="sm-component-zoom__button sm-component-zoom__button--zoomout"
         icon="minus"
         :disabled="!canZoomOut"
-        :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : ''"
+        :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]"
         @click="zoomOut"
       ></a-button>
     </div>
@@ -35,7 +35,6 @@ import Theme from '../../../../common/_mixin/theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
-import { hexToRgba } from '../../../../common/_utils/util';
 
 export default {
   name: 'SmZoom',
@@ -60,7 +59,7 @@ export default {
     activieBgColor() {
       const color = this.getColorStyle(0).color;
       return {
-        backgroundColor: hexToRgba(color, 0.3),
+        backgroundColor: this.getBackground,
         borderColor: color
       };
     }

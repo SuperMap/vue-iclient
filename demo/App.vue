@@ -6,16 +6,19 @@
       :style="{height:'700px'}"
       @load="mapLoaded"
     >
-      <sm-pan></sm-pan>
+      <!-- <sm-pan></sm-pan>
       <sm-zoom :show-zoom-slider="true"></sm-zoom>
       <sm-layer-list position="top-right"/>
-      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-right" :collapsed="false"></sm-legend>
+      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-right" :collapsed="false"></sm-legend> -->
       <sm-query
         :iportal-data="iportalDataQuery"
         :rest-data="restDataQuery"
         :rest-map="restMapQuery"
         position="top-right"
       ></sm-query>
+      <sm-tdt-route
+        position="top-right"
+      ></sm-tdt-route>
       <sm-search
         position="top-right"
         :layer-names="layerSourceNames"
@@ -24,9 +27,13 @@
         :rest-data="restDataSearch"
         :iportal-data="iportalData"
         :online-local-search="onlineLocalSearch"
+        :alwaysCenter="false"
       ></sm-search>
-      <sm-mini-map position="bottom-right"></sm-mini-map>
+      <sm-tdt-search
+        position="top-right"
+      ></sm-tdt-search>
       <sm-measure position="top-right"></sm-measure>
+      <sm-draw position="top-right"></sm-draw>
       <sm-raster-tile-layer v-bind="rasteLayerOptions"></sm-raster-tile-layer>
       <sm-vector-tile-layer
         style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"
@@ -38,22 +45,23 @@
       @load="mapLoaded"
     ></sm-web-map>-->
     
-    <sm-indicator title="人均收入" unit="元" :num="12323412" fontSize="18"></sm-indicator>
+    <sm-indicator title="人均收入" unit="元" indicatorColor='red' textColor='red' :num="12323412" fontSize="18"></sm-indicator>
     <sm-text
       title="文本框"
-      :fontStyle="{ fontSize: '18px', lineHeight: '18px', color:'#73b9ac', fontWeight: '700', textAlign: 'center' }"
+      textColor='red'
+      :fontStyle="{ fontSize: '18px', lineHeight: '18px', fontWeight: '700', textAlign: 'center' }"
     ></sm-text>
     <sm-time-text :fontStyle="{ fontSize: '18', fontWeight: '700' }" timeType="date+second+week"></sm-time-text>
     <!-- <sm-chart :style="{display:'inline-block'}" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> -->
-    <sm-liquid-fill :style="{width:'10%',display:'inline-block'}" :value="0.3" :waveCount="1" position="bottom-right"/>
-    <sm-progress :style="{width:'10%',display:'inline-block'}" type="circle" :percent="80"></sm-progress>
+    <sm-liquid-fill borderColor='blue' waveColor='red' :style="{width:'10%',display:'inline-block'}" :value="0.3" :waveCount="1" position="bottom-right"/>
+    <sm-progress strokeColor='red' :style="{width:'10%',display:'inline-block'}" type="circle" :percent="80"></sm-progress>
 
     <sm-border type="border12" style="width: 460px; height: 260px; float:left">
-        <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
+        <sm-chart :colorGroup="['red','blue']" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
     </sm-border>
      
      <sm-border type="border1" style="width: 460px; height: 260px; float:left">
-        <sm-chart :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
+        <sm-chart :colorGroup="['red','blue']" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
     </sm-border>
 
     <div class="changeTheme">

@@ -1,0 +1,200 @@
+@import '../../../../common/_utils/style/mixins/mixins.scss';
+
+@include b(tdtRoute) {
+  width: 310px;
+  @include e(header) {
+    width: 90%;
+    margin: auto;
+    .route-navbar {
+      width: 100%;
+      justify-content: space-between;
+      margin: auto;
+      overflow: hidden;
+      .car-icon {
+        margin-right: 20px;
+      }
+      .car-icon,
+      .bus-icon {
+        width: 30px;
+        height: 30px;
+        float: left;
+        cursor: pointer;
+        margin-top: 3px;
+        &.active {
+          background: #3385ff;
+          border-radius: 15px;
+        }
+        i {
+          display: block;
+          background-image: url("#{$--tdt-assets-path}/sprite.png");
+          background-repeat: no-repeat;
+          margin: 0 auto;
+        }
+      }
+      .car-icon {
+        padding-top: 7px;
+        &.active {
+          i {
+            background-position: -88px -183px;
+          }
+        }
+        i {
+          width: 21px;
+          height: 16px;
+          background-position: -32px -180px;
+        }
+      }
+      .bus-icon {
+        padding-top: 5px;
+        &.active {
+          i {
+            background-position: -117px -178px;
+          }
+        }
+        i {
+          width: 20px;
+          height: 22px;
+          background-position: -62px -178px;
+        }
+      }
+      .clear-route {
+        height: 36px;
+        line-height: 36px;
+        float: right;
+        font-style: italic;
+        color: #000;
+        cursor: pointer;
+        font-size: 13px;
+      }
+    }
+
+    .route-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-top: 10px;
+      text-align: center;
+      .start-route,
+      .end-route {
+        display: flex;
+        align-items: center;
+        .icon-wrapper {
+          width: 30px;
+          height: 30px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .icon {
+          width: 16px;
+          height: 16px;
+          border-radius: 8px;
+          background: #fff;
+          border: 2px solid;
+        }
+        .content {
+          display: flex;
+          align-items: center;
+          width: 100%;
+          .ant-input-affix-wrapper {
+            width: 100%;
+            padding-right: 25px;
+            margin-left: 14px;
+            display: block;
+            border: 1px solid #e1dcdc;
+            &:hover {
+              .ant-input {
+                border-color: transparent;
+              }
+            }
+            .ant-input {
+              background: transparent;
+              border-color: transparent;
+              padding-left: 11px;
+              &:focus {
+                box-shadow: none;
+              }
+            }
+          }
+          .ant-input-suffix {
+            font-size: 16px;
+            right: 6px;
+          }
+        }
+      }
+      .start-route {
+        .icon {
+          border-color: rgb(50, 188, 95);
+        }
+      }
+      .end-route {
+        margin-top: 20px;
+        .icon {
+          border-color: rgb(250, 89, 106);
+        }
+      }
+      .switch-route {
+        position: absolute;
+        top: 26px;
+        width: 30px;
+        height: 30px;
+        i {
+          transform: rotateX(180deg) rotate(90deg);
+          margin-top: 11px;
+        }
+      }
+    }
+
+    .search-btn {
+      padding: 10px 0;
+      text-align: right;
+    }
+  }
+  @include e(content) {
+    max-height: 200px;
+    overflow: auto;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    .route-result {
+      width: 100%;
+      margin: auto;
+      .start-point,
+      .end-point {
+        & > .title {
+          height: 30px;
+          line-height: 30px;
+          i,
+          span {
+            display: inline-block;
+            vertical-align: middle;
+          }
+          i {
+            color: #fa596a;
+            font-size: 17px;
+            margin: 0 10px;
+          }
+          span {
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 12px;
+            cursor: pointer;
+          }
+        }
+
+        .content {
+          .route-results-container {
+            .route-info {
+              span {
+                max-width: 185px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

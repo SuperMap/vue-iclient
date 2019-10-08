@@ -3,3 +3,4 @@
 /dist/
 /test/unit/coverage/
 /demo
+*.spec.js

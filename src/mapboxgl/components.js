@@ -6,6 +6,9 @@ export { default as Progress } from '../common/progress/Progress';
 export { default as Text } from '../common/text/Text';
 export { default as TimeText } from '../common/time-text/TimeText';
 export { default as Border } from '../common/border/Border';
+export { default as Image } from '../common/image/Image';
+export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
+export { default as Iframe } from '../common/iframe/Iframe';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
@@ -34,6 +37,9 @@ export { default as Pan } from './web-map/control/pan/Pan';
 export { default as Scale } from './web-map/control/scale/Scale';
 export { default as Zoom } from './web-map/control/zoom/Zoom';
 export { default as Draw } from './web-map/control/draw/Draw';
+export { default as TdtSearch } from './tdt/search/TdtSearch';
+export { default as TdtRoute } from './tdt/route/TdtRoute';
+export { default as TdtMapSwitcher } from './tdt/mapSwitcher/TdtMapSwitcher';
 
 export { default as Chart } from './chart/Chart';
 export { default as WebMap } from './web-map/WebMap';
@@ -41,3 +47,4 @@ export { default as WebScene } from './web-scene/WebScene';
 export { default as OpenFile } from './open-file/OpenFile';
 export { default as Query } from './query/Query';
 export { default as Search } from './search/Search';
+export { default as TextList } from './text-list/TextList';

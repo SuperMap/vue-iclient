@@ -3,6 +3,7 @@ import MapGetter from '../../../_mixin/map-getter';
 import ClusterLayerViewModel from './ClusterLayerViewModel';
 import Layer from '../../../_mixin/layer';
 import CircleStyle from '../../../_types/CircleStyle';
+import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmClusterLayer',
@@ -42,6 +43,22 @@ export default {
     },
     clusteredPointTextLayout: {
       type: Object
+    }
+  },
+  watch: {
+    data(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal) && this.viewModel) {
+        this.viewModel.setData(this.data);
+      }
+    },
+    clusteredPointStyle() {
+      this.viewModel && this.viewModel.setClusteredPointStyle(this.clusteredPointStyle);
+    },
+    unclusteredPointStyle() {
+      this.viewModel && this.viewModel.setUnclusteredPointStyle(this.unclusteredPointStyle);
+    },
+    clusteredPointTextLayout() {
+      this.viewModel && this.viewModel.setClusteredPointTextLayout(this.clusteredPointTextLayout);
     }
   },
   loaded() {

@@ -24,9 +24,29 @@ export default {
     }
   },
   // messageTemplate
-  warning: {},
+  warning: {
+    unsupportedVideoAddress: '视频地址不合法',
+    unavailableVideo: '此视频暂无法播放，请稍后再试',
+    mapNotLoaded: '关联的地图尚未加载完整，请稍后',
+    unassociatedMap: '您需要配置关联地图！'
+  },
   success: {},
-  info: {},
+  info: {
+    loading: '加载中',
+    pressEscToExit: '按下 ESC 键或点击关闭按钮退出'
+  },
+  unit: {
+    kilometers: '千米',
+    miles: '英里',
+    meters: '米',
+    yards: '码',
+    feet: '英尺',
+    squarekilometers: '平方千米',
+    squaremiles: '平方英里',
+    squaremeters: '平方米',
+    squareyards: '平方码',
+    squarefeet: '平方英尺'
+  },
   error: {},
   commontypes: {
     restData: 'SuperMap Rest 数据服务',
@@ -35,7 +55,7 @@ export default {
     iportalData: 'SuperMap iPortal 数据',
     onlineLocalSearch: 'SuperMap Online 本地搜索'
   },
-  // 微件
+  // 组件
   timeText: {
     Year: '年',
     Month: '月',
@@ -53,7 +73,10 @@ export default {
   pan: {},
   scale: {},
   webmap: {
-    loadingTip: '地图加载中...'
+    loadingTip: '地图加载中...',
+    crsNotSupport: '不支持当前地图的坐标系！',
+    TileMatrixSetNotSuppport: '不支持传入的 TileMatrixSet！',
+    getLayerInfoFailed: '获取图层信息失败！'
   },
   legend: {
     themeField: '专题字段',
@@ -63,21 +86,13 @@ export default {
     noMatchLayer: '没有匹配的图层'
   },
   measure: {
-    mapMeasure: '地图量算',
+    mapMeasure: '量算',
     measureResult: '测量结果',
-    kilometers: '千米',
-    miles: '英里',
-    meters: '米',
-    yards: '码',
-    feet: '英尺',
-    squarekilometers: '平方千米',
-    squaremiles: '平方英里',
-    squaremeters: '平方米',
-    squareyards: '平方码',
-    squarefeet: '平方英尺',
     distance: '距离',
     area: '面积',
-    delete: '清空'
+    delete: '清空',
+    selectPlaceholder: '请选择',
+    startingPoint: '起点'
   },
   map: {},
   search: {
@@ -85,7 +100,10 @@ export default {
     noKey: '搜索关键字不能为空，请输入搜索条件。',
     inputPlaceHolder: '查找地址或地点',
     attribute: '属性',
-    attributeValue: '属性值'
+    attributeValue: '属性值',
+    setSearchSource: '请设置搜索源！',
+    address: '地址',
+    null: '空'
   },
   query: {
     query: '查询',
@@ -111,6 +129,107 @@ export default {
     openFileFail: '打开文件失败！',
     openFileSuccess: '打开文件成功!',
     selectFile: '选择文件',
-    openEmptyFile: '打开文件为空！'
+    openEmptyFile: '打开文件为空！',
+    openFile: '打开文件'
+  },
+  draw: {
+    draw: '绘制'
+  },
+  indicator: {
+    title: '指标标题',
+    unit: '单位'
+  },
+  tdtResults: {
+    on: '在',
+    station: '站',
+    total: '共',
+    about: '约',
+    // pagination
+    homePage: '首页',
+    prevPage: '上一页',
+    nextPage: '下一页',
+    // nothingResult
+    searchNoResult: '没有查询到相关结果',
+    youCanTry: '您可以尝试',
+    enterCorrect: '检查输入是否正确',
+    enterOtherKeyWords: '输入其他关键字进行搜索',
+    onTdtMap: '在天地图上',
+    addThisAddress: '添加该地点',
+    uWantTo: '您是否要找',
+    // pointResults
+    totalFind: '共找到',
+    piecesResults: '条结果',
+    phone: '电话',
+    address: '地址',
+    setStartPonint: '设为起点',
+    setEndPonint: '设为终点',
+    // routePlan
+    totalMiles: '总里程',
+    distance: '约{distance}公里',
+    showDetails: '显示全部详情',
+    switchTimes: '换乘{switchTimes}次',
+    noSwitch: '无换乘',
+    walk: '步行至',
+    getOff: '下车',
+    getOn: '上车',
+    take: '乘坐',
+    noSearchResults: '没有查询到线路信息',
+    fastRoute: '最快线路',
+    shortRoute: '最短线路',
+    walkRoute: '少走高速',
+    fast: '较快捷',
+    noSubway: '不坐地铁',
+    lessSwitch: '少换乘',
+    lessWalk: '少步行',
+    // staticResult
+    cityHadResults: '以下城市有结果，请您选择',
+    moreCity: '更多城市',
+    // LineResult
+    allFound: '共为您找到',
+    piecesBusRoute: '条公交线路',
+    showDetail: '展开详情',
+    busEndTime: '首末车时间',
+    relateAdress: '点击此处查看 "{keyWord}" 的相关地点',
+    // areaResult
+    switchTo: '已切换到'
+  },
+  tdtRoute: {
+    title: '路线',
+    clearRoute: '清除路线',
+    pleaseEnterStartPoint: '请输入起点',
+    pleaseEnterEndPoint: '请输入终点',
+    search: '搜索',
+    startPoint: '起点',
+    endPoint: '终点',
+    mapLoadedFiled: '地图加载失败',
+    busEndTime: '首末车时间',
+    about: '约',
+    station: '站',
+    total: '共',
+    hour: '小时',
+    minutes: '分钟'
+  },
+  tdtSearch: {
+    phone: '电话',
+    address: '地址',
+    noData: '暂无',
+    transport: '交通'
+  },
+  tdtMapSwitcher: {
+    title: '地图切换',
+    image: '影像',
+    vector: '矢量',
+    terrain: '地形',
+    placeName: '地名',
+    TiandituVec: '天地图矢量底图',
+    TiandituTer: '天地图地形底图',
+    TiandituImg: '天地图影像底图',
+    TiandituCva: '天地图矢量注记',
+    TiandituCta: '天地图地形注记',
+    TiandituCia: '天地图影像注记'
+  },
+  // layer
+  dataFlow: {
+    dataSubscriptionFailed: '数据订阅失败！'
   }
 };

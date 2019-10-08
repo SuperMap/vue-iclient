@@ -2,7 +2,7 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import FileModel from './FileModel';
 import { getFileType } from './FileTypes';
 import FileReaderUtil from './FileReaderUtil';
-import i18n from '../../common/_lang';
+import { geti18n } from '../../common/_lang';
 
 /**
  * @class OpenFileViewModel
@@ -31,7 +31,7 @@ class OpenFileViewModel extends mapboxgl.Evented {
        * @property {string} messageType - 警告类型。
        * @property {string} message - 警告内容。
        */
-      this.fire('errorfileformat', { messageType: 'failure', message: i18n.t(`openFile.fileTypeUnsupported`) });
+      this.fire('errorfileformat', { messageType: 'failure', message: geti18n().t(`openFile.fileTypeUnsupported`) });
       return false;
     }
     // 文件类型限制
@@ -98,7 +98,7 @@ class OpenFileViewModel extends mapboxgl.Evented {
          * @property {String} messageType - 信息类型。
          * @property {String} message - 失败信息。
          */
-        me.fire('openfilefailed', { messageType: 'failure', message: `${i18n.t(`openFile.openFileFail`)} ${e.message}` });
+        me.fire('openfilefailed', { messageType: 'failure', message: `${geti18n().t(`openFile.openFileFail`)} ${e.message}` });
       },
       this
     );

@@ -4,7 +4,7 @@ import SmOpenFile from '../OpenFile.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient9-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
+jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
 
 import { message } from 'ant-design-vue';
 const localVue = createLocalVue()

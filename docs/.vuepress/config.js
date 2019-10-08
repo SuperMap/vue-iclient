@@ -1,5 +1,5 @@
 module.exports = {
-  base: '/vue-iclient/',
+  base: process.argv[4] || '/',
   locales: {
     // 每个语言对象的键(key)，是语言的访问路径。
     // 然而，一种特例是将 '/' 作为默认语言的访问路径。
@@ -14,6 +14,7 @@ module.exports = {
     //   description: 'Vue components'
     // }
   },
+  dest: process.argv[5],
   title: 'vue components by supermap',
   description: 'vue components',
   configureWebpack: {
@@ -46,12 +47,12 @@ module.exports = {
             amd: '../../static/libs/echarts-layer/EchartsLayer.js'
           });
         }
-        if (/\/static\/libs\/iclient-mapboxgl\/iclient9-mapboxgl/.test(request)) {
+        if (/\/static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
           return callback(null, {
             root: 'SuperMap',
-            commonjs: '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
-            commonjs2: '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
-            amd: '../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js'
+            commonjs: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+            commonjs2: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+            amd: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
           });
         }
         callback();
@@ -93,10 +94,10 @@ module.exports = {
         label: '简体中文',
         selectText: '选择语言',
         nav: [
-          {
-            text: '指南',
-            link: '/zh/guide/'
-          },
+          // {
+          //   text: '指南',
+          //   link: '/zh/guide/'
+          // },
           {
             text: '组件',
             link: '/zh/api/'
@@ -114,6 +115,7 @@ module.exports = {
               collapsable: false,
               children: [
                 'web-map/map',
+                'web-scene/scene',
                 {
                   title: '地图子组件',
                   collapsable: false,
@@ -124,13 +126,39 @@ module.exports = {
                     'control/pan',
                     'control/zoom',
                     'control/scale',
-                    'control/measure'
+                    'control/measure',
+                    'control/draw',
+                    'control/query',
+                    'control/search',
+                    'control/open-file'
                   ]
+                },
+                {
+                  title: '天地图子组件',
+                  collapsable: false,
+                  children: ['tdt/tdt-route', 'tdt/tdt-search', 'tdt/tdt-map-switcher']
                 },
                 {
                   title: '可视化组件',
                   collapsable: false,
-                  children: ['layer/animate-marker']
+                  children: [
+                    'layer/geojson',
+                    'layer/raster-tile',
+                    'layer/vector-tile',
+                    'layer/animate-marker',
+                    'layer/fire',
+                    'layer/heatmap',
+                    'layer/cluster',
+                    'layer/unique-theme',
+                    'layer/range-theme',
+                    'layer/rank-symbol-theme',
+                    'layer/label-theme',
+                    'layer/graph-theme',
+                    'layer/mapv',
+                    'layer/echarts',
+                    'layer/deckgl',
+                    'layer/dataflow'
+                  ]
                 },
                 {
                   title: '图表组件',
@@ -140,7 +168,15 @@ module.exports = {
                 {
                   title: '基础组件',
                   collapsable: false,
-                  children: ['common/time-text', 'common/text', 'common/indicator', 'common/icon']
+                  children: [
+                    'common/time-text',
+                    'common/text',
+                    'common/indicator',
+                    'common/icon',
+                    'common/image',
+                    'common/iframe',
+                    'common/text-list'
+                  ]
                 }
               ]
             }

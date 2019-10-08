@@ -3,8 +3,8 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 // import RestDataParameter from '../../common/_types/RestDataParameter';
 // import RestMapParameter from '../../common/_types/RestMapParameter';
 import center from '@turf/center';
-import i18n from '../../common/_lang';
-import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
+import { geti18n } from '../../common/_lang';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 /**
  * @class QueryViewModel
  * @classdesc 查询组件功能类。
@@ -98,6 +98,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
   }
   _queryByRestData(restDataParameter) {
+    let maxFeatures = restDataParameter.maxFeatures || this.maxFeatures;
+    let toIndex = maxFeatures === 1 ? 0 : maxFeatures - 1;
     if (this.bounds) {
       var boundsParam = new SuperMap.GetFeaturesByBoundsParameters({
         attributeFilter: restDataParameter.attributeFilter,
@@ -105,7 +107,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
         spatialQueryMode: 'INTERSECT',
         geometry: this.bounds,
         fromIndex: 0,
-        toIndex: restDataParameter.maxFeatures - 1 || this.maxFeatures - 1
+        toIndex
       });
       new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesByGeometry(boundsParam, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
@@ -117,7 +119,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
         },
         datasetNames: restDataParameter.dataName,
         fromIndex: 0,
-        toIndex: restDataParameter.maxFeatures - 1 || this.maxFeatures - 1
+        toIndex
       });
       new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesBySQL(param, serviceResult => {
         this._dataQuerySucceed(serviceResult, restDataParameter);
@@ -142,9 +144,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
        * @description 查询失败后触发。
        * @property {Object} e  - 事件对象。
        */
-      this.fire('queryfailed', { message: i18n.t('query.noResults') });
+      this.fire('queryfailed', { message: geti18n().t('query.noResults') });
     } else {
-      this.fire('queryfailed', { message: i18n.t('query.queryFailed') });
+      this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
     }
   }
 
@@ -156,9 +158,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
       this._addResultLayer(this.queryResult);
       this.fire('querysucceeded', { result: this.queryResult });
     } else if (result && result.totalCount === 0) {
-      this.fire('queryfailed', { message: i18n.t('query.noResults') });
+      this.fire('queryfailed', { message: geti18n().t('query.noResults') });
     } else {
-      this.fire('queryfailed', { message: i18n.t('query.queryFailed') });
+      this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
     }
   }
 
@@ -185,13 +187,13 @@ export default class QueryViewModel extends mapboxgl.Evented {
             } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
               resultData = item;
             } else {
-              this.fire('queryfailed', { message: i18n.t('query.seviceNotSupport') });
+              this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
             }
           }, this);
           // 如果有服务，获取数据源和数据集, 然后请求rest服务
           this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);
         } else {
-          this.fire('queryfailed', { message: i18n.t('query.seviceNotSupport') });
+          this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
         }
       })
       .catch(error => {
@@ -201,12 +203,11 @@ export default class QueryViewModel extends mapboxgl.Evented {
   }
 
   _getDatafromRest(serviceType, address, iportalDataParameter) {
-    let withCredentials = iportalDataParameter.withCredentials || false;
     if (serviceType === 'RESTDATA') {
       let url = `${address}/data/datasources`;
 
       let sourceName, datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, { withCredentials })
+      SuperMap.FetchRequest.get(url, null, { withCredentials: false })
         .then(response => {
           return response.json();
         })
@@ -214,7 +215,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
           sourceName = data.datasourceNames[0];
           url = `${address}/data/datasources/${sourceName}/datasets`;
           // 请求获取数据集名
-          SuperMap.FetchRequest.get(url, null, { withCredentials })
+          SuperMap.FetchRequest.get(url, null, { withCredentials: false })
             .then(response => {
               return response.json();
             })
@@ -242,7 +243,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       // 如果是地图服务
       let url = `${address}/maps`;
       let mapName, layerName, path; // 请求获取地图名
-      SuperMap.FetchRequest.get(url, null, { withCredentials })
+      SuperMap.FetchRequest.get(url, null, { withCredentials: false })
         .then(response => {
           return response.json();
         })
@@ -251,7 +252,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
           path = data[0].path;
           url = url = `${address}/maps/${mapName}/layers`;
           // 请求获取图层名
-          SuperMap.FetchRequest.get(url, null, { withCredentials })
+          SuperMap.FetchRequest.get(url, null, { withCredentials: false })
             .then(response => {
               return response.json();
             })
@@ -358,10 +359,13 @@ export default class QueryViewModel extends mapboxgl.Evented {
    * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
    */
   addPopup(coordinates, popupContainer) {
-    popupContainer = popupContainer && popupContainer.outerHTML.replace(/display:\s*none/, 'display: block');
-    return new mapboxgl.Popup({ className: 'sm-mapboxgl-table-popup', closeOnClick: true })
+    popupContainer.style.display = 'block';
+    return new mapboxgl.Popup({
+      className: 'sm-mapboxgl-tabel-popup',
+      closeOnClick: true
+    })
       .setLngLat(coordinates)
-      .setHTML(popupContainer)
+      .setDOMContent(popupContainer)
       .addTo(this.map);
   }
   _addOverlayToMap(type, source, layerID) {
@@ -405,8 +409,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
     if (type === 'fill') {
       this.strokeLayerID = layerID + '-StrokeLine';
-      let stokeLineStyle = this.layerStyle.stokeLine;
-      let lineStyle = stokeLineStyle.paint || {
+      let stokeLineStyle = this.layerStyle.stokeLine || {};
+      let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
         'line-width': 3,
         'line-color': '#409eff',
         'line-opacity': 1

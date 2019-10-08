@@ -1,9 +1,10 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
-import center from '@turf/center';
-import '../../../static/libs/iclient-mapboxgl/iclient9-mapboxgl.min';
+import turfCenter from '@turf/center';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import iPortalDataService from '../_utils/iPortalDataService';
 import iServerRestService from '../_utils/iServerRestService';
+import { geti18n } from '../../common/_lang';
 /**
  * @class SearchViewModel
  * @classdesc 数据搜索功能类。
@@ -38,15 +39,26 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.searchTaskId = 0;
     this.options.cityGeoCodingConfig = {
       addressUrl: 'http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
-      key: 'fvV2osxwuZWlY0wJb8FEb2i5'
+      key: options.onlineLocalSearch.key || 'fvV2osxwuZWlY0wJb8FEb2i5'
     };
     if (map) {
       this.map = map;
     } else {
       return new Error(`Cannot find map`);
     }
-    this.searchtType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
+    this.searchtType = [
+      'layerNames',
+      'onlineLocalSearch',
+      'restMap',
+      'restData',
+      'iportalData',
+      'addressMatch'
+    ];
+    this.markerList = [];
+    this.popupList = [];
+    this.errorSourceList = {};
   }
+
   /**
    * @function SearchViewModel.prototype.search
    * @description 开始搜索。
@@ -54,7 +66,8 @@ export default class SearchViewModel extends mapboxgl.Evented {
    */
   search(keyWord) {
     this.searchCount = 0;
-    this.searchResult = [];
+    this.searchResult = {};
+    this.errorSourceList = {};
     this.keyWord = keyWord;
     this.maxFeatures = parseInt(this.options.maxFeatures) >= 100 ? 100 : parseInt(this.options.maxFeatures) || 8;
     this.searchtType.forEach(item => {
@@ -67,7 +80,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
         }
       }
     }, this);
-    let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = { ...this.options };
+    let { layerNames, onlineLocalSearch, restMap, restData, iportalData, addressMatch } = {
+      ...this.options
+    };
     layerNames && this._searchFromLayer(layerNames);
     onlineLocalSearch.enable && this._searchFromPOI(onlineLocalSearch);
     restMap && this._searchFromRestMap(restMap);
@@ -80,62 +95,110 @@ export default class SearchViewModel extends mapboxgl.Evented {
   /**
    * @function SearchViewModel.prototype.getFeatureInfo
    * @description 获取搜索结果的要素信息。
-   * @param {Object} searchResult - 搜索成功返回的结果数据。
-   * @param {String} filter - 过滤条件。
-   * @param {String} sourceName - 要素的来源名称。
+   * @param {String} searchKey - 搜索关键字。
+   * @param {String} data - 过滤数据。
    */
-  getFeatureInfo(searchResult, filter, sourceName) {
-    let filterValue = filter.indexOf('：') > 0 ? filter.split('：')[1].trim() : filter;
-    filterValue = filterValue === 'null' ? filter.split('：')[0].trim() : filterValue;
-    let data = { info: [] };
-    searchResult.forEach(result => {
-      if (sourceName === result.source) {
-        result.result.forEach(feature => {
-          let geometry, coordinates;
-          let properties = feature.properties || feature;
-          let propertiesValue = properties.address || feature.filterAttribute.filterAttributeValue || properties.name;
-          if (propertiesValue.toString().trim() === filterValue) {
-            geometry = feature.geometry || [feature.location.x, feature.location.y];
-            if (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon' || geometry.type === 'LineString') {
-              coordinates = center(feature).geometry.coordinates;
-            } else {
-              coordinates = geometry.coordinates || geometry;
-            }
-            data.coordinates = coordinates;
-            if (filter.indexOf('：') < 0) {
-              data.info.push({ attribute: '地址', attributeValue: propertiesValue });
-            } else {
-              for (let key in feature.properties) {
-                feature.properties[key] && data.info.push({ attribute: key, attributeValue: feature.properties[key] });
-              }
-            }
+  getFeatureInfo(searchKey, data) {
+    const { resultRender } = this.options;
+    this.keyWord = searchKey;
+    this._reset();
+    this.fire('search-selected-info' + this.searchTaskId, { data });
+    if (resultRender) {
+      return;
+    }
+    this._showResultToMap(data);
+  }
+
+  _showResultToMap(feature) {
+    const geometry = feature.geometry || [feature.location.x, feature.location.y];
+    if (!this.options.alwaysCenter && (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon')) {
+      this._addPolygon(feature);
+    } else if (!this.options.alwaysCenter && geometry.type === 'LineString') {
+      this._addLine(feature);
+    } else {
+      this._addPoint(feature);
+    }
+  }
+
+  _addPoint(feature) {
+    const properties = feature.properties || feature;
+    const geometry = feature.geometry || [feature.location.x, feature.location.y];
+    let pointData = { coordinates: null, info: [] };
+    const propertiesValue = properties.address || feature.filterAttribute.filterAttributeValue || properties.name;
+    if (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon' || geometry.type === 'LineString') {
+      pointData.coordinates = turfCenter(feature).geometry.coordinates;
+    } else {
+      pointData.coordinates = geometry.coordinates || geometry;
+    }
+    if (this.keyWord.indexOf('：') < 0) {
+      pointData.info.push({ attribute: geti18n().t('search.address'), attributeValue: propertiesValue });
+    } else {
+      for (let key in properties) {
+        properties[key] && pointData.info.push({ attribute: key, attributeValue: properties[key] });
+      }
+    }
+    this.fire('set-popup-content' + this.searchTaskId, { popupData: pointData });
+  }
+
+  _addLine() {
+    console.log('draw line here');
+  }
+
+  _addPolygon(feature) {
+    if (feature && this.map) {
+      let center = turfCenter(feature).geometry.coordinates;
+      const source = this.map.getSource('searchResultLayer');
+      const sourceData = feature;
+      if (source) {
+        source.setData(sourceData);
+      } else {
+        this.map.addLayer({
+          id: 'searchResultLayer',
+          type: 'fill',
+          source: {
+            type: 'geojson',
+            data: sourceData
+          },
+          layout: {},
+          paint: {
+            'fill-color': 'rgb(255, 0, 0)',
+            'fill-opacity': 0.8
           }
         });
       }
-    }, this);
-    return data;
+      this.map.easeTo({
+        center
+      });
+    }
   }
   /**
    * @function SearchViewModel.prototype.addMarker
    * @description 向地图上添加 Marker。
    * @param {Array} coordinates - 坐标数组。
    * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
+   * @param {Function} callback - 弹窗生成后的回调事件。
    */
-  addMarker(coordinates, popupContainer) {
-    popupContainer = popupContainer && popupContainer.outerHTML.replace(/display:\s*none/, 'display: block');
-    let popup = new mapboxgl.Popup({
-      className: 'sm-mapboxgl-table-popup',
+  setPopupContent(coordinates, popupContainer, callback) {
+    popupContainer.style.display = 'block';
+    const popup = new mapboxgl.Popup({
+      className: 'sm-mapboxgl-tabel-popup sm-component-search-result-popup',
       closeOnClick: true
-    })
+    });
+    const marker = new mapboxgl.Marker();
+    this.popupList.push(popup);
+    this.markerList.push(marker);
+    popup
       .setLngLat(coordinates)
-      .setHTML(popupContainer)
+      .setDOMContent(popupContainer)
       .addTo(this.map);
-    let marker = new mapboxgl.Marker()
+    popup.on('open', () => {
+      callback && callback();
+    });
+    marker
       .setLngLat(coordinates)
       .setPopup(popup)
       .addTo(this.map);
     this.map.flyTo({ center: coordinates });
-    return marker;
   }
 
   _searchFromLayer(layerNames) {
@@ -145,39 +208,52 @@ export default class SearchViewModel extends mapboxgl.Evented {
         if (source) {
           let features = clonedeep(source._data.features);
           let resultFeature = this._getFeaturesByKeyWord(this.keyWord, features);
-          this._searchFeaturesSucceed(resultFeature.slice(0, this.maxFeatures), sourceName);
+          const results = resultFeature.slice(0, this.maxFeatures);
+          if (results.length) {
+            results.length && this._searchFeaturesSucceed(results, sourceName);
+          } else {
+            this._searchFeaturesFailed('', sourceName);
+          }
         } else {
-          this._searchFeaturesFailed(`The ${sourceName} does not exist`);
+          this._searchFeaturesFailed(`The ${sourceName} does not exist`, sourceName);
         }
       }, this);
     }, 0);
   }
-  _searchFeaturesFailed(error) {
+  _searchFeaturesFailed(error, sourceName) {
+    error && console.log(error);
+    if (this.errorSourceList[sourceName]) return;
     this.searchCount--;
-    this.searchCount === 0 && this.fire('searchfailed' + this.searchTaskId, { error }) && (this.searchTaskId += 1);
+    this.errorSourceList[sourceName] = sourceName;
     /**
      * @event SearchViewModel#searchfailed
      * @description 搜索失败后触发。
      * @property {Object} e  - 事件对象。
      */
-    this.fire('searchfailed', { error });
-    error && console.log(error);
+    this.searchCount === 0 &&
+      this.fire('searchfailed' + this.searchTaskId, { error, sourceName }) &&
+      (this.searchTaskId += 1);
   }
   _searchFeaturesSucceed(resultFeature, sourceName) {
-    resultFeature.length > 0 && this.searchResult.push({ source: sourceName, result: resultFeature });
-    this.searchCount--;
-    this.searchCount === 0 &&
-      this.fire('searchsucceeded' + this.searchTaskId, { result: this.searchResult }) &&
-      (this.searchTaskId += 1);
+    if (this.errorSourceList[sourceName]) {
+      delete this.errorSourceList[sourceName];
+    }
+    let result = { source: sourceName, result: resultFeature };
+    this.searchResult[sourceName] = result;
+    let resultList = [];
+    for (let key in this.searchResult) {
+      resultList.push(this.searchResult[key]);
+    }
     /**
      * @event SearchViewModel#searchsucceeded
      * @description 搜索成功后触发。
      * @property {Object} e  - 事件对象。
      */
-    this.searchCount === 0 && this.fire('searchsucceeded', { result: this.searchResult });
+    this.fire('searchsucceeded' + this.searchTaskId, { result: resultList }) && (this.searchTaskId += 1);
   }
 
   _searchFromPOI(onlineLocalSearch) {
+    const sourceName = 'Online 本地搜索';
     this.geoCodeParam = {
       pageSize: this.options.pageSize || 10,
       pageNum: this.options.pageNum || 1,
@@ -191,36 +267,37 @@ export default class SearchViewModel extends mapboxgl.Evented {
       })
       .then(geocodingResult => {
         if (geocodingResult.error) {
-          this._searchFeaturesFailed(geocodingResult.error);
+          this._searchFeaturesFailed(geocodingResult.error, sourceName);
           return;
         }
         if (geocodingResult.poiInfos && geocodingResult.poiInfos.length === 0) {
-          this._searchFeaturesFailed();
+          this._searchFeaturesFailed('', sourceName);
           return;
         }
         if (geocodingResult.poiInfos) {
           const geoJsonResult = this._dataToGeoJson(geocodingResult.poiInfos, this.geoCodeParam);
-          this._searchFeaturesSucceed(geoJsonResult.slice(0, this.maxFeatures), 'Online 本地搜索');
+          this._searchFeaturesSucceed(geoJsonResult.slice(0, this.maxFeatures), sourceName);
         }
       })
       .catch(error => {
-        this._searchFeaturesFailed(error);
+        this._searchFeaturesFailed(error, sourceName);
       });
   }
 
   _searchFromRestMap(restMaps) {
+    const sourceName = 'Rest Map Search';
     restMaps.forEach(restMap => {
       let iserverService = new iServerRestService(restMap.url);
       iserverService.on('getdatafailed', e => {
-        this._searchFeaturesFailed();
+        this._searchFeaturesFailed('', sourceName);
       });
       iserverService.on('featureisempty', e => {
-        this._searchFeaturesFailed();
+        this._searchFeaturesFailed('', sourceName);
       });
       iserverService.on('getdatasucceeded', e => {
         if (e.features) {
           let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
-          this._searchFeaturesSucceed(resultFeatures, restMap.name || 'Rest Map Search');
+          this._searchFeaturesSucceed(resultFeatures, restMap.name || sourceName);
         }
       });
       iserverService.getMapFeatures(
@@ -231,20 +308,19 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   _searchFromRestData(restDatas) {
+    const sourceName = 'Rest Data Search';
     restDatas.forEach(restData => {
       let iserverService = new iServerRestService(restData.url);
       iserverService.on('getdatafailed', e => {
-        this._searchFeaturesFailed();
+        this._searchFeaturesFailed('', sourceName);
       });
       iserverService.on('featureisempty', e => {
-        this._searchFeaturesFailed();
+        this._searchFeaturesFailed('', sourceName);
       });
       iserverService.on('getdatasucceeded', e => {
         if (e.features && e.features.length > 0) {
           let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
-          this._searchFeaturesSucceed(resultFeatures, restData.name || 'Rest Data Search');
-        } else {
-          this.searchCount--;
+          this._searchFeaturesSucceed(resultFeatures, restData.name || sourceName);
         }
       });
       let dataSourceName = restData.dataName[0].split(':')[0];
@@ -257,18 +333,19 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   _searchFromIportal(iportalDatas) {
+    const sourceName = 'Iportal Search';
     iportalDatas.forEach(iportal => {
       let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false);
       iPortalService.on('getdatafailed', e => {
-        this._searchFeaturesFailed();
+        this._searchFeaturesFailed('', sourceName);
       });
       iPortalService.on('featureisempty', e => {
-        this._searchFeaturesFailed();
+        this._searchFeaturesFailed('', sourceName);
       });
       iPortalService.on('getdatasucceeded', e => {
         if (e.features) {
           let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
-          this._searchFeaturesSucceed(resultFeatures, iportal.name || 'Rest Map Search');
+          this._searchFeaturesSucceed(resultFeatures, iportal.name || sourceName);
         }
       });
       iPortalService.getData({ keyWord: this.keyWord });
@@ -276,6 +353,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   _searchFromAddressMatch(addressMatches) {
+    const sourceName = 'Address Match Search';
     addressMatches.forEach(addressMatch => {
       this.addressMatchService = new mapboxgl.supermap.AddressMatchService(addressMatch.url);
       let parm = {
@@ -288,9 +366,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
       let geoCodeParam = new SuperMap.GeoCodingParameter(parm);
       this.addressMatchService.code(geoCodeParam, e => {
         if (e.result && e.result.length > 0) {
-          this._searchFeaturesSucceed(e.result, addressMatch.name || 'Address Match Search');
+          this._searchFeaturesSucceed(e.result, addressMatch.name || sourceName);
         } else {
-          this._searchFeaturesFailed();
+          this._searchFeaturesFailed('', sourceName);
         }
       });
     }, this);
@@ -311,9 +389,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
         },
         filterAttribute: {
           filterAttributeName: data[i].name || geoCodeParam.keyWords,
-          filterAttributeValue: data[i].formatedAddress || data[i].address || '空'
+          filterAttributeValue: data[i].formatedAddress || data[i].address || geti18n().t('search.null')
         },
-        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address || '空'}`
+        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address || geti18n().t('search.null')}`
       };
       features.push(feature);
     }
@@ -341,7 +419,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       operatingAttributeNames.forEach(attributeName => {
         if (fAttr[attributeName] && keyReg.test(fAttr[attributeName].toString().toLowerCase())) {
           let filterAttributeName = attributeName;
-          let filterAttributeValue = fAttr[attributeName] || '空';
+          let filterAttributeValue = fAttr[attributeName] || geti18n().t('search.null');
           if (!feature.filterAttribute) {
             feature.filterAttribute = {
               filterAttributeName: filterAttributeName,
@@ -364,5 +442,56 @@ export default class SearchViewModel extends mapboxgl.Evented {
         attributeNames.push(field);
       }, this);
     return attributeNames;
+  }
+
+  _clearMarkers() {
+    if (this.markerList.length) {
+      this.markerList.forEach(marker => {
+        marker && marker.remove();
+      });
+      this.markerList = [];
+    }
+  }
+
+  _clearPopups() {
+    if (this.popupList.length) {
+      this.popupList.forEach(popup => {
+        popup && popup.remove();
+      });
+      this.popupList = [];
+    }
+  }
+
+  _clearSearchResultLayer() {
+    if (this.map && this.map.getLayer('searchResultLayer')) {
+      this.map.removeLayer('searchResultLayer');
+      this.map.removeSource('searchResultLayer');
+    }
+  }
+
+  _resetSearchSourceData() {
+    if (this.map && this.map.getSource('searchResultLayer')) {
+      this.map.getSource('searchResultLayer').setData({
+        type: 'FeatureCollection',
+        features: []
+      });
+    }
+  }
+
+  _reset() {
+    this._resetSearchSourceData();
+    this._clearMarkers();
+    this._clearPopups();
+  }
+
+  clear() {
+    this.searchTaskId = 0;
+    this.searchResult = {};
+    this.errorSourceList = {};
+    if (!this.options.resultRender) {
+      this._clearSearchResultLayer();
+      this._clearMarkers();
+      this._clearPopups();
+    }
   }
 }

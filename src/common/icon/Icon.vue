@@ -1,8 +1,8 @@
 <template>
-  <div class="sm-component-icon">
+  <div class="sm-component-icon" :style="[background && getBackgroundStyle]">
     <i
       v-if="!!iconClass"
-      :class="'sm-components-icons-' + iconClass"
+      :class="customIconClass"
       :style="[iconStyle, colorStyle]"
       :theme="theme"
       :twoToneColor="twoToneColor"
@@ -44,11 +44,18 @@ export default {
     },
     component: {
       type: Object
+    },
+    autoPrefix: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
     colorStyle() {
       return !this.iconStyle || !this.iconStyle.color ? this.getColorStyle(0) : { color: this.iconStyle.color };
+    },
+    customIconClass() {
+      return this.autoPrefix ? 'sm-components-icons-' + this.iconClass : this.iconClass;
     }
   }
 };

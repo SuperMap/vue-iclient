@@ -27,6 +27,7 @@ import ECharts from 'vue-echarts';
 import Control from '../../mapboxgl/_mixin/control';
 import Card from '../../common/_mixin/card';
 import Theme from '../../common/_mixin/theme';
+import Timer from '../../common/_mixin/timer';
 import { chartThemeUtil } from '../../common/_utils/style/theme/chart';
 import UniqueId from 'lodash.uniqueid';
 import EchartsDataService from '../_utils/EchartsDataService';
@@ -47,6 +48,7 @@ import isEqual from 'lodash.isequal';
  * @vue-prop {Boolean} [autoresize = true] - 用来指定 ECharts 实例在组件根元素尺寸变化时是否需要自动进行重绘。
  * @vue-prop {String} group - 实例的分组，会自动绑定到 ECharts 组件的同名属性上。
  * @vue-prop {Boolean} [manualUpdate = false] - 在性能敏感（数据量很大）的场景下，我们最好对于 options prop 绕过 Vue 的响应式系统。当将 manual-update prop 指定为 true 且不传入 options prop 时，数据将不会被监听。然后，你需要用 ref 获取组件实例以后手动调用 mergeOptions 方法来更新图表。
+ * @vue-prop {Boolean} [autoPlay = false] - 是否自动播放，图表类型为 pie 时生效。
  * @vue-computed {String} computedOptions - 用来读取 ECharts 更新内部 options 后的实际数据。
  * @vue-event {Object} legendselectchanged - 切换图例选中状态后的事件。
  * @vue-event {Object} legendselected - 图例选中后的事件。
@@ -129,7 +131,7 @@ export default {
   components: {
     'v-chart': ECharts
   },
-  mixins: [Control, Theme, Card],
+  mixins: [Control, Theme, Card, Timer],
   props: {
     iconClass: {
       type: String,
@@ -172,6 +174,10 @@ export default {
     manualUpdate: {
       type: Boolean,
       default: false
+    },
+    autoPlay: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -208,19 +214,34 @@ export default {
     // 是否传入dataset和datasetOptions
     _isRequestData() {
       return (
-        this.dataset && Object.keys(this.dataset).length > 0 && this.datasetOptions && this.datasetOptions.length > 0
+        this.dataset &&
+        Object.keys(this.dataset).length > 0 &&
+        this.dataset.url &&
+        this.datasetOptions &&
+        this.datasetOptions.length > 0
       );
+    },
+    xBar() {
+      return this.options && this.options.yAxis && this.options.yAxis.type === 'category';
     }
   },
   watch: {
     theme() {
       this.chartTheme = null;
     },
-    colorGroup(newVal, oldVal) {
+    colorGroupsData(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
-        if (!this.theme) {
-          this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroup);
-        }
+        this._setChartTheme();
+      }
+    },
+    textColorsData(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this._setChartTheme();
+      }
+    },
+    backgroundData(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this._setChartTheme();
       }
     },
     dataset: {
@@ -234,10 +255,11 @@ export default {
     },
     datasetOptions: {
       handler: function(newVal, oldVal) {
-        if (!isEqual(newVal, oldVal)) {
+        if (!isEqual(newVal, oldVal) && newVal.length) {
           !this.echartsDataService &&
             this._isRequestData &&
             this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+          this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
           this.echartsDataService &&
             this.dataSeriesCache &&
             this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
@@ -250,7 +272,8 @@ export default {
           if (this.datasetChange && !this.dataSeriesCache) {
             return;
           }
-          if (this.dataSeriesCache) {
+
+          if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
             this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
           } else {
             this.echartOptions = Object.assign({}, this.options);
@@ -268,14 +291,17 @@ export default {
     },
     computedOptions() {
       return this.smChart && this.smChart.computedOptions;
+    },
+    autoPlay() {
+      this._handlePieAutoPlay();
     }
   },
   created() {
-    this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
-    // 切换主题
-    this.$on('themeStyleChanged', () => {
-      this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
-    });
+    this._setChartTheme();
+    // // 切换主题
+    // this.$on('theme-style-changed', () => {
+    //   this._setChartTheme();
+    // });
   },
   mounted() {
     // 设置echarts实例
@@ -289,24 +315,86 @@ export default {
         this.$emit(event, params);
       });
     });
-
+    !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
   },
+  updated() {
+    this._handlePieAutoPlay(); // 更新自动播放
+  },
+  beforeDestroy() {
+    clearInterval(this.pieAutoPlay); // clear 自动播放
+  },
   methods: {
+    _handlePieAutoPlay() {
+      let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
+      let echartsNode = this.smChart.chart;
+      if (
+        this._chartOptions.legend &&
+        this._chartOptions.legend.data &&
+        this._chartOptions.legend.data.length &&
+        echartsNode &&
+        seriesType === 'pie'
+      ) {
+        this.clearPieAutoPlay(echartsNode);
+        if (this.autoPlay) {
+          this.setPieAutoPlay(echartsNode);
+        }
+      }
+    },
+    setPieAutoPlay(echartsNode) {
+      let i = -1;
+      this.pieAutoPlay = setInterval(() => {
+        echartsNode.dispatchAction({
+          type: 'downplay',
+          seriesIndex: 0,
+          dataIndex: i
+        });
+        i++;
+        if (i >= this._chartOptions.legend.data.length) {
+          i = 0;
+        }
+        echartsNode.dispatchAction({
+          type: 'highlight',
+          seriesIndex: 0,
+          dataIndex: i
+        });
+      }, 2000);
+    },
+    clearPieAutoPlay(echartsNode) {
+      clearInterval(this.pieAutoPlay);
+      for (let i = 0; i < this._chartOptions.legend.data.length; i++) {
+        echartsNode.dispatchAction({
+          type: 'downplay',
+          seriesIndex: 0,
+          dataIndex: i
+        });
+      }
+    },
+    timing() {
+      this.echartsDataService &&
+        this.echartsDataService.getDataOption(this.dataset).then(options => {
+          this.hideLoading();
+          // 缓存dataSeriesCache，请求后格式化成echart的数据
+          this.dataSeriesCache = Object.assign({}, options);
+          this.datasetChange = false;
+          // 设置echartOptions
+          this.echartOptions = this._optionsHandler(this.options, options);
+        });
+    },
     // 请求数据,设置echartOptions
     _setEchartOptions(dataset, datasetOptions, echartOptions) {
       this.echartsDataService = null;
       this.dataSeriesCache = null;
       this.showLoading('default', {
-        text: '加载中',
+        text: this.$t('info.loading'),
         color: this.colorGroupsData[0],
         textColor: this.textColorsData,
         maskColor: 'rgba(0,0,0,0.8)',
         zlevel: 0
       });
       this.echartsDataService = new EchartsDataService(dataset, datasetOptions);
-      this.echartsDataService.getDataOption().then(options => {
+      this.echartsDataService.getDataOption(dataset, this.xBar).then(options => {
         this.hideLoading();
         // 缓存dataSeriesCache，请求后格式化成echart的数据
         this.dataSeriesCache = Object.assign({}, options);
@@ -316,12 +404,33 @@ export default {
       });
     },
     _optionsHandler(options, dataOptions) {
-      if (options && options.xAxis && dataOptions.xAxis) {
-        if (dataOptions.series.length === 0) {
-          options.xAxis = [{}];
-        } else if (!Array.isArray(options.xAxis)) {
-          options.xAxis = [Object.assign({}, options.xAxis, dataOptions.xAxis[0])];
+      dataOptions = dataOptions && JSON.parse(JSON.stringify(dataOptions)); // clone 避免引起重复刷新
+      options = options && JSON.parse(JSON.stringify(options)); // clone 避免引起重复刷新
+      if (options && options.legend && !options.legend.type) {
+        options.legend.type = 'scroll';
+      }
+      let yAxis = options.yAxis;
+      let xAxis = options.xAxis;
+      if (xAxis && dataOptions.xAxis) {
+        let axis = xAxis;
+        let axisData = dataOptions.xAxis[0];
+        let type = 'xAxis';
+        if (yAxis && yAxis.type === 'category') {
+          // 处理条形图
+          type = 'yAxis';
+          axis = yAxis;
+          dataOptions.yAxis = dataOptions.xAxis;
+          delete dataOptions.xAxis;
         }
+        if (dataOptions.series.length === 0) {
+          axis = [{}];
+        } else if (!Array.isArray(axis)) {
+          if (axisData.data.length) {
+            axis.data = [];
+          }
+          axis = [Object.assign({}, axisData, axis)];
+        }
+        options[type] = axis;
       }
       if (options && options.series && dataOptions.series) {
         if (dataOptions.series.length === 0) {
@@ -330,6 +439,17 @@ export default {
           options.series = dataOptions.series.map((element, index) => {
             return Object.assign({}, options.series[index] || {}, element);
           });
+          // pie的图例需要一个扇形是一个图例
+          if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
+            options.legend.data = [];
+            options.series.forEach(element => {
+              options.legend.data.push(
+                ...element.data.map(item => {
+                  return item.name;
+                })
+              );
+            });
+          }
         }
       }
       if (options && options.radar && dataOptions.radar) {
@@ -339,11 +459,22 @@ export default {
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
-      let options = echartsDataService.formatChartData(datasetOptions);
+      let options;
+      if (this.dataset.type === 'rest') {
+        options = echartsDataService.formatThridRestChartData(datasetOptions, this.xBar);
+      } else if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer') {
+        options = echartsDataService.formatChartData(datasetOptions, this.xBar);
+      }
+
       // 缓存dataSeriesCache，格式化成echart的数据
       this.dataSeriesCache = Object.assign({}, options);
       // 设置echartOptions
-      this.echartOptions = Object.assign({}, echartOptions, options);
+      this.echartOptions = this._optionsHandler(echartOptions, options);
+    },
+    _setChartTheme() {
+      if (!this.theme) {
+        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
+      }
     },
     // 获取echart实例
     _getEchart() {

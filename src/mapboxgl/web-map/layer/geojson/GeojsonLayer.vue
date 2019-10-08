@@ -2,6 +2,7 @@
 import MapGetter from '../../../_mixin/map-getter';
 import Layer from '../../../_mixin/layer';
 import GeojsonLayerViewModel from './GeojsonLayerViewModel';
+import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmGeojsonLayer',
@@ -17,20 +18,14 @@ export default {
   watch: {
     layerStyle: {
       handler() {
-        for (let key in this.layerStyle) {
-          if (key === 'paint' && this.layerStyle.paint) {
-            for (let prop of Object.keys(this.layerStyle.paint)) {
-              this.map.setPaintProperty(this.layerId, prop, this.layerStyle.paint[prop]);
-            }
-          }
-          if (key === 'layout' && this.layerStyle.layout) {
-            for (let prop of Object.keys(this.layerStyle.layout)) {
-              this.map.setLayoutProperty(this.layerId, prop, this.layerStyle.layout[prop]);
-            }
-          }
-        }
+        this.viewModel && this.viewModel.setLayerStyle(this.layerStyle);
       },
       deep: true
+    },
+    data(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal) && this.viewModel) {
+        this.viewModel.setData(this.data);
+      }
     }
   },
   loaded() {

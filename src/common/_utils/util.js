@@ -1,8 +1,9 @@
 // 获取当前时间返回置顶格式
-import i18n, { getLanguage } from '../../common/_lang';
+import { getLanguage, geti18n } from '../../common/_lang';
+import colorcolor from 'colorcolor';
 
 export function getDateTime(timeType) {
-  return i18n.d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
+  return geti18n().d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
 }
 // hex -> rgba
 export function hexToRgba(hex, opacity) {
@@ -17,6 +18,10 @@ export function hexToRgba(hex, opacity) {
     opacity +
     ')'
   );
+}
+export function isTransparent(color) {
+  const rgba = colorcolor(color, 'rgba');
+  return +rgba.match(/(\d(\.\d+)?)+/g)[3] === 0;
 }
 // 保留指定位数的小数
 export function reservedDecimal(val, precise) {
@@ -65,4 +70,17 @@ export function isYField(data) {
     lowerdata === 'lat' ||
     lowerdata === 'y坐标'
   );
+}
+
+export function getColorWithOpacity(color, opacity) {
+  if (color.indexOf('rgba') > -1) {
+    return color.substring(0, color.lastIndexOf(',') + 1) + opacity + ')';
+  }
+  let newColor = colorcolor(color, 'rgb');
+  return 'rgba' + newColor.substring(3, newColor.length - 1) + `,${opacity})`;
+}
+
+export function parseUrl(url) {
+  const urlRe = /^(\w+):\/\/([^/?]*)(\/[^?]+)?\??(.+)?/;
+  return url.match(urlRe);
 }

@@ -11,7 +11,7 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
-const outputFileName = 'iclient9-mapboxgl-vue';
+const outputFileName = 'iclient-mapboxgl-vue';
 const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : require('../config/prod.env');
 
 const isMinify = process.argv.includes('-p');
@@ -51,6 +51,12 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs2: 'vue-echarts',
         amd: 'vue-echarts'
       },
+      'ant-design-vue': {
+        root: 'antd',
+        commonjs: 'ant-design-vue',
+        commonjs2: 'ant-design-vue',
+        amd: 'ant-design-vue'
+      },
       xlsx: {
         root: 'XLSX',
         commonjs: 'xlsx',
@@ -71,6 +77,12 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs: 'three',
         commonjs2: 'three',
         amd: 'three'
+      },
+      'video.js': {
+        root: '_videojs',
+        commonjs: 'video.js',
+        commonjs2: 'video.js',
+        amd: 'video.js'
       }
     },
     /// \/static\/libs\//,
@@ -78,41 +90,33 @@ const webpackConfig = merge(baseWebpackConfig, {
       if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
         return callback(null, {
           root: 'mapboxgl',
-          commonjs: './static/libs/mapboxgl/mapbox-gl-enhance.js',
-          commonjs2: './static/libs/mapboxgl/mapbox-gl-enhance.js',
-          amd: './static/libs/mapboxgl/mapbox-gl-enhance.js'
+          commonjs: '../static/libs/mapboxgl/mapbox-gl-enhance.js',
+          commonjs2: '../static/libs/mapboxgl/mapbox-gl-enhance.js',
+          amd: '../static/libs/mapboxgl/mapbox-gl-enhance.js'
         });
       }
       if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
         return callback(null, {
           root: 'DeckGL',
-          commonjs: './static/libs/deckgl/deck.gl.min.js',
-          commonjs2: './static/libs/deckgl/deck.gl.min.js',
-          amd: './static/libs/deckgl/deck.gl.min.js'
+          commonjs: '../static/libs/deckgl/deck.gl.min.js',
+          commonjs2: '../static/libs/deckgl/deck.gl.min.js',
+          amd: '../static/libs/deckgl/deck.gl.min.js'
         });
       }
       if (/\/static\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
         return callback(null, {
           root: 'EchartsLayer',
-          commonjs: './static/libs/echarts-layer/EchartsLayer.js',
-          commonjs2: './static/libs/echarts-layer/EchartsLayer.js',
-          amd: './static/libs/echarts-layer/EchartsLayer.js'
+          commonjs: '../static/libs/echarts-layer/EchartsLayer.js',
+          commonjs2: '../static/libs/echarts-layer/EchartsLayer.js',
+          amd: '../static/libs/echarts-layer/EchartsLayer.js'
         });
       }
-      // if (/\/static\/libs\/geostats\/geostats/.test(request)) {
-      //   return callback(null, {
-      //     root: "geostats",
-      //     commonjs: "./static/libs/geostats/geostats.js",
-      //     commonjs2: "./static/libs/geostats/geostats.js",
-      //     amd: "./static/libs/geostats/geostats.js"
-      //   });
-      // }
-      if (/\/static\/libs\/iclient-mapboxgl\/iclient9-mapboxgl/.test(request)) {
+      if (/\/static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
         return callback(null, {
           root: 'SuperMap',
-          commonjs: './static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
-          commonjs2: './static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js',
-          amd: './static/libs/iclient-mapboxgl/iclient9-mapboxgl.min.js'
+          commonjs: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+          commonjs2: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+          amd: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
         });
       }
       callback();
@@ -140,7 +144,7 @@ const webpackConfig = merge(baseWebpackConfig, {
    `),
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../static'),
+        from: path.resolve(__dirname, '../static/index.js'),
         to: config.build.assetsSubDirectory,
         ignore: ['libs/Cesium/**/*']
       }

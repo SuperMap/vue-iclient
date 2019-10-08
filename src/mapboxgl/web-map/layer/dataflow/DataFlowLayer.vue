@@ -58,7 +58,7 @@ export default {
   methods: {
     registerEvents() {
       this.dataFlowLayerViewModel.on('subscribefailed', e => {
-        this.$message.error('数据订阅失败！');
+        this.$message.error(this.$t('dataFlow.dataSubscriptionFailed'));
         /**
          * @event subscribeFailed
          * @desc 数据订阅失败后触发。

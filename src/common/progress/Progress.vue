@@ -1,12 +1,12 @@
 <template>
-  <div class="sm-component-progress">
+  <div class="sm-component-progress" :style="[background && getBackgroundStyle]">
     <a-progress
-      :percent="parseFloat(percent)"
+      :percent="parseFloat(finalPercent)"
       :type="type"
       :stroke-width="parseFloat(strokeWidth)"
       :show-info="showInfo"
       :width="calWidth"
-      :stroke-color="curColor"
+      :stroke-color="colorData"
       :status="status"
       :gap-degree="type==='circle' ? gapDegree : null"
       :gap-position="gapPosition"
@@ -17,10 +17,12 @@
 <script>
 import Theme from '../_mixin/theme';
 import { ResizeSensor } from 'css-element-queries';
+import Timer from '../_mixin/timer';
+import RestService from '../../mapboxgl/_utils/RestService';
 
 export default {
   name: 'SmProgress',
-  mixins: [Theme],
+  mixins: [Theme, Timer],
   props: {
     percent: {
       type: [Number, String],
@@ -66,11 +68,16 @@ export default {
         const strokeLinecapList = ['round', 'square'];
         return strokeLinecapList.includes(strokeLinecap);
       }
+    },
+    url: {
+      type: String
     }
   },
   data() {
     return {
-      circleWidth: 0
+      colorData: '',
+      circleWidth: 0,
+      finalPercent: this.percent
     };
   },
   computed: {
@@ -79,30 +86,61 @@ export default {
         return this.size;
       }
       return this.circleWidth;
-    },
-    curColor() {
-      return this.strokeColor || this.getColor(0);
     }
   },
   watch: {
+    strokeColor(val) {
+      this.colorData = val;
+    },
     textColorsData: {
       handler() {
         if (this.progressTextNode) {
           this.progressTextNode.style.color = this.getTextColor;
         }
       }
+    },
+    percent(val) {
+      this.finalPercent = val;
+    },
+    url: {
+      handler(val) {
+        if (val) {
+          this.getData();
+        } else {
+          this.finalPercent = this.percent;
+        }
+      },
+      immediate: true
     }
   },
   mounted() {
+    this.colorData = this.strokeColor || this.getColor(0);
+    this.$on('theme-style-changed', () => {
+      this.colorData = this.getColor(0);
+    });
     this.progressTextNode = this.$el.querySelector('.ant-progress-text');
     this.progressTextNode.style.color = this.getTextColor;
     this.resizeObsever = new ResizeSensor(this.$el, () => {
       this.resize();
     });
+    this.restService = new RestService();
+    this.restService.on('getdatasucceeded', this.fetchData);
+  },
+  beforeDestroy() {
+    this.restService.off('getdatasucceeded', this.fetchData);
   },
   methods: {
     resize() {
       this.circleWidth = Math.min(this.$el.offsetWidth, this.$el.offsetHeight);
+    },
+    timing() {
+      this.getData();
+    },
+    fetchData(data) {
+      this.finalPercent = data.data;
+    },
+    getData() {
+      this.restService && this.restService.getData(this.url);
     }
   }
 };

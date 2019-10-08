@@ -391,7 +391,7 @@ export default {
   methods: {
     changeStyle() {
       smcomponents.setTheme('dark');
-      document.getElementsByTagName('body')[0].style.background = '#fff';
+      document.getElementsByTagName('body')[0].style.background = '#000';
     },
     changeStyle1() {
       smcomponents.setTheme('light');

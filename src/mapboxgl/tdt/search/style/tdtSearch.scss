@@ -1,0 +1,123 @@
+@import '../../../../common/_utils/style/mixins/mixins.scss';
+
+@include b(tdtSearch) {
+  max-height: 300px;
+  
+  @include e(suggestions) {
+    li {
+      max-width: 95%;
+      .name {
+        font-size: 14px;
+      }
+      .address {
+        font-size: 12px;
+        margin-left: 5px;
+        color: #b8b8b8;
+      }
+    }
+  }
+  @include e(content) {
+    width: 310px;
+    height: 100%;
+    overflow: auto;
+    max-height: 300px;
+    &::-webkit-scrollbar{
+      display: none;
+    }
+  }
+  .sm-component-search__result {
+    max-height: 200px;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+    max-width: 315px;
+    .title {
+      height: 36px;
+      line-height: 36px;
+      padding-left: 20px;
+      .region,
+      .total-num {
+        color: #fe1d1d;
+        font-weight: 700;
+      }
+    }
+    ul {
+      font-size: 12px;
+    }
+  }
+}
+
+.tdt-search-popup {
+  width: 370px;
+  color: #000;
+  overflow: hidden;
+
+  .popup-container {
+    width: 333px;
+    font-size: 12px;
+    .title {
+      font-weight: 700;
+      border-bottom: 1px solid #ccc;
+      padding: 5px 0;
+      height: 33px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-size: 14px;
+    }
+
+    .phone,
+    .address {
+      margin: 10px 0;
+    }
+    .operate-group {
+      .start-item,
+      .end-item {
+        padding: 6px;
+        cursor: pointer;
+        display: inline-block;
+        vertical-align: middle;
+        border: 1px solid #ccc;
+
+        span {
+          display: block;
+          padding-left: 20px;
+          color: #0078a8;
+          position: relative;
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-image: url("#{$--tdt-assets-path}/sprite.png");
+            background-repeat: no-repeat;
+            width: 17px;
+            height: 17px;
+          }
+        }
+      }
+
+      .end-item {
+        border-left-color: transparent;
+        span {
+          &::before {
+            background-position: -165px -152px;
+          }
+        }
+      }
+
+      .start-item {
+        span {
+          &::before {
+            background-position: -120px -152px;
+          }
+        }
+      }
+    }
+  }
+}
+.tdt-search-line-hover-popup {
+  .mapboxgl-popup-content {
+    padding: 0;
+  }
+}

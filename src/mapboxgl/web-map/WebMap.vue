@@ -1,20 +1,16 @@
 <template>
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
-    <Pan v-if="panControl.show" :position="panControl.position"/>
-    <Scale v-if="scaleControl.show" :position="scaleControl.position"/>
-    <Zoom
-      v-if="zoomControl.show"
-      :show-zoom-slider="zoomControl.zoomWithSlider"
-      :position="zoomControl.position"
-    />
+    <Pan v-if="panControl.show" :position="panControl.position" />
+    <Scale v-if="scaleControl.show" v-bind="scaleControl" />
+    <Zoom v-if="zoomControl.show" v-bind="zoomControl" />
     <mini-map v-if="miniMapControl.show" v-bind="miniMapControl"></mini-map>
     <layer-list v-if="layerListControl.show" v-bind="layerListControl"></layer-list>
     <Measure v-if="measureControl.show" v-bind="measureControl"></Measure>
     <Legend v-if="legendControl.show" v-bind="legendControl"></Legend>
     <Query v-if="queryControl.show" v-bind="queryControl"></Query>
     <Search v-if="searchControl.show" v-bind="searchControl"></Search>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning"/>
+    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
@@ -31,7 +27,9 @@ import Measure from './control/measure/Measure.vue';
 import Legend from './control/legend/Legend.vue';
 import Query from '../query/Query.vue';
 import Search from '../search/Search.vue';
-import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
+import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
+import { addListener, removeListener } from 'resize-detector';
+import debounce from 'lodash/debounce';
 
 /**
  * @module WebMap
@@ -46,6 +44,7 @@ import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
  * @vue-prop {String} [tiandituKey] - 用于访问天地图的服务。当设置 `mapId` 时有效。
  * @vue-prop {String} [withCredentials=false] - 请求是否携带 cookie。当设置 `mapId` 时有效。
  * @vue-prop {String} [excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `mapId` 时有效。
+ * @vue-prop {Boolean} [autoresize = true] - 用来指定 webmap 实例在组件根元素尺寸变化时是否需要自动进行重绘,需要设置webmap组件样式为width:100%, height:100%。
  * @vue-prop {Object} [panControl] - 位移组件配置参数。
  * @vue-prop {Boolean} [panControl.show=false] - 是否显示位移组件。
  * @vue-prop {String} [panControl.position="top-left"] - 位移组件放置位置。
@@ -55,7 +54,7 @@ import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
  * @vue-prop {Object} [zoomControl] - 缩放组件配置参数。
  * @vue-prop {Boolean} [zoomControl.show=false] - 是否显示缩放组件。
  * @vue-prop {String} [zoomControl.position="top-left"] - 缩放组件放置位置。
- * @vue-prop {Boolean} [zoomControl.zoomWithSlider="false"] - 缩放组件是否含有滑动条。
+ * @vue-prop {Boolean} [zoomControl.showZoomSlider="false"] - 缩放组件是否含有滑动条。
  * @vue-prop {Object} [miniMapControl] - 鹰眼组件配置参数。
  * @vue-prop {Boolean} [miniMapControl.show=false] - 是否显示鹰眼组件。
  * @vue-prop {String} [miniMapControl.position="bottom-right"] - 鹰眼组件放置位置。
@@ -79,6 +78,8 @@ import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
 interface commonControlParam {
   show?: boolean;
   position?: string;
+  background?: string;
+  textColor?: string;
 }
 
 interface cardCommonParam extends commonControlParam {
@@ -87,7 +88,7 @@ interface cardCommonParam extends commonControlParam {
 }
 
 interface zoomParam extends commonControlParam {
-  zoomWithSlider?: boolean;
+  showZoomSlider?: boolean;
 }
 
 interface measureParam extends cardCommonParam {
@@ -123,7 +124,21 @@ interface searchParam extends commonControlParam {
 
 @Component({
   name: 'SmWebMap',
-  viewModelProps: ['mapId', 'serverUrl', 'mapOptions', 'withCredentials'],
+  viewModelProps: [
+    'mapId',
+    'serverUrl',
+    'mapOptions.center',
+    'mapOptions.zoom',
+    'mapOptions.style',
+    'mapOptions.crs',
+    'mapOptions.minZoom',
+    'mapOptions.maxZoom',
+    'mapOptions.maxBounds',
+    'mapOptions.renderWorldCopies',
+    'mapOptions.bearing',
+    'mapOptions.pitch',
+    'withCredentials'
+  ],
   components: {
     Pan,
     Scale,
@@ -142,6 +157,8 @@ class SmWebMap extends Mixins(VmUpdater) {
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
   viewModel: WebMapViewModel;
+  // data
+  @Provide() __resizeHandler;
 
   @Prop() mapId: string;
   @Prop({ default: 'map' }) target: string;
@@ -152,6 +169,7 @@ class SmWebMap extends Mixins(VmUpdater) {
   @Prop({ default: false }) withCredentials: boolean;
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() mapOptions: any;
+  @Prop({ default: true }) autoresize: boolean;
   @Prop({
     default: () => {
       return { show: false, position: 'top-left' };
@@ -245,6 +263,7 @@ class SmWebMap extends Mixins(VmUpdater) {
   }
 
   beforeDestroy() {
+    this.destory();
     mapEvent.$options.deleteMap(this.target);
     mapEvent.$options.deleteWebMap(this.target);
   }
@@ -272,7 +291,16 @@ class SmWebMap extends Mixins(VmUpdater) {
 
   /* methods */
   initializeWebMap(): void {
-    let { target, serverUrl, accessToken, accessKey, tiandituKey, withCredentials, excludePortalProxyUrl, mapOptions } = this.$props;
+    let {
+      target,
+      serverUrl,
+      accessToken,
+      accessKey,
+      tiandituKey,
+      withCredentials,
+      excludePortalProxyUrl,
+      mapOptions
+    } = this.$props;
     this.viewModel = new WebMapViewModel(
       this.mapId,
       {
@@ -286,6 +314,17 @@ class SmWebMap extends Mixins(VmUpdater) {
       },
       mapOptions
     );
+    if (this.autoresize) {
+      this.__resizeHandler = debounce(
+        () => {
+          this.resize();
+        },
+        100,
+        { leading: true }
+      );
+      // @ts-ignore
+      addListener(this.$el, this.__resizeHandler);
+    }
   }
 
   resize() {
@@ -308,13 +347,15 @@ class SmWebMap extends Mixins(VmUpdater) {
        */
       this.load({ map: e.map });
     });
-    this.viewModel.on('getmapfailed', e => {
+    this.viewModel.on('getmapinfofailed', e => {
       /**
        * @event getMapFailed
        * @desc 获取 WebMap 地图信息失败。
        * @property {Object} error - 失败原因。
        */
       this.getMapFailed({ error: e.error });
+      this.$message.error(e.error.message);
+      this.spinning = false;
     });
     this.viewModel.on('getlayerdatasourcefailed', e => {
       /**
@@ -325,7 +366,15 @@ class SmWebMap extends Mixins(VmUpdater) {
        * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
        */
       this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
+      this.$message.error(this.$t('webmap.getLayerInfoFailed'));
     });
+  }
+
+  destory(): void {
+    if (this.autoresize) {
+      // @ts-ignore
+      removeListener(this.$el, this.__resizeHandler);
+    }
   }
 }
 

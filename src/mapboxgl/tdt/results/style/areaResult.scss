@@ -1,0 +1,21 @@
+@import '../../../../common/_utils/style/mixins/mixins.scss';
+
+@include b(tdtAreaResults) {
+  padding: 20px 0;
+  .title {
+    text-align: center;
+  }
+  i {
+    display: inline-block;
+    background: url("#{$--tdt-assets-path}/sprite.png") -485px -152px no-repeat;
+    width: 18px;
+    height: 18px;
+    margin-right: 8px;
+    vertical-align: top;
+  }
+  .name {
+    color: #333;
+    font-weight: 700;
+    margin-left: 2px;
+  }
+}

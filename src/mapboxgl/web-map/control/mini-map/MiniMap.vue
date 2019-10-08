@@ -6,15 +6,18 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
     @content-show-state="handleMinimapResize"
   >
     <div id="miniMap" class="miniMap">
-      <a-spin v-if="spinning" size="small" :tip="$t('webmap.loadingTip')" :spinning="spinning"/>
+      <a-spin v-if="spinning" size="small" :tip="$t('info.loading')" :spinning="spinning" />
     </div>
   </sm-card>
 </template>
 
 <script>
+import Theme from '../../../../common/_mixin/theme';
 import MiniMapViewModel from './MiniMapViewModel';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
@@ -22,8 +25,12 @@ import Card from '../../../../common/_mixin/card';
 
 export default {
   name: 'SmMiniMap',
-  mixins: [MapGetter, Control, Card],
+  mixins: [MapGetter, Control, Card, Theme],
   props: {
+    collapsed: {
+      type: Boolean, // 是否折叠
+      default: true
+    },
     iconClass: {
       type: String,
       default: 'sm-components-icons-return'

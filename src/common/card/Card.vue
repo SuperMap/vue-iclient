@@ -111,8 +111,8 @@ export default {
   watch: {
     iconClass(newVal, oldVal) {
       if (newVal && !oldVal) {
-        this.isShow = this.collapsed;
-        this.toggleTransition(this.collapsed ? 'enter' : 'leave');
+        this.isShow = !this.collapsed;
+        this.toggleTransition(this.collapsed ? 'leave' : 'enter');
       } else if (!newVal) {
         // 如果iconClass 为空 则默认显示内容
         this.isShow = true;
@@ -120,12 +120,12 @@ export default {
     }
   },
   created() {
-    this.iconClass && (this.isShow = this.collapsed);
+    this.iconClass && (this.isShow = !this.collapsed);
     let rotateDeg = this.headerName ? this.hasHeaderRotateDeg : this.rotateDeg;
     this.autoRotate && (this.transform = rotateDeg[this.position][this.isShow ? 1 : 0]);
   },
   mounted() {
-    this.toggleTransition(this.collapsed ? 'enter' : 'leave');
+    this.toggleTransition(this.collapsed ? 'leave' : 'enter');
   },
   methods: {
     iconClicked() {

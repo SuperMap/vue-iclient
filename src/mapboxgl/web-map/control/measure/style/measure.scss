@@ -40,8 +40,7 @@
     text-align: center;
     font-size: 22px;
     vertical-align: middle;
-    & .sm-components-icons-polygon-layer,
-    & .sm-components-icons-line-layer {
+    i {
       cursor: pointer;
       font-size: $--text-regular;
     }

@@ -1,0 +1,7 @@
+@import '../../_utils/style/mixins/mixins.scss';
+
+@include b(count-to) {
+  @include e(numItem) {
+    display: inline-block;
+  }
+}

@@ -1,65 +1,79 @@
 <template>
   <div class="sm-component-web-scene">
-    <div :id="sceneId" class="sm-component-web-scene__wrap"></div>
+    <cesium-viewer v-if="sceneUrl" class="sm-component-web-scene__wrap" @ready="ready"></cesium-viewer>
   </div>
 </template>
-
-<script>
+<script lang="ts">
+import Vue from 'vue';
+import { Component, Prop, Watch, Emit } from 'vue-property-decorator';
 import WebSceneViewModel from './WebSceneViewModel';
+import isEqual from 'lodash.isequal';
 
-export default {
-  name: 'SmWebScene',
-  // viewModelProps: ['sceneUrl', 'scanEffect', 'navigation'],
-  props: {
-    sceneUrl: {
-      type: String,
-      required: true
-    },
-    scanEffect: {
-      type: Object
-    },
-    navigation: {
-      type: Boolean,
-      default: true
-    }
-  },
-  data() {
-    return {
-      tooltipIsVisable: true
+@Component({
+  name: 'SmWebScene'
+})
+class SmWebScene extends Vue {
+  WebSceneViewModel: WebSceneViewModel;
+
+  @Prop() sceneUrl: string;
+
+  @Prop() options: {
+    withCredentials: boolean;
+    position?: { x: number; y: number; z: number };
+    scanEffect?: {
+      status?: boolean;
+      type?: 'circle' | 'noScan' | 'line';
+      centerPostion?: { x: number; y: number; z: number };
+      period?: number;
+      speed?: number;
     };
-  },
-  computed: {
-    sceneId() {
-      return 'scene' + parseInt(Math.random() * 100);
-    }
-  },
-  watch: {
-    sceneUrl() {
-      this.sceneViewModel && this.sceneViewModel.setSceneUrl(this.sceneUrl);
-    },
-    scanEffect() {
-      this.sceneViewModel && this.sceneViewModel.setScanEffect(this.scanEffect);
-    }
-  },
-  mounted() {
-    this.createdScene();
-  },
-  beforeDestroy() {
-    this.sceneViewer && this.sceneViewer.destroy();
-    this.sceneViewer = null;
-  },
-  methods: {
-    // 创建场景
-    createdScene() {
-      this.sceneViewModel = new WebSceneViewModel(this.sceneId, this.sceneUrl, this.scanEffect, this.navigation);
-      this.sceneViewModel.on('createsceneviewersucceeded', () => {
-        this.sceneViewer = this.sceneViewModel.sceneViewer;
-      });
-      this.sceneViewModel.on('sceneisprivate', () => {
-        this.$message.destroy();
-        this.$message.error('当前服务并未公开');
-      });
+  };
+
+  @Watch('sceneUrl')
+  sceneUrlChaned() {
+    this.WebSceneViewModel && this.WebSceneViewModel.setSceneUrl(this.sceneUrl);
+  }
+
+  @Watch('options.scanEffect')
+  scanEffectChaned(newVal, oldVal) {
+    if (!isEqual(newVal, oldVal)) {
+      this.WebSceneViewModel && this.WebSceneViewModel.setScanEffect(this.options.scanEffect);
     }
   }
-};
+
+  @Watch('options.position')
+  positionChaned(newVal, oldVal) {
+    if (!isEqual(newVal, oldVal)) {
+      this.WebSceneViewModel && this.WebSceneViewModel.setPosition(this.options.position);
+    }
+  }
+
+  @Emit()
+  viewerPositionChanged(value) {
+    return value;
+  }
+
+  @Emit()
+  scanPositionChanged(value) {
+    return value;
+  }
+
+  ready(cesiumInstance) {
+    const { Cesium, viewer } = cesiumInstance;
+    this.WebSceneViewModel = new WebSceneViewModel(Cesium, viewer, this.sceneUrl, this.options);
+    this.registerEvents();
+  }
+
+  registerEvents() {
+    this.WebSceneViewModel.on('viewerpositionchanged', e => {
+      let position = e.position;
+      this.viewerPositionChanged(position);
+    });
+    this.WebSceneViewModel.on('scanpositionchanged', e => {
+      let position = e.position;
+      this.scanPositionChanged(position);
+    });
+  }
+}
+export default SmWebScene;
 </script>

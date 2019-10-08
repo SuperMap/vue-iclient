@@ -1,7 +1,17 @@
 @import "../../_utils/style/mixins/mixins.scss";
 
 @include b(text) {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1.5;
   padding: 4px;
+  @include e(href) {
+    display: inline-block;
+    &:hover{
+      cursor: pointer;
+      color: #40a9ff !important;
+    }
+  }
+  
 }

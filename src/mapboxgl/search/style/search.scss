@@ -36,6 +36,10 @@
       & + .ant-input-affix-wrapper {
         margin-left: 18px;
         margin-right: 30px;
+        &.toolBar-input {
+          margin-left: 0;
+          margin-right: 30px;
+        }
       }
     }
   }
@@ -45,12 +49,12 @@
     padding: 6px 0;
     box-sizing: border-box;
     text-align: center;
-    color: #b6b6b6;
+    opacity: 0.8;
     background: rgba(207, 216, 220, 0.2);
     cursor: pointer;
   }
   @include e(content) {
-    transform-origin: top left; 
+    transform-origin: top left;
     overflow: hidden;
     box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
     &.sm-component-zoom-in-enter-active {
@@ -72,10 +76,13 @@
   }
   @include e(a-input) {
     &.ant-input-affix-wrapper {
-      width: unset;
+      width: auto;
       padding-right: 25px;
       margin-left: 30px;
       margin-right: 18px;
+      &.toolBar-input {
+        margin-right: 0;
+      }
       display: block;
       &:hover {
         .ant-input {
@@ -102,11 +109,29 @@
       width: 6px;
       height: 6px;
     }
+    ul {
+      list-style: none;
+      // margin-left: -32px;
+      padding: 0;
+      font-size: 13px;
+      & > li {
+        padding: 8px 0;
+        padding-left: 10px;
+        display: block;
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        &.active {
+          background: #f2f2f2;
+        }
+      }
+    }
   }
-  @include e(panel) {
-    padding-left: 4px;
-    padding-right: 4px;
-  }
+  // @include e(panel) {
+  //   padding-left: 4px;
+  //   padding-right: 4px;
+  // }
 
   @include e(panel-header) {
     display: block;
@@ -120,23 +145,5 @@
     text-overflow: ellipsis;
     white-space: nowrap;
     width: 96%;
-  }
-  @include e(panel-body) {
-    & > ul {
-      list-style: none;
-      margin-left: -32px;
-      font-size: 13px;
-      & > li {
-        padding: 8px 0;
-        display: block;
-        cursor: pointer;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        &:hover {
-          color: #409eff;
-        }
-      }
-    }
   }
 }
