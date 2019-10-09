@@ -130,7 +130,7 @@
     "vue-class-component": "^7.1.0",
     "vue-jest": "^3.0.2",
     "vue-loader": "^15.5.1",
-    "vue-server-renderer": "2.5.17",
+    "vue-server-renderer": "^2.5.17",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "^2.5.17",
     "vuepress": "^1.0.3",
