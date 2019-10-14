@@ -114,15 +114,21 @@ export default class DataFlowLayerViewModel extends mapboxgl.Evented {
         }
       });
       if (type === 'Point') {
+        let pointType = 'circle';
+        let pointPaint = {
+          'circle-radius': 6,
+          'circle-color': 'red'
+        };
+        if (layerStyle.symbol) {
+          pointType = 'symbol';
+          pointPaint = {};
+        }
         this.map.addLayer({
           id: this.sourceID,
-          type: 'circle',
-          paint: (layerStyle.circle && layerStyle.circle.paint) || {
-            'circle-radius': 6,
-            'circle-color': 'red'
-          },
-          layout: (layerStyle.circle && layerStyle.circle.layout) || {},
-          source: this.sourceID
+          type: pointType,
+          source: this.sourceID,
+          paint: (layerStyle[pointType] && layerStyle[pointType].paint) || pointPaint,
+          layout: (layerStyle[pointType] && layerStyle[pointType].layout) || {}
         });
       } else if (type === 'MultiPolygon' || type === 'Polygon') {
         this.map.addLayer({

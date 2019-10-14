@@ -18,6 +18,7 @@
 import WebMapViewModel from './WebMapViewModel';
 import mapEvent from '../_types/map-event';
 import VmUpdater from '../../common/_mixin/vm-updater';
+import MapEvents from './_mixin/map-events.ts';
 import Pan from './control/pan/Pan.vue';
 import Scale from './control/scale/Scale.vue';
 import Zoom from './control/zoom/Zoom.vue';
@@ -151,7 +152,7 @@ interface searchParam extends commonControlParam {
     Search
   }
 })
-class SmWebMap extends Mixins(VmUpdater) {
+class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   spinning = true;
 
   // eslint-disable-next-line
@@ -340,6 +341,9 @@ class SmWebMap extends Mixins(VmUpdater) {
       this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
       mapEvent.$emit('load-map', e.map, this.target);
       e.map.resize();
+      this.map = e.map;
+      // 绑定map event
+      this.bindMapEvents();
       /**
        * @event load
        * @desc webmap 加载完成之后触发。
