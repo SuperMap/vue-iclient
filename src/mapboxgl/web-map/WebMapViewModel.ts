@@ -1379,7 +1379,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       features = handleMultyPolygon(features);
     }
 
-    if (layerInfo.style && layerInfo.filterCondition) {
+    if ((layerInfo.style || layerInfo.themeSetting) && layerInfo.filterCondition) {
       // 将 feature 根据过滤条件进行过滤, 分段专题图和单值专题图因为要计算 styleGroup 所以暂时不过滤
       if (layerType !== 'RANGE' && layerType !== 'UNIQUE' && layerType !== 'RANK_SYMBOL') {
         features = this._getFiterFeatures(layerInfo.filterCondition, features);

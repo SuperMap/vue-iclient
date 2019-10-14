@@ -66,6 +66,7 @@ module.exports = {
         include: [
           resolve('src'),
           resolve('test'),
+          resolve('static/libs/json-sql'),
           // resolve('node_modules/webpack-dev-server/client'),
           resolve('node_modules/vue-echarts'),
           resolve('node_modules/resize-detector'),
