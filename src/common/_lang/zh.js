@@ -94,7 +94,6 @@ export default {
     selectPlaceholder: '请选择',
     startingPoint: '起点'
   },
-  map: {},
   search: {
     noResult: '查询结果为空！',
     noKey: '搜索关键字不能为空，请输入搜索条件。',

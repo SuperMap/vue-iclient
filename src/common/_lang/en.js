@@ -94,7 +94,6 @@ export default {
     selectPlaceholder: 'Please Select',
     startingPoint: 'Starting Point'
   },
-  map: {},
   search: {
     noResult: 'The query result is empty!',
     noKey: 'The search keyword cannot be empty. Please enter the search condition.',
