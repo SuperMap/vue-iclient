@@ -86,7 +86,8 @@ export default class iPortalDataService extends mapboxgl.Evented {
               resultData = item;
             }
           }, this);
-          if (resultData) {
+          // 有rest服务并且address不为空（online的address服务为''）
+          if (resultData && resultData.address) {
             // 如果有服务，获取数据源和数据集, 然后请求rest服务
             this._getDatafromRest(resultData.serviceType, resultData.address, queryInfo);
           } else {
