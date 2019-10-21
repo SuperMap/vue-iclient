@@ -2982,7 +2982,9 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       tiles: url,
       tileSize: 256,
       // @ts-ignore
-      rasterSource: isIserver ? 'iserver' : ''
+      rasterSource: isIserver ? 'iserver' : '',
+      // @ts-ignore
+      prjCoordSys: isIserver ? {epsgCode:this.baseProjection.split(':')[1]} : ''
     };
     this.map.addLayer({
       id: layerID,
