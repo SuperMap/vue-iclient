@@ -2851,8 +2851,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     } else if (['REGION', 'POLYGON', 'MULTIPOLYGON'].includes(type)) {
       transTable = {
         fillColor: 'fill-color',
-        fillOpacity: 'fill-opacity',
-        strokeColor: 'fill-outline-color'
+        fillOpacity: 'fill-opacity'
+        // strokeColor: 'fill-outline-color'
       };
     }
 
