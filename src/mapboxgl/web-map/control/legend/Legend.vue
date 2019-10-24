@@ -21,8 +21,8 @@
         class="sm-component-legend__table"
       >
         <a-collapse-panel
-          v-for="(layerValue,layerKey,index) in legendList"
-          :key="`${index+1}`"
+          v-for="(layerValue,layerKey) in legendList"
+          :key="layerKey"
           :showArrow="false"
         >
           <template slot="header">
@@ -262,6 +262,7 @@ export default {
             this.$set(this.legendList, layer, style);
           }
         });
+        this.activeLegend = JSON.stringify(this.legendList) !== '{}' ? Object.keys(this.legendList)[0] : [];
       }
     }
   },

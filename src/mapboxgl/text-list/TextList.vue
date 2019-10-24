@@ -1,11 +1,11 @@
 <template>
   <div class="sm-component-text-list">
-    <template v-if="animateContent.length>0">
-      <div
-        class="sm-component-text-list__header"
-        :style="[listStyle.headerHeight,{background: getColor(0)},getTextColorStyle]"
-      >
-        <div class="sm-component-text-list__header-content">
+    <div
+      class="sm-component-text-list__header"
+      :style="[listStyle.headerHeight,{background: getColor(0)},getTextColorStyle]"
+    >
+      <div class="sm-component-text-list__header-content">
+        <template v-if="animateContent && animateContent.length>0">
           <template
             v-for="(item,index) in ((header && header.length>0 && header) || Object.keys(animateContent[0]))"
           >
@@ -15,16 +15,18 @@
               :title="item"
             >{{ item }}</div>
           </template>
-        </div>
+        </template>
       </div>
+    </div>
+    <div
+      class="sm-component-text-list__animate"
+      :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle, getColorStyle]"
+    >
       <div
-        class="sm-component-text-list__animate"
-        :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle, getColorStyle]"
+        ref="listContent"
+        :class="['sm-component-text-list__body-content',animate && 'sm-component-text-list__body-content--anim']"
       >
-        <div
-          ref="listContent"
-          :class="['sm-component-text-list__body-content',animate && 'sm-component-text-list__body-content--anim']"
-        >
+        <template v-if="animateContent && animateContent.length>0">
           <div
             v-for="(item,index) in animateContent"
             :key="index"
@@ -37,9 +39,9 @@
               :style="listStyle.rowHeight"
             >{{ items }}</div>
           </div>
-        </div>
+        </template>
       </div>
-    </template>
+    </div>
     <a-spin v-if="spinning" size="large" :tip="$t('info.loading')" :spinning="spinning" />
   </div>
 </template>
@@ -286,13 +288,13 @@ class SmTextList extends Mixins(Theme) {
     this.animateContent = this.animateContent.concat(this.animateContent);
     this.startInter = setInterval(() => {
       let wrapper = this.$refs.listContent;
-      wrapper['style'].marginTop = `-${this.listStyle.rowStyle.height}`;
+      wrapper && wrapper['style'] && (wrapper['style'].marginTop = `-${this.listStyle.rowStyle.height}`);
       this.animate = !this.animate;
-
       setTimeout(() => {
-        let first = this.$refs.listContent['children'][0];
+        let first =
+          this.$refs.listContent && this.$refs.listContent['children'] && this.$refs.listContent['children'][0];
         // @ts-ignore
-        this.$refs.listContent.appendChild(first);
+        first && this.$refs.listContent.appendChild(first);
         wrapper['style'].marginTop = '0px'; // 保持滚动距离初始值一直为 0
         this.animate = !this.animate;
       }, 500);
