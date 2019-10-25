@@ -295,7 +295,7 @@ class SmTextList extends Mixins(Theme) {
           this.$refs.listContent && this.$refs.listContent['children'] && this.$refs.listContent['children'][0];
         // @ts-ignore
         first && this.$refs.listContent.appendChild(first);
-        wrapper['style'].marginTop = '0px'; // 保持滚动距离初始值一直为 0
+        wrapper && wrapper['style'] && (wrapper['style'].marginTop = '0px'); // 保持滚动距离初始值一直为 0
         this.animate = !this.animate;
       }, 500);
     }, 2000);

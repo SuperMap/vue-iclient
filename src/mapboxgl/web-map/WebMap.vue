@@ -169,6 +169,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop() tiandituKey: string;
   @Prop({ default: false }) withCredentials: boolean;
   @Prop() excludePortalProxyUrl: boolean;
+  @Prop() isSuperMapOnline: boolean;
   @Prop() mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
   @Prop({
@@ -300,6 +301,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       tiandituKey,
       withCredentials,
       excludePortalProxyUrl,
+      isSuperMapOnline,
       mapOptions
     } = this.$props;
     this.viewModel = new WebMapViewModel(
@@ -311,7 +313,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         accessKey,
         tiandituKey,
         withCredentials,
-        excludePortalProxyUrl
+        excludePortalProxyUrl,
+        isSuperMapOnline
       },
       mapOptions
     );

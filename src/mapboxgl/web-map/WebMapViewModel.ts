@@ -89,6 +89,7 @@ interface webMapOptions {
   tiandituKey?: string;
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
+  isSuperMapOnline?: boolean;
   center?: number[];
   zoom?: number;
 }
@@ -129,6 +130,8 @@ export default class WebMapViewModel extends mapboxgl.Evented {
   target: string;
 
   excludePortalProxyUrl: boolean;
+
+  isSuperMapOnline: boolean;
 
   center: number[];
 
@@ -175,6 +178,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
     this.center = mapOptions.center || [];
     this.zoom = mapOptions.zoom;
+    this.isSuperMapOnline = options.isSuperMapOnline;
     this.echartslayer = [];
     this._createWebMap();
   }
@@ -435,7 +439,15 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
       renderWorldCopies: false,
-      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false
+      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false,
+      transformRequest: (url, resourceType) => {
+        if (resourceType === 'Tile' && this.isSuperMapOnline && url.indexOf('http://') === 0) {
+          url = `https://www.supermapol.com/apps/viewer/getUrlResource.png?url=${encodeURIComponent(url)}`;
+        }
+        return {
+          url: url
+        };
+      }
     });
     /**
      * @event WebMapViewModel#mapinitialized
