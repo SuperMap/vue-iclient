@@ -1398,7 +1398,7 @@ export default class WebMapViewModel extends mapboxgl.Evented {
       }
     }
 
-    if (features && layerInfo.projection !== 'EPSG:4326') {
+    if (features && layerInfo.projection && layerInfo.projection !== 'EPSG:4326') {
       this._transformFeatures(features);
     }
 
