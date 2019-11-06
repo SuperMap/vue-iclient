@@ -5,6 +5,7 @@ import '../../../static/libs/iclient-leaflet/iclient-leaflet.min.css';
 import '../../../static/libs/geostats/geostats';
 import '../../../static/libs/json-sql/jsonsql';
 import { isXField, isYField } from '../../common/_utils/util';
+import getCenter from '@turf/center';
 
 interface webMapOptions {
   target?: string;
@@ -137,6 +138,17 @@ export default class WebMapViewModel extends L.Evented {
         return response.json();
       })
       .then(mapInfo => {
+        if (mapInfo && mapInfo.succeed === false) {
+          /**
+           * @event WebMapViewModel#getmapinfofailed
+           * @description 获取地图信息失败。
+           * @property {Object} error - 失败原因。
+           */
+          let error = { message: mapInfo && mapInfo.error && mapInfo.error.errorMsg };
+          this.fire('getmapinfofailed', { error });
+          console.log(error);
+          return;
+        }
         let { projection, title, description, layers, baseLayer } = mapInfo;
 
         this.baseProjection = projection;
@@ -177,9 +189,9 @@ export default class WebMapViewModel extends L.Evented {
 
     // zoom & center
     let center: [number, number] | L.LatLng;
-    center = mapInfo.center && [mapInfo.center.y, mapInfo.center.x];
+    center = mapInfo.center && [mapInfo.center.x, mapInfo.center.y];
     let zoom = level || 0;
-    zoom = zoom === 0 ? 0 : zoom - 1;
+    zoom = zoom === 0 ? 0 : zoom + 1;
 
     if (!center) {
       center = [0, 0];
@@ -190,7 +202,7 @@ export default class WebMapViewModel extends L.Evented {
     let crs = L.CRS[`EPSG${epsgCode}`];
 
     // bounds
-    let bounds = L.bounds([extent.leftBottom.x, extent.leftBottom.y], [extent.rightTop.x, extent.rightTop.y]);
+    // let bounds = L.bounds([extent.leftBottom.x, extent.leftBottom.y], [extent.rightTop.x, extent.rightTop.y]);
     center =
       this.baseProjection === 'EPSG:3857'
         ? crs.unproject(L.point(center[0], center[1]))
@@ -204,9 +216,9 @@ export default class WebMapViewModel extends L.Evented {
       minZoom: minZoom || 0
     });
 
-    this.map.fitBounds(L.latLngBounds(crs.unproject(bounds.min), crs.unproject(bounds.max)), {
-      maxZoom: maxZoom || 22
-    });
+    // this.map.fitBounds(L.latLngBounds(crs.unproject(bounds.min), crs.unproject(bounds.max)), {
+    //   maxZoom: maxZoom || 22
+    // });
 
     /**
      * @event WebMapViewModel#mapinitialized
@@ -353,6 +365,7 @@ export default class WebMapViewModel extends L.Evented {
       // 坐标系转换 -------------------------------------TODO
     }
 
+    let layer;
     switch (layerType) {
       case 'VECTOR':
         if (featureType === 'POINT') {
@@ -367,7 +380,7 @@ export default class WebMapViewModel extends L.Evented {
         }
         break;
       case 'UNIQUE':
-        // this._createUniqueLayer(layerInfo, features);
+        layer = this._createUniqueLayer(layerInfo, features);
         break;
       case 'RANGE':
         // this._createRangeLayer(layerInfo, features);
@@ -390,9 +403,13 @@ export default class WebMapViewModel extends L.Evented {
         break;
     }
 
+    this.map.addLayer(layer);
+
     if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
       // 存在标签专题图
-      // this._addLabelLayer(layerInfo, features);
+      features = this._getFiterFeatures(filterCondition, features);
+      let labelLayer = this._addLabelLayer(layerInfo, features);
+      this.map.addLayer(labelLayer);
     }
   }
 
@@ -407,6 +424,125 @@ export default class WebMapViewModel extends L.Evented {
     // @ts-ignore
     let layer = L.supermap.tiledMapLayer(url);
     this.map.addLayer(layer);
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._createUniqueLayer
+   * @description 创建单值图层。
+   * @param layerInfo  某个图层的图层信息
+   * @param features   图层上的 feature
+   */
+  private _createUniqueLayer(layerInfo: any, features: any) {
+    let { filterCondition, style, themeSetting, featureType, layerID, opacity } = layerInfo;
+    let layerStyle = JSON.parse(JSON.stringify(style));
+    featureType === 'POINT' && (layerStyle.pointRadius = style.radius);
+    delete layerStyle.radius;
+
+    if (featureType === 'LINE') {
+      layerStyle.fill = false;
+      layerStyle.strokeDashstyle = style.lineDash; // TODO lineDash 样式错误
+      delete layerStyle.lineDash;
+    }
+
+    let styleGroup = this._getUniqueStyleGroup(layerInfo, features);
+    filterCondition && (features = this._getFiterFeatures(filterCondition, features));
+
+    let themeField = themeSetting.themeField;
+    Object.keys(features[0].properties).forEach(key => {
+      key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
+    });
+    // @ts-ignore
+    let layer = L.supermap.uniqueThemeLayer(layerID, {
+      opacity: opacity
+    });
+
+    layerStyle.stroke = true;
+    layer.style = layerStyle;
+    layer.themeField = themeField;
+    layer.styleGroups = styleGroup;
+    layer.addFeatures({
+      type: 'FeatureCollection',
+      features: features
+    });
+
+    return layer;
+  }
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._addLabelLayer
+   * @description 添加标签图层。
+   * @param layerInfo  某个图层的图层信息。
+   * @param {Array.<GeoJSON>} features - feature。
+   */
+  private _addLabelLayer(layerInfo: any, features: any) {
+    let { labelStyle, layerID, visible, opacity, featureType } = layerInfo;
+    // @ts-ignore
+    var label = new L.supermap.labelThemeLayer(layerID + '-label', {
+      visibility: visible,
+      opacity
+    });
+    labelStyle.fontSize = 14;
+    labelStyle.labelRect = true;
+    labelStyle.fontColor = labelStyle.fill;
+    labelStyle.fill = true;
+    labelStyle.fillColor = '#FFFFFF'; // TODO labelStyle 未返回标签背景颜色 待确定；
+    labelStyle.stroke = false;
+    labelStyle.strokeColor = '#8B7B8B';
+    label.style = labelStyle;
+    label.themeField = labelStyle.labelField;
+
+    let labelFeatures = this._convertLabelFeatures(label, features, layerInfo, featureType);
+    label.addFeatures(labelFeatures);
+
+    return label;
+  }
+
+  private _convertLabelFeatures(layer, features, layerInfo, featureType) {
+    if (!features) {
+      return [];
+    }
+    let { themeField, style } = layer;
+    let labelFeatures = [];
+    let layerStyle = layerInfo.style;
+    features.forEach(feature => {
+      let coordinate = this._getLabelLngLat(featureType, feature);
+      this._setLabelOffset(featureType, layerStyle, style);
+      let properties = feature.properties;
+      // @ts-ignore
+      let geoTextFeature = new L.supermap.themeFeature(
+        [coordinate[1], coordinate[0], properties[themeField]],
+        properties
+      );
+      labelFeatures.push(geoTextFeature);
+    });
+    return labelFeatures;
+  }
+
+  private _getLabelLngLat(featureType, feature) {
+    let coordinate;
+    let coordinates = feature.geometry.coordinates;
+    if (featureType === 'POINT') {
+      coordinate = coordinates;
+    } else if (featureType === 'LINE') {
+      let length = coordinates.length;
+      coordinate = coordinates[Math.round(length / 2)];
+    } else {
+      coordinate = getCenter(feature).geometry.coordinates;
+    }
+    return coordinate;
+  }
+
+  private _setLabelOffset(featureType, layerStyle, style) {
+    if (featureType === 'POINT') {
+      var pointRadius = layerStyle.pointRadius || 0;
+      var strokeWidth = layerStyle.strokeWidth || 0;
+      var fontSize = parseInt(layerStyle.fontSize) || 0;
+      style.labelXOffset = 0;
+      style.labelYOffset = layerStyle.unicode ? 20 + fontSize : 25 + (pointRadius + strokeWidth);
+    } else {
+      return;
+    }
   }
 
   private _getType(layer) {
@@ -432,6 +568,65 @@ export default class WebMapViewModel extends L.Evented {
       type = 'dataflow';
     }
     return type;
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._getUniqueStyleGroup
+   * @description 获取单值的目标字段与颜色的对应数组。
+   * @param layerInfo  某个图层的图层信息
+   * @param features   图层上的 feature
+   */
+  private _getUniqueStyleGroup(parameters: any, features: any): Array<{ color: string; value: string }> {
+    // 找出所有的单值
+    let featureType = parameters.featureType;
+    let style = parameters.style;
+    let themeSetting = parameters.themeSetting;
+    let fieldName = themeSetting.themeField;
+    let colors = themeSetting.colors;
+    Object.keys(features[0].properties).forEach(key => {
+      key.toLocaleUpperCase() === fieldName.toLocaleUpperCase() && (fieldName = key);
+    });
+    let names = [];
+    let customSettings = themeSetting.customSettings;
+    for (let i in features) {
+      let properties = features[i].properties;
+      let name = properties[fieldName];
+      let isSaved = false;
+      for (let j in names) {
+        if (names[j] === name) {
+          isSaved = true;
+          break;
+        }
+      }
+      if (!isSaved) {
+        names.push(name || '0');
+      }
+    }
+
+    // 获取一定量的颜色
+    let curentColors = colors;
+    curentColors = SuperMap.ColorsPickerUtil.getGradientColors(curentColors, names.length);
+
+    // 生成styleGroup
+    let styleGroup = [];
+    names.forEach((name, index) => {
+      let color = curentColors[index];
+      if (name in customSettings) {
+        color = customSettings[name];
+      }
+      if (featureType === 'LINE') {
+        style.strokeColor = color;
+      } else {
+        style.fillColor = color;
+      }
+      styleGroup.push({
+        style: { ...style },
+        value: name
+      });
+    }, this);
+
+    return styleGroup;
   }
 
   private _getFeaturesFromHosted({ layer, index, len, _taskID }) {

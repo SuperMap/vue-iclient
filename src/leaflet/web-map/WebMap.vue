@@ -139,7 +139,7 @@ class SmWebMap extends Mixins(VmUpdater) {
       mapEvent.$options.setMap(this.target, e.map);
       this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
       mapEvent.$emit('load-map', e.map, this.target);
-      e.map.resize();
+      // e.map.resize(); TODO resize
       this.map = e.map;
 
       // 绑定map event TODO
