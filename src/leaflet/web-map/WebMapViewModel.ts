@@ -386,7 +386,7 @@ export default class WebMapViewModel extends L.Evented {
         // this._createRangeLayer(layerInfo, features);
         break;
       case 'HEAT':
-        // this._createHeatLayer(layerInfo, features);
+        layer = this._createHeatLayer(layerInfo, features);
         break;
       case 'MARKER':
         // this._createMarkerLayer(layerInfo, features);
@@ -403,7 +403,7 @@ export default class WebMapViewModel extends L.Evented {
         break;
     }
 
-    this.map.addLayer(layer);
+    layer && this.map.addLayer(layer);
 
     if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
       // 存在标签专题图
@@ -434,7 +434,7 @@ export default class WebMapViewModel extends L.Evented {
    * @param features   图层上的 feature
    */
   private _createUniqueLayer(layerInfo: any, features: any) {
-    let { filterCondition, style, themeSetting, featureType, layerID, opacity } = layerInfo;
+    let { filterCondition, style, themeSetting, featureType, layerID, opacity, visible } = layerInfo;
     let layerStyle = JSON.parse(JSON.stringify(style));
     featureType === 'POINT' && (layerStyle.pointRadius = style.radius);
     delete layerStyle.radius;
@@ -454,7 +454,7 @@ export default class WebMapViewModel extends L.Evented {
     });
     // @ts-ignore
     let layer = L.supermap.uniqueThemeLayer(layerID, {
-      opacity: opacity
+      opacity: opacity || (visible && visible === 'none' ? 0 : 1)
     });
 
     layerStyle.stroke = true;
@@ -479,8 +479,7 @@ export default class WebMapViewModel extends L.Evented {
     let { labelStyle, layerID, visible, opacity, featureType } = layerInfo;
     // @ts-ignore
     var label = new L.supermap.labelThemeLayer(layerID + '-label', {
-      visibility: visible,
-      opacity
+      opacity: opacity || (visible && visible === 'none' ? 0 : 1)
     });
     labelStyle.fontSize = 14;
     labelStyle.labelRect = true;
@@ -496,6 +495,56 @@ export default class WebMapViewModel extends L.Evented {
     label.addFeatures(labelFeatures);
 
     return label;
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._createHeatLayer
+   * @description 添加热力图。
+   * @param {Array.<GeoJSON>} features - feature。
+   */
+  private _createHeatLayer(layerInfo: any, features: any): void {
+    let { themeSetting, layerID, opacity, visible } = layerInfo;
+
+    let { colors, radius, customSettings, weight } = themeSetting;
+
+    let heatColors = colors.slice();
+
+    // 自定义颜色
+    for (let i in customSettings) {
+      heatColors[i] = customSettings[i];
+    }
+
+    let gradient = {};
+    for (let i = 0, len = heatColors.length, index = 1; i < len; i++) {
+      gradient[index / len] = heatColors[i];
+      index++;
+    }
+
+    // @ts-ignore  TODO - 待确定是否使用 classic 接口
+    let heatMapLayer = L.supermap.heatMapLayer(layerID, {
+      colors: heatColors,
+      map: this.map,
+      radius: radius * 2, // blur TODO
+      featureWeight: weight,
+      opacity: opacity || (visible && visible === 'none' ? 0 : 1)
+    });
+
+    // // @ts-ignore
+    // let heatMapLayer = L.heatLayer(features, {
+    //   radius: radius,
+    //   minOpacity: opacity,
+    //   gradient: gradient,
+    //   blur: radius / 2,
+    //   featureWeight: weight
+    // }).addTo(this.map);
+
+    heatMapLayer.addFeatures({
+      type: 'FeatureCollection',
+      features: features
+    });
+
+    return heatMapLayer;
   }
 
   private _convertLabelFeatures(layer, features, layerInfo, featureType) {
