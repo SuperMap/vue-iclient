@@ -43,7 +43,7 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     if (!this.features || JSON.stringify(this.features) === '{}') {
       return;
     }
-    this.clearMarkerLayer();
+    this.clear();
     this._createMarker();
   }
   private _createMarker() {
@@ -61,7 +61,7 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     }
   }
 
-  public clearMarkerLayer() {
+  public clear() {
     this.markers.length > 0 &&
       this.markers.forEach(marker => {
         marker && marker.remove();

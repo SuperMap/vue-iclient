@@ -150,4 +150,14 @@ export default class ClusterLayerViewModel extends mapboxgl.Evented {
       this.map.getCanvas().style.cursor = '';
     });
   }
+
+  clear() {
+    const { map, layerId } = this;
+    if (map && layerId && map.getSource(layerId)) {
+      map.getLayer(layerId) && map.removeLayer(layerId);
+      map.getLayer(`count_${layerId}`) && map.removeLayer(`count_${layerId}`);
+      map.getLayer(`unclustered_point${layerId}`) && map.removeLayer(`unclustered_point${layerId}`);
+      map.removeSource(layerId);
+    }
+  }
 }

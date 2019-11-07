@@ -134,16 +134,13 @@ export default {
         beforeId: beforeId
       });
     },
-    remove(layerId = this.layerId) {
-      this.map.removeLayer(layerId);
+    remove() {
+      this.viewModel && this.viewModel.clear && this.viewModel.clear();
       this.$_emitEvent('layer-removed');
       this.$destroy();
     }
   },
   removed() {
-    if (this.layerId && this.map) {
-      this.remove();
-      this.layerId = null;
-    }
+    this.remove();
   }
 };

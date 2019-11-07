@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import globalEvent from '../../common/_utils/global-event';
 import SourceListModel from '../web-map/SourceListModel';
-import drawEvent from './draw-event';
 
 export default new Vue({
   mapCache: {},
@@ -17,7 +16,6 @@ export default new Vue({
   },
   deleteMap: function(mapTarget) {
     globalEvent.$emit('delete-map', mapTarget);
-    drawEvent.$options.deletDrawOfMap(mapTarget);
     delete this.mapCache[mapTarget];
   },
   getWebMap: function(webmapTarget) {

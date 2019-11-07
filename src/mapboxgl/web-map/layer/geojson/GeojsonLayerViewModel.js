@@ -64,4 +64,11 @@ export default class GeojsonLayerViewModel extends mapboxgl.Evented {
     const type = matchType ? matchType[0] : '';
     return type.substr(0, type.length - 1);
   }
+
+  clear() {
+    const { map, layerId } = this;
+    if (map && layerId && map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
+  }
 }

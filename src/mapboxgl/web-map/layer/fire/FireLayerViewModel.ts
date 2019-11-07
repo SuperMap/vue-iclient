@@ -291,4 +291,21 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
       this._lightIntensity = Math.random() * 5;
     }
   }
+
+  public clear() {
+    const {
+      map,
+      layerId,
+      features: { features }
+    } = this;
+    if (map && layerId && features.length) {
+      features.forEach((feature, index) => {
+        let geometry = feature.geometry;
+        if (geometry.type === 'Point') {
+          const featureLayerId = `${layerId}-${index}`;
+          map.getLayer(featureLayerId) && map.removeLayer(featureLayerId);
+        }
+      });
+    }
+  }
 }

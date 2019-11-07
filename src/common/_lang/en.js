@@ -102,7 +102,8 @@ export default {
     attributeValue: 'Attribute Value',
     setSearchSource: 'Please set the search source!',
     address: 'Address',
-    null: 'Null'
+    null: 'Null',
+    illegalFeature: 'Features must contain legal coordinates!'
   },
   query: {
     query: 'Query',

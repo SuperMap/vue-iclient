@@ -21,6 +21,9 @@ import { FeatureCollection } from 'geojson';
   loaded: vm => {
     vm.features && vm._getMarkerElement();
     vm.viewModel = new AnimateMarkerLayerViewModel(vm.map, vm.features, vm._markersElement, vm.fitBounds);
+  },
+  removed: vm => {
+    vm.viewModel && vm.viewModel.clear();
   }
 })
 class AnimateMarkerLayer extends Mixins(MapGetter) {
@@ -121,7 +124,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   }
 
   beforeDestroy() {
-    this.viewModel && this.viewModel.clearMarkerLayer();
+    this.$options.removed.call(this, this);
   }
 
   /* methods */
@@ -129,7 +132,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
     this.marker = null;
     let { features, width, height, colors, textFontSize, textColor, textField } = this;
     if (!this.features || JSON.stringify(this.features) === '{}' || !this.features.features) {
-      this.viewModel && this.viewModel.clearMarkerLayer();
+      this.viewModel && this.viewModel.clear();
       return;
     }
     switch (this.type) {

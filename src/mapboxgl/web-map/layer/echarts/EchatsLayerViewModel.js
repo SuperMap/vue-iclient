@@ -32,4 +32,8 @@ export default class EchatsLayerViewModel extends mapboxgl.Evented {
     this.fire('echartslayeraddsucceeded', { layer: echartslayer });
     this.echartslayer = echartslayer;
   }
+
+  clear() {
+    this.echartslayer && this.echartslayer.remove();
+  }
 }

@@ -95,6 +95,26 @@
               </div>
             </div>
           </div>
+
+          <div
+            v-if="layerValue.layerType === 'RANK_SYMBOL'"
+            :style="[getTextColorStyle]"
+            class="sm-component-legend__wrap"
+          >
+            <div class="sm-component-legend__rank">
+              <div
+                v-for="(item,j) in layerValue.styleGroup"
+                :key="j"
+                class="sm-component-legend__rank-item"
+              >
+                <i :class="item.style.className" :style="rankSymbolStyle(item)"/>
+                <span class="add-ellipsis">
+                  <a-icon type="caret-left" />
+                  {{ item.start }}-{{ item.end }}
+                </span>
+              </div>
+            </div>
+          </div>
         </a-collapse-panel>
       </a-collapse>
       <div
@@ -162,6 +182,22 @@
             </div>
           </div>
         </div>
+
+        <div v-if="layerValue.layerType === 'RANK_SYMBOL'" class="sm-component-legend__wrap">
+          <div class="sm-component-legend__rank">
+            <div
+              v-for="(item,l) in layerValue.styleGroup"
+              :key="l"
+              class="sm-component-legend__rank-item"
+            >
+              <i :class="item.style.className" :style="rankSymbolStyle(item)" />
+              <span class="add-ellipsis">
+                <a-icon type="caret-left" />
+                {{ item.start }}-{{ item.end }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </a-card>
   </sm-card>
@@ -173,6 +209,7 @@ import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import Card from '../../../../common/_mixin/card';
 import LegendViewModel from './LegendViewModel';
+import { getColorWithOpacity } from '../../../../common/_utils/util';
 
 export default {
   name: 'SmLegend',
@@ -241,6 +278,33 @@ export default {
       } else {
         return {};
       }
+    },
+    rankSymbolStyle() {
+      return function(styleItem) {
+        const { style, radius } = styleItem;
+        let generateStyle = {};
+        switch (style.type) {
+          case 'BASIC_POINT':
+            generateStyle.background = getColorWithOpacity(style.fillColor, style.fillOpacity);
+            generateStyle.width = `${radius * 2}px`;
+            generateStyle.height = `${radius * 2}px`;
+            generateStyle.borderRadius = `${radius}px`;
+            break;
+          case 'SYMBOL_POINT':
+            generateStyle.color = getColorWithOpacity(style.fillColor, style.fillOpacity);
+            generateStyle.fontSize = `${radius * 2}px`;
+            break;
+          case 'IMAGE_POINT':
+            generateStyle.background = `url(${style.imageInfo.url})`;
+            generateStyle.backgroundSize = 'contain';
+            generateStyle.width = `${radius * 2}px`;
+            generateStyle.height = `${radius * 2}px`;
+            break;
+          default:
+            break;
+        }
+        return generateStyle;
+      };
     }
   },
   watch: {

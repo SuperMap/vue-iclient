@@ -63,4 +63,12 @@ export default class HeatMapLayerViewModel extends mapboxgl.Evented {
 
     this.fire('heatmaplayeraddsucceeded', { map: this.map });
   }
+
+  clear() {
+    const { map, layerId } = this;
+    if (map && layerId && map.getSource(layerId)) {
+      map.getLayer(layerId) && map.removeLayer(layerId);
+      map.removeSource(layerId);
+    }
+  }
 }

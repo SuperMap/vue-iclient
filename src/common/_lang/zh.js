@@ -102,7 +102,8 @@ export default {
     attributeValue: '属性值',
     setSearchSource: '请设置搜索源！',
     address: '地址',
-    null: '空'
+    null: '空',
+    illegalFeature: '要素必须包含合法的坐标！'
   },
   query: {
     query: '查询',

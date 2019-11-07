@@ -46,14 +46,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     } else {
       return new Error(`Cannot find map`);
     }
-    this.searchtType = [
-      'layerNames',
-      'onlineLocalSearch',
-      'restMap',
-      'restData',
-      'iportalData',
-      'addressMatch'
-    ];
+    this.searchtType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
     this.markerList = [];
     this.popupList = [];
     this.errorSourceList = {};
@@ -110,7 +103,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   _showResultToMap(feature) {
-    const geometry = feature.geometry || [feature.location.x, feature.location.y];
+    const geometry = feature.geometry;
     if (!this.options.alwaysCenter && (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon')) {
       this._addPolygon(feature);
     } else if (!this.options.alwaysCenter && geometry.type === 'LineString') {
@@ -129,6 +122,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
       pointData.coordinates = turfCenter(feature).geometry.coordinates;
     } else {
       pointData.coordinates = geometry.coordinates || geometry;
+    }
+    if (!pointData.coordinates || !pointData.coordinates.length || pointData.coordinates.find(item => isNaN(+item))) {
+      this.fire('addfeaturefailed' + this.searchTaskId, { error: geti18n().t('search.illegalFeature') });
+      return;
     }
     if (this.keyWord.indexOf('：') < 0) {
       pointData.info.push({ attribute: geti18n().t('search.address'), attributeValue: propertiesValue });
@@ -391,7 +388,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
           filterAttributeName: data[i].name || geoCodeParam.keyWords,
           filterAttributeValue: data[i].formatedAddress || data[i].address || geti18n().t('search.null')
         },
-        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress || data[i].address || geti18n().t('search.null')}`
+        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress ||
+          data[i].address ||
+          geti18n().t('search.null')}`
       };
       features.push(feature);
     }

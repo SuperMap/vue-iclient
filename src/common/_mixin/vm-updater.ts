@@ -6,6 +6,7 @@ declare module 'vue/types/options' {
   interface ComponentOptions<V extends Vue> {
     viewModelProps?: Array<string>;
     loaded?: Function;
+    removed?: Function;
   }
 }
 @Component

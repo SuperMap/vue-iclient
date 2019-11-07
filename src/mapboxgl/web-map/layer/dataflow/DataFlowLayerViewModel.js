@@ -178,4 +178,12 @@ export default class DataFlowLayerViewModel extends mapboxgl.Evented {
       this.fire('dataupdated', { data: feature, map: this.map });
     }
   }
+
+  clear() {
+    const { map, sourceID } = this;
+    if (map && sourceID && map.getSource(sourceID)) {
+      map.getLayer(sourceID) && map.removeLayer(sourceID);
+      map.removeSource(sourceID);
+    }
+  }
 }

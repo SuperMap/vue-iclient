@@ -80,6 +80,8 @@ export default {
   },
   removed(deleteState) {
     this.activeMode = null;
+    const targetName = this.getTargetName();
+    drawEvent.$options.deletDrawOfMap(targetName);
     this.viewModel && this.viewModel.clear(deleteState);
   },
   beforeDestroy() {

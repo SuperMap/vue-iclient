@@ -204,7 +204,8 @@ export default {
     resultRender: {
       type: Function
     },
-    collapsed: { // 是否折叠组件
+    collapsed: {
+      // 是否折叠组件
       type: Boolean,
       default: false
     }
@@ -356,6 +357,7 @@ export default {
         this.viewModel.off('searchsucceeded' + this.searchTaskId);
         this.viewModel.off('searchfailed' + this.searchTaskId);
         this.viewModel.off('set-popup-content' + this.searchTaskId);
+        this.viewModel.off('addfeaturefailed' + this.illegalFeatureTip);
         this.viewModel.off('search-selected-info' + this.searchTaskId);
         this.searchTaskId = undefined;
       }
@@ -371,12 +373,14 @@ export default {
         this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1), this.searchSucceeded);
         this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1), this.searchFailed);
         this.viewModel.off('set-popup-content' + (this.searchTaskId - 1), this.setPopupContent);
+        this.viewModel.off('addfeaturefailed' + (this.searchTaskId - 1), this.illegalFeatureTip);
         this.viewModel.off('search-selected-info' + (this.searchTaskId - 1), this.searchSelectedInfo);
       }
       const onTaskId = this.searchTaskId || 0;
       this.registerSuccessEvent(onTaskId);
       this.registerFailedEvent(onTaskId);
       this.viewModel.on('set-popup-content' + onTaskId, this.setPopupContent);
+      this.viewModel.on('addfeaturefailed' + onTaskId, this.illegalFeatureTip);
       this.viewModel.on('search-selected-info' + onTaskId, this.searchSelectedInfo);
     },
     searchSucceeded({ result }) {
@@ -428,6 +432,10 @@ export default {
           this.changeResultPopupArrowStyle
         );
       });
+    },
+    illegalFeatureTip({ error }) {
+      this.$message.destroy();
+      this.$message.error(error);
     },
     searchSelectedInfo({ data }) {
       this.prefixType = 'search';

@@ -10,6 +10,8 @@
 import Theme from '../_mixin/theme';
 import borderConfigs from './assets/border.config.json';
 import UniqueId from 'lodash.uniqueid';
+import { addListener, removeListener } from 'resize-detector';
+import debounce from 'lodash/debounce';
 
 export default {
   name: 'SmBorder',
@@ -63,10 +65,15 @@ export default {
   },
   mounted() {
     this.setPosition();
+    this.resizeHanlder = debounce(this.calcPosition.bind(this), 500);
+    addListener(this.$el, this.resizeHanlder);
   },
   updated() {
     // 避免style.width< borderWidth，引起的dom重绘, 宽高会改变, 需要重新计算组件的位置大小
     this.calcPosition();
+  },
+  beforeDestroy() {
+    removeListener(this.$el, this.resizeHandler);
   },
   methods: {
     // 设置content的位置大小

@@ -17,6 +17,9 @@ export default {
   loaded() {
     this.viewModel = new EchatsLayerViewModel(this.map, this.options);
   },
-  render() {}
+  render() {},
+  removed() {
+    this.viewModel && this.viewModel.clear();
+  }
 };
 </script>

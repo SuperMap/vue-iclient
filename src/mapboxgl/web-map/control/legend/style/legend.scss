@@ -103,9 +103,9 @@
           display: inline-block;
         }
       }
-      @include e(range-item) {
+      @include e(range-item rank-item) {
         height: 30px;
-        & > div, & > span {
+        & > div, & > span, & > i {
           display: inline-block;
           vertical-align: middle;
         }

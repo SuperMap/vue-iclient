@@ -191,9 +191,9 @@ export default new Vue({
     }
   },
   deletDrawOfMap: function(mapTarget) {
-    const draw = this.getDraw(mapTarget);
+    const draw = this.getDraw(mapTarget, false);
     const map = mapEvent.$options.getMap(mapTarget);
-    if (draw && map) {
+    if (draw && map && this.drawList[mapTarget]) {
       draw.onRemove(map);
       delete this.drawList[mapTarget];
     }
