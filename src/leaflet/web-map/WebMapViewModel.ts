@@ -6,6 +6,7 @@ import '../../../static/libs/geostats/geostats';
 import '../../../static/libs/json-sql/jsonsql';
 import { isXField, isYField } from '../../common/_utils/util';
 import getCenter from '@turf/center';
+import canvg from 'canvg';
 
 interface webMapOptions {
   target?: string;
@@ -28,6 +29,7 @@ interface mapOptions {
   pitch?: number;
 }
 
+// TODO 统一处理 layerName 坐标系
 export default class WebMapViewModel extends L.Evented {
   map: L.Map;
 
@@ -70,6 +72,8 @@ export default class WebMapViewModel extends L.Evented {
   private _layers: any = [];
 
   private layerAdded: number;
+
+  private _svgDiv: HTMLElement;
 
   constructor(id, options: webMapOptions = {}, mapOptions: mapOptions = {}) {
     super();
@@ -213,7 +217,8 @@ export default class WebMapViewModel extends L.Evented {
       zoom: this.zoom || zoom,
       crs,
       maxZoom: maxZoom || 22,
-      minZoom: minZoom || 0
+      minZoom: minZoom || 0,
+      preferCanvas: true // unicode marker 需要canvas
     });
 
     // this.map.fitBounds(L.latLngBounds(crs.unproject(bounds.min), crs.unproject(bounds.max)), {
@@ -347,13 +352,6 @@ export default class WebMapViewModel extends L.Evented {
     layerInfo.visible = layerInfo.visible ? 'visible' : 'none';
     let { layerType, style, themeSetting, filterCondition, projection, featureType, labelStyle } = layerInfo;
 
-    // 待测试 leaflet 是否可以处理复杂面  ---------------------------------TODO
-    // mbgl 目前不能处理 geojson 复杂面情况
-    // mbgl isssue https://github.com/mapbox/mapbox-gl-js/issues/7023
-    // if (features && features[0] && features[0].geometry.type === 'Polygon') {
-    //   features = handleMultyPolygon(features);
-    // }
-
     if ((style || themeSetting) && filterCondition) {
       // 将 feature 根据过滤条件进行过滤, 分段专题图和单值专题图因为要计算 styleGroup 所以暂时不过滤
       if (layerType !== 'RANGE' && layerType !== 'UNIQUE' && layerType !== 'RANK_SYMBOL') {
@@ -370,13 +368,13 @@ export default class WebMapViewModel extends L.Evented {
       case 'VECTOR':
         if (featureType === 'POINT') {
           if (style.type === 'SYMBOL_POINT') {
-            // this._createSymbolLayer(layerInfo, features);
+            layer = this._createSymbolLayer(layerInfo, features); // TODO - unicode 样式加载不对
           } else {
-            // this._createGraphicLayer(layerInfo, features);
+            layer = this._createGraphicLayer(layerInfo, features);
           }
         } else {
           // 线和面
-          // this._createVectorLayer(layerInfo, features);
+          layer = this._createVectorLayer(layerInfo, features);
         }
         break;
       case 'UNIQUE':
@@ -434,7 +432,7 @@ export default class WebMapViewModel extends L.Evented {
    * @param features   图层上的 feature
    */
   private _createUniqueLayer(layerInfo: any, features: any) {
-    let { filterCondition, style, themeSetting, featureType, layerID, opacity, visible } = layerInfo;
+    let { filterCondition, style, themeSetting, featureType, layerID, visible } = layerInfo;
     let layerStyle = JSON.parse(JSON.stringify(style));
     featureType === 'POINT' && (layerStyle.pointRadius = style.radius);
     delete layerStyle.radius;
@@ -454,7 +452,7 @@ export default class WebMapViewModel extends L.Evented {
     });
     // @ts-ignore
     let layer = L.supermap.uniqueThemeLayer(layerID, {
-      opacity: opacity || (visible && visible === 'none' ? 0 : 1)
+      opacity: this._getLayerOpacity(visible)
     });
 
     layerStyle.stroke = true;
@@ -476,10 +474,10 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    */
   private _addLabelLayer(layerInfo: any, features: any) {
-    let { labelStyle, layerID, visible, opacity, featureType } = layerInfo;
+    let { labelStyle, layerID, visible, featureType } = layerInfo;
     // @ts-ignore
     var label = new L.supermap.labelThemeLayer(layerID + '-label', {
-      opacity: opacity || (visible && visible === 'none' ? 0 : 1)
+      opacity: this._getLayerOpacity(visible)
     });
     labelStyle.fontSize = 14;
     labelStyle.labelRect = true;
@@ -504,7 +502,7 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    */
   private _createHeatLayer(layerInfo: any, features: any): void {
-    let { themeSetting, layerID, opacity, visible } = layerInfo;
+    let { themeSetting, layerID, visible } = layerInfo;
 
     let { colors, radius, customSettings, weight } = themeSetting;
 
@@ -527,7 +525,7 @@ export default class WebMapViewModel extends L.Evented {
       map: this.map,
       radius: radius * 2, // blur TODO
       featureWeight: weight,
-      opacity: opacity || (visible && visible === 'none' ? 0 : 1)
+      opacity: this._getLayerOpacity(visible)
     });
 
     // // @ts-ignore
@@ -545,6 +543,138 @@ export default class WebMapViewModel extends L.Evented {
     });
 
     return heatMapLayer;
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._createSymbolLayer
+   * @description 添加 symbol 图层。
+   * @param layerInfo  某个图层的图层信息。
+   * @param {Array.<GeoJSON>} features - feature。
+   */
+  private _createSymbolLayer(layerInfo: any, features: any) {
+    let { style, visible } = layerInfo;
+
+    let target = document.getElementById(`${this.target}`);
+    target.classList.add('supermapol-icons-map');
+
+    let { fillColor, unicode } = style;
+
+    let pointToLayer;
+
+    // TODO unicode 画不出来
+    if (unicode) {
+      let symbolStyle = JSON.parse(JSON.stringify(style));
+      symbolStyle.fontColor = fillColor;
+      symbolStyle.label = unicode;
+      pointToLayer = (geojson, latlng) => {
+        // @ts-ignore
+        return new L.supermap.unicodeMarker(latlng, symbolStyle);
+      };
+      // pointToLayer = (geojson, latlng) => {
+      //   return L.marker(latlng, {
+      //     icon: L.divIcon({className: style.className})
+      //   });
+      // };
+    }
+
+    return pointToLayer && this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), pointToLayer);
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._createGraphicLayer
+   * @description 创建 Graphic 图层。
+   * @param {Object} layerInfo - map 信息。
+   * @param {Array} features - 属性 信息。
+   */
+  private _createGraphicLayer(layerInfo: any, features: any) {
+    let { style, visible } = layerInfo;
+    let { type, imageInfo, radius, url } = style;
+    let pointToLayer;
+    if (type === 'IMAGE_POINT' && imageInfo.url) {
+      let resolution = imageInfo.size.w / imageInfo.size.h;
+      pointToLayer = (geojson, latlng) => {
+        return L.marker(latlng, {
+          icon: L.icon({
+            iconUrl: imageInfo.url,
+            iconSize: [radius * 2, (radius * 2) / resolution]
+          })
+        });
+      };
+    } else if (style.type === 'SVG_POINT') {
+      // TODO  svg 颜色有问题
+      if (!this._svgDiv) {
+        this._svgDiv = document.createElement('div');
+        document.body.appendChild(this._svgDiv);
+      }
+      this._getCanvasFromSVG(url, this._svgDiv, canvas => {
+        let imgUrl = canvas.toDataURL('img/png');
+        let resolution = canvas.width / canvas.height;
+        let svgPointToLayer = (geojson, latlng) => {
+          return L.marker(latlng, {
+            icon: L.icon({
+              iconUrl: imgUrl,
+              iconSize: [radius, radius / resolution]
+            })
+          });
+        };
+        this._createGeojsonLayer(features, null, svgPointToLayer, this._getLayerOpacity(visible)).addTo(this.map); // 异步过程，直接addToMap
+      });
+    } else {
+      pointToLayer = (geojson, latlng) => {
+        return L.circleMarker(latlng, this._getVectorLayerStyle(style));
+      };
+    }
+    return pointToLayer && this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), pointToLayer);
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._createVectorLayer
+   * @description 创建 Vector 图层。
+   * @param {Object} layerInfo - map 信息。
+   * @param {Array} features - 属性 信息。
+   */
+  private _createVectorLayer(layerInfo: any, features: any): void {
+    let { style, visible } = layerInfo;
+    return this._createGeojsonLayer(features, this._getVectorLayerStyle(style), this._getLayerOpacity(visible));
+  }
+
+  private _createGeojsonLayer(features, style?, opacity?, pointToLayer?) {
+    return L.geoJSON(
+      {
+        type: 'FeatureCollection',
+        // @ts-ignore
+        features: features
+      },
+      { pointToLayer, style, opacity: opacity ? opacity : opacity === 0 ? opacity : 1 }
+    );
+  }
+
+  private _getVectorLayerStyle(style) {
+    let { fillColor, fillOpacity, strokeColor, strokeOpacity, strokeWidth, radius, lineDash } = style;
+    let commonStyle = {
+      color: strokeColor,
+      weight: strokeWidth,
+      opacity: strokeOpacity,
+      fillColor,
+      fillOpacity
+    };
+    let dashArray;
+    if (lineDash) {
+      dashArray = this._dashStyle(lineDash);
+    }
+    radius && (commonStyle['radius'] = radius);
+    lineDash && (commonStyle['dashArray'] = dashArray);
+    return commonStyle;
+  }
+
+  private _getLayerOpacity(visible) {
+    if (!visible) {
+      return null;
+    }
+    return visible && visible === 'none' ? 0 : 1;
   }
 
   private _convertLabelFeatures(layer, features, layerInfo, featureType) {
@@ -1449,5 +1579,73 @@ export default class WebMapViewModel extends L.Evented {
           return allRestMaps;
         });
       });
+  }
+
+  /**
+   * @private
+   * @description 将SVG转换成Canvas
+   * @param svgUrl
+   * @param divDom
+   * @param callBack
+   */
+  private _getCanvasFromSVG(svgUrl: string, divDom: HTMLElement, callBack: Function): void {
+    // 一个图层对应一个canvas
+    let canvas = document.createElement('canvas');
+    canvas.id = `dataviz-canvas-${new Date()}`;
+    canvas.style.display = 'none';
+    canvas.getContext('2d').fillStyle = 'red';
+    divDom.appendChild(canvas);
+    let canvgs = window.canvg ? window.canvg : canvg;
+    canvgs(canvas.id, svgUrl, {
+      ignoreMouse: true,
+      ignoreAnimation: true,
+      renderCallback: () => {
+        if (canvas.width > 300 || canvas.height > 300) {
+          return;
+        }
+        callBack(canvas);
+      },
+      forceRedraw: () => {
+        return false;
+      }
+    });
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype.._dashStyle
+   * @description 符号样式。
+   * @param {Object} style - 样式参数。
+   * @param {number} widthFactor - 宽度系数。
+   */
+  private _dashStyle(str) {
+    if (!str) {
+      return [];
+    }
+    // var w = style.strokeWidth * widthFactor;
+    var w = 1;
+    switch (str) {
+      case 'solid':
+        return [];
+      case 'dot':
+        return `1,${4 * w}`;
+      case 'dash':
+        return `${4 * w},${4 * w}`;
+      case 'dashdot':
+        return `${4 * w},${4 * w},${1 * w},${4 * w}`;
+      case 'longdash':
+        return `${8 * w},${4 * w}`;
+      case 'longdashdot':
+        return `${8 * w},${4 * w},1,${4 * w}`;
+      default:
+        if (!str) {
+          return [];
+        }
+        if (SuperMap.Util.isArray(str)) {
+          return str;
+        }
+        str = SuperMap.String.trim(str).replace(/\s+/g, ',');
+        return str;
+    }
   }
 }
