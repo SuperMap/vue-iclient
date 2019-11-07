@@ -1,12 +1,17 @@
+
 import L from 'leaflet';
+// import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
 import 'leaflet/dist/leaflet.css'; // TODO css 待抽离
-import '../../../static/libs/iclient-leaflet/iclient-leaflet.min';
+import '../../../static/libs/iclient-leaflet/iclient-leaflet-es6';
 import '../../../static/libs/iclient-leaflet/iclient-leaflet.min.css';
 import '../../../static/libs/geostats/geostats';
 import '../../../static/libs/json-sql/jsonsql';
 import { isXField, isYField } from '../../common/_utils/util';
 import getCenter from '@turf/center';
 import canvg from 'canvg';
+// TODO 待抽公共类
+import provincialCenterData from '../../mapboxgl/web-map/config/ProvinceCenter.json'; // eslint-disable-line import/extensions
+import municipalCenterData from '../../mapboxgl/web-map/config/MunicipalCenter.json'; // eslint-disable-line import/extensions
 
 interface webMapOptions {
   target?: string;
@@ -28,6 +33,9 @@ interface mapOptions {
   bearing?: number;
   pitch?: number;
 }
+
+// 迁徙图最大支持要素数量
+const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 
 // TODO 统一处理 layerName 坐标系
 export default class WebMapViewModel extends L.Evented {
@@ -393,7 +401,7 @@ export default class WebMapViewModel extends L.Evented {
         // this._createRankSymbolLayer(layerInfo, features);
         break;
       case 'MIGRATION':
-        // this._createMigrationLayer(layerInfo, features);
+        layer = this._createMigrationLayer(layerInfo, features);
         break;
       case 'DATAFLOW_POINT_TRACK':
       case 'DATAFLOW_HEAT':
@@ -639,6 +647,18 @@ export default class WebMapViewModel extends L.Evented {
   private _createVectorLayer(layerInfo: any, features: any): void {
     let { style, visible } = layerInfo;
     return this._createGeojsonLayer(features, this._getVectorLayerStyle(style), this._getLayerOpacity(visible));
+  }
+
+  private _createMigrationLayer(layerInfo, features) {
+    // window['echarts'] = echarts;
+    let properties = this._getFeatureProperties(features);
+    let lineData = this._createLinesData(layerInfo, properties);
+    let pointData = this._createPointsData(lineData, layerInfo, properties);
+    let options = this._createOptions(layerInfo, lineData, pointData);
+    // @ts-ignore
+    let layer = L.supermap.echartsLayer(options);
+    this.echartslayer.push(layer);  // TODO  reisize
+    return layer;
   }
 
   private _createGeojsonLayer(features, style?, opacity?, pointToLayer?) {
@@ -1647,5 +1667,212 @@ export default class WebMapViewModel extends L.Evented {
         str = SuperMap.String.trim(str).replace(/\s+/g, ',');
         return str;
     }
+  }
+
+  private _getFeatureProperties(features) {
+    let properties = [];
+    if (features && features.length) {
+      features.forEach(feature => {
+        let property = feature.properties;
+        property && properties.push(property);
+      });
+    }
+    return properties;
+  }
+
+  private _createLinesData(layerInfo, properties) {
+    let data = [];
+    if (properties && properties.length) {
+      // 重新获取数据
+      let from = layerInfo.from,
+        to = layerInfo.to,
+        fromCoord,
+        toCoord;
+      if (from.type === 'XY_FIELD' && from['xField'] && from['yField'] && to['xField'] && to['yField']) {
+        properties.forEach(property => {
+          let fromX = property[from['xField']],
+            fromY = property[from['yField']],
+            toX = property[to['xField']],
+            toY = property[to['yField']];
+          if (!fromX || !fromY || !toX || !toY) {
+            return;
+          }
+
+          fromCoord = [property[from['xField']], property[from['yField']]];
+          toCoord = [property[to['xField']], property[to['yField']]];
+          data.push({
+            coords: [fromCoord, toCoord]
+          });
+        });
+      } else if (from.type === 'PLACE_FIELD' && from['field'] && to['field']) {
+        const centerDatas = provincialCenterData.concat(municipalCenterData);
+
+        properties.forEach(property => {
+          let fromField = property[from['field']],
+            toField = property[to['field']];
+          fromCoord = centerDatas.find(item => {
+            return this.isMatchAdministrativeName(item.name, fromField);
+          });
+          toCoord = centerDatas.find(item => {
+            return this.isMatchAdministrativeName(item.name, toField);
+          });
+          if (!fromCoord || !toCoord) {
+            return;
+          }
+          data.push({
+            coords: [fromCoord.coord, toCoord.coord]
+          });
+        });
+      }
+    }
+    return data;
+  }
+
+  private _createPointsData(lineData, layerInfo, properties) {
+    let data = [],
+      labelSetting = layerInfo.labelSetting;
+    // 标签隐藏则直接返回
+    if (!labelSetting.show || !lineData.length) {
+      return data;
+    }
+    let fromData = [],
+      toData = [];
+    lineData.forEach((item, idx) => {
+      let coords = item.coords,
+        fromCoord = coords[0],
+        toCoord = coords[1],
+        fromProperty = properties[idx][labelSetting.from],
+        toProperty = properties[idx][labelSetting.to];
+      // 起始字段去重
+      let f = fromData.find(d => {
+        return d.value[0] === fromCoord[0] && d.value[1] === fromCoord[1];
+      });
+      !f &&
+        fromData.push({
+          name: fromProperty,
+          value: fromCoord
+        });
+      // 终点字段去重
+      let t = toData.find(d => {
+        return d.value[0] === toCoord[0] && d.value[1] === toCoord[1];
+      });
+      !t &&
+        toData.push({
+          name: toProperty,
+          value: toCoord
+        });
+    });
+    data = fromData.concat(toData);
+    return data;
+  }
+
+
+  private _createOptions(layerInfo, lineData, pointData) {
+    let series;
+    let lineSeries = this._createLineSeries(layerInfo, lineData);
+    if (pointData && pointData.length) {
+      let pointSeries: any = this._createPointSeries(layerInfo, pointData);
+      series = lineSeries.concat(pointSeries);
+    } else {
+      series = lineSeries.slice();
+    }
+    return { series };
+  }
+
+  private _createLineSeries(layerInfo, lineData) {
+    let lineSetting = layerInfo.lineSetting;
+    let animationSetting = layerInfo.animationSetting;
+    let linesSeries = [
+      // 轨迹线样式
+      {
+        name: 'line-series',
+        coordinateSystem: 'leaflet',
+        type: 'lines',
+        zlevel: 1,
+        effect: {
+          show: animationSetting.show,
+          constantSpeed: animationSetting.constantSpeed,
+          trailLength: 0,
+          symbol: animationSetting.symbol,
+          symbolSize: animationSetting.symbolSize
+        },
+        lineStyle: {
+          normal: {
+            color: lineSetting.color,
+            type: lineSetting.type,
+            width: lineSetting.width,
+            opacity: lineSetting.opacity,
+            curveness: lineSetting.curveness
+          }
+        },
+        data: lineData
+      }
+    ];
+
+    if (lineData.length >= MAX_MIGRATION_ANIMATION_COUNT) {
+      // @ts-ignore
+      linesSeries[0].large = true;
+      // @ts-ignore
+      linesSeries[0].largeThreshold = 100;
+      // @ts-ignore
+      linesSeries[0].blendMode = 'lighter';
+    }
+
+    return linesSeries;
+  }
+  private _createPointSeries(layerInfo, pointData) {
+    let lineSetting = layerInfo.lineSetting;
+    let animationSetting = layerInfo.animationSetting;
+    let labelSetting = layerInfo.labelSetting;
+    let pointSeries = [
+      {
+        name: 'point-series',
+        coordinateSystem: 'leaflet',
+        zlevel: 2,
+        label: {
+          normal: {
+            show: labelSetting.show,
+            position: 'right',
+            formatter: '{b}',
+            color: labelSetting.color,
+            fontFamily: labelSetting.fontFamily
+          }
+        },
+        itemStyle: {
+          normal: {
+            color: lineSetting.color || labelSetting.color
+          }
+        },
+        data: pointData
+      }
+    ];
+
+    if (animationSetting.show) {
+      // 开启动画
+      // @ts-ignore
+      pointSeries[0].type = 'effectScatter';
+      // @ts-ignore
+      pointSeries[0].rippleEffect = {
+        brushType: 'stroke'
+      };
+    } else {
+      // 关闭动画
+      // @ts-ignore
+      pointSeries[0].type = 'scatter';
+    }
+
+    return pointSeries;
+  }
+  isMatchAdministrativeName(featureName, fieldName) {
+    let isString = typeof fieldName === 'string' && fieldName.constructor === String;
+    if (isString) {
+      let shortName = featureName.substr(0, 2);
+      // 张家口市和张家界市 特殊处理
+      if (shortName === '张家') {
+        shortName = featureName.substr(0, 3);
+      }
+      return !!fieldName.match(new RegExp(shortName));
+    }
+    return false;
   }
 }
