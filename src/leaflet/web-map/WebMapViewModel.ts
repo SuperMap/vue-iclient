@@ -1,4 +1,3 @@
-
 import L from 'leaflet';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
 import 'leaflet/dist/leaflet.css'; // TODO css 待抽离
@@ -197,13 +196,13 @@ export default class WebMapViewModel extends L.Evented {
   }
 
   private _createMap(mapInfo: any): void {
-    let { level, extent, maxZoom, minZoom } = mapInfo;
+    let { level, maxZoom, minZoom } = mapInfo;
 
     // zoom & center
     let center: [number, number] | L.LatLng;
     center = mapInfo.center && [mapInfo.center.x, mapInfo.center.y];
     let zoom = level || 0;
-    zoom = zoom === 0 ? 0 : zoom + 1;
+    zoom = zoom === 0 ? 0 : zoom;
 
     if (!center) {
       center = [0, 0];
@@ -273,7 +272,7 @@ export default class WebMapViewModel extends L.Evented {
     };
 
     let url: string;
-
+    let layer;
     switch (layerType) {
       case 'TIANDITU_VEC':
       case 'TIANDITU_IMG':
@@ -284,14 +283,14 @@ export default class WebMapViewModel extends L.Evented {
         // this._createBingLayer(layerInfo.name);
         break;
       case 'WMS':
-        // this._createWMSLayer(layerInfo);
+        layer = this._createWMSLayer(layerInfo);
         break;
       case 'WMTS':
-        // this._createWMTSLayer(layerInfo);
+        layer = this._createWMTSLayer(layerInfo);
         break;
       case 'TILE':
       case 'SUPERMAP_REST':
-        this._createDynamicTiledLayer(layerInfo);
+        layer = this._createDynamicTiledLayer(layerInfo);
         break;
       case 'CLOUD':
       case 'CLOUD_BLACK':
@@ -308,6 +307,8 @@ export default class WebMapViewModel extends L.Evented {
       default:
         break;
     }
+
+    layer && this.map.addLayer(layer);
   }
 
   /**
@@ -429,7 +430,46 @@ export default class WebMapViewModel extends L.Evented {
     let url = layerInfo.url;
     // @ts-ignore
     let layer = L.supermap.tiledMapLayer(url);
-    this.map.addLayer(layer);
+    return layer;
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._createWMSLayer
+   * @description 创建 WMS 图层。
+   * @param {Object} layerInfo - 图层信息。
+   */
+  private _createWMSLayer(layerInfo: any) {
+    let { url, visible, layers } = layerInfo;
+    if (!layers || layers === 'undefined' || layers === 'null') {
+      layers = '0';
+    } else if (layers.length > 0) {
+      layers = layers[0];
+    }
+    return L.tileLayer.wms(url, {
+      layers,
+      format: 'image/png',
+      transparent: true,
+      noWrap: true,
+      opacity: this._getLayerOpacity(visible)
+    });
+  }
+
+  /**
+    * @private
+    * @function WebMapViewModel.prototype._createWMTSLayer
+    * @description 创建 WMTS 底图。
+    * @param {Object} layerInfo - 地图信息。
+    */
+   private _createWMTSLayer(layerInfo: any) {
+    let {url, tileMatrixSet, name} = layerInfo;
+    // @ts-ignore
+    return L.supermap.wmtsLayer(url, {
+      layer: name,
+      style: "default",
+      tilematrixSet: tileMatrixSet,
+      format: "image/png"
+    })
   }
 
   /**
@@ -657,7 +697,7 @@ export default class WebMapViewModel extends L.Evented {
     let options = this._createOptions(layerInfo, lineData, pointData);
     // @ts-ignore
     let layer = L.supermap.echartsLayer(options);
-    this.echartslayer.push(layer);  // TODO  reisize
+    this.echartslayer.push(layer); // TODO  reisize
     return layer;
   }
 
@@ -1199,7 +1239,7 @@ export default class WebMapViewModel extends L.Evented {
             layer.visibleScales = restMapInfo.visibleScales;
             layer.url = restMapInfo.url;
             layer.sourceType = 'TILE';
-            // this._createBaseLayer(layer);
+            this._createBaseLayer(layer);
             this.layerAdded++;
             this._sendMapToUser(this.layerAdded, len);
           });
@@ -1765,7 +1805,6 @@ export default class WebMapViewModel extends L.Evented {
     data = fromData.concat(toData);
     return data;
   }
-
 
   private _createOptions(layerInfo, lineData, pointData) {
     let series;
