@@ -791,6 +791,7 @@ export default class WebMapViewModel extends L.Evented {
 
   private _addLayerToMap(layer, type, layerName) {
     this.map.addLayer(layer);
+    !this.layers[type] && (this.layers[type] = {});
     this.layers[type][layerName] = layer;
   }
 
