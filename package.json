@@ -41,6 +41,7 @@
     "lodash.assignin": "^4.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.isequal": "^4.5.0",
+    "lodash.isnumber": "^3.0.3",
     "lodash.max": "^4.0.1",
     "lodash.merge": "^4.6.1",
     "lodash.orderby": "^4.6.0",

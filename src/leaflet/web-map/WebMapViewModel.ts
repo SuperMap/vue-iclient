@@ -8,6 +8,7 @@ import '../../../static/libs/json-sql/jsonsql';
 import { isXField, isYField } from '../../common/_utils/util';
 import getCenter from '@turf/center';
 import canvg from 'canvg';
+import isNumber from 'lodash.isnumber';
 // TODO 待抽公共类
 import provincialCenterData from '../../mapboxgl/web-map/config/ProvinceCenter.json'; // eslint-disable-line import/extensions
 import municipalCenterData from '../../mapboxgl/web-map/config/MunicipalCenter.json'; // eslint-disable-line import/extensions
@@ -407,13 +408,13 @@ export default class WebMapViewModel extends L.Evented {
         layer = this._createUniqueLayer(layerInfo, features);
         break;
       case 'RANGE':
-        // this._createRangeLayer(layerInfo, features);
+        layer = this._createRangeLayer(layerInfo, features);
         break;
       case 'HEAT':
         layer = this._createHeatLayer(layerInfo, features);
         break;
       case 'MARKER':
-        // this._createMarkerLayer(layerInfo, features);
+        layer = this._createMarkerLayer(layerInfo, features);
         break;
       case 'RANK_SYMBOL':
         // this._createRankSymbolLayer(layerInfo, features);
@@ -572,6 +573,176 @@ export default class WebMapViewModel extends L.Evented {
 
     return layer;
   }
+
+   /**
+   * @private
+   * @function WebMapViewModel.prototype._createRangeLayer
+   * @description 创建分段图层。
+   * @param layerInfo  某个图层的图层信息
+   * @param features   图层上的 feature
+   */
+
+  private _createRangeLayer(layerInfo: any, features: any) {
+    let { filterCondition, style, themeSetting, featureType, layerID, opacity, visible } = layerInfo;
+    let layerStyle = JSON.parse(JSON.stringify(style));
+    featureType === 'POINT' && (layerStyle.pointRadius = style.radius);
+    delete layerStyle.radius;
+
+    if (featureType === 'LINE') {
+      layerStyle.fill = false;
+      layerStyle.strokeDashstyle = style.lineDash; // TODO lineDash 样式错误
+      delete layerStyle.lineDash;
+    }
+
+    let styleGroup = this._getRangeStyleGroup(layerInfo, features);
+    filterCondition && (features = this._getFiterFeatures(filterCondition, features));
+
+    let themeField = themeSetting.themeField;
+    Object.keys(features[0].properties).forEach(key => {
+      key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
+    });
+    // @ts-ignore
+    let layer = L.supermap.rangeThemeLayer(layerID, {
+      opacity: opacity || (visible && visible === 'none' ? 0 : 1)
+    });
+
+    layerStyle.stroke = true;
+    layer.style = layerStyle;
+    layer.themeField = themeField;
+    layer.styleGroups = styleGroup;
+    layer.addFeatures({
+      type: 'FeatureCollection',
+      features: features
+    });
+
+    return layer;
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._createMarkerLayer
+   * @description 添加标记图层。
+   * @param {Array.<GeoJSON>} features - feature。
+   */
+  private _createMarkerLayer(layerInfo: any, features: any) {
+    let { visible } = layerInfo;
+    let layerGroup = [];
+    features &&
+      features.forEach(feature => {
+        let geomType = feature.geometry.type.toUpperCase();
+        let defaultStyle = feature.dv_v5_markerStyle;
+        if (geomType === 'POINT' && defaultStyle.text) {
+          // 说明是文字的feature类型
+          geomType = 'TEXT';
+        }
+        let featureInfo = this._setFeatureInfo(feature);
+        feature.properties['useStyle'] = defaultStyle;
+        feature.properties['featureInfo'] = featureInfo;
+        if (
+          geomType === 'POINT' &&
+          defaultStyle.src &&
+          (defaultStyle.src.indexOf('http://') === -1 && defaultStyle.src.indexOf('https://') === -1)
+        ) {
+          // 说明地址不完整
+          defaultStyle.src = this.serverUrl + defaultStyle.src;
+        }
+
+        // image-marker
+        if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') <= -1) {
+          layerGroup.push(L.marker([feature.geometry.coordinates[1],feature.geometry.coordinates[0]], {
+            icon: L.icon({
+              iconUrl: defaultStyle.src,
+              iconSize: [defaultStyle.imgWidth * defaultStyle.scale, defaultStyle.imgHeight * defaultStyle.scale],
+              iconAnchor: defaultStyle.anchor
+            })
+          }))
+        }
+
+        // svg-marker
+        if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') > -1) {
+
+          if (!this._svgDiv) {
+            this._svgDiv = document.createElement('div');
+            document.body.appendChild(this._svgDiv);
+          }
+          this._getCanvasFromSVG(defaultStyle.src, this._svgDiv, canvas => {
+            let imgUrl = canvas.toDataURL('img/png');
+            let svgPointToLayer = (geojson, latlng) => {
+              return L.marker(latlng, {
+                icon: L.icon({
+                  iconUrl: imgUrl,
+                  iconSize: [defaultStyle.imgWidth, defaultStyle.imgHeight]
+                })
+              });
+            };
+            this._createGeojsonLayer(features, null, svgPointToLayer, this._getLayerOpacity(visible)).addTo(this.map); // 异步过程，直接addToMap
+          });
+        }
+        // point-line-polygon-marker
+        if (!defaultStyle.src) {
+          if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
+            geomType = 'LINE';
+            layerGroup.push(this._createGeojsonLayer([feature], this._getVectorLayerStyle(defaultStyle), this._getLayerOpacity(visible)));
+          } else if (geomType === 'POLYGON') {
+            layerGroup.push(this._createGeojsonLayer([feature], this._getVectorLayerStyle(defaultStyle), this._getLayerOpacity(visible)).addTo(this.map));
+          } else if(geomType === 'TEXT') {
+            // @ts-ignore
+            var text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text', {
+              opacity: this._getLayerOpacity(visible)
+            });
+           
+            text.style = {
+              fontSize : defaultStyle.font.split(" ")[0],
+              labelRect : true,
+              fontColor : defaultStyle.fillColor,
+              fill:true,
+              fillColor: defaultStyle.backgroundFill, // TODO labelStyle 未返回标签背景颜色 待确定；
+              stroke : false
+            };
+            text.themeField = 'text';
+            feature.properties.text = defaultStyle.text;
+            // @ts-ignore
+            let geoTextFeature = new L.supermap.themeFeature(
+              [feature.geometry.coordinates[1],feature.geometry.coordinates[0], defaultStyle.text],
+              feature.properties
+            );
+            text.addFeatures([geoTextFeature]);
+            layerGroup.push(text);
+          }
+          else {
+            layerGroup.push(L.circleMarker([feature.geometry.coordinates[1],feature.geometry.coordinates[0]], {...this._getVectorLayerStyle(defaultStyle)}));
+          }
+        }
+      }, this);
+      return L.layerGroup(layerGroup);
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._setFeatureInfo
+   * @description 设置 feature 信息。
+   * @param {Array.<GeoJSON>} features - feature。
+   */
+  private _setFeatureInfo(feature: any): any {
+    let featureInfo;
+    let info = feature.dv_v5_markerInfo;
+    if (info && info.dataViz_title) {
+      // 有featureInfo信息就不需要再添加
+      featureInfo = info;
+    } else {
+      // featureInfo = this.getDefaultAttribute();
+      return info;
+    }
+    let properties = feature.properties;
+    for (let key in featureInfo) {
+      if (properties[key]) {
+        featureInfo[key] = properties[key];
+        delete properties[key];
+      }
+    }
+    return featureInfo;
+  }
+
   /**
    * @private
    * @function WebMapViewModel.prototype._addLabelLayer
@@ -931,6 +1102,92 @@ export default class WebMapViewModel extends L.Evented {
     }, this);
 
     return styleGroup;
+  }
+
+  /**
+   * @private
+   * @function WebMapViewModel.prototype._getRangeStyleGroup
+   * @description 获取分段样式。
+   * @param {Array.<GeoJSON>} features - feature。
+   */
+  private _getRangeStyleGroup(layerInfo: any, features: any): Array<any> | void {
+    // 找出分段值
+    let featureType = layerInfo.featureType;
+    let style = layerInfo.style;
+    let values = [];
+    let attributes;
+
+    let themeSetting = layerInfo.themeSetting;
+    let customSettings = themeSetting.customSettings;
+    let fieldName = themeSetting.themeField;
+    let segmentCount = themeSetting.segmentCount;
+
+    features.forEach(feature => {
+      attributes = feature.properties || feature.get('Properties');
+      if (attributes) {
+        // 过滤掉非数值的数据
+        attributes[fieldName] && isNumber(+attributes[fieldName]) && values.push(parseFloat(attributes[fieldName]));
+      } else if (feature.get(fieldName) && isNumber(+feature.get(fieldName))) {
+        feature.get(fieldName) && values.push(parseFloat(feature.get(fieldName)));
+      }
+    }, this);
+
+    let segements = SuperMap.ArrayStatistic.getArraySegments(values, themeSetting.segmentMethod, segmentCount);
+    if (segements) {
+      let itemNum = segmentCount;
+      if (attributes && segements[0] === segements[attributes.length - 1]) {
+        itemNum = 1;
+        segements.length = 2;
+      }
+
+      // 保留两位有效数
+      for (let i = 0; i < segements.length; i++) {
+        let value = segements[i];
+        value = i === 0 ? Math.floor(value * 100) / 100 : Math.ceil(value * 100) / 100 + 0.1; // 加0.1 解决最大值没有样式问题
+        segements[i] = Number(value.toFixed(2));
+      }
+
+      // 获取一定量的颜色
+      let curentColors = themeSetting.colors;
+      // curentColors = SuperMap.ColorsPickerUtil.getGradientColors(curentColors, itemNum, 'RANGE');
+
+      for (let index = 0; index < itemNum; index++) {
+        if (index in customSettings) {
+          if (customSettings[index]['segment']['start']) {
+            segements[index] = customSettings[index]['segment']['start'];
+          }
+          if (customSettings[index]['segment']['end']) {
+            segements[index + 1] = customSettings[index]['segment']['end'];
+          }
+        }
+      }
+      // 生成styleGroup
+      let styleGroups = [];
+      for (let i = 0; i < itemNum; i++) {
+        let color = curentColors[i];
+        if (i in customSettings) {
+          if (customSettings[i].color) {
+            color = customSettings[i].color;
+          }
+        }
+        if (featureType === 'LINE') {
+          style.strokeColor = color;
+        } else {
+          style.fillColor = color;
+        }
+
+        let start = segements[i];
+        let end = segements[i + 1];
+        let styleObj = JSON.parse(JSON.stringify(style));
+        styleGroups.push({
+          style: styleObj,
+          color: color,
+          start: start,
+          end: end
+        });
+      }
+      return styleGroups;
+    }
   }
 
   private _getFeaturesFromHosted({ layer, index, len, _taskID }) {
