@@ -74,6 +74,8 @@ export default class WebMapViewModel extends L.Evented {
 
   echartslayer: any = [];
 
+  layers: any = {};
+
   private _taskID: Date;
 
   private _layers: any = [];
@@ -196,7 +198,7 @@ export default class WebMapViewModel extends L.Evented {
   }
 
   private _createMap(mapInfo: any): void {
-    let { level, maxZoom, minZoom } = mapInfo;
+    let { level, maxZoom, minZoom, baseLayer } = mapInfo;
 
     // zoom & center
     let center: [number, number] | L.LatLng;
@@ -211,6 +213,16 @@ export default class WebMapViewModel extends L.Evented {
     // crs 坐标系处理待优化
     let epsgCode = this.baseProjection.split(':')[1];
     let crs = L.CRS[`EPSG${epsgCode}`];
+
+    if (baseLayer.layerType === 'BAIDU') {
+      // @ts-ignore
+      crs = L.CRS.Baidu;
+    }
+
+    if (baseLayer.layerType.indexOf('TIANDITU') > -1) {
+      // @ts-ignore
+      crs = this.baseProjection === 'EPSG:3857' ? L.CRS.TianDiTu_Mercator : L.CRS.TianDiTu_WGS84;
+    }
 
     // bounds
     // let bounds = L.bounds([extent.leftBottom.x, extent.leftBottom.y], [extent.rightTop.x, extent.rightTop.y]);
@@ -259,9 +271,9 @@ export default class WebMapViewModel extends L.Evented {
     }
 
     let mapUrls = {
-      CLOUD: 'http://t2.supermapcloud.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
-      CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp?x={x}&y={y}&z={z}',
-      OSM: 'http://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      CLOUD: 'http://t2.supermapcloud.com/FileService/image',
+      CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp',
+      OSM: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       GOOGLE:
         'http://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0',
       GOOGLE_CN: 'https://mt{0-3}.google.cn/vt/lyrs=m&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
@@ -277,7 +289,7 @@ export default class WebMapViewModel extends L.Evented {
       case 'TIANDITU_VEC':
       case 'TIANDITU_IMG':
       case 'TIANDITU_TER':
-        // this._createTiandituLayer(mapInfo);
+        this._createTiandituLayer(layerInfo);
         break;
       case 'BING':
         // this._createBingLayer(layerInfo.name);
@@ -294,6 +306,9 @@ export default class WebMapViewModel extends L.Evented {
         break;
       case 'CLOUD':
       case 'CLOUD_BLACK':
+        url = mapUrls[layerType];
+        layer = this._createCLOUDLayer(layerType, url);
+        break;
       case 'OSM':
       case 'JAPAN_ORT':
       case 'JAPAN_RELIEF':
@@ -302,13 +317,15 @@ export default class WebMapViewModel extends L.Evented {
       case 'GOOGLE_CN':
       case 'GOOGLE':
         url = mapUrls[layerType];
-        // this._createXYZLayer(layerInfo, url);
+        layer = this._createXYZLayer(layerInfo, url);
+        break;
+      case 'BAIDU':
+        layer = this._createBaiduTileLayer();
         break;
       default:
         break;
     }
-
-    layer && this.map.addLayer(layer);
+    layer && this._addLayerToMap(layer, 'baseLayers', layerInfo.name);
   }
 
   /**
@@ -410,13 +427,13 @@ export default class WebMapViewModel extends L.Evented {
         break;
     }
 
-    layer && this.map.addLayer(layer);
+    layer && this._addLayerToMap(layer, 'overlays', layerInfo.layerID);
 
     if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
       // 存在标签专题图
       features = this._getFiterFeatures(filterCondition, features);
       let labelLayer = this._addLabelLayer(layerInfo, features);
-      this.map.addLayer(labelLayer);
+      this._addLayerToMap(labelLayer, 'overlays', layerInfo.layerID);
     }
   }
 
@@ -429,7 +446,7 @@ export default class WebMapViewModel extends L.Evented {
   private _createDynamicTiledLayer(layerInfo: any): void {
     let url = layerInfo.url;
     // @ts-ignore
-    let layer = L.supermap.tiledMapLayer(url);
+    let layer = L.supermap.tiledMapLayer(url, { noWrap: true });
     return layer;
   }
 
@@ -456,20 +473,61 @@ export default class WebMapViewModel extends L.Evented {
   }
 
   /**
-    * @private
-    * @function WebMapViewModel.prototype._createWMTSLayer
-    * @description 创建 WMTS 底图。
-    * @param {Object} layerInfo - 地图信息。
-    */
-   private _createWMTSLayer(layerInfo: any) {
-    let {url, tileMatrixSet, name} = layerInfo;
+   * @private
+   * @function WebMapViewModel.prototype._createWMTSLayer
+   * @description 创建 WMTS 底图。
+   * @param {Object} layerInfo - 地图信息。
+   */
+  private _createWMTSLayer(layerInfo: any) {
+    let { url, tileMatrixSet, name } = layerInfo;
     // @ts-ignore
     return L.supermap.wmtsLayer(url, {
       layer: name,
-      style: "default",
+      style: 'default',
       tilematrixSet: tileMatrixSet,
-      format: "image/png"
-    })
+      format: 'image/png',
+      noWrap: true
+    });
+  }
+
+  private _createTiandituLayer(layerInfo) {
+    this.map.getZoom() < 1 && this.map.setZoom(1);
+    this.map.setMinZoom(1);
+    let layerType = layerInfo.layerType.split('_')[1].toLowerCase();
+    let isLabel = Boolean(layerInfo.labelLayerVisible);
+    // @ts-ignore
+    let tiandituLayer = L.supermap.tiandituTileLayer({
+      layerType,
+      key: this.tiandituKey
+    });
+    // @ts-ignore
+    let tiandituLabelLayer = L.supermap.tiandituTileLayer({
+      layerType,
+      isLabel: true,
+      key: this.tiandituKey
+    });
+    this._addLayerToMap(tiandituLayer, 'overlays', layerInfo.name);
+    isLabel && this._addLayerToMap(tiandituLabelLayer, 'overlays', layerInfo.name + '-label');
+  }
+
+  private _createCLOUDLayer(layerType, url) {
+    if (layerType === 'CLOUD') {
+      this.map.getZoom() < 3 && this.map.setZoom(3);
+      this.map.setMinZoom(3);
+    }
+    // @ts-ignore
+    return L.supermap.cloudTileLayer(url, { noWrap: true });
+  }
+
+  private _createXYZLayer(layerInfo, url) {
+    return L.tileLayer(url, { noWrap: true });
+  }
+
+  private _createBaiduTileLayer() {
+    this.map.getZoom() < 3 && this.map.setZoom(3);
+    this.map.setMinZoom(3);
+    // @ts-ignore
+    return L.supermap.baiduTileLayer('', { noWrap: true });
   }
 
   /**
@@ -637,7 +695,7 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Array} features - 属性 信息。
    */
   private _createGraphicLayer(layerInfo: any, features: any) {
-    let { style, visible } = layerInfo;
+    let { style, visible, layerID } = layerInfo;
     let { type, imageInfo, radius, url } = style;
     let pointToLayer;
     if (type === 'IMAGE_POINT' && imageInfo.url) {
@@ -667,7 +725,8 @@ export default class WebMapViewModel extends L.Evented {
             })
           });
         };
-        this._createGeojsonLayer(features, null, svgPointToLayer, this._getLayerOpacity(visible)).addTo(this.map); // 异步过程，直接addToMap
+        let svgPointLayer = this._createGeojsonLayer(features, null, svgPointToLayer, this._getLayerOpacity(visible));
+        this._addLayerToMap(svgPointLayer, 'overlays', layerID);
       });
     } else {
       pointToLayer = (geojson, latlng) => {
@@ -728,6 +787,11 @@ export default class WebMapViewModel extends L.Evented {
     radius && (commonStyle['radius'] = radius);
     lineDash && (commonStyle['dashArray'] = dashArray);
     return commonStyle;
+  }
+
+  private _addLayerToMap(layer, type, layerName) {
+    this.map.addLayer(layer);
+    this.layers[type][layerName] = layer;
   }
 
   private _getLayerOpacity(visible) {
