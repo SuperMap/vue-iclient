@@ -33,8 +33,8 @@ export default class iServerRestService extends mapboxgl.Evented {
   _getDatasetInfoSucceed(datasetInfo, queryInfo) {
     datasetInfo.dataUrl = this.url;
     // 判断服务为地图服务 或者 数据服务
-    this.url.indexOf('/rest/maps') > -1 && this.getMapFeatures(datasetInfo, queryInfo);
-    this.url.indexOf('/rest/data') > -1 && this.getDataFeatures(datasetInfo, queryInfo);
+    (this.url.indexOf('/rest/maps') > -1 || this.url.indexOf(encodeURIComponent('/rest/map')) > -1) && this.getMapFeatures(datasetInfo, queryInfo);
+    (this.url.indexOf('/rest/data') > -1 || this.url.indexOf(encodeURIComponent('/rest/data')) > -1) && this.getDataFeatures(datasetInfo, queryInfo);
   }
 
   /**
