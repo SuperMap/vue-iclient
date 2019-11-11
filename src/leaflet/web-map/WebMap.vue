@@ -22,9 +22,6 @@ import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-deco
     'mapOptions.minZoom',
     'mapOptions.maxZoom',
     'mapOptions.maxBounds',
-    'mapOptions.renderWorldCopies',
-    'mapOptions.bearing',
-    'mapOptions.pitch',
     'withCredentials'
   ]
 })

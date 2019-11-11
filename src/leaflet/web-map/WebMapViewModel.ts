@@ -9,9 +9,8 @@ import { isXField, isYField } from '../../common/_utils/util';
 import getCenter from '@turf/center';
 import canvg from 'canvg';
 import isNumber from 'lodash.isnumber';
-// TODO 待抽公共类
-import provincialCenterData from '../../mapboxgl/web-map/config/ProvinceCenter.json'; // eslint-disable-line import/extensions
-import municipalCenterData from '../../mapboxgl/web-map/config/MunicipalCenter.json'; // eslint-disable-line import/extensions
+import provincialCenterData from '../../common/_utils/config/ProvinceCenter.json';
+import municipalCenterData from '../../common/_utils/config/MunicipalCenter.json';
 
 interface webMapOptions {
   target?: string;
@@ -27,23 +26,23 @@ interface webMapOptions {
 interface mapOptions {
   center?: number[] | L.LatLng;
   zoom?: number;
-  maxBounds?: [[number, number], [number, number]] | mapboxglTypes.LngLatBoundsLike;
+  maxBounds?: [[number, number], [number, number]] | L.Bounds;
   minZoom?: number;
   maxZoom?: number;
-  bearing?: number;
-  pitch?: number;
+  layers?: L.Layer[];
+  crs?: L.CRS;
 }
 
 // 迁徙图最大支持要素数量
 const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 
-// TODO 统一处理 layerName 坐标系
+// TODO 统一处理 layerName / 坐标系 / noWrap
 export default class WebMapViewModel extends L.Evented {
   map: L.Map;
 
   mapId: string;
 
-  mapOptions: any;
+  mapOptions: mapOptions;
 
   serverUrl: string;
 
@@ -99,7 +98,64 @@ export default class WebMapViewModel extends L.Evented {
     this.echartslayer = [];
     this.center = mapOptions.center || [];
     this.zoom = mapOptions.zoom;
+    this.mapOptions = mapOptions;
     this._createWebMap();
+  }
+
+  public setZoom(zoom) {
+    if (this.map) {
+      this.mapOptions.zoom = zoom;
+      (zoom || zoom === 0) && this.map.setZoom(zoom);
+    }
+  }
+
+  public setMinZoom(minZoom): void {
+    if (this.map) {
+      this.mapOptions.minZoom = minZoom;
+      (minZoom || minZoom === 0) && this.map.setMinZoom(minZoom);
+    }
+  }
+
+  public setMaxZoom(maxZoom): void {
+    if (this.map) {
+      this.mapOptions.maxZoom = maxZoom;
+      (maxZoom || maxZoom === 0) && this.map.setMinZoom(maxZoom);
+    }
+  }
+
+  public setCenter(center): void {
+    if (this.map) {
+      this.mapOptions.center = center;
+      center && (<[number, number]>center).length > 0 && this.map.setView(center, this.zoom);
+    }
+  }
+
+  public setMaxBounds(maxBounds): void {
+    if (this.map) {
+      this.mapOptions.maxBounds = maxBounds;
+      maxBounds && (<[[number, number], [number, number]]>maxBounds).length > 0 && this.map.setMaxBounds(maxBounds);
+    }
+  }
+
+  public echartsLayerResize(): void {
+    this.echartslayer.forEach(echartslayer => {
+      echartslayer.chart.resize();
+    });
+  }
+
+  public setMapId(mapId: string): void {
+    this.mapId = mapId;
+    setTimeout(() => {
+      this._createWebMap();
+    }, 0);
+  }
+
+  public setServerUrl(serverUrl: string): void {
+    this.serverUrl = serverUrl;
+  }
+
+  public setWithCredentials(withCredentials) {
+    this.withCredentials = withCredentials;
   }
 
   private _createWebMap(): void {
@@ -109,7 +165,15 @@ export default class WebMapViewModel extends L.Evented {
       this.zoom = null;
     }
     if (!this.mapId || !this.serverUrl) {
-      this.map = L.map('map');
+      this.map = L.map(this.target, {
+        center: (<number[]>this.center).length ? L.latLng(this.center[0], this.center[1]) : null,
+        zoom: this.zoom,
+        crs: this.mapOptions.crs,
+        maxZoom: this.mapOptions.maxZoom || 22,
+        minZoom: this.mapOptions.minZoom || 0,
+        layers: this.mapOptions.layers,
+        preferCanvas: true // unicode marker 需要canvas
+      });
 
       // load 监听失败 TODO
 
@@ -176,7 +240,7 @@ export default class WebMapViewModel extends L.Evented {
         // 无法 on 到 load 事件  TODO
         // this.map.on('load', () => {
         if (baseLayer && baseLayer.layerType === 'MAPBOXSTYLE') {
-          // 添加矢量瓦片服务作为底图
+          // 添加矢量瓦片服务作为底图 TODO-------------------MVT
           // this._addMVTBaseMap(mapInfo);
         } else {
           this._createBaseLayer(mapInfo);
@@ -574,7 +638,7 @@ export default class WebMapViewModel extends L.Evented {
     return layer;
   }
 
-   /**
+  /**
    * @private
    * @function WebMapViewModel.prototype._createRangeLayer
    * @description 创建分段图层。
@@ -649,18 +713,19 @@ export default class WebMapViewModel extends L.Evented {
 
         // image-marker
         if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') <= -1) {
-          layerGroup.push(L.marker([feature.geometry.coordinates[1],feature.geometry.coordinates[0]], {
-            icon: L.icon({
-              iconUrl: defaultStyle.src,
-              iconSize: [defaultStyle.imgWidth * defaultStyle.scale, defaultStyle.imgHeight * defaultStyle.scale],
-              iconAnchor: defaultStyle.anchor
+          layerGroup.push(
+            L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+              icon: L.icon({
+                iconUrl: defaultStyle.src,
+                iconSize: [defaultStyle.imgWidth * defaultStyle.scale, defaultStyle.imgHeight * defaultStyle.scale],
+                iconAnchor: defaultStyle.anchor
+              })
             })
-          }))
+          );
         }
 
         // svg-marker
         if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') > -1) {
-
           if (!this._svgDiv) {
             this._svgDiv = document.createElement('div');
             document.body.appendChild(this._svgDiv);
@@ -682,39 +747,54 @@ export default class WebMapViewModel extends L.Evented {
         if (!defaultStyle.src) {
           if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
             geomType = 'LINE';
-            layerGroup.push(this._createGeojsonLayer([feature], this._getVectorLayerStyle(defaultStyle), this._getLayerOpacity(visible)));
+            layerGroup.push(
+              this._createGeojsonLayer(
+                [feature],
+                this._getVectorLayerStyle(defaultStyle),
+                this._getLayerOpacity(visible)
+              )
+            );
           } else if (geomType === 'POLYGON') {
-            layerGroup.push(this._createGeojsonLayer([feature], this._getVectorLayerStyle(defaultStyle), this._getLayerOpacity(visible)).addTo(this.map));
-          } else if(geomType === 'TEXT') {
+            layerGroup.push(
+              this._createGeojsonLayer(
+                [feature],
+                this._getVectorLayerStyle(defaultStyle),
+                this._getLayerOpacity(visible)
+              ).addTo(this.map)
+            );
+          } else if (geomType === 'TEXT') {
             // @ts-ignore
             var text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text', {
               opacity: this._getLayerOpacity(visible)
             });
-           
+
             text.style = {
-              fontSize : defaultStyle.font.split(" ")[0],
-              labelRect : true,
-              fontColor : defaultStyle.fillColor,
-              fill:true,
+              fontSize: defaultStyle.font.split(' ')[0],
+              labelRect: true,
+              fontColor: defaultStyle.fillColor,
+              fill: true,
               fillColor: defaultStyle.backgroundFill, // TODO labelStyle 未返回标签背景颜色 待确定；
-              stroke : false
+              stroke: false
             };
             text.themeField = 'text';
             feature.properties.text = defaultStyle.text;
             // @ts-ignore
             let geoTextFeature = new L.supermap.themeFeature(
-              [feature.geometry.coordinates[1],feature.geometry.coordinates[0], defaultStyle.text],
+              [feature.geometry.coordinates[1], feature.geometry.coordinates[0], defaultStyle.text],
               feature.properties
             );
             text.addFeatures([geoTextFeature]);
             layerGroup.push(text);
-          }
-          else {
-            layerGroup.push(L.circleMarker([feature.geometry.coordinates[1],feature.geometry.coordinates[0]], {...this._getVectorLayerStyle(defaultStyle)}));
+          } else {
+            layerGroup.push(
+              L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+                ...this._getVectorLayerStyle(defaultStyle)
+              })
+            );
           }
         }
       }, this);
-      return L.layerGroup(layerGroup);
+    return L.layerGroup(layerGroup);
   }
 
   /**
@@ -1424,7 +1504,7 @@ export default class WebMapViewModel extends L.Evented {
       /**
        * @event WebMapViewModel#addlayerssucceeded
        * @description 添加图层成功。
-       * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
+       * @property {L.Map} map - Leaflet Map 对象。
        * @property {Object} mapparams - 地图信息。
        * @property {string} mapParams.title - 地图标题。
        * @property {string} mapParams.description - 地图描述。

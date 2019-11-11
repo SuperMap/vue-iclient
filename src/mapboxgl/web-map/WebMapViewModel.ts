@@ -12,8 +12,8 @@
  import canvg from 'canvg';
  import echarts from 'echarts';
  import EchartsLayer from '../../../static/libs/echarts-layer/EchartsLayer';
- import provincialCenterData from './config/ProvinceCenter.json'; // eslint-disable-line import/extensions
- import municipalCenterData from './config/MunicipalCenter.json'; // eslint-disable-line import/extensions
+ import provincialCenterData from '../../common/_utils/config/ProvinceCenter.json';
+ import municipalCenterData from '../../common/_utils/config/MunicipalCenter.json';
  import UniqueId from 'lodash.uniqueid';
  import cloneDeep from 'lodash.clonedeep';
  import { geti18n } from '../../common/_lang';
