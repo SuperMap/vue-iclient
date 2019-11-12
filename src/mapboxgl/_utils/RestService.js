@@ -15,12 +15,12 @@ export default class RestService extends mapboxgl.Evented {
         return response.json();
       })
       .then(data => {
-        if (data.success === false || data.code !== 200 || !data) {
+        if (!data || !data.data) {
           // 请求失败
           this.fire('getdatafailed', {
             data
           });
-        } else if (data && data.success === true && data.code === 200) {
+        } else if (data.data) {
           let res = {};
           if (queryInfo && queryInfo.maxFeatures) {
             let length = queryInfo.maxFeatures;
