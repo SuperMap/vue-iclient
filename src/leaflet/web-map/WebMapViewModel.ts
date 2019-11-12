@@ -746,22 +746,13 @@ export default class WebMapViewModel extends L.Evented {
         }
         // point-line-polygon-marker
         if (!defaultStyle.src) {
-          if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
-            geomType = 'LINE';
+          if ((geomType === 'LINESTRING' && defaultStyle.lineCap) || geomType === 'POLYGON') {
             layerGroup.push(
               this._createGeojsonLayer(
                 [feature],
                 this._getVectorLayerStyle(defaultStyle),
                 this._getLayerOpacity(visible)
               )
-            );
-          } else if (geomType === 'POLYGON') {
-            layerGroup.push(
-              this._createGeojsonLayer(
-                [feature],
-                this._getVectorLayerStyle(defaultStyle),
-                this._getLayerOpacity(visible)
-              ).addTo(this.map)
             );
           } else if (geomType === 'TEXT') {
             // @ts-ignore

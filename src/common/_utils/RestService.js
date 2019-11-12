@@ -1,7 +1,11 @@
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { Events } from '../_types/event/Events';
 
-export default class RestService extends mapboxgl.Evented {
+export default class RestService extends Events {
+  constructor() {
+    super();
+    this.eventTypes = ['getdatafailed', 'getdatasucceeded'];
+  }
+
   /**
    * @function RestService.prototype.getData
    * @description 请求数据。
@@ -17,7 +21,7 @@ export default class RestService extends mapboxgl.Evented {
       .then(data => {
         if (!data || !data.data) {
           // 请求失败
-          this.fire('getdatafailed', {
+          this.triggerEvent('getdatafailed', {
             data
           });
         } else if (data.data) {
@@ -36,14 +40,14 @@ export default class RestService extends mapboxgl.Evented {
           } else {
             res = data.data;
           }
-          this.fire('getdatasucceeded', {
+          this.triggerEvent('getdatasucceeded', {
             data: res
           });
         }
       })
       .catch(error => {
         console.log(error);
-        this.fire('getdatafailed', {
+        this.triggerEvent('getdatafailed', {
           error
         });
       });

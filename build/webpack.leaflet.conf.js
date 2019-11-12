@@ -96,7 +96,7 @@ const webpackConfig = merge(baseWebpackConfig, {
           amd: '../static/libs/deckgl/deck.gl.min.js'
         });
       }
-      if (/\/static\/libs\/iclient-mapboxgl\/iclient-leaflet/.test(request)) {
+      if (/\/static\/libs\/iclient-leaflet\/iclient-leaflet/.test(request)) {
         return callback(null, {
           root: 'SuperMap',
           commonjs: '../static/libs/iclient-leaflet/iclient-leaflet.min.js',

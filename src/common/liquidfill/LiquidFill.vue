@@ -12,7 +12,7 @@ import Theme from '../_mixin/theme';
 import 'echarts-liquidfill';
 import { ResizeSensor } from 'css-element-queries';
 import Timer from '../_mixin/timer';
-import RestService from '../../mapboxgl/_utils/RestService';
+import RestService from '../../common/_utils/RestService';
 
 export default {
   name: 'SmLiquidFill',
@@ -132,14 +132,14 @@ export default {
     this.borderColorData = this.borderColor || this.waveColorData;
     this.backgroundColorData = this.backgroundColor || this.getBackground;
     this.restService = new RestService();
-    this.restService.on('getdatasucceeded', this.fetchData);
+    this.restService.on({ 'getdatasucceeded': this.fetchData });
     setTimeout(() => {
       this.initializeChart();
       this.resize();
     }, 0);
   },
   beforeDestroy() {
-    this.restService.off('getdatasucceeded', this.fetchData);
+    this.restService.remove('getdatasucceeded');
   },
   methods: {
     resize() {

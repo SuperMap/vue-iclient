@@ -35,7 +35,7 @@
 <script>
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
-import RestService from '../../mapboxgl/_utils/RestService';
+import RestService from '../../common/_utils/RestService';
 import CountTo from './CountTo';
 
 export default {
@@ -191,7 +191,7 @@ export default {
     this.indicatorColorData = this.indicatorColor || this.getColor(0);
   },
   beforeDestroy() {
-    this.restService && this.restService.off('getdatasucceeded', this.fetchData);
+    this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
     isNumber(str) {
@@ -215,7 +215,7 @@ export default {
     getRestService() {
       if (!this.restService) {
         this.restService = new RestService();
-        this.restService.on('getdatasucceeded', this.fetchData);
+        this.restService.on({ 'getdatasucceeded': this.fetchData });
       }
       return this.restService;
     }

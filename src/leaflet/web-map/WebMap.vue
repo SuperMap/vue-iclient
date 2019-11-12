@@ -145,7 +145,7 @@ class SmWebMap extends Mixins(VmUpdater) {
       /**
        * @event load
        * @desc webmap 加载完成之后触发。
-       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+       * @property {L.Map} map - Leaflet Map 对象。
        */
       this.load({ map: e.map });
     });
@@ -165,7 +165,7 @@ class SmWebMap extends Mixins(VmUpdater) {
        * @desc 获取图层数据失败。
        * @property {Object} error - 失败原因。
        * @property {Object} layer - 图层信息。
-       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+       * @property {L.Map} map - Leaflet Map 对象。
        */
       this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
       this.$message.error(this.$t('webmap.getLayerInfoFailed'));
