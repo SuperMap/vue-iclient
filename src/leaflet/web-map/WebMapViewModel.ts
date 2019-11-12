@@ -34,7 +34,7 @@ interface mapOptions {
 // 迁徙图最大支持要素数量
 const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 
-// TODO 统一处理 layerName / 坐标系 / noWrap
+// TODO 坐标系 / noWrap
 export default class WebMapViewModel extends L.Evented {
   map: L.Map;
 
@@ -73,6 +73,8 @@ export default class WebMapViewModel extends L.Evented {
   echartslayer: any = [];
 
   layers: any = {};
+
+  crs: L.CRS;
 
   private _taskID: Date;
 
@@ -176,14 +178,14 @@ export default class WebMapViewModel extends L.Evented {
       // load 监听失败 TODO
 
       // this.map.on('load', () => {
-        setTimeout(()=>{
-          this.fire('addlayerssucceeded', {
-            map: this.map,
-            mapparams: {},
-            layers: []
-          });
-        },0)
-        
+      setTimeout(() => {
+        this.fire('addlayerssucceeded', {
+          map: this.map,
+          mapparams: {},
+          layers: []
+        });
+      }, 0)
+
       // });
       return;
     }
@@ -309,7 +311,7 @@ export default class WebMapViewModel extends L.Evented {
     // this.map.fitBounds(L.latLngBounds(crs.unproject(bounds.min), crs.unproject(bounds.max)), {
     //   maxZoom: maxZoom || 22
     // });
-
+    this.crs = crs;
     /**
      * @event WebMapViewModel#mapinitialized
      * @description Map 初始化成功。
@@ -452,7 +454,7 @@ export default class WebMapViewModel extends L.Evented {
     }
 
     if (features && projection && projection !== 'EPSG:4326') {
-      // 坐标系转换 -------------------------------------TODO
+      this._transformFeatures(features);
     }
 
     let layer;
@@ -1597,10 +1599,10 @@ export default class WebMapViewModel extends L.Evented {
       //判断是否和底图坐标系一直
       if (info.epsgCode == this.baseProjection.split('EPSG:')[1]) {
         return SuperMap.FetchRequest.get(`${info.url}/tilefeature.mvt`)
-          .then(function(response) {
+          .then(function (response) {
             return response.json();
           })
-          .then(function(result) {
+          .then(function (result) {
             info.isMvt = result.error && result.error.code === 400;
             return info;
           })
@@ -1839,15 +1841,15 @@ export default class WebMapViewModel extends L.Evented {
       requestUrl += `?token=${token}`;
     }
     SuperMap.FetchRequest.get(requestUrl)
-      .then(function(response) {
+      .then(function (response) {
         return response.json();
       })
-      .then(function(result) {
+      .then(function (result) {
         if (result && result.featureMetaData) {
           layerInfo.featureType = result.featureMetaData.featureType.toUpperCase();
           layerInfo.dataSource = { dataTypes: {} };
           if (result.featureMetaData.fieldInfos && result.featureMetaData.fieldInfos.length > 0) {
-            result.featureMetaData.fieldInfos.forEach(function(data) {
+            result.featureMetaData.fieldInfos.forEach(function (data) {
               let name = data.name.trim();
               if (data.type === 'TEXT') {
                 layerInfo.dataSource.dataTypes[name] = 'STRING';
@@ -1866,7 +1868,7 @@ export default class WebMapViewModel extends L.Evented {
           faild();
         }
       })
-      .catch(function() {
+      .catch(function () {
         faild();
       });
   }
@@ -2307,5 +2309,39 @@ export default class WebMapViewModel extends L.Evented {
       return !!fieldName.match(new RegExp(shortName));
     }
     return false;
+  }
+  _transformFeatures(features) {
+    let crs = this.crs || L.CRS.EPSG3857;
+    features &&
+      features.forEach((feature, index) => {
+        let geometryType = feature.geometry.type;
+        let coordinates = feature.geometry.coordinates;
+        if (geometryType === 'LineString') {
+          coordinates.forEach((coordinate, index) => {
+            coordinate = this._latlngToCoordinate(crs.unproject(L.point(coordinate[0], coordinate[1])));
+            coordinates[index] = coordinate;
+          }, this);
+        } else if (geometryType === 'Point') {
+          coordinates = this._latlngToCoordinate(crs.unproject(L.point(coordinates[0], coordinates[1])));
+          feature.geometry.coordinates = coordinates;
+        } else if (geometryType === 'MultiPolygon' || geometryType === 'Polygon') {
+          coordinates.forEach((coordinate, index) => {
+            let coords = geometryType === 'MultiPolygon' ? coordinate[0] : coordinate;
+            coords.forEach((latlng, i) => {
+              latlng = this._latlngToCoordinate(crs.unproject(L.point(latlng[0], latlng[1])));
+              coords[i] = latlng;
+            });
+            coordinates[index] = coordinate;
+          });
+        }
+        features[index] = feature;
+      }, this);
+  }
+
+  _latlngToCoordinate(latlng){
+    if(!latlng){
+      return null;
+    }
+    return [latlng.lng, latlng.lat]
   }
 }

@@ -124,57 +124,8 @@ export default {
       ]
     };
 
-    // 模拟 dataflow 实时数据
-    // SuperMap.SecurityManager.registerToken("ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow", '0ra2250-rPu6ZnqHPKqcqDjGkDGDv3bg5HHy1SNNXf79OlN0ArG07bq3cGFz0v-nfBm2RAnYJ3LGBsuiptH43g..');
-    // var featureResult, dataFlowBroadcast, timer;
-    // function broadcast() {
-    //   var features = [];
-    //   for (var index = 0; index < featureResult.length; index++) {
-    //     var count = parseInt(Math.random() * featureResult.length);
-    //     var geometry = featureResult[count].geometry;
-    //     var feature = {
-    //       geometry: geometry,
-    //       type: "Feature",
-    //       properties: { id: index + 1, time: new Date() }
-    //     };
-    //     features.push(feature);
-    //   }
-    //   dataFlowBroadcast.broadcast(features);
-    // }
-
-    // function query() {
-    //   var param = new SuperMap.QueryBySQLParameters({
-    //     queryParams: { name: "Capitals@World#3", attributeFilter: "SMID > 0" }
-    //   });
-    //   var queryService = new mapboxgl.supermap.QueryService(
-    //     "http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World"
-    //   ).queryBySQL(param, function(serviceResult) {
-    //     featureResult = serviceResult.result.recordsets[0].features.features;
-    //     dataFlowBroadcast = new mapboxgl.supermap.DataFlowService(
-    //       "ws://iclsvrws.supermap.io/iserver/services/dataflowTest/dataflow"
-    //     ).initBroadcast();
-    //     dataFlowBroadcast.on("broadcastSocketConnected", function(e) {
-    //       timer = window.setInterval(broadcast, 2000);
-    //     });
-    //   });
-    // }
-    // query();
-
-    var rankFeatures = [];
-    for (var i = 0, len = themeLayerData.chinaConsumptionLevel.length; i < len; i++) {
-      // 省居民消费水平（单位：元）信息
-      var provinceInfo = themeLayerData.chinaConsumptionLevel[i];
-      var geo = new mapboxgl.LngLat(provinceInfo[1], provinceInfo[2]);
-      var attrs = {};
-      attrs.NAME = provinceInfo[0];
-      attrs.CON2009 = provinceInfo[3];
-      var fea = new mapboxgl.supermap.ThemeFeature(geo, attrs);
-      rankFeatures.push(fea);
-    }
-
     return {
       mapID: '1649097980',
-      rankFeatures,
       styleObject: {
         width: '600px'
       },
@@ -407,36 +358,6 @@ export default {
     rankThemeCallback(themeLayer, map) {
       // 专题图层 mousemove 事件
       themeLayer.on('mousemove', e => this.showInfoWin(themeLayer, map, e));
-    },
-    showInfoWin(themeLayer, map, e) {
-      // e.target 是图形对象，即数据的可视化对象。
-      // 图形对象的 refDataID 属性是数据（feature）的 id 属性，它指明图形对象是由那个数据制作而来;
-      // 图形对象的 dataInfo 属性是图形对象表示的具体数据，他有两个属性，field、R 和 value;
-      if (e.target && e.target.refDataID && e.target.dataInfo) {
-        this.closeInfoWin();
-        // 获取图形对应的数据 (feature)
-        var fea = themeLayer.getFeatureById(e.target.refDataID);
-        var info = e.target.dataInfo;
-        // 弹窗内容
-        var contentHTML = "<div style='color: #000; background-color: #fff'>";
-        contentHTML += '省级行政区名称' + '<br><strong>' + fea.attributes.NAME + '</strong>';
-        contentHTML += "<hr style='margin: 3px'>";
-        switch (info.field) {
-          case 'CON2009':
-            contentHTML += '09年居民消费水平' + ' <br/><strong>' + info.value + '</strong>（元）';
-            break;
-          default:
-            contentHTML += 'No Data';
-        }
-        contentHTML += '</div>';
-        var tempPoint = map.unproject(new window.mapboxgl.Point(e.event.x, e.event.y));
-        this.popup = new mapboxgl.Popup({ closeOnClick: false })
-          .setLngLat([tempPoint.lng, tempPoint.lat])
-          .setHTML(contentHTML)
-          .addTo(map);
-        return;
-      }
-      this.closeInfoWin();
     },
     closeInfoWin() {
       if (this.popup) {
