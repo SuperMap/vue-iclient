@@ -27,7 +27,7 @@ interface mapOptions {
   maxBounds?: [[number, number], [number, number]] | L.Bounds;
   minZoom?: number;
   maxZoom?: number;
-  layers?: L.Layer[];
+  // layers?: L.Layer[];
   crs?: L.CRS;
 }
 
@@ -169,18 +169,21 @@ export default class WebMapViewModel extends L.Evented {
         crs: this.mapOptions.crs,
         maxZoom: this.mapOptions.maxZoom || 22,
         minZoom: this.mapOptions.minZoom || 0,
-        layers: this.mapOptions.layers,
+        // layers: this.mapOptions.layers,
         preferCanvas: true // unicode marker 需要canvas
       });
 
       // load 监听失败 TODO
 
       // this.map.on('load', () => {
-      this.fire('addlayerssucceeded', {
-        map: this.map,
-        mapparams: {},
-        layers: []
-      });
+        setTimeout(()=>{
+          this.fire('addlayerssucceeded', {
+            map: this.map,
+            mapparams: {},
+            layers: []
+          });
+        },0)
+        
       // });
       return;
     }
