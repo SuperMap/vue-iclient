@@ -1,0 +1,17 @@
+$--pan-assets-path: './web-map/control/pan/assets' !default;
+$--tdt-assets-path: './tdt/_assets' !default;
+@import '../common/_utils/style/common/common.scss';
+/** common */
+@import '../common/indicator/style/indicator.scss';
+@import '../common/text/style/text.scss';
+@import '../common/time-text/style/time-text.scss';
+@import '../common/icon/style/icon.scss';
+@import '../common/card/style/card.scss';
+@import '../common/liquidFill/style/liquidFill.scss';
+@import '../common/progress/style/progress.scss';
+@import '../common/table-popup/style/tablePopup.scss';
+@import '../common/border/style/border.scss';
+@import '../common/image/style/image.scss';
+@import '../common/video-player/style/video-player.scss';
+@import '../common/iframe/style/iframe.scss';
+@import './web-map/style/web-map.scss';

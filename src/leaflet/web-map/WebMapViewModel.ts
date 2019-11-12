@@ -1,8 +1,6 @@
 import L from 'leaflet';
+import '../../../static/libs/iclient-leaflet/iclient-leaflet.min'
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
-import 'leaflet/dist/leaflet.css'; // TODO css 待抽离
-import '../../../static/libs/iclient-leaflet/iclient-leaflet-es6';
-import '../../../static/libs/iclient-leaflet/iclient-leaflet.min.css';
 import '../../../static/libs/geostats/geostats';
 import '../../../static/libs/json-sql/jsonsql';
 import { isXField, isYField } from '../../common/_utils/util';
@@ -481,7 +479,7 @@ export default class WebMapViewModel extends L.Evented {
         layer = this._createMarkerLayer(layerInfo, features);
         break;
       case 'RANK_SYMBOL':
-        layer = this._createRankSymbolLayer(layerInfo, features);
+        // this._createRankSymbolLayer(layerInfo, features);
         break;
       case 'MIGRATION':
         layer = this._createMigrationLayer(layerInfo, features);
@@ -686,7 +684,6 @@ export default class WebMapViewModel extends L.Evented {
    * @private
    * @function WebMapViewModel.prototype._createMarkerLayer
    * @description 添加标记图层。
-   * @param layerInfo  某个图层的图层信息
    * @param {Array.<GeoJSON>} features - feature。
    */
   private _createMarkerLayer(layerInfo: any, features: any) {
@@ -796,124 +793,6 @@ export default class WebMapViewModel extends L.Evented {
         }
       }, this);
     return L.layerGroup(layerGroup);
-  }
-
-  /**
-   * @private
-   * @function WebMapViewModel.prototype._createRankSymbolLayer
-   * @description 添加等级符号图层。
-   * @param layerInfo  某个图层的图层信息
-   * @param {Array.<GeoJSON>} features - feature。
-   */
-  private _createRankSymbolLayer(layerInfo, features) {
-    let fieldName = layerInfo.themeSetting.themeField;
-    let style = layerInfo.style;
-    let styleSource: any = this._createRankStyleSource(layerInfo, features, layerInfo.featureType);
-    let styleGroups = styleSource.styleGroups;
-    features = this._getFiterFeatures(layerInfo.filterCondition, features);
-    let radiusList = [];
-    features.forEach(row => {
-      let target = parseFloat(row.properties[fieldName]);
-      if (styleGroups) {
-        for (let i = 0; i < styleGroups.length; i++) {
-          if (styleGroups[i].start <= target && target < styleGroups[i].end) {
-            let radius =
-              style.type === 'SYMBOL_POINT' || style.type === 'IMAGE_POINT'
-                ? style.type === 'SYMBOL_POINT'
-                  ? styleGroups[i].radius * 2
-                  : styleGroups[i].radius
-                : styleGroups[i].radius;
-            radiusList.push(radius);
-          }
-        }
-      }
-    }, this);
-    if (style.type === 'SYMBOL_POINT') {
-      return this._createSymbolLayer(layerInfo, features, radiusList);
-    } else if (style.type === 'IMAGE_POINT') {
-      return this._createGraphicLayer(layerInfo, features, radiusList);
-    } else {
-      const layerGroup = [];
-      features.forEach((feature, index) => {
-        const newStyle = Object.assign({}, style, { radius: radiusList[index] });
-        layerGroup.push(
-          L.circleMarker(
-            [feature.geometry.coordinates[1], feature.geometry.coordinates[0]],
-            this._getVectorLayerStyle(newStyle)
-          )
-        );
-      });
-      return L.layerGroup(layerGroup);
-    }
-  }
-
-  private _createRankStyleSource(parameters, features, featureType) {
-    let themeSetting = parameters.themeSetting,
-      themeField = themeSetting.themeField;
-    let styleGroups = this._getRankStyleGroup(themeField, features, parameters, featureType);
-    // @ts-ignore
-    return styleGroups ? { parameters, styleGroups } : false;
-  }
-  private _getRankStyleGroup(themeField, features, parameters, featureType) {
-    // 找出所有的单值
-    let values = [],
-      segements = [],
-      style = parameters.style,
-      themeSetting = parameters.themeSetting,
-      segmentMethod = themeSetting.segmentMethod,
-      segmentCount = themeSetting.segmentCount,
-      customSettings = themeSetting.customSettings,
-      minR = parameters.themeSetting.minRadius,
-      maxR = parameters.themeSetting.maxRadius;
-    features.forEach(feature => {
-      let properties = feature.properties,
-        value = properties[themeField];
-      // 过滤掉空值和非数值
-      if (value == null || !isNumber(+value)) {
-        return;
-      }
-      values.push(Number(value));
-    });
-    try {
-      segements = SuperMap.ArrayStatistic.getArraySegments(values, segmentMethod, segmentCount);
-    } catch (error) {
-      console.error(error);
-    }
-
-    // 处理自定义 分段
-    for (let i = 0; i < segmentCount; i++) {
-      if (i in customSettings) {
-        let startValue = customSettings[i]['segment']['start'],
-          endValue = customSettings[i]['segment']['end'];
-        startValue != null && (segements[i] = startValue);
-        endValue != null && (segements[i + 1] = endValue);
-      }
-    }
-
-    //生成styleGroup
-    let styleGroup = [];
-    if (segements && segements.length) {
-      let len = segements.length,
-        incrementR = (maxR - minR) / (len - 1), // 半径增量
-        start,
-        end,
-        radius = Number(((maxR + minR) / 2).toFixed(2));
-      for (let i = 0; i < len - 1; i++) {
-        start = Number(segements[i].toFixed(2));
-        end = Number(segements[i + 1].toFixed(2));
-        // 这里特殊处理以下分段值相同的情况（即所有字段值相同）
-        radius = start === end ? radius : minR + Math.round(incrementR * i);
-        // 最后一个分段时将end+0.01，避免取不到最大值
-        end = i === len - 2 ? end + 0.01 : end;
-        // 处理自定义 半径
-        radius = customSettings[i] && customSettings[i].radius ? customSettings[i].radius : radius;
-        style.radius = radius;
-        styleGroup.push({ radius, start, end, style });
-      }
-      return styleGroup;
-    } else {
-      return false;
-    }
   }
 
   /**
@@ -1028,7 +907,7 @@ export default class WebMapViewModel extends L.Evented {
    * @param layerInfo  某个图层的图层信息。
    * @param {Array.<GeoJSON>} features - feature。
    */
-  private _createSymbolLayer(layerInfo: any, features: any, textSize?) {
+  private _createSymbolLayer(layerInfo: any, features: any) {
     let { style, visible } = layerInfo;
 
     let target = document.getElementById(`${this.target}`);
@@ -1044,11 +923,9 @@ export default class WebMapViewModel extends L.Evented {
       symbolStyle.fontColor = fillColor;
       symbolStyle.label = unicode;
       pointToLayer = (geojson, latlng) => {
-        symbolStyle.fontSize = textSize[geojson.id - 1 || geojson.properties.index] + '';
         // @ts-ignore
         return new L.supermap.unicodeMarker(latlng, symbolStyle);
       };
-
       // pointToLayer = (geojson, latlng) => {
       //   return L.marker(latlng, {
       //     icon: L.divIcon({className: style.className})
@@ -1066,19 +943,17 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Object} layerInfo - map 信息。
    * @param {Array} features - 属性 信息。
    */
-  private _createGraphicLayer(layerInfo: any, features: any, textSize?) {
+  private _createGraphicLayer(layerInfo: any, features: any) {
     let { style, visible, layerID } = layerInfo;
     let { type, imageInfo, radius, url } = style;
     let pointToLayer;
     if (type === 'IMAGE_POINT' && imageInfo.url) {
       let resolution = imageInfo.size.w / imageInfo.size.h;
-
       pointToLayer = (geojson, latlng) => {
-        let iconSize = textSize[geojson.id - 1 || geojson.properties.index] * 2;
         return L.marker(latlng, {
           icon: L.icon({
             iconUrl: imageInfo.url,
-            iconSize: textSize ? [iconSize, iconSize / resolution] : [radius * 2, (radius * 2) / resolution]
+            iconSize: [radius * 2, (radius * 2) / resolution]
           })
         });
       };

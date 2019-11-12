@@ -1,9 +1,9 @@
 import * as mapv from 'mapv';
-import smcomponents from '../../src/mapboxgl';
-import demoData from './demo.json';
-import earthquake from './earthquake.json';
-import themeLayerData from './themeLayerData.json';
-import deckglLayerData from './sf-bike-parking.json';
+import smcomponents from '../../../src/mapboxgl';
+import demoData from '../../data/demo.json';
+import earthquake from '../../data/earthquake.json';
+import themeLayerData from '../../data/themeLayerData.json';
+import deckglLayerData from '../../data/sf-bike-parking.json';
 
 export default {
   data() {

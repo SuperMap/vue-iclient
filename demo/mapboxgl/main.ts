@@ -1,11 +1,14 @@
 /* eslint-disable */
 import Vue from 'vue';
-import SmComponents from '../src/mapboxgl';
+import '../../static/libs/mapboxgl/mapbox-gl-enhance.css'
+import '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.css'
+import SmComponents from '../../src/mapboxgl';
 import App from './App.vue';
 import 'ant-design-vue/dist/antd.css';
 
 Vue.config.productionTip = false;
-Vue.use(SmComponents,
+Vue.use(
+  SmComponents
   //{
   // locale: {
   //   el: {
@@ -22,5 +25,5 @@ Vue.use(SmComponents,
 );
 
 new Vue({
-  render: (h) => h(App)
+  render: h => h(App)
 }).$mount('#app');

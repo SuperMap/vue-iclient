@@ -75,7 +75,7 @@
 
 <script lang='ts'>
 import Vue from 'vue';
-import smcomponents from '../src/mapboxgl';
+import smcomponents from '../../src/mapboxgl';
 import data from './data/data.js';
 
 var host = 'http://support.supermap.com.cn:8090';

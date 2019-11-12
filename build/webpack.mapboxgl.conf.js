@@ -30,7 +30,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     app: ['./src/mapboxgl/index.ts']
   },
   output: {
-    path: path.resolve(__dirname, '../dist'),
+    path: path.resolve(__dirname, '../dist/mapboxgl'),
     filename: isMinify ? `${outputFileName}.min.js` : `${outputFileName}.js`,
     libraryTarget: 'umd',
     libraryExport: 'default',
@@ -145,8 +145,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new CopyWebpackPlugin([
       {
         from: path.resolve(__dirname, '../static/index.js'),
-        to: config.build.assetsSubDirectory,
-        ignore: ['libs/Cesium/**/*']
+        to: path.resolve(__dirname, '../dist/mapboxgl')
       }
     ])
   ]
