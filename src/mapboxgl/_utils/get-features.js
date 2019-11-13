@@ -46,7 +46,7 @@ export default function getFeatures(dataset) {
           }
         });
       }
-      if (['iServer', 'iPortal'].includes(type)) {
+      if (['iServer', 'iPortal'].includes(type) && superMapService) {
         superMapService.on('getdatafailed', function (e) {
           reject(e);
         });

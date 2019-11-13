@@ -9,6 +9,7 @@ import canvg from 'canvg';
 import isNumber from 'lodash.isnumber';
 import provincialCenterData from '../../common/_utils/config/ProvinceCenter.json';
 import municipalCenterData from '../../common/_utils/config/MunicipalCenter.json';
+import { getColorWithOpacity } from '../../common/_utils/util';
 
 interface webMapOptions {
   target?: string;
@@ -29,6 +30,7 @@ interface mapOptions {
   maxZoom?: number;
   // layers?: L.Layer[];
   crs?: L.CRS;
+  preferCanvas?: boolean;
 }
 
 // 迁徙图最大支持要素数量
@@ -174,7 +176,7 @@ export default class WebMapViewModel extends L.Evented {
         maxZoom: this.mapOptions.maxZoom || 22,
         minZoom: this.mapOptions.minZoom || 0,
         // layers: this.mapOptions.layers,
-        preferCanvas: true // unicode marker 需要canvas
+        preferCanvas: this.mapOptions.preferCanvas || true
       });
 
       // load 监听失败 TODO
@@ -187,12 +189,16 @@ export default class WebMapViewModel extends L.Evented {
           layers: []
         });
       }, 0)
-
       // });
       return;
     }
 
     this._taskID = new Date();
+    let mapUrl = this._getMapUrl();
+    this._getMapInfo(mapUrl, this._taskID);
+  }
+
+  private _getMapUrl() {
     let urlArr: string[] = this.serverUrl.split('');
     if (urlArr[urlArr.length - 1] !== '/') {
       this.serverUrl += '/';
@@ -209,7 +215,7 @@ export default class WebMapViewModel extends L.Evented {
         mapUrl = urlArray[0] + filter + this.serverUrl + 'web/maps/' + this.mapId + '/map.json';
       }
     }
-    this._getMapInfo(mapUrl, this._taskID);
+    return mapUrl;
   }
 
   private _getMapInfo(url: string, _taskID): void {
@@ -363,7 +369,7 @@ export default class WebMapViewModel extends L.Evented {
         this._createTiandituLayer(layerInfo);
         break;
       case 'BING':
-        // this._createBingLayer(layerInfo.name);
+        layer = this._createBingLayer(layerInfo.name);
         break;
       case 'WMS':
         layer = this._createWMSLayer(layerInfo);
@@ -396,7 +402,7 @@ export default class WebMapViewModel extends L.Evented {
       default:
         break;
     }
-    layer && this._addLayerToMap(layer, 'baseLayers', layerInfo.name, sendToMap);
+    layer && this._addLayerToMap(layer, 'baseLayers', layerInfo.name, layerInfo.visible, sendToMap);
   }
 
   /**
@@ -446,7 +452,6 @@ export default class WebMapViewModel extends L.Evented {
   private async _addLayer(layerInfo: any, features: any, index: number | string): Promise<void> {
     try {
       layerInfo.layerID = layerInfo.name + '-' + index;
-      layerInfo.visible = layerInfo.visible ? 'visible' : 'none';
       let { layerType, style, themeSetting, filterCondition, projection, featureType, labelStyle } = layerInfo;
 
       if ((style || themeSetting) && filterCondition) {
@@ -456,16 +461,16 @@ export default class WebMapViewModel extends L.Evented {
         }
       }
 
-    if (features && projection && projection !== 'EPSG:4326') {
-      this._transformFeatures(features);
-    }
+      if (features && projection && projection !== 'EPSG:4326') {
+        this._transformFeatures(features);
+      }
 
       let layer;
       switch (layerType) {
         case 'VECTOR':
           if (featureType === 'POINT') {
             if (style.type === 'SYMBOL_POINT') {
-              layer = await this._createSymbolLayer(layerInfo, features); // TODO - unicode 样式加载不对
+              layer = await this._createSymbolLayer(layerInfo, features);
             } else {
               layer = await this._createGraphicLayer(layerInfo, features);
             }
@@ -498,13 +503,13 @@ export default class WebMapViewModel extends L.Evented {
           break;
       }
 
-      layer && this._addLayerToMap(layer, 'overlays', layerInfo.layerID);
+      layer && this._addLayerToMap(layer, 'overlays', layerInfo.layerID, layerInfo.visible);
 
       if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
         // 存在标签专题图
         features = this._getFiterFeatures(filterCondition, features);
         let labelLayer = this._addLabelLayer(layerInfo, features);
-        this._addLayerToMap(labelLayer, 'overlays', layerInfo.layerID, false);
+        this._addLayerToMap(labelLayer, 'overlays', layerInfo.layerID, layerInfo.visible, false);
       }
     } catch (err) {
       console.error(err);
@@ -515,6 +520,40 @@ export default class WebMapViewModel extends L.Evented {
         map: this.map
       });
     }
+  }
+
+
+  private _createBingLayer(layerInfo) {
+    let url = 'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadKey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
+    // @ts-ignore
+    L.TileLayer.BingLayer = L.TileLayer.extend({
+      getTileUrl: function (coordinates) {
+        let [z, x, y] = [...coordinates];
+        y = y > 0 ? y - 1 : -y - 1;
+        let index = '';
+        for (let i = z; i > 0; i--) {
+          let b = 0;
+          let mask = 1 << (i - 1);
+          if ((x & mask) !== 0) {
+            b++;
+          }
+          if ((y & mask) !== 0) {
+            b += 2;
+          }
+          index += b.toString()
+        }
+        return url.replace('{quadKey}', index);
+      }
+    })
+    // @ts-ignore
+    L.tileLayer.bingLayer = (url, options) => {
+      // @ts-ignore
+      return new L.TileLayer.BingLayer(url, options)
+    }
+    // @ts-ignore
+    return L.tileLayer.bingLayer(url, {
+      noWrap: true
+    })
   }
 
   /**
@@ -537,7 +576,7 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Object} layerInfo - 图层信息。
    */
   private _createWMSLayer(layerInfo: any) {
-    let { url, visible, layers } = layerInfo;
+    let { url, layers } = layerInfo;
     if (!layers || layers === 'undefined' || layers === 'null') {
       layers = '0';
     } else if (layers.length > 0) {
@@ -547,8 +586,7 @@ export default class WebMapViewModel extends L.Evented {
       layers,
       format: 'image/png',
       transparent: true,
-      noWrap: true,
-      opacity: this._getLayerOpacity(visible)
+      noWrap: true
     });
   }
 
@@ -586,8 +624,8 @@ export default class WebMapViewModel extends L.Evented {
       isLabel: true,
       key: this.tiandituKey
     });
-    this._addLayerToMap(tiandituLayer, 'overlays', layerInfo.name);
-    isLabel && this._addLayerToMap(tiandituLabelLayer, 'overlays', layerInfo.name + '-label');
+    this._addLayerToMap(tiandituLayer, 'overlays', layerInfo.name, layerInfo.visible);
+    isLabel && this._addLayerToMap(tiandituLabelLayer, 'overlays', layerInfo.name + '-label', layerInfo.visible, false);
   }
 
   private _createCLOUDLayer(layerType, url) {
@@ -618,39 +656,7 @@ export default class WebMapViewModel extends L.Evented {
    * @param features   图层上的 feature
    */
   private _createUniqueLayer(layerInfo: any, features: any) {
-    let { filterCondition, style, themeSetting, featureType, layerID, visible } = layerInfo;
-    let layerStyle = JSON.parse(JSON.stringify(style));
-    featureType === 'POINT' && (layerStyle.pointRadius = style.radius);
-    delete layerStyle.radius;
-
-    if (featureType === 'LINE') {
-      layerStyle.fill = false;
-      layerStyle.strokeDashstyle = style.lineDash; // TODO lineDash 样式错误
-      delete layerStyle.lineDash;
-    }
-
-    let styleGroup = this._getUniqueStyleGroup(layerInfo, features);
-    filterCondition && (features = this._getFiterFeatures(filterCondition, features));
-
-    let themeField = themeSetting.themeField;
-    Object.keys(features[0].properties).forEach(key => {
-      key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
-    });
-    // @ts-ignore
-    let layer = L.supermap.uniqueThemeLayer(layerID, {
-      opacity: this._getLayerOpacity(visible)
-    });
-
-    layerStyle.stroke = true;
-    layer.style = layerStyle;
-    layer.themeField = themeField;
-    layer.styleGroups = styleGroup;
-    layer.addFeatures({
-      type: 'FeatureCollection',
-      features: features
-    });
-
-    return layer;
+    return this._createThemeLayer('unique', layerInfo, features);
   }
 
   /**
@@ -660,41 +666,8 @@ export default class WebMapViewModel extends L.Evented {
    * @param layerInfo  某个图层的图层信息
    * @param features   图层上的 feature
    */
-
   private _createRangeLayer(layerInfo: any, features: any) {
-    let { filterCondition, style, themeSetting, featureType, layerID, opacity, visible } = layerInfo;
-    let layerStyle = JSON.parse(JSON.stringify(style));
-    featureType === 'POINT' && (layerStyle.pointRadius = style.radius);
-    delete layerStyle.radius;
-
-    if (featureType === 'LINE') {
-      layerStyle.fill = false;
-      layerStyle.strokeDashstyle = style.lineDash; // TODO lineDash 样式错误
-      delete layerStyle.lineDash;
-    }
-
-    let styleGroup = this._getRangeStyleGroup(layerInfo, features);
-    filterCondition && (features = this._getFiterFeatures(filterCondition, features));
-
-    let themeField = themeSetting.themeField;
-    Object.keys(features[0].properties).forEach(key => {
-      key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
-    });
-    // @ts-ignore
-    let layer = L.supermap.rangeThemeLayer(layerID, {
-      opacity: opacity || (visible && visible === 'none' ? 0 : 1)
-    });
-
-    layerStyle.stroke = true;
-    layer.style = layerStyle;
-    layer.themeField = themeField;
-    layer.styleGroups = styleGroup;
-    layer.addFeatures({
-      type: 'FeatureCollection',
-      features: features
-    });
-
-    return layer;
+    return this._createThemeLayer('range', layerInfo, features);
   }
 
   /**
@@ -706,7 +679,6 @@ export default class WebMapViewModel extends L.Evented {
    */
   private _createMarkerLayer(layerInfo: any, features: any): Promise<object> {
     return new Promise((resolve, reject) => {
-      let { visible } = layerInfo;
       const layerGroupPromises =
         features &&
         features.map(feature => {
@@ -749,17 +721,7 @@ export default class WebMapViewModel extends L.Evented {
                 document.body.appendChild(this._svgDiv);
               }
               this._getCanvasFromSVG(defaultStyle.src, this._svgDiv, canvas => {
-                let imgUrl = canvas.toDataURL('img/png');
-                let resolution = canvas.width / canvas.height;
-                let svgPointToLayer = (geojson, latlng) => {
-                  return L.marker(latlng, {
-                    icon: L.icon({
-                      iconUrl: imgUrl,
-                      iconSize: [defaultStyle.radius, defaultStyle.radius / resolution]
-                    })
-                  });
-                };
-                resolve(this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), svgPointToLayer)); // 异步过程
+                resolve(this._getSvgLayer(canvas, defaultStyle, [feature]));
               });
             }
             // point-line-polygon-marker
@@ -768,15 +730,12 @@ export default class WebMapViewModel extends L.Evented {
                 resolve(
                   this._createGeojsonLayer(
                     [feature],
-                    this._getVectorLayerStyle(defaultStyle),
-                    this._getLayerOpacity(visible)
+                    this._getVectorLayerStyle(defaultStyle)
                   )
                 );
               } else if (geomType === 'TEXT') {
                 // @ts-ignore
-                var text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text', {
-                  opacity: this._getLayerOpacity(visible)
-                });
+                var text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text');
 
                 text.style = {
                   fontSize: defaultStyle.font.split(' ')[0],
@@ -816,13 +775,13 @@ export default class WebMapViewModel extends L.Evented {
     });
   }
 
-   /**
-   * @private
-   * @function WebMapViewModel.prototype._createRankSymbolLayer
-   * @description 添加等级符号图层。
-   * @param layerInfo  某个图层的图层信息
-   * @param {Array.<GeoJSON>} features - feature。
-   */
+  /**
+  * @private
+  * @function WebMapViewModel.prototype._createRankSymbolLayer
+  * @description 添加等级符号图层。
+  * @param layerInfo  某个图层的图层信息
+  * @param {Array.<GeoJSON>} features - feature。
+  */
   private _createRankSymbolLayer(layerInfo, features) {
     let fieldName = layerInfo.themeSetting.themeField;
     let style = layerInfo.style;
@@ -968,11 +927,9 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    */
   private _addLabelLayer(layerInfo: any, features: any) {
-    let { labelStyle, layerID, visible, featureType } = layerInfo;
+    let { labelStyle, layerID, featureType } = layerInfo;
     // @ts-ignore
-    var label = new L.supermap.labelThemeLayer(layerID + '-label', {
-      opacity: this._getLayerOpacity(visible)
-    });
+    var label = new L.supermap.labelThemeLayer(layerID + '-label');
     labelStyle.fontSize = 14;
     labelStyle.labelRect = true;
     labelStyle.fontColor = labelStyle.fill;
@@ -996,7 +953,7 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    */
   private _createHeatLayer(layerInfo: any, features: any): void {
-    let { themeSetting, layerID, visible } = layerInfo;
+    let { themeSetting, layerID } = layerInfo;
 
     let { colors, radius, customSettings, weight } = themeSetting;
 
@@ -1018,8 +975,7 @@ export default class WebMapViewModel extends L.Evented {
       colors: heatColors,
       map: this.map,
       radius: radius * 2, // blur TODO
-      featureWeight: weight,
-      opacity: this._getLayerOpacity(visible)
+      featureWeight: weight
     });
 
     // // @ts-ignore
@@ -1047,33 +1003,25 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Array.<GeoJSON>} features - feature。
    */
   private _createSymbolLayer(layerInfo: any, features: any, textSize?) {
-    let { style, visible } = layerInfo;
-
-    let target = document.getElementById(`${this.target}`);
-    target.classList.add('supermapol-icons-map');
+    let { style } = layerInfo;
 
     let { fillColor, unicode } = style;
 
     let pointToLayer;
 
-    // TODO unicode 画不出来
     if (unicode) {
       let symbolStyle = JSON.parse(JSON.stringify(style));
       symbolStyle.fontColor = fillColor;
       symbolStyle.label = unicode;
+      symbolStyle.fontFamily = 'supermapol-icons'
       pointToLayer = (geojson, latlng) => {
         textSize && (symbolStyle.fontSize = textSize[geojson.id - 1 || geojson.properties.index] + '');
         // @ts-ignore
         return new L.supermap.unicodeMarker(latlng, symbolStyle);
       };
-      // pointToLayer = (geojson, latlng) => {
-      //   return L.marker(latlng, {
-      //     icon: L.divIcon({className: style.className})
-      //   });
-      // };
     }
 
-    return pointToLayer && this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), pointToLayer);
+    return pointToLayer && this._createGeojsonLayer(features, null, pointToLayer);
   }
 
   /**
@@ -1085,7 +1033,7 @@ export default class WebMapViewModel extends L.Evented {
    */
   private _createGraphicLayer(layerInfo: any, features: any, textSize?): Promise<object> {
     return new Promise((resolve, reject) => {
-      let { style, visible, layerID } = layerInfo;
+      let { style } = layerInfo;
       let { type, imageInfo, radius, url } = style;
       let pointToLayer;
       if (type === 'IMAGE_POINT' && imageInfo.url) {
@@ -1099,32 +1047,20 @@ export default class WebMapViewModel extends L.Evented {
             })
           });
         };
-      } else if (style.type === 'SVG_POINT') {
-        // TODO  svg 颜色有问题
+      } else if (type === 'SVG_POINT') {
         if (!this._svgDiv) {
           this._svgDiv = document.createElement('div');
           document.body.appendChild(this._svgDiv);
         }
         this._getCanvasFromSVG(url, this._svgDiv, canvas => {
-          let imgUrl = canvas.toDataURL('img/png');
-          let resolution = canvas.width / canvas.height;
-          let svgPointToLayer = (geojson, latlng) => {
-            return L.marker(latlng, {
-              icon: L.icon({
-                iconUrl: imgUrl,
-                iconSize: [radius, radius / resolution]
-              })
-            });
-          };
-          let svgPointLayer = this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), svgPointToLayer);
-          resolve(svgPointLayer);
+          resolve(this._getSvgLayer(canvas, style, features, textSize));
         });
       } else {
         pointToLayer = (geojson, latlng) => {
           return L.circleMarker(latlng, this._getVectorLayerStyle(style));
         };
       }
-      pointToLayer && resolve(this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), pointToLayer));
+      pointToLayer && resolve(this._createGeojsonLayer(features, null, pointToLayer));
     });
   }
 
@@ -1136,8 +1072,8 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Array} features - 属性 信息。
    */
   private _createVectorLayer(layerInfo: any, features: any): void {
-    let { style, visible } = layerInfo;
-    return this._createGeojsonLayer(features, this._getVectorLayerStyle(style), this._getLayerOpacity(visible));
+    let { style } = layerInfo;
+    return this._createGeojsonLayer(features, this._getVectorLayerStyle(style));
   }
 
   private _createMigrationLayer(layerInfo, features) {
@@ -1148,18 +1084,19 @@ export default class WebMapViewModel extends L.Evented {
     let options = this._createOptions(layerInfo, lineData, pointData);
     // @ts-ignore
     let layer = L.supermap.echartsLayer(options);
-    this.echartslayer.push(layer); // TODO  reisize
+    this.echartslayer.push(layer);
     return layer;
   }
 
-  private _createGeojsonLayer(features, style?, opacity?, pointToLayer?) {
+  private _createGeojsonLayer(features, style?, pointToLayer?) {
+    style = style || {};
     return L.geoJSON(
       {
         type: 'FeatureCollection',
         // @ts-ignore
         features: features
       },
-      { pointToLayer, style, opacity: opacity ? opacity : opacity === 0 ? opacity : 1 }
+      { pointToLayer, style}
     );
   }
 
@@ -1174,7 +1111,7 @@ export default class WebMapViewModel extends L.Evented {
     };
     let dashArray;
     if (lineDash) {
-      dashArray = this._dashStyle(lineDash);
+      dashArray = this._dashStyle(lineDash, strokeWidth);
     }
     radius && (commonStyle['radius'] = radius);
     lineDash && (commonStyle['dashArray'] = dashArray);
@@ -1182,22 +1119,19 @@ export default class WebMapViewModel extends L.Evented {
   }
 
   private _addLayerSucceeded(sendMap = true) {
-    this.layerAdded++;
-    sendMap && this._sendMapToUser(this.layerAdded, this.expectLayerLen);
+    if (sendMap) {
+      this.layerAdded++;
+      this._sendMapToUser(this.layerAdded, this.expectLayerLen);
+    }
   }
 
-  private _addLayerToMap(layer, type, layerName, sendToMap = true) {
-    this.map.addLayer(layer);
+  private _addLayerToMap(layer, type, layerName, visible, sendToMap = true) {
+    if(visible === undefined || visible){
+      this.map.addLayer(layer);
+    }
     !this.layers[type] && (this.layers[type] = {});
     this.layers[type][layerName] = layer;
     this._addLayerSucceeded(sendToMap);
-  }
-
-  private _getLayerOpacity(visible) {
-    if (!visible) {
-      return null;
-    }
-    return visible && visible === 'none' ? 0 : 1;
   }
 
   private _convertLabelFeatures(layer, features, layerInfo, featureType) {
@@ -2187,12 +2121,11 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Object} style - 样式参数。
    * @param {number} widthFactor - 宽度系数。
    */
-  private _dashStyle(str) {
+  private _dashStyle(str, strokeWidth) {
     if (!str) {
       return [];
     }
-    // var w = style.strokeWidth * widthFactor;
-    var w = 1;
+    var w = strokeWidth;
     switch (str) {
       case 'solid':
         return [];
@@ -2451,10 +2384,80 @@ export default class WebMapViewModel extends L.Evented {
       }, this);
   }
 
-  _latlngToCoordinate(latlng){
-    if(!latlng){
+  _latlngToCoordinate(latlng) {
+    if (!latlng) {
       return null;
     }
     return [latlng.lng, latlng.lat]
+  }
+
+  _getSvgLayer(canvas, style, features, textSize?) {
+    let { radius, fillColor, fillOpacity, strokeColor, strokeOpacity, strokeWidth } = style;
+    let context = canvas.getContext('2d');
+
+    if (fillColor) {
+      context.fillStyle = getColorWithOpacity(fillColor, fillOpacity);
+      context.fill();
+    }
+
+    if (strokeColor || strokeWidth) {
+      context.strokeStyle = getColorWithOpacity(strokeColor, strokeOpacity);
+      context.lineWidth = strokeWidth;
+      context.stroke();
+    }
+
+    let imgUrl = canvas.toDataURL('img/png');
+    let resolution = canvas.width / canvas.height;
+    let svgPointToLayer = (geojson, latlng) => {
+      let iconSize = textSize && textSize[geojson.id - 1 || geojson.properties.index];
+      return L.marker(latlng, {
+        icon: L.icon({
+          iconUrl: imgUrl,
+          iconSize: textSize ? [iconSize, iconSize / resolution] : [radius, radius / resolution]
+        }),
+      });
+    };
+    let svgPointLayer = this._createGeojsonLayer(features, null, svgPointToLayer);
+    return svgPointLayer;
+  }
+
+  _createThemeLayer(type, layerInfo, features) {
+    let { filterCondition, style, themeSetting, featureType, layerID } = layerInfo;
+    let layerStyle = JSON.parse(JSON.stringify(style));
+    featureType === 'POINT' && (layerStyle.pointRadius = style.radius);
+    delete layerStyle.radius;
+
+    if (featureType === 'LINE') {
+      layerStyle.fill = false;
+      layerStyle.strokeDashstyle = style.lineDash; // TODO lineDash 样式错误
+      delete layerStyle.lineDash;
+    }
+
+    let styleGroup;
+    if (type === 'unique') {
+      styleGroup = this._getUniqueStyleGroup(layerInfo, features);
+    } else if (type === 'range') {
+      styleGroup = this._getRangeStyleGroup(layerInfo, features);
+    }
+
+    filterCondition && (features = this._getFiterFeatures(filterCondition, features));
+
+    let themeField = themeSetting.themeField;
+    Object.keys(features[0].properties).forEach(key => {
+      key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
+    });
+    // @ts-ignore
+    let layer = L.supermap[`${type}ThemeLayer`](layerID);
+
+    layerStyle.stroke = true;
+    layer.style = layerStyle;
+    layer.themeField = themeField;
+    layer.styleGroups = styleGroup;
+    layer.addFeatures({
+      type: 'FeatureCollection',
+      features: features
+    });
+
+    return layer;
   }
 }
