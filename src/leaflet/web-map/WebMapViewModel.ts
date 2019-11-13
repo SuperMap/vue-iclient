@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import '../../../static/libs/iclient-leaflet/iclient-leaflet.min'
+import '../../../static/libs/iclient-leaflet/iclient-leaflet.min';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
 import '../../../static/libs/geostats/geostats';
 import '../../../static/libs/json-sql/jsonsql';
@@ -83,6 +83,8 @@ export default class WebMapViewModel extends L.Evented {
   private layerAdded: number;
 
   private _svgDiv: HTMLElement;
+
+  private expectLayerLen: number;
 
   constructor(id, options: webMapOptions = {}, mapOptions: mapOptions = {}) {
     super();
@@ -246,7 +248,7 @@ export default class WebMapViewModel extends L.Evented {
           // 添加矢量瓦片服务作为底图 TODO-------------------MVT
           // this._addMVTBaseMap(mapInfo);
         } else {
-          this._createBaseLayer(mapInfo);
+          this._createBaseLayer(mapInfo, false);
         }
         if (!layers || layers.length === 0) {
           this._sendMapToUser(0, 0);
@@ -256,6 +258,7 @@ export default class WebMapViewModel extends L.Evented {
         // });
       })
       .catch(error => {
+        this._addLayerSucceeded();
         /**
          * @event WebMapViewModel#getmapinfofailed
          * @description 获取地图信息失败。
@@ -326,7 +329,7 @@ export default class WebMapViewModel extends L.Evented {
    * @description 创建底图。
    * @param {Object} mapInfo - map 信息。
    */
-  private _createBaseLayer(mapInfo: any): void {
+  private _createBaseLayer(mapInfo: any, sendToMap = true): void {
     let layerInfo = mapInfo.baseLayer || mapInfo;
     let layerType = layerInfo.layerType; // 底图和rest地图兼容
 
@@ -393,7 +396,7 @@ export default class WebMapViewModel extends L.Evented {
       default:
         break;
     }
-    layer && this._addLayerToMap(layer, 'baseLayers', layerInfo.name);
+    layer && this._addLayerToMap(layer, 'baseLayers', layerInfo.name, sendToMap);
   }
 
   /**
@@ -407,6 +410,7 @@ export default class WebMapViewModel extends L.Evented {
     this._layers = layers;
     let len = layers.length;
     this.layerAdded = 0;
+    this.expectLayerLen = len;
     if (len > 0) {
       layers.forEach((layer, index) => {
         let type = this._getType(layer);
@@ -417,8 +421,6 @@ export default class WebMapViewModel extends L.Evented {
             break;
           case 'tile':
             this._createBaseLayer(layer);
-            this.layerAdded++;
-            this._sendMapToUser(this.layerAdded, len);
             break;
           case 'rest_data':
             this._getFeaturesFromRestData({ layer, index, len });
@@ -441,67 +443,77 @@ export default class WebMapViewModel extends L.Evented {
    * @param layerInfo  某个图层的图层信息
    * @param {Array.<GeoJSON>} features - feature。
    */
-  private _addLayer(layerInfo: any, features: any, index: number | string): void {
-    layerInfo.layerID = layerInfo.name + '-' + index;
-    layerInfo.visible = layerInfo.visible ? 'visible' : 'none';
-    let { layerType, style, themeSetting, filterCondition, projection, featureType, labelStyle } = layerInfo;
+  private async _addLayer(layerInfo: any, features: any, index: number | string): Promise<void> {
+    try {
+      layerInfo.layerID = layerInfo.name + '-' + index;
+      layerInfo.visible = layerInfo.visible ? 'visible' : 'none';
+      let { layerType, style, themeSetting, filterCondition, projection, featureType, labelStyle } = layerInfo;
 
-    if ((style || themeSetting) && filterCondition) {
-      // 将 feature 根据过滤条件进行过滤, 分段专题图和单值专题图因为要计算 styleGroup 所以暂时不过滤
-      if (layerType !== 'RANGE' && layerType !== 'UNIQUE' && layerType !== 'RANK_SYMBOL') {
-        features = this._getFiterFeatures(filterCondition, features);
+      if ((style || themeSetting) && filterCondition) {
+        // 将 feature 根据过滤条件进行过滤, 分段专题图和单值专题图因为要计算 styleGroup 所以暂时不过滤
+        if (layerType !== 'RANGE' && layerType !== 'UNIQUE' && layerType !== 'RANK_SYMBOL') {
+          features = this._getFiterFeatures(filterCondition, features);
+        }
       }
-    }
 
     if (features && projection && projection !== 'EPSG:4326') {
       this._transformFeatures(features);
     }
 
-    let layer;
-    switch (layerType) {
-      case 'VECTOR':
-        if (featureType === 'POINT') {
-          if (style.type === 'SYMBOL_POINT') {
-            layer = this._createSymbolLayer(layerInfo, features); // TODO - unicode 样式加载不对
+      let layer;
+      switch (layerType) {
+        case 'VECTOR':
+          if (featureType === 'POINT') {
+            if (style.type === 'SYMBOL_POINT') {
+              layer = await this._createSymbolLayer(layerInfo, features); // TODO - unicode 样式加载不对
+            } else {
+              layer = await this._createGraphicLayer(layerInfo, features);
+            }
           } else {
-            layer = this._createGraphicLayer(layerInfo, features);
+            // 线和面
+            layer = await this._createVectorLayer(layerInfo, features);
           }
-        } else {
-          // 线和面
-          layer = this._createVectorLayer(layerInfo, features);
-        }
-        break;
-      case 'UNIQUE':
-        layer = this._createUniqueLayer(layerInfo, features);
-        break;
-      case 'RANGE':
-        layer = this._createRangeLayer(layerInfo, features);
-        break;
-      case 'HEAT':
-        layer = this._createHeatLayer(layerInfo, features);
-        break;
-      case 'MARKER':
-        layer = this._createMarkerLayer(layerInfo, features);
-        break;
-      case 'RANK_SYMBOL':
-        layer = this._createRankSymbolLayer(layerInfo, features);
-        break;
-      case 'MIGRATION':
-        layer = this._createMigrationLayer(layerInfo, features);
-        break;
-      case 'DATAFLOW_POINT_TRACK':
-      case 'DATAFLOW_HEAT':
-        // this._createDataflowLayer(layerInfo);
-        break;
-    }
+          break;
+        case 'UNIQUE':
+          layer = await this._createUniqueLayer(layerInfo, features);
+          break;
+        case 'RANGE':
+          layer = await this._createRangeLayer(layerInfo, features);
+          break;
+        case 'HEAT':
+          layer = await this._createHeatLayer(layerInfo, features);
+          break;
+        case 'MARKER':
+          layer = await this._createMarkerLayer(layerInfo, features);
+          break;
+        case 'RANK_SYMBOL':
+          layer = await this._createRankSymbolLayer(layerInfo, features);
+          break;
+        case 'MIGRATION':
+          layer = await this._createMigrationLayer(layerInfo, features);
+          break;
+        case 'DATAFLOW_POINT_TRACK':
+        case 'DATAFLOW_HEAT':
+          // this._createDataflowLayer(layerInfo);
+          break;
+      }
 
-    layer && this._addLayerToMap(layer, 'overlays', layerInfo.layerID);
+      layer && this._addLayerToMap(layer, 'overlays', layerInfo.layerID);
 
-    if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
-      // 存在标签专题图
-      features = this._getFiterFeatures(filterCondition, features);
-      let labelLayer = this._addLabelLayer(layerInfo, features);
-      this._addLayerToMap(labelLayer, 'overlays', layerInfo.layerID);
+      if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
+        // 存在标签专题图
+        features = this._getFiterFeatures(filterCondition, features);
+        let labelLayer = this._addLabelLayer(layerInfo, features);
+        this._addLayerToMap(labelLayer, 'overlays', layerInfo.layerID, false);
+      }
+    } catch (err) {
+      console.error(err);
+      this._addLayerSucceeded();
+      this.fire('getlayerdatasourcefailed', {
+        error: err,
+        layer: null,
+        map: this.map
+      });
     }
   }
 
@@ -692,105 +704,116 @@ export default class WebMapViewModel extends L.Evented {
    * @param layerInfo  某个图层的图层信息
    * @param {Array.<GeoJSON>} features - feature。
    */
-  private _createMarkerLayer(layerInfo: any, features: any) {
-    let { visible } = layerInfo;
-    let layerGroup = [];
-    features &&
-      features.forEach(feature => {
-        let geomType = feature.geometry.type.toUpperCase();
-        let defaultStyle = feature.dv_v5_markerStyle;
-        if (geomType === 'POINT' && defaultStyle.text) {
-          // 说明是文字的feature类型
-          geomType = 'TEXT';
-        }
-        let featureInfo = this._setFeatureInfo(feature);
-        feature.properties['useStyle'] = defaultStyle;
-        feature.properties['featureInfo'] = featureInfo;
-        if (
-          geomType === 'POINT' &&
-          defaultStyle.src &&
-          (defaultStyle.src.indexOf('http://') === -1 && defaultStyle.src.indexOf('https://') === -1)
-        ) {
-          // 说明地址不完整
-          defaultStyle.src = this.serverUrl + defaultStyle.src;
-        }
+  private _createMarkerLayer(layerInfo: any, features: any): Promise<object> {
+    return new Promise((resolve, reject) => {
+      let { visible } = layerInfo;
+      const layerGroupPromises =
+        features &&
+        features.map(feature => {
+          return new Promise((resolve, reject) => {
+            let geomType = feature.geometry.type.toUpperCase();
+            let defaultStyle = feature.dv_v5_markerStyle;
+            if (geomType === 'POINT' && defaultStyle.text) {
+              // 说明是文字的feature类型
+              geomType = 'TEXT';
+            }
+            let featureInfo = this._setFeatureInfo(feature);
+            feature.properties['useStyle'] = defaultStyle;
+            feature.properties['featureInfo'] = featureInfo;
+            if (
+              geomType === 'POINT' &&
+              defaultStyle.src &&
+              (defaultStyle.src.indexOf('http://') === -1 && defaultStyle.src.indexOf('https://') === -1)
+            ) {
+              // 说明地址不完整
+              defaultStyle.src = this.serverUrl + defaultStyle.src;
+            }
 
-        // image-marker
-        if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') <= -1) {
-          layerGroup.push(
-            L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
-              icon: L.icon({
-                iconUrl: defaultStyle.src,
-                iconSize: [defaultStyle.imgWidth * defaultStyle.scale, defaultStyle.imgHeight * defaultStyle.scale],
-                iconAnchor: defaultStyle.anchor
-              })
-            })
-          );
-        }
-
-        // svg-marker
-        if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') > -1) {
-          if (!this._svgDiv) {
-            this._svgDiv = document.createElement('div');
-            document.body.appendChild(this._svgDiv);
-          }
-          this._getCanvasFromSVG(defaultStyle.src, this._svgDiv, canvas => {
-            let imgUrl = canvas.toDataURL('img/png');
-            let resolution = canvas.width / canvas.height;
-            let svgPointToLayer = (geojson, latlng) => {
-              return L.marker(latlng, {
-                icon: L.icon({
-                  iconUrl: imgUrl,
-                  iconSize: [defaultStyle.radius, defaultStyle.radius / resolution]
+            // image-marker
+            if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') <= -1) {
+              resolve(
+                L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+                  icon: L.icon({
+                    iconUrl: defaultStyle.src,
+                    iconSize: [defaultStyle.imgWidth * defaultStyle.scale, defaultStyle.imgHeight * defaultStyle.scale],
+                    iconAnchor: defaultStyle.anchor
+                  })
                 })
-              });
-            };
-            this._createGeojsonLayer(feature, null, svgPointToLayer, this._getLayerOpacity(visible)).addTo(this.map); // 异步过程，直接addToMap
-          });
-        }
-        // point-line-polygon-marker
-        if (!defaultStyle.src) {
-          if ((geomType === 'LINESTRING' && defaultStyle.lineCap) || geomType === 'POLYGON') {
-            layerGroup.push(
-              this._createGeojsonLayer(
-                [feature],
-                this._getVectorLayerStyle(defaultStyle),
-                this._getLayerOpacity(visible)
-              )
-            );
-          } else if (geomType === 'TEXT') {
-            // @ts-ignore
-            var text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text', {
-              opacity: this._getLayerOpacity(visible)
-            });
+              );
+            }
 
-            text.style = {
-              fontSize: defaultStyle.font.split(' ')[0],
-              labelRect: true,
-              fontColor: defaultStyle.fillColor,
-              fill: true,
-              fillColor: defaultStyle.backgroundFill, // TODO labelStyle 未返回标签背景颜色 待确定；
-              stroke: false
-            };
-            text.themeField = 'text';
-            feature.properties.text = defaultStyle.text;
-            // @ts-ignore
-            let geoTextFeature = new L.supermap.themeFeature(
-              [feature.geometry.coordinates[1], feature.geometry.coordinates[0], defaultStyle.text],
-              feature.properties
-            );
-            text.addFeatures([geoTextFeature]);
-            layerGroup.push(text);
-          } else {
-            layerGroup.push(
-              L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
-                ...this._getVectorLayerStyle(defaultStyle)
-              })
-            );
-          }
-        }
-      }, this);
-    return L.layerGroup(layerGroup);
+            // svg-marker
+            if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') > -1) {
+              if (!this._svgDiv) {
+                this._svgDiv = document.createElement('div');
+                document.body.appendChild(this._svgDiv);
+              }
+              this._getCanvasFromSVG(defaultStyle.src, this._svgDiv, canvas => {
+                let imgUrl = canvas.toDataURL('img/png');
+                let resolution = canvas.width / canvas.height;
+                let svgPointToLayer = (geojson, latlng) => {
+                  return L.marker(latlng, {
+                    icon: L.icon({
+                      iconUrl: imgUrl,
+                      iconSize: [defaultStyle.radius, defaultStyle.radius / resolution]
+                    })
+                  });
+                };
+                resolve(this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), svgPointToLayer)); // 异步过程
+              });
+            }
+            // point-line-polygon-marker
+            if (!defaultStyle.src) {
+              if ((geomType === 'LINESTRING' && defaultStyle.lineCap) || geomType === 'POLYGON') {
+                resolve(
+                  this._createGeojsonLayer(
+                    [feature],
+                    this._getVectorLayerStyle(defaultStyle),
+                    this._getLayerOpacity(visible)
+                  )
+                );
+              } else if (geomType === 'TEXT') {
+                // @ts-ignore
+                var text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text', {
+                  opacity: this._getLayerOpacity(visible)
+                });
+
+                text.style = {
+                  fontSize: defaultStyle.font.split(' ')[0],
+                  labelRect: true,
+                  fontColor: defaultStyle.fillColor,
+                  fill: true,
+                  fillColor: defaultStyle.backgroundFill, // TODO labelStyle 未返回标签背景颜色 待确定；
+                  stroke: false
+                };
+                text.themeField = 'text';
+                feature.properties.text = defaultStyle.text;
+                // @ts-ignore
+                let geoTextFeature = new L.supermap.themeFeature(
+                  [feature.geometry.coordinates[1], feature.geometry.coordinates[0], defaultStyle.text],
+                  feature.properties
+                );
+                text.addFeatures([geoTextFeature]);
+                resolve(text);
+              } else {
+                resolve(
+                  L.circleMarker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
+                    ...this._getVectorLayerStyle(defaultStyle)
+                  })
+                );
+              }
+            }
+          });
+        });
+      layerGroupPromises &&
+        Promise.all(layerGroupPromises)
+          .then(layerGroup => {
+            layerGroup && resolve(L.layerGroup(layerGroup as L.Layer[]));
+          })
+          .catch(error => {
+            console.error(error);
+          });
+    });
   }
 
    /**
@@ -825,7 +848,7 @@ export default class WebMapViewModel extends L.Evented {
     }, this);
     if (style.type === 'SYMBOL_POINT') {
       return this._createSymbolLayer(layerInfo, features, radiusList);
-    } else if (style.type === 'IMAGE_POINT') {
+    } else if (style.type === 'IMAGE_POINT' || style.type === 'SVG_POINT') {
       return this._createGraphicLayer(layerInfo, features, radiusList);
     } else {
       const layerGroup = [];
@@ -1060,47 +1083,49 @@ export default class WebMapViewModel extends L.Evented {
    * @param {Object} layerInfo - map 信息。
    * @param {Array} features - 属性 信息。
    */
-  private _createGraphicLayer(layerInfo: any, features: any, textSize?) {
-    let { style, visible, layerID } = layerInfo;
-    let { type, imageInfo, radius, url } = style;
-    let pointToLayer;
-    if (type === 'IMAGE_POINT' && imageInfo.url) {
-      let resolution = imageInfo.size.w / imageInfo.size.h;
-      pointToLayer = (geojson, latlng) => {
-        let iconSize = textSize && textSize[geojson.id - 1 || geojson.properties.index] * 2;
-        return L.marker(latlng, {
-          icon: L.icon({
-            iconUrl: imageInfo.url,
-            iconSize: textSize ? [iconSize, iconSize / resolution] : [radius * 2, (radius * 2) / resolution]
-          })
-        });
-      };
-    } else if (style.type === 'SVG_POINT') {
-      // TODO  svg 颜色有问题
-      if (!this._svgDiv) {
-        this._svgDiv = document.createElement('div');
-        document.body.appendChild(this._svgDiv);
-      }
-      this._getCanvasFromSVG(url, this._svgDiv, canvas => {
-        let imgUrl = canvas.toDataURL('img/png');
-        let resolution = canvas.width / canvas.height;
-        let svgPointToLayer = (geojson, latlng) => {
+  private _createGraphicLayer(layerInfo: any, features: any, textSize?): Promise<object> {
+    return new Promise((resolve, reject) => {
+      let { style, visible, layerID } = layerInfo;
+      let { type, imageInfo, radius, url } = style;
+      let pointToLayer;
+      if (type === 'IMAGE_POINT' && imageInfo.url) {
+        let resolution = imageInfo.size.w / imageInfo.size.h;
+        pointToLayer = (geojson, latlng) => {
+          let iconSize = textSize && textSize[geojson.id - 1 || geojson.properties.index] * 2;
           return L.marker(latlng, {
             icon: L.icon({
-              iconUrl: imgUrl,
-              iconSize: [radius, radius / resolution]
+              iconUrl: imageInfo.url,
+              iconSize: textSize ? [iconSize, iconSize / resolution] : [radius * 2, (radius * 2) / resolution]
             })
           });
         };
-        let svgPointLayer = this._createGeojsonLayer(features, null, svgPointToLayer, this._getLayerOpacity(visible));
-        this._addLayerToMap(svgPointLayer, 'overlays', layerID);
-      });
-    } else {
-      pointToLayer = (geojson, latlng) => {
-        return L.circleMarker(latlng, this._getVectorLayerStyle(style));
-      };
-    }
-    return pointToLayer && this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), pointToLayer);
+      } else if (style.type === 'SVG_POINT') {
+        // TODO  svg 颜色有问题
+        if (!this._svgDiv) {
+          this._svgDiv = document.createElement('div');
+          document.body.appendChild(this._svgDiv);
+        }
+        this._getCanvasFromSVG(url, this._svgDiv, canvas => {
+          let imgUrl = canvas.toDataURL('img/png');
+          let resolution = canvas.width / canvas.height;
+          let svgPointToLayer = (geojson, latlng) => {
+            return L.marker(latlng, {
+              icon: L.icon({
+                iconUrl: imgUrl,
+                iconSize: [radius, radius / resolution]
+              })
+            });
+          };
+          let svgPointLayer = this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), svgPointToLayer);
+          resolve(svgPointLayer);
+        });
+      } else {
+        pointToLayer = (geojson, latlng) => {
+          return L.circleMarker(latlng, this._getVectorLayerStyle(style));
+        };
+      }
+      pointToLayer && resolve(this._createGeojsonLayer(features, null, this._getLayerOpacity(visible), pointToLayer));
+    });
   }
 
   /**
@@ -1156,10 +1181,16 @@ export default class WebMapViewModel extends L.Evented {
     return commonStyle;
   }
 
-  private _addLayerToMap(layer, type, layerName) {
+  private _addLayerSucceeded(sendMap = true) {
+    this.layerAdded++;
+    sendMap && this._sendMapToUser(this.layerAdded, this.expectLayerLen);
+  }
+
+  private _addLayerToMap(layer, type, layerName, sendToMap = true) {
     this.map.addLayer(layer);
     !this.layers[type] && (this.layers[type] = {});
     this.layers[type][layerName] = layer;
+    this._addLayerSucceeded(sendToMap);
   }
 
   private _getLayerOpacity(visible) {
@@ -1392,8 +1423,6 @@ export default class WebMapViewModel extends L.Evented {
     let serverId = dataSource ? dataSource.serverId : layer.serverId;
     if (!serverId) {
       this._addLayer(layer, null, index);
-      this.layerAdded++;
-      this._sendMapToUser(this.layerAdded, len);
       return;
     }
 
@@ -1417,14 +1446,7 @@ export default class WebMapViewModel extends L.Evented {
           this._getDataService(serverId, datasetName).then(data => {
             let dataItemServices = data.dataItemServices;
             if (dataItemServices.length === 0) {
-              this.layerAdded++;
-              this._sendMapToUser(this.layerAdded, len);
-              this.fire('getlayerdatasourcefailed', {
-                error: null,
-                layer: layer,
-                map: this.map
-              });
-              return;
+              throw new Error();
             }
             if (isMapService) {
               let dataService = dataItemServices.filter(info => {
@@ -1443,18 +1465,11 @@ export default class WebMapViewModel extends L.Evented {
             }
           });
         } else {
-          this.layerAdded++;
-          this._sendMapToUser(this.layerAdded, len);
-          this.fire('getlayerdatasourcefailed', {
-            error: null,
-            layer: layer,
-            map: this.map
-          });
+          throw new Error();
         }
       })
       .catch(error => {
-        this.layerAdded++;
-        this._sendMapToUser(this.layerAdded, len);
+        this._addLayerSucceeded();
         this.fire('getlayerdatasourcefailed', {
           error: error,
           layer: layer,
@@ -1480,12 +1495,9 @@ export default class WebMapViewModel extends L.Evented {
         });
 
         this._addLayer(layer, features, index);
-        this.layerAdded++;
-        this._sendMapToUser(this.layerAdded, len);
       },
       err => {
-        this.layerAdded++;
-        this._sendMapToUser(this.layerAdded, len);
+        this._addLayerSucceeded();
         this.fire('getlayerdatasourcefailed', {
           error: err,
           layer: layer,
@@ -1516,11 +1528,9 @@ export default class WebMapViewModel extends L.Evented {
             layer,
             features => {
               this._addLayer(layer, features, index);
-              this.layerAdded++;
-              this._sendMapToUser(this.layerAdded, len);
             },
             err => {
-              this.layerAdded++;
+              this._addLayerSucceeded();
               this.fire('getlayerdatasourcefailed', {
                 error: err,
                 layer: layer,
@@ -1531,6 +1541,7 @@ export default class WebMapViewModel extends L.Evented {
         }
       },
       err => {
+        this._addLayerSucceeded();
         this.fire('getlayerdatasourcefailed', {
           error: err,
           layer: layer,
@@ -1546,11 +1557,9 @@ export default class WebMapViewModel extends L.Evented {
       layer,
       () => {
         this._addLayer(layer, null, index);
-        this.layerAdded++;
-        this._sendMapToUser(this.layerAdded, len);
       },
       e => {
-        this.layerAdded++;
+        this._addLayerSucceeded();
         // TODO  fire faild
       }
     );
@@ -1575,15 +1584,7 @@ export default class WebMapViewModel extends L.Evented {
         }
         if (data.succeed === false) {
           //请求失败
-          this.layerAdded++;
-          this._sendMapToUser(this.layerAdded, len);
-          // -----------------------todo-----------------
-          this.fire('getlayerdatasourcefailed', {
-            error: data.error,
-            layer: layer,
-            map: this.map
-          });
-          return;
+          throw new Error(data.error);
         }
         if (data && data.type) {
           if (data.type === 'JSON' || data.type === 'GEOJSON') {
@@ -1593,13 +1594,10 @@ export default class WebMapViewModel extends L.Evented {
             features = this._excelData2Feature(data.content);
           }
           this._addLayer(layer, features, index);
-          this.layerAdded++;
-          this._sendMapToUser(this.layerAdded, len);
         }
       })
       .catch(error => {
-        this.layerAdded++;
-        this._sendMapToUser(this.layerAdded, len);
+        this._addLayerSucceeded();
         this.fire('getlayerdatasourcefailed', {
           error: error,
           layer: layer,
@@ -1758,16 +1756,13 @@ export default class WebMapViewModel extends L.Evented {
             layer.url = restMapInfo.url;
             layer.sourceType = 'TILE';
             this._createBaseLayer(layer);
-            this.layerAdded++;
-            this._sendMapToUser(this.layerAdded, len);
           });
         });
       } // TODO 对接 MVT
       else if (service && !isMapService && service.serviceType === 'RESTDATA') {
         if (info && info.isMvt) {
           // this._addVectorLayer(info, layer, featureType);
-          this.layerAdded++;
-          this._sendMapToUser(this.layerAdded, len);
+          this._addLayerSucceeded();
         } else {
           //数据服务
           isAdded = true;
@@ -1787,12 +1782,9 @@ export default class WebMapViewModel extends L.Evented {
                   featureProjection: this.baseProjection
                 });
                 this._addLayer(layer, features, layerIndex);
-                this.layerAdded++;
-                this._sendMapToUser(this.layerAdded, len);
               },
               err => {
-                this.layerAdded++;
-                this._sendMapToUser(this.layerAdded, len);
+                this._addLayerSucceeded();
                 this.fire('getlayerdatasourcefailed', {
                   error: err,
                   layer: layer,
@@ -1806,8 +1798,7 @@ export default class WebMapViewModel extends L.Evented {
     }, this);
     if (!isAdded) {
       //循环完成了，也没有找到合适的服务。有可能服务被删除
-      this.layerAdded++;
-      this._sendMapToUser(this.layerAdded, len);
+      this._addLayerSucceeded();
       this.fire('getlayerdatasourcefailed', {
         error: null,
         layer: layer,

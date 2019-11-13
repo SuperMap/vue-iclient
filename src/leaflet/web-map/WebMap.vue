@@ -1,6 +1,7 @@
 <template>
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
+    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
