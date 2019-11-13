@@ -1,7 +1,5 @@
 import L from 'leaflet';
-import 'leaflet/dist/leaflet.css'; // TODO css 待抽离
-import '../../../../../static/libs/iclient-leaflet/iclient-leaflet-es6';
-import '../../../../../static/libs/iclient-leaflet/iclient-leaflet.min.css';
+import '../../../../../static/libs/iclient-leaflet/iclient-leaflet.min';
 
 export default class RasterTileLayerViewModel extends L.Evented {
   constructor(map, rasterLayerOptions) {
@@ -47,7 +45,7 @@ export default class RasterTileLayerViewModel extends L.Evented {
     });
   }
   _addLayer() {
-    const layer = L.supermap.tiledMapLayer(this.mapUrl, {
+    this.layer = L.supermap.tiledMapLayer(this.mapUrl, {
       layerId: this.layerId,
       transparent: this.visibility,
       opacity: this.opacity,
@@ -58,13 +56,13 @@ export default class RasterTileLayerViewModel extends L.Evented {
       bounds: this.bounds,
       attribution: this.attribution
     });
-    this.map.addLayer(layer);
+    this.map.addLayer(this.layer);
   }
 
   clear() {
-    const { map, layerId } = this;
-    if (map && layerId && map.getLayer(layerId)) {
-      map.removeLayer(layerId);
+    const { map, layer } = this;
+    if (map && layer && map.hasLayer(this.layer)) {
+      map.removeLayer(layer);
     }
   }
 }
