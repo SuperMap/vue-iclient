@@ -91,17 +91,17 @@ const webpackConfig = merge(baseWebpackConfig, {
       if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
         return callback(null, {
           root: 'DeckGL',
-          commonjs: '../static/libs/deckgl/deck.gl.min.js',
-          commonjs2: '../static/libs/deckgl/deck.gl.min.js',
-          amd: '../static/libs/deckgl/deck.gl.min.js'
+          commonjs: '../../static/libs/deckgl/deck.gl.min.js',
+          commonjs2: '../../static/libs/deckgl/deck.gl.min.js',
+          amd: '../../static/libs/deckgl/deck.gl.min.js'
         });
       }
       if (/\/static\/libs\/iclient-leaflet\/iclient-leaflet/.test(request)) {
         return callback(null, {
           root: 'SuperMap',
-          commonjs: '../static/libs/iclient-leaflet/iclient-leaflet.min.js',
-          commonjs2: '../static/libs/iclient-leaflet/iclient-leaflet.min.js',
-          amd: '../static/libs/iclient-leaflet/iclient-leaflet.min.js'
+          commonjs: '../../static/libs/iclient-leaflet/iclient-leaflet.min.js',
+          commonjs2: '../../static/libs/iclient-leaflet/iclient-leaflet.min.js',
+          amd: '../../static/libs/iclient-leaflet/iclient-leaflet.min.js'
         });
       }
       callback();
