@@ -173,7 +173,7 @@ export default class WebMapViewModel extends L.Evented {
         center: (<number[]>this.center).length ? L.latLng(this.center[0], this.center[1]) : [0, 0],
         zoom: this.zoom || 0,
         crs: this.mapOptions.crs || L.CRS.EPSG3857,
-        maxZoom: this.mapOptions.maxZoom || 22,
+        maxZoom: this.mapOptions.maxZoom || 30,
         minZoom: this.mapOptions.minZoom || 0,
         // layers: this.mapOptions.layers,
         preferCanvas: this.mapOptions.preferCanvas || true
@@ -238,9 +238,7 @@ export default class WebMapViewModel extends L.Evented {
           console.log(error);
           return;
         }
-        let { projection, title, description, layers, baseLayer } = mapInfo;
-
-        this.baseProjection = projection;
+        let { title, description, layers, baseLayer } = mapInfo;
 
         // 存储地图的名称以及描述等信息，返回给用户
         this.mapParams = { title, description };
@@ -275,7 +273,7 @@ export default class WebMapViewModel extends L.Evented {
   }
 
   private _createMap(mapInfo: any): void {
-    let { level, maxZoom, minZoom, baseLayer } = mapInfo;
+    let { level, maxZoom, minZoom } = mapInfo;
 
     // zoom & center
     let center: [number, number] | L.LatLng;
@@ -287,22 +285,8 @@ export default class WebMapViewModel extends L.Evented {
       center = [0, 0];
     }
 
-    // crs 坐标系处理待优化
-    let epsgCode = this.baseProjection.split(':')[1];
-    let crs = L.CRS[`EPSG${epsgCode}`];
+    let crs = this._handleMapCrs(mapInfo);
 
-    if (baseLayer.layerType === 'BAIDU') {
-      // @ts-ignore
-      crs = L.CRS.Baidu;
-    }
-
-    if (baseLayer.layerType.indexOf('TIANDITU') > -1) {
-      // @ts-ignore
-      crs = this.baseProjection === 'EPSG:3857' ? L.CRS.TianDiTu_Mercator : L.CRS.TianDiTu_WGS84;
-    }
-
-    // bounds
-    // let bounds = L.bounds([extent.leftBottom.x, extent.leftBottom.y], [extent.rightTop.x, extent.rightTop.y]);
     center =
       this.baseProjection === 'EPSG:3857'
         ? crs.unproject(L.point(center[0], center[1]))
@@ -312,15 +296,14 @@ export default class WebMapViewModel extends L.Evented {
       center: (<number[]>this.center).length ? L.latLng(this.center[0], this.center[1]) : center,
       zoom: this.zoom || zoom,
       crs,
-      maxZoom: maxZoom || 22,
+      maxZoom: maxZoom || 30,
       minZoom: minZoom || 0,
-      preferCanvas: true // unicode marker 需要canvas
+      preferCanvas: true // unicode marker 需要 canvas
     });
 
     // this.map.fitBounds(L.latLngBounds(crs.unproject(bounds.min), crs.unproject(bounds.max)), {
     //   maxZoom: maxZoom || 22
     // });
-    this.crs = crs;
     /**
      * @event WebMapViewModel#mapinitialized
      * @description Map 初始化成功。
@@ -366,7 +349,7 @@ export default class WebMapViewModel extends L.Evented {
       case 'TIANDITU_VEC':
       case 'TIANDITU_IMG':
       case 'TIANDITU_TER':
-        this._createTiandituLayer(layerInfo);
+        layer = this._createTiandituLayer(layerInfo);
         break;
       case 'BING':
         layer = this._createBingLayer(layerInfo.name);
@@ -402,7 +385,7 @@ export default class WebMapViewModel extends L.Evented {
       default:
         break;
     }
-    layer && this._addLayerToMap(layer, 'baseLayers', layerInfo.name, layerInfo.visible, sendToMap);
+    layer && this._addLayerToMap({ layer, type: 'baseLayers', layerInfo, sendToMap });
   }
 
   /**
@@ -420,6 +403,8 @@ export default class WebMapViewModel extends L.Evented {
     if (len > 0) {
       layers.forEach((layer, index) => {
         let type = this._getType(layer);
+        layer.layerID = layer.name + '-' + index;
+        layer.index = index;
         switch (type) {
           case 'hosted':
             //数据存储到iportal上了
@@ -451,7 +436,6 @@ export default class WebMapViewModel extends L.Evented {
    */
   private async _addLayer(layerInfo: any, features: any, index: number | string): Promise<void> {
     try {
-      layerInfo.layerID = layerInfo.name + '-' + index;
       let { layerType, style, themeSetting, filterCondition, projection, featureType, labelStyle } = layerInfo;
 
       if ((style || themeSetting) && filterCondition) {
@@ -503,13 +487,14 @@ export default class WebMapViewModel extends L.Evented {
           break;
       }
 
-      layer && this._addLayerToMap(layer, 'overlays', layerInfo.layerID, layerInfo.visible);
-
       if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
         // 存在标签专题图
         features = this._getFiterFeatures(filterCondition, features);
-        let labelLayer = this._addLabelLayer(layerInfo, features);
-        this._addLayerToMap(labelLayer, 'overlays', layerInfo.layerID, layerInfo.visible, false);
+        let labelLayerInfo = JSON.parse(JSON.stringify(layerInfo));
+        let labelLayer = this._addLabelLayer(labelLayerInfo, features);
+        this._addLayerToMap({ layer: L.layerGroup([layer, labelLayer]), layerInfo })
+      }else{
+        layer && this._addLayerToMap({ layer, layerInfo });
       }
     } catch (err) {
       console.error(err);
@@ -624,8 +609,9 @@ export default class WebMapViewModel extends L.Evented {
       isLabel: true,
       key: this.tiandituKey
     });
-    this._addLayerToMap(tiandituLayer, 'overlays', layerInfo.name, layerInfo.visible);
-    isLabel && this._addLayerToMap(tiandituLabelLayer, 'overlays', layerInfo.name + '-label', layerInfo.visible, false);
+    let layers = [tiandituLayer]
+    isLabel && layers.push(tiandituLabelLayer);
+    return L.layerGroup(layers);
   }
 
   private _createCLOUDLayer(layerType, url) {
@@ -964,28 +950,33 @@ export default class WebMapViewModel extends L.Evented {
       heatColors[i] = customSettings[i];
     }
 
-    let gradient = {};
-    for (let i = 0, len = heatColors.length, index = 1; i < len; i++) {
-      gradient[index / len] = heatColors[i];
-      index++;
-    }
-
-    // @ts-ignore  TODO - 待确定是否使用 classic 接口
+    // @ts-ignore
     let heatMapLayer = L.supermap.heatMapLayer(layerID, {
       colors: heatColors,
       map: this.map,
-      radius: radius * 2, // blur TODO
-      featureWeight: weight
+      radius: radius * 2,
+      featureWeight: weight,
+      blur: radius * 1.5
     });
 
-    // // @ts-ignore
+    // let gradient = {};
+    // for (let i = 0, len = heatColors.length, index = 1; i < len; i++) {
+    //   gradient[index / len] = heatColors[i];
+    //   index++;
+    // }
+
+    // features.forEach((feature, index) => {
+    //   features[index] = { lng: feature.geometry.coordinates[0], lat: feature.geometry.coordinates[1] };
+    // });
+
+    // @ts-ignore
     // let heatMapLayer = L.heatLayer(features, {
-    //   radius: radius,
-    //   minOpacity: opacity,
+    //   radius: radius*1.3,
+    //   minOpacity: 1,
     //   gradient: gradient,
-    //   blur: radius / 2,
+    //   // blur: radius*2,
     //   featureWeight: weight
-    // }).addTo(this.map);
+    // })
 
     heatMapLayer.addFeatures({
       type: 'FeatureCollection',
@@ -1089,14 +1080,13 @@ export default class WebMapViewModel extends L.Evented {
   }
 
   private _createGeojsonLayer(features, style?, pointToLayer?) {
-    style = style || {};
     return L.geoJSON(
       {
         type: 'FeatureCollection',
         // @ts-ignore
         features: features
       },
-      { pointToLayer, style}
+      { pointToLayer, style }
     );
   }
 
@@ -1125,12 +1115,17 @@ export default class WebMapViewModel extends L.Evented {
     }
   }
 
-  private _addLayerToMap(layer, type, layerName, visible, sendToMap = true) {
-    if(visible === undefined || visible){
+  private _addLayerToMap({ layer, type = 'overlays', layerInfo, sendToMap = true }) {
+    let { visible, layerID, name, index } = layerInfo;
+
+    sendToMap && (type = 'overlays');
+    type === 'overlays' && layer.setZIndex && layer.setZIndex(index);
+
+    if (visible === undefined || visible) {
       this.map.addLayer(layer);
     }
     !this.layers[type] && (this.layers[type] = {});
-    this.layers[type][layerName] = layer;
+    this.layers[type][layerID || name] = layer;
     this._addLayerSucceeded(sendToMap);
   }
 
@@ -2459,5 +2454,61 @@ export default class WebMapViewModel extends L.Evented {
     });
 
     return layer;
+  }
+
+  _handleMapCrs(mapInfo) {
+    let { projection, baseLayer, extent } = mapInfo;
+
+    this.baseProjection = projection;
+
+    // crs 坐标系处理待优化
+    if (projection === 'EPSG:910111' || projection === 'EPSG:910112') {
+      // 早期数据存在的自定义坐标系  "EPSG:910111": "GCJ02MERCATOR"， "EPSG:910112": "BDMERCATOR"
+      this.baseProjection = 'EPSG:3857';
+    } else if (projection === 'EPSG:910101' || projection === 'EPSG:910102') {
+      // 早期数据存在的自定义坐标系 "EPSG:910101": "GCJ02", "EPSG:910102": "BD",
+      this.baseProjection = 'EPSG:4326';
+    }
+
+    if (baseLayer.layerType === 'BAIDU') {
+      // @ts-ignore
+      this.crs = L.CRS.Baidu;
+      return this.crs;
+    }
+
+    if (baseLayer.layerType.indexOf('TIANDITU') > -1) {
+      // @ts-ignore
+      this.crs = this.baseProjection === 'EPSG:3857' ? L.CRS.TianDiTu_Mercator : L.CRS.TianDiTu_WGS84;
+      return this.crs;
+    }
+
+    let epsgCode = this.baseProjection.split(':')[1];
+
+    if (parseFloat(epsgCode) <= 0 || !['4326', '3857', '3395'].includes(epsgCode)) {
+      this.fire("crsnotsupport");
+      throw Error("Unsupported coordinate system!");
+    }
+
+    // bounds origin
+    let bounds = L.bounds([extent.leftBottom.x, extent.leftBottom.y], [extent.rightTop.x, extent.rightTop.y]);
+    var origin = L.point(bounds.min.x, bounds.max.y);
+
+    // resolutions
+    let maxResolution, resolutions = [];
+    let resolutionExtent = [extent.leftBottom.x, extent.leftBottom.y, extent.rightTop.x,extent.rightTop.y]
+    if (resolutionExtent && resolutionExtent.length === 4) {
+      let width = resolutionExtent[2] - resolutionExtent[0];
+      let height = resolutionExtent[3] - resolutionExtent[1];
+      let maxResolution1 = width / 256;
+      let maxResolution2 = height / 256;
+      maxResolution = Math.max(maxResolution1, maxResolution2);
+      for (let i = 0; i < 30; i++) {
+        resolutions.push(maxResolution / Math.pow(2, i));
+      }
+    }
+
+    // @ts-ignore
+    this.crs = L.Proj.CRS(`EPSG:${epsgCode}`, { origin, resolutions, bounds });;
+    return this.crs;
   }
 }
