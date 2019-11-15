@@ -301,9 +301,6 @@ export default class WebMapViewModel extends L.Evented {
       preferCanvas: true // unicode marker 需要 canvas
     });
 
-    // this.map.fitBounds(L.latLngBounds(crs.unproject(bounds.min), crs.unproject(bounds.max)), {
-    //   maxZoom: maxZoom || 22
-    // });
     /**
      * @event WebMapViewModel#mapinitialized
      * @description Map 初始化成功。
@@ -493,7 +490,7 @@ export default class WebMapViewModel extends L.Evented {
         let labelLayerInfo = JSON.parse(JSON.stringify(layerInfo));
         let labelLayer = this._addLabelLayer(labelLayerInfo, features);
         this._addLayerToMap({ layer: L.layerGroup([layer, labelLayer]), layerInfo })
-      }else{
+      } else {
         layer && this._addLayerToMap({ layer, layerInfo });
       }
     } catch (err) {
@@ -513,8 +510,7 @@ export default class WebMapViewModel extends L.Evented {
     // @ts-ignore
     L.TileLayer.BingLayer = L.TileLayer.extend({
       getTileUrl: function (coordinates) {
-        let [z, x, y] = [...coordinates];
-        y = y > 0 ? y - 1 : -y - 1;
+        let { z, x, y } = coordinates;
         let index = '';
         for (let i = z; i > 0; i--) {
           let b = 0;
@@ -1489,7 +1485,6 @@ export default class WebMapViewModel extends L.Evented {
       },
       e => {
         this._addLayerSucceeded();
-        // TODO  fire faild
       }
     );
   }
@@ -1553,13 +1548,6 @@ export default class WebMapViewModel extends L.Evented {
        * @property {string} mapParams.description - 地图描述。
        * @property {Array.<Object>} layers - 地图上所有的图层对象。
        */
-
-      // 图层顺序 -------------------------------TODO
-      // for (let index = this._layers.length - 2; index > -1; index--) {
-      //   const targetlayerId = this._layers[index].layerID;
-      //   const beforLayerId = this._layers[index + 1].layerID;
-      //   this.map.moveLayer(targetlayerId, beforLayerId);
-      // }
 
       this.fire('addlayerssucceeded', {
         map: this.map,
@@ -2485,8 +2473,8 @@ export default class WebMapViewModel extends L.Evented {
     let epsgCode = this.baseProjection.split(':')[1];
 
     if (parseFloat(epsgCode) <= 0 || !['4326', '3857', '3395'].includes(epsgCode)) {
-      this.fire("crsnotsupport");
-      throw Error("Unsupported coordinate system!");
+      this.fire('crsnotsupport');
+      throw Error('Unsupported coordinate system!');
     }
 
     // bounds origin
@@ -2495,7 +2483,7 @@ export default class WebMapViewModel extends L.Evented {
 
     // resolutions
     let maxResolution, resolutions = [];
-    let resolutionExtent = [extent.leftBottom.x, extent.leftBottom.y, extent.rightTop.x,extent.rightTop.y]
+    let resolutionExtent = [extent.leftBottom.x, extent.leftBottom.y, extent.rightTop.x, extent.rightTop.y]
     if (resolutionExtent && resolutionExtent.length === 4) {
       let width = resolutionExtent[2] - resolutionExtent[0];
       let height = resolutionExtent[3] - resolutionExtent[1];

@@ -76,7 +76,8 @@ export default {
     loadingTip: '地图加载中...',
     crsNotSupport: '不支持当前地图的坐标系！',
     TileMatrixSetNotSuppport: '不支持传入的 TileMatrixSet！',
-    getLayerInfoFailed: '获取图层信息失败！'
+    getLayerInfoFailed: '获取图层信息失败！',
+    crsnotsupport: '不支持的坐标系！'
   },
   legend: {
     themeField: '专题字段',

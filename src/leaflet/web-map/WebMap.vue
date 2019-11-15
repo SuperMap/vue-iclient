@@ -171,6 +171,9 @@ class SmWebMap extends Mixins(VmUpdater) {
       this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
       this.$message.error(this.$t('webmap.getLayerInfoFailed'));
     });
+    this.viewModel.on('crsnotsupport', () => {
+      this.$message.error(this.$t('webmap.crsnotsupport'));
+    });
   }
 
   destory(): void {

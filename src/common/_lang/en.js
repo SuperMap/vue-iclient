@@ -76,7 +76,8 @@ export default {
     loadingTip: 'Map is loading...',
     crsNotSupport: 'The coordinate system of the current map is not supported!',
     TileMatrixSetNotSuppport: 'Incoming TileMatrixSet is not supported!',
-    getLayerInfoFailed: 'Failed to get layer information!'
+    getLayerInfoFailed: 'Failed to get layer information!',
+    crsnotsupport: 'Unsupported coordinate system!'
   },
   legend: {
     themeField: 'Thematic Field',
