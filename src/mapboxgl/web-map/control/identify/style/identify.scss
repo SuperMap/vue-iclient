@@ -27,12 +27,14 @@
     width: 40%;
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
   @include e(right) {
     margin-left: 10px;
     width: calc(60% - 10px);
     overflow: hidden;
     text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 .sm-mapboxgl-identify-popup {
