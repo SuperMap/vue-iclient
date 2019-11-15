@@ -89,6 +89,9 @@ export default {
         if (this.layers.length > 0 && !isEqual(val, oldVal)) {
           this.setViewModel();
         }
+        if (this.layers.length === 0) {
+          this.map && this.map.off('click');
+        }
       }
     },
     layerStyle() {
@@ -109,7 +112,7 @@ export default {
     this.viewModel && this.viewModel.removed();
   },
   beforeDestroy() {
-    this.map.off('click');
+    this.map && this.map.off('click');
     this.$options.removed.call(this);
   },
   methods: {
@@ -131,26 +134,46 @@ export default {
           [e.point.x + this.clickAreaAround, e.point.y + this.clickAreaAround]
         ];
         // 获取点中图层的features
-        var features = map.queryRenderedFeatures(bbox, {
-          layers: this.layers
-        });
-        if (features[0]) {
-          // 添加popup
-          this.addPopup(features[0], e.lngLat.toArray());
-          // 高亮过滤(所有字段)
-          let filter = ['all'];
-          const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
-          features[0]._vectorTileFeature._keys.forEach((key, index) => {
-            if (filterKeys.indexOf(key.toLowerCase()) === -1) {
-              filter.push(['==', key, features[0].properties[key]]);
-            }
+        let layersExit = true;
+        for (let i = 0; i < this.layers.length; i++) {
+          if (!map.getLayer(this.layers[i])) {
+            layersExit = false;
+            this.$message.error(this.$t('identify.layerNotExit', { layer: this.layers[i] }));
+            break;
+          }
+        }
+        if (layersExit) {
+          var features = map.queryRenderedFeatures(bbox, {
+            layers: this.layers
           });
-
-          // 添加高亮图层
-          this.addOverlayToMap(features[0].layer, filter);
-          // 给图层加上高亮
-          if (map.getLayer(features[0].layer.id + '-SM-highlighted')) {
-            map.setFilter(features[0].layer.id + '-SM-highlighted', filter);
+          if (features[0]) {
+            // 添加popup
+            this.addPopup(features[0], e.lngLat.toArray());
+            // 高亮过滤(所有字段)
+            let filter = ['all'];
+            const filterKeys = [
+              'smx',
+              'smy',
+              'lon',
+              'lat',
+              'longitude',
+              'latitude',
+              'x',
+              'y',
+              'usestyle',
+              'featureinfo'
+            ];
+            features[0]._vectorTileFeature._keys.forEach((key, index) => {
+              if (filterKeys.indexOf(key.toLowerCase()) === -1) {
+                filter.push(['==', key, features[0].properties[key]]);
+              }
+            });
+            // 添加高亮图层
+            this.addOverlayToMap(features[0].layer, filter);
+            // 给图层加上高亮
+            if (map.getLayer(features[0].layer.id + '-SM-highlighted')) {
+              map.setFilter(features[0].layer.id + '-SM-highlighted', filter);
+            }
           }
         }
       });
@@ -166,6 +189,9 @@ export default {
               this.popupProps[field] = feature.properties[field];
             }
           });
+        } else {
+          // 默认是读取layer的全部字段
+          this.popupProps = feature.properties;
         }
         // 添加popup
         this.$nextTick(() => {

@@ -124,6 +124,9 @@ export default {
     queryFailed: '查询失败!',
     seviceNotSupport: '此服务不支持查询！'
   },
+  identify: {
+    layerNotExit: '地图上不存在该图层: {layer}'
+  },
   openFile: {
     fileSizeExceeded: '文件大小超限！文件大小不得超过 10M！',
     fileTypeUnsupported: '不支持该文件格式！',

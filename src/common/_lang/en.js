@@ -124,6 +124,9 @@ export default {
     queryFailed: 'Query failed!',
     seviceNotSupport: 'This service does not support queries!'
   },
+  identify: {
+    layerNotExit: "The layer {layer} does not exist in the map's style"
+  },
   openFile: {
     fileSizeExceeded: "The file size is too big! The file size can't exceed 10M!",
     fileTypeUnsupported: 'This file format is not supported!',
