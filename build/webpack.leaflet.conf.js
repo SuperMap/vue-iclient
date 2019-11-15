@@ -84,24 +84,30 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs2: 'video.js',
         amd: 'video.js'
       },
-      leaflet: 'L'
+      leaflet: {
+        root: 'L',
+        commonjs: 'leaflet',
+        commonjs2: 'leaflet',
+        amd: 'leaflet'
+      }
     },
-    /// \/static\/libs\//,
+    // TODO 暂时修改成 ./static
+    // / \/static\/libs\//, 
     function(context, request, callback) {
       if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
         return callback(null, {
           root: 'DeckGL',
-          commonjs: '../../static/libs/deckgl/deck.gl.min.js',
-          commonjs2: '../../static/libs/deckgl/deck.gl.min.js',
-          amd: '../../static/libs/deckgl/deck.gl.min.js'
+          commonjs: './static/libs/deckgl/deck.gl.min.js',
+          commonjs2: './static/libs/deckgl/deck.gl.min.js',
+          amd: './static/libs/deckgl/deck.gl.min.js'
         });
       }
       if (/\/static\/libs\/iclient-leaflet\/iclient-leaflet/.test(request)) {
         return callback(null, {
           root: 'SuperMap',
-          commonjs: '../../static/libs/iclient-leaflet/iclient-leaflet.min.js',
-          commonjs2: '../../static/libs/iclient-leaflet/iclient-leaflet.min.js',
-          amd: '../../static/libs/iclient-leaflet/iclient-leaflet.min.js'
+          commonjs: './static/libs/iclient-leaflet/iclient-leaflet.min.js',
+          commonjs2: './static/libs/iclient-leaflet/iclient-leaflet.min.js',
+          amd: './static/libs/iclient-leaflet/iclient-leaflet.min.js'
         });
       }
       callback();
