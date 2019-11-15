@@ -10,6 +10,7 @@
     <Legend v-if="legendControl.show" v-bind="legendControl"></Legend>
     <Query v-if="queryControl.show" v-bind="queryControl"></Query>
     <Search v-if="searchControl.show" v-bind="searchControl"></Search>
+    <Identify v-if="identifyControl.show" v-bind="identifyControl"></Identify>
     <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
@@ -28,6 +29,7 @@ import Measure from './control/measure/Measure.vue';
 import Legend from './control/legend/Legend.vue';
 import Query from '../query/Query.vue';
 import Search from '../search/Search.vue';
+import Identify from './control/identify/Identify.vue';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
@@ -123,6 +125,14 @@ interface searchParam extends commonControlParam {
   addressMatch?: Array<string>;
 }
 
+interface identifyParam {
+  show?: boolean;
+  layers?: Array<Object>;
+  fields?: Array<string>;
+  layerStyle?: Array<Object>;
+  clickAreaAround?: number;
+}
+
 @Component({
   name: 'SmWebMap',
   viewModelProps: [
@@ -149,7 +159,8 @@ interface searchParam extends commonControlParam {
     Measure,
     Legend,
     Query,
-    Search
+    Search,
+    Identify
   }
 })
 class SmWebMap extends Mixins(VmUpdater, MapEvents) {
@@ -253,6 +264,19 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
     }
   })
   searchControl: searchParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: false,
+        layers: [],
+        fields: [],
+        layerStyle: {},
+        clickAreaAround: 5
+      };
+    }
+  })
+  identifyControl: identifyParam;
 
   @Watch('mapId')
   mapIdChanged() {

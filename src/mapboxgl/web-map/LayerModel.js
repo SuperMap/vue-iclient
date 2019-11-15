@@ -16,6 +16,7 @@ class LayerModel {
     this.maxzoom = options.maxzoom;
     this.minzoom = options.minzoom;
     this.source = options.source;
+    this.sourceLayer = options.sourceLayer;
     this.type = options.type;
     this.visibility = options.visibility || 'visible';
   }
