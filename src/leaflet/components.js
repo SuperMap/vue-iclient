@@ -11,4 +11,4 @@ export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
 export { default as Iframe } from '../common/iframe/Iframe';
 
 export { default as WebMap } from './web-map/WebMap.vue';
-export { default as RasterTileLayer } from './web-map/layer/raster-tile/RasterTileLayer';
+export { default as SmTileLayer } from './web-map/layer/sm-tile/SmTileLayer';
