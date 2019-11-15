@@ -37,6 +37,7 @@ export { default as Pan } from './web-map/control/pan/Pan';
 export { default as Scale } from './web-map/control/scale/Scale';
 export { default as Zoom } from './web-map/control/zoom/Zoom';
 export { default as Draw } from './web-map/control/draw/Draw';
+export { default as Identify } from './web-map/control/identify/Identify';
 export { default as TdtSearch } from './tdt/search/TdtSearch';
 export { default as TdtRoute } from './tdt/route/TdtRoute';
 export { default as TdtMapSwitcher } from './tdt/mapSwitcher/TdtMapSwitcher';

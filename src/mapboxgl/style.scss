@@ -23,6 +23,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './web-map/control/layer-list/style/layer-list.scss';
 @import './web-map/control/legend/style/legend.scss';
 @import './web-map/control/draw/style/draw.scss';
+@import './web-map/control/identify/style/identify.scss';
 @import './tdt/results/style/areaResult.scss';
 @import './tdt/results/style/lineResult.scss';
 @import './tdt/results/style/nothingResult.scss';
