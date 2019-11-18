@@ -41,7 +41,7 @@ export default {
         return [];
       }
     },
-    clickAreaAround: {
+    clickTolerance: {
       type: Number,
       default: 5
     },
@@ -130,8 +130,8 @@ export default {
         this.viewModel.removed();
         // set bbox as 5px reactangle area around clicked point
         var bbox = [
-          [e.point.x - this.clickAreaAround, e.point.y - this.clickAreaAround],
-          [e.point.x + this.clickAreaAround, e.point.y + this.clickAreaAround]
+          [e.point.x - this.clickTolerance, e.point.y - this.clickTolerance],
+          [e.point.x + this.clickTolerance, e.point.y + this.clickTolerance]
         ];
         // 获取点中图层的features
         let layersExit = true;
