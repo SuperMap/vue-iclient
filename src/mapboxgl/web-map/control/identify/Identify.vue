@@ -112,7 +112,7 @@ export default {
     this.viewModel && this.viewModel.removed();
   },
   beforeDestroy() {
-    this.map && this.map.off('click');
+    this.map && this.map.off('click', this.mapClickFn);
     this.$options.removed.call(this);
   },
   methods: {
@@ -125,58 +125,50 @@ export default {
     },
     // 给图层绑定popup和高亮
     bindMapClick(map) {
-      map.on('click', e => {
-        // 如果点击其他的要素，移除之前的高亮
-        this.viewModel.removed();
-        // set bbox as 5px reactangle area around clicked point
-        var bbox = [
-          [e.point.x - this.clickTolerance, e.point.y - this.clickTolerance],
-          [e.point.x + this.clickTolerance, e.point.y + this.clickTolerance]
-        ];
-        // 获取点中图层的features
-        let layersExit = true;
-        for (let i = 0; i < this.layers.length; i++) {
-          if (!map.getLayer(this.layers[i])) {
-            layersExit = false;
-            this.$message.error(this.$t('identify.layerNotExit', { layer: this.layers[i] }));
-            break;
-          }
+      map.on('click', this.mapClickFn);
+    },
+    // 点击事件的方法
+    mapClickFn(e) {
+      // 如果点击其他的要素，移除之前的高亮
+      let map = e.target;
+      this.viewModel.removed();
+      // set bbox as 5px reactangle area around clicked point
+      var bbox = [
+        [e.point.x - this.clickTolerance, e.point.y - this.clickTolerance],
+        [e.point.x + this.clickTolerance, e.point.y + this.clickTolerance]
+      ];
+      // 获取点中图层的features
+      let layersExit = true;
+      for (let i = 0; i < this.layers.length; i++) {
+        if (!map.getLayer(this.layers[i])) {
+          layersExit = false;
+          this.$message.error(this.$t('identify.layerNotExit', { layer: this.layers[i] }));
+          break;
         }
-        if (layersExit) {
-          var features = map.queryRenderedFeatures(bbox, {
-            layers: this.layers
-          });
-          if (features[0]) {
-            // 添加popup
-            this.addPopup(features[0], e.lngLat.toArray());
-            // 高亮过滤(所有字段)
-            let filter = ['all'];
-            const filterKeys = [
-              'smx',
-              'smy',
-              'lon',
-              'lat',
-              'longitude',
-              'latitude',
-              'x',
-              'y',
-              'usestyle',
-              'featureinfo'
-            ];
-            features[0]._vectorTileFeature._keys.forEach((key, index) => {
-              if (filterKeys.indexOf(key.toLowerCase()) === -1) {
-                filter.push(['==', key, features[0].properties[key]]);
-              }
-            });
-            // 添加高亮图层
-            this.addOverlayToMap(features[0].layer, filter);
-            // 给图层加上高亮
-            if (map.getLayer(features[0].layer.id + '-SM-highlighted')) {
-              map.setFilter(features[0].layer.id + '-SM-highlighted', filter);
+      }
+      if (layersExit) {
+        var features = map.queryRenderedFeatures(bbox, {
+          layers: this.layers
+        });
+        if (features[0]) {
+          // 添加popup
+          this.addPopup(features[0], e.lngLat.toArray());
+          // 高亮过滤(所有字段)
+          let filter = ['all'];
+          const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
+          features[0]._vectorTileFeature._keys.forEach((key, index) => {
+            if (filterKeys.indexOf(key.toLowerCase()) === -1) {
+              filter.push(['==', key, features[0].properties[key]]);
             }
+          });
+          // 添加高亮图层
+          this.addOverlayToMap(features[0].layer, filter);
+          // 给图层加上高亮
+          if (map.getLayer(features[0].layer.id + '-SM-highlighted')) {
+            map.setFilter(features[0].layer.id + '-SM-highlighted', filter);
           }
         }
-      });
+      }
     },
     // 添加popup
     addPopup(feature, coordinates) {
