@@ -11,9 +11,10 @@ import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
  * @fires iServerRestService#featureisempty
  */
 export default class iServerRestService extends mapboxgl.Evented {
-  constructor(url) {
+  constructor(url, options) {
     super();
     this.url = url;
+    this.options = options || {};
   }
 
   getData(datasetInfo, queryInfo) {
@@ -33,8 +34,8 @@ export default class iServerRestService extends mapboxgl.Evented {
   _getDatasetInfoSucceed(datasetInfo, queryInfo) {
     datasetInfo.dataUrl = this.url;
     // 判断服务为地图服务 或者 数据服务
-    (this.url.indexOf('/rest/maps') > -1 || this.url.indexOf(encodeURIComponent('/rest/map')) > -1) && this.getMapFeatures(datasetInfo, queryInfo);
-    (this.url.indexOf('/rest/data') > -1 || this.url.indexOf(encodeURIComponent('/rest/data')) > -1) && this.getDataFeatures(datasetInfo, queryInfo);
+    this.url.indexOf('/rest/maps') > -1 && this.getMapFeatures(datasetInfo, queryInfo);
+    this.url.indexOf('/rest/data') > -1 && this.getDataFeatures(datasetInfo, queryInfo);
   }
 
   /**
@@ -98,6 +99,7 @@ export default class iServerRestService extends mapboxgl.Evented {
       expectCount: queryInfo.maxFeatures
     });
     queryBySQLService = new SuperMap.QueryBySQLService(url, {
+      proxy: this.options.proxy,
       eventListeners: {
         processCompleted: this._getFeaturesSucceed.bind(this),
         processFailed: function() {}
@@ -118,6 +120,7 @@ export default class iServerRestService extends mapboxgl.Evented {
       maxFeatures: -1
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
+      proxy: this.options.proxy,
       eventListeners: {
         processCompleted: this._getFeaturesSucceed.bind(this),
         processFailed: function() {}
@@ -193,7 +196,7 @@ export default class iServerRestService extends mapboxgl.Evented {
   }
 
   _getRestDataFields(fieldsUrl, callBack) {
-    SuperMap.FetchRequest.get(fieldsUrl)
+    SuperMap.FetchRequest.get(fieldsUrl, null, { proxy: this.options.proxy })
       .then(response => {
         return response.json();
       })
@@ -212,7 +215,9 @@ export default class iServerRestService extends mapboxgl.Evented {
         attributeFilter: 'SMID=0'
       }
     });
-    new mapboxgl.supermap.QueryService(url).queryBySQL(param, serviceResult => {
+    new mapboxgl.supermap.QueryService(url, {
+      proxy: this.options.proxy
+    }).queryBySQL(param, serviceResult => {
       if (serviceResult.type === 'processCompleted') {
         let fields;
         serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);

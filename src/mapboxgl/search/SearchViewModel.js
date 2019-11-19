@@ -284,7 +284,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
   _searchFromRestMap(restMaps) {
     const sourceName = 'Rest Map Search';
     restMaps.forEach(restMap => {
-      let iserverService = new iServerRestService(restMap.url);
+      const options = {};
+      if (restMap.proxy) {
+        options.proxy = restMap.proxy;
+      }
+      let iserverService = new iServerRestService(restMap.url, options);
       iserverService.on('getdatafailed', e => {
         this._searchFeaturesFailed('', sourceName);
       });
@@ -307,7 +311,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
   _searchFromRestData(restDatas) {
     const sourceName = 'Rest Data Search';
     restDatas.forEach(restData => {
-      let iserverService = new iServerRestService(restData.url);
+      const options = {};
+      if (restData.proxy) {
+        options.proxy = restData.proxy;
+      }
+      let iserverService = new iServerRestService(restData.url, options);
       iserverService.on('getdatafailed', e => {
         this._searchFeaturesFailed('', sourceName);
       });
@@ -352,7 +360,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
   _searchFromAddressMatch(addressMatches) {
     const sourceName = 'Address Match Search';
     addressMatches.forEach(addressMatch => {
-      this.addressMatchService = new mapboxgl.supermap.AddressMatchService(addressMatch.url);
+      const options = {};
+      if (addressMatch.proxy) {
+        options.proxy = addressMatch.proxy;
+      }
+      this.addressMatchService = new mapboxgl.supermap.AddressMatchService(addressMatch.url, options);
       let parm = {
         address: this.keyWord,
         fromIndex: 0,

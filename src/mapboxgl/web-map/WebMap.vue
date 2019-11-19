@@ -181,7 +181,18 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: false }) withCredentials: boolean;
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() isSuperMapOnline: boolean;
-  @Prop() mapOptions: any;
+  @Prop({
+    default: () => ({
+      style: {
+        version: 8,
+        sources: {},
+        layers: []
+      },
+      center: [0, 0],
+      zoom: 0
+    })
+  })
+  mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
   @Prop({
     default: () => {

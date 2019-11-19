@@ -1,9 +1,10 @@
 import { Events } from '../_types/event/Events';
 
 export default class RestService extends Events {
-  constructor() {
+  constructor(options) {
     super();
     this.eventTypes = ['getdatafailed', 'getdatasucceeded'];
+    this.options = options || {};
   }
 
   /**
@@ -14,7 +15,7 @@ export default class RestService extends Events {
     if (!url) {
       return;
     }
-    SuperMap.FetchRequest.get(url, null, { withoutFormatSuffix: true })
+    SuperMap.FetchRequest.get(url, null, { withoutFormatSuffix: true, proxy: this.options.proxy })
       .then(response => {
         return response.json();
       })

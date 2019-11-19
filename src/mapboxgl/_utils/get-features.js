@@ -13,7 +13,11 @@ export default function getFeatures(dataset) {
       };
       if (type === 'iServer') {
         let datasetInfo;
-        superMapService = new iServerRestService(url);
+        const options = {};
+        if (dataset.proxy) {
+          options.proxy = dataset.proxy;
+        }
+        superMapService = new iServerRestService(dataset.url, options);
         if (dataName) {
           let arr = dataName[0].split(':');
           datasetInfo = {
@@ -33,7 +37,9 @@ export default function getFeatures(dataset) {
         superMapService = new iPortalDataService(url, withCredentials);
         superMapService.getData(queryInfo, !!preferContent);
       } else if (type === 'rest') {
-        let restService = new RestService();
+        let restService = new RestService({
+          proxy: dataset.proxy
+        });
         restService.getData(url, queryInfo);
         restService.on({
           'getdatafailed': function (e) {
