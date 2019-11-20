@@ -10,8 +10,9 @@ import WebMapViewModel from './WebMapViewModel';
 import VmUpdater from '../../common/_mixin/vm-updater';
 import mapEvent from '../_types/map-event';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
-// import { addListener, removeListener } from 'resize-detector';
-// import debounce from 'lodash/debounce';
+import { addListener, removeListener } from 'resize-detector';
+import debounce from 'lodash/debounce';
+import MapEvents from './_mixin/map-events';
 
 @Component({
   name: 'SmWebMap',
@@ -26,7 +27,7 @@ import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-deco
     'withCredentials'
   ]
 })
-class SmWebMap extends Mixins(VmUpdater) {
+class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   spinning = true;
 
   // eslint-disable-next-line
@@ -111,25 +112,26 @@ class SmWebMap extends Mixins(VmUpdater) {
       },
       mapOptions
     );
-    // if (this.autoresize) {
-    //   this.__resizeHandler = debounce(
-    //     () => {
-    //       this.resize();
-    //     },
-    //     100,
-    //     { leading: true }
-    //   );
-    //   // @ts-ignore
-    //   addListener(this.$el, this.__resizeHandler);
-    // }
+    if (this.autoresize) {
+      this.__resizeHandler = debounce(
+        () => {
+          this.resize();
+        },
+        100,
+        { leading: true }
+      );
+      // @ts-ignore
+      addListener(this.$el, this.__resizeHandler);
+    }
   }
 
-  // TODO resize
-  // resize() {
-  //   if (this.viewModel && this.viewModel.resize) {
-  //     this.viewModel.resize();
-  //   }
-  // }
+  resize() {
+    if (this.viewModel && this.viewModel.resize) {
+      this.$nextTick(() => {
+        this.viewModel.resize();
+      });
+    }
+  }
 
   registerEvents(): void {
     this.viewModel.on('addlayerssucceeded', e => {
@@ -137,11 +139,14 @@ class SmWebMap extends Mixins(VmUpdater) {
       mapEvent.$options.setMap(this.target, e.map);
       this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
       mapEvent.$emit('load-map', e.map, this.target);
-      // e.map.resize(); TODO resize
       this.map = e.map;
 
-      // 绑定map event TODO
-      // this.bindMapEvents();
+      this.$nextTick(() => {
+        this.viewModel.resize();
+      });
+
+      // 绑定map event
+      this.bindMapEvents();
 
       /**
        * @event load
@@ -177,10 +182,10 @@ class SmWebMap extends Mixins(VmUpdater) {
   }
 
   destory(): void {
-    // if (this.autoresize) {
-    //   // @ts-ignore
-    //   removeListener(this.$el, this.__resizeHandler);
-    // }
+    if (this.autoresize) {
+      // @ts-ignore
+      removeListener(this.$el, this.__resizeHandler);
+    }
   }
 }
 

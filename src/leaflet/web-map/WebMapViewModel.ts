@@ -88,6 +88,16 @@ export default class WebMapViewModel extends L.Evented {
 
   private expectLayerLen: number;
 
+  private _dataFlowLayer: any;
+
+  private _dataflowFeatureCache: any;
+
+  private _dataflowPathIdCache: any = {};
+
+  private _dataflowLabelIdCache: any = {};
+
+  private _dataflowLineFeatureCache: any = {};
+
   constructor(id, options: webMapOptions = {}, mapOptions: mapOptions = {}) {
     super();
     this.mapId = id;
@@ -104,6 +114,10 @@ export default class WebMapViewModel extends L.Evented {
     this.zoom = mapOptions.zoom;
     this.mapOptions = mapOptions;
     this._createWebMap();
+  }
+
+  public resize() {
+    this.map && this.map.invalidateSize();
   }
 
   public setZoom(zoom) {
@@ -179,9 +193,6 @@ export default class WebMapViewModel extends L.Evented {
         preferCanvas: this.mapOptions.preferCanvas || true
       });
 
-      // load 监听失败 TODO
-
-      // this.map.on('load', () => {
       setTimeout(() => {
         this.fire('addlayerssucceeded', {
           map: this.map,
@@ -189,7 +200,6 @@ export default class WebMapViewModel extends L.Evented {
           layers: []
         });
       }, 0)
-      // });
       return;
     }
 
@@ -246,8 +256,6 @@ export default class WebMapViewModel extends L.Evented {
         // 坐标系异常处理
         this._createMap(mapInfo);
 
-        // 无法 on 到 load 事件  TODO
-        // this.map.on('load', () => {
         if (baseLayer && baseLayer.layerType === 'MAPBOXSTYLE') {
           // 添加矢量瓦片服务作为底图 TODO-------------------MVT
           // this._addMVTBaseMap(mapInfo);
@@ -259,7 +267,6 @@ export default class WebMapViewModel extends L.Evented {
         } else {
           this._addLayers(layers, _taskID);
         }
-        // });
       })
       .catch(error => {
         this._addLayerSucceeded();
@@ -480,7 +487,7 @@ export default class WebMapViewModel extends L.Evented {
           break;
         case 'DATAFLOW_POINT_TRACK':
         case 'DATAFLOW_HEAT':
-          // this._createDataflowLayer(layerInfo);
+          layer = await this._createDataflowLayer(layerInfo);
           break;
       }
 
@@ -992,20 +999,12 @@ export default class WebMapViewModel extends L.Evented {
   private _createSymbolLayer(layerInfo: any, features: any, textSize?) {
     let { style } = layerInfo;
 
-    let { fillColor, unicode } = style;
+    let { unicode } = style;
 
     let pointToLayer;
 
     if (unicode) {
-      let symbolStyle = JSON.parse(JSON.stringify(style));
-      symbolStyle.fontColor = fillColor;
-      symbolStyle.label = unicode;
-      symbolStyle.fontFamily = 'supermapol-icons'
-      pointToLayer = (geojson, latlng) => {
-        textSize && (symbolStyle.fontSize = textSize[geojson.id - 1 || geojson.properties.index] + '');
-        // @ts-ignore
-        return new L.supermap.unicodeMarker(latlng, symbolStyle);
-      };
+      pointToLayer = this._getSymbolPointLayer(style, textSize);
     }
 
     return pointToLayer && this._createGeojsonLayer(features, null, pointToLayer);
@@ -1075,6 +1074,26 @@ export default class WebMapViewModel extends L.Evented {
     return layer;
   }
 
+  private _createDataflowLayer(layerInfo) {
+    this._dataflowFeatureCache = {};
+    return new Promise((resolve, reject) => {
+      this._getDataflowPointLayer(layerInfo).then((pointToLayer) => {
+        // let style = layerInfo.pointStyle ? this._getVectorLayerStyle(layerInfo.pointStyle) : {};
+        // @ts-ignore
+        let dataFlowLayer = L.supermap.dataFlowLayer(layerInfo.wsUrl, {
+          pointToLayer
+        });
+        dataFlowLayer.on('dataupdated', (e) => {
+          if (layerInfo.visible) {
+            this._updateDataFlowFeature(e.data, layerInfo);
+          }
+        })
+        this._dataFlowLayer = dataFlowLayer;
+        resolve(dataFlowLayer);
+      })
+    })
+  }
+
   private _createGeojsonLayer(features, style?, pointToLayer?) {
     return L.geoJSON(
       {
@@ -1131,7 +1150,7 @@ export default class WebMapViewModel extends L.Evented {
     }
     let { themeField, style } = layer;
     let labelFeatures = [];
-    let layerStyle = layerInfo.style;
+    let layerStyle = layerInfo.style || {};
     features.forEach(feature => {
       let coordinate = this._getLabelLngLat(featureType, feature);
       this._setLabelOffset(featureType, layerStyle, style);
@@ -1485,6 +1504,11 @@ export default class WebMapViewModel extends L.Evented {
       },
       e => {
         this._addLayerSucceeded();
+        this.fire('getlayerdatasourcefailed', {
+          error: e,
+          layer: layer,
+          map: this.map
+        });
       }
     );
   }
@@ -2375,33 +2399,8 @@ export default class WebMapViewModel extends L.Evented {
   }
 
   _getSvgLayer(canvas, style, features, textSize?) {
-    let { radius, fillColor, fillOpacity, strokeColor, strokeOpacity, strokeWidth } = style;
-    let context = canvas.getContext('2d');
-
-    if (fillColor) {
-      context.fillStyle = getColorWithOpacity(fillColor, fillOpacity);
-      context.fill();
-    }
-
-    if (strokeColor || strokeWidth) {
-      context.strokeStyle = getColorWithOpacity(strokeColor, strokeOpacity);
-      context.lineWidth = strokeWidth;
-      context.stroke();
-    }
-
-    let imgUrl = canvas.toDataURL('img/png');
-    let resolution = canvas.width / canvas.height;
-    let svgPointToLayer = (geojson, latlng) => {
-      let iconSize = textSize && textSize[geojson.id - 1 || geojson.properties.index];
-      return L.marker(latlng, {
-        icon: L.icon({
-          iconUrl: imgUrl,
-          iconSize: textSize ? [iconSize, iconSize / resolution] : [radius, radius / resolution]
-        }),
-      });
-    };
-    let svgPointLayer = this._createGeojsonLayer(features, null, svgPointToLayer);
-    return svgPointLayer;
+    let svgPointToLayer = this._getSvgPointLayer(canvas, style, textSize);
+    return this._createGeojsonLayer(features, null, svgPointToLayer);
   }
 
   _createThemeLayer(type, layerInfo, features) {
@@ -2498,5 +2497,164 @@ export default class WebMapViewModel extends L.Evented {
     // @ts-ignore
     this.crs = L.Proj.CRS(`EPSG:${epsgCode}`, { origin, resolutions, bounds });;
     return this.crs;
+  }
+
+  _updateDataFlowFeature(feature, layerInfo) {
+    let { lineStyle, labelStyle } = layerInfo;
+    lineStyle && this._updateDataflowPathLayer(feature, layerInfo);
+    labelStyle && labelStyle.labelField !== '未设置' && this._updateDataflowLabelLayer(feature, layerInfo);
+  }
+
+  _handleDataflowFeatures(layerInfo, geojson) {
+    let { filterCondition } = layerInfo;
+    if (filterCondition) {
+      let condition = this._replaceFilterCharacter(filterCondition);
+      let sql = 'select * from json where (' + condition + ')';
+      let filterResult = window['jsonsql'].query(sql, {
+        attributes: geojson.properties
+      });
+      if (filterResult && filterResult.length > 0) {
+        return geojson;
+      } else {
+        return null;
+      }
+    } else {
+      return geojson;
+    }
+  }
+
+  _getSymbolPointLayer(style, textSize?) {
+    let symbolStyle = JSON.parse(JSON.stringify(style));
+    symbolStyle.fontColor = style.fillColor;
+    symbolStyle.label = style.unicode;
+    symbolStyle.fontFamily = 'supermapol-icons'
+    let pointToLayer = (geojson, latlng) => {
+      textSize && (symbolStyle.fontSize = textSize[geojson.id - 1 || geojson.properties.index] + '');
+      // @ts-ignore
+      return new L.supermap.unicodeMarker(latlng, symbolStyle);
+    };
+    return pointToLayer
+  }
+
+  _getSvgPointLayer(canvas, style, textSize?) {
+    let { radius, fillColor, fillOpacity, strokeColor, strokeOpacity, strokeWidth } = style;
+    let context = canvas.getContext('2d');
+
+    if (fillColor) {
+      context.fillStyle = getColorWithOpacity(fillColor, fillOpacity);
+      context.fill();
+    }
+
+    if (strokeColor || strokeWidth) {
+      context.strokeStyle = getColorWithOpacity(strokeColor, strokeOpacity);
+      context.lineWidth = strokeWidth;
+      context.stroke();
+    }
+
+    let imgUrl = canvas.toDataURL('img/png');
+    let resolution = canvas.width / canvas.height;
+    let svgPointToLayer = (geojson, latlng) => {
+      let iconSize = textSize && textSize[geojson.id - 1 || geojson.properties.index];
+      return L.marker(latlng, {
+        icon: L.icon({
+          iconUrl: imgUrl,
+          iconSize: textSize ? [iconSize, iconSize / resolution] : [radius, radius / resolution]
+        }),
+      });
+    };
+    return svgPointToLayer;
+  }
+
+  _getDataflowPointLayer(layerInfo) {
+    let { layerType, pointStyle, layerID, themeSetting } = layerInfo
+    return new Promise((resolve, reject) => {
+      if (layerType === 'DATAFLOW_HEAT') {
+        let { colors, radius, customSettings, weight } = themeSetting;
+        let heatLayerInfo = { layerID, themeSetting: { colors, radius, customSettings, weight } }
+        let pointToLayer = (geojson, latlng) => {
+          return this._createHeatLayer(heatLayerInfo, [geojson])
+        }
+        resolve(pointToLayer);
+      } else if ('SYMBOL_POINT' === pointStyle.type) {
+        resolve(this._getSymbolPointLayer(pointStyle, null));
+      } else if ('SVG_POINT' === pointStyle.type) {
+        if (!this._svgDiv) {
+          this._svgDiv = document.createElement('div');
+          document.body.appendChild(this._svgDiv);
+        }
+        this._getCanvasFromSVG(pointStyle.url, this._svgDiv, canvas => {
+          resolve(this._getSvgPointLayer(canvas, pointStyle, null));
+        });
+      } else {
+        let pointToLayer = (geojson, latlng) => {
+          return L.circleMarker(latlng, this._getVectorLayerStyle(pointStyle));
+        };
+        resolve(pointToLayer)
+      }
+    })
+  }
+
+  _handleDataflowFeature(feature, layerInfo) {
+    let { identifyField, maxPointCount, lineStyle } = layerInfo;
+    let geoID = feature.properties[identifyField];
+    if (lineStyle) {
+      if (this._dataflowLineFeatureCache[geoID]) {
+        let coordinates = this._dataflowLineFeatureCache[geoID].geometry.coordinates;
+        coordinates.push(feature.geometry.coordinates);
+        if (maxPointCount && coordinates.length > maxPointCount) {
+          coordinates.splice(0, coordinates.length - maxPointCount);
+        }
+        this._dataflowLineFeatureCache[geoID].geometry.coordinates = coordinates;
+      } else {
+        this._dataflowLineFeatureCache[geoID] = {
+          type: 'Feature',
+          properties: feature.properties,
+          geometry: {
+            type: 'LineString',
+            coordinates: [feature.geometry.coordinates]
+          }
+        }
+      }
+    }
+    this._dataflowFeatureCache[geoID] = feature;
+  }
+  
+  _updateDataflowLabelLayer(feature, layerInfo) {
+    this._handleDataflowFeature(feature, layerInfo);
+    let geoID = feature.properties[layerInfo.identifyField];
+    let layer;
+    if (this._dataflowLabelIdCache[geoID]) {
+      layer = this._dataFlowLayer.getLayer(this._dataflowLabelIdCache[geoID]);
+      let feature = this._dataflowFeatureCache[geoID];
+      // @ts-ignore
+      let geoTextFeature = new L.supermap.themeFeature(
+        [feature.geometry.coordinates[1], feature.geometry.coordinates[0], geoID],
+        feature.properties
+      );
+      layer.removeAllFeatures();
+      layer.addFeatures([geoTextFeature]);
+    } else {
+      let feature = this._dataflowFeatureCache[geoID];
+      layer = this._addLabelLayer(layerInfo, [feature]);
+      this._dataFlowLayer.addLayer(layer);
+      this._dataflowLabelIdCache[geoID] = this._dataFlowLayer.getLayerId(layer);
+    }
+  }
+
+  _updateDataflowPathLayer(feature, layerInfo) {
+    this._handleDataflowFeature(feature, layerInfo);
+    let geoID = feature.properties[layerInfo.identifyField];
+    let layer;
+    let coordinates = this._dataflowLineFeatureCache[geoID].geometry.coordinates;
+    let latlngs = L.GeoJSON.coordsToLatLngs(coordinates, 0);
+    if (this._dataflowPathIdCache[geoID]) {
+      layer = this._dataFlowLayer.getLayer(this._dataflowPathIdCache[geoID]);
+      layer.setLatLngs(latlngs);
+    } else {
+      layer = L.polyline(latlngs, { ...this._getVectorLayerStyle(layerInfo.lineStyle) })
+      // layer = L.GeoJSON.geometryToLayer(this._dataflowLineFeatureCache[geoID], { style: () => { return this._getVectorLayerStyle(layerInfo.lineStyle) } });  // style 不生效
+      this._dataFlowLayer.addLayer(layer);
+      this._dataflowPathIdCache[geoID] = this._dataFlowLayer.getLayerId(layer);
+    }
   }
 }
