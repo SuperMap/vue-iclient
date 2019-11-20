@@ -130,7 +130,8 @@ module.exports = {
                     'control/draw',
                     'control/query',
                     'control/search',
-                    'control/open-file'
+                    'control/open-file',
+                    'control/identify'
                   ]
                 },
                 {
