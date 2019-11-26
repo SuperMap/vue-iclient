@@ -1,7 +1,7 @@
 @import "../../../../../common/_utils/style/mixins/mixins.scss";
 @include b(pan) {
   &.mapboxgl-ctrl {
-    margin: 10px 0 0 0px;
+    margin: 10px 0 0 0px !important;
   }
   width: 62px;
   height: 63px;

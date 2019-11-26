@@ -32,6 +32,12 @@
 .mapboxgl-ctrl-top-right .mapboxgl-ctrl {
   margin: 10px 16px 0 0;
 }
+.mapboxgl-ctrl-bottom-left .mapboxgl-ctrl {
+  margin: 0 0 10px 16px;
+}
+.mapboxgl-ctrl-bottom-right .mapboxgl-ctrl {
+  margin: 0 16px 10px 0;
+}
 .sm-mapboxgl-tabel-popup {
   .mapboxgl-popup-content {
     padding: 0;

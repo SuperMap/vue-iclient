@@ -8,6 +8,7 @@
     :collapsed="collapsed"
     :background="background"
     :textColor="textColor"
+    class="sm-component-minimap"
     @content-show-state="handleMinimapResize"
   >
     <div id="miniMap" class="miniMap">
@@ -48,7 +49,6 @@ export default {
   loaded() {
     this.spinning = true;
     this.miniMap && this.miniMap.remove();
-    this.$el.classList.add('sm-component-minimap');
     this.viewModel = new MiniMapViewModel(this.$el.querySelector('#miniMap') || this.$el, this.map);
     this.viewModel.on('minimaploaded', e => {
       this.miniMap = e.miniMap;

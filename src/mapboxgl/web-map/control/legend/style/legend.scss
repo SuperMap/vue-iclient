@@ -118,6 +118,13 @@
           max-width: 200px;
         }
       }
+      @include e(rank-icon) {
+        text-align: center;
+        & > i {
+          display: inline-block;
+          vertical-align: middle;
+        }
+      }
 
       @include e(heatbox) {
         display: flex !important;

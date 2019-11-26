@@ -2,30 +2,32 @@
   <div class="sm-component-card">
     <div
       v-if="iconClass"
-      :class="{['sm-component-card__icon']:true,['is-'+position]:true,[`is-click-${isShow?'out':'in'}`]:true,['is-not-header']:!headerName}"
+      :class="{
+        ['sm-component-card__icon']: true,
+        ['is-' + position]: true,
+        [`is-click-${isShow ? 'out' : 'in'}`]: true,
+        ['is-not-header']: !headerName
+      }"
       :style="[getBackgroundStyle, getTextColorStyle, iconStyleObject]"
       @click="iconClicked"
     >
       <div
         :style="[iconStyle]"
-        :class="{[iconClass]:true,['is-auto-rotate']:autoRotate,['sm-component-card__component-icon']:true}"
+        :class="{ [iconClass]: true, ['is-auto-rotate']: autoRotate, ['sm-component-card__component-icon']: true }"
       ></div>
     </div>
-    <transition
-      name="sm-component-zoom-in"
-      @after-leave="toggleTransition('leave')"
-      @enter="toggleTransition('enter')"
-    >
+    <transition name="sm-component-zoom-in" @after-leave="toggleTransition('leave')" @enter="toggleTransition('enter')">
       <div
         v-show="isShow"
-        :class="{['sm-component-card__content']:true,['is-not-header']:!headerName,['is-'+position]:true,['is-icon']:iconClass}"
+        :class="{
+          ['sm-component-card__content']: true,
+          ['is-not-header']: !headerName,
+          ['is-' + position]: true,
+          ['is-icon']: iconClass
+        }"
         :style="[getCardStyle]"
       >
-        <div
-          v-if="headerName"
-          class="sm-component-card__header"
-          :style="[getBackgroundStyle, getTextColorStyle]"
-        >
+        <div v-if="headerName" class="sm-component-card__header" :style="[getBackgroundStyle, getTextColorStyle]">
           <span class="sm-component-card__header-name">{{ headerName }}</span>
         </div>
         <slot></slot>
@@ -81,15 +83,7 @@ export default {
       };
     },
     position() {
-      let isControl =
-        this.$parent.$parent &&
-        this.$parent.$parent.$options.name &&
-        this.$parent.$parent.$options.name.toLowerCase() === 'smwebmap';
-      if (this.headerName && !isControl) {
-        return 'top-left';
-      } else {
-        return this.iconPosition;
-      }
+      return this.iconPosition;
     },
     rotateDeg() {
       return {
@@ -117,21 +111,22 @@ export default {
         // 如果iconClass 为空 则默认显示内容
         this.isShow = true;
       }
+    },
+    iconPosition() {
+      this.resetIconTransform();
     }
   },
   created() {
     this.iconClass && (this.isShow = !this.collapsed);
-    let rotateDeg = this.headerName ? this.hasHeaderRotateDeg : this.rotateDeg;
-    this.autoRotate && (this.transform = rotateDeg[this.position][this.isShow ? 1 : 0]);
+    this.resetIconTransform();
   },
   mounted() {
     this.toggleTransition(this.collapsed ? 'leave' : 'enter');
   },
   methods: {
     iconClicked() {
-      let rotateDeg = this.headerName ? this.hasHeaderRotateDeg : this.rotateDeg;
-      this.autoRotate && (this.transform = rotateDeg[this.position][!this.isShow ? 1 : 0]);
       this.isShow = !this.isShow;
+      this.resetIconTransform();
       this.$emit('content-show-state', this.isShow);
     },
     toggleTransition(type) {
@@ -141,9 +136,12 @@ export default {
           iconDom.style.position = type === 'leave' ? 'relative' : 'absolute';
         }
       });
+    },
+    resetIconTransform() {
+      let rotateDeg = this.headerName ? this.hasHeaderRotateDeg : this.rotateDeg;
+      this.autoRotate && (this.transform = rotateDeg[this.position][this.isShow ? 1 : 0]);
     }
   }
 };
 </script>
-<style lang="scss">
-</style>
+<style lang="scss"></style>

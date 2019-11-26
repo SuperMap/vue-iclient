@@ -1,5 +1,10 @@
 <template>
-  <div class="sm-component-scale" :style="[scaleStyle, background && getBackgroundStyle, (textColor && getTextColorStyle) || getColorStyle(0)]">{{ content }}</div>
+  <div
+    class="sm-component-scale"
+    :style="[scaleStyle, background && getBackgroundStyle, (textColor && getTextColorStyle) || getColorStyle(0)]"
+  >
+    <span>{{ content }}</span>
+  </div>
 </template>
 <script>
 import Theme from '../../../../common/_mixin/theme';
@@ -34,15 +39,23 @@ export default {
       return { width: this.width };
     }
   },
+  watch: {
+    unit() {
+      this.viewModel && this.viewModel.setUnit(this.unit);
+    },
+    maxWidth() {
+      this.viewModel && this.viewModel.setMaxWidth(this.maxWidth);
+    }
+  },
   methods: {
     inlitializeScale(map) {
       let scaleViewModel = new ScaleViewModel(map);
-      this.scaleViewModel = scaleViewModel;
+      this.viewModel = scaleViewModel;
       this.updateContainer();
       scaleViewModel.onMoveEvt();
     },
     updateContainer() {
-      this.scaleViewModel.on('scaleupdated', e => {
+      this.viewModel.on('scaleupdated', e => {
         this.width = e.containerWidth;
         this.content = e.containerContent;
       });

@@ -107,7 +107,9 @@
                 :key="j"
                 class="sm-component-legend__rank-item"
               >
-                <i :class="item.style.className" :style="rankSymbolStyle(item)"/>
+                <div class="sm-component-legend__rank-icon">
+                  <i :class="item.style.className" :style="rankSymbolStyle(item)"/>
+                </div>
                 <span class="add-ellipsis">
                   <a-icon type="caret-left" />
                   {{ item.start }}-{{ item.end }}
@@ -190,7 +192,9 @@
               :key="l"
               class="sm-component-legend__rank-item"
             >
-              <i :class="item.style.className" :style="rankSymbolStyle(item)" />
+              <div class="sm-component-legend__rank-icon">
+                <i :class="item.style.className" :style="rankSymbolStyle(item)" />
+              </div>
               <span class="add-ellipsis">
                 <a-icon type="caret-left" />
                 {{ item.start }}-{{ item.end }}

@@ -33,6 +33,11 @@ export default class ScaleViewModel extends mapboxgl.Evented {
     this.updateScale(this._mainMap, this.options);
   }
 
+  setMaxWidth(maxWidth) {
+    this.options.maxWidth = maxWidth;
+    this.updateScale(this._mainMap, this.options);
+  }
+
   updateScale(map, options) {
     const maxWidth = options && options.maxWidth || 100;
 

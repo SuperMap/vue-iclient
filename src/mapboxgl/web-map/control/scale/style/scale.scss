@@ -1,11 +1,17 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 
-@include b(scale){
-    font-size: 10px;
-    border-width: medium 2px 2px;
-    border-style: none solid solid;
-    // border-color: #333;
-    padding: 0 5px;
-    // color: #333;
-    box-sizing: border-box;
+@include b(scale) {
+  font-size: 10px;
+  border-width: medium 2px 2px;
+  border-style: none solid solid;
+  // border-color: #333;
+  padding: 0 5px;
+  // color: #333;
+  box-sizing: border-box;
+  display: table;
+  text-align: center;
+  & > span {
+    display: table-cell;
+    vertical-align: middle;
+  }
 }

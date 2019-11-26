@@ -12,8 +12,10 @@ export default {
   },
   watch: {
     position() {
-      this.remove(this.map);
-      this.addTo(this.map);
+      if (this.$el && this.parentIsWebMapOrMap) {
+        this.remove(this.map);
+        this.addTo(this.map);
+      }
     }
   },
   created() {
