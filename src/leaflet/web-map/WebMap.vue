@@ -134,50 +134,53 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   }
 
   registerEvents(): void {
-    this.viewModel.on('addlayerssucceeded', e => {
-      this.spinning = false;
-      mapEvent.$options.setMap(this.target, e.map);
-      this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
-      mapEvent.$emit('load-map', e.map, this.target);
-      this.map = e.map;
+    this.viewModel.on({
+      addlayerssucceeded: e => {
+        this.spinning = false;
+        mapEvent.$options.setMap(this.target, e.map);
+        this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
+        mapEvent.$emit('load-map', e.map, this.target);
+        this.map = e.map;
 
-      this.$nextTick(() => {
-        this.viewModel.resize();
-      });
+        this.$nextTick(() => {
+          this.viewModel.resize();
+        });
 
-      // 绑定map event
-      this.bindMapEvents();
+        // 绑定map event
+        this.bindMapEvents();
 
-      /**
-       * @event load
-       * @desc webmap 加载完成之后触发。
-       * @property {L.Map} map - Leaflet Map 对象。
-       */
-      this.load({ map: e.map });
-    });
-    this.viewModel.on('getmapinfofailed', e => {
-      /**
-       * @event getMapFailed
-       * @desc 获取 WebMap 地图信息失败。
-       * @property {Object} error - 失败原因。
-       */
-      this.getMapFailed({ error: e.error });
-      this.$message.error(e.error.message);
-      this.spinning = false;
-    });
-    this.viewModel.on('getlayerdatasourcefailed', e => {
-      /**
-       * @event getLayerDatasourceFailed
-       * @desc 获取图层数据失败。
-       * @property {Object} error - 失败原因。
-       * @property {Object} layer - 图层信息。
-       * @property {L.Map} map - Leaflet Map 对象。
-       */
-      this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
-      this.$message.error(this.$t('webmap.getLayerInfoFailed'));
-    });
-    this.viewModel.on('crsnotsupport', () => {
-      this.$message.error(this.$t('webmap.crsnotsupport'));
+        /**
+         * @event load
+         * @desc webmap 加载完成之后触发。
+         * @property {L.Map} map - Leaflet Map 对象。
+         */
+        this.load({ map: e.map });
+      },
+      getmapinfofailed: e => {
+        /**
+         * @event getMapFailed
+         * @desc 获取 WebMap 地图信息失败。
+         * @property {Object} error - 失败原因。
+         */
+        this.getMapFailed({ error: e.error });
+        this.$message.error(e.error.message);
+        this.spinning = false;
+      },
+      getlayerdatasourcefailed: e => {
+        /**
+         * @event getLayerDatasourceFailed
+         * @desc 获取图层数据失败。
+         * @property {Object} error - 失败原因。
+         * @property {Object} layer - 图层信息。
+         * @property {L.Map} map - Leaflet Map 对象。
+         */
+        this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
+        this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+      },
+      notsupportmvt: () => {
+        this.$message.error('暂不支持加载矢量瓦片图层！');
+        this.spinning = false;
+      }
     });
   }
 

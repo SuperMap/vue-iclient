@@ -181,17 +181,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: false }) withCredentials: boolean;
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() isSuperMapOnline: boolean;
-  @Prop({
-    default: () => ({
-      style: {
-        version: 8,
-        sources: {},
-        layers: []
-      },
-      center: [0, 0],
-      zoom: 0
-    })
-  })
+  @Prop()
   mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
   @Prop({
@@ -373,42 +363,47 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   }
 
   registerEvents(): void {
-    this.viewModel.on('addlayerssucceeded', e => {
-      this.spinning = false;
-      mapEvent.$options.setMap(this.target, e.map);
-      this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
-      mapEvent.$emit('load-map', e.map, this.target);
-      e.map.resize();
-      this.map = e.map;
-      // 绑定map event
-      this.bindMapEvents();
-      /**
-       * @event load
-       * @desc webmap 加载完成之后触发。
-       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
-       */
-      this.load({ map: e.map });
-    });
-    this.viewModel.on('getmapinfofailed', e => {
-      /**
-       * @event getMapFailed
-       * @desc 获取 WebMap 地图信息失败。
-       * @property {Object} error - 失败原因。
-       */
-      this.getMapFailed({ error: e.error });
-      this.$message.error(e.error.message);
-      this.spinning = false;
-    });
-    this.viewModel.on('getlayerdatasourcefailed', e => {
-      /**
-       * @event getLayerDatasourceFailed
-       * @desc 获取图层数据失败。
-       * @property {Object} error - 失败原因。
-       * @property {Object} layer - 图层信息。
-       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
-       */
-      this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
-      this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+    this.viewModel.on({
+      addlayerssucceeded: e => {
+        this.spinning = false;
+        mapEvent.$options.setMap(this.target, e.map);
+        this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
+        mapEvent.$emit('load-map', e.map, this.target);
+        e.map.resize();
+        this.map = e.map;
+        // 绑定map event
+        this.bindMapEvents();
+        /**
+         * @event load
+         * @desc webmap 加载完成之后触发。
+         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+         */
+        this.load({ map: e.map });
+      },
+      getmapinfofailed: e => {
+        /**
+         * @event getMapFailed
+         * @desc 获取 WebMap 地图信息失败。
+         * @property {Object} error - 失败原因。
+         */
+        this.getMapFailed({ error: e.error });
+        this.$message.error(e.error.message);
+        this.spinning = false;
+      },
+      getlayerdatasourcefailed: e => {
+        /**
+         * @event getLayerDatasourceFailed
+         * @desc 获取图层数据失败。
+         * @property {Object} error - 失败原因。
+         * @property {Object} layer - 图层信息。
+         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+         */
+        this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
+        this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+      },
+      notsupportbaidumap: () => {
+        this.$message.error('暂不支持加载百度地图！');
+      }
     });
   }
 
