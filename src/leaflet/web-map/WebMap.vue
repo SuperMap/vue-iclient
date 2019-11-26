@@ -175,7 +175,11 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
          * @property {L.Map} map - Leaflet Map 对象。
          */
         this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
-        this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+        if (e.error === 'SAMPLE DATA is not supported') {
+          this.$message.error(this.$t('webmap.sampleDataNotSupport'));
+        } else {
+          this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+        }
       },
       notsupportmvt: () => {
         this.$message.error('暂不支持加载矢量瓦片图层！');

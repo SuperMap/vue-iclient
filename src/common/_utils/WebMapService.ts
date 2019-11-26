@@ -308,7 +308,7 @@ export default class WebMapService extends Events {
   ): void {
     let queryBySQLParams = this._getQueryFeaturesParam(layerName, attributeFilter, fields, epsgCode, startRecord, recordLength, onlyAttribute)
     // @ts-ignore
-    let queryBySQLService = SuperMap.QueryBySQLService(url, {
+    let queryBySQLService = new SuperMap.QueryBySQLService(url, {
       eventListeners: {
         processCompleted: data => {
           processCompleted && processCompleted(data);
@@ -432,25 +432,29 @@ export default class WebMapService extends Events {
   }
 
   public getDatasourceType(layer) {
+    let { dataSource, layerType } = layer;
+    if (dataSource && dataSource.type === 'SAMPLE_DATA') {
+      return dataSource.type
+    }
     let type;
     let isHosted =
-      (layer.dataSource && layer.dataSource.serverId) ||
-      layer.layerType === 'MARKER' ||
-      layer.layerType === 'HOSTED_TILE';
+      (dataSource && dataSource.serverId) ||
+      layerType === 'MARKER' ||
+      layerType === 'HOSTED_TILE';
     let isTile =
-      layer.layerType === 'SUPERMAP_REST' ||
-      layer.layerType === 'TILE' ||
-      layer.layerType === 'WMS' ||
-      layer.layerType === 'WMTS';
+      layerType === 'SUPERMAP_REST' ||
+      layerType === 'TILE' ||
+      layerType === 'WMS' ||
+      layerType === 'WMTS';
     if (isHosted) {
       type = 'hosted';
     } else if (isTile) {
       type = 'tile';
-    } else if (layer.dataSource && layer.dataSource.type === 'REST_DATA') {
+    } else if (dataSource && dataSource.type === 'REST_DATA') {
       type = 'rest_data';
-    } else if (layer.dataSource && layer.dataSource.type === 'REST_MAP' && layer.dataSource.url) {
+    } else if (dataSource && dataSource.type === 'REST_MAP' && dataSource.url) {
       type = 'rest_map';
-    } else if (layer.layerType === 'DATAFLOW_POINT_TRACK' || layer.layerType === 'DATAFLOW_HEAT') {
+    } else if (layerType === 'DATAFLOW_POINT_TRACK' || layerType === 'DATAFLOW_HEAT') {
       type = 'dataflow';
     }
     return type;

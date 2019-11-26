@@ -291,6 +291,12 @@ export default class WebMapViewModel extends WebMapBase {
     if (this.expectLayerLen > 0) {
       layers.forEach((layer, index) => {
         let type = this.webMapService.getDatasourceType(layer);
+        // TODO  ---  暂不支持 SAMPLE_DATA
+        if (type === 'SAMPLE_DATA') {
+          this._addLayerSucceeded();
+          this.triggerEvent('getlayerdatasourcefailed', { error: 'SAMPLE DATA is not supported', layer, map: this.map });
+          return;
+        }
         if (type === 'tile') {
           this._initBaseLayer(layer);
           this._addLayerSucceeded();
@@ -326,7 +332,7 @@ export default class WebMapViewModel extends WebMapBase {
         return;
       }
       this._unprojectProjection = projection;
-      
+
       if (projection !== 'EPSG:3857') {
         await this._defineProj4(epsgCode);
       }

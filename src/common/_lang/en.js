@@ -77,7 +77,10 @@ export default {
     crsNotSupport: 'The coordinate system of the current map is not supported!',
     TileMatrixSetNotSuppport: 'Incoming TileMatrixSet is not supported!',
     getLayerInfoFailed: 'Failed to get layer information!',
-    crsnotsupport: 'Unsupported coordinate system!'
+    crsnotsupport: 'Unsupported coordinate system!',
+    baiduMapNotSupport: 'Baidu maps is not supported yet!',
+    sampleDataNotSupport: 'Sample datas is not supported yet!',
+    mvtNotSupport: 'Vector tile layers is not supported yet!'
   },
   legend: {
     themeField: 'Thematic Field',

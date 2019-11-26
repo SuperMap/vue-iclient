@@ -217,7 +217,7 @@ export default abstract class WebMapBase extends Events {
   protected getLayerFeatures(layer, _taskID, type) {
     let getLayerFunc = this.webMapService.getLayerFeatures(type, layer, this.baseProjection)
 
-    getLayerFunc.then(result => {
+    getLayerFunc && getLayerFunc.then(result => {
       if (this._taskID !== _taskID) {
         return;
       }

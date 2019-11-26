@@ -190,6 +190,12 @@ export default class WebMapViewModel extends WebMapBase {
     if (this.expectLayerLen > 0) {
       layers.forEach((layer, index) => {
         let type = this.webMapService.getDatasourceType(layer);
+        // TODO  ---  暂不支持 SAMPLE_DATA
+        if (type === 'SAMPLE_DATA') {
+          this._addLayerSucceeded();
+          this.triggerEvent('getlayerdatasourcefailed', { error: 'SAMPLE DATA is not supported', layer, map: this.map });
+          return;
+        }
         layer.layerID = layer.name + '-' + index;
         layer.index = index;
         if (type === 'tile') {
