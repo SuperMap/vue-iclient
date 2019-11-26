@@ -164,8 +164,12 @@ export default class WebMapViewModel extends WebMapBase {
 
     // 坐标系异常处理
     if (mapboxgl.CRS.get(this.baseProjection)) {
-      this._createMap(mapInfo);
 
+      if (!['EPSG:4326', 'EPSG:3857'].includes(this.baseProjection)) {
+        this._defineProj4(this.baseProjection.split(':')[1]);
+      }
+
+      this._createMap(mapInfo);
       this.map.on('load', () => {
         this._initBaseLayer(mapInfo);
         if (!layers || layers.length === 0) {
@@ -322,7 +326,11 @@ export default class WebMapViewModel extends WebMapBase {
         return;
       }
       this._unprojectProjection = projection;
-      await this._defineProj4(epsgCode);
+      
+      if (projection !== 'EPSG:3857') {
+        await this._defineProj4(epsgCode);
+      }
+
       features = this.transformFeatures(features);
     }
 
@@ -1438,7 +1446,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   _unproject(point: [number, number]): [number, number] {
     // @ts-ignore
-    return proj4(this._unprojectProjection || this.baseProjection, "EPSG:4326", point);
+    return proj4(this._unprojectProjection || this.baseProjection, this.baseProjection === 'EPSG:3857' ? "EPSG:4326" : this.baseProjection, point);
   }
   private _getMapCenter(mapInfo) {
     // center
@@ -1532,7 +1540,7 @@ export default class WebMapViewModel extends WebMapBase {
     return new Promise((resolve, reject) => {
       this.webMapService.getEpsgcodeWkt(epsgCode).then(epsgcodeInfo => {
         // @ts-ignore
-        proj4.defs(this._unprojectProjection, epsgcodeInfo.wkt);
+        proj4.defs(`EPSG:${epsgCode}`, epsgcodeInfo.wkt);
         resolve(epsgcodeInfo);
       }, err => {
         reject(err);
