@@ -221,13 +221,6 @@ export class Events {
     }
   }
 
-  /**
-   * @function Events.prototype.triggerEvent
-   * @description 触发一个特定的注册事件。
-   * @param {string} type - 触发事件类型。
-   * @param {Event} evt - 事件对象。
-   * @returns {boolean} 返回监听对象，如果返回是 false，则停止监听。
-   */
   triggerEvent(type, evt) {
     var listeners = this.listeners[type];
 
@@ -268,11 +261,6 @@ export class Events {
     return continueChain;
   }
 
-  /**
-   * @function Events.prototype.handleBrowserEvent
-   * @description 对 triggerEvent 函数的包装，给事件对象设置了 xy 属性（即当前鼠标点的 xy 坐标）。
-   * @param {Event} evt - 事件对象。
-   */
   handleBrowserEvent(evt) {
     var type = evt.type;
     var listeners = this.listeners[type];
@@ -317,7 +305,6 @@ export class Events {
 
   /**
    * @function Events.prototype.getMousePosition
-   * @param {Event} evt - 事件对象。
    * @returns {Pixel} 当前的鼠标的 xy 坐标点。
    */
   getMousePosition(evt) {

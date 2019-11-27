@@ -4,11 +4,6 @@
 
 import { Util } from './Util';
 
-/**
- * @name Event
- * @namespace
- * @description 事件处理函数.
- */
 export var Event = {
   /**
    * @description  A hash table cache of the event observers. Keyed by element._eventCacheID
@@ -134,7 +129,6 @@ export var Event = {
 
   /**
    * @description Stops an event from propagating.
-   * @param {Event} event - The event
    * @param {boolean} allowDefault - If true, we stop the event chain but still allow the default browser  behaviour (text selection, radio-button clicking, etc) Default false
    */
   stop: function(event, allowDefault) {
@@ -154,7 +148,6 @@ export var Event = {
   },
 
   /**
-   * @param {Event} event - The event。
    * @param {string} tagName - html 标签名。
    * @returns {HTMLElement} The first node with the given tagName, starting from the node the event was triggered on and traversing the DOM upwards
    */
