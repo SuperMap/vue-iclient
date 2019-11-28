@@ -1,5 +1,5 @@
-@import '../../../../../common/_utils/style/mixins/mixins.scss';
-@import '../../../../../common/_utils/style/common/var.scss';
+@import '../common/_utils/style/mixins/mixins.scss';
+@import '../common/_utils/style/common/var.scss';
 
 @include b(identify) {
   list-style: none;
@@ -9,6 +9,7 @@
   width: 280px;
   overflow: auto;
   font-size: 14px;
+  background: transparent;
   &::-webkit-scrollbar {
     width: 5px;
     height: 5px;
@@ -35,15 +36,5 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-  }
-}
-.sm-mapboxgl-identify-popup {
-  .mapboxgl-popup-content {
-    padding: 0;
-    background: transparent;
-  }
-  .mapboxgl-popup-close-button {
-    color: #dfd4d4;
-    font-size: 15px;
   }
 }

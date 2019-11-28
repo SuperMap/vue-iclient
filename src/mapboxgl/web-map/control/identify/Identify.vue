@@ -1,16 +1,12 @@
 <template>
   <ul
-    ref="queryClickPopup"
+    ref="Popup"
     :style="[getBackgroundStyle, getTextColorStyle]"
-    :class="['sm-component-query-click', {'sm-component-content-hide': isHide}]"
+    :class="['sm-component-identify', {'sm-component-content-hide': isHide}]"
   >
-    <li
-      v-for="(value, key, index) in popupProps"
-      :key="index"
-      class="sm-component-query-click__body"
-    >
-      <div class="sm-component-query-click__left" :title="key">{{ key }}</div>
-      <div class="sm-component-query-click__right" :title="value">{{ value }}</div>
+    <li v-for="(value, key, index) in popupProps" :key="index" class="sm-component-identify__body">
+      <div class="sm-component-identify__left" :title="key">{{ key }}</div>
+      <div class="sm-component-identify__right" :title="value">{{ value }}</div>
     </li>
   </ul>
 </template>
@@ -188,7 +184,7 @@ export default {
         // 添加popup
         this.$nextTick(() => {
           this.isHide = false; // 显示内容
-          this.viewModel.addPopup(coordinates, this.$refs.queryClickPopup);
+          this.viewModel.addPopup(coordinates, this.$refs.Popup);
           this.changeResultPopupArrowStyle();
         });
       }

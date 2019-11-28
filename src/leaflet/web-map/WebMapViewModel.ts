@@ -1,4 +1,4 @@
-import L, { map } from 'leaflet';
+import L from '../leaflet-wrapper';
 import '../../../static/libs/iclient-leaflet/iclient-leaflet.min';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
 import '../../../static/libs/geostats/geostats';
@@ -103,8 +103,8 @@ export default class WebMapViewModel extends WebMapBase {
           map: this.map,
           mapparams: {},
           layers: []
-        })
-      }, 0)
+        });
+      }, 0);
       return;
     }
     let { level, maxZoom, minZoom } = mapInfo;
@@ -131,7 +131,7 @@ export default class WebMapViewModel extends WebMapBase {
      * @description Map 初始化成功。
      * @property {L.Map} map - Leaflet Map 对象。
      */
-    this.triggerEvent('mapinitialized', { map: this.map })
+    this.triggerEvent('mapinitialized', { map: this.map });
   }
 
   _initBaseLayer(mapInfo: any, sendToMap = true): void {
@@ -141,7 +141,7 @@ export default class WebMapViewModel extends WebMapBase {
     let mapUrls = this.getMapurls({
       CLOUD: 'http://t2.supermapcloud.com/FileService/image',
       CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp',
-      OSM: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      OSM: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
     });
 
     let url: string;
@@ -193,7 +193,11 @@ export default class WebMapViewModel extends WebMapBase {
         // TODO  ---  暂不支持 SAMPLE_DATA
         if (type === 'SAMPLE_DATA') {
           this._addLayerSucceeded();
-          this.triggerEvent('getlayerdatasourcefailed', { error: 'SAMPLE DATA is not supported', layer, map: this.map });
+          this.triggerEvent('getlayerdatasourcefailed', {
+            error: 'SAMPLE DATA is not supported',
+            layer,
+            map: this.map
+          });
           return;
         }
         layer.layerID = layer.name + '-' + index;
@@ -201,7 +205,7 @@ export default class WebMapViewModel extends WebMapBase {
         if (type === 'tile') {
           this._initBaseLayer(layer);
         } else {
-          this.getLayerFeatures(layer, _taskID, type)
+          this.getLayerFeatures(layer, _taskID, type);
         }
       }, this);
     }
@@ -224,7 +228,7 @@ export default class WebMapViewModel extends WebMapBase {
     try {
       let { layerType, style, filterCondition, featureType, labelStyle, projection } = layerInfo;
       if (layerType === 'restMap') {
-        this._createRestMapLayer(features, layerInfo)
+        this._createRestMapLayer(features, layerInfo);
         return;
       }
       if (layerType === 'mvt') {
@@ -233,11 +237,11 @@ export default class WebMapViewModel extends WebMapBase {
       }
 
       if (features && projection && projection !== 'EPSG:4326') {
-        let epsgCode = projection.split(":")[1];
+        let epsgCode = projection.split(':')[1];
         if (!epsgCode) {
           return;
         }
-        this._unprojectCrs = await this.getTransformCoodinatesCRS(projection.split(":")[1]);
+        this._unprojectCrs = await this.getTransformCoodinatesCRS(projection.split(':')[1]);
         features = this.transformFeatures(features);
       }
 
@@ -286,7 +290,7 @@ export default class WebMapViewModel extends WebMapBase {
         features = this.getFiterFeatures(filterCondition, features);
         let labelLayerInfo = JSON.parse(JSON.stringify(layerInfo));
         let labelLayer = this._addLabelLayer(labelLayerInfo, features);
-        this._addLayerToMap({ layer: L.layerGroup([layer, labelLayer]), layerInfo })
+        this._addLayerToMap({ layer: L.layerGroup([layer, labelLayer]), layerInfo });
       } else {
         layer && this._addLayerToMap({ layer, layerInfo });
       }
@@ -297,15 +301,16 @@ export default class WebMapViewModel extends WebMapBase {
         error: err,
         layer: layerInfo,
         map: this.map
-      })
+      });
     }
   }
 
   private _createBingLayer() {
-    let url = 'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadKey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
+    let url =
+      'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadKey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
     // @ts-ignore
     L.TileLayer.BingLayer = L.TileLayer.extend({
-      getTileUrl: function (coordinates) {
+      getTileUrl: function(coordinates) {
         let { z, x, y } = coordinates;
         let index = '';
         for (let i = z; i > 0; i--) {
@@ -317,26 +322,29 @@ export default class WebMapViewModel extends WebMapBase {
           if ((y & mask) !== 0) {
             b += 2;
           }
-          index += b.toString()
+          index += b.toString();
         }
         return url.replace('{quadKey}', index);
       }
-    })
+    });
     // @ts-ignore
     L.tileLayer.bingLayer = (url, options) => {
       // @ts-ignore
-      return new L.TileLayer.BingLayer(url, options)
-    }
+      return new L.TileLayer.BingLayer(url, options);
+    };
     // @ts-ignore
     return L.tileLayer.bingLayer(url, {
       noWrap: true
-    })
+    });
   }
 
   private _createDynamicTiledLayer(layerInfo: any): void {
     let url = layerInfo.url;
     // @ts-ignore
-    let layer = L.supermap.tiledMapLayer(url, { noWrap: true, prjCoordSys: { "epsgCode": this.baseProjection.split(':')[1] } });
+    let layer = L.supermap.tiledMapLayer(url, {
+      noWrap: true,
+      prjCoordSys: { epsgCode: this.baseProjection.split(':')[1] }
+    });
     return layer;
   }
 
@@ -383,7 +391,7 @@ export default class WebMapViewModel extends WebMapBase {
       isLabel: true,
       key: this.tiandituKey
     });
-    let layers = [tiandituLayer]
+    let layers = [tiandituLayer];
     isLabel && layers.push(tiandituLabelLayer);
     return L.layerGroup(layers);
   }
@@ -434,7 +442,8 @@ export default class WebMapViewModel extends WebMapBase {
             if (
               geomType === 'POINT' &&
               defaultStyle.src &&
-              (defaultStyle.src.indexOf('http://') === -1 && defaultStyle.src.indexOf('https://') === -1)
+              defaultStyle.src.indexOf('http://') === -1 &&
+              defaultStyle.src.indexOf('https://') === -1
             ) {
               // 说明地址不完整
               defaultStyle.src = this.serverUrl + defaultStyle.src;
@@ -466,12 +475,7 @@ export default class WebMapViewModel extends WebMapBase {
             // point-line-polygon-marker
             if (!defaultStyle.src) {
               if ((geomType === 'LINESTRING' && defaultStyle.lineCap) || geomType === 'POLYGON') {
-                resolve(
-                  this._createGeojsonLayer(
-                    [feature],
-                    this._getVectorLayerStyle(defaultStyle)
-                  )
-                );
+                resolve(this._createGeojsonLayer([feature], this._getVectorLayerStyle(defaultStyle)));
               } else if (geomType === 'TEXT') {
                 // @ts-ignore
                 var text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text');
@@ -688,17 +692,17 @@ export default class WebMapViewModel extends WebMapBase {
   private _createDataflowLayer(layerInfo) {
     this._dataflowFeatureCache = {};
     return new Promise((resolve, reject) => {
-      this._getDataflowPointLayer(layerInfo).then((pointToLayer) => {
+      this._getDataflowPointLayer(layerInfo).then(pointToLayer => {
         // @ts-ignore
         let dataFlowLayer = L.supermap.dataFlowLayer(layerInfo.wsUrl, {
           pointToLayer
         });
         this._updateDataFlowFeaturesCallback = this._updateDataFlowFeature.bind(this, layerInfo);
-        dataFlowLayer.on('dataupdated', this._updateDataFlowFeaturesCallback)
+        dataFlowLayer.on('dataupdated', this._updateDataFlowFeaturesCallback);
         this._dataFlowLayer = dataFlowLayer;
         resolve(dataFlowLayer);
-      })
-    })
+      });
+    });
   }
 
   private _createGeojsonLayer(features, style?, pointToLayer?) {
@@ -729,7 +733,6 @@ export default class WebMapViewModel extends WebMapBase {
     lineDash && (commonStyle['dashArray'] = dashArray);
     return commonStyle;
   }
-
 
   private _getMapCenter(mapInfo) {
     let center: [number, number] | L.LatLng;
@@ -772,7 +775,8 @@ export default class WebMapViewModel extends WebMapBase {
     type === 'overlays' && layer.setZIndex && layer.setZIndex(index + 1);
 
     if (visible === undefined || visible) {
-      this.map.addLayer(layer);
+      // @ts-ignore
+      this.map.addLayer(layer, layerInfo.name);
     }
     !this.layers[type] && (this.layers[type] = {});
     this.layers[type][layerID || name] = layer;
@@ -842,7 +846,7 @@ export default class WebMapViewModel extends WebMapBase {
     if (!latlng) {
       return null;
     }
-    return [latlng.lng, latlng.lat]
+    return [latlng.lng, latlng.lat];
   }
 
   _getSvgLayer(canvas, style, features, textSize?) {
@@ -921,7 +925,7 @@ export default class WebMapViewModel extends WebMapBase {
 
     if (['4326', '3857', '3395'].includes(epsgCode)) {
       // @ts-ignore
-      this.crs = L.Proj.CRS(`EPSG:${epsgCode}`, { bounds });;
+      this.crs = L.Proj.CRS(`EPSG:${epsgCode}`, { bounds });
     } else if (parseFloat(epsgCode) < 0) {
       // @ts-ignore
       this.crs = new L.CRS.NonEarthCRS({ bounds });
@@ -951,13 +955,13 @@ export default class WebMapViewModel extends WebMapBase {
     let symbolStyle = JSON.parse(JSON.stringify(style));
     symbolStyle.fontColor = style.fillColor;
     symbolStyle.label = style.unicode;
-    symbolStyle.fontFamily = 'supermapol-icons'
+    symbolStyle.fontFamily = 'supermapol-icons';
     let pointToLayer = (geojson, latlng) => {
       textSize && (symbolStyle.fontSize = textSize[geojson.id - 1 || geojson.properties.index] + 'px');
       // @ts-ignore
       return new L.supermap.unicodeMarker(latlng, symbolStyle);
     };
-    return pointToLayer
+    return pointToLayer;
   }
 
   _getSvgPointLayer(canvas, style, textSize?) {
@@ -973,21 +977,21 @@ export default class WebMapViewModel extends WebMapBase {
         icon: L.icon({
           iconUrl: imgUrl,
           iconSize: textSize ? [iconSize, iconSize / resolution] : [radius, radius / resolution]
-        }),
+        })
       });
     };
     return svgPointToLayer;
   }
 
   _getDataflowPointLayer(layerInfo) {
-    let { layerType, pointStyle, layerID, themeSetting } = layerInfo
+    let { layerType, pointStyle, layerID, themeSetting } = layerInfo;
     return new Promise((resolve, reject) => {
       if (layerType === 'DATAFLOW_HEAT') {
         let { colors, radius, customSettings, weight } = themeSetting;
-        let heatLayerInfo = { layerID, themeSetting: { colors, radius, customSettings, weight } }
+        let heatLayerInfo = { layerID, themeSetting: { colors, radius, customSettings, weight } };
         let pointToLayer = (geojson, latlng) => {
-          return this._createHeatLayer(heatLayerInfo, [geojson])
-        }
+          return this._createHeatLayer(heatLayerInfo, [geojson]);
+        };
         resolve(pointToLayer);
       } else if ('SYMBOL_POINT' === pointStyle.type) {
         resolve(this._getSymbolPointLayer(pointStyle, null));
@@ -1003,9 +1007,9 @@ export default class WebMapViewModel extends WebMapBase {
         let pointToLayer = (geojson, latlng) => {
           return L.circleMarker(latlng, this._getVectorLayerStyle(pointStyle));
         };
-        resolve(pointToLayer)
+        resolve(pointToLayer);
       }
-    })
+    });
   }
 
   _handleDataflowFeature(feature, layerInfo) {
@@ -1027,7 +1031,7 @@ export default class WebMapViewModel extends WebMapBase {
             type: 'LineString',
             coordinates: [feature.geometry.coordinates]
           }
-        }
+        };
       }
     }
     this._dataflowFeatureCache[geoID] = feature;
@@ -1065,7 +1069,7 @@ export default class WebMapViewModel extends WebMapBase {
       layer = this._dataFlowLayer.getLayer(this._dataflowPathIdCache[geoID]);
       layer.setLatLngs(latlngs);
     } else {
-      layer = L.polyline(latlngs, { ...this._getVectorLayerStyle(layerInfo.lineStyle) })
+      layer = L.polyline(latlngs, { ...this._getVectorLayerStyle(layerInfo.lineStyle) });
       // layer = L.GeoJSON.geometryToLayer(this._dataflowLineFeatureCache[geoID], { style: () => { return this._getVectorLayerStyle(layerInfo.lineStyle) } });  // style 不生效
       this._dataFlowLayer.addLayer(layer);
       this._dataflowPathIdCache[geoID] = this._dataFlowLayer.getLayerId(layer);
@@ -1074,16 +1078,21 @@ export default class WebMapViewModel extends WebMapBase {
 
   protected getTransformCoodinatesCRS(epsgCode) {
     return new Promise((resolve, reject) => {
-      this.webMapService.getEpsgcodeWkt(epsgCode).then(epsgcodeInfo => {
-        // @ts-ignore
-        resolve(L.Proj.CRS(this.getEpsgInfoFromWKT(epsgcodeInfo.wkt), {
-          // @ts-ignore
-          def: epsgcodeInfo.wkt,
-        }));
-      }, err => {
-        reject(err);
-      })
-    })
+      this.webMapService.getEpsgcodeWkt(epsgCode).then(
+        epsgcodeInfo => {
+          resolve(
+            // @ts-ignore
+            L.Proj.CRS(this.getEpsgInfoFromWKT(epsgcodeInfo.wkt), {
+              // @ts-ignore
+              def: epsgcodeInfo.wkt
+            })
+          );
+        },
+        err => {
+          reject(err);
+        }
+      );
+    });
   }
 
   public cleanWebMap() {
@@ -1094,6 +1103,5 @@ export default class WebMapViewModel extends WebMapBase {
       this._dataFlowLayer.off('dataupdated', this._updateDataFlowFeaturesCallback);
       this._unprojectCrs = null;
     }
-
   }
 }

@@ -70,17 +70,23 @@ export default abstract class WebMapBase extends Events {
     this.echartslayer = [];
     this.webMapService = new WebMapService(id, options);
     this.mapOptions = mapOptions;
-    this.eventTypes = ['getmapinfofailed', 'crsnotsupport', 'getlayerdatasourcefailed', 'addlayerssucceeded', 'notsupportmvt', 'notsupportbaidumap'];
+    this.eventTypes = [
+      'getmapinfofailed',
+      'crsnotsupport',
+      'getlayerdatasourcefailed',
+      'addlayerssucceeded',
+      'notsupportmvt',
+      'notsupportbaidumap'
+    ];
     this._initWebMap();
   }
 
-  abstract _initWebMap(): void
+  abstract _initWebMap(): void;
   abstract _getMapInfo(data, _taskID);
   abstract _createMap();
   // TODO 重构子类 webmap layer 添加逻辑，只重写具体添加某个layer的方法，基类实现 initxxxx
   abstract _initBaseLayer(mapInfo);
   abstract _initOverlayLayer(layer, features?);
-
 
   abstract _addLayerSucceeded();
   abstract _unproject(point: [number, number]): [number, number];
@@ -151,19 +157,25 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected getMapInfo(_taskID) {
-    this.webMapService.getMapInfo().then((mapInfo: any) => {
-      if (this._taskID !== _taskID) {
-        return;
-      }
-      // 存储地图的名称以及描述等信息，返回给用户
-      this.mapParams = mapInfo.mapParams;
-      this._getMapInfo(mapInfo, _taskID);
-    }, (error) => {
-      throw new Error(error);
-    }).catch((error) => {
-      this.triggerEvent('getmapinfofailed', { error })
-      console.log(error);
-    })
+    this.webMapService
+      .getMapInfo()
+      .then(
+        (mapInfo: any) => {
+          if (this._taskID !== _taskID) {
+            return;
+          }
+          // 存储地图的名称以及描述等信息，返回给用户
+          this.mapParams = mapInfo.mapParams;
+          this._getMapInfo(mapInfo, _taskID);
+        },
+        error => {
+          throw new Error(error);
+        }
+      )
+      .catch(error => {
+        this.triggerEvent('getmapinfofailed', { error });
+        console.log(error);
+      });
   }
 
   protected getBaseLayerType(layerInfo) {
@@ -174,7 +186,7 @@ export default abstract class WebMapBase extends Events {
       layerType.indexOf('TIANDITU_IMG') > -1 ||
       layerType.indexOf('TIANDITU_TER') > -1
     ) {
-      layerType = "TIANDITU"
+      layerType = 'TIANDITU';
     }
 
     switch (layerType) {
@@ -183,7 +195,7 @@ export default abstract class WebMapBase extends Events {
         return 'TILE';
       case 'CLOUD':
       case 'CLOUD_BLACK':
-        return 'CLOUD'
+        return 'CLOUD';
       case 'OSM':
       case 'JAPAN_ORT':
       case 'JAPAN_RELIEF':
@@ -215,20 +227,26 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected getLayerFeatures(layer, _taskID, type) {
-    let getLayerFunc = this.webMapService.getLayerFeatures(type, layer, this.baseProjection)
+    let getLayerFunc = this.webMapService.getLayerFeatures(type, layer, this.baseProjection);
 
-    getLayerFunc && getLayerFunc.then(result => {
-      if (this._taskID !== _taskID) {
-        return;
-      }
-      this._getLayerFeaturesSucceeded(result, layer);
-    }, (error) => {
-      throw new Error(error);
-    }).catch(error => {
-      this._addLayerSucceeded();
-      this.triggerEvent('getlayerdatasourcefailed', { error, layer, map: this.map });
-      console.log(error)
-    });
+    getLayerFunc &&
+      getLayerFunc
+        .then(
+          result => {
+            if (this._taskID !== _taskID) {
+              return;
+            }
+            this._getLayerFeaturesSucceeded(result, layer);
+          },
+          error => {
+            throw new Error(error);
+          }
+        )
+        .catch(error => {
+          this._addLayerSucceeded();
+          this.triggerEvent('getlayerdatasourcefailed', { error, layer, map: this.map });
+          console.log(error);
+        });
   }
 
   protected setFeatureInfo(feature: any): any {
@@ -346,7 +364,7 @@ export default abstract class WebMapBase extends Events {
     return layer;
   }
   protected handleLayerFeatures(features, layerInfo) {
-    let { layerType, style, themeSetting, filterCondition } = layerInfo
+    let { layerType, style, themeSetting, filterCondition } = layerInfo;
     if ((style || themeSetting) && filterCondition) {
       // 将 feature 根据过滤条件进行过滤, 分段专题图和单值专题图因为要计算 styleGroup 所以暂时不过滤
       if (layerType !== 'RANGE' && layerType !== 'UNIQUE' && layerType !== 'RANK_SYMBOL') {
@@ -435,7 +453,7 @@ export default abstract class WebMapBase extends Events {
         dashArr = str.replace(/\[|\]/gi, '').split(',');
         break;
     }
-    dashArr = type === 'array' ? dashArr : dashArr.join(',')
+    dashArr = type === 'array' ? dashArr : dashArr.join(',');
     return dashArr;
   }
 
@@ -461,7 +479,6 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected getRangeStyleGroup(layerInfo: any, features: any): Array<any> | void {
-
     let { featureType, style, themeSetting } = layerInfo;
     let { customSettings, themeField, segmentCount, segmentMethod, colors } = themeSetting;
 
@@ -555,7 +572,7 @@ export default abstract class WebMapBase extends Events {
         }
       }
       if (!isSaved) {
-        names.push(name);
+        names.push(name || '0');
       }
     }
 
@@ -585,15 +602,18 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected getEpsgInfoFromWKT(wkt) {
-    if (typeof (wkt) !== 'string') {
+    if (typeof wkt !== 'string') {
       return '';
-    } else if (wkt.indexOf("EPSG") === 0) {
+    } else if (wkt.indexOf('EPSG') === 0) {
       return wkt;
     } else {
-      let lastAuthority = wkt.lastIndexOf("AUTHORITY") + 10,
-        endString = wkt.indexOf("]", lastAuthority) - 1;
+      let lastAuthority = wkt.lastIndexOf('AUTHORITY') + 10,
+        endString = wkt.indexOf(']', lastAuthority) - 1;
       if (lastAuthority > 0 && endString > 0) {
-        return `EPSG:${wkt.substring(lastAuthority, endString).split(",")[1].substr(1)}`;
+        return `EPSG:${wkt
+          .substring(lastAuthority, endString)
+          .split(',')[1]
+          .substr(1)}`;
       } else {
         return '';
       }
@@ -627,7 +647,7 @@ export default abstract class WebMapBase extends Events {
           });
         }
         features[index] = feature;
-      })
+      });
 
     return features;
   }
@@ -848,6 +868,5 @@ export default abstract class WebMapBase extends Events {
         this._initOverlayLayer(layer);
         break;
     }
-  };
-
+  }
 }
