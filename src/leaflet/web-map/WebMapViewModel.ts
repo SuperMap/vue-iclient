@@ -448,15 +448,16 @@ export default class WebMapViewModel extends WebMapBase {
               // 说明地址不完整
               defaultStyle.src = this.serverUrl + defaultStyle.src;
             }
-
+            const imgWidth = (defaultStyle.imgWidth || 48) * defaultStyle.scale;
+            const imgHeight = (defaultStyle.imgHeight || 43) * defaultStyle.scale;
             // image-marker
             if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') <= -1) {
               resolve(
                 L.marker([feature.geometry.coordinates[1], feature.geometry.coordinates[0]], {
                   icon: L.icon({
                     iconUrl: defaultStyle.src,
-                    iconSize: [defaultStyle.imgWidth * defaultStyle.scale, defaultStyle.imgHeight * defaultStyle.scale],
-                    iconAnchor: defaultStyle.anchor
+                    iconSize: [imgWidth, imgHeight],
+                    iconAnchor: [imgWidth * defaultStyle.anchor[0], imgHeight * defaultStyle.anchor[1]]
                   })
                 })
               );
