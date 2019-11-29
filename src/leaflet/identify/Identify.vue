@@ -57,8 +57,8 @@ export default {
   },
   watch: {
     layerNames(val, oldVal) {
-      this.removed();
       if (val && !isEqual(val, oldVal)) {
+        this.$options.removed.call(this);
         this.setLayers();
       }
     }
