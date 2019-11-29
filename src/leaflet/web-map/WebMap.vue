@@ -1,6 +1,6 @@
 <template>
   <div :id="target" class="sm-component-web-map">
-    <slot></slot>
+    <slot v-if="ready"></slot>
     <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
@@ -33,8 +33,11 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   // eslint-disable-next-line
   map: L.Map;
   viewModel: WebMapViewModel;
+  // eslint-disable-next-line
+  mapObject: L.Map;
   // data
   @Provide() __resizeHandler;
+  @Provide() ready = false;
 
   @Prop() mapId: string;
   @Prop({ default: 'map' }) target: string;
@@ -141,7 +144,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
         mapEvent.$emit('load-map', e.map, this.target);
         this.map = e.map;
-
+        this.mapObject = e.map;
+        this.ready = true;
         this.$nextTick(() => {
           this.viewModel.resize();
         });

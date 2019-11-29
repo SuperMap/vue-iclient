@@ -7,9 +7,10 @@ import L from '../leaflet-wrapper';
  */
 
 export default class PopupViewModel extends L.Evented {
-  constructor(options) {
+  constructor(map, options) {
     super();
-    this.popup = null;
+    this.map = map;
+    this.mapObject = null;
     this.options = options.options || {};
     this.latLng = options.latLng;
     this.content = options.content;
@@ -20,7 +21,7 @@ export default class PopupViewModel extends L.Evented {
    * @desc 创建popup
    */
   createPopup() {
-    this.popup = L.popup(this.options);
+    this.mapObject = L.popup(this.options);
     this.setLatLng();
     this.setContent();
   }
@@ -30,8 +31,8 @@ export default class PopupViewModel extends L.Evented {
    * @param {Array} content - 内容。
    */
   setContent(content = this.content) {
-    if (this.popup && content) {
-      this.popup.setContent(content);
+    if (this.mapObject && content) {
+      this.mapObject.setContent(content);
     }
   }
   /**
@@ -40,8 +41,8 @@ export default class PopupViewModel extends L.Evented {
    * @param {Array} latLng - 坐标
    */
   setLatLng(latLng = this.latLng) {
-    if (this.popup && latLng) {
-      this.popup.setLatLng(latLng);
+    if (this.mapObject && latLng) {
+      this.mapObject.setLatLng(latLng);
     }
   }
   /**
@@ -49,6 +50,20 @@ export default class PopupViewModel extends L.Evented {
    * @desc 获取popup
    */
   getPopup() {
-    return this.popup;
+    return this.mapObject;
+  }
+  /**
+   * @function PopupViewModel.prototype.openOnMap
+   * @desc openOn MAP
+   */
+  openOnMap() {
+    this.mapObject.openOn(this.map);
+  }
+  /**
+   * @function PopupViewModel.prototype.openOnMap
+   * @desc openOn MAP
+   */
+  isMap(mapObject) {
+    return mapObject instanceof L.Map;
   }
 }

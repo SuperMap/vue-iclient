@@ -29,11 +29,29 @@ export default {
     this.mapObject = this.viewModel.getPopup();
     this.parentContainer = this.$parent;
     // 如果有父组件有mapObject,则可以绑定在上面
-    if (this.parentContainer.mapObject && this.parentContainer.mapObject.bindPopup) {
-      this.parentContainer.mapObject.bindPopup(this.mapObject);
-      this.$nextTick(() => {
-        this.$emit('ready', this.mapObject);
-      });
+    let parentContainerObject = this.$parent.mapObject;
+    if (parentContainerObject) {
+      // 如果有bindpopup方法的就绑定
+      if (parentContainerObject.bindPopup) {
+        parentContainerObject.bindPopup(this.mapObject);
+        this.$nextTick(() => {
+          this.$emit('ready', this.mapObject);
+        });
+        return;
+      }
+      // 如果是地图，则openOn(this.map)
+      this.isMap = this.viewModel.isMap(parentContainerObject);
+      if (this.isMap) {
+        parentContainerObject.on('click', e => {
+          let latLng = this.map.layerPointToLatLng(e.layerPoint);
+          this.viewModel.setLatLng(latLng);
+          // 通过slot进来的content
+          if (this.$el && this.$el.style) {
+            this.$el.style.display = 'block';
+          }
+          this.viewModel.openOnMap();
+        });
+      }
     }
   },
   beforeDestroy() {
@@ -47,7 +65,7 @@ export default {
   },
   methods: {
     setViewModel() {
-      this.viewModel = new PopupViewModel({
+      this.viewModel = new PopupViewModel(this.map, {
         latLng: this.latLng,
         content: this.content || this.$el,
         options: this.options
