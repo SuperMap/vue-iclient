@@ -65,7 +65,9 @@ export default {
     second: '秒'
   },
   zoom: {},
-  chart: {},
+  chart: {
+    unSupportedData: '当前数据不支持与地图联动'
+  },
   layerList: {
     title: '图层'
   },

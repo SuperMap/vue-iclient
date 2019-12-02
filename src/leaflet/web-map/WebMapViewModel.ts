@@ -241,7 +241,7 @@ export default class WebMapViewModel extends WebMapBase {
         if (!epsgCode) {
           return;
         }
-        this._unprojectCrs = await this.getTransformCoodinatesCRS(projection.split(':')[1]);
+        this._unprojectCrs = this.getTransformCoodinatesCRS(projection.split(":")[1]);
         features = this.transformFeatures(features);
       }
 
@@ -1078,21 +1078,11 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   protected getTransformCoodinatesCRS(epsgCode) {
-    return new Promise((resolve, reject) => {
-      this.webMapService.getEpsgcodeWkt(epsgCode).then(
-        epsgcodeInfo => {
-          resolve(
-            // @ts-ignore
-            L.Proj.CRS(this.getEpsgInfoFromWKT(epsgcodeInfo.wkt), {
-              // @ts-ignore
-              def: epsgcodeInfo.wkt
-            })
-          );
-        },
-        err => {
-          reject(err);
-        }
-      );
+    const defName = `EPSG:${epsgCode}`;
+    const defValue = this.webMapService.getEpsgcodeWkt(defName);
+    // @ts-ignore
+    return L.Proj.CRS(this.getEpsgInfoFromWKT(defValue), {
+      def: defValue,
     });
   }
 

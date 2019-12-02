@@ -2,8 +2,8 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import iPortalDataService from '../_utils/iPortalDataService';
-import iServerRestService from '../_utils/iServerRestService';
+import iPortalDataService from '../../common/_utils/iPortalDataService';
+import iServerRestService from '../../common/_utils/iServerRestService';
 import { geti18n } from '../../common/_lang';
 /**
  * @class SearchViewModel
@@ -289,16 +289,18 @@ export default class SearchViewModel extends mapboxgl.Evented {
         options.proxy = restMap.proxy;
       }
       let iserverService = new iServerRestService(restMap.url, options);
-      iserverService.on('getdatafailed', e => {
-        this._searchFeaturesFailed('', sourceName);
-      });
-      iserverService.on('featureisempty', e => {
-        this._searchFeaturesFailed('', sourceName);
-      });
-      iserverService.on('getdatasucceeded', e => {
-        if (e.features) {
-          let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
-          this._searchFeaturesSucceed(resultFeatures, restMap.name || sourceName);
+      iserverService.on({
+        getdatafailed: e => {
+          this._searchFeaturesFailed('', sourceName);
+        },
+        featureisempty: e => {
+          this._searchFeaturesFailed('', sourceName);
+        },
+        getdatasucceeded: e => {
+          if (e.features) {
+            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+            this._searchFeaturesSucceed(resultFeatures, restMap.name || sourceName);
+          }
         }
       });
       iserverService.getMapFeatures(
@@ -316,16 +318,18 @@ export default class SearchViewModel extends mapboxgl.Evented {
         options.proxy = restData.proxy;
       }
       let iserverService = new iServerRestService(restData.url, options);
-      iserverService.on('getdatafailed', e => {
-        this._searchFeaturesFailed('', sourceName);
-      });
-      iserverService.on('featureisempty', e => {
-        this._searchFeaturesFailed('', sourceName);
-      });
-      iserverService.on('getdatasucceeded', e => {
-        if (e.features && e.features.length > 0) {
-          let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
-          this._searchFeaturesSucceed(resultFeatures, restData.name || sourceName);
+      iserverService.on({
+        getdatafailed: e => {
+          this._searchFeaturesFailed('', sourceName);
+        },
+        featureisempty: e => {
+          this._searchFeaturesFailed('', sourceName);
+        },
+        getdatasucceeded: e => {
+          if (e.features && e.features.length > 0) {
+            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+            this._searchFeaturesSucceed(resultFeatures, restData.name || sourceName);
+          }
         }
       });
       let dataSourceName = restData.dataName[0].split(':')[0];
@@ -341,16 +345,18 @@ export default class SearchViewModel extends mapboxgl.Evented {
     const sourceName = 'Iportal Search';
     iportalDatas.forEach(iportal => {
       let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false);
-      iPortalService.on('getdatafailed', e => {
-        this._searchFeaturesFailed('', sourceName);
-      });
-      iPortalService.on('featureisempty', e => {
-        this._searchFeaturesFailed('', sourceName);
-      });
-      iPortalService.on('getdatasucceeded', e => {
-        if (e.features) {
-          let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
-          this._searchFeaturesSucceed(resultFeatures, iportal.name || sourceName);
+      iPortalService.on({
+        getdatafailed: e => {
+          this._searchFeaturesFailed('', sourceName);
+        },
+        featureisempty: e => {
+          this._searchFeaturesFailed('', sourceName);
+        },
+        getdatasucceeded: e => {
+          if (e.features) {
+            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+            this._searchFeaturesSucceed(resultFeatures, iportal.name || sourceName);
+          }
         }
       });
       iPortalService.getData({ keyWord: this.keyWord });

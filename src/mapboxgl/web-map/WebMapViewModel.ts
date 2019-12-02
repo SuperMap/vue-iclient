@@ -307,7 +307,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  async _initOverlayLayer(layerInfo: any, features?: any) {
+  _initOverlayLayer(layerInfo: any, features?: any) {
     let { layerType, visible, style, featureType, labelStyle, projection } = layerInfo
     layerInfo.visible = visible ? 'visible' : 'none';
 
@@ -326,7 +326,7 @@ export default class WebMapViewModel extends WebMapBase {
       features = handleMultyPolygon(features);
     }
 
-    if (features && projection && projection !== 'EPSG:4326') {
+    if (features && projection && (projection !== this.baseProjection || projection === 'EPSG:3857')) {
       let epsgCode = projection.split(":")[1];
       if (!epsgCode) {
         return;
@@ -334,7 +334,7 @@ export default class WebMapViewModel extends WebMapBase {
       this._unprojectProjection = projection;
 
       if (projection !== 'EPSG:3857') {
-        await this._defineProj4(epsgCode);
+        this._defineProj4(epsgCode);
       }
 
       features = this.transformFeatures(features);
@@ -1543,15 +1543,9 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _defineProj4(epsgCode) {
-    return new Promise((resolve, reject) => {
-      this.webMapService.getEpsgcodeWkt(epsgCode).then(epsgcodeInfo => {
-        // @ts-ignore
-        proj4.defs(`EPSG:${epsgCode}`, epsgcodeInfo.wkt);
-        resolve(epsgcodeInfo);
-      }, err => {
-        reject(err);
-      })
-    })
+    const defName = `EPSG:${epsgCode}`;
+    const defValue = this.webMapService.getEpsgcodeWkt(defName);
+    proj4.defs(defName, defValue);
   }
 
   public cleanWebMap() {

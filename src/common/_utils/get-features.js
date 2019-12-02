@@ -1,6 +1,6 @@
 import iServerRestService from './iServerRestService';
 import iPortalDataService from './iPortalDataService';
-import RestService from '../../common/_utils/RestService';
+import RestService from './RestService';
 
 export default function getFeatures(dataset) {
   let promise = new Promise((resolve, reject) => {
@@ -37,27 +37,20 @@ export default function getFeatures(dataset) {
         superMapService = new iPortalDataService(url, withCredentials);
         superMapService.getData(queryInfo, !!preferContent);
       } else if (type === 'rest') {
-        let restService = new RestService({
+        superMapService = new RestService({
           proxy: dataset.proxy
         });
-        restService.getData(url, queryInfo);
-        restService.on({
-          'getdatafailed': function (e) {
+        superMapService.getData(url, queryInfo);
+      }
+
+      if (superMapService) {
+        superMapService.on({
+          getdatasucceeded: function(data) {
+            resolve(data);
+          },
+          getdatafailed: function(e) {
             reject(e);
           }
-        });
-        restService.on({
-          'getdatasucceeded': function (data) {
-            resolve(data);
-          }
-        });
-      }
-      if (['iServer', 'iPortal'].includes(type) && superMapService) {
-        superMapService.on('getdatafailed', function (e) {
-          reject(e);
-        });
-        superMapService.on('getdatasucceeded', function (data) {
-          resolve(data);
         });
       }
     }

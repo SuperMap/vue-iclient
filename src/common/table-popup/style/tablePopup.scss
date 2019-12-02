@@ -22,6 +22,7 @@
     }
     .ant-table-tbody > tr > td {
       transition: all 0s, height 0s;
+      border-bottom-color: transparent;
     }
     .ant-table-row {
       &:hover {

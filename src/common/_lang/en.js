@@ -65,7 +65,9 @@ export default {
     second: 's'
   },
   zoom: {},
-  chart: {},
+  chart: {
+    unSupportedData: 'The current data does not support linkage with the map'
+  },
   layerList: {
     title: 'Layer'
   },

@@ -1,5 +1,6 @@
 import { Events } from '../_types/event/Events';
 import { isXField, isYField } from './util';
+import epsgCodes from '../web-map/config/epsg.json';
 import * as convert from 'xml-js';
 
 const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
@@ -491,16 +492,7 @@ export default class WebMapService extends Events {
   }
 
   public getEpsgcodeWkt(epsgCode) {
-    let codeUrl = `${this.serverUrl}epsgcodes/${epsgCode}`;
-    return new Promise((resolve, reject) => {
-      SuperMap.FetchRequest.get(codeUrl).then(response => {
-        return response.json();
-      }).then(epsgcodeInfo => {
-        resolve(epsgcodeInfo);
-      }).catch(err => {
-        reject(err);
-      })
-    })
+    return epsgCodes[epsgCode];
   }
 
   private _getDataFromIportal(serverId) {

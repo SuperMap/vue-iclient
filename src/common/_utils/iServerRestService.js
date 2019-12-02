@@ -1,5 +1,9 @@
+// eslint-disable-next-line
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { Events } from '../_types/event/Events';
+import epsgCodes from '../web-map/config/epsg.json';
+import proj4 from 'proj4';
 
 /**
  * @class iServerRestService
@@ -10,11 +14,12 @@ import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
  * @fires iServerRestService#getdatafailed
  * @fires iServerRestService#featureisempty
  */
-export default class iServerRestService extends mapboxgl.Evented {
+export default class iServerRestService extends Events {
   constructor(url, options) {
     super();
     this.url = url;
     this.options = options || {};
+    this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
   }
 
   getData(datasetInfo, queryInfo) {
@@ -52,6 +57,7 @@ export default class iServerRestService extends mapboxgl.Evented {
   getMapFeatures(datasetInfo, queryInfo) {
     let { dataUrl, mapName } = datasetInfo;
     queryInfo.name = mapName;
+    this.projectionUrl = `${dataUrl}/prjCoordSys`;
     if (queryInfo.keyWord) {
       this._getRestMapFields(dataUrl, mapName, fields => {
         queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
@@ -77,6 +83,7 @@ export default class iServerRestService extends mapboxgl.Evented {
     let { datasetName, dataSourceName, dataUrl } = datasetInfo;
     queryInfo.name = datasetName + '@' + dataSourceName;
     queryInfo.datasetNames = [dataSourceName + ':' + datasetName];
+    this.projectionUrl = `${dataUrl}/datasources/${dataSourceName}/datasets/${datasetName}`;
     if (queryInfo.keyWord) {
       let fieldsUrl = dataUrl + `/datasources/${dataSourceName}/datasets/${datasetName}/fields.rjson`;
       this._getRestDataFields(fieldsUrl, fields => {
@@ -129,7 +136,7 @@ export default class iServerRestService extends mapboxgl.Evented {
     getFeatureBySQLService.processAsync(getFeatureBySQLParams);
   }
 
-  _getFeaturesSucceed(results) {
+  async _getFeaturesSucceed(results) {
     let features;
     let fieldCaptions;
     let fieldTypes;
@@ -148,7 +155,10 @@ export default class iServerRestService extends mapboxgl.Evented {
          * @description 请求数据为空后触发。
          * @property {Object} e  - 事件对象。
          */
-        this.fire('featureisempty', { results });
+        this.triggerEvent('featureisempty', {
+          results
+        });
+        return;
       }
     } else if (results.result) {
       // 数据来自restdata---results.result.features
@@ -164,10 +174,16 @@ export default class iServerRestService extends mapboxgl.Evented {
           fieldTypes.push(this._getDataType(feature.properties[attr]));
         }
       } else {
-        this.fire('featureisempty', { results });
+        this.triggerEvent('featureisempty', {
+          results
+        });
+        return;
       }
     } else {
-      this.fire('getdatafailed', { results });
+      this.triggerEvent('getdatafailed', {
+        results
+      });
+      return;
     }
     const data = {
       features,
@@ -187,12 +203,21 @@ export default class iServerRestService extends mapboxgl.Evented {
       data.fieldValues.push(fieldValue);
     }
     // this.getDataSucceedCallback && this.getDataSucceedCallback(data);
+    const epsgCode = await this._getEpsgCode();
+    if (epsgCode) {
+      const projName = this._getValueOfEpsgCode(epsgCode);
+      data.features = features.map(feature => {
+        const coordinates = feature.geometry.coordinates;
+        feature.geometry.coordinates = this._transformCoordinates(coordinates, projName);
+        return feature;
+      });
+    }
     /**
      * @event iServerRestService#getdatasucceeded
      * @description 请求数据成功后触发。
      * @property {Object} e  - 事件对象。
      */
-    this.fire('getdatasucceeded', data);
+    this.triggerEvent('getdatasucceeded', data);
   }
 
   _getRestDataFields(fieldsUrl, callBack) {
@@ -210,22 +235,27 @@ export default class iServerRestService extends mapboxgl.Evented {
   }
   _getRestMapFields(url, layerName, callBack) {
     let param = new SuperMap.QueryBySQLParameters({
-      queryParams: {
-        name: layerName,
-        attributeFilter: 'SMID=0'
+      queryParams: [
+        new SuperMap.FilterParameter({
+          name: layerName,
+          attributeFilter: 'SMID=0'
+        })
+      ]
+    });
+    const queryBySQLSerice = new SuperMap.QueryBySQLService(url, {
+      proxy: this.options.proxy,
+      eventListeners: {
+        processCompleted: serviceResult => {
+          let fields;
+          serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);
+          fields && callBack(fields, serviceResult.result.recordsets[0]);
+        },
+        processFailed: serviceResult => {
+          callBack(serviceResult);
+        }
       }
     });
-    new mapboxgl.supermap.QueryService(url, {
-      proxy: this.options.proxy
-    }).queryBySQL(param, serviceResult => {
-      if (serviceResult.type === 'processCompleted') {
-        let fields;
-        serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);
-        fields && callBack(fields, serviceResult.result.recordsets[0]);
-      } else {
-        callBack(serviceResult);
-      }
-    });
+    queryBySQLSerice.processAsync(param);
   }
   _getAttributeFilterByKeywords(fields, keyWord) {
     let attributeFilter = '';
@@ -305,5 +335,46 @@ export default class iServerRestService extends mapboxgl.Evented {
       return true;
     }
     return !isNaN(mdata);
+  }
+
+  // 转坐标系
+  _getEpsgCode() {
+    if (!this.projectionUrl) {
+      return;
+    }
+    return SuperMap.FetchRequest.get(this.projectionUrl, null, { proxy: this.options.proxy })
+      .then(response => {
+        return response.json();
+      })
+      .then(results => {
+        let epsgCode = results.epsgCode;
+        if (results.datasetInfo) {
+          const { prjCoordSys } = results.datasetInfo;
+          epsgCode = prjCoordSys ? prjCoordSys.epsgCode : null;
+        }
+        return epsgCode;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  }
+
+  _getValueOfEpsgCode(epsgCode) {
+    const defName = `EPSG:${epsgCode}`;
+    proj4.defs(`EPSG:${epsgCode}`, epsgCodes[defName]);
+    return defName;
+  }
+
+  _transformCoordinates(coordinates, projName) {
+    if (coordinates[0] instanceof Array) {
+      coordinates.forEach((item, index) => {
+        if (item instanceof Array) {
+          coordinates[index] = this._transformCoordinates(item, projName);
+        }
+      });
+    } else if (coordinates.length > 0) {
+      return projName !== 'EPSG:4326' ? proj4(projName, 'EPSG:4326', coordinates) : coordinates;
+    }
+    return coordinates;
   }
 }

@@ -1,5 +1,7 @@
 import iServerRestService from './iServerRestService';
-import { isXField, isYField } from '../../common/_utils/util';
+import { isXField, isYField } from './util';
+import { Events } from '../_types/event/Events';
+// eslint-disable-next-line
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -13,37 +15,45 @@ import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
  * @fires iPortalDataService#getdatafailed
  * @fires iPortalDataService#featureisempty
  */
-export default class iPortalDataService extends mapboxgl.Evented {
+export default class iPortalDataService extends Events {
   constructor(url, withCredentials) {
     super();
     this.url = url;
     this.withCredentials = withCredentials || false;
+    this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
+    this.initSerivce(url);
+  }
+
+  initSerivce(url) {
     this.iserverService = new iServerRestService(url);
-    this.iserverService.on('getdatasucceeded', e => {
-      /**
-       * @event iPortalDataService#getdatasucceeded
-       * @description 请求数据成功后触发。
-       * @property {Object} e  - 事件对象。
-       */
-      this.fire('getdatasucceeded', e);
-    });
-    this.iserverService.on('getdatafailed', e => {
-      /**
-       * @event iPortalDataService#getdatafailed
-       * @description 请求数据失败后触发。
-       * @property {Object} e  - 事件对象。
-       */
-      this.fire('getdatafailed', e);
-    });
-    this.iserverService.on('featureisempty', e => {
-      /**
-       * @event iPortalDataService#featureisempty
-       * @description 请求数据为空后触发。
-       * @property {Object} e  - 事件对象。
-       */
-      this.fire('featureisempty', e);
+    this.iserverService.on({
+      getdatasucceeded: e => {
+        /**
+         * @event iPortalDataService#getdatasucceeded
+         * @description 请求数据成功后触发。
+         * @property {Object} e  - 事件对象。
+         */
+        this.triggerEvent('getdatasucceeded', e);
+      },
+      getdatafailed: e => {
+        /**
+         * @event iPortalDataService#getdatafailed
+         * @description 请求数据失败后触发。
+         * @property {Object} e  - 事件对象。
+         */
+        this.triggerEvent('getdatafailed', e);
+      },
+      featureisempty: e => {
+        /**
+         * @event iPortalDataService#featureisempty
+         * @description 请求数据为空后触发。
+         * @property {Object} e  - 事件对象。
+         */
+        this.triggerEvent('featureisempty', e);
+      }
     });
   }
+
   /**
    * @function iPortalDataService.prototype.getData
    * @description 请求数据。
@@ -70,7 +80,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
       .then(data => {
         if (data.succeed === false) {
           // 请求失败
-          this.fire('getdatafailed', {
+          this.triggerEvent('getdatafailed', {
             data
           });
           return;
@@ -99,7 +109,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
       })
       .catch(error => {
         console.log(error);
-        this.fire('getdatafailed', {
+        this.triggerEvent('getdatafailed', {
           error
         });
       });
@@ -135,7 +145,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
             })
             .catch(error => {
               console.log(error);
-              this.fire('getdatafailed', {
+              this.triggerEvent('getdatafailed', {
                 error
               });
             });
@@ -173,14 +183,14 @@ export default class iPortalDataService extends mapboxgl.Evented {
             })
             .catch(error => {
               console.log(error);
-              this.fire('getdatafailed', {
+              this.triggerEvent('getdatafailed', {
                 error
               });
             });
         })
         .catch(error => {
           console.log(error);
-          this.fire('getdatafailed', {
+          this.triggerEvent('getdatafailed', {
             error
           });
         });
@@ -200,7 +210,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
       .then(data => {
         if (data.succeed === false) {
           // 请求失败
-          this.fire('getdatafailed', {
+          this.triggerEvent('getdatafailed', {
             data
           });
           return;
@@ -233,7 +243,7 @@ export default class iPortalDataService extends mapboxgl.Evented {
       })
       .catch(error => {
         console.log(error);
-        this.fire('getdatafailed', {
+        this.triggerEvent('getdatafailed', {
           error
         });
       });

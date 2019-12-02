@@ -50,7 +50,7 @@
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
-import getFeatures from '../../mapboxgl/_utils/get-features';
+import getFeatures from '../../common/_utils/get-features';
 import Theme from '../../common/_mixin/theme';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import isEqual from 'lodash.isequal';

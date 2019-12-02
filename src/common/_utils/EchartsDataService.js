@@ -3,7 +3,7 @@ import tonumber from 'lodash.tonumber';
 import isEqual from 'lodash.isequal';
 import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
-import { clearNumberComma } from '../../common/_utils/util';
+import { clearNumberComma } from './util';
 /**
  * @class EchartsDataService
  * @classdesc 图表组件功能类

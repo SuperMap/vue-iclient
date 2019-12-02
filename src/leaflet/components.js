@@ -14,3 +14,5 @@ export { default as WebMap } from './web-map/WebMap.vue';
 export { default as SmTileLayer } from './web-map/layer/sm-tile/SmTileLayer';
 export { default as Identify } from './identify/Identify';
 export { default as Popup } from './popup/Popup';
+
+export { default as Chart } from './chart/Chart';

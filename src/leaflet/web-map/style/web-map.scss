@@ -17,3 +17,15 @@
     background: rgba(0, 0, 0, 0.8);
   }
 }
+
+.sm-leaflet-tabel-popup {
+  .leaflet-popup-content {
+    margin: 0;
+  }
+  .leaflet-popup-content-wrapper {
+    border-radius: 3px;
+  }
+  .leaflet-popup-content-wrapper, .leaflet-popup-content, .leaflet-popup-tip {
+    background: transparent;
+  }
+}
