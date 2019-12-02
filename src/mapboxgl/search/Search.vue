@@ -102,6 +102,7 @@ import Control from '../_mixin/control';
 
 import SearchViewModel from './SearchViewModel';
 import TablePopup from '../../common/table-popup/TablePopup';
+import { getColorWithOpacity } from '../../common/_utils/util';
 // import iPortalDataParameter from "../commontypes/iPortalDataParameter";
 // import RestDataParameter from "../commontypes/RestDataParameter";
 // import RestMapParameter from "../commontypes/RestMapParameter";
@@ -233,6 +234,9 @@ export default {
         return false;
       }
       return this.searchResult.length > 0;
+    },
+    popupBackground() {
+      return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
     }
   },
   watch: {
@@ -283,10 +287,8 @@ export default {
     },
     changeResultPopupArrowStyle() {
       const searchResultPopupArrow = document.querySelector('.sm-component-search-result-popup .mapboxgl-popup-tip');
-      searchResultPopupArrow && (searchResultPopupArrow.style.borderTopColor = this.backgroundData);
       if (searchResultPopupArrow) {
-        searchResultPopupArrow.style.borderTopColor = this.backgroundData;
-        searchResultPopupArrow.style.borderBottomColor = this.backgroundData;
+        searchResultPopupArrow.style.borderTopColor = this.popupBackground;
       }
     },
     /**

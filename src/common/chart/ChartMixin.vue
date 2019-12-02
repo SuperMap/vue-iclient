@@ -24,7 +24,7 @@
       ref="chartTablePopup"
       v-bind="tablePopupProps"
       :text-color="textColor"
-      :background="popupBackground"
+      :background="background"
     />
   </sm-card>
 </template>
@@ -239,7 +239,7 @@ export default {
       return this.options && this.options.yAxis && this.options.yAxis.type === 'category';
     },
     popupBackground() {
-      return this.background ? getColorWithOpacity(this.background, 0.5) : this.background;
+      return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
     }
   },
   watch: {
