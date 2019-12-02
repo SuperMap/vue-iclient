@@ -90,10 +90,13 @@ export default class WebMapViewModel extends WebMapBase {
       mapOptions.center = [0, 0];
       mapOptions.zoom = 0;
     }
-    this.center = mapOptions.center;
+    if (this.centerValid(mapOptions.center)) {
+      this.center = mapOptions.center;
+    }
     this.zoom = mapOptions.zoom;
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
+    this._initWebMap();
   }
 
   public resize(): void {
@@ -110,9 +113,9 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   public setCenter(center): void {
-    if (this.map) {
+    if (this.map && this.centerValid(center)) {
       this.mapOptions.center = center;
-      center && (<[number, number]>center).length > 0 && this.map.setCenter(center);
+      this.map.setCenter(center);
     }
   }
 
@@ -1556,5 +1559,12 @@ export default class WebMapViewModel extends WebMapBase {
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
       this._unprojectProjection = null;
     }
+  }
+
+  private centerValid(center) {
+    if (center && ((<[number, number]>center).length > 0 || typeof center === mapboxgl.LngLat || (<{ lng: number; lat: number }>center).lng)) {
+      return true
+    }
+    return false
   }
 }

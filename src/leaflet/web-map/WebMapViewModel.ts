@@ -56,6 +56,7 @@ export default class WebMapViewModel extends WebMapBase {
     super(id, options, mapOptions);
     this.center = mapOptions.center;
     this.zoom = mapOptions.zoom;
+    this._initWebMap();
   }
 
   public resize() {
@@ -310,7 +311,7 @@ export default class WebMapViewModel extends WebMapBase {
       'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadKey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
     // @ts-ignore
     L.TileLayer.BingLayer = L.TileLayer.extend({
-      getTileUrl: function(coordinates) {
+      getTileUrl: function (coordinates) {
         let { z, x, y } = coordinates;
         let index = '';
         for (let i = z; i > 0; i--) {

@@ -78,7 +78,6 @@ export default abstract class WebMapBase extends Events {
       'notsupportmvt',
       'notsupportbaidumap'
     ];
-    this._initWebMap();
   }
 
   abstract _initWebMap(): void;
