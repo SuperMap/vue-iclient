@@ -36,6 +36,7 @@ pageClass: chart
 | group          | 实例的分组，会自动绑定到 ECharts 组件的同名属性上                                                                                                                                                                                          | string           | -                                                            | -                                                         |
 | manualUpdate   | 在性能敏感（数据量很大）的场景下，我们最好对于 options prop 绕过 Vue 的响应式系统。当将 manual-update prop 指定为 true 且不传入 options prop 时，数据将不会被监听。然后，你需要用 ref 获取组件实例以后手动调用 mergeOptions 方法来更新图表 | boolean          | -                                                            | false                                                     |
 | autoPlay       | 是否自动播放。图表类型为 pie 时生效                                                                                                                                                                                                        | boolean          | -                                                            | false                                                     |
+| associatedMap  | 是否与地图关联。点击图表项定位到地图，仅当有坐标的数据才能与地图联动。                                                                                                                                                                     | boolean          | -                                                            | false                                                     |
 
 ### dataset
 
