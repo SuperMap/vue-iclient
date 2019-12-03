@@ -21,7 +21,7 @@ export default {
       this.changePopupStyle();
     },
     options() {
-      this.setViewModel();
+      this.loaded();
     }
   },
   loaded() {
@@ -49,7 +49,10 @@ export default {
           if (this.$el && this.$el.style) {
             this.$el.style.display = 'block';
           }
-          this.viewModel.openOnMap();
+          this.$nextTick(() => {
+            this.$emit('ready', this.mapObject);
+          });
+          this.$on('ready', this.viewModel.openOnMap);
         });
       }
     }
