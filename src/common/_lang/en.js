@@ -114,7 +114,7 @@ export default {
   query: {
     query: 'Query',
     queryJob: 'Task',
-    queryReuslt: 'Reuslt',
+    queryResult: 'Result',
     attributeCondition: 'Attribute Condition',
     spatialFilter: 'Spatial Filter',
     mapBounds: 'Query within the whole map extent',

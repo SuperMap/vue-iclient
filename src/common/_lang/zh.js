@@ -114,7 +114,7 @@ export default {
   query: {
     query: '查询',
     queryJob: '任务',
-    queryReuslt: '结果',
+    queryResult: '结果',
     attributeCondition: '属性条件',
     spatialFilter: '空间过滤器',
     mapBounds: '返回地图全图范围的要素',

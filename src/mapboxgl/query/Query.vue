@@ -22,11 +22,11 @@
         </div>
         <div
           class="sm-component-query__result-button"
-          :title="$t('query.queryReuslt')"
+          :title="$t('query.queryResult')"
           :style="activeTab === 'result' ? getColorStyle(0) : ''"
           @click="resultButtonClicked"
         >
-          {{ $t('query.queryReuslt') }}
+          {{ $t('query.queryResult') }}
         </div>
       </div>
       <div class="sm-component-query__job-info">
