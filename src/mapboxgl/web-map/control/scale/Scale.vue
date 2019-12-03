@@ -1,7 +1,7 @@
 <template>
   <div
     class="sm-component-scale"
-    :style="[scaleStyle, background && getBackgroundStyle, (textColor && getTextColorStyle) || getColorStyle(0)]"
+    :style="[background && getBackgroundStyle, (textColor && getTextColorStyle) || getColorStyle(0)]"
   >
     <span>{{ content }}</span>
   </div>
@@ -30,14 +30,8 @@ export default {
   },
   data() {
     return {
-      width: null,
       content: null
     };
-  },
-  computed: {
-    scaleStyle() {
-      return { width: this.width };
-    }
   },
   watch: {
     unit() {
@@ -56,8 +50,8 @@ export default {
     },
     updateContainer() {
       this.viewModel.on('scaleupdated', e => {
-        this.width = e.containerWidth;
         this.content = e.containerContent;
+        this.$el.style.width = e.containerWidth;
       });
     }
   },
