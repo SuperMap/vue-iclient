@@ -176,7 +176,8 @@ module.exports = {
                     'common/icon',
                     'common/image',
                     'common/iframe',
-                    'common/text-list'
+                    'common/text-list',
+                    'common/border'
                   ]
                 }
               ]
