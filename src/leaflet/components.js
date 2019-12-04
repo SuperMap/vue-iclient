@@ -9,6 +9,7 @@ export { default as Border } from '../common/border/Border';
 export { default as Image } from '../common/image/Image';
 export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
 export { default as Iframe } from '../common/iframe/Iframe';
+export { default as TablePopup } from '../common/table-popup/TablePopup';
 
 export { default as WebMap } from './web-map/WebMap.vue';
 export { default as SmTileLayer } from './web-map/layer/sm-tile/SmTileLayer';
