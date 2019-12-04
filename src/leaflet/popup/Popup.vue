@@ -28,8 +28,8 @@ export default {
     this.setViewModel();
     this.mapObject = this.viewModel.getPopup();
     this.parentContainer = this.$parent;
-    // 如果有父组件有mapObject,则可以绑定在上面
-    let parentContainerObject = this.$parent.mapObject;
+    // 如果有父组件有mapObject,则可以绑定在上面(默认绑定在map上面)
+    let parentContainerObject = (this.parentContainer && this.parentContainer.mapObject) || this.map;
     if (parentContainerObject) {
       // 如果有bindpopup方法的就绑定
       if (parentContainerObject.bindPopup) {

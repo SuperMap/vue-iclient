@@ -2,7 +2,7 @@ export default {
   props: {
     content: {
       type: String,
-      default: null,
+      default: '',
       custom: true
     }
   },
