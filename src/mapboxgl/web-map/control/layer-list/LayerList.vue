@@ -155,26 +155,32 @@ export default {
       return {
         color: '#c0c4cc'
       };
+    },
+    layerUpdate() {
+      this.$nextTick(() => {
+        this.sourceList = this.viewModel && this.viewModel.initLayerList();
+        this.sourceNames = this.viewModel && this.viewModel.getSourceNames();
+        this.viewModel && this.changCheckStyle();
+      });
     }
   },
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add('layer-list-container');
     this.viewModel = new LayerListViewModel(this.map);
+    this.layerUpdateFn = this.layerUpdate.bind(this);
     this.$nextTick(() => {
       this.sourceList = this.viewModel.initLayerList();
       this.sourceNames = this.viewModel.getSourceNames();
     });
-    this.viewModel.on('layersUpdated', () => {
-      this.$nextTick(() => {
-        this.sourceList = this.viewModel.initLayerList();
-        this.sourceNames = this.viewModel.getSourceNames();
-        this.changCheckStyle();
-      });
-    });
+    this.viewModel.on('layersUpdated', this.layerUpdateFn);
   },
   removed() {
     this.sourceList = {};
     this.sourceNames = [];
+    this.viewModel.off('layersUpdated', this.layerUpdateFn);
+  },
+  beforeDestory() {
+    this.$options.removed.call(this);
   }
 };
 </script>

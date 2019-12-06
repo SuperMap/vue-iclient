@@ -58,6 +58,9 @@ export default {
   removed() {
     this.viewModel && this.viewModel.removeMap();
   },
+  beforeDestory() {
+    this.$options.removed.call(this);
+  },
   methods: {
     handleMinimapResize(state) {
       this.$nextTick(() => {

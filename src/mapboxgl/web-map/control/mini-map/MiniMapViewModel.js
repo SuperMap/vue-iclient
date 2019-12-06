@@ -42,6 +42,11 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._previousPoint = [0, 0];
     this._currentPoint = [0, 0];
     this._trackingRectCoordinates = [[[], [], [], [], []]];
+    this._updateFn = this._update.bind(this);
+    this._setStyleFn = this._setStyle.bind(this);
+    this._mouseMoveFn = this._mouseMove.bind(this);
+    this._mouseDownFn = this._mouseDown.bind(this);
+    this._mouseUpFn = this._mouseUp.bind(this);
     this.initializeMiniMap();
   }
   initializeMiniMap() {
@@ -102,11 +107,12 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._convertBoundsToPoints(bounds);
     this._addRectLayers();
     this._update();
-    parentMap.on('move', this._update.bind(this));
-    parentMap.on('styledata', this._setStyle.bind(this));
-    miniMap.on('mousemove', this._mouseMove.bind(this));
-    miniMap.on('mousedown', this._mouseDown.bind(this));
-    miniMap.on('mouseup', this._mouseUp.bind(this));
+
+    parentMap.on('move', this._updateFn);
+    parentMap.on('styledata', this._setStyleFn);
+    miniMap.on('mousemove', this._mouseMoveFn);
+    miniMap.on('mousedown', this._mouseDownFn);
+    miniMap.on('mouseup', this._mouseUpFn);
 
     this._miniMapCanvas = miniMap.getCanvasContainer();
     this._miniMapCanvas.addEventListener('wheel', this._preventDefault);
@@ -322,6 +328,13 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   }
 
   removeMap() {
-    this._miniMap && this._miniMap.remove();
+    var parentMap = this._parentMap;
+    var miniMap = this._miniMap;
+    parentMap && parentMap.off('move', this._updateFn);
+    parentMap && parentMap.off('styledata', this._setStyleFn);
+    miniMap && miniMap.off('mousemove', this._mouseMoveFn);
+    miniMap && miniMap.off('mousedown', this._mouseDownFn);
+    miniMap && miniMap.off('mouseup', this._mouseUpFn);
+    miniMap && miniMap.remove();
   }
 }
