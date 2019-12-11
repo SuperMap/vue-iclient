@@ -8,7 +8,7 @@
       :width="calWidth"
       :stroke-color="colorData"
       :status="status"
-      :gap-degree="type==='circle' ? gapDegree : null"
+      :gap-degree="type === 'circle' ? gapDegree : null"
       :gap-position="gapPosition"
       :stroke-linecap="strokeLinecap"
     ></a-progress>
@@ -71,6 +71,9 @@ export default {
     },
     url: {
       type: String
+    },
+    field: {
+      type: String
     }
   },
   data() {
@@ -108,9 +111,13 @@ export default {
           this.getData();
         } else {
           this.finalPercent = this.percent;
+          this.features = null;
         }
       },
       immediate: true
+    },
+    field() {
+      this.setPercent(this.features);
     }
   },
   mounted() {
@@ -124,7 +131,7 @@ export default {
       this.resize();
     });
     this.restService = new RestService();
-    this.restService.on({ 'getdatasucceeded': this.fetchData });
+    this.restService.on({ getdatasucceeded: this.fetchData });
   },
   beforeDestroy() {
     this.restService.remove('getdatasucceeded');
@@ -136,11 +143,18 @@ export default {
     timing() {
       this.getData();
     },
-    fetchData(data) {
-      this.finalPercent = data.data;
+    fetchData({ features }) {
+      this.features = features;
+      this.setPercent(features);
     },
     getData() {
       this.restService && this.restService.getData(this.url);
+    },
+    setPercent(features) {
+      if (features && !!features.length) {
+        const field = this.field;
+        this.finalPercent = features[0].properties[field];
+      }
     }
   }
 };

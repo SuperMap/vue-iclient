@@ -4,6 +4,7 @@ import isEqual from 'lodash.isequal';
 import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
 import { clearNumberComma } from './util';
+import { statisticsFeatures } from './statistics';
 /**
  * @class EchartsDataService
  * @classdesc 图表组件功能类
@@ -53,13 +54,17 @@ export default class EchartsDataService {
       // 请求数据，请求成功后，解析数据
       getFeatures(dataset)
         .then(data => {
+          // 兼容三方服务接口返回的一个普通的对象
+          if (data.transformed && !!data.features.length) {
+            const dataInfo = data.features[0].properties;
+            data.features = Object.entries(dataInfo).map(([key, value]) => ({ properties: { label: key, value } }));
+            data = Object.assign(data, statisticsFeatures(data.features));
+          }
           // 设置this.data
           this._setData(data);
           // 解析数据，生成dataOption
           let options;
-          if (this.dataset.type === 'rest') {
-            options = this.formatThridRestChartData(this.datasetOptions, xBar, data);
-          } else if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer') {
+          if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer' || this.dataset.type === 'rest') {
             options = this.formatChartData(this.datasetOptions, xBar, data);
           }
 
@@ -102,73 +107,6 @@ export default class EchartsDataService {
       ...radarAxis,
       series
     };
-  }
-
-  formatThridRestChartData(datasetOptions, xBar = false, data = this.dataCache) {
-    let datas = data.data;
-    let xData = Object.keys(datas);
-    let sData = Object.values(datas);
-    let options;
-    let { seriesType, xField, yField, sort } = datasetOptions[0];
-    switch (seriesType) {
-      case 'pie':
-        let pieData = [];
-        for (let [key, value] of Object.entries(datas)) {
-          pieData.push({ value, name: key });
-        }
-        options = {
-          series: [
-            {
-              type: seriesType,
-              data: pieData
-            }
-          ]
-        };
-        break;
-      case 'radar':
-        let maxValue = Math.max.apply(this, sData);
-        let indicator = [];
-        for (let key of Object.keys(datas)) {
-          indicator.push({ name: key, max: maxValue });
-        }
-        options = {
-          radar: {
-            indicator
-          },
-          series: [
-            {
-              type: seriesType,
-              data: [
-                {
-                  value: sData
-                }
-              ]
-            }
-          ]
-        };
-        break;
-      default:
-        let result = sort && sort !== 'unsort' ? this._resortData(xData, sData, sort, xBar) : { xData, yData: sData };
-        options = {
-          xAxis: [
-            {
-              data: result.xData,
-              name: xField
-            }
-          ],
-          yAxis: {
-            name: yField
-          },
-          series: [
-            {
-              data: result.yData,
-              type: seriesType
-            }
-          ]
-        };
-        break;
-    }
-    return options;
   }
 
   /**
@@ -311,7 +249,7 @@ export default class EchartsDataService {
     fieldCaptions = data.fieldCaptions; // 所有x字段
     xFieldIndex = fieldCaptions.indexOf(xField); // x字段的下标
     yFieldIndex = fieldCaptions.indexOf(yField); // y字段的下标
-    fieldValues = data.fieldValues[yFieldIndex]; // y字段的所有feature值
+    fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
     // 该数据是否需要统计,统计的是数组下标
     if (isStastic) {
       fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex, sort);

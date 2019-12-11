@@ -4,6 +4,8 @@ import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { Events } from '../_types/event/Events';
 import epsgCodes from '../web-map/config/epsg.json';
 import proj4 from 'proj4';
+import { isMatchUrl } from './util';
+import { statisticsFeatures } from './statistics';
 
 /**
  * @class iServerRestService
@@ -138,8 +140,7 @@ export default class iServerRestService extends Events {
 
   async _getFeaturesSucceed(results) {
     let features;
-    let fieldCaptions;
-    let fieldTypes;
+    let data;
 
     if (results.result && results.result.recordsets) {
       // 数据来自restmap
@@ -147,8 +148,7 @@ export default class iServerRestService extends Events {
       this.features = recordsets.features;
       features = this.features.features;
       if (features && features.length > 0) {
-        fieldCaptions = recordsets.fields;
-        fieldTypes = recordsets.fieldTypes;
+        data = statisticsFeatures(features, recordsets.fields, recordsets.fieldTypes);
       } else {
         /**
          * @event iServerRestService#featureisempty
@@ -164,15 +164,8 @@ export default class iServerRestService extends Events {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features;
-      fieldCaptions = [];
-      fieldTypes = [];
       if (features && features.length > 0) {
-        const feature = this.features.features[0];
-        // 获取每个字段的名字和类型
-        for (let attr in feature.properties) {
-          fieldCaptions.push(attr);
-          fieldTypes.push(this._getDataType(feature.properties[attr]));
-        }
+        data = statisticsFeatures(features);
       } else {
         this.triggerEvent('featureisempty', {
           results
@@ -184,23 +177,6 @@ export default class iServerRestService extends Events {
         results
       });
       return;
-    }
-    const data = {
-      features,
-      fieldCaptions,
-      fieldTypes,
-      fieldValues: []
-    };
-    for (let m in fieldCaptions) {
-      const fieldValue = [];
-      for (let j in features) {
-        const feature = features[j];
-        const caption = data.fieldCaptions[m];
-        const value = feature.properties[caption];
-        fieldValue.push(value);
-      }
-      // fieldValues   [[每个字段的所有要素值],[],[]]
-      data.fieldValues.push(fieldValue);
     }
     // this.getDataSucceedCallback && this.getDataSucceedCallback(data);
     const epsgCode = await this._getEpsgCode();
@@ -273,7 +249,7 @@ export default class iServerRestService extends Events {
    */
   _checkUrl(url) {
     let match;
-    if (url === '' || !this._isMatchUrl(url)) {
+    if (url === '' || !isMatchUrl(url)) {
       match = false;
     } else {
       match = true;
@@ -283,58 +259,6 @@ export default class iServerRestService extends Events {
     //     match = false;
     // }
     return match;
-  }
-
-  /**
-   * @function iServerRestService.prototype._isMatchUrl
-   * @description 判断输入的地址是否符合地址格式
-   * @private
-   * @param {string} str - url
-   */
-  _isMatchUrl(str) {
-    var reg = new RegExp('(https?|http|file|ftp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
-    return reg.test(str);
-  }
-  /**
-     /**
-   * @function ChartViewModel.prototype._isDate
-   * @description 判断是否为日期
-   * @private
-   * @param {string} data - 字符串
-   */
-  _isDate(data) {
-    let reg = /((^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(10|12|0?[13578])([-\/\._])(3[01]|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(11|0?[469])([-\/\._])(30|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(0?2)([-\/\._])(2[0-8]|1[0-9]|0?[1-9])$)|(^([2468][048]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([3579][26]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][13579][26])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][13579][26])([-\/\._])(0?2)([-\/\._])(29)$))/gi;
-    return reg.test(data);
-  }
-  /**
-   * @function iServerRestService.prototype._getDataType
-   * @description 判断数据的类型
-   * @private
-   * @param {string} data - 字符串
-   */
-  _getDataType(data) {
-    if (data !== null && data !== undefined && data !== '') {
-      if (this._isDate(data)) {
-        return 'DATE';
-      }
-      if (this._isNumber(data)) {
-        return 'NUMBER';
-      }
-    }
-    return 'STRING';
-  }
-  /**
-   * @function iServerRestService.prototype._isNumber
-   * @description 判断是否为数值
-   * @private
-   * @param {string} data - 字符串
-   */
-  _isNumber(data) {
-    let mdata = Number(data);
-    if (mdata === 0) {
-      return true;
-    }
-    return !isNaN(mdata);
   }
 
   // 转坐标系

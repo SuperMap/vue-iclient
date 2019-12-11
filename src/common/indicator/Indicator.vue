@@ -1,16 +1,14 @@
 <template>
-  <div class="sm-component-indicator" :style="[getBackgroundStyle,{'flex-direction':direction}]">
+  <div class="sm-component-indicator" :style="[getBackgroundStyle, { 'flex-direction': direction }]">
     <div class="sm-component-indicator__head">
-      <span
-        v-show="showTitleUnit"
-        class="sm-component-indicator__title"
-        :style="[unit_titleStyle, getTextColorStyle]"
-      >{{ titleData }}</span>
+      <span v-show="showTitleUnit" class="sm-component-indicator__title" :style="[unit_titleStyle, getTextColorStyle]">
+        {{ titleData }}
+      </span>
     </div>
     <div class="sm-component-indicator__content">
       <span class="sm-component-indicator__num" :style="[indicatorStyle]">
         <countTo
-          v-if="isNumber(num)"
+          v-if="isNumber(indicatorNum)"
           :decimals="calDecimals"
           :startVal="startData"
           :endVal="numData"
@@ -21,13 +19,11 @@
           :separatorBackground="separatorBackground"
           :fontSize="fontSize"
         ></countTo>
-        {{ isNumber(num) ? '' : num }}
+        {{ isNumber(indicatorNum) ? '' : indicatorNum }}
       </span>
-      <span
-        v-show="showTitleUnit"
-        class="sm-component-indicator__unit"
-        :style="[unit_titleStyle, getTextColorStyle]"
-      >{{ unitData }}</span>
+      <span v-show="showTitleUnit" class="sm-component-indicator__unit" :style="[unit_titleStyle, getTextColorStyle]">{{
+        unitData
+      }}</span>
     </div>
   </div>
 </template>
@@ -122,7 +118,8 @@ export default {
       titleData: this.title,
       unitData: this.unit,
       numData: 0,
-      startData: 0
+      startData: 0,
+      indicatorNum: 0
     };
   },
   computed: {
@@ -139,7 +136,7 @@ export default {
     },
     indicatorStyle() {
       let style = { color: this.indicatorColorData };
-      typeof this.num === 'string' && (style.fontSize = parseFloat(this.fontSize) + this.fontUnit);
+      typeof this.indicatorNum === 'string' && (style.fontSize = parseFloat(this.fontSize) + this.fontUnit);
       return style;
     },
     direction() {
@@ -164,6 +161,7 @@ export default {
           this.unitData = this.unit;
           this.changeNumData(this.num);
           this.titleData = this.title;
+          this.fetchProperties = null;
         }
       },
       immediate: true
@@ -172,16 +170,13 @@ export default {
       this.indicatorColorData = val;
     },
     title(val) {
-      this.titleData = val;
+      this.setFieldValue('titleData', val);
     },
     unit(val) {
-      this.unitData = val;
+      this.setFieldValue('unitData', val);
     },
-    num: {
-      handler(val) {
-        this.changeNumData(val);
-      },
-      immediate: true
+    num(val) {
+      this.setFieldValue('numData', val);
     }
   },
   mounted() {
@@ -200,10 +195,14 @@ export default {
     timing() {
       this.getData();
     },
-    fetchData(data) {
-      this.unitData = data.data.unit;
-      this.changeNumData(data.data.num);
-      this.titleData = data.data.title;
+    fetchData({ features }) {
+      if (features && !!features.length) {
+        const properties = features[0].properties;
+        this.fetchProperties = properties;
+        this.unitData = properties.hasOwnProperty(this.unit) ? properties[this.unit] : this.unit;
+        properties.hasOwnProperty(this.num) && this.changeNumData(properties[this.num]);
+        this.titleData = properties.hasOwnProperty(this.title) ? properties[this.title] : this.title;
+      }
     },
     getData() {
       this.getRestService().getData(this.url);
@@ -211,13 +210,25 @@ export default {
     changeNumData(newData) {
       this.startData = this.animated ? +this.numData : +newData;
       this.numData = +newData;
+      this.indicatorNum = newData;
     },
     getRestService() {
       if (!this.restService) {
         this.restService = new RestService();
-        this.restService.on({ 'getdatasucceeded': this.fetchData });
+        this.restService.on({ getdatasucceeded: this.fetchData });
       }
       return this.restService;
+    },
+    setFieldValue(dataKey, value) {
+      let dataValue = value;
+      if (this.url && this.fetchProperties && this.fetchProperties.hasOwnProperty(value)) {
+        dataValue = this.fetchProperties[value];
+      }
+      if (dataKey !== 'numData') {
+        this[dataKey] = dataValue;
+      } else {
+        this.changeNumData(dataValue);
+      }
     }
   }
 };

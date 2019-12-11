@@ -1,10 +1,5 @@
 <template>
-  <div
-    id="chart"
-    ref="chart"
-    class="sm-component-liquidFill"
-    :style="[background && getBackgroundStyle]"
-  ></div>
+  <div id="chart" ref="chart" class="sm-component-liquidFill" :style="[background && getBackgroundStyle]"></div>
 </template>
 <script>
 import echarts from 'echarts';
@@ -61,6 +56,9 @@ export default {
     },
     url: {
       type: String
+    },
+    field: {
+      type: String
     }
   },
   data() {
@@ -90,6 +88,7 @@ export default {
           this.getData();
         } else {
           this.finalValue = this.value;
+          this.features = null;
         }
       },
       immediate: true
@@ -124,6 +123,9 @@ export default {
     },
     value(val) {
       this.finalValue = val;
+    },
+    field() {
+      this.setValue(this.features);
     }
   },
   mounted() {
@@ -132,7 +134,7 @@ export default {
     this.borderColorData = this.borderColor || this.waveColorData;
     this.backgroundColorData = this.backgroundColor || this.getBackground;
     this.restService = new RestService();
-    this.restService.on({ 'getdatasucceeded': this.fetchData });
+    this.restService.on({ getdatasucceeded: this.fetchData });
     setTimeout(() => {
       this.initializeChart();
       this.resize();
@@ -196,11 +198,18 @@ export default {
     timing() {
       this.getData();
     },
-    fetchData(data) {
-      this.finalValue = data.data;
+    fetchData({ features }) {
+      this.features = features;
+      this.setValue(features);
     },
     getData() {
       this.restService && this.restService.getData(this.url);
+    },
+    setValue(features) {
+      if (features && !!features.length) {
+        const field = this.field;
+        this.finalValue = features[0].properties[field];
+      }
     }
   }
 };

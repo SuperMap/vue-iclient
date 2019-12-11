@@ -487,11 +487,8 @@ export default {
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
       let options;
-      if (this.dataset.type === 'rest') {
-        options = echartsDataService.formatThridRestChartData(datasetOptions, this.xBar);
-      } else if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer') {
-        options = echartsDataService.formatChartData(datasetOptions, this.xBar);
-      }
+
+      options = echartsDataService.formatChartData(datasetOptions, this.xBar);
 
       // 缓存dataSeriesCache，格式化成echart的数据
       this.dataSeriesCache = Object.assign({}, options);
@@ -658,7 +655,8 @@ export default {
         }
       }
       return propsData;
-    }
+    },
+    changePopupArrowStyle() {}
   },
   // echarts所有静态方法
   /**

@@ -1,12 +1,7 @@
 <template>
   <div class="sm-component-text" :style="[customStyle, getBackgroundStyle, getTextColorStyle]">
     <span v-if="href">
-      <a
-        :target="target"
-        :href="href"
-        class="sm-component-text__href"
-        :style="[getTextColorStyle]"
-      >{{ finalTitle }}</a>
+      <a :target="target" :href="href" class="sm-component-text__href" :style="[getTextColorStyle]">{{ finalTitle }}</a>
     </span>
     <span v-else>{{ finalTitle }}</span>
   </div>
@@ -37,6 +32,9 @@ export default {
     target: {
       type: String,
       default: '_self'
+    },
+    field: {
+      type: String
     }
   },
   data() {
@@ -65,14 +63,18 @@ export default {
           this.getData();
         } else {
           this.finalTitle = this.title;
+          this.features = null;
         }
       },
       immediate: true
+    },
+    field() {
+      this.setTitle(this.features);
     }
   },
   mounted() {
     this.restService = new RestService();
-    this.restService.on({ 'getdatasucceeded': this.fetchData });
+    this.restService.on({ getdatasucceeded: this.fetchData });
   },
   beforeDestroy() {
     this.restService.remove('getdatasucceeded');
@@ -81,11 +83,18 @@ export default {
     timing() {
       this.getData();
     },
-    fetchData(data) {
-      this.finalTitle = data.data;
+    fetchData({ features }) {
+      this.features = features;
+      this.setTitle(features);
     },
     getData() {
       this.restService && this.restService.getData(this.url);
+    },
+    setTitle(features) {
+      if (features && !!features.length) {
+        const field = this.field;
+        this.finalTitle = features[0].properties[field];
+      }
     }
   }
 };
