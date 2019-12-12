@@ -5,6 +5,17 @@ import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
 import { clearNumberComma } from './util';
 import { statisticsFeatures } from './statistics';
+
+// 三方服务请求的结果为单对象的时候，是否要转成多个features
+export function tranformSingleToMulti(data) {
+  const dataInfo = (data.features[0] || {}).properties;
+  if (dataInfo) {
+    data.features = Object.entries(dataInfo).map(([key, value]) => ({ properties: { label: key, value } }));
+    return Object.assign(data, statisticsFeatures(data.features));
+  }
+  return data;
+}
+
 /**
  * @class EchartsDataService
  * @classdesc 图表组件功能类
@@ -56,9 +67,7 @@ export default class EchartsDataService {
         .then(data => {
           // 兼容三方服务接口返回的一个普通的对象
           if (data.transformed && !!data.features.length) {
-            const dataInfo = data.features[0].properties;
-            data.features = Object.entries(dataInfo).map(([key, value]) => ({ properties: { label: key, value } }));
-            data = Object.assign(data, statisticsFeatures(data.features));
+            data = tranformSingleToMulti(data);
           }
           // 设置this.data
           this._setData(data);

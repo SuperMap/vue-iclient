@@ -72,12 +72,8 @@ export default {
       this.setTitle(this.features);
     }
   },
-  mounted() {
-    this.restService = new RestService();
-    this.restService.on({ getdatasucceeded: this.fetchData });
-  },
   beforeDestroy() {
-    this.restService.remove('getdatasucceeded');
+    this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
     timing() {
@@ -88,7 +84,11 @@ export default {
       this.setTitle(features);
     },
     getData() {
-      this.restService && this.restService.getData(this.url);
+      if (!this.restService) {
+        this.restService = new RestService();
+        this.restService.on({ getdatasucceeded: this.fetchData });
+      }
+      this.restService.getData(this.url);
     },
     setTitle(features) {
       if (features && !!features.length) {

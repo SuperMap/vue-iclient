@@ -110,7 +110,10 @@ export default {
     showTitleUnit: {
       type: Boolean,
       default: true
-    }
+    },
+    titleField: String,
+    numField: String,
+    unitField: String
   },
   data() {
     return {
@@ -168,15 +171,6 @@ export default {
     },
     indicatorColor(val) {
       this.indicatorColorData = val;
-    },
-    title(val) {
-      this.setFieldValue('titleData', val);
-    },
-    unit(val) {
-      this.setFieldValue('unitData', val);
-    },
-    num(val) {
-      this.setFieldValue('numData', val);
     }
   },
   mounted() {
@@ -184,11 +178,51 @@ export default {
       this.indicatorColorData = this.getColor(0);
     });
     this.indicatorColorData = this.indicatorColor || this.getColor(0);
+    this.partsOfPropsWatcher();
   },
   beforeDestroy() {
     this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
+    partsOfPropsWatcher() {
+      const propsFields = ['title', 'unit', 'num', 'titleField', 'unitField', 'numField'];
+      propsFields.forEach(props => {
+        this.$watch(props, function(next) {
+          switch (props) {
+            case 'title':
+              this.titleData = next;
+              break;
+            case 'titleField':
+              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+                this.titleData = this.fetchProperties[this.titleField];
+              } else {
+                this.titleData = this.title;
+              }
+              break;
+            case 'unit':
+              this.unitData = next;
+              break;
+            case 'unitField':
+              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+                this.unitData = this.fetchProperties[this.unitField];
+              } else {
+                this.unitData = this.unit;
+              }
+              break;
+            case 'num':
+              this.changeNumData(next);
+              break;
+            case 'numField':
+              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+                this.changeNumData(this.fetchProperties[this.numField]);
+              } else {
+                this.changeNumData(this.num);
+              }
+              break;
+          }
+        });
+      });
+    },
     isNumber(str) {
       return /^\d+$/.test(str);
     },
@@ -199,9 +233,11 @@ export default {
       if (features && !!features.length) {
         const properties = features[0].properties;
         this.fetchProperties = properties;
-        this.unitData = properties.hasOwnProperty(this.unit) ? properties[this.unit] : this.unit;
-        properties.hasOwnProperty(this.num) && this.changeNumData(properties[this.num]);
-        this.titleData = properties.hasOwnProperty(this.title) ? properties[this.title] : this.title;
+        this.unitData = properties.hasOwnProperty(this.unitField) ? properties[this.unitField] : this.unit;
+        properties.hasOwnProperty(this.numField)
+          ? this.changeNumData(properties[this.numField])
+          : this.changeNumData(this.num);
+        this.titleData = properties.hasOwnProperty(this.titleField) ? properties[this.titleField] : this.title;
       }
     },
     getData() {
@@ -218,17 +254,6 @@ export default {
         this.restService.on({ getdatasucceeded: this.fetchData });
       }
       return this.restService;
-    },
-    setFieldValue(dataKey, value) {
-      let dataValue = value;
-      if (this.url && this.fetchProperties && this.fetchProperties.hasOwnProperty(value)) {
-        dataValue = this.fetchProperties[value];
-      }
-      if (dataKey !== 'numData') {
-        this[dataKey] = dataValue;
-      } else {
-        this.changeNumData(dataValue);
-      }
     }
   }
 };

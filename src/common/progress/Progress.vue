@@ -130,11 +130,9 @@ export default {
     this.resizeObsever = new ResizeSensor(this.$el, () => {
       this.resize();
     });
-    this.restService = new RestService();
-    this.restService.on({ getdatasucceeded: this.fetchData });
   },
   beforeDestroy() {
-    this.restService.remove('getdatasucceeded');
+    this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
     resize() {
@@ -148,7 +146,11 @@ export default {
       this.setPercent(features);
     },
     getData() {
-      this.restService && this.restService.getData(this.url);
+      if (!this.restService) {
+        this.restService = new RestService();
+        this.restService.on({ getdatasucceeded: this.fetchData });
+      }
+      this.restService.getData(this.url);
     },
     setPercent(features) {
       if (features && !!features.length) {

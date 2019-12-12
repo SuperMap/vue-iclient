@@ -133,15 +133,13 @@ export default {
     this.labelColorData = this.labelColor || this.getTextColor;
     this.borderColorData = this.borderColor || this.waveColorData;
     this.backgroundColorData = this.backgroundColor || this.getBackground;
-    this.restService = new RestService();
-    this.restService.on({ getdatasucceeded: this.fetchData });
     setTimeout(() => {
       this.initializeChart();
       this.resize();
     }, 0);
   },
   beforeDestroy() {
-    this.restService.remove('getdatasucceeded');
+    this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
     resize() {
@@ -203,7 +201,11 @@ export default {
       this.setValue(features);
     },
     getData() {
-      this.restService && this.restService.getData(this.url);
+      if (!this.restService) {
+        this.restService = new RestService();
+        this.restService.on({ getdatasucceeded: this.fetchData });
+      }
+      this.restService.getData(this.url);
     },
     setValue(features) {
       if (features && !!features.length) {
