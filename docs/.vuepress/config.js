@@ -131,7 +131,8 @@ module.exports = {
                     'control/query',
                     'control/search',
                     'control/open-file',
-                    'control/identify'
+                    'control/identify',
+                    'control/layer-manager'
                   ]
                 },
                 {

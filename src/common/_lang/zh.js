@@ -148,6 +148,9 @@ export default {
     title: '指标标题',
     unit: '单位'
   },
+  layerManager: {
+    title: '图层管理'
+  },
   tdtResults: {
     on: '在',
     station: '站',

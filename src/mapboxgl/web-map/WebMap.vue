@@ -11,6 +11,7 @@
     <Query v-if="queryControl.show" v-bind="queryControl"></Query>
     <Search v-if="searchControl.show" v-bind="searchControl"></Search>
     <Identify v-if="identifyControl.show" v-bind="identifyControl"></Identify>
+    <LayerManager v-if="layerManageControl.show" v-bind="layerManageControl"></LayerManager>
     <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
@@ -30,6 +31,7 @@ import Legend from './control/legend/Legend.vue';
 import Query from '../query/Query.vue';
 import Search from '../search/Search.vue';
 import Identify from './control/identify/Identify.vue';
+import LayerManager from './control/layer-manager/LayerManager.vue';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
@@ -133,6 +135,11 @@ interface identifyParam {
   clickAreaAround?: number;
 }
 
+interface layerManageParam {
+  show?: boolean;
+  layers?: Array<Object>;
+}
+
 @Component({
   name: 'SmWebMap',
   viewModelProps: [
@@ -160,7 +167,8 @@ interface identifyParam {
     Legend,
     Query,
     Search,
-    Identify
+    Identify,
+    LayerManager
   }
 })
 class SmWebMap extends Mixins(VmUpdater, MapEvents) {
@@ -278,6 +286,16 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
     }
   })
   identifyControl: identifyParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: false,
+        layers: []
+      };
+    }
+  })
+  layerManageControl: layerManageParam;
 
   @Watch('mapId')
   mapIdChanged() {

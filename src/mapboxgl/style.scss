@@ -25,6 +25,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './web-map/control/legend/style/legend.scss';
 @import './web-map/control/draw/style/draw.scss';
 @import './web-map/control/identify/style/identify.scss';
+@import './web-map/control/layer-manager/style/layer-manager.scss';
 @import './tdt/results/style/areaResult.scss';
 @import './tdt/results/style/lineResult.scss';
 @import './tdt/results/style/nothingResult.scss';
@@ -42,6 +43,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './query/style/query.scss';
 @import './open-file/style/open-file.scss';
 @import './text-list/style/text-list.scss';
+
 
 /* layer */
 @import './web-map/layer/animate-marker/style/animate-marker-layer.scss';

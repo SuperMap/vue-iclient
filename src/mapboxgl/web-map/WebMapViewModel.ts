@@ -70,6 +70,8 @@ export default class WebMapViewModel extends WebMapBase {
 
   pitch: number;
 
+  ignoreBaseLayer: boolean;
+
   private _sourceListModel: SourceListModel;
 
   private _legendList: any;
@@ -82,8 +84,15 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _unprojectProjection: string;
 
-  // @ts-ignore fix-mapoptions
-  constructor(id, options: webMapOptions = {}, mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } }) {
+  private _cacheLayerId: Array<string> = [];
+
+  constructor(
+    id,
+    options: webMapOptions = {},
+    // @ts-ignore fix-mapoptions
+    mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
+    map?: mapboxglTypes.Map
+  ) {
     super(id, options, mapOptions);
     this.mapId = id;
     if (!this.mapId && !mapOptions.center && !mapOptions.zoom) {
@@ -96,6 +105,9 @@ export default class WebMapViewModel extends WebMapBase {
     this.zoom = mapOptions.zoom;
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
+    if (map) {
+      this.map = map;
+    }
     this._initWebMap();
   }
 
@@ -147,17 +159,38 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
+  protected addWebMap(ignoreBaseLayer) {
+    this._taskID = new Date();
+    this.ignoreBaseLayer = ignoreBaseLayer;
+    this.getMapInfo(this._taskID);
+  }
+
+  protected removeWebMap() {
+    this._taskID = null;
+    this._cacheLayerId.forEach(layerId => {
+      if (this.map.getLayer(layerId)) {
+        this.map.removeLayer(layerId);
+      }
+    });
+    this._cacheLayerId.forEach(layerId => {
+      if (this.map.getSource(layerId)) {
+        this.map.removeSource(layerId);
+      }
+    });
+    this._cacheLayerId = [];
+  }
+
   get getSourceListModel(): SourceListModel {
     return this._sourceListModel;
   }
 
   _initWebMap(): void {
     this._legendList = {};
-    this.initWebMap()
+    !this.map && this.initWebMap();
   }
 
   _getMapInfo(mapInfo, _taskID): void {
-    let { projection, layers, baseLayer } = mapInfo;
+    let { projection } = mapInfo;
     let epsgCode = projection.split(':')[1];
     if (!epsgCode) {
       this.baseProjection = this.getEpsgInfoFromWKT(projection);
@@ -165,25 +198,33 @@ export default class WebMapViewModel extends WebMapBase {
       this.baseProjection = projection;
     }
 
-    // 坐标系异常处理
     if (mapboxgl.CRS.get(this.baseProjection)) {
-
       if (!['EPSG:4326', 'EPSG:3857'].includes(this.baseProjection)) {
         this._defineProj4(this.baseProjection.split(':')[1]);
       }
 
-      this._createMap(mapInfo);
-      this.map.on('load', () => {
-        this._initBaseLayer(mapInfo);
-        if (!layers || layers.length === 0) {
-          this._sendMapToUser(0, 0);
-        } else {
-          layers = this._setLayerID(baseLayer, layers);
-          this._initOverlayLayers(layers, _taskID);
-        }
-      });
+      if (this.map) {
+        // console.log('this.map.setCRS(mapboxgl.CRS.get(crs));', this.map.getCRS().epsgCode, this.baseProjection);
+        this._handleLayerInfo(mapInfo, _taskID);
+      } else {
+        this._createMap(mapInfo);
+        this.map.on('load', () => {
+          this._handleLayerInfo(mapInfo, _taskID);
+        });
+      }
     } else {
       throw Error(geti18n().t('webmap.crsNotSupport'));
+    }
+  }
+
+  _handleLayerInfo(mapInfo, _taskID): void {
+    mapInfo = this._setLayerID(mapInfo);
+    const { layers } = mapInfo;
+    !this.ignoreBaseLayer && this._initBaseLayer(mapInfo);
+    if (!layers || layers.length === 0) {
+      this._sendMapToUser(0, 0);
+    } else {
+      this._initOverlayLayers(layers, _taskID);
     }
   }
 
@@ -197,7 +238,7 @@ export default class WebMapViewModel extends WebMapBase {
             map: this.map,
             mapparams: {},
             layers: []
-          })
+          });
         });
       }, 0);
 
@@ -239,7 +280,7 @@ export default class WebMapViewModel extends WebMapBase {
     /**
      * @description Map 初始化成功。
      */
-    this.triggerEvent('mapinitialized', { map: this.map })
+    this.triggerEvent('mapinitialized', { map: this.map });
   }
 
   private _createMVTBaseLayer(layerInfo) {
@@ -250,7 +291,6 @@ export default class WebMapViewModel extends WebMapBase {
 
   _initBaseLayer(mapInfo: any): void {
     let layerInfo = mapInfo.baseLayer || mapInfo;
-
     let layerType = this.getBaseLayerType(layerInfo);
     let mapUrls = this.getMapurls();
     let url: string;
@@ -277,7 +317,7 @@ export default class WebMapViewModel extends WebMapBase {
         this._createXYZLayer(layerInfo, url);
         break;
       case 'BAIDU':
-        this.triggerEvent('notsupportbaidumap', {})
+        this.triggerEvent('notsupportbaidumap', {});
         break;
       case 'MAPBOXSTYLE':
         this._createMVTBaseLayer(layerInfo); // 添加矢量瓦片服务作为底图
@@ -297,7 +337,11 @@ export default class WebMapViewModel extends WebMapBase {
         // TODO  ---  暂不支持 SAMPLE_DATA
         if (type === 'SAMPLE_DATA') {
           this._addLayerSucceeded();
-          this.triggerEvent('getlayerdatasourcefailed', { error: 'SAMPLE DATA is not supported', layer, map: this.map });
+          this.triggerEvent('getlayerdatasourcefailed', {
+            error: 'SAMPLE DATA is not supported',
+            layer,
+            map: this.map
+          });
           return;
         }
         if (type === 'tile') {
@@ -311,11 +355,10 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _initOverlayLayer(layerInfo: any, features?: any) {
-    let { layerType, visible, style, featureType, labelStyle, projection } = layerInfo
+    let { layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
     layerInfo.visible = visible ? 'visible' : 'none';
-
     if (layerType === 'restMap') {
-      this._createRestMapLayer(features, layerInfo)
+      this._createRestMapLayer(features, layerInfo);
       return;
     }
     if (layerType === 'mvt') {
@@ -330,7 +373,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
 
     if (features && projection && (projection !== this.baseProjection || projection === 'EPSG:3857')) {
-      let epsgCode = projection.split(":")[1];
+      let epsgCode = projection.split(':')[1];
       if (!epsgCode) {
         return;
       }
@@ -391,19 +434,25 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createWMTSLayer(layerInfo): void {
     let wmtsUrl = this._getWMTSUrl(layerInfo);
-    this.webMapService.getWmtsInfo(layerInfo).then((result: any) => {
-      const layerId = layerInfo.layerID || layerInfo.name;
-      result.isMatched && this._addBaselayer([wmtsUrl], layerId, 0, result.matchMaxZoom);
-    }, (error) => {
-      throw new Error(error);
-    }).catch(error => {
-      /**
-       * @event WebMapViewModel#getmapinfofailed
-       * @description 获取地图信息失败。
-       * @property {Object} error - 失败原因。
-       */
-      this.triggerEvent('getmapinfofailed', { error })
-    })
+    this.webMapService
+      .getWmtsInfo(layerInfo)
+      .then(
+        (result: any) => {
+          const layerId = layerInfo.layerID || layerInfo.name;
+          result.isMatched && this._addBaselayer([wmtsUrl], layerId, 0, result.matchMaxZoom);
+        },
+        error => {
+          throw new Error(error);
+        }
+      )
+      .catch(error => {
+        /**
+         * @event WebMapViewModel#getmapinfofailed
+         * @description 获取地图信息失败。
+         * @property {Object} error - 失败原因。
+         */
+        this.triggerEvent('getmapinfofailed', { error });
+      });
   }
 
   private _createBingLayer(layerName: string): void {
@@ -509,24 +558,46 @@ export default class WebMapViewModel extends WebMapBase {
     return url;
   }
 
-  private _setLayerID(baseLayer: any, layers: any): Array<object> {
+  private _setLayerID(mapInfo): Array<object> {
     let sumInfo: object = {};
+    const { baseLayer, layers } = mapInfo;
+    sumInfo[baseLayer.name] = 0;
+    let baseInfo = this._generateUniqueLayerId(baseLayer.name, sumInfo[baseLayer.name]);
+    baseLayer.name = baseInfo.newId;
     const layerNames = layers.map(layer => layer.name);
     const _layers: Array<object> = layers.map((layer, index) => {
       if (!(layer.name in sumInfo)) {
         sumInfo[layer.name] = baseLayer.name === layer.name ? 1 : 0;
-      } else {
-        sumInfo[layer.name] = sumInfo[layer.name];
       }
       const matchFirstIndex = layerNames.indexOf(layer.name);
       const matchLastIndex = layerNames.lastIndexOf(layer.name);
-      if (matchFirstIndex > -1 && matchLastIndex > -1 && index > matchFirstIndex && index <= matchLastIndex) {
+      if (index >= matchFirstIndex && index <= matchLastIndex) {
         sumInfo[layer.name] = sumInfo[layer.name] + 1;
       }
       let layerID = !!sumInfo[layer.name] ? `${layer.name}-${sumInfo[layer.name]}` : layer.name;
+      let { newId, newIndex } = this._generateUniqueLayerId(layerID, sumInfo[layer.name]);
+      sumInfo[layer.name] = newIndex;
+      layerID = newId;
       return Object.assign(layer, { layerID });
     });
-    return _layers;
+    mapInfo.layers = _layers;
+    mapInfo.baseLayer = baseLayer;
+    return mapInfo;
+  }
+
+  private _generateUniqueLayerId(newId, index) {
+    if (this.map.getLayer(newId)) {
+      index++;
+      // 判断是否带有-index后缀
+      if (newId.match(/-\d+&/gi)) {
+        newId = newId.replace(/\d+$/gi, index);
+      } else {
+        newId = `${newId}-${index}`;
+      }
+      return this._generateUniqueLayerId(newId, index);
+    } else {
+      return { newId, newIndex: index };
+    }
   }
 
   _createRestMapLayer(restMaps, layer) {
@@ -696,7 +767,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _createMigrationLayer(layerInfo, features) {
     window['echarts'] = echarts;
     let options = this.getEchartsLayerOptions(layerInfo, features, 'GLMap');
-    options['GLMap'] = { roam: true }
+    options['GLMap'] = { roam: true };
     let echartslayer = new EchartsLayer(this.map);
     echartslayer.chart.setOption(options);
     this.echartslayer.push(echartslayer);
@@ -763,8 +834,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _addLabelLayer(layerInfo: any, features: any): void {
     let labelStyle = layerInfo.labelStyle;
-
-    this.map.addLayer({
+    this._addLayer({
       id: `${layerInfo.layerID}-label`,
       type: 'symbol',
       source: {
@@ -798,17 +868,16 @@ export default class WebMapViewModel extends WebMapBase {
     let unicode = layerInfo.style.unicode;
     let text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
     let layerID = layerInfo.layerID;
-    this.map.addSource(layerID, {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: []
-      }
-    });
-    this.map.addLayer({
+    this._addLayer({
       id: layerID,
       type: 'symbol',
-      source: layerID,
+      source: {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      },
       paint: {
         'text-color': style.fillColor
       },
@@ -848,7 +917,7 @@ export default class WebMapViewModel extends WebMapBase {
         }
         let iconSize = Number.parseFloat((style.radius / image.height).toFixed(2)) * 2;
         !this.map.hasImage('imageIcon') && this.map.addImage('imageIcon', image);
-        !this.map.getLayer(layerID) && this.map.addLayer({
+        this._addLayer({
           id: layerID,
           type: 'symbol',
           source: source,
@@ -877,7 +946,7 @@ export default class WebMapViewModel extends WebMapBase {
             }
             let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2));
             !this.map.hasImage('imageIcon') && this.map.addImage('imageIcon', image);
-            !this.map.getLayer(layerID) && this.map.addLayer({
+            this._addLayer({
               id: layerID,
               type: 'symbol',
               source: source,
@@ -1006,7 +1075,7 @@ export default class WebMapViewModel extends WebMapBase {
                 reject();
               }
               this.map.addImage(index + '', image);
-              this.map.addLayer({
+              this._addLayer({
                 id: layerID,
                 type: 'symbol',
                 source: source,
@@ -1028,24 +1097,25 @@ export default class WebMapViewModel extends WebMapBase {
             this.getCanvasFromSVG(defaultStyle.src, this._svgDiv, canvas => {
               this.handleSvgColor(defaultStyle, canvas);
               let imgUrl = canvas.toDataURL('img/png');
-              imgUrl && this.map.loadImage(imgUrl, (error, image) => {
-                if (error) {
-                  console.log(error);
-                  reject();
-                }
-                this.map.addImage(index + '', image);
-                this.map.addLayer({
-                  id: layerID,
-                  type: 'symbol',
-                  source: source,
-                  layout: {
-                    'icon-image': index + '',
-                    'icon-size': defaultStyle.scale,
-                    visibility: layerInfo.visible
+              imgUrl &&
+                this.map.loadImage(imgUrl, (error, image) => {
+                  if (error) {
+                    console.log(error);
+                    reject();
                   }
+                  this.map.addImage(index + '', image);
+                  this._addLayer({
+                    id: layerID,
+                    type: 'symbol',
+                    source: source,
+                    layout: {
+                      'icon-image': index + '',
+                      'icon-size': defaultStyle.scale,
+                      visibility: layerInfo.visible
+                    }
+                  });
+                  resolve();
                 });
-                resolve();
-              });
             });
           }
           // point-line-polygon-marker
@@ -1137,8 +1207,7 @@ export default class WebMapViewModel extends WebMapBase {
       let min = SuperMap.ArrayStatistic.getMin(weight);
       paint['heatmap-weight'] = ['interpolate', ['linear'], ['get', 'weight'], min, 0, max, 1];
     }
-
-    this.map.addLayer({
+    this._addLayer({
       id: layerInfo.layerID,
       type: 'heatmap',
       source: {
@@ -1246,6 +1315,7 @@ export default class WebMapViewModel extends WebMapBase {
        * @property {string} mapParams.description - 地图描述。
        * @property {Array.<Object>} layers - 地图上所有的图层对象。
        */
+
       this._sourceListModel = new SourceListModel({
         map: this.map
       });
@@ -1351,7 +1421,7 @@ export default class WebMapViewModel extends WebMapBase {
     };
     let mbglType = mbglTypeMap[type];
     if (mbglType === 'circle' || mbglType === 'line' || mbglType === 'fill') {
-      this.map.addLayer({
+      this._addLayer({
         id: layerID,
         type: mbglType,
         source: source,
@@ -1371,7 +1441,7 @@ export default class WebMapViewModel extends WebMapBase {
       // @ts-ignore
       prjCoordSys: isIserver ? { epsgCode: this.baseProjection.split(':')[1] } : ''
     };
-    this.map.addLayer({
+    this._addLayer({
       id: layerID,
       type: 'raster',
       source: source,
@@ -1413,7 +1483,7 @@ export default class WebMapViewModel extends WebMapBase {
     let url = info.url + '/tileFeature.mvt';
     let origin = mapboxgl.CRS.get(this.baseProjection).getOrigin();
     url += `?&returnAttributes=true&width=512&height=512&x={x}&y={y}&scale={scale}&origin={x:${origin[0]},y:${origin[1]}}`;
-    this.map.addLayer({
+    this._addLayer({
       id: layerInfo.layerID,
       // @ts-ignore
       type: style.mbglType,
@@ -1455,7 +1525,11 @@ export default class WebMapViewModel extends WebMapBase {
 
   _unproject(point: [number, number]): [number, number] {
     // @ts-ignore
-    return proj4(this._unprojectProjection || this.baseProjection, this.baseProjection === 'EPSG:3857' ? "EPSG:4326" : this.baseProjection, point);
+    return proj4(
+      this._unprojectProjection || this.baseProjection,
+      this.baseProjection === 'EPSG:3857' ? 'EPSG:4326' : this.baseProjection,
+      point
+    );
   }
   private _getMapCenter(mapInfo) {
     // center
@@ -1551,7 +1625,14 @@ export default class WebMapViewModel extends WebMapBase {
     proj4.defs(defName, defValue);
   }
 
-  public cleanWebMap() {
+  private _addLayer(layerInfo) {
+    const { id } = layerInfo;
+    Array.isArray(this._cacheLayerId) && this._cacheLayerId.push(id);
+    layerInfo = Object.assign(layerInfo, { id });
+    this.map.addLayer(layerInfo);
+  }
+
+  cleanWebMap() {
     if (this.map) {
       this.map.remove();
       this.center = null;
@@ -1562,9 +1643,14 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private centerValid(center) {
-    if (center && ((<[number, number]>center).length > 0 || typeof center === mapboxgl.LngLat || (<{ lng: number; lat: number }>center).lng)) {
-      return true
+    if (
+      center &&
+      ((<[number, number]>center).length > 0 ||
+        typeof center === mapboxgl.LngLat ||
+        (<{ lng: number; lat: number }>center).lng)
+    ) {
+      return true;
     }
-    return false
+    return false;
   }
 }
