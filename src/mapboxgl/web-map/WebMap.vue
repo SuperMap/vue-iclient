@@ -11,7 +11,7 @@
     <Query v-if="queryControl.show" v-bind="queryControl"></Query>
     <Search v-if="searchControl.show" v-bind="searchControl"></Search>
     <Identify v-if="identifyControl.show" v-bind="identifyControl"></Identify>
-    <LayerManager v-if="layerManageControl.show" v-bind="layerManageControl"></LayerManager>
+    <LayerManager v-if="layerManagerControl.show" v-bind="layerManagerControl"></LayerManager>
     <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
@@ -295,7 +295,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       };
     }
   })
-  layerManageControl: layerManageParam;
+  layerManagerControl: layerManageParam;
 
   @Watch('mapId')
   mapIdChanged() {

@@ -105,10 +105,12 @@ export default class WebMapViewModel extends WebMapBase {
     this.zoom = mapOptions.zoom;
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
+    this._legendList = {};
     if (map) {
       this.map = map;
+    } else {
+      this._initWebMap();
     }
-    this._initWebMap();
   }
 
   public resize(): void {
@@ -185,8 +187,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _initWebMap(): void {
-    this._legendList = {};
-    !this.map && this.initWebMap();
+    this.initWebMap();
   }
 
   _getMapInfo(mapInfo, _taskID): void {
@@ -205,6 +206,12 @@ export default class WebMapViewModel extends WebMapBase {
 
       if (this.map) {
         // console.log('this.map.setCRS(mapboxgl.CRS.get(crs));', this.map.getCRS().epsgCode, this.baseProjection);
+        // @ts-ignore
+        if(this.map.getCRS().epsgCode !== this.baseProjection) {
+          this.triggerEvent('projectionIsNotMatch', {});
+          return;
+        }
+
         this._handleLayerInfo(mapInfo, _taskID);
       } else {
         this._createMap(mapInfo);
@@ -571,7 +578,7 @@ export default class WebMapViewModel extends WebMapBase {
       }
       const matchFirstIndex = layerNames.indexOf(layer.name);
       const matchLastIndex = layerNames.lastIndexOf(layer.name);
-      if (index >= matchFirstIndex && index <= matchLastIndex) {
+      if (index > matchFirstIndex && index <= matchLastIndex) {
         sumInfo[layer.name] = sumInfo[layer.name] + 1;
       }
       let layerID = !!sumInfo[layer.name] ? `${layer.name}-${sumInfo[layer.name]}` : layer.name;
@@ -1635,6 +1642,7 @@ export default class WebMapViewModel extends WebMapBase {
   cleanWebMap() {
     if (this.map) {
       this.map.remove();
+      this.map = null;
       this.center = null;
       this.zoom = null;
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);

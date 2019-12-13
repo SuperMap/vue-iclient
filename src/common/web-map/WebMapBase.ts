@@ -76,7 +76,8 @@ export default abstract class WebMapBase extends Events {
       'getlayerdatasourcefailed',
       'addlayerssucceeded',
       'notsupportmvt',
-      'notsupportbaidumap'
+      'notsupportbaidumap',
+      'projectionIsNotMatch'
     ];
   }
 
