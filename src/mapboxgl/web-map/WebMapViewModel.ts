@@ -207,7 +207,7 @@ export default class WebMapViewModel extends WebMapBase {
       if (this.map) {
         // console.log('this.map.setCRS(mapboxgl.CRS.get(crs));', this.map.getCRS().epsgCode, this.baseProjection);
         // @ts-ignore
-        if(this.map.getCRS().epsgCode !== this.baseProjection) {
+        if (this.map.getCRS().epsgCode !== this.baseProjection) {
           this.triggerEvent('projectionIsNotMatch', {});
           return;
         }
@@ -256,8 +256,11 @@ export default class WebMapViewModel extends WebMapBase {
     let center = this._getMapCenter(mapInfo);
     // zoom
     let zoom = mapInfo.level || 0;
-    zoom = zoom === 0 ? 0 : zoom - 1;
-    // zoom = zoom + 7.2;  TODO  mvt zoom 级别对应算法
+    // @ts-ignore
+    const zoomBase = +Math.log2(
+      this._getResolution(mapboxgl.CRS.get(this.baseProjection).getExtent()) / this._getResolution(mapInfo.extent)
+    ).toFixed(2);
+    zoom += zoomBase;
     // 初始化 map
     this.map = new mapboxgl.Map({
       container: this.target,
@@ -1275,6 +1278,10 @@ export default class WebMapViewModel extends WebMapBase {
     let expression = ['match', ['get', 'index']];
     features.forEach(row => {
       let tartget = parseFloat(row.properties[fieldName]);
+      if (!tartget && tartget !== 0) {
+        expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
+        return;
+      }
       if (styleGroups) {
         for (let i = 0; i < styleGroups.length; i++) {
           if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
@@ -1282,7 +1289,6 @@ export default class WebMapViewModel extends WebMapBase {
           }
         }
       }
-      !tartget && expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
     }, this);
     expression.push('rgba(0, 0, 0, 0)');
 
@@ -1660,5 +1666,12 @@ export default class WebMapViewModel extends WebMapBase {
       return true;
     }
     return false;
+  }
+
+  private _getResolution(bounds, tileSize = 512.0) {
+    if (bounds.leftBottom && bounds.rightTop) {
+      return Math.max(bounds.rightTop.x - bounds.leftBottom.x, bounds.rightTop.y - bounds.leftBottom.y) / tileSize;
+    }
+    return Math.max(bounds[2] - bounds[0], bounds[3] - bounds[1]) / tileSize;
   }
 }
