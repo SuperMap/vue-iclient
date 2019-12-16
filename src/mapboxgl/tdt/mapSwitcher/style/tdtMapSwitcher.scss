@@ -21,7 +21,8 @@
           position: relative;
           margin-right: 4px;
           display: inline-block;
-          background: url("#{$--tdt-assets-path}/sprite.png") no-repeat;
+          background: url('#{$--tdt-assets-path}/sprite.png') no-repeat;
+          cursor: pointer;
           &.map-item {
             background-position: -240px -53px;
           }

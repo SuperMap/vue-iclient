@@ -177,7 +177,7 @@ export default {
   removed() {
     this.sourceList = {};
     this.sourceNames = [];
-    this.viewModel.off('layersUpdated', this.layerUpdateFn);
+    this.viewModel && this.viewModel.off('layersUpdated', this.layerUpdateFn);
   },
   beforeDestory() {
     this.$options.removed.call(this);
