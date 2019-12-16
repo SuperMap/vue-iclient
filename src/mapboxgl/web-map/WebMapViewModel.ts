@@ -205,13 +205,11 @@ export default class WebMapViewModel extends WebMapBase {
       }
 
       if (this.map) {
-        // console.log('this.map.setCRS(mapboxgl.CRS.get(crs));', this.map.getCRS().epsgCode, this.baseProjection);
         // @ts-ignore
         if (this.map.getCRS().epsgCode !== this.baseProjection) {
           this.triggerEvent('projectionIsNotMatch', {});
           return;
         }
-
         this._handleLayerInfo(mapInfo, _taskID);
       } else {
         this._createMap(mapInfo);

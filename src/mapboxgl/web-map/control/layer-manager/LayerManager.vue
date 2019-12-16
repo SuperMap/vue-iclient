@@ -187,6 +187,7 @@ export default {
         if (!node.key) {
           node.key = uniqueId('key_');
         }
+        node.selectable = false;
         // 如果没有mapInfo就禁用掉checkbox
         if (!node.children && !node.mapInfo) {
           node.disableCheckbox = true;
