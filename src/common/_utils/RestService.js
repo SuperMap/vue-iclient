@@ -76,7 +76,7 @@ export default class RestService extends Events {
         features.push(feature);
         break;
       case '[object Array]':
-        subData = !isNaN(+limitLen) && limitLen < data.length ? data.slice(0, limitLen) : data;
+        subData = limitLen && !isNaN(+limitLen) && limitLen < data.length ? data.slice(0, limitLen) : data;
         features = subData.map(item => {
           if (
             getDataType(item) === '[object Object]' &&
@@ -99,7 +99,7 @@ export default class RestService extends Events {
         break;
       case '[object Object]':
         subData = data;
-        if (!isNaN(+limitLen) && limitLen < Object.keys(data).length) {
+        if (limitLen && !isNaN(+limitLen) && limitLen < Object.keys(data).length) {
           subData = Object.fromEntries(Object.entries(data).slice(0, limitLen));
         }
         if (!subData.hasOwnProperty('properties') || getDataType(subData.properties) !== '[object Object]') {

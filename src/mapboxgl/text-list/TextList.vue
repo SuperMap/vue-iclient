@@ -199,14 +199,14 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   timing() {
     if (this.dataset && this.dataset.url) {
-      this.getFeaturesFromDataset();
+      this.getFeaturesFromDataset(false);
     }
   }
 
-  getFeaturesFromDataset() {
-    this.spinning = true;
+  getFeaturesFromDataset(initLoading = true) {
+    initLoading && (this.spinning = true);
     getFeatures(this.dataset).then(data => {
-      this.spinning = false;
+      initLoading && (this.spinning = false);
       this.featuresData = data;
       this.listData = this.handleFeatures(data);
       this.getListHeightStyle();
