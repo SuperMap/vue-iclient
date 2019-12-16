@@ -2,18 +2,12 @@
   <div class="sm-component-text-list">
     <div
       class="sm-component-text-list__header"
-      :style="[listStyle.headerHeight,{background: getColor(0)},getTextColorStyle]"
+      :style="[listStyle.headerHeight, { background: getColor(0) }, getTextColorStyle]"
     >
       <div class="sm-component-text-list__header-content">
-        <template v-if="animateContent && animateContent.length>0">
-          <template
-            v-for="(item,index) in ((header && header.length>0 && header) || Object.keys(animateContent[0]))"
-          >
-            <div
-              :key="index"
-              :style="[listStyle.headerLineHeight, fontSizeStyle]"
-              :title="item"
-            >{{ item }}</div>
+        <template v-if="animateContent && animateContent.length > 0">
+          <template v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])">
+            <div :key="index" :style="[listStyle.headerLineHeight, fontSizeStyle]" :title="item">{{ item }}</div>
           </template>
         </template>
       </div>
@@ -24,20 +18,16 @@
     >
       <div
         ref="listContent"
-        :class="['sm-component-text-list__body-content',animate && 'sm-component-text-list__body-content--anim']"
+        :class="['sm-component-text-list__body-content', animate && 'sm-component-text-list__body-content--anim']"
       >
-        <template v-if="animateContent && animateContent.length>0">
+        <template v-if="animateContent && animateContent.length > 0">
           <div
-            v-for="(item,index) in animateContent"
+            v-for="(item, index) in animateContent"
             :key="index"
             class="sm-component-text-list__list"
             :style="[listStyle.rowStyle, getRowStyle(index)]"
           >
-            <div
-              v-for="(items,index2) in item"
-              :key="index2"
-              :style="listStyle.rowHeight"
-            >{{ items }}</div>
+            <div v-for="(items, index2) in item" :key="index2" :style="listStyle.rowHeight">{{ items }}</div>
           </div>
         </template>
       </div>
@@ -52,13 +42,14 @@ import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
 import getFeatures from '../../common/_utils/get-features';
 import Theme from '../../common/_mixin/theme';
+import Timer from '../../common/_mixin/timer';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import isEqual from 'lodash.isequal';
 
 @Component({
   name: 'SmTextList'
 })
-class SmTextList extends Mixins(Theme) {
+class SmTextList extends Mixins(Theme, Timer) {
   animate: Boolean = false;
 
   spinning: Boolean = false;
@@ -202,6 +193,12 @@ class SmTextList extends Mixins(Theme) {
     if (this.content && this.content.length > 0) {
       this.listData = this.handleContent(this.content);
     } else if (this.dataset && this.dataset.url) {
+      this.getFeaturesFromDataset();
+    }
+  }
+
+  timing() {
+    if (this.dataset && this.dataset.url) {
       this.getFeaturesFromDataset();
     }
   }
