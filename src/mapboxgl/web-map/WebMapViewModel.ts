@@ -1442,7 +1442,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  private _addBaselayer(url: Array<string>, layerID: string, visibility, minzoom = 0, maxzoom = 22, isIserver = false): void {
+  private _addBaselayer(url: Array<string>, layerID: string, visibility = true, minzoom = 0, maxzoom = 22, isIserver = false): void {
     let source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,
