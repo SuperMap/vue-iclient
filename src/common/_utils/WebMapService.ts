@@ -630,6 +630,8 @@ export default class WebMapService extends Events {
                 reject(err);
               }
             );
+          }, err => {
+            reject(err);
           });
         }
       }
@@ -666,6 +668,9 @@ export default class WebMapService extends Events {
         return response.json();
       })
       .then(datasource => {
+        if (datasource.code === 401) {
+          throw Error(datasource.errorMsg);
+        }
         let datasourceNames = datasource.datasourceNames;
         return datasourceNames[0];
       });

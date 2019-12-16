@@ -169,7 +169,7 @@ export default abstract class WebMapBase extends Events {
           this._getMapInfo(mapInfo, _taskID);
         },
         error => {
-          throw new Error(error);
+          throw error;
         }
       )
       .catch(error => {

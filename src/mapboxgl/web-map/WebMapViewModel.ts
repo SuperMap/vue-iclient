@@ -432,12 +432,12 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createTiandituLayer(mapInfo: any): void {
     let tiandituUrls = this._getTiandituUrl(mapInfo);
-    let isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
+    let {labelLayerVisible, name, visible} = mapInfo.baseLayer;
+    let isLabel = Boolean(labelLayerVisible);
     let labelUrl = tiandituUrls['labelUrl'];
     let tiandituUrl = tiandituUrls['tiandituUrl'];
-    const layerId = mapInfo.baseLayer.name;
-    this._addBaselayer(tiandituUrl, layerId);
-    isLabel && this._addBaselayer(labelUrl, `${layerId}-label`);
+    this._addBaselayer(tiandituUrl, name, visible);
+    isLabel && this._addBaselayer(labelUrl, `${name}-label`, visible);
   }
 
   private _createWMTSLayer(layerInfo): void {
@@ -447,7 +447,7 @@ export default class WebMapViewModel extends WebMapBase {
       .then(
         (result: any) => {
           const layerId = layerInfo.layerID || layerInfo.name;
-          result.isMatched && this._addBaselayer([wmtsUrl], layerId, 0, result.matchMaxZoom);
+          result.isMatched && this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom);
         },
         error => {
           throw new Error(error);
@@ -467,7 +467,7 @@ export default class WebMapViewModel extends WebMapBase {
     let bingUrl =
       'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
     // @ts-ignore
-    this._addBaselayer([bingUrl], layerName);
+    this._addBaselayer([bingUrl], layerName, layerInfo.visible);
   }
 
   private _createXYZLayer(layerInfo: any, url: string): void {
@@ -505,19 +505,19 @@ export default class WebMapViewModel extends WebMapBase {
       urlArr = [url];
     }
     const layerId = layerInfo.layerID || layerInfo.name;
-    this._addBaselayer(urlArr, layerId);
+    this._addBaselayer(urlArr, layerId, layerInfo.visible);
   }
 
   private _createDynamicTiledLayer(layerInfo: any): void {
     let url = layerInfo.url;
     const layerId = layerInfo.layerID || layerInfo.name;
-    this._addBaselayer([url], layerId, null, null, true);
+    this._addBaselayer([url], layerId, layerInfo.visible, null, null, true);
   }
 
   private _createWMSLayer(layerInfo: any): void {
     let WMSUrl = this._getWMSUrl(layerInfo);
     const layerId = layerInfo.layerID || layerInfo.name;
-    this._addBaselayer([WMSUrl], layerId);
+    this._addBaselayer([WMSUrl], layerId, layerInfo.visible);
   }
 
   private _createVectorLayer(layerInfo: any, features: any): void {
@@ -1442,7 +1442,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  private _addBaselayer(url: Array<string>, layerID: string, minzoom = 0, maxzoom = 22, isIserver = false): void {
+  private _addBaselayer(url: Array<string>, layerID: string, visibility, minzoom = 0, maxzoom = 22, isIserver = false): void {
     let source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,
@@ -1457,7 +1457,10 @@ export default class WebMapViewModel extends WebMapBase {
       type: 'raster',
       source: source,
       minzoom: minzoom || 0,
-      maxzoom: maxzoom || 22
+      maxzoom: maxzoom || 22,
+      layout: {
+        visibility: visibility ? 'visible' : 'none'
+      }
     });
   }
   /**
