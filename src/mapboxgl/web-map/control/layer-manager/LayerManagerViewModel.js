@@ -8,12 +8,13 @@ import WebMapViewModel from '../../WebMapViewModel';
  * @extends mapboxgl.Evented
  */
 class LayerManageViewModel extends mapboxgl.Evented {
-  constructor(map) {
+  constructor(map, targetName) {
     super();
     this.map = map;
     this.cacheMaps = {};
     this.readyNext = true;
     this.mapQuene = [];
+    this.targetName = targetName;
   }
   addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, ignoreBaseLayer = false } = {}) {
     // 通过唯一key来判断是否已经new了实例，用来过滤选中后父节点再选中导致的重复new实例
@@ -36,7 +37,8 @@ class LayerManageViewModel extends mapboxgl.Evented {
       mapId,
       {
         serverUrl,
-        withCredentials
+        withCredentials,
+        target: this.targetName
       },
       {},
       this.map
@@ -117,7 +119,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       if (data.mapInfo.mapId) {
         this.removeLayer(data.key);
       } else {
-        this.removeIServerLayer(data.mapInfo.id);
+        this.removeIServerLayer(data.key);
       }
     }
     if (data.children && data.children.length) {

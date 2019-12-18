@@ -432,7 +432,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createTiandituLayer(mapInfo: any): void {
     let tiandituUrls = this._getTiandituUrl(mapInfo);
-    let {labelLayerVisible, name, visible} = mapInfo.baseLayer;
+    let { labelLayerVisible, name, visible } = mapInfo.baseLayer;
     let isLabel = Boolean(labelLayerVisible);
     let labelUrl = tiandituUrls['labelUrl'];
     let tiandituUrl = tiandituUrls['tiandituUrl'];
@@ -569,8 +569,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _setLayerID(mapInfo): Array<object> {
     let sumInfo: object = {};
     const { baseLayer, layers } = mapInfo;
-    sumInfo[baseLayer.name] = 0;
-    let baseInfo = this._generateUniqueLayerId(baseLayer.name, sumInfo[baseLayer.name]);
+    let baseInfo = this._generateUniqueLayerId(baseLayer.name, 0);
     baseLayer.name = baseInfo.newId;
     const layerNames = layers.map(layer => layer.name);
     const _layers: Array<object> = layers.map((layer, index) => {
@@ -1442,7 +1441,14 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  private _addBaselayer(url: Array<string>, layerID: string, visibility = true, minzoom = 0, maxzoom = 22, isIserver = false): void {
+  private _addBaselayer(
+    url: Array<string>,
+    layerID: string,
+    visibility = true,
+    minzoom = 0,
+    maxzoom = 22,
+    isIserver = false
+  ): void {
     let source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,

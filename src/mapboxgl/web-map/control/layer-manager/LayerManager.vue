@@ -109,12 +109,12 @@ export default {
           e.checkedNodes.forEach(node => {
             const mapInfo = node.data.props.mapInfo;
             if (mapInfo && mapInfo.serverUrl) {
+              const nodeKey = node.key;
               if (mapInfo.mapId) {
-                const nodeKey = node.key;
                 const { serverUrl, mapId, withCredentials, ignoreBaseLayer } = mapInfo;
                 this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, ignoreBaseLayer });
               } else {
-                this.addIServerLayer(mapInfo.serverUrl, mapInfo.id);
+                this.addIServerLayer(mapInfo.serverUrl, nodeKey);
               }
             }
           });
@@ -139,11 +139,11 @@ export default {
       }
       this.viewModel.removeLayer(nodeKey);
     },
-    addIServerLayer(serverUrl, id) {
+    addIServerLayer(serverUrl, nodeKey) {
       if (!this.mapIsLoad) {
         return;
       }
-      this.viewModel.addIServerLayer(serverUrl, id);
+      this.viewModel.addIServerLayer(serverUrl, nodeKey);
     },
     removeIServerLayer(id) {
       if (!this.mapIsLoad) {
@@ -179,10 +179,6 @@ export default {
     },
     insertProperty(layers) {
       this.eachNode(layers, function(node, parentNode) {
-        // 为iserver地图生成layerID
-        if (!node.children && node.mapInfo && !node.mapInfo.mapId) {
-          node.mapInfo.id = uniqueId('iServerLayer_');
-        }
         // 为没有传key的节点生成key
         if (!node.key) {
           node.key = uniqueId('key_');
@@ -217,7 +213,8 @@ export default {
   },
   loaded() {
     this.mapIsLoad = true;
-    this.viewModel = new LayerManagerViewModel(this.map);
+    const targetName = this.getTargetName();
+    this.viewModel = new LayerManagerViewModel(this.map, targetName);
   }
 };
 </script>
