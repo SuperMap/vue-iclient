@@ -11,13 +11,13 @@ class LayerManageViewModel extends mapboxgl.Evented {
   constructor(map) {
     super();
     this.map = map;
-    this.cacheViewModel = {};
+    this.cacheMaps = {};
     this.readyNext = true;
     this.mapQuene = [];
   }
   addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, ignoreBaseLayer = false } = {}) {
     // 通过唯一key来判断是否已经new了实例，用来过滤选中后父节点再选中导致的重复new实例
-    if (this.cacheViewModel[nodeKey]) {
+    if (this.cacheMaps[nodeKey]) {
       return;
     }
 
@@ -52,7 +52,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       }
     });
     this.webMapViewModel.addWebMap(ignoreBaseLayer);
-    this.cacheViewModel[nodeKey] = this.webMapViewModel;
+    this.cacheMaps[nodeKey] = this.webMapViewModel;
   }
   handleNextMap() {
     this.readyNext = true;
@@ -62,17 +62,24 @@ class LayerManageViewModel extends mapboxgl.Evented {
     }
   }
   addIServerLayer(url, id) {
+    if (this.cacheMaps[id]) {
+      return;
+    }
+    const epsgCode = this.map.getCRS().epsgCode.split(':')[1];
     this.map.addLayer({
       id,
       type: 'raster',
       source: {
         type: 'raster',
-        tiles: [`${url}/zxyTileImage.png?z={z}&x={x}&y={y}`],
-        tileSize: 256
+        tiles: [url],
+        tileSize: 256,
+        rasterSource: 'iserver',
+        prjCoordSys: { epsgCode }
       },
       minzoom: 0,
       maxzoom: 22
     });
+    this.cacheMaps[id] = true;
   }
   removeLayer(nodeKey) {
     this.handleNextMap();
@@ -82,12 +89,15 @@ class LayerManageViewModel extends mapboxgl.Evented {
       });
       this.mapQuene.splice(index, 1);
     }
-    if (this.cacheViewModel[nodeKey]) {
-      this.cacheViewModel[nodeKey].removeWebMap();
-      delete this.cacheViewModel[nodeKey];
+    if (this.cacheMaps[nodeKey]) {
+      this.cacheMaps[nodeKey].removeWebMap();
+      delete this.cacheMaps[nodeKey];
     }
   }
   removeIServerLayer(id) {
+    if (this.cacheMaps[id]) {
+      delete this.cacheMaps[id];
+    }
     if (this.map.getLayer(id)) {
       this.map.removeLayer(id);
       this.map.removeSource(id);

@@ -183,7 +183,7 @@ export default {
         if (!node.children && node.mapInfo && !node.mapInfo.mapId) {
           node.mapInfo.id = uniqueId('iServerLayer_');
         }
-        // 为iPortal地图生成ID
+        // 为没有传key的节点生成key
         if (!node.key) {
           node.key = uniqueId('key_');
         }
