@@ -70,7 +70,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   pitch: number;
 
-  ignoreBaseLayer: boolean;
+  layerFilter: Function;
 
   private _sourceListModel: SourceListModel;
 
@@ -91,7 +91,8 @@ export default class WebMapViewModel extends WebMapBase {
     options: webMapOptions = {},
     // @ts-ignore fix-mapoptions
     mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
-    map?: mapboxglTypes.Map
+    map?: mapboxglTypes.Map,
+    layerFilter: Function = function() { return true }
   ) {
     super(id, options, mapOptions);
     this.mapId = id;
@@ -105,10 +106,13 @@ export default class WebMapViewModel extends WebMapBase {
     this.zoom = mapOptions.zoom;
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
+    this.layerFilter = layerFilter;
     this._legendList = {};
     if (map) {
       this.map = map;
-    } else {
+      this._taskID = new Date();
+      this.getMapInfo(this._taskID);
+    }else{
       this._initWebMap();
     }
   }
@@ -161,21 +165,15 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  protected addWebMap(ignoreBaseLayer) {
-    this._taskID = new Date();
-    this.ignoreBaseLayer = ignoreBaseLayer;
-    this.getMapInfo(this._taskID);
-  }
-
-  protected removeWebMap() {
+  protected cleanLayers() {
     this._taskID = null;
     this._cacheLayerId.forEach(layerId => {
-      if (this.map.getLayer(layerId)) {
+      if (this.map && this.map.getLayer(layerId)) {
         this.map.removeLayer(layerId);
       }
     });
     this._cacheLayerId.forEach(layerId => {
-      if (this.map.getSource(layerId)) {
+      if (this.map && this.map.getSource(layerId)) {
         this.map.removeSource(layerId);
       }
     });
@@ -224,8 +222,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   _handleLayerInfo(mapInfo, _taskID): void {
     mapInfo = this._setLayerID(mapInfo);
-    const { layers } = mapInfo;
-    !this.ignoreBaseLayer && this._initBaseLayer(mapInfo);
+    const { layers, baseLayer} = mapInfo;
+
+    typeof this.layerFilter === 'function' && this.layerFilter(baseLayer)  && this._initBaseLayer(mapInfo);
     if (!layers || layers.length === 0) {
       this._sendMapToUser(0, 0);
     } else {
@@ -336,6 +335,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   _initOverlayLayers(layers: any, _taskID): void {
     // 存储地图上所有的图层对象
+    if(typeof this.layerFilter === 'function') {
+      layers = layers.filter(this.layerFilter);
+    }
     this._layers = layers;
     this.layerAdded = 0;
     this.expectLayerLen = layers.length;

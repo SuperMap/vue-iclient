@@ -47,7 +47,7 @@
               :title="sourcelayerKey"
               :style="sourcelayerValue[0].visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
               @change="toggleVisibility(sourcelayerKey, name, sourcelayerValue[0].visibility)"
-              >{{ sourcelayerKey }}</a-checkbox
+            >{{ sourcelayerKey }}</a-checkbox
             >
           </a-collapse-panel>
 

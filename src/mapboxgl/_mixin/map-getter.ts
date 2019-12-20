@@ -61,6 +61,9 @@ export default class MapGetter extends Vue {
   loadMapSucceed(map, target) {
     const targetName = this.getTargetName();
     if (target === targetName) {
+      if(this.map) {
+        callHook(this, 'removed');
+      }
       this.loadMap(target);
     }
   }

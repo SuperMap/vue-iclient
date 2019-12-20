@@ -12,11 +12,12 @@ class LayerManageViewModel extends mapboxgl.Evented {
     super();
     this.map = map;
     this.cacheMaps = {};
-    this.readyNext = true;
+    this.cacheIServerMaps = {};
+    this.readyNext = true; // 是否可以开始实例化下一个vm
     this.mapQuene = [];
     this.targetName = targetName;
   }
-  addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, ignoreBaseLayer = false } = {}) {
+  addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, layerFilter } = {}) {
     // 通过唯一key来判断是否已经new了实例，用来过滤选中后父节点再选中导致的重复new实例
     if (this.cacheMaps[nodeKey]) {
       return;
@@ -28,7 +29,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
         mapId,
         serverUrl,
         withCredentials,
-        ignoreBaseLayer
+        layerFilter
       });
       return;
     }
@@ -41,7 +42,8 @@ class LayerManageViewModel extends mapboxgl.Evented {
         target: this.targetName
       },
       {},
-      this.map
+      this.map,
+      layerFilter
     );
 
     // 设置 readyNext 为 false
@@ -53,23 +55,23 @@ class LayerManageViewModel extends mapboxgl.Evented {
         this.handleNextMap();
       }
     });
-    this.webMapViewModel.addWebMap(ignoreBaseLayer);
+    // this.webMapViewModel.addWebMap(layerFilter);
     this.cacheMaps[nodeKey] = this.webMapViewModel;
   }
   handleNextMap() {
     this.readyNext = true;
     if (this.mapQuene.length) {
-      const { nodeKey, serverUrl, mapId, withCredentials, ignoreBaseLayer } = this.mapQuene.shift();
-      this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, ignoreBaseLayer });
+      const { nodeKey, serverUrl, mapId, withCredentials, layerFilter } = this.mapQuene.shift();
+      this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
     }
   }
-  addIServerLayer(url, id) {
-    if (this.cacheMaps[id]) {
+  addIServerLayer(url, nodeKey) {
+    if (this.cacheIServerMaps[nodeKey]) {
       return;
     }
     const epsgCode = this.map.getCRS().epsgCode.split(':')[1];
     this.map.addLayer({
-      id,
+      id: nodeKey,
       type: 'raster',
       source: {
         type: 'raster',
@@ -81,7 +83,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       minzoom: 0,
       maxzoom: 22
     });
-    this.cacheMaps[id] = true;
+    this.cacheIServerMaps[nodeKey] = true;
   }
   removeLayer(nodeKey) {
     this.handleNextMap();
@@ -92,17 +94,17 @@ class LayerManageViewModel extends mapboxgl.Evented {
       this.mapQuene.splice(index, 1);
     }
     if (this.cacheMaps[nodeKey]) {
-      this.cacheMaps[nodeKey].removeWebMap();
+      this.cacheMaps[nodeKey].cleanLayers();
       delete this.cacheMaps[nodeKey];
     }
   }
-  removeIServerLayer(id) {
-    if (this.cacheMaps[id]) {
-      delete this.cacheMaps[id];
+  removeIServerLayer(nodeKey) {
+    if (this.cacheIServerMaps[nodeKey]) {
+      delete this.cacheIServerMaps[nodeKey];
     }
-    if (this.map.getLayer(id)) {
-      this.map.removeLayer(id);
-      this.map.removeSource(id);
+    if (this.map && this.map.getLayer(nodeKey)) {
+      this.map.removeLayer(nodeKey);
+      this.map.removeSource(nodeKey);
     }
   }
   eachNode(datas, callback) {

@@ -16,6 +16,7 @@
           checkable
           :defaultExpandAll="defaultExpandAll"
           :treeData="treeData"
+          :checkedKeys="checkedKeys"
           :replaceFields="replaceFields"
           @check="checkNode"
           @expand="expandNode"
@@ -40,6 +41,8 @@ import Card from '../../../../common/_mixin/card';
 import MapGetter from '../../../_mixin/map-getter';
 import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
+import clonedeep from 'lodash.clonedeep';
+import isequal from 'lodash.isequal';
 
 export default {
   name: 'SmLayerManager',
@@ -76,13 +79,17 @@ export default {
   data() {
     return {
       treeData: null,
+      checkedKeys: [],
       mapIsLoad: false
     };
   },
   watch: {
     layers: {
-      handler(newVal) {
-        this.treeData = newVal;
+      handler(newVal, oldVal) {
+        if (oldVal && !isequal(newVal, oldVal)) {
+          this.$options.removed.call(this);
+        }
+        this.treeData = clonedeep(newVal);
         this.insertProperty(this.treeData);
       },
       deep: true,
@@ -99,10 +106,14 @@ export default {
     this.changeCheckBoxStyle();
     this.changeArrowStyle();
   },
+  beforeDestroy() {
+    this.$options.removed.call(this);
+  },
   methods: {
     checkNode(key, e) {
       this.changeCheckBoxStyle();
       this.changeArrowStyle();
+      this.checkedKeys = key;
       if (e.checked) {
         e.checkedNodes &&
           e.checkedNodes.length &&
@@ -111,8 +122,8 @@ export default {
             if (mapInfo && mapInfo.serverUrl) {
               const nodeKey = node.key;
               if (mapInfo.mapId) {
-                const { serverUrl, mapId, withCredentials, ignoreBaseLayer } = mapInfo;
-                this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, ignoreBaseLayer });
+                const { serverUrl, mapId, withCredentials, layerFilter } = mapInfo;
+                this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
               } else {
                 this.addIServerLayer(mapInfo.serverUrl, nodeKey);
               }
@@ -127,11 +138,11 @@ export default {
       this.changeCheckBoxStyle();
       this.changeArrowStyle();
     },
-    addLayer({ nodeKey, serverUrl, mapId, withCredentials, ignoreBaseLayer }) {
+    addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter }) {
       if (!this.mapIsLoad) {
         return;
       }
-      this.viewModel.addLayer({ nodeKey, serverUrl, mapId, withCredentials, ignoreBaseLayer });
+      this.viewModel.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
     },
     removeLayer(nodeKey) {
       if (!this.mapIsLoad) {
@@ -145,11 +156,11 @@ export default {
       }
       this.viewModel.addIServerLayer(serverUrl, nodeKey);
     },
-    removeIServerLayer(id) {
+    removeIServerLayer(nodeKey) {
       if (!this.mapIsLoad) {
         return;
       }
-      this.viewModel.removeIServerLayer(id);
+      this.viewModel.removeIServerLayer(nodeKey);
     },
     changeCheckBoxStyle() {
       setTimeout(() => {
@@ -215,6 +226,17 @@ export default {
     this.mapIsLoad = true;
     const targetName = this.getTargetName();
     this.viewModel = new LayerManagerViewModel(this.map, targetName);
+  },
+  removed() {
+    if (this.checkedKeys.length) {
+      this.checkedKeys.forEach(key => {
+        this.removeLayer(key);
+        this.removeIServerLayer(key);
+      });
+    }
+    this.checkedKeys = [];
+    this.changeCheckBoxStyle();
+    this.changeArrowStyle();
   }
 };
 </script>

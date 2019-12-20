@@ -150,32 +150,31 @@ export default abstract class WebMapBase extends Events {
       this._createMap();
       return;
     }
-
     this._taskID = new Date();
-    this.serverUrl = this.webMapService.handleServerUrl(this.serverUrl);
     this.getMapInfo(this._taskID);
   }
 
   protected getMapInfo(_taskID) {
-    this.webMapService
-      .getMapInfo()
-      .then(
-        (mapInfo: any) => {
-          if (this._taskID !== _taskID) {
-            return;
+      this.serverUrl = this.webMapService.handleServerUrl(this.serverUrl);
+      this.webMapService
+        .getMapInfo()
+        .then(
+          (mapInfo: any) => {
+            if (this._taskID !== _taskID) {
+              return;
+            }
+            // 存储地图的名称以及描述等信息，返回给用户
+            this.mapParams = mapInfo.mapParams;
+            this._getMapInfo(mapInfo, _taskID);
+          },
+          error => {
+            throw error;
           }
-          // 存储地图的名称以及描述等信息，返回给用户
-          this.mapParams = mapInfo.mapParams;
-          this._getMapInfo(mapInfo, _taskID);
-        },
-        error => {
-          throw error;
-        }
-      )
-      .catch(error => {
-        this.triggerEvent('getmapinfofailed', { error });
-        console.log(error);
-      });
+        )
+        .catch(error => {
+          this.triggerEvent('getmapinfofailed', { error });
+          console.log(error);
+        });
   }
 
   protected getBaseLayerType(layerInfo) {
