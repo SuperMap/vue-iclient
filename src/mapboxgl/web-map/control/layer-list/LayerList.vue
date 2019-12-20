@@ -33,7 +33,7 @@
                   <a-icon
                     type="eye"
                     :style="sourceList[name].visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
-                    @click.stop="toggleLayerGroupVisibility(name,sourceList[name].visibility)"
+                    @click.stop="toggleLayerGroupVisibility(name, sourceList[name].visibility)"
                   ></a-icon>
                   <span class="add-ellipsis">{{ name }}</span>
                 </div>
@@ -41,27 +41,30 @@
               </div>
             </template>
             <a-checkbox
-              v-for="(sourcelayerValue,sourcelayerKey,i) in sourceList[name].sourceLayerList"
+              v-for="(sourcelayerValue, sourcelayerKey, i) in sourceList[name].sourceLayerList"
               :key="i"
               :checked="sourcelayerValue[0].visibility | isVisible"
               :title="sourcelayerKey"
               :style="sourcelayerValue[0].visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
-              @change="toggleVisibility(sourcelayerKey,name,sourcelayerValue[0].visibility)"
-            >{{ sourcelayerKey }}</a-checkbox>
+              @change="toggleVisibility(sourcelayerKey, name, sourcelayerValue[0].visibility)"
+              >{{ sourcelayerKey }}</a-checkbox
+            >
           </a-collapse-panel>
 
           <a-card v-else class="sm-component-layer-list__elcarditem" :style="[getTextColorStyle]">
             <a-icon
               type="eye"
-              :class="[sourceList[name].visibility === 'visible' ? 'visible':'none']"
+              :class="[sourceList[name].visibility === 'visible' ? 'visible' : 'none']"
               :style="sourceList[name].visibility === 'visible' ? getColorStyle(0) : getDisabledStyle(false)"
-              @click.stop="toggleLayerGroupVisibility(name,sourceList[name].visibility)"
+              @click.stop="toggleLayerGroupVisibility(name, sourceList[name].visibility)"
             ></a-icon>
             <div
               class="sm-component-layer-list__layergroupname add-ellipsis"
               :title="name"
               :style="sourceList[name].visibility === 'visible' ? getTextColorStyle : getDisabledStyle()"
-            >{{ name }}</div>
+            >
+              {{ name }}
+            </div>
           </a-card>
         </a-collapse>
       </div>
@@ -169,8 +172,10 @@ export default {
     this.viewModel = new LayerListViewModel(this.map);
     this.layerUpdateFn = this.layerUpdate.bind(this);
     this.$nextTick(() => {
-      this.sourceList = this.viewModel.initLayerList();
-      this.sourceNames = this.viewModel.getSourceNames();
+      if (this.viewModel) {
+        this.sourceList = this.viewModel.initLayerList();
+        this.sourceNames = this.viewModel.getSourceNames();
+      }
     });
     this.viewModel.on('layersUpdated', this.layerUpdateFn);
   },
