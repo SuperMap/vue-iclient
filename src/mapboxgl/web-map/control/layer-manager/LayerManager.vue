@@ -87,7 +87,7 @@ export default {
     layers: {
       handler(newVal, oldVal) {
         if (oldVal && !isequal(newVal, oldVal)) {
-          this.$options.removed.call(this);
+          this.cleanStatus();
         }
         this.treeData = clonedeep(newVal);
         this.insertProperty(this.treeData);
@@ -107,7 +107,7 @@ export default {
     this.changeArrowStyle();
   },
   beforeDestroy() {
-    this.$options.removed.call(this);
+    this.cleanStatus();
   },
   methods: {
     checkNode(key, e) {
@@ -220,20 +220,28 @@ export default {
         }
       }
       return datas;
+    },
+    cleanStatus() {
+      if (this.checkedKeys.length) {
+        this.checkedKeys.forEach(key => {
+          this.removeLayer(key);
+          this.removeIServerLayer(key);
+        });
+      }
+      this.checkedKeys = [];
+      this.changeCheckBoxStyle();
+      this.changeArrowStyle();
     }
   },
   loaded() {
     this.mapIsLoad = true;
     const targetName = this.getTargetName();
     this.viewModel = new LayerManagerViewModel(this.map, targetName);
+    this.checkedKeys = [];
+    this.changeCheckBoxStyle();
+    this.changeArrowStyle();
   },
   removed() {
-    if (this.checkedKeys.length) {
-      this.checkedKeys.forEach(key => {
-        this.removeLayer(key);
-        this.removeIServerLayer(key);
-      });
-    }
     this.checkedKeys = [];
     this.changeCheckBoxStyle();
     this.changeArrowStyle();
