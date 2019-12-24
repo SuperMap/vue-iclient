@@ -135,7 +135,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
       this.viewModel && this.viewModel.clear();
       return;
     }
-    this.features.features = this.viewModel.getPointFeatures(features.features);
+    this.features.features = this._getPointFeatures(features.features);
     if (this.features.features.length === 0) {
       this.$message.warning(this.$t('unsupportedData'), 2);
       return;
@@ -175,6 +175,18 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
     }
     this.marker && (this._markersElement = this.marker.getMarkersElement());
   }
+
+  _getPointFeatures(features) {
+    let resultFeatures = [];
+    features.forEach(feature => {
+      let geometry = feature.geometry;
+      if (geometry && geometry.coordinates && geometry.coordinates.length !== 0 && geometry.type === 'Point') {
+        resultFeatures.push(feature);
+      }
+    });
+    return resultFeatures;
+  }
+
   render(): void {}
 }
 

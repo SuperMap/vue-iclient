@@ -71,15 +71,4 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
       });
     this.markers = [];
   }
-
-  public getPointFeatures(features) {
-    let resultFeatures = [];
-    features.forEach(feature => {
-      let geometry = feature.geometry;
-      if (geometry && geometry.coordinates && geometry.coordinates.length !== 0 && geometry.type === 'Point') {
-        resultFeatures.push(feature);
-      }
-    });
-    return resultFeatures;
-  }
 }
