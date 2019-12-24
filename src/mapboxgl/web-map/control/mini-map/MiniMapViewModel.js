@@ -56,13 +56,16 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
       container: _this._container,
       style: clonedeep(_this._parentMap.getStyle()),
       zoom: 1,
+      crs: this._parentMap.getCRS(),
       center: [0, 0],
-      renderWorldCopies: false
+      renderWorldCopies: false,
+      localIdeographFontFamily: this._parentMap._localIdeographFontFamily
     });
     this._miniMap.on('load', () => {
       this.fire('minimaploaded', { miniMap: this._miniMap });
       this._miniMap.resize();
       this.loadMiniMap();
+      window.minimap = this._miniMap;
     });
   }
 
@@ -282,6 +285,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   }
   _setStyle() {
     this._miniMap.setStyle(this._parentMap.getStyle());
+    this._miniMap.setCRS(this._parentMap.getCRS());
     this._addRectLayers();
     this._update();
   }
