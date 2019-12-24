@@ -129,7 +129,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.HashedModuleIdsPlugin(),
     new webpack.BannerPlugin(`
     ${pkg.name}.(${pkg.homepage})
-    Copyright© 2000 - 2019 SuperMap Software Co.Ltd
+    Copyright© 2000 - 2020 SuperMap Software Co.Ltd
     license: ${pkg.license}
     version: v${pkg.version}
    `)
