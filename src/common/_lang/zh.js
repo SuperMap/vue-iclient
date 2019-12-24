@@ -243,5 +243,8 @@ export default {
   // layer
   dataFlow: {
     dataSubscriptionFailed: '数据订阅失败！'
+  },
+  animateMarkerlayer: {
+    unsupportedData: '当前图层不支持该数据，请重新传入数据！'
   }
 };

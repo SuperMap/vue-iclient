@@ -15,7 +15,7 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
 
   fitBounds: Boolean;
 
-  constructor( map: mapboxglTypes.Map, features: FeatureCollection, markersElement: HTMLElement[], fitBounds: Boolean = true ) {
+  constructor(map: mapboxglTypes.Map, features: FeatureCollection, markersElement: HTMLElement[], fitBounds: Boolean = true) {
     super();
     if (!map) {
       throw new Error('map is requierd');
@@ -48,11 +48,14 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
   }
   private _createMarker() {
     this.features.features.forEach((point, index) => {
-      let marker = new mapboxgl.Marker(this.markersElement[index] || this.markersElement[0])
-        // @ts-ignore
-        .setLngLat(point.geometry.coordinates)
-        .addTo(this.map);
-      this.markers.push(marker);
+      // @ts-ignore
+      let coordinates = point.geometry.coordinates;
+      if (coordinates) {
+        let marker = new mapboxgl.Marker(this.markersElement[index] || this.markersElement[0])
+          .setLngLat(coordinates)
+          .addTo(this.map);
+        this.markers.push(marker);
+      }
     }, this);
     if (this.fitBounds) {
       // @ts-ignore
@@ -67,5 +70,16 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
         marker && marker.remove();
       });
     this.markers = [];
+  }
+
+  public getPointFeatures(features) {
+    let resultFeatures = [];
+    features.forEach(feature => {
+      let geometry = feature.geometry;
+      if (geometry && geometry.coordinates && geometry.coordinates.length !== 0 && geometry.type === 'Point') {
+        resultFeatures.push(feature);
+      }
+    });
+    return resultFeatures;
   }
 }

@@ -240,5 +240,8 @@ export default {
   // layer
   dataFlow: {
     dataSubscriptionFailed: 'Data subscription failed!'
+  },
+  animateMarkerlayer: {
+    unsupportedData: 'The data is not supported, please reset the data!'
   }
 };

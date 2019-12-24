@@ -64,7 +64,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
     if (this.viewModel && !isEqual(newVal, oldVal)) {
       this._markersElement = [];
       this._getMarkerElement();
-      this.features && this.viewModel.setFeatures(this.features, this._markersElement);
+      this._markersElement.length > 0 && this.viewModel.setFeatures(this.features, this._markersElement);
     }
   }
 
@@ -73,7 +73,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
     if (this.viewModel) {
       this._markersElement = [];
       this._getMarkerElement();
-      this.viewModel.setType(this._markersElement);
+      this._markersElement.length > 0 && this.viewModel.setType(this._markersElement);
     }
   }
 
@@ -133,6 +133,11 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
     let { features, width, height, colors, textFontSize, textColor, textField } = this;
     if (!this.features || JSON.stringify(this.features) === '{}' || !this.features.features) {
       this.viewModel && this.viewModel.clear();
+      return;
+    }
+    this.features.features = this.viewModel.getPointFeatures(features.features);
+    if (this.features.features.length === 0) {
+      this.$message.warning(this.$t('unsupportedData'), 2);
       return;
     }
     switch (this.type) {
