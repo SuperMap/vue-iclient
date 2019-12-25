@@ -22,15 +22,17 @@ class MeasureViewModel extends mapboxgl.Evented {
     this.cachePolygonUnit = {};
     this.map = options.map;
     this.mapTarget = options.mapTarget;
-    this.componentName = 'SmMeasure';
+    this.componentName = options.componentName;
     this.continueDraw = options.continueDraw;
     this._addDrawControl();
   }
 
   _addDrawControl() {
     this.draw = drawEvent.$options.getDraw(this.mapTarget);
-    this.map.on('draw.create', this._finishDraw.bind(this));
-    this.map.on('draw.modechange', this._changeMode.bind(this));
+    this._finishDrawBind = this._finishDraw.bind(this);
+    this._changeModeBind = this._changeMode.bind(this);
+    this.map.on('draw.create', this._finishDrawBind);
+    this.map.on('draw.modechange', this._changeModeBind);
   }
 
   // 绘画结束后计算最后的结果
@@ -308,14 +310,13 @@ class MeasureViewModel extends mapboxgl.Evented {
   _resetEvent() {
     this.map.off('mousemove', this.popupFollowMouseBind);
     this.map.off('mousedown', this.measureNodeDistanceBind);
+    this.map.off('mousedown', this.continueDrawBind);
   }
 
   _clearEvent() {
-    this.map.off('mousemove', this.popupFollowMouseBind);
-    this.map.off('mousedown', this.measureNodeDistanceBind);
-    this.map.off('mousedown', this.continueDrawBind);
-    this.map.off('draw.create', this._finishDraw.bind(this));
-    this.map.off('draw.modechange', this._changeMode.bind(this));
+    this._resetEvent();
+    this.map.off('draw.create', this._finishDrawBind);
+    this.map.off('draw.modechange', this._changeModeBind);
   }
 
   _removePopups() {
@@ -351,32 +352,24 @@ class MeasureViewModel extends mapboxgl.Evented {
     });
   }
 
-  removeDraw() {
+  removeDraw(continueDraw) {
     this.isEditing = false;
+    this.draw.changeMode('simple_select');
     this.ids && this.draw.delete(this.ids);
     this.ids = [];
-    this.draw.changeMode('simple_select');
-    this._resetDraw();
-    this._clearEvent();
+    this._resetDraw(continueDraw);
+    this._resetEvent();
     this._removePopups();
     this._removeHoverPopup();
   }
 
-  pauseDraw() {
+  clear() {
+    this.isEditing = false;
+    this.ids && this.draw.delete(this.ids);
+    this.ids = [];
     this._clearEvent();
-  }
-
-  clear(deleteState = true) {
-    if (drawEvent.$options.getDraw(this.mapTarget, false)) {
-      this.removeDraw();
-      deleteState && drawEvent.$options.deleteDrawingState(this.mapTarget, this.componentName);
-    } else {
-      this.isEditing = false;
-      this.ids = [];
-      this._clearEvent();
-      this._removePopups();
-      this._removeHoverPopup();
-    }
+    this._removePopups();
+    this._removeHoverPopup();
   }
 }
 export default MeasureViewModel;

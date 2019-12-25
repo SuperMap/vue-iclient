@@ -13,11 +13,11 @@ import { geti18n } from '../../../../common/_lang';
  */
 
 export default class DrawViewModel extends mapboxgl.Evented {
-  constructor(map, mapTarget) {
+  constructor(map, mapTarget, componentName) {
     super();
     this.map = map;
     this.mapTarget = mapTarget;
-    this.componentName = 'SmDraw';
+    this.componentName = componentName;
     this.featureIds = []; // 收集当前draw所画的点线面的id
     this._addDrawControl();
     this.activeFeature = {};
@@ -261,24 +261,12 @@ export default class DrawViewModel extends mapboxgl.Evented {
     }
   }
 
-  removeDraw() {
+  clear() {
     this.featureIds && this.draw.delete(this.featureIds);
     this.featureIds = [];
     this.activeFeature = {};
     this.dashedLayerIds = [];
     this.layerStyleList = {};
-  }
-
-  clear(deleteState = true) {
-    if (drawEvent.$options.getDraw(this.mapTarget, false)) {
-      this.removeDraw();
-      deleteState && drawEvent.$options.deleteDrawingState(this.mapTarget, this.componentName);
-    } else {
-      this.featureIds = [];
-      this.activeFeature = {};
-      this.dashedLayerIds = [];
-      this.layerStyleList = {};
-    }
   }
 
   _isDrawing() {

@@ -66,12 +66,6 @@ const webpackConfig = merge(baseWebpackConfig, {
       shapefile: 'shapefile',
       'echarts-liquidfill': 'echarts-liquidfill',
       mapv: 'mapv',
-      '@mapbox/mapbox-gl-draw': {
-        root: 'MapboxDraw',
-        commonjs: '@mapbox/mapbox-gl-draw',
-        commonjs2: '@mapbox/mapbox-gl-draw',
-        amd: '@mapbox/mapbox-gl-draw'
-      },
       three: {
         root: 'THREE',
         commonjs: 'three',
@@ -117,6 +111,14 @@ const webpackConfig = merge(baseWebpackConfig, {
           commonjs: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
           commonjs2: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
           amd: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
+        });
+      }
+      if (/\/static\/libs\/mapbox-gl-draw\/mapbox-gl-draw/.test(request)) {
+        return callback(null, {
+          root: 'MapboxDraw',
+          commonjs: '../../static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
+          commonjs2: '../../static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
+          amd: '../../static/libs/mapbox-gl-draw/mapbox-gl-draw.js'
         });
       }
       callback();
