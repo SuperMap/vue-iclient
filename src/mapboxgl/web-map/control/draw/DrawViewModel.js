@@ -27,6 +27,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
 
   _addDrawControl() {
     this.draw = drawEvent.$options.getDraw(this.mapTarget);
+    drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
     this.map.on('draw.create', this._drawCreate.bind(this));
     this.map.on('draw.selectionchange', this._selectionChange.bind(this));
     this.map.on('mouseover', 'draw-line-static.cold', e => {
