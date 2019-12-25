@@ -18,7 +18,7 @@ npm install @supermap/vue-iclient
 
 获取文件后，只需要像普通的 JavaScript 库一样用 &lt;script&gt; 标签引入即可。
 
-以下详细介绍如何通过 [在线站点](http://iclient.supermap.io/) 引入 SuperMap Vue-iClient。
+以下详细介绍如何通过 [在线站点](https://iclient.supermap.io/) 引入 SuperMap Vue-iClient。
 
 新建一个 HTML 文件，在 &lt;head&gt; 标签中引入如下文件：
 
@@ -38,27 +38,27 @@ npm install @supermap/vue-iclient
 - 引入 MapboxGL-enhange JS 和 CSS 文件
 
 ```html
-<link href="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css" rel="stylesheet" />
-<script type="text/javascript" src="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js" ></script>
+<link href="https://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css" rel="stylesheet" />
+<script type="text/javascript" src="https://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js" ></script>
 ```
 
 - 引入 iclient-mapboxgl JS 和 CSS 文件
 
 ```html
-<link href="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
-<script type="text/javascript" src="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-es6.min.js"></script>
+<link href="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-es6.min.js"></script>
 ```
 
 - 引入 Vue-iClient JS 和 CSS 文件
 
 ```html
-<link href="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
-<script type="text/javascript" src="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.min.js"></script>
+<link href="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
+<script type="text/javascript" src="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.min.js"></script>
 ```
 
 #### 示例
 
-通过引入文件方式可以快速使用 Vue-iClient 写出一个示例，您可以复制下面代码或参考此在线[示例](http://iclient.supermap.io/examples/component/editor.html#components_webmap_vue)。
+通过引入文件方式可以快速使用 Vue-iClient 写出一个示例，您可以复制下面代码或参考此在线[示例](https://iclient.supermap.io/examples/component/editor.html#components_webmap_vue)。
 
 ```html
 <!DOCTYPE html>
@@ -67,14 +67,14 @@ npm install @supermap/vue-iclient
     <meta charset="UTF-8" />
     <title>vue-iclient example</title>
     <link href="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.css" rel="stylesheet" />
-    <link href="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css" rel="stylesheet" />
-    <link href="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
-    <link href="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
+    <link href="https://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css" rel="stylesheet" />
+    <link href="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
+    <link href="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.js"></script>
-    <script type="text/javascript" src="http://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js" ></script>
-    <script type="text/javascript" src="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-es6.min.js" ></script>
-    <script type="text/javascript" src="http://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.min.js" ></script>
+    <script type="text/javascript" src="https://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js" ></script>
+    <script type="text/javascript" src="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-es6.min.js" ></script>
+    <script type="text/javascript" src="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.min.js" ></script>
     <style>
       #main {
         margin: 0 auto;
@@ -85,7 +85,7 @@ npm install @supermap/vue-iclient
   </head>
   <body style="margin: 0; overflow: hidden; background: #fff; width: 100%; height:100%; position: absolute; top: 0;">
     <div id="main">
-      <sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980"></sm-web-map>
+      <sm-web-map server-url="https://iportal.supermap.io/iportal/" map-id="801571284"></sm-web-map>
     </div>
     <script>
       new Vue({

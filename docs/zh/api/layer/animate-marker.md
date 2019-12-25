@@ -1,9 +1,9 @@
 # 动效标记点图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_rotating_text_border_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_rotating_text_border_vue.html"></sm-iframe>
 
 ```vue
-<sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980">
+<sm-web-map server-url="https://iportal.supermap.io/iportal/" map-id="801571284">
   <sm-animate-marker-layer :features="features" type="rotatingTextBorder" text-field="NAME" :colors="['rgb(21, 209, 242)', 'rgba(21, 209, 242, 0.56)']" :width="150"></sm-animate-marker-layer>
 </sm-web-map>
 ```

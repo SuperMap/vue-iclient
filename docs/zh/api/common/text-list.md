@@ -43,5 +43,5 @@
 | type            | 服务类型              | string                     | 'iServer' \| 'iPortal' | 'iServer' |
 | url             | 服务地址              | string                     | -                      | -         |
 | withCredentials | 设置请求是否带 cookie | boolean                    | -                      | false     |
-| queryInfo       | 查询条件              | [SuperMap.FilterParameter](http://iclient.supermap.io/web/apis/mapboxgl.html) | -                      | -         |
+| queryInfo       | 查询条件              | [SuperMap.FilterParameter](https://iclient.supermap.io/web/apis/mapboxgl.html) | -                      | -         |
 

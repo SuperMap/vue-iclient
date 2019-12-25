@@ -1,6 +1,6 @@
 # 边框
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_border_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_border_vue.html"></sm-iframe>
 
 ```vue
 <sm-border type="border7"></sm-border>

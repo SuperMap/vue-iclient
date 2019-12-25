@@ -22,7 +22,7 @@ Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路�
 组件使用方式：
 
 ```html
-<sm-web-scene sceneUrl="http://support.supermap.com.cn:8090/iserver/services/3D-CBD/rest/realspace"></sm-web-scene>
+<sm-web-scene sceneUrl="https://iserver.supermap.io/iserver/services/3D-CBD/rest/realspace"></sm-web-scene>
 ```
 
 ### Attributes

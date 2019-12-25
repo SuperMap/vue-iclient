@@ -1,6 +1,6 @@
 # 动态火焰图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_fire_layer_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_fire_layer_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map :map-options="mapOptions" style="background:black">
@@ -15,7 +15,7 @@
     new Vue({
       el: "#main",
       data() {
-          var mapUrl = "http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/ChinaDark";
+          var mapUrl = "https://iserver.supermap.io/iserver/services/map-china400/rest/maps/ChinaDark";
           return {
               mapOptions: {
                   container: "map",
@@ -29,7 +29,7 @@
                           },
                           buildings: {
                               type: "geojson",
-                              data: "http://iclient.supermap.io/examples/data/buildings.json"
+                              data: "https://iclient.supermap.io/examples/data/buildings.json"
                           }
                       },
                       layers: [

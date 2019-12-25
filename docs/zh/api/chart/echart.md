@@ -8,7 +8,7 @@ pageClass: chart
 该组件是基于 [vue-echarts](https://github.com/ecomfe/vue-echarts)
 :::
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_chart_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_chart_vue.html"></sm-iframe>
 
 ```vue
 <sm-chart
@@ -45,7 +45,7 @@ pageClass: chart
 | type            | 服务类型              | string                                                                        | 'iServer' \| 'iPortal' | 'iServer' |
 | url             | 服务地址              | string                                                                        | -                      | -         |
 | withCredentials | 设置请求是否带 cookie | boolean                                                                       | -                      | false     |
-| queryInfo       | 查询条件              | [SuperMap.FilterParameter](http://iclient.supermap.io/web/apis/mapboxgl.html) | -                      | -         |
+| queryInfo       | 查询条件              | [SuperMap.FilterParameter](https://iclient.supermap.io/web/apis/mapboxgl.html) | -                      | -         |
 
 ### datasetOptions
 

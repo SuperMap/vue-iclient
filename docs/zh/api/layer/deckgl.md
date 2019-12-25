@@ -1,6 +1,6 @@
 # DeckGL 图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_deckgl_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_deckgl_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map :map-options="mapOptions" @load="mapIsLoaded">
@@ -85,7 +85,7 @@
                 'raster-tiles': {
                   type: 'raster',
                   tiles: [
-                      'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/ChinaDark/zxyTileImage.png?z={z}&x={x}&y={y}',
+                      'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/ChinaDark/zxyTileImage.png?z={z}&x={x}&y={y}',
                   ],
                   tileSize: 256,
                 },
@@ -122,4 +122,4 @@
 | 参数      | 说明                                                                                                                        | 类型   | 可选值                                                                                                                                                                                        | 默认值 |
 | :-------- | :-------------------------------------------------------------------------------------------------------------------------- | :----- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- |
 | layerType | 高效率图层类型                                                                                                              | object | 'scatter-plot'高效率点图层 \| 'path-layer'（路径线图层） \| 'polygon-layer'（高效率面图层） \| 'arc-layer'（曲线图层） \| 'hexagon-layer'（ 正六边形图层） \| 'screen-grid-layer'（网格图层） | -      |
-| options   | 图层可选参数，参照 [SuperMap echartsLayer API](http://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.DeckglLayer.html) | object | -                                                                                                                                                                                             | -      |
+| options   | 图层可选参数，参照 [SuperMap echartsLayer API](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.DeckglLayer.html) | object | -                                                                                                                                                                                             | -      |

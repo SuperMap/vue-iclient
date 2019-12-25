@@ -1,6 +1,6 @@
 # 热力图图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_heatmap_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_heatmap_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map :map-options="mapOptions">

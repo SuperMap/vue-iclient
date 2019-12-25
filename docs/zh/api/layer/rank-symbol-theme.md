@@ -1,6 +1,6 @@
 # 等级符号专题图
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_ranksymboltheme_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_ranksymboltheme_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map :map-options="mapOptions" @load="mapIsLoaded">
@@ -21,8 +21,8 @@
 | :--------- | :------------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------- | :------- |
 | layerName  | 图层名                                                                                                                          | string                                                                                                                                                                                        | -                                    | -        |
 | symbolType | 符号类型                                                                                                                        | string                                                                                                                                                                                        | 'Bar' \| 'Line' \| 'Pie' \| 'Circle' | 'Circle' |
-| options    | 图层可选参数，参照 [SuperMap iClient API](http://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.RankSymbolThemeLayer.html) | object                                                                                                                                                                                        | -                                    | -        |
-| data       | 图层要素数据                                                                                                                    | [mapboxgl.supermap.ThemeFeature](http://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.ThemeFeature.html) \| [SuperMap.ServerFeature](http://iclient.supermap.io/web/apis/mapboxgl.html) | -                                    | -        |
+| options    | 图层可选参数，参照 [SuperMap iClient API](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.RankSymbolThemeLayer.html) | object                                                                                                                                                                                        | -                                    | -        |
+| data       | 图层要素数据                                                                                                                    | [mapboxgl.supermap.ThemeFeature](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.ThemeFeature.html) \| [SuperMap.ServerFeature](https://iclient.supermap.io/web/apis/mapboxgl.html) | -                                    | -        |
 
 ### Events
 

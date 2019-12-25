@@ -1,9 +1,9 @@
 # 图表专题图
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_graph_theme_layer_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_graph_theme_layer_vue.html"></sm-iframe>
 
 ```html
-<sm-web-map server-url='http://support.supermap.com.cn:8092/' map-id="676816598" @load="mapIsLoaded">
+<sm-web-map server-url='https://iportal.supermap.io/iportal/' map-id="1329428269" @load="mapIsLoaded">
   <sm-graph-theme-layer
     :options="themeOptions"
     :data="features"
@@ -21,8 +21,8 @@
 | :--------- | :------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------- | :----- |
 | layerName  | 图层名                                                                                                                     | string                                                                                                                                                                                        | -                        | -      |
 | chartsType | 图表类别                                                                                                                   | string                                                                                                                                                                                        | 'Bar' \| 'Line' \| 'Pie' | 'Bar'  |
-| options    | 图层可选参数，参照 [SuperMap iClient API](http://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.GraphThemeLayer.html) | object                                                                                                                                                                                        | -                        | -      |
-| data       | 图层要素数据                                                                                                               | [mapboxgl.supermap.ThemeFeature](http://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.ThemeFeature.html) \| [SuperMap.ServerFeature](http://iclient.supermap.io/web/apis/mapboxgl.html) | -                        | -      |
+| options    | 图层可选参数，参照 [SuperMap iClient API](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.GraphThemeLayer.html) | object                                                                                                                                                                                        | -                        | -      |
+| data       | 图层要素数据                                                                                                               | [mapboxgl.supermap.ThemeFeature](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.ThemeFeature.html) \| [SuperMap.ServerFeature](https://iclient.supermap.io/web/apis/mapboxgl.html) | -                        | -      |
 
 ### Events
 
