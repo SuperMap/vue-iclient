@@ -16,4 +16,4 @@
 | position     | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string                  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left'                                               |
 | mode         | 搜索框样式                                                                      | string                  | 'control' \| 'toolBar'                                       | 'control'                                                |
 | resultRender | 查询结果后的回调方法                                                            | function(searchResults) | -                                                            | -                                                        |
-| data         | 天地图搜索服务和许可服务配置                                                    | object                  | -                                                            | {searchUrl: 'http://api.tianditu.gov.cn/search', tk: ''} |
+| data         | 天地图搜索服务和许可服务配置                                                    | object                  | -                                                            | {searchUrl: 'https://api.tianditu.gov.cn/search', tk: ''} |

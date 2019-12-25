@@ -66,7 +66,7 @@ new Vue({
 
 | 参数            | 说明                  | 类型                                                                          | 可选值                 | 默认值    |
 | :-------------- | :-------------------- | :---------------------------------------------------------------------------- | :--------------------- | :-------- |
-| serverUrl            | SuperMap iPortal/Online 服务器地址              | string                                                                        | - | http://www.supermapol.com
+| serverUrl            | SuperMap iPortal/Online 服务器地址              | string                                                                        | - | https://www.supermapol.com
 | mapId             | iPortal              | Online 地图 ID                                                                        | number                      | -         |
 | withCredentials | 请求是否携带 cookie | boolean                                                                       | -                      | false     |
 | ignoreBaseLayer | 不添加底图 | boolean | - | false
