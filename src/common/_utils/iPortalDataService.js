@@ -1,9 +1,6 @@
 import iServerRestService from './iServerRestService';
 import { isXField, isYField } from './util';
 import { Events } from '../_types/event/Events';
-// eslint-disable-next-line
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 /**
  * @class iPortalDataService

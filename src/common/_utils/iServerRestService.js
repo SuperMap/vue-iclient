@@ -1,6 +1,3 @@
-// eslint-disable-next-line
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { Events } from '../_types/event/Events';
 import epsgCodes from '../web-map/config/epsg.json';
 import proj4 from 'proj4';
