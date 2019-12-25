@@ -4,6 +4,8 @@
   overflow-y: auto;
   border: none;
   color: #fff;
+  min-width: 30px;
+  min-height: 30px;
   &::-webkit-scrollbar {
     width: 6px;
     height: 6px;

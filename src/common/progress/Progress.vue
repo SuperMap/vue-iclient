@@ -120,8 +120,10 @@ export default {
       this.setPercent(this.features);
     }
   },
-  mounted() {
+  created() {
     this.colorData = this.strokeColor || this.getColor(0);
+  },
+  mounted() {
     this.$on('theme-style-changed', () => {
       this.colorData = this.getColor(0);
     });
