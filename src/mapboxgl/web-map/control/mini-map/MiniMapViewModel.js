@@ -284,7 +284,9 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     return latlng;
   }
   _setStyle() {
-    this._miniMap.setStyle(this._parentMap.getStyle());
+    this._miniMap.setStyle(this._parentMap.getStyle(), {
+      localIdeographFontFamily: this._parentMap._localIdeographFontFamily
+    });
     this._miniMap.setCRS(this._parentMap.getCRS());
     this._addRectLayers();
     this._update();
