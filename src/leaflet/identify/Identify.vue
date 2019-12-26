@@ -1,30 +1,24 @@
 <template>
-  <sm-popup ref="SmPopup" :latLng="mapClickPosition">
-    <ul ref="Popup" :style="[getTextColorStyle]" :class="['sm-component-identify']">
-      <li
-        v-for="(value, key, index) in popupProps"
-        :key="index"
-        class="sm-component-identify__body"
-      >
-        <div class="sm-component-identify__left" :title="key">{{ key }}</div>
-        <div class="sm-component-identify__right" :title="value">{{ value }}</div>
-      </li>
-    </ul>
-  </sm-popup>
+  <ul v-show="false" ref="Popup" :style="[getTextColorStyle]" :class="['sm-component-identify']">
+    <li
+      v-for="(value, key, index) in popupProps"
+      :key="index"
+      class="sm-component-identify__body"
+    >
+      <div class="sm-component-identify__left" :title="key">{{ key }}</div>
+      <div class="sm-component-identify__right" :title="value">{{ value }}</div>
+    </li>
+  </ul>
 </template>
 
 <script>
 import MapGetter from '../_mixin/map-getter';
 import Theme from '../../common/_mixin/theme';
 import IdentifyViewModel from './IdentifyViewModel';
-import SmPopup from '../popup/Popup';
 import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmIdentify',
-  components: {
-    SmPopup
-  },
   mixins: [MapGetter, Theme],
   props: {
     layerNames: {
@@ -61,6 +55,9 @@ export default {
         this.$options.removed.call(this, oldVal);
         this.setLayers();
       }
+    },
+    backgroundData() {
+      this.changeStyle();
     }
   },
   loaded() {
@@ -198,7 +195,9 @@ export default {
       this.$nextTick(() => {
         // 这个定时器是避免和专题图的点击事件（要清空popup）冲突
         setTimeout(() => {
-          popupLayer.bindPopup(this.$refs.Popup);
+          let popupDom = this.$refs.Popup;
+          popupDom.style.display = 'block';
+          popupLayer.bindPopup(popupDom);
           // 定时为了获取最近的一次地图点击事件的坐标mapClickPosition
           popupLayer.openPopup(latlng || this.mapClickPosition);
           // popupclose(点击地图的时候，清除最后一次的高亮)
@@ -228,6 +227,13 @@ export default {
           this.popupProps = feature.properties;
         }
       }
+    },
+    // 根据主题改变样式
+    changeStyle() {
+      const wrapper = document.querySelector('.leaflet-popup-content-wrapper');
+      const tip = document.querySelector('.leaflet-popup-tip');
+      wrapper && (wrapper.style.background = this.backgroundData);
+      tip && (tip.style.background = this.backgroundData);
     }
   }
 };
