@@ -47,6 +47,9 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     this._createMarker();
   }
   private _createMarker() {
+    if (this.markersElement.length === 0) {
+      return;
+    }
     this.features.features.forEach((point, index) => {
       // @ts-ignore
       let coordinates = point.geometry.coordinates;
