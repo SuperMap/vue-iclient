@@ -139,10 +139,12 @@ export default {
       let layerId = this.getUniqueId();
 
       if (this.clearLastLayer) {
-        this.prevLayerId && this.map.removeLayer(this.prevLayerId);
-        this.prevLayerId = layerId;
+        if (this.prevLayerId && this.map.getLayer(this.prevLayerId)) {
+          this.map.removeLayer(this.prevLayerId);
+        }
+        this.geojsonLayerInstance && this.geojsonLayerInstance.$destroy();
       }
-
+      this.prevLayerId = layerId;
       if (this.addToMap) {
         let type = this.transformType[result.features[0].geometry.type];
 
@@ -156,13 +158,13 @@ export default {
         });
 
         let component = GeojsonLayerInstance.$mount();
+        this.geojsonLayerInstance = component;
         this.map.getContainer().appendChild(component.$el);
       }
 
       if (this.fitBounds && this.addToMap) {
         this.map.fitBounds(bbox(result), { maxZoom: 12 });
       }
-
       this.notify && this.$message.success(this.$t('openFile.openFileSuccess'));
       this.$emit('open-file-succeeded', result);
     });
