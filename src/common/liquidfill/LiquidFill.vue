@@ -68,6 +68,7 @@ export default {
     return {
       waveColorData: '',
       labelColorData: '',
+      insideLabelColorData: '',
       borderColorData: '',
       backgroundColorData: '',
       finalValue: this.value
@@ -102,6 +103,10 @@ export default {
     },
     labelColor(val) {
       this.labelColorData = val;
+      this.updateChart();
+    },
+    insideLabelColor(val) {
+      this.insideLabelColorData = val;
       this.updateChart();
     },
     borderColor(val) {
@@ -140,6 +145,7 @@ export default {
   mounted() {
     this.waveColorData = this.waveColor || this.getColor(0);
     this.labelColorData = this.labelColor || this.getTextColor;
+    this.insideLabelColorData = this.insideLabelColor || this.getTextColor;
     this.borderColorData = this.borderColor || this.waveColorData;
     this.backgroundColorData = this.backgroundColor || this.getBackground;
     setTimeout(() => {
@@ -160,6 +166,7 @@ export default {
       this.$on('theme-style-changed', () => {
         this.waveColorData = this.getColor(0);
         this.labelColorData = this.getTextColor;
+        this.insideLabelColorData = this.getTextColor;
         this.borderColorData = this.getColor(0);
         this.backgroundColorData = this.getBackground;
         this.updateChart(true);
@@ -181,7 +188,7 @@ export default {
             label: {
               fontSize: parseFloat(this.fontSize),
               color: this.labelColorData,
-              insideColor: this.insideLabelColor
+              insideColor: this.insideLabelColorData
             },
             backgroundStyle: {
               color: this.backgroundColorData
