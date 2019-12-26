@@ -173,7 +173,7 @@ export default {
         // 过滤字段
         if (this.fields.length > 0) {
           this.fields.forEach(field => {
-            if (feature.properties[field]) {
+            if (feature.properties.hasOwnProperty(field)) {
               this.popupProps[field] = feature.properties[field];
             }
           });
