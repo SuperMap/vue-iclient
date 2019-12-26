@@ -620,7 +620,9 @@ export default {
       }
     },
     showDetailInfo(feature) {
-      if (feature && this.viewModel) {
+      const coordinates = ((feature || {}).geometry || {}).coordinates;
+      const hasCoordinates = coordinates && !!coordinates.length;
+      if (hasCoordinates && this.viewModel) {
         const properties = feature.properties || {};
         const coordinates = getCenter(feature).geometry.coordinates;
         const propsData = this.generateTableData(properties);
@@ -633,7 +635,7 @@ export default {
         if (mapNotLoaded) {
           return;
         }
-        if (!feature) {
+        if (!hasCoordinates) {
           this.unSupportedFeatureTip();
         }
       }
@@ -656,7 +658,8 @@ export default {
       }
       return propsData;
     },
-    changePopupArrowStyle() {}
+    changePopupArrowStyle() {},
+    mapNotLoadedTip() {}
   },
   // echarts所有静态方法
   /**

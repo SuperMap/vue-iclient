@@ -103,7 +103,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
   }
 
   _showResultToMap(feature) {
-    const geometry = feature.geometry;
+    const geometry = feature.geometry || {};
     if (!this.options.alwaysCenter && (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon')) {
       this._addPolygon(feature);
     } else if (!this.options.alwaysCenter && geometry.type === 'LineString') {

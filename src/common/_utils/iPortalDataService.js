@@ -1,4 +1,4 @@
-import iServerRestService from './iServerRestService';
+import iServerRestService, { vertifyEpsgCode, transformFeatures } from './iServerRestService';
 import { isXField, isYField } from './util';
 import { Events } from '../_types/event/Events';
 
@@ -222,12 +222,14 @@ export default class iPortalDataService extends Events {
               return;
             }
             let features = this._formatGeoJSON(data.content, queryInfo);
+            features = this._transformContentFeatures(features);
             result.features = {
               type: data.content.type,
               features
             };
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
             let features = this._excelData2Feature(data.content, queryInfo);
+            features = this._transformContentFeatures(features);
             result.features = {
               type: 'FeatureCollection',
               features
@@ -302,5 +304,14 @@ export default class iPortalDataService extends Events {
       features.push(feature);
     }
     return features;
+  }
+  // 转坐标系
+  _transformContentFeatures(features) {
+    let transformedFeatures = features;
+    if (features && !!features.length) {
+      const epsgCode = vertifyEpsgCode(features[0]);
+      transformedFeatures = transformFeatures(epsgCode, features);
+    }
+    return transformedFeatures;
   }
 }

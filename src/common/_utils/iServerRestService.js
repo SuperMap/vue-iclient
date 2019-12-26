@@ -4,6 +4,60 @@ import proj4 from 'proj4';
 import { isMatchUrl } from './util';
 import { statisticsFeatures } from './statistics';
 
+function _getValueOfEpsgCode(epsgCode) {
+  const defName = `EPSG:${epsgCode}`;
+  const defValue = epsgCodes[defName];
+  if (!defValue) {
+    console.error(`${defName} not define`);
+  } else {
+    proj4.defs(defName, defValue);
+  }
+  return defName;
+}
+
+function _transformCoordinates(coordinates, projName) {
+  if (coordinates[0] instanceof Array) {
+    coordinates.forEach((item, index) => {
+      if (item instanceof Array) {
+        coordinates[index] = _transformCoordinates(item, projName);
+      }
+    });
+  } else if (coordinates.length > 0) {
+    return projName !== 'EPSG:4326' ? proj4(projName, 'EPSG:4326', coordinates) : coordinates;
+  }
+  return coordinates;
+}
+
+export function vertifyEpsgCode(firstFeature) {
+  let epsgCode = 4326;
+  let firstCoord = (firstFeature.geometry || {}).coordinates || [];
+  if (firstCoord[0] instanceof Array) {
+    if (firstCoord[0][0] instanceof Array) {
+      // type: Polygon
+      firstCoord = firstCoord[0][0];
+    } else {
+      // type: LineString
+      firstCoord = firstCoord[0];
+    }
+  }
+  // 以防经纬度交换，判断错误的问题，都改成180
+  const acceptRange = firstCoord[0] > -180 && firstCoord[0] < 180 && firstCoord[1] > -180 && firstCoord[1] < 180;
+  if (!acceptRange) {
+    epsgCode = 3857;
+  }
+  return epsgCode;
+}
+
+export function transformFeatures(epsgCode, features) {
+  const projName = _getValueOfEpsgCode(epsgCode);
+  const transformedFeatures = features.map(feature => {
+    const coordinates = feature.geometry.coordinates;
+    feature.geometry.coordinates = _transformCoordinates(coordinates, projName);
+    return feature;
+  });
+  return transformedFeatures;
+}
+
 /**
  * @class iServerRestService
  * @classdesc iServer 数据请求类。
@@ -176,14 +230,14 @@ export default class iServerRestService extends Events {
       return;
     }
     // this.getDataSucceedCallback && this.getDataSucceedCallback(data);
-    const epsgCode = await this._getEpsgCode();
-    if (epsgCode) {
-      const projName = this._getValueOfEpsgCode(epsgCode);
-      data.features = features.map(feature => {
-        const coordinates = feature.geometry.coordinates;
-        feature.geometry.coordinates = this._transformCoordinates(coordinates, projName);
-        return feature;
-      });
+    let epsgCode = await this._getEpsgCode();
+    // 关系型存储发布成服务后坐标一定是4326，但真实数据可能不是4326，判断一下暂时按照3857处理
+    if (epsgCode && data.features && !!data.features.length) {
+      if (epsgCode === 4326) {
+        const vertifyCode = vertifyEpsgCode(features[0]);
+        epsgCode = vertifyCode;
+      }
+      data.features = transformFeatures(epsgCode, features);
     }
     /**
      * @event iServerRestService#getdatasucceeded
@@ -232,10 +286,11 @@ export default class iServerRestService extends Events {
   }
   _getAttributeFilterByKeywords(fields, keyWord) {
     let attributeFilter = '';
-    fields.forEach((field, index) => {
-      attributeFilter +=
-        index !== fields.length - 1 ? `${field} LIKE '%${keyWord}%' ` + 'OR ' : `${field} LIKE '%${keyWord}%'`;
-    }, this);
+    fields &&
+      fields.forEach((field, index) => {
+        attributeFilter +=
+          index !== fields.length - 1 ? `${field} LIKE '%${keyWord}%' ` + 'OR ' : `${field} LIKE '%${keyWord}%'`;
+      }, this);
     return attributeFilter;
   }
   /**
@@ -278,24 +333,5 @@ export default class iServerRestService extends Events {
       .catch(error => {
         console.log(error);
       });
-  }
-
-  _getValueOfEpsgCode(epsgCode) {
-    const defName = `EPSG:${epsgCode}`;
-    proj4.defs(`EPSG:${epsgCode}`, epsgCodes[defName]);
-    return defName;
-  }
-
-  _transformCoordinates(coordinates, projName) {
-    if (coordinates[0] instanceof Array) {
-      coordinates.forEach((item, index) => {
-        if (item instanceof Array) {
-          coordinates[index] = this._transformCoordinates(item, projName);
-        }
-      });
-    } else if (coordinates.length > 0) {
-      return projName !== 'EPSG:4326' ? proj4(projName, 'EPSG:4326', coordinates) : coordinates;
-    }
-    return coordinates;
   }
 }

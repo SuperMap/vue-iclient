@@ -1644,7 +1644,11 @@ export default class WebMapViewModel extends WebMapBase {
   private _defineProj4(epsgCode) {
     const defName = `EPSG:${epsgCode}`;
     const defValue = this.webMapService.getEpsgcodeWkt(defName);
-    proj4.defs(defName, defValue);
+    if (!defValue) {
+      console.error(`${defName} not define`);
+    } else {
+      proj4.defs(defName, defValue);
+    }
   }
 
   private _addLayer(layerInfo) {

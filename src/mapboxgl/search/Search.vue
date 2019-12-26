@@ -39,18 +39,16 @@
             @compositionstart="isInputing = true"
             @compositionend="isInputing = false"
             @pressEnter="searchButtonClicked"
-            @mouseenter="isHover = !isHover"
-            @mouseleave="isHover = !isHover"
+            @focus="isActive = !isActive"
+            @blur="isActive = !isActive"
             @keyup="changeResultHover"
           >
             <a-icon
-              v-show="isHover && searchKey"
+              v-show="isActive"
               slot="suffix"
               type="close-circle"
               :style="getColorStyle(0)"
-              @click="inputValueCleared"
-              @mouseenter="isHover = !isHover"
-              @mouseleave="isHover = !isHover"
+              @mousedown="inputValueCleared"
             />
           </a-input>
         </div>
@@ -216,7 +214,7 @@ export default {
       searchKey: null,
       searchResult: [],
       prefixType: 'search',
-      isHover: false,
+      isActive: false,
       tablePopupProps: {},
       showSearch: true,
       showIcon: false,
