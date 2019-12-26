@@ -5,6 +5,8 @@ import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import iPortalDataService from '../../common/_utils/iPortalDataService';
 import iServerRestService from '../../common/_utils/iServerRestService';
 import { geti18n } from '../../common/_lang';
+import { getFeatureCenter } from '../../common/_utils/util';
+
 /**
  * @class SearchViewModel
  * @classdesc 数据搜索功能类。
@@ -119,7 +121,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     let pointData = { coordinates: null, info: [] };
     const propertiesValue = properties.address || feature.filterAttribute.filterAttributeValue || properties.name;
     if (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon' || geometry.type === 'LineString') {
-      pointData.coordinates = turfCenter(feature).geometry.coordinates;
+      pointData.coordinates = getFeatureCenter(feature);
     } else {
       pointData.coordinates = geometry.coordinates || geometry;
     }

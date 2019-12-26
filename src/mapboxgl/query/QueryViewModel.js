@@ -2,9 +2,9 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 // import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
 // import RestDataParameter from '../../common/_types/RestDataParameter';
 // import RestMapParameter from '../../common/_types/RestMapParameter';
-import center from '@turf/center';
 import { geti18n } from '../../common/_lang';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { getFeatureCenter } from '../../common/_utils/util';
 /**
  * @class QueryViewModel
  * @classdesc 查询组件功能类。
@@ -323,7 +323,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       geometry.type === 'LineString' ||
       geometry.type === 'MultiLineString'
     ) {
-      coordinates = center(feature).geometry.coordinates;
+      coordinates = getFeatureCenter(feature);
     } else {
       coordinates = geometry.coordinates;
     }

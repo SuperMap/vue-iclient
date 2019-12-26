@@ -34,14 +34,13 @@ import ECharts from 'vue-echarts';
 import UniqueId from 'lodash.uniqueid';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
-import getCenter from '@turf/center';
 import Card from '../_mixin/card';
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
 import { chartThemeUtil } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
-import { getColorWithOpacity } from '../../common/_utils/util';
 import TablePopup from '../table-popup/TablePopup';
+import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
 
 /**
  * @module Chart
@@ -624,7 +623,7 @@ export default {
       const hasCoordinates = coordinates && !!coordinates.length;
       if (hasCoordinates && this.viewModel) {
         const properties = feature.properties || {};
-        const coordinates = getCenter(feature).geometry.coordinates;
+        const coordinates = getFeatureCenter(feature);
         const propsData = this.generateTableData(properties);
         this.tablePopupProps = { ...propsData };
         this.$nextTick(() => {

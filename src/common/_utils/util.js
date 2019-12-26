@@ -1,6 +1,7 @@
 // 获取当前时间返回置顶格式
 import { getLanguage, geti18n } from '../../common/_lang';
 import colorcolor from 'colorcolor';
+import getCenter from '@turf/center';
 
 export function getDateTime(timeType) {
   return geti18n().d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
@@ -107,4 +108,23 @@ export function isNumber(data) {
     return true;
   }
   return !isNaN(mdata);
+}
+
+export function getFeatureCenter(feature) {
+  const coordinates = ((feature || {}).geometry || {}).coordinates;
+  const hasCoordinates = coordinates && !!coordinates.length;
+  if (!hasCoordinates) {
+    return;
+  }
+  let featureType = feature.geometry.type;
+  let center;
+  if (featureType === 'LineString') {
+    center = coordinates[parseInt(coordinates.length / 2)];
+  } else if (featureType === 'MultiLineString') {
+    let coord = coordinates[parseInt(coordinates.length / 2)];
+    center = coord[parseInt(coord.length / 2)];
+  } else {
+    center = getCenter(feature).geometry.coordinates;
+  }
+  return center;
 }
