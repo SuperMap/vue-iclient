@@ -9,6 +9,10 @@ export default class RestService extends Events {
     this.options = options || {};
   }
 
+  setProxy(proxy) {
+    this.options.proxy = proxy;
+  }
+
   /**
    * @function RestService.prototype.getData
    * @description 请求数据。

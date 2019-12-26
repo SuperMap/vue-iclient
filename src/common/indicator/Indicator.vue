@@ -70,6 +70,9 @@ export default {
     url: {
       type: String
     },
+    proxy: {
+      type: String
+    },
     animated: {
       type: Boolean,
       default: false
@@ -171,6 +174,12 @@ export default {
     },
     indicatorColor(val) {
       this.indicatorColorData = val;
+    },
+    proxy() {
+      this.restService && this.restService.setProxy(this.proxy);
+      if (this.url) {
+        this.getData();
+      }
     }
   },
   mounted() {
@@ -250,7 +259,7 @@ export default {
     },
     getRestService() {
       if (!this.restService) {
-        this.restService = new RestService();
+        this.restService = new RestService({ proxy: this.proxy });
         this.restService.on({ getdatasucceeded: this.fetchData });
       }
       return this.restService;

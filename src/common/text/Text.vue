@@ -35,6 +35,9 @@ export default {
     },
     field: {
       type: String
+    },
+    proxy: {
+      type: String
     }
   },
   data() {
@@ -70,6 +73,12 @@ export default {
     },
     field() {
       this.setTitle(this.features);
+    },
+    proxy() {
+      this.restService && this.restService.setProxy(this.proxy);
+      if (this.url) {
+        this.getData();
+      }
     }
   },
   beforeDestroy() {
@@ -85,7 +94,7 @@ export default {
     },
     getData() {
       if (!this.restService) {
-        this.restService = new RestService();
+        this.restService = new RestService({ proxy: this.proxy });
         this.restService.on({ getdatasucceeded: this.fetchData });
       }
       this.restService.getData(this.url);
