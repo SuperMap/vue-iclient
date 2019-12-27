@@ -303,6 +303,7 @@ export default class iServerRestService extends Events {
       })
       .catch(error => {
         console.log(error);
+        this.fetchFailed(error);
       });
   }
   _getRestMapFields(url, layerName, callBack) {
@@ -326,7 +327,8 @@ export default class iServerRestService extends Events {
           fields && callBack(fields, serviceResult.result.recordsets[0]);
         },
         processFailed: serviceResult => {
-          callBack(serviceResult);
+          console.error(serviceResult.error);
+          this.fetchFailed(serviceResult.error);
         }
       }
     });
@@ -359,5 +361,20 @@ export default class iServerRestService extends Events {
     //     match = false;
     // }
     return match;
+  }
+
+  // types => []string
+  _getFiledsByType(types, fields, fieldTypes) {
+    let resultFileds = [];
+    fields.forEach((field, index) => {
+      types.includes((fieldTypes && fieldTypes[index]) || field.type) && resultFileds.push(fieldTypes ? field : field.name);
+    });
+    return resultFileds;
+  }
+
+  fetchFailed(error) {
+    this.triggerEvent('getdatafailed', {
+      error
+    });
   }
 }
