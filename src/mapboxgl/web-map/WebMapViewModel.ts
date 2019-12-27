@@ -92,7 +92,7 @@ export default class WebMapViewModel extends WebMapBase {
     // @ts-ignore fix-mapoptions
     mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
     map?: mapboxglTypes.Map,
-    layerFilter: Function = function() { return true }
+    layerFilter: Function = function () { return true }
   ) {
     super(id, options, mapOptions);
     this.mapId = id;
@@ -112,7 +112,7 @@ export default class WebMapViewModel extends WebMapBase {
       this.map = map;
       this._taskID = new Date();
       this.getMapInfo(this._taskID);
-    }else{
+    } else {
       this._initWebMap();
     }
   }
@@ -222,9 +222,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   _handleLayerInfo(mapInfo, _taskID): void {
     mapInfo = this._setLayerID(mapInfo);
-    const { layers, baseLayer} = mapInfo;
+    const { layers, baseLayer } = mapInfo;
 
-    typeof this.layerFilter === 'function' && this.layerFilter(baseLayer)  && this._initBaseLayer(mapInfo);
+    typeof this.layerFilter === 'function' && this.layerFilter(baseLayer) && this._initBaseLayer(mapInfo);
     if (!layers || layers.length === 0) {
       this._sendMapToUser(0, 0);
     } else {
@@ -335,7 +335,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   _initOverlayLayers(layers: any, _taskID): void {
     // 存储地图上所有的图层对象
-    if(typeof this.layerFilter === 'function') {
+    if (typeof this.layerFilter === 'function') {
       layers = layers.filter(this.layerFilter);
     }
     this._layers = layers;
@@ -1226,7 +1226,10 @@ export default class WebMapViewModel extends WebMapBase {
           features: features
         }
       },
-      paint: paint
+      paint: paint,
+      layout: {
+        visibility: layerInfo.visible
+      }
     });
     this._addLayerSucceeded();
   }
