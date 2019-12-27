@@ -25,7 +25,7 @@ import { checkAndRectifyFeatures } from '../../common/_utils/iServerRestService'
  * @fires QueryViewModel#getfeatureinfosucceeded
  */
 export default class QueryViewModel extends mapboxgl.Evented {
-  constructor(map, options) {
+  constructor(options, map) {
     super();
     this.map = map;
     this.options = options || {};
@@ -33,10 +33,20 @@ export default class QueryViewModel extends mapboxgl.Evented {
     this.layerStyle = options.layerStyle || {};
   }
 
+  setMap(map) {
+    this.map = map;
+  }
+
   clearResultLayer() {
+    if (this.map) {
+      this.strokeLayerID && this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
+      this.layerID && this.map.getLayer(this.layerID) && this.map.removeLayer(this.layerID);
+    }
+  }
+
+  clear() {
     this.bounds = null;
-    this.strokeLayerID && this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
-    this.layerID && this.map.getLayer(this.layerID) && this.map.removeLayer(this.layerID);
+    this.clearResultLayer();
   }
   /**
    * @function QueryViewModel.prototype.query
@@ -45,6 +55,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
    * @param {String} [queryBounds='mapBounds'] - 查询范围，可选值为 mapBounds（地图全图范围），currentMapBounds（当前地图范围）。
    */
   query(queryParameter, queryBounds) {
+    if (!this.map) {
+      return;
+    }
     this.queryParameter = queryParameter;
     this.clearResultLayer();
     this.queryBounds = queryBounds;

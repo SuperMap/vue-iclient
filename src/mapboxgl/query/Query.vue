@@ -298,14 +298,18 @@ export default {
     this.jobButton = this.$el.querySelector('.sm-component-query__job-button');
     this.resultInfoContainer = this.$el.querySelector('.sm-component-query__result-info');
     this.jobInfoContainer = this.$el.querySelector('.sm-component-query__job-info');
+    this.formatJobInfos();
+    this.registerEvents();
   },
   beforeDestroy() {
     this.$options.removed.call(this);
   },
   loaded() {
-    this.viewModel = new QueryViewModel(this.map, this.$props);
-    this.formatJobInfos();
-    this.registerEvents();
+    this.viewModel.setMap(this.map);
+    this.clear();
+  },
+  created() {
+    this.viewModel = new QueryViewModel(this.$props);
   },
   removed() {
     this.clearResult();
@@ -314,6 +318,11 @@ export default {
     this.popup && this.popup.remove() && (this.popup = null);
   },
   methods: {
+    clear() {
+      this.queryResult = null;
+      this.map && this.viewModel && this.viewModel.clearResultLayer();
+      this.popup && this.popup.remove() && (this.popup = null);
+    },
     formatJobInfos() {
       if (this.viewModel) {
         this.jobInfos = [];
@@ -333,7 +342,7 @@ export default {
     },
     queryButtonClicked(jobInfo, value) {
       this.$message.destroy();
-      if (this.jobInfo === jobInfo && this.selectValue === value) {
+      if (this.jobInfo === jobInfo && this.selectValue === value && this.queryResult) {
         this.$message.warning(this.$t('query.resultAlreadyExists'));
         return;
       }
@@ -360,11 +369,13 @@ export default {
       this.viewModel.query(parameter, bounds);
     },
     jobButtonClicked() {
-      this.activeTab = 'job';
-      this.resultButton.classList.remove('is-active');
-      this.jobButton.classList.add('is-active');
-      this.jobInfoContainer.classList.remove('hidden');
-      this.resultInfoContainer.classList.add('hidden');
+      if (this.resultButton) {
+        this.activeTab = 'job';
+        this.resultButton.classList.remove('is-active');
+        this.jobButton.classList.add('is-active');
+        this.jobInfoContainer.classList.remove('hidden');
+        this.resultInfoContainer.classList.add('hidden');
+      }
     },
     resultButtonClicked() {
       this.activeTab = 'result';
@@ -524,7 +535,7 @@ export default {
       this.queryResult = null;
       this.popup && this.popup.remove() && (this.popup = null);
       this.jobInfo = null;
-      this.viewModel && this.viewModel.clearResultLayer();
+      this.viewModel && this.viewModel.clear();
     },
     getInfoOfSmid(properties) {
       return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;
