@@ -138,7 +138,7 @@ export default class iServerRestService extends Events {
     queryInfo.datasetNames = [dataSourceName + ':' + datasetName];
     this.projectionUrl = `${dataUrl}/datasources/${dataSourceName}/datasets/${datasetName}`;
     if (queryInfo.keyWord) {
-      let fieldsUrl = dataUrl + `/datasources/${dataSourceName}/datasets/${datasetName}/fields.rjson`;
+      let fieldsUrl = dataUrl + `/datasources/${dataSourceName}/datasets/${datasetName}/fields.rjson?returnAll=true`;
       this._getRestDataFields(fieldsUrl, fields => {
         queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
         this._getDataFeaturesBySql(dataUrl, queryInfo);
@@ -253,7 +253,7 @@ export default class iServerRestService extends Events {
         return response.json();
       })
       .then(results => {
-        let fields = results.fieldNames;
+        let fields = this._getFiledsByType(['CHAR', 'TEXT', 'WTEXT'], results);
         callBack(fields, results);
       })
       .catch(error => {
@@ -274,7 +274,10 @@ export default class iServerRestService extends Events {
       eventListeners: {
         processCompleted: serviceResult => {
           let fields;
-          serviceResult.result && (fields = serviceResult.result.recordsets[0].fieldCaptions);
+          if (serviceResult.result) {
+            let result = serviceResult.result.recordsets[0];
+            fields = this._getFiledsByType(['CHAR', 'TEXT', 'WTEXT'], result.fieldCaptions, result.fieldTypes);
+          }
           fields && callBack(fields, serviceResult.result.recordsets[0]);
         },
         processFailed: serviceResult => {
@@ -333,5 +336,14 @@ export default class iServerRestService extends Events {
       .catch(error => {
         console.log(error);
       });
+  }
+
+  // types => []string
+  _getFiledsByType(types, fields, fieldTypes) {
+    let resultFileds = [];
+    fields.forEach((field, index) => {
+      types.includes((fieldTypes && fieldTypes[index]) || field.type) && resultFileds.push(fieldTypes ? field : field.name);
+    });
+    return resultFileds;
   }
 }
