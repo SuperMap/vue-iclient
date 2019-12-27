@@ -101,12 +101,12 @@
             <li
               v-for="(item, index) in queryResult.result"
               :key="index"
-              :title="'SmID：' + (item.properties.SmID || item.properties.SMID)"
+              :title="getInfoOfSmid(item.properties)"
               @click="queryResultListClicked"
               @mouseenter="changeChosenResultStyle"
               @mouseleave="resetChosenResultStyle"
             >
-              {{ 'SmID：' + (item.properties.SmID || item.properties.SMID) }}
+              {{ getInfoOfSmid(item.properties) }}
             </li>
           </ul>
         </div>
@@ -134,7 +134,7 @@ import CircleStyle from '../_types/CircleStyle';
 // import RestMapParameter from '../../common/_types/RestMapParameter';
 import QueryViewModel from './QueryViewModel.js';
 import TablePopup from '../../common/table-popup/TablePopup';
-import { getColorWithOpacity } from '../../common/_utils/util';
+import { getColorWithOpacity, getValueCaseInsensitive } from '../../common/_utils/util';
 
 // let validators = (value, propType) => {
 //   let valid = true;
@@ -525,6 +525,9 @@ export default {
       this.popup && this.popup.remove() && (this.popup = null);
       this.jobInfo = null;
       this.viewModel && this.viewModel.clearResultLayer();
+    },
+    getInfoOfSmid(properties) {
+      return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;
     }
   }
 };

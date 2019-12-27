@@ -128,3 +128,17 @@ export function getFeatureCenter(feature) {
   }
   return center;
 }
+
+export function getValueCaseInsensitive(properties, searchKey) {
+  const isObj = getDataType(properties) === '[object Object]';
+  if (!searchKey || !isObj) {
+    return '';
+  }
+  const lowerSearchKey = searchKey.toLocaleLowerCase();
+  for (let key in properties) {
+    if (key.toLocaleLowerCase() === lowerSearchKey) {
+      return properties[key];
+    }
+  }
+  return '';
+}

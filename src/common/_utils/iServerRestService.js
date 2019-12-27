@@ -3,8 +3,9 @@ import epsgCodes from '../web-map/config/epsg.json';
 import proj4 from 'proj4';
 import { isMatchUrl } from './util';
 import { statisticsFeatures } from './statistics';
+import cloneDeep from 'lodash.clonedeep';
 
-function _getValueOfEpsgCode(epsgCode) {
+export function _getValueOfEpsgCode(epsgCode) {
   const defName = `EPSG:${epsgCode}`;
   const defValue = epsgCodes[defName];
   if (!defValue) {
@@ -12,7 +13,10 @@ function _getValueOfEpsgCode(epsgCode) {
   } else {
     proj4.defs(defName, defValue);
   }
-  return defName;
+  return {
+    name: defName,
+    value: defValue
+  };
 }
 
 function _transformCoordinates(coordinates, projName) {
@@ -49,13 +53,56 @@ export function vertifyEpsgCode(firstFeature) {
 }
 
 export function transformFeatures(epsgCode, features) {
-  const projName = _getValueOfEpsgCode(epsgCode);
+  const projName = _getValueOfEpsgCode(epsgCode).name;
   const transformedFeatures = features.map(feature => {
     const coordinates = feature.geometry.coordinates;
     feature.geometry.coordinates = _transformCoordinates(coordinates, projName);
     return feature;
   });
   return transformedFeatures;
+}
+
+// 获取iServer restdata restmap 的 epsgcode
+export function getServerEpsgCode(projectionUrl, options) {
+  if (!projectionUrl) {
+    return;
+  }
+  return SuperMap.FetchRequest.get(projectionUrl, null, options)
+    .then(response => {
+      return response.json();
+    })
+    .then(results => {
+      let epsgCode = results.epsgCode;
+      if (results.datasetInfo) {
+        const { prjCoordSys } = results.datasetInfo;
+        epsgCode = prjCoordSys ? prjCoordSys.epsgCode : null;
+      }
+      return epsgCode;
+    })
+    .catch(error => {
+      console.log(error);
+    });
+}
+
+// 关系型存储发布成服务后坐标一定是4326，但真实数据可能不是4326，判断一下暂时按照3857处理
+export async function checkAndRectifyFeatures({ features, epsgCode, projectionUrl, options }) {
+  let currentEpsgCode = epsgCode;
+  let copyFeatures = features;
+  if (!epsgCode) {
+    currentEpsgCode = await getServerEpsgCode(projectionUrl, options);
+  }
+  const epsgValue = epsgCodes[`EPSG: ${currentEpsgCode}`];
+  if (epsgValue === void 0) {
+    currentEpsgCode = 4326;
+  }
+  if (currentEpsgCode && features && !!features.length) {
+    if (currentEpsgCode === 4326) {
+      const vertifyCode = vertifyEpsgCode(features[0]);
+      currentEpsgCode = vertifyCode;
+    }
+    copyFeatures = transformFeatures(currentEpsgCode, cloneDeep(features));
+  }
+  return copyFeatures;
 }
 
 /**
@@ -199,7 +246,7 @@ export default class iServerRestService extends Events {
       this.features = recordsets.features;
       features = this.features.features;
       if (features && features.length > 0) {
-        data = statisticsFeatures(features, recordsets.fields, recordsets.fieldTypes);
+        data = statisticsFeatures(features, recordsets.fields, recordsets.fieldCaptions, recordsets.fieldTypes);
       } else {
         /**
          * @event iServerRestService#featureisempty
@@ -229,16 +276,14 @@ export default class iServerRestService extends Events {
       });
       return;
     }
-    // this.getDataSucceedCallback && this.getDataSucceedCallback(data);
-    let epsgCode = await this._getEpsgCode();
+
     // 关系型存储发布成服务后坐标一定是4326，但真实数据可能不是4326，判断一下暂时按照3857处理
-    if (epsgCode && data.features && !!data.features.length) {
-      if (epsgCode === 4326) {
-        const vertifyCode = vertifyEpsgCode(features[0]);
-        epsgCode = vertifyCode;
-      }
-      data.features = transformFeatures(epsgCode, features);
-    }
+    data.features = await checkAndRectifyFeatures({
+      features: data.features,
+      projectionUrl: this.projectionUrl,
+      options: this.options
+    });
+
     /**
      * @event iServerRestService#getdatasucceeded
      * @description 请求数据成功后触发。
@@ -314,36 +359,5 @@ export default class iServerRestService extends Events {
     //     match = false;
     // }
     return match;
-  }
-
-  // 转坐标系
-  _getEpsgCode() {
-    if (!this.projectionUrl) {
-      return;
-    }
-    return SuperMap.FetchRequest.get(this.projectionUrl, null, { proxy: this.options.proxy })
-      .then(response => {
-        return response.json();
-      })
-      .then(results => {
-        let epsgCode = results.epsgCode;
-        if (results.datasetInfo) {
-          const { prjCoordSys } = results.datasetInfo;
-          epsgCode = prjCoordSys ? prjCoordSys.epsgCode : null;
-        }
-        return epsgCode;
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  }
-
-  // types => []string
-  _getFiledsByType(types, fields, fieldTypes) {
-    let resultFileds = [];
-    fields.forEach((field, index) => {
-      types.includes((fieldTypes && fieldTypes[index]) || field.type) && resultFileds.push(fieldTypes ? field : field.name);
-    });
-    return resultFileds;
   }
 }

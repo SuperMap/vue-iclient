@@ -4,7 +4,9 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 // import RestMapParameter from '../../common/_types/RestMapParameter';
 import { geti18n } from '../../common/_lang';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import { getFeatureCenter } from '../../common/_utils/util';
+import { getFeatureCenter, getValueCaseInsensitive } from '../../common/_utils/util';
+import { checkAndRectifyFeatures } from '../../common/_utils/iServerRestService';
+
 /**
  * @class QueryViewModel
  * @classdesc 查询组件功能类。
@@ -69,6 +71,10 @@ export default class QueryViewModel extends mapboxgl.Evented {
   }
 
   _queryByRestMap(restMapParameter) {
+    const options = {};
+    if (restMapParameter.proxy) {
+      options.proxy = restMapParameter.proxy;
+    }
     if (this.bounds) {
       let param = new SuperMap.QueryByGeometryParameters({
         queryParams: {
@@ -80,8 +86,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
         startRecord: 0,
         expectCount: restMapParameter.maxFeatures || this.maxFeatures
       });
-      new mapboxgl.supermap.QueryService(restMapParameter.url).queryByGeometry(param, serviceResult => {
-        this._mapQuerySucceed(serviceResult, restMapParameter);
+      new mapboxgl.supermap.QueryService(restMapParameter.url, options).queryByGeometry(param, serviceResult => {
+        this._mapQuerySucceed(serviceResult, restMapParameter, options);
       });
     } else {
       let param = new SuperMap.QueryBySQLParameters({
@@ -92,14 +98,18 @@ export default class QueryViewModel extends mapboxgl.Evented {
         startRecord: 0,
         expectCount: restMapParameter.maxFeatures || this.maxFeatures
       });
-      new mapboxgl.supermap.QueryService(restMapParameter.url).queryBySQL(param, serviceResult => {
-        this._mapQuerySucceed(serviceResult, restMapParameter);
+      new mapboxgl.supermap.QueryService(restMapParameter.url, options).queryBySQL(param, serviceResult => {
+        this._mapQuerySucceed(serviceResult, restMapParameter, options);
       });
     }
   }
   _queryByRestData(restDataParameter) {
     let maxFeatures = restDataParameter.maxFeatures || this.maxFeatures;
     let toIndex = maxFeatures === 1 ? 0 : maxFeatures - 1;
+    const options = {};
+    if (restDataParameter.proxy) {
+      options.proxy = restDataParameter.proxy;
+    }
     if (this.bounds) {
       var boundsParam = new SuperMap.GetFeaturesByBoundsParameters({
         attributeFilter: restDataParameter.attributeFilter,
@@ -109,9 +119,12 @@ export default class QueryViewModel extends mapboxgl.Evented {
         fromIndex: 0,
         toIndex
       });
-      new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesByGeometry(boundsParam, serviceResult => {
-        this._dataQuerySucceed(serviceResult, restDataParameter);
-      });
+      new mapboxgl.supermap.FeatureService(restDataParameter.url, options).getFeaturesByGeometry(
+        boundsParam,
+        serviceResult => {
+          this._dataQuerySucceed(serviceResult, restDataParameter, options);
+        }
+      );
     } else {
       let param = new SuperMap.GetFeaturesBySQLParameters({
         queryParameter: {
@@ -121,15 +134,22 @@ export default class QueryViewModel extends mapboxgl.Evented {
         fromIndex: 0,
         toIndex
       });
-      new mapboxgl.supermap.FeatureService(restDataParameter.url).getFeaturesBySQL(param, serviceResult => {
-        this._dataQuerySucceed(serviceResult, restDataParameter);
+      new mapboxgl.supermap.FeatureService(restDataParameter.url, options).getFeaturesBySQL(param, serviceResult => {
+        this._dataQuerySucceed(serviceResult, restDataParameter, options);
       });
     }
   }
-  _mapQuerySucceed(serviceResult, restMapParameter) {
+  async _mapQuerySucceed(serviceResult, restMapParameter, options) {
     let result = serviceResult.result;
     if (result && result.totalCount !== 0) {
       let resultFeatures = result.recordsets[0].features.features;
+      const projectionUrl = `${restMapParameter.url}/prjCoordSys`;
+      resultFeatures = await checkAndRectifyFeatures({ features: resultFeatures, projectionUrl, options }).catch(
+        error => {
+          console.error(error);
+          return resultFeatures;
+        }
+      );
       resultFeatures.length > 0 && (this.queryResult = { name: restMapParameter.name, result: resultFeatures });
       this._addResultLayer(this.queryResult);
       /**
@@ -150,10 +170,20 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
   }
 
-  _dataQuerySucceed(serviceResult, restDataParameter) {
+  async _dataQuerySucceed(serviceResult, restDataParameter, options) {
     let result = serviceResult.result;
     if (result && result.totalCount !== 0) {
+      const { url, dataName } = restDataParameter;
+      const dataSourceName = dataName[0].split(':')[0];
+      const datasetName = dataName[0].split(':')[1];
+      const projectionUrl = `${url}/datasources/${dataSourceName}/datasets/${datasetName}`;
       let resultFeatures = result.features.features;
+      resultFeatures = await checkAndRectifyFeatures({ features: resultFeatures, projectionUrl, options }).catch(
+        error => {
+          console.error(error);
+          return resultFeatures;
+        }
+      );
       resultFeatures.length > 0 && (this.queryResult = { name: restDataParameter.name, result: resultFeatures });
       this._addResultLayer(this.queryResult);
       this.fire('querysucceeded', { result: this.queryResult });
@@ -303,7 +333,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
     let features = this.queryResult.result;
     let feature;
     for (let i = 0; i < features.length; i++) {
-      let propertiesValue = features[i].properties.SmID || features[i].properties.SMID;
+      let propertiesValue = getValueCaseInsensitive(features[i].properties, 'smid');
       if (filter === propertiesValue) {
         feature = this._getFeatrueInfo(features[i]);
         break;
