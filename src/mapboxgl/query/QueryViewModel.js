@@ -59,7 +59,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       return;
     }
     this.queryParameter = queryParameter;
-    this.clearResultLayer();
+    this.clear();
     this.queryBounds = queryBounds;
     if (queryBounds === 'currentMapBounds') {
       this.bounds = this.map.getBounds();
