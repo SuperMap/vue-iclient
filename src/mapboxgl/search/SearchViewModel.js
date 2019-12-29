@@ -209,11 +209,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
           let features = clonedeep(source._data.features);
           let resultFeature = this._getFeaturesByKeyWord(this.keyWord, features);
           const results = resultFeature.slice(0, this.maxFeatures);
-          if (results.length) {
-            results.length && this._searchFeaturesSucceed(results, sourceName);
-          } else {
-            this._searchFeaturesFailed('', sourceName);
-          }
+          this._searchFeaturesSucceed(results, sourceName);
         } else {
           this._searchFeaturesFailed(`The ${sourceName} does not exist`, sourceName);
         }
@@ -238,8 +234,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     if (this.errorSourceList[sourceName]) {
       delete this.errorSourceList[sourceName];
     }
-    let result = { source: sourceName, result: resultFeature };
-    this.searchResult[sourceName] = result;
+    if (resultFeature.length > 0) {
+      let result = { source: sourceName, result: resultFeature };
+      this.searchResult[sourceName] = result;
+    }
     let resultList = [];
     for (let key in this.searchResult) {
       resultList.push(this.searchResult[key]);
@@ -271,7 +269,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
           return;
         }
         if (geocodingResult.poiInfos && geocodingResult.poiInfos.length === 0) {
-          this._searchFeaturesFailed('', sourceName);
+          this._searchFeaturesSucceed([], sourceName);
           return;
         }
         if (geocodingResult.poiInfos) {
@@ -294,10 +292,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
       let iserverService = new iServerRestService(restMap.url, options);
       iserverService.on({
         getdatafailed: e => {
-          this._searchFeaturesFailed('', sourceName);
+          this._searchFeaturesFailed('', restMap.name || sourceName);
         },
         featureisempty: e => {
-          this._searchFeaturesFailed('', sourceName);
+          this._searchFeaturesSucceed([], restMap.name || sourceName);
         },
         getdatasucceeded: e => {
           if (e.features) {
@@ -323,10 +321,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
       let iserverService = new iServerRestService(restData.url, options);
       iserverService.on({
         getdatafailed: e => {
-          this._searchFeaturesFailed('', sourceName);
+          this._searchFeaturesFailed('', restData.name || sourceName);
         },
         featureisempty: e => {
-          this._searchFeaturesFailed('', sourceName);
+          this._searchFeaturesSucceed([], restData.name || sourceName);
         },
         getdatasucceeded: e => {
           if (e.features && e.features.length > 0) {
@@ -350,10 +348,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
       let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false);
       iPortalService.on({
         getdatafailed: e => {
-          this._searchFeaturesFailed('', sourceName);
+          this._searchFeaturesFailed('', iportal.name || sourceName);
         },
         featureisempty: e => {
-          this._searchFeaturesFailed('', sourceName);
+          this._searchFeaturesSucceed([], iportal.name || sourceName);
         },
         getdatasucceeded: e => {
           if (e.features) {
@@ -383,10 +381,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
       };
       let geoCodeParam = new SuperMap.GeoCodingParameter(parm);
       this.addressMatchService.code(geoCodeParam, e => {
-        if (e.result && e.result.length > 0) {
+        if (e.result) {
           this._searchFeaturesSucceed(e.result, addressMatch.name || sourceName);
         } else {
-          this._searchFeaturesFailed('', sourceName);
+          this._searchFeaturesFailed('', addressMatch.name || sourceName);
         }
       });
     }, this);

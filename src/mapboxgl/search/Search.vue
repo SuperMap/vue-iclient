@@ -393,7 +393,7 @@ export default {
       this.searchResult = result;
       this.$emit('search-succeeded', { searchResult: this.searchResult });
       this.prefixType = 'search';
-      this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
+      // this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
       if (this.isNumber(this.searchTaskId)) {
         this.searchTaskId += 1;
         this.regiterEvents();
@@ -407,7 +407,7 @@ export default {
        */
       this.clearResult();
       this.prefixType = 'search';
-      this.$message.warning(this.$t('search.noResult'));
+      // this.$message.warning(this.$t('search.noResult'));
       this.$emit('search-failed', e);
       if (this.isNumber(this.searchTaskId)) {
         this.searchTaskId += 1;

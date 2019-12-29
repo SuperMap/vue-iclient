@@ -209,7 +209,10 @@ export default class iServerRestService extends Events {
       proxy: this.options.proxy,
       eventListeners: {
         processCompleted: this._getFeaturesSucceed.bind(this),
-        processFailed: function() {}
+        processFailed: serviceResult => {
+          console.error(serviceResult.error);
+          this.fetchFailed(serviceResult.error);
+        }
       }
     });
     queryBySQLService.processAsync(queryBySQLParams);
