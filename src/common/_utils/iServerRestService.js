@@ -39,6 +39,10 @@ export function vertifyEpsgCode(firstFeature) {
     if (firstCoord[0][0] instanceof Array) {
       // type: Polygon
       firstCoord = firstCoord[0][0];
+      if(firstCoord[0] instanceof Array){
+        // type: MultiPolygon
+        firstCoord = firstCoord[0];
+      }
     } else {
       // type: LineString
       firstCoord = firstCoord[0];
