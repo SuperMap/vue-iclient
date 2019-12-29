@@ -229,12 +229,14 @@ export default class QueryViewModel extends mapboxgl.Evented {
               resultData = item;
             } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
               resultData = item;
-            } else {
-              this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
             }
           }, this);
-          // 如果有服务，获取数据源和数据集, 然后请求rest服务
-          this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);
+          if (resultData) {
+            // 如果有服务，获取数据源和数据集, 然后请求rest服务
+            this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);
+          } else {
+            this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
+          }
         } else {
           this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
         }
