@@ -39,7 +39,7 @@ export function vertifyEpsgCode(firstFeature) {
     if (firstCoord[0][0] instanceof Array) {
       // type: Polygon
       firstCoord = firstCoord[0][0];
-      if(firstCoord[0] instanceof Array){
+      if (firstCoord[0] instanceof Array) {
         // type: MultiPolygon
         firstCoord = firstCoord[0];
       }
@@ -374,7 +374,8 @@ export default class iServerRestService extends Events {
   _getFiledsByType(types, fields, fieldTypes) {
     let resultFileds = [];
     fields.forEach((field, index) => {
-      types.includes((fieldTypes && fieldTypes[index]) || field.type) && resultFileds.push(fieldTypes ? field : field.name);
+      types.includes((fieldTypes && fieldTypes[index]) || field.type) &&
+        resultFileds.push(fieldTypes ? field : field.name);
     });
     return resultFileds;
   }
