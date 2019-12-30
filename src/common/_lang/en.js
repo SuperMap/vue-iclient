@@ -148,6 +148,9 @@ export default {
     title: 'Indicator Title',
     unit: 'Unit'
   },
+  layerManager: {
+    title: 'Layer Manager'
+  },
   tdtResults: {
     on: 'on ',
     station: ' station',
