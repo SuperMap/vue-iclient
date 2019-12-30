@@ -2,7 +2,7 @@ import mapboxgl from '../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import { geti18n } from '../../../common/_lang';
 
 const tileUrlTemplate =
-  'http://t{s}.tianditu.com/{type}_{proj}/wmts?tk={tk}&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet={proj}&format=tiles&width=256&height=256&layer={type}&tilematrix={z}&tilerow={y}&tilecol={x}';
+  'https://t{s}.tianditu.gov.cn/{type}_{proj}/wmts?tk={tk}&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet={proj}&format=tiles&width=256&height=256&layer={type}&tilematrix={z}&tilerow={y}&tilecol={x}';
 
 const LABELLIST = {
   vec: 'cva',

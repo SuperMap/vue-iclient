@@ -110,7 +110,7 @@ export default {
       type: Object,
       default() {
         return {
-          searchUrl: 'http://api.tianditu.gov.cn/search',
+          searchUrl: 'https://api.tianditu.gov.cn/search',
           tk: ''
         };
       }

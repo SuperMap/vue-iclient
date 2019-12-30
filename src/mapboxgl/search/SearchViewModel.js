@@ -40,7 +40,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this.options = options || {};
     this.searchTaskId = 0;
     this.options.cityGeoCodingConfig = {
-      addressUrl: 'http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
+      addressUrl: 'https://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
       key: options.onlineLocalSearch.key || 'fvV2osxwuZWlY0wJb8FEb2i5'
     };
     if (map) {

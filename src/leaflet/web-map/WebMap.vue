@@ -41,7 +41,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
 
   @Prop() mapId: string;
   @Prop({ default: 'map' }) target: string;
-  @Prop({ default: 'http://www.supermapol.com' }) serverUrl: string;
+  @Prop({ default: 'https://www.supermapol.com' }) serverUrl: string;
   @Prop() accessToken: string;
   @Prop() accessKey: string;
   @Prop() tiandituKey: string;

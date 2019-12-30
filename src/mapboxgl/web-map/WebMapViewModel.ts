@@ -22,7 +22,7 @@ import proj4 from 'proj4';
  * @param {number} id - iPortal|Online 地图 ID。
  * @param {Object} options - 参数。
  * @param {string} [options.target='map'] - 地图容器 ID。
- * @param {string} [options.serverUrl="http://www.supermapol.com"] - SuperMap iPortal/Online 服务器地址。当设置 `id` 时有效。
+ * @param {string} [options.serverUrl="https://www.supermapol.com"] - SuperMap iPortal/Online 服务器地址。当设置 `id` 时有效。
  * @param {string} [options.accessToken] - 用于访问 SuperMap iPortal 、SuperMap Online 中受保护的服务。当设置 `id` 时有效。
  * @param {string} [options.accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `id` 时有效。
  * @param {String} [options.tiandituKey] - 用于访问天地图的服务。当设置 `id` 时有效。
@@ -467,7 +467,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createBingLayer(layerName: string): void {
     let bingUrl =
-      'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
+      'https://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
     // @ts-ignore
     this._addBaselayer([bingUrl], layerName, layerInfo.visible);
   }
@@ -1596,7 +1596,7 @@ export default class WebMapViewModel extends WebMapBase {
     let layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
     let isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
 
-    let url = `http://t0.tianditu.com/{layer}_{proj}/wmts?tk=${this.tiandituKey}`;
+    let url = `https://t0.tianditu.gov.cn/{layer}_{proj}/wmts?tk=${this.tiandituKey}`;
     let labelUrl = url;
 
     let layerLabelMap = {

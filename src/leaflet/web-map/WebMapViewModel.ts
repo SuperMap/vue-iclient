@@ -142,7 +142,7 @@ export default class WebMapViewModel extends WebMapBase {
     let mapUrls = this.getMapurls({
       CLOUD: 'http://t2.supermapcloud.com/FileService/image',
       CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp',
-      OSM: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      OSM: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
     });
 
     let url: string;
@@ -308,7 +308,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createBingLayer() {
     let url =
-      'http://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadKey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
+      'https://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadKey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
     // @ts-ignore
     L.TileLayer.BingLayer = L.TileLayer.extend({
       getTileUrl: function (coordinates) {

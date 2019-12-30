@@ -70,8 +70,8 @@ function cancelRequest(sourceName) {
 }
 
 export const config = {
-  HOME_URL: 'http://www.tianditu.gov.cn',
-  feedbackIp: 'http://www.tianditu.gov.cn/feedback',
+  HOME_URL: 'https://www.tianditu.gov.cn',
+  feedbackIp: 'https://www.tianditu.gov.cn/feedback',
   T_URL: 'https://map.tianditu.gov.cn',
   T_SSO_URL: 'https://sso.tianditu.gov.cn',
   T_UMS_URL: 'https://uums.tianditu.gov.cn',
@@ -79,7 +79,7 @@ export const config = {
   DRIVE_URL: 'https://api.tianditu.gov.cn/drive',
   BUS_URL: 'https://api.tianditu.gov.cn/transit',
   GEOCODE_URL: 'https://api.tianditu.gov.cn/geocoder',
-  API_URL: 'http://lbs.tianditu.gov.cn/'
+  API_URL: 'https://lbs.tianditu.gov.cn/'
 };
 
 export const tiandituSearch = (url, params) => {

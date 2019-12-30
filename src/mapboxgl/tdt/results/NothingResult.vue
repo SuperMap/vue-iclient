@@ -14,7 +14,7 @@
             <p>
               3、{{ $t('tdtResults.onTdtMap') }}
               <a
-                href="http://www.tianditu.gov.cn/feedback/#/newPlace"
+                href="https://www.tianditu.gov.cn/feedback/#/newPlace"
                 target="_bank"
                 :style="getColorStyle(0)"
               >{{ $t('tdtResults.addThisAddress') }}</a>

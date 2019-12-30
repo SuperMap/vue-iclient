@@ -78,7 +78,7 @@ export default class WebMapService extends Events {
   constructor(mapId: string, options: webMapOptions = {}) {
     super();
     this.mapId = mapId;
-    this.serverUrl = options.serverUrl || 'http://www.supermapol.com';
+    this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
     this.tiandituKey = options.tiandituKey || '';
