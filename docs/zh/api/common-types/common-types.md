@@ -3,11 +3,7 @@
 组件基础类型，你可以通过以下方式快速创建一个类型对象，下面以 `CircleStyle` 为例：
 
 ```js
-import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient';
-import App from './App.vue';
-
-Vue.use(VueiClient);
+import VueiClient from '@supermap/vue-iclient-mapboxgl';
 
 let CircleStyle = new VueiClient.commontypes.CircleStyle();
 ```
