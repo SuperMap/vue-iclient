@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <sm-web-map
-      server-url="http://192.168.12.28:8092/iportal"
-      map-id="905578847"
+      server-url="http://support.supermap.com.cn:8092/"
+      map-id="1649097980"
       :style="{height:'100%'}"
       @load="mapLoaded"
     >
