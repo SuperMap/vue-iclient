@@ -7,7 +7,7 @@ export default class MapvLayerViewModel extends mapboxgl.Evented {
     this.map = map;
     const { data, options, layerId } = mapvLayerProps;
     this.data = data;
-    this.options = options.layerId ? options : { ...options, layerId };
+    this.options = options.layerID ? options : { ...options, layerID: layerId };
     this._init();
   }
 
@@ -18,7 +18,15 @@ export default class MapvLayerViewModel extends mapboxgl.Evented {
   }
 
   _addMapvLayer() {
-    const mapVLayer = new mapboxgl.supermap.MapvLayer('', this.data, this.options);
+    const mapVLayer = new mapboxgl.supermap.MapvLayer('', this.data, Object.assign({}, this.options));
     this.map.addLayer(mapVLayer);
+  }
+
+  clear() {
+    const { map, options } = this;
+    const layerId = options.layerID;
+    if (map && layerId && map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
   }
 }

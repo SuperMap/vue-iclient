@@ -10,11 +10,11 @@ pageClass: web-scene
 该组件基于 [vue-cesium](https://github.com/zouyaoji/vue-cesium)
 :::
 
-在使用三维场景组件之前，你需要在引入 Vue-iClient 时，传入 Cesium 依赖（你可以点击此处下载 [Cesium](http://support.supermap.com.cn/DownloadCenter/DownloadPage.aspx?id=1159) ），如下所示：
+在使用三维场景组件之前，你需要在引入 Vue-iClient-MapboxGL 时，传入 Cesium 依赖（你可以点击此处下载 [Cesium](http://support.supermap.com.cn/DownloadCenter/DownloadPage.aspx?id=1159) ），如下所示：
 
 ```js
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient';
+import VueiClient from '@supermap/vue-iclient-mapboxgl';
 
 Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路径相对于根目录
 ```
@@ -22,7 +22,7 @@ Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路�
 组件使用方式：
 
 ```html
-<sm-web-scene sceneUrl="http://support.supermap.com.cn:8090/iserver/services/3D-CBD/rest/realspace"></sm-web-scene>
+<sm-web-scene sceneUrl="https://iserver.supermap.io/iserver/services/3D-CBD/rest/realspace"></sm-web-scene>
 ```
 
 ### Attributes

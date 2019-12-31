@@ -1,6 +1,6 @@
 # 单值专题图
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_uniquetheme_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_uniquetheme_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map :map-options="mapOptions" @load="mapIsLoaded">
@@ -19,8 +19,8 @@
 | 参数      | 说明                                                                                                                        | 类型                                                                                                                                                                                          | 可选值 | 默认值 |
 | :-------- | :-------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- | :----- |
 | layerName | 图层名                                                                                                                      | string                                                                                                                                                                                        | -      | -      |
-| options   | 图层可选参数，参照 [SuperMap iClient API](http://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.UniqueThemeLayer.html) | object                                                                                                                                                                                        | -      | -      |
-| data      | 图层要素数据                                                                                                                | [mapboxgl.supermap.ThemeFeature](http://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.ThemeFeature.html) \| [SuperMap.ServerFeature](http://iclient.supermap.io/web/apis/mapboxgl.html) | -      | -      |
+| options   | 图层可选参数，参照 [SuperMap iClient API](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.UniqueThemeLayer.html) | object                                                                                                                                                                                        | -      | -      |
+| data      | 图层要素数据                                                                                                                | [mapboxgl.supermap.ThemeFeature](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.ThemeFeature.html) \| [SuperMap.ServerFeature](https://iclient.supermap.io/web/apis/mapboxgl.html) | -      | -      |
 
 ### Events
 

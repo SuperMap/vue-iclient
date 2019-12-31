@@ -10,6 +10,8 @@
     <Legend v-if="legendControl.show" v-bind="legendControl"></Legend>
     <Query v-if="queryControl.show" v-bind="queryControl"></Query>
     <Search v-if="searchControl.show" v-bind="searchControl"></Search>
+    <Identify v-if="identifyControl.show" v-bind="identifyControl"></Identify>
+    <LayerManager v-if="layerManagerControl.show" v-bind="layerManagerControl"></LayerManager>
     <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
@@ -18,6 +20,7 @@
 import WebMapViewModel from './WebMapViewModel';
 import mapEvent from '../_types/map-event';
 import VmUpdater from '../../common/_mixin/vm-updater';
+import MapEvents from './_mixin/map-events';
 import Pan from './control/pan/Pan.vue';
 import Scale from './control/scale/Scale.vue';
 import Zoom from './control/zoom/Zoom.vue';
@@ -27,6 +30,8 @@ import Measure from './control/measure/Measure.vue';
 import Legend from './control/legend/Legend.vue';
 import Query from '../query/Query.vue';
 import Search from '../search/Search.vue';
+import Identify from './control/identify/Identify.vue';
+import LayerManager from './control/layer-manager/LayerManager.vue';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
@@ -38,7 +43,7 @@ import debounce from 'lodash/debounce';
  * @vue-prop {Object} [mapOptions] - {@link MapboxGL map options[https://docs.mapbox.com/mapbox-gl-js/api/#map]} 对象。
  * @vue-prop {String} [mapId] - SuperMap iPortal|Online 地图 ID。当设置 `mapId` 时为加载iPortal/Online 地图，mapOptions中仅 `mapOptions.center` `mapOptions.zoom` `mapOptions.maxBounds` `mapOptions.minZoom` `mapOptions.maxZoom` `mapOptions.renderWorldCopies` `mapOptions.bearing` `mapOptions.pitch` 有效。
  * @vue-prop {String} [target='map'] - 地图容器 ID。
- * @vue-prop {String} [serverUrl='http://www.supermapol.com'] - iPortal/Online 服务器地址。当设置 `mapId` 时有效。
+ * @vue-prop {String} [serverUrl='https://www.supermapol.com'] - iPortal/Online 服务器地址。当设置 `mapId` 时有效。
  * @vue-prop {String} [accessKey] - 用于访问 SuperMap iPortal、SuperMap Online 中受保护的服务。当设置 `mapId` 时有效。
  * @vue-prop {String} [accessToken] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `mapId` 时有效。
  * @vue-prop {String} [tiandituKey] - 用于访问天地图的服务。当设置 `mapId` 时有效。
@@ -122,6 +127,19 @@ interface searchParam extends commonControlParam {
   addressMatch?: Array<string>;
 }
 
+interface identifyParam {
+  show?: boolean;
+  layers?: Array<Object>;
+  fields?: Array<string>;
+  layerStyle?: Array<Object>;
+  clickAreaAround?: number;
+}
+
+interface layerManageParam {
+  show?: boolean;
+  layers?: Array<Object>;
+}
+
 @Component({
   name: 'SmWebMap',
   viewModelProps: [
@@ -148,10 +166,12 @@ interface searchParam extends commonControlParam {
     Measure,
     Legend,
     Query,
-    Search
+    Search,
+    Identify,
+    LayerManager
   }
 })
-class SmWebMap extends Mixins(VmUpdater) {
+class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   spinning = true;
 
   // eslint-disable-next-line
@@ -162,13 +182,15 @@ class SmWebMap extends Mixins(VmUpdater) {
 
   @Prop() mapId: string;
   @Prop({ default: 'map' }) target: string;
-  @Prop({ default: 'http://www.supermapol.com' }) serverUrl: string;
+  @Prop({ default: 'https://www.supermapol.com' }) serverUrl: string;
   @Prop() accessToken: string;
   @Prop() accessKey: string;
   @Prop() tiandituKey: string;
   @Prop({ default: false }) withCredentials: boolean;
   @Prop() excludePortalProxyUrl: boolean;
-  @Prop() mapOptions: any;
+  @Prop() isSuperMapOnline: boolean;
+  @Prop()
+  mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
   @Prop({
     default: () => {
@@ -252,6 +274,29 @@ class SmWebMap extends Mixins(VmUpdater) {
   })
   searchControl: searchParam;
 
+  @Prop({
+    default: () => {
+      return {
+        show: false,
+        layers: [],
+        fields: [],
+        layerStyle: {},
+        clickAreaAround: 5
+      };
+    }
+  })
+  identifyControl: identifyParam;
+
+  @Prop({
+    default: () => {
+      return {
+        show: false,
+        layers: []
+      };
+    }
+  })
+  layerManagerControl: layerManageParam;
+
   @Watch('mapId')
   mapIdChanged() {
     this.spinning = true;
@@ -299,6 +344,7 @@ class SmWebMap extends Mixins(VmUpdater) {
       tiandituKey,
       withCredentials,
       excludePortalProxyUrl,
+      isSuperMapOnline,
       mapOptions
     } = this.$props;
     this.viewModel = new WebMapViewModel(
@@ -310,7 +356,8 @@ class SmWebMap extends Mixins(VmUpdater) {
         accessKey,
         tiandituKey,
         withCredentials,
-        excludePortalProxyUrl
+        excludePortalProxyUrl,
+        isSuperMapOnline
       },
       mapOptions
     );
@@ -334,39 +381,51 @@ class SmWebMap extends Mixins(VmUpdater) {
   }
 
   registerEvents(): void {
-    this.viewModel.on('addlayerssucceeded', e => {
-      this.spinning = false;
-      mapEvent.$options.setMap(this.target, e.map);
-      this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
-      mapEvent.$emit('load-map', e.map, this.target);
-      e.map.resize();
-      /**
-       * @event load
-       * @desc webmap 加载完成之后触发。
-       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
-       */
-      this.load({ map: e.map });
-    });
-    this.viewModel.on('getmapinfofailed', e => {
-      /**
-       * @event getMapFailed
-       * @desc 获取 WebMap 地图信息失败。
-       * @property {Object} error - 失败原因。
-       */
-      this.getMapFailed({ error: e.error });
-      this.$message.error(e.error.message);
-      this.spinning = false;
-    });
-    this.viewModel.on('getlayerdatasourcefailed', e => {
-      /**
-       * @event getLayerDatasourceFailed
-       * @desc 获取图层数据失败。
-       * @property {Object} error - 失败原因。
-       * @property {Object} layer - 图层信息。
-       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
-       */
-      this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
-      this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+    this.viewModel.on({
+      addlayerssucceeded: e => {
+        this.spinning = false;
+        mapEvent.$options.setMap(this.target, e.map);
+        this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
+        mapEvent.$emit('load-map', e.map, this.target);
+        e.map.resize();
+        this.map = e.map;
+        // 绑定map event
+        this.bindMapEvents();
+        /**
+         * @event load
+         * @desc webmap 加载完成之后触发。
+         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+         */
+        this.load({ map: e.map });
+      },
+      getmapinfofailed: e => {
+        /**
+         * @event getMapFailed
+         * @desc 获取 WebMap 地图信息失败。
+         * @property {Object} error - 失败原因。
+         */
+        this.getMapFailed({ error: e.error });
+        this.$message.error(e.error.message);
+        this.spinning = false;
+      },
+      getlayerdatasourcefailed: e => {
+        /**
+         * @event getLayerDatasourceFailed
+         * @desc 获取图层数据失败。
+         * @property {Object} error - 失败原因。
+         * @property {Object} layer - 图层信息。
+         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+         */
+        this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
+        if (e.error === 'SAMPLE DATA is not supported') {
+          this.$message.error(this.$t('webmap.sampleDataNotSupport'));
+        } else {
+          this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+        }
+      },
+      notsupportbaidumap: () => {
+        this.$message.error(this.$t('webmap.baiduMapNotSupport'));
+      }
     });
   }
 

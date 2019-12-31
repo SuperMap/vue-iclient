@@ -7,10 +7,10 @@ Web Map 地图组件。支持 MapboxGL Map，和对接 iPortal/Online 地图。<
 
 ## 加载 iPortal 地图
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_webmap_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_webmap_vue.html"></sm-iframe>
 
 ```vue
-<sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980"></sm-web-map>
+<sm-web-map server-url="https://iportal.supermap.io/iportal/" map-id="801571284"></sm-web-map>
 ```
 
 ### Attributes
@@ -18,7 +18,7 @@ Web Map 地图组件。支持 MapboxGL Map，和对接 iPortal/Online 地图。<
 | 参数                  | 说明                                                            | 类型           | 可选值 | 默认值                    |
 | :-------------------- | :-------------------------------------------------------------- | :------------- | :----- | :------------------------ |
 | mapId                 | iPortal                                                         | Online 地图 ID | number | -                         | - |
-| serverUrl             | SuperMap iPortal/Online 服务器地址                              | string         | -      | http://www.supermapol.com |
+| serverUrl             | SuperMap iPortal/Online 服务器地址                              | string         | -      | https://www.supermapol.com |
 | accessToken           | 用于访问 SuperMap iPortal 、SuperMap Online 中受保护的服务      | string         | -      | -                         |
 | accessKey             | SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制 | string         | -      | -                         |
 | tiandituKey           | 用于访问天地图的服务                                            | string         | -      | -                         |
@@ -28,7 +28,7 @@ Web Map 地图组件。支持 MapboxGL Map，和对接 iPortal/Online 地图。<
 
 ## 加载 iServer 地图
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_map_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_map_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map :map-options="mapOptions"></sm-web-map>
@@ -44,7 +44,7 @@ export default {
                 "raster-tiles": {
                   "type": "raster",
                   "tiles": [
-                    'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
+                    'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
                   ],
                   "tileSize": 256
                 }
@@ -76,8 +76,8 @@ export default {
 
 ```vue
 <sm-web-map
-  server-url="http://support.supermap.com.cn:8092/"
-  map-id="1649097980"
+  server-url="https://iportal.supermap.io/iportal/"
+  map-id="801571284"
   :layerList-control="{ show: true, position: 'top-left' }"
 ></sm-web-map>
 ```

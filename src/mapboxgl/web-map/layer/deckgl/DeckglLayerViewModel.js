@@ -24,4 +24,11 @@ export default class DeckglLayerViewModel extends mapboxgl.Evented {
     const deckglLayer = new mapboxgl.supermap.DeckglLayer(this.layerType, this.options);
     this.map.addLayer(deckglLayer);
   }
+
+  clear() {
+    const { map, options: { layerId } } = this;
+    if (map && layerId && map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
+  }
 }

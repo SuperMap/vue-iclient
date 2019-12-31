@@ -32,7 +32,7 @@ export default class MapGetter extends Vue {
 
   @Watch('mapTarget')
   mapTargetChanged(newVal, oldVal) {
-    if (newVal && oldVal && newVal !== oldVal) {
+    if (newVal && newVal !== oldVal) {
       // 多个map切换的时候，需要删除该组件与前一个map的图层绑定
       callHook(this, 'removed');
       if (mapEvent.$options.getMap(newVal)) {

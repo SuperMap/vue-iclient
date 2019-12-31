@@ -2,7 +2,6 @@
 
 @include b(tdtSearch) {
   max-height: 300px;
-  
   @include e(suggestions) {
     li {
       max-width: 95%;
@@ -21,9 +20,12 @@
     height: 100%;
     overflow: auto;
     max-height: 300px;
-    &::-webkit-scrollbar{
+    &::-webkit-scrollbar {
       display: none;
     }
+  }
+  @include e(pointer) {
+    cursor: pointer;
   }
   .sm-component-search__result {
     max-height: 200px;
@@ -89,7 +91,7 @@
             position: absolute;
             left: 0;
             top: 0;
-            background-image: url("#{$--tdt-assets-path}/sprite.png");
+            background-image: url('#{$--tdt-assets-path}/sprite.png');
             background-repeat: no-repeat;
             width: 17px;
             height: 17px;

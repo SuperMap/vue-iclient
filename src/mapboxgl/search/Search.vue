@@ -39,18 +39,16 @@
             @compositionstart="isInputing = true"
             @compositionend="isInputing = false"
             @pressEnter="searchButtonClicked"
-            @mouseenter="isHover = !isHover"
-            @mouseleave="isHover = !isHover"
+            @focus="isActive = !isActive"
+            @blur="isActive = !isActive"
             @keyup="changeResultHover"
           >
             <a-icon
-              v-show="isHover && searchKey"
+              v-show="isActive"
               slot="suffix"
               type="close-circle"
               :style="getColorStyle(0)"
-              @click="inputValueCleared"
-              @mouseenter="isHover = !isHover"
-              @mouseleave="isHover = !isHover"
+              @mousedown="inputValueCleared"
             />
           </a-input>
         </div>
@@ -102,6 +100,7 @@ import Control from '../_mixin/control';
 
 import SearchViewModel from './SearchViewModel';
 import TablePopup from '../../common/table-popup/TablePopup';
+import { getColorWithOpacity } from '../../common/_utils/util';
 // import iPortalDataParameter from "../commontypes/iPortalDataParameter";
 // import RestDataParameter from "../commontypes/RestDataParameter";
 // import RestMapParameter from "../commontypes/RestMapParameter";
@@ -204,7 +203,8 @@ export default {
     resultRender: {
       type: Function
     },
-    collapsed: { // 是否折叠组件
+    collapsed: {
+      // 是否折叠组件
       type: Boolean,
       default: false
     }
@@ -214,7 +214,7 @@ export default {
       searchKey: null,
       searchResult: [],
       prefixType: 'search',
-      isHover: false,
+      isActive: false,
       tablePopupProps: {},
       showSearch: true,
       showIcon: false,
@@ -232,6 +232,9 @@ export default {
         return false;
       }
       return this.searchResult.length > 0;
+    },
+    popupBackground() {
+      return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
     }
   },
   watch: {
@@ -282,10 +285,8 @@ export default {
     },
     changeResultPopupArrowStyle() {
       const searchResultPopupArrow = document.querySelector('.sm-component-search-result-popup .mapboxgl-popup-tip');
-      searchResultPopupArrow && (searchResultPopupArrow.style.borderTopColor = this.backgroundData);
       if (searchResultPopupArrow) {
-        searchResultPopupArrow.style.borderTopColor = this.backgroundData;
-        searchResultPopupArrow.style.borderBottomColor = this.backgroundData;
+        searchResultPopupArrow.style.borderTopColor = this.popupBackground;
       }
     },
     /**
@@ -356,6 +357,7 @@ export default {
         this.viewModel.off('searchsucceeded' + this.searchTaskId);
         this.viewModel.off('searchfailed' + this.searchTaskId);
         this.viewModel.off('set-popup-content' + this.searchTaskId);
+        this.viewModel.off('addfeaturefailed' + this.illegalFeatureTip);
         this.viewModel.off('search-selected-info' + this.searchTaskId);
         this.searchTaskId = undefined;
       }
@@ -371,12 +373,14 @@ export default {
         this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1), this.searchSucceeded);
         this.viewModel.off('searchsucceeded' + (this.searchTaskId - 1), this.searchFailed);
         this.viewModel.off('set-popup-content' + (this.searchTaskId - 1), this.setPopupContent);
+        this.viewModel.off('addfeaturefailed' + (this.searchTaskId - 1), this.illegalFeatureTip);
         this.viewModel.off('search-selected-info' + (this.searchTaskId - 1), this.searchSelectedInfo);
       }
       const onTaskId = this.searchTaskId || 0;
       this.registerSuccessEvent(onTaskId);
       this.registerFailedEvent(onTaskId);
       this.viewModel.on('set-popup-content' + onTaskId, this.setPopupContent);
+      this.viewModel.on('addfeaturefailed' + onTaskId, this.illegalFeatureTip);
       this.viewModel.on('search-selected-info' + onTaskId, this.searchSelectedInfo);
     },
     searchSucceeded({ result }) {
@@ -389,7 +393,7 @@ export default {
       this.searchResult = result;
       this.$emit('search-succeeded', { searchResult: this.searchResult });
       this.prefixType = 'search';
-      this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
+      // this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
       if (this.isNumber(this.searchTaskId)) {
         this.searchTaskId += 1;
         this.regiterEvents();
@@ -403,7 +407,7 @@ export default {
        */
       this.clearResult();
       this.prefixType = 'search';
-      this.$message.warning(this.$t('search.noResult'));
+      // this.$message.warning(this.$t('search.noResult'));
       this.$emit('search-failed', e);
       if (this.isNumber(this.searchTaskId)) {
         this.searchTaskId += 1;
@@ -428,6 +432,10 @@ export default {
           this.changeResultPopupArrowStyle
         );
       });
+    },
+    illegalFeatureTip({ error }) {
+      this.$message.destroy();
+      this.$message.error(error);
     },
     searchSelectedInfo({ data }) {
       this.prefixType = 'search';

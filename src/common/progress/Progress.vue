@@ -8,7 +8,7 @@
       :width="calWidth"
       :stroke-color="colorData"
       :status="status"
-      :gap-degree="type==='circle' ? gapDegree : null"
+      :gap-degree="type === 'circle' ? gapDegree : null"
       :gap-position="gapPosition"
       :stroke-linecap="strokeLinecap"
     ></a-progress>
@@ -18,7 +18,7 @@
 import Theme from '../_mixin/theme';
 import { ResizeSensor } from 'css-element-queries';
 import Timer from '../_mixin/timer';
-import RestService from '../../mapboxgl/_utils/RestService';
+import RestService from '../../common/_utils/RestService';
 
 export default {
   name: 'SmProgress',
@@ -71,6 +71,12 @@ export default {
     },
     url: {
       type: String
+    },
+    field: {
+      type: String
+    },
+    proxy: {
+      type: String
     }
   },
   data() {
@@ -108,13 +114,25 @@ export default {
           this.getData();
         } else {
           this.finalPercent = this.percent;
+          this.features = null;
         }
       },
       immediate: true
+    },
+    field() {
+      this.setPercent(this.features);
+    },
+    proxy() {
+      this.restService && this.restService.setProxy(this.proxy);
+      if (this.url) {
+        this.getData();
+      }
     }
   },
-  mounted() {
+  created() {
     this.colorData = this.strokeColor || this.getColor(0);
+  },
+  mounted() {
     this.$on('theme-style-changed', () => {
       this.colorData = this.getColor(0);
     });
@@ -123,11 +141,9 @@ export default {
     this.resizeObsever = new ResizeSensor(this.$el, () => {
       this.resize();
     });
-    this.restService = new RestService();
-    this.restService.on('getdatasucceeded', this.fetchData);
   },
   beforeDestroy() {
-    this.restService.off('getdatasucceeded', this.fetchData);
+    this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
     resize() {
@@ -136,11 +152,22 @@ export default {
     timing() {
       this.getData();
     },
-    fetchData(data) {
-      this.finalPercent = data.data;
+    fetchData({ features }) {
+      this.features = features;
+      this.setPercent(features);
     },
     getData() {
-      this.restService && this.restService.getData(this.url);
+      if (!this.restService) {
+        this.restService = new RestService({ proxy: this.proxy });
+        this.restService.on({ getdatasucceeded: this.fetchData });
+      }
+      this.restService.getData(this.url);
+    },
+    setPercent(features) {
+      if (features && !!features.length) {
+        const field = this.field;
+        this.finalPercent = features[0].properties[field];
+      }
     }
   }
 };

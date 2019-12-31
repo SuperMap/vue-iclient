@@ -76,9 +76,18 @@ export default {
   },
   methods: {
     sliderChange() {
+      const mapNotLoaded = this.mapNotLoadedTip();
+      if (mapNotLoaded) {
+        this.zoomPosition = 0;
+        return;
+      }
       this.setZoom(this.zoomPosition);
     },
     zoomIn(e) {
+      const mapNotLoaded = this.mapNotLoadedTip();
+      if (mapNotLoaded) {
+        return;
+      }
       this.activeZoomMode = 'zoomInBtn';
       if (Math.round(this.zoomPosition) < this.max) {
         // slider的默认步长为1
@@ -88,6 +97,10 @@ export default {
       }
     },
     zoomOut(e) {
+      const mapNotLoaded = this.mapNotLoadedTip();
+      if (mapNotLoaded) {
+        return;
+      }
       this.activeZoomMode = 'zoomOutBtn';
       if (Math.round(this.zoomPosition) > this.min) {
         this.zoomPosition -= 1;

@@ -65,7 +65,9 @@ export default {
     second: 's'
   },
   zoom: {},
-  chart: {},
+  chart: {
+    unSupportedData: 'The current data does not support linkage with the map'
+  },
   layerList: {
     title: 'Layer'
   },
@@ -76,7 +78,11 @@ export default {
     loadingTip: 'Map is loading...',
     crsNotSupport: 'The coordinate system of the current map is not supported!',
     TileMatrixSetNotSuppport: 'Incoming TileMatrixSet is not supported!',
-    getLayerInfoFailed: 'Failed to get layer information!'
+    getLayerInfoFailed: 'Failed to get layer information!',
+    crsnotsupport: 'Unsupported coordinate system!',
+    baiduMapNotSupport: 'Baidu maps is not supported yet!',
+    sampleDataNotSupport: 'Sample datas is not supported yet!',
+    mvtNotSupport: 'Vector tile layers is not supported yet!'
   },
   legend: {
     themeField: 'Thematic Field',
@@ -94,7 +100,6 @@ export default {
     selectPlaceholder: 'Please Select',
     startingPoint: 'Starting Point'
   },
-  map: {},
   search: {
     noResult: 'The query result is empty!',
     noKey: 'The search keyword cannot be empty. Please enter the search condition.',
@@ -103,12 +108,13 @@ export default {
     attributeValue: 'Attribute Value',
     setSearchSource: 'Please set the search source!',
     address: 'Address',
-    null: 'Null'
+    null: 'Null',
+    illegalFeature: 'Features must contain legal coordinates!'
   },
   query: {
     query: 'Query',
     queryJob: 'Task',
-    queryReuslt: 'Reuslt',
+    queryResult: 'Result',
     attributeCondition: 'Attribute Condition',
     spatialFilter: 'Spatial Filter',
     mapBounds: 'Query within the whole map extent',
@@ -122,6 +128,9 @@ export default {
     noResults: 'The query result is empty!',
     queryFailed: 'Query failed!',
     seviceNotSupport: 'This service does not support queries!'
+  },
+  identify: {
+    layerNotExit: "The layer '{layer}' does not exist in the map's style"
   },
   openFile: {
     fileSizeExceeded: "The file size is too big! The file size can't exceed 10M!",
@@ -138,6 +147,9 @@ export default {
   indicator: {
     title: 'Indicator Title',
     unit: 'Unit'
+  },
+  layerManager: {
+    title: 'Layer Manager'
   },
   tdtResults: {
     on: 'on ',
@@ -231,5 +243,8 @@ export default {
   // layer
   dataFlow: {
     dataSubscriptionFailed: 'Data subscription failed!'
+  },
+  animateMarkerlayer: {
+    unsupportedData: 'The data is not supported, please reset the data!'
   }
 };

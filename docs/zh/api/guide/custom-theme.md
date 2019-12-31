@@ -1,14 +1,14 @@
 # 自定义主题
 
-Vue-iClient 内置了 [13 套主题](https://github.com/SuperMap/vue-iclient/blob/master/src/common/_utils/style/theme/theme.json)，CSS 命名采用 BEM 的风格，方便使用者覆盖样式。
+Vue-iClient-MapboxGL 内置了 [13 套主题](https://github.com/SuperMap/vue-iclient/blob/master/src/common/_utils/style/theme/theme.json)，CSS 命名采用 BEM 的风格，方便使用者覆盖样式。
 
 你可以通过以下方式定义主题。
 
-### 使用 Vue-iClient 内置主题
+### 使用 Vue-iClient-MapboxGL 内置主题
 
 ```js
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient';
+import VueiClient from '@supermap/vue-iclient-mapboxgl';
 import App from './App.vue';
 
 // 可以通过两种方式使用内置主题

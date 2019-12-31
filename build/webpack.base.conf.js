@@ -20,10 +20,19 @@ const createLintingRule = () => ({
   }
 });
 
+let argv = JSON.parse(process.env['npm_config_argv']);
+let origin = argv.original;
+let entry = './demo/mapboxgl/main.ts';
+
+if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
+  let type = origin[2].split('-')[1];
+  entry = `./demo/${type}/main.ts`;
+}
+
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
-    app: './demo/main.ts'
+    app: entry
   },
   output: {
     path: config.build.assetsRoot,
@@ -66,6 +75,7 @@ module.exports = {
         include: [
           resolve('src'),
           resolve('test'),
+          resolve('static/libs/json-sql'),
           // resolve('node_modules/webpack-dev-server/client'),
           resolve('node_modules/vue-echarts'),
           resolve('node_modules/resize-detector'),

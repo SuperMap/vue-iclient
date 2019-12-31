@@ -23,6 +23,10 @@ class OpenFileViewModel extends mapboxgl.Evented {
     let fileName = file && file.name;
     let fileType = getFileType(fileName);
 
+    if (!filePath) {
+      return;
+    }
+
     // 文件格式不支持
     if (!fileType) {
       /**
@@ -91,14 +95,17 @@ class OpenFileViewModel extends mapboxgl.Evented {
           this
         );
       },
-      (e) => {
+      e => {
         /**
          * @event openfilefailed
          * @description 打开文件失败。
          * @property {String} messageType - 信息类型。
          * @property {String} message - 失败信息。
          */
-        me.fire('openfilefailed', { messageType: 'failure', message: `${geti18n().t(`openFile.openFileFail`)} ${e.message}` });
+        me.fire('openfilefailed', {
+          messageType: 'failure',
+          message: `${geti18n().t(`openFile.openFileFail`)} ${e.message}`
+        });
       },
       this
     );

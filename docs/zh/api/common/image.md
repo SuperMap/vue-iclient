@@ -1,7 +1,7 @@
 # 图片
 
 ```vue
-  <sm-image src="http://iclient.supermap.io/img/whatsNewLandUse.png"></sm-image>
+  <sm-image src="https://iclient.supermap.io/img/whatsNewLandUse.png"></sm-image>
 ```
 
 ### Attributes

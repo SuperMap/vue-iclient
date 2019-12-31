@@ -4,6 +4,8 @@
   overflow-y: auto;
   border: none;
   color: #fff;
+  min-width: 30px;
+  min-height: 30px;
   &::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -103,9 +105,9 @@
           display: inline-block;
         }
       }
-      @include e(range-item) {
+      @include e(range-item rank-item) {
         height: 30px;
-        & > div, & > span {
+        & > div, & > span, & > i {
           display: inline-block;
           vertical-align: middle;
         }
@@ -116,6 +118,13 @@
         & > span {
           margin-left: 2px;
           max-width: 200px;
+        }
+      }
+      @include e(rank-icon) {
+        text-align: center;
+        & > i {
+          display: inline-block;
+          vertical-align: middle;
         }
       }
 

@@ -65,7 +65,9 @@ export default {
     second: '秒'
   },
   zoom: {},
-  chart: {},
+  chart: {
+    unSupportedData: '当前数据不支持与地图联动'
+  },
   layerList: {
     title: '图层'
   },
@@ -76,7 +78,11 @@ export default {
     loadingTip: '地图加载中...',
     crsNotSupport: '不支持当前地图的坐标系！',
     TileMatrixSetNotSuppport: '不支持传入的 TileMatrixSet！',
-    getLayerInfoFailed: '获取图层信息失败！'
+    getLayerInfoFailed: '获取图层信息失败！',
+    crsnotsupport: '不支持的坐标系！',
+    baiduMapNotSupport: '暂不支持加载百度地图！',
+    sampleDataNotSupport: '暂不支持加载示例数据！',
+    mvtNotSupport: '暂不支持加载矢量瓦片图层！'
   },
   legend: {
     themeField: '专题字段',
@@ -94,7 +100,6 @@ export default {
     selectPlaceholder: '请选择',
     startingPoint: '起点'
   },
-  map: {},
   search: {
     noResult: '查询结果为空！',
     noKey: '搜索关键字不能为空，请输入搜索条件。',
@@ -103,12 +108,13 @@ export default {
     attributeValue: '属性值',
     setSearchSource: '请设置搜索源！',
     address: '地址',
-    null: '空'
+    null: '空',
+    illegalFeature: '要素必须包含合法的坐标！'
   },
   query: {
     query: '查询',
     queryJob: '任务',
-    queryReuslt: '结果',
+    queryResult: '结果',
     attributeCondition: '属性条件',
     spatialFilter: '空间过滤器',
     mapBounds: '返回地图全图范围的要素',
@@ -122,6 +128,9 @@ export default {
     noResults: '查询结果为空！',
     queryFailed: '查询失败!',
     seviceNotSupport: '此服务不支持查询！'
+  },
+  identify: {
+    layerNotExit: "地图上不存在该图层: '{layer}'"
   },
   openFile: {
     fileSizeExceeded: '文件大小超限！文件大小不得超过 10M！',
@@ -138,6 +147,9 @@ export default {
   indicator: {
     title: '指标标题',
     unit: '单位'
+  },
+  layerManager: {
+    title: '图层管理'
   },
   tdtResults: {
     on: '在',
@@ -231,5 +243,8 @@ export default {
   // layer
   dataFlow: {
     dataSubscriptionFailed: '数据订阅失败！'
+  },
+  animateMarkerlayer: {
+    unsupportedData: '当前图层不支持该数据，请重新传入数据！'
   }
 };

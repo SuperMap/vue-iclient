@@ -14,7 +14,7 @@ class LegendViewModel extends mapboxgl.Evented {
   }
 
   getStyle(layerName) {
-    return this.sourceListModel.getLegendStyle(layerName);
+    return this.sourceListModel && this.sourceListModel.getLegendStyle(layerName);
   }
 }
 export default LegendViewModel;

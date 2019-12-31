@@ -14,6 +14,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/image/style/image.scss';
 @import '../common/video-player/style/video-player.scss';
 @import '../common/iframe/style/iframe.scss';
+@import '../common/chart/style/chart.scss';
 /** control */
 @import './web-map/control/scale/style/scale.scss';
 @import './web-map/control/zoom/style/zoom.scss';
@@ -23,6 +24,8 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './web-map/control/layer-list/style/layer-list.scss';
 @import './web-map/control/legend/style/legend.scss';
 @import './web-map/control/draw/style/draw.scss';
+@import './web-map/control/identify/style/identify.scss';
+@import './web-map/control/layer-manager/style/layer-manager.scss';
 @import './tdt/results/style/areaResult.scss';
 @import './tdt/results/style/lineResult.scss';
 @import './tdt/results/style/nothingResult.scss';
@@ -39,8 +42,8 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './search/style/search.scss';
 @import './query/style/query.scss';
 @import './open-file/style/open-file.scss';
-@import './chart/style/chart.scss';
 @import './text-list/style/text-list.scss';
+
 
 /* layer */
 @import './web-map/layer/animate-marker/style/animate-marker-layer.scss';

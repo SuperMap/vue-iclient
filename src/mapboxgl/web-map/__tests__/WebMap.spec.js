@@ -1,17 +1,17 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import SmWebMap from '../WebMap';
 import mapboxgl from "@libs/mapboxgl/mapbox-gl-enhance.js";
-// jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
+import '../../../../test/jest.init';
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl)
 jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
-import { Icon, Card, Collapse, Button } from 'ant-design-vue';
+import { Icon, Card, Collapse, Button, Spin } from 'ant-design-vue';
 
 const localVue = createLocalVue()
 localVue.use(Card);
 localVue.use(Collapse);
 localVue.use(Icon);
 localVue.use(Button);
-// localVue.use(Checkbox);
+localVue.use(Spin);
 
 
 describe('WebMap.vue', () => {
@@ -27,19 +27,16 @@ describe('WebMap.vue', () => {
         }
       }
     )
-
+   
     wrapper.vm.$on("load", () => {
       try {
         expect(spy).toBeCalled();
         expect(wrapper.element.id).toEqual('map');
         expect(wrapper.vm.mapId).toBe("1649097980");
         expect(wrapper.vm.viewModel.serverUrl).toBe('http://support.supermap.com.cn:8092/');
-        // expect(wrapper.vm.panControl.show).toBe(false);
-        // expect(wrapper.vm.scaleControl.show).toBe(false);
-        // expect(wrapper.vm.zoomControl.show).toBe(false);
-        expect(wrapper.element.outerHTML).not.toContain("pan")
-        expect(wrapper.element.outerHTML).not.toContain("zoom")
-        expect(wrapper.element.outerHTML).not.toContain("scale")
+        expect(wrapper.vm.panControl.show).toBe(false);
+        expect(wrapper.vm.scaleControl.show).toBe(false);
+        expect(wrapper.vm.zoomControl.show).toBe(false);
         done()
       }
       catch (exception) {

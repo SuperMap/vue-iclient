@@ -17,17 +17,21 @@
           :title="$t('query.queryJob')"
           :style="activeTab === 'job' ? getColorStyle(0) : ''"
           @click="jobButtonClicked"
-        >{{ $t('query.queryJob') }}</div>
+        >
+          {{ $t('query.queryJob') }}
+        </div>
         <div
           class="sm-component-query__result-button"
-          :title="$t('query.queryReuslt')"
+          :title="$t('query.queryResult')"
           :style="activeTab === 'result' ? getColorStyle(0) : ''"
           @click="resultButtonClicked"
-        >{{ $t('query.queryReuslt') }}</div>
+        >
+          {{ $t('query.queryResult') }}
+        </div>
       </div>
       <div class="sm-component-query__job-info">
         <div
-          v-for="(jobInfo,index) in jobInfos"
+          v-for="(jobInfo, index) in jobInfos"
           v-show="jobInfos.length > 0"
           :key="index"
           class="sm-component-query__job-info-panel"
@@ -40,22 +44,17 @@
             @mouseenter="changeHoverStyle"
           >
             <span class="sm-components-icons-preview"></span>
-            <span
-              :title="jobInfo.queryParameter.name"
-              class="sm-component-query__job-info-name"
-            >{{ jobInfo.queryParameter.name }}</span>
+            <span :title="jobInfo.queryParameter.name" class="sm-component-query__job-info-name">{{
+              jobInfo.queryParameter.name
+            }}</span>
             <div class="sm-components-icons-legend-unfold"></div>
           </div>
-          <div
-            v-if="jobInfo.queryParameter.attributeFilter"
-            class="sm-component-query__job-info-body hidden"
-          >
+          <div v-if="jobInfo.queryParameter.attributeFilter" class="sm-component-query__job-info-body hidden">
             <div class="sm-component-query__attribute">
               <div>{{ $t('query.attributeCondition') }}</div>
-              <div
-                class="sm-component-query__attribute-name"
-                :style="getColorStyle(0)"
-              >{{ jobInfo.queryParameter.attributeFilter }}</div>
+              <div class="sm-component-query__attribute-name" :style="getColorStyle(0)">
+                {{ jobInfo.queryParameter.attributeFilter }}
+              </div>
             </div>
             <div class="sm-component-query__spatial-filter">
               <div>{{ $t('query.spatialFilter') }}</div>
@@ -65,11 +64,9 @@
                 :get-popup-container="getPopupContainer"
                 @dropdownVisibleChange="changeChosenStyle"
               >
-                <a-select-option
-                  v-for="item in selectOptions"
-                  :key="item.value"
-                  :value="item.value"
-                >{{ item.label }}</a-select-option>
+                <a-select-option v-for="item in selectOptions" :key="item.value" :value="item.value">{{
+                  item.label
+                }}</a-select-option>
               </a-select>
             </div>
             <div class="sm-component-query__query-button">
@@ -77,40 +74,40 @@
                 type="primary"
                 size="small"
                 class="sm-component-query__a-button"
-                :style="{backgroundColor: getColorStyle(0).color, color: getTextColor}"
+                :style="{ backgroundColor: getColorStyle(0).color, color: getTextColor }"
                 @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)"
-              >{{ $t('query.applicate') }}</a-button>
+              >
+                {{ $t('query.applicate') }}
+              </a-button>
             </div>
           </div>
         </div>
       </div>
       <div class="sm-component-query__result-info hidden">
-        <div
-          v-show="!queryResult && !isQuery"
-          class="sm-component-query__no-result hidden"
-        >{{ $t('query.noResult') }}</div>
+        <div v-show="!queryResult && !isQuery" class="sm-component-query__no-result hidden">
+          {{ $t('query.noResult') }}
+        </div>
         <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
           <a-spin :tip="$t('query.querying')">
             <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
           </a-spin>
         </div>
         <div v-if="queryResult" class="sm-component-query__result-header" :style="getColorStyle(0)">
-          <span
-            :title="queryResult.name"
-            class="sm-component-query__header-name"
-          >{{ queryResult.name }}</span>
+          <span :title="queryResult.name" class="sm-component-query__header-name">{{ queryResult.name }}</span>
           <span class="sm-components-icons-close" @click="clearResult"></span>
         </div>
         <div v-if="queryResult" class="sm-component-query__result-body">
           <ul>
             <li
-              v-for="(item,index) in queryResult.result"
+              v-for="(item, index) in queryResult.result"
               :key="index"
-              :title="'SmID：'+(item.properties.SmID || item.properties.SMID)"
+              :title="getInfoOfSmid(item.properties)"
               @click="queryResultListClicked"
               @mouseenter="changeChosenResultStyle"
               @mouseleave="resetChosenResultStyle"
-            >{{ 'SmID：'+(item.properties.SmID || item.properties.SMID) }}</li>
+            >
+              {{ getInfoOfSmid(item.properties) }}
+            </li>
           </ul>
         </div>
       </div>
@@ -137,6 +134,7 @@ import CircleStyle from '../_types/CircleStyle';
 // import RestMapParameter from '../../common/_types/RestMapParameter';
 import QueryViewModel from './QueryViewModel.js';
 import TablePopup from '../../common/table-popup/TablePopup';
+import { getColorWithOpacity, getValueCaseInsensitive } from '../../common/_utils/util';
 
 // let validators = (value, propType) => {
 //   let valid = true;
@@ -259,6 +257,11 @@ export default {
       tablePopupProps: {}
     };
   },
+  computed: {
+    popupBackground() {
+      return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
+    }
+  },
   watch: {
     iportalData() {
       this.formatJobInfos();
@@ -295,14 +298,18 @@ export default {
     this.jobButton = this.$el.querySelector('.sm-component-query__job-button');
     this.resultInfoContainer = this.$el.querySelector('.sm-component-query__result-info');
     this.jobInfoContainer = this.$el.querySelector('.sm-component-query__job-info');
+    this.formatJobInfos();
+    this.registerEvents();
   },
   beforeDestroy() {
     this.$options.removed.call(this);
   },
   loaded() {
-    this.viewModel = new QueryViewModel(this.map, this.$props);
-    this.formatJobInfos();
-    this.registerEvents();
+    this.viewModel.setMap(this.map);
+    this.clear();
+  },
+  created() {
+    this.viewModel = new QueryViewModel(this.$props);
   },
   removed() {
     this.clearResult();
@@ -311,6 +318,11 @@ export default {
     this.popup && this.popup.remove() && (this.popup = null);
   },
   methods: {
+    clear() {
+      this.queryResult = null;
+      this.map && this.viewModel && this.viewModel.clearResultLayer();
+      this.popup && this.popup.remove() && (this.popup = null);
+    },
     formatJobInfos() {
       if (this.viewModel) {
         this.jobInfos = [];
@@ -330,7 +342,7 @@ export default {
     },
     queryButtonClicked(jobInfo, value) {
       this.$message.destroy();
-      if (this.jobInfo === jobInfo && this.selectValue === value) {
+      if (this.jobInfo === jobInfo && this.selectValue === value && this.queryResult) {
         this.$message.warning(this.$t('query.resultAlreadyExists'));
         return;
       }
@@ -357,11 +369,13 @@ export default {
       this.viewModel.query(parameter, bounds);
     },
     jobButtonClicked() {
-      this.activeTab = 'job';
-      this.resultButton.classList.remove('is-active');
-      this.jobButton.classList.add('is-active');
-      this.jobInfoContainer.classList.remove('hidden');
-      this.resultInfoContainer.classList.add('hidden');
+      if (this.resultButton) {
+        this.activeTab = 'job';
+        this.resultButton.classList.remove('is-active');
+        this.jobButton.classList.add('is-active');
+        this.jobInfoContainer.classList.remove('hidden');
+        this.resultInfoContainer.classList.add('hidden');
+      }
     },
     resultButtonClicked() {
       this.activeTab = 'result';
@@ -442,8 +456,7 @@ export default {
     changeResultPopupArrowStyle() {
       const searchResultPopupArrow = this.popup && this.popup['_tip'];
       if (searchResultPopupArrow) {
-        searchResultPopupArrow.style.borderTopColor = this.backgroundData;
-        searchResultPopupArrow.style.borderBottomColor = this.backgroundData;
+        searchResultPopupArrow.style.borderTopColor = this.popupBackground;
       }
     },
     queryResultListClicked(e) {
@@ -522,7 +535,10 @@ export default {
       this.queryResult = null;
       this.popup && this.popup.remove() && (this.popup = null);
       this.jobInfo = null;
-      this.viewModel && this.viewModel.clearResultLayer();
+      this.viewModel && this.viewModel.clear();
+    },
+    getInfoOfSmid(properties) {
+      return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;
     }
   }
 };

@@ -85,4 +85,11 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
       this.before
     );
   }
+
+  clear() {
+    const { map, layerId } = this;
+    if (map && layerId && map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
+  }
 }

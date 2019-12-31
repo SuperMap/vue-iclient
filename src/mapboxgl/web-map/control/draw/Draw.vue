@@ -30,7 +30,8 @@ import Card from '../../../../common/_mixin/card';
 import MapGetter from '../../../_mixin/map-getter';
 import Control from '../../../_mixin/control';
 import DrawViewModel from './DrawViewModel';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import uniqueId from 'lodash.uniqueid';
+import '../../../../../static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 
 export default {
   name: 'SmDraw',
@@ -73,14 +74,19 @@ export default {
       deep: true
     }
   },
+  created() {
+    this.componentName = uniqueId(this.$options.name);
+  },
   loaded() {
     const mapTarget = this.getTargetName();
-    this.viewModel = new DrawViewModel(this.map, mapTarget);
+    this.viewModel = new DrawViewModel(this.map, mapTarget, this.componentName);
     this.initEvent();
   },
-  removed(deleteState) {
+  removed() {
     this.activeMode = null;
-    this.viewModel && this.viewModel.clear(deleteState);
+    const targetName = this.getTargetName();
+    this.viewModel && this.viewModel.clear();
+    drawEvent.$options.deleteDrawingState(targetName, this.componentName);
   },
   beforeDestroy() {
     this.$options.removed.call(this);
@@ -111,7 +117,7 @@ export default {
     },
     // 提供对外方法：清空features
     clear() {
-      this.$options.removed.call(this, false);
+      this.$options.removed.call(this);
     }
   }
 };

@@ -15,7 +15,8 @@ module.exports = {
     '^@types_mapboxgl/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
     '^@types_common/(.*)$': '<rootDir>/src/common/_types/$1',
     '^@mixin/(.*)$': '<rootDir>/src/mapboxgl/_mixin/$1',
-    '\\.(css|less)$': 'identity-obj-proxy'
+    '\\.(css|less)$': 'identity-obj-proxy',
+    '@i18n/(.*)$': '<rootDir>/src/common/$1'
   },
   transform: {
     '^.+\\.ts$': '<rootDir>/node_modules/ts-jest',

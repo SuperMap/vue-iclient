@@ -9,7 +9,7 @@ export default {
   props: {
     symbolType: {
       type: String,
-      required: true
+      default: 'Circle'
     },
     layerName: {
       type: String

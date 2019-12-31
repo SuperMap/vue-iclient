@@ -1,6 +1,6 @@
 # 数据流图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_dataflow_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_dataflow_vue.html"></sm-iframe>
 
 ```html
 <sm-web-map :map-options="mapOptions" @load="mapIsLoaded">
@@ -66,7 +66,7 @@
               'raster-tiles': {
                 type: 'raster',
                 tiles: [
-                    'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}',
+                    'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}',
                 ],
                 tileSize: 256,
               },
@@ -95,7 +95,7 @@
 | 参数          | 说明                                                                                                                                                                                | 类型                                                                                                                                                                                          | 可选值 | 默认值 |
 | :------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- | :----- |
 | serviceUrl    | 数据流服务地址                                                                                                                                                                      | string                                                                                                                                                                                        | -      | -      |
-| registerToken | SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制、参照 [SuperMap iClient API](http://iclient.supermap.io/docs/mapboxgl/SuperMap.SecurityManager.html#.registerToken) | string                                                                                                                                                                                        | -      | -      |
+| registerToken | SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制、参照 [SuperMap iClient API](https://iclient.supermap.io/docs/mapboxgl/SuperMap.SecurityManager.html#.registerToken) | string                                                                                                                                                                                        | -      | -      |
 | geometry      | 指定几何范围。该范围内的要素才能被订阅                                                                                                                                              | object                                                                                                                                                                                        | -      | -      |
 | excludeField  | 排除字段                                                                                                                                                                            | object                                                                                                                                                                                        | -      | -      |
 | layerStyle    | 图层样式                                                                                                                                                                            | [CircleStyle](/zh/api/common-types/common-types.md#circlestyle) \| [LineStyle](/zh/api/common-types/common-types.md#linestyle) \| [FillStyle](/zh/api/common-types/common-types.md#fillstyle) | -      | -      |

@@ -1,45 +1,37 @@
 <template>
   <div class="sm-component-text-list">
-    <template v-if="animateContent.length>0">
-      <div
-        class="sm-component-text-list__header"
-        :style="[listStyle.headerHeight,{background: getColor(0)},getTextColorStyle]"
-      >
-        <div class="sm-component-text-list__header-content">
-          <template
-            v-for="(item,index) in ((header && header.length>0 && header) || Object.keys(animateContent[0]))"
-          >
-            <div
-              :key="index"
-              :style="[listStyle.headerLineHeight, fontSizeStyle]"
-              :title="item"
-            >{{ item }}</div>
+    <div
+      class="sm-component-text-list__header"
+      :style="[listStyle.headerHeight, { background: getColor(0) }, getTextColorStyle]"
+    >
+      <div class="sm-component-text-list__header-content">
+        <template v-if="animateContent && animateContent.length > 0">
+          <template v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])">
+            <div :key="index" :style="[listStyle.headerLineHeight, fontSizeStyle]" :title="item">{{ item }}</div>
           </template>
-        </div>
+        </template>
       </div>
+    </div>
+    <div
+      class="sm-component-text-list__animate"
+      :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle, getColorStyle]"
+    >
       <div
-        class="sm-component-text-list__animate"
-        :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle, getColorStyle]"
+        ref="listContent"
+        :class="['sm-component-text-list__body-content', animate && 'sm-component-text-list__body-content--anim']"
       >
-        <div
-          ref="listContent"
-          :class="['sm-component-text-list__body-content',animate && 'sm-component-text-list__body-content--anim']"
-        >
+        <template v-if="animateContent && animateContent.length > 0">
           <div
-            v-for="(item,index) in animateContent"
+            v-for="(item, index) in animateContent"
             :key="index"
             class="sm-component-text-list__list"
             :style="[listStyle.rowStyle, getRowStyle(index)]"
           >
-            <div
-              v-for="(items,index2) in item"
-              :key="index2"
-              :style="listStyle.rowHeight"
-            >{{ items }}</div>
+            <div v-for="(items, index2) in item" :key="index2" :style="listStyle.rowHeight">{{ items }}</div>
           </div>
-        </div>
+        </template>
       </div>
-    </template>
+    </div>
     <a-spin v-if="spinning" size="large" :tip="$t('info.loading')" :spinning="spinning" />
   </div>
 </template>
@@ -48,15 +40,16 @@
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
-import getFeatures from '../../mapboxgl/_utils/get-features';
+import getFeatures from '../../common/_utils/get-features';
 import Theme from '../../common/_mixin/theme';
+import Timer from '../../common/_mixin/timer';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import isEqual from 'lodash.isequal';
 
 @Component({
   name: 'SmTextList'
 })
-class SmTextList extends Mixins(Theme) {
+class SmTextList extends Mixins(Theme, Timer) {
   animate: Boolean = false;
 
   spinning: Boolean = false;
@@ -204,10 +197,16 @@ class SmTextList extends Mixins(Theme) {
     }
   }
 
-  getFeaturesFromDataset() {
-    this.spinning = true;
+  timing() {
+    if (this.dataset && this.dataset.url) {
+      this.getFeaturesFromDataset(false);
+    }
+  }
+
+  getFeaturesFromDataset(initLoading = true) {
+    initLoading && (this.spinning = true);
     getFeatures(this.dataset).then(data => {
-      this.spinning = false;
+      initLoading && (this.spinning = false);
       this.featuresData = data;
       this.listData = this.handleFeatures(data);
       this.getListHeightStyle();
@@ -286,14 +285,14 @@ class SmTextList extends Mixins(Theme) {
     this.animateContent = this.animateContent.concat(this.animateContent);
     this.startInter = setInterval(() => {
       let wrapper = this.$refs.listContent;
-      wrapper['style'].marginTop = `-${this.listStyle.rowStyle.height}`;
+      wrapper && wrapper['style'] && (wrapper['style'].marginTop = `-${this.listStyle.rowStyle.height}`);
       this.animate = !this.animate;
-
       setTimeout(() => {
-        let first = this.$refs.listContent['children'][0];
+        let first =
+          this.$refs.listContent && this.$refs.listContent['children'] && this.$refs.listContent['children'][0];
         // @ts-ignore
-        this.$refs.listContent.appendChild(first);
-        wrapper['style'].marginTop = '0px'; // 保持滚动距离初始值一直为 0
+        first && this.$refs.listContent.appendChild(first);
+        wrapper && wrapper['style'] && (wrapper['style'].marginTop = '0px'); // 保持滚动距离初始值一直为 0
         this.animate = !this.animate;
       }, 500);
     }, 2000);

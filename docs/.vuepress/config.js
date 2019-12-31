@@ -5,12 +5,12 @@ module.exports = {
     // 然而，一种特例是将 '/' 作为默认语言的访问路径。
     '/': {
       lang: 'zh-CN',
-      title: 'Vue-iClient',
-      description: 'Vue-iClient'
+      title: 'Vue-iClient-MapboxGL',
+      description: 'Vue-iClient-MapboxGL'
     }
     // '/en/': {
     //   lang: 'en-US', // 这个值会被设置在 <html> 的 lang 属性上
-    //   title: 'Vue-iClient',
+    //   title: 'Vue-iClient-MapboxGL',
     //   description: 'Vue components'
     // }
   },
@@ -130,7 +130,9 @@ module.exports = {
                     'control/draw',
                     'control/query',
                     'control/search',
-                    'control/open-file'
+                    'control/open-file',
+                    'control/identify',
+                    'control/layer-manager'
                   ]
                 },
                 {
@@ -175,7 +177,8 @@ module.exports = {
                     'common/icon',
                     'common/image',
                     'common/iframe',
-                    'common/text-list'
+                    'common/text-list',
+                    'common/border'
                   ]
                 }
               ]

@@ -20,4 +20,12 @@ export default class GraphThemeLayerViewModel extends mapboxgl.Evented {
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
   }
+
+  clear() {
+    const { map, options } = this;
+    const layerId = options.id;
+    if (map && layerId && map.getLayer(layerId)) {
+      map.removeLayer(layerId);
+    }
+  }
 }

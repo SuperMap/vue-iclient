@@ -1,9 +1,9 @@
 # 图层列表
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_layerList_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_layerList_vue.html"></sm-iframe>
 
 ```vue
-<sm-web-map server-url="http://support.supermap.com.cn:8092/" map-id="1649097980">
+<sm-web-map server-url="https://iportal.supermap.io/iportal/" map-id="801571284">
   <sm-layer-list position="top-left"></sm-layer-list>
 </sm-web-map>
 ```

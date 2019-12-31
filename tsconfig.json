@@ -28,14 +28,14 @@
     // 函数返回值
     "noImplicitReturns": true,
     // 要包含的类型声明文件名列表
-    "types": ["node", "mapbox-gl", "geojson"],
+    "types": ["node", "mapbox-gl", "geojson", "leaflet"],
     // 是相对于"baseUrl"进行解析
     "paths": {
       "vue": ["node_modules/vue/types"],
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "demo/main.ts"],
+  "include": ["src/**/*", "demo/mapboxgl/main.ts", "demo/leaflet/main.ts"],
   "exclude": ["node_modules"],
   "files": ["src/sfc.d.ts", "src/image.d.ts"]
 }

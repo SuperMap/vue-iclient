@@ -1,12 +1,7 @@
 <template>
   <div class="sm-component-text" :style="[customStyle, getBackgroundStyle, getTextColorStyle]">
     <span v-if="href">
-      <a
-        :target="target"
-        :href="href"
-        class="sm-component-text__href"
-        :style="[getTextColorStyle]"
-      >{{ finalTitle }}</a>
+      <a :target="target" :href="href" class="sm-component-text__href" :style="[getTextColorStyle]">{{ finalTitle }}</a>
     </span>
     <span v-else>{{ finalTitle }}</span>
   </div>
@@ -15,7 +10,7 @@
 <script>
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
-import RestService from '../../mapboxgl/_utils/RestService';
+import RestService from '../../common/_utils/RestService';
 
 export default {
   name: 'SmText',
@@ -37,6 +32,12 @@ export default {
     target: {
       type: String,
       default: '_self'
+    },
+    field: {
+      type: String
+    },
+    proxy: {
+      type: String
     }
   },
   data() {
@@ -65,27 +66,44 @@ export default {
           this.getData();
         } else {
           this.finalTitle = this.title;
+          this.features = null;
         }
       },
       immediate: true
+    },
+    field() {
+      this.setTitle(this.features);
+    },
+    proxy() {
+      this.restService && this.restService.setProxy(this.proxy);
+      if (this.url) {
+        this.getData();
+      }
     }
   },
-  mounted() {
-    this.restService = new RestService();
-    this.restService.on('getdatasucceeded', this.fetchData);
-  },
   beforeDestroy() {
-    this.restService.off('getdatasucceeded', this.fetchData);
+    this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
     timing() {
       this.getData();
     },
-    fetchData(data) {
-      this.finalTitle = data.data;
+    fetchData({ features }) {
+      this.features = features;
+      this.setTitle(features);
     },
     getData() {
-      this.restService && this.restService.getData(this.url);
+      if (!this.restService) {
+        this.restService = new RestService({ proxy: this.proxy });
+        this.restService.on({ getdatasucceeded: this.fetchData });
+      }
+      this.restService.getData(this.url);
+    },
+    setTitle(features) {
+      if (features && !!features.length) {
+        const field = this.field;
+        this.finalTitle = features[0].properties[field];
+      }
     }
   }
 };

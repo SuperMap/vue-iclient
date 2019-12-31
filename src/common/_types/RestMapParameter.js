@@ -8,5 +8,6 @@ export default class RestMapParameter {
     this.attributeFilter = options.attributeFilter || null;
     this.maxFeatures = options.maxFeatures || 20;
     this.name = options.name || geti18n().t('commontypes.restMap');
+    this.proxy = options.proxy;
   }
 }

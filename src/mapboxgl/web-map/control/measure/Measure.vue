@@ -35,12 +35,9 @@
           @change="updateUnit"
           @dropdownVisibleChange="changeChosenStyle"
         >
-          <a-select-option
-            v-for="(value, key, index) in getUnitOptions"
-            :key="index"
-            :title="value"
-            :value="key"
-          >{{ value }}</a-select-option>
+          <a-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
+            {{ value }}
+          </a-select-option>
         </a-select>
         <a-select
           v-show="getAreaSelect"
@@ -51,24 +48,16 @@
           @change="updateUnit"
           @dropdownVisibleChange="changeChosenStyle"
         >
-          <a-select-option
-            v-for="(value, key, index) in getUnitOptions"
-            :key="index"
-            :title="value"
-            :value="key"
-          >{{ value }}</a-select-option>
+          <a-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
+            {{ value }}
+          </a-select-option>
         </a-select>
-        <div
-          v-show="!showUnitSelect && activeMode"
-          class="sm-component-measure__unit sm-component-measure__default"
-        >{{ getUnitLabel }}</div>
+        <div v-show="!showUnitSelect && activeMode" class="sm-component-measure__unit sm-component-measure__default">
+          {{ getUnitLabel }}
+        </div>
       </div>
-      <div
-        v-show="getResult"
-        class="sm-component-measure__calculateResult"
-        :style="getTextColorStyle"
-      >
-        <div class="sm-component-measure__calcuTitle">{{ $t("measure.measureResult") }}</div>
+      <div v-show="getResult" class="sm-component-measure__calculateResult" :style="getTextColorStyle">
+        <div class="sm-component-measure__calcuTitle">{{ $t('measure.measureResult') }}</div>
         <div class="sm-component-measure__result">{{ getResult }}</div>
       </div>
     </div>
@@ -82,7 +71,8 @@ import MapGetter from '../../../_mixin/map-getter';
 import Card from '../../../../common/_mixin/card';
 import MeasureViewModel from './MeasureViewModel';
 import drawEvent from '../../../_types/draw-event';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
+import uniqueId from 'lodash.uniqueid';
+import '../../../../../static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 
 export default {
   name: 'SmMeasure',
@@ -213,6 +203,9 @@ export default {
       }
     }
   },
+  created() {
+    this.componentName = uniqueId(this.$options.name);
+  },
   mounted() {
     this.changeSelectInputStyle();
   },
@@ -221,10 +214,12 @@ export default {
   },
   loaded() {
     const mapTarget = this.getTargetName();
+    this.viewModel && this.resetData(mapTarget);
     this.viewModel = new MeasureViewModel({
       map: this.map,
       mapTarget,
-      continueDraw: this.continueDraw
+      continueDraw: this.continueDraw,
+      componentName: this.componentName
     });
 
     // 控制显示结果的显示
@@ -240,17 +235,18 @@ export default {
       this.result = result;
     });
     drawEvent.$on('draw-reset', ({ componentName }) => {
-      if (componentName !== this.$options.name) {
+      if (componentName !== this.componentName) {
         this.activeMode = null;
         this.result = '';
-        this.viewModel && this.viewModel.pauseDraw();
       }
     });
   },
-  removed(deleteState) {
+  removed() {
     this.activeMode = null;
     this.result = '';
-    this.viewModel && this.viewModel.clear(deleteState);
+    const targetName = this.getTargetName();
+    this.viewModel && this.viewModel.clear();
+    drawEvent.$options.deleteDrawingState(targetName, this.componentName);
   },
   methods: {
     changeSelectInputStyle() {
@@ -305,8 +301,9 @@ export default {
           if (this.activeMode !== mode || !this.continueDraw) {
             this.viewModel.openDraw(mode, activeUnit);
             this.activeMode = mode;
+            this.continueDraw && drawEvent.$emit('draw-reset', { componentName: this.componentName });
           } else {
-            this.viewModel.removeDraw();
+            this.viewModel.removeDraw(this.continueDraw);
             this.activeMode = null;
           }
         }
@@ -325,9 +322,17 @@ export default {
         this.activeMode = this.activeModeCache;
       }
     },
+    resetData(mapTarget) {
+      this.activeMode = null;
+      this.result = '';
+      const mapDom = document.querySelector(`#${mapTarget}`);
+      if (mapDom && mapDom.classList && !!mapDom.classList.length) {
+        mapDom.classList.remove('mouse-add');
+      }
+    },
     // 提供对外方法：清空features
     clear() {
-      this.$options.removed.call(this, false);
+      this.$options.removed.call(this);
     }
   }
 };

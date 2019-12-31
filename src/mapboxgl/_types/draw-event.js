@@ -1,7 +1,8 @@
 import Vue from 'vue';
-import MapboxDraw, { modes } from '@mapbox/mapbox-gl-draw';
+import MapboxDraw from '../../../static/libs/mapbox-gl-draw/mapbox-gl-draw';
 import mapEvent from './map-event';
 import assignIn from 'lodash.assignin';
+import isEqual from 'lodash.isequal';
 
 /**
  * drawList 结构为 { [mapTarget1]: [draw1], [mapTarget2]: [draw2] }
@@ -13,6 +14,7 @@ import assignIn from 'lodash.assignin';
  */
 
 export default new Vue({
+  mapList: {},
   drawList: {},
   drawStates: {},
   _createDraw: function(mapTarget) {
@@ -21,8 +23,8 @@ export default new Vue({
       touchEnabled: false,
       boxSelect: false,
       modes: {
-        ...modes,
-        simple_select: assignIn(modes.simple_select, {
+        ...MapboxDraw.modes,
+        simple_select: assignIn(MapboxDraw.modes.simple_select, {
           dragMove() {},
           clickOnVertex() {},
           clickOnFeature(state, e) {
@@ -44,7 +46,7 @@ export default new Vue({
             this.doRender(featureId);
           }
         }),
-        direct_select: assignIn(modes.direct_select, {
+        direct_select: assignIn(MapboxDraw.modes.direct_select, {
           dragFeature() {}
         })
       },
@@ -159,9 +161,12 @@ export default new Vue({
   getDraw: function(mapTarget, create = true) {
     let draw = this.drawList[mapTarget];
     const map = mapEvent.$options.getMap(mapTarget);
-    if (map && !draw && create) {
+    const prevMap = this.mapList[mapTarget];
+    const isSame = isEqual(map, prevMap);
+    if (map && !isSame && create) {
       draw = this._createDraw(mapTarget);
       draw.onAdd(map);
+      this.mapList[mapTarget] = map;
     }
     return draw;
   },
@@ -184,18 +189,20 @@ export default new Vue({
         delete mapDrawStates[componentName];
       }
       // 如果当前map上有关draw的组件都销毁 则把当前map上的draw图层销毁 同时把组件状态也销毁
-      if (!Object.keys(mapDrawStates).length) {
-        delete this.drawStates[mapTarget];
-        this.deletDrawOfMap(mapTarget);
+      const componentsLen = Object.keys(this.drawStates[mapTarget]).length;
+      if (!componentsLen) {
+        this.deleteDrawOfMap(mapTarget);
       }
     }
   },
-  deletDrawOfMap: function(mapTarget) {
-    const draw = this.getDraw(mapTarget);
-    const map = mapEvent.$options.getMap(mapTarget);
+  deleteDrawOfMap: function(mapTarget) {
+    const draw = this.getDraw(mapTarget, false);
+    const map = this.mapList[mapTarget];
     if (draw && map) {
       draw.onRemove(map);
       delete this.drawList[mapTarget];
+      delete this.mapList[mapTarget];
+      delete this.drawStates[mapTarget];
     }
   }
 });

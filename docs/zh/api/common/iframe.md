@@ -1,7 +1,7 @@
 # iframe
 
 ```vue
-  <sm-iframe src="http://iclient.supermap.io/"></sm-iframe>
+  <sm-iframe src="https://iclient.supermap.io/"></sm-iframe>
 ```
 
 ### Attributes

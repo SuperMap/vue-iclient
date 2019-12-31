@@ -1,10 +1,5 @@
 <template>
-  <div
-    id="chart"
-    ref="chart"
-    class="sm-component-liquidFill"
-    :style="[background && getBackgroundStyle]"
-  ></div>
+  <div id="chart" ref="chart" class="sm-component-liquidFill" :style="[background && getBackgroundStyle]"></div>
 </template>
 <script>
 import echarts from 'echarts';
@@ -12,7 +7,7 @@ import Theme from '../_mixin/theme';
 import 'echarts-liquidfill';
 import { ResizeSensor } from 'css-element-queries';
 import Timer from '../_mixin/timer';
-import RestService from '../../mapboxgl/_utils/RestService';
+import RestService from '../../common/_utils/RestService';
 
 export default {
   name: 'SmLiquidFill',
@@ -61,12 +56,19 @@ export default {
     },
     url: {
       type: String
+    },
+    field: {
+      type: String
+    },
+    proxy: {
+      type: String
     }
   },
   data() {
     return {
       waveColorData: '',
       labelColorData: '',
+      insideLabelColorData: '',
       borderColorData: '',
       backgroundColorData: '',
       finalValue: this.value
@@ -90,6 +92,7 @@ export default {
           this.getData();
         } else {
           this.finalValue = this.value;
+          this.features = null;
         }
       },
       immediate: true
@@ -100,6 +103,10 @@ export default {
     },
     labelColor(val) {
       this.labelColorData = val;
+      this.updateChart();
+    },
+    insideLabelColor(val) {
+      this.insideLabelColorData = val;
       this.updateChart();
     },
     borderColor(val) {
@@ -124,22 +131,30 @@ export default {
     },
     value(val) {
       this.finalValue = val;
+    },
+    field() {
+      this.setValue(this.features);
+    },
+    proxy() {
+      this.restService && this.restService.setProxy(this.proxy);
+      if (this.url) {
+        this.getData();
+      }
     }
   },
   mounted() {
     this.waveColorData = this.waveColor || this.getColor(0);
     this.labelColorData = this.labelColor || this.getTextColor;
+    this.insideLabelColorData = this.insideLabelColor || this.getTextColor;
     this.borderColorData = this.borderColor || this.waveColorData;
     this.backgroundColorData = this.backgroundColor || this.getBackground;
-    this.restService = new RestService();
-    this.restService.on('getdatasucceeded', this.fetchData);
     setTimeout(() => {
       this.initializeChart();
       this.resize();
     }, 0);
   },
   beforeDestroy() {
-    this.restService.off('getdatasucceeded', this.fetchData);
+    this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
     resize() {
@@ -151,6 +166,7 @@ export default {
       this.$on('theme-style-changed', () => {
         this.waveColorData = this.getColor(0);
         this.labelColorData = this.getTextColor;
+        this.insideLabelColorData = this.getTextColor;
         this.borderColorData = this.getColor(0);
         this.backgroundColorData = this.getBackground;
         this.updateChart(true);
@@ -172,7 +188,7 @@ export default {
             label: {
               fontSize: parseFloat(this.fontSize),
               color: this.labelColorData,
-              insideColor: this.insideLabelColor
+              insideColor: this.insideLabelColorData
             },
             backgroundStyle: {
               color: this.backgroundColorData
@@ -196,11 +212,22 @@ export default {
     timing() {
       this.getData();
     },
-    fetchData(data) {
-      this.finalValue = data.data;
+    fetchData({ features }) {
+      this.features = features;
+      this.setValue(features);
     },
     getData() {
-      this.restService && this.restService.getData(this.url);
+      if (!this.restService) {
+        this.restService = new RestService({ proxy: this.proxy });
+        this.restService.on({ getdatasucceeded: this.fetchData });
+      }
+      this.restService.getData(this.url);
+    },
+    setValue(features) {
+      if (features && !!features.length) {
+        const field = this.field;
+        this.finalValue = features[0].properties[field];
+      }
     }
   }
 };

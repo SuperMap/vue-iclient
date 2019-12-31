@@ -1,4 +1,4 @@
-<script lang='ts'>
+<script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import MapGetter from '../../../_mixin/map-getter';
 import AnimateMarkerLayerViewModel from './AnimateMarkerLayerViewModel';
@@ -19,8 +19,12 @@ import { FeatureCollection } from 'geojson';
 @Component({
   name: 'SmAnimateMarkerLayer',
   loaded: vm => {
-    vm.features && vm._getMarkerElement();
-    vm.viewModel = new AnimateMarkerLayerViewModel(vm.map, vm.features, vm._markersElement, vm.fitBounds);
+    vm._pointFeatures = vm._getPointFeatures(vm.features);
+    vm._getMarkerElement(vm._pointFeatures);
+    vm.viewModel = new AnimateMarkerLayerViewModel(vm.map, vm._pointFeatures, vm._markersElement, vm.fitBounds);
+  },
+  removed: vm => {
+    vm.viewModel && vm.viewModel.clear();
   }
 })
 class AnimateMarkerLayer extends Mixins(MapGetter) {
@@ -37,6 +41,8 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   // | RotatingApertureMarker;
 
   _markersElement: HTMLElement[];
+
+  _pointFeatures: any;
 
   @Prop() features: FeatureCollection;
 
@@ -59,18 +65,18 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   @Watch('features')
   featuresChanged(newVal, oldVal) {
     if (this.viewModel && !isEqual(newVal, oldVal)) {
-      this._markersElement = [];
-      this._getMarkerElement();
-      this.features && this.viewModel.setFeatures(this.features, this._markersElement);
+      this._pointFeatures = this._getPointFeatures(this.features);
+      this._getMarkerElement(this._pointFeatures);
+      this._markersElement.length > 0 && this.viewModel.setFeatures(this._pointFeatures, this._markersElement);
     }
   }
 
   @Watch('type')
   typeChanged() {
     if (this.viewModel) {
-      this._markersElement = [];
-      this._getMarkerElement();
-      this.viewModel.setType(this._markersElement);
+      this._pointFeatures = this._getPointFeatures(this.features);
+      this._getMarkerElement(this._pointFeatures);
+      this._markersElement.length > 0 && this.viewModel.setType(this._markersElement);
     }
   }
 
@@ -121,15 +127,20 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   }
 
   beforeDestroy() {
-    this.viewModel && this.viewModel.clearMarkerLayer();
+    this.$options.removed.call(this, this);
   }
 
   /* methods */
-  _getMarkerElement(): void {
+  _getMarkerElement(features): void {
+    this._markersElement = [];
     this.marker = null;
-    let { features, width, height, colors, textFontSize, textColor, textField } = this;
+    let { width, height, colors, textFontSize, textColor, textField } = this;
     if (!this.features || JSON.stringify(this.features) === '{}' || !this.features.features) {
-      this.viewModel && this.viewModel.clearMarkerLayer();
+      this.viewModel && this.viewModel.clear();
+      return;
+    }
+    if (features.features.length === 0) {
+      this.$message.warning(this.$t('unsupportedData'), 2);
       return;
     }
     switch (this.type) {
@@ -167,6 +178,21 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
     }
     this.marker && (this._markersElement = this.marker.getMarkersElement());
   }
+
+  _getPointFeatures(features) {
+    let resultFeatures = [];
+    features && features.features && features.features.forEach(feature => {
+      let geometry = feature.geometry;
+      if (geometry && geometry.coordinates && geometry.coordinates.length !== 0 && geometry.type === 'Point') {
+        resultFeatures.push(feature);
+      }
+    });
+    return {
+      type: 'FeatureCollection',
+      features: resultFeatures
+    };
+  }
+
   render(): void {}
 }
 

@@ -1,16 +1,14 @@
 <template>
-  <div class="sm-component-indicator" :style="[getBackgroundStyle,{'flex-direction':direction}]">
+  <div class="sm-component-indicator" :style="[getBackgroundStyle, { 'flex-direction': direction }]">
     <div class="sm-component-indicator__head">
-      <span
-        v-show="showTitleUnit"
-        class="sm-component-indicator__title"
-        :style="[unit_titleStyle, getTextColorStyle]"
-      >{{ titleData }}</span>
+      <span v-show="showTitleUnit" class="sm-component-indicator__title" :style="[unit_titleStyle, getTextColorStyle]">
+        {{ titleData }}
+      </span>
     </div>
     <div class="sm-component-indicator__content">
       <span class="sm-component-indicator__num" :style="[indicatorStyle]">
         <countTo
-          v-if="isNumber(num)"
+          v-if="isNumber(indicatorNum)"
           :decimals="calDecimals"
           :startVal="startData"
           :endVal="numData"
@@ -21,13 +19,11 @@
           :separatorBackground="separatorBackground"
           :fontSize="fontSize"
         ></countTo>
-        {{ isNumber(num) ? '' : num }}
+        {{ isNumber(indicatorNum) ? '' : indicatorNum }}
       </span>
-      <span
-        v-show="showTitleUnit"
-        class="sm-component-indicator__unit"
-        :style="[unit_titleStyle, getTextColorStyle]"
-      >{{ unitData }}</span>
+      <span v-show="showTitleUnit" class="sm-component-indicator__unit" :style="[unit_titleStyle, getTextColorStyle]">{{
+        unitData
+      }}</span>
     </div>
   </div>
 </template>
@@ -35,7 +31,7 @@
 <script>
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
-import RestService from '../../mapboxgl/_utils/RestService';
+import RestService from '../../common/_utils/RestService';
 import CountTo from './CountTo';
 
 export default {
@@ -72,6 +68,9 @@ export default {
       default: 0
     },
     url: {
+      type: String
+    },
+    proxy: {
       type: String
     },
     animated: {
@@ -114,7 +113,10 @@ export default {
     showTitleUnit: {
       type: Boolean,
       default: true
-    }
+    },
+    titleField: String,
+    numField: String,
+    unitField: String
   },
   data() {
     return {
@@ -122,7 +124,8 @@ export default {
       titleData: this.title,
       unitData: this.unit,
       numData: 0,
-      startData: 0
+      startData: 0,
+      indicatorNum: 0
     };
   },
   computed: {
@@ -139,7 +142,7 @@ export default {
     },
     indicatorStyle() {
       let style = { color: this.indicatorColorData };
-      typeof this.num === 'string' && (style.fontSize = parseFloat(this.fontSize) + this.fontUnit);
+      typeof this.indicatorNum === 'string' && (style.fontSize = parseFloat(this.fontSize) + this.fontUnit);
       return style;
     },
     direction() {
@@ -164,6 +167,7 @@ export default {
           this.unitData = this.unit;
           this.changeNumData(this.num);
           this.titleData = this.title;
+          this.fetchProperties = null;
         }
       },
       immediate: true
@@ -171,17 +175,11 @@ export default {
     indicatorColor(val) {
       this.indicatorColorData = val;
     },
-    title(val) {
-      this.titleData = val;
-    },
-    unit(val) {
-      this.unitData = val;
-    },
-    num: {
-      handler(val) {
-        this.changeNumData(val);
-      },
-      immediate: true
+    proxy() {
+      this.restService && this.restService.setProxy(this.proxy);
+      if (this.url) {
+        this.getData();
+      }
     }
   },
   mounted() {
@@ -189,21 +187,67 @@ export default {
       this.indicatorColorData = this.getColor(0);
     });
     this.indicatorColorData = this.indicatorColor || this.getColor(0);
+    this.partsOfPropsWatcher();
   },
   beforeDestroy() {
-    this.restService && this.restService.off('getdatasucceeded', this.fetchData);
+    this.restService && this.restService.remove('getdatasucceeded');
   },
   methods: {
+    partsOfPropsWatcher() {
+      const propsFields = ['title', 'unit', 'num', 'titleField', 'unitField', 'numField'];
+      propsFields.forEach(props => {
+        this.$watch(props, function(next) {
+          switch (props) {
+            case 'title':
+              this.titleData = next;
+              break;
+            case 'titleField':
+              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+                this.titleData = this.fetchProperties[this.titleField];
+              } else {
+                this.titleData = this.title;
+              }
+              break;
+            case 'unit':
+              this.unitData = next;
+              break;
+            case 'unitField':
+              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+                this.unitData = this.fetchProperties[this.unitField];
+              } else {
+                this.unitData = this.unit;
+              }
+              break;
+            case 'num':
+              this.changeNumData(next);
+              break;
+            case 'numField':
+              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+                this.changeNumData(this.fetchProperties[this.numField]);
+              } else {
+                this.changeNumData(this.num);
+              }
+              break;
+          }
+        });
+      });
+    },
     isNumber(str) {
       return /^\d+$/.test(str);
     },
     timing() {
       this.getData();
     },
-    fetchData(data) {
-      this.unitData = data.data.unit;
-      this.changeNumData(data.data.num);
-      this.titleData = data.data.title;
+    fetchData({ features }) {
+      if (features && !!features.length) {
+        const properties = features[0].properties;
+        this.fetchProperties = properties;
+        this.unitData = properties.hasOwnProperty(this.unitField) ? properties[this.unitField] : this.unit;
+        properties.hasOwnProperty(this.numField)
+          ? this.changeNumData(properties[this.numField])
+          : this.changeNumData(this.num);
+        this.titleData = properties.hasOwnProperty(this.titleField) ? properties[this.titleField] : this.title;
+      }
     },
     getData() {
       this.getRestService().getData(this.url);
@@ -211,11 +255,12 @@ export default {
     changeNumData(newData) {
       this.startData = this.animated ? +this.numData : +newData;
       this.numData = +newData;
+      this.indicatorNum = newData;
     },
     getRestService() {
       if (!this.restService) {
-        this.restService = new RestService();
-        this.restService.on('getdatasucceeded', this.fetchData);
+        this.restService = new RestService({ proxy: this.proxy });
+        this.restService.on({ getdatasucceeded: this.fetchData });
       }
       return this.restService;
     }

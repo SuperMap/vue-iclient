@@ -1,6 +1,6 @@
 # MapV 图层
 
-<sm-iframe src="http://iclient.supermap.io/examples/component/components_mapv_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_mapv_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map :map-options="mapOptions" @load="addPopup">
@@ -14,4 +14,4 @@
 | 参数    | 说明                                                                                                                       | 类型                            | 可选值 | 默认值 |
 | :------ | :------------------------------------------------------------------------------------------------------------------------- | :------------------------------ | :----- | :----- |
 | data    | MapV 图层数据集                                                                                                            | [GeoJSON](https://geojson.org/) | -      | -      |
-| options | 图层可选参数，参照 [SuperMap iClient API](http://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.MapvLayer.html) | object                          | -      | -      |
+| options | 图层可选参数，参照 [SuperMap iClient API](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.MapvLayer.html) | object                          | -      | -      |

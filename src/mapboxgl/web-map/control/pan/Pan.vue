@@ -74,10 +74,18 @@ export default {
       this.panBy([0, this.panLength]);
     },
     panTo(lnglat) {
-      this.panViewModel.panTo(lnglat);
+      const mapNotLoaded = this.mapNotLoadedTip();
+      if (mapNotLoaded) {
+        return;
+      }
+      this.viewModel.panTo(lnglat);
     },
     panBy(point) {
-      this.panViewModel.panBy(point);
+      const mapNotLoaded = this.mapNotLoadedTip();
+      if (mapNotLoaded) {
+        return;
+      }
+      this.viewModel.panBy(point);
     },
 
     setPanImg() {
@@ -98,7 +106,7 @@ export default {
   },
   loaded() {
     this.parentIsWebMapOrMap && (this.mapboxglClass = 'mapboxgl-ctrl');
-    this.panViewModel = new PanViewModel(this.map);
+    this.viewModel = new PanViewModel(this.map);
     this.center = this.map.getCenter();
     this.lnglat = this.center;
   }

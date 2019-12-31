@@ -22,6 +22,7 @@
     }
     .ant-table-tbody > tr > td {
       transition: all 0s, height 0s;
+      border-bottom-color: transparent;
     }
     .ant-table-row {
       &:hover {
@@ -35,10 +36,4 @@
     display: none;
     -ms-overflow-style: none;
   }
-}
-.sm-mapboxgl-tabel-popup {
-  .mapboxgl-popup-content {
-    padding: 0;
-  }
-  max-width: none !important;
 }

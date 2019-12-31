@@ -1,6 +1,7 @@
 // 获取当前时间返回置顶格式
 import { getLanguage, geti18n } from '../../common/_lang';
 import colorcolor from 'colorcolor';
+import getCenter from '@turf/center';
 
 export function getDateTime(timeType) {
   return geti18n().d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
@@ -83,4 +84,61 @@ export function getColorWithOpacity(color, opacity) {
 export function parseUrl(url) {
   const urlRe = /^(\w+):\/\/([^/?]*)(\/[^?]+)?\??(.+)?/;
   return url.match(urlRe);
+}
+
+export function getDataType(data) {
+  return Object.prototype.toString.call(data);
+}
+
+// 判断输入的地址是否符合地址格式
+export function isMatchUrl(str) {
+  var reg = new RegExp('(https?|http|file|ftp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
+  return reg.test(str);
+}
+// 判断是否为日期
+export function isDate(data) {
+  let reg = /((^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(10|12|0?[13578])([-\/\._])(3[01]|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(11|0?[469])([-\/\._])(30|[12][0-9]|0?[1-9])$)|(^((1[8-9]\d{2})|([2-9]\d{3}))([-\/\._])(0?2)([-\/\._])(2[0-8]|1[0-9]|0?[1-9])$)|(^([2468][048]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([3579][26]00)([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][0][48])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][2468][048])([-\/\._])(0?2)([-\/\._])(29)$)|(^([1][89][13579][26])([-\/\._])(0?2)([-\/\._])(29)$)|(^([2-9][0-9][13579][26])([-\/\._])(0?2)([-\/\._])(29)$))/gi;
+  return reg.test(data);
+}
+
+// 判断是否为数值
+export function isNumber(data) {
+  let mdata = Number(data);
+  if (mdata === 0) {
+    return true;
+  }
+  return !isNaN(mdata);
+}
+
+export function getFeatureCenter(feature) {
+  const coordinates = ((feature || {}).geometry || {}).coordinates;
+  const hasCoordinates = coordinates && !!coordinates.length;
+  if (!hasCoordinates) {
+    return;
+  }
+  let featureType = feature.geometry.type;
+  let center;
+  if (featureType === 'LineString') {
+    center = coordinates[parseInt(coordinates.length / 2)];
+  } else if (featureType === 'MultiLineString') {
+    let coord = coordinates[parseInt(coordinates.length / 2)];
+    center = coord[parseInt(coord.length / 2)];
+  } else {
+    center = getCenter(feature).geometry.coordinates;
+  }
+  return center;
+}
+
+export function getValueCaseInsensitive(properties, searchKey) {
+  const isObj = getDataType(properties) === '[object Object]';
+  if (!searchKey || !isObj) {
+    return '';
+  }
+  const lowerSearchKey = searchKey.toLocaleLowerCase();
+  for (let key in properties) {
+    if (key.toLocaleLowerCase() === lowerSearchKey) {
+      return properties[key];
+    }
+  }
+  return '';
 }

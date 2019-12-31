@@ -6,7 +6,7 @@
       :style="[{'--icon-color--hover': colorGroupsData[0]}, getBackgroundStyle]"
       @click="showSearch = !showSearch; showIcon = !showIcon"
     >
-      <i class="sm-components-icons-preview"></i>
+      <i class="sm-component-tdtSearch__pointer sm-components-icons-preview"></i>
     </div>
     <transition name="sm-component-zoom-in" @after-leave="showIcon = !showIcon">
       <div
@@ -28,7 +28,10 @@
             :style="[getBackgroundStyle, getColorStyle(0)]"
             @click="searchButtonClicked"
           >
-            <i v-if="prefixType==='search'" class="sm-components-icons-preview"></i>
+            <i
+              v-if="prefixType==='search'"
+              class="sm-component-tdtSearch__pointer sm-components-icons-preview"
+            ></i>
             <a-icon v-else :type="prefixType"></a-icon>
           </div>
           <a-input
@@ -45,9 +48,10 @@
             @keyup="changeResultHover"
           >
             <a-icon
-              v-show="isHover && searchKey"
+              v-show="searchKey"
               slot="suffix"
               type="close-circle"
+              class="sm-component-tdtSearch__pointer"
               :style="getColorStyle(0)"
               @click="inputValueCleared"
               @mouseenter="isHover = !isHover"
@@ -106,7 +110,7 @@ export default {
       type: Object,
       default() {
         return {
-          searchUrl: 'http://api.tianditu.gov.cn/search',
+          searchUrl: 'https://api.tianditu.gov.cn/search',
           tk: ''
         };
       }
