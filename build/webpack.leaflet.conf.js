@@ -93,21 +93,21 @@ const webpackConfig = merge(baseWebpackConfig, {
     },
     // TODO 暂时修改成 ./static
     // / \/static\/libs\//, 
-    function(context, request, callback) {
+    function (context, request, callback) {
       if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
         return callback(null, {
           root: 'DeckGL',
-          commonjs: './static/libs/deckgl/deck.gl.min.js',
-          commonjs2: './static/libs/deckgl/deck.gl.min.js',
-          amd: './static/libs/deckgl/deck.gl.min.js'
+          commonjs: '../static/libs/deckgl/deck.gl.min.js',
+          commonjs2: '../static/libs/deckgl/deck.gl.min.js',
+          amd: '../static/libs/deckgl/deck.gl.min.js'
         });
       }
       if (/\/static\/libs\/iclient-leaflet\/iclient-leaflet/.test(request)) {
         return callback(null, {
           root: 'SuperMap',
-          commonjs: './static/libs/iclient-leaflet/iclient-leaflet.min.js',
-          commonjs2: './static/libs/iclient-leaflet/iclient-leaflet.min.js',
-          amd: './static/libs/iclient-leaflet/iclient-leaflet.min.js'
+          commonjs: '../static/libs/iclient-leaflet/iclient-leaflet.min.js',
+          commonjs2: '../static/libs/iclient-leaflet/iclient-leaflet.min.js',
+          amd: '../static/libs/iclient-leaflet/iclient-leaflet.min.js'
         });
       }
       callback();
@@ -132,14 +132,13 @@ const webpackConfig = merge(baseWebpackConfig, {
     Copyright© 2000 - 2020 SuperMap Software Co.Ltd
     license: ${pkg.license}
     version: v${pkg.version}
-   `)
-    // new CopyWebpackPlugin([
-    // {
-    // from: path.resolve(__dirname, '../static/index.js'),
-    // to: config.build.assetsSubDirectory,
-    // ignore: ['libs/Cesium/**/*']
-    // }
-    // ])
+   `),
+    new CopyWebpackPlugin([
+      {
+        from: path.resolve(__dirname, '../static/leaflet-index.js'),
+        to: path.resolve(__dirname, '../dist/leaflet/index.js')
+      }
+    ])
   ]
 });
 

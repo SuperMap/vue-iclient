@@ -25,7 +25,7 @@ let origin = argv.original;
 let entry = './demo/mapboxgl/main.ts';
 
 if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  let type = origin[2].split('-')[1];
+  let type = origin[2].replace("-", "");
   entry = `./demo/${type}/main.ts`;
 }
 
