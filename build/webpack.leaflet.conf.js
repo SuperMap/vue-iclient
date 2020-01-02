@@ -66,12 +66,6 @@ const webpackConfig = merge(baseWebpackConfig, {
       shapefile: 'shapefile',
       'echarts-liquidfill': 'echarts-liquidfill',
       mapv: 'mapv',
-      '@mapbox/mapbox-gl-draw': {
-        root: 'MapboxDraw',
-        commonjs: '@mapbox/mapbox-gl-draw',
-        commonjs2: '@mapbox/mapbox-gl-draw',
-        amd: '@mapbox/mapbox-gl-draw'
-      },
       three: {
         root: 'THREE',
         commonjs: 'three',
@@ -91,8 +85,6 @@ const webpackConfig = merge(baseWebpackConfig, {
         amd: 'leaflet'
       }
     },
-    // TODO 暂时修改成 ./static
-    // / \/static\/libs\//, 
     function (context, request, callback) {
       if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
         return callback(null, {

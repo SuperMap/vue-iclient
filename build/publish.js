@@ -5,7 +5,7 @@ let argv = JSON.parse(process.env['npm_config_argv']);
 let origin = argv.original;
 let key = origin[1] ? origin[1].replace('-', '') : 'mapboxgl';
 
-let fileNames = ['package.json', '.npmignore', 'tsconfig.json'];
+let fileNames = ['package.json', '.npmignore', 'tsconfig.json', 'README.md'];
 key === 'leaflet' && fileNames.push('sfc.d.ts');
 
 fileNames.forEach(fileName => {
