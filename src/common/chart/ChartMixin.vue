@@ -12,7 +12,6 @@
       :id="chartId"
       :ref="chartId"
       :options="_chartOptions"
-      :autoresize="autoresize"
       :initOptions="initOptions"
       :group="group"
       :manual-update="manualUpdate"
@@ -34,6 +33,7 @@ import ECharts from 'vue-echarts';
 import UniqueId from 'lodash.uniqueid';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
+import debounce from 'lodash/debounce';
 import Card from '../_mixin/card';
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
@@ -41,6 +41,7 @@ import { chartThemeUtil } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
+import { addListener, removeListener } from 'resize-detector';
 
 /**
  * @module Chart
@@ -299,6 +300,13 @@ export default {
       },
       deep: true
     },
+    autoresize() {
+      if (this.autoresize) {
+        addListener(this.$el, this.__resizeHandler);
+      } else {
+        removeListener(this.$el, this.__resizeHandler);
+      }
+    },
     // 以下为echart的配置参数
     width() {
       return this.smChart && this.smChart.width;
@@ -341,6 +349,7 @@ export default {
         self.$emit(event, params);
       });
     });
+    this._init();
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -350,8 +359,24 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.pieAutoPlay); // clear 自动播放
+    if (this.autoresize) {
+      removeListener(this.$el, this.__resizeHandler);
+    }
   },
   methods: {
+    _init() {
+      this.__resizeHandler = debounce(
+        () => {
+          this.resize();
+        },
+        100,
+        { leading: true }
+      );
+      if (this.autoresize) {
+        // @ts-ignore
+        addListener(this.$el, this.__resizeHandler);
+      }
+    },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
       let echartsNode = this.smChart.chart;
