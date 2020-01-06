@@ -349,7 +349,7 @@ export default {
         self.$emit(event, params);
       });
     });
-    this._init();
+    this._initAutoResize();
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -364,7 +364,7 @@ export default {
     }
   },
   methods: {
-    _init() {
+    _initAutoResize() {
       this.__resizeHandler = debounce(
         () => {
           this.resize();
