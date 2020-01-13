@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 
 @Component
-export default class Theme extends Vue {
+export default class Timer extends Vue {
   timer: any = null;
 
   @Prop({ default: false }) startTiming: boolean;

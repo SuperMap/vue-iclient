@@ -43,7 +43,6 @@ export default class EchartsDataService {
   constructor(dataset, datasetOptions) {
     // 设置默认值
     dataset.withCredentials = dataset.withCredentials || false; // 请求认证
-
     this.dataset = dataset;
     this.datasetOptions = datasetOptions;
     this.dataCache = null; // 缓存的是请求后的数据
@@ -73,7 +72,7 @@ export default class EchartsDataService {
           this._setData(data);
           // 解析数据，生成dataOption
           let options;
-          if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer' || this.dataset.type === 'rest') {
+          if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer' || this.dataset.type === 'rest' || this.dataset.type === 'geoJSON') {
             options = this.formatChartData(this.datasetOptions, xBar, data);
           }
 
@@ -211,7 +210,7 @@ export default class EchartsDataService {
     let XData = fieldData.xData;
     let radarData = [];
     let axisData;
-    if (chartType === 'radar') {
+    if (chartType === 'radar' && XData) {
       let radarMax = this.radarMax;
       XData.forEach(text => {
         radarData.push({

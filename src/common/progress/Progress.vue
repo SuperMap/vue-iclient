@@ -1,7 +1,7 @@
 <template>
   <div class="sm-component-progress" :style="[background && getBackgroundStyle]">
     <a-progress
-      :percent="parseFloat(finalPercent)"
+      :percent="parseFloat(finalValue)"
       :type="type"
       :stroke-width="parseFloat(strokeWidth)"
       :show-info="showInfo"
@@ -18,11 +18,11 @@
 import Theme from '../_mixin/theme';
 import { ResizeSensor } from 'css-element-queries';
 import Timer from '../_mixin/timer';
-import RestService from '../../common/_utils/RestService';
+import ThirdService from '../_mixin/thirdService';
 
 export default {
   name: 'SmProgress',
-  mixins: [Theme, Timer],
+  mixins: [Theme, Timer, ThirdService],
   props: {
     percent: {
       type: [Number, String],
@@ -68,22 +68,13 @@ export default {
         const strokeLinecapList = ['round', 'square'];
         return strokeLinecapList.includes(strokeLinecap);
       }
-    },
-    url: {
-      type: String
-    },
-    field: {
-      type: String
-    },
-    proxy: {
-      type: String
     }
   },
   data() {
     return {
       colorData: '',
       circleWidth: 0,
-      finalPercent: this.percent
+      finalValue: this.percent
     };
   },
   computed: {
@@ -106,27 +97,7 @@ export default {
       }
     },
     percent(val) {
-      this.finalPercent = val;
-    },
-    url: {
-      handler(val) {
-        if (val) {
-          this.getData();
-        } else {
-          this.finalPercent = this.percent;
-          this.features = null;
-        }
-      },
-      immediate: true
-    },
-    field() {
-      this.setPercent(this.features);
-    },
-    proxy() {
-      this.restService && this.restService.setProxy(this.proxy);
-      if (this.url) {
-        this.getData();
-      }
+      this.finalValue = val;
     }
   },
   created() {
@@ -151,23 +122,6 @@ export default {
     },
     timing() {
       this.getData();
-    },
-    fetchData({ features }) {
-      this.features = features;
-      this.setPercent(features);
-    },
-    getData() {
-      if (!this.restService) {
-        this.restService = new RestService({ proxy: this.proxy });
-        this.restService.on({ getdatasucceeded: this.fetchData });
-      }
-      this.restService.getData(this.url);
-    },
-    setPercent(features) {
-      if (features && !!features.length) {
-        const field = this.field;
-        this.finalPercent = features[0].properties[field];
-      }
     }
   }
 };

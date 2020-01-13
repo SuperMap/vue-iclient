@@ -6,8 +6,14 @@
     >
       <div class="sm-component-text-list__header-content">
         <template v-if="animateContent && animateContent.length > 0">
-          <template v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])">
-            <div :key="index" :style="[listStyle.headerLineHeight, fontSizeStyle]" :title="item">{{ item }}</div>
+          <template
+            v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])"
+          >
+            <div
+              :key="index"
+              :style="[listStyle.headerLineHeight, fontSizeStyle]"
+              :title="item"
+            >{{ item }}</div>
           </template>
         </template>
       </div>
@@ -27,7 +33,11 @@
             class="sm-component-text-list__list"
             :style="[listStyle.rowStyle, getRowStyle(index)]"
           >
-            <div v-for="(items, index2) in item" :key="index2" :style="listStyle.rowHeight">{{ items }}</div>
+            <div
+              v-for="(items, index2) in item"
+              :key="index2"
+              :style="listStyle.rowHeight"
+            >{{ items }}</div>
           </div>
         </template>
       </div>
@@ -95,12 +105,12 @@ class SmTextList extends Mixins(Theme, Timer) {
   @Watch('dataset')
   datasetChanged(newVal, oldVal) {
     if (!isEqual(newVal, oldVal)) {
-      if (this.dataset && this.dataset.url) {
+      if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
         this.getFeaturesFromDataset();
       } else {
-        this.featuresData = [];
-        this.listData = [];
-        this.animateContent = [];
+        // this.featuresData = [];
+        // this.listData = [];
+        // this.animateContent = [];
         clearInterval(this.startInter);
       }
     }
@@ -192,7 +202,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   setListData() {
     if (this.content && this.content.length > 0) {
       this.listData = this.handleContent(this.content);
-    } else if (this.dataset && this.dataset.url) {
+    } else if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
       this.getFeaturesFromDataset();
     }
   }
@@ -204,13 +214,18 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   getFeaturesFromDataset(initLoading = true) {
-    initLoading && (this.spinning = true);
-    getFeatures(this.dataset).then(data => {
-      initLoading && (this.spinning = false);
-      this.featuresData = data;
-      this.listData = this.handleFeatures(data);
-      this.getListHeightStyle();
-    });
+    // 如果是geojson就不加loading
+    let { url, geoJSON } = this.dataset;
+    url && initLoading && (this.spinning = true);
+    // 有url或geojson ,dataset才发请求
+    if (url || geoJSON) {
+      getFeatures(this.dataset).then(data => {
+        this.dataset.url && initLoading && (this.spinning = false);
+        this.featuresData = data;
+        this.listData = this.handleFeatures(data);
+        this.getListHeightStyle();
+      });
+    }
   }
 
   getListHeightStyle() {

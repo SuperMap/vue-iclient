@@ -230,7 +230,7 @@ export default {
       return (
         this.dataset &&
         Object.keys(this.dataset).length > 0 &&
-        this.dataset.url &&
+        (this.dataset.url || this.dataset.geoJSON) &&
         this.datasetOptions &&
         this.datasetOptions.length > 0
       );
@@ -424,7 +424,7 @@ export default {
     },
     timing() {
       this.echartsDataService &&
-        this.echartsDataService.getDataOption(this.dataset).then(options => {
+        this.echartsDataService.getDataOption(this.dataset, this.xBar).then(options => {
           this.hideLoading();
           // 缓存dataSeriesCache，请求后格式化成echart的数据
           this.dataSeriesCache = Object.assign({}, options);
@@ -437,13 +437,15 @@ export default {
     _setEchartOptions(dataset, datasetOptions, echartOptions) {
       this.echartsDataService = null;
       this.dataSeriesCache = null;
-      this.showLoading('default', {
-        text: this.$t('info.loading'),
-        color: this.colorGroupsData[0],
-        textColor: this.textColorsData,
-        maskColor: 'rgba(0,0,0,0.8)',
-        zlevel: 0
-      });
+      if (this.dataset.type !== 'geoJSON') {
+        this.showLoading('default', {
+          text: this.$t('info.loading'),
+          color: this.colorGroupsData[0],
+          textColor: this.textColorsData,
+          maskColor: 'rgba(0,0,0,0.8)',
+          zlevel: 0
+        });
+      }
       this.echartsDataService = new EchartsDataService(dataset, datasetOptions);
       this.echartsDataService.getDataOption(dataset, this.xBar).then(options => {
         this.hideLoading();
@@ -476,7 +478,7 @@ export default {
         if (dataOptions.series.length === 0) {
           axis = [{}];
         } else if (!Array.isArray(axis)) {
-          if (axisData.data.length) {
+          if (axisData.data && axisData.data.length) {
             axis.data = [];
           }
           axis = [Object.assign({}, axisData, axis)];
