@@ -140,7 +140,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
       return;
     }
     if (features.features.length === 0) {
-      this.$message.warning(this.$t('unsupportedData'), 2);
+      this.viewModel.clear();
       return;
     }
     switch (this.type) {

@@ -77,7 +77,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   _getMapInfo(mapInfo, _taskID) {
     let { layers } = mapInfo;
-
+    this._layers = [];
     // 创建 MAP
     this._createMap(mapInfo);
     this._initBaseLayer(mapInfo, false);

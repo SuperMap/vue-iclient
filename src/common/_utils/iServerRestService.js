@@ -11,7 +11,7 @@ export function _getValueOfEpsgCode(epsgCode) {
   if (!defValue) {
     console.error(`${defName} not define`);
   } else {
-    proj4.defs(defName, defValue);
+    !proj4.defs(defName) && proj4.defs(defName, defValue);
   }
   return {
     name: defName,

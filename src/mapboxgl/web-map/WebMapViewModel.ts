@@ -198,9 +198,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
 
     if (mapboxgl.CRS.get(this.baseProjection)) {
-      if (!['EPSG:4326', 'EPSG:3857'].includes(this.baseProjection)) {
-        this._defineProj4(this.baseProjection.split(':')[1]);
-      }
+      this._defineProj4(this.baseProjection.split(':')[1]);
 
       if (this.map) {
         // @ts-ignore
@@ -222,6 +220,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   _handleLayerInfo(mapInfo, _taskID): void {
     mapInfo = this._setLayerID(mapInfo);
+    this._layers = [];
     const { layers, baseLayer } = mapInfo;
 
     typeof this.layerFilter === 'function' && this.layerFilter(baseLayer) && this._initBaseLayer(mapInfo);
@@ -1650,7 +1649,7 @@ export default class WebMapViewModel extends WebMapBase {
     if (!defValue) {
       console.error(`${defName} not define`);
     } else {
-      proj4.defs(defName, defValue);
+      !proj4.defs(defName) && proj4.defs(defName, defValue);
     }
   }
 
