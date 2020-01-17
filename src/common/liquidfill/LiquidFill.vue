@@ -147,7 +147,7 @@ export default {
       });
     },
     updateChart(propsUpdate = false) {
-      this.chart.setOption({
+      this.chart && this.chart.setOption({
         series: [
           {
             color: [this.waveColorData],
