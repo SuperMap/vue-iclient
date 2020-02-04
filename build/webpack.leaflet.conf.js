@@ -109,6 +109,10 @@ const webpackConfig = merge(baseWebpackConfig, {
     minimizer: []
   },
   plugins: [
+    new webpack.HashedModuleIdsPlugin({
+      hashFunction: 'sha256',
+      hashDigest: 'hex'
+    }),
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
