@@ -842,6 +842,8 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _addLabelLayer(layerInfo: any, features: any): void {
     let labelStyle = layerInfo.labelStyle;
+    let { backgroundFill, fontFamily } = labelStyle;
+    backgroundFill = `rgba(${backgroundFill.join(',')})`;
     this._addLayer({
       id: `${layerInfo.layerID}-label`,
       type: 'symbol',
@@ -854,14 +856,14 @@ export default class WebMapViewModel extends WebMapBase {
       },
       paint: {
         'text-color': labelStyle.fill,
-        'text-halo-color': 'rgba(255,255,255,0.8)',
-        'text-halo-width': parseFloat(labelStyle.fontSize) || 12
+        'text-halo-color': backgroundFill || 'rgba(255,255,255,0.8)',
+        'text-halo-width': 4
       },
       layout: {
         'text-field': `{${labelStyle.labelField}}`,
-        'text-size': parseFloat(labelStyle.fontSize) || 12,
+        'text-size': 14,
         'text-offset': labelStyle.offsetX ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0] : [0, -2.5],
-        'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
+        'text-font': fontFamily ? [fontFamily] : ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
         visibility: layerInfo.visible
       }
     });
