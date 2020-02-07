@@ -59,8 +59,10 @@ export function vertifyEpsgCode(firstFeature) {
 export function transformFeatures(epsgCode, features) {
   const projName = _getValueOfEpsgCode(epsgCode).name;
   const transformedFeatures = features.map(feature => {
-    const coordinates = feature.geometry.coordinates;
-    feature.geometry.coordinates = _transformCoordinates(coordinates, projName);
+    if (feature.geometry && feature.geometry.coordinates) {
+      const coordinates = feature.geometry.coordinates;
+      feature.geometry.coordinates = _transformCoordinates(coordinates, projName);
+    }
     return feature;
   });
   return transformedFeatures;
