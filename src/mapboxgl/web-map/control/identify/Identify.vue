@@ -81,12 +81,9 @@ export default {
   watch: {
     layers: {
       handler(val, oldVal) {
-        this.viewModel && this.viewModel.removed(oldVal);
-        if (this.layers.length > 0 && !isEqual(val, oldVal)) {
+        if (!isEqual(val, oldVal)) {
+          this.viewModel && this.viewModel.removed(oldVal);
           this.setViewModel();
-        }
-        if (this.layers.length === 0) {
-          this.map && this.map.off('click');
         }
       }
     },
@@ -101,23 +98,25 @@ export default {
     // 每次地图加载，就要隐藏（md的切换地图）
     this.isHide = true;
     this.setViewModel();
-    this.map && this.bindMapClick(this.map);
   },
   removed() {
+    this.map && this.map.off('click', this.mapClickFn);
     // 清除旧的高亮的图层
     this.viewModel && this.viewModel.removed();
   },
   beforeDestroy() {
-    this.map && this.map.off('click', this.mapClickFn);
     this.$options.removed.call(this);
   },
   methods: {
     setViewModel() {
-      this.viewModel = new IdentifyViewModel(this.map, {
-        mapTarget: this.getTargetName(),
-        layers: this.layers,
-        layerStyle: this.layerStyle
-      });
+      if (this.layers.length > 0) {
+        this.viewModel = new IdentifyViewModel(this.map, {
+          mapTarget: this.getTargetName(),
+          layers: this.layers,
+          layerStyle: this.layerStyle
+        });
+        this.map && this.bindMapClick(this.map);
+      }
     },
     // 给图层绑定popup和高亮
     bindMapClick(map) {
