@@ -72,7 +72,12 @@ export default class EchartsDataService {
           this._setData(data);
           // 解析数据，生成dataOption
           let options;
-          if (this.dataset.type === 'iPortal' || this.dataset.type === 'iServer' || this.dataset.type === 'rest' || this.dataset.type === 'geoJSON') {
+          if (
+            this.dataset.type === 'iPortal' ||
+            this.dataset.type === 'iServer' ||
+            this.dataset.type === 'rest' ||
+            this.dataset.type === 'geoJSON'
+          ) {
             options = this.formatChartData(this.datasetOptions, xBar, data);
           }
 
@@ -105,6 +110,9 @@ export default class EchartsDataService {
       let serieData = this._createDataOption(fieldData, item);
       // 设置坐标
       this._createAxisData(fieldData, item);
+      if (!serieData.tooltip) {
+        serieData.tooltip = this._fixToolTip(data, item);
+      }
       this.serieDatas.push(serieData);
     });
     let gridAxis = (this.gridAxis.xAxis.length > 0 || JSON.stringify(this.gridAxis.yAxis) !== '{}') && this.gridAxis;
@@ -195,6 +203,30 @@ export default class EchartsDataService {
       }
     }
     return serieData;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._fixToolTip
+   * @private
+   * @description 调整tooltip显示，Todo 考虑支持用户自定义tooltip内容
+   * @param {Object} data - 数据
+   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @returns {Object}  tooltip
+   */
+  _fixToolTip(data, datasetOption) {
+    if (data.transformed) {
+      if (datasetOption.seriesType === 'pie') {
+        return {
+          trigger: 'item',
+          formatter: '{b} : {c} ({d}%)'
+        };
+      }
+      return {
+        trigger: 'item',
+        formatter: '{b} : {c}'
+      };
+    }
+    return null;
   }
 
   /**
