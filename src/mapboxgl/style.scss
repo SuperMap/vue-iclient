@@ -50,3 +50,5 @@ $--tdt-assets-path: './tdt/_assets' !default;
 /* tdt */
 @import './tdt/route/style/tdtRoute.scss';
 @import './tdt/search/style/tdtSearch.scss';
+
+@import './ncp-map/style/ncp-map.scss';

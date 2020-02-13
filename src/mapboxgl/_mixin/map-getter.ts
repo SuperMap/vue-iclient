@@ -76,7 +76,7 @@ export default class MapGetter extends Vue {
     const parentTarget =
       selfParent &&
       selfParent.$options.name &&
-      selfParent.$options.name.toLowerCase() === 'smwebmap' &&
+      ['smwebmap', 'smncpmap'].includes(selfParent.$options.name.toLowerCase())  &&
       // @ts-ignore
       selfParent.target;
     return this.mapTarget || parentTarget || Object.keys(mapEvent.$options.getAllMaps())[0];

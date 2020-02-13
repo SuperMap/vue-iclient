@@ -90,7 +90,7 @@
                 <div :style="{background: item.color}"></div>
                 <span class="add-ellipsis">
                   <a-icon type="caret-left" />
-                  {{ item.start }}-{{ item.end }}
+                  {{ showRangeInfo(item) }}
                 </span>
               </div>
             </div>
@@ -108,7 +108,7 @@
                 class="sm-component-legend__rank-item"
               >
                 <div class="sm-component-legend__rank-icon">
-                  <i :class="item.style.className" :style="rankSymbolStyle(item)"/>
+                  <i :class="item.style.className" :style="rankSymbolStyle(item)" />
                 </div>
                 <span class="add-ellipsis">
                   <a-icon type="caret-left" />
@@ -179,7 +179,7 @@
               <div :style="{background: item.color}"></div>
               <span class="add-ellipsis">
                 <a-icon type="caret-left" />
-                {{ item.start }}-{{ item.end }}
+                {{ showRangeInfo(item) }}
               </span>
             </div>
           </div>
@@ -308,6 +308,15 @@ export default {
             break;
         }
         return generateStyle;
+      };
+    },
+    showRangeInfo() {
+      return function(item) {
+        const { start, end } = item;
+        if (start && end) {
+          return `${start} - ${end}`;
+        }
+        return start ? `≥${start}` : `≤${end}`;
       };
     }
   },

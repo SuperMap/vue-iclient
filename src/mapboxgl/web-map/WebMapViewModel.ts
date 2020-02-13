@@ -257,6 +257,7 @@ export default class WebMapViewModel extends WebMapBase {
       this._getResolution(mapboxgl.CRS.get(this.baseProjection).getExtent()) / this._getResolution(mapInfo.extent)
     ).toFixed(2);
     zoom += zoomBase;
+    const { interactive, bounds } = this.mapOptions || {};
     // 初始化 map
     this.map = new mapboxgl.Map({
       container: this.target,
@@ -264,6 +265,8 @@ export default class WebMapViewModel extends WebMapBase {
       zoom: this.zoom || zoom,
       bearing: this.bearing || 0,
       pitch: this.pitch || 0,
+      interactive: interactive === void 0 ? true : interactive,
+      bounds,
       style: {
         version: 8,
         sources: {},
@@ -862,7 +865,7 @@ export default class WebMapViewModel extends WebMapBase {
       layout: {
         'text-field': `{${labelStyle.labelField}}`,
         'text-size': 14,
-        'text-offset': labelStyle.offsetX ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0] : [0, -2.5],
+        'text-offset': labelStyle.offsetX ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0] : [0, 0],
         'text-font': fontFamily ? [fontFamily] : ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
         visibility: layerInfo.visible
       }
