@@ -77,19 +77,19 @@ export default {
       default: true
     },
     keyMaxWidth: {
-      type: Number,
+      type: [ Number, String ],
       default: 110
     },
     valueMaxWidth: {
-      type: Number,
+      type: [ Number, String ],
       default: 170
     },
     keyWidth: {
-      type: Number,
+      type: [ Number, String ],
       default: 110
     },
     valueWidth: {
-      type: Number,
+      type: [ Number, String ],
       default: 170
     }
   },
