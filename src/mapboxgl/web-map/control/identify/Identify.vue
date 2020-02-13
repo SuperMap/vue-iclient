@@ -15,7 +15,6 @@
 <script>
 import Theme from '../../../../common/_mixin/theme';
 import MapGetter from '../../../_mixin/map-getter';
-import Control from '../../../_mixin/control';
 import IdentifyViewModel from './IdentifyViewModel';
 import CircleStyle from '../../../_types/CircleStyle';
 import FillStyle from '../../../_types/FillStyle';
@@ -24,7 +23,7 @@ import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmIdentify',
-  mixins: [MapGetter, Control, Theme],
+  mixins: [MapGetter, Theme],
   props: {
     layers: {
       type: Array,
