@@ -1,14 +1,15 @@
 <template>
-  <ul
-    ref="Popup"
-    :style="[getBackgroundStyle, getTextColorStyle]"
-    :class="['sm-component-identify', {'sm-component-content-hide': isHide}]"
-  >
-    <li v-for="(value, key, index) in popupProps" :key="index" class="sm-component-identify__body">
-      <div class="sm-component-identify__left" :title="key">{{ key }}</div>
-      <div class="sm-component-identify__right" :title="value">{{ value }}</div>
-    </li>
-  </ul>
+  <div v-show="false" class="sm-component-identify" ref="Popup">
+    <ul
+      :class="[autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom', 'sm-component-identify__content']"
+      :style="[getBackgroundStyle, getTextColorStyle]"
+    >
+      <li v-for="(value, key, index) in popupProps" :key="index" class="content">
+        <div class="left ellipsis" :title="key" :style="getWidthStyle.keyWidth">{{ key }}</div>
+        <div class="right ellipsis" :title="value" :style="getWidthStyle.valueWidth">{{ value }}</div>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -70,6 +71,26 @@ export default {
           })
         };
       }
+    },
+    autoResize: {
+      type: Boolean,
+      default: true
+    },
+    keyMaxWidth: {
+      type: Number,
+      default: 110
+    },
+    valueMaxWidth: {
+      type: Number,
+      default: 170
+    },
+    keyWidth: {
+      type: Number,
+      default: 110
+    },
+    valueWidth: {
+      type: Number,
+      default: 170
     }
   },
   data() {
@@ -77,6 +98,28 @@ export default {
       isHide: true, // 消除style里block
       popupProps: {}
     };
+  },
+  computed: {
+    getWidthStyle() {
+      let style = { keyWidth: {}, valueWidth: {} };
+      if (!this.autoResize) {
+        if (this.keyWidth) {
+          style.keyWidth.width = this.keyWidth + 'px';
+        }
+        if (this.valueWidth) {
+          style.valueWidth.width = this.valueWidth + 'px';
+        }
+        return style;
+      } else {
+        if (this.keyMaxWidth) {
+          style.keyWidth.maxWidth = this.keyMaxWidth + 'px';
+        }
+        if (this.valueMaxWidth) {
+          style.valueWidth.maxWidth = this.valueMaxWidth + 'px';
+        }
+      }
+      return style;
+    }
   },
   watch: {
     layers: {
@@ -214,9 +257,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.sm-component-content-hide {
-  display: none !important;
-}
-</style>
