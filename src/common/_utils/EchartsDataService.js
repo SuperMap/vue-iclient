@@ -262,10 +262,12 @@ export default class EchartsDataService {
         this.gridAxis.xAxis = [];
         this.gridAxis.yAxis = {};
       }
-      if (this.gridAxis.xAxis.length === 0 || !isEqual(data, this.gridAxis.xAxis[0].data)) {
+      if (this.gridAxis.xAxis.length === 0) {
         this.gridAxis.xAxis.push({
           data
         });
+      } else {
+        this.gridAxis.xAxis[0] = { data };
       }
 
       axisData = this.gridAxis;
