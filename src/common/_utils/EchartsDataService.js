@@ -1,6 +1,5 @@
 import getFeatures from './get-features';
 import tonumber from 'lodash.tonumber';
-import isEqual from 'lodash.isequal';
 import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
 import { clearNumberComma } from './util';
@@ -99,6 +98,8 @@ export default class EchartsDataService {
    */
   formatChartData(datasetOptions, xBar = false, data = this.dataCache) {
     // 清除数据缓存
+    let orderInfo = { orderField: '', order: '' };
+    this.sortIndex = null;
     this._clearChartCache();
     // 设置datasetOptions
     this.setDatasetOptions(datasetOptions);
@@ -107,6 +108,13 @@ export default class EchartsDataService {
       // 生成YData, XData
       let fieldData = this._fieldsData(data, item, xBar);
       // 解析YData, XData，生成EchartsOption的data
+      if (['ascending', 'descending'].includes(item.sort)) {
+        orderInfo.orderField = item.yField;
+        orderInfo.order = item.sort;
+        let sortData = this._resortData(fieldData.xData, fieldData.yData, item.sort, xBar);
+        this.sortIndex = sortData.xDataIndex;
+        this.sortXData = sortData.xData;
+      }
       let serieData = this._createDataOption(fieldData, item);
       // 设置坐标
       this._createAxisData(fieldData, item);
@@ -117,6 +125,16 @@ export default class EchartsDataService {
     });
     let gridAxis = (this.gridAxis.xAxis.length > 0 || JSON.stringify(this.gridAxis.yAxis) !== '{}') && this.gridAxis;
     let radarAxis = this.radarAxis;
+    if (this.sortIndex) {
+      this.serieDatas.forEach((serie) => {
+        const temp = [];
+        this.sortIndex.forEach((trueIndex, index) => {
+          temp[index] = serie.data[trueIndex];
+        });
+        serie.data = temp;
+      });
+      gridAxis.xAxis[0] = { data: this.sortXData };
+    }
     let series = this.serieDatas;
     return {
       ...gridAxis,
@@ -303,14 +321,15 @@ export default class EchartsDataService {
       xData = this._getFieldDatas(data, xFieldIndex);
       yData = [...fieldValues];
     }
-    result = sort && sort !== 'unsort' ? this._resortData(xData, yData, sort, xBar) : { xData, yData };
+    // result = sort && sort !== 'unsort' ? this._resortData(xData, yData, sort, xBar) : { xData, yData };
+    result = { xData, yData };
     return result;
   }
 
   _resortData(xData, yData, sort, xBar = false) {
     let obj = [];
     yData.forEach((item, index) => {
-      obj.push({ y: item, x: xData[index] });
+      obj.push({ y: item, x: xData[index], index: index });
     });
     obj = orderBy(
       obj,
@@ -321,13 +340,16 @@ export default class EchartsDataService {
     );
     let x = [];
     let y = [];
+    let index = [];
     obj.forEach(item => {
       x.push(item.x);
       y.push(item.y);
+      index.push(item.index);
     });
     return {
       xData: x,
-      yData: y
+      yData: y,
+      xDataIndex: index
     };
   }
 
