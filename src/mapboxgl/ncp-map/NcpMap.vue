@@ -25,7 +25,8 @@ import debounce from 'lodash/debounce';
     'mapOptions.bearing',
     'mapOptions.pitch',
     'dataOptions.url',
-    'dataOptions.name'
+    'dataOptions.name',
+    'dataOptions.proxyUrl'
   ]
 })
 class SmNcpMap extends Mixins(VmUpdater, MapEvents) {

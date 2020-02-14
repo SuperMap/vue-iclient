@@ -5,6 +5,7 @@ import { handleMultyPolygon } from '../_utils/geometry-util';
 export interface dataOptions {
   url?: string;
   name?: string;
+  proxyUrl?: string;
 }
 
 export interface mapOptions {
@@ -37,8 +38,9 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   constructor(target: string, dataOptions?: dataOptions, mapOptions?: mapOptions) {
     super();
     this.target = target;
-    const { url, name } = dataOptions || {};
+    const { url, name, proxyUrl } = dataOptions || {};
     this.dataUrl = url;
+    this.proxyUrl = proxyUrl;
     this.mapOptions = mapOptions || {};
     this.overLayerId = name || this.defaultOverLayerId;
     this._initWebMap();
@@ -72,17 +74,19 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         sources: {
           [this.baseLayerId]: {
             type: 'raster',
-            tiles: ["https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark/zxyTileImage.png?z={z}&x={x}&y={y}"],
+            tiles: [
+              'https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark/zxyTileImage.png?z={z}&x={x}&y={y}'
+            ],
             tileSize: 256
           }
         },
         layers: [
           {
-            "id": this.baseLayerId,
-            "source": this.baseLayerId,
-            "type": "raster",
-            'minzoom': 0,
-            'maxzoom': 22
+            id: this.baseLayerId,
+            source: this.baseLayerId,
+            type: 'raster',
+            minzoom: 0,
+            maxzoom: 22
           }
         ]
       }
@@ -91,7 +95,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
 
   private _handleLayerInfo(): void {
     if (this.dataUrl) {
-      SuperMap.FetchRequest.get(this.dataUrl, null, { withoutFormatSuffix: true })
+      SuperMap.FetchRequest.get(this.dataUrl, null, { withoutFormatSuffix: true, proxy: this.proxyUrl })
         .then(response => {
           return response.json();
         })
@@ -203,21 +207,25 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         },
         {
           color: '#f59e83',
-          start: 9, 
+          start: 9,
           end: 99
-        }, {
+        },
+        {
           color: '#e55a4e',
           start: 99,
           end: 499
-        }, {
+        },
+        {
           color: '#cb2a2f',
           start: 499,
           end: 999
-        }, {
+        },
+        {
           color: '#811c24',
           start: 999,
           end: 10000
-        }, {
+        },
+        {
           color: '#4f070d',
           start: 10000
         }
@@ -240,7 +248,11 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   public resize(): void {
     this.map && this.map.resize();
   }
-
+  public setProxyUrl(proxyUrl) {
+    debugger
+    this.proxyUrl = proxyUrl;
+    this.map ? this._handleLayerInfo() : this._clearOverLayer();
+  }
   public setCenter(center): void {
     if (this.map && this.centerValid(center)) {
       this.mapOptions.center = center;
