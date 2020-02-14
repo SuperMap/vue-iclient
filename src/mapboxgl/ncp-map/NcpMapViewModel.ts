@@ -151,8 +151,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         source: this.overLayerId,
         layout: {},
         paint: {
-          'line-width': 1,
-          'line-color':'#c2bdbd',
+          'line-width': 0.7,
+          'line-color':'#696868',
           'line-opacity': 1
         }
       });
