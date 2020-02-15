@@ -24,6 +24,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   target: string;
   dataUrl: string;
+  proxyUrl: string;
   mapOptions: mapOptions;
   defaultOverLayerId: string = '全省确诊人数';
   baseLayerId: string = '中国地图';
