@@ -232,7 +232,7 @@ export default {
       if (feature.properties) {
         // 无数据情况
         for (let key in feature.properties) {
-          if (typeof feature.properties[key] !=='number' && !feature.properties[key]) {
+          if (typeof feature.properties[key] !== 'number' && !feature.properties[key]) {
             feature.properties[key] = this.$t('identify.noData');
           }
         }
