@@ -492,6 +492,29 @@ export default {
           options.series = dataOptions.series.map((element, index) => {
             return Object.assign({}, options.series[index] || {}, element);
           });
+          const labelConfig = options.series[0].label.normal;
+          if (labelConfig.show && labelConfig.position === 'smart') {
+            options.series.forEach(serie => {
+              let label = serie.label.normal;
+              label.position = 'top';
+              label.formatter = function({ dataIndex, value }) {
+                let result = '';
+                const data = serie.data;
+                if (dataIndex === 0 || dataIndex === data.length - 1 || Math.max.apply(null, data) === value) {
+                  result = value;
+                }
+                return result;
+              };
+            });
+          } else {
+            options.series.forEach(serie => {
+              let label = serie.label.normal;
+              if (label.formatter) {
+                delete label.formatter;
+              }
+            });
+          }
+
           // pie的图例需要一个扇形是一个图例
           if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
             options.legend.data = [];
@@ -508,7 +531,7 @@ export default {
       if (options && options.radar && dataOptions.radar) {
         options.radar.indicator = Object.assign({}, dataOptions.radar.indicator || {});
       }
-      return merge(JSON.parse(JSON.stringify(options)), dataOptions);
+      return merge(options, dataOptions);
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
