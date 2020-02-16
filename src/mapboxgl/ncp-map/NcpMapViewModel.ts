@@ -241,7 +241,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         );
       }
 
-      this.map.setLayoutProperty(`${this.overLayerId}-label`, 'text-field',  [
+      this.map.setLayoutProperty(`${this.overLayerId}-label`, 'text-field', [
         'case',
         ['>', ['to-number', ['get', this.themeInfo.field], 0], 0],
         ['concat', ['get', '地区'], ['get', this.themeInfo.field]],
@@ -272,7 +272,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       this.features.forEach(feature => {
         this.labels[feature.properties['地区']] = feature.properties[this.themeInfo.field];
       });
-      const labelData = this._creatNewLabelData() || [];
+      const labelData: GeoJSON.FeatureCollection = this._creatNewLabelData() || { type: 'FeatureCollection', features: [] };
       this.map.addSource(`${this.overLayerId}-label`, {
         type: 'geojson',
         data: labelData
