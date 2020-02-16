@@ -5,7 +5,7 @@
   </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import NcpMapViewModel, { dataOptions, mapOptions } from './NcpMapViewModel';
 import mapEvent from '../_types/map-event';
 import MapEvents from '../web-map/_mixin/map-events';
@@ -19,7 +19,7 @@ import debounce from 'lodash/debounce';
   viewModelProps: [
     'mapOptions.center',
     'mapOptions.zoom',
-    'mapOptions.style',
+    // 'mapOptions.style',
     'mapOptions.maxBounds',
     'mapOptions.renderWorldCopies',
     'mapOptions.bearing',
@@ -62,6 +62,11 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
 
   @Emit()
   getLayerFailed(value) {
+    return value;
+  }
+
+  @Emit()
+  getThemeFailed(value) {
     return value;
   }
 
@@ -117,6 +122,16 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
        */
       this.getLayerFailed({ error: e.error });
       this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+      this.spinning = false;
+    });
+    this.viewModel.on('getthmeminfofailed', e => {
+      /**
+       * @event getThemeFailed
+       * @desc 获取样式信息失败。
+       * @property {Object} error - 失败原因。
+       */
+      this.getThemeFailed({ error: e.error });
+      this.$message.warning(this.$t('webmap.getLayerInfoFailed'));
       this.spinning = false;
     });
   }

@@ -1,6 +1,7 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from '../web-map/SourceListModel';
 import { handleMultyPolygon } from '../_utils/geometry-util';
+import labelPoints from './config/label-points.json';
 
 export interface dataOptions {
   url?: string;
@@ -20,13 +21,14 @@ export interface mapOptions {
   interactive?: boolean;
   [props: string]: any;
 }
-const defauleThemeInfo = {
+const defaultThemeInfo = {
   field: '确诊',
   stroke: {
     'line-width': 0.7,
     'line-color': '#696868',
     'line-opacity': 1
   },
+  label: { 'text-size': 10, 'text-color': 'white', 'text-halo-color': '#696868', 'text-halo-width': 1 },
   defaultColor: '#f5f5f5',
   styleGroup: [
     {
@@ -70,8 +72,9 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   defaultOverLayerId: string = '全省确诊人数';
   baseLayerId: string = '中国地图';
   overLayerId: string;
+  labels: any;
   features: any;
-  themeInfo: any = defauleThemeInfo;
+  themeInfo: any = defaultThemeInfo;
   fire: any;
   on: any;
 
@@ -104,6 +107,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   private _createMap(): void {
     const { center, zoom, bearing, pitch, renderWorldCopies, interactive, style, bounds } = this.mapOptions;
     // 初始化 map
+    style.glyphs =
+      'https://iserver.supermap.io/iserver/services/map-mvt-California/rest/maps/California/tileFeature/sdffonts/{fontstack}/{range}.pbf';
     this.map = new mapboxgl.Map({
       container: this.target,
       center: center || { lng: 104.93846582803894, lat: 33.37080662210445 },
@@ -162,6 +167,13 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     }
   }
 
+  private _creatNewLabelData(): GeoJSON.FeatureCollection {
+    const newFeatures = labelPoints.features.map(point => {
+      point.properties[this.themeInfo.field] = this.labels[point.properties['地区']];
+      return point;
+    });
+    return { type: 'FeatureCollection', features: newFeatures };
+  }
   private _handleThemeInfo(): void {
     if (this.themeUrl) {
       SuperMap.FetchRequest.get(this.themeUrl, null, { withoutFormatSuffix: true, proxy: this.proxyUrl })
@@ -169,21 +181,22 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
           return response.json();
         })
         .then(themeInfo => {
-          this.themeInfo = themeInfo;
+          this.themeInfo = Object.assign({}, defaultThemeInfo, themeInfo);
           this._addOverLayer();
         })
         .catch(error => {
           console.log(error);
-          this.fire('getlayerinfofailed', {
+          this.fire('getthmeminfofailed', {
             error: error
           });
+          this.themeInfo = defaultThemeInfo;
+          this._addOverLayer();
         });
     } else {
       this._sendMapToUser();
     }
   }
   private _toFillColor({ styleGroup, field, defaultColor = '#f5f5f5' }): mapboxglTypes.Expression {
-    debugger;
     const fillColor: mapboxglTypes.Expression = ['case'];
     for (let index = styleGroup.length - 1; index >= 0; index--) {
       const element = styleGroup[index];
@@ -200,10 +213,40 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     if (this.map.getSource(this.overLayerId)) {
       const source: mapboxglTypes.GeoJSONSource = <mapboxglTypes.GeoJSONSource>this.map.getSource(this.overLayerId);
       source.setData(sourceData);
+      this.labels = {};
+      this.features.forEach(feature => {
+        this.labels[feature.properties['地区']] = feature.properties[this.themeInfo.field];
+      });
+      const labelData = this._creatNewLabelData();
       this.map.setPaintProperty(this.overLayerId, 'fill-color', this._toFillColor(this.themeInfo));
       this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-color', this.themeInfo.stroke['line-color']);
       this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-width', this.themeInfo.stroke['line-width']);
       this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-opacity', this.themeInfo.stroke['line-opacity']);
+      const sourceLabel: mapboxglTypes.GeoJSONSource = <mapboxglTypes.GeoJSONSource>(
+        this.map.getSource(`${this.overLayerId}-label`)
+      );
+      sourceLabel.setData(labelData);
+      if (this.map.getLayer(`${this.overLayerId}-label`)) {
+        this.map.setLayoutProperty(`${this.overLayerId}-label`, 'text-size', this.themeInfo.label['text-size']);
+        this.map.setPaintProperty(`${this.overLayerId}-label`, 'text-color', this.themeInfo.label['text-color']);
+        this.map.setPaintProperty(
+          `${this.overLayerId}-label`,
+          'text-halo-color',
+          this.themeInfo.label['text-halo-color']
+        );
+        this.map.setPaintProperty(
+          `${this.overLayerId}-label`,
+          'text-halo-width',
+          this.themeInfo.label['text-halo-width']
+        );
+      }
+
+      this.map.setLayoutProperty(`${this.overLayerId}-label`, 'text-field',  [
+        'case',
+        ['>', ['to-number', ['get', this.themeInfo.field], 0], 0],
+        ['concat', ['get', '地区'], ['get', this.themeInfo.field]],
+        ''
+      ]);
     } else {
       this.map.addSource(this.overLayerId, {
         type: 'geojson',
@@ -224,6 +267,39 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         source: this.overLayerId,
         layout: {},
         paint: this.themeInfo.stroke
+      });
+      this.labels = {};
+      this.features.forEach(feature => {
+        this.labels[feature.properties['地区']] = feature.properties[this.themeInfo.field];
+      });
+      const labelData = this._creatNewLabelData() || [];
+      this.map.addSource(`${this.overLayerId}-label`, {
+        type: 'geojson',
+        data: labelData
+      });
+      this.map.addLayer({
+        id: `${this.overLayerId}-label`,
+        type: 'symbol',
+        source: `${this.overLayerId}-label`,
+        layout: {
+          'text-field': [
+            'case',
+            ['>', ['to-number', ['get', this.themeInfo.field], 0], 0],
+            ['concat', ['get', '地区'], ['get', this.themeInfo.field]],
+            ''
+          ],
+          // 'text-font':["Microsoft YaHei Regular"],
+          'text-size': this.themeInfo.label['text-size'],
+          'text-allow-overlap': true,
+          'text-letter-spacing': 0,
+          'text-max-width': 0
+        },
+        paint: {
+          'text-color': this.themeInfo.label['text-color'],
+          'text-opacity': 1,
+          'text-halo-color': this.themeInfo.label['text-halo-color'],
+          'text-halo-width': this.themeInfo.label['text-halo-width']
+        }
       });
 
       // 图例处理
@@ -254,12 +330,14 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     if (this.map && this.map.getLayer(this.overLayerId)) {
       this.map.getLayer(this.overLayerId) && this.map.removeLayer(this.overLayerId);
       this.map.getLayer(`${this.overLayerId}-stroke`) && this.map.removeLayer(`${this.overLayerId}-stroke`);
+      this.map.getLayer(`${this.overLayerId}-label`) && this.map.removeLayer(`${this.overLayerId}-label`);
       this.map.getSource(this.overLayerId) && this.map.removeSource(this.overLayerId);
+      this.map.getSource(`${this.overLayerId}-label`) && this.map.removeSource(`${this.overLayerId}-label`);
     }
   }
   private _restTheme(): void {
     if (this.map && this.map.getLayer(this.overLayerId)) {
-      this.themeInfo = defauleThemeInfo;
+      this.themeInfo = defaultThemeInfo;
       this._addOverLayer();
     }
   }
@@ -291,7 +369,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   }
   public setProxyUrl(proxyUrl) {
     this.proxyUrl = proxyUrl;
-    this.map ? this._handleLayerInfo() : this._clearOverLayer();
+    this.map && this._handleLayerInfo();
   }
   public setCenter(center): void {
     if (this.map && this.centerValid(center)) {
@@ -335,12 +413,13 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     }
   }
 
-  public setStyle(style): void {
-    if (this.map) {
-      this.mapOptions.style = style;
-      style && this.map.setStyle(style);
-    }
-  }
+  // public setStyle(style): void {
+  //   if (this.map) {
+  //     style.glyphs="https://iserver.supermap.io/iserver/services/map-mvt-California/rest/maps/California/tileFeature/sdffonts/{fontstack}/{range}.pbf"
+  //     this.mapOptions.style = style;
+  //     style && this.map.setStyle(style);
+  //   }
+  // }
 
   public setUrl(url: string): void {
     if (this.map) {

@@ -79,6 +79,7 @@ export default {
     crsNotSupport: 'The coordinate system of the current map is not supported!',
     TileMatrixSetNotSuppport: 'Incoming TileMatrixSet is not supported!',
     getLayerInfoFailed: 'Failed to get layer information!',
+    getThemeInfoFailed: 'Failed to get theme information!',
     crsnotsupport: 'Unsupported coordinate system!',
     baiduMapNotSupport: 'Baidu maps is not supported yet!',
     sampleDataNotSupport: 'Sample datas is not supported yet!',

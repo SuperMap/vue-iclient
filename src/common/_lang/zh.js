@@ -79,6 +79,7 @@ export default {
     crsNotSupport: '不支持当前地图的坐标系！',
     TileMatrixSetNotSuppport: '不支持传入的 TileMatrixSet！',
     getLayerInfoFailed: '获取图层信息失败！',
+    getThemeInfoFailed: '获取图层样式信息失败！',
     crsnotsupport: '不支持的坐标系！',
     baiduMapNotSupport: '暂不支持加载百度地图！',
     sampleDataNotSupport: '暂不支持加载示例数据！',
