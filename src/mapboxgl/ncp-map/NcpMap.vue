@@ -25,6 +25,7 @@ import debounce from 'lodash/debounce';
     'mapOptions.bearing',
     'mapOptions.pitch',
     'dataOptions.url',
+    'dataOptions.themeUrl',
     'dataOptions.name',
     'dataOptions.proxyUrl'
   ]

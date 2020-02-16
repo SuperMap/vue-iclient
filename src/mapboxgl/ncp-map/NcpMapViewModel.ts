@@ -6,6 +6,7 @@ export interface dataOptions {
   url?: string;
   name?: string;
   proxyUrl?: string;
+  themeUrl?: string;
 }
 
 export interface mapOptions {
@@ -19,17 +20,58 @@ export interface mapOptions {
   interactive?: boolean;
   [props: string]: any;
 }
-
+const defauleThemeInfo = {
+  field: '确诊',
+  stroke: {
+    'line-width': 0.7,
+    'line-color': '#696868',
+    'line-opacity': 1
+  },
+  defaultColor: '#f5f5f5',
+  styleGroup: [
+    {
+      color: '#fdebcf',
+      start: 1,
+      end: 9
+    },
+    {
+      color: '#f59e83',
+      start: 9,
+      end: 99
+    },
+    {
+      color: '#e55a4e',
+      start: 99,
+      end: 499
+    },
+    {
+      color: '#cb2a2f',
+      start: 499,
+      end: 999
+    },
+    {
+      color: '#811c24',
+      start: 999,
+      end: 10000
+    },
+    {
+      color: '#4f070d',
+      start: 10000
+    }
+  ]
+};
 export default class NcpMapViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   target: string;
   dataUrl: string;
+  themeUrl: string;
   proxyUrl: string;
   mapOptions: mapOptions;
   defaultOverLayerId: string = '全省确诊人数';
   baseLayerId: string = '中国地图';
   overLayerId: string;
   features: any;
+  themeInfo: any = defauleThemeInfo;
   fire: any;
   on: any;
 
@@ -39,8 +81,9 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   constructor(target: string, dataOptions?: dataOptions, mapOptions?: mapOptions) {
     super();
     this.target = target;
-    const { url, name, proxyUrl } = dataOptions || {};
+    const { url, name, proxyUrl, themeUrl } = dataOptions || {};
     this.dataUrl = url;
+    this.themeUrl = themeUrl;
     this.proxyUrl = proxyUrl;
     this.mapOptions = mapOptions || {};
     this.overLayerId = name || this.defaultOverLayerId;
@@ -102,7 +145,11 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         })
         .then(features => {
           this.features = handleMultyPolygon(features.features);
-          this._addOverLayer();
+          if (this.themeUrl) {
+            this._handleThemeInfo();
+          } else {
+            this._addOverLayer();
+          }
         })
         .catch(error => {
           console.log(error);
@@ -115,12 +162,48 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     }
   }
 
+  private _handleThemeInfo(): void {
+    if (this.themeUrl) {
+      SuperMap.FetchRequest.get(this.themeUrl, null, { withoutFormatSuffix: true, proxy: this.proxyUrl })
+        .then(response => {
+          return response.json();
+        })
+        .then(themeInfo => {
+          this.themeInfo = themeInfo;
+          this._addOverLayer();
+        })
+        .catch(error => {
+          console.log(error);
+          this.fire('getlayerinfofailed', {
+            error: error
+          });
+        });
+    } else {
+      this._sendMapToUser();
+    }
+  }
+  private _toFillColor({ styleGroup, field, defaultColor = '#f5f5f5' }): mapboxglTypes.Expression {
+    debugger;
+    const fillColor: mapboxglTypes.Expression = ['case'];
+    for (let index = styleGroup.length - 1; index >= 0; index--) {
+      const element = styleGroup[index];
+      const stop = ['>=', ['to-number', ['get', field], 0], element.start];
+      fillColor.push(stop);
+      fillColor.push(element.color);
+    }
+    fillColor.push(defaultColor);
+    return fillColor;
+  }
   private _addOverLayer() {
     if (!this.features) return;
     const sourceData: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: this.features };
     if (this.map.getSource(this.overLayerId)) {
       const source: mapboxglTypes.GeoJSONSource = <mapboxglTypes.GeoJSONSource>this.map.getSource(this.overLayerId);
       source.setData(sourceData);
+      this.map.setPaintProperty(this.overLayerId, 'fill-color', this._toFillColor(this.themeInfo));
+      this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-color', this.themeInfo.stroke['line-color']);
+      this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-width', this.themeInfo.stroke['line-width']);
+      this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-opacity', this.themeInfo.stroke['line-opacity']);
     } else {
       this.map.addSource(this.overLayerId, {
         type: 'geojson',
@@ -132,22 +215,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         source: this.overLayerId,
         layout: {},
         paint: {
-          'fill-color': [
-            'case',
-            ['>', ['to-number', ['get', '确诊'], 0], 10000],
-            '#4f070d',
-            ['>', ['to-number', ['get', '确诊'], 0], 999],
-            '#811c24',
-            ['>', ['to-number', ['get', '确诊'], 0], 499],
-            '#cb2a2f',
-            ['>', ['to-number', ['get', '确诊'], 0], 99],
-            '#e55a4e',
-            ['>', ['to-number', ['get', '确诊'], 0], 9],
-            '#f59e83',
-            ['>', ['to-number', ['get', '确诊'], 0], 0],
-            '#fdebcf',
-            '#f5f5f5'
-          ]
+          'fill-color': this._toFillColor(this.themeInfo)
         }
       });
       this.map.addLayer({
@@ -155,11 +223,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         type: 'line',
         source: this.overLayerId,
         layout: {},
-        paint: {
-          'line-width': 0.7,
-          'line-color':'#696868',
-          'line-opacity': 1
-        }
+        paint: this.themeInfo.stroke
       });
 
       // 图例处理
@@ -193,44 +257,20 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       this.map.getSource(this.overLayerId) && this.map.removeSource(this.overLayerId);
     }
   }
+  private _restTheme(): void {
+    if (this.map && this.map.getLayer(this.overLayerId)) {
+      this.themeInfo = defauleThemeInfo;
+      this._addOverLayer();
+    }
+  }
 
   private _initLegendInfo(): void {
     this._legendInfo = {
       layerType: 'RANGE',
       featureType: 'POLYGON',
       layerId: this.overLayerId,
-      themeField: '确诊',
-      styleGroup: [
-        {
-          color: '#fdebcf',
-          start: 1,
-          end: 9
-        },
-        {
-          color: '#f59e83',
-          start: 9,
-          end: 99
-        },
-        {
-          color: '#e55a4e',
-          start: 99,
-          end: 499
-        },
-        {
-          color: '#cb2a2f',
-          start: 499,
-          end: 999
-        },
-        {
-          color: '#811c24',
-          start: 999,
-          end: 10000
-        },
-        {
-          color: '#4f070d',
-          start: 10000
-        }
-      ]
+      themeField: this.themeInfo.field,
+      styleGroup: this.themeInfo.styleGroup
     };
   }
 
@@ -250,7 +290,6 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     this.map && this.map.resize();
   }
   public setProxyUrl(proxyUrl) {
-    debugger
     this.proxyUrl = proxyUrl;
     this.map ? this._handleLayerInfo() : this._clearOverLayer();
   }
@@ -307,6 +346,12 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     if (this.map) {
       this.dataUrl = url;
       url ? this._handleLayerInfo() : this._clearOverLayer();
+    }
+  }
+  public setThemeUrl(url: string): void {
+    if (this.map) {
+      this.themeUrl = url;
+      url ? this._handleThemeInfo() : this._restTheme();
     }
   }
 
