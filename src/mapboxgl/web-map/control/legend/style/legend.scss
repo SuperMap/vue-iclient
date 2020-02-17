@@ -34,9 +34,6 @@
         }
       }
     }
-    .ant-collapse-content-box {
-      padding-right: 30px;
-    }
   }
   @include e(table) {
     border-top: none;
@@ -51,7 +48,7 @@
     padding-right: 15px;
   }
   .ant-collapse-header {
-    font-size: $--text-regular;
+    font-size: 14px;
     background: transparent;
     .header-wrap {
       padding-right: 10px;
@@ -77,6 +74,7 @@
   }
   .ant-collapse-content {
     background: transparent;
+    margin-bottom: 15px;
     &.ant-collapse-content {
       border-top-color: transparent;
       .ant-collapse-content-box {
@@ -99,27 +97,34 @@
         justify-content: center;
         align-items: center;
         height: 100%;
-        min-width: 160px;
-        min-width: max-content;
-        & > div, & > ul {
+        min-width: 80px;
+        & > div,
+        & > ul {
           display: inline-block;
         }
       }
-      @include e(range-item rank-item) {
-        height: 30px;
-        & > div, & > span, & > i {
-          display: inline-block;
-          vertical-align: middle;
-        }
-        & > div {
-          width: 40px;
-          height: 100%;
-        }
-        & > span {
-          margin-left: 2px;
-          max-width: 200px;
+      @include e(range) {
+        @include e(range-item rank-item) {
+          height: 16px;
+          margin-bottom: 8px;
+          & > div,
+          & > span,
+          & > i {
+            display: inline-block;
+            vertical-align: middle;
+          }
+          & > div {
+            width: 20px;
+            height: 100%;
+          }
+          & > span {
+            font-size: 12px;
+            margin-left: 2px;
+            max-width: 200px;
+          }
         }
       }
+
       @include e(rank-icon) {
         text-align: center;
         & > i {
@@ -134,12 +139,13 @@
       }
 
       @include e(heat) {
-        width: 40px;
-        height: 150px;
+        width: 25px;
+        height: 120px;
       }
 
       @include e(heatText) {
         display: flex;
+        font-size: 12px;
         flex-direction: column;
         justify-content: space-between;
         flex: 1;
@@ -165,13 +171,13 @@
         font-size: 12px;
         margin-left: 30px;
         margin-bottom: 4px;
-        max-width: 250px;
+        max-width: 100px;
       }
 
       @include e(title) {
-        max-width: 250px;
+        max-width: 100px;
         & + i {
-         margin-left: 5px;
+          margin-left: 5px;
         }
       }
     }
