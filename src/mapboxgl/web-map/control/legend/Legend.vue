@@ -23,10 +23,11 @@
         <a-collapse-panel
           v-for="(layerValue,layerKey) in legendList"
           :key="layerKey"
+          :disabled="!isShowTitle"
           :showArrow="false"
         >
           <template slot="header">
-            <div class="header-wrap" :style="[getTextColorStyle]">
+            <div v-if="isShowTitle" class="header-wrap" :style="[getTextColorStyle]">
               <div class="sm-component-legend__title add-ellipsis">{{ layerValue.layerId }}</div>
               <a-icon type="right" class="header-arrow" />
             </div>
