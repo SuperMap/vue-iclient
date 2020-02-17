@@ -313,10 +313,10 @@ export default {
     showRangeInfo() {
       return function(item) {
         const { start, end } = item;
-        if (start && end) {
+        if (start !== undefined && end !== undefined) {
           return `${start} - ${end}`;
         }
-        return start ? `≥${start}` : `≤${end}`;
+        return start !== undefined ? `≥${start}` : `≤${end}`;
       };
     }
   },
