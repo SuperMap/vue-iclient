@@ -68,20 +68,26 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
         }
       }
     };
-    let type = layer.type;
-    let layerID = layer.id;
+    let { type, id, paint } = layer;
+    // 如果是面的strokline,处理成面
+    if (id.includes('-strokeLine') && type === 'line') {
+      type = 'fill';
+      paint = {};
+      id = id.substring(0, id.indexOf('-strokeLine'));
+    }
     if (type === 'circle' || type === 'line' || type === 'fill') {
       let layerStyle = this.layerStyle[type];
       let highlightLayer = Object.assign({}, layer, {
-        id: layerID + '-SM-highlighted',
-        paint: (layerStyle && layerStyle.paint) || Object.assign({}, layer.paint, mbglStyle[type]),
+        id: id + '-SM-highlighted',
+        type,
+        paint: (layerStyle && layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
         layout: (layerStyle && layerStyle.layout) || {},
         filter
       });
       this.map.addLayer(highlightLayer);
     }
     if (type === 'fill') {
-      let strokeLayerID = layerID + '-SM-StrokeLine';
+      let strokeLayerID = id + '-SM-StrokeLine';
       let stokeLineStyle = this.layerStyle.stokeLine || {};
       let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
         'line-width': 3,
