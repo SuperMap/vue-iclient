@@ -108,17 +108,29 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
   }
   /**
    * @function IdentifyViewModel.prototype.removed
-   * @desc 清除高亮图层。
+   * @desc 清除popup和高亮图层。
    */
   removed(source = this.source) {
     // 移除高亮图层
-    this.popup && this.popup.remove() && (this.popup = null);
+    this.removePopup();
+    this.removeOverlayer(source);
+  }
+  removePopup() {
+    if (this.popup) {
+      this.popup.remove() && (this.popup = null);
+    }
+  }
+  removeOverlayer(source = this.source) {
     for (let key in source) {
       let layers = source[key];
-      layers && layers.forEach && layers.forEach(layerId => {
-        this.map && this.map.getLayer(layerId + '-SM-highlighted') && this.map.removeLayer(layerId + '-SM-highlighted');
-        this.map && this.map.getLayer(layerId + '-SM-StrokeLine') && this.map.removeLayer(layerId + '-SM-StrokeLine');
-      });
+      layers &&
+        layers.forEach &&
+        layers.forEach(layerId => {
+          this.map &&
+            this.map.getLayer(layerId + '-SM-highlighted') &&
+            this.map.removeLayer(layerId + '-SM-highlighted');
+          this.map && this.map.getLayer(layerId + '-SM-StrokeLine') && this.map.removeLayer(layerId + '-SM-StrokeLine');
+        });
     }
   }
 }

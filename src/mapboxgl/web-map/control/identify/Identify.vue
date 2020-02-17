@@ -191,6 +191,8 @@ export default {
     },
     // 给source中的图层绑定popup
     sourceMapClickFn(e) {
+      // 如果点击其他的要素，移除之前的高亮
+      this.viewModel.removeOverlayer(this.layers);
       // 获取点中图层的features
       let features = this.bindQueryRenderedFeatures(e);
       if (features[0]) {
@@ -222,8 +224,6 @@ export default {
     },
     // 给点击的图层添加popup和高亮
     layersMapClickFn(e, fields, feature) {
-      // 如果点击其他的要素，移除之前的高亮
-      this.viewModel.removed();
       let map = e.target;
       // 添加popup
       this.addPopup(feature, e.lngLat.toArray(), fields);
@@ -246,12 +246,6 @@ export default {
     addPopup(feature, coordinates, fields) {
       this.popupProps = {};
       if (feature.properties) {
-        // 无数据情况
-        for (let key in feature.properties) {
-          if (typeof feature.properties[key] !== 'number' && !feature.properties[key]) {
-            feature.properties[key] = this.$t('identify.noData');
-          }
-        }
         // 过滤字段
         if (fields.length > 0) {
           fields.forEach(field => {
