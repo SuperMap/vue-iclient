@@ -29,15 +29,15 @@ export default {
   mixins: [MapGetter, Theme],
   props: {
     layers: {
-      type: [Object, Array],
+      type: Object,
       default() {
-        return [];
+        return {};
       }
     },
     fields: {
-      type: [Object, Array],
+      type: Object,
       default() {
-        return [];
+        return {};
       }
     },
     clickTolerance: {
@@ -104,25 +104,13 @@ export default {
   computed: {
     getAllLayers() {
       let allLayers = [];
-      for (let key in this.realLayers) {
-        let layers = this.realLayers[key];
+      for (let key in this.layers) {
+        let layers = this.layers[key];
         if (layers) {
           allLayers = allLayers.concat(layers);
         }
       }
       return allLayers;
-    },
-    realLayers() {
-      if (this.layers instanceof Array) {
-        return { source: this.layers };
-      }
-      return this.layers;
-    },
-    realFields() {
-      if (this.fields instanceof Array) {
-        return { source: this.fields };
-      }
-      return this.fields;
     },
     getWidthStyle() {
       let style = { keyWidth: {}, valueWidth: {} };
@@ -176,10 +164,10 @@ export default {
   },
   methods: {
     setViewModel() {
-      if (this.realLayers) {
+      if (this.layers) {
         this.viewModel = new IdentifyViewModel(this.map, {
           mapTarget: this.getTargetName(),
-          source: this.realLayers,
+          source: this.layers,
           layerStyle: this.layerStyle
         });
         this.map && this.bindMapClick(this.map);
@@ -196,11 +184,7 @@ export default {
       // 获取点中图层的features
       let features = this.bindQueryRenderedFeatures(e);
       if (features[0]) {
-        let key = features[0].source;
-        if (this.fields instanceof Array) {
-          key = 'source';
-        }
-        let fileds = this.realFields[key] || [];
+        let fileds = this.fields[features[0].source] || [];
         this.layersMapClickFn(e, fileds, features[0]);
       }
     },
