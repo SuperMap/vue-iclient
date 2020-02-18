@@ -8,16 +8,26 @@ import EchartsLayer from '../../../../../static/libs/echarts-layer/EchartsLayer'
  */
 
 export default class EchatsLayerViewModel extends mapboxgl.Evented {
-  constructor(map, options) {
+  constructor(options) {
     super();
     if (!options) {
       throw new Error('echarts options is requierd');
     }
+    this.options = options;
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
     if (!map) {
       throw new Error('map is requierd');
     }
     this.map = map;
+    this._initializeEchartsLayer();
+  }
+
+  setOptions(options) {
     this.options = options;
+    this.removed();
     this._initializeEchartsLayer();
   }
 
@@ -33,7 +43,7 @@ export default class EchatsLayerViewModel extends mapboxgl.Evented {
     this.echartslayer = echartslayer;
   }
 
-  clear() {
+  removed() {
     this.echartslayer && this.echartslayer.remove();
   }
 }

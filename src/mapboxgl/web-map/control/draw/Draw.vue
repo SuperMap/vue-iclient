@@ -76,20 +76,13 @@ export default {
   },
   created() {
     this.componentName = uniqueId(this.$options.name);
-  },
-  loaded() {
-    const mapTarget = this.getTargetName();
-    this.viewModel = new DrawViewModel(this.map, mapTarget, this.componentName);
+    this.viewModel = new DrawViewModel(this.componentName);
     this.initEvent();
   },
   removed() {
     this.activeMode = null;
     const targetName = this.getTargetName();
-    this.viewModel && this.viewModel.clear();
     drawEvent.$options.deleteDrawingState(targetName, this.componentName);
-  },
-  beforeDestroy() {
-    this.$options.removed.call(this);
   },
   methods: {
     initEvent() {

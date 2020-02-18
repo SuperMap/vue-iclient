@@ -13,16 +13,20 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  */
 
 export default class ClusterLayerViewModel extends mapboxgl.Evented {
-  constructor(map, data, options = {}) {
+  constructor(data, options = {}) {
     super();
     this.options = options;
+    this.data = data;
+    this.layerId = options.layerId || 'clusterLayer' + new Date().getTime();
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
     if (!map) {
       throw new Error('map is requierd');
     }
     this.map = map;
-    this.data = data;
-    this.layerId = options.layerId || 'clusterLayer' + new Date().getTime();
-    this.data && this._initializeClusterLayer();
+    this._initializeClusterLayer();
   }
 
   setData(data) {
@@ -151,7 +155,7 @@ export default class ClusterLayerViewModel extends mapboxgl.Evented {
     });
   }
 
-  clear() {
+  removed() {
     const { map, layerId } = this;
     if (map && layerId && map.getSource(layerId)) {
       map.getLayer(layerId) && map.removeLayer(layerId);

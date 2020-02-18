@@ -28,8 +28,8 @@ export default {
       deep: true
     }
   },
-  loaded() {
-    this.viewModel = new GeojsonLayerViewModel(this.map, this.$props);
+  created() {
+    this.viewModel = new GeojsonLayerViewModel(this.$props);
   },
   render() {}
 };

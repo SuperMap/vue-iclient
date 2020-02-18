@@ -41,8 +41,8 @@ export default {
       }
     }
   },
-  loaded() {
-    this.viewModel = new RasterTileLayerViewModel(this.map, this.$props);
+  created() {
+    this.viewModel = new RasterTileLayerViewModel(this.$props);
   },
   render() {}
 };

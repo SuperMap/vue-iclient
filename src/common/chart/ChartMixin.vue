@@ -494,14 +494,22 @@ export default {
           });
           const labelConfig = options.series[0].label.normal;
           if (labelConfig.show && labelConfig.position === 'smart') {
+            let labelGap = 20;
             options.series.forEach(serie => {
               let label = serie.label.normal;
+              // label.position = ['150%', '-100%'];
               label.position = 'top';
+              label.rich = {
+                start: {
+                  padding: [-labelGap, 0, 0, 30]
+                }
+              };
+              labelGap += 20;
               label.formatter = function({ dataIndex, value }) {
                 let result = '';
                 const data = serie.data;
                 if (dataIndex === 0 || dataIndex === data.length - 1 || Math.max.apply(null, data) === value) {
-                  result = value;
+                  result = `{start|${value}}`;
                 }
                 return result;
               };

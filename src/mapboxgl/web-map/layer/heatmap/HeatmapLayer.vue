@@ -19,8 +19,22 @@ export default {
       }
     }
   },
-  loaded() {
-    this.viewModel = new HeatmapLayerViewModel(this.map, this.data, {
+  watch: {
+    data: {
+      handler(val) {
+        this.viewModel && this.viewModel.setData(val);
+      },
+      deep: true
+    },
+    layerStyle: {
+      handler(val) {
+        this.viewModel && this.viewModel.setLayerStyle(val);
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.viewModel = new HeatmapLayerViewModel(this.data, {
       layerId: this.layerId,
       layerStyle: this.layerStyle
     });

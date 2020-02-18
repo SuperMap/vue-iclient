@@ -3,6 +3,8 @@ import FileModel from './FileModel';
 import { getFileType } from './FileTypes';
 import FileReaderUtil from './FileReaderUtil';
 import { geti18n } from '../../common/_lang';
+import bbox from '@turf/bbox';
+import UniqueId from 'lodash.uniqueid';
 
 /**
  * @class OpenFileViewModel
@@ -11,11 +13,30 @@ import { geti18n } from '../../common/_lang';
  * @extends mapboxgl.Evented
  */
 class OpenFileViewModel extends mapboxgl.Evented {
-  constructor(map) {
+  constructor() {
     super();
-    this.map = map;
+    this.prevLayerId = '';
+    this.geojson = null;
     this.fileModel = new FileModel();
   }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
+  }
+
+  setClearLastLayer(clearLastLayer) {
+    this.clearLastLayer = clearLastLayer;
+  }
+
+  setFitBounds(fitBounds) {
+    this.fitBounds = fitBounds;
+  }
+
+  setAddToMap(addToMap) {
+    this.addToMap = addToMap;
+  }
+
   readFile(fileEventObject) {
     let inputDom = fileEventObject.target;
     let file = inputDom.files[0];
@@ -53,6 +74,14 @@ class OpenFileViewModel extends mapboxgl.Evented {
     }
   }
 
+  getUniqueId() {
+    return UniqueId(`layer-smopenfile-`);
+  }
+
+  fitBoundsToData() {
+    this.map.fitBounds(bbox(this.geojson), { maxZoom: 12 });
+  }
+
   _readData() {
     // todo 需要测试另外两个
     const me = this;
@@ -76,9 +105,20 @@ class OpenFileViewModel extends mapboxgl.Evented {
                * @property {GeoJSONObject} result - GeoJSON 格式数据。
                * @property {string} layerName - 图层名。
                */
+              this.geojson = geojson;
+              let layerId = this.getUniqueId();
 
+              if (this.clearLastLayer) {
+                if (this.prevLayerId && this.map.getLayer(this.prevLayerId)) {
+                  this.map.removeLayer(this.prevLayerId);
+                }
+              }
+
+              this.prevLayerId = layerId;
+              // bounds
               this.fire('openfilesucceeded', {
                 result: geojson,
+                layerId,
                 layerName: this.fileModel.loadFileObject.fileName.split('.')[0]
               });
             }

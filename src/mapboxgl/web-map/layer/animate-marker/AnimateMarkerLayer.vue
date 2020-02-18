@@ -17,15 +17,7 @@ import { FeatureCollection } from 'geojson';
  * @module AnimateMarkerLayer
  */
 @Component({
-  name: 'SmAnimateMarkerLayer',
-  loaded: vm => {
-    vm._pointFeatures = vm._getPointFeatures(vm.features);
-    vm._getMarkerElement(vm._pointFeatures);
-    vm.viewModel = new AnimateMarkerLayerViewModel(vm.map, vm._pointFeatures, vm._markersElement, vm.fitBounds);
-  },
-  removed: vm => {
-    vm.viewModel && vm.viewModel.clear();
-  }
+  name: 'SmAnimateMarkerLayer'
 })
 class AnimateMarkerLayer extends Mixins(MapGetter) {
   viewModel: AnimateMarkerLayerViewModel;
@@ -122,12 +114,14 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
     }
   }
 
-  mounted() {
-    this._markersElement = [];
+  created() {
+    this._pointFeatures = this._getPointFeatures(this.features);
+    this._getMarkerElement(this._pointFeatures);
+    this.viewModel = new AnimateMarkerLayerViewModel(this._pointFeatures, this._markersElement, this.fitBounds);
   }
 
-  beforeDestroy() {
-    this.$options.removed.call(this, this);
+  mounted() {
+    this._markersElement = [];
   }
 
   /* methods */
@@ -136,7 +130,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
     this.marker = null;
     let { width, height, colors, textFontSize, textColor, textField } = this;
     if (!this.features || JSON.stringify(this.features) === '{}' || !this.features.features) {
-      this.viewModel && this.viewModel.clear();
+      this.viewModel && this.viewModel.removed();
       return;
     }
     if (features.features.length === 0) {
@@ -181,12 +175,14 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
 
   _getPointFeatures(features) {
     let resultFeatures = [];
-    features && features.features && features.features.forEach(feature => {
-      let geometry = feature.geometry;
-      if (geometry && geometry.coordinates && geometry.coordinates.length !== 0 && geometry.type === 'Point') {
-        resultFeatures.push(feature);
-      }
-    });
+    features &&
+      features.features &&
+      features.features.forEach(feature => {
+        let geometry = feature.geometry;
+        if (geometry && geometry.coordinates && geometry.coordinates.length !== 0 && geometry.type === 'Point') {
+          resultFeatures.push(feature);
+        }
+      });
     return {
       type: 'FeatureCollection',
       features: resultFeatures

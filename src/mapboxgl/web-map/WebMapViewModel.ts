@@ -361,6 +361,12 @@ export default class WebMapViewModel extends WebMapBase {
           this._addLayerSucceeded();
         } else {
           this.getLayerFeatures(layer, _taskID, type);
+          layer.timing = 5;
+          if (layer.timing) {
+            setInterval(() => {
+              this.getLayerFeatures(layer, _taskID, type);
+            }, layer.timing * 1000);
+          }
         }
       }, this);
     }
@@ -1234,7 +1240,7 @@ export default class WebMapViewModel extends WebMapBase {
       layout: {
         visibility: layerInfo.visible
       }
-    });
+    }, true);
     this._addLayerSucceeded();
   }
 
@@ -1658,15 +1664,21 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  private _addLayer(layerInfo) {
+  private _addLayer(layerInfo, update = false) {
     const { id } = layerInfo;
     Array.isArray(this._cacheLayerId) && this._cacheLayerId.push(id);
     layerInfo = Object.assign(layerInfo, { id });
+    if (update && this.map.getSource(id)) {
+      //@ts-ignore
+      this.map.getSource(id).setData(layerInfo.source.data);
+      return;
+    }
     this.map.addLayer(layerInfo);
   }
 
   cleanWebMap() {
     if (this.map) {
+      this.triggerEvent('beforeremovemap');
       this.map.remove();
       this.map = null;
       this._legendList = {};

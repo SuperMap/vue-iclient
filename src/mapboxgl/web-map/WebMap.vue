@@ -16,7 +16,7 @@
   </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import WebMapViewModel from './WebMapViewModel';
 import mapEvent from '../_types/map-event';
 import VmUpdater from '../../common/_mixin/vm-updater';
@@ -309,6 +309,9 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
 
   beforeDestroy() {
     this.destory();
+  }
+
+  destroyed() {
     mapEvent.$options.deleteMap(this.target);
     mapEvent.$options.deleteWebMap(this.target);
   }
@@ -425,6 +428,10 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       },
       notsupportbaidumap: () => {
         this.$message.error(this.$t('webmap.baiduMapNotSupport'));
+      },
+      beforeremovemap: () => {
+        mapEvent.$options.deleteMap(this.target);
+        mapEvent.$options.deleteWebMap(this.target);
       }
     });
   }

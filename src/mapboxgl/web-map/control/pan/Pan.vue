@@ -48,6 +48,9 @@ export default {
       mapboxglClass: ''
     };
   },
+  created() {
+    this.viewModel = new PanViewModel();
+  },
   methods: {
     panToCenter() {
       this.lnglat = this.center;
@@ -106,7 +109,6 @@ export default {
   },
   loaded() {
     this.parentIsWebMapOrMap && (this.mapboxglClass = 'mapboxgl-ctrl');
-    this.viewModel = new PanViewModel(this.map);
     this.center = this.map.getCenter();
     this.lnglat = this.center;
   }

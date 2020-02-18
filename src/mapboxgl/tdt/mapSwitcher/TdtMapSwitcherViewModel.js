@@ -11,11 +11,14 @@ const LABELLIST = {
 };
 
 export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
-  constructor(map, tk) {
+  constructor(tk) {
     super();
-    this.map = map;
     this.tk = tk;
     this.proj = 'w';
+  }
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
   }
   changeBaseLayer(type) {
     if (this.map) {

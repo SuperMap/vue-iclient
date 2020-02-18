@@ -9,8 +9,8 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  */
 
 export default class ZoomViewModel extends mapboxgl.Evented {
-  constructor(map) {
-    super();
+  setMap(mapInfo) {
+    const { map } = mapInfo;
     this.map = map || null;
     this._initVM();
   }
@@ -100,4 +100,5 @@ export default class ZoomViewModel extends mapboxgl.Evented {
       result: e
     });
   }
+  removed() {}
 }

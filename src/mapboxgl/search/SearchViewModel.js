@@ -35,7 +35,7 @@ import { getFeatureCenter } from '../../common/_utils/util';
  * @fires SearchViewModel#searchfailed
  */
 export default class SearchViewModel extends mapboxgl.Evented {
-  constructor(map, options) {
+  constructor(options) {
     super();
     this.options = options || {};
     this.searchTaskId = 0;
@@ -43,15 +43,15 @@ export default class SearchViewModel extends mapboxgl.Evented {
       addressUrl: 'https://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
       key: options.onlineLocalSearch.key || 'fvV2osxwuZWlY0wJb8FEb2i5'
     };
-    if (map) {
-      this.map = map;
-    } else {
-      return new Error(`Cannot find map`);
-    }
     this.searchtType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
     this.markerList = [];
     this.popupList = [];
     this.errorSourceList = {};
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
   }
 
   /**
@@ -502,7 +502,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this._clearPopups();
   }
 
-  clear() {
+  removed() {
     this.searchTaskId = 0;
     this.searchResult = {};
     this.errorSourceList = {};

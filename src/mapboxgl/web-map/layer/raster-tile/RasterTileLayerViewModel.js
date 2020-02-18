@@ -2,9 +2,8 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class RasterTileLayerViewModel extends mapboxgl.Evented {
-  constructor(map, rasterLayerOptions) {
+  constructor(rasterLayerOptions) {
     super();
-    this.map = map;
     const {
       layerId,
       tileSize,
@@ -33,6 +32,10 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
     this.before = before;
     // enhance扩展，传iserver标识是iserver rest map
     this.rasterSource = '';
+  }
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
     this._init();
   }
   _init() {
@@ -86,10 +89,13 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
     );
   }
 
-  clear() {
+  removed() {
     const { map, layerId } = this;
     if (map && layerId && map.getLayer(layerId)) {
       map.removeLayer(layerId);
+    }
+    if (map && layerId && map.getSource(layerId)) {
+      map.removeSource(layerId);
     }
   }
 }

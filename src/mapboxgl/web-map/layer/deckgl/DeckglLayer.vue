@@ -20,9 +20,7 @@ export default {
       type: String,
       required: true,
       validator(layerType) {
-        const matchIndex = LAYER_TYPE_ID_LIST.findIndex(
-          item => item === layerType
-        );
+        const matchIndex = LAYER_TYPE_ID_LIST.findIndex(item => item === layerType);
         return matchIndex > -1;
       }
     },
@@ -33,12 +31,21 @@ export default {
       }
     }
   },
-  loaded() {
-    const matchIndex = LAYER_TYPE_ID_LIST.findIndex(
-      item => item === this.layerType
-    );
+  watch: {
+    options: {
+      handler(val) {
+        this.viewModel && this.viewModel.setOptions(val);
+      },
+      deep: true
+    },
+    layerType(val) {
+      this.viewModel && this.viewModel.setLayerType(val);
+    }
+  },
+  created() {
+    const matchIndex = LAYER_TYPE_ID_LIST.findIndex(item => item === this.layerType);
     if (matchIndex > -1) {
-      this.viewModel = new DeckglLayerViewModel(this.map, this.$props);
+      this.viewModel = new DeckglLayerViewModel(this.$props);
     }
   },
   render() {}

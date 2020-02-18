@@ -3,8 +3,11 @@
     <div
       v-if="showIcon && mode === 'control'"
       class="sm-component-search__toggle-icon"
-      :style="[{'--icon-color--hover': colorGroupsData[0]}, getBackgroundStyle]"
-      @click="showSearch = !showSearch; showIcon = !showIcon"
+      :style="[{ '--icon-color--hover': colorGroupsData[0] }, getBackgroundStyle]"
+      @click="
+        showSearch = !showSearch;
+        showIcon = !showIcon;
+      "
     >
       <i class="sm-component-tdtSearch__pointer sm-components-icons-preview"></i>
     </div>
@@ -12,26 +15,23 @@
       <div
         v-show="showSearch || mode === 'toolBar'"
         class="sm-component-search__content sm-component-tdtSearch__content"
-        :style="[{'transform-origin': position.includes('left') ? 'top left' : 'top right'}, getBackgroundStyle]"
+        :style="[{ 'transform-origin': position.includes('left') ? 'top left' : 'top right' }, getBackgroundStyle]"
       >
         <div class="sm-component-search__input">
           <div
             v-if="mode === 'control'"
             class="sm-component-search__arrow-icon"
-            :style="{ float: position.includes('left') ? 'right' : 'left'}"
+            :style="{ float: position.includes('left') ? 'right' : 'left' }"
             @click="showSearch = !showSearch"
           >
             <a-icon :type="position.includes('left') ? 'double-left' : 'double-right'" />
           </div>
           <div
-            :class="['sm-component-search__search-icon', { 'right': position.includes('right') }]"
+            :class="['sm-component-search__search-icon', { right: position.includes('right') }]"
             :style="[getBackgroundStyle, getColorStyle(0)]"
             @click="searchButtonClicked"
           >
-            <i
-              v-if="prefixType==='search'"
-              class="sm-component-tdtSearch__pointer sm-components-icons-preview"
-            ></i>
+            <i v-if="prefixType === 'search'" class="sm-component-tdtSearch__pointer sm-components-icons-preview"></i>
             <a-icon v-else :type="prefixType"></a-icon>
           </div>
           <a-input
@@ -66,7 +66,7 @@
                 v-for="(item, i) in searchResult"
                 :key="i"
                 :title="item.name"
-                :class="{'active': hoverIndex === i }"
+                :class="{ active: hoverIndex === i }"
                 @click="searchResultListClicked(item.name)"
                 @mouseenter="changeChosenResultStyle"
                 @mouseleave="resetChosenResultStyle"
@@ -180,20 +180,17 @@ export default {
   created() {
     this.showSearch = !this.collapsed;
     this.showIcon = this.collapsed;
-  },
-  mounted() {
-    this.changeSearchInputStyle();
-  },
-  loaded() {
-    this.viewModel = new TdtSearchViewModel(this.map, this.$props);
+    this.viewModel = new TdtSearchViewModel(this.$props);
     this.viewModel.on('get-transit-data-succeeded', ({ data }) => {
       this.$set(this.componentProps, 'busData', Object.assign({}, data));
     });
     this.viewModel.on('search-selected-info', this.searchSelectedInfo);
   },
+  mounted() {
+    this.changeSearchInputStyle();
+  },
   removed() {
     this.clearResult(true);
-    this.viewModel && this.viewModel.clear();
   },
   beforeDestroy() {
     this.$message.destroy();
@@ -267,7 +264,7 @@ export default {
     },
     inputValueCleared(emitEvent = true) {
       this.clearResult(true);
-      this.viewModel && this.viewModel.clear();
+      this.viewModel && this.viewModel.removed();
       emitEvent && this.$emit('clear-search-result');
     },
     searchResultListClicked(searchKey) {

@@ -137,7 +137,6 @@ export default {
     remove() {
       this.viewModel && this.viewModel.clear && this.viewModel.clear();
       this.$_emitEvent('layer-removed');
-      this.$destroy();
     }
   },
   removed() {

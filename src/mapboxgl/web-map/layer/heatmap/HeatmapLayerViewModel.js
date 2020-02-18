@@ -9,19 +9,35 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  */
 
 export default class HeatMapLayerViewModel extends mapboxgl.Evented {
-  constructor(map, data, options) {
+  constructor(data, options) {
     super();
-
-    if (!map) {
-      throw new Error('map is requierd');
-    }
     options = options || {};
-    this.map = map;
     this.data = data;
     this.layerId = options.layerId || 'heatmap' + new Date().getTime();
     let layerStyle = options.layerStyle;
     this.paint = layerStyle && layerStyle.paint;
     this.layout = layerStyle && layerStyle.layout;
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    if (!map) {
+      throw new Error('map is requierd');
+    }
+    this.map = map;
+    this._initializeHeatMapLayer();
+  }
+
+  setData(data) {
+    this.data = data;
+    this.removed();
+    this._initializeHeatMapLayer();
+  }
+
+  setLayerStyle(layerStyle) {
+    this.paint = layerStyle && layerStyle.paint;
+    this.layout = layerStyle && layerStyle.layout;
+    this.removed();
     this._initializeHeatMapLayer();
   }
 
@@ -64,7 +80,7 @@ export default class HeatMapLayerViewModel extends mapboxgl.Evented {
     this.fire('heatmaplayeraddsucceeded', { map: this.map });
   }
 
-  clear() {
+  removed() {
     const { map, layerId } = this;
     if (map && layerId && map.getSource(layerId)) {
       map.getLayer(layerId) && map.removeLayer(layerId);

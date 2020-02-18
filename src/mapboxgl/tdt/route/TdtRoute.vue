@@ -14,24 +14,16 @@
       <div class="sm-component-tdtRoute__header">
         <div class="route-navbar">
           <div>
-            <div
-              :class="['car-icon', { 'active': routeActive === 'car' }]"
-              @click="routeActive = 'car'"
-            >
+            <div :class="['car-icon', { active: routeActive === 'car' }]" @click="routeActive = 'car'">
               <i></i>
             </div>
-            <div
-              :class="['bus-icon', { 'active': routeActive === 'bus' }]"
-              @click="routeActive = 'bus'"
-            >
+            <div :class="['bus-icon', { active: routeActive === 'bus' }]" @click="routeActive = 'bus'">
               <i></i>
             </div>
           </div>
-          <div
-            class="clear-route"
-            :style="[getTextColorStyle]"
-            @click="clearRoute"
-          >{{ $t('tdtRoute.clearRoute') }}</div>
+          <div class="clear-route" :style="[getTextColorStyle]" @click="clearRoute">
+            {{ $t('tdtRoute.clearRoute') }}
+          </div>
         </div>
         <div class="route-panel">
           <div class="start-route">
@@ -46,12 +38,7 @@
                 :style="[getBackgroundStyle, getTextColorStyle]"
                 @keyup.13="searchClicked"
               >
-                <a-icon
-                  slot="suffix"
-                  type="close-circle"
-                  :style="[getTextColorStyle]"
-                  @click="clearStart"
-                />
+                <a-icon slot="suffix" type="close-circle" :style="[getTextColorStyle]" @click="clearStart" />
               </a-input>
             </div>
           </div>
@@ -67,12 +54,7 @@
                 :style="[getBackgroundStyle, getTextColorStyle]"
                 @keyup.13="searchClicked"
               >
-                <a-icon
-                  slot="suffix"
-                  type="close-circle"
-                  :style="[getTextColorStyle]"
-                  @click="clearEnd"
-                />
+                <a-icon slot="suffix" type="close-circle" :style="[getTextColorStyle]" @click="clearEnd" />
               </a-input>
             </div>
           </div>
@@ -81,11 +63,9 @@
           </div>
         </div>
         <div class="search-btn">
-          <a-button
-            type="primary"
-            :style="[getBackgroundStyle, getTextColorStyle]"
-            @click="searchClicked"
-          >{{ $t('tdtRoute.search') }}</a-button>
+          <a-button type="primary" :style="[getBackgroundStyle, getTextColorStyle]" @click="searchClicked">{{
+            $t('tdtRoute.search')
+          }}</a-button>
         </div>
       </div>
       <div class="sm-component-tdtRoute__content" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -112,8 +92,8 @@
         <RoutePlan
           v-if="showRoutePlan"
           :route-plan="routePlan"
-          :start="{name: start}"
-          :dest="{name: end}"
+          :start="{ name: start }"
+          :dest="{ name: end }"
           :spinning="spinning"
           :search-type="routeActive"
           :isError="isError"
@@ -229,10 +209,9 @@ export default {
   beforeDestroy() {
     this.clearRoute();
   },
-  loaded() {
+  created() {
     this.viewModel = new TdtRouteViewModel({
       type: this.routeActive,
-      map: this.map,
       data: this.data
     });
   },
@@ -260,7 +239,7 @@ export default {
         if (this.start && this.end) {
           this.showRoutePlan = false;
           this.status = 'toSetStart';
-          this.viewModel && this.viewModel.clear();
+          this.viewModel && this.viewModel.removed();
         }
       });
     },
@@ -364,7 +343,7 @@ export default {
     searchFailed() {
       this.isError = true;
       this.routePlan = null;
-      this.viewModel && this.viewModel.clear();
+      this.viewModel && this.viewModel.removed();
     },
     clearRoute() {
       this.start = '';
@@ -374,7 +353,7 @@ export default {
       this.status = '';
       this.showRoutePlan = false;
       this.routePlan = null;
-      this.viewModel && this.viewModel.clear();
+      this.viewModel && this.viewModel.removed();
     },
     clearStart() {
       this.start = '';
