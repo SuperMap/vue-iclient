@@ -180,7 +180,7 @@
               <div :style="{background: item.color}"></div>
               <span class="add-ellipsis">
                 <a-icon type="caret-left" />
-                {{ showRangeInfo(item) }}
+                {{ showRangeInfo(item, layerKey) }}
               </span>
             </div>
           </div>
