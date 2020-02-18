@@ -23,6 +23,7 @@ export interface mapOptions {
 }
 const defaultThemeInfo = {
   field: '确诊',
+  identifyField: '省份',
   stroke: {
     'line-width': 0.7,
     'line-color': '#696868',
@@ -62,6 +63,7 @@ const defaultThemeInfo = {
     }
   ]
 };
+const Backup_Identify_Field = '地区';
 export default class NcpMapViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   target: string;
@@ -72,7 +74,6 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   defaultOverLayerId: string = '全省确诊人数';
   baseLayerId: string = '中国地图';
   overLayerId: string;
-  labels: any;
   features: any;
   themeInfo: any = defaultThemeInfo;
   fire: any;
@@ -107,8 +108,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   private _createMap(): void {
     const { center, zoom, bearing, pitch, renderWorldCopies, interactive, style, bounds } = this.mapOptions;
     // 初始化 map
-    style.glyphs =
-      'https://iserver.supermap.io/iserver/services/map-mvt-California/rest/maps/California/tileFeature/sdffonts/{fontstack}/{range}.pbf';
+    style.glyphs = 'https://ncov.supermapol.com/statichtml/font/{fontstack}/{range}.pbf';
     this.map = new mapboxgl.Map({
       container: this.target,
       center: center || { lng: 104.93846582803894, lat: 33.37080662210445 },
@@ -168,8 +168,18 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   }
 
   private _creatNewLabelData(): GeoJSON.FeatureCollection {
+    if (this.features.length > 0 && this.features[0].properties[this.themeInfo.identifyField] === undefined) {
+      this.themeInfo.identifyField = Backup_Identify_Field;
+    }
+    const labels = {};
+    this.features.forEach(feature => {
+      labels[feature.properties[this.themeInfo.identifyField]] = feature.properties[this.themeInfo.field];
+    });
     const newFeatures = labelPoints.features.map(point => {
-      point.properties[this.themeInfo.field] = this.labels[point.properties['地区']];
+      const properties = {};
+      properties[this.themeInfo.identifyField] = point.properties['省份'];
+      properties[this.themeInfo.field] = labels[point.properties['省份']];
+      point.properties = properties;
       return point;
     });
     return { type: 'FeatureCollection', features: newFeatures };
@@ -213,10 +223,6 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     if (this.map.getSource(this.overLayerId)) {
       const source: mapboxglTypes.GeoJSONSource = <mapboxglTypes.GeoJSONSource>this.map.getSource(this.overLayerId);
       source.setData(sourceData);
-      this.labels = {};
-      this.features.forEach(feature => {
-        this.labels[feature.properties['地区']] = feature.properties[this.themeInfo.field];
-      });
       const labelData = this._creatNewLabelData();
       this.map.setPaintProperty(this.overLayerId, 'fill-color', this._toFillColor(this.themeInfo));
       this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-color', this.themeInfo.stroke['line-color']);
@@ -244,7 +250,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       this.map.setLayoutProperty(`${this.overLayerId}-label`, 'text-field', [
         'case',
         ['>', ['to-number', ['get', this.themeInfo.field], 0], 0],
-        ['concat', ['get', '地区'], ['get', this.themeInfo.field]],
+        ['concat', ['get', this.themeInfo.identifyField], ['get', this.themeInfo.field]],
         ''
       ]);
     } else {
@@ -268,11 +274,10 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         layout: {},
         paint: this.themeInfo.stroke
       });
-      this.labels = {};
-      this.features.forEach(feature => {
-        this.labels[feature.properties['地区']] = feature.properties[this.themeInfo.field];
-      });
-      const labelData: GeoJSON.FeatureCollection = this._creatNewLabelData() || { type: 'FeatureCollection', features: [] };
+      const labelData: GeoJSON.FeatureCollection = this._creatNewLabelData() || {
+        type: 'FeatureCollection',
+        features: []
+      };
       this.map.addSource(`${this.overLayerId}-label`, {
         type: 'geojson',
         data: labelData
@@ -285,10 +290,10 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
           'text-field': [
             'case',
             ['>', ['to-number', ['get', this.themeInfo.field], 0], 0],
-            ['concat', ['get', '地区'], ['get', this.themeInfo.field]],
+            ['concat', ['get', this.themeInfo.identifyField], ['get', this.themeInfo.field]],
             ''
           ],
-          // 'text-font':["Microsoft YaHei Regular"],
+          'text-font': ['Microsoft YaHei Regular'],
           'text-size': this.themeInfo.label['text-size'],
           'text-allow-overlap': true,
           'text-letter-spacing': 0,
@@ -416,7 +421,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
 
   // public setStyle(style): void {
   //   if (this.map) {
-  //     style.glyphs="https://iserver.supermap.io/iserver/services/map-mvt-California/rest/maps/California/tileFeature/sdffonts/{fontstack}/{range}.pbf"
+  //     style.glyphs="https://ncov.supermapol.com/statichtml/font/{fontstack}/{range}.pbf"
   //     this.mapOptions.style = style;
   //     style && this.map.setStyle(style);
   //   }

@@ -3,172 +3,172 @@
   "features": [
     {
       "geometry": { "coordinates": [85.50648962377559, 41.0795371259766], "type": "Point" },
-      "properties": { "地区": "新疆" },
+      "properties": { "省份": "新疆" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [89.81054792048526, 30.46619972736792], "type": "Point" },
-      "properties": { "地区": "西藏" },
+      "properties": { "省份": "西藏" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [96.1088863880621, 35.7783387438333], "type": "Point" },
-      "properties": { "地区": "青海" },
+      "properties": { "省份": "青海" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [104.4333972690034, 35.09978535091904], "type": "Point" },
-      "properties": { "地区": "甘肃" },
+      "properties": { "省份": "甘肃" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [118.638979512171, 44.078899368505], "type": "Point" },
-      "properties": { "地区": "内蒙古" },
+      "properties": { "省份": "内蒙古" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [127.985829291213, 47.008509000742], "type": "Point" },
-      "properties": { "地区": "黑龙江" },
+      "properties": { "省份": "黑龙江" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [126.660529695677, 43.3116206553], "type": "Point" },
-      "properties": { "地区": "吉林" },
+      "properties": { "省份": "吉林" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [123.103146570818, 41.4980527877247], "type": "Point" },
-      "properties": { "地区": "辽宁" },
+      "properties": { "省份": "辽宁" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [115.430359438768, 38.2894327143222], "type": "Point" },
-      "properties": { "地区": "河北" },
+      "properties": { "省份": "河北" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [118.136760718073, 36.3084585820476], "type": "Point" },
-      "properties": { "地区": "山东" },
+      "properties": { "省份": "山东" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [117.299729394577, 31.5652810822353], "type": "Point" },
-      "properties": { "地区": "安徽" },
+      "properties": { "省份": "安徽" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [116.46269807108, 40.1588026701306], "type": "Point" },
-      "properties": { "地区": "北京" },
+      "geometry": { "coordinates": [116.4616928300249, 40.2231380976565], "type": "Point" },
+      "properties": { "省份": "北京" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [113.56098948296, 33.7973646115587], "type": "Point" },
-      "properties": { "地区": "河南" },
+      "properties": { "省份": "河南" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [112.277541453599, 37.3686982584763], "type": "Point" },
-      "properties": { "地区": "山西" },
+      "geometry": { "coordinates": [112.2592562253268, 36.8567118668542], "type": "Point" },
+      "properties": { "省份": "山西" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [108.371395277283, 33.7415625233257], "type": "Point" },
-      "properties": { "地区": "陕西" },
+      "properties": { "省份": "陕西" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [102.958592718673, 30.6724476705059], "type": "Point" },
-      "properties": { "地区": "四川" },
+      "properties": { "省份": "四川" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [101.842550954012, 24.4226137884002], "type": "Point" },
-      "properties": { "地区": "云南" },
+      "properties": { "省份": "云南" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [108.873614071381, 23.7529887296031], "type": "Point" },
-      "properties": { "地区": "广西" },
+      "geometry": { "coordinates": [108.5590496323684, 23.7454991001028], "type": "Point" },
+      "properties": { "省份": "广西" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [107.199551424388, 26.8221035824229], "type": "Point" },
-      "properties": { "地区": "贵州" },
+      "geometry": { "coordinates": [107.199551424388, 26.47102719959632], "type": "Point" },
+      "properties": { "省份": "贵州" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [109.710645394877, 19.0098112297908], "type": "Point" },
-      "properties": { "地区": "海南" },
+      "geometry": { "coordinates": [109.7166370984773, 18.91993567578719], "type": "Point" },
+      "properties": { "省份": "海南" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [120.926865129727, 23.5855824649039], "type": "Point" },
-      "properties": { "地区": "台湾" },
+      "properties": { "省份": "台湾" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [113.8080329166514, 24.00979976081936], "type": "Point" },
-      "properties": { "地区": "广东" },
+      "properties": { "省份": "广东" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [112.639485651564, 20.55445363123207], "type": "Point" },
-      "properties": { "地区": "澳门" },
+      "properties": { "省份": "澳门" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [115.5374226645028, 22.27256022161274], "type": "Point" },
-      "properties": { "地区": "香港" },
+      "properties": { "省份": "香港" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [118.069798212193, 25.9962326765732], "type": "Point" },
-      "properties": { "地区": "福建" },
+      "geometry": { "coordinates": [118.4501309602551, 25.9962326765732], "type": "Point" },
+      "properties": { "省份": "福建" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [115.614506329938, 27.781899500032], "type": "Point" },
-      "properties": { "地区": "江西" },
+      "geometry": { "coordinates": [115.6291345125558, 27.35768220411655], "type": "Point" },
+      "properties": { "省份": "江西" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [111.552114306569, 27.8711828412049], "type": "Point" },
-      "properties": { "地区": "湖南" },
+      "geometry": { "coordinates": [111.5296454180681, 28.17076802121692], "type": "Point" },
+      "properties": { "省份": "湖南" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [112.712797741817, 31.0407414528443], "type": "Point" },
-      "properties": { "地区": "湖北" },
+      "properties": { "省份": "湖北" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [107.445080612614, 29.5675663234908], "type": "Point" },
-      "properties": { "地区": "重庆" },
+      "geometry": { "coordinates": [107.445080612614, 29.90401452369961], "type": "Point" },
+      "properties": { "省份": "重庆" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [119.989390047412, 33.0942582998219], "type": "Point" },
-      "properties": { "地区": "江苏" },
+      "geometry": { "coordinates": [119.989390047412, 33.48921923050181], "type": "Point" },
+      "properties": { "省份": "江苏" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [121.596490188524, 31.1746664646037], "type": "Point" },
-      "properties": { "地区": "上海" },
+      "properties": { "省份": "上海" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [120.123315059171, 29.0765079470396], "type": "Point" },
-      "properties": { "地区": "浙江" },
+      "properties": { "省份": "浙江" },
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [117.35553148281, 39.2101671701682], "type": "Point" },
-      "properties": { "地区": "天津" },
+      "geometry": { "coordinates": [117.5708583309436, 39.2101671701682], "type": "Point" },
+      "properties": { "省份": "天津" },
       "type": "Feature"
     },
     {
       "geometry": { "coordinates": [106.195113836192, 37.3798586761229], "type": "Point" },
-      "properties": { "地区": "宁夏" },
+      "properties": { "省份": "宁夏" },
       "type": "Feature"
     }
   ]
