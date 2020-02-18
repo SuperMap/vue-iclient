@@ -91,7 +91,7 @@
                 <div :style="{background: item.color}"></div>
                 <span class="add-ellipsis">
                   <a-icon type="caret-left" />
-                  {{ showRangeInfo(item) }}
+                  {{ showRangeInfo(item, layerKey) }}
                 </span>
               </div>
             </div>
@@ -312,9 +312,12 @@ export default {
       };
     },
     showRangeInfo() {
-      return function(item) {
+      return (item, layerKey) => {
         const { start, end } = item;
         if (start !== undefined && end !== undefined) {
+          if (this.legendList[layerKey].integerType) {
+            return this.getIntegerRangeInfo(start, end);
+          }
           return `${start} - ${end}`;
         }
         return start !== undefined ? `≥${start}` : `≤${end}`;
@@ -342,6 +345,12 @@ export default {
         });
         this.activeLegend = JSON.stringify(this.legendList) !== '{}' ? Object.keys(this.legendList)[0] : [];
       }
+    },
+    getIntegerRangeInfo(start, end) {
+      if (end - 1 === start || end === start) {
+        return `${start}`;
+      }
+      return `${start} - ${end - 1}`;
     }
   },
   loaded() {

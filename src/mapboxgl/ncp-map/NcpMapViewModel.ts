@@ -348,7 +348,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       featureType: 'POLYGON',
       layerId: this.overLayerId,
       themeField: this.themeInfo.field,
-      styleGroup: this.themeInfo.styleGroup
+      styleGroup: this.themeInfo.styleGroup,
+      integerType: true
     };
   }
 
