@@ -22,7 +22,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [118.638979512171, 44.078899368505], "type": "Point" },
+      "geometry": { "coordinates": [108.638979512171, 40.578899368505], "type": "Point" },
       "properties": { "省份": "内蒙古" },
       "type": "Feature"
     },
@@ -42,7 +42,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [115.430359438768, 38.2894327143222], "type": "Point" },
+      "geometry": { "coordinates": [115.430359438768, 37.93835633149562], "type": "Point" },
       "properties": { "省份": "河北" },
       "type": "Feature"
     },
@@ -57,7 +57,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [116.4616928300249, 40.2231380976565], "type": "Point" },
+      "geometry": { "coordinates": [116.4557011264247, 40.36094728046202], "type": "Point" },
       "properties": { "省份": "北京" },
       "type": "Feature"
     },
@@ -67,7 +67,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [112.2592562253268, 36.8567118668542], "type": "Point" },
+      "geometry": { "coordinates": [112.2592562253268, 36.62266094496981], "type": "Point" },
       "properties": { "省份": "山西" },
       "type": "Feature"
     },
@@ -77,7 +77,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [102.958592718673, 30.6724476705059], "type": "Point" },
+      "geometry": { "coordinates": [103.0024772665263, 31.0674086011858], "type": "Point" },
       "properties": { "省份": "四川" },
       "type": "Feature"
     },
@@ -87,7 +87,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [108.5590496323684, 23.7454991001028], "type": "Point" },
+      "geometry": { "coordinates": [108.3396268931018, 23.7454991001028], "type": "Point" },
       "properties": { "省份": "广西" },
       "type": "Feature"
     },
@@ -162,7 +162,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [117.5708583309436, 39.2101671701682], "type": "Point" },
+      "geometry": { "coordinates": [117.7580990684511, 39.04633152484913], "type": "Point" },
       "properties": { "省份": "天津" },
       "type": "Feature"
     },

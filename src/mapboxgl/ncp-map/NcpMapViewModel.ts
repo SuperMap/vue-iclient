@@ -281,10 +281,6 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         layout: {},
         paint: this.themeInfo.stroke
       });
-      this.labels = {};
-      this.features.forEach(feature => {
-        this.labels[feature.properties['地区']] = feature.properties[this.themeInfo.field];
-      });
       const labelData: GeoJSON.FeatureCollection = this._creatNewLabelData() || {
         type: 'FeatureCollection',
         features: []
