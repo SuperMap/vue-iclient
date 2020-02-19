@@ -62,7 +62,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [113.56098948296, 33.7973646115587], "type": "Point" },
+      "geometry": { "coordinates": [114.0056862345403, 33.7973646115587], "type": "Point" },
       "properties": { "省份": "河南" },
       "type": "Feature"
     },
@@ -77,7 +77,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [103.0024772665263, 31.0674086011858], "type": "Point" },
+      "geometry": { "coordinates": [103.0024772665263, 31.44189007620082], "type": "Point" },
       "properties": { "省份": "四川" },
       "type": "Feature"
     },
@@ -132,7 +132,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [111.5296454180681, 28.17076802121692], "type": "Point" },
+      "geometry": { "coordinates": [111.5296454180681, 28.56572895189682], "type": "Point" },
       "properties": { "省份": "湖南" },
       "type": "Feature"
     },
@@ -152,7 +152,7 @@
       "type": "Feature"
     },
     {
-      "geometry": { "coordinates": [121.596490188524, 31.1746664646037], "type": "Point" },
+      "geometry": { "coordinates": [121.7342993713295, 31.26454201860731], "type": "Point" },
       "properties": { "省份": "上海" },
       "type": "Feature"
     },
