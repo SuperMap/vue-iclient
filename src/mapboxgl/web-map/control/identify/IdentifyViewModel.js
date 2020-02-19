@@ -73,7 +73,6 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
     if (id.includes('-strokeLine') && type === 'line') {
       type = 'fill';
       paint = {};
-      id = id.substring(0, id.indexOf('-strokeLine'));
     }
     if (type === 'circle' || type === 'line' || type === 'fill') {
       let layerStyle = this.layerStyle[type];

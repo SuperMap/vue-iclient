@@ -2,7 +2,6 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from '../web-map/SourceListModel';
 import { handleMultyPolygon } from '../_utils/geometry-util';
 import labelPoints from './config/label-points.json';
-
 export interface dataOptions {
   url?: string;
   name?: string;
@@ -64,6 +63,7 @@ const defaultThemeInfo = {
   ]
 };
 const Backup_Identify_Field = '地区';
+const WORLD_WIDTH = 360;
 export default class NcpMapViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   target: string;
@@ -78,6 +78,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   themeInfo: any = defaultThemeInfo;
   fire: any;
   on: any;
+  bounds: mapboxglTypes.LngLatBoundsLike;
 
   private _sourceListModel: SourceListModel;
   private _legendInfo: any;
@@ -91,6 +92,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     this.proxyUrl = proxyUrl;
     this.mapOptions = mapOptions || {};
     this.overLayerId = name || this.defaultOverLayerId;
+    this.bounds = mapOptions.bounds;
+    this.center = mapOptions.center;
     this._initWebMap();
   }
 
@@ -115,9 +118,9 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       zoom: zoom || 3,
       bearing: bearing || 0,
       pitch: pitch || 0,
+      bounds,
       renderWorldCopies: renderWorldCopies || false,
       interactive: interactive === void 0 ? true : interactive,
-      bounds,
       style: style || {
         version: 8,
         sources: {
@@ -225,9 +228,13 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       source.setData(sourceData);
       const labelData = this._creatNewLabelData();
       this.map.setPaintProperty(this.overLayerId, 'fill-color', this._toFillColor(this.themeInfo));
-      this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-color', this.themeInfo.stroke['line-color']);
-      this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-width', this.themeInfo.stroke['line-width']);
-      this.map.setPaintProperty(`${this.overLayerId}-stroke`, 'line-opacity', this.themeInfo.stroke['line-opacity']);
+      this.map.setPaintProperty(`${this.overLayerId}-strokeLine`, 'line-color', this.themeInfo.stroke['line-color']);
+      this.map.setPaintProperty(`${this.overLayerId}-strokeLine`, 'line-width', this.themeInfo.stroke['line-width']);
+      this.map.setPaintProperty(
+        `${this.overLayerId}-strokeLine`,
+        'line-opacity',
+        this.themeInfo.stroke['line-opacity']
+      );
       const sourceLabel: mapboxglTypes.GeoJSONSource = <mapboxglTypes.GeoJSONSource>(
         this.map.getSource(`${this.overLayerId}-label`)
       );
@@ -268,11 +275,15 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
         }
       });
       this.map.addLayer({
-        id: `${this.overLayerId}-stroke`,
+        id: `${this.overLayerId}-strokeLine`,
         type: 'line',
         source: this.overLayerId,
         layout: {},
         paint: this.themeInfo.stroke
+      });
+      this.labels = {};
+      this.features.forEach(feature => {
+        this.labels[feature.properties['地区']] = feature.properties[this.themeInfo.field];
       });
       const labelData: GeoJSON.FeatureCollection = this._creatNewLabelData() || {
         type: 'FeatureCollection',
@@ -334,7 +345,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   private _clearOverLayer(): void {
     if (this.map && this.map.getLayer(this.overLayerId)) {
       this.map.getLayer(this.overLayerId) && this.map.removeLayer(this.overLayerId);
-      this.map.getLayer(`${this.overLayerId}-stroke`) && this.map.removeLayer(`${this.overLayerId}-stroke`);
+      this.map.getLayer(`${this.overLayerId}-strokeLine`) && this.map.removeLayer(`${this.overLayerId}-strokeLine`);
       this.map.getLayer(`${this.overLayerId}-label`) && this.map.removeLayer(`${this.overLayerId}-label`);
       this.map.getSource(this.overLayerId) && this.map.removeSource(this.overLayerId);
       this.map.getSource(`${this.overLayerId}-label`) && this.map.removeSource(`${this.overLayerId}-label`);
@@ -370,9 +381,24 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     return false;
   }
 
-  public resize(): void {
-    this.map && this.map.resize();
+  private _getResizedZoom(bounds, mapContainerWidth, tileSize = 512, worldWidth = WORLD_WIDTH) {
+    let boundsWidth = Math.abs(bounds.getEast() - bounds.getWest());
+    let resizeZoom = +Math.log2(worldWidth / ((boundsWidth / mapContainerWidth) * tileSize)).toFixed(2);
+    return resizeZoom;
   }
+
+  // TODO现在只限制了不同屏幕大小下地图bounds的经度不变， 纬度会随setZoom变化
+
+  public resize(keepBounds = false, mapContainerWidth): void {
+    this.map && this.map.resize();
+    if (keepBounds && this.map && this.bounds && mapContainerWidth) {
+      let zoom = this._getResizedZoom(this.bounds, mapContainerWidth);
+      if (zoom !== this.map.getZoom()) {
+        this.map && this.map.setZoom(zoom);
+      }
+    }
+  }
+
   public setProxyUrl(proxyUrl) {
     this.proxyUrl = proxyUrl;
     this.map && this._handleLayerInfo();

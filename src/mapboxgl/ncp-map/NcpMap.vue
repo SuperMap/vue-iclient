@@ -42,6 +42,7 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: 'map' }) target: string;
   @Prop() mapOptions: mapOptions;
   @Prop() dataOptions: dataOptions;
+  @Prop({ default: false }) keepBounds: boolean;
 
   mounted() {
     this.initializeWebMap();
@@ -93,7 +94,9 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
 
   resize() {
     if (this.viewModel && this.viewModel.resize) {
-      this.viewModel.resize();
+      let id = this.target;
+      let width = window.getComputedStyle(document.getElementById(id)).width;
+      this.viewModel.resize(this.keepBounds, parseInt(width));
     }
   }
 

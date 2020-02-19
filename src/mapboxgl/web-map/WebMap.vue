@@ -192,6 +192,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop()
   mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
+  @Prop({ default: false }) keepBounds: boolean;
   @Prop({
     default: () => {
       return { show: false, position: 'top-left' };
@@ -376,7 +377,9 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
 
   resize() {
     if (this.viewModel && this.viewModel.resize) {
-      this.viewModel.resize();
+      let id = this.target;
+      let width = window.getComputedStyle(document.getElementById(id)).width;
+      this.viewModel.resize(this.keepBounds, parseInt(width));
     }
   }
 

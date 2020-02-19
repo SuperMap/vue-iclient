@@ -14,6 +14,7 @@ import { geti18n } from '../../common/_lang';
 import WebMapBase from '../../common/web-map/WebMapBase';
 import proj4 from 'proj4';
 
+const WORLD_WIDTH = 360;
 // 迁徙图最大支持要素数量
 /**
  * @class WebMapViewModel
@@ -48,6 +49,7 @@ interface webMapOptions {
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
   zoom?: number;
+  bounds?: mapboxglTypes.LngLatBoundsLike;
   maxBounds?: [[number, number], [number, number]] | mapboxglTypes.LngLatBoundsLike;
   minZoom?: number;
   maxZoom?: number;
@@ -65,6 +67,8 @@ export default class WebMapViewModel extends WebMapBase {
   map: mapboxglTypes.Map;
 
   center: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
+
+  bounds: mapboxglTypes.LngLatBoundsLike;
 
   bearing: number;
 
@@ -92,7 +96,9 @@ export default class WebMapViewModel extends WebMapBase {
     // @ts-ignore fix-mapoptions
     mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
     map?: mapboxglTypes.Map,
-    layerFilter: Function = function () { return true }
+    layerFilter: Function = function() {
+      return true;
+    }
   ) {
     super(id, options, mapOptions);
     this.mapId = id;
@@ -104,6 +110,7 @@ export default class WebMapViewModel extends WebMapBase {
       this.center = mapOptions.center;
     }
     this.zoom = mapOptions.zoom;
+    this.bounds = mapOptions.bounds;
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
     this.layerFilter = layerFilter;
@@ -117,9 +124,15 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  public resize(): void {
+  public resize(keepBounds = false, mapContainerWidth): void {
     this.map && this.map.resize();
     this.echartsLayerResize();
+    if (keepBounds && this.map && this.bounds && mapContainerWidth) {
+      let zoom = this._getResizedZoom(this.bounds, mapContainerWidth);
+      if (zoom !== this.map.getZoom()) {
+        this.map && this.map.setZoom(zoom);
+      }
+    }
   }
 
   public setCrs(crs): void {
@@ -265,8 +278,8 @@ export default class WebMapViewModel extends WebMapBase {
       zoom: this.zoom || zoom,
       bearing: this.bearing || 0,
       pitch: this.pitch || 0,
-      interactive: interactive === void 0 ? true : interactive,
       bounds,
+      interactive: interactive === void 0 ? true : interactive,
       style: {
         version: 8,
         sources: {},
@@ -609,6 +622,12 @@ export default class WebMapViewModel extends WebMapBase {
     } else {
       return { newId, newIndex: index };
     }
+  }
+
+  private _getResizedZoom(bounds, mapContainerWidth, tileSize = 512, worldWidth = WORLD_WIDTH) {
+    let boundsWidth = Math.abs(bounds.getEast() - bounds.getWest());;
+    let resizeZoom = +Math.log2(worldWidth / ((boundsWidth / mapContainerWidth) * tileSize)).toFixed(2);
+    return resizeZoom;
   }
 
   _createRestMapLayer(restMaps, layer) {
