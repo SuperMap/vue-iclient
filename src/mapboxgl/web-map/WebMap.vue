@@ -377,9 +377,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
 
   resize() {
     if (this.viewModel && this.viewModel.resize) {
-      let id = this.target;
-      let width = window.getComputedStyle(document.getElementById(id)).width;
-      this.viewModel.resize(this.keepBounds, parseInt(width));
+      this.viewModel.resize(this.keepBounds);
     }
   }
 

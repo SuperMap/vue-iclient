@@ -93,7 +93,6 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     this.mapOptions = mapOptions || {};
     this.overLayerId = name || this.defaultOverLayerId;
     this.bounds = mapOptions.bounds;
-    this.center = mapOptions.center;
     this._initWebMap();
   }
 
@@ -377,18 +376,29 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     return false;
   }
 
-  private _getResizedZoom(bounds, mapContainerWidth, tileSize = 512, worldWidth = WORLD_WIDTH) {
-    let boundsWidth = Math.abs(bounds.getEast() - bounds.getWest());
-    let resizeZoom = +Math.log2(worldWidth / ((boundsWidth / mapContainerWidth) * tileSize)).toFixed(2);
-    return resizeZoom;
+  private _getResizedZoom(bounds, mapContainerStyle, tileSize = 512, worldWidth = WORLD_WIDTH) {
+    let { width, height } = mapContainerStyle;
+    let lngArcLength = Math.abs(bounds.getEast() - bounds.getWest());
+    let latArcLength = Math.abs(this._getBoundsRadian(bounds.getSouth()) - this._getBoundsRadian(bounds.getNorth()));
+    let lngResizeZoom = +Math.log2(worldWidth / ((lngArcLength / parseInt(width)) * tileSize)).toFixed(2);
+    let latResizeZoom = +Math.log2(worldWidth / ((latArcLength / parseInt(height)) * tileSize)).toFixed(2);
+    if (lngResizeZoom <= latResizeZoom) {
+      return lngResizeZoom;
+    }
+    return latResizeZoom;
+  }
+
+  private _getBoundsRadian(point) {
+    return (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (point * Math.PI) / 360));
   }
 
   // TODO现在只限制了不同屏幕大小下地图bounds的经度不变， 纬度会随setZoom变化
 
-  public resize(keepBounds = false, mapContainerWidth): void {
+  public resize(keepBounds = false): void {
     this.map && this.map.resize();
-    if (keepBounds && this.map && this.bounds && mapContainerWidth) {
-      let zoom = this._getResizedZoom(this.bounds, mapContainerWidth);
+    let mapContainerStyle = window.getComputedStyle(document.getElementById(this.target));
+    if (keepBounds && this.map && this.bounds && mapContainerStyle) {
+      let zoom = this._getResizedZoom(this.bounds, mapContainerStyle);
       if (zoom !== this.map.getZoom()) {
         this.map && this.map.setZoom(zoom);
       }
