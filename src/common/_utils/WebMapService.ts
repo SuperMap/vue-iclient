@@ -150,6 +150,9 @@ export default class WebMapService extends Events {
       case 'dataflow':
         pro = this._getFeaturesFromDataflow(layer);
         break;
+      case 'user_data':
+        pro = this._getFeaturesFromUserData(layer);
+        break;
     }
     return pro;
   }
@@ -208,13 +211,12 @@ export default class WebMapService extends Events {
               }
             }
           }
-          resolve({ isMatched, matchMaxZoom })
+          resolve({ isMatched, matchMaxZoom });
         })
         .catch(error => {
           reject(error);
         });
-    })
-
+    });
   }
 
   private _getFeaturesFromHosted(layer, baseProjection?) {
@@ -223,7 +225,7 @@ export default class WebMapService extends Events {
 
     if (!serverId) {
       return new Promise((resolve, reject) => {
-        resolve({ type: 'noServerId' })
+        resolve({ type: 'noServerId' });
       })
     }
     let getDataFromIportal = layerType === 'MARKER' || (dataSource && (!dataSource.accessType || dataSource.accessType === 'DIRECT'));
@@ -255,7 +257,7 @@ export default class WebMapService extends Events {
           reject(err);
         }
       );
-    })
+    });
   }
 
   private _getFeaturesFromRestMap(layer) {
@@ -292,7 +294,29 @@ export default class WebMapService extends Events {
         },
         'smid=1'
       );
-    })
+    });
+  }
+
+  private _getFeaturesFromUserData(layer) {
+    let dataSource = layer.dataSource;
+    return new Promise((resolve, reject) => {
+      SuperMap.FetchRequest.get(dataSource.url, null, {
+        withCredentials: this.withCredentials
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          if(data && data instanceof Object && data.type === 'FeatureCollection') {
+            resolve({ type: 'feature', features: data.features });
+          } else {
+            resolve({ type: 'feature', features: data });
+          }
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 
   private _queryFeatureBySQL(
@@ -457,6 +481,8 @@ export default class WebMapService extends Events {
       type = 'rest_map';
     } else if (layerType === 'DATAFLOW_POINT_TRACK' || layerType === 'DATAFLOW_HEAT') {
       type = 'dataflow';
+    } else if (dataSource && dataSource.type === 'USER_DATA') {
+      type = 'user_data';
     }
     return type;
   }
@@ -511,7 +537,7 @@ export default class WebMapService extends Events {
         })
         .then(data => {
           if (data.succeed === false) {
-            reject(data.error)
+            reject(data.error);
           }
           if (data && data.type) {
             if (data.type === 'JSON' || data.type === 'GEOJSON') {
@@ -524,9 +550,9 @@ export default class WebMapService extends Events {
           }
         })
         .catch(error => {
-          reject(error)
+          reject(error);
         });
-    })
+    });
   }
 
   private _getDataFromHosted({ layer, serverId, baseProjection }) {
@@ -575,10 +601,10 @@ export default class WebMapService extends Events {
       //判断是否和底图坐标系一直
       if (info.epsgCode == baseProjection.split('EPSG:')[1]) {
         return SuperMap.FetchRequest.get(`${info.url}/tilefeature.mvt`)
-          .then(function (response) {
+          .then(function(response) {
             return response.json();
           })
-          .then(function (result) {
+          .then(function(result) {
             info.isMvt = result.error && result.error.code === 400;
             return info;
           })
@@ -602,13 +628,13 @@ export default class WebMapService extends Events {
         isAdded = true;
         //地图服务,判断使用mvt还是tile
         this._getTileLayerInfo(service.address, baseProjection).then(restMaps => {
-          resolve({ type: 'restMap', restMaps })
+          resolve({ type: 'restMap', restMaps });
         });
       } // TODO 对接 MVT
       else if (service && !isMapService && service.serviceType === 'RESTDATA') {
         if (info && info.isMvt) {
           // this._addVectorLayer(info, layer, featureType);
-          resolve({ type: 'mvt', info, featureType })
+          resolve({ type: 'mvt', info, featureType });
         } else {
           //数据服务
           isAdded = true;
