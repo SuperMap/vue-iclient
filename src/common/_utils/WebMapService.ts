@@ -307,11 +307,18 @@ export default class WebMapService extends Events {
           return response.json();
         })
         .then(data => {
+          let features;
           if(data && data instanceof Object && data.type === 'FeatureCollection') {
-            resolve({ type: 'feature', features: data.features });
+            features = data.features;
           } else {
-            resolve({ type: 'feature', features: data });
+            features = data;
           }
+          features = this.parseGeoJsonData2Feature({
+            allDatas: {
+              features
+            }
+          });
+          resolve({ type: 'feature', features });
         })
         .catch(err => {
           reject(err);
