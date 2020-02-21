@@ -1,17 +1,13 @@
 <template>
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
-    <Pan v-if="panControl.show" :position="panControl.position" />
-    <Scale v-if="scaleControl.show" v-bind="scaleControl" />
-    <Zoom v-if="zoomControl.show" v-bind="zoomControl" />
-    <mini-map v-if="miniMapControl.show" v-bind="miniMapControl"></mini-map>
-    <layer-list v-if="layerListControl.show" v-bind="layerListControl"></layer-list>
-    <Measure v-if="measureControl.show" v-bind="measureControl"></Measure>
-    <Legend v-if="legendControl.show" v-bind="legendControl"></Legend>
-    <Query v-if="queryControl.show" v-bind="queryControl"></Query>
-    <Search v-if="searchControl.show" v-bind="searchControl"></Search>
-    <Identify v-if="identifyControl.show" v-bind="identifyControl"></Identify>
-    <LayerManager v-if="layerManagerControl.show" v-bind="layerManagerControl"></LayerManager>
+    <template v-for="(controlProps, controlName) in controlComponents">
+      <component
+        :is="controlName"
+        :key="controlName"
+        v-bind="controlProps"
+      ></component>
+    </template>
     <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
@@ -21,17 +17,6 @@ import WebMapViewModel from './WebMapViewModel';
 import mapEvent from '../_types/map-event';
 import VmUpdater from '../../common/_mixin/vm-updater';
 import MapEvents from './_mixin/map-events';
-import Pan from './control/pan/Pan.vue';
-import Scale from './control/scale/Scale.vue';
-import Zoom from './control/zoom/Zoom.vue';
-import MiniMap from './control/mini-map/MiniMap.vue';
-import LayerList from './control/layer-list/LayerList.vue';
-import Measure from './control/measure/Measure.vue';
-import Legend from './control/legend/Legend.vue';
-import Query from '../query/Query.vue';
-import Search from '../search/Search.vue';
-import Identify from './control/identify/Identify.vue';
-import LayerManager from './control/layer-manager/LayerManager.vue';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
@@ -140,6 +125,20 @@ interface layerManageParam {
   layers?: Array<Object>;
 }
 
+interface controlProps {
+  panControl?: commonControlParam;
+  scaleControl?: commonControlParam;
+  zoomControl?: zoomParam;
+  miniMapControl?: cardCommonParam;
+  layerListControl?: cardCommonParam;
+  measureControl?: measureParam;
+  legendControl?: legendParam;
+  queryControl?: queryParam;
+  searchControl?: searchParam;
+  identifyControl?: identifyParam;
+  layerManagerControl?: layerManageParam;
+}
+
 @Component({
   name: 'SmWebMap',
   viewModelProps: [
@@ -157,19 +156,7 @@ interface layerManageParam {
     'mapOptions.pitch',
     'withCredentials'
   ],
-  components: {
-    Pan,
-    Scale,
-    Zoom,
-    MiniMap,
-    LayerList,
-    Measure,
-    Legend,
-    Query,
-    Search,
-    Identify,
-    LayerManager
-  }
+  inheritAttrs: false
 })
 class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   spinning = true;
@@ -333,6 +320,18 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   /* computed */
   get getMapTarget(): string {
     return this.target;
+  }
+
+  get controlComponents(): controlProps {
+    const controls: controlProps = {};
+    for (let key in this.$props) {
+      if (key.includes('Control') && this.$props[key].show) {
+        const controlName = key.replace('Control', '');
+        const firstLetter = controlName[0];
+        controls[`Sm${controlName.replace(firstLetter, firstLetter.toUpperCase())}`] = this.$props[key];
+      }
+    }
+    return controls;
   }
 
   /* methods */

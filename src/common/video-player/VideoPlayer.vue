@@ -55,7 +55,8 @@ interface playerOptions {
   name: 'SmVideoPlayer',
   components: {
     videoPlayer
-  }
+  },
+  inheritAttrs: false
 })
 class SmVideoPlayer extends Vue {
   isFirst: Boolean = true;

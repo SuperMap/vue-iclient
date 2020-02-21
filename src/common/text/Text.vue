@@ -15,6 +15,7 @@ import ThirdService from '../_mixin/thirdService';
 export default {
   name: 'SmText',
   mixins: [Theme, Timer, ThirdService],
+  inheritAttrs: false,
   props: {
     fontStyle: {
       type: Object

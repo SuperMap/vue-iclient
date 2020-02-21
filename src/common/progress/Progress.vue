@@ -23,6 +23,7 @@ import ThirdService from '../_mixin/thirdService';
 export default {
   name: 'SmProgress',
   mixins: [Theme, Timer, ThirdService],
+  inheritAttrs: false,
   props: {
     percent: {
       type: [Number, String],

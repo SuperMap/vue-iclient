@@ -1,6 +1,11 @@
 <template>
   <div class="sm-component-web-scene">
-    <cesium-viewer v-if="sceneUrl" class="sm-component-web-scene__wrap" @ready="ready"></cesium-viewer>
+    <cesium-viewer
+      v-if="sceneUrl"
+      class="sm-component-web-scene__wrap"
+      :cesiumPath="cesiumPath"
+      @ready="ready"
+    ></cesium-viewer>
   </div>
 </template>
 <script lang="ts">
@@ -10,12 +15,15 @@ import WebSceneViewModel from './WebSceneViewModel';
 import isEqual from 'lodash.isequal';
 
 @Component({
-  name: 'SmWebScene'
+  name: 'SmWebScene',
+  inheritAttrs: false
 })
 class SmWebScene extends Vue {
   WebSceneViewModel: WebSceneViewModel;
 
   @Prop() sceneUrl: string;
+
+  @Prop() cesiumPath: string;
 
   @Prop() options: {
     withCredentials: boolean;
