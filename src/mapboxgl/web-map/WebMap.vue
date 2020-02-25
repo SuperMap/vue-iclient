@@ -301,6 +301,10 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
     mapEvent.$options.deleteWebMap(this.target);
   }
 
+  destroyed() {
+    this.viewModel.cleanWebMap();
+  }
+
   /* emit */
   @Emit()
   load(value) {

@@ -90,6 +90,8 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _cacheLayerId: Array<string> = [];
 
+  private _layerTimerList: Array<any> = [];
+
   constructor(
     id,
     options: webMapOptions = {},
@@ -370,11 +372,32 @@ export default class WebMapViewModel extends WebMapBase {
           });
           return;
         }
+
+        if (layer.visibleScale) {
+          let { minScale, maxScale } = layer.visibleScale;
+          layer.minzoom = this._transformScaleToZoom(minScale);
+          layer.maxzoom = this._transformScaleToZoom(maxScale) + 0.0000001;
+        }
+
         if (type === 'tile') {
           this._initBaseLayer(layer);
           this._addLayerSucceeded();
+          if (!!layer.autoUpdateTime) {
+            this._layerTimerList.push(
+              setInterval(() => {
+                this._initBaseLayer(layer);
+              }, layer.autoUpdateTime)
+            );
+          }
         } else {
           this.getLayerFeatures(layer, _taskID, type);
+          if (!!layer.autoUpdateTime) {
+            this._layerTimerList.push(
+              setInterval(() => {
+                this.getLayerFeatures(layer, _taskID, type);
+              }, layer.autoUpdateTime)
+            );
+          }
         }
       }, this);
     }
@@ -529,7 +552,8 @@ export default class WebMapViewModel extends WebMapBase {
   private _createDynamicTiledLayer(layerInfo: any): void {
     let url = layerInfo.url;
     const layerId = layerInfo.layerID || layerInfo.name;
-    this._addBaselayer([url], layerId, layerInfo.visible, null, null, true);
+    const { minzoom, maxzoom } = layerInfo;
+    this._addBaselayer([url], layerId, layerInfo.visible, minzoom, maxzoom, true);
   }
 
   private _createWMSLayer(layerInfo: any): void {
@@ -539,10 +563,8 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createVectorLayer(layerInfo: any, features: any): void {
-    let style = layerInfo.style;
     let type = layerInfo.featureType;
-    let layerID = layerInfo.layerID;
-    let visible = layerInfo.visible;
+    const { layerID, minzoom, maxzoom, style, visible } = layerInfo;
     let layerStyle = {
       style: this._transformStyleToMapBoxGl(style, type),
       layout: {
@@ -556,11 +578,11 @@ export default class WebMapViewModel extends WebMapBase {
         features: features
       }
     };
-    this._addOverlayToMap(type, source, layerID, layerStyle);
+    this._addOverlayToMap(type, source, layerID, layerStyle, minzoom, maxzoom);
     // 如果面有边框
     type === 'POLYGON' &&
       style.strokeColor &&
-      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible);
+      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
   }
 
   private _getWMSUrl(mapInfo: any): string {
@@ -816,6 +838,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createRankSymbolLayer(layerInfo, features) {
+    const { minzoom, maxzoom } = layerInfo;
     let fieldName = layerInfo.themeSetting.themeField;
     let style = layerInfo.style;
     let featureType = layerInfo.featureType;
@@ -868,7 +891,7 @@ export default class WebMapViewModel extends WebMapBase {
       };
       layerStyle.style = this._transformStyleToMapBoxGl(style, featureType, expression, 'circle-radius');
       let layerID = layerInfo.layerID;
-      this._addOverlayToMap(featureType, source, layerID, layerStyle);
+      this._addOverlayToMap(featureType, source, layerID, layerStyle, minzoom, maxzoom);
       this._addLayerSucceeded();
     }
   }
@@ -876,6 +899,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _addLabelLayer(layerInfo: any, features: any): void {
     let labelStyle = layerInfo.labelStyle;
     let { backgroundFill, fontFamily } = labelStyle;
+    const { minzoom, maxzoom } = layerInfo;
     backgroundFill = `rgba(${backgroundFill.join(',')})`;
     this._addLayer({
       id: `${layerInfo.layerID}-label`,
@@ -898,7 +922,9 @@ export default class WebMapViewModel extends WebMapBase {
         'text-offset': labelStyle.offsetX ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0] : [0, 0],
         'text-font': fontFamily ? [fontFamily] : ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
         visibility: layerInfo.visible
-      }
+      },
+      minzoom: minzoom || 0,
+      maxzoom: maxzoom || 22
     });
   }
 
@@ -906,11 +932,9 @@ export default class WebMapViewModel extends WebMapBase {
     // 用来请求symbol_point字体文件
     let target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
-
-    let style = layerInfo.style;
-    let unicode = layerInfo.style.unicode;
+    const { layerID, minzoom, maxzoom, style } = layerInfo;
+    let unicode = style.unicode;
     let text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
-    let layerID = layerInfo.layerID;
     this._addLayer({
       id: layerID,
       type: 'symbol',
@@ -930,7 +954,9 @@ export default class WebMapViewModel extends WebMapBase {
         'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
         'text-rotate': textRotateExpresion || 0,
         visibility: layerInfo.visible
-      }
+      },
+      minzoom: minzoom || 0,
+      maxzoom: maxzoom || 22
     });
     // @ts-ignore
     this.map.getSource(layerID).setData({
@@ -941,8 +967,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createGraphicLayer(layerInfo: any, features: any, iconSizeExpression?, iconRotateExpression?) {
-    let style = layerInfo.style;
-    let layerID = layerInfo.layerID;
+    let { layerID, minzoom, maxzoom, style } = layerInfo;
     let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
@@ -969,7 +994,9 @@ export default class WebMapViewModel extends WebMapBase {
             'icon-size': iconSizeExpression || iconSize,
             visibility: layerInfo.visible,
             'icon-rotate': iconRotateExpression || 0
-          }
+          },
+          minzoom: minzoom || 0,
+          maxzoom: maxzoom || 22
         });
         this._addLayerSucceeded();
       });
@@ -998,7 +1025,9 @@ export default class WebMapViewModel extends WebMapBase {
                 'icon-size': iconSizeExpression || iconSize,
                 visibility: layerInfo.visible,
                 'icon-rotate': iconRotateExpression || 0
-              }
+              },
+              minzoom: minzoom || 0,
+              maxzoom: maxzoom || 22
             });
             this._addLayerSucceeded();
           });
@@ -1010,7 +1039,7 @@ export default class WebMapViewModel extends WebMapBase {
           visibility: layerInfo.visible
         }
       };
-      this._addOverlayToMap('POINT', source, layerID, layerStyle);
+      this._addOverlayToMap('POINT', source, layerID, layerStyle, minzoom, maxzoom);
       this._addLayerSucceeded();
     }
   }
@@ -1018,15 +1047,13 @@ export default class WebMapViewModel extends WebMapBase {
   private _createUniqueLayer(layerInfo: any, features: any): void {
     let styleGroup = this.getUniqueStyleGroup(layerInfo, features);
     features = this.getFiterFeatures(layerInfo.filterCondition, features);
-
-    let style = layerInfo.style;
+    const { layerID, minzoom, maxzoom, style } = layerInfo;
     let themeField = layerInfo.themeSetting.themeField;
     Object.keys(features[0].properties).forEach(key => {
       key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
     });
     let type = layerInfo.featureType;
     let expression = ['match', ['get', 'index']];
-    let layerID = layerInfo.layerID;
 
     features.forEach(row => {
       styleGroup.forEach(item => {
@@ -1055,10 +1082,10 @@ export default class WebMapViewModel extends WebMapBase {
         features: features
       }
     };
-    this._addOverlayToMap(type, source, layerID, layerStyle);
+    this._addOverlayToMap(type, source, layerID, layerStyle, minzoom, maxzoom);
     type === 'POLYGON' &&
       style.strokeColor &&
-      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible);
+      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
     this._addLayerSucceeded();
   }
 
@@ -1079,6 +1106,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createMarkerLayer(layerInfo: any, features: any): void {
+    const { minzoom, maxzoom } = layerInfo;
     const promises =
       features &&
       features.map(feature => {
@@ -1126,7 +1154,9 @@ export default class WebMapViewModel extends WebMapBase {
                   'icon-image': index + '',
                   'icon-size': defaultStyle.scale,
                   visibility: layerInfo.visible
-                }
+                },
+                minzoom: minzoom || 0,
+                maxzoom: maxzoom || 22
               });
               resolve();
             });
@@ -1155,7 +1185,9 @@ export default class WebMapViewModel extends WebMapBase {
                       'icon-image': index + '',
                       'icon-size': defaultStyle.scale,
                       visibility: layerInfo.visible
-                    }
+                    },
+                    minzoom: minzoom || 0,
+                    maxzoom: maxzoom || 22
                   });
                   resolve();
                 });
@@ -1176,11 +1208,11 @@ export default class WebMapViewModel extends WebMapBase {
             layeStyle.layout.visibility = visible;
             // get style
             layeStyle.style = this._transformStyleToMapBoxGl(defaultStyle, geomType);
-            this._addOverlayToMap(geomType, source, layerID, layeStyle);
+            this._addOverlayToMap(geomType, source, layerID, layeStyle, minzoom, maxzoom);
             // 若面有边框
             geomType === 'POLYGON' &&
               defaultStyle.strokeColor &&
-              this._addStrokeLineForPoly(defaultStyle, layerID, layerID + '-strokeLine', visible);
+              this._addStrokeLineForPoly(defaultStyle, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
 
             resolve();
           }
@@ -1194,6 +1226,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createHeatLayer(layerInfo: any, features: any): void {
+    const { minzoom, maxzoom } = layerInfo;
     let style = layerInfo.themeSetting;
     let layerOption = {
       gradient: style.colors.slice(),
@@ -1263,7 +1296,9 @@ export default class WebMapViewModel extends WebMapBase {
       paint: paint,
       layout: {
         visibility: layerInfo.visible
-      }
+      },
+      minzoom: minzoom || 0,
+      maxzoom: maxzoom || 22
     });
     this._addLayerSucceeded();
   }
@@ -1296,27 +1331,19 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createRangeLayer(layerInfo: any, features: any): void {
     let fieldName = layerInfo.themeSetting.themeField;
-    let style = layerInfo.style;
     let featureType = layerInfo.featureType;
+    const { minzoom, maxzoom, style } = layerInfo;
     let styleGroups = this.getRangeStyleGroup(layerInfo, features);
 
     features = this.getFiterFeatures(layerInfo.filterCondition, features);
 
-    let source: mapboxglTypes.GeoJSONSourceRaw = {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: features
-      }
-    };
-
     // 获取 expression
     let expression = ['match', ['get', 'index']];
-    features.forEach(row => {
+    const datas = features.filter((row, index, arr) => {
       let tartget = parseFloat(row.properties[fieldName]);
       if (!tartget && tartget !== 0) {
-        expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
-        return;
+        // expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
+        return false;
       }
       if (styleGroups) {
         for (let i = 0; i < styleGroups.length; i++) {
@@ -1325,9 +1352,17 @@ export default class WebMapViewModel extends WebMapBase {
           }
         }
       }
+      return true;
     }, this);
     expression.push('rgba(0, 0, 0, 0)');
 
+    let source: mapboxglTypes.GeoJSONSourceRaw = {
+      type: 'geojson',
+      data: {
+        type: 'FeatureCollection',
+        features: datas
+      }
+    };
     // 图例处理
     this._initLegendConfigInfo(layerInfo, styleGroups);
 
@@ -1345,11 +1380,11 @@ export default class WebMapViewModel extends WebMapBase {
     layerStyle.style = this._transformStyleToMapBoxGl(style, featureType, expression);
     // 添加图层
     let layerID = layerInfo.layerID;
-    this._addOverlayToMap(featureType, source, layerID, layerStyle);
+    this._addOverlayToMap(featureType, source, layerID, layerStyle, minzoom, maxzoom);
     // 如果面有边框
     featureType === 'POLYGON' &&
       style.strokeColor &&
-      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeline', visible);
+      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeline', visible, minzoom, maxzoom);
     this._addLayerSucceeded();
   }
 
@@ -1461,7 +1496,9 @@ export default class WebMapViewModel extends WebMapBase {
     type: layerType,
     source: mapboxglTypes.GeoJSONSourceRaw,
     layerID: string,
-    layerStyle: any
+    layerStyle: any,
+    minzoom: number,
+    maxzoom: number
   ): void {
     let mbglTypeMap = {
       POINT: 'circle',
@@ -1475,7 +1512,9 @@ export default class WebMapViewModel extends WebMapBase {
         type: mbglType,
         source: source,
         paint: layerStyle.style,
-        layout: layerStyle.layout || {}
+        layout: layerStyle.layout || {},
+        minzoom: minzoom || 0,
+        maxzoom: maxzoom || 22
       });
     }
   }
@@ -1514,14 +1553,21 @@ export default class WebMapViewModel extends WebMapBase {
    * @description 添加面的边框。
    * @param {Object} style - mabgl style
    */
-  private _addStrokeLineForPoly(style: any, source: any, layerID: string, visible: boolean): void {
+  private _addStrokeLineForPoly(
+    style: any,
+    source: any,
+    layerID: string,
+    visible: boolean,
+    minzoom: number,
+    maxzoom: number
+  ): void {
     let lineStyle = {
       style: this._transformStyleToMapBoxGl(style, 'LINE'),
       layout: {
         visibility: visible
       }
     };
-    this._addOverlayToMap('LINE', source, layerID, lineStyle);
+    this._addOverlayToMap('LINE', source, layerID, lineStyle, minzoom, maxzoom);
   }
 
   private _initLegendConfigInfo(layerInfo: any, style: any): void {
@@ -1541,6 +1587,7 @@ export default class WebMapViewModel extends WebMapBase {
     let paint = this._transformStyleToMapBoxGl(style, featureType);
     let url = info.url + '/tileFeature.mvt';
     let origin = mapboxgl.CRS.get(this.baseProjection).getOrigin();
+    const { minzoom, maxzoom } = layerInfo;
     url += `?&returnAttributes=true&width=512&height=512&x={x}&y={y}&scale={scale}&origin={x:${origin[0]},y:${origin[1]}}`;
     this._addLayer({
       id: layerInfo.layerID,
@@ -1554,7 +1601,9 @@ export default class WebMapViewModel extends WebMapBase {
       paint,
       layout: {
         visibility: layerInfo.visible ? 'visible' : 'none'
-      }
+      },
+      minzoom: minzoom || 0,
+      maxzoom: maxzoom || 22
     });
     this._addLayerSucceeded();
   }
@@ -1689,9 +1738,32 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _addLayer(layerInfo) {
-    const { id } = layerInfo;
+    const {
+      id,
+      paint,
+      source: { type, tiles, data }
+    } = layerInfo;
     Array.isArray(this._cacheLayerId) && this._cacheLayerId.push(id);
     layerInfo = Object.assign(layerInfo, { id });
+    if (this.map.getSource(id)) {
+      if (type === 'geojson') {
+        Object.keys(paint).forEach(name => {
+          this.map.setPaintProperty(id, name, paint[name]);
+        });
+        // @ts-ignore
+        this.map.getSource(id).setData(data);
+      } else if (type === 'raster') {
+        // @ts-ignore
+        this.map.getSource(id).tiles = tiles;
+        // @ts-ignore
+        this.map.style.sourceCaches[id].clearTiles();
+        // @ts-ignore
+        this.map.style.sourceCaches[id].update(this.map.transform);
+        // @ts-ignore
+        this.map.triggerRepaint();
+      }
+      return;
+    }
     this.map.addLayer(layerInfo);
   }
 
@@ -1704,6 +1776,12 @@ export default class WebMapViewModel extends WebMapBase {
       this.zoom = null;
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
       this._unprojectProjection = null;
+    }
+    if (this._layerTimerList.length) {
+      this._layerTimerList.forEach(timer => {
+        clearInterval(timer);
+      });
+      this._layerTimerList = [];
     }
   }
 
@@ -1724,5 +1802,11 @@ export default class WebMapViewModel extends WebMapBase {
       return Math.max(bounds.rightTop.x - bounds.leftBottom.x, bounds.rightTop.y - bounds.leftBottom.y) / tileSize;
     }
     return Math.max(bounds[2] - bounds[0], bounds[3] - bounds[1]) / tileSize;
+  }
+
+  private _transformScaleToZoom(scale) {
+    const MB_SCALEDENOMINATOR_0 = 591658710.909131;
+    const scaleDenominator = scale.split(':')[1];
+    return +Math.log2(+MB_SCALEDENOMINATOR_0 / +scaleDenominator).toFixed(2);
   }
 }
