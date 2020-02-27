@@ -511,7 +511,7 @@ export default abstract class WebMapBase extends Events {
 
       // 获取一定量的颜色
       let curentColors = colors;
-
+      curentColors = SuperMap.ColorsPickerUtil.getGradientColors(curentColors, itemNum, 'RANGE');
       for (let index = 0; index < itemNum; index++) {
         if (index in customSettings) {
           if (customSettings[index]['segment']['start']) {
