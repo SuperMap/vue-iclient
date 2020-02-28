@@ -1738,30 +1738,11 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _addLayer(layerInfo) {
-    const {
-      id,
-      paint,
-      source: { type, tiles, data }
-    } = layerInfo;
+    const { id } = layerInfo;
     Array.isArray(this._cacheLayerId) && this._cacheLayerId.push(id);
     layerInfo = Object.assign(layerInfo, { id });
     if (this.map.getSource(id)) {
-      if (type === 'geojson') {
-        Object.keys(paint).forEach(name => {
-          this.map.setPaintProperty(id, name, paint[name]);
-        });
-        // @ts-ignore
-        this.map.getSource(id).setData(data);
-      } else if (type === 'raster') {
-        // @ts-ignore
-        this.map.getSource(id).tiles = tiles;
-        // @ts-ignore
-        this.map.style.sourceCaches[id].clearTiles();
-        // @ts-ignore
-        this.map.style.sourceCaches[id].update(this.map.transform);
-        // @ts-ignore
-        this.map.triggerRepaint();
-      }
+      this._updateLayer(layerInfo);
       return;
     }
     this.map.addLayer(layerInfo);
@@ -1805,8 +1786,36 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _transformScaleToZoom(scale) {
-    const MB_SCALEDENOMINATOR_0 = 591658710.909131;
+    let scale_0 = 591658710.909131;
+    //@ts-ignore
+    if (this.map.getCRS().epsgCode !== 'EPSG:3857') {
+      scale_0 = 295829355.4545922;
+    }
     const scaleDenominator = scale.split(':')[1];
-    return +Math.log2(+MB_SCALEDENOMINATOR_0 / +scaleDenominator).toFixed(2);
+    return +Math.log2(scale_0 / +scaleDenominator).toFixed(2);
+  }
+
+  private _updateLayer(layerInfo) {
+    const {
+      id,
+      paint,
+      source: { type, tiles, data }
+    } = layerInfo;
+    if (type === 'geojson') {
+      Object.keys(paint).forEach(name => {
+        this.map.setPaintProperty(id, name, paint[name]);
+      });
+      // @ts-ignore
+      this.map.getSource(id).setData(data);
+    } else if (type === 'raster') {
+      // @ts-ignore
+      this.map.getSource(id).tiles = tiles;
+      // @ts-ignore
+      this.map.style.sourceCaches[id].clearTiles();
+      // @ts-ignore
+      this.map.style.sourceCaches[id].update(this.map.transform);
+      // @ts-ignore
+      this.map.triggerRepaint();
+    }
   }
 }
