@@ -244,7 +244,7 @@ export default class WebMapService extends Events {
     return new Promise((resolve, reject) => {
       this._getFeatureBySQL(
         dataSource.url,
-        [dataSource.dataSourseName || layer.name],
+        [dataSource.dataSourceName || layer.name],
         result => {
           features = this.parseGeoJsonData2Feature({
             allDatas: {

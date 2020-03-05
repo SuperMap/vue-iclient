@@ -1107,122 +1107,126 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createMarkerLayer(layerInfo: any, features: any): void {
     const { minzoom, maxzoom } = layerInfo;
-    const promises =
-      features &&
-      features.map(feature => {
-        return new Promise((resolve, reject) => {
-          let geomType = feature.geometry.type.toUpperCase();
-          let defaultStyle = feature.dv_v5_markerStyle;
-          if (geomType === 'POINT' && defaultStyle.text) {
-            // 说明是文字的feature类型
-            geomType = 'TEXT';
+    const marker_src = {};
+    features = features || [];
+    features.forEach(feature => {
+      const defaultStyle = feature.dv_v5_markerStyle;
+      let geomType = feature.geometry.type.toUpperCase();
+      if (geomType === 'POINT' && defaultStyle.text) {
+        // 说明是文字的feature类型
+        geomType = 'TEXT';
+      }
+      if (
+        geomType === 'POINT' &&
+        defaultStyle.src &&
+        defaultStyle.src.indexOf('http://') === -1 &&
+        defaultStyle.src.indexOf('https://') === -1
+      ) {
+        // 说明地址不完整
+        defaultStyle.src = this.serverUrl + defaultStyle.src;
+      }
+      if (!marker_src[defaultStyle.src]) {
+        marker_src[defaultStyle.src] = defaultStyle;
+      }
+    });
+    const loadImagePromise = (src, defaultStyle) => {
+      return new Promise((resolve, reject) => {
+        if (src.indexOf('svg') < 0) {
+          this.map.loadImage(src, (error, image) => {
+            if (error) {
+              console.log(error);
+              resolve();
+              return;
+            }
+            !this.map.hasImage(src) && this.map.addImage(src, image);
+            resolve(src);
+          });
+        } else {
+          if (!this._svgDiv) {
+            this._svgDiv = document.createElement('div');
+            document.body.appendChild(this._svgDiv);
           }
-          let featureInfo = this.setFeatureInfo(feature);
-          feature.properties['useStyle'] = defaultStyle;
-          feature.properties['featureInfo'] = featureInfo;
-          if (
-            geomType === 'POINT' &&
-            defaultStyle.src &&
-            defaultStyle.src.indexOf('http://') === -1 &&
-            defaultStyle.src.indexOf('https://') === -1
-          ) {
-            // 说明地址不完整
-            defaultStyle.src = this.serverUrl + defaultStyle.src;
-          }
-
-          let source: mapboxglTypes.GeoJSONSourceRaw = {
-            type: 'geojson',
-            data: feature
-          };
-          let index = feature.properties.index;
-          let layerID = geomType + '-' + index;
-          // image-marker
-          geomType === 'POINT' &&
-            defaultStyle.src &&
-            defaultStyle.src.indexOf('svg') <= -1 &&
-            this.map.loadImage(defaultStyle.src, (error, image) => {
+          this.getCanvasFromSVG(src, this._svgDiv, canvas => {
+            this.handleSvgColor(defaultStyle, canvas);
+            this.map.loadImage(canvas.toDataURL('img/png'), (error, image) => {
               if (error) {
                 console.log(error);
-                reject();
+                resolve();
+                return;
               }
-              this.map.addImage(index + '', image);
-              this._addLayer({
-                id: layerID,
-                type: 'symbol',
-                source: source,
-                layout: {
-                  'icon-image': index + '',
-                  'icon-size': defaultStyle.scale,
-                  visibility: layerInfo.visible
-                },
-                minzoom: minzoom || 0,
-                maxzoom: maxzoom || 22
-              });
-              resolve();
+              !this.map.hasImage(src) && this.map.addImage(src, image);
+              resolve(src);
             });
-
-          // svg-marker
-          if (geomType === 'POINT' && defaultStyle.src && defaultStyle.src.indexOf('svg') > -1) {
-            if (!this._svgDiv) {
-              this._svgDiv = document.createElement('div');
-              document.body.appendChild(this._svgDiv);
-            }
-            this.getCanvasFromSVG(defaultStyle.src, this._svgDiv, canvas => {
-              this.handleSvgColor(defaultStyle, canvas);
-              let imgUrl = canvas.toDataURL('img/png');
-              imgUrl &&
-                this.map.loadImage(imgUrl, (error, image) => {
-                  if (error) {
-                    console.log(error);
-                    reject();
-                  }
-                  this.map.addImage(index + '', image);
-                  this._addLayer({
-                    id: layerID,
-                    type: 'symbol',
-                    source: source,
-                    layout: {
-                      'icon-image': index + '',
-                      'icon-size': defaultStyle.scale,
-                      visibility: layerInfo.visible
-                    },
-                    minzoom: minzoom || 0,
-                    maxzoom: maxzoom || 22
-                  });
-                  resolve();
-                });
-            });
-          }
-          // point-line-polygon-marker
-          if (!defaultStyle.src) {
-            let layeStyle: any = {
-              layout: {}
-            };
-            if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
-              geomType = 'LINE';
-              layeStyle.layout = {
-                'line-cap': defaultStyle.lineCap
-              };
-            }
-            let visible = layerInfo.visible;
-            layeStyle.layout.visibility = visible;
-            // get style
-            layeStyle.style = this._transformStyleToMapBoxGl(defaultStyle, geomType);
-            this._addOverlayToMap(geomType, source, layerID, layeStyle, minzoom, maxzoom);
-            // 若面有边框
-            geomType === 'POLYGON' &&
-              defaultStyle.strokeColor &&
-              this._addStrokeLineForPoly(defaultStyle, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
-
-            resolve();
-          }
-        });
+          });
+        }
       });
-    if (promises) {
-      Promise.all(promises).then(() => {
-        this._addLayerSucceeded();
-      });
+    };
+    const promiseList = [];
+    for (const src in marker_src) {
+      promiseList.push(loadImagePromise(src, marker_src[src]));
     }
+    Promise.all(promiseList).then(images => {
+      for (let i = 0; i < features.length; i++) {
+        const feature = features[i];
+        let defaultStyle = feature.dv_v5_markerStyle;
+        let geomType = feature.geometry.type.toUpperCase();
+        if (geomType === 'POINT' && defaultStyle.text) {
+          // 说明是文字的feature类型
+          geomType = 'TEXT';
+        }
+        let featureInfo = this.setFeatureInfo(feature);
+        feature.properties['useStyle'] = defaultStyle;
+        feature.properties['featureInfo'] = featureInfo;
+
+        let source: mapboxglTypes.GeoJSONSourceRaw = {
+          type: 'geojson',
+          data: feature
+        };
+        let index = feature.properties.index;
+        let layerID = geomType + '-' + index;
+        // image-marker  svg-marker
+        if (geomType === 'POINT' && defaultStyle.src) {
+          if (!images.includes(defaultStyle.src)) {
+            continue;
+          }
+          this._addLayer({
+            id: layerID,
+            type: 'symbol',
+            source: source,
+            layout: {
+              'icon-image': defaultStyle.src,
+              'icon-size': defaultStyle.scale,
+              visibility: layerInfo.visible
+            },
+            minzoom: minzoom || 0,
+            maxzoom: maxzoom || 22
+          });
+        }
+
+        // point-line-polygon-marker
+        if (!defaultStyle.src) {
+          let layeStyle: any = {
+            layout: {}
+          };
+          if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
+            geomType = 'LINE';
+            layeStyle.layout = {
+              'line-cap': defaultStyle.lineCap
+            };
+          }
+          let visible = layerInfo.visible;
+          layeStyle.layout.visibility = visible;
+          // get style
+          layeStyle.style = this._transformStyleToMapBoxGl(defaultStyle, geomType);
+          this._addOverlayToMap(geomType, source, layerID, layeStyle, minzoom, maxzoom);
+          // 若面有边框
+          geomType === 'POLYGON' &&
+            defaultStyle.strokeColor &&
+            this._addStrokeLineForPoly(defaultStyle, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
+        }
+      }
+      this._addLayerSucceeded();
+    });
   }
 
   private _createHeatLayer(layerInfo: any, features: any): void {
