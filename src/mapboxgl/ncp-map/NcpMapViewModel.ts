@@ -108,7 +108,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   }
 
   private _createMap(): void {
-    const { center, zoom, bearing, pitch, renderWorldCopies, interactive, style, bounds } = this.mapOptions;
+    const { center, zoom, bearing, pitch, renderWorldCopies = false, interactive, style, bounds, preserveDrawingBuffer = false } = this.mapOptions;
     // 初始化 map
     style.glyphs = 'https://ncov.supermapol.com/statichtml/font/{fontstack}/{range}.pbf';
     this.map = new mapboxgl.Map({
@@ -118,7 +118,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       bearing: bearing || 0,
       pitch: pitch || 0,
       bounds,
-      renderWorldCopies: renderWorldCopies || false,
+      renderWorldCopies,
+      preserveDrawingBuffer,
       interactive: interactive === void 0 ? true : interactive,
       style: style || {
         version: 8,

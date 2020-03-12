@@ -847,7 +847,8 @@ export default class WebMapViewModel extends WebMapBase {
     features = this.getFiterFeatures(layerInfo.filterCondition, features);
     // 获取 expression
     let expression = ['match', ['get', 'index']];
-    features.forEach(row => {
+    for (let index = 0; index < features.length; index++) {
+      const row = features[index];
       let tartget = parseFloat(row.properties[fieldName]);
       if (styleGroups) {
         for (let i = 0; i < styleGroups.length; i++) {
@@ -859,12 +860,11 @@ export default class WebMapViewModel extends WebMapBase {
                   : Number.parseFloat((styleGroups[i].radius / style.imageInfo.size.h).toFixed(2)) * 2
                 : styleGroups[i].radius;
             expression.push(row.properties['index'], radius);
+            continue;
           }
         }
       }
-      // @ts-ignore
-      !tartget && expression.push(row.properties['index'], 1);
-    }, this);
+    }
     // @ts-ignore
     expression.push(1);
 
@@ -919,7 +919,11 @@ export default class WebMapViewModel extends WebMapBase {
       layout: {
         'text-field': `{${labelStyle.labelField}}`,
         'text-size': 14,
-        'text-offset': labelStyle.offsetX ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0] : [0, 0],
+        'text-offset': labelStyle.offsetX
+          ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0]
+          : layerInfo.featureType === 'POINT'
+          ? [0, -1.5]
+          : [0, 0],
         'text-font': fontFamily ? [fontFamily] : ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
         visibility: layerInfo.visible
       },
@@ -1416,6 +1420,9 @@ export default class WebMapViewModel extends WebMapBase {
         const targetlayerId = exsitLayers[index].layerID;
         const beforLayerId = exsitLayers[index + 1].layerID;
         this.map.moveLayer(targetlayerId, beforLayerId);
+        if (this.map.getLayer(`${targetlayerId}-strokeLine`)) {
+          this.map.moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
+        }
       }
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,
