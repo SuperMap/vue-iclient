@@ -33,13 +33,13 @@ export default class RestService extends Events {
         return response.json();
       })
       .then(data => {
-        if (!data || !data.hasOwnProperty('data')) {
+        if (!data) {
           // 请求失败
           this.triggerEvent('getdatafailed', {
             data
           });
-        } else if (data.hasOwnProperty('data')) {
-          const resData = data.data;
+        } else {
+          const resData = data.hasOwnProperty('data') ? data.data : data;
           this.transfromGeoJSON(resData, queryInfo);
         }
       })

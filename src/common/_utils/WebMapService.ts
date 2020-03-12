@@ -1,6 +1,6 @@
 import { Events } from '../_types/event/Events';
 import { isXField, isYField } from './util';
-import epsgCodes from '../web-map/config/epsg.json';
+import { getProjection } from '../../common/_utils/epsg-define';
 import * as convert from 'xml-js';
 
 const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
@@ -543,7 +543,7 @@ export default class WebMapService extends Events {
   }
 
   public getEpsgcodeWkt(epsgCode) {
-    return epsgCodes[epsgCode];
+    return getProjection(epsgCode);
   }
 
   private _getDataFromIportal(serverId) {

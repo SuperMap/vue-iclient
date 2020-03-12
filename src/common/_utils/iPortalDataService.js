@@ -13,16 +13,17 @@ import { Events } from '../_types/event/Events';
  * @fires iPortalDataService#featureisempty
  */
 export default class iPortalDataService extends Events {
-  constructor(url, withCredentials) {
+  constructor(url, withCredentials, options = {}) {
     super();
     this.url = url;
     this.withCredentials = withCredentials || false;
+    this.epsgCode = options.epsgCode;
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
     this.initSerivce(url);
   }
 
   initSerivce(url) {
-    this.iserverService = new iServerRestService(url);
+    this.iserverService = new iServerRestService(url, { epsgCode: this.epsgCode });
     this.iserverService.on({
       getdatasucceeded: e => {
         /**
@@ -85,14 +86,10 @@ export default class iPortalDataService extends Events {
         // 是否有rest服务
         if (data.dataItemServices && data.dataItemServices.length > 0) {
           let dataItemServices = data.dataItemServices;
-          let resultData;
-          dataItemServices.forEach(item => {
-            if (item.serviceType === 'RESTDATA' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            }
-          }, this);
+          let resultData = dataItemServices.find(
+            item =>
+              (item.serviceType === 'RESTDATA' || item.serviceType === 'RESTMAP') && item.serviceStatus === 'PUBLISHED'
+          );
           // 有rest服务并且address不为空（online的address服务为''）
           if (resultData && resultData.address) {
             // 如果有服务，获取数据源和数据集, 然后请求rest服务
@@ -227,6 +224,7 @@ export default class iPortalDataService extends Events {
               type: data.content.type,
               features
             };
+            this.vertified && (result.vertified = this.vertified);
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
             let features = this._excelData2Feature(data.content, queryInfo);
             features = this._transformContentFeatures(features);
@@ -234,6 +232,7 @@ export default class iPortalDataService extends Events {
               type: 'FeatureCollection',
               features
             };
+            this.vertified && (result.vertified = this.vertified);
           }
           this.iserverService._getFeaturesSucceed({
             result: result
@@ -311,6 +310,7 @@ export default class iPortalDataService extends Events {
     if (features && !!features.length) {
       const epsgCode = vertifyEpsgCode(features[0]);
       transformedFeatures = transformFeatures(epsgCode, features);
+      this.vertified = true;
     }
     return transformedFeatures;
   }

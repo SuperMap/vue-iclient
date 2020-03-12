@@ -289,6 +289,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       if (restMap.proxy) {
         options.proxy = restMap.proxy;
       }
+      restMap.epsgCode && (options.epsgCode = restMap.epsgCode);
       let iserverService = new iServerRestService(restMap.url, options);
       iserverService.on({
         getdatafailed: e => {
@@ -318,6 +319,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       if (restData.proxy) {
         options.proxy = restData.proxy;
       }
+      restData.epsgCode && (options.epsgCode = restData.epsgCode);
       let iserverService = new iServerRestService(restData.url, options);
       iserverService.on({
         getdatafailed: e => {
@@ -345,7 +347,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
   _searchFromIportal(iportalDatas) {
     const sourceName = 'Iportal Search';
     iportalDatas.forEach(iportal => {
-      let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false);
+      let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false, { epsgCode: iportal.epsgCode });
       iPortalService.on({
         getdatafailed: e => {
           this._searchFeaturesFailed('', iportal.name || sourceName);

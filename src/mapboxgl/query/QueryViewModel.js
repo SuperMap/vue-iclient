@@ -157,7 +157,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
     if (result && result.totalCount !== 0) {
       let resultFeatures = result.recordsets[0].features.features;
       const projectionUrl = `${restMapParameter.url}/prjCoordSys`;
-      resultFeatures = await checkAndRectifyFeatures({ features: resultFeatures, projectionUrl, options }).catch(
+      resultFeatures = await checkAndRectifyFeatures({ features: resultFeatures, epsgCode: restMapParameter.epsgCode, projectionUrl, options }).catch(
         error => {
           console.error(error);
           return resultFeatures;
@@ -186,12 +186,12 @@ export default class QueryViewModel extends mapboxgl.Evented {
   async _dataQuerySucceed(serviceResult, restDataParameter, options) {
     let result = serviceResult.result;
     if (result && result.totalCount !== 0) {
-      const { url, dataName } = restDataParameter;
+      const { url, dataName, epsgCode } = restDataParameter;
       const dataSourceName = dataName[0].split(':')[0];
       const datasetName = dataName[0].split(':')[1];
       const projectionUrl = `${url}/datasources/${dataSourceName}/datasets/${datasetName}`;
       let resultFeatures = result.features.features;
-      resultFeatures = await checkAndRectifyFeatures({ features: resultFeatures, projectionUrl, options }).catch(
+      resultFeatures = await checkAndRectifyFeatures({ features: resultFeatures, epsgCode, projectionUrl, options }).catch(
         error => {
           console.error(error);
           return resultFeatures;
@@ -272,7 +272,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
                 url: `${address}/data`,
                 name: iportalDataParameter.name,
                 attributeFilter: iportalDataParameter.attributeFilter,
-                maxFeatures: iportalDataParameter.maxFeatures
+                maxFeatures: iportalDataParameter.maxFeatures,
+                epsgCode: iportalDataParameter.epsgCode
               });
             })
             .catch(error => {
@@ -309,7 +310,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
                 url: path,
                 name: iportalDataParameter.name,
                 attributeFilter: iportalDataParameter.attributeFilter,
-                maxFeatures: iportalDataParameter.maxFeatures
+                maxFeatures: iportalDataParameter.maxFeatures,
+                epsgCode: iportalDataParameter.epsgCode
               });
               return layerName;
             })
