@@ -83,10 +83,10 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   private _sourceListModel: SourceListModel;
   private _legendInfo: any;
 
-  constructor(target: string, dataOptions?: dataOptions, mapOptions?: mapOptions) {
+  constructor(target: string, dataOptions: dataOptions = {}, mapOptions?: mapOptions) {
     super();
     this.target = target;
-    const { url, name, proxyUrl, themeUrl } = dataOptions || {};
+    const { url, name, proxyUrl, themeUrl } = dataOptions;
     this.dataUrl = url;
     this.themeUrl = themeUrl;
     this.proxyUrl = proxyUrl;

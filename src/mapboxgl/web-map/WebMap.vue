@@ -154,7 +154,8 @@ interface controlProps {
     'mapOptions.renderWorldCopies',
     'mapOptions.bearing',
     'mapOptions.pitch',
-    'withCredentials'
+    'withCredentials',
+    'proxy'
   ],
   inheritAttrs: false
 })
@@ -176,6 +177,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: false }) withCredentials: boolean;
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() isSuperMapOnline: boolean;
+  @Prop() proxy: boolean | string;
   @Prop()
   mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
@@ -349,6 +351,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       withCredentials,
       excludePortalProxyUrl,
       isSuperMapOnline,
+      proxy,
       mapOptions
     } = this.$props;
     this.viewModel = new WebMapViewModel(
@@ -361,7 +364,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         tiandituKey,
         withCredentials,
         excludePortalProxyUrl,
-        isSuperMapOnline
+        isSuperMapOnline,
+        proxy
       },
       mapOptions
     );

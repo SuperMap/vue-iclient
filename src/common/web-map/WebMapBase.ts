@@ -28,6 +28,8 @@ export default abstract class WebMapBase extends Events {
 
   withCredentials: boolean;
 
+  proxy: String | Boolean;
+
   target: string;
 
   excludePortalProxyUrl: boolean;
@@ -64,6 +66,7 @@ export default abstract class WebMapBase extends Events {
     this.accessKey = options.accessKey;
     this.tiandituKey = options.tiandituKey || '';
     this.withCredentials = options.withCredentials || false;
+    this.proxy = options.proxy;
     this.target = options.target || 'map';
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
     this.isSuperMapOnline = options.isSuperMapOnline;
@@ -114,6 +117,11 @@ export default abstract class WebMapBase extends Events {
   public setWithCredentials(withCredentials) {
     this.withCredentials = withCredentials;
     this.webMapService.setWithCredentials(withCredentials);
+  }
+
+  public setProxy(proxy) {
+    this.proxy = proxy;
+    this.webMapService.setProxy(proxy);
   }
 
   public setZoom(zoom) {

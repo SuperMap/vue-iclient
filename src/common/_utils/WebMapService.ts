@@ -53,6 +53,7 @@ interface webMapOptions {
   tiandituKey?: string;
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
+  proxy?: boolean | string;
 }
 
 export default class WebMapService extends Events {
@@ -75,6 +76,13 @@ export default class WebMapService extends Events {
 
   isSuperMapOnline: boolean;
 
+  proxy: boolean | string;
+
+  proxyOptions: object = {
+    data: 'apps/viewer/getUrlResource.json?url=',
+    image: 'apps/viewer/getUrlResource.png?url='
+  }
+
   constructor(mapId: string, options: webMapOptions = {}) {
     super();
     this.mapId = mapId;
@@ -84,6 +92,7 @@ export default class WebMapService extends Events {
     this.tiandituKey = options.tiandituKey || '';
     this.withCredentials = options.withCredentials || false;
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
+    this.proxy = options.proxy;
   }
 
   public setMapId(mapId: string): void {
@@ -96,6 +105,10 @@ export default class WebMapService extends Events {
 
   public setWithCredentials(withCredentials) {
     this.withCredentials = withCredentials;
+  }
+
+  public setProxy(proxy) {
+    this.proxy = proxy;
   }
 
   public handleServerUrl(serverUrl) {
@@ -161,8 +174,8 @@ export default class WebMapService extends Events {
     return new Promise((resolve, reject) => {
       let isMatched = false;
       let matchMaxZoom = 22;
-
-      SuperMap.FetchRequest.get(mapInfo.url, null, { withCredentials: false, withoutFormatSuffix: true })
+      const proxy = this.handleProxy();
+      SuperMap.FetchRequest.get(mapInfo.url, null, { withCredentials: false, withoutFormatSuffix: true, proxy })
         .then(response => {
           return response.text();
         })
@@ -300,8 +313,10 @@ export default class WebMapService extends Events {
   private _getFeaturesFromUserData(layer) {
     let dataSource = layer.dataSource;
     return new Promise((resolve, reject) => {
+      const proxy = this.handleProxy();
       SuperMap.FetchRequest.get(dataSource.url, null, {
-        withCredentials: this.withCredentials
+        withCredentials: this.withCredentials,
+        proxy
       })
         .then(response => {
           return response.json();
@@ -339,8 +354,10 @@ export default class WebMapService extends Events {
     onlyAttribute?
   ): void {
     let queryBySQLParams = this._getQueryFeaturesParam(layerName, attributeFilter, fields, epsgCode, startRecord, recordLength, onlyAttribute)
+    const proxy = this.handleProxy();
     // @ts-ignore
     let queryBySQLService = new SuperMap.QueryBySQLService(url, {
+      proxy,
       eventListeners: {
         processCompleted: data => {
           processCompleted && processCompleted(data);
@@ -430,7 +447,8 @@ export default class WebMapService extends Events {
       token = layerInfo.credential.token;
       requestUrl += `?token=${token}`;
     }
-    SuperMap.FetchRequest.get(requestUrl)
+    const proxy = this.handleProxy();
+    SuperMap.FetchRequest.get(requestUrl, null, { proxy })
       .then(function (response) {
         return response.json();
       })
@@ -536,8 +554,10 @@ export default class WebMapService extends Events {
       url = `${url}&${this.accessKey}=${this.accessToken}`;
     }
     return new Promise((resolve, reject) => {
+      const proxy = this.handleProxy();
       SuperMap.FetchRequest.get(url, null, {
-        withCredentials: this.withCredentials
+        withCredentials: this.withCredentials,
+        proxy
       })
         .then(response => {
           return response.json();
@@ -679,7 +699,8 @@ export default class WebMapService extends Events {
     return this._getDatasources(serviceUrl).then(datasourceName => {
       //判断mvt服务是否可用
       let url = `${serviceUrl}/data/datasources/${datasourceName}/datasets/${datasetName}`;
-      return SuperMap.FetchRequest.get(url)
+      const proxy = this.handleProxy();
+      return SuperMap.FetchRequest.get(url, null, { proxy })
         .then(response => {
           return response.json();
         })
@@ -696,7 +717,8 @@ export default class WebMapService extends Events {
   }
 
   private _getDatasources(url) {
-    return SuperMap.FetchRequest.get(`${url}/data/datasources.json`)
+    const proxy = this.handleProxy();
+    return SuperMap.FetchRequest.get(`${url}/data/datasources.json`, null, { proxy })
       .then(response => {
         return response.json();
       })
@@ -710,8 +732,10 @@ export default class WebMapService extends Events {
   }
 
   private _getDataService(fileId, datasetName) {
+    const proxy = this.handleProxy();
     return SuperMap.FetchRequest.get(`${this.serverUrl}web/datas/${fileId}.json`, null, {
-      withCredentials: this.withCredentials
+      withCredentials: this.withCredentials,
+      proxy
     })
       .then(response => {
         return response.json();
@@ -724,8 +748,10 @@ export default class WebMapService extends Events {
   }
 
   private _checkUploadToRelationship(fileId) {
+    const proxy = this.handleProxy();
     return SuperMap.FetchRequest.get(`${this.serverUrl}web/datas/${fileId}/datasets.json`, null, {
-      withCredentials: this.withCredentials
+      withCredentials: this.withCredentials,
+      proxy
     })
       .then(response => {
         return response.json();
@@ -750,6 +776,18 @@ export default class WebMapService extends Events {
     }
     mapUrl = mapUrl.indexOf('.json') === -1 ? `${mapUrl}.json` : mapUrl;
     return mapUrl;
+  }
+
+  public handleProxy(type?: string): string {
+    if (!this.proxy) {
+      return null;
+    }
+    const proxySuffix: string = this.proxyOptions[type || 'data'];
+    let proxy: string = this.serverUrl + proxySuffix;
+    if (typeof this.proxy === 'string') {
+      proxy = this.proxy;
+    }
+    return proxy;
   }
 
   private _formatGeoJSON(data): any {
@@ -805,11 +843,11 @@ export default class WebMapService extends Events {
   }
 
   private _getTileLayerInfo(url, baseProjection) {
-    let proxyUrl = this.serverUrl + 'apps/viewer/getUrlResource.json?url=';
-    let requestUrl = proxyUrl + encodeURIComponent(url);
+    const proxy = this.handleProxy();
     let epsgCode = baseProjection.split('EPSG:')[1];
-    return SuperMap.FetchRequest.get(`${requestUrl}/maps.json`, null, {
-      withCredentials: this.withCredentials
+    return SuperMap.FetchRequest.get(`${url}/maps.json`, null, {
+      withCredentials: this.withCredentials,
+      proxy
     })
       .then(response => {
         return response.json();
@@ -819,10 +857,11 @@ export default class WebMapService extends Events {
         if (mapInfo) {
           mapInfo.forEach(info => {
             let promise = SuperMap.FetchRequest.get(
-              `${proxyUrl}${info.path}.json?prjCoordSys=${JSON.stringify({ epsgCode: epsgCode })}`,
+              `${info.path}.json?prjCoordSys=${JSON.stringify({ epsgCode: epsgCode })}`,
               null,
               {
-                withCredentials: this.withCredentials
+                withCredentials: this.withCredentials,
+                proxy
               }
             )
               .then(response => {
@@ -855,7 +894,9 @@ export default class WebMapService extends Events {
       maxFeatures: -1,
       returnContent: true
     });
+    const proxy = this.handleProxy();
     let options = {
+      proxy,
       eventListeners: {
         processCompleted: getFeaturesEventArgs => {
           processCompleted && processCompleted(getFeaturesEventArgs);

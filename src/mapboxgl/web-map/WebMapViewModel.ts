@@ -45,6 +45,7 @@ interface webMapOptions {
   isSuperMapOnline?: boolean;
   center?: number[];
   zoom?: number;
+  proxy?: boolean | string;
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
@@ -75,6 +76,8 @@ export default class WebMapViewModel extends WebMapBase {
   pitch: number;
 
   layerFilter: Function;
+
+  baseLayerProxy: string | boolean;
 
   private _sourceListModel: SourceListModel;
 
@@ -250,6 +253,18 @@ export default class WebMapViewModel extends WebMapBase {
   _createMap(mapInfo?): void {
     if (!mapInfo) {
       this.mapOptions.container = this.target;
+      if(typeof this.proxy === 'string' && !this.mapOptions.transformRequest) {
+        this.mapOptions.transformRequest = (url: string, resourceType : string) => {
+          let proxyType = 'data';
+          if (resourceType === 'Tile') {
+            proxyType = 'image';
+          }
+          const proxy = this.webMapService.handleProxy(proxyType);
+          return {
+            url: proxy + encodeURIComponent(url)
+          };
+        }
+      }
       setTimeout(() => {
         this.map = new mapboxgl.Map(this.mapOptions);
         this.map.on('load', () => {
@@ -273,7 +288,7 @@ export default class WebMapViewModel extends WebMapBase {
       this._getResolution(mapboxgl.CRS.get(this.baseProjection).getExtent()) / this._getResolution(mapInfo.extent)
     ).toFixed(2);
     zoom += zoomBase;
-    const { interactive, bounds } = this.mapOptions || {};
+    const { interactive, bounds } = this.mapOptions;
     // 初始化 map
     this.map = new mapboxgl.Map({
       container: this.target,
@@ -292,15 +307,7 @@ export default class WebMapViewModel extends WebMapBase {
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
       renderWorldCopies: false,
-      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false,
-      transformRequest: (url, resourceType) => {
-        if (resourceType === 'Tile' && this.isSuperMapOnline && url.indexOf('http://') === 0) {
-          url = `https://www.supermapol.com/apps/viewer/getUrlResource.png?url=${encodeURIComponent(url)}`;
-        }
-        return {
-          url: url
-        };
-      }
+      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false
     });
     /**
      * @description Map 初始化成功。
@@ -319,12 +326,15 @@ export default class WebMapViewModel extends WebMapBase {
     let layerType = this.getBaseLayerType(layerInfo);
     let mapUrls = this.getMapurls();
     let url: string;
+    this.baseLayerProxy = this.webMapService.handleProxy('image');
 
     switch (layerType) {
       case 'TIANDITU':
+        this.baseLayerProxy = null;
         this._createTiandituLayer(mapInfo);
         break;
       case 'BING':
+        this.baseLayerProxy = null;
         this._createBingLayer(layerInfo.layerID || layerInfo.name);
         break;
       case 'WMS':
@@ -608,7 +618,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _setLayerID(mapInfo): Array<object> {
     let sumInfo: object = {};
-    const { baseLayer, layers } = mapInfo;
+    const { baseLayer, layers = [] } = mapInfo;
     let baseInfo = this._generateUniqueLayerId(baseLayer.name, 0);
     baseLayer.name = baseInfo.newId;
     const layerNames = layers.map(layer => layer.name);
@@ -1545,7 +1555,8 @@ export default class WebMapViewModel extends WebMapBase {
       // @ts-ignore
       rasterSource: isIserver ? 'iserver' : '',
       // @ts-ignore
-      prjCoordSys: isIserver ? { epsgCode: this.baseProjection.split(':')[1] } : ''
+      prjCoordSys: isIserver ? { epsgCode: this.baseProjection.split(':')[1] } : '',
+      proxy: this.baseLayerProxy
     };
     this._addLayer({
       id: layerID,
@@ -1557,6 +1568,7 @@ export default class WebMapViewModel extends WebMapBase {
         visibility: visibility ? 'visible' : 'none'
       }
     });
+    this.baseLayerProxy = null;
   }
   /**
    * @private
@@ -1606,7 +1618,8 @@ export default class WebMapViewModel extends WebMapBase {
       type: style.mbglType,
       source: {
         type: 'vector',
-        tiles: [url]
+        tiles: [url],
+        proxy: this.webMapService.handleProxy('image')
       },
       'source-layer': `${info.datasetName}@${info.datasourceName}`,
       paint,
@@ -1810,7 +1823,7 @@ export default class WebMapViewModel extends WebMapBase {
     const {
       id,
       paint,
-      source: { type, tiles, data }
+      source: { type, tiles, data, proxy }
     } = layerInfo;
     if (type === 'geojson') {
       Object.keys(paint).forEach(name => {
@@ -1819,6 +1832,8 @@ export default class WebMapViewModel extends WebMapBase {
       // @ts-ignore
       this.map.getSource(id).setData(data);
     } else if (type === 'raster') {
+      // @ts-ignore
+      this.map.getSource(id).proxy = proxy;
       // @ts-ignore
       this.map.getSource(id).tiles = tiles;
       // @ts-ignore
