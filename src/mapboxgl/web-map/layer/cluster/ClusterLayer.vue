@@ -17,10 +17,6 @@ export default {
       type: Number,
       default: 50
     },
-    maxZoom: {
-      type: Number,
-      default: 14
-    },
     clusteredPointStyle: {
       type: Object,
       default() {
@@ -61,10 +57,10 @@ export default {
       this.viewModel && this.viewModel.setClusteredPointTextLayout(this.clusteredPointTextLayout);
     }
   },
-  loaded() {
+  created() {
     let options = JSON.parse(JSON.stringify(this.$props));
     delete options.data;
-    this.viewModel = new ClusterLayerViewModel(this.map, this.data, { ...options });
+    this.viewModel = new ClusterLayerViewModel(this.data, { ...options });
   },
   render() {}
 };

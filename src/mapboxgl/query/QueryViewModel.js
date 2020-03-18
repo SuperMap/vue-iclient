@@ -25,15 +25,15 @@ import { checkAndRectifyFeatures } from '../../common/_utils/iServerRestService'
  * @fires QueryViewModel#getfeatureinfosucceeded
  */
 export default class QueryViewModel extends mapboxgl.Evented {
-  constructor(options, map) {
+  constructor(options) {
     super();
-    this.map = map;
     this.options = options || {};
     this.maxFeatures = this.options.maxFeatures || 200;
     this.layerStyle = options.layerStyle || {};
   }
 
-  setMap(map) {
+  setMap(mapInfo) {
+    const { map } = mapInfo;
     this.map = map;
   }
 
@@ -44,7 +44,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
   }
 
-  clear() {
+  removed() {
     this.bounds = null;
     this.clearResultLayer();
   }
@@ -59,7 +59,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       return;
     }
     this.queryParameter = queryParameter;
-    this.clear();
+    this.removed();
     this.queryBounds = queryBounds;
     if (queryBounds === 'currentMapBounds') {
       this.bounds = this.map.getBounds();

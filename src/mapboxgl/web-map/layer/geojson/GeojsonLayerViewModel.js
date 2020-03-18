@@ -1,17 +1,21 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
 export default class GeojsonLayerViewModel extends mapboxgl.Evented {
-  constructor(map, GeojsonLayerOptions) {
+  constructor(GeojsonLayerOptions) {
     super();
-    if (!map) {
-      throw new Error('map is requierd');
-    }
-    this.map = map;
     const { layerStyle, data, layerId } = GeojsonLayerOptions;
     this.data = data;
     this.layerStyle = layerStyle;
     this.layerId = layerId;
-    this.data && this._addLayer();
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    if (!map) {
+      throw new Error('map is requierd');
+    }
+    this.map = map;
+    this._addLayer();
   }
 
   setData(data) {
@@ -65,7 +69,7 @@ export default class GeojsonLayerViewModel extends mapboxgl.Evented {
     return type.substr(0, type.length - 1);
   }
 
-  clear() {
+  removed() {
     const { map, layerId } = this;
     if (map && layerId && map.getLayer(layerId)) {
       map.removeLayer(layerId);

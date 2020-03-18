@@ -105,7 +105,7 @@
         }
       }
       @include e(range) {
-        @include e(range-item rank-item) {
+        @include e(range-item) {
           height: 16px;
           margin-bottom: 8px;
           & > div,
@@ -124,13 +124,24 @@
             max-width: 200px;
           }
         }
+        @include e(rank-item) {
+          & > span {
+            font-size: 12px;
+            // line-height: 2;
+            vertical-align: 12;
+            // margin-left: 0px;
+            max-width: 200px;
+          }
+        }
       }
 
       @include e(rank-icon) {
         text-align: center;
+        display: inline-block;
+        width: 40px;
         & > i {
           display: inline-block;
-          vertical-align: middle;
+          // vertical-align: middle;
         }
       }
 

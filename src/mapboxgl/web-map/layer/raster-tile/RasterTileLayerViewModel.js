@@ -2,9 +2,8 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class RasterTileLayerViewModel extends mapboxgl.Evented {
-  constructor(map, rasterLayerOptions) {
+  constructor(rasterLayerOptions) {
     super();
-    this.map = map;
     const {
       layerId,
       tileSize,
@@ -33,7 +32,24 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
     this.before = before;
     // enhance扩展，传iserver标识是iserver rest map
     this.rasterSource = '';
+  }
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
     this._init();
+  }
+  setTiles(tiles) {
+    if (this.map.getSource(this.layerId)) {
+      this.map.getSource(this.layerId).tiles = tiles;
+      // @ts-ignore
+      this.map.style.sourceCaches[this.layerId].clearTiles();
+      // @ts-ignore
+      this.map.style.sourceCaches[this.layerId].update(this.map.transform);
+      // @ts-ignore
+      this.map.triggerRepaint();
+    } else {
+      this._addLayer();
+    }
   }
   _init() {
     if (this.mapUrl) {
@@ -65,12 +81,6 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
       {
         id: this.layerId || `raster-layer-${new Date().getTime()}`,
         type: 'raster',
-        layout: {
-          visibility: this.visibility
-        },
-        paint: {
-          'raster-opacity': this.opacity
-        },
         source: {
           bounds: this.bounds || [-180, -85.051129, 180, 85.051129],
           type: 'raster',
@@ -86,10 +96,13 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
     );
   }
 
-  clear() {
+  removed() {
     const { map, layerId } = this;
     if (map && layerId && map.getLayer(layerId)) {
       map.removeLayer(layerId);
+    }
+    if (map && layerId && map.getSource(layerId)) {
+      map.removeSource(layerId);
     }
   }
 }

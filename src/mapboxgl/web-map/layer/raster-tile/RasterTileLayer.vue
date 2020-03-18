@@ -28,21 +28,15 @@ export default {
       validator(scheme) {
         return ['xyz', 'tms'].indexOf(scheme) !== -1;
       }
-    },
-    visible: {
-      type: Boolean,
-      default: true
-    },
-    opacity: {
-      type: Number,
-      default: 1,
-      validator(opacity) {
-        return opacity >= 0 && opacity <= 1;
-      }
     }
   },
-  loaded() {
-    this.viewModel = new RasterTileLayerViewModel(this.map, this.$props);
+  watch: {
+    tiles(val) {
+      this.viewModel && this.viewModel.setTiles(val);
+    }
+  },
+  created() {
+    this.viewModel = new RasterTileLayerViewModel(this.$props);
   },
   render() {}
 };

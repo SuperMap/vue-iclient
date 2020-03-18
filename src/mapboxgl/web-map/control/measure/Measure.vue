@@ -205,50 +205,46 @@ export default {
   },
   created() {
     this.componentName = uniqueId(this.$options.name);
-  },
-  mounted() {
-    this.changeSelectInputStyle();
-  },
-  beforeDestroy() {
-    this.$options.removed.call(this);
-  },
-  loaded() {
-    const mapTarget = this.getTargetName();
-    this.viewModel && this.resetData(mapTarget);
     this.viewModel = new MeasureViewModel({
-      map: this.map,
-      mapTarget,
       continueDraw: this.continueDraw,
       componentName: this.componentName
     });
-
-    // 控制显示结果的显示
-    this.viewModel.on('measure-finished', ({ result }) => {
-      this.result = result;
+    this.viewModel.on('measure-finished', this.measureFinishedFn);
+    this.viewModel.on('measure-start', this.measureStartFn);
+    this.viewModel.on('update-unit', this.updateUnitFn);
+  },
+  mounted() {
+    this.changeSelectInputStyle();
+    drawEvent.$on('draw-reset', this.drawResetFn);
+  },
+  beforeDestroy() {
+    this.viewModel.off('measure-finished', this.measureFinishedFn);
+    this.viewModel.off('measure-start', this.measureStartFn);
+    this.viewModel.off('update-unit', this.updateUnitFn);
+    drawEvent.$off('draw-reset', this.drawResetFn);
+  },
+  removed(map, target) {
+    drawEvent.$options.deleteDrawingState(target, this.componentName);
+    this.resetData(target);
+  },
+  methods: {
+    measureFinishedFn(e) {
+      this.result = e.result;
       this.measureFinished = true;
-    });
-    this.viewModel.on('measure-start', ({ result }) => {
+    },
+    measureStartFn(e) {
       this.result = '';
       this.measureFinished = false;
-    });
-    this.viewModel.on('update-unit', ({ result }) => {
-      this.result = result;
-    });
-    drawEvent.$on('draw-reset', ({ componentName }) => {
+    },
+    updateUnitFn(e) {
+      this.result = e.result;
+    },
+    drawResetFn({ componentName }) {
       if (componentName !== this.componentName) {
         this.activeMode = null;
         this.result = '';
       }
-    });
-  },
-  removed() {
-    this.activeMode = null;
-    this.result = '';
-    const targetName = this.getTargetName();
-    this.viewModel && this.viewModel.clear();
-    drawEvent.$options.deleteDrawingState(targetName, this.componentName);
-  },
-  methods: {
+    },
     changeSelectInputStyle() {
       const selectDoms = this.$el.querySelectorAll('.ant-select-selection');
       for (let selectDom of selectDoms) {
@@ -325,10 +321,7 @@ export default {
     resetData(mapTarget) {
       this.activeMode = null;
       this.result = '';
-      const mapDom = document.querySelector(`#${mapTarget}`);
-      if (mapDom && mapDom.classList && !!mapDom.classList.length) {
-        mapDom.classList.remove('mouse-add');
-      }
+      this.continueDraw && drawEvent.$emit('draw-reset', { componentName: this.componentName });
     },
     // 提供对外方法：清空features
     clear() {

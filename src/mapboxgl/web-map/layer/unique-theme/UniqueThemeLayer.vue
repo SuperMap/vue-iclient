@@ -21,8 +21,24 @@ export default {
       required: true
     }
   },
+  watch: {
+    options: {
+      handler(val) {
+        this.viewModel && this.viewModel.setOptions(val);
+      },
+      deep: true
+    },
+    data: {
+      handler(val) {
+        this.viewModel && this.viewModel.setData(val);
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.viewModel = new UniqueThemeLayerViewModel(this.$props);
+  },
   loaded() {
-    this.viewModel = new UniqueThemeLayerViewModel(this.map, this.$props);
     this.$emit('load', this.viewModel.themeLayer, this.map);
   },
   render() {}

@@ -119,6 +119,9 @@ export default {
       }
     }
   },
+  created() {
+    this.viewModel = new LayerListViewModel();
+  },
   methods: {
     handleCollapseChange() {
       this.changCheckStyle();
@@ -169,22 +172,22 @@ export default {
   },
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add('layer-list-container');
-    this.viewModel = new LayerListViewModel(this.map);
-    this.layerUpdateFn = this.layerUpdate.bind(this);
+    // this.layerUpdate();
     this.$nextTick(() => {
       if (this.viewModel) {
         this.sourceList = this.viewModel.initLayerList();
         this.sourceNames = this.viewModel.getSourceNames();
       }
     });
+    this.layerUpdateFn = this.layerUpdate.bind(this);
     this.viewModel.on('layersUpdated', this.layerUpdateFn);
   },
   removed() {
     this.sourceList = {};
     this.sourceNames = [];
-    this.viewModel && this.viewModel.off('layersUpdated', this.layerUpdateFn);
   },
   beforeDestory() {
+    this.viewModel && this.viewModel.off('layersUpdated', this.layerUpdateFn);
     this.$options.removed.call(this);
   }
 };

@@ -492,8 +492,8 @@ export default {
           options.series = dataOptions.series.map((element, index) => {
             return Object.assign({}, options.series[index] || {}, element);
           });
-          const labelConfig = options.series[0].label.normal;
-          if (labelConfig.show && labelConfig.position === 'smart') {
+          const labelConfig = options.series[0].label && options.series[0].label.normal;
+          if (labelConfig && labelConfig.show && labelConfig.position === 'smart') {
             options.series.forEach(serie => {
               let label = serie.label.normal;
               label.position = 'top';
@@ -508,8 +508,8 @@ export default {
             });
           } else {
             options.series.forEach(serie => {
-              let label = serie.label.normal;
-              if (label.formatter) {
+              let label = serie.label && serie.label.normal;
+              if (label && label.formatter) {
                 delete label.formatter;
               }
             });

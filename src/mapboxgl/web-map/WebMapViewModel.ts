@@ -1774,9 +1774,11 @@ export default class WebMapViewModel extends WebMapBase {
 
   cleanWebMap() {
     if (this.map) {
+      this.triggerEvent('beforeremovemap');
       this.map.remove();
       this.map = null;
       this._legendList = {};
+      this._sourceListModel = null
       this.center = null;
       this.zoom = null;
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);

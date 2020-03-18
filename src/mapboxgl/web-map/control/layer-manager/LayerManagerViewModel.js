@@ -8,15 +8,20 @@ import WebMapViewModel from '../../WebMapViewModel';
  * @extends mapboxgl.Evented
  */
 class LayerManageViewModel extends mapboxgl.Evented {
-  constructor(map, targetName) {
+  constructor() {
     super();
-    this.map = map;
     this.cacheMaps = {};
     this.cacheIServerMaps = {};
     this.readyNext = true; // 是否可以开始实例化下一个vm
     this.mapQuene = [];
-    this.targetName = targetName;
   }
+
+  setMap(mapInfo) {
+    const { map, mapTarget } = mapInfo;
+    this.map = map;
+    this.mapTarget = mapTarget;
+  }
+
   addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, layerFilter } = {}) {
     // 通过唯一key来判断是否已经new了实例，用来过滤选中后父节点再选中导致的重复new实例
     if (this.cacheMaps[nodeKey]) {
@@ -33,13 +38,12 @@ class LayerManageViewModel extends mapboxgl.Evented {
       });
       return;
     }
-
     this.webMapViewModel = new WebMapViewModel(
       mapId,
       {
         serverUrl,
         withCredentials,
-        target: this.targetName
+        target: this.mapTarget
       },
       {},
       this.map,
@@ -129,6 +133,10 @@ class LayerManageViewModel extends mapboxgl.Evented {
         this.removeLayerLoop(data.children[index]);
       });
     }
+  }
+  removed() {
+    this.cacheMaps = {};
+    this.cacheIServerMaps = {};
   }
 }
 export default LayerManageViewModel;

@@ -254,21 +254,17 @@ export default {
   created() {
     this.showSearch = !this.collapsed;
     this.showIcon = this.collapsed;
+    this.viewModel = new SearchViewModel(this.$props);
   },
   mounted() {
     this.changeSearchInputStyle();
   },
-  loaded() {
-    this.viewModel = new SearchViewModel(this.map, this.$props);
-  },
   removed() {
     this.clearResult(true);
-    this.viewModel && this.viewModel.clear();
   },
   beforeDestroy() {
     this.$message.destroy();
     this.marker && this.marker.remove() && (this.marker = null);
-    this.$options.removed.call(this);
   },
   methods: {
     changeSearchInputStyle() {

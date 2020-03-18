@@ -2,15 +2,19 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class UniqueThemeLayerViewModel extends mapboxgl.Evented {
-  constructor(map, themeProps) {
+  constructor(themeProps) {
     super();
-    this.map = map;
     const { layerName, options, layerId, data } = themeProps;
     this.layerName = layerName || layerId;
     options.id = options.id || layerId;
     this.options = options;
     this.layerId = layerId;
     this.data = data || [];
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
     this._init();
   }
 
@@ -20,7 +24,19 @@ export default class UniqueThemeLayerViewModel extends mapboxgl.Evented {
     this.themeLayer.addFeatures(this.data);
   }
 
-  clear() {
+  setOptions(options) {
+    this.options = options;
+    this.removed();
+    this._init();
+  }
+
+  setData(data) {
+    this.data = data;
+    this.removed();
+    this._init();
+  }
+
+  removed() {
     const { map, options } = this;
     const layerId = options.id;
     if (map && layerId && map.getLayer(layerId)) {

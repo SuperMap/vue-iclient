@@ -76,6 +76,9 @@ export default {
       currentSelect: this.data.select
     };
   },
+  created() {
+    this.viewModel = new TdtMapSwitcherViewModel(this.data.tk);
+  },
   methods: {
     changeBaseLayer(type) {
       this.viewModel.changeBaseLayer(type);
@@ -90,7 +93,6 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new TdtMapSwitcherViewModel(this.map, this.data.tk);
     if (this.data.select) {
       this.viewModel.changeBaseLayer(this.data.select);
       this.togglerLabelLayer(this.data.label);

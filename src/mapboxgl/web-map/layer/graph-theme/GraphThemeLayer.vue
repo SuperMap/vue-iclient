@@ -25,8 +25,30 @@ export default {
       required: true
     }
   },
+  watch: {
+    data: {
+      handler(val) {
+        this.viewModel && this.viewModel.setData(val);
+      },
+      deep: true
+    },
+    options: {
+      handler(val) {
+        this.viewModel && this.viewModel.setOptions(val);
+      },
+      deep: true
+    },
+    chartsType(val) {
+      this.viewModel && this.viewModel.setChartsType(val);
+    },
+    layerName(val) {
+      this.viewModel && this.viewModel.setLayerName(val);
+    }
+  },
+  created() {
+    this.viewModel = new GraphThemeLayerViewModel(this.$props);
+  },
   loaded() {
-    this.viewModel = new GraphThemeLayerViewModel(this.map, this.$props);
     this.$emit('load', this.viewModel.themeLayer, this.map);
   },
   render() {}

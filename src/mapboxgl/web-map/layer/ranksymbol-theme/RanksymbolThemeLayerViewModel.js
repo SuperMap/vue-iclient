@@ -2,9 +2,8 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class RanksymbolThemeLayerViewModel extends mapboxgl.Evented {
-  constructor(map, themeProps) {
+  constructor(themeProps) {
     super();
-    this.map = map;
     const { layerName, options, symbolType, layerId, data } = themeProps;
     this.layerName = layerName || layerId;
     this.symbolType = symbolType || 'Circle';
@@ -12,6 +11,35 @@ export default class RanksymbolThemeLayerViewModel extends mapboxgl.Evented {
     this.options = options;
     this.layerId = layerId;
     this.data = data || [];
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
+    this._init();
+  }
+
+  setLayerName(layerName) {
+    this.layerName = layerName;
+    this.removed();
+    this._init();
+  }
+
+  setSymbolType(symbolType) {
+    this.symbolType = symbolType;
+    this.removed();
+    this._init();
+  }
+
+  setData(data) {
+    this.data = data;
+    this.removed();
+    this._init();
+  }
+
+  setOptions(options) {
+    this.options = options;
+    this.removed();
     this._init();
   }
 
@@ -21,7 +49,7 @@ export default class RanksymbolThemeLayerViewModel extends mapboxgl.Evented {
     this.themeLayer.addFeatures(this.data);
   }
 
-  clear() {
+  removed() {
     const { map, options } = this;
     const layerId = options.id;
     if (map && layerId && map.getLayer(layerId)) {

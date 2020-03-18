@@ -24,12 +24,16 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
   constructor(options) {
     super();
     this.type = options.type;
-    this.map = options.map;
     this.appConfig = config;
     this.token = options.data.tk;
     this.data = Object.assign({}, options.data);
     this.style = 0;
     this.sourceName = { tdtRoutePoints: 'tdt-route-searchRoutePoints', tdtDrawRoutes: 'tdt-route-routes' };
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
   }
   // 分页的params里面应该有mapBound
   searchPoints(keyWord, params, searchUrl = this.data.searchUrl || 'https://api.tianditu.gov.cn/search') {
@@ -179,10 +183,10 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       this.addDestMarker();
       this._addMarker(this.result[id].features.features);
     } else {
-      this.clear();
+      this.removed();
     }
   }
-  clear() {
+  removed() {
     let source = this.map.getSource(this.sourceName.tdtDrawRoutes);
     source &&
       source.setData({

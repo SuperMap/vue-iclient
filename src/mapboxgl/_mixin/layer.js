@@ -65,13 +65,13 @@ export default {
     }
   },
   created() {
-    if (this.minzoom) {
+    if (this.minzoom || this.minzoom === 0) {
       this.$watch('minzoom', function(next) {
         this.map.setLayerZoomRange(this.layerId, next, this.maxzoom);
       });
     }
 
-    if (this.maxzoom) {
+    if (this.maxzoom || this.minzoom === 0) {
       this.$watch('maxzoom', function(next) {
         this.map.setLayerZoomRange(this.layerId, this.minzoom, next);
       });
@@ -102,6 +102,10 @@ export default {
         }
       });
     }
+
+    this.$watch('layerId', function(newLayerId) {
+      this.viewModel && this.viewModel.setLayerId && this.viewModel.setLayerId(newLayerId);
+    });
   },
   methods: {
     $_emitEvent(name, data = {}) {
@@ -137,7 +141,6 @@ export default {
     remove() {
       this.viewModel && this.viewModel.clear && this.viewModel.clear();
       this.$_emitEvent('layer-removed');
-      this.$destroy();
     }
   },
   removed() {

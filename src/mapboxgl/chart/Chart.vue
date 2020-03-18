@@ -7,19 +7,10 @@ import ChartViewModel from './ChartViewModel';
 export default {
   name: 'SmChart',
   mixins: [ChartCommon, MapGetter, Control],
-  loaded() {
-    this.viewModel = new ChartViewModel(this.map);
-  },
-  beforeDestroy() {
-    this.$options.removed.call(this);
-  },
-  removed() {
-    this.clearPopup();
+  created() {
+    this.viewModel = new ChartViewModel();
   },
   methods: {
-    clearPopup() {
-      this.viewModel && this.viewModel.clear();
-    },
     changePopupArrowStyle() {
       const popupArrow = document.querySelector('.sm-component-chart-result-popup .mapboxgl-popup-tip');
       if (popupArrow) {

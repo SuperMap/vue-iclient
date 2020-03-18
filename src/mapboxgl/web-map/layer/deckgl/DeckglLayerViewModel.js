@@ -3,14 +3,30 @@ import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import '../../../../../static/libs/deckgl/deck.gl.min';
 
 export default class DeckglLayerViewModel extends mapboxgl.Evented {
-  constructor(map, deckglProps) {
+  constructor(deckglProps) {
     super();
-    this.map = map;
     const { layerType, options, layerId } = deckglProps;
     this.layerType = layerType;
     options.data = options.data || [];
     options.layerId = options.layerId || layerId;
     this.options = options;
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
+    this._init();
+  }
+
+  setLayerType(layerType) {
+    this.layerType = layerType;
+    this.removed();
+    this._init();
+  }
+
+  setOptions(options) {
+    this.options = options;
+    this.removed();
     this._init();
   }
 
@@ -25,7 +41,7 @@ export default class DeckglLayerViewModel extends mapboxgl.Evented {
     this.map.addLayer(deckglLayer);
   }
 
-  clear() {
+  removed() {
     const { map, options: { layerId } } = this;
     if (map && layerId && map.getLayer(layerId)) {
       map.removeLayer(layerId);

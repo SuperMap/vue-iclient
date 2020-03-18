@@ -102,12 +102,12 @@ export default {
       }
     }
   },
+  created() {
+    this.viewModel = new LayerManagerViewModel();
+  },
   mounted() {
     this.changeCheckBoxStyle();
     this.changeArrowStyle();
-  },
-  beforeDestroy() {
-    this.cleanStatus();
   },
   methods: {
     checkNode(key, e) {
@@ -235,16 +235,9 @@ export default {
   },
   loaded() {
     this.mapIsLoad = true;
-    const targetName = this.getTargetName();
-    this.viewModel = new LayerManagerViewModel(this.map, targetName);
-    this.checkedKeys = [];
-    this.changeCheckBoxStyle();
-    this.changeArrowStyle();
   },
   removed() {
-    this.checkedKeys = [];
-    this.changeCheckBoxStyle();
-    this.changeArrowStyle();
+    this.cleanStatus();
   }
 };
 </script>

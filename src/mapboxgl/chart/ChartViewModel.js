@@ -1,14 +1,18 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
 export default class ChartViewModel extends mapboxgl.Evented {
-  constructor(map, options) {
+  constructor(options) {
     super();
-    this.map = map;
     this.options = options;
   }
 
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
+  }
+
   setPopupContent(coordinates, popupContainer, callback) {
-    this.clear();
+    this.removed();
     popupContainer.style.display = 'block';
     this.popup = new mapboxgl.Popup({
       className: 'sm-mapboxgl-tabel-popup sm-component-chart-result-popup',
@@ -30,7 +34,7 @@ export default class ChartViewModel extends mapboxgl.Evented {
     this.map.flyTo({ center: coordinates });
   }
 
-  clear() {
+  removed() {
     if (this.popup) {
       this.popup.remove();
       this.popup = null;

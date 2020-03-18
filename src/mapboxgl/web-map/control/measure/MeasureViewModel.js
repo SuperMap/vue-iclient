@@ -20,10 +20,14 @@ class MeasureViewModel extends mapboxgl.Evented {
     this.areaTipNodesList = {}; // 收集多绘制情况下 测量面积最后生成的结果popup
     this.cacheLengthUnitList = {}; // 缓存量算长度每个节点的值跟单位，在修改单位时使用
     this.cachePolygonUnit = {};
-    this.map = options.map;
-    this.mapTarget = options.mapTarget;
     this.componentName = options.componentName;
     this.continueDraw = options.continueDraw;
+  }
+
+  setMap(mapInfo) {
+    const { map, mapTarget } = mapInfo;
+    this.map = map;
+    this.mapTarget = mapTarget;
     this._addDrawControl();
   }
 
@@ -364,13 +368,16 @@ class MeasureViewModel extends mapboxgl.Evented {
     this._removeHoverPopup();
   }
 
-  clear() {
+  removed() {
     this.isEditing = false;
     this.ids && this.draw.delete(this.ids);
     this.ids = [];
+    this.cacheLengthUnitList = {};
+    this.cachePolygonUnit = {};
     this._clearEvent();
     this._removePopups();
     this._removeHoverPopup();
+    this.draw = null;
   }
 }
 export default MeasureViewModel;
