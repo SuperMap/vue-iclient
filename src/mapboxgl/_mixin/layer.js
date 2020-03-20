@@ -139,7 +139,7 @@ export default {
       });
     },
     remove() {
-      this.viewModel && this.viewModel.clear && this.viewModel.clear();
+      this.viewModel && this.viewModel.clear && this.viewModel.removed();
       this.$_emitEvent('layer-removed');
     }
   },

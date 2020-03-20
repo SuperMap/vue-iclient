@@ -340,7 +340,7 @@ export default {
     },
     inputValueCleared(emitEvent = true) {
       this.clearResult(true);
-      this.viewModel && this.viewModel.clear();
+      this.viewModel && this.viewModel.removed();
       emitEvent && this.$emit('clear-search-result');
     },
     searchResultListClicked(data, event) {

@@ -134,7 +134,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
       return;
     }
     if (features.features.length === 0) {
-      this.viewModel.clear();
+      this.viewModel.removed();
       return;
     }
     switch (this.type) {
