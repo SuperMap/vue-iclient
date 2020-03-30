@@ -253,8 +253,8 @@ export default class WebMapViewModel extends WebMapBase {
   _createMap(mapInfo?): void {
     if (!mapInfo) {
       this.mapOptions.container = this.target;
-      if(typeof this.proxy === 'string' && !this.mapOptions.transformRequest) {
-        this.mapOptions.transformRequest = (url: string, resourceType : string) => {
+      if (typeof this.proxy === 'string' && !this.mapOptions.transformRequest) {
+        this.mapOptions.transformRequest = (url: string, resourceType: string) => {
           let proxyType = 'data';
           if (resourceType === 'Tile') {
             proxyType = 'image';
@@ -263,7 +263,7 @@ export default class WebMapViewModel extends WebMapBase {
           return {
             url: proxy + encodeURIComponent(url)
           };
-        }
+        };
       }
       setTimeout(() => {
         this.map = new mapboxgl.Map(this.mapOptions);
@@ -283,12 +283,25 @@ export default class WebMapViewModel extends WebMapBase {
     let center = this._getMapCenter(mapInfo);
     // zoom
     let zoom = mapInfo.level || 0;
-    // @ts-ignore
-    const zoomBase = +Math.log2(
-      this._getResolution(mapboxgl.CRS.get(this.baseProjection).getExtent()) / this._getResolution(mapInfo.extent)
-    ).toFixed(2);
-    zoom += zoomBase;
-    const { interactive, bounds } = this.mapOptions;
+    let zoomBase = 0;
+    let { interactive, bounds } = this.mapOptions;
+    if (mapInfo.visibleExtent && mapInfo.visibleExtent.length === 4 && !bounds) {
+      bounds = [
+        this._unproject([mapInfo.visibleExtent[0], mapInfo.visibleExtent[1]]),
+        this._unproject([mapInfo.visibleExtent[2], mapInfo.visibleExtent[3]])
+      ];
+    }
+    if (!bounds) {
+      if (mapInfo.minScale && mapInfo.maxScale) {
+        zoomBase = this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection));
+      } else {
+        zoomBase = +Math.log2(
+          this._getResolution(mapboxgl.CRS.get(this.baseProjection).getExtent()) / this._getResolution(mapInfo.extent)
+        ).toFixed(2);
+      }
+      zoom += zoomBase;
+    }
+
     // 初始化 map
     this.map = new mapboxgl.Map({
       container: this.target,
@@ -385,8 +398,8 @@ export default class WebMapViewModel extends WebMapBase {
 
         if (layer.visibleScale) {
           let { minScale, maxScale } = layer.visibleScale;
-          layer.minzoom = this._transformScaleToZoom(minScale);
-          layer.maxzoom = this._transformScaleToZoom(maxScale) + 0.0000001;
+          layer.minzoom = Math.max(this._transformScaleToZoom(minScale), 0);
+          layer.maxzoom = Math.min(24, this._transformScaleToZoom(maxScale) + 0.0000001);
         }
 
         if (type === 'tile') {
@@ -1656,13 +1669,14 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _unproject(point: [number, number]): [number, number] {
+    const sourceProjection = this._unprojectProjection || this.baseProjection;
+    if (sourceProjection === 'EPSG:4326') {
+      return point;
+    }
     // @ts-ignore
-    return proj4(
-      this._unprojectProjection || this.baseProjection,
-      this.baseProjection === 'EPSG:3857' ? 'EPSG:4326' : this.baseProjection,
-      point
-    );
+    return proj4(sourceProjection, 'EPSG:4326', point);
   }
+
   private _getMapCenter(mapInfo) {
     // center
     let center: [number, number] | mapboxglTypes.LngLat;
@@ -1671,9 +1685,7 @@ export default class WebMapViewModel extends WebMapBase {
     if (!center) {
       center = [0, 0];
     }
-    if (this.baseProjection === 'EPSG:3857') {
-      center = this._unproject(center);
-    }
+    center = this._unproject(center);
 
     center = new mapboxgl.LngLat(center[0], center[1]);
 
@@ -1778,7 +1790,7 @@ export default class WebMapViewModel extends WebMapBase {
       this.map.remove();
       this.map = null;
       this._legendList = {};
-      this._sourceListModel = null
+      this._sourceListModel = null;
       this.center = null;
       this.zoom = null;
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
@@ -1811,14 +1823,14 @@ export default class WebMapViewModel extends WebMapBase {
     return Math.max(bounds[2] - bounds[0], bounds[3] - bounds[1]) / tileSize;
   }
 
-  private _transformScaleToZoom(scale) {
-    let scale_0 = 591658710.909131;
+  private _transformScaleToZoom(scale, crs?) {
+    let scale_0 = 295829515.2024169;
     //@ts-ignore
-    if (this.map.getCRS().epsgCode !== 'EPSG:3857') {
-      scale_0 = 295829355.4545922;
+    if ((crs || this.map.getCRS()).epsgCode !== 'EPSG:3857') {
+      scale_0 = 295295895;
     }
     const scaleDenominator = scale.split(':')[1];
-    return +Math.log2(scale_0 / +scaleDenominator).toFixed(2);
+    return Math.min(24, +Math.log2(scale_0 / +scaleDenominator).toFixed(2));
   }
 
   private _updateLayer(layerInfo) {
