@@ -24,6 +24,7 @@
   }
   @include e(header-content) {
     display: flex;
+    height: 100%;
     & > div {
       text-align: center;
       flex: 1;
@@ -33,6 +34,8 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+      align-self: center;
+      min-width: 5%;
     }
   }
   @include e(animate) {
@@ -57,6 +60,8 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+      align-self: center;
+      min-width: 5%;
     }
   }
 }

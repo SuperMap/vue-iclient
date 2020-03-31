@@ -57,6 +57,10 @@ export default {
     indicatorColor: {
       type: String
     },
+    // title/unit
+    textFontSize: {
+      type: [String, Number]
+    },
     fontSize: {
       type: [String, Number]
     },
@@ -132,7 +136,7 @@ export default {
   computed: {
     unit_titleStyle() {
       return {
-        fontSize: parseFloat(this.fontSize) * 0.66 + this.fontUnit,
+        fontSize: this.textFontSize || (parseFloat(this.fontSize) * 0.66 + this.fontUnit),
         fontWeight: this.fontWeight
       };
     },
@@ -254,7 +258,8 @@ export default {
       this.getRestService().getData(this.url);
     },
     changeNumData(newData) {
-      this.startData = this.animated ? +this.numData : +newData;
+      const startData = this.animated ? +this.numData : +newData;
+      this.startData = isNaN(startData) ? 0 : startData;
       this.numData = +newData;
       this.indicatorNum = newData;
     },
