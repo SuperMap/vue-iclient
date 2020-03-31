@@ -197,9 +197,7 @@ export default {
     return {
       chartId: UniqueId(`${this.$options.name.toLowerCase()}-`),
       smChart: null, // echarts实例
-      chartTheme: {}, // 图表的主题
       echartOptions: {}, // 最后生成的echart数据
-      echartsDataService: null, // 请求数据的实例，保存请求回来的数据
       datasetChange: false, // dataset是否改变
       dataSeriesCache: {},
       tablePopupProps: {}
@@ -335,9 +333,7 @@ export default {
   },
   mounted() {
     // 设置echarts实例
-    let chartId = this.chartId;
-    this.smChart = this.$refs[chartId];
-
+    this.smChart = this.$refs[this.chartId];
     // 派发echart所有事件
     let smChart = this._getEchart();
     const self = this;
