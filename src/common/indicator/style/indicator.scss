@@ -23,7 +23,7 @@
   @include e(content) {
     display: flex;
     flex-flow: row nowrap;
-    align-items: flex-start;
+    align-items: flex-end;
     font-weight: bolder;
     margin-right: 10px;
   }
@@ -31,10 +31,11 @@
     font-weight: bolder;
     color: rgb(73, 155, 255);
     font-size: 22px;
+    line-height: 1;
   }
   @include e(unit) {
     text-indent: 5px;
     font-size: 16px;
-    line-height: 2.3;
+    line-height: 1.2;
   }
 }

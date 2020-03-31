@@ -34,6 +34,7 @@ import UniqueId from 'lodash.uniqueid';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
 import debounce from 'lodash/debounce';
+import cloneDeep from 'lodash.clonedeep';
 import Card from '../_mixin/card';
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
@@ -453,8 +454,8 @@ export default {
       });
     },
     _optionsHandler(options, dataOptions) {
-      dataOptions = dataOptions && JSON.parse(JSON.stringify(dataOptions)); // clone 避免引起重复刷新
-      options = options && JSON.parse(JSON.stringify(options)); // clone 避免引起重复刷新
+      dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
+      options = options && cloneDeep(options); // clone 避免引起重复刷新
       if (options && options.legend && !options.legend.type) {
         options.legend.type = 'scroll';
       }
@@ -502,7 +503,7 @@ export default {
                 return result;
               };
             });
-          } else {
+          } else if (options.series[0].type !== 'pie') {
             options.series.forEach(serie => {
               let label = serie.label && serie.label.normal;
               if (label && label.formatter) {
