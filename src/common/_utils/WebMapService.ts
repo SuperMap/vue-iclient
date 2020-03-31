@@ -510,7 +510,11 @@ export default class WebMapService extends Events {
         return response.json();
       })
       .then(function(result) {
-        if (result && result.featureMetaData) {
+        if (!result) {
+          faild();
+          return;
+        }
+        if (result.featureMetaData) {
           layerInfo.featureType = result.featureMetaData.featureType.toUpperCase();
           layerInfo.dataSource = { dataTypes: {} };
           if (result.featureMetaData.fieldInfos && result.featureMetaData.fieldInfos.length > 0) {
@@ -525,13 +529,10 @@ export default class WebMapService extends Events {
               }
             });
           }
-          layerInfo.wsUrl = result.urls[0].url;
-          layerInfo.name = result.urls[0].url.split('iserver/services/')[1].split('/dataflow')[0];
-          success();
-        } else {
-          //失败也要到成功会调函数中，否则不会继续执行
-          faild();
         }
+        layerInfo.wsUrl = result.urls[0].url;
+        layerInfo.name = result.urls[0].url.split('iserver/services/')[1].split('/dataflow')[0];
+        success();
       })
       .catch(function() {
         faild();
