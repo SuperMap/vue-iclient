@@ -156,8 +156,7 @@ interface controlProps {
     'mapOptions.pitch',
     'withCredentials',
     'proxy'
-  ],
-  inheritAttrs: false
+  ]
 })
 class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   spinning = true;

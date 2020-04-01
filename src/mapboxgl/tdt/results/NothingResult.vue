@@ -42,7 +42,6 @@ import Theme from '../../../common/_mixin/theme';
 export default {
   name: 'NothingResult',
   mixins: [Theme],
-  inheritAttrs: false,
   props: {
     data: {
       type: Array,

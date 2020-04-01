@@ -52,7 +52,6 @@ import Theme from '../../../common/_mixin/theme';
 export default {
   name: 'StatisticsResult',
   mixins: [Theme],
-  inheritAttrs: false,
   props: {
     keyWord: {
       type: String

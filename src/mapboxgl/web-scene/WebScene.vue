@@ -15,8 +15,7 @@ import WebSceneViewModel from './WebSceneViewModel';
 import isEqual from 'lodash.isequal';
 
 @Component({
-  name: 'SmWebScene',
-  inheritAttrs: false
+  name: 'SmWebScene'
 })
 class SmWebScene extends Vue {
   WebSceneViewModel: WebSceneViewModel;

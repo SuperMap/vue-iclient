@@ -40,7 +40,6 @@ export default {
     countTo: CountTo
   },
   mixins: [Theme, Timer],
-  inheritAttrs: false,
   props: {
     title: {
       type: String,
