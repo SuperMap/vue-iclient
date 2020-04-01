@@ -226,6 +226,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     setTimeout(() => {
       // @ts-ignore
       this.containerHeight = this.$el.offsetHeight;
+      // @ts-ignore
       this.containerWidth = this.$el.offsetWidth;
     }, 0);
   }
