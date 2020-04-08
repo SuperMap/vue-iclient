@@ -59,6 +59,8 @@ interface webMapOptions {
 export default class WebMapService extends Events {
   mapId: string;
 
+  mapInfo: any;
+
   serverUrl: string;
 
   accessToken: string;
@@ -84,9 +86,13 @@ export default class WebMapService extends Events {
     image: 'apps/viewer/getUrlResource.png?url='
   };
 
-  constructor(mapId: string, options: webMapOptions = {}) {
+  constructor(mapId: string | object, options: webMapOptions = {}) {
     super();
-    this.mapId = mapId;
+    if (typeof mapId === 'string') {
+      this.mapId = mapId;
+    } else if (mapId !== null && typeof mapId === 'object') {
+      this.mapInfo = mapId;
+    }
     this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
@@ -122,6 +128,9 @@ export default class WebMapService extends Events {
   }
 
   public getMapInfo() {
+    if (!this.mapId && this.mapInfo) {
+      return new Promise(resolve => this.mapInfo);
+    }
     let mapUrl = this._handleMapUrl();
     return new Promise(async (resolve, reject) => {
       try {

@@ -96,7 +96,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _layerTimerList: Array<any> = [];
 
   constructor(
-    id,
+    id: string | object,
     options: webMapOptions = {},
     // @ts-ignore fix-mapoptions
     mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
@@ -106,7 +106,11 @@ export default class WebMapViewModel extends WebMapBase {
     }
   ) {
     super(id, options, mapOptions);
-    this.mapId = id;
+    if (typeof id === "string") {
+      this.mapId = id;
+    } else if (id !== null && typeof id === "object") {
+      this.webMapInfo = id;
+    }
     if (!this.mapId && !mapOptions.center && !mapOptions.zoom) {
       mapOptions.center = [0, 0];
       mapOptions.zoom = 0;

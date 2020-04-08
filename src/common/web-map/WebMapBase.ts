@@ -14,7 +14,9 @@ const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 export default abstract class WebMapBase extends Events {
   map: any;
 
-  mapId: string;
+  mapId: string | object;
+
+  webMapInfo: any;
 
   mapOptions: any;
 
@@ -60,7 +62,6 @@ export default abstract class WebMapBase extends Events {
 
   constructor(id, options?, mapOptions?) {
     super();
-    this.mapId = id;
     this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
@@ -83,6 +84,18 @@ export default abstract class WebMapBase extends Events {
       'projectionIsNotMatch',
       'beforeremovemap'
     ];
+    if (typeof id === "string") {
+      this.mapId = id;
+    } else if (id !== null && typeof id === "object") {
+      // 传入的id为webmap对象时
+      let mapInfo = id;
+      mapInfo.mapParams = {
+        title: id.title,
+        description: id.description
+      };
+      this.mapParams = mapInfo.mapParams;
+      this._getMapInfo(mapInfo, null);
+    }
   }
 
   abstract _initWebMap(): void;
@@ -155,7 +168,16 @@ export default abstract class WebMapBase extends Events {
 
   protected initWebMap() {
     this.cleanWebMap();
-    if (!this.mapId || !this.serverUrl) {
+    if (this.webMapInfo) { // 传入是webmap对象
+      let mapInfo = this.webMapInfo;
+      mapInfo.mapParams = {
+        title: this.webMapInfo.title,
+          description: this.webMapInfo.description
+      }
+      this.mapParams = mapInfo.mapParams;
+      this._getMapInfo(mapInfo, null);
+      return;
+    } else if (!this.mapId || !this.serverUrl) {
       this._createMap();
       return;
     }
@@ -241,7 +263,7 @@ export default abstract class WebMapBase extends Events {
       getLayerFunc
         .then(
           result => {
-            if (this._taskID !== _taskID) {
+            if (this.mapId && this._taskID !== _taskID) {
               return;
             }
             this._getLayerFeaturesSucceeded(result, layer);
