@@ -29,6 +29,7 @@ const WORLD_WIDTH = 360;
  * @param {String} [options.tiandituKey] - 用于访问天地图的服务。当设置 `id` 时有效。
  * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。当设置 `id` 时有效。
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
+ * @param {boolean} [options.ignoreBaseProjection = 'false'] - 是否忽略底图坐标系和叠加图层坐标系不一致。
  * @fires WebMapViewModel#mapinitialized
  * @fires WebMapViewModel#getmapinfofailed
  * @fires WebMapViewModel#getlayerdatasourcefailed
@@ -225,7 +226,7 @@ export default class WebMapViewModel extends WebMapBase {
 
       if (this.map) {
         // @ts-ignore
-        if (this.map.getCRS().epsgCode !== this.baseProjection) {
+        if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
           this.triggerEvent('projectionIsNotMatch', {});
           return;
         }

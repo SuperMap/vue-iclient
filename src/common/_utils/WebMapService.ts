@@ -129,7 +129,7 @@ export default class WebMapService extends Events {
 
   public getMapInfo() {
     if (!this.mapId && this.mapInfo) {
-      return new Promise(resolve => this.mapInfo);
+      return new Promise(resolve => { resolve(this.mapInfo)});
     }
     let mapUrl = this._handleMapUrl();
     return new Promise(async (resolve, reject) => {

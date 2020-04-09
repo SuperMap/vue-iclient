@@ -44,6 +44,8 @@ export default abstract class WebMapBase extends Events {
 
   baseProjection: string;
 
+  ignoreBaseProjection: boolean;
+
   on: any;
 
   echartslayer: any = [];
@@ -71,6 +73,7 @@ export default abstract class WebMapBase extends Events {
     this.target = options.target || 'map';
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
     this.isSuperMapOnline = options.isSuperMapOnline;
+    this.ignoreBaseProjection = options.ignoreBaseProjection;
     this.echartslayer = [];
     this.webMapService = new WebMapService(id, options);
     this.mapOptions = mapOptions;
@@ -84,18 +87,7 @@ export default abstract class WebMapBase extends Events {
       'projectionIsNotMatch',
       'beforeremovemap'
     ];
-    if (typeof id === "string") {
-      this.mapId = id;
-    } else if (id !== null && typeof id === "object") {
-      // 传入的id为webmap对象时
-      let mapInfo = id;
-      mapInfo.mapParams = {
-        title: id.title,
-        description: id.description
-      };
-      this.mapParams = mapInfo.mapParams;
-      this._getMapInfo(mapInfo, null);
-    }
+    this.mapId = id;
   }
 
   abstract _initWebMap(): void;
