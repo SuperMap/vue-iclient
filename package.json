@@ -14,7 +14,7 @@
     "e2e": "node test/e2e/runner.js --test ",
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
-    "prepublishOnly": "node ./build/publish.js",
+    "prepublishOnly": "node build/publish.js",
     "publish:all": "npm run build -leaflet && npm publish -leaflet && npm run build -mapboxgl && npm publish -mapboxgl"
   },
   "dependencies": {
