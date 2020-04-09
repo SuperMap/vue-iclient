@@ -41,22 +41,18 @@ export default {
       this.viewModel && this.viewModel.setMaxWidth(this.maxWidth);
     }
   },
+  created() {
+    this.viewModel = new ScaleViewModel();
+    this.viewModel.on('scaleupdated', this.scaleUpdatedFn);
+  },
   methods: {
-    inlitializeScale(map) {
-      let scaleViewModel = new ScaleViewModel(map);
-      this.viewModel = scaleViewModel;
-      this.updateContainer();
-      scaleViewModel.onMoveEvt();
-    },
-    updateContainer() {
-      this.viewModel.on('scaleupdated', e => {
-        this.content = e.containerContent;
-        this.$el.style.width = e.containerWidth;
-      });
+    scaleUpdatedFn(e) {
+      this.content = e.containerContent;
+      this.$el.style.width = e.containerWidth;
     }
   },
-  loaded() {
-    this.inlitializeScale(this.map);
+  beforeDestory() {
+    this.viewModel.off('scaleupdated', this.scaleUpdatedFn);
   }
 };
 </script>

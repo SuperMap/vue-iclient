@@ -84,41 +84,41 @@ const webpackConfig = merge(baseWebpackConfig, {
       if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
         return callback(null, {
           root: 'mapboxgl',
-          commonjs: '../../static/libs/mapboxgl/mapbox-gl-enhance.js',
-          commonjs2: '../../static/libs/mapboxgl/mapbox-gl-enhance.js',
-          amd: '../../static/libs/mapboxgl/mapbox-gl-enhance.js'
+          commonjs: '../static/libs/mapboxgl/mapbox-gl-enhance.js',
+          commonjs2: '../static/libs/mapboxgl/mapbox-gl-enhance.js',
+          amd: '../static/libs/mapboxgl/mapbox-gl-enhance.js'
         });
       }
       if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
         return callback(null, {
           root: 'DeckGL',
-          commonjs: '../../static/libs/deckgl/deck.gl.min.js',
-          commonjs2: '../../static/libs/deckgl/deck.gl.min.js',
-          amd: '../../static/libs/deckgl/deck.gl.min.js'
+          commonjs: '../static/libs/deckgl/deck.gl.min.js',
+          commonjs2: '../static/libs/deckgl/deck.gl.min.js',
+          amd: '../static/libs/deckgl/deck.gl.min.js'
         });
       }
       if (/\/static\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
         return callback(null, {
           root: 'EchartsLayer',
-          commonjs: '../../static/libs/echarts-layer/EchartsLayer.js',
-          commonjs2: '../../static/libs/echarts-layer/EchartsLayer.js',
-          amd: '../../static/libs/echarts-layer/EchartsLayer.js'
+          commonjs: '../static/libs/echarts-layer/EchartsLayer.js',
+          commonjs2: '../static/libs/echarts-layer/EchartsLayer.js',
+          amd: '../static/libs/echarts-layer/EchartsLayer.js'
         });
       }
       if (/\/static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
         return callback(null, {
           root: 'SuperMap',
-          commonjs: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
-          commonjs2: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
-          amd: '../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
+          commonjs: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+          commonjs2: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
+          amd: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
         });
       }
       if (/\/static\/libs\/mapbox-gl-draw\/mapbox-gl-draw/.test(request)) {
         return callback(null, {
           root: 'MapboxDraw',
-          commonjs: '../../static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
-          commonjs2: '../../static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
-          amd: '../../static/libs/mapbox-gl-draw/mapbox-gl-draw.js'
+          commonjs: '../static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
+          commonjs2: '../static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
+          amd: '../static/libs/mapbox-gl-draw/mapbox-gl-draw.js'
         });
       }
       callback();
@@ -128,6 +128,10 @@ const webpackConfig = merge(baseWebpackConfig, {
     minimizer: []
   },
   plugins: [
+    new webpack.HashedModuleIdsPlugin({
+      hashFunction: 'sha256',
+      hashDigest: 'hex'
+    }),
     // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
@@ -146,8 +150,8 @@ const webpackConfig = merge(baseWebpackConfig, {
    `),
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../static/index.js'),
-        to: path.resolve(__dirname, '../dist/mapboxgl')
+        from: path.resolve(__dirname, '../static/mbgl-index.js'),
+        to: path.resolve(__dirname, '../dist/mapboxgl/index.js')
       }
     ])
   ]

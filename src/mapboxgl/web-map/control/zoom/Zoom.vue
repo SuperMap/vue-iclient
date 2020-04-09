@@ -6,7 +6,9 @@
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
         icon="plus"
         :disabled="!canZoomIn"
-        :style="activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]"
+        :style="
+          activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]
+        "
         @click="zoomIn"
       ></a-button>
       <a-button
@@ -14,7 +16,9 @@
         class="sm-component-zoom__button sm-component-zoom__button--zoomout"
         icon="minus"
         :disabled="!canZoomOut"
-        :style="activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]"
+        :style="
+          activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]
+        "
         @click="zoomOut"
       ></a-button>
     </div>
@@ -70,6 +74,9 @@ export default {
         this.changeSliderStyle();
       }
     }
+  },
+  created() {
+    this.viewModel = new ZoomViewModel();
   },
   mounted() {
     this.changeSliderStyle();
@@ -128,21 +135,19 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new ZoomViewModel(this.map);
     this.canZoomIn = this.getMaxZoom() > this.getZoom();
     this.canZoomOut = this.getMinZoom() < this.getZoom();
-    let me = this;
     this.map.on('zoomend', () => {
       this.activeZoomMode = '';
       if (this.getMaxZoom() <= Math.ceil(this.getZoom())) {
-        me.canZoomIn = false;
+        this.canZoomIn = false;
       } else {
-        me.canZoomIn = true;
+        this.canZoomIn = true;
       }
       if (this.getMinZoom() >= Math.floor(this.getZoom())) {
-        me.canZoomOut = false;
+        this.canZoomOut = false;
       } else {
-        me.canZoomOut = true;
+        this.canZoomOut = true;
       }
     });
     // 设置slider的最大最小值

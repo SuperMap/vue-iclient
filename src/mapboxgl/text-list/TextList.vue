@@ -6,8 +6,14 @@
     >
       <div class="sm-component-text-list__header-content">
         <template v-if="animateContent && animateContent.length > 0">
-          <template v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])">
-            <div :key="index" :style="[listStyle.headerLineHeight, fontSizeStyle]" :title="item">{{ item }}</div>
+          <template
+            v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])"
+          >
+            <div
+              :key="index"
+              :style="[fontSizeStyle, { flex: getColumnWidth(index) }]"
+              :title="item"
+            >{{ item }}</div>
           </template>
         </template>
       </div>
@@ -27,7 +33,11 @@
             class="sm-component-text-list__list"
             :style="[listStyle.rowStyle, getRowStyle(index)]"
           >
-            <div v-for="(items, index2) in item" :key="index2" :style="listStyle.rowHeight">{{ items }}</div>
+            <div
+              v-for="(items, index2, itemIndex) in item"
+              :key="index2"
+              :style="{flex: getColumnWidth(itemIndex)}"
+            >{{ items }}</div>
           </div>
         </template>
       </div>
@@ -62,6 +72,8 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   containerHeight: number = 0;
 
+  containerWidth: number = 0;
+
   resizeHandler: Function;
 
   listStyle: any = {};
@@ -84,6 +96,12 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Prop() fields: Array<string>; // 显示的字段名
 
+  @Prop() columnWidths: Array<number>; // 列宽
+
+  @Prop() rowHeight: number; // 行高
+
+  @Prop() headerHeight: number; // 表头行高
+
   @Watch('content')
   contentChanged(newVal, oldVal) {
     if (!isEqual(newVal, oldVal)) {
@@ -95,12 +113,12 @@ class SmTextList extends Mixins(Theme, Timer) {
   @Watch('dataset')
   datasetChanged(newVal, oldVal) {
     if (!isEqual(newVal, oldVal)) {
-      if (this.dataset && this.dataset.url) {
+      if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
         this.getFeaturesFromDataset();
       } else {
-        this.featuresData = [];
-        this.listData = [];
-        this.animateContent = [];
+        // this.featuresData = [];
+        // this.listData = [];
+        // this.animateContent = [];
         clearInterval(this.startInter);
       }
     }
@@ -128,6 +146,16 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Watch('rows')
   rowsChanged() {
+    this.getListHeightStyle();
+  }
+
+  @Watch('rowHeight')
+  rowHeightChanged() {
+    this.getListHeightStyle();
+  }
+
+  @Watch('headerHeight')
+  headerHeightChanged() {
     this.getListHeightStyle();
   }
 
@@ -163,6 +191,16 @@ class SmTextList extends Mixins(Theme, Timer) {
     };
   }
 
+  get getColumnWidth() {
+    return function (index) {
+      if (this.columnWidths && this.columnWidths.length > 0) {
+        const width = this.columnWidths[index];
+        return width ? `0 0 ${width / 100 * this.containerWidth}px` : 1;
+      }
+      return 1;
+    };
+  }
+
   mounted() {
     this.setListData();
 
@@ -173,6 +211,8 @@ class SmTextList extends Mixins(Theme, Timer) {
           if (this.$el) {
             // @ts-ignore
             this.containerHeight = this.$el.offsetHeight;
+            // @ts-ignore
+            this.containerWidth = this.$el.offsetWidth;
           }
         },
         500,
@@ -186,13 +226,15 @@ class SmTextList extends Mixins(Theme, Timer) {
     setTimeout(() => {
       // @ts-ignore
       this.containerHeight = this.$el.offsetHeight;
+      // @ts-ignore
+      this.containerWidth = this.$el.offsetWidth;
     }, 0);
   }
 
   setListData() {
     if (this.content && this.content.length > 0) {
       this.listData = this.handleContent(this.content);
-    } else if (this.dataset && this.dataset.url) {
+    } else if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
       this.getFeaturesFromDataset();
     }
   }
@@ -204,13 +246,18 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   getFeaturesFromDataset(initLoading = true) {
-    initLoading && (this.spinning = true);
-    getFeatures(this.dataset).then(data => {
-      initLoading && (this.spinning = false);
-      this.featuresData = data;
-      this.listData = this.handleFeatures(data);
-      this.getListHeightStyle();
-    });
+    // 如果是geojson就不加loading
+    let { url, geoJSON } = this.dataset;
+    url && initLoading && (this.spinning = true);
+    // 有url或geojson ,dataset才发请求
+    if (url || geoJSON) {
+      getFeatures(this.dataset).then(data => {
+        this.dataset.url && initLoading && (this.spinning = false);
+        this.featuresData = data;
+        this.listData = this.handleFeatures(data);
+        this.getListHeightStyle();
+      });
+    }
   }
 
   getListHeightStyle() {
@@ -219,17 +266,19 @@ class SmTextList extends Mixins(Theme, Timer) {
       return;
     }
     let height = this.containerHeight;
-    let headerHeight = { height: height * 0.15 + 'px' };
-    let headerLineHeight = { lineHeight: height * 0.15 + 'px' };
-    let contentHeight = { height: height - height * 0.15 + 'px' };
-    let rowHeight;
-    if (this.listData.length < this.rows) {
-      rowHeight = (height - height * 0.15) / this.listData.length;
-    } else {
-      rowHeight = (height - height * 0.15) / this.rows;
+    const headerHeightNum = this.headerHeight || (height * 0.15);
+    let headerHeight = { height: `${headerHeightNum}px` };
+    const contentHeightNum = height - headerHeightNum;
+    let contentHeight = { height: `${contentHeightNum}px` };
+    let rowHeight = this.rowHeight;
+    if (!rowHeight) {
+      if (this.listData.length < this.rows) {
+        rowHeight = contentHeightNum / this.listData.length;
+      } else {
+        rowHeight = contentHeightNum / this.rows;
+      }
     }
     let rowStyle = { height: rowHeight + 'px' };
-    rowHeight = { lineHeight: rowHeight + 'px' };
 
     if (this.autoRolling) {
       if (this.listData.length > 2) {
@@ -238,7 +287,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     } else {
       clearInterval(this.startInter);
     }
-    this.listStyle = { headerHeight, headerLineHeight, contentHeight, rowHeight, rowStyle };
+    this.listStyle = { headerHeight, contentHeight, rowStyle };
   }
 
   handleContent(content) {

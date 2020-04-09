@@ -15,7 +15,7 @@ let argv = JSON.parse(process.env['npm_config_argv']);
 let origin = argv.original;
 
 if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  let type = origin[2].split('-')[1];
+  let type = origin[2].replace("-", "");
   webpackConfig = require(`./webpack.${type}.conf`);
 }
 
@@ -46,7 +46,7 @@ rm(path.join(config.build.assetsRoot, config.build.assetsSubDirectory), err => {
     console.log(
       chalk.yellow(
         '  Tip: built files are meant to be served over an HTTP server.\n' +
-          "  Opening index.html over file:// won't work.\n"
+        "  Opening index.html over file:// won't work.\n"
       )
     );
   });

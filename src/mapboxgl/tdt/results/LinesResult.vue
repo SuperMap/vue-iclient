@@ -62,7 +62,6 @@ import Theme from '../../../common/_mixin/theme';
 export default {
   name: 'LinedataResult',
   mixins: [Theme],
-  inheritAttrs: false,
   props: {
     keyWord: {
       type: String

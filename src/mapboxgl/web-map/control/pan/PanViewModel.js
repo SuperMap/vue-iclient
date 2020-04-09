@@ -8,9 +8,9 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  */
 
 export default class PanViewModel extends mapboxgl.Evented {
-  constructor(map) {
-    super();
-    this.map = map || null;
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
   }
   /**
    * @function PanViewModel.prototype.panTo

@@ -11,12 +11,8 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  * @extends mapboxgl.Evented
  */
 export default class ScaleViewModel extends mapboxgl.Evented {
-  constructor(map, options) {
+  constructor(options) {
     super();
-    this._mainMap = map;
-    this.onMoveEvt = this.onMoveEvt.bind(this);
-    this._mainMap.on('move', this.onMoveEvt);
-
     options = options || {};
     this.options = {
       unit: options.unit || 'metric',
@@ -24,18 +20,26 @@ export default class ScaleViewModel extends mapboxgl.Evented {
     };
   }
 
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
+    this.onMoveEvt = this.onMoveEvt.bind(this);
+    this.map.on('move', this.onMoveEvt);
+    this.updateScale(this.map, this.options);
+  }
+
   onMoveEvt() {
-    this.updateScale(this._mainMap, this.options);
+    this.updateScale(this.map, this.options);
   }
 
   setUnit(unit) {
     this.options.unit = unit;
-    this.updateScale(this._mainMap, this.options);
+    this.updateScale(this.map, this.options);
   }
 
   setMaxWidth(maxWidth) {
     this.options.maxWidth = maxWidth;
-    this.updateScale(this._mainMap, this.options);
+    this.updateScale(this.map, this.options);
   }
 
   updateScale(map, options) {
@@ -58,6 +62,9 @@ export default class ScaleViewModel extends mapboxgl.Evented {
     } else {
       this._setScale(maxWidth, maxMeters, 'm');
     }
+  }
+  removed() {
+    this.map.off('move', this.onMoveEvt);
   }
   _setScale(maxWidth, maxDistance, unit) {
     let distance = this._getRoundNum(maxDistance);

@@ -1,20 +1,23 @@
 <template>
-  <ul
-    ref="Popup"
-    :style="[getBackgroundStyle, getTextColorStyle]"
-    :class="['sm-component-identify', {'sm-component-content-hide': isHide}]"
-  >
-    <li v-for="(value, key, index) in popupProps" :key="index" class="sm-component-identify__body">
-      <div class="sm-component-identify__left" :title="key">{{ key }}</div>
-      <div class="sm-component-identify__right" :title="value">{{ value }}</div>
-    </li>
-  </ul>
+  <div v-show="false" ref="Popup" class="sm-component-identify">
+    <ul
+      :class="[
+        autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
+        'sm-component-identify__content'
+      ]"
+      :style="[getBackgroundStyle, getTextColorStyle]"
+    >
+      <li v-for="(value, key, index) in popupProps" :key="index" class="content">
+        <div class="left ellipsis" :title="key" :style="getWidthStyle.keyWidth">{{ key }}</div>
+        <div class="right ellipsis" :title="value" :style="getWidthStyle.valueWidth">{{ value }}</div>
+      </li>
+    </ul>
+  </div>
 </template>
 
 <script>
 import Theme from '../../../../common/_mixin/theme';
 import MapGetter from '../../../_mixin/map-getter';
-import Control from '../../../_mixin/control';
 import IdentifyViewModel from './IdentifyViewModel';
 import CircleStyle from '../../../_types/CircleStyle';
 import FillStyle from '../../../_types/FillStyle';
@@ -23,18 +26,18 @@ import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmIdentify',
-  mixins: [MapGetter, Control, Theme],
+  mixins: [MapGetter, Theme],
   props: {
     layers: {
-      type: Array,
+      type: Object,
       default() {
-        return [];
+        return {};
       }
     },
     fields: {
-      type: Array,
+      type: Object,
       default() {
-        return [];
+        return {};
       }
     },
     clickTolerance: {
@@ -70,6 +73,26 @@ export default {
           })
         };
       }
+    },
+    autoResize: {
+      type: Boolean,
+      default: true
+    },
+    keyMaxWidth: {
+      type: [Number, String],
+      default: 110
+    },
+    valueMaxWidth: {
+      type: [Number, String],
+      default: 170
+    },
+    keyWidth: {
+      type: [Number, String],
+      default: 110
+    },
+    valueWidth: {
+      type: [Number, String],
+      default: 170
     }
   },
   data() {
@@ -78,15 +101,44 @@ export default {
       popupProps: {}
     };
   },
+  computed: {
+    getAllLayers() {
+      let allLayers = [];
+      for (let key in this.layers) {
+        let layers = this.layers[key];
+        if (layers) {
+          allLayers = allLayers.concat(layers);
+        }
+      }
+      return allLayers;
+    },
+    getWidthStyle() {
+      let style = { keyWidth: {}, valueWidth: {} };
+      if (!this.autoResize) {
+        if (this.keyWidth) {
+          style.keyWidth.width = this.keyWidth + 'px';
+        }
+        if (this.valueWidth) {
+          style.valueWidth.width = this.valueWidth + 'px';
+        }
+        return style;
+      } else {
+        if (this.keyMaxWidth) {
+          style.keyWidth.maxWidth = this.keyMaxWidth + 'px';
+        }
+        if (this.valueMaxWidth) {
+          style.valueWidth.maxWidth = this.valueMaxWidth + 'px';
+        }
+      }
+      return style;
+    }
+  },
   watch: {
     layers: {
       handler(val, oldVal) {
-        this.viewModel && this.viewModel.removed(oldVal);
-        if (this.layers.length > 0 && !isEqual(val, oldVal)) {
+        if (!isEqual(val, oldVal)) {
+          this.viewModel && this.viewModel.removed(oldVal);
           this.setViewModel();
-        }
-        if (this.layers.length === 0) {
-          this.map && this.map.off('click');
         }
       }
     },
@@ -101,78 +153,86 @@ export default {
     // 每次地图加载，就要隐藏（md的切换地图）
     this.isHide = true;
     this.setViewModel();
-    this.map && this.bindMapClick(this.map);
   },
   removed() {
+    this.map && this.map.off('click', this.sourceMapClickFn);
     // 清除旧的高亮的图层
     this.viewModel && this.viewModel.removed();
   },
   beforeDestroy() {
-    this.map && this.map.off('click', this.mapClickFn);
     this.$options.removed.call(this);
   },
   methods: {
     setViewModel() {
-      this.viewModel = new IdentifyViewModel(this.map, {
-        mapTarget: this.getTargetName(),
-        layers: this.layers,
-        layerStyle: this.layerStyle
-      });
+      if (this.layers) {
+        this.viewModel = new IdentifyViewModel(this.map, {
+          mapTarget: this.getTargetName(),
+          source: this.layers,
+          layerStyle: this.layerStyle
+        });
+        this.map && this.bindMapClick(this.map);
+      }
     },
     // 给图层绑定popup和高亮
     bindMapClick(map) {
-      map.on('click', this.mapClickFn);
+      map.on('click', this.sourceMapClickFn);
     },
-    // 点击事件的方法
-    mapClickFn(e) {
+    // 给source中的图层绑定popup
+    sourceMapClickFn(e) {
       // 如果点击其他的要素，移除之前的高亮
+      this.viewModel.removeOverlayer(this.layers);
+      // 获取点中图层的features
+      let features = this.bindQueryRenderedFeatures(e);
+      if (features[0]) {
+        let fileds = this.fields[features[0].source] || [];
+        this.layersMapClickFn(e, fileds, features[0]);
+      }
+    },
+    // 给layer绑定queryRenderedFeatures
+    bindQueryRenderedFeatures(e) {
+      let layersOnMap = [];
       let map = e.target;
-      this.viewModel.removed();
-      // set bbox as 5px reactangle area around clicked point
-      var bbox = [
+      let bbox = [
         [e.point.x - this.clickTolerance, e.point.y - this.clickTolerance],
         [e.point.x + this.clickTolerance, e.point.y + this.clickTolerance]
       ];
-      // 获取点中图层的features
-      let layersExit = true;
-      for (let i = 0; i < this.layers.length; i++) {
-        if (!map.getLayer(this.layers[i])) {
-          layersExit = false;
-          this.$message.error(this.$t('identify.layerNotExit', { layer: this.layers[i] }));
-          break;
+      for (let i = 0; i < this.getAllLayers.length; i++) {
+        if (map.getLayer(this.getAllLayers[i])) {
+          layersOnMap.push(this.getAllLayers[i]);
         }
       }
-      if (layersExit) {
-        var features = map.queryRenderedFeatures(bbox, {
-          layers: this.layers
-        });
-        if (features[0]) {
-          // 添加popup
-          this.addPopup(features[0], e.lngLat.toArray());
-          // 高亮过滤(所有字段)
-          let filter = ['all'];
-          const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
-          features[0]._vectorTileFeature._keys.forEach((key, index) => {
-            if (filterKeys.indexOf(key.toLowerCase()) === -1) {
-              filter.push(['==', key, features[0].properties[key]]);
-            }
-          });
-          // 添加高亮图层
-          this.addOverlayToMap(features[0].layer, filter);
-          // 给图层加上高亮
-          if (map.getLayer(features[0].layer.id + '-SM-highlighted')) {
-            map.setFilter(features[0].layer.id + '-SM-highlighted', filter);
-          }
+      let features = map.queryRenderedFeatures(bbox, {
+        layers: layersOnMap
+      });
+      return features;
+    },
+    // 给点击的图层添加popup和高亮
+    layersMapClickFn(e, fields, feature) {
+      let map = e.target;
+      // 添加popup
+      this.addPopup(feature, e.lngLat.toArray(), fields);
+      // 高亮过滤(所有字段)
+      let filter = ['all'];
+      const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
+      feature._vectorTileFeature._keys.forEach((key, index) => {
+        if (filterKeys.indexOf(key.toLowerCase()) === -1) {
+          filter.push(['==', key, feature.properties[key]]);
         }
+      });
+      // 添加高亮图层
+      this.addOverlayToMap(feature.layer, filter);
+      // 给图层加上高亮
+      if (map.getLayer(feature.layer.id + '-SM-highlighted')) {
+        map.setFilter(feature.layer.id + '-SM-highlighted', filter);
       }
     },
-    // 添加popup
-    addPopup(feature, coordinates) {
+    // 过滤数据， 添加popup
+    addPopup(feature, coordinates, fields) {
       this.popupProps = {};
       if (feature.properties) {
         // 过滤字段
-        if (this.fields.length > 0) {
-          this.fields.forEach(field => {
+        if (fields.length > 0) {
+          fields.forEach(field => {
             if (feature.properties.hasOwnProperty(field)) {
               this.popupProps[field] = feature.properties[field];
             }
@@ -215,9 +275,3 @@ export default {
   }
 };
 </script>
-
-<style lang="scss" scoped>
-.sm-component-content-hide {
-  display: none !important;
-}
-</style>

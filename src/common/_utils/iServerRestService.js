@@ -11,7 +11,7 @@ export function _getValueOfEpsgCode(epsgCode) {
   if (!defValue) {
     console.error(`${defName} not define`);
   } else {
-    proj4.defs(defName, defValue);
+    !proj4.defs(defName) && proj4.defs(defName, defValue);
   }
   return {
     name: defName,
@@ -59,8 +59,10 @@ export function vertifyEpsgCode(firstFeature) {
 export function transformFeatures(epsgCode, features) {
   const projName = _getValueOfEpsgCode(epsgCode).name;
   const transformedFeatures = features.map(feature => {
-    const coordinates = feature.geometry.coordinates;
-    feature.geometry.coordinates = _transformCoordinates(coordinates, projName);
+    if (feature.geometry && feature.geometry.coordinates) {
+      const coordinates = feature.geometry.coordinates;
+      feature.geometry.coordinates = _transformCoordinates(coordinates, projName);
+    }
     return feature;
   });
   return transformedFeatures;

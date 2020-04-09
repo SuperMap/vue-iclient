@@ -60,7 +60,6 @@ export default {
     Pagination
   },
   mixins: [Theme],
-  inheritAttrs: false,
   props: {
     keyWord: {
       type: String

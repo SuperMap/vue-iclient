@@ -35,7 +35,7 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src/**/*", "demo/mapboxgl/main.ts", "demo/leaflet/main.ts"],
+  "include": ["src/**/*", "demo/**/*"],
   "exclude": ["node_modules"],
   "files": ["src/sfc.d.ts", "src/image.d.ts"]
 }

@@ -50,3 +50,5 @@ export { default as OpenFile } from './open-file/OpenFile';
 export { default as Query } from './query/Query';
 export { default as Search } from './search/Search';
 export { default as TextList } from './text-list/TextList';
+
+export { default as NcpMap } from './ncp-map/NcpMap';

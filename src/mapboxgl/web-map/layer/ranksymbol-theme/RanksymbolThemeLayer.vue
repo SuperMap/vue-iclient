@@ -25,8 +25,30 @@ export default {
       required: true
     }
   },
+  watch: {
+    data: {
+      handler(val) {
+        this.viewModel && this.viewModel.setData(val);
+      },
+      deep: true
+    },
+    options: {
+      handler(val) {
+        this.viewModel && this.viewModel.setOptions(val);
+      },
+      deep: true
+    },
+    symbolType(val) {
+      this.viewModel && this.viewModel.setSymbolType(val);
+    },
+    layerName(val) {
+      this.viewModel && this.viewModel.setLayerName(val);
+    }
+  },
+  created() {
+    this.viewModel = new RanksymbolThemeLayerViewModel(this.$props);
+  },
   loaded() {
-    this.viewModel = new RanksymbolThemeLayerViewModel(this.map, this.$props);
     this.$emit('load', this.viewModel.themeLayer, this.map);
   },
   render() {}

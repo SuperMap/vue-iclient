@@ -20,8 +20,22 @@ export default {
       }
     }
   },
-  loaded() {
-    this.viewModel = new MapvLayerViewModel(this.map, this.$props);
+  watch: {
+    data: {
+      handler(val) {
+        this.viewModel && this.viewModel.setData(val);
+      },
+      deep: true
+    },
+    options: {
+      handler(val) {
+        this.viewModel && this.viewModel.setOptions(val);
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.viewModel = new MapvLayerViewModel(this.$props);
   },
   render() {}
 };

@@ -13,7 +13,7 @@ import clonedeep from 'lodash.clonedeep';
  * @extends mapboxgl.Evented
  */
 export default class MiniMapViewModel extends mapboxgl.Evented {
-  constructor(container, parentMap) {
+  constructor() {
     super();
     this.options = {
       id: 'mapboxgl-minimap',
@@ -33,15 +33,23 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
       doubleClickZoom: false,
       touchZoomRotate: false
     };
-    this._container = container;
+
     this._ticking = false;
     this._lastMouseMoveEvent = null;
-    this._parentMap = parentMap;
     this._isDragging = false;
     this._isCursorOverFeature = false;
     this._previousPoint = [0, 0];
     this._currentPoint = [0, 0];
     this._trackingRectCoordinates = [[[], [], [], [], []]];
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this._parentMap = map;
+  }
+
+  setContainer(container) {
+    this._container = container;
     this._updateFn = this._update.bind(this);
     this._setStyleFn = this._setStyle.bind(this);
     this._mouseMoveFn = this._mouseMove.bind(this);
@@ -49,6 +57,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._mouseUpFn = this._mouseUp.bind(this);
     this.initializeMiniMap();
   }
+
   initializeMiniMap() {
     const _this = this;
     this._miniMap = new mapboxgl.Map({
@@ -333,7 +342,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._trackingRect = this._miniMap.getSource('trackingRect');
   }
 
-  removeMap() {
+  removed() {
     var parentMap = this._parentMap;
     var miniMap = this._miniMap;
     parentMap && parentMap.off('move', this._updateFn);

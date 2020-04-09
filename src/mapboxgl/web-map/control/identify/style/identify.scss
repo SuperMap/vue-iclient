@@ -2,39 +2,52 @@
 @import '../../../../../common/_utils/style/common/var.scss';
 
 @include b(identify) {
-  list-style: none;
-  margin: 0;
-  padding: 10px 15px;
-  max-height: 170px;
-  width: 280px;
-  overflow: auto;
-  font-size: 14px;
-  &::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    background-color: $--fill-base;
+  @include e(content) {
+    list-style: none;
+    margin: 0;
+    padding: 10px 12px;
+    overflow: auto;
+    font-size: 14px;
+    max-height: 200px;
+    background: transparent;
+    &::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+      background-color: $--fill-base;
+    }
+    &::-webkit-scrollbar-thumb {
+      border-radius: 10px;
+      background-color: #bbb;
+    }
+    .content .ellipsis {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #bbb;
+  @include e(custom) {
+    .content {
+      display: flex;
+      padding: 5px 0;
+    }
+    .right {
+      margin-left: 10px;
+    }
   }
-  @include e(body) {
-    display: flex;
-    justify-content: space-between;
-    padding: 5px 0;
-  }
-  @include e(left) {
-    width: 40%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  @include e(right) {
-    margin-left: 10px;
-    width: calc(60% - 10px);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  @include e(auto) {
+    border-collapse: separate;
+    border-spacing: 10px 5px;
+    .content {
+      display: table-row;
+      padding: 5px 0;
+      .left {
+        display: table-cell;
+      }
+      .right {
+        display: table-cell;
+        padding-left: 10px;
+      }
+    }
   }
 }
 .sm-mapboxgl-identify-popup {
@@ -45,5 +58,6 @@
   .mapboxgl-popup-close-button {
     color: #dfd4d4;
     font-size: 15px;
+    z-index: 2;
   }
 }

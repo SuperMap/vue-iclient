@@ -19,21 +19,20 @@ import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
  */
 
 export default class DataFlowLayerViewModel extends mapboxgl.Evented {
-  constructor(map, serviceUrl, options) {
+  constructor(serviceUrl, options) {
     super();
-    if (!serviceUrl) {
-      throw new Error('serviceUrl is requierd');
-    }
-    if (!map) {
-      throw new Error('map is requierd');
-    }
-
     this.options = options || {};
-    this.map = map;
     this.serviceUrl = serviceUrl;
     this.sourceID = options.layerId || 'dataFlow' + new Date().getTime();
     this.layerStyle = options.layerStyle || {};
+  }
 
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    if (!map) {
+      throw new Error('map is requierd');
+    }
+    this.map = map;
     if (this.options.registerToken) {
       SuperMap.SecurityManager.registerToken(this.serviceUrl, this.options.registerToken);
     }
@@ -179,7 +178,7 @@ export default class DataFlowLayerViewModel extends mapboxgl.Evented {
     }
   }
 
-  clear() {
+  removed() {
     const { map, sourceID } = this;
     if (map && sourceID && map.getSource(sourceID)) {
       map.getLayer(sourceID) && map.removeLayer(sourceID);

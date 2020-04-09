@@ -46,20 +46,16 @@ export default {
       spinning: true
     };
   },
-  loaded() {
-    this.spinning = true;
+  created() {
     this.miniMap && this.miniMap.remove();
-    this.viewModel = new MiniMapViewModel(this.$el.querySelector('#miniMap') || this.$el, this.map);
-    this.viewModel.on('minimaploaded', e => {
-      this.miniMap = e.miniMap;
-      this.spinning = false;
-    });
-  },
-  removed() {
-    this.viewModel && this.viewModel.removeMap();
+    this.viewModel = new MiniMapViewModel();
+    this.viewModel.on('minimaploaded', this.minimapLoadedFn);
   },
   beforeDestory() {
-    this.$options.removed.call(this);
+    this.viewModel.off('minimaploaded', this.minimapLoadedFn);
+  },
+  loaded() {
+    this.viewModel && (this.viewModel.setContainer(this.$el.querySelector('#miniMap') || this.$el));
   },
   methods: {
     handleMinimapResize(state) {
@@ -71,6 +67,10 @@ export default {
       if (this.viewModel && this.viewModel.resize) {
         this.viewModel.resize();
       }
+    },
+    minimapLoadedFn(e) {
+      this.miniMap = e.miniMap;
+      this.spinning = false;
     }
   }
 };

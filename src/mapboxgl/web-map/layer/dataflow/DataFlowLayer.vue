@@ -49,40 +49,49 @@ export default {
       }
     }
   },
-  loaded() {
+  loaded() {},
+  created() {
     let options = JSON.parse(JSON.stringify(this.$props));
     delete options.serviceUrl;
-    this.dataFlowLayerViewModel = new DataFlowLayerViewModel(this.map, this.serviceUrl, { ...options });
+    this.viewModel = new DataFlowLayerViewModel(this.serviceUrl, { ...options });
     this.registerEvents();
+  },
+  beforeDestroy() {
+    this.viewModel.off('subscribefailed', this.subscribefailedFn);
+    this.viewModel.off('subscribesucceeded', this.subscribesucceededFn);
+    this.viewModel.off('dataupdated', this.dataupdatedFn);
   },
   methods: {
     registerEvents() {
-      this.dataFlowLayerViewModel.on('subscribefailed', e => {
-        this.$message.error(this.$t('dataFlow.dataSubscriptionFailed'));
-        /**
-         * @event subscribeFailed
-         * @desc 数据订阅失败后触发。
-         * @property {Object} e  - 事件对象。
-         */
-        this.$emit('subscribe-failed', e);
-      });
-      this.dataFlowLayerViewModel.on('subscribesucceeded', e => {
-        /**
-         * @event subscribeSucceeded
-         * @desc 数据订阅失败后触发。
-         * @property {Object} e  - 事件对象。
-         */
-        this.$emit('subscribe-succeeded', e);
-      });
-      this.dataFlowLayerViewModel.on('dataupdated', e => {
-        /**
-         * @event dataUpdated
-         * @desc 数据更新成功后触发。
-         * @property {GeoJSONObject} data - 更新的数据。
-         * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
-         */
-        this.$emit('data-updated', e);
-      });
+      this.viewModel.on('subscribefailed', this.subscribefailedFn);
+      this.viewModel.on('subscribesucceeded', this.subscribesucceededFn);
+      this.viewModel.on('dataupdated', this.dataupdatedFn);
+    },
+    subscribefailedFn(e) {
+      this.$message.error(this.$t('dataFlow.dataSubscriptionFailed'));
+      /**
+       * @event subscribeFailed
+       * @desc 数据订阅失败后触发。
+       * @property {Object} e  - 事件对象。
+       */
+      this.$emit('subscribe-failed', e);
+    },
+    subscribesucceededFn(e) {
+      /**
+       * @event subscribeSucceeded
+       * @desc 数据订阅失败后触发。
+       * @property {Object} e  - 事件对象。
+       */
+      this.$emit('subscribe-succeeded', e);
+    },
+    dataupdatedFn(e) {
+      /**
+       * @event dataUpdated
+       * @desc 数据更新成功后触发。
+       * @property {GeoJSONObject} data - 更新的数据。
+       * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
+       */
+      this.$emit('data-updated', e);
     }
   },
   render() {}

@@ -23,10 +23,11 @@
         <a-collapse-panel
           v-for="(layerValue,layerKey) in legendList"
           :key="layerKey"
+          :disabled="!isShowTitle"
           :showArrow="false"
         >
           <template slot="header">
-            <div class="header-wrap" :style="[getTextColorStyle]">
+            <div v-if="isShowTitle" class="header-wrap" :style="[getTextColorStyle]">
               <div class="sm-component-legend__title add-ellipsis">{{ layerValue.layerId }}</div>
               <a-icon type="right" class="header-arrow" />
             </div>
@@ -90,7 +91,7 @@
                 <div :style="{background: item.color}"></div>
                 <span class="add-ellipsis">
                   <a-icon type="caret-left" />
-                  {{ item.start }}-{{ item.end }}
+                  {{ showRangeInfo(item, layerKey) }}
                 </span>
               </div>
             </div>
@@ -108,7 +109,7 @@
                 class="sm-component-legend__rank-item"
               >
                 <div class="sm-component-legend__rank-icon">
-                  <i :class="item.style.className" :style="rankSymbolStyle(item)"/>
+                  <i :class="item.style.className" :style="rankSymbolStyle(item)" />
                 </div>
                 <span class="add-ellipsis">
                   <a-icon type="caret-left" />
@@ -179,7 +180,7 @@
               <div :style="{background: item.color}"></div>
               <span class="add-ellipsis">
                 <a-icon type="caret-left" />
-                {{ item.start }}-{{ item.end }}
+                {{ showRangeInfo(item, layerKey) }}
               </span>
             </div>
           </div>
@@ -309,6 +310,18 @@ export default {
         }
         return generateStyle;
       };
+    },
+    showRangeInfo() {
+      return (item, layerKey) => {
+        const { start, end } = item;
+        if (start !== undefined && end !== undefined) {
+          if (this.legendList[layerKey].integerType) {
+            return this.getIntegerRangeInfo(start, end);
+          }
+          return `${start} - ${end}`;
+        }
+        return start !== undefined ? `≥${start}` : `≤${end}`;
+      };
     }
   },
   watch: {
@@ -332,6 +345,12 @@ export default {
         });
         this.activeLegend = JSON.stringify(this.legendList) !== '{}' ? Object.keys(this.legendList)[0] : [];
       }
+    },
+    getIntegerRangeInfo(start, end) {
+      if (end - 1 === start || end === start) {
+        return `${start}`;
+      }
+      return `${start} - ${end - 1}`;
     }
   },
   loaded() {

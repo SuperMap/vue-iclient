@@ -12,10 +12,7 @@ import { FeatureCollection } from 'geojson';
 // @ts-ignore   TODO mixins 待重写
 @Component({
   name: 'SmFireLayer',
-  viewModelProps: ['features', 'modelScale'],
-  loaded: vm => {
-    vm.viewModel = new FireLayerViewModel(vm.map, vm.features, vm.modelScale, vm.layerId);
-  }
+  viewModelProps: ['features', 'modelScale']
 })
 
 // @ts-ignore
@@ -29,6 +26,11 @@ class FireLayer extends Mixins(MapGetter, Layer, VmUpdater) {
 
   // @ts-ignore
   @Prop({ default: 5.41843220338983e-6 }) modelScale: number;
+
+  created() {
+    // @ts-ignore
+    this.viewModel = new FireLayerViewModel(this.features, this.modelScale, this.layerId);
+  }
 
   render(): void {}
 }

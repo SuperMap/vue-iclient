@@ -3,10 +3,21 @@ import iPortalDataService from './iPortalDataService';
 import RestService from './RestService';
 
 export default function getFeatures(dataset) {
+  let superMapService;
+  let params = [];
   let promise = new Promise((resolve, reject) => {
-    let { url, type, maxFeatures, attributeFilter, dataName, layerName, withCredentials, preferContent } = dataset;
-    if (dataset && url && type) {
-      let superMapService;
+    let {
+      url,
+      type,
+      geoJSON,
+      maxFeatures,
+      attributeFilter,
+      dataName,
+      layerName,
+      withCredentials,
+      preferContent
+    } = dataset;
+    if (dataset && (url || geoJSON) && type) {
       let queryInfo = {
         maxFeatures: maxFeatures,
         attributeFilter: attributeFilter
@@ -31,28 +42,32 @@ export default function getFeatures(dataset) {
             dataUrl: url
           };
         }
-        superMapService.getData(datasetInfo, queryInfo);
+        params = [datasetInfo, queryInfo];
       } else if (type === 'iPortal') {
         queryInfo.withCredentials = withCredentials;
         superMapService = new iPortalDataService(url, withCredentials);
-        superMapService.getData(queryInfo, !!preferContent);
+        params = [queryInfo, !!preferContent];
       } else if (type === 'rest') {
         superMapService = new RestService({
           proxy: dataset.proxy
         });
-        superMapService.getData(url, queryInfo);
+        params = [url, queryInfo];
+      } else if (type === 'geoJSON' && geoJSON) {
+        superMapService = new RestService();
+        params = [geoJSON, queryInfo];
       }
+    }
 
-      if (superMapService) {
-        superMapService.on({
-          getdatasucceeded: function(data) {
-            resolve(data);
-          },
-          getdatafailed: function(e) {
-            reject(e);
-          }
-        });
-      }
+    if (superMapService) {
+      superMapService.on({
+        getdatasucceeded: function(data) {
+          resolve(data);
+        },
+        getdatafailed: function(e) {
+          reject(e);
+        }
+      });
+      superMapService.getData(params[0], params[1]);
     }
   });
   return promise;

@@ -14,12 +14,17 @@ export default {
       }
     }
   },
-  loaded() {
-    this.viewModel = new EchatsLayerViewModel(this.map, this.options);
+  watch: {
+    options: {
+      handler(val) {
+        this.viewModel && this.viewModel.setOptions(val);
+      },
+      deep: true
+    }
   },
-  render() {},
-  removed() {
-    this.viewModel && this.viewModel.clear();
-  }
+  created() {
+    this.viewModel = new EchatsLayerViewModel(this.options);
+  },
+  render() {}
 };
 </script>

@@ -26,13 +26,13 @@ import GeojsonLayer from '../web-map/layer/geojson/GeojsonLayer';
 import CircleStyle from '../_types/CircleStyle';
 import FillStyle from '../_types/FillStyle';
 import LineStyle from '../_types/LineStyle';
-import bbox from '@turf/bbox';
+import VmUpdater from '../../common/_mixin/vm-updater';
 import Vue from 'vue';
-import UniqueId from 'lodash.uniqueid';
 
 export default {
   name: 'SmOpenFile',
-  mixins: [Theme, Control, MapGetter],
+  viewModelProps: ['fitBounds', 'clearLastLayer', 'addToMap'],
+  mixins: [Theme, Control, MapGetter, VmUpdater],
   props: {
     fitBounds: {
       type: Boolean,
@@ -93,37 +93,43 @@ export default {
         LineString: 'line',
         MultiPolygon: 'fill'
       },
-      mapboxglClass: '',
-      prevLayerId: ''
+      cacheGeojsonLayer: [],
+      mapboxglClass: ''
     };
+  },
+  created() {
+    this.viewModel = new OpenFileViewModel();
+    // 打开失败
+    this.viewModel.on('openfilefailed', this.openfilefailedFn);
+
+    this.viewModel.on('errorfileformat', this.errorfileformatFn);
+
+    this.viewModel.on('openfilesucceeded', this.openfilesucceededFn);
+  },
+  beforeDestroy() {
+    this.viewModel.off('openfilefailed', this.openfilefailedFn);
+
+    this.viewModel.off('errorfileformat', this.errorfileformatFn);
+
+    this.viewModel.off('openfilesucceeded', this.openfilesucceededFn);
   },
   methods: {
     fileSelect(e) {
       this.viewModel && this.viewModel.readFile(e);
     },
-    getUniqueId() {
-      return UniqueId(`layer-${this.$options.name.toLowerCase()}-`);
-    },
     preventDefault(e) {
       const mapNotLoaded = this.mapNotLoadedTip();
       mapNotLoaded && e.preventDefault();
-    }
-  },
-  loaded() {
-    this.parentIsWebMapOrMap && (this.mapboxglClass = 'mapboxgl-ctrl');
-    this.viewModel = new OpenFileViewModel();
-    // 打开失败
-    this.viewModel.on('openfilefailed', e => {
+    },
+    openfilefailedFn(e) {
       this.notify && this.$message.error(e.message);
       this.$emit('open-file-failed', e);
-    });
-
-    this.viewModel.on('errorfileformat', e => {
+    },
+    errorfileformatFn(e) {
       this.notify && this.$message.error(e.message);
       this.$emit('error-file-format', e);
-    });
-
-    this.viewModel.on('openfilesucceeded', e => {
+    },
+    openfilesucceededFn(e) {
       let result = e.result;
       if (!result) {
         return;
@@ -136,15 +142,12 @@ export default {
         this.$emit('open-empty-file', result);
         return;
       }
-      let layerId = this.getUniqueId();
 
       if (this.clearLastLayer) {
-        if (this.prevLayerId && this.map.getLayer(this.prevLayerId)) {
-          this.map.removeLayer(this.prevLayerId);
-        }
-        this.geojsonLayerInstance && this.geojsonLayerInstance.$destroy();
+        const geojsonLayerInstance = this.cacheGeojsonLayer.pop();
+        geojsonLayerInstance && geojsonLayerInstance.$destroy();
       }
-      this.prevLayerId = layerId;
+
       if (this.addToMap) {
         let type = this.transformType[result.features[0].geometry.type];
 
@@ -153,21 +156,34 @@ export default {
           propsData: {
             data: result,
             layerStyle: this.layerStyle[type],
-            layerId
+            layerId: e.layerId
           }
         });
 
         let component = GeojsonLayerInstance.$mount();
-        this.geojsonLayerInstance = component;
-        this.map.getContainer().appendChild(component.$el);
+        this.cacheGeojsonLayer.push(component);
+        const mapTarget = this.getTargetName();
+        document.querySelector(`#${mapTarget}`).appendChild(component.$el);
       }
 
       if (this.fitBounds && this.addToMap) {
-        this.map.fitBounds(bbox(result), { maxZoom: 12 });
+        this.viewModel.fitBoundsToData();
       }
+
       this.notify && this.$message.success(this.$t('openFile.openFileSuccess'));
       this.$emit('open-file-succeeded', result);
-    });
+    }
+  },
+  loaded() {
+    this.parentIsWebMapOrMap && (this.mapboxglClass = 'mapboxgl-ctrl');
+  },
+  removed() {
+    if (this.cacheGeojsonLayer && this.cacheGeojsonLayer.length) {
+      this.cacheGeojsonLayer.forEach(component => {
+        component.$destroy();
+      });
+      this.cacheGeojsonLayer = [];
+    }
   }
 };
 </script>

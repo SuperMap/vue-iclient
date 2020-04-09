@@ -264,12 +264,15 @@ export default {
   },
   watch: {
     iportalData() {
+      this.clearResult();
       this.formatJobInfos();
     },
     restData() {
+      this.clearResult();
       this.formatJobInfos();
     },
     restMap() {
+      this.clearResult();
       this.formatJobInfos();
     },
     colorGroupsData: {
@@ -301,18 +304,15 @@ export default {
     this.formatJobInfos();
     this.registerEvents();
   },
-  beforeDestroy() {
-    this.$options.removed.call(this);
-  },
   loaded() {
-    this.viewModel.setMap(this.map);
     this.clear();
   },
   created() {
     this.viewModel = new QueryViewModel(this.$props);
   },
   removed() {
-    this.clearResult();
+    this.queryResult = null;
+    this.jobInfo = null;
     this.jobInfos = [];
     this.jobButtonClicked();
     this.popup && this.popup.remove() && (this.popup = null);
@@ -535,7 +535,7 @@ export default {
       this.queryResult = null;
       this.popup && this.popup.remove() && (this.popup = null);
       this.jobInfo = null;
-      this.viewModel && this.viewModel.clear();
+      this.viewModel && this.viewModel.removed();
     },
     getInfoOfSmid(properties) {
       return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;

@@ -7,7 +7,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/time-text/style/time-text.scss';
 @import '../common/icon/style/icon.scss';
 @import '../common/card/style/card.scss';
-@import '../common/liquidFill/style/liquidFill.scss';
+@import '../common/liquidfill/style/liquidFill.scss';
 @import '../common/progress/style/progress.scss';
 @import '../common/table-popup/style/tablePopup.scss';
 @import '../common/border/style/border.scss';
@@ -50,3 +50,5 @@ $--tdt-assets-path: './tdt/_assets' !default;
 /* tdt */
 @import './tdt/route/style/tdtRoute.scss';
 @import './tdt/search/style/tdtSearch.scss';
+
+@import './ncp-map/style/ncp-map.scss';

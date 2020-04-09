@@ -1,6 +1,7 @@
 <script>
 import MapGetter from '../../../_mixin/map-getter';
 import Layer from '../../../_mixin/layer';
+import VectorTileLayerViewModel from './VectorTileLayerViewModel';
 
 export default {
   name: 'SmVectorTileLayer',
@@ -10,10 +11,16 @@ export default {
       type: [String, Object]
     }
   },
-  loaded() {
-    if (this.map.addStyle) {
-      this.map.addStyle(this.styleOptions, this.before);
+  watch: {
+    styleOptions: {
+      handler(val) {
+        this.viewModel && this.viewModel.setStyleOptions(val);
+      },
+      deep: true
     }
+  },
+  created() {
+    this.viewModel = new VectorTileLayerViewModel(this.styleOptions, this.before);
   },
   render() {}
 };

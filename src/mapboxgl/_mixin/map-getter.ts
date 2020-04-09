@@ -4,13 +4,13 @@ import globalEvent from '../../common/_utils/global-event';
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 
-function callHook(vm, hook) {
+function callHook(vm, hook, ...params) {
   const { options } = vm.constructor;
   options.mixins &&
     options.mixins.forEach(mixin => {
-      mixin[hook] && mixin[hook].call(vm, vm.$options.name);
+      mixin[hook] && mixin[hook].call(vm, ...params);
     });
-  options[hook] && options[hook].call(vm, vm); // 调用子组件的生命周期
+  options[hook] && options[hook].call(vm, ...params); // 调用子组件的生命周期
 }
 /**
  * Description
@@ -27,14 +27,19 @@ export default class MapGetter extends Vue {
   viewModel: any;
   $message: any;
   $t: any;
+  firstDefaultTarget: string;
 
   @Prop() mapTarget: String;
 
   @Watch('mapTarget')
   mapTargetChanged(newVal, oldVal) {
-    if (newVal && newVal !== oldVal) {
+    if (newVal && oldVal && newVal !== oldVal) {
       // 多个map切换的时候，需要删除该组件与前一个map的图层绑定
-      callHook(this, 'removed');
+      const prevTarget = oldVal || this.firstDefaultTarget;
+      const prevMap = mapEvent.$options.getMap(prevTarget);
+      if (prevMap) {
+        this.removeMap(prevMap, prevTarget);
+      }
       if (mapEvent.$options.getMap(newVal)) {
         this.loadMap(newVal);
       }
@@ -43,27 +48,36 @@ export default class MapGetter extends Vue {
 
   mounted() {
     const targetName = this.getTargetName();
+    this.firstDefaultTarget = targetName;
     if (mapEvent.$options.getMap(targetName)) {
       this.loadMap(targetName);
     }
     mapEvent.$on('load-map', this.loadMapSucceed);
-    globalEvent.$on('delete-map', this.deleteMapSucceed);
+    globalEvent.$on('delete-map', this.removeMapSucceed);
   }
 
   beforeDestroy() {
+    this.removeMap();
     mapEvent.$off('load-map', this.loadMapSucceed);
-    globalEvent.$off('delete-map', this.deleteMapSucceed);
+    globalEvent.$off('delete-map', this.removeMapSucceed);
   }
 
   // loaded() {
   //   // 组件生命周期方法(挂载后调用)，子类实现【组件主要业务逻辑写在这个生命周期里】
   // },
-  loadMapSucceed(map, target) {
-    const targetName = this.getTargetName();
-    if (target === targetName) {
-      this.loadMap(target);
+
+  getFirstTarget(): string {
+    let targetName: string;
+    const mapList = mapEvent.$options.getAllMaps();
+    for (let target in mapList) {
+      if (target) {
+        targetName = target;
+        break;
+      }
     }
+    return targetName;
   }
+
   getTargetName() {
     /**
      * 便于区分存在多个map时，子组件对应的map的渲染；
@@ -76,16 +90,22 @@ export default class MapGetter extends Vue {
     const parentTarget =
       selfParent &&
       selfParent.$options.name &&
-      selfParent.$options.name.toLowerCase() === 'smwebmap' &&
+      ['smwebmap', 'smncpmap'].includes(selfParent.$options.name.toLowerCase())  &&
       // @ts-ignore
       selfParent.target;
-    return this.mapTarget || parentTarget || Object.keys(mapEvent.$options.getAllMaps())[0];
+    return this.mapTarget || parentTarget || this.getFirstTarget();
   }
 
   loadMap(targetName) {
+    if (!this.firstDefaultTarget) {
+      this.firstDefaultTarget = targetName;
+    }
     this.map = mapEvent.$options.getMap(targetName);
     this.webmap = mapEvent.$options.getWebMap(targetName);
-    callHook(this, 'loaded');
+    this.viewModel &&
+      typeof this.viewModel.setMap === 'function' &&
+      this.viewModel.setMap({ map: this.map, webmap: this.webmap, mapTarget: targetName });
+    callHook(this, 'loaded', this.map, targetName);
     // 控制与map组件同级的组件的显示加载
     this.$nextTick(() => {
       /**
@@ -96,15 +116,30 @@ export default class MapGetter extends Vue {
     });
   }
 
-  deleteMapSucceed(target) {
-    const targetName = this.getTargetName();
-    if (target === targetName) {
-      callHook(this, 'removed');
+  removeMap(map = this.map, target = this.getTargetName()) {
+    if (map) {
+      this.viewModel && this.viewModel.removed && this.viewModel.removed();
+      callHook(this, 'removed', map, target);
       this.map = null;
       this.webmap = null;
-      this.viewModel && (this.viewModel = null);
+      this.firstDefaultTarget = null;
     }
   }
+
+  loadMapSucceed(map, target) {
+    const targetName = this.getTargetName();
+    if (target === targetName) {
+      this.loadMap(target);
+    }
+  }
+
+  removeMapSucceed(target) {
+    const targetName = this.getTargetName();
+    if (target === targetName) {
+      this.removeMap();
+    }
+  }
+
   mapNotLoadedTip() {
     if (!this.map) {
       this.$message.destroy();

@@ -2,12 +2,28 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class MapvLayerViewModel extends mapboxgl.Evented {
-  constructor(map, mapvLayerProps) {
+  constructor(mapvLayerProps) {
     super();
-    this.map = map;
     const { data, options, layerId } = mapvLayerProps;
     this.data = data;
     this.options = options.layerID ? options : { ...options, layerID: layerId };
+  }
+
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
+    this._init();
+  }
+
+  setData(data) {
+    this.data = data;
+    this.removed();
+    this._init();
+  }
+
+  setOptions(options) {
+    this.options = options;
+    this.removed();
     this._init();
   }
 
@@ -22,7 +38,7 @@ export default class MapvLayerViewModel extends mapboxgl.Evented {
     this.map.addLayer(mapVLayer);
   }
 
-  clear() {
+  removed() {
     const { map, options } = this;
     const layerId = options.layerID;
     if (map && layerId && map.getLayer(layerId)) {

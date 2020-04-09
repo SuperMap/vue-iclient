@@ -53,11 +53,13 @@ interface webMapOptions {
   tiandituKey?: string;
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
+  proxy?: boolean | string;
 }
 
 export default class WebMapService extends Events {
-
   mapId: string;
+
+  mapInfo: any;
 
   serverUrl: string;
 
@@ -75,15 +77,29 @@ export default class WebMapService extends Events {
 
   isSuperMapOnline: boolean;
 
-  constructor(mapId: string, options: webMapOptions = {}) {
+  proxy: boolean | string;
+
+  iportalServiceProxyUrl: string;
+
+  proxyOptions: object = {
+    data: 'apps/viewer/getUrlResource.json?url=',
+    image: 'apps/viewer/getUrlResource.png?url='
+  };
+
+  constructor(mapId: string | object, options: webMapOptions = {}) {
     super();
-    this.mapId = mapId;
+    if (typeof mapId === 'string') {
+      this.mapId = mapId;
+    } else if (mapId !== null && typeof mapId === 'object') {
+      this.mapInfo = mapId;
+    }
     this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
     this.tiandituKey = options.tiandituKey || '';
     this.withCredentials = options.withCredentials || false;
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
+    this.proxy = options.proxy;
   }
 
   public setMapId(mapId: string): void {
@@ -98,6 +114,10 @@ export default class WebMapService extends Events {
     this.withCredentials = withCredentials;
   }
 
+  public setProxy(proxy) {
+    this.proxy = proxy;
+  }
+
   public handleServerUrl(serverUrl) {
     let urlArr: string[] = serverUrl.split('');
     if (urlArr[urlArr.length - 1] !== '/') {
@@ -108,32 +128,66 @@ export default class WebMapService extends Events {
   }
 
   public getMapInfo() {
+    if (!this.mapId && this.mapInfo) {
+      return new Promise(resolve => { resolve(this.mapInfo)});
+    }
     let mapUrl = this._handleMapUrl();
-    return new Promise((resolve, reject) => {
-      SuperMap.FetchRequest.get(mapUrl, null, {
-        withCredentials: this.withCredentials
-      }).then(response => {
-        return response.json();
-      }).then(mapInfo => {
+    return new Promise(async (resolve, reject) => {
+      try {
+        await this.getiPortalServiceProxy();
+        SuperMap.FetchRequest.get(mapUrl, null, {
+          withCredentials: this.withCredentials
+        })
+          .then(response => {
+            return response.json();
+          })
+          .then(mapInfo => {
+            if (mapInfo && mapInfo.succeed === false) {
+              let error = { message: mapInfo && mapInfo.error && mapInfo.error.errorMsg };
+              reject(error);
+              return;
+            }
 
-        if (mapInfo && mapInfo.succeed === false) {
-          let error = { message: mapInfo && mapInfo.error && mapInfo.error.errorMsg };
-          reject(error)
-          return;
-        }
-
-        mapInfo.mapParams = {
-          title: mapInfo.title,
-          description: mapInfo.description
-        }
-        resolve(mapInfo);
-
-      }).catch(error => {
-        reject(error)
-      });
-    })
+            mapInfo.mapParams = {
+              title: mapInfo.title,
+              description: mapInfo.description
+            };
+            resolve(mapInfo);
+          })
+          .catch(error => {
+            reject(error);
+          });
+      } catch (err) {
+        reject(err);
+      }
+    });
   }
-
+  public getiPortalServiceProxy() {
+    return new Promise((resolve, reject) => {
+      SuperMap.FetchRequest.get(`${this.serverUrl}web/config/portal.json`, { scope: ['serviceProxy'] })
+        .then(response => {
+          return response.json();
+        })
+        .then(serviceProxyInfo => {
+          if (!serviceProxyInfo || !serviceProxyInfo.serviceProxy) {
+            reject('serviceProxyFailed');
+            return;
+          }
+          const serviceProxy = serviceProxyInfo.serviceProxy;
+          if (serviceProxy.enable) {
+            if (serviceProxy.proxyServerRootUrl) {
+              this.iportalServiceProxyUrl = serviceProxy.proxyServerRootUrl;
+            } else if (serviceProxy.port && serviceProxy.rootUrlPostfix) {
+              this.iportalServiceProxyUrl = `${serviceProxy.port}/${serviceProxy.rootUrlPostfix}`;
+            }
+          }
+          resolve(serviceProxy);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
   public getLayerFeatures(type, layer, baseProjection?) {
     let pro;
     switch (type) {
@@ -150,6 +204,9 @@ export default class WebMapService extends Events {
       case 'dataflow':
         pro = this._getFeaturesFromDataflow(layer);
         break;
+      case 'user_data':
+        pro = this._getFeaturesFromUserData(layer);
+        break;
     }
     return pro;
   }
@@ -158,8 +215,12 @@ export default class WebMapService extends Events {
     return new Promise((resolve, reject) => {
       let isMatched = false;
       let matchMaxZoom = 22;
-
-      SuperMap.FetchRequest.get(mapInfo.url, null, { withCredentials: false, withoutFormatSuffix: true })
+      const proxy = this.handleProxy();
+      SuperMap.FetchRequest.get(mapInfo.url, null, {
+        withCredentials: this.handleWithCredentials(proxy, mapInfo.url, false),
+        withoutFormatSuffix: true,
+        proxy
+      })
         .then(response => {
           return response.text();
         })
@@ -208,13 +269,12 @@ export default class WebMapService extends Events {
               }
             }
           }
-          resolve({ isMatched, matchMaxZoom })
+          resolve({ isMatched, matchMaxZoom });
         })
         .catch(error => {
           reject(error);
         });
-    })
-
+    });
   }
 
   private _getFeaturesFromHosted(layer, baseProjection?) {
@@ -223,10 +283,11 @@ export default class WebMapService extends Events {
 
     if (!serverId) {
       return new Promise((resolve, reject) => {
-        resolve({ type: 'noServerId' })
-      })
+        resolve({ type: 'noServerId' });
+      });
     }
-    let getDataFromIportal = layerType === 'MARKER' || (dataSource && (!dataSource.accessType || dataSource.accessType === 'DIRECT'));
+    let getDataFromIportal =
+      layerType === 'MARKER' || (dataSource && (!dataSource.accessType || dataSource.accessType === 'DIRECT'));
 
     if (getDataFromIportal) {
       return this._getDataFromIportal(serverId);
@@ -242,7 +303,7 @@ export default class WebMapService extends Events {
     return new Promise((resolve, reject) => {
       this._getFeatureBySQL(
         dataSource.url,
-        [dataSource.dataSourseName || layer.name],
+        [dataSource.dataSourceName || layer.name],
         result => {
           features = this.parseGeoJsonData2Feature({
             allDatas: {
@@ -255,7 +316,7 @@ export default class WebMapService extends Events {
           reject(err);
         }
       );
-    })
+    });
   }
 
   private _getFeaturesFromRestMap(layer) {
@@ -292,7 +353,38 @@ export default class WebMapService extends Events {
         },
         'smid=1'
       );
-    })
+    });
+  }
+
+  private _getFeaturesFromUserData(layer) {
+    let dataSource = layer.dataSource;
+    return new Promise((resolve, reject) => {
+      const proxy = this.handleProxy();
+      SuperMap.FetchRequest.get(dataSource.url, null, {
+        withCredentials: this.handleWithCredentials(proxy, dataSource.url, this.withCredentials),
+        proxy
+      })
+        .then(response => {
+          return response.json();
+        })
+        .then(data => {
+          let features;
+          if (data && data instanceof Object && data.type === 'FeatureCollection') {
+            features = data.features;
+          } else {
+            features = data;
+          }
+          features = this.parseGeoJsonData2Feature({
+            allDatas: {
+              features
+            }
+          });
+          resolve({ type: 'feature', features });
+        })
+        .catch(err => {
+          reject(err);
+        });
+    });
   }
 
   private _queryFeatureBySQL(
@@ -307,9 +399,20 @@ export default class WebMapService extends Events {
     recordLength?,
     onlyAttribute?
   ): void {
-    let queryBySQLParams = this._getQueryFeaturesParam(layerName, attributeFilter, fields, epsgCode, startRecord, recordLength, onlyAttribute)
+    let queryBySQLParams = this._getQueryFeaturesParam(
+      layerName,
+      attributeFilter,
+      fields,
+      epsgCode,
+      startRecord,
+      recordLength,
+      onlyAttribute
+    );
+    const proxy = this.handleProxy();
     // @ts-ignore
     let queryBySQLService = new SuperMap.QueryBySQLService(url, {
+      proxy,
+      withCredentials: this.handleWithCredentials(proxy, url, false),
       eventListeners: {
         processCompleted: data => {
           processCompleted && processCompleted(data);
@@ -345,7 +448,15 @@ export default class WebMapService extends Events {
     );
   }
 
-  private _getQueryFeaturesParam(layerName: string, attributeFilter?: string, fields?: Array<string>, epsgCode?: string, startRecord?, recordLength?, onlyAttribute?) {
+  private _getQueryFeaturesParam(
+    layerName: string,
+    attributeFilter?: string,
+    fields?: Array<string>,
+    epsgCode?: string,
+    startRecord?,
+    recordLength?,
+    onlyAttribute?
+  ) {
     let queryParam = new SuperMap.FilterParameter({
       name: layerName,
       attributeFilter: attributeFilter
@@ -382,13 +493,13 @@ export default class WebMapService extends Events {
       this._getDataflowInfo(
         layer,
         () => {
-          resolve({ type: 'dataflow' })
+          resolve({ type: 'dataflow' });
         },
         e => {
-          reject(e)
+          reject(e);
         }
       );
-    })
+    });
   }
 
   private _getDataflowInfo(layerInfo, success, faild?) {
@@ -399,16 +510,24 @@ export default class WebMapService extends Events {
       token = layerInfo.credential.token;
       requestUrl += `?token=${token}`;
     }
-    SuperMap.FetchRequest.get(requestUrl)
-      .then(function (response) {
+    const proxy = this.handleProxy();
+    SuperMap.FetchRequest.get(requestUrl, null, {
+      proxy,
+      withCredentials: this.handleWithCredentials(proxy, requestUrl, false)
+    })
+      .then(function(response) {
         return response.json();
       })
-      .then(function (result) {
-        if (result && result.featureMetaData) {
+      .then(function(result) {
+        if (!result) {
+          faild();
+          return;
+        }
+        if (result.featureMetaData) {
           layerInfo.featureType = result.featureMetaData.featureType.toUpperCase();
           layerInfo.dataSource = { dataTypes: {} };
           if (result.featureMetaData.fieldInfos && result.featureMetaData.fieldInfos.length > 0) {
-            result.featureMetaData.fieldInfos.forEach(function (data) {
+            result.featureMetaData.fieldInfos.forEach(function(data) {
               let name = data.name.trim();
               if (data.type === 'TEXT') {
                 layerInfo.dataSource.dataTypes[name] = 'STRING';
@@ -419,15 +538,12 @@ export default class WebMapService extends Events {
               }
             });
           }
-          layerInfo.wsUrl = result.urls[0].url;
-          layerInfo.name = result.urls[0].url.split('iserver/services/')[1].split('/dataflow')[0];
-          success();
-        } else {
-          //失败也要到成功会调函数中，否则不会继续执行
-          faild();
         }
+        layerInfo.wsUrl = result.urls[0].url;
+        layerInfo.name = result.urls[0].url.split('iserver/services/')[1].split('/dataflow')[0];
+        success();
       })
-      .catch(function () {
+      .catch(function() {
         faild();
       });
   }
@@ -435,18 +551,11 @@ export default class WebMapService extends Events {
   public getDatasourceType(layer) {
     let { dataSource, layerType } = layer;
     if (dataSource && dataSource.type === 'SAMPLE_DATA') {
-      return dataSource.type
+      return dataSource.type;
     }
     let type;
-    let isHosted =
-      (dataSource && dataSource.serverId) ||
-      layerType === 'MARKER' ||
-      layerType === 'HOSTED_TILE';
-    let isTile =
-      layerType === 'SUPERMAP_REST' ||
-      layerType === 'TILE' ||
-      layerType === 'WMS' ||
-      layerType === 'WMTS';
+    let isHosted = (dataSource && dataSource.serverId) || layerType === 'MARKER' || layerType === 'HOSTED_TILE';
+    let isTile = layerType === 'SUPERMAP_REST' || layerType === 'TILE' || layerType === 'WMS' || layerType === 'WMTS';
     if (isHosted) {
       type = 'hosted';
     } else if (isTile) {
@@ -457,6 +566,8 @@ export default class WebMapService extends Events {
       type = 'rest_map';
     } else if (layerType === 'DATAFLOW_POINT_TRACK' || layerType === 'DATAFLOW_HEAT') {
       type = 'dataflow';
+    } else if (dataSource && dataSource.type === 'USER_DATA') {
+      type = 'user_data';
     }
     return type;
   }
@@ -503,15 +614,17 @@ export default class WebMapService extends Events {
       url = `${url}&${this.accessKey}=${this.accessToken}`;
     }
     return new Promise((resolve, reject) => {
+      const proxy = this.handleProxy();
       SuperMap.FetchRequest.get(url, null, {
-        withCredentials: this.withCredentials
+        withCredentials: this.handleWithCredentials(proxy, url, this.withCredentials),
+        proxy
       })
         .then(response => {
           return response.json();
         })
         .then(data => {
           if (data.succeed === false) {
-            reject(data.error)
+            reject(data.error);
           }
           if (data && data.type) {
             if (data.type === 'JSON' || data.type === 'GEOJSON') {
@@ -524,50 +637,50 @@ export default class WebMapService extends Events {
           }
         })
         .catch(error => {
-          reject(error)
+          reject(error);
         });
-    })
+    });
   }
 
   private _getDataFromHosted({ layer, serverId, baseProjection }) {
     //关系型文件
     let isMapService = layer.layerType === 'HOSTED_TILE';
     return new Promise((resolve, reject) => {
-      this._checkUploadToRelationship(serverId).then(result => {
-        if (result && result.length > 0) {
-          let datasetName = result[0].name,
-            featureType = result[0].type.toUpperCase();
-          this._getDataService(serverId, datasetName).then(data => {
-            let dataItemServices = data.dataItemServices;
-            if (dataItemServices.length === 0) {
-              reject('noDataServices');
-            }
-            let param = { layer, dataItemServices, datasetName, featureType, resolve, reject, baseProjection };
-            if (isMapService) {
-
-              let dataService = dataItemServices.filter(info => {
-                return info && info.serviceType === 'RESTDATA';
-              })[0];
-              this._isMvt(dataService.address, datasetName, baseProjection)
-                .then(info => {
-                  this._getServiceInfoFromLayer(param, info);
-                })
-                .catch(() => {
-                  //判断失败就走之前逻辑，>数据量用tile
-                  this._getServiceInfoFromLayer(param);
-                });
-            } else {
-              this._getServiceInfoFromLayer(param);
-            }
-          });
-        } else {
-          reject('resultIsEmpty');
-        }
-      }).catch(error => {
-        reject(error);
-      });
-    })
-
+      this._checkUploadToRelationship(serverId)
+        .then(result => {
+          if (result && result.length > 0) {
+            let datasetName = result[0].name,
+              featureType = result[0].type.toUpperCase();
+            this._getDataService(serverId, datasetName).then(data => {
+              let dataItemServices = data.dataItemServices;
+              if (dataItemServices.length === 0) {
+                reject('noDataServices');
+              }
+              let param = { layer, dataItemServices, datasetName, featureType, resolve, reject, baseProjection };
+              if (isMapService) {
+                let dataService = dataItemServices.filter(info => {
+                  return info && info.serviceType === 'RESTDATA';
+                })[0];
+                this._isMvt(dataService.address, datasetName, baseProjection)
+                  .then(info => {
+                    this._getServiceInfoFromLayer(param, info);
+                  })
+                  .catch(() => {
+                    //判断失败就走之前逻辑，>数据量用tile
+                    this._getServiceInfoFromLayer(param);
+                  });
+              } else {
+                this._getServiceInfoFromLayer(param);
+              }
+            });
+          } else {
+            reject('resultIsEmpty');
+          }
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
   }
 
   private _isMvt(serviceUrl, datasetName, baseProjection) {
@@ -575,10 +688,10 @@ export default class WebMapService extends Events {
       //判断是否和底图坐标系一直
       if (info.epsgCode == baseProjection.split('EPSG:')[1]) {
         return SuperMap.FetchRequest.get(`${info.url}/tilefeature.mvt`)
-          .then(function (response) {
+          .then(function(response) {
             return response.json();
           })
-          .then(function (result) {
+          .then(function(result) {
             info.isMvt = result.error && result.error.code === 400;
             return info;
           })
@@ -590,7 +703,10 @@ export default class WebMapService extends Events {
     });
   }
 
-  private _getServiceInfoFromLayer({ layer, dataItemServices, datasetName, featureType, resolve, reject, baseProjection }, info?: any) {
+  private _getServiceInfoFromLayer(
+    { layer, dataItemServices, datasetName, featureType, resolve, reject, baseProjection },
+    info?: any
+  ) {
     let isMapService = info ? !info.isMvt : layer.layerType === 'HOSTED_TILE',
       isAdded = false;
     dataItemServices.forEach((service, index) => {
@@ -602,37 +718,41 @@ export default class WebMapService extends Events {
         isAdded = true;
         //地图服务,判断使用mvt还是tile
         this._getTileLayerInfo(service.address, baseProjection).then(restMaps => {
-          resolve({ type: 'restMap', restMaps })
+          resolve({ type: 'restMap', restMaps });
         });
       } // TODO 对接 MVT
       else if (service && !isMapService && service.serviceType === 'RESTDATA') {
         if (info && info.isMvt) {
           // this._addVectorLayer(info, layer, featureType);
-          resolve({ type: 'mvt', info, featureType })
+          resolve({ type: 'mvt', info, featureType });
         } else {
           //数据服务
           isAdded = true;
           //关系型文件发布的数据服务
-          this._getDatasources(service.address).then(datasourceName => {
-            layer.dataSource.dataSourceName = datasourceName + ':' + datasetName;
-            layer.dataSource.url = `${service.address}/data`;
-            this._getFeatureBySQL(
-              layer.dataSource.url,
-              [layer.dataSource.dataSourceName || layer.name],
-              result => {
-                let features = this.parseGeoJsonData2Feature({
-                  allDatas: {
-                    features: result.result.features.features
-                  }
-                });
-                resolve({ type: 'feature', features });
-              }, err => {
-                reject(err);
-              }
-            );
-          }, err => {
-            reject(err);
-          });
+          this._getDatasources(service.address).then(
+            datasourceName => {
+              layer.dataSource.dataSourceName = datasourceName + ':' + datasetName;
+              layer.dataSource.url = `${service.address}/data`;
+              this._getFeatureBySQL(
+                layer.dataSource.url,
+                [layer.dataSource.dataSourceName || layer.name],
+                result => {
+                  let features = this.parseGeoJsonData2Feature({
+                    allDatas: {
+                      features: result.result.features.features
+                    }
+                  });
+                  resolve({ type: 'feature', features });
+                },
+                err => {
+                  reject(err);
+                }
+              );
+            },
+            err => {
+              reject(err);
+            }
+          );
         }
       }
     }, this);
@@ -646,7 +766,11 @@ export default class WebMapService extends Events {
     return this._getDatasources(serviceUrl).then(datasourceName => {
       //判断mvt服务是否可用
       let url = `${serviceUrl}/data/datasources/${datasourceName}/datasets/${datasetName}`;
-      return SuperMap.FetchRequest.get(url)
+      const proxy = this.handleProxy();
+      return SuperMap.FetchRequest.get(url, null, {
+        withCredentials: this.handleWithCredentials(proxy, url, this.withCredentials),
+        proxy
+      })
         .then(response => {
           return response.json();
         })
@@ -663,7 +787,12 @@ export default class WebMapService extends Events {
   }
 
   private _getDatasources(url) {
-    return SuperMap.FetchRequest.get(`${url}/data/datasources.json`)
+    const proxy = this.handleProxy();
+    const serviceUrl = `${url}/data/datasources.json`;
+    return SuperMap.FetchRequest.get(serviceUrl, null, {
+      withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
+      proxy
+    })
       .then(response => {
         return response.json();
       })
@@ -677,8 +806,11 @@ export default class WebMapService extends Events {
   }
 
   private _getDataService(fileId, datasetName) {
-    return SuperMap.FetchRequest.get(`${this.serverUrl}web/datas/${fileId}.json`, null, {
-      withCredentials: this.withCredentials
+    const proxy = this.handleProxy();
+    const serviceUrl = `${this.serverUrl}web/datas/${fileId}.json`;
+    return SuperMap.FetchRequest.get(serviceUrl, null, {
+      withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
+      proxy
     })
       .then(response => {
         return response.json();
@@ -691,8 +823,11 @@ export default class WebMapService extends Events {
   }
 
   private _checkUploadToRelationship(fileId) {
-    return SuperMap.FetchRequest.get(`${this.serverUrl}web/datas/${fileId}/datasets.json`, null, {
-      withCredentials: this.withCredentials
+    const proxy = this.handleProxy();
+    const serviceUrl = `${this.serverUrl}web/datas/${fileId}/datasets.json`;
+    return SuperMap.FetchRequest.get(serviceUrl, null, {
+      withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
+      proxy
     })
       .then(response => {
         return response.json();
@@ -717,6 +852,28 @@ export default class WebMapService extends Events {
     }
     mapUrl = mapUrl.indexOf('.json') === -1 ? `${mapUrl}.json` : mapUrl;
     return mapUrl;
+  }
+
+  public handleProxy(type?: string): string {
+    if (!this.proxy) {
+      return null;
+    }
+    const proxySuffix: string = this.proxyOptions[type || 'data'];
+    let proxy: string = this.serverUrl + proxySuffix;
+    if (typeof this.proxy === 'string') {
+      proxy = this.proxy;
+    }
+    return proxy;
+  }
+  private handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean {
+    if (proxyUrl && proxyUrl.startsWith(this.serverUrl)) {
+      return true;
+    }
+    if (serviceUrl && this.iportalServiceProxyUrl && serviceUrl.indexOf(this.iportalServiceProxyUrl) >= 0) {
+      return true;
+    }
+
+    return defaultValue;
   }
 
   private _formatGeoJSON(data): any {
@@ -772,11 +929,12 @@ export default class WebMapService extends Events {
   }
 
   private _getTileLayerInfo(url, baseProjection) {
-    let proxyUrl = this.serverUrl + 'apps/viewer/getUrlResource.json?url=';
-    let requestUrl = proxyUrl + encodeURIComponent(url);
+    const proxy = this.handleProxy();
     let epsgCode = baseProjection.split('EPSG:')[1];
-    return SuperMap.FetchRequest.get(`${requestUrl}/maps.json`, null, {
-      withCredentials: this.withCredentials
+    const serviceUrl = `${url}/maps.json`;
+    return SuperMap.FetchRequest.get(serviceUrl, null, {
+      withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
+      proxy
     })
       .then(response => {
         return response.json();
@@ -786,10 +944,11 @@ export default class WebMapService extends Events {
         if (mapInfo) {
           mapInfo.forEach(info => {
             let promise = SuperMap.FetchRequest.get(
-              `${proxyUrl}${info.path}.json?prjCoordSys=${JSON.stringify({ epsgCode: epsgCode })}`,
+              `${info.path}.json?prjCoordSys=${JSON.stringify({ epsgCode: epsgCode })}`,
               null,
               {
-                withCredentials: this.withCredentials
+                withCredentials: this.withCredentials,
+                proxy
               }
             )
               .then(response => {
@@ -808,7 +967,12 @@ export default class WebMapService extends Events {
       });
   }
 
-  private _getFeatureBySQL(url: string, datasetNames: Array<string>, processCompleted: Function, processFaild: Function): void {
+  private _getFeatureBySQL(
+    url: string,
+    datasetNames: Array<string>,
+    processCompleted: Function,
+    processFaild: Function
+  ): void {
     let getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
     getFeatureParam = new SuperMap.FilterParameter({
       name: datasetNames.join().replace(':', '@'),
@@ -822,7 +986,10 @@ export default class WebMapService extends Events {
       maxFeatures: -1,
       returnContent: true
     });
+    const proxy = this.handleProxy();
     let options = {
+      proxy,
+      withCredentials: this.handleWithCredentials(proxy, url, false),
       eventListeners: {
         processCompleted: getFeaturesEventArgs => {
           processCompleted && processCompleted(getFeaturesEventArgs);

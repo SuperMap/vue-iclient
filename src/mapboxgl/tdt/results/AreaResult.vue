@@ -11,7 +11,6 @@
 <script>
 export default {
   name: 'AreaResult',
-  inheritAttrs: false,
   props: {
     data: {
       type: Object

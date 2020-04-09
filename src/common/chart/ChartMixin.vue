@@ -12,7 +12,6 @@
       :id="chartId"
       :ref="chartId"
       :options="_chartOptions"
-      :autoresize="autoresize"
       :initOptions="initOptions"
       :group="group"
       :manual-update="manualUpdate"
@@ -34,6 +33,8 @@ import ECharts from 'vue-echarts';
 import UniqueId from 'lodash.uniqueid';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
+import debounce from 'lodash/debounce';
+import cloneDeep from 'lodash.clonedeep';
 import Card from '../_mixin/card';
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
@@ -41,6 +42,7 @@ import { chartThemeUtil } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
+import { addListener, removeListener } from 'resize-detector';
 
 /**
  * @module Chart
@@ -229,7 +231,7 @@ export default {
       return (
         this.dataset &&
         Object.keys(this.dataset).length > 0 &&
-        this.dataset.url &&
+        (this.dataset.url || this.dataset.geoJSON) &&
         this.datasetOptions &&
         this.datasetOptions.length > 0
       );
@@ -299,6 +301,13 @@ export default {
       },
       deep: true
     },
+    autoresize() {
+      if (this.autoresize) {
+        addListener(this.$el, this.__resizeHandler);
+      } else {
+        removeListener(this.$el, this.__resizeHandler);
+      }
+    },
     // 以下为echart的配置参数
     width() {
       return this.smChart && this.smChart.width;
@@ -341,6 +350,7 @@ export default {
         self.$emit(event, params);
       });
     });
+    this._initAutoResize();
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -350,8 +360,24 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.pieAutoPlay); // clear 自动播放
+    if (this.autoresize) {
+      removeListener(this.$el, this.__resizeHandler);
+    }
   },
   methods: {
+    _initAutoResize() {
+      this.__resizeHandler = debounce(
+        () => {
+          this.resize();
+        },
+        100,
+        { leading: true }
+      );
+      if (this.autoresize) {
+        // @ts-ignore
+        addListener(this.$el, this.__resizeHandler);
+      }
+    },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
       let echartsNode = this.smChart.chart;
@@ -399,7 +425,7 @@ export default {
     },
     timing() {
       this.echartsDataService &&
-        this.echartsDataService.getDataOption(this.dataset).then(options => {
+        this.echartsDataService.getDataOption(this.dataset, this.xBar).then(options => {
           this.hideLoading();
           // 缓存dataSeriesCache，请求后格式化成echart的数据
           this.dataSeriesCache = Object.assign({}, options);
@@ -412,13 +438,15 @@ export default {
     _setEchartOptions(dataset, datasetOptions, echartOptions) {
       this.echartsDataService = null;
       this.dataSeriesCache = null;
-      this.showLoading('default', {
-        text: this.$t('info.loading'),
-        color: this.colorGroupsData[0],
-        textColor: this.textColorsData,
-        maskColor: 'rgba(0,0,0,0.8)',
-        zlevel: 0
-      });
+      if (this.dataset.type !== 'geoJSON') {
+        this.showLoading('default', {
+          text: this.$t('info.loading'),
+          color: this.colorGroupsData[0],
+          textColor: this.textColorsData,
+          maskColor: 'rgba(0,0,0,0.8)',
+          zlevel: 0
+        });
+      }
       this.echartsDataService = new EchartsDataService(dataset, datasetOptions);
       this.echartsDataService.getDataOption(dataset, this.xBar).then(options => {
         this.hideLoading();
@@ -430,8 +458,8 @@ export default {
       });
     },
     _optionsHandler(options, dataOptions) {
-      dataOptions = dataOptions && JSON.parse(JSON.stringify(dataOptions)); // clone 避免引起重复刷新
-      options = options && JSON.parse(JSON.stringify(options)); // clone 避免引起重复刷新
+      dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
+      options = options && cloneDeep(options); // clone 避免引起重复刷新
       if (options && options.legend && !options.legend.type) {
         options.legend.type = 'scroll';
       }
@@ -451,7 +479,7 @@ export default {
         if (dataOptions.series.length === 0) {
           axis = [{}];
         } else if (!Array.isArray(axis)) {
-          if (axisData.data.length) {
+          if (axisData.data && axisData.data.length) {
             axis.data = [];
           }
           axis = [Object.assign({}, axisData, axis)];
@@ -465,6 +493,29 @@ export default {
           options.series = dataOptions.series.map((element, index) => {
             return Object.assign({}, options.series[index] || {}, element);
           });
+          const labelConfig = options.series[0].label && options.series[0].label.normal;
+          if (labelConfig && labelConfig.show && labelConfig.position === 'smart') {
+            options.series.forEach(serie => {
+              let label = serie.label.normal;
+              label.position = 'top';
+              label.formatter = function({ dataIndex, value }) {
+                let result = '';
+                const data = serie.data;
+                if (dataIndex === 0 || dataIndex === data.length - 1 || Math.max.apply(null, data) === value) {
+                  result = value;
+                }
+                return result;
+              };
+            });
+          } else if (options.series[0].type !== 'pie') {
+            options.series.forEach(serie => {
+              let label = serie.label && serie.label.normal;
+              if (label && label.formatter) {
+                delete label.formatter;
+              }
+            });
+          }
+
           // pie的图例需要一个扇形是一个图例
           if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
             options.legend.data = [];
@@ -481,7 +532,7 @@ export default {
       if (options && options.radar && dataOptions.radar) {
         options.radar.indicator = Object.assign({}, dataOptions.radar.indicator || {});
       }
-      return merge(JSON.parse(JSON.stringify(options)), dataOptions);
+      return merge(options, dataOptions);
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {

@@ -9,19 +9,22 @@ import SourceListModel from '../../SourceListModel';
  * @extends mapboxgl.Evented
  */
 class LayerListViewModel extends mapboxgl.Evented {
-  constructor(map) {
+  constructor() {
     super();
-    this.map = map;
     this.sourceList = {};
     this.sourceNames = [];
-    this._init();
   }
-  _init() {
-    this.map.on('styledata', this._updateLayers.bind(this));
-  }
+
   _updateLayers(data) {
     this.fire('layersUpdated');
   }
+  setMap(mapInfo) {
+    const { map } = mapInfo;
+    this.map = map;
+    this.updateFn = this._updateLayers.bind(this);
+    this.map.on('styledata', this.updateFn);
+  }
+
   initLayerList() {
     this.sourceListModel = new SourceListModel({
       map: this.map
@@ -56,6 +59,12 @@ class LayerListViewModel extends mapboxgl.Evented {
         this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));
       }
     }
+  }
+
+  removed() {
+    this.sourceList = {};
+    this.sourceNames = [];
+    this.map.off('styledata', this.updateFn);
   }
 }
 export default LayerListViewModel;

@@ -79,6 +79,7 @@ export default {
     crsNotSupport: '不支持当前地图的坐标系！',
     TileMatrixSetNotSuppport: '不支持传入的 TileMatrixSet！',
     getLayerInfoFailed: '获取图层信息失败！',
+    getThemeInfoFailed: '获取图层样式信息失败！',
     crsnotsupport: '不支持的坐标系！',
     baiduMapNotSupport: '暂不支持加载百度地图！',
     sampleDataNotSupport: '暂不支持加载示例数据！',
@@ -130,7 +131,8 @@ export default {
     seviceNotSupport: '此服务不支持查询！'
   },
   identify: {
-    layerNotExit: "地图上不存在该图层: '{layer}'"
+    layerNotExit: "地图上不存在该图层: '{layer}'",
+    noData: '无数据'
   },
   openFile: {
     fileSizeExceeded: '文件大小超限！文件大小不得超过 10M！',

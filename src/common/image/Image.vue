@@ -40,7 +40,8 @@ export default {
       repeatOption: {
         center: {
           backgroundRepeat: 'no-repeat',
-          backgroundPosition: 'center'
+          backgroundPosition: 'center',
+          backgroundSize: 'contain'
         },
         noRepeat: {
           backgroundSize: '100% 100%',

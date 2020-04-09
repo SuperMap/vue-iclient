@@ -14,7 +14,9 @@ const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 export default abstract class WebMapBase extends Events {
   map: any;
 
-  mapId: string;
+  mapId: string | object;
+
+  webMapInfo: any;
 
   mapOptions: any;
 
@@ -28,6 +30,8 @@ export default abstract class WebMapBase extends Events {
 
   withCredentials: boolean;
 
+  proxy: String | Boolean;
+
   target: string;
 
   excludePortalProxyUrl: boolean;
@@ -39,6 +43,8 @@ export default abstract class WebMapBase extends Events {
   mapParams: { title?: string; description?: string };
 
   baseProjection: string;
+
+  ignoreBaseProjection: boolean;
 
   on: any;
 
@@ -58,15 +64,16 @@ export default abstract class WebMapBase extends Events {
 
   constructor(id, options?, mapOptions?) {
     super();
-    this.mapId = id;
     this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
     this.tiandituKey = options.tiandituKey || '';
     this.withCredentials = options.withCredentials || false;
+    this.proxy = options.proxy;
     this.target = options.target || 'map';
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
     this.isSuperMapOnline = options.isSuperMapOnline;
+    this.ignoreBaseProjection = options.ignoreBaseProjection;
     this.echartslayer = [];
     this.webMapService = new WebMapService(id, options);
     this.mapOptions = mapOptions;
@@ -77,8 +84,10 @@ export default abstract class WebMapBase extends Events {
       'addlayerssucceeded',
       'notsupportmvt',
       'notsupportbaidumap',
-      'projectionIsNotMatch'
+      'projectionIsNotMatch',
+      'beforeremovemap'
     ];
+    this.mapId = id;
   }
 
   abstract _initWebMap(): void;
@@ -116,6 +125,11 @@ export default abstract class WebMapBase extends Events {
     this.webMapService.setWithCredentials(withCredentials);
   }
 
+  public setProxy(proxy) {
+    this.proxy = proxy;
+    this.webMapService.setProxy(proxy);
+  }
+
   public setZoom(zoom) {
     if (this.map) {
       this.mapOptions.zoom = zoom;
@@ -146,7 +160,16 @@ export default abstract class WebMapBase extends Events {
 
   protected initWebMap() {
     this.cleanWebMap();
-    if (!this.mapId || !this.serverUrl) {
+    if (this.webMapInfo) { // 传入是webmap对象
+      let mapInfo = this.webMapInfo;
+      mapInfo.mapParams = {
+        title: this.webMapInfo.title,
+          description: this.webMapInfo.description
+      }
+      this.mapParams = mapInfo.mapParams;
+      this._getMapInfo(mapInfo, null);
+      return;
+    } else if (!this.mapId || !this.serverUrl) {
       this._createMap();
       return;
     }
@@ -232,7 +255,7 @@ export default abstract class WebMapBase extends Events {
       getLayerFunc
         .then(
           result => {
-            if (this._taskID !== _taskID) {
+            if (this.mapId && this._taskID !== _taskID) {
               return;
             }
             this._getLayerFeaturesSucceeded(result, layer);
@@ -511,7 +534,7 @@ export default abstract class WebMapBase extends Events {
 
       // 获取一定量的颜色
       let curentColors = colors;
-
+      curentColors = SuperMap.ColorsPickerUtil.getGradientColors(curentColors, itemNum, 'RANGE');
       for (let index = 0; index < itemNum; index++) {
         if (index in customSettings) {
           if (customSettings[index]['segment']['start']) {

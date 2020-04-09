@@ -19,10 +19,11 @@ export default {
     }
   },
   created() {
-    this.parentIsWebMapOrMap = this.$parent.$options.name && this.$parent.$options.name.toLowerCase() === 'smwebmap';
+    const parentName = this.$parent.$options.name;
+    this.parentIsWebMapOrMap = parentName && ['smwebmap', 'smncpmap'].includes(this.$parent.$options.name.toLowerCase());
   },
   mounted() {
-    this.filterDelayLoad = !['smwebmap', 'smminimap'].includes(this.$options.name && this.$options.name.toLowerCase());
+    this.filterDelayLoad = !['smwebmap', 'smminimap', 'smncpmap'].includes(this.$options.name && this.$options.name.toLowerCase());
     if (this.$el && this.parentIsWebMapOrMap) {
       if (this.filterDelayLoad) {
         this.isShow = false;

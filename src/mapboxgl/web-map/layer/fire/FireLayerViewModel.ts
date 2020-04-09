@@ -46,20 +46,23 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
   private _lightIntensity: number;
 
   constructor(
-    map: mapboxglTypes.Map,
     features: FeatureCollection,
     modelScale: number = 5.41843220338983e-6,
     layerId?: string
   ) {
     super();
+    this.layerId = layerId;
+    this.features = features;
+    this.modelScale = modelScale;
+  }
+
+  public setMap(mapInfo) {
+    const { map } = mapInfo;
     if (!map) {
       throw new Error('map is requierd');
     }
     this.map = map;
-    this.layerId = layerId;
-    this.features = features;
-    this.modelScale = modelScale;
-    this.features && this._addFireLayer();
+    this._addFireLayer();
   }
 
   public setFeatures(features: any): void {
@@ -292,7 +295,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
     }
   }
 
-  public clear() {
+  public removed() {
     const {
       map,
       layerId,
