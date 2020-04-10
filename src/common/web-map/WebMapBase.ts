@@ -14,7 +14,7 @@ const MAX_MIGRATION_ANIMATION_COUNT = 1000;
 export default abstract class WebMapBase extends Events {
   map: any;
 
-  mapId: string | object;
+  mapId: string | number | object;
 
   webMapInfo: any;
 
@@ -107,7 +107,7 @@ export default abstract class WebMapBase extends Events {
     });
   }
 
-  public setMapId(mapId: string): void {
+  public setMapId(mapId: string | number): void {
     this.mapId = mapId;
     this.webMapService.setMapId(mapId);
     setTimeout(() => {

@@ -57,7 +57,7 @@ interface webMapOptions {
 }
 
 export default class WebMapService extends Events {
-  mapId: string;
+  mapId: string | number ;
 
   mapInfo: any;
 
@@ -86,9 +86,9 @@ export default class WebMapService extends Events {
     image: 'apps/viewer/getUrlResource.png?url='
   };
 
-  constructor(mapId: string | object, options: webMapOptions = {}) {
+  constructor(mapId: string | number | object, options: webMapOptions = {}) {
     super();
-    if (typeof mapId === 'string') {
+    if (typeof mapId === 'string' || typeof mapId === 'number') {
       this.mapId = mapId;
     } else if (mapId !== null && typeof mapId === 'object') {
       this.mapInfo = mapId;
@@ -102,7 +102,7 @@ export default class WebMapService extends Events {
     this.proxy = options.proxy;
   }
 
-  public setMapId(mapId: string): void {
+  public setMapId(mapId: string | number): void {
     this.mapId = mapId;
   }
 
@@ -768,7 +768,7 @@ export default class WebMapService extends Events {
       let url = `${serviceUrl}/data/datasources/${datasourceName}/datasets/${datasetName}`;
       const proxy = this.handleProxy();
       return SuperMap.FetchRequest.get(url, null, {
-        withCredentials: this.handleWithCredentials(proxy, url, this.withCredentials),
+        withCredentials: this.handleWithCredentials(proxy, url, false),
         proxy
       })
         .then(response => {
@@ -790,7 +790,7 @@ export default class WebMapService extends Events {
     const proxy = this.handleProxy();
     const serviceUrl = `${url}/data/datasources.json`;
     return SuperMap.FetchRequest.get(serviceUrl, null, {
-      withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
+      withCredentials: this.handleWithCredentials(proxy, serviceUrl, false),
       proxy
     })
       .then(response => {
