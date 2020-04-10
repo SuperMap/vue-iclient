@@ -495,7 +495,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
     if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
       // 存在标签专题图
-      this._addLabelLayer(layerInfo, features);
+      this._addLabelLayer(layerInfo, features, false);
     }
   }
 
@@ -781,7 +781,7 @@ export default class WebMapViewModel extends WebMapBase {
       }
       if (layerInfo.labelStyle && layerInfo.visible) {
         if (!this.map.getSource(layerID + '-label')) {
-          this._addLabelLayer(layerInfo, [feature]);
+          this._addLabelLayer(layerInfo, [feature], true);
         } else {
           this._updateDataFlowFeature(layerID + '-label', feature, layerInfo);
         }
@@ -924,7 +924,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  private _addLabelLayer(layerInfo: any, features: any): void {
+  private _addLabelLayer(layerInfo: any, features: any, addSource: boolean = false): void {
     let labelStyle = layerInfo.labelStyle;
     let { backgroundFill, fontFamily } = labelStyle;
     const { minzoom, maxzoom } = layerInfo;
@@ -932,13 +932,16 @@ export default class WebMapViewModel extends WebMapBase {
     this._addLayer({
       id: `${layerInfo.layerID}-label`,
       type: 'symbol',
-      source: {
-        type: 'geojson',
-        data: {
-          type: 'FeatureCollection',
-          features: features
-        }
-      },
+      source:
+        this.map.getSource(layerInfo.layerID) && !addSource
+          ? layerInfo.layerID
+          : {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: features
+              }
+            },
       paint: {
         'text-color': labelStyle.fill,
         'text-halo-color': backgroundFill || 'rgba(255,255,255,0.8)',
@@ -1420,7 +1423,7 @@ export default class WebMapViewModel extends WebMapBase {
     // 如果面有边框
     featureType === 'POLYGON' &&
       style.strokeColor &&
-      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeline', visible, minzoom, maxzoom);
+      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
     this._addLayerSucceeded();
   }
 
