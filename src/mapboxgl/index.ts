@@ -1,4 +1,5 @@
 import globalEvent from '../common/_utils/global-event';
+import { registerProjection } from '../common/_utils/epsg-define';
 import {
   Progress,
   Icon,
@@ -38,6 +39,7 @@ const install = function(Vue, opts: any = {}) {
   require(`../common/_utils/style/theme/${theme}.scss`);
   require('./style.scss');
   setTheme(theme);
+  registerProjection(opts.projections);
 
   Vue.use(Button);
   Vue.use(Checkbox);
