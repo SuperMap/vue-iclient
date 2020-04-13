@@ -15,7 +15,8 @@ export default function getFeatures(dataset) {
       dataName,
       layerName,
       withCredentials,
-      preferContent
+      preferContent,
+      epsgCode
     } = dataset;
     if (dataset && (url || geoJSON) && type) {
       let queryInfo = {
@@ -28,6 +29,7 @@ export default function getFeatures(dataset) {
         if (dataset.proxy) {
           options.proxy = dataset.proxy;
         }
+        epsgCode && (options.epsgCode = epsgCode);
         superMapService = new iServerRestService(dataset.url, options);
         if (dataName) {
           let arr = dataName[0].split(':');
@@ -45,7 +47,7 @@ export default function getFeatures(dataset) {
         params = [datasetInfo, queryInfo];
       } else if (type === 'iPortal') {
         queryInfo.withCredentials = withCredentials;
-        superMapService = new iPortalDataService(url, withCredentials);
+        superMapService = new iPortalDataService(url, withCredentials, { epsgCode });
         params = [queryInfo, !!preferContent];
       } else if (type === 'rest') {
         superMapService = new RestService({
