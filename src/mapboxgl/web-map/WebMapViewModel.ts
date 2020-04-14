@@ -615,8 +615,7 @@ export default class WebMapViewModel extends WebMapBase {
       height: 256,
       srs: this.baseProjection
     };
-    let bbox = this.baseProjection === 'EPSG:4326' ? '{bbox-epsg-4326}' : '{bbox-epsg-3857}';
-    url += this._getParamString(options, url) + `&bbox=${bbox}`;
+    url += `${this._getParamString(options, url)}&bbox={bbox-epsg-3857}`;
     return url;
   }
 
