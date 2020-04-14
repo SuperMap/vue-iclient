@@ -623,25 +623,6 @@ export default abstract class WebMapBase extends Events {
     return styleGroup;
   }
 
-  protected getEpsgInfoFromWKT(wkt) {
-    if (typeof wkt !== 'string') {
-      return '';
-    } else if (wkt.indexOf('EPSG') === 0) {
-      return wkt;
-    } else {
-      let lastAuthority = wkt.lastIndexOf('AUTHORITY') + 10,
-        endString = wkt.indexOf(']', lastAuthority) - 1;
-      if (lastAuthority > 0 && endString > 0) {
-        return `EPSG:${wkt
-          .substring(lastAuthority, endString)
-          .split(',')[1]
-          .substr(1)}`;
-      } else {
-        return '';
-      }
-    }
-  }
-
   protected transformFeatures(features) {
     features &&
       features.forEach((feature, index) => {

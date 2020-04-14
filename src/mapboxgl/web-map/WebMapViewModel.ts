@@ -12,6 +12,7 @@ import EchartsLayer from '../../../static/libs/echarts-layer/EchartsLayer';
 import cloneDeep from 'lodash.clonedeep';
 import { geti18n } from '../../common/_lang';
 import WebMapBase from '../../common/web-map/WebMapBase';
+import { getProjection, registerProjection, toEpsgCode } from '../../common/_utils/epsg-define';
 import proj4 from 'proj4';
 
 const WORLD_WIDTH = 360;
@@ -214,15 +215,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   _getMapInfo(mapInfo, _taskID): void {
     let { projection } = mapInfo;
-    let epsgCode = projection.split(':')[1];
-    if (!epsgCode) {
-      this.baseProjection = this.getEpsgInfoFromWKT(projection);
-    } else {
-      this.baseProjection = projection;
-    }
+    this.baseProjection = this._defineProj4(projection);
 
     if (mapboxgl.CRS.get(this.baseProjection)) {
-      this._defineProj4(this.baseProjection.split(':')[1]);
 
       if (this.map) {
         // @ts-ignore
@@ -450,16 +445,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
 
     if (features && projection && (projection !== this.baseProjection || projection === 'EPSG:3857')) {
-      let epsgCode = projection.split(':')[1];
-      if (!epsgCode) {
-        return;
-      }
-      this._unprojectProjection = projection;
-
-      if (projection !== 'EPSG:3857') {
-        this._defineProj4(epsgCode);
-      }
-
+      this._unprojectProjection = this._defineProj4(projection);
       features = this.transformFeatures(features);
     }
 
@@ -1771,14 +1757,23 @@ export default class WebMapViewModel extends WebMapBase {
     return tiandituUrls;
   }
 
-  private _defineProj4(epsgCode) {
-    const defName = `EPSG:${epsgCode}`;
-    const defValue = this.webMapService.getEpsgcodeWkt(defName);
-    if (!defValue) {
-      console.error(`${defName} not define`);
-    } else {
-      !proj4.defs(defName) && proj4.defs(defName, defValue);
+  private _defineProj4(projection: string) {
+    let epsgCode = projection;
+    let epsgValue: string;
+    if (!projection.split(':')[1]) {
+      epsgCode = toEpsgCode(projection);
+      epsgValue = projection;
     }
+    const defaultValue = getProjection(epsgCode);
+    const defValue = epsgValue || defaultValue;
+    
+    if (!defValue) {
+      console.error(`${epsgCode} not define`);
+    } else {
+      !proj4.defs(epsgCode) && proj4.defs(epsgCode, defValue);
+      !defaultValue && registerProjection(epsgCode, defValue);
+    }
+    return epsgCode;
   }
 
   private _addLayer(layerInfo) {

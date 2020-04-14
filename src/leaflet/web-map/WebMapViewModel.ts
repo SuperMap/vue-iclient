@@ -4,6 +4,7 @@ import '../../../static/libs/iclient-leaflet/iclient-leaflet.min';
 import '../../../static/libs/geostats/geostats';
 import getCenter from '@turf/center';
 import WebMapBase from '../../common/web-map/WebMapBase';
+import { toEpsgCode, getProjection } from '../../common/_utils/epsg-define';
 
 interface webMapOptions {
   target?: string;
@@ -932,7 +933,7 @@ export default class WebMapViewModel extends WebMapBase {
       // @ts-ignore
       this.crs = new L.CRS.NonEarthCRS({ bounds });
     } else if (!epsgCode) {
-      this.baseProjection = this.getEpsgInfoFromWKT(this.baseProjection);
+      this.baseProjection = toEpsgCode(this.baseProjection);
       if (this.baseProjection) {
         // @ts-ignore
         this.crs = L.Proj.CRS(this.baseProjection, {
@@ -1080,9 +1081,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   protected getTransformCoodinatesCRS(epsgCode) {
     const defName = `EPSG:${epsgCode}`;
-    const defValue = this.webMapService.getEpsgcodeWkt(defName);
+    const defValue = getProjection(defName);
     // @ts-ignore
-    return L.Proj.CRS(this.getEpsgInfoFromWKT(defValue), {
+    return L.Proj.CRS(toEpsgCode(defValue), {
       def: defValue,
     });
   }
