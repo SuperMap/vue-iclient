@@ -197,7 +197,7 @@ export default {
   data() {
     return {
       chartId: UniqueId(`${this.$options.name.toLowerCase()}-`),
-      smChart: null, // echarts实例
+      chartTheme: {}, // 图表的主题
       echartOptions: {}, // 最后生成的echart数据
       datasetChange: false, // dataset是否改变
       dataSeriesCache: {},
