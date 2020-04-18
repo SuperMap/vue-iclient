@@ -860,7 +860,7 @@ export default class WebMapService extends Events {
     }
     return proxy;
   }
-  private handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean {
+  public handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean {
     if (proxyUrl && proxyUrl.startsWith(this.serverUrl)) {
       return true;
     }

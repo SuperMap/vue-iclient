@@ -218,7 +218,6 @@ export default class WebMapViewModel extends WebMapBase {
     this.baseProjection = this._defineProj4(projection);
 
     if (mapboxgl.CRS.get(this.baseProjection)) {
-
       if (this.map) {
         // @ts-ignore
         if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
@@ -320,7 +319,17 @@ export default class WebMapViewModel extends WebMapBase {
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
       renderWorldCopies: false,
-      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false
+      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false,
+      transformRequest: (url, resourceType) => {
+        if (resourceType === 'Tile') {
+          const proxy = this.webMapService.handleProxy('image');
+          return {
+            url: url,
+            credentials: this.webMapService.handleWithCredentials(proxy, url) ? 'include' : 'omit'
+          };
+        }
+        return { url };
+      }
     });
     /**
      * @description Map 初始化成功。
@@ -1765,7 +1774,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
     const defaultValue = getProjection(epsgCode);
     const defValue = epsgValue || defaultValue;
-    
+
     if (!defValue) {
       console.error(`${epsgCode} not define`);
     } else {
