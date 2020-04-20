@@ -1873,4 +1873,13 @@ export default class WebMapViewModel extends WebMapBase {
       }
     }
   }
+
+  updateOverlayLayer(layerInfo: any, features: any) {
+    if (features) {
+      this._initOverlayLayer(layerInfo, features);
+    } else{
+      const type = this.webMapService.getDatasourceType(layerInfo);
+      this.getLayerFeatures(layerInfo, this._taskID, type);
+    }
+  }
 }
