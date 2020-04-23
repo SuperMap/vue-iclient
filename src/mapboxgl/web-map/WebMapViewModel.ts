@@ -325,7 +325,7 @@ export default class WebMapViewModel extends WebMapBase {
           const proxy = this.webMapService.handleProxy('image');
           return {
             url: url,
-            credentials: this.webMapService.handleWithCredentials(proxy, url) ? 'include' : 'omit'
+            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : 'omit'
           };
         }
         return { url };
