@@ -160,12 +160,13 @@ export default abstract class WebMapBase extends Events {
 
   protected initWebMap() {
     this.cleanWebMap();
-    if (this.webMapInfo) { // 传入是webmap对象
+    if (this.webMapInfo) {
+      // 传入是webmap对象
       let mapInfo = this.webMapInfo;
       mapInfo.mapParams = {
         title: this.webMapInfo.title,
-          description: this.webMapInfo.description
-      }
+        description: this.webMapInfo.description
+      };
       this.mapParams = mapInfo.mapParams;
       this._getMapInfo(mapInfo, null);
       return;
@@ -178,26 +179,26 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected getMapInfo(_taskID) {
-      this.serverUrl = this.webMapService.handleServerUrl(this.serverUrl);
-      this.webMapService
-        .getMapInfo()
-        .then(
-          (mapInfo: any) => {
-            if (this._taskID !== _taskID) {
-              return;
-            }
-            // 存储地图的名称以及描述等信息，返回给用户
-            this.mapParams = mapInfo.mapParams;
-            this._getMapInfo(mapInfo, _taskID);
-          },
-          error => {
-            throw error;
+    this.serverUrl = this.webMapService.handleServerUrl(this.serverUrl);
+    this.webMapService
+      .getMapInfo()
+      .then(
+        (mapInfo: any) => {
+          if (this._taskID !== _taskID) {
+            return;
           }
-        )
-        .catch(error => {
-          this.triggerEvent('getmapinfofailed', { error });
-          console.log(error);
-        });
+          // 存储地图的名称以及描述等信息，返回给用户
+          this.mapParams = mapInfo.mapParams;
+          this._getMapInfo(mapInfo, _taskID);
+        },
+        error => {
+          throw error;
+        }
+      )
+      .catch(error => {
+        this.triggerEvent('getmapinfofailed', { error });
+        console.log(error);
+      });
   }
 
   protected getBaseLayerType(layerInfo) {
@@ -390,14 +391,47 @@ export default abstract class WebMapBase extends Events {
     if ((style || themeSetting) && filterCondition) {
       // 将 feature 根据过滤条件进行过滤, 分段专题图和单值专题图因为要计算 styleGroup 所以暂时不过滤
       if (layerType !== 'RANGE' && layerType !== 'UNIQUE' && layerType !== 'RANK_SYMBOL') {
-        features = this.getFiterFeatures(filterCondition, features);
+        features = this.getFilterFeatures(filterCondition, features);
       }
     }
 
     return features;
   }
 
-  protected getFiterFeatures(filterCondition: string, allFeatures): any {
+  protected mergeFeatures(layerId: string, features: any, mergeByField?: string): any {
+    if (!mergeByField) {
+      return features;
+    }
+    const source = this.map.getSource(layerId);
+    if (!source || !source._data.features) {
+      return features;
+    }
+    const prevFeatures = source._data.features;
+    const nextFeatures = [];
+    features.forEach((feature: any) => {
+      const prevFeature = prevFeatures.find((item: any) => {
+        if (isNaN(+item.properties[mergeByField]) && isNaN(+feature.properties[mergeByField])) {
+          return (
+            JSON.stringify(item.properties[mergeByField] || '') ===
+            JSON.stringify(feature.properties[mergeByField] || '')
+          );
+        } else {
+          return +item.properties[mergeByField] === +feature.properties[mergeByField];
+        }
+      });
+      if (prevFeature) {
+        nextFeatures.push({
+          ...prevFeature,
+          ...feature
+        });
+      } else if (feature.geometry) {
+        nextFeatures.push(feature);
+      }
+    });
+    return nextFeatures;
+  }
+
+  protected getFilterFeatures(filterCondition: string, allFeatures): any {
     if (!filterCondition) {
       return allFeatures;
     }

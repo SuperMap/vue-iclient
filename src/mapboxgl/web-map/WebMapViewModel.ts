@@ -437,9 +437,10 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  _initOverlayLayer(layerInfo: any, features?: any) {
-    let { layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
+  _initOverlayLayer(layerInfo: any, features?: any, mergeByField?: string) {
+    let { layerID, layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
     layerInfo.visible = visible ? 'visible' : 'none';
+    features = this.mergeFeatures(layerID, features, mergeByField);
     if (layerType === 'restMap') {
       this._createRestMapLayer(features, layerInfo);
       return;
@@ -868,7 +869,7 @@ export default class WebMapViewModel extends WebMapBase {
     let featureType = layerInfo.featureType;
     let styleSource: any = this.createRankStyleSource(layerInfo, features);
     let styleGroups = styleSource.styleGroups;
-    features = this.getFiterFeatures(layerInfo.filterCondition, features);
+    features = this.getFilterFeatures(layerInfo.filterCondition, features);
     // 获取 expression
     let expression = ['match', ['get', 'index']];
     for (let index = 0; index < features.length; index++) {
@@ -1077,7 +1078,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createUniqueLayer(layerInfo: any, features: any): void {
     let styleGroup = this.getUniqueStyleGroup(layerInfo, features);
-    features = this.getFiterFeatures(layerInfo.filterCondition, features);
+    features = this.getFilterFeatures(layerInfo.filterCondition, features);
     const { layerID, minzoom, maxzoom, style } = layerInfo;
     let themeField = layerInfo.themeSetting.themeField;
     Object.keys(features[0].properties).forEach(key => {
@@ -1370,7 +1371,7 @@ export default class WebMapViewModel extends WebMapBase {
     const { minzoom, maxzoom, style } = layerInfo;
     let styleGroups = this.getRangeStyleGroup(layerInfo, features);
 
-    features = this.getFiterFeatures(layerInfo.filterCondition, features);
+    features = this.getFilterFeatures(layerInfo.filterCondition, features);
 
     // 获取 expression
     let expression = ['match', ['get', 'index']];
@@ -1876,9 +1877,9 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  updateOverlayLayer(layerInfo: any, features: any) {
+  updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
     if (features) {
-      this._initOverlayLayer(layerInfo, features);
+      this._initOverlayLayer(layerInfo, features, mergeByField);
     } else{
       const type = this.webMapService.getDatasourceType(layerInfo);
       this.getLayerFeatures(layerInfo, this._taskID, type);

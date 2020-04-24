@@ -289,7 +289,7 @@ export default class WebMapViewModel extends WebMapBase {
 
       if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
         // 存在标签专题图
-        features = this.getFiterFeatures(filterCondition, features);
+        features = this.getFilterFeatures(filterCondition, features);
         let labelLayerInfo = JSON.parse(JSON.stringify(layerInfo));
         let labelLayer = this._addLabelLayer(labelLayerInfo, features);
         this._addLayerToMap({ layer: L.layerGroup([layer, labelLayer]), layerInfo });
@@ -526,7 +526,7 @@ export default class WebMapViewModel extends WebMapBase {
     let style = layerInfo.style;
     let styleSource: any = this.createRankStyleSource(layerInfo, features);
     let styleGroups = styleSource.styleGroups;
-    features = this.getFiterFeatures(layerInfo.filterCondition, features);
+    features = this.getFilterFeatures(layerInfo.filterCondition, features);
     let radiusList = [];
     features.forEach(row => {
       let target = parseFloat(row.properties[fieldName]);
@@ -876,7 +876,7 @@ export default class WebMapViewModel extends WebMapBase {
       styleGroup = this.getRangeStyleGroup(layerInfo, features);
     }
 
-    filterCondition && (features = this.getFiterFeatures(filterCondition, features));
+    filterCondition && (features = this.getFilterFeatures(filterCondition, features));
 
     let themeField = themeSetting.themeField;
     Object.keys(features[0].properties).forEach(key => {
