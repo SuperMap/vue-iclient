@@ -32,6 +32,7 @@ import debounce from 'lodash/debounce';
  * @vue-prop {String} [accessKey] - 用于访问 SuperMap iPortal、SuperMap Online 中受保护的服务。当设置 `mapId` 时有效。
  * @vue-prop {String} [accessToken] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `mapId` 时有效。
  * @vue-prop {String} [tiandituKey] - 用于访问天地图的服务。当设置 `mapId` 时有效。
+ * @vue-prop {String} [iportalServiceProxyUrlPrefix] - iportal代理地址前缀。
  * @vue-prop {String} [withCredentials=false] - 请求是否携带 cookie。当设置 `mapId` 时有效。
  * @vue-prop {String} [excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `mapId` 时有效。
  * @vue-prop {Boolean} [autoresize = true] - 用来指定 webmap 实例在组件根元素尺寸变化时是否需要自动进行重绘,需要设置webmap组件样式为width:100%, height:100%。
@@ -177,6 +178,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() isSuperMapOnline: boolean;
   @Prop() proxy: boolean | string;
+  @Prop() iportalServiceProxyUrlPrefix: string;
   @Prop()
   mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
@@ -351,7 +353,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       excludePortalProxyUrl,
       isSuperMapOnline,
       proxy,
-      mapOptions
+      mapOptions,
+      iportalServiceProxyUrlPrefix
     } = this.$props;
     this.viewModel = new WebMapViewModel(
       this.mapId,
@@ -364,7 +367,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         withCredentials,
         excludePortalProxyUrl,
         isSuperMapOnline,
-        proxy
+        proxy,
+        iportalServiceProxyUrlPrefix
       },
       mapOptions
     );
