@@ -53,6 +53,7 @@ interface webMapOptions {
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
   proxy?: boolean | string;
+  iportalServiceProxyUrlPrefix? :string;
 }
 
 export default class WebMapService extends Events {
@@ -98,6 +99,7 @@ export default class WebMapService extends Events {
     this.tiandituKey = options.tiandituKey || '';
     this.withCredentials = options.withCredentials || false;
     this.excludePortalProxyUrl = options.excludePortalProxyUrl;
+    this.iportalServiceProxyUrl = options.iportalServiceProxyUrlPrefix;
     this.proxy = options.proxy;
   }
 
