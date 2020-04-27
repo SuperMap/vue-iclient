@@ -1454,6 +1454,9 @@ export default class WebMapViewModel extends WebMapBase {
         if (this.map.getLayer(`${targetlayerId}-strokeLine`)) {
           this.map.moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
         }
+        if (this.map.getLayer(`${targetlayerId}-label`)) {
+          this.map.moveLayer(`${targetlayerId}-label`);
+        }
       }
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,
