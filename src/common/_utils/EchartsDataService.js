@@ -329,7 +329,7 @@ export default class EchartsDataService {
   _resortData(xData, yData, sort, xBar = false) {
     let obj = [];
     yData.forEach((item, index) => {
-      obj.push({ y: item, x: xData[index], index: index });
+      obj.push({ y: +item, x: xData[index], index: index });
     });
     obj = orderBy(
       obj,

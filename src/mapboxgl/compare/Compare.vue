@@ -84,6 +84,10 @@ class Compare extends Mixins(Theme) {
     this.viewModel = new CompareViewModel();
   }
 
+  mounted () {
+    this.$on('theme-style-changed', this.handleThemeStyleChanged);
+  }
+
   beforeDestroy() {
     this.viewModel.removed();
   }
@@ -187,9 +191,6 @@ class Compare extends Mixins(Theme) {
         class: 'sm-component-compare',
         attrs: {
           id: this.target
-        },
-        on: {
-          themeStyleChanged: this.handleThemeStyleChanged
         }
       },
       children

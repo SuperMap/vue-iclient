@@ -1,27 +1,19 @@
 <template>
-  <div class="sm-component-text-list">
+  <div class="sm-component-text-list" :style="getBackgroundStyle">
     <div
+      v-if="headerStyleData.show"
       class="sm-component-text-list__header"
-      :style="[listStyle.headerHeight, { background: getColor(0) }, getTextColorStyle]"
+      :style="[listStyle.headerHeight, { background: headerStyleData.background, color: headerStyleData.color }]"
     >
       <div class="sm-component-text-list__header-content">
         <template v-if="animateContent && animateContent.length > 0">
-          <template
-            v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])"
-          >
-            <div
-              :key="index"
-              :style="[fontSizeStyle, { flex: getColumnWidth(index) }]"
-              :title="item"
-            >{{ item }}</div>
+          <template v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])">
+            <div :key="index" :style="[fontSizeStyle, { flex: getColumnWidth(index) }]" :title="item">{{ item }}</div>
           </template>
         </template>
       </div>
     </div>
-    <div
-      class="sm-component-text-list__animate"
-      :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle, getColorStyle]"
-    >
+    <div class="sm-component-text-list__animate" :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle]">
       <div
         ref="listContent"
         :class="['sm-component-text-list__body-content', animate && 'sm-component-text-list__body-content--anim']"
@@ -31,13 +23,15 @@
             v-for="(item, index) in animateContent"
             :key="index"
             class="sm-component-text-list__list"
-            :style="[listStyle.rowStyle, getRowStyle(index)]"
+            :style="getRowStyle(index)"
           >
             <div
               v-for="(items, index2, itemIndex) in item"
               :key="index2"
-              :style="{flex: getColumnWidth(itemIndex)}"
-            >{{ items }}</div>
+              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
+            >
+              {{ items }}
+            </div>
           </div>
         </template>
       </div>
@@ -55,6 +49,35 @@ import Theme from '../../common/_mixin/theme';
 import Timer from '../../common/_mixin/timer';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import isEqual from 'lodash.isequal';
+import merge from 'lodash.merge';
+
+interface HeaderStyleParams {
+  show?: boolean;
+  height?: number;
+  background?: string;
+  color?: string;
+}
+
+interface RowStyleParams {
+  height: number;
+  oddStyle?: {
+    background?: string;
+  };
+  evenStyle?: {
+    background?: string;
+  };
+}
+
+interface StyleRangeParams {
+  compare: string;
+  value: number;
+  color: string;
+}
+
+interface CellStyleRangeGroupParams {
+  type: 'background' | 'color';
+  data: StyleRangeParams[];
+}
 
 @Component({
   name: 'SmTextList'
@@ -80,6 +103,10 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   featuresData: any = {};
 
+  headerStyleData: HeaderStyleParams;
+
+  rowStyleData: RowStyleParams;
+
   @Prop() content: any; // 显示内容（JSON），dataset 二选一
 
   @Prop() dataset: any;
@@ -98,9 +125,11 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Prop() columnWidths: Array<number>; // 列宽
 
-  @Prop() rowHeight: number; // 行高
+  @Prop() rowStyle: RowStyleParams;
 
-  @Prop() headerHeight: number; // 表头行高
+  @Prop({ default: () => ({ show: true }) }) headerStyle: HeaderStyleParams; // 表头样式
+
+  @Prop() cellStyleRangeGroup: CellStyleRangeGroupParams[];
 
   @Watch('content')
   contentChanged(newVal, oldVal) {
@@ -149,13 +178,15 @@ class SmTextList extends Mixins(Theme, Timer) {
     this.getListHeightStyle();
   }
 
-  @Watch('rowHeight')
-  rowHeightChanged() {
+  @Watch('rowStyle')
+  rowStyleChanged(next) {
+    this.rowStyleData = Object.assign({}, this.rowStyleData, next);
     this.getListHeightStyle();
   }
 
-  @Watch('headerHeight')
-  headerHeightChanged() {
+  @Watch('headerStyle')
+  headerHeightChanged(next) {
+    this.headerStyleData = Object.assign({}, this.headerStyleData, next);
     this.getListHeightStyle();
   }
 
@@ -167,21 +198,38 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
-  get getContentStyle() {
-    return { background: getColorWithOpacity(this.getBackground, 0.6) };
-  }
-
   get getRowStyle() {
     return function(index) {
-      if (index % 2 !== 0) {
+      if ((index + 1) % 2 !== 0) {
         return {
-          background: getColorWithOpacity(this.getColor(0), 0.4)
+          background: this.rowStyleData.oddStyle.background
         };
       } else {
         return {
-          background: getColorWithOpacity(this.getBackground, 0.4)
+          background: this.rowStyleData.evenStyle.background
         };
       }
+    };
+  }
+
+  get getCellStyle() {
+    return function(value, columnIndex) {
+      if (isNaN(+value) || !this.cellStyleRangeGroup || !this.cellStyleRangeGroup[columnIndex]) {
+        return {};
+      }
+      const rangeGroup = this.cellStyleRangeGroup[columnIndex];
+      let colorRangeInfo = rangeGroup.data.map(item => ({ ...item }));
+      colorRangeInfo.sort((a: StyleRangeParams, b: StyleRangeParams) => {
+        return a.value - b.value;
+      });
+      const matchColorRange = colorRangeInfo.find(
+        /* eslint-disable no-new-func */
+        item => !isNaN(item.value) && new Function(`return ${+value} ${item.compare} ${+item.value}`)()
+      );
+      if (matchColorRange) {
+        return { [rangeGroup.type]: matchColorRange.color };
+      }
+      return {};
     };
   }
 
@@ -192,13 +240,27 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   get getColumnWidth() {
-    return function (index) {
+    return function(index) {
       if (this.columnWidths && this.columnWidths.length > 0) {
         const width = this.columnWidths[index];
-        return width ? `0 0 ${width / 100 * this.containerWidth}px` : 1;
+        return width ? `0 0 ${(width / 100) * this.containerWidth}px` : 1;
       }
       return 1;
     };
+  }
+
+  created() {
+    this.headerStyleData = merge(
+      { show: true, background: this.getColor(0), color: this.textColorsData },
+      this.headerStyle
+    );
+    this.rowStyleData = merge(
+      {
+        oddStyle: { background: getColorWithOpacity(this.getBackground, 0.4) },
+        evenStyle: { background: getColorWithOpacity(this.getColor(0), 0.4) }
+      },
+      this.rowStyle
+    );
   }
 
   mounted() {
@@ -229,6 +291,23 @@ class SmTextList extends Mixins(Theme, Timer) {
       // @ts-ignore
       this.containerWidth = this.$el.offsetWidth;
     }, 0);
+
+    this.$on('theme-style-changed', this.handleThemeStyleChanged);
+  }
+
+  handleThemeStyleChanged() {
+    this.headerStyleData = merge(this.headerStyleData, {
+      background: this.getColor(0),
+      color: this.textColorsData
+    });
+    this.rowStyleData = merge(this.rowStyleData, {
+      oddStyle: {
+        background: getColorWithOpacity(this.getBackground, 0.4)
+      },
+      evenStyle: {
+        background: getColorWithOpacity(this.getColor(0), 0.4)
+      }
+    });
   }
 
   setListData() {
@@ -266,11 +345,11 @@ class SmTextList extends Mixins(Theme, Timer) {
       return;
     }
     let height = this.containerHeight;
-    const headerHeightNum = this.headerHeight || (height * 0.15);
+    const headerHeightNum = this.headerStyleData.show ? this.headerStyleData.height || height * 0.15 : 0;
     let headerHeight = { height: `${headerHeightNum}px` };
     const contentHeightNum = height - headerHeightNum;
     let contentHeight = { height: `${contentHeightNum}px` };
-    let rowHeight = this.rowHeight;
+    let rowHeight = this.rowStyleData.height;
     if (!rowHeight) {
       if (this.listData.length < this.rows) {
         rowHeight = contentHeightNum / this.listData.length;
@@ -278,7 +357,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         rowHeight = contentHeightNum / this.rows;
       }
     }
-    let rowStyle = { height: rowHeight + 'px' };
+    let rowStyle = { height: `${rowHeight}px`, lineHeight: `${rowHeight}px` };
 
     if (this.autoRolling) {
       if (this.listData.length > 2) {
@@ -318,7 +397,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         let contentObj = {};
         if (this.fields) {
           this.fields.forEach((field, index) => {
-            contentObj[field] = properties[field] || '-';
+            contentObj[`${field}-${index}`] = properties[field] || '-';
           });
         } else {
           contentObj = properties;
