@@ -420,6 +420,7 @@ export default abstract class WebMapBase extends Events {
         }
       });
       if (prevFeature) {
+        feature.properties['index'] = prevFeature.properties['index'];
         nextFeatures.push({
           ...prevFeature,
           ...feature
