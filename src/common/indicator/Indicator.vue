@@ -1,29 +1,29 @@
 <template>
-  <div class="sm-component-indicator" :style="[getBackgroundStyle, { 'flex-direction': direction }]">
-    <div class="sm-component-indicator__head">
+  <div class="sm-component-indicator" :style="getBackgroundStyle">
+    <div :class="`sm-component-indicator__content sm-component-indicator__content-${mode}`">
       <span v-show="showTitleUnit" class="sm-component-indicator__title" :style="[unit_titleStyle, getTextColorStyle]">
         {{ titleData }}
       </span>
-    </div>
-    <div class="sm-component-indicator__content">
-      <span class="sm-component-indicator__num" :style="[indicatorStyle]">
-        <countTo
-          v-if="isNumber(indicatorNum)"
-          :decimals="calDecimals"
-          :startVal="startData"
-          :endVal="numData"
-          :duration="Number(duration) || 1000"
-          :separator="separator"
-          :numBackground="numBackground"
-          :numSpacing="numSpacing"
-          :separatorBackground="separatorBackground"
-          :fontSize="fontSize"
-        ></countTo>
-        {{ isNumber(indicatorNum) ? '' : indicatorNum }}
-      </span>
-      <span v-show="showTitleUnit" class="sm-component-indicator__unit" :style="[unit_titleStyle, getTextColorStyle]">{{
-        unitData
-      }}</span>
+      <div>
+        <span class="sm-component-indicator__num" :style="[indicatorStyle]">
+          <countTo
+            v-if="isNumber(indicatorNum)"
+            :decimals="calDecimals"
+            :startVal="startData"
+            :endVal="numData"
+            :duration="Number(duration) || 1000"
+            :separator="separator"
+            :numBackground="numBackground"
+            :numSpacing="numSpacing"
+            :separatorBackground="separatorBackground"
+            :fontSize="fontSize"
+          ></countTo>
+          {{ isNumber(indicatorNum) ? '' : indicatorNum }}
+        </span>
+        <span v-show="showTitleUnit" class="sm-component-indicator__unit" :style="[unit_titleStyle, getTextColorStyle]">
+          {{ unitData }}
+        </span>
+      </div>
     </div>
   </div>
 </template>

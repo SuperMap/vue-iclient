@@ -4,28 +4,33 @@
 @include b(indicator) {
   display: inline-flex;
   flex-wrap: nowrap;
-  flex-direction: column;
   justify-content: center;
+  align-items: center;
   color: #595959;
-  padding-left: 10px; 
-  @include e(head) {
+  @include e(content) {
     display: flex;
+    align-items: flex-end;
+    font-weight: bolder;
+  }
+  @include e(content-vertical) {
+    flex-direction: column;
+    align-items: flex-start;
+    .sm-component-indicator__title {
+      margin-bottom: 8px;
+      padding-left: 5px;
+    }
+  }
+  @include e(content-horizontal) {
     flex-flow: row nowrap;
-    justify-content: flex-start;
-    padding-left: 5px;
-    margin-right: 5px;
+    width: 100%;
+    justify-content: space-around;
+    .sm-component-indicator__title {
+      line-height: 1.2;
+    }
   }
   @include e(title) {
     font-size: 16px;
-    line-height: 2.3;
     font-weight: bolder;
-  }
-  @include e(content) {
-    display: flex;
-    flex-flow: row nowrap;
-    align-items: flex-end;
-    font-weight: bolder;
-    margin-right: 10px;
   }
   @include e(num) {
     font-weight: bolder;
