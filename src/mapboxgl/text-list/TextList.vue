@@ -129,7 +129,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Prop({ default: () => ({ show: true }) }) headerStyle: HeaderStyleParams; // 表头样式
 
-  @Prop() cellStyleRangeGroup: CellStyleRangeGroupParams[];
+  @Prop() thresholdsStyle: CellStyleRangeGroupParams[];
 
   @Watch('content')
   contentChanged(newVal, oldVal) {
@@ -214,10 +214,10 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   get getCellStyle() {
     return function(value, columnIndex) {
-      if (isNaN(+value) || !this.cellStyleRangeGroup || !this.cellStyleRangeGroup[columnIndex]) {
+      if (isNaN(+value) || !this.thresholdsStyle || !this.thresholdsStyle[columnIndex]) {
         return {};
       }
-      const rangeGroup = this.cellStyleRangeGroup[columnIndex];
+      const rangeGroup = this.thresholdsStyle[columnIndex];
       let colorRangeInfo = rangeGroup.data.map(item => ({ ...item }));
       colorRangeInfo.sort((a: StyleRangeParams, b: StyleRangeParams) => {
         return a.value - b.value;

@@ -3,6 +3,8 @@ import Vue, { VNode } from 'vue';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import Theme from '../../common/_mixin/theme';
 import CompareViewModel, { mapType, orientationTypes, compareOptions } from './CompareViewModel';
+import debounce from 'lodash/debounce';
+import { addListener, removeListener } from 'resize-detector';
 import 'mapbox-gl-compare/dist/mapbox-gl-compare.css';
 
 interface loadParams {
@@ -24,6 +26,7 @@ class Compare extends Mixins(Theme) {
   viewModel: CompareViewModel;
   beforeMapInstance: mapType;
   afterMapInstance: mapType;
+  resizeHandler: any;
 
   @Prop({ default: 'comparison-container' }) target: string;
   @Prop({ default: 'vertical' }) orientation: orientationTypes;
@@ -33,6 +36,7 @@ class Compare extends Mixins(Theme) {
   @Prop({ default: 2 }) lineSize: number;
   @Prop({ default: 60 }) slideSize: number;
   @Prop() slideBackground: string;
+  @Prop({ default: true }) autoresize: boolean;
 
   get additionalOptions() {
     return {
@@ -84,17 +88,30 @@ class Compare extends Mixins(Theme) {
     this.viewModel = new CompareViewModel();
   }
 
-  mounted () {
+  mounted() {
     this.$on('theme-style-changed', this.handleThemeStyleChanged);
+    if (this.autoresize) {
+      this.resizeHandler = debounce(this.resize, 300, { leading: true });
+      // @ts-ignore
+      addListener(this.$el, this.resizeHandler);
+    }
   }
 
   beforeDestroy() {
     this.viewModel.removed();
+    if (this.autoresize) {
+      // @ts-ignore
+      removeListener(this.$el, this.resizeHandler);
+    }
   }
 
   initSwipeStyle() {
     this.setSwipeLineStyle();
     this.setSwipeStyle();
+  }
+
+  resize() {
+    this.handleOptionsChange();
   }
 
   diffStyle(nextStyle: swipeStyle, prevStyle: swipeStyle): swipeStyle {

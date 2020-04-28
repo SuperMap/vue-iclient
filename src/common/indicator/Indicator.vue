@@ -5,7 +5,7 @@
         {{ titleData }}
       </span>
       <div>
-        <span class="sm-component-indicator__num" :style="[indicatorStyle]">
+        <span class="sm-component-indicator__num" :style="indicatorStyle">
           <countTo
             v-if="isNumber(indicatorNum)"
             :decimals="calDecimals"
@@ -16,7 +16,7 @@
             :numBackground="numBackground"
             :numSpacing="numSpacing"
             :separatorBackground="separatorBackground"
-            :fontSize="fontSize"
+            :fontSize="parseFloat(fontSize) + fontUnit"
           ></countTo>
           {{ isNumber(indicatorNum) ? '' : indicatorNum }}
         </span>
@@ -120,7 +120,8 @@ export default {
     },
     titleField: String,
     numField: String,
-    unitField: String
+    unitField: String,
+    thresholdsStyle: Array
   },
   data() {
     return {
@@ -135,7 +136,7 @@ export default {
   computed: {
     unit_titleStyle() {
       return {
-        fontSize: this.textFontSize || (parseFloat(this.fontSize) * 0.66 + this.fontUnit),
+        fontSize: this.textFontSize || parseFloat(this.fontSize) * 0.66 + this.fontUnit,
         fontWeight: this.fontWeight
       };
     },
@@ -145,7 +146,17 @@ export default {
       return fontUnit;
     },
     indicatorStyle() {
-      let style = { color: this.indicatorColorData };
+      let color = this.indicatorColorData;
+      if (!isNaN(this.indicatorNum) && this.thresholdsStyle) {
+        /* eslint-disable no-new-func */
+        const matchStyle = this.thresholdsStyle.find(item =>
+          new Function(`return ${this.indicatorNum} ${item.compare} ${+item.value}`)()
+        );
+        if (matchStyle) {
+          color = matchStyle.color;
+        }
+      }
+      let style = { color };
       typeof this.indicatorNum === 'string' && (style.fontSize = parseFloat(this.fontSize) + this.fontUnit);
       return style;
     },
