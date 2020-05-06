@@ -28,6 +28,7 @@
             <div
               v-for="(items, index2, itemIndex) in item"
               :key="index2"
+              :title="items"
               :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
             >
               {{ items }}
