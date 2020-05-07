@@ -215,7 +215,7 @@ export default {
       let filter = ['all'];
       const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
       feature._vectorTileFeature._keys.forEach((key, index) => {
-        if (filterKeys.indexOf(key.toLowerCase()) === -1) {
+        if (filterKeys.indexOf(key.toLowerCase()) === -1 && feature.properties[key] !== undefined) {
           filter.push(['==', key, feature.properties[key]]);
         }
       });
