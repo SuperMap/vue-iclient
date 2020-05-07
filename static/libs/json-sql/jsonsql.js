@@ -63,22 +63,23 @@ window.jsonsql = {
       //     }
       // }
       //  fix with -- stric mode
-      if (this.functionreplaceWith(jsonsql_scope[jsonsql_i], jsonsql_o.where)) {
+      if (this.functionWith(jsonsql_scope[jsonsql_i], jsonsql_o.where)) {
         jsonsql_result[jsonsql_rc++] = this.returnFields(jsonsql_scope[jsonsql_i], jsonsql_o.fields);
       }
     }
 
     return jsonsql_result;
   },
+  functionWith(scope, exp) {
+    if (!scope) return;
 
-  functionreplaceWith: function(scope, exp) {
-    exp = ' ' + exp.trim();
-    let quickRegex = /([\s\+\-\*\/%&\|\^!\*~]\s*?)([a-zA-Z_$][a-zA-Z_$0-9]*?)/g;
-    exp = exp.replace(quickRegex, (a, b, c) => {
-      return b + 'scope.' + c;
-    });
-    let func = new Function('scope', 'return ' + exp);
-    return func(scope);
+    var resetArgs = '';
+    for (var key in scope) {
+      resetArgs = resetArgs + 'var ' + key + ' = _$_$_functionWith["' + key + '"];';
+    }
+    var nf = new Function('_$_$_functionWith', resetArgs + 'return ' + exp);
+
+    return nf(scope);
   },
 
   returnFields: function(scope, fields) {

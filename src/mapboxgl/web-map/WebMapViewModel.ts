@@ -1685,7 +1685,12 @@ export default class WebMapViewModel extends WebMapBase {
       return point;
     }
     // @ts-ignore
-    return proj4(sourceProjection, 'EPSG:4326', point);
+    const coor = proj4(sourceProjection, 'EPSG:4326', point);
+    const proj = proj4.defs(sourceProjection);
+    if (proj.axis && proj.axis.indexOf('ne') === 0) {
+      coor.reverse();
+    }
+    return coor;
   }
 
   private _getMapCenter(mapInfo) {
