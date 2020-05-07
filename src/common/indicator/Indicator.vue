@@ -150,7 +150,7 @@ export default {
       if (!isNaN(this.indicatorNum) && this.thresholdsStyle) {
         /* eslint-disable no-new-func */
         const matchStyle = this.thresholdsStyle.find(item =>
-          new Function(`return ${this.indicatorNum} ${item.compare} ${+item.value}`)()
+          new Function(`return ${+this.indicatorNum} ${item.compare} ${+item.value}`)()
         );
         if (matchStyle) {
           color = matchStyle.color;
