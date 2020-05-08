@@ -285,7 +285,17 @@ export default class WebMapViewModel extends WebMapBase {
     // zoom
     let zoom = mapInfo.level || 0;
     let zoomBase = 0;
-    let { interactive, bounds } = this.mapOptions;
+    let { interactive, bounds, minZoom, maxZoom } = this.mapOptions;
+    if (isNaN(minZoom)) {
+      minZoom = mapInfo.minScale
+        ? this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection))
+        : 0;
+    }
+    if (isNaN(maxZoom)) {
+      maxZoom = mapInfo.maxScale
+        ? this._transformScaleToZoom(mapInfo.maxScale, mapboxgl.CRS.get(this.baseProjection))
+        : 22;
+    }
     if (mapInfo.visibleExtent && mapInfo.visibleExtent.length === 4 && !bounds) {
       bounds = [
         this._unproject([mapInfo.visibleExtent[0], mapInfo.visibleExtent[1]]),
@@ -308,6 +318,8 @@ export default class WebMapViewModel extends WebMapBase {
       container: this.target,
       center: this.center || center,
       zoom: this.zoom || zoom,
+      minZoom,
+      maxZoom,
       bearing: this.bearing || 0,
       pitch: this.pitch || 0,
       bounds,
@@ -1888,7 +1900,7 @@ export default class WebMapViewModel extends WebMapBase {
   updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
     if (features) {
       this._initOverlayLayer(layerInfo, features, mergeByField);
-    } else{
+    } else {
       const type = this.webMapService.getDatasourceType(layerInfo);
       this.getLayerFeatures(layerInfo, this._taskID, type);
     }
