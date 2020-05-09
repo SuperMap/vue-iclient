@@ -2,7 +2,12 @@ import { Events } from '../_types/event/Events';
 import { isXField, isYField } from './util';
 import * as convert from 'xml-js';
 
-const DEFAULT_WELLKNOWNSCALESET = ['GoogleCRS84Quad', 'GoogleMapsCompatible'];
+const DEFAULT_WELLKNOWNSCALESET = [
+  'GoogleCRS84Quad',
+  'GoogleMapsCompatible',
+  'urn:ogc:def:wkss:OGC:1.0:GoogleMapsCompatible',
+  'urn:ogc:def:wkss:OGC:1.0:GoogleCRS84Quad'
+];
 const MB_SCALEDENOMINATOR_3857 = [
   '559082264.0287178',
   '279541132.0143589',
@@ -53,11 +58,11 @@ interface webMapOptions {
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
   proxy?: boolean | string;
-  iportalServiceProxyUrlPrefix? :string;
+  iportalServiceProxyUrlPrefix?: string;
 }
 
 export default class WebMapService extends Events {
-  mapId: string | number ;
+  mapId: string | number;
 
   mapInfo: any;
 
@@ -130,7 +135,9 @@ export default class WebMapService extends Events {
 
   public getMapInfo() {
     if (!this.mapId && this.mapInfo) {
-      return new Promise(resolve => { resolve(this.mapInfo)});
+      return new Promise(resolve => {
+        resolve(this.mapInfo);
+      });
     }
     let mapUrl = this._handleMapUrl();
     return new Promise(async (resolve, reject) => {
