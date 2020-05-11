@@ -298,7 +298,7 @@ export default class WebMapService extends Events {
       layerType === 'MARKER' || (dataSource && (!dataSource.accessType || dataSource.accessType === 'DIRECT'));
 
     if (getDataFromIportal) {
-      return this._getDataFromIportal(serverId);
+      return this._getDataFromIportal(serverId, layer);
     } else {
       return this._getDataFromHosted({ layer, serverId, baseProjection });
     }
@@ -610,7 +610,7 @@ export default class WebMapService extends Events {
     return features;
   }
 
-  private _getDataFromIportal(serverId) {
+  private _getDataFromIportal(serverId, layerInfo) {
     let features;
     //原来二进制文件
     let url = `${this.serverUrl}web/datas/${serverId}/content.json?pageSize=9999999&currentPage=1`;
@@ -635,7 +635,7 @@ export default class WebMapService extends Events {
               data.content = JSON.parse(data.content.trim());
               features = this._formatGeoJSON(data.content);
             } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-              features = this._excelData2Feature(data.content);
+              features = this._excelData2Feature(data.content, (layerInfo && layerInfo.xyField) || {});
             }
             resolve({ type: 'feature', features });
           }
@@ -888,19 +888,22 @@ export default class WebMapService extends Events {
     return features;
   }
 
-  private _excelData2Feature(dataContent: any): any {
+  private _excelData2Feature(dataContent: any, xyField: any = {}) : any {
     let fieldCaptions = dataContent.colTitles;
     // 位置属性处理
-    let xfieldIndex = -1;
-    let yfieldIndex = -1;
-    for (let i = 0, len = fieldCaptions.length; i < len; i++) {
-      if (isXField(fieldCaptions[i])) {
-        xfieldIndex = i;
-      }
-      if (isYField(fieldCaptions[i])) {
-        yfieldIndex = i;
+    let xfieldIndex = fieldCaptions.indexOf(xyField.xField);
+    let yfieldIndex = fieldCaptions.indexOf(xyField.yField);
+    if(yfieldIndex < 0 || xfieldIndex < 0){
+      for (let i = 0, len = fieldCaptions.length; i < len; i++) {
+        if (isXField(fieldCaptions[i])) {
+          xfieldIndex = i;
+        }
+        if (isYField(fieldCaptions[i])) {
+          yfieldIndex = i;
+        }
       }
     }
+    
 
     // feature 构建后期支持坐标系 4326/3857
     let features = [];
