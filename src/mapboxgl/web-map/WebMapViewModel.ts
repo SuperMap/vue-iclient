@@ -254,15 +254,20 @@ export default class WebMapViewModel extends WebMapBase {
   _createMap(mapInfo?): void {
     if (!mapInfo) {
       this.mapOptions.container = this.target;
-      if (typeof this.proxy === 'string' && !this.mapOptions.transformRequest) {
+      if (!this.mapOptions.transformRequest) {
         this.mapOptions.transformRequest = (url: string, resourceType: string) => {
-          let proxyType = 'data';
-          if (resourceType === 'Tile') {
-            proxyType = 'image';
+          const urlParam= {url}
+          let proxy = '';
+          if(typeof this.proxy === 'string'){
+            let proxyType = 'data';
+            if (resourceType === 'Tile') {
+              proxyType = 'image';
+            }
+            proxy = this.webMapService.handleProxy(proxyType);
           }
-          const proxy = this.webMapService.handleProxy(proxyType);
           return {
-            url: proxy + encodeURIComponent(url)
+            url: proxy? + `${proxy}${encodeURIComponent(url)}`:url,
+            credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false) ? 'include' : 'omit'
           };
         };
       }
