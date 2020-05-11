@@ -631,11 +631,10 @@ export default class WebMapViewModel extends WebMapBase {
   private _getWMSUrl(mapInfo: any): string {
     let url = mapInfo.url;
     url = url.split('?')[0];
-    let strArr = url.split('/');
     let options = {
       service: 'WMS',
       request: 'GetMap',
-      layers: strArr[strArr.length - 1],
+      layers: mapInfo.layers !== null && typeof mapInfo.layers === 'object'? mapInfo.layers.join(',') : (mapInfo.layers || '0'), // 如果是多个图层，用逗号分隔
       styles: '',
       format: 'image/png',
       transparent: 'true',
