@@ -21,6 +21,7 @@
         "
         @click="zoomOut"
       ></a-button>
+      <div v-if="showZoom" class="sm-component-zoom__show-zoom" :style="showZoomStyle">{{ zoomPosition }}</div>
     </div>
     <div v-show="showZoomSlider" class="sm-component-zoom__slider">
       <a-slider
@@ -39,11 +40,16 @@ import Theme from '../../../../common/_mixin/theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
+import { getColorWithOpacity } from '../../../../common/_utils/util';
 
 export default {
   name: 'SmZoom',
   mixins: [MapGetter, Control, Theme],
   props: {
+    showZoom: {
+      type: Boolean,
+      default: false
+    },
     showZoomSlider: {
       type: Boolean,
       default: false
@@ -65,6 +71,12 @@ export default {
       return {
         backgroundColor: this.getBackground,
         borderColor: color
+      };
+    },
+    showZoomStyle() {
+      return {
+        color: getColorWithOpacity(this.getBackground, 1),
+        background: this.getTextColor
       };
     }
   },
