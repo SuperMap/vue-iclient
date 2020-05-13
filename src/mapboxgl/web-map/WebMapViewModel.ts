@@ -1401,6 +1401,7 @@ export default class WebMapViewModel extends WebMapBase {
         for (let i = 0; i < styleGroups.length; i++) {
           if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
             expression.push(row.properties['index'], styleGroups[i].color);
+            break;
           }
         }
       }

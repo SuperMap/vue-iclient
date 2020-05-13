@@ -188,6 +188,9 @@ export default class WebMapService extends Events {
             } else if (serviceProxy.port && serviceProxy.rootUrlPostfix) {
               this.iportalServiceProxyUrl = `${serviceProxy.port}/${serviceProxy.rootUrlPostfix}`;
             }
+            if(this.serverUrl.indexOf(this.iportalServiceProxyUrl) > -1){
+              this.iportalServiceProxyUrl = ''; 
+            }
           }
           resolve(serviceProxy);
         })
