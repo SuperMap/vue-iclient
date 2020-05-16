@@ -17,6 +17,7 @@
       :manual-update="manualUpdate"
       :theme="theme || chartTheme"
       :style="_chartStyle"
+      @datazoom="_dataZoomChanged"
     />
     <TablePopup
       v-show="false"
@@ -453,7 +454,7 @@ export default {
         this.echartOptions = this._optionsHandler(echartOptions, options);
       });
     },
-    _optionsHandler(options, dataOptions) {
+    _optionsHandler(options, dataOptions, startValue, endValue) {
       dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
       options = options && cloneDeep(options); // clone 避免引起重复刷新
       if (options && options.legend && !options.legend.type) {
@@ -490,14 +491,26 @@ export default {
             return Object.assign({}, options.series[index] || {}, element);
           });
           const labelConfig = options.series[0].label && options.series[0].label.normal;
-          if (labelConfig && labelConfig.show && labelConfig.position === 'smart') {
+          const dataZoom = options.dataZoom[0];
+          if (labelConfig && labelConfig.show && labelConfig.smart) {
             options.series.forEach(serie => {
               let label = serie.label.normal;
-              label.position = 'top';
+              label.position = labelConfig.position || 'top';
+              let data = serie.data;
+              let start = 0;
+              let end = data.length - 1;
+              if (dataZoom && dataZoom.show !== false) {
+                start = startValue || Math.ceil((options.dataZoom[0].start * data.length) / 100);
+                end = endValue || Math.ceil((options.dataZoom[0].end * data.length) / 100);
+                data = serie.data.slice(start, end + 1);
+                options.dataZoom[0].startValue = start;
+                options.dataZoom[0].endValue = end;
+                delete options.dataZoom[0].start;
+                delete options.dataZoom[0].end;
+              }
               label.formatter = function({ dataIndex, value }) {
                 let result = '';
-                const data = serie.data;
-                if (dataIndex === 0 || dataIndex === data.length - 1 || Math.max.apply(null, data) === value) {
+                if (dataIndex === start || dataIndex === end || Math.max.apply(null, data) + '' === value + '') {
                   result = value;
                 }
                 return result;
@@ -705,7 +718,11 @@ export default {
       return propsData;
     },
     changePopupArrowStyle() {},
-    mapNotLoadedTip() {}
+    mapNotLoadedTip() {},
+    _dataZoomChanged() {
+      let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
+      this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, startValue, endValue);
+    }
   },
   // echarts所有静态方法
   /**
