@@ -491,7 +491,7 @@ export default {
             return Object.assign({}, options.series[index] || {}, element);
           });
           const labelConfig = options.series[0].label && options.series[0].label.normal;
-          const dataZoom = options.dataZoom[0];
+          const dataZoom = options.dataZoom && options.dataZoom[0];
           if (labelConfig && labelConfig.show && labelConfig.smart) {
             options.series.forEach(serie => {
               let label = serie.label.normal;
