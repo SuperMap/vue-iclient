@@ -490,10 +490,10 @@ export default {
           options.series = dataOptions.series.map((element, index) => {
             return Object.assign({}, options.series[index] || {}, element);
           });
-          const labelConfig = options.series[0].label && options.series[0].label.normal;
           const dataZoom = options.dataZoom && options.dataZoom[0];
-          if (labelConfig && labelConfig.show && labelConfig.smart) {
-            options.series.forEach(serie => {
+          options.series.forEach(serie => {
+            const labelConfig = serie.label && serie.label.normal;
+            if (labelConfig && labelConfig.show && labelConfig.smart) {
               let label = serie.label.normal;
               label.position = labelConfig.position || 'top';
               let data = serie.data;
@@ -515,16 +515,15 @@ export default {
                 }
                 return result;
               };
-            });
-          } else if (options.series[0].type !== 'pie') {
-            options.series.forEach(serie => {
-              let label = serie.label && serie.label.normal;
-              if (label && label.formatter) {
-                delete label.formatter;
-              }
-            });
-          }
-
+            } else if (options.series[0].type !== 'pie') {
+              options.series.forEach(serie => {
+                let label = serie.label && serie.label.normal;
+                if (label && label.formatter) {
+                  delete label.formatter;
+                }
+              });
+            }
+          });
           // pie的图例需要一个扇形是一个图例
           if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
             options.legend.data = [];
@@ -720,8 +719,15 @@ export default {
     changePopupArrowStyle() {},
     mapNotLoadedTip() {},
     _dataZoomChanged() {
-      let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
-      this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, startValue, endValue);
+      let flag = false;
+      this.options.series.forEach((serie, index) => {
+        const labelConfig = serie.label && serie.label.normal;
+        flag = labelConfig.show && labelConfig.smart;
+      });
+      if (flag) {
+        let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
+        this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, startValue, endValue);
+      }
     }
   },
   // echarts所有静态方法
