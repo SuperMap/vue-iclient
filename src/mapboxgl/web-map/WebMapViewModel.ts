@@ -341,6 +341,9 @@ export default class WebMapViewModel extends WebMapBase {
       preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false,
       transformRequest: (url, resourceType) => {
         if (resourceType === 'Tile') {
+          if (this.isSuperMapOnline && url.indexOf('http://') === 0) {
+            url = `https://www.supermapol.com/apps/viewer/getUrlResource.png?url=${encodeURIComponent(url)}`;
+          }
           const proxy = this.webMapService.handleProxy('image');
           return {
             url: url,
