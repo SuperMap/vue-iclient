@@ -42,6 +42,10 @@ export default {
     strokeColor: {
       type: String
     },
+    trailColor: {
+      type: String,
+      default: '#f3f3f3'
+    },
     size: {
       type: [Number] // fix 其父元素宽高都很大的时候，需要传一个合适的size, 这时候不会自适应, 如需自适应则不传size
     },
@@ -89,6 +93,16 @@ export default {
     strokeColor(val) {
       this.colorData = val;
     },
+    trailColor: {
+      handler() {
+        if (this.type === 'circle' && this.progressTrailNode) {
+          this.progressTrailNode.style.stroke = this.trailColor;
+        }
+        if (this.type === 'line' && this.progressLineTrailNode) {
+          this.progressLineTrailNode.style.backgroundColor = this.trailColor;
+        }
+      }
+    },
     textColorsData: {
       handler() {
         if (this.progressTextNode) {
@@ -109,6 +123,14 @@ export default {
     });
     this.progressTextNode = this.$el.querySelector('.ant-progress-text');
     this.progressTextNode.style.color = this.getTextColor;
+    this.progressTrailNode = this.$el.querySelector('.ant-progress-circle-trail');
+    this.progressLineTrailNode = this.$el.querySelector('.ant-progress-inner');
+    if (this.type === 'circle' && this.progressTrailNode) {
+      this.progressTrailNode.style.stroke = this.trailColor;
+    }
+    if (this.type === 'line' && this.progressLineTrailNode) {
+      this.progressLineTrailNode.style.backgroundColor = this.trailColor;
+    }
     this.resizeObsever = new ResizeSensor(this.$el, () => {
       this.resize();
     });
