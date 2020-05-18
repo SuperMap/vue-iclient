@@ -399,6 +399,12 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected mergeFeatures(layerId: string, features: any, mergeByField?: string): any {
+    features = features.map((feature: any, index: any) => {
+      if (!feature.properties.hasOwnProperty('index')) {
+        feature.properties.index = index;
+      }
+      return feature;
+    });
     if (!mergeByField) {
       return features;
     }
