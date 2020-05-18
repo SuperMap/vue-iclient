@@ -16,7 +16,7 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
   constructor(map, options) {
     super();
     this.map = map;
-    this.source = options.source;
+    this.layers = options.layers || [];
     this.layerStyle = options.layerStyle || {};
     this.popup = null;
   }
@@ -115,27 +115,21 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
    * @function IdentifyViewModel.prototype.removed
    * @desc 清除popup和高亮图层。
    */
-  removed(source = this.source) {
+  removed(layers = this.layers) {
     // 移除高亮图层
     this.removePopup();
-    this.removeOverlayer(source);
+    this.removeOverlayer(layers);
   }
   removePopup() {
     if (this.popup) {
       this.popup.remove() && (this.popup = null);
     }
   }
-  removeOverlayer(source = this.source) {
-    for (let key in source) {
-      let layers = source[key];
-      layers &&
-        layers.forEach &&
-        layers.forEach(layerId => {
-          this.map &&
-            this.map.getLayer(layerId + '-SM-highlighted') &&
-            this.map.removeLayer(layerId + '-SM-highlighted');
-          this.map && this.map.getLayer(layerId + '-SM-StrokeLine') && this.map.removeLayer(layerId + '-SM-StrokeLine');
-        });
-    }
+  removeOverlayer(layers = this.layers) {
+    layers &&
+      layers.forEach(layerId => {
+        this.map && this.map.getLayer(layerId + '-SM-highlighted') && this.map.removeLayer(layerId + '-SM-highlighted');
+        this.map && this.map.getLayer(layerId + '-SM-StrokeLine') && this.map.removeLayer(layerId + '-SM-StrokeLine');
+      });
   }
 }

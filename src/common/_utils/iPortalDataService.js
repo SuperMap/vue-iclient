@@ -210,33 +210,26 @@ export default class iPortalDataService extends Events {
           return;
         }
         if (data.type) {
+          let features;
+          let type = 'FeatureCollection';
           if (data.type === 'JSON' || data.type === 'GEOJSON') {
             data.content = JSON.parse(data.content.trim());
             // 如果是json文件 data.content = {type:'fco', features},格式不固定
             if (!data.content.features) {
-              // json格式解析失败
-              console.log('JSON 格式解析失败！');
-              return;
+              features = this._json2Feature(data.content, queryInfo);
             }
-            let features = this._formatGeoJSON(data.content, queryInfo);
-            features = this._transformContentFeatures(features);
-            result.features = {
-              type: data.content.type,
-              features
-            };
-            this.vertified && (result.vertified = this.vertified);
+            features = this._formatGeoJSON(features || data.content, queryInfo);
+            type = data.content.type;
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-            let features = this._excelData2Feature(data.content, queryInfo);
-            features = this._transformContentFeatures(features);
-            result.features = {
-              type: 'FeatureCollection',
-              features
-            };
-            this.vertified && (result.vertified = this.vertified);
+            features = this._excelData2Feature(data.content, queryInfo);
           }
-          this.iserverService._getFeaturesSucceed({
-            result: result
-          });
+          features = this._transformContentFeatures(features);
+          result.features = {
+            type,
+            features
+          };
+          this.vertified && (result.vertified = this.vertified);
+          this.iserverService._getFeaturesSucceed({ result });
         }
       })
       .catch(error => {
@@ -303,6 +296,23 @@ export default class iPortalDataService extends Events {
       features.push(feature);
     }
     return features;
+  }
+
+  _json2Feature(dataContent) {
+    let content = typeof dataContent === 'string' ? JSON.parse(dataContent) : dataContent;
+    let features = [];
+    if (content instanceof Array) {
+      content.map(val => {
+        if (val.hasOwnProperty('geometry')) {
+          features.push({ properties: val.properties || val, geometry: val.geometry });
+        } else {
+          features.push({ properties: val });
+        }
+      });
+    } else if (content) {
+      features = [{ properties: content }];
+    }
+    return { features };
   }
   // 转坐标系
   _transformContentFeatures(features) {

@@ -29,15 +29,15 @@ export default {
   mixins: [MapGetter, Theme],
   props: {
     layers: {
-      type: Object,
+      type: Array,
       default() {
-        return {};
+        return [];
       }
     },
     fields: {
-      type: Object,
+      type: [Array, Object],
       default() {
-        return {};
+        return [];
       }
     },
     clickTolerance: {
@@ -102,16 +102,6 @@ export default {
     };
   },
   computed: {
-    getAllLayers() {
-      let allLayers = [];
-      for (let key in this.layers) {
-        let layers = this.layers[key];
-        if (layers) {
-          allLayers = allLayers.concat(layers);
-        }
-      }
-      return allLayers;
-    },
     getWidthStyle() {
       let style = { keyWidth: {}, valueWidth: {} };
       if (!this.autoResize) {
@@ -167,7 +157,7 @@ export default {
       if (this.layers) {
         this.viewModel = new IdentifyViewModel(this.map, {
           mapTarget: this.getTargetName(),
-          source: this.layers,
+          layers: this.layers,
           layerStyle: this.layerStyle
         });
         this.map && this.bindMapClick(this.map);
@@ -184,8 +174,14 @@ export default {
       // 获取点中图层的features
       let features = this.bindQueryRenderedFeatures(e);
       if (features[0]) {
-        let fileds = this.fields[features[0].source] || [];
-        this.layersMapClickFn(e, fileds, features[0]);
+        let index = this.layers && this.layers.indexOf(features[0].layer.id);
+        let fields;
+        if (this.fields instanceof Array) {
+          fields = (this.fields && this.fields[index]) || [];
+        } else if (this.fields instanceof Object && index === 0) {
+          fields = this.fields;
+        }
+        this.layersMapClickFn(e, fields, features[0]);
       }
     },
     // 给layer绑定queryRenderedFeatures
@@ -196,9 +192,9 @@ export default {
         [e.point.x - this.clickTolerance, e.point.y - this.clickTolerance],
         [e.point.x + this.clickTolerance, e.point.y + this.clickTolerance]
       ];
-      for (let i = 0; i < this.getAllLayers.length; i++) {
-        if (map.getLayer(this.getAllLayers[i])) {
-          layersOnMap.push(this.getAllLayers[i]);
+      for (let i = 0; i < this.layers.length; i++) {
+        if (map.getLayer(this.layers[i])) {
+          layersOnMap.push(this.layers[i]);
         }
       }
       let features = map.queryRenderedFeatures(bbox, {
