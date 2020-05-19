@@ -375,8 +375,8 @@ class SmTextList extends Mixins(Theme, Timer) {
       let listData = [];
       content.forEach(data => {
         let obj = {};
-        this.fields.forEach(field => {
-          obj[field] = data[field] || '-';
+        this.fields.forEach((field, index) => {
+          obj[`${field}-${index}`] = data[field] || '-';
         });
         JSON.stringify(obj) !== '{}' && listData.push(obj);
       });
