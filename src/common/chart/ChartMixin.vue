@@ -17,7 +17,7 @@
       :manual-update="manualUpdate"
       :theme="theme || chartTheme"
       :style="_chartStyle"
-      @datazoom="_dataZoomChanged"
+      @datazoom="dataZoomHandler"
     />
     <TablePopup
       v-show="false"
@@ -202,7 +202,8 @@ export default {
       echartOptions: {}, // 最后生成的echart数据
       datasetChange: false, // dataset是否改变
       dataSeriesCache: {},
-      tablePopupProps: {}
+      tablePopupProps: {},
+      dataZoomHandler: function() {}
     };
   },
   computed: {
@@ -290,7 +291,6 @@ export default {
           if (this.datasetChange && !this.dataSeriesCache) {
             return;
           }
-
           if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
             this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
           } else {
@@ -348,6 +348,7 @@ export default {
       });
     });
     this._initAutoResize();
+    this._initDataZoom();
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -374,6 +375,15 @@ export default {
         // @ts-ignore
         addListener(this.$el, this.__resizeHandler);
       }
+    },
+    _initDataZoom() {
+      this.dataZoomHandler = debounce(
+        () => {
+          this._dataZoomChanged();
+        },
+        500,
+        { leading: true }
+      );
     },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
@@ -454,7 +464,7 @@ export default {
         this.echartOptions = this._optionsHandler(echartOptions, options);
       });
     },
-    _optionsHandler(options, dataOptions, startValue, endValue) {
+    _optionsHandler(options, dataOptions) {
       dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
       options = options && cloneDeep(options); // clone 避免引起重复刷新
       if (options && options.legend && !options.legend.type) {
@@ -491,38 +501,54 @@ export default {
             return Object.assign({}, options.series[index] || {}, element);
           });
           const dataZoom = options.dataZoom && options.dataZoom[0];
-          options.series.forEach(serie => {
-            const labelConfig = serie.label && serie.label.normal;
-            if (labelConfig && labelConfig.show && labelConfig.smart) {
-              let label = serie.label.normal;
-              label.position = labelConfig.position || 'top';
+          options.series = options.series.map(serie => {
+            let label = serie.label && serie.label.normal;
+            if (label && label.show && label.smart) {
+              label.position = label.position || 'top';
               let data = serie.data;
-              let start = 0;
-              let end = data.length - 1;
+              let startDataIndex = 0;
+              let endDataIndex = data.length - 1;
               if (dataZoom && dataZoom.show !== false) {
-                start = startValue || Math.ceil((options.dataZoom[0].start * data.length) / 100);
-                end = endValue || Math.ceil((options.dataZoom[0].end * data.length) / 100);
-                data = serie.data.slice(start, end + 1);
-                options.dataZoom[0].startValue = start;
-                options.dataZoom[0].endValue = end;
-                delete options.dataZoom[0].start;
-                delete options.dataZoom[0].end;
+                if (dataZoom.start > dataZoom.end) {
+                  let oldStart = dataZoom.start;
+                  dataZoom.start = dataZoom.end;
+                  dataZoom.end = oldStart;
+                }
+                let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
+                if (startValue >= 0) {
+                  startDataIndex = startValue;
+                } else {
+                  startDataIndex = Math.floor((dataZoom.start / 100) * data.length);
+                }
+                endDataIndex = endValue || Math.ceil((dataZoom.end / 100) * data.length);
+                data = serie.data.slice(startDataIndex, endDataIndex + 1);
+                options.dataZoom = options.dataZoom.map(val => {
+                  if (startValue >= 0 && endValue >= 0) {
+                    val.startValue = startValue;
+                    val.endValue = endValue;
+                    delete val.start;
+                    delete val.end;
+                    return val;
+                  }
+                  return val;
+                });
               }
+
               label.formatter = function({ dataIndex, value }) {
                 let result = '';
-                if (dataIndex === start || dataIndex === end || Math.max.apply(null, data) + '' === value + '') {
+                if (
+                  dataIndex === startDataIndex ||
+                  dataIndex === endDataIndex ||
+                  Math.max.apply(null, data) + '' === value + ''
+                ) {
                   result = value;
                 }
                 return result;
               };
-            } else if (options.series[0].type !== 'pie') {
-              options.series.forEach(serie => {
-                let label = serie.label && serie.label.normal;
-                if (label && label.formatter) {
-                  delete label.formatter;
-                }
-              });
+            } else if (options.series[0] && options.series[0].type !== 'pie') {
+              label && delete label.formatter;
             }
+            return serie;
           });
           // pie的图例需要一个扇形是一个图例
           if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
@@ -725,8 +751,7 @@ export default {
         flag = labelConfig.show && labelConfig.smart;
       });
       if (flag) {
-        let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
-        this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, startValue, endValue);
+        this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
       }
     }
   },
