@@ -256,9 +256,9 @@ export default class WebMapViewModel extends WebMapBase {
       this.mapOptions.container = this.target;
       if (!this.mapOptions.transformRequest) {
         this.mapOptions.transformRequest = (url: string, resourceType: string) => {
-          const urlParam= {url}
+          const urlParam = { url };
           let proxy = '';
-          if(typeof this.proxy === 'string'){
+          if (typeof this.proxy === 'string') {
             let proxyType = 'data';
             if (resourceType === 'Tile') {
               proxyType = 'image';
@@ -266,8 +266,10 @@ export default class WebMapViewModel extends WebMapBase {
             proxy = this.webMapService.handleProxy(proxyType);
           }
           return {
-            url: proxy? + `${proxy}${encodeURIComponent(url)}`:url,
-            credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false) ? 'include' : 'omit'
+            url: proxy ? +`${proxy}${encodeURIComponent(url)}` : url,
+            credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
+              ? 'include'
+              : 'omit'
           };
         };
       }
@@ -637,7 +639,10 @@ export default class WebMapViewModel extends WebMapBase {
     let options = {
       service: 'WMS',
       request: 'GetMap',
-      layers: mapInfo.layers !== null && typeof mapInfo.layers === 'object'? mapInfo.layers.join(',') : (mapInfo.layers || '0'), // 如果是多个图层，用逗号分隔
+      layers:
+        mapInfo.layers !== null && typeof mapInfo.layers === 'object'
+          ? mapInfo.layers.join(',')
+          : mapInfo.layers || '0', // 如果是多个图层，用逗号分隔
       styles: '',
       format: 'image/png',
       transparent: 'true',
@@ -884,6 +889,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _createRankSymbolLayer(layerInfo, features) {
     const { minzoom, maxzoom } = layerInfo;
     let fieldName = layerInfo.themeSetting.themeField;
+    let colors = layerInfo.themeSetting.colors;
     let style = layerInfo.style;
     let featureType = layerInfo.featureType;
     let styleSource: any = this.createRankStyleSource(layerInfo, features);
@@ -891,6 +897,7 @@ export default class WebMapViewModel extends WebMapBase {
     features = this.getFilterFeatures(layerInfo.filterCondition, features);
     // 获取 expression
     let expression = ['match', ['get', 'index']];
+    let colorExpression = ['match', ['get', 'index']];
     for (let index = 0; index < features.length; index++) {
       const row = features[index];
       let tartget = parseFloat(row.properties[fieldName]);
@@ -904,6 +911,7 @@ export default class WebMapViewModel extends WebMapBase {
                   : Number.parseFloat((styleGroups[i].radius / style.imageInfo.size.h).toFixed(2)) * 2
                 : styleGroups[i].radius;
             expression.push(row.properties['index'], radius);
+            colorExpression.push(row.properties['index'], styleGroups[i].color);
             continue;
           }
         }
@@ -911,10 +919,12 @@ export default class WebMapViewModel extends WebMapBase {
     }
     // @ts-ignore
     expression.push(1);
-
+    colorExpression.push('rgba(0, 0, 0, 0)');
     // 图例处理
     this._initLegendConfigInfo(layerInfo, styleGroups);
-
+    if (colors && colors.length > 0) {
+      style.fillColor = colorExpression;
+    }
     if (style.type === 'SYMBOL_POINT') {
       this._createSymbolLayer(layerInfo, features, expression);
     } else if (style.type === 'IMAGE_POINT') {
@@ -933,7 +943,7 @@ export default class WebMapViewModel extends WebMapBase {
           visibility: layerInfo.visible
         }
       };
-      layerStyle.style = this._transformStyleToMapBoxGl(style, featureType, expression, 'circle-radius');
+      layerStyle.style = this._transformStyleToMapBoxGl(layerInfo.style, featureType, expression, 'circle-radius');
       let layerID = layerInfo.layerID;
       this._addOverlayToMap(featureType, source, layerID, layerStyle, minzoom, maxzoom);
       this._addLayerSucceeded();

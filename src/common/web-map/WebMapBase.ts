@@ -302,7 +302,8 @@ export default abstract class WebMapBase extends Events {
       segmentCount = themeSetting.segmentCount,
       customSettings = themeSetting.customSettings,
       minR = parameters.themeSetting.minRadius,
-      maxR = parameters.themeSetting.maxRadius;
+      maxR = parameters.themeSetting.maxRadius,
+      colors = themeSetting.colors;
     features.forEach(feature => {
       let properties = feature.properties,
         value = properties[themeField];
@@ -335,8 +336,10 @@ export default abstract class WebMapBase extends Events {
         incrementR = (maxR - minR) / (len - 1), // 半径增量
         start,
         end,
-        radius = Number(((maxR + minR) / 2).toFixed(2));
+        radius = Number(((maxR + minR) / 2).toFixed(2)),
+        color = '';
       for (let i = 0; i < len - 1; i++) {
+        // 处理radius
         start = Number(segements[i].toFixed(2));
         end = Number(segements[i + 1].toFixed(2));
         // 这里特殊处理以下分段值相同的情况（即所有字段值相同）
@@ -346,7 +349,12 @@ export default abstract class WebMapBase extends Events {
         // 处理自定义 半径
         radius = customSettings[i] && customSettings[i].radius ? customSettings[i].radius : radius;
         style.radius = radius;
-        styleGroup.push({ radius, start, end, style });
+        // 处理颜色
+        if (colors && colors.length > 0) {
+          color = customSettings[i] && customSettings[i].color ? customSettings[i].color : colors[i];
+          style.fillColor = color;
+        }
+        styleGroup.push({ radius, color, start, end, style });
       }
       return styleGroup;
     } else {

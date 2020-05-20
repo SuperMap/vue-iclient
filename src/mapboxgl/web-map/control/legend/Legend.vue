@@ -286,17 +286,17 @@ export default {
     },
     rankSymbolStyle() {
       return function(styleItem) {
-        const { style, radius } = styleItem;
+        const { style, radius, color } = styleItem;
         let generateStyle = {};
         switch (style.type) {
           case 'BASIC_POINT':
-            generateStyle.background = getColorWithOpacity(style.fillColor, style.fillOpacity);
+            generateStyle.background = getColorWithOpacity(color || style.fillColor, style.fillOpacity);
             generateStyle.width = `${radius * 2}px`;
             generateStyle.height = `${radius * 2}px`;
             generateStyle.borderRadius = `${radius}px`;
             break;
           case 'SYMBOL_POINT':
-            generateStyle.color = getColorWithOpacity(style.fillColor, style.fillOpacity);
+            generateStyle.color = getColorWithOpacity(color || style.fillColor, style.fillOpacity);
             generateStyle.fontSize = `${radius * 2}px`;
             break;
           case 'IMAGE_POINT':
