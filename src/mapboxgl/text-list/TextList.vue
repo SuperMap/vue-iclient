@@ -7,8 +7,37 @@
     >
       <div class="sm-component-text-list__header-content">
         <template v-if="animateContent && animateContent.length > 0">
-          <template v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])">
-            <div :key="index" :style="[fontSizeStyle, { flex: getColumnWidth(index) }]" :title="item">{{ item }}</div>
+          <template
+            v-for="(item, index) in (getColumns && getColumns.length > 0 && getColumns) ||
+              Object.keys(animateContent[0])"
+          >
+            <div
+              :key="index"
+              class="sm-component-text-list__header-title"
+              :style="[fontSizeStyle, { flex: getColumnWidth(index) }]"
+              :title="item.header"
+            >
+              <div>{{ getColumns[index].header }}</div>
+              <div
+                v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
+                :style="{ color: headerStyleData.sortBtnColor }"
+                @click="sortByField(getColumns[index].field + '-' + index, index)"
+              >
+                <i
+                  :class="['sm-mapdashboard-icons-Triangle', 'up-triangle']"
+                  :style="
+                    sortType === 'ascend' && sortIndex === index && { color: headerStyleData.sortBtnSelectColor }
+                  "
+                ></i>
+                <i
+                  :class="['sm-mapdashboard-icons-Triangle', 'down-triangle']"
+                  :style="
+                    sortType === 'descend' &&
+                      sortIndex === index && { color: headerStyleData.sortBtnSelectColor }
+                  "
+                ></i>
+              </div>
+            </div>
           </template>
         </template>
       </div>
@@ -31,7 +60,9 @@
               :title="items"
               :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
             >
-              {{ items }}
+              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.prefix }}</span
+              >{{ items }}
+              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.suffix }}</span>
             </div>
           </div>
         </template>
@@ -51,6 +82,7 @@ import Timer from '../../common/_mixin/timer';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import isEqual from 'lodash.isequal';
 import merge from 'lodash.merge';
+import clonedeep from 'lodash.clonedeep';
 
 interface HeaderStyleParams {
   show?: boolean;
@@ -78,6 +110,15 @@ interface StyleRangeParams {
 interface CellStyleRangeGroupParams {
   type: 'background' | 'color';
   data: StyleRangeParams[];
+}
+
+interface ColumnParams {
+  header: string,
+  field: string,
+  columnWidths: number,
+  sort: true | false | undefined;
+  defaultSortType: 'ascend' | 'descend' | 'none';
+  fixInfo: Object
 }
 
 @Component({
@@ -108,6 +149,16 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   rowStyleData: RowStyleParams;
 
+  sortType: string = 'descend';
+
+  sortTypeList: Array<string> = ['ascend', 'descend', 'none'];
+
+  sortTypeIndex: number = 0;
+
+  sortField: string = '';
+
+  sortIndex: number;
+
   @Prop() content: any; // 显示内容（JSON），dataset 二选一
 
   @Prop() dataset: any;
@@ -132,10 +183,12 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Prop() thresholdsStyle: CellStyleRangeGroupParams[];
 
+  @Prop() columns: Array<ColumnParams>;
+
   @Watch('content')
   contentChanged(newVal, oldVal) {
     if (!isEqual(newVal, oldVal)) {
-      this.listData = this.content;
+      this.listData = this.handleContent(this.content);
       this.getListHeightStyle();
     }
   }
@@ -159,6 +212,15 @@ class SmTextList extends Mixins(Theme, Timer) {
     if (!isEqual(newVal, oldVal) && this.listData) {
       this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
       this.getListHeightStyle();
+    }
+  }
+
+  @Watch('columns')
+  columnsChanged(newVal, oldVal) {
+    if (!isEqual(newVal, oldVal) && this.listData) {
+      this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+      this.getListHeightStyle();
+      this.setDefaultSortType();
     }
   }
 
@@ -197,6 +259,18 @@ class SmTextList extends Mixins(Theme, Timer) {
       clearInterval(this.startInter);
       this.getListHeightStyle();
     }
+  }
+
+  @Watch('sortType')
+  sortTypeChanged(newVal, oldVal) {
+    this.listData = this.sortContent(this.listData);
+    this.getListHeightStyle();
+  }
+
+  @Watch('sortField')
+  sortFieldChanged(newVal, oldVal) {
+    this.listData = this.sortContent(this.listData);
+    this.getListHeightStyle();
   }
 
   get getRowStyle() {
@@ -250,6 +324,30 @@ class SmTextList extends Mixins(Theme, Timer) {
     };
   }
 
+  get getColumns() {
+    if (Array.isArray(this.columns)) {
+      return this.columns.map((column, index) => {
+        let obj = {
+          header: this.header[index],
+          field: this.fields[index],
+          columnWidths: this.columnWidths[index],
+          fixInfo: { prefix: '', suffix: '' }
+        };
+        return Object.assign({}, obj, column);
+      });
+    } else {
+      return this.fields.map((column, index) => {
+        let obj = {
+          header: this.header[index],
+          field: this.fields[index],
+          columnWidths: this.columnWidths[index],
+          fixInfo: { prefix: '', suffix: '' }
+        };
+        return Object.assign({}, obj, column);
+      });
+    }
+  }
+
   created() {
     this.headerStyleData = merge(
       { show: true, background: this.getColor(0), color: this.textColorsData },
@@ -266,7 +364,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   mounted() {
     this.setListData();
-
+    this.setDefaultSortType();
     // resize 监听
     if (this.autoResize) {
       this.resizeHandler = debounce(
@@ -371,13 +469,14 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   handleContent(content) {
-    if (this.fields) {
+    if (this.fields && content) {
       let listData = [];
       content.forEach(data => {
         let obj = {};
-        this.fields.forEach((field, index) => {
-          obj[`${field}-${index}`] = data[field] || '-';
-        });
+        this.getColumns &&
+          this.getColumns.forEach((column, index) => {
+            obj[`${column.field}-${index}`] = data[column.field] || '-';
+          });
         JSON.stringify(obj) !== '{}' && listData.push(obj);
       });
       return listData;
@@ -397,9 +496,10 @@ class SmTextList extends Mixins(Theme, Timer) {
         }
         let contentObj = {};
         if (this.fields) {
-          this.fields.forEach((field, index) => {
-            contentObj[`${field}-${index}`] = properties[field] || '-';
-          });
+          this.getColumns &&
+            this.getColumns.forEach((column, index) => {
+              contentObj[`${column.field}-${index}`] = properties[column.field] || '-';
+            });
         } else {
           contentObj = properties;
         }
@@ -425,6 +525,64 @@ class SmTextList extends Mixins(Theme, Timer) {
         this.animate = !this.animate;
       }, 500);
     }, 2000);
+  }
+
+  sortByField(fieldName, index) {
+    this.sortField = fieldName;
+    this.sortIndex = index;
+    this.sortTypeIndex++;
+    if (this.sortTypeIndex > this.sortTypeList.length - 1) {
+      this.sortTypeIndex = 0;
+    }
+    this.sortType = this.sortTypeList[this.sortTypeIndex];
+  }
+
+  sortContent(content) {
+    if (!content) {
+      return null;
+    }
+    let sortContent = [];
+    // 没有排序类型 或者 排序字段不存在
+    if (this.sortType === 'none' || !this.sortField || content.length <= 1) {
+      sortContent = content;
+    } else {
+      sortContent = clonedeep(content);
+      if (this.sortType === 'descend') {
+        sortContent.sort((a, b) => {
+          return b[this.sortField] - a[this.sortField];
+        });
+      } else if (this.sortType === 'ascend') {
+        sortContent.sort((a, b) => {
+          return a[this.sortField] - b[this.sortField];
+        });
+      }
+    }
+    return sortContent;
+  }
+
+  setDefaultSortType() {
+    let fieldIndex = 0;
+    let column =
+      this.columns &&
+      this.columns.find((column, index) => {
+        if (['ascend', 'descend'].includes(column.defaultSortType) && column.sort) {
+          fieldIndex = index;
+          return true;
+        }
+        return false;
+      });
+    if (column) {
+      this.sortType = column.defaultSortType;
+      let index = this.sortTypeList.findIndex(item => {
+        return item === column.defaultSortType;
+      });
+      this.sortTypeIndex = index;
+      this.sortField = `${column.field}-${fieldIndex}`;
+      this.sortIndex = fieldIndex;
+      return;
+    }
+    this.sortField = '';
+    this.sortType = 'none';
   }
 
   destory(): void {

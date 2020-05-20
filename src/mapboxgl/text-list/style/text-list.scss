@@ -26,16 +26,37 @@
     display: flex;
     height: 100%;
     & > div {
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       flex: 1;
       font-family: 'MicrosoftYaHei';
-      display: block;
       word-break: keep-all;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
       align-self: center;
       min-width: 5%;
+      div {
+        position: relative;
+        cursor: pointer;
+        .up-triangle {
+          position: absolute;
+          font-size: 12px;
+          left: 4px;
+          top: -12px;
+        }
+        .down-triangle {
+          font-size: 12px;
+          position: absolute;
+          left: 4px;
+          top: -4px;
+          transform: rotate(180deg);
+        }
+        .active {
+          color: #eee;
+        }
+      }
     }
   }
   @include e(animate) {
