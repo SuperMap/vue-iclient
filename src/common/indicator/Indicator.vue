@@ -148,10 +148,17 @@ export default {
     indicatorStyle() {
       let color = this.indicatorColorData;
       if (!isNaN(this.indicatorNum) && this.thresholdsStyle) {
-        /* eslint-disable no-new-func */
-        const matchStyle = this.thresholdsStyle.find(item =>
-          new Function(`return ${+this.indicatorNum} ${item.compare} ${+item.value}`)()
-        );
+        const matchStyle = this.thresholdsStyle.find(item => {
+          let status;
+          if (item.min) {
+            status = +this.indicatorNum >= +item.min;
+          }
+          if (item.max) {
+            status = status === void 0 ? true : status;
+            status = status && +this.indicatorNum <= +item.max;
+          }
+          return status;
+        });
         if (matchStyle) {
           color = matchStyle.color;
         }

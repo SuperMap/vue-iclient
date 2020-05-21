@@ -15,6 +15,24 @@ export function tranformSingleToMulti(data) {
   return data;
 }
 
+export function sortData(features, datasetOptions, maxFeatures, xBar) {
+  const matchItem = datasetOptions.find(item => item.sort !== 'unsort');
+  let nextFeatures = features;
+  if (matchItem) {
+    nextFeatures = orderBy(
+      features,
+      (feature) => +feature.properties[matchItem.yField],
+      matchItem.sort === 'ascending' ? 'asc' : 'desc'
+    );
+  }
+  const maxLen = +maxFeatures;
+  if (maxLen && nextFeatures.length > maxLen) {
+    nextFeatures.length = maxLen;
+  }
+  matchItem && xBar && nextFeatures.reverse();
+  return nextFeatures;
+}
+
 /**
  * @class EchartsDataService
  * @classdesc 图表组件功能类
@@ -149,28 +167,10 @@ export default class EchartsDataService {
       let nextFeatures = filterInvalidData(this.datasetOptions, data.features);
       // 只过滤空数据但不排序的原数据
       this.dataCache = statisticsFeatures(nextFeatures);
-      nextFeatures = this._sortData(nextFeatures, xBar);
+      nextFeatures = sortData(nextFeatures, this.datasetOptions, this.dataset.maxFeatures, xBar);
       nextData = statisticsFeatures(nextFeatures);
     }
     return nextData;
-  }
-
-  _sortData(features, xBar) {
-    const matchItem = this.datasetOptions.find(item => item.sort !== 'unsort');
-    let nextFeatures = features;
-    if (matchItem) {
-      nextFeatures = orderBy(
-        features,
-        (feature) => +feature.properties[matchItem.yField],
-        matchItem.sort === 'ascending' ? 'asc' : 'desc'
-      );
-    }
-    const maxLen = +this.dataset.maxFeatures;
-    if (maxLen && nextFeatures.length > maxLen) {
-      nextFeatures.length = maxLen;
-    }
-    matchItem && xBar && nextFeatures.reverse();
-    return nextFeatures;
   }
 
   /**

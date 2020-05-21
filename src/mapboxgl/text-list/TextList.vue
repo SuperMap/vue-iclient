@@ -102,8 +102,8 @@ interface RowStyleParams {
 }
 
 interface StyleRangeParams {
-  compare: string;
-  value: number;
+  min: number;
+  max: number;
   color: string;
 }
 
@@ -294,13 +294,17 @@ class SmTextList extends Mixins(Theme, Timer) {
       }
       const rangeGroup = this.thresholdsStyle[columnIndex];
       let colorRangeInfo = rangeGroup.data.map(item => ({ ...item }));
-      colorRangeInfo.sort((a: StyleRangeParams, b: StyleRangeParams) => {
-        return a.value - b.value;
+      const matchColorRange = colorRangeInfo.find(item => {
+        let status;
+        if (item.min) {
+          status = +value >= +item.min;
+        }
+        if (item.max) {
+          status = status === void 0 ? true : status;
+          status = status && +value <= +item.max;
+        }
+        return status;
       });
-      const matchColorRange = colorRangeInfo.find(
-        /* eslint-disable no-new-func */
-        item => !isNaN(item.value) && new Function(`return ${+value} ${item.compare} ${+item.value}`)()
-      );
       if (matchColorRange) {
         return { [rangeGroup.type]: matchColorRange.color };
       }
