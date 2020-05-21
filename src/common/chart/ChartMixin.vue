@@ -545,7 +545,7 @@ export default {
                 }
                 return result;
               };
-            } else if (options.series[0] && options.series[0].type !== 'pie') {
+            } else if (serie && serie.type !== 'pie' && serie.type !== 'radar') {
               label && delete label.formatter;
             }
             return serie;
