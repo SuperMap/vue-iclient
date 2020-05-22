@@ -139,7 +139,9 @@ export default class iPortalDataService extends Events {
                   dataSourceName,
                   dataUrl: url.split('/datasources')[0]
                 },
-                queryInfo
+                Object.assign({}, queryInfo, {
+                  withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+                })
               );
             })
             .catch(error => {
@@ -180,7 +182,9 @@ export default class iPortalDataService extends Events {
                   mapName: layerName,
                   dataUrl: path
                 },
-                queryInfo
+                Object.assign({}, queryInfo, {
+                  withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+                })
               );
               return layerName;
             })
