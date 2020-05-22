@@ -25,15 +25,12 @@
               >
                 <i
                   :class="['sm-mapdashboard-icons-Triangle', 'up-triangle']"
-                  :style="
-                    sortType === 'ascend' && sortIndex === index && { color: headerStyleData.sortBtnSelectColor }
-                  "
+                  :style="sortType === 'ascend' && sortIndex === index && { color: headerStyleData.sortBtnSelectColor }"
                 ></i>
                 <i
                   :class="['sm-mapdashboard-icons-Triangle', 'down-triangle']"
                   :style="
-                    sortType === 'descend' &&
-                      sortIndex === index && { color: headerStyleData.sortBtnSelectColor }
+                    sortType === 'descend' && sortIndex === index && { color: headerStyleData.sortBtnSelectColor }
                   "
                 ></i>
               </div>
@@ -113,12 +110,12 @@ interface CellStyleRangeGroupParams {
 }
 
 interface ColumnParams {
-  header: string,
-  field: string,
-  columnWidths: number,
+  header: string;
+  field: string;
+  width: number;
   sort: true | false | undefined;
   defaultSortType: 'ascend' | 'descend' | 'none';
-  fixInfo: Object
+  fixInfo: Object;
 }
 
 @Component({
@@ -163,7 +160,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Prop() dataset: any;
 
-  @Prop() header: Array<string>; // 表头
+  @Prop({ default: () => [] }) header: Array<string>; // 表头
 
   @Prop({ default: 6 }) rows: number; // 显示行数
 
@@ -173,9 +170,9 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Prop({ default: true }) autoResize: Boolean; // 是否自适应大小
 
-  @Prop() fields: Array<string>; // 显示的字段名
+  @Prop({ default: () => [] }) fields: Array<string>; // 显示的字段名
 
-  @Prop() columnWidths: Array<number>; // 列宽
+  @Prop({ default: () => [] }) columnWidths: Array<number>; // 列宽
 
   @Prop() rowStyle: RowStyleParams;
 
@@ -207,17 +204,9 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
-  @Watch('fields')
-  fieldsChanged(newVal, oldVal) {
-    if (!isEqual(newVal, oldVal) && this.listData) {
-      this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
-      this.getListHeightStyle();
-    }
-  }
-
   @Watch('columns')
   columnsChanged(newVal, oldVal) {
-    if (!isEqual(newVal, oldVal) && this.listData) {
+    if (!isEqual(newVal, oldVal)) {
       this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
       this.getListHeightStyle();
       this.setDefaultSortType();
@@ -320,8 +309,8 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   get getColumnWidth() {
     return function(index) {
-      if (this.columnWidths && this.columnWidths.length > 0) {
-        const width = this.columnWidths[index];
+      if (this.getColumns && this.getColumns.length > 0) {
+        const width = this.getColumns[index].width;
         return width ? `0 0 ${(width / 100) * this.containerWidth}px` : 1;
       }
       return 1;
@@ -330,24 +319,17 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   get getColumns() {
     if (Array.isArray(this.columns)) {
-      return this.columns.map((column, index) => {
-        let obj = {
-          header: this.header[index],
-          field: this.fields[index],
-          columnWidths: this.columnWidths[index],
-          fixInfo: { prefix: '', suffix: '' }
-        };
-        return Object.assign({}, obj, column);
-      });
+      return this.columns;
     } else {
-      return this.fields.map((column, index) => {
-        let obj = {
+      return this.fields.map((field, index) => {
+        return {
           header: this.header[index],
           field: this.fields[index],
-          columnWidths: this.columnWidths[index],
-          fixInfo: { prefix: '', suffix: '' }
+          width: this.columnWidths[index],
+          fixInfo: { prefix: '', suffix: '' },
+          sort: true,
+          defaultSortType: 'none'
         };
-        return Object.assign({}, obj, column);
       });
     }
   }
@@ -473,7 +455,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   handleContent(content) {
-    if (this.fields && content) {
+    if (content) {
       let listData = [];
       content.forEach(data => {
         let obj = {};
@@ -499,11 +481,10 @@ class SmTextList extends Mixins(Theme, Timer) {
           return;
         }
         let contentObj = {};
-        if (this.fields) {
-          this.getColumns &&
-            this.getColumns.forEach((column, index) => {
-              contentObj[`${column.field}-${index}`] = properties[column.field] || '-';
-            });
+        if (this.getColumns) {
+          this.getColumns.forEach((column, index) => {
+            contentObj[`${column.field}-${index}`] = properties[column.field] || '-';
+          });
         } else {
           contentObj = properties;
         }
