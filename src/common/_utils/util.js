@@ -153,3 +153,9 @@ export function filterInvalidData(datasetOptions, features) {
   });
   return nextFeatures;
 }
+export function handleWithCredentials(url, iportalServiceProxyUrl, defaultValue = false) {
+  if (!iportalServiceProxyUrl) {
+    return defaultValue;
+  }
+  return url.indexOf(iportalServiceProxyUrl) >= 0 || defaultValue;
+}

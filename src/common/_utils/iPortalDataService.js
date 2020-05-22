@@ -1,5 +1,5 @@
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from './iServerRestService';
-import { isXField, isYField } from './util';
+import { isXField, isYField, handleWithCredentials } from './util';
 import { Events } from '../_types/event/Events';
 
 /**
@@ -18,6 +18,7 @@ export default class iPortalDataService extends Events {
     this.url = url;
     this.withCredentials = withCredentials || false;
     this.epsgCode = options.epsgCode;
+    this.iportalServiceProxyUrl = options.iportalServiceProxyUrl;
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
     this.initSerivce(url);
   }
@@ -113,7 +114,9 @@ export default class iPortalDataService extends Events {
       let url = `${address}/data/datasources`;
       let dataSourceName;
       let datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, { withCredentials: false })
+      SuperMap.FetchRequest.get(url, null, {
+        withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+      })
         .then(response => {
           return response.json();
         })
@@ -121,7 +124,9 @@ export default class iPortalDataService extends Events {
           dataSourceName = data.datasourceNames[0];
           url = `${address}/data/datasources/${dataSourceName}/datasets`;
           // 请求获取数据集名
-          SuperMap.FetchRequest.get(url, null, { withCredentials: false })
+          SuperMap.FetchRequest.get(url, null, {
+            withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+          })
             .then(response => {
               return response.json();
             })
@@ -150,7 +155,9 @@ export default class iPortalDataService extends Events {
       let mapName;
       let layerName;
       let path; // 请求获取地图名
-      SuperMap.FetchRequest.get(url, null)
+      SuperMap.FetchRequest.get(url, null, {
+        withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+      })
         .then(response => {
           return response.json();
         })
@@ -159,7 +166,9 @@ export default class iPortalDataService extends Events {
           path = data[0].path;
           url = url = `${address}/maps/${mapName}/layers`;
           // 请求获取图层名
-          SuperMap.FetchRequest.get(url, null)
+          SuperMap.FetchRequest.get(url, null, {
+            withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+          })
             .then(response => {
               return response.json();
             })

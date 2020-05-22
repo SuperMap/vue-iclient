@@ -192,7 +192,7 @@ export default class iServerRestService extends Events {
     this.projectionUrl = `${dataUrl}/datasources/${dataSourceName}/datasets/${datasetName}`;
     if (queryInfo.keyWord) {
       let fieldsUrl = dataUrl + `/datasources/${dataSourceName}/datasets/${datasetName}/fields.rjson?returnAll=true`;
-      this._getRestDataFields(fieldsUrl, fields => {
+      this._getRestDataFields(fieldsUrl, queryInfo, fields => {
         queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
         this._getDataFeaturesBySql(dataUrl, queryInfo);
       });
@@ -213,6 +213,7 @@ export default class iServerRestService extends Events {
     });
     queryBySQLService = new SuperMap.QueryBySQLService(url, {
       proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials,
       eventListeners: {
         processCompleted: this._getFeaturesSucceed.bind(this),
         processFailed: serviceResult => {
@@ -237,6 +238,7 @@ export default class iServerRestService extends Events {
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
       proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials,
       eventListeners: {
         processCompleted: this._getFeaturesSucceed.bind(this),
         processFailed: function() {}
@@ -304,8 +306,11 @@ export default class iServerRestService extends Events {
     this.triggerEvent('getdatasucceeded', data);
   }
 
-  _getRestDataFields(fieldsUrl, callBack) {
-    SuperMap.FetchRequest.get(fieldsUrl, null, { proxy: this.options.proxy })
+  _getRestDataFields(fieldsUrl, queryInfo, callBack) {
+    SuperMap.FetchRequest.get(fieldsUrl, null, {
+      proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials
+    })
       .then(response => {
         return response.json();
       })
