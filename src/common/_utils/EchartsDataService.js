@@ -63,6 +63,7 @@ export default class EchartsDataService {
     this.dataset = dataset;
     this.datasetOptions = datasetOptions;
     this.dataCache = null; // 缓存的是请求后的数据
+    this.sortDataCache = null;
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
     this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
@@ -169,6 +170,7 @@ export default class EchartsDataService {
       this.dataCache = statisticsFeatures(nextFeatures);
       nextFeatures = sortData(nextFeatures, this.datasetOptions, this.dataset.maxFeatures, xBar);
       nextData = statisticsFeatures(nextFeatures);
+      this.sortDataCache = nextData;
     }
     return nextData;
   }

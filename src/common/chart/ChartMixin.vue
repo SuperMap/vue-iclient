@@ -696,8 +696,8 @@ export default {
       if (this.associatedMap) {
         const { dataIndex } = params;
         let features = [];
-        if (this.echartsDataService && this.echartsDataService.dataCache) {
-          features = this.echartsDataService.dataCache.features || features;
+        if (this.echartsDataService && this.echartsDataService.sortDataCache) {
+          features = this.echartsDataService.sortDataCache.features || features;
         }
         const selectedFeature = features[dataIndex];
         this.showDetailInfo(selectedFeature);
