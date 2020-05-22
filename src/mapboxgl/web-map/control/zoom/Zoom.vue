@@ -21,7 +21,11 @@
         "
         @click="zoomOut"
       ></a-button>
-      <div v-if="showZoom" class="sm-component-zoom__show-zoom" :style="showZoomStyle">{{ zoomPosition }}</div>
+      <div
+        v-if="showZoom"
+        class="sm-component-zoom__show-zoom"
+        :style="showZoomStyle"
+      >{{ zoomPosition }}</div>
     </div>
     <div v-show="showZoomSlider" class="sm-component-zoom__slider">
       <a-slider
@@ -161,6 +165,8 @@ export default {
       } else {
         this.canZoomOut = true;
       }
+      // 设置slider初始值
+      this.zoomPosition = Math.ceil(this.getZoom());
     });
     // 设置slider的最大最小值
     this.min = this.getMinZoom();
