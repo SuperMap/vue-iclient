@@ -30,31 +30,42 @@
       justify-content: center;
       align-items: center;
       flex: 1;
+      cursor: pointer;
       font-family: 'MicrosoftYaHei';
       word-break: keep-all;
       white-space: nowrap;
+      user-select: none;
       text-overflow: ellipsis;
       overflow: hidden;
       align-self: center;
       min-width: 5%;
-      div {
-        position: relative;
+      .arrow-wrap {
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        height: 34px;
+        width: 24px;
+        vertical-align: bottom;
         cursor: pointer;
+        overflow: initial;
+        position: relative;
         .up-triangle {
+          width: 0;
+          height: 0;
+          border: 5px solid transparent;
           position: absolute;
-          font-size: 12px;
-          left: 4px;
-          top: -12px;
+          left: 3px;
+          border-bottom-color: #fff;
+          top: 7px;
         }
         .down-triangle {
-          font-size: 12px;
+          width: 0;
+          height: 0;
+          border: 5px solid transparent;
           position: absolute;
-          left: 4px;
-          top: -4px;
-          transform: rotate(180deg);
-        }
-        .active {
-          color: #eee;
+          left: 3px;
+          border-top-color: #fff;
+          bottom: 5px;
         }
       }
     }

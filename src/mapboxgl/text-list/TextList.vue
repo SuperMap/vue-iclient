@@ -16,21 +16,22 @@
               class="sm-component-text-list__header-title"
               :style="[fontSizeStyle, { flex: getColumnWidth(index) }]"
               :title="item.header"
+              @click="sortByField(getColumns[index].field + '-' + index, index, !Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort)"
             >
               <div>{{ getColumns[index].header }}</div>
               <div
                 v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
+                class="arrow-wrap"
                 :style="{ color: headerStyleData.sortBtnColor }"
-                @click="sortByField(getColumns[index].field + '-' + index, index)"
               >
                 <i
-                  :class="['sm-mapdashboard-icons-Triangle', 'up-triangle']"
-                  :style="sortType === 'ascend' && sortIndex === index && { color: headerStyleData.sortBtnSelectColor }"
+                  :class="['up-triangle']"
+                  :style="sortType === 'ascend' && sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }"
                 ></i>
                 <i
-                  :class="['sm-mapdashboard-icons-Triangle', 'down-triangle']"
+                  :class="['down-triangle']"
                   :style="
-                    sortType === 'descend' && sortIndex === index && { color: headerStyleData.sortBtnSelectColor }
+                    sortType === 'descend' && sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }
                   "
                 ></i>
               </div>
@@ -252,13 +253,15 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Watch('sortType')
   sortTypeChanged(newVal, oldVal) {
-    this.listData = this.sortContent(this.listData);
+    let rawContent = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+    this.listData = this.sortContent(rawContent);
     this.getListHeightStyle();
   }
 
   @Watch('sortField')
   sortFieldChanged(newVal, oldVal) {
-    this.listData = this.sortContent(this.listData);
+    let rawContent = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+    this.listData = this.sortContent(rawContent);
     this.getListHeightStyle();
   }
 
@@ -418,7 +421,8 @@ class SmTextList extends Mixins(Theme, Timer) {
       getFeatures(this.dataset).then(data => {
         this.dataset.url && initLoading && (this.spinning = false);
         this.featuresData = data;
-        this.listData = this.handleFeatures(data);
+        // 对定时刷新数据 按当前选择排序
+        this.listData = this.sortContent(this.handleFeatures(data));
         this.getListHeightStyle();
       });
     }
@@ -512,7 +516,10 @@ class SmTextList extends Mixins(Theme, Timer) {
     }, 2000);
   }
 
-  sortByField(fieldName, index) {
+  sortByField(fieldName, index, isSortField) {
+    if (!isSortField) {
+      return;
+    }
     this.sortField = fieldName;
     this.sortIndex = index;
     this.sortTypeIndex++;
