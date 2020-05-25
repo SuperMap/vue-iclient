@@ -187,8 +187,8 @@ export default class WebMapService extends Events {
             } else if (serviceProxy.port && serviceProxy.rootUrlPostfix) {
               this.iportalServiceProxyUrl = `${serviceProxy.port}/${serviceProxy.rootUrlPostfix}`;
             }
-            if(this.serverUrl.indexOf(this.iportalServiceProxyUrl) > -1){
-              this.iportalServiceProxyUrl = ''; 
+            if (this.serverUrl.indexOf(this.iportalServiceProxyUrl) > -1) {
+              this.iportalServiceProxyUrl = '';
             }
           }
           resolve(serviceProxy);
@@ -221,13 +221,15 @@ export default class WebMapService extends Events {
     return pro;
   }
 
-  public getWmtsInfo(mapInfo) {
+  public getWmtsInfo(layerInfo, mapCRS) {
     return new Promise((resolve, reject) => {
       let isMatched = false;
       let matchMaxZoom = 22;
+      let style = '';
+      let bounds;
       const proxy = this.handleProxy();
-      SuperMap.FetchRequest.get(mapInfo.url, null, {
-        withCredentials: this.handleWithCredentials(proxy, mapInfo.url, false),
+      SuperMap.FetchRequest.get(`${layerInfo.url}REQUEST=GetCapabilities&SERVICE=WMTS`, null, {
+        withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
         withoutFormatSuffix: true,
         proxy
       })
@@ -236,34 +238,38 @@ export default class WebMapService extends Events {
         })
         .then(capabilitiesText => {
           let converts = convert || window.convert;
-          let tileMatrixSet = JSON.parse(
+          let content = JSON.parse(
             converts.xml2json(capabilitiesText, {
               compact: true,
               spaces: 4
             })
-          ).Capabilities.Contents.TileMatrixSet;
+          ).Capabilities.Contents;
+          let tileMatrixSet = content.TileMatrixSet;
           for (let i = 0; i < tileMatrixSet.length; i++) {
             if (
               tileMatrixSet[i]['ows:Identifier'] &&
-              tileMatrixSet[i]['ows:Identifier']['_text'] === mapInfo.tileMatrixSet
+              tileMatrixSet[i]['ows:Identifier']['_text'] === layerInfo.tileMatrixSet
             ) {
-              if (DEFAULT_WELLKNOWNSCALESET.includes(tileMatrixSet[i]['WellKnownScaleSet']['_text'])) {
-                isMatched = true;
-              } else if (
+              if (
                 tileMatrixSet[i]['WellKnownScaleSet'] &&
-                tileMatrixSet[i]['WellKnownScaleSet']['_text'] === 'Custom'
+                DEFAULT_WELLKNOWNSCALESET.includes(tileMatrixSet[i]['WellKnownScaleSet']['_text'])
               ) {
+                isMatched = true;
+              } else {
                 let matchedScaleDenominator = [];
                 // 坐标系判断
                 let defaultCRSScaleDenominators =
                   // @ts-ignore -------- crs 为 enhance 新加属性
-                  this.map.crs === 'EPSG:3857' ? MB_SCALEDENOMINATOR_3857 : MB_SCALEDENOMINATOR_4326;
+                  mapCRS === 'EPSG:3857' ? MB_SCALEDENOMINATOR_3857 : MB_SCALEDENOMINATOR_4326;
 
                 for (let j = 0, len = defaultCRSScaleDenominators.length; j < len; j++) {
                   if (!tileMatrixSet[i].TileMatrix[j]) {
                     break;
                   }
-                  if (defaultCRSScaleDenominators[j] !== tileMatrixSet[i].TileMatrix[j]['ScaleDenominator']['_text']) {
+                  if (
+                    parseFloat(defaultCRSScaleDenominators[j]) !==
+                    parseFloat(tileMatrixSet[i].TileMatrix[j]['ScaleDenominator']['_text'])
+                  ) {
                     break;
                   }
                   matchedScaleDenominator.push(defaultCRSScaleDenominators[j]);
@@ -274,12 +280,32 @@ export default class WebMapService extends Events {
                 } else {
                   throw Error('TileMatrixSetNotSuppport');
                 }
-              } else {
-                throw Error('TileMatrixSetNotSuppport');
               }
+              break;
             }
           }
-          resolve({ isMatched, matchMaxZoom });
+          const layer = content.Layer.find(item => {
+            return item['ows:Identifier']['_text'] === layerInfo.layer;
+          });
+          if (layer) {
+            let styles = layer.Style;
+            if (Array.isArray(layer.Style)) {
+              style = styles[0]['ows:Identifier'] ? styles[0]['ows:Identifier']['_text'] : '';
+            } else {
+              style = styles['ows:Identifier'] ? styles['ows:Identifier']['_text'] : '';
+            }
+            if (layer['ows:WGS84BoundingBox']) {
+              const lowerCorner = layer['ows:WGS84BoundingBox']['ows:LowerCorner']['_text'].split(' ');
+              const upperCorner = layer['ows:WGS84BoundingBox']['ows:UpperCorner']['_text'].split(' ');
+              bounds = [
+                parseFloat(lowerCorner[0]),
+                parseFloat(lowerCorner[1]),
+                parseFloat(upperCorner[0]),
+                parseFloat(upperCorner[1])
+              ];
+            }
+          }
+          resolve({ isMatched, matchMaxZoom, style, bounds });
         })
         .catch(error => {
           reject(error);
@@ -890,12 +916,12 @@ export default class WebMapService extends Events {
     return features;
   }
 
-  private _excelData2Feature(dataContent: any, xyField: any = {}) : any {
+  private _excelData2Feature(dataContent: any, xyField: any = {}): any {
     let fieldCaptions = dataContent.colTitles;
     // 位置属性处理
     let xfieldIndex = fieldCaptions.indexOf(xyField.xField);
     let yfieldIndex = fieldCaptions.indexOf(xyField.yField);
-    if(yfieldIndex < 0 || xfieldIndex < 0){
+    if (yfieldIndex < 0 || xfieldIndex < 0) {
       for (let i = 0, len = fieldCaptions.length; i < len; i++) {
         if (isXField(fieldCaptions[i])) {
           xfieldIndex = i;
@@ -905,7 +931,6 @@ export default class WebMapService extends Events {
         }
       }
     }
-    
 
     // feature 构建后期支持坐标系 4326/3857
     let features = [];

@@ -530,13 +530,15 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createWMTSLayer(layerInfo): void {
-    let wmtsUrl = this._getWMTSUrl(layerInfo);
     this.webMapService
-      .getWmtsInfo(layerInfo)
+      // @ts-ignore
+      .getWmtsInfo(layerInfo, this.map.getCRS().epsgCode)
       .then(
         (result: any) => {
           const layerId = layerInfo.layerID || layerInfo.name;
-          result.isMatched && this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom);
+          let wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result.style));
+          result.isMatched &&
+            this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom, false, result.bounds);
         },
         error => {
           throw new Error(error);
@@ -1155,13 +1157,12 @@ export default class WebMapViewModel extends WebMapBase {
       service: 'WMTS',
       request: 'GetTile',
       version: '1.0.0',
-      style: 'default',
+      style: options.style || '',
       layer: options.layer,
       tilematrixSet: options.tileMatrixSet,
       format: 'image/png'
     };
     let url = options.url;
-
     url += this._getParamString(obj, url) + '&tilematrix={z}&tilerow={y}&tilecol={x}';
     return url;
   }
@@ -1597,7 +1598,8 @@ export default class WebMapViewModel extends WebMapBase {
     visibility = true,
     minzoom = 0,
     maxzoom = 22,
-    isIserver = false
+    isIserver = false,
+    bounds?
   ): void {
     let source: mapboxglTypes.RasterSource = {
       type: 'raster',
@@ -1609,6 +1611,9 @@ export default class WebMapViewModel extends WebMapBase {
       prjCoordSys: isIserver ? { epsgCode: this.baseProjection.split(':')[1] } : '',
       proxy: this.baseLayerProxy
     };
+    if (bounds) {
+      source.bounds = bounds;
+    }
     this._addLayer({
       id: layerID,
       type: 'raster',
