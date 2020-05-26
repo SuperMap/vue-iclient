@@ -536,9 +536,11 @@ export default class WebMapViewModel extends WebMapBase {
       .then(
         (result: any) => {
           const layerId = layerInfo.layerID || layerInfo.name;
-          let wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result.style));
-          result.isMatched &&
+          if (result.isMatched) {
+            let wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result));
+
             this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom, false, result.bounds);
+          }
         },
         error => {
           throw new Error(error);
@@ -1153,6 +1155,14 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _getWMTSUrl(options: any): string {
+    if (options.requestEncoding === 'REST' && options.restResourceURL) {
+      return options.restResourceURL
+        .replace('{Style}', options.style || '')
+        .replace('{TileMatrixSet}', options.tileMatrixSet)
+        .replace('{TileRow}', '{y}')
+        .replace('{TileCol}', '{x}')
+        .replace('{TileMatrix}', '{z}');
+    }
     let obj = {
       service: 'WMTS',
       request: 'GetTile',
@@ -1160,11 +1170,12 @@ export default class WebMapViewModel extends WebMapBase {
       style: options.style || '',
       layer: options.layer,
       tilematrixSet: options.tileMatrixSet,
-      format: 'image/png'
+      format: 'image/png',
+      tilematrix:'{z}',
+      tilerow:'{y}',
+      tilecol:'{x}'
     };
-    let url = options.url;
-    url += this._getParamString(obj, url) + '&tilematrix={z}&tilerow={y}&tilecol={x}';
-    return url;
+    return `${options.kvpResourceUrl}${this._getParamString(obj, options.kvpResourceUrl)}`;
   }
 
   private _createMarkerLayer(layerInfo: any, features: any): void {

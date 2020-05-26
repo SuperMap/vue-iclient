@@ -227,23 +227,48 @@ export default class WebMapService extends Events {
       let matchMaxZoom = 22;
       let style = '';
       let bounds;
+      let restResourceURL = '';
+      let kvpResourceUrl = '';
       const proxy = this.handleProxy();
-      SuperMap.FetchRequest.get(`${layerInfo.url}REQUEST=GetCapabilities&SERVICE=WMTS`, null, {
-        withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
-        withoutFormatSuffix: true,
-        proxy
-      })
+      SuperMap.FetchRequest.get(
+        `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0`,
+        null,
+        {
+          withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
+          withoutFormatSuffix: true,
+          proxy
+        }
+      )
         .then(response => {
           return response.text();
         })
         .then(capabilitiesText => {
           let converts = convert || window.convert;
-          let content = JSON.parse(
+          const capabilities = JSON.parse(
             converts.xml2json(capabilitiesText, {
               compact: true,
               spaces: 4
             })
-          ).Capabilities.Contents;
+          ).Capabilities;
+          const content = capabilities.Contents;
+          const metaData = capabilities['ows:OperationsMetadata'];
+          if(metaData){
+             let operations = metaData['ows:Operation'];
+            if (!Array.isArray(operations)) {
+              operations = [operations];
+            }
+            const operation = operations.find(item => {
+              return item._attributes.name === 'GetTile';
+            });
+            if(operation){
+              const getConstraint= operation['ows:DCP']['ows:HTTP']['ows:Get'].find((item)=>{
+                return item['ows:Constraint']['ows:AllowedValues']['ows:Value']['_text'] = 'KVP';
+              })
+              if(getConstraint){
+                kvpResourceUrl = getConstraint['_attributes']['xlink:href'];
+              }
+            }
+          }
           let tileMatrixSet = content.TileMatrixSet;
           for (let i = 0; i < tileMatrixSet.length; i++) {
             if (
@@ -304,8 +329,18 @@ export default class WebMapService extends Events {
                 parseFloat(upperCorner[1])
               ];
             }
+            let resourceUrls = layer.ResourceURL;
+            if (!Array.isArray(resourceUrls)) {
+              resourceUrls = [resourceUrls];
+            }
+            const resourceUrl = resourceUrls.find(item => {
+              return item._attributes.resourceType === 'tile';
+            });
+            if (resourceUrl) {
+              restResourceURL = resourceUrl._attributes.template;
+            }
           }
-          resolve({ isMatched, matchMaxZoom, style, bounds });
+          resolve({ isMatched, matchMaxZoom, style, bounds, restResourceURL, kvpResourceUrl });
         })
         .catch(error => {
           reject(error);
@@ -898,7 +933,7 @@ export default class WebMapService extends Events {
     return proxy;
   }
   public handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean {
-    if (proxyUrl && proxyUrl.startsWith(this.serverUrl)) {
+    if (proxyUrl && proxyUrl.startsWith(this.serverUrl) && (!serviceUrl || serviceUrl.startsWith(proxyUrl))) {
       return true;
     }
     if (serviceUrl && this.iportalServiceProxyUrl && serviceUrl.indexOf(this.iportalServiceProxyUrl) >= 0) {
