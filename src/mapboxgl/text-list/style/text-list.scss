@@ -34,18 +34,16 @@
       font-family: 'MicrosoftYaHei';
       word-break: keep-all;
       white-space: nowrap;
-      user-select: none;
       text-overflow: ellipsis;
       overflow: hidden;
       align-self: center;
       min-width: 5%;
+      user-select: none;
       .arrow-wrap {
-        display: inline-flex;
-        flex-direction: column;
-        align-items: center;
+        display: inline-block;
         height: 34px;
-        width: 24px;
-        vertical-align: bottom;
+        width: 0px;
+        vertical-align: middle;
         cursor: pointer;
         overflow: initial;
         position: relative;
@@ -54,18 +52,18 @@
           height: 0;
           border: 5px solid transparent;
           position: absolute;
-          left: 3px;
+          left: 0px;
           border-bottom-color: #fff;
-          top: 7px;
+          top: 5px;
         }
         .down-triangle {
           width: 0;
           height: 0;
           border: 5px solid transparent;
           position: absolute;
-          left: 3px;
+          left: 0px;
           border-top-color: #fff;
-          bottom: 5px;
+          bottom: 6px;
         }
       }
     }

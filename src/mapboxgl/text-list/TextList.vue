@@ -16,24 +16,35 @@
               class="sm-component-text-list__header-title"
               :style="[fontSizeStyle, { flex: getColumnWidth(index) }]"
               :title="item.header"
-              @click="sortByField(getColumns[index].field + '-' + index, index, !Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort)"
             >
-              <div>{{ getColumns[index].header }}</div>
               <div
-                v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
-                class="arrow-wrap"
-                :style="{ color: headerStyleData.sortBtnColor }"
+                @click="
+                  sortByField(
+                    getColumns[index].field + '-' + index,
+                    index,
+                    !Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort
+                  )
+                "
               >
-                <i
-                  :class="['up-triangle']"
-                  :style="sortType === 'ascend' && sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }"
-                ></i>
-                <i
-                  :class="['down-triangle']"
-                  :style="
-                    sortType === 'descend' && sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }
-                  "
-                ></i>
+                {{ getColumns[index].header }}
+                <div
+                  v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
+                  class="arrow-wrap"
+                  :style="{ borderColor: headerStyleData.sortBtnColor }"
+                >
+                  <i
+                    :class="['up-triangle']"
+                    :style="[{ borderBottomColor: headerStyleData.sortBtnColor }, sortType === 'ascend' &&
+                      sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }]
+                    "
+                  ></i>
+                  <i
+                    :class="['down-triangle']"
+                    :style="[{ borderTopColor: headerStyleData.sortBtnColor }, sortType === 'descend' &&
+                      sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }]
+                    "
+                  ></i>
+                </div>
               </div>
             </div>
           </template>
