@@ -979,7 +979,7 @@ export default class WebMapViewModel extends WebMapBase {
       },
       layout: {
         'text-field': `{${labelStyle.labelField}}`,
-        'text-size': 14,
+        'text-size': parseFloat(labelStyle.fontSize || 14),
         'text-offset': labelStyle.offsetX
           ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0]
           : layerInfo.featureType === 'POINT'
@@ -1171,9 +1171,9 @@ export default class WebMapViewModel extends WebMapBase {
       layer: options.layer,
       tilematrixSet: options.tileMatrixSet,
       format: 'image/png',
-      tilematrix:'{z}',
-      tilerow:'{y}',
-      tilecol:'{x}'
+      tilematrix: '{z}',
+      tilerow: '{y}',
+      tilecol: '{x}'
     };
     return `${options.kvpResourceUrl}${this._getParamString(obj, options.kvpResourceUrl)}`;
   }
