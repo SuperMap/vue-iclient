@@ -252,19 +252,23 @@ export default class WebMapService extends Events {
           ).Capabilities;
           const content = capabilities.Contents;
           const metaData = capabilities['ows:OperationsMetadata'];
-          if(metaData){
-             let operations = metaData['ows:Operation'];
+          if (metaData) {
+            let operations = metaData['ows:Operation'];
             if (!Array.isArray(operations)) {
               operations = [operations];
             }
             const operation = operations.find(item => {
               return item._attributes.name === 'GetTile';
             });
-            if(operation){
-              const getConstraint= operation['ows:DCP']['ows:HTTP']['ows:Get'].find((item)=>{
-                return item['ows:Constraint']['ows:AllowedValues']['ows:Value']['_text'] = 'KVP';
-              })
-              if(getConstraint){
+            if (operation) {
+              let getConstraints = operation['ows:DCP']['ows:HTTP']['ows:Get'];
+              if (!Array.isArray(getConstraints)) {
+                getConstraints = [getConstraints];
+              }
+              const getConstraint = getConstraints.find(item => {
+                return item['ows:Constraint']['ows:AllowedValues']['ows:Value']['_text'] === 'KVP';
+              });
+              if (getConstraint) {
                 kvpResourceUrl = getConstraint['_attributes']['xlink:href'];
               }
             }
