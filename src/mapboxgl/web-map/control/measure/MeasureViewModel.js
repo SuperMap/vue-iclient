@@ -379,5 +379,9 @@ class MeasureViewModel extends mapboxgl.Evented {
     this._removeHoverPopup();
     this.draw = null;
   }
+
+  clearAllFeatures() {
+    this.removeDraw();
+  }
 }
 export default MeasureViewModel;

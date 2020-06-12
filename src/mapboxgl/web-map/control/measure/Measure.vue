@@ -325,7 +325,9 @@ export default {
     },
     // 提供对外方法：清空features
     clear() {
-      this.$options.removed.call(this);
+      this.activeMode = null;
+      this.result = '';
+      this.viewModel && this.viewModel.clearAllFeatures();
     }
   }
 };
