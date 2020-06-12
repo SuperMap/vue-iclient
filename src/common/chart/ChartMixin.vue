@@ -42,6 +42,7 @@ import Timer from '../_mixin/timer';
 import { chartThemeUtil } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
 import { addListener, removeListener } from 'resize-detector';
 
@@ -137,6 +138,7 @@ const EVENTS = [
   'globalout',
   'contextmenu'
 ];
+
 export default {
   components: {
     'v-chart': ECharts,
@@ -462,6 +464,7 @@ export default {
         this.datasetChange = false;
         // 设置echartOptions
         this.echartOptions = this._optionsHandler(echartOptions, options);
+        this._setChartTheme();
       });
     },
     _optionsHandler(options, dataOptions) {
@@ -547,9 +550,58 @@ export default {
               };
             } else if (serie && serie.type !== 'pie' && serie.type !== 'radar') {
               label && delete label.formatter;
+            } else if (serie && serie.type === 'pie') {
+              // 控制label显示条数
+              if (serie.maxLabels) {
+                let formatMode;
+                if (label.formatter && typeof label.formatter === 'string') {
+                  formatMode = label.formatter;
+                }
+                label.formatter = function({ dataIndex, value, name, percent }) {
+                  const FORMATTER_MAP = {
+                    '{b}: {c}': `${name}: ${value}`,
+                    '{b}': `${name}`,
+                    '{c}': `${value}`,
+                    '{d}%': `${percent}%`
+                  };
+                  let result = '';
+                  if (dataIndex < serie.maxLabels) {
+                    result = FORMATTER_MAP[formatMode];
+                  }
+                  return result;
+                };
+              }
+              // 对pie处理数据颜色分段
+              if (serie.data && serie.data.length > this.colorGroupsData.length) {
+                let colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(
+                  this.colorGroupsData,
+                  serie.data.length,
+                  'RANGE'
+                );
+                if (serie.itemStyle) {
+                  serie.itemStyle.color = function({ dataIndex }) {
+                    return colorGroup[dataIndex];
+                  };
+                } else {
+                  serie.itemStyle = {
+                    color: function({ dataIndex }) {
+                      return colorGroup[dataIndex];
+                    }
+                  };
+                }
+              }
             }
             return serie;
           });
+          // 玫瑰图多个选中
+          if (options.series[0].type === 'pie' && options.series[0].roseType) {
+            options.series = options.series.map(serie => {
+              if (!serie.roseType) {
+                serie.roseType = options.series[0].roseType;
+              }
+              return serie;
+            });
+          }
           // pie的图例需要一个扇形是一个图例
           if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
             options.legend.data = [];
@@ -581,7 +633,12 @@ export default {
     },
     _setChartTheme() {
       if (!this.theme) {
-        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
+        let series = this.echartOptions.series;
+        let seriesNumber = 5;
+        if (series && series.length > this.colorGroupsData.length) {
+          seriesNumber = series.length;
+        }
+        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, seriesNumber);
       }
     },
     // 获取echart实例
