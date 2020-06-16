@@ -8,7 +8,9 @@ export const chartThemeUtil = (
   dataNumber
 ) => {
   // 是否需要产生分段颜色值
-  colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(colorGroup, dataNumber, 'RANGE');
+  if (dataNumber >= 5) {
+    colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(colorGroup, dataNumber, 'RANGE');
+  }
   let chartTheme = {
     color: colorGroup,
     backgroundColor: background,

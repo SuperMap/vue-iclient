@@ -277,6 +277,9 @@ export default {
     datasetOptions: {
       handler: function(newVal, oldVal) {
         if (!isEqual(newVal, oldVal) && newVal.length) {
+          if (newVal) {
+            this._setChartTheme(newVal.length);
+          }
           !this.echartsDataService &&
             this._isRequestData &&
             this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -464,7 +467,6 @@ export default {
         this.datasetChange = false;
         // 设置echartOptions
         this.echartOptions = this._optionsHandler(echartOptions, options);
-        this._setChartTheme();
       });
     },
     _optionsHandler(options, dataOptions) {
@@ -631,14 +633,14 @@ export default {
       // 设置echartOptions
       this.echartOptions = this._optionsHandler(echartOptions, options);
     },
-    _setChartTheme() {
+    _setChartTheme(seriesNumber) {
       if (!this.theme) {
-        let series = this.echartOptions.series;
-        let seriesNumber = 5;
-        if (series && series.length > this.colorGroupsData.length) {
-          seriesNumber = series.length;
+        let length = seriesNumber || (this.echartOptions.series && this.echartOptions.series.length);
+        let colorNumber = this.colorGroup.length;
+        if (length && length > this.colorGroupsData.length) {
+          colorNumber = length;
         }
-        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, seriesNumber);
+        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, colorNumber);
       }
     },
     // 获取echart实例
