@@ -7,7 +7,7 @@ import cloneDeep from 'lodash.clonedeep';
  * @param {Object} map - map 对象。
  * @param {String} [options.layerName] - 图层名。
  * @param {Object} [options.layerStyle] - 查询结果图层样式配置。
- * @extends mapboxgl.Evented
+ * @extends L.Evented
  */
 
 export default class IdentifyViewModel extends L.Evented {

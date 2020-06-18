@@ -76,3 +76,13 @@ let CircleStyle = new VueiClient.commontypes.CircleStyle();
 | maxFeatures     | 要素最大返回数      | number  | -      | 20                      |
 | name            | 服务名称            | string  | -      | 'SuperMap iPortal 数据' |
 | withCredentials | 请求是否携带 cookie | boolean | -      | false                   |
+
+## GeoJSONParameter
+
+| 参数            | 说明                | 类型                            | 可选值 | 默认值    |
+| :-------------- | :------------------ | :------------------------------ | :----- | :-------- |
+| type            | 服务类型            | string                          | -      | 'geoJSON' |
+| geoJSON         | GeoJSON 数据        | [GeoJSON](https://geojson.org/) | -      | -         |
+| attributeFilter | 属性过滤条件        | string                          | -      | -         |
+| maxFeatures     | 要素最大返回数      | number                          | -      | 20        |
+| withCredentials | 请求是否携带 cookie | boolean                         | -      | false     |

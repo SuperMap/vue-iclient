@@ -42,7 +42,6 @@ import Timer from '../_mixin/timer';
 import { chartThemeUtil } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
 import { addListener, removeListener } from 'resize-detector';
 

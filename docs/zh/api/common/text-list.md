@@ -25,23 +25,124 @@
 
 ### Attributes
 
-| 参数        | 说明       | 类型             | 可选值 | 默认值 |
-| :---------- | :--------- | :--------------- | :----- | :----- |
-| content     | 显示内容（与dataset二选一）   | object[]         | -      | -      | -
-| dataset     | 显示内容（与content二选一），<a href="#dataset">配置项</a>  | object           | -      | -      |
-| header      | 表头       | string[]         | -      | -      |
-| rows        | 显示行数   | string           | -      | 6      |
-| autoRolling | 逐条滚动   | boolean          | -      | false  |
-| fontSize    | 字体大小   | number \| string | -      | -      |
-| autoResize  | 自适应大小 | string           | -      | true   |
-| fields      | 字段名     | string[]         | -      | -      |
+| 参数            | 说明                          | 类型                                                                                                                                                                                                                                          | 可选值 | 默认值 |
+| :-------------- | :---------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- | :----- |
+| content         | 显示内容（与 dataset 二选一） | object[]                                                                                                                                                                                                                                      | -      | -      | - |
+| dataset         | 数据来源（与 content 二选一） | [iPortalDataParameter](/zh/api/common-types/common-types.md#iportaldataparameter) \| [RestDataParameter](/zh/api/common-types/common-types.md#restdataparameter) \| [GeoJSONParameter](/zh/api/common-types/common-types.md#geojsonparameter) | -      | -      |
+| header          | 表头                          | string[]                                                                                                                                                                                                                                      | -      | -      |
+| rows            | 显示行数                      | string                                                                                                                                                                                                                                        | -      | 6      |
+| autoRolling     | 逐条滚动                      | boolean                                                                                                                                                                                                                                       | -      | false  |
+| fontSize        | 字体大小                      | number \| string                                                                                                                                                                                                                              | -      | -      |
+| autoResize      | 自适应大小                    | string                                                                                                                                                                                                                                        | -      | true   |
+| fields          | 字段名                        | string[]                                                                                                                                                                                                                                      | -      | []     |
+| columnWidths    | 列表宽度                      | number[]                                                                                                                                                                                                                                      | -      | []     |
+| rowStyle        | 行样式                        | <a href="#rowstyle">rowStyle </a>                                                                                                                                                                                                             | -      | []     |
+| headerStyle     | 表头样式                      | <a href="#headerstyle">headerStyle </a>                                                                                                                                                                                                       | -      | []     |
+| thresholdsStyle | 阈值样式                      | <a href="#thresholdsstyle1">ThresholdsStyle1 </a>                                                                                                                                                                                             | -      | []     |
+| columns         | 排序和前后缀                  | <a href="#columns">columns </a>                                                                                                                                                                                                               | -      | []     |
 
-### dataset
+### headerStyle
 
-| 参数            | 说明                  | 类型                       | 可选值                 | 默认值    |
-| :-------------- | :-------------------- | :------------------------- | :--------------------- | :-------- |
-| type            | 服务类型              | string                     | 'iServer' \| 'iPortal' | 'iServer' |
-| url             | 服务地址              | string                     | -                      | -         |
-| withCredentials | 设置请求是否带 cookie | boolean                    | -                      | false     |
-| queryInfo       | 查询条件              | [SuperMap.FilterParameter](https://iclient.supermap.io/web/apis/mapboxgl.html) | -                      | -         |
+| 参数               | 说明                                       | 类型   | 可选值 | 默认值 |
+| :----------------- | :----------------------------------------- | :----- | :----- | :----- |
+| color              | 奇数行样式（目前支持配置 background 属性） | string | -      | -      | - |
+| background         | 偶数行样式（目前支持配置 background 属性） | string | -      | -      | - |
+| sortBtnSelectColor | 排序图标选中的颜色                         | string | -      | -      | - |
+| sortBtnColor       | 排序图标默认颜色                           | string | -      | -      | - |
+| height             | 表头的高度                                 | number | -      | -      | - |
 
+### rowStyle
+
+| 参数      | 说明                                         | 类型   | 可选值 | 默认值 |
+| :-------- | :------------------------------------------- | :----- | :----- | :----- |
+| oddStyle  | 奇数行样式（目前只支持配置 background 属性） | object | -      | -      | - |
+| evenStyle | 偶数行样式（目前只支持配置 background 属性） | object | -      | -      | - |
+| height    | 行的高度                                     | number | -      | -      | - |
+
+### ThresholdsStyle1
+
+```json
+// 设置每列不同阈值下的背景颜色和字体颜色，示例如下：
+[
+  // 第一列的background阈值配置
+  {
+    "type": "background",
+    "data": [
+      {
+        "max": 85,
+        "color": "rgba(14, 229, 18, 0)"
+      },
+      {
+        "min": 85,
+        "color": "#E31C1C"
+      }
+    ]
+  },
+  // 第一列的color阈值配置
+  {
+    "type": "color",
+    "data": [
+      {
+        "max": 800,
+        "color": "#E31C1C"
+      },
+      {
+        "min": 800,
+        "max": 1200,
+        "color": "#F05940"
+      },
+      {
+        "min": 1200,
+        "color": "#0CD54A"
+      }
+    ]
+  },
+  // 第二列的color阈值配置
+  {
+    "type": "color",
+    "data": [
+      {
+        "max": 204,
+        "color": "#0CD54A"
+      },
+      {
+        "min": 400,
+        "color": "#E31C1C"
+      }
+    ]
+  }
+]
+```
+
+### columns
+
+```json
+// 每一列都可以设置排序和前后缀：
+// （1）sort 属性可选项： true | false | undefined
+// （2）defaultSortType 属性可选项：'ascend' | 'descend' | 'none'
+// （3）fixInfo 属性配置前后缀
+[
+  {
+    "header": "服务",
+    "field": "name",
+    "sort": true,
+    "defaultSortType": "none",
+    "fixInfo": {
+      "prefix": "",
+      "suffix": ""
+    },
+    "width": 0
+  },
+  {
+    "header": "访问人数 ",
+    "field": "visitCount",
+    "sort": true,
+    "defaultSortType": "ascend",
+    "fixInfo": {
+      "prefix": "",
+      "suffix": ""
+    },
+    "width": 0
+  }
+]
+```

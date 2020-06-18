@@ -27,6 +27,12 @@ import VueCesium from 'vue-cesium';
 
 const setTheme = (themeStyle = {}) => {
   if (typeof themeStyle === 'string') {
+    try {
+      require(`../common/_utils/style/theme/${themeStyle}.scss`);
+    } catch (e) {
+      themeStyle = 'light';
+      require(`../common/_utils/style/theme/${themeStyle}.scss`);
+    }
     themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
   }
   globalEvent.$options.theme = themeStyle;
@@ -35,8 +41,6 @@ const setTheme = (themeStyle = {}) => {
 
 const install = function(Vue, opts: any = {}) {
   let theme = opts.theme || 'light';
-
-  require(`../common/_utils/style/theme/${theme}.scss`);
   require('./style.scss');
   setTheme(theme);
   registerProjection(opts.projections);

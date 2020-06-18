@@ -35,7 +35,7 @@ export default {
       }
     },
     fields: {
-      type: [Array, Object],
+      type: Array,
       default() {
         return [];
       }
@@ -177,11 +177,16 @@ export default {
         let index = this.layers && this.layers.indexOf(features[0].layer.id);
         let fields;
         if (this.fields instanceof Array) {
-          fields = (this.fields && this.fields[index]) || [];
+          // 如果是二维数组
+          fields = this.fields[index];
+          // 兼容一维数组
+          if (typeof fields === 'string') {
+            fields = this.fields;
+          }
         } else if (this.fields instanceof Object && index === 0) {
           fields = this.fields;
         }
-        this.layersMapClickFn(e, fields, features[0]);
+        this.layersMapClickFn(e, fields || [], features[0]);
       }
     },
     // 给layer绑定queryRenderedFeatures

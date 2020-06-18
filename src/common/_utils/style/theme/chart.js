@@ -1,5 +1,4 @@
 import { getColorWithOpacity } from '../../util';
-import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export const chartThemeUtil = (
   background = 'rgba(255, 255, 255, 0.6)',
