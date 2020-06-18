@@ -16,7 +16,7 @@ export function tranformSingleToMulti(data) {
 }
 
 export function sortData(features, datasetOptions, maxFeatures, xBar) {
-  const matchItem = datasetOptions.find(item => item.sort !== 'unsort');
+  const matchItem = datasetOptions.find(item => item.sort && item.sort !== 'unsort');
   let nextFeatures = features;
   if (matchItem) {
     nextFeatures = orderBy(
