@@ -116,6 +116,7 @@ module.exports = {
               children: [
                 'web-map/map',
                 'web-scene/scene',
+                'map-compare/compare',
                 {
                   title: '地图子组件',
                   collapsable: false,

@@ -159,6 +159,22 @@ class Compare extends Mixins(Theme) {
       }
     };
     if (options.beforeMap && options.afterMap) {
+      const beforeZoom = options.beforeMap.getZoom();
+      const beforeCenter = options.beforeMap.getCenter();
+      const beforeBearing = options.beforeMap.getBearing();
+      const beforePitch = options.beforeMap.getPitch();
+      if (beforeZoom !== options.afterMap.getZoom()) {
+        options.afterMap.setZoom(beforeZoom);
+      }
+      if (beforeCenter.toString() !== options.afterMap.getCenter().toString()) {
+        options.afterMap.setCenter(beforeCenter);
+      }
+      if (beforeBearing !== options.afterMap.getBearing()) {
+        options.afterMap.setBearing(beforeBearing);
+      }
+      if (beforePitch !== options.afterMap.getPitch()) {
+        options.afterMap.setPitch(beforePitch);
+      }
       this.viewModel.init(options);
       this.$nextTick(this.initSwipeStyle);
     }

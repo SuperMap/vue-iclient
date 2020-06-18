@@ -15,23 +15,29 @@ Web Map 地图组件。支持 MapboxGL Map，和对接 iPortal/Online 地图。<
 
 ### Attributes
 
-| 参数                  | 说明                                                            | 类型           | 可选值 | 默认值                    |
-| :-------------------- | :-------------------------------------------------------------- | :------------- | :----- | :------------------------ |
-| mapId                 | iPortal Online 地图 ID                                          | number \| string | -     | -                            |
-| serverUrl             | SuperMap iPortal/Online 服务器地址                              | string         | -      | https://www.supermapol.com |
-| accessToken           | 用于访问 SuperMap iPortal 、SuperMap Online 中受保护的服务      | string         | -      | -                         |
-| accessKey             | SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制 | string         | -      | -                         |
-| tiandituKey           | 用于访问天地图的服务                                            | string         | -      | -                         |
-| withCredentials       | 请求是否携带 cookie                                             | boolean        | -      | false                     |
-| excludePortalProxyUrl | server 传递过来的 URL 是否带有代理                              | boolean        | -      | false                     |
-| autoresize            | 用来指定 webMap 实例在组件根元素尺寸变化时是否需要自动进行重绘  | boolean        | -      | true                      |
+| 参数                         | 说明                                                                 | 类型              | 可选值 | 默认值                     |
+| :--------------------------- | :------------------------------------------------------------------- | :---------------- | :----- | :------------------------- |
+| mapId                        | iPortal Online 地图 ID                                               | number \| string  | -      | -                          |
+| target                       | iPortal Online 地图容器 ID                                           | string            | -      | map                        |
+| serverUrl                    | SuperMap iPortal/Online 服务器地址                                   | string            | -      | https://www.supermapol.com |
+| accessToken                  | 用于访问 SuperMap iPortal 、SuperMap Online 中受保护的服务           | string            | -      | -                          |
+| accessKey                    | SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制      | string            | -      | -                          |
+| tiandituKey                  | 用于访问天地图的服务                                                 | string            | -      | -                          |
+| withCredentials              | 请求是否携带 cookie                                                  | boolean           | -      | false                      |
+| excludePortalProxyUrl        | server 传递过来的 URL 是否带有代理                                   | boolean           | -      | false                      |
+| iportalServiceProxyUrlPrefix | serverUrl 参数对应的 iPortal 服务器[服务代理](https://iportal.supermap.io/iportal/help/html/zh/iP/iportal_management/Portal_config/serviceProxy_config/Service_Proxy_Config.htm)地址前缀                                           | string            | -      | -                          |
+| proxy                        | HTTP 请求代理地址 （布尔值表示使用 iPortal 默认代理地址） | boolean \| string | -      | -                          |
+| autoresize                   | 用来指定 webMap 实例在组件根元素尺寸变化时是否需要自动进行重绘       | boolean           | -      | true                       |
+| isSuperMapOnline             | 是否是 SuperMap Online 地图                                          | boolean           | -      | -                          |
 
 ## 加载 iServer 地图
 
 <sm-iframe src="https://iclient.supermap.io/examples/component/components_map_vue.html"></sm-iframe>
 
 ```vue
-<sm-web-map :map-options="mapOptions"></sm-web-map>
+<template>
+  <sm-web-map :map-options="mapOptions"></sm-web-map>
+</template>
 <script>
 export default {
   data() {
@@ -61,6 +67,7 @@ export default {
             zoom: 3 // starting zoom
           }
       };
+  }
 }
 </script>
 ```
@@ -71,6 +78,7 @@ export default {
 | :--------- | :------------------------------------------------------------------------- | :------ | :----- | :----- |
 | mapOptions | [MapboxGL map options 对象](https://docs.mapbox.com/mapbox-gl-js/api/#map) | object  | -      | -      |
 | autoresize | 用来指定 webMap 实例在组件根元素尺寸变化时是否需要自动进行重绘             | boolean | -      | true   |
+| keepBounds | 当地图重绘时，是否用 mapOptions 中的 bounds                                | boolean | -      | false  |
 
 <!-- ## 子组件
 
@@ -109,6 +117,6 @@ export default {
 
 ### Events
 
-| name | 说明             | 回调参数 |
-| :--- | :--------------- | :------- |
-| load | Map 加载完成事件 | -        |
+| name | 说明             | 回调参数                                                                         |
+| :--- | :--------------- | :------------------------------------------------------------------------------- |
+| load | Map 加载完成事件 | function({ map: [Mapboxgl.map](https://docs.mapbox.com/mapbox-gl-js/api/#map) }) |
