@@ -636,8 +636,8 @@ export default {
     _setChartTheme(seriesNumber) {
       if (!this.theme) {
         let length = seriesNumber || (this.echartOptions.series && this.echartOptions.series.length);
-        let colorNumber = this.colorGroup.length;
-        if (length && length > this.colorGroupsData.length) {
+        let colorNumber = this.colorGroupsData.length;
+        if (length && length > colorNumber) {
           colorNumber = length;
         }
         this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, colorNumber);
