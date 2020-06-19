@@ -1,7 +1,7 @@
 {
   "name": "@supermap/vue-iclient-mapboxgl",
   "description": "SuperMap iClient for Vue.js",
-  "version": "10.0.1",
+  "version": "10.1.0-alpha",
   "homepage": "http://iclient.supermap.io",
   "main": "dist/index",
   "dependencies": {
