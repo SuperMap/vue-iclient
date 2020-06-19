@@ -277,7 +277,7 @@ export default {
       handler: function(newVal, oldVal) {
         if (!isEqual(newVal, oldVal) && newVal.length) {
           if (newVal) {
-            this._setChartTheme(newVal.length);
+            this._setChartTheme();
           }
           !this.echartsDataService &&
             this._isRequestData &&
@@ -572,25 +572,6 @@ export default {
                   return result;
                 };
               }
-              // 对pie处理数据颜色分段
-              if (serie.data && serie.data.length > this.colorGroupsData.length) {
-                let colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(
-                  this.colorGroupsData,
-                  serie.data.length,
-                  'RANGE'
-                );
-                if (serie.itemStyle) {
-                  serie.itemStyle.color = function({ dataIndex }) {
-                    return colorGroup[dataIndex];
-                  };
-                } else {
-                  serie.itemStyle = {
-                    color: function({ dataIndex }) {
-                      return colorGroup[dataIndex];
-                    }
-                  };
-                }
-              }
             }
             return serie;
           });
@@ -619,6 +600,33 @@ export default {
       if (options && options.radar && dataOptions.radar) {
         options.radar.indicator = Object.assign({}, dataOptions.radar.indicator || {});
       }
+
+      let series = dataOptions.series;
+      if (series && series.length) {
+        series.forEach(serie => {
+          // 对pie处理数据颜色分段
+          if (serie.type === 'pie') {
+            if (serie.data && serie.data.length > this.colorGroupsData.length) {
+              let colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(
+                this.colorGroupsData,
+                serie.data.length,
+                'RANGE'
+              );
+              if (serie.itemStyle) {
+                serie.itemStyle.color = function({ dataIndex }) {
+                  return colorGroup[dataIndex];
+                };
+              } else {
+                serie.itemStyle = {
+                  color: function({ dataIndex }) {
+                    return colorGroup[dataIndex];
+                  }
+                };
+              }
+            }
+          }
+        });
+      }
       return merge(options, dataOptions);
     },
     // 当datasetUrl不变，datasetOptions改变时
@@ -632,9 +640,9 @@ export default {
       // 设置echartOptions
       this.echartOptions = this._optionsHandler(echartOptions, options);
     },
-    _setChartTheme(seriesNumber) {
+    _setChartTheme() {
       if (!this.theme) {
-        let length = seriesNumber || (this.echartOptions.series && this.echartOptions.series.length);
+        let length = this.datasetOptions.length || (this.echartOptions.series && this.echartOptions.series.length);
         let colorNumber = this.colorGroupsData.length;
         if (length && length > colorNumber) {
           colorNumber = length;
