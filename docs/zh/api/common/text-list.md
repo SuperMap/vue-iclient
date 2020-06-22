@@ -43,13 +43,13 @@
 
 ### headerStyle
 
-| 参数               | 说明                                       | 类型   | 可选值 | 默认值 |
-| :----------------- | :----------------------------------------- | :----- | :----- | :----- |
-| color              | 奇数行样式（目前支持配置 background 属性） | string | -      | -      | - |
-| background         | 偶数行样式（目前支持配置 background 属性） | string | -      | -      | - |
-| sortBtnSelectColor | 排序图标选中的颜色                         | string | -      | -      | - |
-| sortBtnColor       | 排序图标默认颜色                           | string | -      | -      | - |
-| height             | 表头的高度                                 | number | -      | -      | - |
+| 参数               | 说明               | 类型   | 可选值 | 默认值 |
+| :----------------- | :----------------- | :----- | :----- | :----- |
+| color              | 字体颜色           | string | -      | -      | - |
+| background         | 背景颜色           | string | -      | -      | - |
+| sortBtnSelectColor | 排序图标选中的颜色 | string | -      | -      | - |
+| sortBtnColor       | 排序图标默认颜色   | string | -      | -      | - |
+| height             | 表头的高度         | number | -      | -      | - |
 
 ### rowStyle
 
