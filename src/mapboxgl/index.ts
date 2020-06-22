@@ -59,9 +59,11 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Modal);
   Vue.use(Tree);
   Vue.use(Tabs);
-  Vue.use(VueCesium, {
-    cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
-  });
+  if (VueCesium) {
+    Vue.use(VueCesium, {
+      cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
+    });
+  }
   Vue.prototype.$message = message;
   initi18n(Vue, opts);
   for (let component in components) {

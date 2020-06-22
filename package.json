@@ -2,7 +2,7 @@
   "name": "@supermap/vue-iclient",
   "version": "10.1.0-alpha",
   "description": "SuperMap iClient for Vue.js",
-  "homepage": "http://iclient.supermap.io",
+  "homepage": "https://iclient.supermap.io",
   "scripts": {
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
