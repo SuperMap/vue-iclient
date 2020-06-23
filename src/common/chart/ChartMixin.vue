@@ -642,7 +642,7 @@ export default {
     },
     _setChartTheme() {
       if (!this.theme) {
-        let length = this.datasetOptions.length || (this.echartOptions.series && this.echartOptions.series.length);
+        let length = (this.datasetOptions && this.datasetOptions.length) || (this.echartOptions.series && this.echartOptions.series.length);
         let colorNumber = this.colorGroupsData.length;
         if (length && length > colorNumber) {
           colorNumber = length;
