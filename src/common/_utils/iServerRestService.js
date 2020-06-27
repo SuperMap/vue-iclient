@@ -168,7 +168,7 @@ export default class iServerRestService extends Events {
       this._getRestMapFields(dataUrl, mapName, fields => {
         queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
         this._getMapFeatureBySql(dataUrl, queryInfo);
-      });
+      }, queryInfo.withCredentials);
     } else {
       this._getMapFeatureBySql(dataUrl, queryInfo);
     }
@@ -323,7 +323,7 @@ export default class iServerRestService extends Events {
         this.fetchFailed(error);
       });
   }
-  _getRestMapFields(url, layerName, callBack) {
+  _getRestMapFields(url, layerName, callBack, withCredentials = false) {
     let param = new SuperMap.QueryBySQLParameters({
       queryParams: [
         new SuperMap.FilterParameter({
@@ -334,6 +334,7 @@ export default class iServerRestService extends Events {
     });
     const queryBySQLSerice = new SuperMap.QueryBySQLService(url, {
       proxy: this.options.proxy,
+      withCredentials,
       eventListeners: {
         processCompleted: serviceResult => {
           let fields;

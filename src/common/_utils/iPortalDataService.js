@@ -115,7 +115,7 @@ export default class iPortalDataService extends Events {
       let dataSourceName;
       let datasetName; // 请求获取数据源名
       SuperMap.FetchRequest.get(url, null, {
-        withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+        withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
       })
         .then(response => {
           return response.json();
@@ -125,7 +125,7 @@ export default class iPortalDataService extends Events {
           url = `${address}/data/datasources/${dataSourceName}/datasets`;
           // 请求获取数据集名
           SuperMap.FetchRequest.get(url, null, {
-            withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+            withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
           })
             .then(response => {
               return response.json();
@@ -140,7 +140,7 @@ export default class iPortalDataService extends Events {
                   dataUrl: url.split('/datasources')[0]
                 },
                 Object.assign({}, queryInfo, {
-                  withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+                  withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
                 })
               );
             })
@@ -158,7 +158,7 @@ export default class iPortalDataService extends Events {
       let layerName;
       let path; // 请求获取地图名
       SuperMap.FetchRequest.get(url, null, {
-        withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+        withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
       })
         .then(response => {
           return response.json();
@@ -169,7 +169,7 @@ export default class iPortalDataService extends Events {
           url = url = `${address}/maps/${mapName}/layers`;
           // 请求获取图层名
           SuperMap.FetchRequest.get(url, null, {
-            withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+            withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
           })
             .then(response => {
               return response.json();
@@ -183,7 +183,7 @@ export default class iPortalDataService extends Events {
                   dataUrl: path
                 },
                 Object.assign({}, queryInfo, {
-                  withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, false)
+                  withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
                 })
               );
               return layerName;
