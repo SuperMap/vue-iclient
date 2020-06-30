@@ -3,8 +3,13 @@ import { getColorWithOpacity } from '../../util';
 export const chartThemeUtil = (
   background = 'rgba(255, 255, 255, 0.6)',
   textColor = '#333',
-  colorGroup = ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
+  colorGroup = ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8'],
+  dataNumber
 ) => {
+  // 是否需要产生分段颜色值
+  if (dataNumber >= 5) {
+    colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(colorGroup, dataNumber, 'RANGE');
+  }
   let chartTheme = {
     color: colorGroup,
     backgroundColor: background,

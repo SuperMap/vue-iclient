@@ -1,11 +1,11 @@
 <template>
   <div class="sm-component-web-scene">
-    <cesium-viewer
+    <vc-viewer
       v-if="sceneUrl"
       class="sm-component-web-scene__wrap"
       :cesiumPath="cesiumPath"
       @ready="ready"
-    ></cesium-viewer>
+    ></vc-viewer>
   </div>
 </template>
 <script lang="ts">

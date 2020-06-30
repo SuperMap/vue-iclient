@@ -72,7 +72,7 @@ export default class RestService extends Events {
     if (this.transformed) {
       generateData.transformed = this.transformed;
     }
-    const triggerData = Object.assign(generateData, statisticsFeatures(generateData.features));
+    const triggerData = Object.assign({}, generateData, statisticsFeatures(generateData.features));
     this.triggerEvent('getdatasucceeded', triggerData);
   }
 

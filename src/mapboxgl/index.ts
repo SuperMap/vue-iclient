@@ -1,4 +1,5 @@
 import globalEvent from '../common/_utils/global-event';
+import { registerProjection } from '../common/_utils/epsg-define';
 import {
   Progress,
   Icon,
@@ -26,6 +27,12 @@ import VueCesium from 'vue-cesium';
 
 const setTheme = (themeStyle = {}) => {
   if (typeof themeStyle === 'string') {
+    try {
+      require(`../common/_utils/style/theme/${themeStyle}.scss`);
+    } catch (e) {
+      themeStyle = 'light';
+      require(`../common/_utils/style/theme/${themeStyle}.scss`);
+    }
     themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
   }
   globalEvent.$options.theme = themeStyle;
@@ -34,10 +41,9 @@ const setTheme = (themeStyle = {}) => {
 
 const install = function(Vue, opts: any = {}) {
   let theme = opts.theme || 'light';
-
-  require(`../common/_utils/style/theme/${theme}.scss`);
   require('./style.scss');
   setTheme(theme);
+  registerProjection(opts.projections);
 
   Vue.use(Button);
   Vue.use(Checkbox);
@@ -53,9 +59,11 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Modal);
   Vue.use(Tree);
   Vue.use(Tabs);
-  Vue.use(VueCesium, {
-    cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
-  });
+  if (VueCesium) {
+    Vue.use(VueCesium, {
+      cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
+    });
+  }
   Vue.prototype.$message = message;
   initi18n(Vue, opts);
   for (let component in components) {

@@ -63,7 +63,6 @@
     background: transparent;
     .ant-collapse-item {
       &.ant-collapse-item-active {
-        padding-bottom: 12px;
         .ant-collapse-header {
           padding-bottom: 0;
         }
@@ -75,7 +74,7 @@
   }
   .ant-collapse-content {
     background: transparent;
-    margin-bottom: 15px;
+    margin-bottom: 22px;
     &.ant-collapse-content {
       border-top-color: transparent;
       .ant-collapse-content-box {
@@ -125,12 +124,19 @@
           }
         }
         @include e(rank-item) {
+          border-collapse: separate;
+          border-spacing: 10px 3px;
+          display: table-row;
           & > span {
+            display: table-cell;
             font-size: 12px;
             // line-height: 2;
-            vertical-align: 12;
+            vertical-align: middle;
             // margin-left: 0px;
             max-width: 200px;
+          }
+          & > div {
+            display: table-cell;
           }
         }
       }
@@ -141,7 +147,8 @@
         width: 40px;
         & > i {
           display: inline-block;
-          // vertical-align: middle;
+          vertical-align: middle;
+          margin: 3px 0;
         }
       }
 

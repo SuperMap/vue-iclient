@@ -52,3 +52,4 @@ export { default as Search } from './search/Search';
 export { default as TextList } from './text-list/TextList';
 
 export { default as NcpMap } from './ncp-map/NcpMap';
+export { default as Compare } from './compare/Compare';

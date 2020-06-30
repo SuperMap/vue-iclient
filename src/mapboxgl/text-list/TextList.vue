@@ -1,27 +1,57 @@
 <template>
-  <div class="sm-component-text-list">
+  <div class="sm-component-text-list" :style="getBackgroundStyle">
     <div
+      v-if="headerStyleData.show"
       class="sm-component-text-list__header"
-      :style="[listStyle.headerHeight, { background: getColor(0) }, getTextColorStyle]"
+      :style="[listStyle.headerHeight, { background: headerStyleData.background, color: headerStyleData.color }]"
     >
       <div class="sm-component-text-list__header-content">
         <template v-if="animateContent && animateContent.length > 0">
           <template
-            v-for="(item, index) in (header && header.length > 0 && header) || Object.keys(animateContent[0])"
+            v-for="(item, index) in (getColumns && getColumns.length > 0 && getColumns) ||
+              Object.keys(animateContent[0])"
           >
             <div
               :key="index"
+              class="sm-component-text-list__header-title"
               :style="[fontSizeStyle, { flex: getColumnWidth(index) }]"
-              :title="item"
-            >{{ item }}</div>
+              :title="item.header"
+            >
+              <div
+                @click="
+                  sortByField(
+                    getColumns[index].field + '-' + index,
+                    index,
+                    !Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort
+                  )
+                "
+              >
+                {{ getColumns[index].header }}
+                <div
+                  v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
+                  class="arrow-wrap"
+                  :style="{ borderColor: headerStyleData.sortBtnColor }"
+                >
+                  <i
+                    :class="['up-triangle']"
+                    :style="[{ borderBottomColor: headerStyleData.sortBtnColor }, sortType === 'ascend' &&
+                      sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }]
+                    "
+                  ></i>
+                  <i
+                    :class="['down-triangle']"
+                    :style="[{ borderTopColor: headerStyleData.sortBtnColor }, sortType === 'descend' &&
+                      sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }]
+                    "
+                  ></i>
+                </div>
+              </div>
+            </div>
           </template>
         </template>
       </div>
     </div>
-    <div
-      class="sm-component-text-list__animate"
-      :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle, getColorStyle]"
-    >
+    <div class="sm-component-text-list__animate" :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle]">
       <div
         ref="listContent"
         :class="['sm-component-text-list__body-content', animate && 'sm-component-text-list__body-content--anim']"
@@ -31,13 +61,18 @@
             v-for="(item, index) in animateContent"
             :key="index"
             class="sm-component-text-list__list"
-            :style="[listStyle.rowStyle, getRowStyle(index)]"
+            :style="getRowStyle(index)"
           >
             <div
               v-for="(items, index2, itemIndex) in item"
               :key="index2"
-              :style="{flex: getColumnWidth(itemIndex)}"
-            >{{ items }}</div>
+              :title="items"
+              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
+            >
+              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.prefix }}</span
+              >{{ items }}
+              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.suffix }}</span>
+            </div>
           </div>
         </template>
       </div>
@@ -55,6 +90,45 @@ import Theme from '../../common/_mixin/theme';
 import Timer from '../../common/_mixin/timer';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import isEqual from 'lodash.isequal';
+import merge from 'lodash.merge';
+import clonedeep from 'lodash.clonedeep';
+
+interface HeaderStyleParams {
+  show?: boolean;
+  height?: number;
+  background?: string;
+  color?: string;
+}
+
+interface RowStyleParams {
+  height: number;
+  oddStyle?: {
+    background?: string;
+  };
+  evenStyle?: {
+    background?: string;
+  };
+}
+
+interface StyleRangeParams {
+  min: number;
+  max: number;
+  color: string;
+}
+
+interface CellStyleRangeGroupParams {
+  type: 'background' | 'color';
+  data: StyleRangeParams[];
+}
+
+interface ColumnParams {
+  header: string;
+  field: string;
+  width: number;
+  sort: true | false | undefined;
+  defaultSortType: 'ascend' | 'descend' | 'none';
+  fixInfo: Object;
+}
 
 @Component({
   name: 'SmTextList'
@@ -80,11 +154,25 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   featuresData: any = {};
 
+  headerStyleData: HeaderStyleParams;
+
+  rowStyleData: RowStyleParams;
+
+  sortType: string = 'descend';
+
+  sortTypeList: Array<string> = ['ascend', 'descend', 'none'];
+
+  sortTypeIndex: number = 0;
+
+  sortField: string = '';
+
+  sortIndex: number;
+
   @Prop() content: any; // 显示内容（JSON），dataset 二选一
 
   @Prop() dataset: any;
 
-  @Prop() header: Array<string>; // 表头
+  @Prop({ default: () => [] }) header: Array<string>; // 表头
 
   @Prop({ default: 6 }) rows: number; // 显示行数
 
@@ -94,18 +182,22 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Prop({ default: true }) autoResize: Boolean; // 是否自适应大小
 
-  @Prop() fields: Array<string>; // 显示的字段名
+  @Prop({ default: () => [] }) fields: Array<string>; // 显示的字段名
 
-  @Prop() columnWidths: Array<number>; // 列宽
+  @Prop({ default: () => [] }) columnWidths: Array<number>; // 列宽
 
-  @Prop() rowHeight: number; // 行高
+  @Prop() rowStyle: RowStyleParams;
 
-  @Prop() headerHeight: number; // 表头行高
+  @Prop({ default: () => ({ show: true }) }) headerStyle: HeaderStyleParams; // 表头样式
+
+  @Prop() thresholdsStyle: CellStyleRangeGroupParams[];
+
+  @Prop() columns: Array<ColumnParams>;
 
   @Watch('content')
   contentChanged(newVal, oldVal) {
     if (!isEqual(newVal, oldVal)) {
-      this.listData = this.content;
+      this.listData = this.handleContent(this.content);
       this.getListHeightStyle();
     }
   }
@@ -124,11 +216,12 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
-  @Watch('fields')
-  fieldsChanged(newVal, oldVal) {
-    if (!isEqual(newVal, oldVal) && this.listData) {
+  @Watch('columns')
+  columnsChanged(newVal, oldVal) {
+    if (!isEqual(newVal, oldVal)) {
       this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
       this.getListHeightStyle();
+      this.setDefaultSortType();
     }
   }
 
@@ -149,13 +242,15 @@ class SmTextList extends Mixins(Theme, Timer) {
     this.getListHeightStyle();
   }
 
-  @Watch('rowHeight')
-  rowHeightChanged() {
+  @Watch('rowStyle')
+  rowStyleChanged(next) {
+    this.rowStyleData = Object.assign({}, this.rowStyleData, next);
     this.getListHeightStyle();
   }
 
-  @Watch('headerHeight')
-  headerHeightChanged() {
+  @Watch('headerStyle')
+  headerHeightChanged(next) {
+    this.headerStyleData = Object.assign({}, this.headerStyleData, next);
     this.getListHeightStyle();
   }
 
@@ -167,21 +262,56 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
-  get getContentStyle() {
-    return { background: getColorWithOpacity(this.getBackground, 0.6) };
+  @Watch('sortType')
+  sortTypeChanged(newVal, oldVal) {
+    let rawContent = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+    this.listData = this.sortContent(rawContent);
+    this.getListHeightStyle();
+  }
+
+  @Watch('sortField')
+  sortFieldChanged(newVal, oldVal) {
+    let rawContent = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+    this.listData = this.sortContent(rawContent);
+    this.getListHeightStyle();
   }
 
   get getRowStyle() {
     return function(index) {
-      if (index % 2 !== 0) {
+      if ((index + 1) % 2 !== 0) {
         return {
-          background: getColorWithOpacity(this.getColor(0), 0.4)
+          background: this.rowStyleData.oddStyle.background
         };
       } else {
         return {
-          background: getColorWithOpacity(this.getBackground, 0.4)
+          background: this.rowStyleData.evenStyle.background
         };
       }
+    };
+  }
+
+  get getCellStyle() {
+    return function(value, columnIndex) {
+      if (isNaN(+value) || !this.thresholdsStyle || !this.thresholdsStyle[columnIndex]) {
+        return {};
+      }
+      const rangeGroup = this.thresholdsStyle[columnIndex];
+      let colorRangeInfo = rangeGroup.data.map(item => ({ ...item }));
+      const matchColorRange = colorRangeInfo.find(item => {
+        let status;
+        if (item.min) {
+          status = +value >= +item.min;
+        }
+        if (item.max) {
+          status = status === void 0 ? true : status;
+          status = status && +value <= +item.max;
+        }
+        return status;
+      });
+      if (matchColorRange) {
+        return { [rangeGroup.type]: matchColorRange.color };
+      }
+      return {};
     };
   }
 
@@ -192,18 +322,49 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   get getColumnWidth() {
-    return function (index) {
-      if (this.columnWidths && this.columnWidths.length > 0) {
-        const width = this.columnWidths[index];
-        return width ? `0 0 ${width / 100 * this.containerWidth}px` : 1;
+    return function(index) {
+      if (this.getColumns && this.getColumns.length > 0) {
+        const width = this.getColumns[index].width;
+        return width ? `0 0 ${(width / 100) * this.containerWidth}px` : 1;
       }
       return 1;
     };
   }
 
+  get getColumns() {
+    if (Array.isArray(this.columns)) {
+      return this.columns;
+    } else {
+      return this.fields.map((field, index) => {
+        return {
+          header: this.header[index],
+          field: this.fields[index],
+          width: this.columnWidths[index],
+          fixInfo: { prefix: '', suffix: '' },
+          sort: true,
+          defaultSortType: 'none'
+        };
+      });
+    }
+  }
+
+  created() {
+    this.headerStyleData = merge(
+      { show: true, background: this.getColor(0), color: this.textColorsData },
+      this.headerStyle
+    );
+    this.rowStyleData = merge(
+      {
+        oddStyle: { background: getColorWithOpacity(this.getBackground, 0.4) },
+        evenStyle: { background: getColorWithOpacity(this.getColor(0), 0.4) }
+      },
+      this.rowStyle
+    );
+  }
+
   mounted() {
     this.setListData();
-
+    this.setDefaultSortType();
     // resize 监听
     if (this.autoResize) {
       this.resizeHandler = debounce(
@@ -229,6 +390,23 @@ class SmTextList extends Mixins(Theme, Timer) {
       // @ts-ignore
       this.containerWidth = this.$el.offsetWidth;
     }, 0);
+
+    this.$on('theme-style-changed', this.handleThemeStyleChanged);
+  }
+
+  handleThemeStyleChanged() {
+    this.headerStyleData = merge(this.headerStyleData, {
+      background: this.getColor(0),
+      color: this.textColorsData
+    });
+    this.rowStyleData = merge(this.rowStyleData, {
+      oddStyle: {
+        background: getColorWithOpacity(this.getBackground, 0.4)
+      },
+      evenStyle: {
+        background: getColorWithOpacity(this.getColor(0), 0.4)
+      }
+    });
   }
 
   setListData() {
@@ -254,7 +432,8 @@ class SmTextList extends Mixins(Theme, Timer) {
       getFeatures(this.dataset).then(data => {
         this.dataset.url && initLoading && (this.spinning = false);
         this.featuresData = data;
-        this.listData = this.handleFeatures(data);
+        // 对定时刷新数据 按当前选择排序
+        this.listData = this.sortContent(this.handleFeatures(data));
         this.getListHeightStyle();
       });
     }
@@ -266,11 +445,11 @@ class SmTextList extends Mixins(Theme, Timer) {
       return;
     }
     let height = this.containerHeight;
-    const headerHeightNum = this.headerHeight || (height * 0.15);
+    const headerHeightNum = this.headerStyleData.show ? this.headerStyleData.height || height * 0.15 : 0;
     let headerHeight = { height: `${headerHeightNum}px` };
     const contentHeightNum = height - headerHeightNum;
     let contentHeight = { height: `${contentHeightNum}px` };
-    let rowHeight = this.rowHeight;
+    let rowHeight = this.rowStyleData.height;
     if (!rowHeight) {
       if (this.listData.length < this.rows) {
         rowHeight = contentHeightNum / this.listData.length;
@@ -278,7 +457,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         rowHeight = contentHeightNum / this.rows;
       }
     }
-    let rowStyle = { height: rowHeight + 'px' };
+    let rowStyle = { height: `${rowHeight}px`, lineHeight: `${rowHeight}px` };
 
     if (this.autoRolling) {
       if (this.listData.length > 2) {
@@ -291,13 +470,14 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   handleContent(content) {
-    if (this.fields) {
+    if (content) {
       let listData = [];
       content.forEach(data => {
         let obj = {};
-        this.fields.forEach(field => {
-          obj[field] = data[field] || '-';
-        });
+        this.getColumns &&
+          this.getColumns.forEach((column, index) => {
+            obj[`${column.field}-${index}`] = data[column.field] || '-';
+          });
         JSON.stringify(obj) !== '{}' && listData.push(obj);
       });
       return listData;
@@ -316,9 +496,9 @@ class SmTextList extends Mixins(Theme, Timer) {
           return;
         }
         let contentObj = {};
-        if (this.fields) {
-          this.fields.forEach((field, index) => {
-            contentObj[field] = properties[field] || '-';
+        if (this.getColumns) {
+          this.getColumns.forEach((column, index) => {
+            contentObj[`${column.field}-${index}`] = properties[column.field] || '-';
           });
         } else {
           contentObj = properties;
@@ -345,6 +525,67 @@ class SmTextList extends Mixins(Theme, Timer) {
         this.animate = !this.animate;
       }, 500);
     }, 2000);
+  }
+
+  sortByField(fieldName, index, isSortField) {
+    if (!isSortField) {
+      return;
+    }
+    this.sortField = fieldName;
+    this.sortIndex = index;
+    this.sortTypeIndex++;
+    if (this.sortTypeIndex > this.sortTypeList.length - 1) {
+      this.sortTypeIndex = 0;
+    }
+    this.sortType = this.sortTypeList[this.sortTypeIndex];
+  }
+
+  sortContent(content) {
+    if (!content) {
+      return null;
+    }
+    let sortContent = [];
+    // 没有排序类型 或者 排序字段不存在
+    if (this.sortType === 'none' || !this.sortField || content.length <= 1) {
+      sortContent = content;
+    } else {
+      sortContent = clonedeep(content);
+      if (this.sortType === 'descend') {
+        sortContent.sort((a, b) => {
+          return b[this.sortField] - a[this.sortField];
+        });
+      } else if (this.sortType === 'ascend') {
+        sortContent.sort((a, b) => {
+          return a[this.sortField] - b[this.sortField];
+        });
+      }
+    }
+    return sortContent;
+  }
+
+  setDefaultSortType() {
+    let fieldIndex = 0;
+    let column =
+      this.columns &&
+      this.columns.find((column, index) => {
+        if (['ascend', 'descend'].includes(column.defaultSortType) && column.sort) {
+          fieldIndex = index;
+          return true;
+        }
+        return false;
+      });
+    if (column) {
+      this.sortType = column.defaultSortType;
+      let index = this.sortTypeList.findIndex(item => {
+        return item === column.defaultSortType;
+      });
+      this.sortTypeIndex = index;
+      this.sortField = `${column.field}-${fieldIndex}`;
+      this.sortIndex = fieldIndex;
+      return;
+    }
+    this.sortField = '';
+    this.sortType = 'none';
   }
 
   destory(): void {

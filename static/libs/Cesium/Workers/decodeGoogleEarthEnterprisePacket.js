@@ -20,4 +20,454 @@
  * Portions licensed separately.
  * See https://github.com/AnalyticalGraphicsInc/cesium/blob/master/LICENSE.md for full licensing details.
  */
-!function(){define("Core/defined",[],function(){"use strict";function e(e){return void 0!==e&&null!==e}return e}),define("Core/DeveloperError",["./defined"],function(e){"use strict";function t(e){this.name="DeveloperError",this.message=e;var t;try{throw new Error}catch(r){t=r.stack}this.stack=t}return e(Object.create)&&(t.prototype=Object.create(Error.prototype),t.prototype.constructor=t),t.prototype.toString=function(){var t=this.name+": "+this.message;return e(this.stack)&&(t+="\n"+this.stack.toString()),t},t.throwInstantiationError=function(){throw new t("This function defines an interface and should not be called directly.")},t}),define("Core/Check",["./defined","./DeveloperError"],function(e,t){"use strict";function r(e){return e+" is required, actual value was undefined"}function n(e,t,r){return"Expected "+r+" to be typeof "+t+", actual typeof was "+e}var i={};return i.typeOf={},i.defined=function(n,i){if(!e(i))throw new t(r(n))},i.typeOf.func=function(e,r){if("function"!=typeof r)throw new t(n(typeof r,"function",e))},i.typeOf.string=function(e,r){if("string"!=typeof r)throw new t(n(typeof r,"string",e))},i.typeOf.number=function(e,r){if("number"!=typeof r)throw new t(n(typeof r,"number",e))},i.typeOf.number.lessThan=function(e,r,n){if(i.typeOf.number(e,r),r>=n)throw new t("Expected "+e+" to be less than "+n+", actual value was "+r)},i.typeOf.number.lessThanOrEquals=function(e,r,n){if(i.typeOf.number(e,r),r>n)throw new t("Expected "+e+" to be less than or equal to "+n+", actual value was "+r)},i.typeOf.number.greaterThan=function(e,r,n){if(i.typeOf.number(e,r),n>=r)throw new t("Expected "+e+" to be greater than "+n+", actual value was "+r)},i.typeOf.number.greaterThanOrEquals=function(e,r,n){if(i.typeOf.number(e,r),n>r)throw new t("Expected "+e+" to be greater than or equal to"+n+", actual value was "+r)},i.typeOf.object=function(e,r){if("object"!=typeof r)throw new t(n(typeof r,"object",e))},i.typeOf.bool=function(e,r){if("boolean"!=typeof r)throw new t(n(typeof r,"boolean",e))},i.typeOf.number.equals=function(e,r,n,o){if(i.typeOf.number(e,n),i.typeOf.number(r,o),n!==o)throw new t(e+" must be equal to "+r+", the actual values are "+n+" and "+o)},i}),define("Core/RuntimeError",["./defined"],function(e){"use strict";function t(e){this.name="RuntimeError",this.message=e;var t;try{throw new Error}catch(r){t=r.stack}this.stack=t}return e(Object.create)&&(t.prototype=Object.create(Error.prototype),t.prototype.constructor=t),t.prototype.toString=function(){var t=this.name+": "+this.message;return e(this.stack)&&(t+="\n"+this.stack.toString()),t},t}),define("Core/decodeGoogleEarthEnterpriseData",["./Check","./RuntimeError"],function(e,t){"use strict";function r(o,a){if(r.passThroughDataForTesting)return a;e.typeOf.object("key",o),e.typeOf.object("data",a);var s=o.byteLength;if(0===s||s%4!==0)throw new t("The length of key must be greater than 0 and a multiple of 4.");var u=new DataView(a),f=u.getUint32(0,!0);if(f===n||f===i)return a;for(var c,h=new DataView(o),d=0,p=a.byteLength,l=p-p%8,v=s,g=8;l>d;)for(g=(g+8)%24,c=g;l>d&&v>c;)u.setUint32(d,u.getUint32(d,!0)^h.getUint32(c,!0),!0),u.setUint32(d+4,u.getUint32(d+4,!0)^h.getUint32(c+4,!0),!0),d+=8,c+=24;if(p>d)for(c>=v&&(g=(g+8)%24,c=g);p>d;)u.setUint8(d,u.getUint8(d)^h.getUint8(c)),d++,c++}var n=1953029805,i=2917034100;return r.passThroughDataForTesting=!1,r}),define("Core/isBitSet",[],function(){"use strict";function e(e,t){return 0!==(e&t)}return e}),define("Core/GoogleEarthEnterpriseTileInformation",["./defined","./isBitSet"],function(e,t){"use strict";function r(e,t,r,n,i,o){this._bits=e,this.cnodeVersion=t,this.imageryVersion=r,this.terrainVersion=n,this.imageryProvider=i,this.terrainProvider=o,this.ancestorHasTerrain=!1,this.terrainState=void 0}var n=[1,2,4,8],i=15,o=16,a=64,s=128;return r.clone=function(t,n){return e(n)?(n._bits=t._bits,n.cnodeVersion=t.cnodeVersion,n.imageryVersion=t.imageryVersion,n.terrainVersion=t.terrainVersion,n.imageryProvider=t.imageryProvider,n.terrainProvider=t.terrainProvider):n=new r(t._bits,t.cnodeVersion,t.imageryVersion,t.terrainVersion,t.imageryProvider,t.terrainProvider),n.ancestorHasTerrain=t.ancestorHasTerrain,n.terrainState=t.terrainState,n},r.prototype.setParent=function(e){this.ancestorHasTerrain=e.ancestorHasTerrain||this.hasTerrain()},r.prototype.hasSubtree=function(){return t(this._bits,o)},r.prototype.hasImagery=function(){return t(this._bits,a)},r.prototype.hasTerrain=function(){return t(this._bits,s)},r.prototype.hasChildren=function(){return t(this._bits,i)},r.prototype.hasChild=function(e){return t(this._bits,n[e])},r.prototype.getChildBitmask=function(){return this._bits&i},r}),define("Core/freezeObject",["./defined"],function(e){"use strict";var t=Object.freeze;return e(t)||(t=function(e){return e}),t}),define("Core/defaultValue",["./freezeObject"],function(e){"use strict";function t(e,t){return void 0!==e&&null!==e?e:t}return t.EMPTY_OBJECT=e({}),t}),define("Core/formatError",["./defined"],function(e){"use strict";function t(t){var r,n=t.name,i=t.message;r=e(n)&&e(i)?n+": "+i:t.toString();var o=t.stack;return e(o)&&(r+="\n"+o),r}return t}),define("Workers/createTaskProcessorWorker",["../Core/defaultValue","../Core/defined","../Core/formatError"],function(e,t,r){"use strict";function n(n){var i,o=[],a={id:void 0,result:void 0,error:void 0};return function(s){var u=s.data;o.length=0,a.id=u.id,a.error=void 0,a.result=void 0;try{a.result=n(u.parameters,o)}catch(f){f instanceof Error?a.error={name:f.name,message:f.message,stack:f.stack}:a.error=f}t(i)||(i=e(self.webkitPostMessage,self.postMessage)),u.canTransferArrayBuffer||(o.length=0);try{i(a,o)}catch(f){a.result=void 0,a.error="postMessage failed with error: "+r(f)+"\n  with responseMessage: "+JSON.stringify(a),i(a)}}}return n}),define("Workers/decodeGoogleEarthEnterprisePacket",["../Core/decodeGoogleEarthEnterpriseData","../Core/GoogleEarthEnterpriseTileInformation","../Core/RuntimeError","./createTaskProcessorWorker"],function(e,t,r,n){"use strict";function i(t,r){var n=h.fromString(t.type),i=t.buffer;e(t.key,i);var u=s(i);i=u.buffer;var f=u.length;switch(n){case h.METADATA:return o(i,f,t.quadKey);case h.TERRAIN:return a(i,f,r);case h.DBROOT:return r.push(i),{buffer:i}}}function o(e,n,i){function o(e,t,r){var n=!1;if(4===r){if(t.hasSubtree())return;n=!0}for(var i=0;4>i;++i){var a=e+i.toString();if(n)P[a]=null;else if(4>r)if(t.hasChild(i)){if(S===v)return void console.log("Incorrect number of instances");var s=E[S++];P[a]=s,o(a,s,r+1)}else P[a]=null}}var a=new DataView(e),s=0,h=a.getUint32(s,!0);if(s+=c,h!==d)throw new r("Invalid magic");var p=a.getUint32(s,!0);if(s+=c,1!==p)throw new r("Invalid data type. Must be 1 for QuadTreePacket");var l=a.getUint32(s,!0);if(s+=c,2!==l)throw new r("Invalid QuadTreePacket version. Only version 2 is supported.");var v=a.getInt32(s,!0);s+=f;var g=a.getInt32(s,!0);if(s+=f,32!==g)throw new r("Invalid instance size.");var y=a.getInt32(s,!0);s+=f;var w=a.getInt32(s,!0);s+=f;var b=a.getInt32(s,!0);if(s+=f,y!==v*g+s)throw new r("Invalid dataBufferOffset");if(y+w+b!==n)throw new r("Invalid packet offsets");for(var E=[],m=0;v>m;++m){var T=a.getUint8(s);++s,++s;var O=a.getUint16(s,!0);s+=u;var k=a.getUint16(s,!0);s+=u;var C=a.getUint16(s,!0);s+=u,s+=u,s+=u,s+=f,s+=f,s+=8;var U=a.getUint8(s++),I=a.getUint8(s++);s+=u,E.push(new t(T,O,k,C,U,I))}var P=[],S=0,D=0,V=E[S++];return""===i?++D:P[i]=V,o(i,V,D),P}function a(e,t,r){for(var n=new DataView(e),i=0,o=[];t>i;){for(var a=i,s=0;4>s;++s){var u=n.getUint32(i,!0);i+=c,i+=u}var f=e.slice(a,i);r.push(f),o.push(f)}return o}function s(e){return}var u=Uint16Array.BYTES_PER_ELEMENT,f=Int32Array.BYTES_PER_ELEMENT,c=Uint32Array.BYTES_PER_ELEMENT,h={METADATA:0,TERRAIN:1,DBROOT:2};h.fromString=function(e){return"Metadata"===e?h.METADATA:"Terrain"===e?h.TERRAIN:"DbRoot"===e?h.DBROOT:void 0};var d=32301;return n(i)})}();
+define(['./when-a55a8a4c', './Check-bc1d37d9', './RuntimeError-7c184ac0', './createTaskProcessorWorker', './pako_inflate-8ea163f9'], function (when, Check, RuntimeError, createTaskProcessorWorker, pako_inflate) { 'use strict';
+
+    var compressedMagic = 0x7468dead;
+        var compressedMagicSwap = 0xadde6874;
+
+        /**
+         * Decodes data that is received from the Google Earth Enterprise server.
+         *
+         * @param {ArrayBuffer} key The key used during decoding.
+         * @param {ArrayBuffer} data The data to be decoded.
+         *
+         * @private
+         */
+        function decodeGoogleEarthEnterpriseData(key, data) {
+            if (decodeGoogleEarthEnterpriseData.passThroughDataForTesting) {
+                return data;
+            }
+
+            //>>includeStart('debug', pragmas.debug);
+            Check.Check.typeOf.object('key', key);
+            Check.Check.typeOf.object('data', data);
+            //>>includeEnd('debug');
+
+            var keyLength = key.byteLength;
+            if (keyLength === 0 || (keyLength % 4) !== 0) {
+                throw new RuntimeError.RuntimeError('The length of key must be greater than 0 and a multiple of 4.');
+            }
+
+            var dataView = new DataView(data);
+            var magic = dataView.getUint32(0, true);
+            if (magic === compressedMagic || magic === compressedMagicSwap) {
+                // Occasionally packets don't come back encoded, so just return
+                return data;
+            }
+
+            var keyView = new DataView(key);
+
+            var dp = 0;
+            var dpend = data.byteLength;
+            var dpend64 = dpend - (dpend % 8);
+            var kpend = keyLength;
+            var kp;
+            var off = 8;
+
+            // This algorithm is intentionally asymmetric to make it more difficult to
+            // guess. Security through obscurity. :-(
+
+            // while we have a full uint64 (8 bytes) left to do
+            // assumes buffer is 64bit aligned (or processor doesn't care)
+            while (dp < dpend64) {
+                // rotate the key each time through by using the offets 16,0,8,16,0,8,...
+                off = (off + 8) % 24;
+                kp = off;
+
+                // run through one key length xor'ing one uint64 at a time
+                // then drop out to rotate the key for the next bit
+                while ((dp < dpend64) && (kp < kpend)) {
+                    dataView.setUint32(dp, dataView.getUint32(dp, true) ^ keyView.getUint32(kp, true), true);
+                    dataView.setUint32(dp + 4, dataView.getUint32(dp + 4, true) ^ keyView.getUint32(kp + 4, true), true);
+                    dp += 8;
+                    kp += 24;
+                }
+            }
+
+            // now the remaining 1 to 7 bytes
+            if (dp < dpend) {
+                if (kp >= kpend) {
+                    // rotate the key one last time (if necessary)
+                    off = (off + 8) % 24;
+                    kp = off;
+                }
+
+                while (dp < dpend) {
+                    dataView.setUint8(dp, dataView.getUint8(dp) ^ keyView.getUint8(kp));
+                    dp++;
+                    kp++;
+                }
+            }
+        }
+
+        decodeGoogleEarthEnterpriseData.passThroughDataForTesting = false;
+
+    /**
+         * @private
+         */
+        function isBitSet(bits, mask) {
+            return ((bits & mask) !== 0);
+        }
+
+    // Bitmask for checking tile properties
+        var childrenBitmasks = [0x01, 0x02, 0x04, 0x08];
+        var anyChildBitmask = 0x0F;
+        var cacheFlagBitmask = 0x10; // True if there is a child subtree
+        var imageBitmask = 0x40;
+        var terrainBitmask = 0x80;
+
+        /**
+         * Contains information about each tile from a Google Earth Enterprise server
+         *
+         * @param {Number} bits Bitmask that contains the type of data and available children for each tile.
+         * @param {Number} cnodeVersion Version of the request for subtree metadata.
+         * @param {Number} imageryVersion Version of the request for imagery tile.
+         * @param {Number} terrainVersion Version of the request for terrain tile.
+         * @param {Number} imageryProvider Id of imagery provider.
+         * @param {Number} terrainProvider Id of terrain provider.
+         *
+         * @private
+         */
+        function GoogleEarthEnterpriseTileInformation(bits, cnodeVersion, imageryVersion, terrainVersion, imageryProvider, terrainProvider) {
+            this._bits = bits;
+            this.cnodeVersion = cnodeVersion;
+            this.imageryVersion = imageryVersion;
+            this.terrainVersion = terrainVersion;
+            this.imageryProvider = imageryProvider;
+            this.terrainProvider = terrainProvider;
+            this.ancestorHasTerrain = false; // Set it later once we find its parent
+            this.terrainState = undefined;
+        }
+
+        /**
+         * Creates GoogleEarthEnterpriseTileInformation from an object
+         *
+         * @param {Object} info Object to be cloned
+         * @param {GoogleEarthEnterpriseTileInformation} [result] The object onto which to store the result.
+         * @returns {GoogleEarthEnterpriseTileInformation} The modified result parameter or a new GoogleEarthEnterpriseTileInformation instance if none was provided.
+         */
+        GoogleEarthEnterpriseTileInformation.clone = function(info, result) {
+            if (!when.defined(result)) {
+                result = new GoogleEarthEnterpriseTileInformation(info._bits, info.cnodeVersion, info.imageryVersion, info.terrainVersion,
+                    info.imageryProvider, info.terrainProvider);
+            } else {
+                result._bits = info._bits;
+                result.cnodeVersion = info.cnodeVersion;
+                result.imageryVersion = info.imageryVersion;
+                result.terrainVersion = info.terrainVersion;
+                result.imageryProvider = info.imageryProvider;
+                result.terrainProvider = info.terrainProvider;
+            }
+            result.ancestorHasTerrain = info.ancestorHasTerrain;
+            result.terrainState = info.terrainState;
+
+            return result;
+        };
+
+        /**
+         * Sets the parent for the tile
+         *
+         * @param {GoogleEarthEnterpriseTileInformation} parent Parent tile
+         */
+        GoogleEarthEnterpriseTileInformation.prototype.setParent = function(parent) {
+            this.ancestorHasTerrain = parent.ancestorHasTerrain || this.hasTerrain();
+        };
+
+        /**
+         * Gets whether a subtree is available
+         *
+         * @returns {Boolean} true if subtree is available, false otherwise.
+         */
+        GoogleEarthEnterpriseTileInformation.prototype.hasSubtree = function() {
+            return isBitSet(this._bits, cacheFlagBitmask);
+        };
+
+        /**
+         * Gets whether imagery is available
+         *
+         * @returns {Boolean} true if imagery is available, false otherwise.
+         */
+        GoogleEarthEnterpriseTileInformation.prototype.hasImagery = function() {
+            return isBitSet(this._bits, imageBitmask);
+        };
+
+        /**
+         * Gets whether terrain is available
+         *
+         * @returns {Boolean} true if terrain is available, false otherwise.
+         */
+        GoogleEarthEnterpriseTileInformation.prototype.hasTerrain = function() {
+            return isBitSet(this._bits, terrainBitmask);
+        };
+
+        /**
+         * Gets whether any children are present
+         *
+         * @returns {Boolean} true if any children are available, false otherwise.
+         */
+        GoogleEarthEnterpriseTileInformation.prototype.hasChildren = function() {
+            return isBitSet(this._bits, anyChildBitmask);
+        };
+
+        /**
+         * Gets whether a specified child is available
+         *
+         * @param {Number} index Index of child tile
+         *
+         * @returns {Boolean} true if child is available, false otherwise
+         */
+        GoogleEarthEnterpriseTileInformation.prototype.hasChild = function(index) {
+            return isBitSet(this._bits, childrenBitmasks[index]);
+        };
+
+        /**
+         * Gets bitmask containing children
+         *
+         * @returns {Number} Children bitmask
+         */
+        GoogleEarthEnterpriseTileInformation.prototype.getChildBitmask = function() {
+            return this._bits & anyChildBitmask;
+        };
+
+    // Datatype sizes
+    var sizeOfUint16 = Uint16Array.BYTES_PER_ELEMENT;
+    var sizeOfInt32 = Int32Array.BYTES_PER_ELEMENT;
+    var sizeOfUint32 = Uint32Array.BYTES_PER_ELEMENT;
+
+    var Types = {
+        METADATA : 0,
+        TERRAIN : 1,
+        DBROOT : 2
+    };
+
+    Types.fromString = function(s) {
+        if (s === 'Metadata') {
+            return Types.METADATA;
+        } else if (s === 'Terrain') {
+            return Types.TERRAIN;
+        } else if (s === 'DbRoot') {
+            return Types.DBROOT;
+        }
+    };
+
+    function decodeGoogleEarthEnterprisePacket(parameters, transferableObjects) {
+        var type = Types.fromString(parameters.type);
+        var buffer = parameters.buffer;
+        decodeGoogleEarthEnterpriseData(parameters.key, buffer);
+
+        var uncompressedTerrain = uncompressPacket(buffer);
+        buffer = uncompressedTerrain.buffer;
+        var length = uncompressedTerrain.length;
+
+        switch (type) {
+            case Types.METADATA:
+                return processMetadata(buffer, length, parameters.quadKey);
+            case Types.TERRAIN:
+                return processTerrain(buffer, length, transferableObjects);
+            case Types.DBROOT:
+                transferableObjects.push(buffer);
+                return {
+                    buffer : buffer
+                };
+        }
+
+    }
+
+    var qtMagic = 32301;
+
+    function processMetadata(buffer, totalSize, quadKey) {
+        var dv = new DataView(buffer);
+        var offset = 0;
+        var magic = dv.getUint32(offset, true);
+        offset += sizeOfUint32;
+        if (magic !== qtMagic) {
+            throw new RuntimeError.RuntimeError('Invalid magic');
+        }
+
+        var dataTypeId = dv.getUint32(offset, true);
+        offset += sizeOfUint32;
+        if (dataTypeId !== 1) {
+            throw new RuntimeError.RuntimeError('Invalid data type. Must be 1 for QuadTreePacket');
+        }
+
+        // Tile format version
+        var quadVersion = dv.getUint32(offset, true);
+        offset += sizeOfUint32;
+        if (quadVersion !== 2) {
+            throw new RuntimeError.RuntimeError('Invalid QuadTreePacket version. Only version 2 is supported.');
+        }
+
+        var numInstances = dv.getInt32(offset, true);
+        offset += sizeOfInt32;
+
+        var dataInstanceSize = dv.getInt32(offset, true);
+        offset += sizeOfInt32;
+        if (dataInstanceSize !== 32) {
+            throw new RuntimeError.RuntimeError('Invalid instance size.');
+        }
+
+        var dataBufferOffset = dv.getInt32(offset, true);
+        offset += sizeOfInt32;
+
+        var dataBufferSize = dv.getInt32(offset, true);
+        offset += sizeOfInt32;
+
+        var metaBufferSize = dv.getInt32(offset, true);
+        offset += sizeOfInt32;
+
+        // Offset from beginning of packet (instances + current offset)
+        if (dataBufferOffset !== (numInstances * dataInstanceSize + offset)) {
+            throw new RuntimeError.RuntimeError('Invalid dataBufferOffset');
+        }
+
+        // Verify the packets is all there header + instances + dataBuffer + metaBuffer
+        if (dataBufferOffset + dataBufferSize + metaBufferSize !== totalSize) {
+            throw new RuntimeError.RuntimeError('Invalid packet offsets');
+        }
+
+        // Read all the instances
+        var instances = [];
+        for (var i = 0; i < numInstances; ++i) {
+            var bitfield = dv.getUint8(offset);
+            ++offset;
+
+            ++offset; // 2 byte align
+
+            var cnodeVersion = dv.getUint16(offset, true);
+            offset += sizeOfUint16;
+
+            var imageVersion = dv.getUint16(offset, true);
+            offset += sizeOfUint16;
+
+            var terrainVersion = dv.getUint16(offset, true);
+            offset += sizeOfUint16;
+
+            // Number of channels stored in the dataBuffer
+            offset += sizeOfUint16;
+
+            offset += sizeOfUint16; // 4 byte align
+
+            // Channel type offset into dataBuffer
+            offset += sizeOfInt32;
+
+            // Channel version offset into dataBuffer
+            offset += sizeOfInt32;
+
+            offset += 8; // Ignore image neighbors for now
+
+            // Data providers
+            var imageProvider = dv.getUint8(offset++);
+            var terrainProvider = dv.getUint8(offset++);
+            offset += sizeOfUint16; // 4 byte align
+
+            instances.push(new GoogleEarthEnterpriseTileInformation(bitfield, cnodeVersion,
+                imageVersion, terrainVersion, imageProvider, terrainProvider));
+        }
+
+        var tileInfo = [];
+        var index = 0;
+
+        function populateTiles(parentKey, parent, level) {
+            var isLeaf = false;
+            if (level === 4) {
+                if (parent.hasSubtree()) {
+                    return; // We have a subtree, so just return
+                }
+
+                isLeaf = true; // No subtree, so set all children to null
+            }
+            for (var i = 0; i < 4; ++i) {
+                var childKey = parentKey + i.toString();
+                if (isLeaf) {
+                    // No subtree so set all children to null
+                    tileInfo[childKey] = null;
+                } else if (level < 4) {
+                    // We are still in the middle of the subtree, so add child
+                    //  only if their bits are set, otherwise set child to null.
+                    if (!parent.hasChild(i)) {
+                        tileInfo[childKey] = null;
+                    } else {
+                        if (index === numInstances) {
+                            console.log('Incorrect number of instances');
+                            return;
+                        }
+
+                        var instance = instances[index++];
+                        tileInfo[childKey] = instance;
+                        populateTiles(childKey, instance, level + 1);
+                    }
+                }
+            }
+        }
+
+        var level = 0;
+        var root = instances[index++];
+        if (quadKey === '') {
+            // Root tile has data at its root and one less level
+            ++level;
+        } else {
+            tileInfo[quadKey] = root; // This will only contain the child bitmask
+        }
+
+        populateTiles(quadKey, root, level);
+
+        return tileInfo;
+    }
+
+    function processTerrain(buffer, totalSize, transferableObjects) {
+        var dv = new DataView(buffer);
+
+        var offset = 0;
+        var terrainTiles = [];
+        while (offset < totalSize) {
+            // Each tile is split into 4 parts
+            var tileStart = offset;
+            for (var quad = 0; quad < 4; ++quad) {
+                var size = dv.getUint32(offset, true);
+                offset += sizeOfUint32;
+                offset += size;
+            }
+            var tile = buffer.slice(tileStart, offset);
+            transferableObjects.push(tile);
+            terrainTiles.push(tile);
+        }
+
+        return terrainTiles;
+    }
+
+    var compressedMagic$1 = 0x7468dead;
+    var compressedMagicSwap$1 = 0xadde6874;
+
+    function uncompressPacket(data) {
+        // The layout of this decoded data is
+        // Magic Uint32
+        // Size Uint32
+        // [GZipped chunk of Size bytes]
+
+        // Pullout magic and verify we have the correct data
+        var dv = new DataView(data);
+        var offset = 0;
+        var magic = dv.getUint32(offset, true);
+        offset += sizeOfUint32;
+        if (magic !== compressedMagic$1 && magic !== compressedMagicSwap$1) {
+            throw new RuntimeError.RuntimeError('Invalid magic');
+        }
+
+        // Get the size of the compressed buffer - the endianness depends on which magic was used
+        var size = dv.getUint32(offset, (magic === compressedMagic$1));
+        offset += sizeOfUint32;
+
+        var compressedPacket = new Uint8Array(data, offset);
+        var uncompressedPacket = pako_inflate.pako.inflate(compressedPacket);
+
+        if (uncompressedPacket.length !== size) {
+            throw new RuntimeError.RuntimeError('Size of packet doesn\'t match header');
+        }
+
+        return uncompressedPacket;
+    }
+    var decodeGoogleEarthEnterprisePacket$1 = createTaskProcessorWorker(decodeGoogleEarthEnterprisePacket);
+
+    return decodeGoogleEarthEnterprisePacket$1;
+
+});

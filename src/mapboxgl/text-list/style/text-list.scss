@@ -26,16 +26,46 @@
     display: flex;
     height: 100%;
     & > div {
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       flex: 1;
+      cursor: pointer;
       font-family: 'MicrosoftYaHei';
-      display: block;
       word-break: keep-all;
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
       align-self: center;
       min-width: 5%;
+      user-select: none;
+      .arrow-wrap {
+        display: inline-block;
+        height: 34px;
+        width: 0px;
+        vertical-align: middle;
+        cursor: pointer;
+        overflow: initial;
+        position: relative;
+        .up-triangle {
+          width: 0;
+          height: 0;
+          border: 5px solid transparent;
+          position: absolute;
+          left: 0px;
+          border-bottom-color: #fff;
+          top: 5px;
+        }
+        .down-triangle {
+          width: 0;
+          height: 0;
+          border: 5px solid transparent;
+          position: absolute;
+          left: 0px;
+          border-top-color: #fff;
+          bottom: 6px;
+        }
+      }
     }
   }
   @include e(animate) {

@@ -7,7 +7,7 @@ import { geti18n } from '../../../../common/_lang';
 
 /**
  * @class DrawViewModel
- * @description 量算 viewModel.
+ * @description 绘制 viewModel.
  * @param {Object} webmap - webmap实例对象。
  * @extends mapboxgl.Evented
  */
@@ -60,7 +60,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
     if (this._isDrawing()) {
       const { features } = e;
       const feature = features[0];
-      if (feature && feature.id !== this.activeFeature.id) {
+      if (feature) {
         this._getDefaultStyle();
         this.activeFeature = feature;
         this._calcResult(feature);
@@ -267,12 +267,16 @@ export default class DrawViewModel extends mapboxgl.Evented {
   }
 
   removed() {
+    this.clearAllFeatures();
+    this.draw = null;
+  }
+
+  clearAllFeatures() {
     this.featureIds && this.draw.delete(this.featureIds);
     this.featureIds = [];
     this.activeFeature = {};
     this.dashedLayerIds = [];
     this.layerStyleList = {};
-    this.draw = null;
   }
 
   _isDrawing() {

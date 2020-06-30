@@ -6,7 +6,6 @@ const MAP_EVENT_NAMES: string[] = [
   'webglcontextlost',
   'webglcontextrestored',
   'remove',
-  'movestart',
   'contextmenu',
   'dblclick',
   'click',
@@ -18,13 +17,18 @@ const MAP_EVENT_NAMES: string[] = [
   'mousemove',
   'mouseup',
   'mousedown',
+  'mouseenter',
+  'mouseleave',
+  'mouseover',
+  'mouseout',
   'sourcedataloading',
   'error',
   'data',
   'styledata',
   'sourcedata',
-  'mouseout',
   'styledataloading',
+  'styleimagemissing',
+  'movestart',
   'moveend',
   'move',
   'render',
@@ -41,7 +45,10 @@ const MAP_EVENT_NAMES: string[] = [
   'drag',
   'dragstart',
   'pitch',
-  'idle'
+  'pitchend',
+  'pitchstart',
+  'idle',
+  'wheel'
 ];
 
 @Component

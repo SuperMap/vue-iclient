@@ -139,7 +139,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     sceneUrl = sceneUrl.slice(0, sceneUrl.indexOf('/rest/realspace') + 15);
     let promise = this.scene.open(sceneUrl);
     this.scene.fxaa = true;
-    this.scene.skyAtmosphere.show = false;
+    this.scene.skyAtmosphere.show = true;
     this.Cesium.when.all(promise, () => {
       let sc = this.scene.camera;
       this.scene.camera.setView({

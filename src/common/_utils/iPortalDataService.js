@@ -1,5 +1,5 @@
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from './iServerRestService';
-import { isXField, isYField } from './util';
+import { isXField, isYField, handleWithCredentials } from './util';
 import { Events } from '../_types/event/Events';
 
 /**
@@ -13,16 +13,18 @@ import { Events } from '../_types/event/Events';
  * @fires iPortalDataService#featureisempty
  */
 export default class iPortalDataService extends Events {
-  constructor(url, withCredentials) {
+  constructor(url, withCredentials, options = {}) {
     super();
     this.url = url;
     this.withCredentials = withCredentials || false;
+    this.epsgCode = options.epsgCode;
+    this.iportalServiceProxyUrl = options.iportalServiceProxyUrl;
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
     this.initSerivce(url);
   }
 
   initSerivce(url) {
-    this.iserverService = new iServerRestService(url);
+    this.iserverService = new iServerRestService(url, { epsgCode: this.epsgCode });
     this.iserverService.on({
       getdatasucceeded: e => {
         /**
@@ -85,14 +87,10 @@ export default class iPortalDataService extends Events {
         // 是否有rest服务
         if (data.dataItemServices && data.dataItemServices.length > 0) {
           let dataItemServices = data.dataItemServices;
-          let resultData;
-          dataItemServices.forEach(item => {
-            if (item.serviceType === 'RESTDATA' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            }
-          }, this);
+          let resultData = dataItemServices.find(
+            item =>
+              (item.serviceType === 'RESTDATA' || item.serviceType === 'RESTMAP') && item.serviceStatus === 'PUBLISHED'
+          );
           // 有rest服务并且address不为空（online的address服务为''）
           if (resultData && resultData.address) {
             // 如果有服务，获取数据源和数据集, 然后请求rest服务
@@ -116,7 +114,9 @@ export default class iPortalDataService extends Events {
       let url = `${address}/data/datasources`;
       let dataSourceName;
       let datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, { withCredentials: false })
+      SuperMap.FetchRequest.get(url, null, {
+        withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
+      })
         .then(response => {
           return response.json();
         })
@@ -124,7 +124,9 @@ export default class iPortalDataService extends Events {
           dataSourceName = data.datasourceNames[0];
           url = `${address}/data/datasources/${dataSourceName}/datasets`;
           // 请求获取数据集名
-          SuperMap.FetchRequest.get(url, null, { withCredentials: false })
+          SuperMap.FetchRequest.get(url, null, {
+            withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
+          })
             .then(response => {
               return response.json();
             })
@@ -137,7 +139,9 @@ export default class iPortalDataService extends Events {
                   dataSourceName,
                   dataUrl: url.split('/datasources')[0]
                 },
-                queryInfo
+                Object.assign({}, queryInfo, {
+                  withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
+                })
               );
             })
             .catch(error => {
@@ -153,7 +157,9 @@ export default class iPortalDataService extends Events {
       let mapName;
       let layerName;
       let path; // 请求获取地图名
-      SuperMap.FetchRequest.get(url, null)
+      SuperMap.FetchRequest.get(url, null, {
+        withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
+      })
         .then(response => {
           return response.json();
         })
@@ -162,7 +168,9 @@ export default class iPortalDataService extends Events {
           path = data[0].path;
           url = url = `${address}/maps/${mapName}/layers`;
           // 请求获取图层名
-          SuperMap.FetchRequest.get(url, null)
+          SuperMap.FetchRequest.get(url, null, {
+            withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
+          })
             .then(response => {
               return response.json();
             })
@@ -174,7 +182,9 @@ export default class iPortalDataService extends Events {
                   mapName: layerName,
                   dataUrl: path
                 },
-                queryInfo
+                Object.assign({}, queryInfo, {
+                  withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
+                })
               );
               return layerName;
             })
@@ -213,31 +223,26 @@ export default class iPortalDataService extends Events {
           return;
         }
         if (data.type) {
+          let features;
+          let type = 'FeatureCollection';
           if (data.type === 'JSON' || data.type === 'GEOJSON') {
             data.content = JSON.parse(data.content.trim());
             // 如果是json文件 data.content = {type:'fco', features},格式不固定
             if (!data.content.features) {
-              // json格式解析失败
-              console.log('JSON 格式解析失败！');
-              return;
+              features = this._json2Feature(data.content, queryInfo);
             }
-            let features = this._formatGeoJSON(data.content, queryInfo);
-            features = this._transformContentFeatures(features);
-            result.features = {
-              type: data.content.type,
-              features
-            };
+            features = this._formatGeoJSON(features || data.content, queryInfo);
+            type = data.content.type;
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-            let features = this._excelData2Feature(data.content, queryInfo);
-            features = this._transformContentFeatures(features);
-            result.features = {
-              type: 'FeatureCollection',
-              features
-            };
+            features = this._excelData2Feature(data.content, queryInfo);
           }
-          this.iserverService._getFeaturesSucceed({
-            result: result
-          });
+          features = this._transformContentFeatures(features);
+          result.features = {
+            type,
+            features
+          };
+          this.vertified && (result.vertified = this.vertified);
+          this.iserverService._getFeaturesSucceed({ result });
         }
       })
       .catch(error => {
@@ -305,12 +310,30 @@ export default class iPortalDataService extends Events {
     }
     return features;
   }
+
+  _json2Feature(dataContent) {
+    let content = typeof dataContent === 'string' ? JSON.parse(dataContent) : dataContent;
+    let features = [];
+    if (content instanceof Array) {
+      content.map(val => {
+        if (val.hasOwnProperty('geometry')) {
+          features.push({ properties: val.properties || val, geometry: val.geometry });
+        } else {
+          features.push({ properties: val });
+        }
+      });
+    } else if (content) {
+      features = [{ properties: content }];
+    }
+    return { features };
+  }
   // 转坐标系
   _transformContentFeatures(features) {
     let transformedFeatures = features;
     if (features && !!features.length) {
       const epsgCode = vertifyEpsgCode(features[0]);
       transformedFeatures = transformFeatures(epsgCode, features);
+      this.vertified = true;
     }
     return transformedFeatures;
   }

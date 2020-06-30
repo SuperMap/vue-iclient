@@ -17,6 +17,7 @@
       :manual-update="manualUpdate"
       :theme="theme || chartTheme"
       :style="_chartStyle"
+      @datazoom="dataZoomHandler"
     />
     <TablePopup
       v-show="false"
@@ -136,6 +137,7 @@ const EVENTS = [
   'globalout',
   'contextmenu'
 ];
+
 export default {
   components: {
     'v-chart': ECharts,
@@ -197,13 +199,12 @@ export default {
   data() {
     return {
       chartId: UniqueId(`${this.$options.name.toLowerCase()}-`),
-      smChart: null, // echarts实例
       chartTheme: {}, // 图表的主题
       echartOptions: {}, // 最后生成的echart数据
-      echartsDataService: null, // 请求数据的实例，保存请求回来的数据
       datasetChange: false, // dataset是否改变
       dataSeriesCache: {},
-      tablePopupProps: {}
+      tablePopupProps: {},
+      dataZoomHandler: function() {}
     };
   },
   computed: {
@@ -275,6 +276,9 @@ export default {
     datasetOptions: {
       handler: function(newVal, oldVal) {
         if (!isEqual(newVal, oldVal) && newVal.length) {
+          if (newVal) {
+            this._setChartTheme();
+          }
           !this.echartsDataService &&
             this._isRequestData &&
             this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -291,7 +295,6 @@ export default {
           if (this.datasetChange && !this.dataSeriesCache) {
             return;
           }
-
           if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
             this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
           } else {
@@ -336,9 +339,7 @@ export default {
   },
   mounted() {
     // 设置echarts实例
-    let chartId = this.chartId;
-    this.smChart = this.$refs[chartId];
-
+    this.smChart = this.$refs[this.chartId];
     // 派发echart所有事件
     let smChart = this._getEchart();
     const self = this;
@@ -351,6 +352,7 @@ export default {
       });
     });
     this._initAutoResize();
+    this._initDataZoom();
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -377,6 +379,15 @@ export default {
         // @ts-ignore
         addListener(this.$el, this.__resizeHandler);
       }
+    },
+    _initDataZoom() {
+      this.dataZoomHandler = debounce(
+        () => {
+          this._dataZoomChanged();
+        },
+        500,
+        { leading: true }
+      );
     },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
@@ -493,29 +504,86 @@ export default {
           options.series = dataOptions.series.map((element, index) => {
             return Object.assign({}, options.series[index] || {}, element);
           });
-          const labelConfig = options.series[0].label && options.series[0].label.normal;
-          if (labelConfig && labelConfig.show && labelConfig.position === 'smart') {
-            options.series.forEach(serie => {
-              let label = serie.label.normal;
-              label.position = 'top';
+          const dataZoom = options.dataZoom && options.dataZoom[0];
+          options.series = options.series.map(serie => {
+            let label = serie.label && serie.label.normal;
+            if (label && label.show && label.smart) {
+              label.position = label.position || 'top';
+              let data = serie.data;
+              let startDataIndex = 0;
+              let endDataIndex = data.length - 1;
+              if (dataZoom && dataZoom.show !== false) {
+                if (dataZoom.start > dataZoom.end) {
+                  let oldStart = dataZoom.start;
+                  dataZoom.start = dataZoom.end;
+                  dataZoom.end = oldStart;
+                }
+                let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
+                if (startValue >= 0) {
+                  startDataIndex = startValue;
+                } else {
+                  startDataIndex = Math.floor((dataZoom.start / 100) * data.length);
+                }
+                endDataIndex = endValue || Math.ceil((dataZoom.end / 100) * data.length);
+                data = serie.data.slice(startDataIndex, endDataIndex + 1);
+                options.dataZoom = options.dataZoom.map(val => {
+                  if (startValue >= 0 && endValue >= 0) {
+                    val.startValue = startValue;
+                    val.endValue = endValue;
+                    delete val.start;
+                    delete val.end;
+                    return val;
+                  }
+                  return val;
+                });
+              }
+
               label.formatter = function({ dataIndex, value }) {
                 let result = '';
-                const data = serie.data;
-                if (dataIndex === 0 || dataIndex === data.length - 1 || Math.max.apply(null, data) === value) {
+                if (
+                  dataIndex === startDataIndex ||
+                  dataIndex === endDataIndex ||
+                  Math.max.apply(null, data) + '' === value + ''
+                ) {
                   result = value;
                 }
                 return result;
               };
-            });
-          } else if (options.series[0].type !== 'pie') {
-            options.series.forEach(serie => {
-              let label = serie.label && serie.label.normal;
-              if (label && label.formatter) {
-                delete label.formatter;
+            } else if (serie && serie.type !== 'pie' && serie.type !== 'radar') {
+              label && delete label.formatter;
+            } else if (serie && serie.type === 'pie') {
+              // 控制label显示条数
+              if (serie.maxLabels) {
+                let formatMode;
+                if (label.formatter && typeof label.formatter === 'string') {
+                  formatMode = label.formatter;
+                }
+                label.formatter = function({ dataIndex, value, name, percent }) {
+                  const FORMATTER_MAP = {
+                    '{b}: {c}': `${name}: ${value}`,
+                    '{b}': `${name}`,
+                    '{c}': `${value}`,
+                    '{d}%': `${percent}%`
+                  };
+                  let result = '';
+                  if (dataIndex < serie.maxLabels) {
+                    result = FORMATTER_MAP[formatMode];
+                  }
+                  return result;
+                };
               }
+            }
+            return serie;
+          });
+          // 玫瑰图多个选中
+          if (options.series[0].type === 'pie' && options.series[0].roseType) {
+            options.series = options.series.map(serie => {
+              if (!serie.roseType) {
+                serie.roseType = options.series[0].roseType;
+              }
+              return serie;
             });
           }
-
           // pie的图例需要一个扇形是一个图例
           if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
             options.legend.data = [];
@@ -532,6 +600,33 @@ export default {
       if (options && options.radar && dataOptions.radar) {
         options.radar.indicator = Object.assign({}, dataOptions.radar.indicator || {});
       }
+
+      let series = dataOptions.series;
+      if (series && series.length) {
+        series.forEach(serie => {
+          // 对pie处理数据颜色分段
+          if (serie.type === 'pie') {
+            if (serie.data && serie.data.length > this.colorGroupsData.length) {
+              let colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(
+                this.colorGroupsData,
+                serie.data.length,
+                'RANGE'
+              );
+              if (serie.itemStyle) {
+                serie.itemStyle.color = function({ dataIndex }) {
+                  return colorGroup[dataIndex];
+                };
+              } else {
+                serie.itemStyle = {
+                  color: function({ dataIndex }) {
+                    return colorGroup[dataIndex];
+                  }
+                };
+              }
+            }
+          }
+        });
+      }
       return merge(options, dataOptions);
     },
     // 当datasetUrl不变，datasetOptions改变时
@@ -547,7 +642,12 @@ export default {
     },
     _setChartTheme() {
       if (!this.theme) {
-        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData);
+        let length = (this.datasetOptions && this.datasetOptions.length) || (this.echartOptions.series && this.echartOptions.series.length);
+        let colorNumber = this.colorGroupsData.length;
+        if (length && length > colorNumber) {
+          colorNumber = length;
+        }
+        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, colorNumber);
       }
     },
     // 获取echart实例
@@ -662,8 +762,8 @@ export default {
       if (this.associatedMap) {
         const { dataIndex } = params;
         let features = [];
-        if (this.echartsDataService && this.echartsDataService.dataCache) {
-          features = this.echartsDataService.dataCache.features || features;
+        if (this.echartsDataService && this.echartsDataService.sortDataCache) {
+          features = this.echartsDataService.sortDataCache.features || features;
         }
         const selectedFeature = features[dataIndex];
         this.showDetailInfo(selectedFeature);
@@ -709,7 +809,17 @@ export default {
       return propsData;
     },
     changePopupArrowStyle() {},
-    mapNotLoadedTip() {}
+    mapNotLoadedTip() {},
+    _dataZoomChanged() {
+      let flag = false;
+      this.options.series.forEach((serie, index) => {
+        const labelConfig = serie.label && serie.label.normal;
+        flag = labelConfig.show && labelConfig.smart;
+      });
+      if (flag) {
+        this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
+      }
+    }
   },
   // echarts所有静态方法
   /**

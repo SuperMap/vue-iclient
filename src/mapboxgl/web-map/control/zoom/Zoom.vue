@@ -21,12 +21,18 @@
         "
         @click="zoomOut"
       ></a-button>
+      <div
+        v-if="showZoom"
+        class="sm-component-zoom__show-zoom"
+        :style="showZoomStyle"
+      >{{ Math.round(zoomPosition) }}</div>
     </div>
     <div v-show="showZoomSlider" class="sm-component-zoom__slider">
       <a-slider
         v-model="zoomPosition"
         :min="min"
         :max="max"
+        :step="0.01"
         vertical
         :style="getColorStyle(0)"
         @change="sliderChange"
@@ -39,11 +45,16 @@ import Theme from '../../../../common/_mixin/theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
+import { getColorWithOpacity } from '../../../../common/_utils/util';
 
 export default {
   name: 'SmZoom',
   mixins: [MapGetter, Control, Theme],
   props: {
+    showZoom: {
+      type: Boolean,
+      default: false
+    },
     showZoomSlider: {
       type: Boolean,
       default: false
@@ -65,6 +76,12 @@ export default {
       return {
         backgroundColor: this.getBackground,
         borderColor: color
+      };
+    },
+    showZoomStyle() {
+      return {
+        color: getColorWithOpacity(this.getBackground, 1),
+        background: this.getTextColor
       };
     }
   },
@@ -96,12 +113,14 @@ export default {
         return;
       }
       this.activeZoomMode = 'zoomInBtn';
-      if (Math.round(this.zoomPosition) < this.max) {
+      if (this.zoomPosition + 1 <= this.max) {
         // slider的默认步长为1
         this.zoomPosition += 1;
         // 地图放大一级
-        this.viewModel.zoomIn();
+      } else {
+        this.zoomPosition = this.max;
       }
+      this.viewModel.zoomIn();
     },
     zoomOut(e) {
       const mapNotLoaded = this.mapNotLoadedTip();
@@ -109,11 +128,13 @@ export default {
         return;
       }
       this.activeZoomMode = 'zoomOutBtn';
-      if (Math.round(this.zoomPosition) > this.min) {
+      if (this.zoomPosition - 1 >= this.min) {
         this.zoomPosition -= 1;
-        // 地图缩小一级
-        this.viewModel.zoomOut();
+      } else {
+        this.zoomPosition = this.min;
       }
+      // 地图缩小一级
+      this.viewModel.zoomOut();
     },
     getMaxZoom() {
       return this.viewModel && this.viewModel.getMaxZoom();
@@ -127,6 +148,17 @@ export default {
     setZoom(zoom) {
       return this.viewModel && this.viewModel.setZoom(zoom);
     },
+    getZoomPosition() {
+      if (this.canZoomOut || this.canZoomIn) {
+        return this.getZoom();
+      }
+      if (!this.canZoomIn) {
+        return this.getMinZoom();
+      }
+      if (!this.canZoomOut) {
+        return this.getMaxZoom();
+      }
+    },
     changeSliderStyle() {
       const sliderBar = document.querySelector('.ant-slider-track');
       const sliderBtn = document.querySelector('.ant-slider-handle');
@@ -139,30 +171,32 @@ export default {
     this.canZoomOut = this.getMinZoom() < this.getZoom();
     this.map.on('zoomend', () => {
       this.activeZoomMode = '';
-      if (this.getMaxZoom() <= Math.ceil(this.getZoom())) {
+      if (this.getMaxZoom() <= this.getZoom()) {
         this.canZoomIn = false;
       } else {
         this.canZoomIn = true;
       }
-      if (this.getMinZoom() >= Math.floor(this.getZoom())) {
+      if (this.getMinZoom() >= this.getZoom()) {
         this.canZoomOut = false;
       } else {
         this.canZoomOut = true;
       }
+      // 设置slider初始值
+      this.zoomPosition = this.getZoomPosition();
     });
     // 设置slider的最大最小值
     this.min = this.getMinZoom();
     this.max = this.getMaxZoom();
 
     // 设置slider初始值
-    this.zoomPosition = Math.ceil(this.getZoom());
+    this.zoomPosition = this.getZoomPosition();
 
     // ZoomViewModel中监听滚轮事件(滚轮缩放地图)，改变slider的值
     this.viewModel.wheelEventOn(() => {
-      this.zoomPosition = Math.ceil(this.getZoom());
+      this.zoomPosition = this.getZoomPosition();
     });
     // this.viewModel.on('mouseWheel', () => {
-    //   this.zoomPosition = Math.ceil(this.getZoom());
+    //   this.zoomPosition = this.getZoomPosition();
     // });
   }
 };

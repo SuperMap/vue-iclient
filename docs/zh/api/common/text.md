@@ -15,7 +15,7 @@
 | :---------- | :----------------------------------------------------------------------- | :--------------- | :--------------------------------------------- | :------- |
 | title       | 文本内容                                                                 | string           | -                                              | -        |
 | url         | 服务地址                                                                 | string           | -                                              | -        |
-| field       | 指定[服务响应数据](/zh/api/service-response-data-requirements/index)中的字段 | string           | -                                              | -        |
+| field       | 指定[服务响应数据](/zh/api/service-response-data-requirements/index.md)中的字段 | string           | -                                              | -        |
 | startTiming | 是否开启定时刷新                                                         | boolean          | -                                              | false    |
 | frequency   | 请求间隔                                                                 | number \| string | -                                              | 3        |
 | href        | 超链接                                                                   | string           | -                                              | -        |

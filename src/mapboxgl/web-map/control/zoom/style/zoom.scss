@@ -5,16 +5,16 @@
   // width: 38px; /*因为slider的总宽度为38px,无法重置居中，所以父元素设为38px*/
   @include e(buttons) {
     width: 30px;
-    height: 60px;
     margin: 0 auto;
     border-radius: $--border-radius-base;
     box-shadow: $--box-shadow-base;
     // background: $--fill-base;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
   }
   @include e(button) {
-    width: 100%;
-    height: 50%;
+    height: 30px;
     padding: 0;
     border-radius: $--border-radius-base;
     margin-left: 0 !important;
@@ -27,13 +27,21 @@
       color: rgba(0, 0, 0, 0.65);
     }
     @include m(zoomin){
-      border-bottom-right-radius: 0;
-      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0 !important;
+      border-bottom-left-radius: 0 !important;
     }
     @include m(zoomout){
-      border-top-right-radius: 0;
-      border-top-left-radius: 0;
+      border-radius: 0 !important;
     }
+  }
+  @include e(show-zoom) {
+    height: 20px;
+    line-height: 20px;
+    text-align: center;
+    border-bottom-right-radius: $--border-radius-base;
+    border-bottom-left-radius: $--border-radius-base;
+    border: 1px solid #d9d9d9;
+    border-top: none;
   }
   @include e(slider) {
     height: 300px;

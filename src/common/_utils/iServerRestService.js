@@ -1,5 +1,5 @@
 import { Events } from '../_types/event/Events';
-import epsgCodes from '../web-map/config/epsg.json';
+import { getProjection } from './epsg-define';
 import proj4 from 'proj4';
 import { isMatchUrl } from './util';
 import { statisticsFeatures } from './statistics';
@@ -7,7 +7,7 @@ import cloneDeep from 'lodash.clonedeep';
 
 export function _getValueOfEpsgCode(epsgCode) {
   const defName = `EPSG:${epsgCode}`;
-  const defValue = epsgCodes[defName];
+  const defValue = getProjection(defName);
   if (!defValue) {
     console.error(`${defName} not define`);
   } else {
@@ -59,7 +59,7 @@ export function vertifyEpsgCode(firstFeature) {
 export function transformFeatures(epsgCode, features) {
   const projName = _getValueOfEpsgCode(epsgCode).name;
   const transformedFeatures = features.map(feature => {
-    if (feature.geometry && feature.geometry.coordinates) {
+    if (proj4.defs(projName) && feature.geometry && feature.geometry.coordinates) {
       const coordinates = feature.geometry.coordinates;
       feature.geometry.coordinates = _transformCoordinates(coordinates, projName);
     }
@@ -97,7 +97,7 @@ export async function checkAndRectifyFeatures({ features, epsgCode, projectionUr
   if (!epsgCode) {
     currentEpsgCode = await getServerEpsgCode(projectionUrl, options);
   }
-  const epsgValue = epsgCodes[`EPSG: ${currentEpsgCode}`];
+  const epsgValue = getProjection(`EPSG:${currentEpsgCode}`);
   if (epsgValue === void 0) {
     currentEpsgCode = 4326;
   }
@@ -168,7 +168,7 @@ export default class iServerRestService extends Events {
       this._getRestMapFields(dataUrl, mapName, fields => {
         queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
         this._getMapFeatureBySql(dataUrl, queryInfo);
-      });
+      }, queryInfo.withCredentials);
     } else {
       this._getMapFeatureBySql(dataUrl, queryInfo);
     }
@@ -192,7 +192,7 @@ export default class iServerRestService extends Events {
     this.projectionUrl = `${dataUrl}/datasources/${dataSourceName}/datasets/${datasetName}`;
     if (queryInfo.keyWord) {
       let fieldsUrl = dataUrl + `/datasources/${dataSourceName}/datasets/${datasetName}/fields.rjson?returnAll=true`;
-      this._getRestDataFields(fieldsUrl, fields => {
+      this._getRestDataFields(fieldsUrl, queryInfo, fields => {
         queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
         this._getDataFeaturesBySql(dataUrl, queryInfo);
       });
@@ -213,6 +213,7 @@ export default class iServerRestService extends Events {
     });
     queryBySQLService = new SuperMap.QueryBySQLService(url, {
       proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials,
       eventListeners: {
         processCompleted: this._getFeaturesSucceed.bind(this),
         processFailed: serviceResult => {
@@ -237,6 +238,7 @@ export default class iServerRestService extends Events {
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
       proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials,
       eventListeners: {
         processCompleted: this._getFeaturesSucceed.bind(this),
         processFailed: function() {}
@@ -251,8 +253,8 @@ export default class iServerRestService extends Events {
 
     if (results.result && results.result.recordsets) {
       // 数据来自restmap
-      const recordsets = results.result.recordsets[0];
-      this.features = recordsets.features;
+      const recordsets = results.result.recordsets[0] || {};
+      this.features = recordsets.features || {};
       features = this.features.features;
       if (features && features.length > 0) {
         data = statisticsFeatures(features, recordsets.fields, recordsets.fieldCaptions, recordsets.fieldTypes);
@@ -285,13 +287,16 @@ export default class iServerRestService extends Events {
       });
       return;
     }
-
-    // 关系型存储发布成服务后坐标一定是4326，但真实数据可能不是4326，判断一下暂时按照3857处理
-    data.features = await checkAndRectifyFeatures({
-      features: data.features,
-      projectionUrl: this.projectionUrl,
-      options: this.options
-    });
+    // vertified 表示已经验证过 epsgCode且转化了features 比如iportalData从content.json获取的features
+    if (!results.result.vertified) {
+      // 关系型存储发布成服务后坐标一定是4326，但真实数据可能不是4326，判断一下暂时按照3857处理
+      data.features = await checkAndRectifyFeatures({
+        features: data.features,
+        epsgCode: this.options.epsgCode,
+        projectionUrl: this.projectionUrl,
+        options: { proxy: this.options.proxy }
+      });
+    }
 
     /**
      * @event iServerRestService#getdatasucceeded
@@ -301,8 +306,11 @@ export default class iServerRestService extends Events {
     this.triggerEvent('getdatasucceeded', data);
   }
 
-  _getRestDataFields(fieldsUrl, callBack) {
-    SuperMap.FetchRequest.get(fieldsUrl, null, { proxy: this.options.proxy })
+  _getRestDataFields(fieldsUrl, queryInfo, callBack) {
+    SuperMap.FetchRequest.get(fieldsUrl, null, {
+      proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials
+    })
       .then(response => {
         return response.json();
       })
@@ -315,7 +323,7 @@ export default class iServerRestService extends Events {
         this.fetchFailed(error);
       });
   }
-  _getRestMapFields(url, layerName, callBack) {
+  _getRestMapFields(url, layerName, callBack, withCredentials = false) {
     let param = new SuperMap.QueryBySQLParameters({
       queryParams: [
         new SuperMap.FilterParameter({
@@ -326,6 +334,7 @@ export default class iServerRestService extends Events {
     });
     const queryBySQLSerice = new SuperMap.QueryBySQLService(url, {
       proxy: this.options.proxy,
+      withCredentials,
       eventListeners: {
         processCompleted: serviceResult => {
           let fields;

@@ -142,3 +142,20 @@ export function getValueCaseInsensitive(properties, searchKey) {
   }
   return '';
 }
+
+export function filterInvalidData(datasetOptions, features) {
+  const xFields = datasetOptions.map(item => item.xField);
+  const yFields = datasetOptions.map(item => item.yField);
+  const nextFeatures = features.filter(feature => {
+    const matchXField = xFields.find(item => feature.properties.hasOwnProperty(item));
+    const matchYField = yFields.find(item => ![undefined, null, ''].includes(feature.properties[item]));
+    return !!(matchXField && matchYField);
+  });
+  return nextFeatures;
+}
+export function handleWithCredentials(url, iportalServiceProxyUrl, defaultValue = false) {
+  if (!iportalServiceProxyUrl) {
+    return defaultValue;
+  }
+  return url.indexOf(iportalServiceProxyUrl) >= 0 || defaultValue;
+}

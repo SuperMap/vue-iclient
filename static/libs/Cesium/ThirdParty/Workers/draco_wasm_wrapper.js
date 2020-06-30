@@ -20,5 +20,1792 @@
  * Portions licensed separately.
  * See https://github.com/AnalyticalGraphicsInc/cesium/blob/master/LICENSE.md for full licensing details.
  */
-var $jscomp=$jscomp||{};$jscomp.scope={},$jscomp.ASSUME_ES5=!1,$jscomp.ASSUME_NO_NATIVE_MAP=!1,$jscomp.ASSUME_NO_NATIVE_SET=!1,$jscomp.defineProperty=$jscomp.ASSUME_ES5||"function"==typeof Object.defineProperties?Object.defineProperty:function(t,e,r){t!=Array.prototype&&t!=Object.prototype&&(t[e]=r.value)},$jscomp.getGlobal=function(t){return"undefined"!=typeof window&&window===t?t:"undefined"!=typeof global&&null!=global?global:t},$jscomp.global=$jscomp.getGlobal(this),$jscomp.polyfill=function(t,e,r,n){if(e){for(r=$jscomp.global,t=t.split("."),n=0;n<t.length-1;n++){var o=t[n];o in r||(r[o]={}),r=r[o]}t=t[t.length-1],n=r[t],e=e(n),e!=n&&null!=e&&$jscomp.defineProperty(r,t,{configurable:!0,writable:!0,value:e})}},$jscomp.polyfill("Math.imul",function(t){return t?t:function(t,e){t=Number(t),e=Number(e);var r=65535&t,n=65535&e;return r*n+((t>>>16&65535)*n+r*(e>>>16&65535)<<16>>>0)|0}},"es6","es3"),$jscomp.polyfill("Math.clz32",function(t){return t?t:function(t){if(t=Number(t)>>>0,0===t)return 32;var e=0;return 0===(4294901760&t)&&(t<<=16,e+=16),0===(4278190080&t)&&(t<<=8,e+=8),0===(4026531840&t)&&(t<<=4,e+=4),0===(3221225472&t)&&(t<<=2,e+=2),0===(2147483648&t)&&e++,e}},"es6","es3"),$jscomp.polyfill("Math.trunc",function(t){return t?t:function(t){if(t=Number(t),isNaN(t)||1/0===t||-(1/0)===t||0===t)return t;var e=Math.floor(Math.abs(t));return 0>t?-e:e}},"es6","es3"),$jscomp.SYMBOL_PREFIX="jscomp_symbol_",$jscomp.initSymbol=function(){$jscomp.initSymbol=function(){},$jscomp.global.Symbol||($jscomp.global.Symbol=$jscomp.Symbol)},$jscomp.Symbol=function(){var t=0;return function(e){return $jscomp.SYMBOL_PREFIX+(e||"")+t++}}(),$jscomp.initSymbolIterator=function(){$jscomp.initSymbol();var t=$jscomp.global.Symbol.iterator;t||(t=$jscomp.global.Symbol.iterator=$jscomp.global.Symbol("iterator")),"function"!=typeof Array.prototype[t]&&$jscomp.defineProperty(Array.prototype,t,{configurable:!0,writable:!0,value:function(){return $jscomp.arrayIterator(this)}}),$jscomp.initSymbolIterator=function(){}},$jscomp.arrayIterator=function(t){var e=0;return $jscomp.iteratorPrototype(function(){return e<t.length?{done:!1,value:t[e++]}:{done:!0}})},$jscomp.iteratorPrototype=function(t){return $jscomp.initSymbolIterator(),t={next:t},t[$jscomp.global.Symbol.iterator]=function(){return this},t},$jscomp.makeIterator=function(t){$jscomp.initSymbolIterator();var e=t[Symbol.iterator];return e?e.call(t):$jscomp.arrayIterator(t)},$jscomp.FORCE_POLYFILL_PROMISE=!1,$jscomp.polyfill("Promise",function(t){function e(){this.batch_=null}function r(t){return t instanceof o?t:new o(function(e,r){e(t)})}if(t&&!$jscomp.FORCE_POLYFILL_PROMISE)return t;e.prototype.asyncExecute=function(t){return null==this.batch_&&(this.batch_=[],this.asyncExecuteBatch_()),this.batch_.push(t),this},e.prototype.asyncExecuteBatch_=function(){var t=this;this.asyncExecuteFunction(function(){t.executeBatch_()})};var n=$jscomp.global.setTimeout;e.prototype.asyncExecuteFunction=function(t){n(t,0)},e.prototype.executeBatch_=function(){for(;this.batch_&&this.batch_.length;){var t=this.batch_;this.batch_=[];for(var e=0;e<t.length;++e){var r=t[e];delete t[e];try{r()}catch(n){this.asyncThrow_(n)}}}this.batch_=null},e.prototype.asyncThrow_=function(t){this.asyncExecuteFunction(function(){throw t})};var o=function(t){this.state_=0,this.result_=void 0,this.onSettledCallbacks_=[];var e=this.createResolveAndReject_();try{t(e.resolve,e.reject)}catch(r){e.reject(r)}};o.prototype.createResolveAndReject_=function(){function t(t){return function(n){r||(r=!0,t.call(e,n))}}var e=this,r=!1;return{resolve:t(this.resolveTo_),reject:t(this.reject_)}},o.prototype.resolveTo_=function(t){if(t===this)this.reject_(new TypeError("A Promise cannot resolve to itself"));else if(t instanceof o)this.settleSameAsPromise_(t);else{t:switch(typeof t){case"object":var e=null!=t;break t;case"function":e=!0;break t;default:e=!1}e?this.resolveToNonPromiseObj_(t):this.fulfill_(t)}},o.prototype.resolveToNonPromiseObj_=function(t){var e=void 0;try{e=t.then}catch(r){return void this.reject_(r)}"function"==typeof e?this.settleSameAsThenable_(e,t):this.fulfill_(t)},o.prototype.reject_=function(t){this.settle_(2,t)},o.prototype.fulfill_=function(t){this.settle_(1,t)},o.prototype.settle_=function(t,e){if(0!=this.state_)throw Error("Cannot settle("+t+", "+e|"): Promise already settled in state"+this.state_);this.state_=t,this.result_=e,this.executeOnSettledCallbacks_()},o.prototype.executeOnSettledCallbacks_=function(){if(null!=this.onSettledCallbacks_){for(var t=this.onSettledCallbacks_,e=0;e<t.length;++e)t[e].call(),t[e]=null;this.onSettledCallbacks_=null}};var i=new e;return o.prototype.settleSameAsPromise_=function(t){var e=this.createResolveAndReject_();t.callWhenSettled_(e.resolve,e.reject)},o.prototype.settleSameAsThenable_=function(t,e){var r=this.createResolveAndReject_();try{t.call(e,r.resolve,r.reject)}catch(n){r.reject(n)}},o.prototype.then=function(t,e){function r(t,e){return"function"==typeof t?function(e){try{n(t(e))}catch(r){i(r)}}:e}var n,i,_=new o(function(t,e){n=t,i=e});return this.callWhenSettled_(r(t,n),r(e,i)),_},o.prototype["catch"]=function(t){return this.then(void 0,t)},o.prototype.callWhenSettled_=function(t,e){function r(){switch(n.state_){case 1:t(n.result_);break;case 2:e(n.result_);break;default:throw Error("Unexpected state: "+n.state_)}}var n=this;null==this.onSettledCallbacks_?i.asyncExecute(r):this.onSettledCallbacks_.push(function(){i.asyncExecute(r)})},o.resolve=r,o.reject=function(t){return new o(function(e,r){r(t)})},o.race=function(t){return new o(function(e,n){for(var o=$jscomp.makeIterator(t),i=o.next();!i.done;i=o.next())r(i.value).callWhenSettled_(e,n)})},o.all=function(t){var e=$jscomp.makeIterator(t),n=e.next();return n.done?r([]):new o(function(t,o){function i(e){return function(r){_[e]=r,a--,0==a&&t(_)}}var _=[],a=0;do _.push(void 0),a++,r(n.value).callWhenSettled_(i(_.length-1),o),n=e.next();while(!n.done)})},o},"es6","es3");var DracoDecoderModule=function(t){function e(t,e){return e||(e=16),Math.ceil(t/e)*e}function r(t,e){t||f("Assertion failed: "+e)}function n(t,e){if(0===e||!t)return"";for(var r,n=0,i=0;(r=tt[t+i>>0],n|=r,0!=r||e)&&(i++,!e||i!=e););if(e||(e=i),r="",128>n){for(;e>0;)n=String.fromCharCode.apply(String,tt.subarray(t,t+Math.min(e,1024))),r=r?r+n:n,t+=1024,e-=1024;return r}return o(tt,t)}function o(t,e){for(var r=e;t[r];)++r;if(r-e>16&&t.subarray&&Z)return Z.decode(t.subarray(e,r));for(r="";;){var n=t[e++];if(!n)return r;if(128&n){var o=63&t[e++];if(192==(224&n))r+=String.fromCharCode((31&n)<<6|o);else{var i=63&t[e++];if(224==(240&n))n=(15&n)<<12|o<<6|i;else{var _=63&t[e++];if(240==(248&n))n=(7&n)<<18|o<<12|i<<6|_;else{var a=63&t[e++];if(248==(252&n))n=(3&n)<<24|o<<18|i<<12|_<<6|a;else{var p=63&t[e++];n=(1&n)<<30|o<<24|i<<18|_<<12|a<<6|p}}}65536>n?r+=String.fromCharCode(n):(n-=65536,r+=String.fromCharCode(55296|n>>10,56320|1023&n))}}else r+=String.fromCharCode(n)}}function i(t,e){return t%e>0&&(t+=e-t%e),t}function _(){L.HEAP8=J=new Int8Array(ft),L.HEAP16=et=new Int16Array(ft),L.HEAP32=rt=new Int32Array(ft),L.HEAPU8=tt=new Uint8Array(ft),L.HEAPU16=new Uint16Array(ft),L.HEAPU32=new Uint32Array(ft),L.HEAPF32=new Float32Array(ft),L.HEAPF64=new Float64Array(ft)}function a(t){for(;0<t.length;){var e=t.shift();if("function"==typeof e)e();else{var r=e.func;"number"==typeof r?void 0===e.arg?L.dynCall_v(r):L.dynCall_vi(r,e.arg):r(void 0===e.arg?null:e.arg)}}}function p(t){return String.prototype.startsWith?t.startsWith("data:application/octet-stream;base64,"):0===t.indexOf("data:application/octet-stream;base64,")}function u(){return!!u.uncaught_exception}function s(){var t=St.last;if(!t)return 0|(Jr(0),0);var e=St.infos[t],r=e.type;if(!r)return 0|(Jr(0),t);var n=Array.prototype.slice.call(arguments);L.___cxa_is_pointer_type(r),s.buffer||(s.buffer=Zr(4)),rt[s.buffer>>2]=t,t=s.buffer;for(var o=0;o<n.length;o++)if(n[o]&&L.___cxa_can_catch(n[o],r,t))return t=rt[t>>2],e.adjusted=t,0|(Jr(n[o]),t);return t=rt[t>>2],0|(Jr(r),t)}function c(t,e){Rt.varargs=e;try{var n=Rt.get(),i=Rt.get(),_=Rt.get();for(t=0,c.buffers||(c.buffers=[null,[],[]],c.printChar=function(t,e){var n=c.buffers[t];r(n),0===e||10===e?((1===t?L.print:L.printErr)(o(n,0)),n.length=0):n.push(e)}),e=0;_>e;e++){for(var a=rt[i+8*e>>2],p=rt[i+(8*e+4)>>2],u=0;p>u;u++)c.printChar(n,tt[a+u]);t+=p}return t}catch(s){return"undefined"!=typeof FS&&s instanceof FS.ErrnoError||f(s),-s.errno}}function l(t,e){l.seen||(l.seen={}),t in l.seen||(L.dynCall_v(e),l.seen[t]=1)}function y(t){this.name="ExitStatus",this.message="Program terminated with exit("+t+")",this.status=t}function m(t){function e(){if(!L.calledRun&&(L.calledRun=!0,!K)){if(Tt||(Tt=!0,a(bt)),a(ht),L.onRuntimeInitialized&&L.onRuntimeInitialized(),L.postRun)for("function"==typeof L.postRun&&(L.postRun=[L.postRun]);L.postRun.length;)gt.unshift(L.postRun.shift());a(gt)}}if(!(vt>0)){if(L.preRun)for("function"==typeof L.preRun&&(L.preRun=[L.preRun]);L.preRun.length;)dt.unshift(L.preRun.shift());a(dt),vt>0||L.calledRun||(L.setStatus?(L.setStatus("Running..."),setTimeout(function(){setTimeout(function(){L.setStatus("")},1),e()},1)):e())}}function f(t){throw L.onAbort&&L.onAbort(t),void 0!==t?(L.print(t),L.printErr(t),t=JSON.stringify(t)):t="",K=!0,"abort("+t+"). Build with -s ASSERTIONS=1 for more info."}function d(){}function b(t){return(t||d).__cache__}function h(t,e){var r=b(e),n=r[t];return n?n:(n=Object.create((e||d).prototype),n.ptr=t,r[t]=n)}function A(t){if("string"==typeof t){for(var e=0,r=0;r<t.length;++r){var n=t.charCodeAt(r);n>=55296&&57343>=n&&(n=65536+((1023&n)<<10)|1023&t.charCodeAt(++r)),127>=n?++e:e=2047>=n?e+2:65535>=n?e+3:2097151>=n?e+4:67108863>=n?e+5:e+6}if(e=Array(e+1),r=0,n=e.length,n>0){n=r+n-1;for(var o=0;o<t.length;++o){var i=t.charCodeAt(o);if(i>=55296&&57343>=i&&(i=65536+((1023&i)<<10)|1023&t.charCodeAt(++o)),127>=i){if(r>=n)break;e[r++]=i}else{if(2047>=i){if(r+1>=n)break;e[r++]=192|i>>6}else{if(65535>=i){if(r+2>=n)break;e[r++]=224|i>>12}else{if(2097151>=i){if(r+3>=n)break;e[r++]=240|i>>18}else{if(67108863>=i){if(r+4>=n)break;e[r++]=248|i>>24}else{if(r+5>=n)break;e[r++]=252|i>>30,e[r++]=128|i>>24&63}e[r++]=128|i>>18&63}e[r++]=128|i>>12&63}e[r++]=128|i>>6&63}e[r++]=128|63&i}}e[r]=0}t=tn.alloc(e,J),tn.copy(e,J,t)}return t}function g(){throw"cannot construct a Status, no constructor in IDL"}function T(){this.ptr=Ce(),b(T)[this.ptr]=this}function I(){this.ptr=vr(),b(I)[this.ptr]=this}function v(){this.ptr=ke(),b(v)[this.ptr]=this}function E(){this.ptr=Be(),b(E)[this.ptr]=this}function D(){this.ptr=wt(),b(D)[this.ptr]=this}function j(){this.ptr=yr(),b(j)[this.ptr]=this}function S(){this.ptr=kt(),b(S)[this.ptr]=this}function R(){this.ptr=Ft(),b(R)[this.ptr]=this}function G(){this.ptr=Me(),b(G)[this.ptr]=this}function M(){this.ptr=ar(),b(M)[this.ptr]=this}function O(){this.ptr=Ie(),b(O)[this.ptr]=this}function w(){this.ptr=he(),b(w)[this.ptr]=this}function P(){this.ptr=He(),b(P)[this.ptr]=this}function C(){this.ptr=Qt(),b(C)[this.ptr]=this}function N(){this.ptr=Xt(),b(N)[this.ptr]=this}function F(){this.ptr=qe(),b(F)[this.ptr]=this}function U(){throw"cannot construct a VoidPtr, no constructor in IDL"}function B(){this.ptr=je(),b(B)[this.ptr]=this}function z(){this.ptr=sr(),b(z)[this.ptr]=this}t=t||{};var L="undefined"!=typeof t?t:{},x=!1,k=!1;L.onRuntimeInitialized=function(){x=!0,k&&"function"==typeof L.onModuleLoaded&&L.onModuleLoaded(L)},L.onModuleParsed=function(){k=!0,x&&"function"==typeof L.onModuleLoaded&&L.onModuleLoaded(L)},L.isVersionSupported=function(t){return"string"!=typeof t?!1:(t=t.split("."),2>t.length||3<t.length?!1:1==t[0]&&0<=t[1]&&3>=t[1]?!0:0!=t[0]||10<t[1]?!1:!0)};var V,$={};for(V in L)L.hasOwnProperty(V)&&($[V]=L[V]);L.arguments=[],L.thisProgram="./this.program",L.quit=function(t,e){throw e},L.preRun=[],L.postRun=[];var Q=!1,H=!1,W=!1,q=!1;if(L.ENVIRONMENT)if("WEB"===L.ENVIRONMENT)Q=!0;else if("WORKER"===L.ENVIRONMENT)H=!0;else if("NODE"===L.ENVIRONMENT)W=!0;else{if("SHELL"!==L.ENVIRONMENT)throw Error("Module['ENVIRONMENT'] value is not valid. must be one of: WEB|WORKER|NODE|SHELL.");q=!0}else Q="object"==typeof window,H="function"==typeof importScripts,W="object"==typeof process&&"function"==typeof require&&!Q&&!H,q=!Q&&!W&&!H;if(W){var Y,X;L.read=function(t,e){return Y||(Y=require("fs")),X||(X=require("path")),t=X.normalize(t),t=Y.readFileSync(t),e?t:t.toString()},L.readBinary=function(t){return t=L.read(t,!0),t.buffer||(t=new Uint8Array(t)),r(t.buffer),t},1<process.argv.length&&(L.thisProgram=process.argv[1].replace(/\\/g,"/")),L.arguments=process.argv.slice(2),process.on("uncaughtException",function(t){if(!(t instanceof y))throw t}),process.on("unhandledRejection",function(t,e){process.exit(1)}),L.inspect=function(){return"[Emscripten Module object]"}}else q?("undefined"!=typeof read&&(L.read=function(t){return read(t)}),L.readBinary=function(t){return"function"==typeof readbuffer?new Uint8Array(readbuffer(t)):(t=read(t,"binary"),r("object"==typeof t),t)},"undefined"!=typeof scriptArgs?L.arguments=scriptArgs:"undefined"!=typeof arguments&&(L.arguments=arguments),"function"==typeof quit&&(L.quit=function(t,e){quit(t)})):(Q||H)&&(L.read=function(t){var e=new XMLHttpRequest;return e.open("GET",t,!1),e.send(null),e.responseText},H&&(L.readBinary=function(t){var e=new XMLHttpRequest;return e.open("GET",t,!1),e.responseType="arraybuffer",e.send(null),new Uint8Array(e.response)}),L.readAsync=function(t,e,r){var n=new XMLHttpRequest;n.open("GET",t,!0),n.responseType="arraybuffer",n.onload=function(){200==n.status||0==n.status&&n.response?e(n.response):r()},n.onerror=r,n.send(null)},L.setWindowTitle=function(t){document.title=t});L.print="undefined"!=typeof console?console.log.bind(console):"undefined"!=typeof print?print:null,L.printErr="undefined"!=typeof printErr?printErr:"undefined"!=typeof console&&console.warn.bind(console)||L.print,L.print=L.print,L.printErr=L.printErr;for(V in $)$.hasOwnProperty(V)&&(L[V]=$[V]);$=void 0;var K=0,Z="undefined"!=typeof TextDecoder?new TextDecoder("utf8"):void 0;"undefined"!=typeof TextDecoder&&new TextDecoder("utf-16le");var J,tt,et,rt,nt,ot,it,_t,at,pt,ut=nt=ot=it=_t=at=pt=0,st=!1;L.reallocBuffer||(L.reallocBuffer=function(t){try{if(ArrayBuffer.transfer)var e=ArrayBuffer.transfer(ft,t);else{var r=J;e=new ArrayBuffer(t),new Int8Array(e).set(r)}}catch(n){return!1}return Kr(e)?e:!1});try{var ct=Function.prototype.call.bind(Object.getOwnPropertyDescriptor(ArrayBuffer.prototype,"byteLength").get);ct(new ArrayBuffer(4))}catch(lt){ct=function(t){return t.byteLength}}var yt=L.TOTAL_STACK||5242880,mt=L.TOTAL_MEMORY||16777216;if(yt>mt&&L.printErr("TOTAL_MEMORY should be larger than TOTAL_STACK, was "+mt+"! (TOTAL_STACK="+yt+")"),L.buffer)var ft=L.buffer;else"object"==typeof WebAssembly&&"function"==typeof WebAssembly.Memory?(L.wasmMemory=new WebAssembly.Memory({initial:mt/65536}),ft=L.wasmMemory.buffer):ft=new ArrayBuffer(mt),L.buffer=ft;if(_(),rt[0]=1668509029,et[1]=25459,115!==tt[2]||99!==tt[3])throw"Runtime error: expected the system to be little-endian!";var dt=[],bt=[],ht=[],At=[],gt=[],Tt=!1,It=Math.floor,vt=0,Et=null,Dt=null;L.preloadedImages={},L.preloadedAudios={},function(){function t(){try{if(L.wasmBinary)return new Uint8Array(L.wasmBinary);if(L.readBinary)return L.readBinary(o);throw"on the web, we need the wasm binary to be preloaded and set on Module['wasmBinary']. emcc.py will do that for you when generating HTML (but not JS)"}catch(t){f(t)}}function e(){return L.wasmBinary||!Q&&!H||"function"!=typeof fetch?new Promise(function(e,r){e(t())}):fetch(o,{credentials:"same-origin"}).then(function(t){if(!t.ok)throw"failed to load wasm binary file at '"+o+"'";return t.arrayBuffer()})["catch"](function(){return t()})}function r(t,r,n){function i(t,e){s=t.exports,s.memory&&(t=s.memory,e=L.buffer,t.byteLength<e.byteLength&&L.printErr("the new buffer in mergeMemory is smaller than the previous one. in native wasm, we should grow memory here"),e=new Int8Array(e),new Int8Array(t).set(e),L.buffer=ft=t,_()),L.asm=s,L.usingWasm=!0,vt--,L.monitorRunDependencies&&L.monitorRunDependencies(vt),0==vt&&(null!==Et&&(clearInterval(Et),Et=null),Dt&&(t=Dt,Dt=null,t()))}function a(t){i(t.instance,t.module)}function c(t){e().then(function(t){return WebAssembly.instantiate(t,u)}).then(t)["catch"](function(t){L.printErr("failed to asynchronously prepare wasm: "+t),f(t)})}if("object"!=typeof WebAssembly)return L.printErr("no native wasm support detected"),!1;if(!(L.wasmMemory instanceof WebAssembly.Memory))return L.printErr("no native wasm Memory in use"),!1;if(r.memory=L.wasmMemory,u.global={NaN:NaN,Infinity:1/0},u["global.Math"]=Math,u.env=r,vt++,L.monitorRunDependencies&&L.monitorRunDependencies(vt),L.instantiateWasm)try{return L.instantiateWasm(u,i)}catch(l){return L.printErr("Module.instantiateWasm callback failed with error: "+l),!1}return L.wasmBinary||"function"!=typeof WebAssembly.instantiateStreaming||p(o)||"function"!=typeof fetch?c(a):WebAssembly.instantiateStreaming(fetch(o,{credentials:"same-origin"}),u).then(a)["catch"](function(t){L.printErr("wasm streaming compile failed: "+t),L.printErr("falling back to ArrayBuffer instantiation"),c(a)}),{}}var n="draco_decoder.wast",o="draco_decoder.wasm",a="draco_decoder.temp.asm.js";"function"==typeof L.locateFile&&(p(n)||(n=L.locateFile(n)),p(o)||(o=L.locateFile(o)),p(a)||(a=L.locateFile(a)));var u={global:null,env:null,asm2wasm:{"f64-rem":function(t,e){return t%e},"debugger":function(){}},parent:L},s=null;L.asmPreload=L.asm;var c=L.reallocBuffer;L.reallocBuffer=function(t){if("asmjs"===l)var e=c(t);else t:{t=i(t,L.usingWasm?65536:16777216);var r=L.buffer.byteLength;if(L.usingWasm)try{e=-1!==L.wasmMemory.grow((t-r)/65536)?L.buffer=L.wasmMemory.buffer:null;break t}catch(n){e=null;break t}e=void 0}return e};var l="";L.asm=function(t,e,n){if(!e.table){var o=L.wasmTableSize;void 0===o&&(o=1024);var i=L.wasmMaxTableSize;e.table="object"==typeof WebAssembly&&"function"==typeof WebAssembly.Table?void 0!==i?new WebAssembly.Table({initial:o,maximum:i,element:"anyfunc"}):new WebAssembly.Table({initial:o,element:"anyfunc"}):Array(o),L.wasmTable=e.table}return e.memoryBase||(e.memoryBase=L.STATIC_BASE),e.tableBase||(e.tableBase=0),(t=r(t,e,n))||f("no binaryen method succeeded. consider enabling more options, like interpreting, if you want that: https://github.com/kripken/emscripten/wiki/WebAssembly#binaryen-methods"),t}}(),ut=1024,nt=ut+19088,bt.push(),L.STATIC_BASE=ut,L.STATIC_BUMP=19088;var jt=nt;nt+=16;var St={last:0,caught:[],infos:{},deAdjust:function(t){if(!t||St.infos[t])return t;for(var e in St.infos)if(St.infos[e].adjusted===t)return e;return t},addRef:function(t){t&&St.infos[t].refcount++},decRef:function(t){if(t){var e=St.infos[t];r(0<e.refcount),e.refcount--,0!==e.refcount||e.rethrown||(e.destructor&&L.dynCall_vi(e.destructor,t),delete St.infos[t],___cxa_free_exception(t))}},clearRef:function(t){t&&(St.infos[t].refcount=0)}},Rt={varargs:0,get:function(t){return Rt.varargs+=4,rt[Rt.varargs-4>>2]},getStr:function(){return n(Rt.get())},get64:function(){var t=Rt.get(),e=Rt.get();return r(t>=0?0===e:-1===e),t},getZero:function(){r(0===Rt.get())}},Gt={},Mt=1;pt=function(t){r(!st);var e=nt;return nt=nt+t+15&-16,e}(4),ot=it=e(nt),_t=ot+yt,at=e(_t),rt[pt>>2]=at,st=!0,L.wasmTableSize=492,L.wasmMaxTableSize=492,L.asmGlobalArg={},L.asmLibraryArg={abort:f,assert:r,enlargeMemory:function(){var t=L.usingWasm?65536:16777216,e=2147483648-t;if(rt[pt>>2]>e)return!1;var r=mt;for(mt=Math.max(mt,16777216);mt<rt[pt>>2];)mt=536870912>=mt?i(2*mt,t):Math.min(i((3*mt+2147483648)/4,t),e);return t=L.reallocBuffer(mt),t&&t.byteLength==mt?(L.buffer=ft=t,_(),!0):(mt=r,!1)},getTotalMemory:function(){return mt},abortOnCannotGrowMemory:function(){f("Cannot enlarge memory arrays. Either (1) compile with  -s TOTAL_MEMORY=X  with X higher than the current value "+mt+", (2) compile with  -s ALLOW_MEMORY_GROWTH=1  which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with  -s ABORTING_MALLOC=0 ")},invoke_ii:function(t,e){try{return L.dynCall_ii(t,e)}catch(r){if("number"!=typeof r&&"longjmp"!==r)throw r;L.setThrew(1,0)}},invoke_iii:function(t,e,r){try{return L.dynCall_iii(t,e,r)}catch(n){if("number"!=typeof n&&"longjmp"!==n)throw n;L.setThrew(1,0)}},invoke_iiii:function(t,e,r,n){try{return L.dynCall_iiii(t,e,r,n)}catch(o){if("number"!=typeof o&&"longjmp"!==o)throw o;L.setThrew(1,0)}},invoke_iiiiiii:function(t,e,r,n,o,i,_){try{return L.dynCall_iiiiiii(t,e,r,n,o,i,_)}catch(a){if("number"!=typeof a&&"longjmp"!==a)throw a;L.setThrew(1,0)}},invoke_v:function(t){try{L.dynCall_v(t)}catch(e){if("number"!=typeof e&&"longjmp"!==e)throw e;L.setThrew(1,0)}},invoke_vi:function(t,e){try{L.dynCall_vi(t,e)}catch(r){if("number"!=typeof r&&"longjmp"!==r)throw r;L.setThrew(1,0)}},invoke_vii:function(t,e,r){try{L.dynCall_vii(t,e,r)}catch(n){if("number"!=typeof n&&"longjmp"!==n)throw n;L.setThrew(1,0)}},invoke_viii:function(t,e,r,n){try{L.dynCall_viii(t,e,r,n)}catch(o){if("number"!=typeof o&&"longjmp"!==o)throw o;L.setThrew(1,0)}},invoke_viiii:function(t,e,r,n,o){try{L.dynCall_viiii(t,e,r,n,o)}catch(i){if("number"!=typeof i&&"longjmp"!==i)throw i;L.setThrew(1,0)}},invoke_viiiii:function(t,e,r,n,o,i){try{L.dynCall_viiiii(t,e,r,n,o,i)}catch(_){if("number"!=typeof _&&"longjmp"!==_)throw _;L.setThrew(1,0)}},invoke_viiiiii:function(t,e,r,n,o,i,_){try{L.dynCall_viiiiii(t,e,r,n,o,i,_)}catch(a){if("number"!=typeof a&&"longjmp"!==a)throw a;L.setThrew(1,0)}},__ZSt18uncaught_exceptionv:u,___cxa_allocate_exception:function(t){return Zr(t)},___cxa_begin_catch:function(t){var e=St.infos[t];return e&&!e.caught&&(e.caught=!0,u.uncaught_exception--),e&&(e.rethrown=!1),St.caught.push(t),St.addRef(St.deAdjust(t)),t},___cxa_find_matching_catch:s,___cxa_pure_virtual:function(){throw K=!0,"Pure virtual function called!"},___cxa_throw:function(t,e,r){throw St.infos[t]={ptr:t,adjusted:t,type:e,destructor:r,refcount:0,caught:!1,rethrown:!1},St.last=t,"uncaught_exception"in u?u.uncaught_exception++:u.uncaught_exception=1,t+" - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch."},___gxx_personality_v0:function(){},___resumeException:function(t){throw St.last||(St.last=t),t+" - Exception catching is disabled, this exception cannot be caught. Compile with -s DISABLE_EXCEPTION_CATCHING=0 or DISABLE_EXCEPTION_CATCHING=2 to catch."},___setErrNo:function(t){return L.___errno_location&&(rt[L.___errno_location()>>2]=t),t},___syscall140:function(t,e){Rt.varargs=e;try{var r=Rt.getStreamFromFD();Rt.get();var n=Rt.get(),o=Rt.get(),i=Rt.get();return FS.llseek(r,n,i),rt[o>>2]=r.position,r.getdents&&0===n&&0===i&&(r.getdents=null),0}catch(_){return"undefined"!=typeof FS&&_ instanceof FS.ErrnoError||f(_),-_.errno}},___syscall146:c,___syscall54:function(t,e){return Rt.varargs=e,0},___syscall6:function(t,e){Rt.varargs=e;try{var r=Rt.getStreamFromFD();return FS.close(r),0}catch(n){return"undefined"!=typeof FS&&n instanceof FS.ErrnoError||f(n),-n.errno}},_abort:function(){L.abort()},_emscripten_memcpy_big:function(t,e,r){return tt.set(tt.subarray(e,e+r),t),t},_llvm_floor_f64:It,_llvm_trap:function(){f("trap!")},_pthread_getspecific:function(t){return Gt[t]||0},_pthread_key_create:function(t,e){return 0==t?22:(rt[t>>2]=Mt,Gt[Mt]=0,Mt++,0)},_pthread_once:l,_pthread_setspecific:function(t,e){return t in Gt?(Gt[t]=e,0):22},flush_NO_FILESYSTEM:function(){var t=L._fflush;if(t&&t(0),t=c.printChar){var e=c.buffers;e[1].length&&t(1,10),e[2].length&&t(2,10)}},DYNAMICTOP_PTR:pt,tempDoublePtr:jt,ABORT:K,STACKTOP:it,STACK_MAX:_t};var Ot=L.asm(L.asmGlobalArg,L.asmLibraryArg,ft);L.asm=Ot,L.___cxa_can_catch=function(){return L.asm.___cxa_can_catch.apply(null,arguments)},L.___cxa_is_pointer_type=function(){return L.asm.___cxa_is_pointer_type.apply(null,arguments)};var wt=L._emscripten_bind_AttributeOctahedronTransform_AttributeOctahedronTransform_0=function(){return L.asm._emscripten_bind_AttributeOctahedronTransform_AttributeOctahedronTransform_0.apply(null,arguments)},Pt=L._emscripten_bind_AttributeOctahedronTransform_InitFromAttribute_1=function(){return L.asm._emscripten_bind_AttributeOctahedronTransform_InitFromAttribute_1.apply(null,arguments)},Ct=L._emscripten_bind_AttributeOctahedronTransform___destroy___0=function(){return L.asm._emscripten_bind_AttributeOctahedronTransform___destroy___0.apply(null,arguments)},Nt=L._emscripten_bind_AttributeOctahedronTransform_quantization_bits_0=function(){return L.asm._emscripten_bind_AttributeOctahedronTransform_quantization_bits_0.apply(null,arguments)},Ft=L._emscripten_bind_AttributeQuantizationTransform_AttributeQuantizationTransform_0=function(){return L.asm._emscripten_bind_AttributeQuantizationTransform_AttributeQuantizationTransform_0.apply(null,arguments)},Ut=L._emscripten_bind_AttributeQuantizationTransform_InitFromAttribute_1=function(){return L.asm._emscripten_bind_AttributeQuantizationTransform_InitFromAttribute_1.apply(null,arguments)},Bt=L._emscripten_bind_AttributeQuantizationTransform___destroy___0=function(){return L.asm._emscripten_bind_AttributeQuantizationTransform___destroy___0.apply(null,arguments)},zt=L._emscripten_bind_AttributeQuantizationTransform_min_value_1=function(){return L.asm._emscripten_bind_AttributeQuantizationTransform_min_value_1.apply(null,arguments)},Lt=L._emscripten_bind_AttributeQuantizationTransform_quantization_bits_0=function(){return L.asm._emscripten_bind_AttributeQuantizationTransform_quantization_bits_0.apply(null,arguments)},xt=L._emscripten_bind_AttributeQuantizationTransform_range_0=function(){return L.asm._emscripten_bind_AttributeQuantizationTransform_range_0.apply(null,arguments)},kt=L._emscripten_bind_AttributeTransformData_AttributeTransformData_0=function(){return L.asm._emscripten_bind_AttributeTransformData_AttributeTransformData_0.apply(null,arguments)},Vt=L._emscripten_bind_AttributeTransformData___destroy___0=function(){return L.asm._emscripten_bind_AttributeTransformData___destroy___0.apply(null,arguments)},$t=L._emscripten_bind_AttributeTransformData_transform_type_0=function(){return L.asm._emscripten_bind_AttributeTransformData_transform_type_0.apply(null,arguments)},Qt=L._emscripten_bind_DecoderBuffer_DecoderBuffer_0=function(){return L.asm._emscripten_bind_DecoderBuffer_DecoderBuffer_0.apply(null,arguments)},Ht=L._emscripten_bind_DecoderBuffer_Init_2=function(){return L.asm._emscripten_bind_DecoderBuffer_Init_2.apply(null,arguments)},Wt=L._emscripten_bind_DecoderBuffer___destroy___0=function(){return L.asm._emscripten_bind_DecoderBuffer___destroy___0.apply(null,arguments)},qt=L._emscripten_bind_Decoder_DecodeBufferToMesh_2=function(){return L.asm._emscripten_bind_Decoder_DecodeBufferToMesh_2.apply(null,arguments)},Yt=L._emscripten_bind_Decoder_DecodeBufferToPointCloud_2=function(){return L.asm._emscripten_bind_Decoder_DecodeBufferToPointCloud_2.apply(null,arguments)},Xt=L._emscripten_bind_Decoder_Decoder_0=function(){return L.asm._emscripten_bind_Decoder_Decoder_0.apply(null,arguments)},Kt=L._emscripten_bind_Decoder_GetAttributeByUniqueId_2=function(){return L.asm._emscripten_bind_Decoder_GetAttributeByUniqueId_2.apply(null,arguments)},Zt=L._emscripten_bind_Decoder_GetAttributeFloatForAllPoints_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeFloatForAllPoints_3.apply(null,arguments)},Jt=L._emscripten_bind_Decoder_GetAttributeFloat_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeFloat_3.apply(null,arguments)},te=L._emscripten_bind_Decoder_GetAttributeIdByMetadataEntry_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeIdByMetadataEntry_3.apply(null,arguments)},ee=L._emscripten_bind_Decoder_GetAttributeIdByName_2=function(){return L.asm._emscripten_bind_Decoder_GetAttributeIdByName_2.apply(null,arguments)},re=L._emscripten_bind_Decoder_GetAttributeId_2=function(){return L.asm._emscripten_bind_Decoder_GetAttributeId_2.apply(null,arguments)},ne=L._emscripten_bind_Decoder_GetAttributeInt16ForAllPoints_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeInt16ForAllPoints_3.apply(null,arguments)},oe=L._emscripten_bind_Decoder_GetAttributeInt32ForAllPoints_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeInt32ForAllPoints_3.apply(null,arguments)},ie=L._emscripten_bind_Decoder_GetAttributeInt8ForAllPoints_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeInt8ForAllPoints_3.apply(null,arguments)},_e=L._emscripten_bind_Decoder_GetAttributeIntForAllPoints_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeIntForAllPoints_3.apply(null,arguments)},ae=L._emscripten_bind_Decoder_GetAttributeMetadata_2=function(){return L.asm._emscripten_bind_Decoder_GetAttributeMetadata_2.apply(null,arguments)},pe=L._emscripten_bind_Decoder_GetAttributeUInt16ForAllPoints_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeUInt16ForAllPoints_3.apply(null,arguments)},ue=L._emscripten_bind_Decoder_GetAttributeUInt32ForAllPoints_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeUInt32ForAllPoints_3.apply(null,arguments)},se=L._emscripten_bind_Decoder_GetAttributeUInt8ForAllPoints_3=function(){return L.asm._emscripten_bind_Decoder_GetAttributeUInt8ForAllPoints_3.apply(null,arguments)},ce=L._emscripten_bind_Decoder_GetAttribute_2=function(){return L.asm._emscripten_bind_Decoder_GetAttribute_2.apply(null,arguments)},le=L._emscripten_bind_Decoder_GetEncodedGeometryType_1=function(){return L.asm._emscripten_bind_Decoder_GetEncodedGeometryType_1.apply(null,arguments)},ye=L._emscripten_bind_Decoder_GetFaceFromMesh_3=function(){return L.asm._emscripten_bind_Decoder_GetFaceFromMesh_3.apply(null,arguments)},me=L._emscripten_bind_Decoder_GetMetadata_1=function(){return L.asm._emscripten_bind_Decoder_GetMetadata_1.apply(null,arguments)},fe=L._emscripten_bind_Decoder_GetTriangleStripsFromMesh_2=function(){return L.asm._emscripten_bind_Decoder_GetTriangleStripsFromMesh_2.apply(null,arguments)},de=L._emscripten_bind_Decoder_SkipAttributeTransform_1=function(){return L.asm._emscripten_bind_Decoder_SkipAttributeTransform_1.apply(null,arguments)},be=L._emscripten_bind_Decoder___destroy___0=function(){return L.asm._emscripten_bind_Decoder___destroy___0.apply(null,arguments)},he=L._emscripten_bind_DracoFloat32Array_DracoFloat32Array_0=function(){return L.asm._emscripten_bind_DracoFloat32Array_DracoFloat32Array_0.apply(null,arguments)},Ae=L._emscripten_bind_DracoFloat32Array_GetValue_1=function(){return L.asm._emscripten_bind_DracoFloat32Array_GetValue_1.apply(null,arguments)},ge=L._emscripten_bind_DracoFloat32Array___destroy___0=function(){return L.asm._emscripten_bind_DracoFloat32Array___destroy___0.apply(null,arguments)},Te=L._emscripten_bind_DracoFloat32Array_size_0=function(){return L.asm._emscripten_bind_DracoFloat32Array_size_0.apply(null,arguments)},Ie=L._emscripten_bind_DracoInt16Array_DracoInt16Array_0=function(){return L.asm._emscripten_bind_DracoInt16Array_DracoInt16Array_0.apply(null,arguments)},ve=L._emscripten_bind_DracoInt16Array_GetValue_1=function(){return L.asm._emscripten_bind_DracoInt16Array_GetValue_1.apply(null,arguments)},Ee=L._emscripten_bind_DracoInt16Array___destroy___0=function(){return L.asm._emscripten_bind_DracoInt16Array___destroy___0.apply(null,arguments)},De=L._emscripten_bind_DracoInt16Array_size_0=function(){return L.asm._emscripten_bind_DracoInt16Array_size_0.apply(null,arguments)},je=L._emscripten_bind_DracoInt32Array_DracoInt32Array_0=function(){return L.asm._emscripten_bind_DracoInt32Array_DracoInt32Array_0.apply(null,arguments)},Se=L._emscripten_bind_DracoInt32Array_GetValue_1=function(){return L.asm._emscripten_bind_DracoInt32Array_GetValue_1.apply(null,arguments)},Re=L._emscripten_bind_DracoInt32Array___destroy___0=function(){return L.asm._emscripten_bind_DracoInt32Array___destroy___0.apply(null,arguments)},Ge=L._emscripten_bind_DracoInt32Array_size_0=function(){return L.asm._emscripten_bind_DracoInt32Array_size_0.apply(null,arguments);
-},Me=L._emscripten_bind_DracoInt8Array_DracoInt8Array_0=function(){return L.asm._emscripten_bind_DracoInt8Array_DracoInt8Array_0.apply(null,arguments)},Oe=L._emscripten_bind_DracoInt8Array_GetValue_1=function(){return L.asm._emscripten_bind_DracoInt8Array_GetValue_1.apply(null,arguments)},we=L._emscripten_bind_DracoInt8Array___destroy___0=function(){return L.asm._emscripten_bind_DracoInt8Array___destroy___0.apply(null,arguments)},Pe=L._emscripten_bind_DracoInt8Array_size_0=function(){return L.asm._emscripten_bind_DracoInt8Array_size_0.apply(null,arguments)},Ce=L._emscripten_bind_DracoUInt16Array_DracoUInt16Array_0=function(){return L.asm._emscripten_bind_DracoUInt16Array_DracoUInt16Array_0.apply(null,arguments)},Ne=L._emscripten_bind_DracoUInt16Array_GetValue_1=function(){return L.asm._emscripten_bind_DracoUInt16Array_GetValue_1.apply(null,arguments)},Fe=L._emscripten_bind_DracoUInt16Array___destroy___0=function(){return L.asm._emscripten_bind_DracoUInt16Array___destroy___0.apply(null,arguments)},Ue=L._emscripten_bind_DracoUInt16Array_size_0=function(){return L.asm._emscripten_bind_DracoUInt16Array_size_0.apply(null,arguments)},Be=L._emscripten_bind_DracoUInt32Array_DracoUInt32Array_0=function(){return L.asm._emscripten_bind_DracoUInt32Array_DracoUInt32Array_0.apply(null,arguments)},ze=L._emscripten_bind_DracoUInt32Array_GetValue_1=function(){return L.asm._emscripten_bind_DracoUInt32Array_GetValue_1.apply(null,arguments)},Le=L._emscripten_bind_DracoUInt32Array___destroy___0=function(){return L.asm._emscripten_bind_DracoUInt32Array___destroy___0.apply(null,arguments)},xe=L._emscripten_bind_DracoUInt32Array_size_0=function(){return L.asm._emscripten_bind_DracoUInt32Array_size_0.apply(null,arguments)},ke=L._emscripten_bind_DracoUInt8Array_DracoUInt8Array_0=function(){return L.asm._emscripten_bind_DracoUInt8Array_DracoUInt8Array_0.apply(null,arguments)},Ve=L._emscripten_bind_DracoUInt8Array_GetValue_1=function(){return L.asm._emscripten_bind_DracoUInt8Array_GetValue_1.apply(null,arguments)},$e=L._emscripten_bind_DracoUInt8Array___destroy___0=function(){return L.asm._emscripten_bind_DracoUInt8Array___destroy___0.apply(null,arguments)},Qe=L._emscripten_bind_DracoUInt8Array_size_0=function(){return L.asm._emscripten_bind_DracoUInt8Array_size_0.apply(null,arguments)},He=L._emscripten_bind_GeometryAttribute_GeometryAttribute_0=function(){return L.asm._emscripten_bind_GeometryAttribute_GeometryAttribute_0.apply(null,arguments)},We=L._emscripten_bind_GeometryAttribute___destroy___0=function(){return L.asm._emscripten_bind_GeometryAttribute___destroy___0.apply(null,arguments)},qe=L._emscripten_bind_Mesh_Mesh_0=function(){return L.asm._emscripten_bind_Mesh_Mesh_0.apply(null,arguments)},Ye=L._emscripten_bind_Mesh___destroy___0=function(){return L.asm._emscripten_bind_Mesh___destroy___0.apply(null,arguments)},Xe=L._emscripten_bind_Mesh_num_attributes_0=function(){return L.asm._emscripten_bind_Mesh_num_attributes_0.apply(null,arguments)},Ke=L._emscripten_bind_Mesh_num_faces_0=function(){return L.asm._emscripten_bind_Mesh_num_faces_0.apply(null,arguments)},Ze=L._emscripten_bind_Mesh_num_points_0=function(){return L.asm._emscripten_bind_Mesh_num_points_0.apply(null,arguments)},Je=L._emscripten_bind_MetadataQuerier_GetDoubleEntry_2=function(){return L.asm._emscripten_bind_MetadataQuerier_GetDoubleEntry_2.apply(null,arguments)},tr=L._emscripten_bind_MetadataQuerier_GetEntryName_2=function(){return L.asm._emscripten_bind_MetadataQuerier_GetEntryName_2.apply(null,arguments)},er=L._emscripten_bind_MetadataQuerier_GetIntEntry_2=function(){return L.asm._emscripten_bind_MetadataQuerier_GetIntEntry_2.apply(null,arguments)},rr=L._emscripten_bind_MetadataQuerier_GetStringEntry_2=function(){return L.asm._emscripten_bind_MetadataQuerier_GetStringEntry_2.apply(null,arguments)},nr=L._emscripten_bind_MetadataQuerier_HasDoubleEntry_2=function(){return L.asm._emscripten_bind_MetadataQuerier_HasDoubleEntry_2.apply(null,arguments)},or=L._emscripten_bind_MetadataQuerier_HasEntry_2=function(){return L.asm._emscripten_bind_MetadataQuerier_HasEntry_2.apply(null,arguments)},ir=L._emscripten_bind_MetadataQuerier_HasIntEntry_2=function(){return L.asm._emscripten_bind_MetadataQuerier_HasIntEntry_2.apply(null,arguments)},_r=L._emscripten_bind_MetadataQuerier_HasStringEntry_2=function(){return L.asm._emscripten_bind_MetadataQuerier_HasStringEntry_2.apply(null,arguments)},ar=L._emscripten_bind_MetadataQuerier_MetadataQuerier_0=function(){return L.asm._emscripten_bind_MetadataQuerier_MetadataQuerier_0.apply(null,arguments)},pr=L._emscripten_bind_MetadataQuerier_NumEntries_1=function(){return L.asm._emscripten_bind_MetadataQuerier_NumEntries_1.apply(null,arguments)},ur=L._emscripten_bind_MetadataQuerier___destroy___0=function(){return L.asm._emscripten_bind_MetadataQuerier___destroy___0.apply(null,arguments)},sr=L._emscripten_bind_Metadata_Metadata_0=function(){return L.asm._emscripten_bind_Metadata_Metadata_0.apply(null,arguments)},cr=L._emscripten_bind_Metadata___destroy___0=function(){return L.asm._emscripten_bind_Metadata___destroy___0.apply(null,arguments)},lr=L._emscripten_bind_PointAttribute_GetAttributeTransformData_0=function(){return L.asm._emscripten_bind_PointAttribute_GetAttributeTransformData_0.apply(null,arguments)},yr=L._emscripten_bind_PointAttribute_PointAttribute_0=function(){return L.asm._emscripten_bind_PointAttribute_PointAttribute_0.apply(null,arguments)},mr=L._emscripten_bind_PointAttribute___destroy___0=function(){return L.asm._emscripten_bind_PointAttribute___destroy___0.apply(null,arguments)},fr=L._emscripten_bind_PointAttribute_attribute_type_0=function(){return L.asm._emscripten_bind_PointAttribute_attribute_type_0.apply(null,arguments)},dr=L._emscripten_bind_PointAttribute_byte_offset_0=function(){return L.asm._emscripten_bind_PointAttribute_byte_offset_0.apply(null,arguments)},br=L._emscripten_bind_PointAttribute_byte_stride_0=function(){return L.asm._emscripten_bind_PointAttribute_byte_stride_0.apply(null,arguments)},hr=L._emscripten_bind_PointAttribute_data_type_0=function(){return L.asm._emscripten_bind_PointAttribute_data_type_0.apply(null,arguments)},Ar=L._emscripten_bind_PointAttribute_normalized_0=function(){return L.asm._emscripten_bind_PointAttribute_normalized_0.apply(null,arguments)},gr=L._emscripten_bind_PointAttribute_num_components_0=function(){return L.asm._emscripten_bind_PointAttribute_num_components_0.apply(null,arguments)},Tr=L._emscripten_bind_PointAttribute_size_0=function(){return L.asm._emscripten_bind_PointAttribute_size_0.apply(null,arguments)},Ir=L._emscripten_bind_PointAttribute_unique_id_0=function(){return L.asm._emscripten_bind_PointAttribute_unique_id_0.apply(null,arguments)},vr=L._emscripten_bind_PointCloud_PointCloud_0=function(){return L.asm._emscripten_bind_PointCloud_PointCloud_0.apply(null,arguments)},Er=L._emscripten_bind_PointCloud___destroy___0=function(){return L.asm._emscripten_bind_PointCloud___destroy___0.apply(null,arguments)},Dr=L._emscripten_bind_PointCloud_num_attributes_0=function(){return L.asm._emscripten_bind_PointCloud_num_attributes_0.apply(null,arguments)},jr=L._emscripten_bind_PointCloud_num_points_0=function(){return L.asm._emscripten_bind_PointCloud_num_points_0.apply(null,arguments)},Sr=L._emscripten_bind_Status___destroy___0=function(){return L.asm._emscripten_bind_Status___destroy___0.apply(null,arguments)},Rr=L._emscripten_bind_Status_code_0=function(){return L.asm._emscripten_bind_Status_code_0.apply(null,arguments)},Gr=L._emscripten_bind_Status_error_msg_0=function(){return L.asm._emscripten_bind_Status_error_msg_0.apply(null,arguments)},Mr=L._emscripten_bind_Status_ok_0=function(){return L.asm._emscripten_bind_Status_ok_0.apply(null,arguments)},Or=L._emscripten_bind_VoidPtr___destroy___0=function(){return L.asm._emscripten_bind_VoidPtr___destroy___0.apply(null,arguments)},wr=L._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_INVALID_TRANSFORM=function(){return L.asm._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_INVALID_TRANSFORM.apply(null,arguments)},Pr=L._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_NO_TRANSFORM=function(){return L.asm._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_NO_TRANSFORM.apply(null,arguments)},Cr=L._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_OCTAHEDRON_TRANSFORM=function(){return L.asm._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_OCTAHEDRON_TRANSFORM.apply(null,arguments)},Nr=L._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_QUANTIZATION_TRANSFORM=function(){return L.asm._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_QUANTIZATION_TRANSFORM.apply(null,arguments)},Fr=L._emscripten_enum_draco_EncodedGeometryType_INVALID_GEOMETRY_TYPE=function(){return L.asm._emscripten_enum_draco_EncodedGeometryType_INVALID_GEOMETRY_TYPE.apply(null,arguments)},Ur=L._emscripten_enum_draco_EncodedGeometryType_POINT_CLOUD=function(){return L.asm._emscripten_enum_draco_EncodedGeometryType_POINT_CLOUD.apply(null,arguments)},Br=L._emscripten_enum_draco_EncodedGeometryType_TRIANGULAR_MESH=function(){return L.asm._emscripten_enum_draco_EncodedGeometryType_TRIANGULAR_MESH.apply(null,arguments)},zr=L._emscripten_enum_draco_GeometryAttribute_Type_COLOR=function(){return L.asm._emscripten_enum_draco_GeometryAttribute_Type_COLOR.apply(null,arguments)},Lr=L._emscripten_enum_draco_GeometryAttribute_Type_GENERIC=function(){return L.asm._emscripten_enum_draco_GeometryAttribute_Type_GENERIC.apply(null,arguments)},xr=L._emscripten_enum_draco_GeometryAttribute_Type_INVALID=function(){return L.asm._emscripten_enum_draco_GeometryAttribute_Type_INVALID.apply(null,arguments)},kr=L._emscripten_enum_draco_GeometryAttribute_Type_NORMAL=function(){return L.asm._emscripten_enum_draco_GeometryAttribute_Type_NORMAL.apply(null,arguments)},Vr=L._emscripten_enum_draco_GeometryAttribute_Type_POSITION=function(){return L.asm._emscripten_enum_draco_GeometryAttribute_Type_POSITION.apply(null,arguments)},$r=L._emscripten_enum_draco_GeometryAttribute_Type_TEX_COORD=function(){return L.asm._emscripten_enum_draco_GeometryAttribute_Type_TEX_COORD.apply(null,arguments)},Qr=L._emscripten_enum_draco_StatusCode_ERROR=function(){return L.asm._emscripten_enum_draco_StatusCode_ERROR.apply(null,arguments)},Hr=L._emscripten_enum_draco_StatusCode_INVALID_PARAMETER=function(){return L.asm._emscripten_enum_draco_StatusCode_INVALID_PARAMETER.apply(null,arguments)},Wr=L._emscripten_enum_draco_StatusCode_IO_ERROR=function(){return L.asm._emscripten_enum_draco_StatusCode_IO_ERROR.apply(null,arguments)},qr=L._emscripten_enum_draco_StatusCode_OK=function(){return L.asm._emscripten_enum_draco_StatusCode_OK.apply(null,arguments)},Yr=L._emscripten_enum_draco_StatusCode_UNKNOWN_VERSION=function(){return L.asm._emscripten_enum_draco_StatusCode_UNKNOWN_VERSION.apply(null,arguments)},Xr=L._emscripten_enum_draco_StatusCode_UNSUPPORTED_VERSION=function(){return L.asm._emscripten_enum_draco_StatusCode_UNSUPPORTED_VERSION.apply(null,arguments)},Kr=L._emscripten_replace_memory=function(){return L.asm._emscripten_replace_memory.apply(null,arguments)};L._free=function(){return L.asm._free.apply(null,arguments)},L._llvm_bswap_i32=function(){return L.asm._llvm_bswap_i32.apply(null,arguments)};var Zr=L._malloc=function(){return L.asm._malloc.apply(null,arguments)};L._memcpy=function(){return L.asm._memcpy.apply(null,arguments)},L._memmove=function(){return L.asm._memmove.apply(null,arguments)},L._memset=function(){return L.asm._memset.apply(null,arguments)},L._sbrk=function(){return L.asm._sbrk.apply(null,arguments)},L.establishStackSpace=function(){return L.asm.establishStackSpace.apply(null,arguments)},L.getTempRet0=function(){return L.asm.getTempRet0.apply(null,arguments)},L.runPostSets=function(){return L.asm.runPostSets.apply(null,arguments)};var Jr=L.setTempRet0=function(){return L.asm.setTempRet0.apply(null,arguments)};if(L.setThrew=function(){return L.asm.setThrew.apply(null,arguments)},L.stackAlloc=function(){return L.asm.stackAlloc.apply(null,arguments)},L.stackRestore=function(){return L.asm.stackRestore.apply(null,arguments)},L.stackSave=function(){return L.asm.stackSave.apply(null,arguments)},L.dynCall_ii=function(){return L.asm.dynCall_ii.apply(null,arguments)},L.dynCall_iii=function(){return L.asm.dynCall_iii.apply(null,arguments)},L.dynCall_iiii=function(){return L.asm.dynCall_iiii.apply(null,arguments)},L.dynCall_iiiiiii=function(){return L.asm.dynCall_iiiiiii.apply(null,arguments)},L.dynCall_v=function(){return L.asm.dynCall_v.apply(null,arguments)},L.dynCall_vi=function(){return L.asm.dynCall_vi.apply(null,arguments)},L.dynCall_vii=function(){return L.asm.dynCall_vii.apply(null,arguments)},L.dynCall_viii=function(){return L.asm.dynCall_viii.apply(null,arguments)},L.dynCall_viiii=function(){return L.asm.dynCall_viiii.apply(null,arguments)},L.dynCall_viiiii=function(){return L.asm.dynCall_viiiii.apply(null,arguments)},L.dynCall_viiiiii=function(){return L.asm.dynCall_viiiiii.apply(null,arguments)},L.asm=Ot,L.then=function(t){if(L.calledRun)t(L);else{var e=L.onRuntimeInitialized;L.onRuntimeInitialized=function(){e&&e(),t(L)}}return L},y.prototype=Error(),y.prototype.constructor=y,Dt=function en(){L.calledRun||m(),L.calledRun||(Dt=en)},L.run=m,L.exit=function(t,e){e&&L.noExitRuntime&&0===t||(!L.noExitRuntime&&(K=!0,it=void 0,a(At),L.onExit)&&L.onExit(t),W&&process.exit(t),L.quit(t,new y(t)))},L.abort=f,L.preInit)for("function"==typeof L.preInit&&(L.preInit=[L.preInit]);0<L.preInit.length;)L.preInit.pop()();L.noExitRuntime=!0,m(),d.prototype=Object.create(d.prototype),d.prototype.constructor=d,d.prototype.__class__=d,d.__cache__={},L.WrapperObject=d,L.getCache=b,L.wrapPointer=h,L.castObject=function(t,e){return h(t.ptr,e)},L.NULL=h(0),L.destroy=function(t){if(!t.__destroy__)throw"Error: Cannot destroy object. (Did you create it yourself?)";t.__destroy__(),delete b(t.__class__)[t.ptr]},L.compare=function(t,e){return t.ptr===e.ptr},L.getPointer=function(t){return t.ptr},L.getClass=function(t){return t.__class__};var tn={buffer:0,size:0,pos:0,temps:[],needed:0,prepare:function(){if(tn.needed){for(var t=0;t<tn.temps.length;t++)L._free(tn.temps[t]);tn.temps.length=0,L._free(tn.buffer),tn.buffer=0,tn.size+=tn.needed,tn.needed=0}tn.buffer||(tn.size+=128,tn.buffer=L._malloc(tn.size),r(tn.buffer)),tn.pos=0},alloc:function(t,e){return r(tn.buffer),t=t.length*e.BYTES_PER_ELEMENT,t=t+7&-8,tn.pos+t>=tn.size?(r(t>0),tn.needed+=t,e=L._malloc(t),tn.temps.push(e)):(e=tn.buffer+tn.pos,tn.pos+=t),e},copy:function(t,e,r){switch(e.BYTES_PER_ELEMENT){case 2:r>>=1;break;case 4:r>>=2;break;case 8:r>>=3}for(var n=0;n<t.length;n++)e[r+n]=t[n]}};return g.prototype=Object.create(d.prototype),g.prototype.constructor=g,g.prototype.__class__=g,g.__cache__={},L.Status=g,g.prototype.code=g.prototype.code=function(){return Rr(this.ptr)},g.prototype.ok=g.prototype.ok=function(){return!!Mr(this.ptr)},g.prototype.error_msg=g.prototype.error_msg=function(){return n(Gr(this.ptr))},g.prototype.__destroy__=g.prototype.__destroy__=function(){Sr(this.ptr)},T.prototype=Object.create(d.prototype),T.prototype.constructor=T,T.prototype.__class__=T,T.__cache__={},L.DracoUInt16Array=T,T.prototype.GetValue=T.prototype.GetValue=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),Ne(e,t)},T.prototype.size=T.prototype.size=function(){return Ue(this.ptr)},T.prototype.__destroy__=T.prototype.__destroy__=function(){Fe(this.ptr)},I.prototype=Object.create(d.prototype),I.prototype.constructor=I,I.prototype.__class__=I,I.__cache__={},L.PointCloud=I,I.prototype.num_attributes=I.prototype.num_attributes=function(){return Dr(this.ptr)},I.prototype.num_points=I.prototype.num_points=function(){return jr(this.ptr)},I.prototype.__destroy__=I.prototype.__destroy__=function(){Er(this.ptr)},v.prototype=Object.create(d.prototype),v.prototype.constructor=v,v.prototype.__class__=v,v.__cache__={},L.DracoUInt8Array=v,v.prototype.GetValue=v.prototype.GetValue=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),Ve(e,t)},v.prototype.size=v.prototype.size=function(){return Qe(this.ptr)},v.prototype.__destroy__=v.prototype.__destroy__=function(){$e(this.ptr)},E.prototype=Object.create(d.prototype),E.prototype.constructor=E,E.prototype.__class__=E,E.__cache__={},L.DracoUInt32Array=E,E.prototype.GetValue=E.prototype.GetValue=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),ze(e,t)},E.prototype.size=E.prototype.size=function(){return xe(this.ptr)},E.prototype.__destroy__=E.prototype.__destroy__=function(){Le(this.ptr)},D.prototype=Object.create(d.prototype),D.prototype.constructor=D,D.prototype.__class__=D,D.__cache__={},L.AttributeOctahedronTransform=D,D.prototype.InitFromAttribute=D.prototype.InitFromAttribute=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),!!Pt(e,t)},D.prototype.quantization_bits=D.prototype.quantization_bits=function(){return Nt(this.ptr)},D.prototype.__destroy__=D.prototype.__destroy__=function(){Ct(this.ptr)},j.prototype=Object.create(d.prototype),j.prototype.constructor=j,j.prototype.__class__=j,j.__cache__={},L.PointAttribute=j,j.prototype.size=j.prototype.size=function(){return Tr(this.ptr)},j.prototype.GetAttributeTransformData=j.prototype.GetAttributeTransformData=function(){return h(lr(this.ptr),S)},j.prototype.attribute_type=j.prototype.attribute_type=function(){return fr(this.ptr)},j.prototype.data_type=j.prototype.data_type=function(){return hr(this.ptr)},j.prototype.num_components=j.prototype.num_components=function(){return gr(this.ptr)},j.prototype.normalized=j.prototype.normalized=function(){return!!Ar(this.ptr)},j.prototype.byte_stride=j.prototype.byte_stride=function(){return br(this.ptr)},j.prototype.byte_offset=j.prototype.byte_offset=function(){return dr(this.ptr)},j.prototype.unique_id=j.prototype.unique_id=function(){return Ir(this.ptr)},j.prototype.__destroy__=j.prototype.__destroy__=function(){mr(this.ptr)},S.prototype=Object.create(d.prototype),S.prototype.constructor=S,S.prototype.__class__=S,S.__cache__={},L.AttributeTransformData=S,S.prototype.transform_type=S.prototype.transform_type=function(){return $t(this.ptr)},S.prototype.__destroy__=S.prototype.__destroy__=function(){Vt(this.ptr)},R.prototype=Object.create(d.prototype),R.prototype.constructor=R,R.prototype.__class__=R,R.__cache__={},L.AttributeQuantizationTransform=R,R.prototype.InitFromAttribute=R.prototype.InitFromAttribute=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),!!Ut(e,t)},R.prototype.quantization_bits=R.prototype.quantization_bits=function(){return Lt(this.ptr)},R.prototype.min_value=R.prototype.min_value=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),zt(e,t)},R.prototype.range=R.prototype.range=function(){return xt(this.ptr)},R.prototype.__destroy__=R.prototype.__destroy__=function(){Bt(this.ptr)},G.prototype=Object.create(d.prototype),G.prototype.constructor=G,G.prototype.__class__=G,G.__cache__={},L.DracoInt8Array=G,G.prototype.GetValue=G.prototype.GetValue=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),Oe(e,t)},G.prototype.size=G.prototype.size=function(){return Pe(this.ptr)},G.prototype.__destroy__=G.prototype.__destroy__=function(){we(this.ptr)},M.prototype=Object.create(d.prototype),M.prototype.constructor=M,M.prototype.__class__=M,M.__cache__={},L.MetadataQuerier=M,M.prototype.HasEntry=M.prototype.HasEntry=function(t,e){var r=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),!!or(r,t,e)},M.prototype.HasIntEntry=M.prototype.HasIntEntry=function(t,e){var r=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),!!ir(r,t,e)},M.prototype.GetIntEntry=M.prototype.GetIntEntry=function(t,e){var r=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),er(r,t,e)},M.prototype.HasDoubleEntry=M.prototype.HasDoubleEntry=function(t,e){var r=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),!!nr(r,t,e)},M.prototype.GetDoubleEntry=M.prototype.GetDoubleEntry=function(t,e){var r=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),Je(r,t,e)},M.prototype.HasStringEntry=M.prototype.HasStringEntry=function(t,e){var r=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),!!_r(r,t,e)},M.prototype.GetStringEntry=M.prototype.GetStringEntry=function(t,e){var r=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),n(rr(r,t,e))},M.prototype.NumEntries=M.prototype.NumEntries=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),pr(e,t)},M.prototype.GetEntryName=M.prototype.GetEntryName=function(t,e){var r=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),n(tr(r,t,e))},M.prototype.__destroy__=M.prototype.__destroy__=function(){ur(this.ptr)},O.prototype=Object.create(d.prototype),O.prototype.constructor=O,O.prototype.__class__=O,O.__cache__={},L.DracoInt16Array=O,O.prototype.GetValue=O.prototype.GetValue=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),ve(e,t)},O.prototype.size=O.prototype.size=function(){return De(this.ptr)},O.prototype.__destroy__=O.prototype.__destroy__=function(){Ee(this.ptr)},w.prototype=Object.create(d.prototype),w.prototype.constructor=w,w.prototype.__class__=w,w.__cache__={},L.DracoFloat32Array=w,w.prototype.GetValue=w.prototype.GetValue=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),Ae(e,t)},w.prototype.size=w.prototype.size=function(){return Te(this.ptr)},w.prototype.__destroy__=w.prototype.__destroy__=function(){ge(this.ptr)},P.prototype=Object.create(d.prototype),P.prototype.constructor=P,P.prototype.__class__=P,P.__cache__={},L.GeometryAttribute=P,P.prototype.__destroy__=P.prototype.__destroy__=function(){We(this.ptr)},C.prototype=Object.create(d.prototype),C.prototype.constructor=C,C.prototype.__class__=C,C.__cache__={},L.DecoderBuffer=C,C.prototype.Init=C.prototype.Init=function(t,e){var r=this.ptr;if(tn.prepare(),"object"==typeof t&&"object"==typeof t){var n=tn.alloc(t,J);tn.copy(t,J,n),t=n}e&&"object"==typeof e&&(e=e.ptr),Ht(r,t,e)},C.prototype.__destroy__=C.prototype.__destroy__=function(){Wt(this.ptr)},N.prototype=Object.create(d.prototype),N.prototype.constructor=N,N.prototype.__class__=N,N.__cache__={},L.Decoder=N,N.prototype.GetEncodedGeometryType=N.prototype.GetEncodedGeometryType=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),le(e,t)},N.prototype.DecodeBufferToPointCloud=N.prototype.DecodeBufferToPointCloud=function(t,e){var r=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),h(Yt(r,t,e),g)},N.prototype.DecodeBufferToMesh=N.prototype.DecodeBufferToMesh=function(t,e){var r=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),h(qt(r,t,e),g)},N.prototype.GetAttributeId=N.prototype.GetAttributeId=function(t,e){var r=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),re(r,t,e)},N.prototype.GetAttributeIdByName=N.prototype.GetAttributeIdByName=function(t,e){var r=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),ee(r,t,e)},N.prototype.GetAttributeIdByMetadataEntry=N.prototype.GetAttributeIdByMetadataEntry=function(t,e,r){var n=this.ptr;return tn.prepare(),t&&"object"==typeof t&&(t=t.ptr),e=e&&"object"==typeof e?e.ptr:A(e),r=r&&"object"==typeof r?r.ptr:A(r),te(n,t,e,r)},N.prototype.GetAttribute=N.prototype.GetAttribute=function(t,e){var r=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),h(ce(r,t,e),j)},N.prototype.GetAttributeByUniqueId=N.prototype.GetAttributeByUniqueId=function(t,e){var r=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),h(Kt(r,t,e),j)},N.prototype.GetMetadata=N.prototype.GetMetadata=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),h(me(e,t),z)},N.prototype.GetAttributeMetadata=N.prototype.GetAttributeMetadata=function(t,e){var r=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),h(ae(r,t,e),z)},N.prototype.GetFaceFromMesh=N.prototype.GetFaceFromMesh=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!ye(n,t,e,r)},N.prototype.GetTriangleStripsFromMesh=N.prototype.GetTriangleStripsFromMesh=function(t,e){var r=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),fe(r,t,e)},N.prototype.GetAttributeFloat=N.prototype.GetAttributeFloat=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!Jt(n,t,e,r)},N.prototype.GetAttributeFloatForAllPoints=N.prototype.GetAttributeFloatForAllPoints=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!Zt(n,t,e,r)},N.prototype.GetAttributeIntForAllPoints=N.prototype.GetAttributeIntForAllPoints=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!_e(n,t,e,r)},N.prototype.GetAttributeInt8ForAllPoints=N.prototype.GetAttributeInt8ForAllPoints=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!ie(n,t,e,r)},N.prototype.GetAttributeUInt8ForAllPoints=N.prototype.GetAttributeUInt8ForAllPoints=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!se(n,t,e,r)},N.prototype.GetAttributeInt16ForAllPoints=N.prototype.GetAttributeInt16ForAllPoints=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!ne(n,t,e,r)},N.prototype.GetAttributeUInt16ForAllPoints=N.prototype.GetAttributeUInt16ForAllPoints=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!pe(n,t,e,r)},N.prototype.GetAttributeInt32ForAllPoints=N.prototype.GetAttributeInt32ForAllPoints=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!oe(n,t,e,r)},N.prototype.GetAttributeUInt32ForAllPoints=N.prototype.GetAttributeUInt32ForAllPoints=function(t,e,r){var n=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),e&&"object"==typeof e&&(e=e.ptr),r&&"object"==typeof r&&(r=r.ptr),!!ue(n,t,e,r)},N.prototype.SkipAttributeTransform=N.prototype.SkipAttributeTransform=function(t){var e=this.ptr;t&&"object"==typeof t&&(t=t.ptr),de(e,t)},N.prototype.__destroy__=N.prototype.__destroy__=function(){be(this.ptr)},F.prototype=Object.create(d.prototype),F.prototype.constructor=F,F.prototype.__class__=F,F.__cache__={},L.Mesh=F,F.prototype.num_faces=F.prototype.num_faces=function(){return Ke(this.ptr)},F.prototype.num_attributes=F.prototype.num_attributes=function(){return Xe(this.ptr)},F.prototype.num_points=F.prototype.num_points=function(){return Ze(this.ptr)},F.prototype.__destroy__=F.prototype.__destroy__=function(){Ye(this.ptr)},U.prototype=Object.create(d.prototype),U.prototype.constructor=U,U.prototype.__class__=U,U.__cache__={},L.VoidPtr=U,U.prototype.__destroy__=U.prototype.__destroy__=function(){Or(this.ptr)},B.prototype=Object.create(d.prototype),B.prototype.constructor=B,B.prototype.__class__=B,B.__cache__={},L.DracoInt32Array=B,B.prototype.GetValue=B.prototype.GetValue=function(t){var e=this.ptr;return t&&"object"==typeof t&&(t=t.ptr),Se(e,t)},B.prototype.size=B.prototype.size=function(){return Ge(this.ptr)},B.prototype.__destroy__=B.prototype.__destroy__=function(){Re(this.ptr)},z.prototype=Object.create(d.prototype),z.prototype.constructor=z,z.prototype.__class__=z,z.__cache__={},L.Metadata=z,z.prototype.__destroy__=z.prototype.__destroy__=function(){cr(this.ptr)},function(){function t(){L.OK=qr(),L.ERROR=Qr(),L.IO_ERROR=Wr(),L.INVALID_PARAMETER=Hr(),L.UNSUPPORTED_VERSION=Xr(),L.UNKNOWN_VERSION=Yr(),L.INVALID_GEOMETRY_TYPE=Fr(),L.POINT_CLOUD=Ur(),L.TRIANGULAR_MESH=Br(),L.ATTRIBUTE_INVALID_TRANSFORM=wr(),L.ATTRIBUTE_NO_TRANSFORM=Pr(),L.ATTRIBUTE_QUANTIZATION_TRANSFORM=Nr(),L.ATTRIBUTE_OCTAHEDRON_TRANSFORM=Cr(),L.INVALID=xr(),L.POSITION=Vr(),L.NORMAL=kr(),L.COLOR=zr(),L.TEX_COORD=$r(),L.GENERIC=Lr()}L.calledRun?t():ht.unshift(t)}(),"function"==typeof L.onModuleParsed&&L.onModuleParsed(),t};"object"==typeof exports&&"object"==typeof module?module.exports=DracoDecoderModule:"function"==typeof define&&define.amd?define("ThirdParty/Workers/draco_wasm_wrapper",[],function(){return DracoDecoderModule}):"object"==typeof exports&&(exports.DracoDecoderModule=DracoDecoderModule);
+var $jscomp = $jscomp || {};
+$jscomp.scope = {};
+$jscomp.arrayIteratorImpl = function (f) {
+    var m = 0;
+    return function () {
+        return m < f.length ? {done: !1, value: f[m++]} : {done: !0}
+    }
+};
+$jscomp.arrayIterator = function (f) {
+    return{next: $jscomp.arrayIteratorImpl(f)}
+};
+$jscomp.makeIterator = function (f) {
+    var m = "undefined" != typeof Symbol && Symbol.iterator && f[Symbol.iterator];
+    return m ? m.call(f) : $jscomp.arrayIterator(f)
+};
+$jscomp.getGlobal = function (f) {
+    return"undefined" != typeof window && window === f ? f : "undefined" != typeof global && null != global ? global : f
+};
+$jscomp.global = $jscomp.getGlobal(this);
+$jscomp.ASSUME_ES5 = !1;
+$jscomp.ASSUME_NO_NATIVE_MAP = !1;
+$jscomp.ASSUME_NO_NATIVE_SET = !1;
+$jscomp.SIMPLE_FROUND_POLYFILL = !1;
+$jscomp.defineProperty = $jscomp.ASSUME_ES5 || "function" == typeof Object.defineProperties ? Object.defineProperty : function (f, m, v) {
+    f != Array.prototype && f != Object.prototype && (f[m] = v.value)
+};
+$jscomp.polyfill = function (f, m, v, t) {
+    if (m) {
+        v = $jscomp.global;
+        f = f.split(".");
+        for (t = 0; t < f.length - 1; t++) {
+            var h = f[t];
+            h in v || (v[h] = {});
+            v = v[h]
+        }
+        f = f[f.length - 1];
+        t = v[f];
+        m = m(t);
+        m != t && null != m && $jscomp.defineProperty(v, f, {configurable: !0, writable: !0, value: m})
+    }
+};
+$jscomp.FORCE_POLYFILL_PROMISE = !1;
+$jscomp.polyfill("Promise", function (f) {
+    function m() {
+        this.batch_ = null
+    }
+
+    function v(e) {
+        return e instanceof h ? e : new h(function (l, f) {
+            l(e)
+        })
+    }
+
+    if (f && !$jscomp.FORCE_POLYFILL_PROMISE)return f;
+    m.prototype.asyncExecute = function (e) {
+        if (null == this.batch_) {
+            this.batch_ = [];
+            var l = this;
+            this.asyncExecuteFunction(function () {
+                l.executeBatch_()
+            })
+        }
+        this.batch_.push(e)
+    };
+    var t = $jscomp.global.setTimeout;
+    m.prototype.asyncExecuteFunction = function (e) {
+        t(e, 0)
+    };
+    m.prototype.executeBatch_ = function () {
+        for (; this.batch_ && this.batch_.length;) {
+            var e =
+                this.batch_;
+            this.batch_ = [];
+            for (var l = 0; l < e.length; ++l) {
+                var f = e[l];
+                e[l] = null;
+                try {
+                    f()
+                } catch (z) {
+                    this.asyncThrow_(z)
+                }
+            }
+        }
+        this.batch_ = null
+    };
+    m.prototype.asyncThrow_ = function (e) {
+        this.asyncExecuteFunction(function () {
+            throw e;
+        })
+    };
+    var h = function (e) {
+        this.state_ = 0;
+        this.result_ = void 0;
+        this.onSettledCallbacks_ = [];
+        var l = this.createResolveAndReject_();
+        try {
+            e(l.resolve, l.reject)
+        } catch (S) {
+            l.reject(S)
+        }
+    };
+    h.prototype.createResolveAndReject_ = function () {
+        function e(e) {
+            return function (h) {
+                f || (f = !0, e.call(l, h))
+            }
+        }
+
+        var l = this, f = !1;
+        return{resolve: e(this.resolveTo_), reject: e(this.reject_)}
+    };
+    h.prototype.resolveTo_ = function (e) {
+        if (e === this)this.reject_(new TypeError("A Promise cannot resolve to itself")); else if (e instanceof h)this.settleSameAsPromise_(e); else {
+            a:switch (typeof e) {
+                case "object":
+                    var l = null != e;
+                    break a;
+                case "function":
+                    l = !0;
+                    break a;
+                default:
+                    l = !1
+            }
+            l ? this.resolveToNonPromiseObj_(e) : this.fulfill_(e)
+        }
+    };
+    h.prototype.resolveToNonPromiseObj_ = function (e) {
+        var l = void 0;
+        try {
+            l = e.then
+        } catch (S) {
+            this.reject_(S);
+            return
+        }
+        "function" == typeof l ?
+            this.settleSameAsThenable_(l, e) : this.fulfill_(e)
+    };
+    h.prototype.reject_ = function (e) {
+        this.settle_(2, e)
+    };
+    h.prototype.fulfill_ = function (e) {
+        this.settle_(1, e)
+    };
+    h.prototype.settle_ = function (e, l) {
+        if (0 != this.state_)throw Error("Cannot settle(" + e + ", " + l + "): Promise already settled in state" + this.state_);
+        this.state_ = e;
+        this.result_ = l;
+        this.executeOnSettledCallbacks_()
+    };
+    h.prototype.executeOnSettledCallbacks_ = function () {
+        if (null != this.onSettledCallbacks_) {
+            for (var e = 0; e < this.onSettledCallbacks_.length; ++e)X.asyncExecute(this.onSettledCallbacks_[e]);
+            this.onSettledCallbacks_ = null
+        }
+    };
+    var X = new m;
+    h.prototype.settleSameAsPromise_ = function (e) {
+        var l = this.createResolveAndReject_();
+        e.callWhenSettled_(l.resolve, l.reject)
+    };
+    h.prototype.settleSameAsThenable_ = function (e, l) {
+        var f = this.createResolveAndReject_();
+        try {
+            e.call(l, f.resolve, f.reject)
+        } catch (z) {
+            f.reject(z)
+        }
+    };
+    h.prototype.then = function (e, f) {
+        function l(e, f) {
+            return"function" == typeof e ? function (f) {
+                try {
+                    m(e(f))
+                } catch (p) {
+                    v(p)
+                }
+            } : f
+        }
+
+        var m, v, t = new h(function (e, f) {
+            m = e;
+            v = f
+        });
+        this.callWhenSettled_(l(e, m), l(f, v));
+        return t
+    };
+    h.prototype.catch = function (e) {
+        return this.then(void 0, e)
+    };
+    h.prototype.callWhenSettled_ = function (e, f) {
+        function l() {
+            switch (h.state_) {
+                case 1:
+                    e(h.result_);
+                    break;
+                case 2:
+                    f(h.result_);
+                    break;
+                default:
+                    throw Error("Unexpected state: " + h.state_);
+            }
+        }
+
+        var h = this;
+        null == this.onSettledCallbacks_ ? X.asyncExecute(l) : this.onSettledCallbacks_.push(l)
+    };
+    h.resolve = v;
+    h.reject = function (e) {
+        return new h(function (f, h) {
+            h(e)
+        })
+    };
+    h.race = function (e) {
+        return new h(function (f, h) {
+            for (var l = $jscomp.makeIterator(e), m = l.next(); !m.done; m = l.next())v(m.value).callWhenSettled_(f,
+                h)
+        })
+    };
+    h.all = function (e) {
+        var f = $jscomp.makeIterator(e), m = f.next();
+        return m.done ? v([]) : new h(function (e, h) {
+            function l(f) {
+                return function (h) {
+                    t[f] = h;
+                    z--;
+                    0 == z && e(t)
+                }
+            }
+
+            var t = [], z = 0;
+            do t.push(void 0), z++, v(m.value).callWhenSettled_(l(t.length - 1), h), m = f.next(); while (!m.done)
+        })
+    };
+    return h
+}, "es6", "es3");
+var DracoDecoderModule = function () {
+    var f = "undefined" !== typeof document && document.currentScript ? document.currentScript.src : void 0;
+    "undefined" !== typeof __filename && (f = f || __filename);
+    return function (m) {
+        function v(k) {
+            return a.locateFile ? a.locateFile(k, M) : M + k
+        }
+
+        function t(a, c) {
+            a || z("Assertion failed: " + c)
+        }
+
+        function h(a, c, b) {
+            var d = c + b;
+            for (b = c; a[b] && !(b >= d);)++b;
+            if (16 < b - c && a.subarray && xa)return xa.decode(a.subarray(c, b));
+            for (d = ""; c < b;) {
+                var k = a[c++];
+                if (k & 128) {
+                    var e = a[c++] & 63;
+                    if (192 == (k & 224))d += String.fromCharCode((k &
+                        31) << 6 | e); else {
+                        var f = a[c++] & 63;
+                        k = 224 == (k & 240) ? (k & 15) << 12 | e << 6 | f : (k & 7) << 18 | e << 12 | f << 6 | a[c++] & 63;
+                        65536 > k ? d += String.fromCharCode(k) : (k -= 65536, d += String.fromCharCode(55296 | k >> 10, 56320 | k & 1023))
+                    }
+                } else d += String.fromCharCode(k)
+            }
+            return d
+        }
+
+        function X(a, c) {
+            return a ? h(ca, a, c) : ""
+        }
+
+        function e(a, c) {
+            0 < a % c && (a += c - a % c);
+            return a
+        }
+
+        function l(k) {
+            ka = k;
+            a.HEAP8 = T = new Int8Array(k);
+            a.HEAP16 = new Int16Array(k);
+            a.HEAP32 = P = new Int32Array(k);
+            a.HEAPU8 = ca = new Uint8Array(k);
+            a.HEAPU16 = new Uint16Array(k);
+            a.HEAPU32 = new Uint32Array(k);
+            a.HEAPF32 = new Float32Array(k);
+            a.HEAPF64 = new Float64Array(k)
+        }
+
+        function S(k) {
+            for (; 0 < k.length;) {
+                var c = k.shift();
+                if ("function" == typeof c)c(); else {
+                    var b = c.func;
+                    "number" === typeof b ? void 0 === c.arg ? a.dynCall_v(b) : a.dynCall_vi(b, c.arg) : b(void 0 === c.arg ? null : c.arg)
+                }
+            }
+        }
+
+        function z(k) {
+            if (a.onAbort)a.onAbort(k);
+            k += "";
+            ya(k);
+            Y(k);
+            za = !0;
+            throw new WebAssembly.RuntimeError("abort(" + k + "). Build with -s ASSERTIONS=1 for more info.");
+        }
+
+        function va(a) {
+            return String.prototype.startsWith ? a.startsWith("data:application/octet-stream;base64,") :
+                0 === a.indexOf("data:application/octet-stream;base64,")
+        }
+
+        function wa() {
+            try {
+                if (da)return new Uint8Array(da);
+                if (la)return la(U);
+                throw"both async and sync fetching of the wasm failed";
+            } catch (k) {
+                z(k)
+            }
+        }
+
+        function Ma() {
+            return da || !ea && !Z || "function" !== typeof fetch ? new Promise(function (a, c) {
+                a(wa())
+            }) : fetch(U, {credentials: "same-origin"}).then(function (a) {
+                if (!a.ok)throw"failed to load wasm binary file at '" + U + "'";
+                return a.arrayBuffer()
+            }).catch(function () {
+                return wa()
+            })
+        }
+
+        function ba() {
+            if (!ba.strings) {
+                var a = {USER: "web_user",
+                    LOGNAME: "web_user", PATH: "/", PWD: "/", HOME: "/home/web_user", LANG: ("object" === typeof navigator && navigator.languages && navigator.languages[0] || "C").replace("-", "_") + ".UTF-8", _: na}, c;
+                for (c in Aa)a[c] = Aa[c];
+                var b = [];
+                for (c in a)b.push(c + "=" + a[c]);
+                ba.strings = b
+            }
+            return ba.strings
+        }
+
+        function ma(k) {
+            function c() {
+                if (!fa && (fa = !0, !za)) {
+                    Ba = !0;
+                    S(Ca);
+                    S(Da);
+                    if (a.onRuntimeInitialized)a.onRuntimeInitialized();
+                    if (a.postRun)for ("function" == typeof a.postRun && (a.postRun = [a.postRun]); a.postRun.length;)Ea.unshift(a.postRun.shift());
+                    S(Ea)
+                }
+            }
+
+            if (!(0 < aa)) {
+                if (a.preRun)for ("function" == typeof a.preRun && (a.preRun = [a.preRun]); a.preRun.length;)Fa.unshift(a.preRun.shift());
+                S(Fa);
+                0 < aa || (a.setStatus ? (a.setStatus("Running..."), setTimeout(function () {
+                    setTimeout(function () {
+                        a.setStatus("")
+                    }, 1);
+                    c()
+                }, 1)) : c())
+            }
+        }
+
+        function p() {
+        }
+
+        function u(a) {
+            return(a || p).__cache__
+        }
+
+        function N(a, c) {
+            var b = u(c), d = b[a];
+            if (d)return d;
+            d = Object.create((c || p).prototype);
+            d.ptr = a;
+            return b[a] = d
+        }
+
+        function V(a) {
+            if ("string" === typeof a) {
+                for (var c = 0, b = 0; b < a.length; ++b) {
+                    var d = a.charCodeAt(b);
+                    55296 <= d && 57343 >= d && (d = 65536 + ((d & 1023) << 10) | a.charCodeAt(++b) & 1023);
+                    127 >= d ? ++c : c = 2047 >= d ? c + 2 : 65535 >= d ? c + 3 : c + 4
+                }
+                c = Array(c + 1);
+                b = 0;
+                d = c.length;
+                if (0 < d) {
+                    d = b + d - 1;
+                    for (var k = 0; k < a.length; ++k) {
+                        var e = a.charCodeAt(k);
+                        if (55296 <= e && 57343 >= e) {
+                            var f = a.charCodeAt(++k);
+                            e = 65536 + ((e & 1023) << 10) | f & 1023
+                        }
+                        if (127 >= e) {
+                            if (b >= d)break;
+                            c[b++] = e
+                        } else {
+                            if (2047 >= e) {
+                                if (b + 1 >= d)break;
+                                c[b++] = 192 | e >> 6
+                            } else {
+                                if (65535 >= e) {
+                                    if (b + 2 >= d)break;
+                                    c[b++] = 224 | e >> 12
+                                } else {
+                                    if (b + 3 >= d)break;
+                                    c[b++] = 240 | e >> 18;
+                                    c[b++] = 128 | e >> 12 & 63
+                                }
+                                c[b++] = 128 | e >> 6 & 63
+                            }
+                            c[b++] = 128 |
+                                e & 63
+                        }
+                    }
+                    c[b] = 0
+                }
+                a = n.alloc(c, T);
+                n.copy(c, T, a)
+            }
+            return a
+        }
+
+        function x() {
+            throw"cannot construct a Status, no constructor in IDL";
+        }
+
+        function A() {
+            this.ptr = Oa();
+            u(A)[this.ptr] = this
+        }
+
+        function B() {
+            this.ptr = Pa();
+            u(B)[this.ptr] = this
+        }
+
+        function C() {
+            this.ptr = Qa();
+            u(C)[this.ptr] = this
+        }
+
+        function D() {
+            this.ptr = Ra();
+            u(D)[this.ptr] = this
+        }
+
+        function E() {
+            this.ptr = Sa();
+            u(E)[this.ptr] = this
+        }
+
+        function q() {
+            this.ptr = Ta();
+            u(q)[this.ptr] = this
+        }
+
+        function J() {
+            this.ptr = Ua();
+            u(J)[this.ptr] = this
+        }
+
+        function w() {
+            this.ptr = Va();
+            u(w)[this.ptr] = this
+        }
+
+        function F() {
+            this.ptr =
+                Wa();
+            u(F)[this.ptr] = this
+        }
+
+        function r() {
+            this.ptr = Xa();
+            u(r)[this.ptr] = this
+        }
+
+        function G() {
+            this.ptr = Ya();
+            u(G)[this.ptr] = this
+        }
+
+        function H() {
+            this.ptr = Za();
+            u(H)[this.ptr] = this
+        }
+
+        function O() {
+            this.ptr = $a();
+            u(O)[this.ptr] = this
+        }
+
+        function K() {
+            this.ptr = ab();
+            u(K)[this.ptr] = this
+        }
+
+        function g() {
+            this.ptr = bb();
+            u(g)[this.ptr] = this
+        }
+
+        function y() {
+            this.ptr = cb();
+            u(y)[this.ptr] = this
+        }
+
+        function Q() {
+            throw"cannot construct a VoidPtr, no constructor in IDL";
+        }
+
+        function I() {
+            this.ptr = db();
+            u(I)[this.ptr] = this
+        }
+
+        function L() {
+            this.ptr = eb();
+            u(L)[this.ptr] =
+                this
+        }
+
+        m = m || {};
+        var a = "undefined" !== typeof m ? m : {}, Ga = !1, Ha = !1;
+        a.onRuntimeInitialized = function () {
+            Ga = !0;
+            if (Ha && "function" === typeof a.onModuleLoaded)a.onModuleLoaded(a)
+        };
+        a.onModuleParsed = function () {
+            Ha = !0;
+            if (Ga && "function" === typeof a.onModuleLoaded)a.onModuleLoaded(a)
+        };
+        a.isVersionSupported = function (a) {
+            if ("string" !== typeof a)return!1;
+            a = a.split(".");
+            return 2 > a.length || 3 < a.length ? !1 : 1 == a[0] && 0 <= a[1] && 3 >= a[1] ? !0 : 0 != a[0] || 10 < a[1] ? !1 : !0
+        };
+        var ha = {}, W;
+        for (W in a)a.hasOwnProperty(W) && (ha[W] = a[W]);
+        var na = "./this.program",
+            ea = !1, Z = !1, oa = !1, fb = !1, Ia = !1;
+        ea = "object" === typeof window;
+        Z = "function" === typeof importScripts;
+        oa = (fb = "object" === typeof process && "object" === typeof process.versions && "string" === typeof process.versions.node) && !ea && !Z;
+        Ia = !ea && !oa && !Z;
+        var M = "", pa, qa;
+        if (oa) {
+            M = __dirname + "/";
+            var ra = function (a, c) {
+                pa || (pa = require("fs"));
+                qa || (qa = require("path"));
+                a = qa.normalize(a);
+                return pa.readFileSync(a, c ? null : "utf8")
+            };
+            var la = function (a) {
+                a = ra(a, !0);
+                a.buffer || (a = new Uint8Array(a));
+                t(a.buffer);
+                return a
+            };
+            1 < process.argv.length &&
+            (na = process.argv[1].replace(/\\/g, "/"));
+            process.argv.slice(2);
+            process.on("uncaughtException", function (a) {
+                throw a;
+            });
+            process.on("unhandledRejection", z);
+            a.inspect = function () {
+                return"[Emscripten Module object]"
+            }
+        } else if (Ia)"undefined" != typeof read && (ra = function (a) {
+            return read(a)
+        }), la = function (a) {
+            if ("function" === typeof readbuffer)return new Uint8Array(readbuffer(a));
+            a = read(a, "binary");
+            t("object" === typeof a);
+            return a
+        }, "undefined" !== typeof print && ("undefined" === typeof console && (console = {}), console.log = print,
+            console.warn = console.error = "undefined" !== typeof printErr ? printErr : print); else if (ea || Z)Z ? M = self.location.href : document.currentScript && (M = document.currentScript.src), f && (M = f), M = 0 !== M.indexOf("blob:") ? M.substr(0, M.lastIndexOf("/") + 1) : "", ra = function (a) {
+            var c = new XMLHttpRequest;
+            c.open("GET", a, !1);
+            c.send(null);
+            return c.responseText
+        }, Z && (la = function (a) {
+            var c = new XMLHttpRequest;
+            c.open("GET", a, !1);
+            c.responseType = "arraybuffer";
+            c.send(null);
+            return new Uint8Array(c.response)
+        });
+        var ya = a.print || console.log.bind(console),
+            Y = a.printErr || console.warn.bind(console);
+        for (W in ha)ha.hasOwnProperty(W) && (a[W] = ha[W]);
+        ha = null;
+        a.thisProgram && (na = a.thisProgram);
+        var da;
+        a.wasmBinary && (da = a.wasmBinary);
+        "object" !== typeof WebAssembly && Y("no native wasm support detected");
+        var ia, gb = new WebAssembly.Table({initial: 381, maximum: 381, element: "anyfunc"}), za = !1, xa = "undefined" !== typeof TextDecoder ? new TextDecoder("utf8") : void 0;
+        "undefined" !== typeof TextDecoder && new TextDecoder("utf-16le");
+        var T, ca, P, Ja = a.TOTAL_MEMORY || 16777216;
+        if (ia = a.wasmMemory ?
+            a.wasmMemory : new WebAssembly.Memory({initial: Ja / 65536}))var ka = ia.buffer;
+        Ja = ka.byteLength;
+        l(ka);
+        P[4604] = 5261456;
+        var Fa = [], Ca = [], Da = [], Ea = [], Ba = !1, aa = 0, sa = null, ja = null;
+        a.preloadedImages = {};
+        a.preloadedAudios = {};
+        var U = "draco_decoder.wasm";
+        va(U) || (U = v(U));
+        Ca.push({func: function () {
+            hb()
+        }});
+        var Aa = {}, R = {buffers: [null, [], []], printChar: function (a, c) {
+            var b = R.buffers[a];
+            0 === c || 10 === c ? ((1 === a ? ya : Y)(h(b, 0)), b.length = 0) : b.push(c)
+        }, varargs: 0, get: function (a) {
+            R.varargs += 4;
+            return P[R.varargs - 4 >> 2]
+        }, getStr: function () {
+            return X(R.get())
+        },
+            get64: function () {
+                var a = R.get();
+                R.get();
+                return a
+            }, getZero: function () {
+                R.get()
+            }}, Ka = {__cxa_allocate_exception: function (a) {
+            return ib(a)
+        }, __cxa_throw: function (a, c, b) {
+            "uncaught_exception"in ta ? ta.uncaught_exceptions++ : ta.uncaught_exceptions = 1;
+            throw a;
+        }, abort: function () {
+            z()
+        }, emscripten_get_sbrk_ptr: function () {
+            return 18416
+        }, emscripten_memcpy_big: function (a, c, b) {
+            ca.set(ca.subarray(c, c + b), a)
+        }, emscripten_resize_heap: function (a) {
+            if (2147418112 < a)return!1;
+            for (var c = Math.max(T.length, 16777216); c < a;)c = 536870912 >=
+                c ? e(2 * c, 65536) : Math.min(e((3 * c + 2147483648) / 4, 65536), 2147418112);
+            a:{
+                try {
+                    ia.grow(c - ka.byteLength + 65535 >> 16);
+                    l(ia.buffer);
+                    var b = 1;
+                    break a
+                } catch (d) {
+                }
+                b = void 0
+            }
+            return b ? !0 : !1
+        }, environ_get: function (a, c) {
+            var b = 0;
+            ba().forEach(function (d, e) {
+                var f = c + b;
+                e = P[a + 4 * e >> 2] = f;
+                for (f = 0; f < d.length; ++f)T[e++ >> 0] = d.charCodeAt(f);
+                T[e >> 0] = 0;
+                b += d.length + 1
+            });
+            return 0
+        }, environ_sizes_get: function (a, c) {
+            var b = ba();
+            P[a >> 2] = b.length;
+            var d = 0;
+            b.forEach(function (a) {
+                d += a.length + 1
+            });
+            P[c >> 2] = d;
+            return 0
+        }, fd_close: function (a) {
+            return 0
+        }, fd_seek: function (a, c, b, d, e) {
+            return 0
+        }, fd_write: function (a, c, b, d) {
+            try {
+                for (var e = 0, f = 0; f < b; f++) {
+                    for (var g = P[c + 8 * f >> 2], k = P[c + (8 * f + 4) >> 2], h = 0; h < k; h++)R.printChar(a, ca[g + h]);
+                    e += k
+                }
+                P[d >> 2] = e;
+                return 0
+            } catch (ua) {
+                return"undefined" !== typeof FS && ua instanceof FS.ErrnoError || z(ua), ua.errno
+            }
+        }, memory: ia, setTempRet0: function (a) {
+        }, table: gb}, La = function () {
+            function e(c, b) {
+                a.asm = c.exports;
+                aa--;
+                a.monitorRunDependencies && a.monitorRunDependencies(aa);
+                0 == aa && (null !== sa && (clearInterval(sa), sa = null), ja && (c = ja, ja = null, c()))
+            }
+
+            function c(a) {
+                e(a.instance)
+            }
+
+            function b(a) {
+                return Ma().then(function (a) {
+                    return WebAssembly.instantiate(a, d)
+                }).then(a, function (a) {
+                    Y("failed to asynchronously prepare wasm: " + a);
+                    z(a)
+                })
+            }
+
+            var d = {env: Ka, wasi_unstable: Ka};
+            aa++;
+            a.monitorRunDependencies && a.monitorRunDependencies(aa);
+            if (a.instantiateWasm)try {
+                return a.instantiateWasm(d, e)
+            } catch (Na) {
+                return Y("Module.instantiateWasm callback failed with error: " + Na), !1
+            }
+            (function () {
+                if (da || "function" !== typeof WebAssembly.instantiateStreaming || va(U) || "function" !== typeof fetch)return b(c);
+                fetch(U,
+                    {credentials: "same-origin"}).then(function (a) {
+                        return WebAssembly.instantiateStreaming(a, d).then(c, function (a) {
+                            Y("wasm streaming compile failed: " + a);
+                            Y("falling back to ArrayBuffer instantiation");
+                            b(c)
+                        })
+                    })
+            })();
+            return{}
+        }();
+        a.asm = La;
+        var hb = a.___wasm_call_ctors = function () {
+                return a.asm.__wasm_call_ctors.apply(null, arguments)
+            }, jb = a._emscripten_bind_Status_code_0 = function () {
+                return a.asm.emscripten_bind_Status_code_0.apply(null, arguments)
+            }, kb = a._emscripten_bind_Status_ok_0 = function () {
+                return a.asm.emscripten_bind_Status_ok_0.apply(null,
+                    arguments)
+            }, lb = a._emscripten_bind_Status_error_msg_0 = function () {
+                return a.asm.emscripten_bind_Status_error_msg_0.apply(null, arguments)
+            }, mb = a._emscripten_bind_Status___destroy___0 = function () {
+                return a.asm.emscripten_bind_Status___destroy___0.apply(null, arguments)
+            }, Oa = a._emscripten_bind_DracoUInt16Array_DracoUInt16Array_0 = function () {
+                return a.asm.emscripten_bind_DracoUInt16Array_DracoUInt16Array_0.apply(null, arguments)
+            }, nb = a._emscripten_bind_DracoUInt16Array_GetValue_1 = function () {
+                return a.asm.emscripten_bind_DracoUInt16Array_GetValue_1.apply(null,
+                    arguments)
+            }, ob = a._emscripten_bind_DracoUInt16Array_size_0 = function () {
+                return a.asm.emscripten_bind_DracoUInt16Array_size_0.apply(null, arguments)
+            }, pb = a._emscripten_bind_DracoUInt16Array___destroy___0 = function () {
+                return a.asm.emscripten_bind_DracoUInt16Array___destroy___0.apply(null, arguments)
+            }, Pa = a._emscripten_bind_PointCloud_PointCloud_0 = function () {
+                return a.asm.emscripten_bind_PointCloud_PointCloud_0.apply(null, arguments)
+            }, qb = a._emscripten_bind_PointCloud_num_attributes_0 = function () {
+                return a.asm.emscripten_bind_PointCloud_num_attributes_0.apply(null,
+                    arguments)
+            }, rb = a._emscripten_bind_PointCloud_num_points_0 = function () {
+                return a.asm.emscripten_bind_PointCloud_num_points_0.apply(null, arguments)
+            }, sb = a._emscripten_bind_PointCloud___destroy___0 = function () {
+                return a.asm.emscripten_bind_PointCloud___destroy___0.apply(null, arguments)
+            }, Qa = a._emscripten_bind_DracoUInt8Array_DracoUInt8Array_0 = function () {
+                return a.asm.emscripten_bind_DracoUInt8Array_DracoUInt8Array_0.apply(null, arguments)
+            }, tb = a._emscripten_bind_DracoUInt8Array_GetValue_1 = function () {
+                return a.asm.emscripten_bind_DracoUInt8Array_GetValue_1.apply(null,
+                    arguments)
+            }, ub = a._emscripten_bind_DracoUInt8Array_size_0 = function () {
+                return a.asm.emscripten_bind_DracoUInt8Array_size_0.apply(null, arguments)
+            }, vb = a._emscripten_bind_DracoUInt8Array___destroy___0 = function () {
+                return a.asm.emscripten_bind_DracoUInt8Array___destroy___0.apply(null, arguments)
+            }, Ra = a._emscripten_bind_DracoUInt32Array_DracoUInt32Array_0 = function () {
+                return a.asm.emscripten_bind_DracoUInt32Array_DracoUInt32Array_0.apply(null, arguments)
+            }, wb = a._emscripten_bind_DracoUInt32Array_GetValue_1 = function () {
+                return a.asm.emscripten_bind_DracoUInt32Array_GetValue_1.apply(null,
+                    arguments)
+            }, xb = a._emscripten_bind_DracoUInt32Array_size_0 = function () {
+                return a.asm.emscripten_bind_DracoUInt32Array_size_0.apply(null, arguments)
+            }, yb = a._emscripten_bind_DracoUInt32Array___destroy___0 = function () {
+                return a.asm.emscripten_bind_DracoUInt32Array___destroy___0.apply(null, arguments)
+            }, Sa = a._emscripten_bind_AttributeOctahedronTransform_AttributeOctahedronTransform_0 = function () {
+                return a.asm.emscripten_bind_AttributeOctahedronTransform_AttributeOctahedronTransform_0.apply(null, arguments)
+            }, zb = a._emscripten_bind_AttributeOctahedronTransform_InitFromAttribute_1 =
+                function () {
+                    return a.asm.emscripten_bind_AttributeOctahedronTransform_InitFromAttribute_1.apply(null, arguments)
+                }, Ab = a._emscripten_bind_AttributeOctahedronTransform_quantization_bits_0 = function () {
+                return a.asm.emscripten_bind_AttributeOctahedronTransform_quantization_bits_0.apply(null, arguments)
+            }, Bb = a._emscripten_bind_AttributeOctahedronTransform___destroy___0 = function () {
+                return a.asm.emscripten_bind_AttributeOctahedronTransform___destroy___0.apply(null, arguments)
+            }, Ta = a._emscripten_bind_PointAttribute_PointAttribute_0 =
+                function () {
+                    return a.asm.emscripten_bind_PointAttribute_PointAttribute_0.apply(null, arguments)
+                }, Cb = a._emscripten_bind_PointAttribute_size_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_size_0.apply(null, arguments)
+            }, Db = a._emscripten_bind_PointAttribute_GetAttributeTransformData_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_GetAttributeTransformData_0.apply(null, arguments)
+            }, Eb = a._emscripten_bind_PointAttribute_attribute_type_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_attribute_type_0.apply(null,
+                    arguments)
+            }, Fb = a._emscripten_bind_PointAttribute_data_type_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_data_type_0.apply(null, arguments)
+            }, Gb = a._emscripten_bind_PointAttribute_num_components_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_num_components_0.apply(null, arguments)
+            }, Hb = a._emscripten_bind_PointAttribute_normalized_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_normalized_0.apply(null, arguments)
+            }, Ib = a._emscripten_bind_PointAttribute_byte_stride_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_byte_stride_0.apply(null,
+                    arguments)
+            }, Jb = a._emscripten_bind_PointAttribute_byte_offset_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_byte_offset_0.apply(null, arguments)
+            }, Kb = a._emscripten_bind_PointAttribute_unique_id_0 = function () {
+                return a.asm.emscripten_bind_PointAttribute_unique_id_0.apply(null, arguments)
+            }, Lb = a._emscripten_bind_PointAttribute___destroy___0 = function () {
+                return a.asm.emscripten_bind_PointAttribute___destroy___0.apply(null, arguments)
+            }, Ua = a._emscripten_bind_AttributeTransformData_AttributeTransformData_0 =
+                function () {
+                    return a.asm.emscripten_bind_AttributeTransformData_AttributeTransformData_0.apply(null, arguments)
+                }, Mb = a._emscripten_bind_AttributeTransformData_transform_type_0 = function () {
+                return a.asm.emscripten_bind_AttributeTransformData_transform_type_0.apply(null, arguments)
+            }, Nb = a._emscripten_bind_AttributeTransformData___destroy___0 = function () {
+                return a.asm.emscripten_bind_AttributeTransformData___destroy___0.apply(null, arguments)
+            }, Va = a._emscripten_bind_AttributeQuantizationTransform_AttributeQuantizationTransform_0 =
+                function () {
+                    return a.asm.emscripten_bind_AttributeQuantizationTransform_AttributeQuantizationTransform_0.apply(null, arguments)
+                }, Ob = a._emscripten_bind_AttributeQuantizationTransform_InitFromAttribute_1 = function () {
+                return a.asm.emscripten_bind_AttributeQuantizationTransform_InitFromAttribute_1.apply(null, arguments)
+            }, Pb = a._emscripten_bind_AttributeQuantizationTransform_quantization_bits_0 = function () {
+                return a.asm.emscripten_bind_AttributeQuantizationTransform_quantization_bits_0.apply(null, arguments)
+            },
+            Qb = a._emscripten_bind_AttributeQuantizationTransform_min_value_1 = function () {
+                return a.asm.emscripten_bind_AttributeQuantizationTransform_min_value_1.apply(null, arguments)
+            }, Rb = a._emscripten_bind_AttributeQuantizationTransform_range_0 = function () {
+                return a.asm.emscripten_bind_AttributeQuantizationTransform_range_0.apply(null, arguments)
+            }, Sb = a._emscripten_bind_AttributeQuantizationTransform___destroy___0 = function () {
+                return a.asm.emscripten_bind_AttributeQuantizationTransform___destroy___0.apply(null, arguments)
+            },
+            Wa = a._emscripten_bind_DracoInt8Array_DracoInt8Array_0 = function () {
+                return a.asm.emscripten_bind_DracoInt8Array_DracoInt8Array_0.apply(null, arguments)
+            }, Tb = a._emscripten_bind_DracoInt8Array_GetValue_1 = function () {
+                return a.asm.emscripten_bind_DracoInt8Array_GetValue_1.apply(null, arguments)
+            }, Ub = a._emscripten_bind_DracoInt8Array_size_0 = function () {
+                return a.asm.emscripten_bind_DracoInt8Array_size_0.apply(null, arguments)
+            }, Vb = a._emscripten_bind_DracoInt8Array___destroy___0 = function () {
+                return a.asm.emscripten_bind_DracoInt8Array___destroy___0.apply(null,
+                    arguments)
+            }, Xa = a._emscripten_bind_MetadataQuerier_MetadataQuerier_0 = function () {
+                return a.asm.emscripten_bind_MetadataQuerier_MetadataQuerier_0.apply(null, arguments)
+            }, Wb = a._emscripten_bind_MetadataQuerier_HasEntry_2 = function () {
+                return a.asm.emscripten_bind_MetadataQuerier_HasEntry_2.apply(null, arguments)
+            }, Xb = a._emscripten_bind_MetadataQuerier_GetIntEntry_2 = function () {
+                return a.asm.emscripten_bind_MetadataQuerier_GetIntEntry_2.apply(null, arguments)
+            }, Yb = a._emscripten_bind_MetadataQuerier_GetIntEntryArray_3 =
+                function () {
+                    return a.asm.emscripten_bind_MetadataQuerier_GetIntEntryArray_3.apply(null, arguments)
+                }, Zb = a._emscripten_bind_MetadataQuerier_GetDoubleEntry_2 = function () {
+                return a.asm.emscripten_bind_MetadataQuerier_GetDoubleEntry_2.apply(null, arguments)
+            }, $b = a._emscripten_bind_MetadataQuerier_GetStringEntry_2 = function () {
+                return a.asm.emscripten_bind_MetadataQuerier_GetStringEntry_2.apply(null, arguments)
+            }, ac = a._emscripten_bind_MetadataQuerier_NumEntries_1 = function () {
+                return a.asm.emscripten_bind_MetadataQuerier_NumEntries_1.apply(null,
+                    arguments)
+            }, bc = a._emscripten_bind_MetadataQuerier_GetEntryName_2 = function () {
+                return a.asm.emscripten_bind_MetadataQuerier_GetEntryName_2.apply(null, arguments)
+            }, cc = a._emscripten_bind_MetadataQuerier___destroy___0 = function () {
+                return a.asm.emscripten_bind_MetadataQuerier___destroy___0.apply(null, arguments)
+            }, Ya = a._emscripten_bind_DracoInt16Array_DracoInt16Array_0 = function () {
+                return a.asm.emscripten_bind_DracoInt16Array_DracoInt16Array_0.apply(null, arguments)
+            }, dc = a._emscripten_bind_DracoInt16Array_GetValue_1 =
+                function () {
+                    return a.asm.emscripten_bind_DracoInt16Array_GetValue_1.apply(null, arguments)
+                }, ec = a._emscripten_bind_DracoInt16Array_size_0 = function () {
+                return a.asm.emscripten_bind_DracoInt16Array_size_0.apply(null, arguments)
+            }, fc = a._emscripten_bind_DracoInt16Array___destroy___0 = function () {
+                return a.asm.emscripten_bind_DracoInt16Array___destroy___0.apply(null, arguments)
+            }, Za = a._emscripten_bind_DracoFloat32Array_DracoFloat32Array_0 = function () {
+                return a.asm.emscripten_bind_DracoFloat32Array_DracoFloat32Array_0.apply(null,
+                    arguments)
+            }, gc = a._emscripten_bind_DracoFloat32Array_GetValue_1 = function () {
+                return a.asm.emscripten_bind_DracoFloat32Array_GetValue_1.apply(null, arguments)
+            }, hc = a._emscripten_bind_DracoFloat32Array_size_0 = function () {
+                return a.asm.emscripten_bind_DracoFloat32Array_size_0.apply(null, arguments)
+            }, ic = a._emscripten_bind_DracoFloat32Array___destroy___0 = function () {
+                return a.asm.emscripten_bind_DracoFloat32Array___destroy___0.apply(null, arguments)
+            }, $a = a._emscripten_bind_GeometryAttribute_GeometryAttribute_0 = function () {
+                return a.asm.emscripten_bind_GeometryAttribute_GeometryAttribute_0.apply(null,
+                    arguments)
+            }, jc = a._emscripten_bind_GeometryAttribute___destroy___0 = function () {
+                return a.asm.emscripten_bind_GeometryAttribute___destroy___0.apply(null, arguments)
+            }, ab = a._emscripten_bind_DecoderBuffer_DecoderBuffer_0 = function () {
+                return a.asm.emscripten_bind_DecoderBuffer_DecoderBuffer_0.apply(null, arguments)
+            }, kc = a._emscripten_bind_DecoderBuffer_Init_2 = function () {
+                return a.asm.emscripten_bind_DecoderBuffer_Init_2.apply(null, arguments)
+            }, lc = a._emscripten_bind_DecoderBuffer___destroy___0 = function () {
+                return a.asm.emscripten_bind_DecoderBuffer___destroy___0.apply(null,
+                    arguments)
+            }, bb = a._emscripten_bind_Decoder_Decoder_0 = function () {
+                return a.asm.emscripten_bind_Decoder_Decoder_0.apply(null, arguments)
+            }, mc = a._emscripten_bind_Decoder_GetEncodedGeometryType_1 = function () {
+                return a.asm.emscripten_bind_Decoder_GetEncodedGeometryType_1.apply(null, arguments)
+            }, nc = a._emscripten_bind_Decoder_DecodeBufferToPointCloud_2 = function () {
+                return a.asm.emscripten_bind_Decoder_DecodeBufferToPointCloud_2.apply(null, arguments)
+            }, oc = a._emscripten_bind_Decoder_DecodeBufferToMesh_2 = function () {
+                return a.asm.emscripten_bind_Decoder_DecodeBufferToMesh_2.apply(null,
+                    arguments)
+            }, pc = a._emscripten_bind_Decoder_GetAttributeId_2 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeId_2.apply(null, arguments)
+            }, qc = a._emscripten_bind_Decoder_GetAttributeIdByName_2 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeIdByName_2.apply(null, arguments)
+            }, rc = a._emscripten_bind_Decoder_GetAttributeIdByMetadataEntry_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeIdByMetadataEntry_3.apply(null, arguments)
+            }, sc = a._emscripten_bind_Decoder_GetAttribute_2 =
+                function () {
+                    return a.asm.emscripten_bind_Decoder_GetAttribute_2.apply(null, arguments)
+                }, tc = a._emscripten_bind_Decoder_GetAttributeByUniqueId_2 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeByUniqueId_2.apply(null, arguments)
+            }, uc = a._emscripten_bind_Decoder_GetMetadata_1 = function () {
+                return a.asm.emscripten_bind_Decoder_GetMetadata_1.apply(null, arguments)
+            }, vc = a._emscripten_bind_Decoder_GetAttributeMetadata_2 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeMetadata_2.apply(null,
+                    arguments)
+            }, wc = a._emscripten_bind_Decoder_GetFaceFromMesh_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetFaceFromMesh_3.apply(null, arguments)
+            }, xc = a._emscripten_bind_Decoder_GetTriangleStripsFromMesh_2 = function () {
+                return a.asm.emscripten_bind_Decoder_GetTriangleStripsFromMesh_2.apply(null, arguments)
+            }, yc = a._emscripten_bind_Decoder_GetTrianglesUInt16Array_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetTrianglesUInt16Array_3.apply(null, arguments)
+            }, zc = a._emscripten_bind_Decoder_GetTrianglesUInt32Array_3 =
+                function () {
+                    return a.asm.emscripten_bind_Decoder_GetTrianglesUInt32Array_3.apply(null, arguments)
+                }, Ac = a._emscripten_bind_Decoder_GetAttributeFloat_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeFloat_3.apply(null, arguments)
+            }, Bc = a._emscripten_bind_Decoder_GetAttributeFloatForAllPoints_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeFloatForAllPoints_3.apply(null, arguments)
+            }, Cc = a._emscripten_bind_Decoder_GetAttributeIntForAllPoints_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeIntForAllPoints_3.apply(null,
+                    arguments)
+            }, Dc = a._emscripten_bind_Decoder_GetAttributeInt8ForAllPoints_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeInt8ForAllPoints_3.apply(null, arguments)
+            }, Ec = a._emscripten_bind_Decoder_GetAttributeUInt8ForAllPoints_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeUInt8ForAllPoints_3.apply(null, arguments)
+            }, Fc = a._emscripten_bind_Decoder_GetAttributeInt16ForAllPoints_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeInt16ForAllPoints_3.apply(null, arguments)
+            },
+            Gc = a._emscripten_bind_Decoder_GetAttributeUInt16ForAllPoints_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeUInt16ForAllPoints_3.apply(null, arguments)
+            }, Hc = a._emscripten_bind_Decoder_GetAttributeInt32ForAllPoints_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeInt32ForAllPoints_3.apply(null, arguments)
+            }, Ic = a._emscripten_bind_Decoder_GetAttributeUInt32ForAllPoints_3 = function () {
+                return a.asm.emscripten_bind_Decoder_GetAttributeUInt32ForAllPoints_3.apply(null, arguments)
+            }, Jc =
+                a._emscripten_bind_Decoder_GetAttributeDataArrayForAllPoints_5 = function () {
+                    return a.asm.emscripten_bind_Decoder_GetAttributeDataArrayForAllPoints_5.apply(null, arguments)
+                }, Kc = a._emscripten_bind_Decoder_SkipAttributeTransform_1 = function () {
+                return a.asm.emscripten_bind_Decoder_SkipAttributeTransform_1.apply(null, arguments)
+            }, Lc = a._emscripten_bind_Decoder___destroy___0 = function () {
+                return a.asm.emscripten_bind_Decoder___destroy___0.apply(null, arguments)
+            }, cb = a._emscripten_bind_Mesh_Mesh_0 = function () {
+                return a.asm.emscripten_bind_Mesh_Mesh_0.apply(null,
+                    arguments)
+            }, Mc = a._emscripten_bind_Mesh_num_faces_0 = function () {
+                return a.asm.emscripten_bind_Mesh_num_faces_0.apply(null, arguments)
+            }, Nc = a._emscripten_bind_Mesh_num_attributes_0 = function () {
+                return a.asm.emscripten_bind_Mesh_num_attributes_0.apply(null, arguments)
+            }, Oc = a._emscripten_bind_Mesh_num_points_0 = function () {
+                return a.asm.emscripten_bind_Mesh_num_points_0.apply(null, arguments)
+            }, Pc = a._emscripten_bind_Mesh___destroy___0 = function () {
+                return a.asm.emscripten_bind_Mesh___destroy___0.apply(null, arguments)
+            },
+            Qc = a._emscripten_bind_VoidPtr___destroy___0 = function () {
+                return a.asm.emscripten_bind_VoidPtr___destroy___0.apply(null, arguments)
+            }, db = a._emscripten_bind_DracoInt32Array_DracoInt32Array_0 = function () {
+                return a.asm.emscripten_bind_DracoInt32Array_DracoInt32Array_0.apply(null, arguments)
+            }, Rc = a._emscripten_bind_DracoInt32Array_GetValue_1 = function () {
+                return a.asm.emscripten_bind_DracoInt32Array_GetValue_1.apply(null, arguments)
+            }, Sc = a._emscripten_bind_DracoInt32Array_size_0 = function () {
+                return a.asm.emscripten_bind_DracoInt32Array_size_0.apply(null,
+                    arguments)
+            }, Tc = a._emscripten_bind_DracoInt32Array___destroy___0 = function () {
+                return a.asm.emscripten_bind_DracoInt32Array___destroy___0.apply(null, arguments)
+            }, eb = a._emscripten_bind_Metadata_Metadata_0 = function () {
+                return a.asm.emscripten_bind_Metadata_Metadata_0.apply(null, arguments)
+            }, Uc = a._emscripten_bind_Metadata___destroy___0 = function () {
+                return a.asm.emscripten_bind_Metadata___destroy___0.apply(null, arguments)
+            }, Vc = a._emscripten_enum_draco_StatusCode_OK = function () {
+                return a.asm.emscripten_enum_draco_StatusCode_OK.apply(null,
+                    arguments)
+            }, Wc = a._emscripten_enum_draco_StatusCode_DRACO_ERROR = function () {
+                return a.asm.emscripten_enum_draco_StatusCode_DRACO_ERROR.apply(null, arguments)
+            }, Xc = a._emscripten_enum_draco_StatusCode_IO_ERROR = function () {
+                return a.asm.emscripten_enum_draco_StatusCode_IO_ERROR.apply(null, arguments)
+            }, Yc = a._emscripten_enum_draco_StatusCode_INVALID_PARAMETER = function () {
+                return a.asm.emscripten_enum_draco_StatusCode_INVALID_PARAMETER.apply(null, arguments)
+            }, Zc = a._emscripten_enum_draco_StatusCode_UNSUPPORTED_VERSION =
+                function () {
+                    return a.asm.emscripten_enum_draco_StatusCode_UNSUPPORTED_VERSION.apply(null, arguments)
+                }, $c = a._emscripten_enum_draco_StatusCode_UNKNOWN_VERSION = function () {
+                return a.asm.emscripten_enum_draco_StatusCode_UNKNOWN_VERSION.apply(null, arguments)
+            }, ad = a._emscripten_enum_draco_DataType_DT_INVALID = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_INVALID.apply(null, arguments)
+            }, bd = a._emscripten_enum_draco_DataType_DT_INT8 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_INT8.apply(null,
+                    arguments)
+            }, cd = a._emscripten_enum_draco_DataType_DT_UINT8 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_UINT8.apply(null, arguments)
+            }, dd = a._emscripten_enum_draco_DataType_DT_INT16 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_INT16.apply(null, arguments)
+            }, ed = a._emscripten_enum_draco_DataType_DT_UINT16 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_UINT16.apply(null, arguments)
+            }, fd = a._emscripten_enum_draco_DataType_DT_INT32 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_INT32.apply(null,
+                    arguments)
+            }, gd = a._emscripten_enum_draco_DataType_DT_UINT32 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_UINT32.apply(null, arguments)
+            }, hd = a._emscripten_enum_draco_DataType_DT_INT64 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_INT64.apply(null, arguments)
+            }, id = a._emscripten_enum_draco_DataType_DT_UINT64 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_UINT64.apply(null, arguments)
+            }, jd = a._emscripten_enum_draco_DataType_DT_FLOAT32 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_FLOAT32.apply(null,
+                    arguments)
+            }, kd = a._emscripten_enum_draco_DataType_DT_FLOAT64 = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_FLOAT64.apply(null, arguments)
+            }, ld = a._emscripten_enum_draco_DataType_DT_BOOL = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_BOOL.apply(null, arguments)
+            }, md = a._emscripten_enum_draco_DataType_DT_TYPES_COUNT = function () {
+                return a.asm.emscripten_enum_draco_DataType_DT_TYPES_COUNT.apply(null, arguments)
+            }, nd = a._emscripten_enum_draco_EncodedGeometryType_INVALID_GEOMETRY_TYPE = function () {
+                return a.asm.emscripten_enum_draco_EncodedGeometryType_INVALID_GEOMETRY_TYPE.apply(null,
+                    arguments)
+            }, od = a._emscripten_enum_draco_EncodedGeometryType_POINT_CLOUD = function () {
+                return a.asm.emscripten_enum_draco_EncodedGeometryType_POINT_CLOUD.apply(null, arguments)
+            }, pd = a._emscripten_enum_draco_EncodedGeometryType_TRIANGULAR_MESH = function () {
+                return a.asm.emscripten_enum_draco_EncodedGeometryType_TRIANGULAR_MESH.apply(null, arguments)
+            }, qd = a._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_INVALID_TRANSFORM = function () {
+                return a.asm.emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_INVALID_TRANSFORM.apply(null,
+                    arguments)
+            }, rd = a._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_NO_TRANSFORM = function () {
+                return a.asm.emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_NO_TRANSFORM.apply(null, arguments)
+            }, sd = a._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_QUANTIZATION_TRANSFORM = function () {
+                return a.asm.emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_QUANTIZATION_TRANSFORM.apply(null, arguments)
+            }, td = a._emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_OCTAHEDRON_TRANSFORM = function () {
+                return a.asm.emscripten_enum_draco_AttributeTransformType_ATTRIBUTE_OCTAHEDRON_TRANSFORM.apply(null,
+                    arguments)
+            }, ud = a._emscripten_enum_draco_GeometryAttribute_Type_INVALID = function () {
+                return a.asm.emscripten_enum_draco_GeometryAttribute_Type_INVALID.apply(null, arguments)
+            }, vd = a._emscripten_enum_draco_GeometryAttribute_Type_POSITION = function () {
+                return a.asm.emscripten_enum_draco_GeometryAttribute_Type_POSITION.apply(null, arguments)
+            }, wd = a._emscripten_enum_draco_GeometryAttribute_Type_NORMAL = function () {
+                return a.asm.emscripten_enum_draco_GeometryAttribute_Type_NORMAL.apply(null, arguments)
+            }, xd = a._emscripten_enum_draco_GeometryAttribute_Type_COLOR =
+                function () {
+                    return a.asm.emscripten_enum_draco_GeometryAttribute_Type_COLOR.apply(null, arguments)
+                }, yd = a._emscripten_enum_draco_GeometryAttribute_Type_TEX_COORD = function () {
+                return a.asm.emscripten_enum_draco_GeometryAttribute_Type_TEX_COORD.apply(null, arguments)
+            }, zd = a._emscripten_enum_draco_GeometryAttribute_Type_GENERIC = function () {
+                return a.asm.emscripten_enum_draco_GeometryAttribute_Type_GENERIC.apply(null, arguments)
+            };
+        a._setThrew = function () {
+            return a.asm.setThrew.apply(null, arguments)
+        };
+        var ta = a.__ZSt18uncaught_exceptionv =
+            function () {
+                return a.asm._ZSt18uncaught_exceptionv.apply(null, arguments)
+            };
+        a._free = function () {
+            return a.asm.free.apply(null, arguments)
+        };
+        var ib = a._malloc = function () {
+            return a.asm.malloc.apply(null, arguments)
+        };
+        a.stackSave = function () {
+            return a.asm.stackSave.apply(null, arguments)
+        };
+        a.stackAlloc = function () {
+            return a.asm.stackAlloc.apply(null, arguments)
+        };
+        a.stackRestore = function () {
+            return a.asm.stackRestore.apply(null, arguments)
+        };
+        a.__growWasmMemory = function () {
+            return a.asm.__growWasmMemory.apply(null, arguments)
+        };
+        a.dynCall_ii = function () {
+            return a.asm.dynCall_ii.apply(null, arguments)
+        };
+        a.dynCall_vi = function () {
+            return a.asm.dynCall_vi.apply(null, arguments)
+        };
+        a.dynCall_iii = function () {
+            return a.asm.dynCall_iii.apply(null, arguments)
+        };
+        a.dynCall_vii = function () {
+            return a.asm.dynCall_vii.apply(null, arguments)
+        };
+        a.dynCall_iiii = function () {
+            return a.asm.dynCall_iiii.apply(null, arguments)
+        };
+        a.dynCall_v = function () {
+            return a.asm.dynCall_v.apply(null, arguments)
+        };
+        a.dynCall_viii = function () {
+            return a.asm.dynCall_viii.apply(null, arguments)
+        };
+        a.dynCall_viiii = function () {
+            return a.asm.dynCall_viiii.apply(null, arguments)
+        };
+        a.dynCall_iiiiiii = function () {
+            return a.asm.dynCall_iiiiiii.apply(null, arguments)
+        };
+        a.dynCall_iidiiii = function () {
+            return a.asm.dynCall_iidiiii.apply(null, arguments)
+        };
+        a.dynCall_jiji = function () {
+            return a.asm.dynCall_jiji.apply(null, arguments)
+        };
+        a.dynCall_viiiiii = function () {
+            return a.asm.dynCall_viiiiii.apply(null, arguments)
+        };
+        a.dynCall_viiiii = function () {
+            return a.asm.dynCall_viiiii.apply(null, arguments)
+        };
+        a.asm = La;
+        var fa;
+        a.then = function (e) {
+            if (fa)e(a);
+            else {
+                var c = a.onRuntimeInitialized;
+                a.onRuntimeInitialized = function () {
+                    c && c();
+                    e(a)
+                }
+            }
+            return a
+        };
+        ja = function c() {
+            fa || ma();
+            fa || (ja = c)
+        };
+        a.run = ma;
+        if (a.preInit)for ("function" == typeof a.preInit && (a.preInit = [a.preInit]); 0 < a.preInit.length;)a.preInit.pop()();
+        ma();
+        p.prototype = Object.create(p.prototype);
+        p.prototype.constructor = p;
+        p.prototype.__class__ = p;
+        p.__cache__ = {};
+        a.WrapperObject = p;
+        a.getCache = u;
+        a.wrapPointer = N;
+        a.castObject = function (a, b) {
+            return N(a.ptr, b)
+        };
+        a.NULL = N(0);
+        a.destroy = function (a) {
+            if (!a.__destroy__)throw"Error: Cannot destroy object. (Did you create it yourself?)";
+            a.__destroy__();
+            delete u(a.__class__)[a.ptr]
+        };
+        a.compare = function (a, b) {
+            return a.ptr === b.ptr
+        };
+        a.getPointer = function (a) {
+            return a.ptr
+        };
+        a.getClass = function (a) {
+            return a.__class__
+        };
+        var n = {buffer: 0, size: 0, pos: 0, temps: [], needed: 0, prepare: function () {
+            if (n.needed) {
+                for (var c = 0; c < n.temps.length; c++)a._free(n.temps[c]);
+                n.temps.length = 0;
+                a._free(n.buffer);
+                n.buffer = 0;
+                n.size += n.needed;
+                n.needed = 0
+            }
+            n.buffer || (n.size += 128, n.buffer = a._malloc(n.size), t(n.buffer));
+            n.pos = 0
+        }, alloc: function (c, b) {
+            t(n.buffer);
+            c = c.length * b.BYTES_PER_ELEMENT;
+            c = c + 7 & -8;
+            n.pos + c >= n.size ? (t(0 < c), n.needed += c, b = a._malloc(c), n.temps.push(b)) : (b = n.buffer + n.pos, n.pos += c);
+            return b
+        }, copy: function (a, b, d) {
+            switch (b.BYTES_PER_ELEMENT) {
+                case 2:
+                    d >>= 1;
+                    break;
+                case 4:
+                    d >>= 2;
+                    break;
+                case 8:
+                    d >>= 3
+            }
+            for (var c = 0; c < a.length; c++)b[d + c] = a[c]
+        }};
+        x.prototype = Object.create(p.prototype);
+        x.prototype.constructor = x;
+        x.prototype.__class__ = x;
+        x.__cache__ = {};
+        a.Status = x;
+        x.prototype.code = x.prototype.code = function () {
+            return jb(this.ptr)
+        };
+        x.prototype.ok = x.prototype.ok = function () {
+            return!!kb(this.ptr)
+        };
+        x.prototype.error_msg =
+            x.prototype.error_msg = function () {
+                return X(lb(this.ptr))
+            };
+        x.prototype.__destroy__ = x.prototype.__destroy__ = function () {
+            mb(this.ptr)
+        };
+        A.prototype = Object.create(p.prototype);
+        A.prototype.constructor = A;
+        A.prototype.__class__ = A;
+        A.__cache__ = {};
+        a.DracoUInt16Array = A;
+        A.prototype.GetValue = A.prototype.GetValue = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return nb(c, a)
+        };
+        A.prototype.size = A.prototype.size = function () {
+            return ob(this.ptr)
+        };
+        A.prototype.__destroy__ = A.prototype.__destroy__ = function () {
+            pb(this.ptr)
+        };
+        B.prototype = Object.create(p.prototype);
+        B.prototype.constructor = B;
+        B.prototype.__class__ = B;
+        B.__cache__ = {};
+        a.PointCloud = B;
+        B.prototype.num_attributes = B.prototype.num_attributes = function () {
+            return qb(this.ptr)
+        };
+        B.prototype.num_points = B.prototype.num_points = function () {
+            return rb(this.ptr)
+        };
+        B.prototype.__destroy__ = B.prototype.__destroy__ = function () {
+            sb(this.ptr)
+        };
+        C.prototype = Object.create(p.prototype);
+        C.prototype.constructor = C;
+        C.prototype.__class__ = C;
+        C.__cache__ = {};
+        a.DracoUInt8Array = C;
+        C.prototype.GetValue =
+            C.prototype.GetValue = function (a) {
+                var c = this.ptr;
+                a && "object" === typeof a && (a = a.ptr);
+                return tb(c, a)
+            };
+        C.prototype.size = C.prototype.size = function () {
+            return ub(this.ptr)
+        };
+        C.prototype.__destroy__ = C.prototype.__destroy__ = function () {
+            vb(this.ptr)
+        };
+        D.prototype = Object.create(p.prototype);
+        D.prototype.constructor = D;
+        D.prototype.__class__ = D;
+        D.__cache__ = {};
+        a.DracoUInt32Array = D;
+        D.prototype.GetValue = D.prototype.GetValue = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return wb(c, a)
+        };
+        D.prototype.size = D.prototype.size =
+            function () {
+                return xb(this.ptr)
+            };
+        D.prototype.__destroy__ = D.prototype.__destroy__ = function () {
+            yb(this.ptr)
+        };
+        E.prototype = Object.create(p.prototype);
+        E.prototype.constructor = E;
+        E.prototype.__class__ = E;
+        E.__cache__ = {};
+        a.AttributeOctahedronTransform = E;
+        E.prototype.InitFromAttribute = E.prototype.InitFromAttribute = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return!!zb(c, a)
+        };
+        E.prototype.quantization_bits = E.prototype.quantization_bits = function () {
+            return Ab(this.ptr)
+        };
+        E.prototype.__destroy__ = E.prototype.__destroy__ =
+            function () {
+                Bb(this.ptr)
+            };
+        q.prototype = Object.create(p.prototype);
+        q.prototype.constructor = q;
+        q.prototype.__class__ = q;
+        q.__cache__ = {};
+        a.PointAttribute = q;
+        q.prototype.size = q.prototype.size = function () {
+            return Cb(this.ptr)
+        };
+        q.prototype.GetAttributeTransformData = q.prototype.GetAttributeTransformData = function () {
+            return N(Db(this.ptr), J)
+        };
+        q.prototype.attribute_type = q.prototype.attribute_type = function () {
+            return Eb(this.ptr)
+        };
+        q.prototype.data_type = q.prototype.data_type = function () {
+            return Fb(this.ptr)
+        };
+        q.prototype.num_components =
+            q.prototype.num_components = function () {
+                return Gb(this.ptr)
+            };
+        q.prototype.normalized = q.prototype.normalized = function () {
+            return!!Hb(this.ptr)
+        };
+        q.prototype.byte_stride = q.prototype.byte_stride = function () {
+            return Ib(this.ptr)
+        };
+        q.prototype.byte_offset = q.prototype.byte_offset = function () {
+            return Jb(this.ptr)
+        };
+        q.prototype.unique_id = q.prototype.unique_id = function () {
+            return Kb(this.ptr)
+        };
+        q.prototype.__destroy__ = q.prototype.__destroy__ = function () {
+            Lb(this.ptr)
+        };
+        J.prototype = Object.create(p.prototype);
+        J.prototype.constructor =
+            J;
+        J.prototype.__class__ = J;
+        J.__cache__ = {};
+        a.AttributeTransformData = J;
+        J.prototype.transform_type = J.prototype.transform_type = function () {
+            return Mb(this.ptr)
+        };
+        J.prototype.__destroy__ = J.prototype.__destroy__ = function () {
+            Nb(this.ptr)
+        };
+        w.prototype = Object.create(p.prototype);
+        w.prototype.constructor = w;
+        w.prototype.__class__ = w;
+        w.__cache__ = {};
+        a.AttributeQuantizationTransform = w;
+        w.prototype.InitFromAttribute = w.prototype.InitFromAttribute = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return!!Ob(c, a)
+        };
+        w.prototype.quantization_bits = w.prototype.quantization_bits = function () {
+            return Pb(this.ptr)
+        };
+        w.prototype.min_value = w.prototype.min_value = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return Qb(c, a)
+        };
+        w.prototype.range = w.prototype.range = function () {
+            return Rb(this.ptr)
+        };
+        w.prototype.__destroy__ = w.prototype.__destroy__ = function () {
+            Sb(this.ptr)
+        };
+        F.prototype = Object.create(p.prototype);
+        F.prototype.constructor = F;
+        F.prototype.__class__ = F;
+        F.__cache__ = {};
+        a.DracoInt8Array = F;
+        F.prototype.GetValue = F.prototype.GetValue =
+            function (a) {
+                var c = this.ptr;
+                a && "object" === typeof a && (a = a.ptr);
+                return Tb(c, a)
+            };
+        F.prototype.size = F.prototype.size = function () {
+            return Ub(this.ptr)
+        };
+        F.prototype.__destroy__ = F.prototype.__destroy__ = function () {
+            Vb(this.ptr)
+        };
+        r.prototype = Object.create(p.prototype);
+        r.prototype.constructor = r;
+        r.prototype.__class__ = r;
+        r.__cache__ = {};
+        a.MetadataQuerier = r;
+        r.prototype.HasEntry = r.prototype.HasEntry = function (a, b) {
+            var c = this.ptr;
+            n.prepare();
+            a && "object" === typeof a && (a = a.ptr);
+            b = b && "object" === typeof b ? b.ptr : V(b);
+            return!!Wb(c,
+                a, b)
+        };
+        r.prototype.GetIntEntry = r.prototype.GetIntEntry = function (a, b) {
+            var c = this.ptr;
+            n.prepare();
+            a && "object" === typeof a && (a = a.ptr);
+            b = b && "object" === typeof b ? b.ptr : V(b);
+            return Xb(c, a, b)
+        };
+        r.prototype.GetIntEntryArray = r.prototype.GetIntEntryArray = function (a, b, d) {
+            var c = this.ptr;
+            n.prepare();
+            a && "object" === typeof a && (a = a.ptr);
+            b = b && "object" === typeof b ? b.ptr : V(b);
+            d && "object" === typeof d && (d = d.ptr);
+            Yb(c, a, b, d)
+        };
+        r.prototype.GetDoubleEntry = r.prototype.GetDoubleEntry = function (a, b) {
+            var c = this.ptr;
+            n.prepare();
+            a && "object" === typeof a && (a = a.ptr);
+            b = b && "object" === typeof b ? b.ptr : V(b);
+            return Zb(c, a, b)
+        };
+        r.prototype.GetStringEntry = r.prototype.GetStringEntry = function (a, b) {
+            var c = this.ptr;
+            n.prepare();
+            a && "object" === typeof a && (a = a.ptr);
+            b = b && "object" === typeof b ? b.ptr : V(b);
+            return X($b(c, a, b))
+        };
+        r.prototype.NumEntries = r.prototype.NumEntries = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return ac(c, a)
+        };
+        r.prototype.GetEntryName = r.prototype.GetEntryName = function (a, b) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            return X(bc(c, a, b))
+        };
+        r.prototype.__destroy__ = r.prototype.__destroy__ = function () {
+            cc(this.ptr)
+        };
+        G.prototype = Object.create(p.prototype);
+        G.prototype.constructor = G;
+        G.prototype.__class__ = G;
+        G.__cache__ = {};
+        a.DracoInt16Array = G;
+        G.prototype.GetValue = G.prototype.GetValue = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return dc(c, a)
+        };
+        G.prototype.size = G.prototype.size = function () {
+            return ec(this.ptr)
+        };
+        G.prototype.__destroy__ = G.prototype.__destroy__ = function () {
+            fc(this.ptr)
+        };
+        H.prototype =
+            Object.create(p.prototype);
+        H.prototype.constructor = H;
+        H.prototype.__class__ = H;
+        H.__cache__ = {};
+        a.DracoFloat32Array = H;
+        H.prototype.GetValue = H.prototype.GetValue = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return gc(c, a)
+        };
+        H.prototype.size = H.prototype.size = function () {
+            return hc(this.ptr)
+        };
+        H.prototype.__destroy__ = H.prototype.__destroy__ = function () {
+            ic(this.ptr)
+        };
+        O.prototype = Object.create(p.prototype);
+        O.prototype.constructor = O;
+        O.prototype.__class__ = O;
+        O.__cache__ = {};
+        a.GeometryAttribute = O;
+        O.prototype.__destroy__ =
+            O.prototype.__destroy__ = function () {
+                jc(this.ptr)
+            };
+        K.prototype = Object.create(p.prototype);
+        K.prototype.constructor = K;
+        K.prototype.__class__ = K;
+        K.__cache__ = {};
+        a.DecoderBuffer = K;
+        K.prototype.Init = K.prototype.Init = function (a, b) {
+            var c = this.ptr;
+            n.prepare();
+            if ("object" == typeof a && "object" === typeof a) {
+                var e = n.alloc(a, T);
+                n.copy(a, T, e);
+                a = e
+            }
+            b && "object" === typeof b && (b = b.ptr);
+            kc(c, a, b)
+        };
+        K.prototype.__destroy__ = K.prototype.__destroy__ = function () {
+            lc(this.ptr)
+        };
+        g.prototype = Object.create(p.prototype);
+        g.prototype.constructor =
+            g;
+        g.prototype.__class__ = g;
+        g.__cache__ = {};
+        a.Decoder = g;
+        g.prototype.GetEncodedGeometryType = g.prototype.GetEncodedGeometryType = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return mc(c, a)
+        };
+        g.prototype.DecodeBufferToPointCloud = g.prototype.DecodeBufferToPointCloud = function (a, b) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            return N(nc(c, a, b), x)
+        };
+        g.prototype.DecodeBufferToMesh = g.prototype.DecodeBufferToMesh = function (a, b) {
+            var c = this.ptr;
+            a && "object" === typeof a &&
+            (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            return N(oc(c, a, b), x)
+        };
+        g.prototype.GetAttributeId = g.prototype.GetAttributeId = function (a, b) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            return pc(c, a, b)
+        };
+        g.prototype.GetAttributeIdByName = g.prototype.GetAttributeIdByName = function (a, b) {
+            var c = this.ptr;
+            n.prepare();
+            a && "object" === typeof a && (a = a.ptr);
+            b = b && "object" === typeof b ? b.ptr : V(b);
+            return qc(c, a, b)
+        };
+        g.prototype.GetAttributeIdByMetadataEntry = g.prototype.GetAttributeIdByMetadataEntry =
+            function (a, b, d) {
+                var c = this.ptr;
+                n.prepare();
+                a && "object" === typeof a && (a = a.ptr);
+                b = b && "object" === typeof b ? b.ptr : V(b);
+                d = d && "object" === typeof d ? d.ptr : V(d);
+                return rc(c, a, b, d)
+            };
+        g.prototype.GetAttribute = g.prototype.GetAttribute = function (a, b) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            return N(sc(c, a, b), q)
+        };
+        g.prototype.GetAttributeByUniqueId = g.prototype.GetAttributeByUniqueId = function (a, b) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            return N(tc(c, a, b), q)
+        };
+        g.prototype.GetMetadata = g.prototype.GetMetadata = function (a) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            return N(uc(c, a), L)
+        };
+        g.prototype.GetAttributeMetadata = g.prototype.GetAttributeMetadata = function (a, b) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            return N(vc(c, a, b), L)
+        };
+        g.prototype.GetFaceFromMesh = g.prototype.GetFaceFromMesh = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!wc(c, a, b, d)
+        };
+        g.prototype.GetTriangleStripsFromMesh = g.prototype.GetTriangleStripsFromMesh = function (a, b) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            return xc(c, a, b)
+        };
+        g.prototype.GetTrianglesUInt16Array = g.prototype.GetTrianglesUInt16Array = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!yc(c, a, b, d)
+        };
+        g.prototype.GetTrianglesUInt32Array = g.prototype.GetTrianglesUInt32Array =
+            function (a, b, d) {
+                var c = this.ptr;
+                a && "object" === typeof a && (a = a.ptr);
+                b && "object" === typeof b && (b = b.ptr);
+                d && "object" === typeof d && (d = d.ptr);
+                return!!zc(c, a, b, d)
+            };
+        g.prototype.GetAttributeFloat = g.prototype.GetAttributeFloat = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!Ac(c, a, b, d)
+        };
+        g.prototype.GetAttributeFloatForAllPoints = g.prototype.GetAttributeFloatForAllPoints = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a &&
+            (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!Bc(c, a, b, d)
+        };
+        g.prototype.GetAttributeIntForAllPoints = g.prototype.GetAttributeIntForAllPoints = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!Cc(c, a, b, d)
+        };
+        g.prototype.GetAttributeInt8ForAllPoints = g.prototype.GetAttributeInt8ForAllPoints = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b &&
+            (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!Dc(c, a, b, d)
+        };
+        g.prototype.GetAttributeUInt8ForAllPoints = g.prototype.GetAttributeUInt8ForAllPoints = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!Ec(c, a, b, d)
+        };
+        g.prototype.GetAttributeInt16ForAllPoints = g.prototype.GetAttributeInt16ForAllPoints = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d &&
+            (d = d.ptr);
+            return!!Fc(c, a, b, d)
+        };
+        g.prototype.GetAttributeUInt16ForAllPoints = g.prototype.GetAttributeUInt16ForAllPoints = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!Gc(c, a, b, d)
+        };
+        g.prototype.GetAttributeInt32ForAllPoints = g.prototype.GetAttributeInt32ForAllPoints = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!Hc(c,
+                a, b, d)
+        };
+        g.prototype.GetAttributeUInt32ForAllPoints = g.prototype.GetAttributeUInt32ForAllPoints = function (a, b, d) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            return!!Ic(c, a, b, d)
+        };
+        g.prototype.GetAttributeDataArrayForAllPoints = g.prototype.GetAttributeDataArrayForAllPoints = function (a, b, d, e, f) {
+            var c = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            b && "object" === typeof b && (b = b.ptr);
+            d && "object" === typeof d && (d = d.ptr);
+            e && "object" === typeof e &&
+            (e = e.ptr);
+            f && "object" === typeof f && (f = f.ptr);
+            return!!Jc(c, a, b, d, e, f)
+        };
+        g.prototype.SkipAttributeTransform = g.prototype.SkipAttributeTransform = function (a) {
+            var b = this.ptr;
+            a && "object" === typeof a && (a = a.ptr);
+            Kc(b, a)
+        };
+        g.prototype.__destroy__ = g.prototype.__destroy__ = function () {
+            Lc(this.ptr)
+        };
+        y.prototype = Object.create(p.prototype);
+        y.prototype.constructor = y;
+        y.prototype.__class__ = y;
+        y.__cache__ = {};
+        a.Mesh = y;
+        y.prototype.num_faces = y.prototype.num_faces = function () {
+            return Mc(this.ptr)
+        };
+        y.prototype.num_attributes = y.prototype.num_attributes =
+            function () {
+                return Nc(this.ptr)
+            };
+        y.prototype.num_points = y.prototype.num_points = function () {
+            return Oc(this.ptr)
+        };
+        y.prototype.__destroy__ = y.prototype.__destroy__ = function () {
+            Pc(this.ptr)
+        };
+        Q.prototype = Object.create(p.prototype);
+        Q.prototype.constructor = Q;
+        Q.prototype.__class__ = Q;
+        Q.__cache__ = {};
+        a.VoidPtr = Q;
+        Q.prototype.__destroy__ = Q.prototype.__destroy__ = function () {
+            Qc(this.ptr)
+        };
+        I.prototype = Object.create(p.prototype);
+        I.prototype.constructor = I;
+        I.prototype.__class__ = I;
+        I.__cache__ = {};
+        a.DracoInt32Array = I;
+        I.prototype.GetValue =
+            I.prototype.GetValue = function (a) {
+                var b = this.ptr;
+                a && "object" === typeof a && (a = a.ptr);
+                return Rc(b, a)
+            };
+        I.prototype.size = I.prototype.size = function () {
+            return Sc(this.ptr)
+        };
+        I.prototype.__destroy__ = I.prototype.__destroy__ = function () {
+            Tc(this.ptr)
+        };
+        L.prototype = Object.create(p.prototype);
+        L.prototype.constructor = L;
+        L.prototype.__class__ = L;
+        L.__cache__ = {};
+        a.Metadata = L;
+        L.prototype.__destroy__ = L.prototype.__destroy__ = function () {
+            Uc(this.ptr)
+        };
+        (function () {
+            function c() {
+                a.OK = Vc();
+                a.DRACO_ERROR = Wc();
+                a.IO_ERROR = Xc();
+                a.INVALID_PARAMETER =
+                    Yc();
+                a.UNSUPPORTED_VERSION = Zc();
+                a.UNKNOWN_VERSION = $c();
+                a.DT_INVALID = ad();
+                a.DT_INT8 = bd();
+                a.DT_UINT8 = cd();
+                a.DT_INT16 = dd();
+                a.DT_UINT16 = ed();
+                a.DT_INT32 = fd();
+                a.DT_UINT32 = gd();
+                a.DT_INT64 = hd();
+                a.DT_UINT64 = id();
+                a.DT_FLOAT32 = jd();
+                a.DT_FLOAT64 = kd();
+                a.DT_BOOL = ld();
+                a.DT_TYPES_COUNT = md();
+                a.INVALID_GEOMETRY_TYPE = nd();
+                a.POINT_CLOUD = od();
+                a.TRIANGULAR_MESH = pd();
+                a.ATTRIBUTE_INVALID_TRANSFORM = qd();
+                a.ATTRIBUTE_NO_TRANSFORM = rd();
+                a.ATTRIBUTE_QUANTIZATION_TRANSFORM = sd();
+                a.ATTRIBUTE_OCTAHEDRON_TRANSFORM = td();
+                a.INVALID = ud();
+                a.POSITION = vd();
+                a.NORMAL = wd();
+                a.COLOR = xd();
+                a.TEX_COORD = yd();
+                a.GENERIC = zd()
+            }
+
+            Ba ? c() : Da.unshift(c)
+        })();
+        if ("function" === typeof a.onModuleParsed)a.onModuleParsed();
+        return m
+    }
+}();
+"object" === typeof exports && "object" === typeof module ? module.exports = DracoDecoderModule : "function" === typeof define && define.amd ? define([], function () {
+    return DracoDecoderModule
+}) : "object" === typeof exports && (exports.DracoDecoderModule = DracoDecoderModule);

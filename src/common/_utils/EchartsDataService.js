@@ -2,7 +2,7 @@ import getFeatures from './get-features';
 import tonumber from 'lodash.tonumber';
 import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
-import { clearNumberComma } from './util';
+import { clearNumberComma, filterInvalidData } from './util';
 import { statisticsFeatures } from './statistics';
 
 // 三方服务请求的结果为单对象的时候，是否要转成多个features
@@ -13,6 +13,24 @@ export function tranformSingleToMulti(data) {
     return Object.assign(data, statisticsFeatures(data.features));
   }
   return data;
+}
+
+export function sortData(features, datasetOptions, maxFeatures, xBar) {
+  const matchItem = datasetOptions.find(item => item.sort && item.sort !== 'unsort');
+  let nextFeatures = features;
+  if (matchItem) {
+    nextFeatures = orderBy(
+      features,
+      (feature) => +feature.properties[matchItem.yField],
+      matchItem.sort === 'ascending' ? 'asc' : 'desc'
+    );
+  }
+  const maxLen = +maxFeatures;
+  if (maxLen && nextFeatures.length > maxLen) {
+    nextFeatures.length = maxLen;
+  }
+  matchItem && xBar && nextFeatures.reverse();
+  return nextFeatures;
 }
 
 /**
@@ -45,6 +63,7 @@ export default class EchartsDataService {
     this.dataset = dataset;
     this.datasetOptions = datasetOptions;
     this.dataCache = null; // 缓存的是请求后的数据
+    this.sortDataCache = null;
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
     this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
@@ -61,14 +80,14 @@ export default class EchartsDataService {
     // 设置datasets的默认配置type，withCredentials
     let promise = new Promise((resolve, reject) => {
       // 请求数据，请求成功后，解析数据
-      getFeatures(dataset)
+      const matchItem = this.datasetOptions.find(item => item.sort !== 'unsort');
+      const maxFeatures = matchItem ? '' : dataset.maxFeatures;
+      getFeatures({ ...dataset, maxFeatures })
         .then(data => {
           // 兼容三方服务接口返回的一个普通的对象
           if (data.transformed && !!data.features.length) {
             data = tranformSingleToMulti(data);
           }
-          // 设置this.data
-          this._setData(data);
           // 解析数据，生成dataOption
           let options;
           if (
@@ -98,23 +117,16 @@ export default class EchartsDataService {
    */
   formatChartData(datasetOptions, xBar = false, data = this.dataCache) {
     // 清除数据缓存
-    let orderInfo = { orderField: '', order: '' };
-    this.sortIndex = null;
     this._clearChartCache();
     // 设置datasetOptions
     this.setDatasetOptions(datasetOptions);
+    // 设置this.data
+    data = this._setData(data, xBar);
     // 生成seriedata
     datasetOptions.forEach(item => {
       // 生成YData, XData
       let fieldData = this._fieldsData(data, item, xBar);
       // 解析YData, XData，生成EchartsOption的data
-      if (['ascending', 'descending'].includes(item.sort)) {
-        orderInfo.orderField = item.yField;
-        orderInfo.order = item.sort;
-        let sortData = this._resortData(fieldData.xData, fieldData.yData, item.sort, xBar);
-        this.sortIndex = sortData.xDataIndex;
-        this.sortXData = sortData.xData;
-      }
       let serieData = this._createDataOption(fieldData, item);
       // 设置坐标
       this._createAxisData(fieldData, item);
@@ -125,16 +137,6 @@ export default class EchartsDataService {
     });
     let gridAxis = (this.gridAxis.xAxis.length > 0 || JSON.stringify(this.gridAxis.yAxis) !== '{}') && this.gridAxis;
     let radarAxis = this.radarAxis;
-    if (this.sortIndex) {
-      this.serieDatas.forEach((serie) => {
-        const temp = [];
-        this.sortIndex.forEach((trueIndex, index) => {
-          temp[index] = serie.data[trueIndex];
-        });
-        serie.data = temp;
-      });
-      gridAxis.xAxis[0] = { data: this.sortXData };
-    }
     let series = this.serieDatas;
     return {
       ...gridAxis,
@@ -160,10 +162,17 @@ export default class EchartsDataService {
    * @description 给实例绑定data。
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
    */
-  _setData(data) {
+  _setData(data, xBar) {
+    let nextData = data;
     if (data) {
-      this.dataCache = data;
+      let nextFeatures = filterInvalidData(this.datasetOptions, data.features);
+      // 只过滤空数据但不排序的原数据
+      this.dataCache = statisticsFeatures(nextFeatures);
+      nextFeatures = sortData(nextFeatures, this.datasetOptions, this.dataset.maxFeatures, xBar);
+      nextData = statisticsFeatures(nextFeatures);
+      this.sortDataCache = nextData;
     }
+    return nextData;
   }
 
   /**
@@ -321,36 +330,8 @@ export default class EchartsDataService {
       xData = this._getFieldDatas(data, xFieldIndex);
       yData = [...fieldValues];
     }
-    // result = sort && sort !== 'unsort' ? this._resortData(xData, yData, sort, xBar) : { xData, yData };
     result = { xData, yData };
     return result;
-  }
-
-  _resortData(xData, yData, sort, xBar = false) {
-    let obj = [];
-    yData.forEach((item, index) => {
-      obj.push({ y: item, x: xData[index], index: index });
-    });
-    obj = orderBy(
-      obj,
-      o => {
-        return o.y;
-      },
-      sort === 'ascending' ? [xBar ? 'desc' : 'asc'] : [xBar ? 'asc' : 'desc']
-    );
-    let x = [];
-    let y = [];
-    let index = [];
-    obj.forEach(item => {
-      x.push(item.x);
-      y.push(item.y);
-      index.push(item.index);
-    });
-    return {
-      xData: x,
-      yData: y,
-      xDataIndex: index
-    };
   }
 
   /**

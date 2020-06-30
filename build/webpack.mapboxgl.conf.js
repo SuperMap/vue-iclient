@@ -51,6 +51,12 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs2: 'vue-echarts',
         amd: 'vue-echarts'
       },
+      'vue-cesium': {
+        root: 'VueCesium',
+        commonjs: 'vue-cesium',
+        commonjs2: 'vue-cesium',
+        amd: 'vue-cesium'
+      },
       'ant-design-vue': {
         root: 'antd',
         commonjs: 'ant-design-vue',
