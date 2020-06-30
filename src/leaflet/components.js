@@ -11,9 +11,9 @@ export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
 export { default as Iframe } from '../common/iframe/Iframe';
 export { default as TablePopup } from '../common/table-popup/TablePopup';
 
-export { default as WebMap } from './web-map/WebMap.vue';
-export { default as SmTileLayer } from './web-map/layer/sm-tile/SmTileLayer';
 export { default as Identify } from './identify/Identify';
 export { default as Popup } from './popup/Popup';
 
 export { default as Chart } from './chart/Chart';
+export { default as WebMap } from './web-map/WebMap.vue';
+export { default as SmTileLayer } from './web-map/layer/sm-tile/SmTileLayer';
