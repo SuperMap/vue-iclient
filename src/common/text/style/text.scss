@@ -13,5 +13,8 @@
       color: #40a9ff !important;
     }
   }
+  @include e(span) {
+    white-space:pre-wrap;
+  }
   
 }
