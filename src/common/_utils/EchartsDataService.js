@@ -21,7 +21,7 @@ export function sortData(features, datasetOptions, maxFeatures, xBar) {
   if (matchItem) {
     nextFeatures = orderBy(
       features,
-      (feature) => +feature.properties[matchItem.yField],
+      feature => +feature.properties[matchItem.yField],
       matchItem.sort === 'ascending' ? 'asc' : 'desc'
     );
   }
@@ -201,7 +201,12 @@ export default class EchartsDataService {
     let serieData = {
       type: chartType,
       name: datasetOption.yField,
-      data: []
+      data: [],
+      emphasis: {
+        itemStyle: {
+          color: '#409eff'
+        }
+      }
     };
     if (chartType === 'pie') {
       YData.forEach((value, index) => {

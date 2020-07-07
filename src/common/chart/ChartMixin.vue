@@ -194,6 +194,12 @@ export default {
     associatedMap: {
       type: Boolean,
       default: false
+    },
+    highlightOptions: {
+      type: Array,
+      default() {
+        return [];
+      }
     }
   },
   data() {
@@ -328,6 +334,13 @@ export default {
       if (!this.associatedMap) {
         this.clearPopup && this.clearPopup();
       }
+    },
+    highlightOptions: {
+      handler(newVal, oldVal) {
+        this._offHighlight(oldVal);
+        this._initHighlight();
+      },
+      deep: true
     }
   },
   created() {
@@ -356,6 +369,7 @@ export default {
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+    this._initHighlight();
   },
   updated() {
     this._handlePieAutoPlay(); // 更新自动播放
@@ -388,6 +402,22 @@ export default {
         500,
         { leading: true }
       );
+    },
+    _initHighlight() {
+      let echartsNode = this.smChart && this.smChart.chart;
+      this.highlightOptions.forEach(option => {
+        option = Object.assign({}, option, { type: 'highlight' });
+        echartsNode.dispatchAction(option);
+      });
+    },
+    _offHighlight(options) {
+      if (options && options.length) {
+        let echartsNode = this.smChart && this.smChart.chart;
+        options.forEach(option => {
+          option = Object.assign({}, option, { type: 'downplay' });
+          echartsNode.dispatchAction(option);
+        });
+      }
     },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
@@ -642,7 +672,9 @@ export default {
     },
     _setChartTheme() {
       if (!this.theme) {
-        let length = (this.datasetOptions && this.datasetOptions.length) || (this.echartOptions.series && this.echartOptions.series.length);
+        let length =
+          (this.datasetOptions && this.datasetOptions.length) ||
+          (this.echartOptions.series && this.echartOptions.series.length);
         let colorNumber = this.colorGroupsData.length;
         if (length && length > colorNumber) {
           colorNumber = length;
