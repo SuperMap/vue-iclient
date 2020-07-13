@@ -506,6 +506,9 @@ export default abstract class WebMapBase extends Events {
       case 'dash':
         dashArr = [4 * w, 4 * w];
         break;
+       case 'dashrailway':
+        dashArr = [8 * w, 12 * w];
+        break;
       case 'dashdot':
         dashArr = [4 * w, 4 * w, 1 * w, 4 * w];
         break;

@@ -247,7 +247,7 @@ export default class WebMapViewModel extends WebMapBase {
         features = this.transformFeatures(features);
       }
 
-      this.handleLayerFeatures(features, layerInfo);
+      features = this.handleLayerFeatures(features, layerInfo);
 
       let layer;
       switch (layerType) {
