@@ -12,6 +12,7 @@ import EchartsLayer from '../../../static/libs/echarts-layer/EchartsLayer';
 import cloneDeep from 'lodash.clonedeep';
 import { geti18n } from '../../common/_lang';
 import WebMapBase from '../../common/web-map/WebMapBase';
+import { getColorWithOpacity } from '../../common/_utils/util';
 import { getProjection, registerProjection, toEpsgCode } from '../../common/_utils/epsg-define';
 import proj4 from 'proj4';
 
@@ -1057,8 +1058,9 @@ export default class WebMapViewModel extends WebMapBase {
         }
       },
       paint: {
-        'text-color': style.fillColor,
-        'text-halo-color': style.strokeColor || 'rgba(0,0,0,0)',
+        'text-color': getColorWithOpacity(style.fillColor, style.fillOpacity),
+        // 'text-opacity': style.fillOpacity === 0 ? 0.1 : style.fillOpacity,
+        'text-halo-color': getColorWithOpacity(style.strokeColor || 'rgba(0,0,0,0)', style.strokeOpacity),
         'text-halo-width': style.strokeWidth || 0
       },
       layout: {
@@ -1108,6 +1110,7 @@ export default class WebMapViewModel extends WebMapBase {
             'icon-image': iconID,
             'icon-anchor': 'bottom-right',
             'icon-size': iconSizeExpression || iconSize,
+            'icon-allow-overlap': true,
             visibility: layerInfo.visible,
             'icon-offset': [style.offsetX * image.width || 0, style.offsetY * image.height || 0],
             'icon-rotate': iconRotateExpression || ((layerInfo.style['rotation'] || 0) * 180) / Math.PI
@@ -1143,6 +1146,7 @@ export default class WebMapViewModel extends WebMapBase {
                 'icon-anchor': 'bottom-right',
                 visibility: layerInfo.visible,
                 'icon-offset': [style.offsetX * canvas.width || 0, style.offsetY * canvas.height || 0],
+                'icon-allow-overlap': true,
                 'icon-rotate': iconRotateExpression || ((layerInfo.style['rotation'] || 0) * 180) / Math.PI
               },
               minzoom: minzoom || 0,
