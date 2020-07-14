@@ -498,7 +498,7 @@ export default {
         this.echartOptions = this._optionsHandler(echartOptions, options);
       });
     },
-    _optionsHandler(options, dataOptions) {
+    _optionsHandler(options, dataOptions, dataZoomChanged) {
       dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
       options = options && cloneDeep(options); // clone 避免引起重复刷新
       if (options && options.legend && !options.legend.type) {
@@ -548,24 +548,25 @@ export default {
                   dataZoom.start = dataZoom.end;
                   dataZoom.end = oldStart;
                 }
-                let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
-                if (startValue >= 0) {
+                if (dataZoomChanged) {
+                  let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
                   startDataIndex = startValue;
+                  endDataIndex = endValue;
+                  options.dataZoom = options.dataZoom.map(val => {
+                    if (startValue >= 0 && endValue >= 0) {
+                      val.startValue = startValue;
+                      val.endValue = endValue;
+                      delete val.start;
+                      delete val.end;
+                      return val;
+                    }
+                    return val;
+                  });
                 } else {
                   startDataIndex = Math.floor((dataZoom.start / 100) * data.length);
+                  endDataIndex = Math.ceil((dataZoom.end / 100) * data.length);
                 }
-                endDataIndex = endValue || Math.ceil((dataZoom.end / 100) * data.length);
                 data = serie.data.slice(startDataIndex, endDataIndex + 1);
-                options.dataZoom = options.dataZoom.map(val => {
-                  if (startValue >= 0 && endValue >= 0) {
-                    val.startValue = startValue;
-                    val.endValue = endValue;
-                    delete val.start;
-                    delete val.end;
-                    return val;
-                  }
-                  return val;
-                });
               }
 
               label.formatter = function({ dataIndex, value }) {
@@ -849,7 +850,7 @@ export default {
         flag = labelConfig.show && labelConfig.smart;
       });
       if (flag) {
-        this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
+        this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, true);
       }
     }
   },
