@@ -303,7 +303,8 @@ export default abstract class WebMapBase extends Events {
       customSettings = themeSetting.customSettings,
       minR = parameters.themeSetting.minRadius,
       maxR = parameters.themeSetting.maxRadius,
-      colors = themeSetting.colors;
+      colors = themeSetting.colors,
+      fillColor = style.fillColor;
     features.forEach(feature => {
       let properties = feature.properties,
         value = properties[themeField];
@@ -338,6 +339,7 @@ export default abstract class WebMapBase extends Events {
         end,
         radius = Number(((maxR + minR) / 2).toFixed(2)),
         color = '';
+      let rangeColors = colors ? SuperMap.ColorsPickerUtil.getGradientColors(colors, len, 'RANGE') : [];
       for (let i = 0; i < len - 1; i++) {
         // 处理radius
         start = Number(segements[i].toFixed(2));
@@ -351,7 +353,7 @@ export default abstract class WebMapBase extends Events {
         style.radius = radius;
         // 处理颜色
         if (colors && colors.length > 0) {
-          color = customSettings[i] && customSettings[i].color ? customSettings[i].color : colors[i];
+          color = customSettings[i] && customSettings[i].color ? customSettings[i].color : rangeColors[i] || fillColor;;
           style.fillColor = color;
         }
         styleGroup.push({ radius, color, start, end, style });
@@ -532,7 +534,7 @@ export default abstract class WebMapBase extends Events {
 
   protected getCanvasFromSVG(svgUrl: string, divDom: HTMLElement, callBack: Function): void {
     let canvas = document.createElement('canvas');
-    canvas.id = `dataviz-canvas-${new Date()}`;
+    canvas.id = `dataviz-canvas-${new Date().getTime()}`;
     canvas.style.display = 'none';
     divDom.appendChild(canvas);
     let canvgs = window.canvg ? window.canvg : canvg;

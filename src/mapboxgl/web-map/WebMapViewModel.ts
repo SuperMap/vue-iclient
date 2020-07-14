@@ -938,7 +938,7 @@ export default class WebMapViewModel extends WebMapBase {
                 : styleGroups[i].radius;
             expression.push(row.properties['index'], radius);
             colorExpression.push(row.properties['index'], styleGroups[i].color);
-            continue;
+            break;
           }
         }
       }
