@@ -1049,7 +1049,7 @@ export default class WebMapService extends Events {
     let getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
     getFeatureParam = new SuperMap.FilterParameter({
       name: datasetNames.join().replace(':', '@'),
-      attributeFilter: 'SMID > 0'
+      attributeFilter: null
     });
     getFeatureBySQLParams = new SuperMap.GetFeaturesBySQLParameters({
       queryParameter: getFeatureParam,
