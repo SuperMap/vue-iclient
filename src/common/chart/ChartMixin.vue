@@ -39,7 +39,7 @@ import cloneDeep from 'lodash.clonedeep';
 import Card from '../_mixin/card';
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
-import { chartThemeUtil } from '../_utils/style/theme/chart';
+import { chartThemeUtil, handleMultiGradient } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
@@ -638,11 +638,17 @@ export default {
           // 对pie处理数据颜色分段
           if (serie.type === 'pie') {
             if (serie.data && serie.data.length > this.colorGroupsData.length) {
-              let colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(
-                this.colorGroupsData,
-                serie.data.length,
-                'RANGE'
-              );
+              let colorGroup;
+              if (typeof this.colorGroupsData[0] === 'object') {
+                colorGroup = handleMultiGradient(this.colorGroupsData, serie.data.length);
+              } else {
+                colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(
+                  this.colorGroupsData,
+                  serie.data.length,
+                  'RANGE'
+                );
+              }
+
               if (serie.itemStyle) {
                 serie.itemStyle.color = function({ dataIndex }) {
                   return colorGroup[dataIndex];
