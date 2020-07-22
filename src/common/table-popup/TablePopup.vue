@@ -1,5 +1,6 @@
 <template>
   <div class="sm-component-table-popup" :style="[backgroundStyle, getTextColorStyle, styleObject]">
+    <div class="sm-component-table-popup__close">x</div>
     <a-table
       class="sm-component-table-popup__table"
       :data-source="data"

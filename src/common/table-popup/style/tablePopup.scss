@@ -32,8 +32,21 @@
     }
     overflow: scroll;
   }
+  @include e(close) {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    width: 20px;
+    height: 20px;
+    font-size: 18px;
+    pointer-events: none;
+    color: var(--table-popup-color--text);
+  }
   ::-webkit-scrollbar {
     display: none;
     -ms-overflow-style: none;
   }
+}
+.sm-mapboxgl-tabel-popup .mapboxgl-popup-close-button {
+  color: transparent;
 }
