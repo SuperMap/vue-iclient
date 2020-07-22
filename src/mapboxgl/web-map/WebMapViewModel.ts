@@ -54,7 +54,7 @@ interface webMapOptions {
   keepCenterZoom?: boolean
 }
 interface mapOptions {
-  center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
+  center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
   zoom?: number;
   bounds?: mapboxglTypes.LngLatBoundsLike;
   maxBounds?: [[number, number], [number, number]] | mapboxglTypes.LngLatBoundsLike;
@@ -73,7 +73,7 @@ type layerType = 'POINT' | 'LINE' | 'POLYGON';
 export default class WebMapViewModel extends WebMapBase {
   map: mapboxglTypes.Map;
 
-  center: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
+  center: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
 
   bounds: mapboxglTypes.LngLatBoundsLike;
 
@@ -1945,7 +1945,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   cleanWebMap() {
     if (this.map) {
-      this.triggerEvent('beforeremovemap');
+      this.triggerEvent('beforeremovemap',{});
+      const lastCenter = this.map.getCenter();
+      const lastZoom = this.map.getZoom();
       this.map.remove();
       this.map = null;
       this._legendList = {};
@@ -1953,6 +1955,9 @@ export default class WebMapViewModel extends WebMapBase {
       if (!this._keepCenterZoom) {
         this.center = null;
         this.zoom = null;
+      } else {
+        this.center = lastCenter.toArray();
+        this.zoom = lastZoom;
       }
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
       this._unprojectProjection = null;
