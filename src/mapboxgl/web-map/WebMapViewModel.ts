@@ -51,6 +51,7 @@ interface webMapOptions {
   zoom?: number;
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
+  keepCenterZoom?: boolean
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
@@ -100,6 +101,8 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _layerTimerList: Array<any> = [];
 
+  private _keepCenterZoom: boolean;
+
   constructor(
     id: string | number | object,
     options: webMapOptions = {},
@@ -128,6 +131,7 @@ export default class WebMapViewModel extends WebMapBase {
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
     this.layerFilter = layerFilter;
+    this._keepCenterZoom = options.keepCenterZoom;
     this._legendList = {};
     if (map) {
       this.map = map;
@@ -191,6 +195,10 @@ export default class WebMapViewModel extends WebMapBase {
       this.mapOptions.style = style;
       style && this.map.setStyle(style);
     }
+  }
+
+  public setKeepCenterZoom(keepCenterZoom): void {
+    this._keepCenterZoom = keepCenterZoom;
   }
 
   protected cleanLayers() {
@@ -319,6 +327,17 @@ export default class WebMapViewModel extends WebMapBase {
         ).toFixed(2);
       }
       zoom += zoomBase;
+    }
+
+    if (this._keepCenterZoom && (!this.center || (this.center[0] === 0 && this.center[1] === 0)) && (!this.zoom || this.zoom === 1)) {
+      
+      if (this.mapOptions.center && this.mapOptions.zoom && this.mapOptions.zoom !== 1) {
+        this.center = this.mapOptions.center;
+        this.zoom = this.mapOptions.zoom;
+      } else {
+        this.center = center;
+        this.zoom = zoom;
+      }
     }
 
     // 初始化 map
@@ -1931,8 +1950,10 @@ export default class WebMapViewModel extends WebMapBase {
       this.map = null;
       this._legendList = {};
       this._sourceListModel = null;
-      this.center = null;
-      this.zoom = null;
+      if (!this._keepCenterZoom) {
+        this.center = null;
+        this.zoom = null;
+      }
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
       this._unprojectProjection = null;
     }
