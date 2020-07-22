@@ -337,8 +337,7 @@ export default {
     },
     highlightOptions: {
       handler(newVal, oldVal) {
-        this._offHighlight(oldVal);
-        this._initHighlight();
+        this.setNormalColorFunction();
       },
       deep: true
     }
@@ -369,10 +368,6 @@ export default {
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
-    this.smChart.$on('mouseout', params => {
-      this._initHighlight();
-    });
-    this._initHighlight();
   },
   updated() {
     this._handlePieAutoPlay(); // 更新自动播放
@@ -382,7 +377,6 @@ export default {
     if (this.autoresize) {
       removeListener(this.$el, this.__resizeHandler);
     }
-    this.smChart.$off('mouseout');
   },
   methods: {
     _initAutoResize() {
@@ -407,21 +401,27 @@ export default {
         { leading: true }
       );
     },
-    _initHighlight() {
-      let echartsNode = this.smChart && this.smChart.chart;
-      this.highlightOptions.forEach(option => {
-        option = Object.assign({}, option, { type: 'highlight' });
-        echartsNode.dispatchAction(option);
-      });
-    },
-    _offHighlight(options) {
-      if (options && options.length) {
-        let echartsNode = this.smChart && this.smChart.chart;
-        options.forEach(option => {
-          option = Object.assign({}, option, { type: 'downplay' });
-          echartsNode.dispatchAction(option);
+    setNormalColorFunction(isSet = true, series, highlightOptions = this.highlightOptions, color = 'red') {
+      series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
+      series.forEach((serie, seriesIndex) => {
+        const dataIndexs = highlightOptions.map(item => {
+          if (item.seriesIndex.includes(seriesIndex)) return item.dataIndex;
         });
-      }
+        serie.itemStyle = serie.itemStyle || {
+          normal: { color: '' }
+        };
+        serie.itemStyle.normal = serie.itemStyle.normal || { color: '' };
+
+        serie.itemStyle.normal.color = ({ dataIndex }) => {
+          if (dataIndexs.indexOf(dataIndex) > -1) {
+            return color;
+          } else if (serie.type === 'pie') {
+            let colorGroup = this._handlerColorGroup(serie);
+            return colorGroup[dataIndex];
+          }
+        };
+      });
+      isSet && this.$set(this.echartOptions, 'series', series);
     },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
@@ -638,37 +638,16 @@ export default {
 
       let series = dataOptions.series;
       if (series && series.length) {
-        series.forEach(serie => {
-          // 对pie处理数据颜色分段
-          if (serie.type === 'pie') {
-            if (serie.data && serie.data.length > this.colorGroupsData.length) {
-              let colorGroup;
-              if (typeof this.colorGroupsData[0] === 'object') {
-                colorGroup = handleMultiGradient(this.colorGroupsData, serie.data.length);
-              } else {
-                colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(
-                  this.colorGroupsData,
-                  serie.data.length,
-                  'RANGE'
-                );
-              }
-
-              if (serie.itemStyle) {
-                serie.itemStyle.color = function({ dataIndex }) {
-                  return colorGroup[dataIndex];
-                };
-              } else {
-                serie.itemStyle = {
-                  color: function({ dataIndex }) {
-                    return colorGroup[dataIndex];
-                  }
-                };
-              }
-            }
-          }
-        });
+        this.setNormalColorFunction(false, series);
       }
       return merge(options, dataOptions);
+    },
+    _handlerColorGroup(serie) {
+      if (typeof this.colorGroupsData[0] === 'object') {
+        return handleMultiGradient(this.colorGroupsData, serie.data.length);
+      } else {
+        return SuperMap.ColorsPickerUtil.getGradientColors(this.colorGroupsData, serie.data.length, 'RANGE');
+      }
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {

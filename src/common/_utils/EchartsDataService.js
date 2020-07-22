@@ -201,12 +201,7 @@ export default class EchartsDataService {
     let serieData = {
       type: chartType,
       name: datasetOption.yField,
-      data: [],
-      emphasis: {
-        itemStyle: {
-          color: '#409eff'
-        }
-      }
+      data: []
     };
     if (chartType === 'pie') {
       YData.forEach((value, index) => {
