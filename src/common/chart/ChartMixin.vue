@@ -369,6 +369,9 @@ export default {
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+    this.smChart.$on('mouseout', params => {
+      this._initHighlight();
+    });
     this._initHighlight();
   },
   updated() {
@@ -379,6 +382,7 @@ export default {
     if (this.autoresize) {
       removeListener(this.$el, this.__resizeHandler);
     }
+    this.smChart.$off('mouseout');
   },
   methods: {
     _initAutoResize() {
