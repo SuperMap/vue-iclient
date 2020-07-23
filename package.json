@@ -34,7 +34,7 @@
     "canvg": "~1.5.3",
     "colorcolor": "^1.1.1",
     "css-element-queries": "^1.2.0",
-    "echarts": "^4.2.1",
+    "echarts": "^4.8.0",
     "echarts-liquidfill": "^2.0.5",
     "js-cookie": "^2.2.0",
     "leaflet": "1.5.1",
