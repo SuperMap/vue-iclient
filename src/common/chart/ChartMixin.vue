@@ -337,7 +337,7 @@ export default {
     },
     highlightOptions: {
       handler(newVal, oldVal) {
-        this.setNormalColorFunction();
+        this.setItemStyleColor();
       },
       deep: true
     }
@@ -401,18 +401,15 @@ export default {
         { leading: true }
       );
     },
-    setNormalColorFunction(isSet = true, series, highlightOptions = this.highlightOptions, color = 'red') {
+    setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = 'red') {
       series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
       series.forEach((serie, seriesIndex) => {
         const dataIndexs = highlightOptions.map(item => {
           if (item.seriesIndex.includes(seriesIndex)) return item.dataIndex;
         });
-        serie.itemStyle = serie.itemStyle || {
-          normal: { color: '' }
-        };
-        serie.itemStyle.normal = serie.itemStyle.normal || { color: '' };
 
-        serie.itemStyle.normal.color = ({ dataIndex }) => {
+        serie.itemStyle = serie.itemStyle || { color: '' };
+        serie.itemStyle.color = ({ dataIndex }) => {
           if (dataIndexs.indexOf(dataIndex) > -1) {
             return color;
           } else if (serie.type === 'pie') {
@@ -638,7 +635,7 @@ export default {
 
       let series = dataOptions.series;
       if (series && series.length) {
-        this.setNormalColorFunction(false, series);
+        this.setItemStyleColor(false, series);
       }
       return merge(options, dataOptions);
     },
