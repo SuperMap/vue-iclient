@@ -21,7 +21,7 @@ export function sortData(features, datasetOptions, maxFeatures, xBar) {
   if (matchItem) {
     nextFeatures = orderBy(
       features,
-      (feature) => +feature.properties[matchItem.yField],
+      feature => +feature.properties[matchItem.yField],
       matchItem.sort === 'ascending' ? 'asc' : 'desc'
     );
   }

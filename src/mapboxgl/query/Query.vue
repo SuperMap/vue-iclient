@@ -135,6 +135,7 @@ import CircleStyle from '../_types/CircleStyle';
 import QueryViewModel from './QueryViewModel.js';
 import TablePopup from '../../common/table-popup/TablePopup';
 import { getColorWithOpacity, getValueCaseInsensitive } from '../../common/_utils/util';
+import isEqual from 'lodash.isequal';
 
 // let validators = (value, propType) => {
 //   let valid = true;
@@ -263,17 +264,23 @@ export default {
     }
   },
   watch: {
-    iportalData() {
-      this.clearResult();
-      this.formatJobInfos();
+    iportalData(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.clearResult();
+        this.formatJobInfos();
+      }
     },
-    restData() {
-      this.clearResult();
-      this.formatJobInfos();
+    restData(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.clearResult();
+        this.formatJobInfos();
+      }
     },
-    restMap() {
-      this.clearResult();
-      this.formatJobInfos();
+    restMap(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.clearResult();
+        this.formatJobInfos();
+      }
     },
     colorGroupsData: {
       handler() {

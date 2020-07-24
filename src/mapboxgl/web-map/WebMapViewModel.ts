@@ -12,6 +12,7 @@ import EchartsLayer from '../../../static/libs/echarts-layer/EchartsLayer';
 import cloneDeep from 'lodash.clonedeep';
 import { geti18n } from '../../common/_lang';
 import WebMapBase from '../../common/web-map/WebMapBase';
+import { getColorWithOpacity } from '../../common/_utils/util';
 import { getProjection, registerProjection, toEpsgCode } from '../../common/_utils/epsg-define';
 import proj4 from 'proj4';
 
@@ -50,9 +51,10 @@ interface webMapOptions {
   zoom?: number;
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
+  keepCenterZoom?: boolean
 }
 interface mapOptions {
-  center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
+  center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
   zoom?: number;
   bounds?: mapboxglTypes.LngLatBoundsLike;
   maxBounds?: [[number, number], [number, number]] | mapboxglTypes.LngLatBoundsLike;
@@ -71,7 +73,7 @@ type layerType = 'POINT' | 'LINE' | 'POLYGON';
 export default class WebMapViewModel extends WebMapBase {
   map: mapboxglTypes.Map;
 
-  center: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number };
+  center: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
 
   bounds: mapboxglTypes.LngLatBoundsLike;
 
@@ -98,6 +100,8 @@ export default class WebMapViewModel extends WebMapBase {
   private _cacheLayerId: Array<string> = [];
 
   private _layerTimerList: Array<any> = [];
+
+  private _keepCenterZoom: boolean;
 
   constructor(
     id: string | number | object,
@@ -127,6 +131,7 @@ export default class WebMapViewModel extends WebMapBase {
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
     this.layerFilter = layerFilter;
+    this._keepCenterZoom = options.keepCenterZoom;
     this._legendList = {};
     if (map) {
       this.map = map;
@@ -190,6 +195,10 @@ export default class WebMapViewModel extends WebMapBase {
       this.mapOptions.style = style;
       style && this.map.setStyle(style);
     }
+  }
+
+  public setKeepCenterZoom(keepCenterZoom): void {
+    this._keepCenterZoom = keepCenterZoom;
   }
 
   protected cleanLayers() {
@@ -320,6 +329,17 @@ export default class WebMapViewModel extends WebMapBase {
       zoom += zoomBase;
     }
 
+    if (this._keepCenterZoom && (!this.center || (this.center[0] === 0 && this.center[1] === 0)) && (!this.zoom || this.zoom === 1)) {
+      
+      if (this.mapOptions.center && this.mapOptions.zoom && this.mapOptions.zoom !== 1) {
+        this.center = this.mapOptions.center;
+        this.zoom = this.mapOptions.zoom;
+      } else {
+        this.center = center;
+        this.zoom = zoom;
+      }
+    }
+
     // 初始化 map
     this.map = new mapboxgl.Map({
       container: this.target,
@@ -363,6 +383,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createMVTBaseLayer(layerInfo) {
     let url = layerInfo.dataSource.url;
+    if (url.indexOf('/restjsr/') > -1) {
+      url += '/style.json';
+    }
     // @ts-ignore
     this.map.addStyle(url);
   }
@@ -483,7 +506,7 @@ export default class WebMapViewModel extends WebMapBase {
       features = this.transformFeatures(features);
     }
 
-    this.handleLayerFeatures(features, layerInfo);
+    features = this.handleLayerFeatures(features, layerInfo);
 
     if (layerType === 'VECTOR') {
       if (featureType === 'POINT') {
@@ -617,20 +640,38 @@ export default class WebMapViewModel extends WebMapBase {
   private _createVectorLayer(layerInfo: any, features: any): void {
     let type = layerInfo.featureType;
     const { layerID, minzoom, maxzoom, style, visible } = layerInfo;
-    let layerStyle = {
-      style: this._transformStyleToMapBoxGl(style, type),
-      layout: {
-        visibility: visible
-      }
-    };
-    let source: mapboxglTypes.GeoJSONSourceRaw = {
+    const source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
         features: features
       }
     };
-    this._addOverlayToMap(type, source, layerID, layerStyle, minzoom, maxzoom);
+    this.map.addSource(layerID, source);
+    let styleArr = Array.isArray(style) ? style : [style];
+    if (styleArr.length === 2) {
+      // 道路
+      if (styleArr[0].lineDash === 'solid' && styleArr[1].lineDash === 'solid') {
+        styleArr[0].strokeWidth = styleArr[1].strokeWidth;
+        styleArr[1].strokeWidth = styleArr[1].strokeWidth - 2;
+      }
+      // 铁路
+      if (styleArr[0].lineDash === 'solid' && styleArr[1].lineDash === 'dash') {
+        styleArr[0].strokeWidth = styleArr[1].strokeWidth;
+        styleArr[1].strokeWidth = styleArr[1].strokeWidth * 0.5;
+        styleArr[1].lineDash = 'dashrailway';
+      }
+    }
+    styleArr.forEach((element, index) => {
+      let layerStyle = {
+        style: this._transformStyleToMapBoxGl(element, type),
+        layout: {
+          visibility: visible
+        }
+      };
+      const newLayerID = index === 0 ? layerID : `${layerID}-additional-${index}`;
+      this._addOverlayToMap(type, layerID, newLayerID, layerStyle, minzoom, maxzoom);
+    });
     // 如果面有边框
     type === 'POLYGON' &&
       style.strokeColor &&
@@ -916,7 +957,7 @@ export default class WebMapViewModel extends WebMapBase {
                 : styleGroups[i].radius;
             expression.push(row.properties['index'], radius);
             colorExpression.push(row.properties['index'], styleGroups[i].color);
-            continue;
+            break;
           }
         }
       }
@@ -958,7 +999,28 @@ export default class WebMapViewModel extends WebMapBase {
     let labelStyle = layerInfo.labelStyle;
     let { backgroundFill, fontFamily } = labelStyle;
     const { minzoom, maxzoom } = layerInfo;
+    const textSize = parseFloat(labelStyle.fontSize || 14);
     backgroundFill = `rgba(${backgroundFill.join(',')})`;
+    let textHaloColor = 'rgba(255,255,255,0)';
+    if (labelStyle.outlineColor && labelStyle.outlineWidth > 0) {
+      textHaloColor = labelStyle.outlineColor;
+    } else if (labelStyle.placement !== 'line') {
+      textHaloColor = backgroundFill || 'rgba(255,255,255,1)';
+    }
+
+    let textHaloWidth = (labelStyle.outlineWidth || 0) / 2;
+    if (textHaloWidth === 0 && labelStyle.placement !== 'line' && backgroundFill) {
+      textHaloWidth = 4;
+    }
+    let textAnchor = labelStyle.textAlign || 'center';
+    if (labelStyle.textBaseline && labelStyle.textBaseline !== 'middle') {
+      textAnchor = `${labelStyle.textBaseline}${textAnchor === 'center' ? '' : `-${textAnchor}`}`;
+    }
+
+    let textOffset =
+      layerInfo.featureType === 'POINT'
+        ? [labelStyle.offsetX / textSize || 0, labelStyle.offsetY / textSize || 0]
+        : [0, 0];
     this._addLayer({
       id: `${layerInfo.layerID}-label`,
       type: 'symbol',
@@ -974,18 +1036,20 @@ export default class WebMapViewModel extends WebMapBase {
             },
       paint: {
         'text-color': labelStyle.fill,
-        'text-halo-color': backgroundFill || 'rgba(255,255,255,0.8)',
-        'text-halo-width': 4
+        'text-halo-color': textHaloColor,
+        'text-halo-width': textHaloWidth
       },
       layout: {
         'text-field': `{${labelStyle.labelField}}`,
-        'text-size': parseFloat(labelStyle.fontSize || 14),
-        'text-offset': labelStyle.offsetX
-          ? [labelStyle.offsetX / 10 || 0, labelStyle.offsetY / 10 || 0]
-          : layerInfo.featureType === 'POINT'
-          ? [0, -1.5]
-          : [0, 0],
+        'text-size': textSize,
+        'text-offset': textOffset,
         'text-font': fontFamily ? [fontFamily] : ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
+        'symbol-placement':
+          labelStyle.placement === 'line' ? (layerInfo.featureType === 'POLYGON' ? 'line' : 'line-center') : 'point',
+        'text-max-angle': layerInfo.featureType === 'POLYGON' ? 40 : 30,
+        'symbol-spacing': layerInfo.featureType === 'POLYGON' ? 200 : 50,
+        'text-anchor': textAnchor,
+        'text-line-height': 1.2,
         visibility: layerInfo.visible
       },
       minzoom: minzoom || 0,
@@ -993,13 +1057,15 @@ export default class WebMapViewModel extends WebMapBase {
     });
   }
 
-  private _createSymbolLayer(layerInfo: any, features: any, textSize?, textRotateExpresion?): void {
+  private _createSymbolLayer(layerInfo: any, features: any, textSizeExpresion?, textRotateExpresion?): void {
     // 用来请求symbol_point字体文件
     let target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
     const { layerID, minzoom, maxzoom, style } = layerInfo;
     let unicode = style.unicode;
     let text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
+    const textSize = textSizeExpresion || (style.fontSize && parseFloat(style.fontSize)) || 12;
+    const rotate = ((layerInfo.style['rotation'] || 0) * 180) / Math.PI;
     this._addLayer({
       id: layerID,
       type: 'symbol',
@@ -1011,13 +1077,18 @@ export default class WebMapViewModel extends WebMapBase {
         }
       },
       paint: {
-        'text-color': style.fillColor
+        'text-color': getColorWithOpacity(style.fillColor, style.fillOpacity),
+        // 'text-opacity': style.fillOpacity === 0 ? 0.1 : style.fillOpacity,
+        'text-halo-color': getColorWithOpacity(style.strokeColor || 'rgba(0,0,0,0)', style.strokeOpacity),
+        'text-halo-width': style.strokeWidth || 0
       },
       layout: {
         'text-field': text,
-        'text-size': textSize || (style.fontSize && parseFloat(style.fontSize)) || 12,
+        'text-size': textSize,
         'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
-        'text-rotate': textRotateExpresion || 0,
+        'text-rotate': textRotateExpresion || rotate || 0,
+        'text-offset': [style.offsetX / 2 || 0, style.offsetY / 2 || 0],
+        'text-allow-overlap': true,
         visibility: layerInfo.visible
       },
       minzoom: minzoom || 0,
@@ -1040,7 +1111,7 @@ export default class WebMapViewModel extends WebMapBase {
         features: features
       }
     };
-
+    const iconID = `imageIcon-${layerID}`;
     if (style.type === 'IMAGE_POINT') {
       let imageInfo = style.imageInfo;
       this.map.loadImage(imageInfo.url, (error, image) => {
@@ -1048,17 +1119,20 @@ export default class WebMapViewModel extends WebMapBase {
           console.error(error);
           return;
         }
-        let iconSize = Number.parseFloat((style.radius / image.height).toFixed(2)) * 2;
-        !this.map.hasImage('imageIcon') && this.map.addImage('imageIcon', image);
+        let iconSize = Number.parseFloat((style.radius / image.width).toFixed(2)) * 2;
+        !this.map.hasImage(iconID) && this.map.addImage(iconID, image);
         this._addLayer({
           id: layerID,
           type: 'symbol',
           source: source,
           layout: {
-            'icon-image': 'imageIcon',
+            'icon-image': iconID,
+            'icon-anchor': 'bottom-right',
             'icon-size': iconSizeExpression || iconSize,
+            'icon-allow-overlap': true,
             visibility: layerInfo.visible,
-            'icon-rotate': iconRotateExpression || 0
+            'icon-offset': [style.offsetX * image.width || 0, style.offsetY * image.height || 0],
+            'icon-rotate': iconRotateExpression || ((layerInfo.style['rotation'] || 0) * 180) / Math.PI
           },
           minzoom: minzoom || 0,
           maxzoom: maxzoom || 22
@@ -1079,17 +1153,20 @@ export default class WebMapViewModel extends WebMapBase {
             if (error) {
               console.log(error);
             }
-            let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2));
-            !this.map.hasImage('imageIcon') && this.map.addImage('imageIcon', image);
+            let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2)) * 2;
+            !this.map.hasImage(iconID) && this.map.addImage(iconID, image);
             this._addLayer({
               id: layerID,
               type: 'symbol',
               source: source,
               layout: {
-                'icon-image': 'imageIcon',
+                'icon-image': iconID,
                 'icon-size': iconSizeExpression || iconSize,
+                'icon-anchor': 'bottom-right',
                 visibility: layerInfo.visible,
-                'icon-rotate': iconRotateExpression || 0
+                'icon-offset': [style.offsetX * canvas.width || 0, style.offsetY * canvas.height || 0],
+                'icon-allow-overlap': true,
+                'icon-rotate': iconRotateExpression || ((layerInfo.style['rotation'] || 0) * 180) / Math.PI
               },
               minzoom: minzoom || 0,
               maxzoom: maxzoom || 22
@@ -1493,6 +1570,13 @@ export default class WebMapViewModel extends WebMapBase {
         if (this.map.getLayer(`${targetlayerId}-strokeLine`)) {
           this.map.moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
         }
+        for (let index = 1; index < this.expectLayerLen + 1; index++) {
+          if (this.map.getLayer(`${targetlayerId}-additional-${index}`)) {
+            this.map.moveLayer(`${targetlayerId}-additional-${index}`, beforLayerId);
+          } else {
+            break;
+          }
+        }
         if (this.map.getLayer(`${targetlayerId}-label`)) {
           this.map.moveLayer(`${targetlayerId}-label`);
         }
@@ -1566,6 +1650,12 @@ export default class WebMapViewModel extends WebMapBase {
     if (style.lineDash && style.lineDash !== 'solid' && type === 'LINE') {
       newObj['line-dasharray'] = this.getDashStyle(style.lineDash);
     }
+    if (style.type === 'POINT' || style.type === 'BASIC_POINT' || type === 'POINT') {
+      const offsetX = style.offsetX || 0;
+      const offsetY = style.offsetY || 0;
+      newObj['circle-translate'] = [offsetX * style['radius'], offsetY * style['radius']];
+    }
+
     return newObj;
   }
 
@@ -1855,13 +1945,20 @@ export default class WebMapViewModel extends WebMapBase {
 
   cleanWebMap() {
     if (this.map) {
-      this.triggerEvent('beforeremovemap');
+      this.triggerEvent('beforeremovemap',{});
+      const lastCenter = this.map.getCenter();
+      const lastZoom = this.map.getZoom();
       this.map.remove();
       this.map = null;
       this._legendList = {};
       this._sourceListModel = null;
-      this.center = null;
-      this.zoom = null;
+      if (!this._keepCenterZoom) {
+        this.center = null;
+        this.zoom = null;
+      } else {
+        this.center = lastCenter.toArray();
+        this.zoom = lastZoom;
+      }
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
       this._unprojectProjection = null;
     }

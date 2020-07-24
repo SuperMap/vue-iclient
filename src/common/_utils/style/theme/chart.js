@@ -1,4 +1,34 @@
 import { getColorWithOpacity } from '../../util';
+import cloneDeep from 'lodash.clonedeep';
+
+export const handleMultiGradient = (colorGroupsData, dataLength) => {
+  let startColors = [];
+  let endColors = [];
+  let startColorGroups = [];
+  let endColorGroups = [];
+  let results = [];
+  colorGroupsData.forEach(colorInfo => {
+    startColors.push(colorInfo.colorStops[0].color);
+    endColors.push(colorInfo.colorStops[1].color);
+  });
+  startColorGroups = SuperMap.ColorsPickerUtil.getGradientColors(startColors, dataLength, 'RANGE');
+  endColorGroups = SuperMap.ColorsPickerUtil.getGradientColors(endColors, dataLength, 'RANGE');
+  for (let i = 0; i < dataLength; i++) {
+    let colorGroupDataCopy = cloneDeep(colorGroupsData[0]);
+    colorGroupDataCopy.colorStops = [
+      {
+        offset: 0,
+        color: startColorGroups[i]
+      },
+      {
+        offset: 1,
+        color: endColorGroups[i]
+      }
+    ];
+    results.push(colorGroupDataCopy);
+  }
+  return results;
+};
 
 export const chartThemeUtil = (
   background = 'rgba(255, 255, 255, 0.6)',
@@ -7,7 +37,9 @@ export const chartThemeUtil = (
   dataNumber
 ) => {
   // 是否需要产生分段颜色值
-  if (dataNumber >= 5) {
+  if (colorGroup && dataNumber > colorGroup.length && typeof colorGroup[0] === 'object') {
+    colorGroup = handleMultiGradient(colorGroup, dataNumber);
+  } else {
     colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(colorGroup, dataNumber, 'RANGE');
   }
   let chartTheme = {

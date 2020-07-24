@@ -630,7 +630,7 @@ export default class WebMapService extends Events {
     }
     let type;
     let isHosted = (dataSource && dataSource.serverId) || layerType === 'MARKER' || layerType === 'HOSTED_TILE';
-    let isTile = layerType === 'SUPERMAP_REST' || layerType === 'TILE' || layerType === 'WMS' || layerType === 'WMTS';
+    let isTile = layerType === 'SUPERMAP_REST' || layerType === 'TILE' || layerType === 'WMS' || layerType === 'WMTS' || layerType === 'MAPBOXSTYLE';
     if (isHosted) {
       type = 'hosted';
     } else if (isTile) {
@@ -1049,7 +1049,7 @@ export default class WebMapService extends Events {
     let getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
     getFeatureParam = new SuperMap.FilterParameter({
       name: datasetNames.join().replace(':', '@'),
-      attributeFilter: 'SMID > 0'
+      attributeFilter: null
     });
     getFeatureBySQLParams = new SuperMap.GetFeaturesBySQLParameters({
       queryParameter: getFeatureParam,

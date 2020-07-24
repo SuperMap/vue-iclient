@@ -2,11 +2,7 @@
   <div :id="target" class="sm-component-web-map">
     <slot></slot>
     <template v-for="(controlProps, controlName) in controlComponents">
-      <component
-        :is="controlName"
-        :key="controlName"
-        v-bind="controlProps"
-      ></component>
+      <component :is="controlName" :key="controlName" v-bind="controlProps"></component>
     </template>
     <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
@@ -178,6 +174,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() isSuperMapOnline: boolean;
   @Prop() proxy: boolean | string;
+  @Prop({ default: true }) useLoading: boolean | string;
+  @Prop({ default: false }) keepCenterZoom: boolean;
   @Prop() iportalServiceProxyUrlPrefix: string;
   @Prop()
   mapOptions: any;
@@ -290,7 +288,25 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
 
   @Watch('mapId')
   mapIdChanged() {
-    this.spinning = true;
+    if (this.viewModel) {
+      this.viewModel.setKeepCenterZoom(this.keepCenterZoom);
+    }
+    if (this.useLoading) {
+      this.spinning = true;
+    }
+  }
+
+  @Watch('keepCenterZoom')
+  keepCenterZoomChanged() {
+    if (this.viewModel) {
+      this.viewModel.setKeepCenterZoom(this.keepCenterZoom);
+    }
+  }
+
+  created() {
+    if (!this.useLoading) {
+      this.spinning = false;
+    }
   }
 
   mounted() {
@@ -368,7 +384,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         excludePortalProxyUrl,
         isSuperMapOnline,
         proxy,
-        iportalServiceProxyUrlPrefix
+        iportalServiceProxyUrlPrefix,
+        keepCenterZoom: this.keepCenterZoom
       },
       mapOptions
     );

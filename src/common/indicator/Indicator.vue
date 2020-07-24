@@ -1,9 +1,11 @@
 <template>
   <div class="sm-component-indicator" :style="getBackgroundStyle">
     <div :class="`sm-component-indicator__content sm-component-indicator__content-${mode}`">
-      <span v-show="showTitleUnit" class="sm-component-indicator__title" :style="[unit_titleStyle, getTextColorStyle]">
-        {{ titleData }}
-      </span>
+      <span
+        v-show="showTitleUnit"
+        class="sm-component-indicator__title"
+        :style="[unit_titleStyle, getTextColorStyle]"
+      >{{ titleData }}</span>
       <div>
         <span class="sm-component-indicator__num" :style="indicatorStyle">
           <countTo
@@ -20,9 +22,11 @@
           ></countTo>
           {{ isNumber(indicatorNum) ? '' : indicatorNum }}
         </span>
-        <span v-show="showTitleUnit" class="sm-component-indicator__unit" :style="[unit_titleStyle, getTextColorStyle]">
-          {{ unitData }}
-        </span>
+        <span
+          v-show="showTitleUnit"
+          class="sm-component-indicator__unit"
+          :style="[unit_titleStyle, getTextColorStyle]"
+        >{{ unitData }}</span>
       </div>
     </div>
   </div>
@@ -107,7 +111,7 @@ export default {
     numBackground: {
       type: Object,
       default: function() {
-        return { color: 'rgba(0, 0, 0, 0)', image: '' };
+        return { color: 'rgba(0, 0, 0, 0)', image: '', padding: 0 };
       }
     },
     separatorBackground: {

@@ -39,7 +39,7 @@ import cloneDeep from 'lodash.clonedeep';
 import Card from '../_mixin/card';
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
-import { chartThemeUtil } from '../_utils/style/theme/chart';
+import { chartThemeUtil, handleMultiGradient } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
@@ -194,6 +194,12 @@ export default {
     associatedMap: {
       type: Boolean,
       default: false
+    },
+    highlightOptions: {
+      type: Array,
+      default() {
+        return [];
+      }
     }
   },
   data() {
@@ -328,6 +334,12 @@ export default {
       if (!this.associatedMap) {
         this.clearPopup && this.clearPopup();
       }
+    },
+    highlightOptions: {
+      handler(newVal, oldVal) {
+        this.setItemStyleColor();
+      },
+      deep: true
     }
   },
   created() {
@@ -388,6 +400,25 @@ export default {
         500,
         { leading: true }
       );
+    },
+    setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = 'red') {
+      series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
+      series.forEach((serie, seriesIndex) => {
+        const dataIndexs = highlightOptions.map(item => {
+          if (item.seriesIndex.includes(seriesIndex)) return item.dataIndex;
+        });
+
+        serie.itemStyle = serie.itemStyle || { color: '' };
+        serie.itemStyle.color = ({ dataIndex }) => {
+          if (dataIndexs.indexOf(dataIndex) > -1) {
+            return color;
+          } else if (serie.type === 'pie') {
+            let colorGroup = this._handlerColorGroup(serie);
+            return colorGroup[dataIndex];
+          }
+        };
+      });
+      isSet && this.$set(this.echartOptions, 'series', series);
     },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
@@ -468,7 +499,7 @@ export default {
         this.echartOptions = this._optionsHandler(echartOptions, options);
       });
     },
-    _optionsHandler(options, dataOptions) {
+    _optionsHandler(options, dataOptions, dataZoomChanged) {
       dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
       options = options && cloneDeep(options); // clone 避免引起重复刷新
       if (options && options.legend && !options.legend.type) {
@@ -518,24 +549,25 @@ export default {
                   dataZoom.start = dataZoom.end;
                   dataZoom.end = oldStart;
                 }
-                let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
-                if (startValue >= 0) {
+                if (dataZoomChanged) {
+                  let { startValue, endValue } = this.smChart.chart.getOption().dataZoom[0] || {};
                   startDataIndex = startValue;
+                  endDataIndex = endValue;
+                  options.dataZoom = options.dataZoom.map(val => {
+                    if (startValue >= 0 && endValue >= 0) {
+                      val.startValue = startValue;
+                      val.endValue = endValue;
+                      delete val.start;
+                      delete val.end;
+                      return val;
+                    }
+                    return val;
+                  });
                 } else {
                   startDataIndex = Math.floor((dataZoom.start / 100) * data.length);
+                  endDataIndex = Math.ceil((dataZoom.end / 100) * data.length);
                 }
-                endDataIndex = endValue || Math.ceil((dataZoom.end / 100) * data.length);
                 data = serie.data.slice(startDataIndex, endDataIndex + 1);
-                options.dataZoom = options.dataZoom.map(val => {
-                  if (startValue >= 0 && endValue >= 0) {
-                    val.startValue = startValue;
-                    val.endValue = endValue;
-                    delete val.start;
-                    delete val.end;
-                    return val;
-                  }
-                  return val;
-                });
               }
 
               label.formatter = function({ dataIndex, value }) {
@@ -603,31 +635,16 @@ export default {
 
       let series = dataOptions.series;
       if (series && series.length) {
-        series.forEach(serie => {
-          // 对pie处理数据颜色分段
-          if (serie.type === 'pie') {
-            if (serie.data && serie.data.length > this.colorGroupsData.length) {
-              let colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(
-                this.colorGroupsData,
-                serie.data.length,
-                'RANGE'
-              );
-              if (serie.itemStyle) {
-                serie.itemStyle.color = function({ dataIndex }) {
-                  return colorGroup[dataIndex];
-                };
-              } else {
-                serie.itemStyle = {
-                  color: function({ dataIndex }) {
-                    return colorGroup[dataIndex];
-                  }
-                };
-              }
-            }
-          }
-        });
+        this.setItemStyleColor(false, series);
       }
       return merge(options, dataOptions);
+    },
+    _handlerColorGroup(serie) {
+      if (typeof this.colorGroupsData[0] === 'object') {
+        return handleMultiGradient(this.colorGroupsData, serie.data.length);
+      } else {
+        return SuperMap.ColorsPickerUtil.getGradientColors(this.colorGroupsData, serie.data.length, 'RANGE');
+      }
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
@@ -642,7 +659,9 @@ export default {
     },
     _setChartTheme() {
       if (!this.theme) {
-        let length = (this.datasetOptions && this.datasetOptions.length) || (this.echartOptions.series && this.echartOptions.series.length);
+        let length =
+          (this.datasetOptions && this.datasetOptions.length) ||
+          (this.echartOptions.series && this.echartOptions.series.length);
         let colorNumber = this.colorGroupsData.length;
         if (length && length > colorNumber) {
           colorNumber = length;
@@ -817,7 +836,7 @@ export default {
         flag = labelConfig.show && labelConfig.smart;
       });
       if (flag) {
-        this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
+        this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, true);
       }
     }
   },

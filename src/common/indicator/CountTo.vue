@@ -25,7 +25,7 @@ export default {
     numBackground: {
       type: Object,
       default: function() {
-        return { color: 'rgba(0, 0, 0, 0)', image: '' };
+        return { color: 'rgba(0, 0, 0, 0)', image: '', padding: 0 };
       }
     },
     numSpacing: {
@@ -48,7 +48,7 @@ export default {
         }
         const reg = /\d+(\.\d+)?([a-z]+)/gi;
         const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
-        let styleObj = { backgroundColor: this.numBackground.color };
+        let styleObj = { backgroundColor: this.numBackground.color, padding: this.numBackground.padding };
         if (this.numBackground.image) {
           styleObj = Object.assign(styleObj, {
             backgroundImage: `url(${this.numBackground.image})`,

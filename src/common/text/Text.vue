@@ -3,7 +3,7 @@
     <span v-if="href">
       <a :target="target" :href="href" class="sm-component-text__href" :style="[getTextColorStyle]">{{ finalValue }}</a>
     </span>
-    <span v-else>{{ finalValue }}</span>
+    <span v-else class="sm-component-text__span">{{ finalValue }}</span>
   </div>
 </template>
 
