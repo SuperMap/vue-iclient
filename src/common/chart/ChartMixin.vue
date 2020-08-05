@@ -409,13 +409,20 @@ export default {
       series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
       series.forEach((serie, seriesIndex) => {
         const dataIndexs = highlightOptions.map(item => {
-          if (item.seriesIndex.includes(seriesIndex)) return item.dataIndex;
+          if (item.seriesIndex.includes(seriesIndex)) {
+            return item.dataIndex;
+          }
         });
-
+        const colors = highlightOptions.map(item => {
+          if (item.seriesIndex.includes(seriesIndex)) {
+            return item.color || color;
+          }
+        });
         serie.itemStyle = serie.itemStyle || { color: '' };
         serie.itemStyle.color = ({ dataIndex }) => {
-          if (dataIndexs.indexOf(dataIndex) > -1) {
-            return color;
+          const index = dataIndexs.indexOf(dataIndex);
+          if (index > -1) {
+            return colors[index];
           } else if (serie.type === 'pie') {
             let colorGroup = this._handlerColorGroup(serie);
             return colorGroup[dataIndex];
