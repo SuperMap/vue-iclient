@@ -141,8 +141,8 @@ export default class WebMapViewModel extends WebMapBase {
 
     let layerType = this.getBaseLayerType(layerInfo);
     let mapUrls = this.getMapurls({
-      CLOUD: 'http://t2.supermapcloud.com/FileService/image',
-      CLOUD_BLACK: 'http://t3.supermapcloud.com/MapService/getGdp',
+      CLOUD: 'http://t2.dituhui.com/FileService/image',
+      CLOUD_BLACK: 'http://t3.dituhui.com/MapService/getGdp',
       OSM: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
     });
 
