@@ -200,6 +200,10 @@ export default {
       default() {
         return [];
       }
+    },
+    highlightColor: {
+      type: String,
+      default: '#00eeff'
     }
   },
   data() {
@@ -401,7 +405,7 @@ export default {
         { leading: true }
       );
     },
-    setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = 'red') {
+    setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = this.highlightColor) {
       series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
       series.forEach((serie, seriesIndex) => {
         const dataIndexs = highlightOptions.map(item => {
