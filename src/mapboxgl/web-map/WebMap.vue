@@ -1,5 +1,5 @@
 <template>
-  <div :id="target" class="sm-component-web-map">
+  <div :id="target" class="sm-component-web-map" :style="[{'background': background}]">
     <slot></slot>
     <template v-for="(controlProps, controlName) in controlComponents">
       <component :is="controlName" :key="controlName" v-bind="controlProps"></component>
@@ -151,6 +151,7 @@ interface controlProps {
     'mapOptions.renderWorldCopies',
     'mapOptions.bearing',
     'mapOptions.pitch',
+    'mapOptions.rasterTileSize',
     'withCredentials',
     'proxy'
   ]
@@ -175,7 +176,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop() isSuperMapOnline: boolean;
   @Prop() proxy: boolean | string;
   @Prop({ default: true }) useLoading: boolean | string;
-  @Prop({ default: false }) keepCenterZoom: boolean;
+  @Prop() background: string;
   @Prop() iportalServiceProxyUrlPrefix: string;
   @Prop()
   mapOptions: any;
@@ -288,18 +289,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
 
   @Watch('mapId')
   mapIdChanged() {
-    if (this.viewModel) {
-      this.viewModel.setKeepCenterZoom(this.keepCenterZoom);
-    }
     if (this.useLoading) {
       this.spinning = true;
-    }
-  }
-
-  @Watch('keepCenterZoom')
-  keepCenterZoomChanged() {
-    if (this.viewModel) {
-      this.viewModel.setKeepCenterZoom(this.keepCenterZoom);
     }
   }
 
@@ -384,8 +375,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         excludePortalProxyUrl,
         isSuperMapOnline,
         proxy,
-        iportalServiceProxyUrlPrefix,
-        keepCenterZoom: this.keepCenterZoom
+        iportalServiceProxyUrlPrefix
       },
       mapOptions
     );
