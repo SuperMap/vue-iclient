@@ -1,11 +1,16 @@
 <template>
-  <div v-show="false" ref="Popup" class="sm-component-identify">
+  <div
+    v-show="false"
+    ref="Popup"
+    class="sm-component-identify"
+    :style="[getBackgroundStyle, getTextColorStyle]"
+  >
+    <div class="sm-component-identify__close">x</div>
     <ul
       :class="[
         autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
         'sm-component-identify__content'
       ]"
-      :style="[getBackgroundStyle, getTextColorStyle]"
     >
       <li v-for="(value, key, index) in popupProps" :key="index" class="content">
         <div class="left ellipsis" :title="key" :style="getWidthStyle.keyWidth">{{ key }}</div>
@@ -129,6 +134,15 @@ export default {
         }
       }
       return style;
+    },
+    layersOnMap() {
+      let layersOnMap = [];
+      for (let i = 0; i < this.layers.length; i++) {
+        if (this.map.getLayer(this.layers[i])) {
+          layersOnMap.push(this.layers[i]);
+        }
+      }
+      return layersOnMap;
     }
   },
   watch: {
@@ -153,7 +167,13 @@ export default {
     this.setViewModel();
   },
   removed() {
-    this.map && this.map.off('click', this.sourceMapClickFn);
+    if (this.map) {
+      this.map.off('click', this.sourceMapClickFn);
+      this.layersOnMap.forEach(layer => {
+        this.map.off('mousemove', layer, this.changeCursorPointer);
+        this.map.off('mouseleave', layer, this.changeCursorGrab);
+      });
+    }
     // 清除旧的高亮的图层
     this.viewModel && this.viewModel.removed();
   },
@@ -169,6 +189,7 @@ export default {
           layerStyle: this.layerStyle
         });
         this.map && this.bindMapClick(this.map);
+        this.changeClickedLayersCursor(this.layersOnMap);
       }
     },
     // 给图层绑定popup和高亮
@@ -198,20 +219,14 @@ export default {
       }
     },
     // 给layer绑定queryRenderedFeatures
-    bindQueryRenderedFeatures(e) {
-      let layersOnMap = [];
+    bindQueryRenderedFeatures(e, layers = this.layersOnMap) {
       let map = e.target;
       let bbox = [
         [e.point.x - this.clickTolerance, e.point.y - this.clickTolerance],
         [e.point.x + this.clickTolerance, e.point.y + this.clickTolerance]
       ];
-      for (let i = 0; i < this.layers.length; i++) {
-        if (map.getLayer(this.layers[i])) {
-          layersOnMap.push(this.layers[i]);
-        }
-      }
       let features = map.queryRenderedFeatures(bbox, {
-        layers: layersOnMap
+        layers
       });
       return features;
     },
@@ -280,6 +295,18 @@ export default {
       identifyBottomAnchor && (identifyBottomAnchor.style.borderTopColor = this.backgroundData);
       identifyLeftAnchor && (identifyLeftAnchor.style.borderRightColor = this.backgroundData);
       identifyRightAnchor && (identifyRightAnchor.style.borderLeftColor = this.backgroundData);
+    },
+    changeClickedLayersCursor(layers = [], map = this.map) {
+      this.changeCursorPointer = () => this.changeCursor('pointer');
+      this.changeCursorGrab = () => this.changeCursor('grab');
+      layers &&
+        layers.forEach(layer => {
+          map.on('mousemove', layer, this.changeCursorPointer);
+          map.on('mouseleave', layer, this.changeCursorGrab);
+        });
+    },
+    changeCursor(cursorType = 'grab', map = this.map) {
+      map.getCanvas().style.cursor = cursorType;
     }
   }
 };

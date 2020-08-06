@@ -11,7 +11,7 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  * @param {Object} [options.layerStyle.stokeLine] - 面图层样式配置。
  * @extends mapboxgl.Evented
  */
-
+const HIGHLIGHT_COLOR = '#4fcfff';
 export default class IdentifyViewModel extends mapboxgl.Evented {
   constructor(map, options) {
     super();
@@ -47,20 +47,20 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
   addOverlayToMap(layer, filter) {
     let mbglStyle = {
       circle: {
-        'circle-color': '#409eff',
+        'circle-color': HIGHLIGHT_COLOR,
         'circle-opacity': 0.6,
-        'circle-stroke-color': '#409eff',
+        'circle-stroke-color': HIGHLIGHT_COLOR,
         'circle-stroke-opacity': 1
       },
       line: {
         'line-width': 3,
-        'line-color': '#409eff',
+        'line-color': HIGHLIGHT_COLOR,
         'line-opacity': 1
       },
       fill: {
-        'fill-color': '#409eff',
+        'fill-color': HIGHLIGHT_COLOR,
         'fill-opacity': 0.6,
-        'fill-outline-color': '#409eff'
+        'fill-outline-color': HIGHLIGHT_COLOR
       },
       symbol: {
         layout: {
@@ -90,7 +90,7 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
       let stokeLineStyle = this.layerStyle.stokeLine || {};
       let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
         'line-width': 3,
-        'line-color': '#409eff',
+        'line-color': HIGHLIGHT_COLOR,
         'line-opacity': 1
       };
       let highlightLayer = Object.assign({}, layer, {
