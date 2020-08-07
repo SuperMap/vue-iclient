@@ -133,7 +133,7 @@ export default abstract class WebMapBase extends Events {
   public setZoom(zoom) {
     if (this.map) {
       this.mapOptions.zoom = zoom;
-      (zoom || zoom === 0) && this.map.setZoom(zoom);
+      (zoom || zoom === 0) && this.map.setZoom(zoom, { from: 'setZoom' });
     }
   }
 
@@ -353,7 +353,7 @@ export default abstract class WebMapBase extends Events {
         style.radius = radius;
         // 处理颜色
         if (colors && colors.length > 0) {
-          color = customSettings[i] && customSettings[i].color ? customSettings[i].color : rangeColors[i] || fillColor;;
+          color = customSettings[i] && customSettings[i].color ? customSettings[i].color : rangeColors[i] || fillColor;
           style.fillColor = color;
         }
         styleGroup.push({ radius, color, start, end, style });
@@ -508,7 +508,7 @@ export default abstract class WebMapBase extends Events {
       case 'dash':
         dashArr = [4 * w, 4 * w];
         break;
-       case 'dashrailway':
+      case 'dashrailway':
         dashArr = [8 * w, 12 * w];
         break;
       case 'dashdot':

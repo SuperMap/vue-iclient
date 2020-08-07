@@ -203,7 +203,7 @@ export default {
     },
     highlightColor: {
       type: String,
-      default: '#00eeff'
+      default: '#01ffff'
     }
   },
   data() {

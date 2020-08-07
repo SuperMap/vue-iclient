@@ -169,7 +169,7 @@ export default class WebMapViewModel extends WebMapBase {
   public setCenter(center): void {
     if (this.map && this.centerValid(center)) {
       this.mapOptions.center = center;
-      this.map.setCenter(center);
+      this.map.setCenter(center, { from: 'setCenter' });
     }
   }
 
