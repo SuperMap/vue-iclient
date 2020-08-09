@@ -7,9 +7,9 @@ export function statisticsFeatures(features, fields, fieldCaptions, fieldTypes) 
     fieldTypes
   };
   if (features && !!features.length && !fieldCaptions && !fields) {
-    const feature = features[0];
+    const properties = Object.assign({}, features[0].properties, features[features.length - 1].properties);
     // 获取每个字段的名字和类型
-    for (let attr in feature.properties) {
+    for (let attr in properties) {
       data.fieldCaptions.push(attr);
       data.fields.push(attr);
     }

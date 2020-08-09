@@ -308,6 +308,9 @@ export default {
           if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
             this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
           } else {
+            if (!this.dataset.hasOwnProperty('geoJSON')) {
+              this._initAxisLabel(this.options.yAxis.axisLabel, this.options.yAxis.data, this.options.visualMap, this.options.series);
+            }
             this.echartOptions = Object.assign({}, this.options);
           }
         }
@@ -369,6 +372,9 @@ export default {
     });
     this._initAutoResize();
     this._initDataZoom();
+    if (!this.dataset.hasOwnProperty('geoJSON')) {
+      this._initAxisLabel(this.options.yAxis.axisLabel, this.options.yAxis.data, this.options.visualMap, this.options.series);
+    }
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -404,6 +410,55 @@ export default {
         500,
         { leading: true }
       );
+    },
+    getStringColor(color) {
+      if (color instanceof Object) {
+        return ((color.colorStops || [])[0] || {}).color;
+      }
+      return color;
+    },
+    _initAxisLabel(axisLabel, data, visualMap, series) {
+      if (!this.xBar) {
+        return;
+      }
+      const sortSeriesIndex = this.datasetOptions.findIndex(item => item.sort !== 'unsort' && item.rankLabel);
+      if (sortSeriesIndex > -1 && axisLabel && data) {
+        for (let index = 0, len = data.length, rankIndex = len - 1; index < len; index++, rankIndex--) {
+          data[index] = rankIndex < 10 ? `0${rankIndex}${data[index]}` : `${rankIndex}${data[index]}`;
+        }
+        const firstVisualMap = visualMap && visualMap.find(item => item.seriesIndex === sortSeriesIndex);
+        axisLabel.rich = axisLabel.rich || {};
+        axisLabel.rich.default = {
+          backgroundColor: this.getStringColor(this.colorGroup[sortSeriesIndex]),
+          width: 20,
+          height: 20,
+          align: 'center',
+          borderRadius: 2
+        };
+        firstVisualMap &&
+          firstVisualMap.pieces.map(item => {
+            axisLabel.rich[`${item.min}_${item.max}`] = {
+              backgroundColor: item.color,
+              width: 20,
+              height: 20,
+              align: 'center',
+              borderRadius: 2
+            };
+          });
+        const serieData = series && series[sortSeriesIndex].data;
+        axisLabel.formatter = function(label, index) {
+          const orderNum = parseInt(label.slice(0, 2)) + 1;
+          const leftLabel = label.slice(2);
+          const labelValue = serieData && serieData[index];
+          if (firstVisualMap) {
+            const matchItem = firstVisualMap.pieces.find(item => labelValue >= item.min && labelValue <= item.max);
+            if (matchItem) {
+              return [`{${matchItem.min}_${matchItem.max}|${orderNum}}  ${leftLabel}`].join('\n');
+            }
+          }
+          return [`{default|${orderNum}}  ${leftLabel}`].join('\n');
+        };
+      }
     },
     setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = this.highlightColor) {
       series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
@@ -528,6 +583,7 @@ export default {
           axis = yAxis;
           dataOptions.yAxis = dataOptions.xAxis;
           delete dataOptions.xAxis;
+          this._initAxisLabel(yAxis.axisLabel, dataOptions.yAxis[0].data, options.visualMap, dataOptions.series);
         }
         if (dataOptions.series.length === 0) {
           axis = [{}];
