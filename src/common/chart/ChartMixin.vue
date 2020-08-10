@@ -227,7 +227,6 @@ export default {
     computedOptions() {
       return this.smChart && this.smChart.computedOptions;
     },
-
     _chartStyle() {
       return {
         width: '100%',
@@ -479,7 +478,7 @@ export default {
           if (index > -1) {
             return colors[index];
           } else if (serie.type === 'pie') {
-            let colorGroup = this._handlerColorGroup(serie);
+            let colorGroup = this._handlerColorGroup(serie.data.length);
             return colorGroup[dataIndex];
           }
         };
@@ -599,11 +598,11 @@ export default {
         if (dataOptions.series.length === 0) {
           options.series = [];
         } else {
-          options.series = dataOptions.series.map((element, index) => {
-            return Object.assign({}, options.series[index] || {}, element);
+          options.series = options.series.map((element, index) => {
+            return Object.assign({}, element, dataOptions.series[index] || {});
           });
           const dataZoom = options.dataZoom && options.dataZoom[0];
-          options.series = options.series.map(serie => {
+          options.series = options.series.map((serie, index) => {
             let label = serie.label && serie.label.normal;
             if (label && label.show && label.smart) {
               label.position = label.position || 'top';
@@ -704,13 +703,68 @@ export default {
       if (series && series.length) {
         this.setItemStyleColor(false, series);
       }
+      dataOptions.series = this._createRingShineSeries(series);
       return merge(options, dataOptions);
     },
-    _handlerColorGroup(serie) {
+    _createRingShineSeries(series) {
+      let { seriesType, outerGap, isShine } = this.datasetOptions[0];
+      if (seriesType === 'pie' && outerGap) {
+        series = series.map(serie => {
+          if (serie.name !== 'innerCircle') {
+            serie.data = this._createRingShineDataOption(serie.data, outerGap, isShine);
+          }
+          return serie;
+        });
+      }
+      return series;
+    },
+    _createRingShineDataOption(data, outerGap, isShine) {
+      if (!data) {
+        return;
+      }
+      let colors = this._handlerColorGroup(data.length);
+      let result = [];
+      for (var i = 0; i < data.length; i++) {
+        let dataItem = {
+          value: data[i].value,
+          name: data[i].name
+        };
+        if (isShine) {
+          dataItem.itemStyle = {
+            normal: {
+              borderWidth: 5,
+              shadowBlur: 10,
+              color: colors[i],
+              borderColor: colors[i],
+              shadowColor: colors[i]
+            }
+          };
+        }
+        result.push(dataItem, {
+          value: outerGap,
+          name: '',
+          itemStyle: {
+            normal: {
+              label: {
+                show: false
+              },
+              labelLine: {
+                show: false
+              },
+              color: 'rgba(0, 0, 0, 0)',
+              borderColor: 'rgba(0, 0, 0, 0)',
+              borderWidth: 0
+            }
+          }
+        });
+      }
+      return result;
+    },
+    _handlerColorGroup(serielDataLength) {
       if (typeof this.colorGroupsData[0] === 'object') {
-        return handleMultiGradient(this.colorGroupsData, serie.data.length);
+        return handleMultiGradient(this.colorGroupsData, serielDataLength);
       } else {
-        return SuperMap.ColorsPickerUtil.getGradientColors(this.colorGroupsData, serie.data.length, 'RANGE');
+        return SuperMap.ColorsPickerUtil.getGradientColors(this.colorGroupsData, serielDataLength, 'RANGE');
       }
     },
     // 当datasetUrl不变，datasetOptions改变时
