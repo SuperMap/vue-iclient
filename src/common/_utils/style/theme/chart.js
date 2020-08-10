@@ -30,18 +30,24 @@ export const handleMultiGradient = (colorGroupsData, dataLength) => {
   return results;
 };
 
+export const getMultiColorGroup = (colorGroup, dataNumber) => {
+  let nextColorGroup;
+  // 是否需要产生分段颜色值
+  if (colorGroup && dataNumber > colorGroup.length && typeof colorGroup[0] === 'object') {
+    nextColorGroup = handleMultiGradient(colorGroup, dataNumber);
+  } else {
+    nextColorGroup = SuperMap.ColorsPickerUtil.getGradientColors(colorGroup, dataNumber, 'RANGE');
+  }
+  return nextColorGroup;
+};
+
 export const chartThemeUtil = (
   background = 'rgba(255, 255, 255, 0.6)',
   textColor = '#333',
   colorGroup = ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8'],
   dataNumber
 ) => {
-  // 是否需要产生分段颜色值
-  if (colorGroup && dataNumber > colorGroup.length && typeof colorGroup[0] === 'object') {
-    colorGroup = handleMultiGradient(colorGroup, dataNumber);
-  } else {
-    colorGroup = SuperMap.ColorsPickerUtil.getGradientColors(colorGroup, dataNumber, 'RANGE');
-  }
+  colorGroup = getMultiColorGroup(colorGroup, dataNumber);
   let chartTheme = {
     color: colorGroup,
     backgroundColor: background,

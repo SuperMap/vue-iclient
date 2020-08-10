@@ -283,7 +283,7 @@ export default class EchartsDataService {
         }
       };
       axisData = this.radarAxis;
-    } else if (chartType === 'bar' || chartType === 'line' || chartType === 'scatter') {
+    } else if (chartType === 'bar' || chartType === 'line' || chartType === 'scatter' || chartType === '2.5Bar') {
       let data = XData && [...XData];
       if (!this.gridAxis.xAxis) {
         this.gridAxis.xAxis = [];

@@ -39,7 +39,7 @@ import cloneDeep from 'lodash.clonedeep';
 import Card from '../_mixin/card';
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
-import { chartThemeUtil, handleMultiGradient } from '../_utils/style/theme/chart';
+import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
@@ -251,6 +251,16 @@ export default {
     },
     popupBackground() {
       return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
+    },
+    colorNumber() {
+      let length =
+        (this.datasetOptions && this.datasetOptions.length) ||
+        (this.echartOptions.series && this.echartOptions.series.length);
+      let colorNumber = this.colorGroupsData.length;
+      if (length && length > colorNumber) {
+        colorNumber = length;
+      }
+      return colorNumber;
     }
   },
   watch: {
@@ -287,6 +297,7 @@ export default {
         if (!isEqual(newVal, oldVal) && newVal.length) {
           if (newVal) {
             this._setChartTheme();
+            this.registerShape();
           }
           !this.echartsDataService &&
             this._isRequestData &&
@@ -307,9 +318,6 @@ export default {
           if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
             this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
           } else {
-            if (!this.dataset.hasOwnProperty('geoJSON')) {
-              this._initAxisLabel(this.options.yAxis.axisLabel, this.options.yAxis.data, this.options.visualMap, this.options.series);
-            }
             this.echartOptions = Object.assign({}, this.options);
           }
         }
@@ -354,6 +362,7 @@ export default {
     // this.$on('theme-style-changed', () => {
     //   this._setChartTheme();
     // });
+    this.registerShape();
   },
   mounted() {
     // 设置echarts实例
@@ -371,9 +380,6 @@ export default {
     });
     this._initAutoResize();
     this._initDataZoom();
-    if (!this.dataset.hasOwnProperty('geoJSON')) {
-      this._initAxisLabel(this.options.yAxis.axisLabel, this.options.yAxis.data, this.options.visualMap, this.options.series);
-    }
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -649,6 +655,63 @@ export default {
               };
             } else if (serie && serie.type !== 'pie' && serie.type !== 'radar') {
               label && delete label.formatter;
+              if (serie.type === '2.5Bar') {
+                const cubeType = serie.type;
+                const fillColors = getMultiColorGroup(this.colorGroupsData, this.colorNumber);
+                serie.type = 'custom';
+                dataOptions.series[index] && (dataOptions.series[index].type = 'custom');
+                serie.renderItem = (params, api) => {
+                  const location = api.coord([api.value(0), api.value(1)]);
+                  const fillColor = fillColors[params.seriesIndex];
+                  return {
+                    type: 'group',
+                    children: [
+                      {
+                        type: `Cube${cubeType}Left`,
+                        shape: {
+                          api,
+                          xValue: api.value(0),
+                          yValue: api.value(1),
+                          x: location[0],
+                          y: location[1],
+                          xAxisPoint: api.coord([api.value(0), 0])
+                        },
+                        style: {
+                          fill: fillColor
+                        }
+                      },
+                      {
+                        type: `Cube${cubeType}Right`,
+                        shape: {
+                          api,
+                          xValue: api.value(0),
+                          yValue: api.value(1),
+                          x: location[0],
+                          y: location[1],
+                          xAxisPoint: api.coord([api.value(0), 0])
+                        },
+                        style: {
+                          fill: fillColor
+                        }
+                      },
+                      {
+                        type: `Cube${cubeType}Top`,
+                        shape: {
+                          api,
+                          xValue: api.value(0),
+                          yValue: api.value(1),
+                          x: location[0],
+                          y: location[1],
+                          xAxisPoint: api.coord([api.value(0), 0])
+                        },
+                        style: {
+                          fill: fillColor
+                        }
+                      }
+                    ]
+                  };
+                };
+              }
             } else if (serie && serie.type === 'pie') {
               // 控制label显示条数
               if (serie.maxLabels) {
@@ -780,13 +843,7 @@ export default {
     },
     _setChartTheme() {
       if (!this.theme) {
-        let length =
-          (this.datasetOptions && this.datasetOptions.length) ||
-          (this.echartOptions.series && this.echartOptions.series.length);
-        let colorNumber = this.colorGroupsData.length;
-        if (length && length > colorNumber) {
-          colorNumber = length;
-        }
+        let colorNumber = this.colorNumber;
         this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, colorNumber);
       }
     },
@@ -959,7 +1016,85 @@ export default {
       if (flag) {
         this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, true);
       }
-    }
+    },
+    registerShape() {
+      this.datasetOptions &&
+        this.datasetOptions.forEach(item => {
+          const graphicIntance = this.$options.graphic;
+          if (item.seriesType === '2.5Bar') {
+            const cubeType = item.seriesType;
+            if (graphicIntance.getShapeClass(`Cube${cubeType}Left`)) {
+              return;
+            }
+            if (cubeType === '2.5Bar') {
+              // 绘制左侧面
+              const CubeLeft = graphicIntance.extendShape({
+                shape: {
+                  x: 0,
+                  y: 0
+                },
+                buildPath: function(ctx, shape) {
+                  // 会canvas的应该都能看得懂，shape是从custom传入的
+                  const xAxisPoint = shape.xAxisPoint;
+                  const c0 = [shape.x, shape.y];
+                  const c1 = [shape.x - 13, shape.y - 13];
+                  const c2 = [xAxisPoint[0] - 13, xAxisPoint[1] - 13];
+                  const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                  ctx
+                    .moveTo(c0[0], c0[1])
+                    .lineTo(c1[0], c1[1])
+                    .lineTo(c2[0], c2[1])
+                    .lineTo(c3[0], c3[1])
+                    .closePath();
+                }
+              });
+              // 绘制右侧面
+              const CubeRight = graphicIntance.extendShape({
+                shape: {
+                  x: 0,
+                  y: 0
+                },
+                buildPath: function(ctx, shape) {
+                  const xAxisPoint = shape.xAxisPoint;
+                  const c1 = [shape.x, shape.y];
+                  const c2 = [xAxisPoint[0], xAxisPoint[1]];
+                  const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                  const c4 = [shape.x + 18, shape.y - 9];
+                  ctx
+                    .moveTo(c1[0], c1[1])
+                    .lineTo(c2[0], c2[1])
+                    .lineTo(c3[0], c3[1])
+                    .lineTo(c4[0], c4[1])
+                    .closePath();
+                }
+              });
+              // 绘制顶面
+              const CubeTop = graphicIntance.extendShape({
+                shape: {
+                  x: 0,
+                  y: 0
+                },
+                buildPath: function(ctx, shape) {
+                  const c1 = [shape.x, shape.y];
+                  const c2 = [shape.x + 18, shape.y - 9];
+                  const c3 = [shape.x + 5, shape.y - 22];
+                  const c4 = [shape.x - 13, shape.y - 13];
+                  ctx
+                    .moveTo(c1[0], c1[1])
+                    .lineTo(c2[0], c2[1])
+                    .lineTo(c3[0], c3[1])
+                    .lineTo(c4[0], c4[1])
+                    .closePath();
+                }
+              });
+              graphicIntance.registerShape(`Cube${cubeType}Left`, CubeLeft);
+              graphicIntance.registerShape(`Cube${cubeType}Right`, CubeRight);
+              graphicIntance.registerShape(`Cube${cubeType}Top`, CubeTop);
+            }
+          }
+        });
+    },
+    customRenderItem() {}
   },
   // echarts所有静态方法
   /**
