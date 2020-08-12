@@ -23,7 +23,7 @@ export default class RestService extends Events {
     }
     // 如果是geojson
     if (typeof data === 'object') {
-      this.transfromGeoJSON(data, queryInfo);
+      this.transfromGeoJSON({ ...data }, queryInfo);
       return;
     }
     // 如果是url， 就发送请求
@@ -101,9 +101,7 @@ export default class RestService extends Events {
             return item;
           } else {
             let feature = {
-              properties:
-                getDataType(item) === '[object Object]'
-                  ? item : { value: item }
+              properties: getDataType(item) === '[object Object]' ? item : { value: item }
             };
             return feature;
           }
