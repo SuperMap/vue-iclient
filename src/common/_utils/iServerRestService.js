@@ -269,7 +269,7 @@ export default class iServerRestService extends Events {
         });
         return;
       }
-    } else if (results.result) {
+    } else if (results.result && results.result.features) {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features;

@@ -486,7 +486,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  _initOverlayLayer(layerInfo: any, features?: any, mergeByField?: string) {
+  _initOverlayLayer(layerInfo: any, features: any = [], mergeByField?: string) {
     let { layerID, layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
     layerInfo.visible = visible ? 'visible' : 'none';
     features = this.mergeFeatures(layerID, features, mergeByField);
@@ -1429,7 +1429,10 @@ export default class WebMapViewModel extends WebMapBase {
       'heatmap-radius': style.radius + 15,
       'heatmap-intensity': {
         base: 1,
-        stops: [[0, 0.8], [22, 1]]
+        stops: [
+          [0, 0.8],
+          [22, 1]
+        ]
       }
     };
 
@@ -1774,9 +1777,7 @@ export default class WebMapViewModel extends WebMapBase {
     let url = info.url + '/tileFeature.mvt';
     let origin = mapboxgl.CRS.get(this.baseProjection).getOrigin();
     const { minzoom, maxzoom } = layerInfo;
-    url += `?&returnAttributes=true&width=512&height=512&x={x}&y={y}&scale={scale}&origin={x:${origin[0]},y:${
-      origin[1]
-    }}`;
+    url += `?&returnAttributes=true&width=512&height=512&x={x}&y={y}&scale={scale}&origin={x:${origin[0]},y:${origin[1]}}`;
     this._addLayer({
       id: layerInfo.layerID,
       // @ts-ignore
