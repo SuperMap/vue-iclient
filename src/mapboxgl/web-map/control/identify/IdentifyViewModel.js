@@ -11,7 +11,12 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  * @param {Object} [options.layerStyle.stokeLine] - 面图层样式配置。
  * @extends mapboxgl.Evented
  */
-const HIGHLIGHT_COLOR = '#4fcfff';
+const HIGHLIGHT_COLOR = '#01ffff';
+const defaultPaintTypes = {
+  circle: ['circle-radius', 'circle-stroke-width'],
+  line: ['line-width'],
+  fill: ['line-width']
+};
 export default class IdentifyViewModel extends mapboxgl.Evented {
   constructor(map, options) {
     super();
@@ -53,7 +58,6 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
         'circle-stroke-opacity': 1
       },
       line: {
-        'line-width': 3,
         'line-color': HIGHLIGHT_COLOR,
         'line-opacity': 1
       },
@@ -74,10 +78,11 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
       type = 'fill';
       paint = {};
     }
+    this.layerStyle = this._setDefaultPaintWidth(this.map, type, id, defaultPaintTypes[type], this.layerStyle);
     if (type === 'circle' || type === 'line' || type === 'fill') {
       let layerStyle = this.layerStyle[type];
       let highlightLayer = Object.assign({}, layer, {
-        id: id + '-SM-highlighted',
+        id: id + '-identify-SM-highlighted',
         type,
         paint: (layerStyle && layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
         layout: (layerStyle && layerStyle.layout) || {},
@@ -86,8 +91,8 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
       this.map.addLayer(highlightLayer);
     }
     if (type === 'fill') {
-      let strokeLayerID = id + '-SM-StrokeLine';
-      let stokeLineStyle = this.layerStyle.stokeLine || {};
+      let strokeLayerID = id + '-identify-SM-StrokeLine';
+      let stokeLineStyle = this.layerStyle.strokeLine || this.layerStyle.stokeLine || {};
       let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
         'line-width': 3,
         'line-color': HIGHLIGHT_COLOR,
@@ -128,8 +133,31 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
   removeOverlayer(layers = this.layers) {
     layers &&
       layers.forEach(layerId => {
-        this.map && this.map.getLayer(layerId + '-SM-highlighted') && this.map.removeLayer(layerId + '-SM-highlighted');
-        this.map && this.map.getLayer(layerId + '-SM-StrokeLine') && this.map.removeLayer(layerId + '-SM-StrokeLine');
+        this.map &&
+          this.map.getLayer(layerId + '-identify-SM-highlighted') &&
+          this.map.removeLayer(layerId + '-identify-SM-highlighted');
+        this.map &&
+          this.map.getLayer(layerId + '-identify-SM-StrokeLine') &&
+          this.map.removeLayer(layerId + '-identify-SM-StrokeLine');
       });
+  }
+
+  _setDefaultPaintWidth(map, type, layerId, paintTypes, layerStyle) {
+    if (!paintTypes) {
+      return;
+    }
+    paintTypes.forEach(paintType => {
+      let mapPaintProperty;
+      if (type !== 'fill') {
+        mapPaintProperty = map.getLayer(layerId) && map.getPaintProperty(layerId, paintType);
+      } else {
+        type = 'stokeLine';
+      }
+      layerStyle[type].paint[paintType] = layerStyle[type].paint[paintType] || mapPaintProperty;
+      if (layerStyle[type].paint[paintType] === void 0 || layerStyle[type].paint[paintType] === '') {
+        layerStyle[type].paint[paintType] = paintType === 'circle-stroke-width' || type === 'stokeLine' ? 2 : 8;
+      }
+    });
+    return layerStyle;
   }
 }
