@@ -233,8 +233,17 @@ export default {
         height: this.headerName ? 'calc(100% - 30px)' : '100%'
       };
     },
+    parseOptions() {
+      if (this.options.series.find(item => item.type === '2.5Bar')) {
+        return {
+          ...this.options,
+          series: []
+        };
+      }
+      return this.options;
+    },
     _chartOptions() {
-      return (this._isRequestData && this.echartOptions) || this.options;
+      return (this._isRequestData && this.echartOptions) || this.parseOptions;
     },
     // 是否传入dataset和datasetOptions
     _isRequestData() {
@@ -442,7 +451,7 @@ export default {
         };
         firstVisualMap &&
           firstVisualMap.pieces.map(item => {
-            axisLabel.rich[`${item.min}_${item.max}`] = {
+            axisLabel.rich[`${parseInt(item.min)}_${parseInt(item.max)}`] = {
               backgroundColor: item.color,
               width: 20,
               height: 20,
@@ -454,11 +463,11 @@ export default {
         axisLabel.formatter = function(label, index) {
           const orderNum = parseInt(label.slice(0, 2)) + 1;
           const leftLabel = label.slice(2);
-          const labelValue = serieData && serieData[index];
+          const labelValue = serieData && +serieData[index];
           if (firstVisualMap) {
             const matchItem = firstVisualMap.pieces.find(item => labelValue >= item.min && labelValue <= item.max);
             if (matchItem) {
-              return [`{${matchItem.min}_${matchItem.max}|${orderNum}}  ${leftLabel}`].join('\n');
+              return [`{${parseInt(matchItem.min)}_${parseInt(matchItem.max)}|${orderNum}}  ${leftLabel}`].join('\n');
             }
           }
           return [`{default|${orderNum}}  ${leftLabel}`].join('\n');
@@ -573,6 +582,7 @@ export default {
     _optionsHandler(options, dataOptions, dataZoomChanged) {
       dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
       options = options && cloneDeep(options); // clone 避免引起重复刷新
+      let extraSeries = [];
       if (options && options.legend && !options.legend.type) {
         options.legend.type = 'scroll';
       }
@@ -655,62 +665,124 @@ export default {
               };
             } else if (serie && serie.type !== 'pie' && serie.type !== 'radar') {
               label && delete label.formatter;
+              const colorGroup = getMultiColorGroup(this.colorGroupsData, this.colorNumber);
               if (serie.type === '2.5Bar') {
-                const cubeType = serie.type;
-                const fillColors = getMultiColorGroup(this.colorGroupsData, this.colorNumber);
-                serie.type = 'custom';
-                dataOptions.series[index] && (dataOptions.series[index].type = 'custom');
-                serie.renderItem = (params, api) => {
-                  const location = api.coord([api.value(0), api.value(1)]);
-                  const fillColor = fillColors[params.seriesIndex];
-                  return {
-                    type: 'group',
-                    children: [
-                      {
-                        type: `Cube${cubeType}Left`,
-                        shape: {
-                          api,
-                          xValue: api.value(0),
-                          yValue: api.value(1),
-                          x: location[0],
-                          y: location[1],
-                          xAxisPoint: api.coord([api.value(0), 0])
+                const shape = serie.shape;
+                const defaultColor = serie.itemStyle && serie.itemStyle.color;
+                if (['square', 'rectangle'].includes(shape)) {
+                  const cubeType = shape;
+                  serie.type = 'custom';
+                  dataOptions.series[index] && (dataOptions.series[index].type = 'custom');
+                  serie.renderItem = (params, api) => {
+                    const location = api.coord([api.value(0), api.value(1)]);
+                    const fillColor = defaultColor || colorGroup[params.seriesIndex];
+                    let leftColor, rightColor;
+                    const topColor = fillColor;
+                    if (typeof fillColor === 'object') {
+                      const copyLeftColor = cloneDeep(fillColor);
+                      const copyRightColor = cloneDeep(fillColor);
+                      copyLeftColor.colorStops[0].color = getColorWithOpacity(copyLeftColor.colorStops[0].color, 0.3);
+                      copyLeftColor.colorStops[1].color = getColorWithOpacity(copyLeftColor.colorStops[1].color, 0.3);
+                      copyRightColor.colorStops[0].color = getColorWithOpacity(copyRightColor.colorStops[0].color, 0.6);
+                      copyRightColor.colorStops[1].color = getColorWithOpacity(copyRightColor.colorStops[1].color, 0.3);
+                      leftColor = copyLeftColor;
+                      rightColor = copyRightColor;
+                    } else {
+                      leftColor = getColorWithOpacity(fillColor, 0.3);
+                      rightColor = getColorWithOpacity(fillColor, 0.6);
+                    }
+                    return {
+                      type: 'group',
+                      children: [
+                        {
+                          type: `Cube${cubeType}Left`,
+                          shape: {
+                            api,
+                            xValue: api.value(0),
+                            yValue: api.value(1),
+                            x: location[0],
+                            y: location[1],
+                            xAxisPoint: api.coord([api.value(0), 0])
+                          },
+                          style: {
+                            fill: leftColor
+                          }
                         },
-                        style: {
-                          fill: fillColor
-                        }
-                      },
-                      {
-                        type: `Cube${cubeType}Right`,
-                        shape: {
-                          api,
-                          xValue: api.value(0),
-                          yValue: api.value(1),
-                          x: location[0],
-                          y: location[1],
-                          xAxisPoint: api.coord([api.value(0), 0])
+                        {
+                          type: `Cube${cubeType}Right`,
+                          shape: {
+                            api,
+                            xValue: api.value(0),
+                            yValue: api.value(1),
+                            x: location[0],
+                            y: location[1],
+                            xAxisPoint: api.coord([api.value(0), 0])
+                          },
+                          style: {
+                            fill: rightColor
+                          }
                         },
-                        style: {
-                          fill: fillColor
+                        {
+                          type: `Cube${cubeType}Top`,
+                          shape: {
+                            api,
+                            xValue: api.value(0),
+                            yValue: api.value(1),
+                            x: location[0],
+                            y: location[1],
+                            xAxisPoint: api.coord([api.value(0), 0])
+                          },
+                          style: {
+                            fill: topColor
+                          }
                         }
-                      },
-                      {
-                        type: `Cube${cubeType}Top`,
-                        shape: {
-                          api,
-                          xValue: api.value(0),
-                          yValue: api.value(1),
-                          x: location[0],
-                          y: location[1],
-                          xAxisPoint: api.coord([api.value(0), 0])
-                        },
-                        style: {
-                          fill: fillColor
-                        }
-                      }
-                    ]
+                      ]
+                    };
                   };
-                };
+                } else if (shape === 'cylinder') {
+                  const baseWidth = '100%';
+                  const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
+                  serie.type = 'bar';
+                  serie.barGap = '-100%';
+                  dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
+                  const cirCleColor = defaultColor || colorGroup[index];
+                  extraSeries.push(
+                    // 头部的圆片
+                    {
+                      name: '',
+                      type: 'pictorialBar',
+                      symbolOffset: [0, -8],
+                      symbolPosition: 'end',
+                      z: 12,
+                      itemStyle: {
+                        normal: {
+                          color: cirCleColor
+                        }
+                      },
+                      data: dataOptions.series[index].data.map((item, dataIndex) => {
+                        return {
+                          value: item,
+                          symbolSize: !nextSerieDatas || nextSerieDatas[dataIndex] && +item >= +nextSerieDatas[dataIndex] ? [baseWidth, 15] : [0, 15]
+                        };
+                      })
+                    },
+                    {
+                      // 底部的圆片
+                      name: '',
+                      type: 'pictorialBar',
+                      symbolSize: [baseWidth, 10],
+                      symbolOffset: [0, 5],
+                      z: 12,
+                      itemStyle: {
+                        normal: {
+                          color: cirCleColor
+                        }
+                      },
+                      data: dataOptions.series[index].data
+                    }
+                  );
+                }
+                delete serie.shape;
               }
             } else if (serie && serie.type === 'pie') {
               // 控制label显示条数
@@ -763,13 +835,20 @@ export default {
       }
 
       let series = dataOptions.series;
-      if (series && series.length) {
-        this.setItemStyleColor(false, series);
-      }
+      // if (series && series.length) {
+      //   this.setItemStyleColor(false, series);
+      // }
       dataOptions.series = this._createRingShineSeries(series);
-      return merge(options, dataOptions);
+      const mergeOptions = merge(options, dataOptions);
+      if (extraSeries.length > 0) {
+        mergeOptions.series.push(...extraSeries);
+      }
+      return mergeOptions;
     },
     _createRingShineSeries(series) {
+      if (!this.datasetOptions[0]) {
+        return series;
+      }
       let { seriesType, outerGap, isShine } = this.datasetOptions[0];
       if (seriesType === 'pie' && outerGap) {
         series = series.map(serie => {
@@ -1019,78 +1098,140 @@ export default {
     },
     registerShape() {
       this.datasetOptions &&
-        this.datasetOptions.forEach(item => {
+        this.datasetOptions.forEach((item, index) => {
           const graphicIntance = this.$options.graphic;
           if (item.seriesType === '2.5Bar') {
-            const cubeType = item.seriesType;
+            const cubeType = this.options.series[index].shape;
             if (graphicIntance.getShapeClass(`Cube${cubeType}Left`)) {
               return;
             }
-            if (cubeType === '2.5Bar') {
-              // 绘制左侧面
-              const CubeLeft = graphicIntance.extendShape({
-                shape: {
-                  x: 0,
-                  y: 0
-                },
-                buildPath: function(ctx, shape) {
-                  // 会canvas的应该都能看得懂，shape是从custom传入的
-                  const xAxisPoint = shape.xAxisPoint;
-                  const c0 = [shape.x, shape.y];
-                  const c1 = [shape.x - 13, shape.y - 13];
-                  const c2 = [xAxisPoint[0] - 13, xAxisPoint[1] - 13];
-                  const c3 = [xAxisPoint[0], xAxisPoint[1]];
-                  ctx
-                    .moveTo(c0[0], c0[1])
-                    .lineTo(c1[0], c1[1])
-                    .lineTo(c2[0], c2[1])
-                    .lineTo(c3[0], c3[1])
-                    .closePath();
-                }
-              });
-              // 绘制右侧面
-              const CubeRight = graphicIntance.extendShape({
-                shape: {
-                  x: 0,
-                  y: 0
-                },
-                buildPath: function(ctx, shape) {
-                  const xAxisPoint = shape.xAxisPoint;
-                  const c1 = [shape.x, shape.y];
-                  const c2 = [xAxisPoint[0], xAxisPoint[1]];
-                  const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
-                  const c4 = [shape.x + 18, shape.y - 9];
-                  ctx
-                    .moveTo(c1[0], c1[1])
-                    .lineTo(c2[0], c2[1])
-                    .lineTo(c3[0], c3[1])
-                    .lineTo(c4[0], c4[1])
-                    .closePath();
-                }
-              });
-              // 绘制顶面
-              const CubeTop = graphicIntance.extendShape({
-                shape: {
-                  x: 0,
-                  y: 0
-                },
-                buildPath: function(ctx, shape) {
-                  const c1 = [shape.x, shape.y];
-                  const c2 = [shape.x + 18, shape.y - 9];
-                  const c3 = [shape.x + 5, shape.y - 22];
-                  const c4 = [shape.x - 13, shape.y - 13];
-                  ctx
-                    .moveTo(c1[0], c1[1])
-                    .lineTo(c2[0], c2[1])
-                    .lineTo(c3[0], c3[1])
-                    .lineTo(c4[0], c4[1])
-                    .closePath();
-                }
-              });
-              graphicIntance.registerShape(`Cube${cubeType}Left`, CubeLeft);
-              graphicIntance.registerShape(`Cube${cubeType}Right`, CubeRight);
-              graphicIntance.registerShape(`Cube${cubeType}Top`, CubeTop);
+            let CubeLeft, CubeRight, CubeTop;
+            switch (cubeType) {
+              case 'square':
+                // 绘制左侧面
+                CubeLeft = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    // 会canvas的应该都能看得懂，shape是从custom传入的
+                    const xAxisPoint = shape.xAxisPoint;
+                    const c0 = [shape.x, shape.y];
+                    const c1 = [shape.x - 13, shape.y - 13];
+                    const c2 = [xAxisPoint[0] - 13, xAxisPoint[1] - 13];
+                    const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                    ctx
+                      .moveTo(c0[0], c0[1])
+                      .lineTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .closePath();
+                  }
+                });
+                // 绘制右侧面
+                CubeRight = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const xAxisPoint = shape.xAxisPoint;
+                    const c1 = [shape.x, shape.y];
+                    const c2 = [xAxisPoint[0], xAxisPoint[1]];
+                    const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                    const c4 = [shape.x + 18, shape.y - 9];
+                    ctx
+                      .moveTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .lineTo(c4[0], c4[1])
+                      .closePath();
+                  }
+                });
+                // 绘制顶面
+                CubeTop = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const c1 = [shape.x, shape.y];
+                    const c2 = [shape.x + 18, shape.y - 9];
+                    const c3 = [shape.x + 5, shape.y - 22];
+                    const c4 = [shape.x - 13, shape.y - 13];
+                    ctx
+                      .moveTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .lineTo(c4[0], c4[1])
+                      .closePath();
+                  }
+                });
+                break;
+              case 'rectangle':
+                // 绘制左侧面
+                CubeLeft = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const xAxisPoint = shape.xAxisPoint;
+                    const c0 = [shape.x, shape.y];
+                    const c1 = [shape.x - 9, shape.y - 9];
+                    const c2 = [xAxisPoint[0] - 9, xAxisPoint[1] - 9];
+                    const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                    ctx
+                      .moveTo(c0[0], c0[1])
+                      .lineTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .closePath();
+                  }
+                });
+                CubeRight = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const xAxisPoint = shape.xAxisPoint;
+                    const c1 = [shape.x, shape.y];
+                    const c2 = [xAxisPoint[0], xAxisPoint[1]];
+                    const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                    const c4 = [shape.x + 18, shape.y - 9];
+                    ctx
+                      .moveTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .lineTo(c4[0], c4[1])
+                      .closePath();
+                  }
+                });
+                CubeTop = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const c1 = [shape.x, shape.y];
+                    const c2 = [shape.x + 18, shape.y - 9];
+                    const c3 = [shape.x + 9, shape.y - 18];
+                    const c4 = [shape.x - 9, shape.y - 9];
+                    ctx
+                      .moveTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .lineTo(c4[0], c4[1])
+                      .closePath();
+                  }
+                });
+                break;
             }
+            CubeLeft && graphicIntance.registerShape(`Cube${cubeType}Left`, CubeLeft);
+            CubeRight && graphicIntance.registerShape(`Cube${cubeType}Right`, CubeRight);
+            CubeTop && graphicIntance.registerShape(`Cube${cubeType}Top`, CubeTop);
           }
         });
     },

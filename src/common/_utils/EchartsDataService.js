@@ -17,7 +17,7 @@ export function tranformSingleToMulti(data) {
 
 export function sortData(features, datasetOptions, maxFeatures, xBar) {
   const matchItem = datasetOptions.find(item => item.sort && item.sort !== 'unsort');
-  let nextFeatures = features;
+  let nextFeatures = [].concat(features);
   if (matchItem) {
     nextFeatures = orderBy(
       features,
@@ -283,7 +283,7 @@ export default class EchartsDataService {
         }
       };
       axisData = this.radarAxis;
-    } else if (chartType === 'bar' || chartType === 'line' || chartType === 'scatter' || chartType === '2.5Bar') {
+    } else if (['bar', 'line', 'scatter', '2.5Bar'].find(item => item === chartType)) {
       let data = XData && [...XData];
       if (!this.gridAxis.xAxis) {
         this.gridAxis.xAxis = [];
