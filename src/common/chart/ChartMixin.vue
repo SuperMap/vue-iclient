@@ -294,41 +294,35 @@ export default {
     },
     dataset: {
       handler: function(newVal, oldVal) {
-        if (!isEqual(newVal, oldVal)) {
-          this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
-          this.datasetChange = true;
-        }
+        this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+        this.datasetChange = true;
       },
       deep: true
     },
     datasetOptions: {
       handler: function(newVal, oldVal) {
-        if (!isEqual(newVal, oldVal) && newVal.length) {
-          if (newVal) {
-            this._setChartTheme();
-            this.registerShape();
-          }
-          !this.echartsDataService &&
-            this._isRequestData &&
-            this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
-          this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
-          this.echartsDataService &&
-            this.dataSeriesCache &&
-            this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
+        if (newVal) {
+          this._setChartTheme();
+          this.registerShape();
         }
+        !this.echartsDataService &&
+          this._isRequestData &&
+          this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+        this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
+        this.echartsDataService &&
+          this.dataSeriesCache &&
+          this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
       }
     },
     options: {
       handler: function(newVal, oldVal) {
-        if (!isEqual(newVal, oldVal)) {
-          if (this.datasetChange && !this.dataSeriesCache) {
-            return;
-          }
-          if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
-            this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
-          } else {
-            this.echartOptions = Object.assign({}, this.options);
-          }
+        if (this.datasetChange && !this.dataSeriesCache) {
+          return;
+        }
+        if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
+          this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
+        } else {
+          this.echartOptions = Object.assign({}, this.options);
         }
       },
       deep: true
@@ -762,7 +756,10 @@ export default {
                       data: dataOptions.series[index].data.map((item, dataIndex) => {
                         return {
                           value: item,
-                          symbolSize: !nextSerieDatas || nextSerieDatas[dataIndex] && +item >= +nextSerieDatas[dataIndex] ? [baseWidth, 15] : [0, 15]
+                          symbolSize:
+                            !nextSerieDatas || (nextSerieDatas[dataIndex] && +item >= +nextSerieDatas[dataIndex])
+                              ? [baseWidth, 15]
+                              : [0, 15]
                         };
                       })
                     },

@@ -31,7 +31,10 @@
             :style="[getBackgroundStyle, getColorStyle(0)]"
             @click="searchButtonClicked"
           >
-            <i v-if="prefixType === 'search'" class="sm-component-tdtSearch__pointer sm-components-icons-preview"></i>
+            <i
+              v-if="prefixType === 'search'"
+              class="sm-component-tdtSearch__pointer sm-components-icons-preview"
+            ></i>
             <a-icon v-else :type="prefixType"></a-icon>
           </div>
           <a-input
@@ -93,7 +96,6 @@ import LinesResult from '../results/LinesResult';
 import AreaResult from '../results/AreaResult';
 import StatisticsResult from '../results/StatisticsResult';
 import NothingResult from '../results/NothingResult';
-import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmTdtSearch',
@@ -172,9 +174,7 @@ export default {
       }
     },
     data(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
-        this.viewModel && this.viewModel.setData(this.data);
-      }
+      this.viewModel && this.viewModel.setData(this.data);
     }
   },
   created() {
