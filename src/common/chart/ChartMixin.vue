@@ -425,6 +425,15 @@ export default {
       }
       return color;
     },
+    setGradientColor(color, nextColor) {
+      if (typeof color === 'string') {
+        return new this.$options.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color },
+          { offset: 1, color: nextColor || color }
+        ]);
+      }
+      return color;
+    },
     _initAxisLabel(axisLabel, data, visualMap, series) {
       if (!this.xBar) {
         return;
@@ -667,23 +676,34 @@ export default {
                   const cubeType = shape;
                   serie.type = 'custom';
                   dataOptions.series[index] && (dataOptions.series[index].type = 'custom');
+                  const _this = this;
                   serie.renderItem = (params, api) => {
                     const location = api.coord([api.value(0), api.value(1)]);
-                    const fillColor = defaultColor || colorGroup[params.seriesIndex];
-                    let leftColor, rightColor;
-                    const topColor = fillColor;
+                    let fillColor = defaultColor || colorGroup[params.seriesIndex];
+                    if (_this.highlightOptions) {
+                      const matchData = _this.highlightOptions.find(item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex);
+                      if (matchData && (matchData.color || _this.highlightColor)) {
+                        fillColor = matchData.color || _this.highlightColor;
+                      }
+                    }
+                    let leftColor, rightColor, topColor;
                     if (typeof fillColor === 'object') {
                       const copyLeftColor = cloneDeep(fillColor);
                       const copyRightColor = cloneDeep(fillColor);
-                      copyLeftColor.colorStops[0].color = getColorWithOpacity(copyLeftColor.colorStops[0].color, 0.3);
-                      copyLeftColor.colorStops[1].color = getColorWithOpacity(copyLeftColor.colorStops[1].color, 0.3);
-                      copyRightColor.colorStops[0].color = getColorWithOpacity(copyRightColor.colorStops[0].color, 0.6);
-                      copyRightColor.colorStops[1].color = getColorWithOpacity(copyRightColor.colorStops[1].color, 0.3);
+                      const copyTopColor = cloneDeep(fillColor);
+                      copyLeftColor.colorStops[0].color = getColorWithOpacity(copyLeftColor.colorStops[0].color, 0.4);
+                      copyLeftColor.colorStops[1].color = getColorWithOpacity(copyLeftColor.colorStops[1].color, 0.4);
+                      copyRightColor.colorStops[0].color = getColorWithOpacity(copyRightColor.colorStops[0].color, 0.7);
+                      copyRightColor.colorStops[1].color = getColorWithOpacity(copyRightColor.colorStops[1].color, 0.7);
+                      copyTopColor.colorStops[0].color = getColorWithOpacity(copyTopColor.colorStops[0].color, 0.85);
+                      copyTopColor.colorStops[1].color = getColorWithOpacity(copyTopColor.colorStops[1].color, 0.85);
                       leftColor = copyLeftColor;
                       rightColor = copyRightColor;
+                      topColor = copyTopColor;
                     } else {
-                      leftColor = getColorWithOpacity(fillColor, 0.3);
-                      rightColor = getColorWithOpacity(fillColor, 0.6);
+                      leftColor = getColorWithOpacity(fillColor, 0.4);
+                      rightColor = getColorWithOpacity(fillColor, 0.7);
+                      topColor = getColorWithOpacity(fillColor, 0.85);
                     }
                     return {
                       type: 'group',
@@ -738,8 +758,12 @@ export default {
                   const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
                   serie.type = 'bar';
                   serie.barGap = '-100%';
+                  options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
                   dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
-                  const cirCleColor = defaultColor || colorGroup[index];
+                  let cirCleColor = defaultColor || colorGroup[index];
+                  if (typeof cirCleColor === 'string') {
+                    cirCleColor = this.setGradientColor(cirCleColor, '#fff');
+                  }
                   extraSeries.push(
                     // 头部的圆片
                     {
