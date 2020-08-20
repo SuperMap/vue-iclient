@@ -842,11 +842,13 @@ export default {
           if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
             options.legend.data = [];
             options.series.forEach(element => {
-              options.legend.data.push(
-                ...element.data.map(item => {
-                  return item.name;
-                })
-              );
+              if (element.data) {
+                options.legend.data.push(
+                  ...element.data.map(item => {
+                    return item.name;
+                  })
+                );
+              }
             });
           }
         }
@@ -856,36 +858,51 @@ export default {
       }
 
       let series = dataOptions.series;
-      // if (series && series.length) {
-      //   this.setItemStyleColor(false, series);
-      // }
-      dataOptions.series = this._createRingShineSeries(series);
+      if (series && series.length && series[0].type === 'pie') {
+        this.setItemStyleColor(false, series);
+      }
+      dataOptions.series = this._createRingShineSeries(series, options.series);
       const mergeOptions = merge(options, dataOptions);
       if (extraSeries.length > 0) {
         mergeOptions.series.push(...extraSeries);
       }
       return mergeOptions;
     },
-    _createRingShineSeries(series) {
-      if (!this.datasetOptions[0]) {
-        return series;
-      }
-      let { seriesType, outerGap, isShine } = this.datasetOptions[0];
-      if (seriesType === 'pie' && outerGap) {
-        series = series.map(serie => {
-          if (serie.name !== 'innerCircle') {
-            serie.data = this._createRingShineDataOption(serie.data, outerGap, isShine);
-          }
-          return serie;
-        });
-      }
+    _createRingShineSeries(series, optionsSeries) {
+      this.datasetOptions.forEach((datasetOption, index) => {
+        let { type, outerGap, isShine } = optionsSeries[index] || {};
+        if (type === 'pie' && outerGap >= 0) {
+          const data = series[index].data.map(val => val.value);
+          outerGap = outerGap || Math.min.apply(null, data) / 5;
+          series[index].data = this._createRingShineDataOption(series[index].data, outerGap, isShine);
+          delete optionsSeries[index].outerGap;
+          delete optionsSeries[index].isShine;
+        }
+      });
       return series;
     },
     _createRingShineDataOption(data, outerGap, isShine) {
       if (!data) {
         return;
       }
-      let colors = this._handlerColorGroup(data.length);
+      const colors = this._handlerColorGroup(data.length);
+      const gapItem = {
+        value: outerGap,
+        name: '',
+        itemStyle: {
+          normal: {
+            label: {
+              show: false
+            },
+            labelLine: {
+              show: false
+            },
+            color: 'rgba(0, 0, 0, 0)',
+            borderColor: 'rgba(0, 0, 0, 0)',
+            borderWidth: 0
+          }
+        }
+      };
       let result = [];
       for (var i = 0; i < data.length; i++) {
         let dataItem = {
@@ -903,23 +920,10 @@ export default {
             }
           };
         }
-        result.push(dataItem, {
-          value: outerGap,
-          name: '',
-          itemStyle: {
-            normal: {
-              label: {
-                show: false
-              },
-              labelLine: {
-                show: false
-              },
-              color: 'rgba(0, 0, 0, 0)',
-              borderColor: 'rgba(0, 0, 0, 0)',
-              borderWidth: 0
-            }
-          }
-        });
+        result.push(dataItem);
+        if (data.length > 1) {
+          result.push(gapItem);
+        }
       }
       return result;
     },
