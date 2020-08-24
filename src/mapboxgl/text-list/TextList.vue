@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-text-list" :style="getBackgroundStyle">
+  <div class="sm-component-text-list" :style="getBackgroundStyle" @mouseleave="handleMouseLeaveFn({}, null, $event)">
     <div
       v-if="headerStyleData.show"
       class="sm-component-text-list__header"
@@ -34,15 +34,19 @@
                 >
                   <i
                     :class="['up-triangle']"
-                    :style="[{ borderBottomColor: headerStyleData.sortBtnColor }, sortType === 'ascend' &&
-                      sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }]
-                    "
+                    :style="[
+                      { borderBottomColor: headerStyleData.sortBtnColor },
+                      sortType === 'ascend' &&
+                        sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }
+                    ]"
                   ></i>
                   <i
                     :class="['down-triangle']"
-                    :style="[{ borderTopColor: headerStyleData.sortBtnColor }, sortType === 'descend' &&
-                      sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }]
-                    "
+                    :style="[
+                      { borderTopColor: headerStyleData.sortBtnColor },
+                      sortType === 'descend' &&
+                        sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }
+                    ]"
                   ></i>
                 </div>
               </div>
@@ -51,23 +55,40 @@
         </template>
       </div>
     </div>
-    <div class="sm-component-text-list__animate" :style="[listStyle.contentHeight, getTextColorStyle, fontSizeStyle]">
+    <div
+      ref="animate"
+      class="sm-component-text-list__animate"
+      :style="[
+        listStyle.contentHeight,
+        getTextColorStyle,
+        fontSizeStyle,
+        { 'overflow-y': autoRolling ? 'hidden' : 'auto' }
+      ]"
+    >
       <div
         ref="listContent"
         :class="['sm-component-text-list__body-content', animate && 'sm-component-text-list__body-content--anim']"
       >
         <template v-if="animateContent && animateContent.length > 0">
           <div
-            v-for="(item, index) in animateContent"
+            v-for="(rowData, index) in animateContent"
             :key="index"
             class="sm-component-text-list__list"
-            :style="getRowStyle(index)"
+            :style="getRowStyle(rowData['idx'], index)"
+            :data-index="rowData['idx']"
+            @click="handleClick(rowData, rowData['idx'], $event)"
+            @mouseenter="handleMouseEnterFn(rowData, rowData['idx'], $event)"
+            @mouseleave="handleMouseLeaveFn(rowData, rowData['idx'], $event)"
           >
             <div
-              v-for="(items, index2, itemIndex) in item"
-              :key="index2"
+              v-for="(items, key, itemIndex) in filterProperty(rowData, 'idx')"
+              :key="key"
               :title="items"
-              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
+              :style="[
+                listStyle.rowStyle,
+                { flex: getColumnWidth(itemIndex) },
+                getCellStyle(items, itemIndex)
+              ]"
             >
               <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.prefix }}</span
               >{{ items }}
@@ -138,7 +159,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   spinning: Boolean = false;
 
-  listData: Array<Object> = [];
+  listData: Array<Object>;
 
   animateContent: Array<Object> = [];
 
@@ -152,7 +173,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   listStyle: any = {};
 
-  featuresData: any = {};
+  featuresData: any;
 
   headerStyleData: HeaderStyleParams;
 
@@ -167,6 +188,22 @@ class SmTextList extends Mixins(Theme, Timer) {
   sortField: string = '';
 
   sortIndex: number;
+
+  handleMouseEnterFn: Function;
+
+  handleMouseLeaveFn: Function;
+
+  activeHoverRowIndex: number = null;
+
+  activeClickRowIndex: Array<number> = [];
+
+  eventTriggerColorList: any = {
+    clickColor: null
+  };
+
+  hoverColor: string = 'rgba(128, 128,128, 0.8 )';
+
+  curRollingStartIndex: number = 0;
 
   @Prop() content: any; // 显示内容（JSON），dataset 二选一
 
@@ -194,6 +231,17 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Prop() columns: Array<ColumnParams>;
 
+  @Prop({
+    default: () => {
+      return [];
+    }
+  })
+  highlightOptions: Object;
+
+  @Prop({ default: true }) highlightCurrentRow: Boolean;
+
+  @Prop({ default: '#b9b9b9' }) highlightColor: String | Function;
+
   @Watch('content')
   contentChanged(newVal, oldVal) {
     if (!isEqual(newVal, oldVal)) {
@@ -202,7 +250,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
-  @Watch('dataset')
+  @Watch('dataset', { deep: true })
   datasetChanged(newVal, oldVal) {
     if (!isEqual(newVal, oldVal)) {
       if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
@@ -219,15 +267,19 @@ class SmTextList extends Mixins(Theme, Timer) {
   @Watch('columns')
   columnsChanged(newVal, oldVal) {
     if (!isEqual(newVal, oldVal)) {
-      this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
-      this.getListHeightStyle();
-      this.setDefaultSortType();
+      if (this.content || this.featuresData) {
+        this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+        this.getListHeightStyle();
+        this.setDefaultSortType();
+      }
     }
   }
 
-  @Watch('autoRolling')
+  @Watch('autoRolling', { immediate: true })
   autoRollingChanged() {
-    this.animateContent = this.listData && this.listData.concat();
+    if (!this.listData) {
+      this.listData = [];
+    }
     if (this.autoRolling) {
       if (this.listData.length > 2) {
         this.itemByItem();
@@ -235,6 +287,8 @@ class SmTextList extends Mixins(Theme, Timer) {
     } else {
       clearInterval(this.startInter);
     }
+    this.getListHeightStyle();
+    this.reset();
   }
 
   @Watch('rows')
@@ -243,15 +297,19 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   @Watch('rowStyle')
-  rowStyleChanged(next) {
-    this.rowStyleData = Object.assign({}, this.rowStyleData, next);
-    this.getListHeightStyle();
+  rowStyleChanged(next, before) {
+    if (!isEqual(next, before)) {
+      this.rowStyleData = Object.assign({}, this.rowStyleData, next);
+      this.getListHeightStyle();
+    }
   }
 
   @Watch('headerStyle')
-  headerHeightChanged(next) {
-    this.headerStyleData = Object.assign({}, this.headerStyleData, next);
-    this.getListHeightStyle();
+  headerHeightChanged(next, before) {
+    if (!isEqual(next, before)) {
+      this.headerStyleData = Object.assign({}, this.headerStyleData, next);
+      this.getListHeightStyle();
+    }
   }
 
   @Watch('containerHeight')
@@ -276,9 +334,66 @@ class SmTextList extends Mixins(Theme, Timer) {
     this.getListHeightStyle();
   }
 
+  @Watch('highlightColor', { immediate: true })
+  highlightColorChanged(newVal, oldVal) {
+    if (newVal && typeof newVal === 'string') {
+      Object.keys(this.eventTriggerColorList).forEach(colorType => {
+        this.eventTriggerColorList[colorType] = newVal;
+      });
+    }
+  }
+  // 切换自动滚动与排序时重置。。。
+  @Watch('highlightOptions', { immediate: true, deep: true })
+  highlightOptionsChanged(newVal, oldVal) {
+    let bounds = this.rowsIndexViewBounds();
+    let autoBounds = this.getAutoRollingIndexBounds;
+    if (!this.autoRolling && newVal && newVal.length && !this.clamp(newVal[0], bounds[0], bounds[1])) {
+      // @ts-ignore
+      this.$refs.animate &&
+        // @ts-ignore
+        (this.$refs.animate.scrollTop = newVal[0] * this.filterUnit(this.listStyle.rowStyle.height));
+      // @ts-ignore
+    } else if (this.autoRolling) {
+      if (!this.clamp(newVal[0], autoBounds[0], autoBounds[1])) {
+        let splitIndex;
+        if (newVal[0] <= this.rows) {
+          this.reset();
+        } else {
+          splitIndex = newVal[0] - this.rows;
+          this.$nextTick(() => {
+            this.animateContent = [];
+            this.$nextTick(() => {
+              let copyListData = clonedeep(this.listData);
+              let tempArr = copyListData.splice(0, splitIndex + 1);
+              copyListData = [...copyListData, ...tempArr];
+              this.animateContent = copyListData;
+            });
+          });
+        }
+      }
+    }
+    this.setCurrentRow(newVal);
+  }
+
+  get getAutoRollingIndexBounds() {
+    return [this.curRollingStartIndex + 1, this.curRollingStartIndex + 1 + this.rows];
+  }
+
   get getRowStyle() {
-    return function(index) {
-      if ((index + 1) % 2 !== 0) {
+    return function(index, rawIndex) {
+      if (this.highlightCurrentRow) {
+        if (this.activeClickRowIndex && this.activeClickRowIndex.includes(index)) {
+          return {
+            background: this.eventTriggerColorList.clickColor
+          };
+        }
+      }
+      if (this.activeHoverRowIndex === index) {
+        return {
+          background: this.hoverColor
+        };
+      }
+      if ((rawIndex + 1) % 2 !== 0) {
         return {
           background: this.rowStyleData.oddStyle.background
         };
@@ -323,7 +438,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   get getColumnWidth() {
     return function(index) {
-      if (this.getColumns && this.getColumns.length > 0) {
+      if (this.getColumns && this.getColumns.length > 0 && index < this.getColumns.length) {
         const width = this.getColumns[index].width;
         return width ? `0 0 ${(width / 100) * this.containerWidth}px` : 1;
       }
@@ -348,6 +463,14 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
+  get filterProperty() {
+    return (rowData, propertyName) => {
+      let copyRowData = { ...rowData };
+      delete copyRowData[propertyName];
+      return copyRowData;
+    };
+  }
+
   created() {
     this.headerStyleData = merge(
       { show: true, background: this.getColor(0), color: this.textColorsData },
@@ -360,6 +483,8 @@ class SmTextList extends Mixins(Theme, Timer) {
       },
       this.rowStyle
     );
+    this.handleMouseEnterFn = debounce(this.handleMouseEnter, 20, { leading: true });
+    this.handleMouseLeaveFn = debounce(this.handleMouseLeave, 20, { leading: true });
   }
 
   mounted() {
@@ -429,7 +554,8 @@ class SmTextList extends Mixins(Theme, Timer) {
     url && initLoading && (this.spinning = true);
     // 有url或geojson ,dataset才发请求
     if (url || geoJSON) {
-      getFeatures(this.dataset).then(data => {
+      let dataset = clonedeep(this.dataset);
+      getFeatures(dataset).then(data => {
         this.dataset.url && initLoading && (this.spinning = false);
         this.featuresData = data;
         // 对定时刷新数据 按当前选择排序
@@ -452,7 +578,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     let rowHeight = this.rowStyleData.height;
     if (!rowHeight) {
       if (this.listData.length < this.rows) {
-        rowHeight = contentHeightNum / this.listData.length;
+        rowHeight = contentHeightNum / (this.listData.length - 1);
       } else {
         rowHeight = contentHeightNum / this.rows;
       }
@@ -472,12 +598,13 @@ class SmTextList extends Mixins(Theme, Timer) {
   handleContent(content) {
     if (content) {
       let listData = [];
-      content.forEach(data => {
+      content.forEach((data, index) => {
         let obj = {};
         this.getColumns &&
           this.getColumns.forEach((column, index) => {
             obj[`${column.field}-${index}`] = data[column.field] || '-';
           });
+        obj['idx'] = index;
         JSON.stringify(obj) !== '{}' && listData.push(obj);
       });
       return listData;
@@ -487,10 +614,10 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   handleFeatures(data) {
-    let { features } = data;
+    let features = data && data.features;
     let content = [];
     features &&
-      features.forEach(feature => {
+      features.forEach((feature, index) => {
         let properties = feature.properties;
         if (!properties) {
           return;
@@ -500,6 +627,7 @@ class SmTextList extends Mixins(Theme, Timer) {
           this.getColumns.forEach((column, index) => {
             contentObj[`${column.field}-${index}`] = properties[column.field] || '-';
           });
+          contentObj['idx'] = index;
         } else {
           contentObj = properties;
         }
@@ -508,10 +636,8 @@ class SmTextList extends Mixins(Theme, Timer) {
 
     return content;
   }
-
   itemByItem() {
     clearInterval(this.startInter);
-    this.animateContent = this.animateContent.concat(this.animateContent);
     this.startInter = setInterval(() => {
       let wrapper = this.$refs.listContent;
       wrapper && wrapper['style'] && (wrapper['style'].marginTop = `-${this.listStyle.rowStyle.height}`);
@@ -519,6 +645,9 @@ class SmTextList extends Mixins(Theme, Timer) {
       setTimeout(() => {
         let first =
           this.$refs.listContent && this.$refs.listContent['children'] && this.$refs.listContent['children'][0];
+        if (first) {
+          this.curRollingStartIndex = +first.dataset.index;
+        }
         // @ts-ignore
         first && this.$refs.listContent.appendChild(first);
         wrapper && wrapper['style'] && (wrapper['style'].marginTop = '0px'); // 保持滚动距离初始值一直为 0
@@ -538,6 +667,7 @@ class SmTextList extends Mixins(Theme, Timer) {
       this.sortTypeIndex = 0;
     }
     this.sortType = this.sortTypeList[this.sortTypeIndex];
+    this.reset();
   }
 
   sortContent(content) {
@@ -586,6 +716,67 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
     this.sortField = '';
     this.sortType = 'none';
+  }
+
+  handleClick(item, rowIndex, event) {
+    if (this.highlightColor && typeof this.highlightColor === 'function') {
+      this.eventTriggerColorList.clickColor = this.highlightColor(item, rowIndex, event);
+    }
+    this.$emit('row-click', item, rowIndex, event);
+    this.$emit('cell-click', item, rowIndex, event);
+  }
+
+  handleMouseEnter(item, rowIndex, event) {
+    this.activeHoverRowIndex = rowIndex;
+    if (this.highlightColor && typeof this.highlightColor === 'function') {
+      this.hoverColor = this.highlightColor(item, rowIndex, event);
+    }
+    this.$emit('cell-mouse-enter', item, rowIndex, event);
+  }
+
+  handleMouseLeave(item, rowIndex, event) {
+    this.activeHoverRowIndex = null;
+    this.$emit('cell-mouse-leave', item, rowIndex, event);
+  }
+
+  setCurrentRow(rowIndexList) {
+    if (rowIndexList && rowIndexList.length) {
+      this.activeClickRowIndex = rowIndexList;
+    } else {
+      this.activeClickRowIndex = null;
+    }
+  }
+
+  filterUnit(str) {
+    return str.match(/[\d\D]+(?=px)/gim)[0];
+  }
+
+  reset() {
+    this.$nextTick(() => {
+      this.animateContent = [];
+      this.$nextTick(() => {
+        this.animateContent = [...this.listData];
+        // @ts-ignore
+        this.$refs.animate && (this.$refs.animate.scrollTop = 0);
+      });
+    });
+  }
+
+  rowsIndexViewBounds() {
+    if (this.$refs.animate && this.rows) {
+      // @ts-ignore
+      let beginIndex = Math.ceil(this.$refs.animate.scrollTop / this.filterUnit(this.listStyle.rowStyle.height));
+      let endIndex = beginIndex + this.rows;
+      return [beginIndex, endIndex];
+    }
+    return [];
+  }
+
+  clamp(num, min, max) {
+    if ((min || min === 0) && (max || max === 0) && num > min && num < max) {
+      return true;
+    }
+    return false;
   }
 
   destory(): void {

@@ -69,7 +69,7 @@
     }
   }
   @include e(animate) {
-    overflow: hidden;
+    overflow-y: auto;
   }
 
   @include e(body-content) {
@@ -92,6 +92,7 @@
       overflow: hidden;
       align-self: center;
       min-width: 5%;
+      cursor: pointer;
     }
   }
 }
