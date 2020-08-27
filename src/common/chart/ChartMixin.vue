@@ -214,6 +214,8 @@ export default {
       datasetChange: false, // dataset是否改变
       dataSeriesCache: {},
       tablePopupProps: {},
+      startSpin: null,
+      customSeries: [],
       dataZoomHandler: function() {}
     };
   },
@@ -238,6 +240,12 @@ export default {
         return {
           ...this.options,
           series: []
+        };
+      }
+      if (this.options.series[0] && this.options.series[0].customType === 'customRingsSeries') {
+        return {
+          ...this.options,
+          series: [...this.options.series, ...this.customSeries]
         };
       }
       return this.options;
@@ -383,6 +391,9 @@ export default {
     });
     this._initAutoResize();
     this._initDataZoom();
+    if (this.options.series[0] && this.options.series[0].customType === 'customRingsSeries') {
+      this.startEffect();
+    }
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -392,6 +403,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.pieAutoPlay); // clear 自动播放
+    clearInterval(this.startAngle);
     if (this.autoresize) {
       removeListener(this.$el, this.__resizeHandler);
     }
@@ -1259,6 +1271,105 @@ export default {
             CubeTop && graphicIntance.registerShape(`Cube${cubeType}Top`, CubeTop);
           }
         });
+    },
+    getCirlPoint(x0, y0, r, angle) {
+      let x1 = x0 + r * Math.cos(angle * Math.PI / 180);
+      let y1 = y0 + r * Math.sin(angle * Math.PI / 180);
+      return {
+        x: x1,
+        y: y1
+      };
+    },
+    spinLine(startAngle, endAngle, angle, effectColor, radius) {
+      return (params, api) => {
+        return {
+          type: 'arc',
+          shape: {
+            cx: api.getWidth() / 2,
+            cy: api.getHeight() / 2,
+            r: Math.min(api.getWidth(), api.getHeight()) / 2 * radius,
+            startAngle: (startAngle + angle) * Math.PI / 180,
+            endAngle: (endAngle + angle) * Math.PI / 180
+          },
+          style: {
+            stroke: effectColor,
+            fill: 'transparent',
+            lineWidth: 1.5
+          },
+          silent: true
+        };
+      };
+    },
+    spinPoint(angle, spinAngle, effectColor, radius) {
+      return (params, api) => {
+        let x0 = api.getWidth() / 2;
+        let y0 = api.getHeight() / 2;
+        let r = Math.min(api.getWidth(), api.getHeight()) / 2 * radius;
+        let point = this.getCirlPoint(x0, y0, r, angle + spinAngle);
+        return {
+          type: 'circle',
+          shape: {
+            cx: point.x,
+            cy: point.y,
+            r: 4
+          },
+          style: {
+            stroke: effectColor,
+            fill: effectColor
+          },
+          silent: true
+        };
+      };
+    },
+    customRingsLine(startAngle, endAngle, angle, effectColor, effectRadius) {
+      let series = {
+        name: 'ring0',
+        type: 'custom',
+        coordinateSystem: 'none',
+        renderItem: null,
+        data: [0]
+      };
+      series.renderItem = this.spinLine(startAngle, endAngle, angle, effectColor, effectRadius);
+      return series;
+    },
+    customRingsPoint(startAngle, angle, effectColor, outEffectRadius) {
+      let series = {
+        name: 'ring4',
+        type: 'custom',
+        coordinateSystem: 'none',
+        renderItem: null,
+        data: [0]
+      };
+      series.renderItem = this.spinPoint(startAngle, angle, effectColor, outEffectRadius);
+      return series;
+    },
+    addEffect(angle) {
+      angle = angle || 0;
+      const effectColor = this.options.series[0].customOptions.color;
+      const effectRadius = this.options.series[0].customOptions.radius;
+      const outEffectRadius = effectRadius + 0.1;
+      // customRightBottomLine
+      this.customSeries.push(this.customRingsLine(0, 90, angle, effectColor, effectRadius));
+      // customRightTopLine
+      this.customSeries.push(this.customRingsLine(270, 40, -angle, effectColor, outEffectRadius));
+      // customLeftTopLine
+      this.customSeries.push(this.customRingsLine(180, 270, angle, effectColor, effectRadius));
+      // customLeftBottomLine
+      this.customSeries.push(this.customRingsLine(90, 220, -angle, effectColor, outEffectRadius));
+      if (this.options.series[0].customOptions.pointState === 'startPoint') {
+        this.customSeries.push(this.customRingsPoint(270, -angle, effectColor, outEffectRadius));
+        this.customSeries.push(this.customRingsPoint(90, -angle, effectColor, outEffectRadius));
+      }
+    },
+    startEffect() {
+      let angle = 0;
+      this.startSpin = setInterval(() => {
+        if (this.options.series[0].customType === 'customRingsSeries') {
+          this.customSeries = [];
+          angle += 3;
+          this.addEffect(angle);
+        }
+      }, 100);
     },
     customRenderItem() {}
   },
