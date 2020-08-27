@@ -51,7 +51,13 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     this._createMarker();
   }
   private _createMarker() {
-    if (this.markersElement.length === 0) {
+    if (
+      this.markersElement.length === 0 ||
+      !this.map ||
+      !this.features ||
+      !this.features.features ||
+      this.features.features.length === 0
+    ) {
       return;
     }
     this.features.features.forEach((point, index) => {

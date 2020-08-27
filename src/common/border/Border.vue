@@ -21,6 +21,9 @@ export default {
     type: {
       type: [String],
       default: 'border1'
+    },
+    customBorder: {
+      type: Object
     }
   },
   data() {
@@ -38,15 +41,27 @@ export default {
     };
   },
   computed: {
+    borderConfig() {
+      if (!this.customBorder && this.type) {
+        return borderConfigs[this.type];
+      } else {
+        return this.customBorder;
+      }
+    },
+    borderImage() {
+      if ((!this.customBorder || !this.customBorder.url) && this.type) {
+        return require(`./assets/image/${this.type}.png`);
+      } else {
+        return `${this.customBorder.url}`;
+      }
+    },
     borderStyle() {
       let borderImageSlice = this.borderWidth.join(' ') + ' fill';
       let borderWidth = this.borderWidth.join('px ') + 'px';
-      let borderImage = require(`./assets/image/${this.type}.png`);
       return {
         borderWidth,
         // 当图片大小超过8KB, webpack就不会转换成base64, 直接引入时路径出错（此时的图片路径在index.html下？）
-        // borderImage: `url(./assets/image/${this.type}.png)`,
-        borderImage: 'url(' + borderImage + ') ' + borderImageSlice + ' / 1 / 0 stretch'
+        borderImage: 'url(' + this.borderImage + ') ' + borderImageSlice + ' / 1 / 0 stretch'
       };
     },
     contentStyle() {
@@ -77,8 +92,7 @@ export default {
   },
   methods: {
     // 设置content的位置大小
-    setPosition() {
-      let borderConfig = borderConfigs[this.type];
+    setPosition(borderConfig = this.borderConfig) {
       this.borderEdge = borderConfig.borderEdge;
       this.borderWidth = borderConfig.borderWidth;
       this.calcPosition();
