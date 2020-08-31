@@ -175,7 +175,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop() excludePortalProxyUrl: boolean;
   @Prop() isSuperMapOnline: boolean;
   @Prop() proxy: boolean | string;
-  @Prop({ default: true }) useLoading: boolean | string;
+  @Prop({ default: true }) defaultLoading: boolean;
+  @Prop({ default: false }) loading: boolean;
   @Prop() background: string;
   @Prop() iportalServiceProxyUrlPrefix: string;
   @Prop()
@@ -289,13 +290,18 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
 
   @Watch('mapId')
   mapIdChanged() {
-    if (this.useLoading) {
+    if (this.defaultLoading) {
       this.spinning = true;
     }
   }
 
+  @Watch('loading')
+  loadingChanged(newVal) {
+    this.spinning = newVal;
+  }
+
   created() {
-    if (!this.useLoading) {
+    if (!this.defaultLoading) {
       this.spinning = false;
     }
   }
