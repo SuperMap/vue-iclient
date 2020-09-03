@@ -27,6 +27,7 @@ export { default as UniqueThemeLayer } from './web-map/layer/unique-theme/Unique
 export { default as VectorTileLayer } from './web-map/layer/vector-tile/VectorTileLayer';
 export { default as FireLayer } from './web-map/layer/fire/FireLayer';
 export { default as AnimateMarkerLayer } from './web-map/layer/animate-marker/AnimateMarkerLayer';
+export { default as TrackLayer } from './web-map/layer/track/TrackLayer';
 
 /** control */
 export { default as Legend } from './web-map/control/legend/Legend';
