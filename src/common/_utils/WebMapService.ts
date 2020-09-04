@@ -630,7 +630,12 @@ export default class WebMapService extends Events {
     }
     let type;
     let isHosted = (dataSource && dataSource.serverId) || layerType === 'MARKER' || layerType === 'HOSTED_TILE';
-    let isTile = layerType === 'SUPERMAP_REST' || layerType === 'TILE' || layerType === 'WMS' || layerType === 'WMTS' || layerType === 'MAPBOXSTYLE';
+    let isTile =
+      layerType === 'SUPERMAP_REST' ||
+      layerType === 'TILE' ||
+      layerType === 'WMS' ||
+      layerType === 'WMTS' ||
+      layerType === 'MAPBOXSTYLE';
     if (isHosted) {
       type = 'hosted';
     } else if (isTile) {
@@ -693,7 +698,7 @@ export default class WebMapService extends Events {
         .then(response => {
           return response.json();
         })
-        .then(data => {
+        .then(async data => {
           if (data.succeed === false) {
             reject(data.error);
           }
@@ -702,7 +707,15 @@ export default class WebMapService extends Events {
               data.content = JSON.parse(data.content.trim());
               features = this._formatGeoJSON(data.content);
             } else if (data.type === 'EXCEL' || data.type === 'CSV') {
-              features = this._excelData2Feature(data.content, (layerInfo && layerInfo.xyField) || {});
+              if (layerInfo.dataSource && layerInfo.dataSource.administrativeInfo) {
+                //行政规划信息
+                data.content.rows.unshift(data.content.colTitles);
+                const { divisionType, divisionField } = layerInfo.dataSource.administrativeInfo;
+                const geojson = await this._excelData2FeatureByDivision(data.content, divisionType, divisionField);
+                features = this._formatGeoJSON(geojson);
+              } else {
+                features = this._excelData2Feature(data.content, (layerInfo && layerInfo.xyField) || {});
+              }
             }
             resolve({ type: 'feature', features });
           }
@@ -999,6 +1012,78 @@ export default class WebMapService extends Events {
       features.push(feature);
     }
     return features;
+  }
+  private _excelData2FeatureByDivision(content: any, divisionType: string, divisionField: string): Promise<object> {
+    const dataName = ['城市', 'City'].includes(divisionType) ? 'MunicipalData' : 'ProvinceData';
+    if (window[dataName] && window[dataName].features) {
+      return new Promise(resolve => {
+        resolve(this._combineFeature(content, window[dataName], divisionField));
+      });
+    }
+    const dataFileName = ['城市', 'City'].includes(divisionType) ? 'MunicipalData.js' : 'ProvincialData.js';
+    const proxy = this.handleProxy();
+    const dataUrl = `${this.serverUrl}apps/dataviz/libs/administrative_data/${dataFileName}`;
+    return SuperMap.FetchRequest.get(dataUrl, null, {
+      withCredentials: this.handleWithCredentials(proxy, dataUrl, this.withCredentials),
+      proxy,
+      withoutFormatSuffix: true
+    })
+      .then(response => {
+        return response.text();
+      })
+      .then(result => {
+        new Function(result)();
+        return this._combineFeature(content, window[dataName], divisionField);
+      });
+  }
+  private _combineFeature(
+    properties: any,
+    geoData: GeoJSON.FeatureCollection,
+    divisionField: string
+  ): GeoJSON.FeatureCollection {
+    let geojson: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: []
+    };
+    if (properties.length < 2) {
+      return geojson;
+    } //只有一行数据时为标题
+    let titles = properties.colTitles,
+      rows = properties.rows,
+      fieldIndex = titles.findIndex(title => title === divisionField);
+
+    rows.forEach(row => {
+      let feature = geoData.features.find((item, index) => {
+        return this._isMatchAdministrativeName(item.properties.Name, row[fieldIndex]);
+      });
+      //todo 需提示忽略无效数据
+      if (feature) {
+        const combineFeature: GeoJSON.Feature = { properties: {}, geometry: feature.geometry, type: 'Feature' };
+        row.forEach((item, idx) => {
+          combineFeature.properties[titles[idx]] = item;
+        });
+        geojson.features.push(combineFeature);
+      }
+    });
+    return geojson;
+  }
+  /**
+   * @description 行政区划原始数据和当前数据是否匹配
+   */
+  private _isMatchAdministrativeName(featureName: string, fieldName: string): boolean {
+    if (featureName && typeof fieldName === 'string' && fieldName.constructor === String) {
+      let shortName = featureName.substr(0, 2);
+      // 张家口市和张家界市
+      if (shortName === '张家') {
+          shortName = featureName.substr(0, 3);
+      } 
+      // 阿拉善盟 阿拉尔市
+      if (shortName === '阿拉') {
+          shortName = featureName.substr(0, 3);
+      }
+      return !!fieldName.startsWith(shortName);
+    }
+    return false;
   }
 
   private _getTileLayerInfo(url, baseProjection) {
