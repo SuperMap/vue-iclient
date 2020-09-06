@@ -15,7 +15,6 @@
 import MapGetter from '../_mixin/map-getter';
 import Theme from '../../common/_mixin/theme';
 import IdentifyViewModel from './IdentifyViewModel';
-import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmIdentify',
@@ -51,7 +50,7 @@ export default {
   },
   watch: {
     layerNames(val, oldVal) {
-      if (val && !isEqual(val, oldVal)) {
+      if (val) {
         this.$options.removed.call(this, oldVal);
         this.setLayers();
       }

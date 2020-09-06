@@ -14,16 +14,24 @@
       <div class="sm-component-tdtRoute__header">
         <div class="route-navbar">
           <div>
-            <div :class="['car-icon', { active: routeActive === 'car' }]" @click="routeActive = 'car'">
+            <div
+              :class="['car-icon', { active: routeActive === 'car' }]"
+              @click="routeActive = 'car'"
+            >
               <i></i>
             </div>
-            <div :class="['bus-icon', { active: routeActive === 'bus' }]" @click="routeActive = 'bus'">
+            <div
+              :class="['bus-icon', { active: routeActive === 'bus' }]"
+              @click="routeActive = 'bus'"
+            >
               <i></i>
             </div>
           </div>
-          <div class="clear-route" :style="[getTextColorStyle]" @click="clearRoute">
-            {{ $t('tdtRoute.clearRoute') }}
-          </div>
+          <div
+            class="clear-route"
+            :style="[getTextColorStyle]"
+            @click="clearRoute"
+          >{{ $t('tdtRoute.clearRoute') }}</div>
         </div>
         <div class="route-panel">
           <div class="start-route">
@@ -38,7 +46,12 @@
                 :style="[getBackgroundStyle, getTextColorStyle]"
                 @keyup.13="searchClicked"
               >
-                <a-icon slot="suffix" type="close-circle" :style="[getTextColorStyle]" @click="clearStart" />
+                <a-icon
+                  slot="suffix"
+                  type="close-circle"
+                  :style="[getTextColorStyle]"
+                  @click="clearStart"
+                />
               </a-input>
             </div>
           </div>
@@ -54,7 +67,12 @@
                 :style="[getBackgroundStyle, getTextColorStyle]"
                 @keyup.13="searchClicked"
               >
-                <a-icon slot="suffix" type="close-circle" :style="[getTextColorStyle]" @click="clearEnd" />
+                <a-icon
+                  slot="suffix"
+                  type="close-circle"
+                  :style="[getTextColorStyle]"
+                  @click="clearEnd"
+                />
               </a-input>
             </div>
           </div>
@@ -63,9 +81,15 @@
           </div>
         </div>
         <div class="search-btn">
-          <a-button type="primary" :style="[getBackgroundStyle, getTextColorStyle]" @click="searchClicked">{{
+          <a-button
+            type="primary"
+            :style="[getBackgroundStyle, getTextColorStyle]"
+            @click="searchClicked"
+          >
+            {{
             $t('tdtRoute.search')
-          }}</a-button>
+            }}
+          </a-button>
         </div>
       </div>
       <div class="sm-component-tdtRoute__content" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -117,7 +141,6 @@ import RoutePlan from '../results/RoutePlan';
 import PointsResult from '../results/PointsResult';
 import StatisticsResult from '../results/StatisticsResult';
 import NothingResult from '../results/NothingResult';
-import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmTdtRoute',
@@ -179,12 +202,9 @@ export default {
       this.searchRoute();
     },
     data(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
-        this.spinning = true;
-        this.routePlan = null;
-        this.viewModel && this.viewModel.setData(this.data);
-        this.clearRoute();
-      }
+      this.spinning = true;
+      // this.clearRoute();
+      this.viewModel && this.viewModel.setData(this.data);
     },
     status(val) {
       if (val === 'toSetStart') {

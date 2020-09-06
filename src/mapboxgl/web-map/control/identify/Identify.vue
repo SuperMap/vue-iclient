@@ -27,7 +27,6 @@ import IdentifyViewModel from './IdentifyViewModel';
 import CircleStyle from '../../../_types/CircleStyle';
 import FillStyle from '../../../_types/FillStyle';
 import LineStyle from '../../../_types/LineStyle';
-import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmIdentify',
@@ -148,10 +147,9 @@ export default {
   watch: {
     layers: {
       handler(val, oldVal) {
-        if (!isEqual(val, oldVal)) {
-          this.viewModel && this.viewModel.removed(oldVal);
-          this.setViewModel();
-        }
+        this.viewModel && this.viewModel.removed(oldVal);
+        this.removeCursorEvent(oldVal);
+        this.setViewModel();
       }
     },
     layerStyle() {
@@ -164,15 +162,18 @@ export default {
   loaded() {
     // 每次地图加载，就要隐藏（md的切换地图）
     this.isHide = true;
+    // this.changeCursorPointer = () => {
+    //   this.changeCursor('pointer', this.map);
+    //   console.log('enter');
+    // };
+    this.changeCursorGrab = () => this.changeCursor('grab', this.map);
     this.setViewModel();
   },
-  removed() {
+  removed(layers = this.layersOnMap) {
     if (this.map) {
       this.map.off('click', this.sourceMapClickFn);
-      this.layersOnMap.forEach(layer => {
-        this.map.off('mousemove', layer, this.changeCursorPointer);
-        this.map.off('mouseleave', layer, this.changeCursorGrab);
-      });
+      this.map.off('mousemove', this.changeCursorPointer);
+      this.map.off('mouseleave', this.changeCursorGrab);
     }
     // 清除旧的高亮的图层
     this.viewModel && this.viewModel.removed();
@@ -297,8 +298,6 @@ export default {
       identifyRightAnchor && (identifyRightAnchor.style.borderLeftColor = this.backgroundData);
     },
     changeClickedLayersCursor(layers = [], map = this.map) {
-      this.changeCursorPointer = () => this.changeCursor('pointer');
-      this.changeCursorGrab = () => this.changeCursor('grab');
       layers &&
         layers.forEach(layer => {
           map.on('mousemove', layer, this.changeCursorPointer);
@@ -306,7 +305,23 @@ export default {
         });
     },
     changeCursor(cursorType = 'grab', map = this.map) {
-      map.getCanvas().style.cursor = cursorType;
+      if (map && map.getCanvas()) {
+        map.getCanvas().style.cursor = cursorType;
+      }
+    },
+    changeCursorPointer() {
+      console.log('map', this, this.map);
+      this.changeCursor('pointer', this.map);
+      console.log('enter');
+    },
+    removeCursorEvent(layers = this.layersOnMap) {
+      console.log('remove', layers);
+      this.map.off('click', this.sourceMapClickFn);
+      layers.forEach(layer => {
+        this.map.off('mousemove', layer, this.changeCursorPointer);
+        this.map.off('mouseleave', layer, this.changeCursorGrab);
+        this.changeCursor('grab', this.map);
+      });
     }
   }
 };

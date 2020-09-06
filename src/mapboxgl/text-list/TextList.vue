@@ -90,9 +90,11 @@
                 getCellStyle(items, itemIndex)
               ]"
             >
-              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.prefix }}</span
-              >{{ items }}
-              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.suffix }}</span>
+              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.prefix }}</span>
+              {{ items }}
+              <span
+                v-if="getColumns[itemIndex]"
+              >{{ getColumns[itemIndex].fixInfo.suffix }}</span>
             </div>
           </div>
         </template>
@@ -110,7 +112,6 @@ import getFeatures from '../../common/_utils/get-features';
 import Theme from '../../common/_mixin/theme';
 import Timer from '../../common/_mixin/timer';
 import { getColorWithOpacity } from '../../common/_utils/util';
-import isEqual from 'lodash.isequal';
 import merge from 'lodash.merge';
 import clonedeep from 'lodash.clonedeep';
 
@@ -244,34 +245,28 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Watch('content')
   contentChanged(newVal, oldVal) {
-    if (!isEqual(newVal, oldVal)) {
-      this.listData = this.handleContent(this.content);
-      this.getListHeightStyle();
-    }
+    this.listData = this.handleContent(this.content);
+    this.getListHeightStyle();
   }
 
   @Watch('dataset', { deep: true })
   datasetChanged(newVal, oldVal) {
-    if (!isEqual(newVal, oldVal)) {
-      if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
-        this.getFeaturesFromDataset();
-      } else {
-        // this.featuresData = [];
-        // this.listData = [];
-        // this.animateContent = [];
-        clearInterval(this.startInter);
-      }
+    if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
+      this.getFeaturesFromDataset();
+    } else {
+      // this.featuresData = [];
+      // this.listData = [];
+      // this.animateContent = [];
+      clearInterval(this.startInter);
     }
   }
 
   @Watch('columns')
   columnsChanged(newVal, oldVal) {
-    if (!isEqual(newVal, oldVal)) {
-      if (this.content || this.featuresData) {
-        this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
-        this.getListHeightStyle();
-        this.setDefaultSortType();
-      }
+    if (this.content || this.featuresData) {
+      this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+      this.getListHeightStyle();
+      this.setDefaultSortType();
     }
   }
 
@@ -298,18 +293,14 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   @Watch('rowStyle')
   rowStyleChanged(next, before) {
-    if (!isEqual(next, before)) {
-      this.rowStyleData = Object.assign({}, this.rowStyleData, next);
-      this.getListHeightStyle();
-    }
+    this.rowStyleData = Object.assign({}, this.rowStyleData, next);
+    this.getListHeightStyle();
   }
 
   @Watch('headerStyle')
   headerHeightChanged(next, before) {
-    if (!isEqual(next, before)) {
-      this.headerStyleData = Object.assign({}, this.headerStyleData, next);
-      this.getListHeightStyle();
-    }
+    this.headerStyleData = Object.assign({}, this.headerStyleData, next);
+    this.getListHeightStyle();
   }
 
   @Watch('containerHeight')

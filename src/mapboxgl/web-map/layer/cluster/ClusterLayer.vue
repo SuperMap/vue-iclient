@@ -3,7 +3,6 @@ import MapGetter from '../../../_mixin/map-getter';
 import ClusterLayerViewModel from './ClusterLayerViewModel';
 import Layer from '../../../_mixin/layer';
 import CircleStyle from '../../../_types/CircleStyle';
-import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmClusterLayer',
@@ -43,7 +42,7 @@ export default {
   },
   watch: {
     data(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal) && this.viewModel) {
+      if (this.viewModel) {
         this.viewModel.setData(this.data);
       }
     },
