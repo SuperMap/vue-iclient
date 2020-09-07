@@ -49,10 +49,10 @@ export default {
       }
     },
     borderImage() {
-      if ((!this.customBorder || !this.customBorder.url) && this.type) {
+      if ((!this.customBorder || !this.customBorder.src) && this.type) {
         return require(`./assets/image/${this.type}.png`);
       } else {
-        return `${this.customBorder.url}`;
+        return `${this.customBorder.src}`;
       }
     },
     borderStyle() {
