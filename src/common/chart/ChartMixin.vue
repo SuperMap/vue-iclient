@@ -248,7 +248,18 @@ export default {
           series: [...this.options.series, ...this.customSeries]
         };
       }
-      return this.options;
+      let series = this.options.series.map((serie, index) => {
+        if (serie.label) {
+          let cloneSerie = cloneDeep(serie);
+          cloneSerie.label.normal = this._controlLabel(cloneSerie.label.normal, cloneSerie.maxLabels);
+          return cloneSerie;
+        }
+        return serie;
+      });
+      return {
+        ...this.options,
+        series
+      };
     },
     _chartOptions() {
       return (this._isRequestData && this.echartOptions) || this.parseOptions;
@@ -641,6 +652,7 @@ export default {
           const dataZoom = options.dataZoom && options.dataZoom[0];
           options.series = options.series.map((serie, index) => {
             let label = serie.label && serie.label.normal;
+            serie.label.normal = this._controlLabel(label, serie.maxLabels);
             if (label && label.show && label.smart) {
               label.position = label.position || 'top';
               let data = serie.data;
@@ -685,7 +697,6 @@ export default {
                 return result;
               };
             } else if (serie && serie.type !== 'pie' && serie.type !== 'radar') {
-              label && delete label.formatter;
               const colorGroup = getMultiColorGroup(this.colorGroupsData, this.colorNumber);
               if (serie.type === '2.5Bar') {
                 const shape = serie.shape;
@@ -825,27 +836,6 @@ export default {
                 }
                 delete serie.shape;
               }
-            } else if (serie && serie.type === 'pie') {
-              // 控制label显示条数
-              if (serie.maxLabels) {
-                let formatMode;
-                if (label.formatter && typeof label.formatter === 'string') {
-                  formatMode = label.formatter;
-                }
-                label.formatter = function({ dataIndex, value, name, percent }) {
-                  const FORMATTER_MAP = {
-                    '{b}: {c}': `${name}: ${value}`,
-                    '{b}': `${name}`,
-                    '{c}': `${value}`,
-                    '{d}%': `${percent}%`
-                  };
-                  let result = '';
-                  if (dataIndex < serie.maxLabels) {
-                    result = FORMATTER_MAP[formatMode];
-                  }
-                  return result;
-                };
-              }
             }
             return serie;
           });
@@ -956,6 +946,31 @@ export default {
       } else {
         return SuperMap.ColorsPickerUtil.getGradientColors(this.colorGroupsData, serielDataLength, 'RANGE');
       }
+    },
+    // 控制label显示条数
+    _controlLabel(normalLabel, maxLabels) {
+      if (normalLabel && normalLabel.show && maxLabels) {
+        let endNormalLabel = cloneDeep(normalLabel);
+        let formatMode;
+        if (endNormalLabel.formatter && typeof endNormalLabel.formatter === 'string') {
+          formatMode = endNormalLabel.formatter;
+        }
+        endNormalLabel.formatter = function({ dataIndex, value, name, percent }) {
+          const FORMATTER_MAP = {
+            '{b}: {c}': `${name}: ${value}`,
+            '{b}': `${name}`,
+            '{c}': `${value}`,
+            '{d}%': `${percent}%`
+          };
+          let result = '';
+          if (dataIndex < maxLabels) {
+            result = FORMATTER_MAP[formatMode || '{c}'];
+          }
+          return result;
+        };
+        return endNormalLabel;
+      }
+      return normalLabel;
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
