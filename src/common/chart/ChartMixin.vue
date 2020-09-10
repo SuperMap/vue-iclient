@@ -502,6 +502,10 @@ export default {
             return item.color || color;
           }
         });
+        const serieColor =
+          this.options.series[seriesIndex] &&
+          this.options.series[seriesIndex].itemStyle &&
+          this.options.series[seriesIndex].itemStyle.color;
         serie.itemStyle = serie.itemStyle || { color: '' };
         serie.itemStyle.color = ({ dataIndex }) => {
           const index = dataIndexs.indexOf(dataIndex);
@@ -510,6 +514,8 @@ export default {
           } else if (serie.type === 'pie') {
             let colorGroup = this._handlerColorGroup(serie.data.length);
             return colorGroup[dataIndex];
+          } else {
+            return serieColor;
           }
         };
       });
@@ -693,7 +699,9 @@ export default {
                     const location = api.coord([api.value(0), api.value(1)]);
                     let fillColor = defaultColor || colorGroup[params.seriesIndex];
                     if (_this.highlightOptions) {
-                      const matchData = _this.highlightOptions.find(item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex);
+                      const matchData = _this.highlightOptions.find(
+                        item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
+                      );
                       if (matchData && (matchData.color || _this.highlightColor)) {
                         fillColor = matchData.color || _this.highlightColor;
                       }
@@ -872,6 +880,9 @@ export default {
       let series = dataOptions.series;
       if (series && series.length && series[0].type === 'pie') {
         this.setItemStyleColor(false, series);
+      }
+      if (this.highlightOptions && this.highlightOptions.length > 0) {
+        this.setItemStyleColor(true, series);
       }
       dataOptions.series = this._createRingShineSeries(series, options.series);
       const mergeOptions = merge(options, dataOptions);
@@ -1273,8 +1284,8 @@ export default {
         });
     },
     getCirlPoint(x0, y0, r, angle) {
-      let x1 = x0 + r * Math.cos(angle * Math.PI / 180);
-      let y1 = y0 + r * Math.sin(angle * Math.PI / 180);
+      let x1 = x0 + r * Math.cos((angle * Math.PI) / 180);
+      let y1 = y0 + r * Math.sin((angle * Math.PI) / 180);
       return {
         x: x1,
         y: y1
@@ -1287,9 +1298,9 @@ export default {
           shape: {
             cx: api.getWidth() / 2,
             cy: api.getHeight() / 2,
-            r: Math.min(api.getWidth(), api.getHeight()) / 2 * radius,
-            startAngle: (startAngle + angle) * Math.PI / 180,
-            endAngle: (endAngle + angle) * Math.PI / 180
+            r: (Math.min(api.getWidth(), api.getHeight()) / 2) * radius,
+            startAngle: ((startAngle + angle) * Math.PI) / 180,
+            endAngle: ((endAngle + angle) * Math.PI) / 180
           },
           style: {
             stroke: effectColor,
@@ -1304,7 +1315,7 @@ export default {
       return (params, api) => {
         let x0 = api.getWidth() / 2;
         let y0 = api.getHeight() / 2;
-        let r = Math.min(api.getWidth(), api.getHeight()) / 2 * radius;
+        let r = (Math.min(api.getWidth(), api.getHeight()) / 2) * radius;
         let point = this.getCirlPoint(x0, y0, r, angle + spinAngle);
         return {
           type: 'circle',

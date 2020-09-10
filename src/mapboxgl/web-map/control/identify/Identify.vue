@@ -247,8 +247,8 @@ export default {
       // 添加高亮图层
       this.addOverlayToMap(feature.layer, filter);
       // 给图层加上高亮
-      if (map.getLayer(feature.layer.id + '-SM-highlighted')) {
-        map.setFilter(feature.layer.id + '-SM-highlighted', filter);
+      if (map.getLayer(feature.layer.id + '-identify-SM-highlighted')) {
+        map.setFilter(feature.layer.id + '-identify-SM-highlighted', filter);
       }
     },
     // 过滤数据， 添加popup
@@ -310,12 +310,9 @@ export default {
       }
     },
     changeCursorPointer() {
-      console.log('map', this, this.map);
       this.changeCursor('pointer', this.map);
-      console.log('enter');
     },
     removeCursorEvent(layers = this.layersOnMap) {
-      console.log('remove', layers);
       this.map.off('click', this.sourceMapClickFn);
       layers.forEach(layer => {
         this.map.off('mousemove', layer, this.changeCursorPointer);
