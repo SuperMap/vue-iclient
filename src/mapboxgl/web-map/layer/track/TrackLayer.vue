@@ -19,35 +19,27 @@ import { FeatureCollection } from 'geojson';
     'layerStyle',
     'direction',
     'unit',
-    'scale'
+    'scale',
+    'fitBounds'
   ]
 })
 // @ts-ignore
 class TrackLayer extends Mixins(MapGetter, VmUpdater) {
   viewModel: TrackLayerViewModel;
 
-  // @ts-ignore
   @Prop() layerId: string;
-  // @ts-ignore
   @Prop() loaderType: string;
-  // @ts-ignore
   @Prop() loaderUrl: string;
-  // @ts-ignore
   @Prop() imgUrl: string;
-  // @ts-ignore
   @Prop() displayLine: string;
-  // @ts-ignore
   @Prop() layerStyle: layerStyleParams;
-  // @ts-ignore
   @Prop() geoJSON: FeatureCollection;
-  // @ts-ignore
   @Prop() positionTimestamp: positionTimeStampParams;
-  // @ts-ignore
   @Prop() direction: directionParams;
-  // @ts-ignore
   @Prop() unit: string;
-  // @ts-ignore
   @Prop() scale: number;
+  @Prop() fitBounds: boolean;
+  @Prop() followCamera: boolean;
 
   created() {
     // @ts-ignore
