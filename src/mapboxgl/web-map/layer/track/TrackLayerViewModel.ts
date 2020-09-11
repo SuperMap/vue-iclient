@@ -83,7 +83,8 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   animationFrameId: number;
   _animateLayerFn: () => void;
   positionTimestamp: positionTimeStampParams;
-  originStartTimestamp: string | number;
+  originStartTimestamp: number;
+  originNextTimestamp: number;
   animateStep: number;
   destTimestamp: number;
   startTimestamp: number;
@@ -158,6 +159,8 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       if (this.map.hasImage(this.imageName)) {
         // @ts-ignore
         this.map.updateImage(this.imageName, image);
+      } else {
+        this._init();
       }
     });
   }
@@ -188,6 +191,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     }
     this.animationFrameId && cancelAnimationFrame(this.animationFrameId);
     this.originStartTimestamp = this.positionTimestamp && this.positionTimestamp.prevTimestamp;
+    this.originNextTimestamp = this.positionTimestamp && this.positionTimestamp.nextTimestamp;
     this.positionTimestamp = timestampInfo;
     let destCoordinates, matchNextPosition, matchStartPosition, animateStep;
     const matchNextPositionIndex = this.geoJSON.features.findIndex(
@@ -239,7 +243,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       this.animateTime = performance.now() + animateStep;
       this._setRotateFactor();
       this._animateLayer();
-    } else if (this.destPosition) {
+    } else if (this.destPosition && this.originNextTimestamp) {
       this.destPosition = null;
     }
   }
@@ -273,7 +277,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   }
 
   setScale(scale: number) {
-    this.options.scale = scale;
+    this.options.scale = isNaN(+scale) ? 0 : +scale;
     this._init(true);
   }
 
@@ -312,10 +316,11 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   }
 
   private _setRotateFactor() {
-    if (this.options.followCamera) {
-      const currentBearing = rhumbBearing(this.startPosition, this.destPosition);
-      this.map.setBearing(currentBearing);
-    }
+    // 若设置 bearing 不需要动画的话，则在此设置
+    // if (this.options.followCamera) {
+    //   const currentBearing = rhumbBearing(this.startPosition, this.destPosition);
+    //   this.map.setBearing(currentBearing);
+    // }
     const pointInfo = this._getPointInfo();
     this.rotateFactor = 0;
     if (pointInfo) {
@@ -387,10 +392,15 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       return;
     }
     if (this.options.followCamera) {
-      this.map.easeTo({
+      let options = {
         center: position,
         pitch: 60
-      });
+      };
+      if (this.startPosition && this.destPosition) {
+        // @ts-ignore
+        options.bearing = rhumbBearing(this.startPosition, this.destPosition);
+      }
+      this.map.easeTo(options);
     }
     switch (this.options.loaderType) {
       case 'GLTF':
@@ -400,7 +410,9 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       case 'image':
         this._addImageLayer(position);
     }
-    this._addTrackLineLayer();
+    if (this.options.loaderType && (this.options.loaderUrl || this.options.imgUrl)) {
+      this._addTrackLineLayer();
+    }
   }
 
   private _addCustomLayer(positionCoordinate: [number, number]) {
@@ -484,12 +496,28 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       // @ts-ignore
       imageSource.setData(sourceData);
     } else {
-      this.map.loadImage(url, (error, image) => {
-        if (error) {
-          console.error(error);
-          return;
-        }
-        this.map.addImage(this.imageName, image);
+      if (!this.map.hasImage(this.imageName)) {
+        this.map.loadImage(url, (error, image) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          this.map.addImage(this.imageName, image);
+          this.map.addSource(this.layerId, {
+            type: 'geojson',
+            data: sourceData
+          });
+          this.map.addLayer({
+            type: 'symbol',
+            id: this.layerId,
+            source: this.layerId,
+            layout: {
+              'icon-image': this.imageName,
+              'icon-size': this.options.scale || 1
+            }
+          });
+        });
+      } else {
         this.map.addSource(this.layerId, {
           type: 'geojson',
           data: sourceData
@@ -503,14 +531,11 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
             'icon-size': this.options.scale || 1
           }
         });
-      });
+      }
     }
   }
 
   private _addTrackLineLayer() {
-    if (!this.map.getLayer(this.layerId)) {
-      return;
-    }
     const imageSource = this.map.getSource(this.lineLayerId);
     let features;
     if (!this.options.displayLine) {
@@ -561,7 +586,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
             'line-opacity': 0.8
           }
         },
-        this.layerId
+        this.map.getLayer(this.layerId) ? this.layerId : null
       );
     }
   }
