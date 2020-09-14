@@ -644,14 +644,21 @@ export default class WebMapViewModel extends WebMapBase {
   private _createVectorLayer(layerInfo: any, features: any): void {
     let type = layerInfo.featureType;
     const { layerID, minzoom, maxzoom, style, visible } = layerInfo;
-    const source: mapboxglTypes.GeoJSONSourceRaw = {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: features
-      }
+    const layerSource = this.map.getSource(layerID);
+    const sourceData: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: features
     };
-    this.map.addSource(layerID, source);
+    if (!layerSource) {
+      const source: mapboxglTypes.GeoJSONSourceRaw = {
+        type: 'geojson',
+        data: sourceData
+      };
+      this.map.addSource(layerID, source);
+    } else {
+      // @ts-ignore
+      layerSource.setData(sourceData);
+    }
     let styleArr = Array.isArray(style) ? style : [style];
     if (styleArr.length === 2) {
       // 道路

@@ -320,7 +320,7 @@ export default {
     },
     datasetOptions: {
       handler: function(newVal, oldVal) {
-        if (newVal) {
+        if (!isEqual(newVal, oldVal)) {
           this._setChartTheme();
           this.registerShape();
         }
