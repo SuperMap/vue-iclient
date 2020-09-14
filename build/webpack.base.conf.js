@@ -79,7 +79,8 @@ module.exports = {
           // resolve('node_modules/webpack-dev-server/client'),
           resolve('node_modules/vue-echarts'),
           resolve('node_modules/resize-detector'),
-          resolve('node_modules/colorcolor')
+          resolve('node_modules/colorcolor'),
+          resolve('node_modules/three/examples/jsm/loaders')
         ]
       },
       {

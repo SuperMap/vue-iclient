@@ -86,9 +86,7 @@
             :style="[getBackgroundStyle, getTextColorStyle]"
             @click="searchClicked"
           >
-            {{
-            $t('tdtRoute.search')
-            }}
+            {{ $t('tdtRoute.search') }}
           </a-button>
         </div>
       </div>
