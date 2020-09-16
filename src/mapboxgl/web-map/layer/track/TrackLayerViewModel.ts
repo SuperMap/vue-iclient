@@ -121,10 +121,11 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   }
 
   setLoaderType(loaderType: string) {
+    this.options.loaderType = loaderType;
     if (!loaderType) {
+      this.removed();
       return;
     }
-    this.options.loaderType = loaderType;
     if (!this.map) {
       return;
     }
@@ -132,11 +133,11 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   }
 
   setLoaderUrl(loaderUrl: string) {
+    this.options.loaderUrl = loaderUrl;
     if (!loaderUrl) {
       this.removed();
       return;
     }
-    this.options.loaderUrl = loaderUrl;
     if (!this.map || !this.options.loaderType || !['OBJ2', 'GLTF'].includes(this.options.loaderType)) {
       return;
     }
@@ -144,10 +145,10 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   }
 
   setImgUrl(imgUrl: string) {
+    this.options.imgUrl = imgUrl;
     if (!imgUrl) {
       return;
     }
-    this.options.imgUrl = imgUrl;
     if (!this.map || !this.options.loaderType || this.options.loaderType !== 'IMAGE') {
       return;
     }
@@ -249,6 +250,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   }
 
   setLayerStyle(layerStyle: layerStyleParams) {
+    this.layerStyle = layerStyle;
     if (!layerStyle || !this.map.getSource(this.lineLayerId)) {
       return;
     }
@@ -263,7 +265,6 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
         this.map.setLayoutProperty(this.lineLayerId, prop, layout[prop]);
       }
     }
-    this.layerStyle = layerStyle;
   }
 
   setDirection(direction: directionParams) {
