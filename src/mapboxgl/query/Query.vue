@@ -147,22 +147,6 @@ import isEqual from 'lodash.isequal';
 //   return valid;
 // };
 
-/**
- * @module Query
- * @category Components
- * @desc 查询组件。
- * @vue-prop {String} [iconClass='sm-components-icons-search'] - 设置组件图标的类名。
- * @vue-prop {String} [headerName='查询'] - 组件标题名。
- * @vue-prop {Number} [maxFeatures=200] - 最大返回要素个数。
- * @vue-prop {Array} [restMap] - iServer 地图服务查询配置。
- * @vue-prop {Array} [restData] - iServer 数据服务查询配置。
- * @vue-prop {Array} [iportalData] - iPortal 数据查询配置。
- * @vue-prop {Object} [layerStyle] - 图层样式配置。
- * @vue-prop {SuperMap.Components.commontypes.LineStyle} [layerStyle.line] - 线图层样式配置。
- * @vue-prop {SuperMap.Components.commontypes.CircleStyle} [layerStyle.circle] - 点图层样式配置。
- * @vue-prop {SuperMap.Components.commontypes.FillStyle} [layerStyle.fill] - 面图层样式配置。
- * @vue-prop {SuperMap.Components.commontypes.LineStyle} [layerStyle.stokeLine] - 面图层边框样式配置。
- */
 export default {
   name: 'SmQuery',
   components: {

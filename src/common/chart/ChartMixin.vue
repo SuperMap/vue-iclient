@@ -45,59 +45,6 @@ import TablePopup from '../table-popup/TablePopup';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
 import { addListener, removeListener } from 'resize-detector';
 
-/**
- * @module Chart
- * @category Components
- * @desc Chart 组件。除了prop: dataset和datasetOptions，其他的所有prop,event,computed, methods都是ECharts的配置，参考https://echarts.baidu.com/api.html#echartsInstance.dispose
- * @vue-prop {String} [iconClass='sm-components-icons-attribute']  - 设置组件图标的类名。
- * @vue-prop {Object} [dataset=null] - 数据来源,支持的参数类型为iPortalDataParameter/RestDataParameter/RestMapParameter。
- * @vue-prop {Array} datasetOptions - 数据来源的配置。
- * @vue-prop {Array} [colorGroup] - 图表颜色数组。
- * @vue-prop {Object} theme - 当前 ECharts 实例使用的主题。
- * @vue-prop {Object} initOptions - 用来初始化 ECharts 实例。
- * @vue-prop {Object} options - ECharts 实例的数据。修改这个 prop 会触发 ECharts 实例的 setOption 方法。如果直接修改 options 绑定的数据而对象引用保持不变，setOption 方法调用时将带有参数 notMerge: false。否则，如果为 options 绑定一个新的对象，setOption 方法调用时则将带有参数 notMerge: true。
- * @vue-prop {Boolean} [autoresize = true] - 用来指定 ECharts 实例在组件根元素尺寸变化时是否需要自动进行重绘。
- * @vue-prop {String} group - 实例的分组，会自动绑定到 ECharts 组件的同名属性上。
- * @vue-prop {Boolean} [manualUpdate = false] - 在性能敏感（数据量很大）的场景下，我们最好对于 options prop 绕过 Vue 的响应式系统。当将 manual-update prop 指定为 true 且不传入 options prop 时，数据将不会被监听。然后，你需要用 ref 获取组件实例以后手动调用 mergeOptions 方法来更新图表。
- * @vue-prop {Boolean} [autoPlay = false] - 是否自动播放，图表类型为 pie 时生效。
- * @vue-computed {String} computedOptions - 用来读取 ECharts 更新内部 options 后的实际数据。
- * @vue-event {Object} legendselectchanged - 切换图例选中状态后的事件。
- * @vue-event {Object} legendselected - 图例选中后的事件。
- * @vue-event {Object} legendunselected - 图例取消选中后的事件。
- * @vue-event {Object} legendscroll - 图例滚动事件。
- * @vue-event {Object} datazoom - 数据区域缩放后的事件。
- * @vue-event {Object} datarangeselected - 视觉映射组件中，range 值改变后触发的事件。
- * @vue-event {Object} timelinechanged - 时间轴中的时间点改变后的事件。
- * @vue-event {Object} timelineplaychanged - 时间轴中播放状态的切换事件。
- * @vue-event {Object} restore - 重置 option 事件。
- * @vue-event {Object} dataviewchanged - 工具栏中数据视图的修改事件。
- * @vue-event {Object} magictypechanged - 工具栏中动态类型切换的切换事件。
- * @vue-event {Object} geoselectchanged - geo 中地图区域切换选中状态的事件。
- * @vue-event {Object} geoselected - geo 中地图区域选中后的事件。
- * @vue-event {Object} geounselected - geo 中地图区域取消选中后的事件。
- * @vue-event {Object} pieselectchanged - series-pie 中饼图扇形切换选中状态的事件。
- * @vue-event {Object} pieselected - series-pie 中饼图扇形选中后的事件。
- * @vue-event {Object} pieunselected - series-pie 中饼图扇形取消选中后的事件。
- * @vue-event {Object} mapselectchanged - series-map 中地图区域切换选中状态的事件。
- * @vue-event {Object} mapselected - series-map 中地图区域选中后的事件。
- * @vue-event {Object} mapunselected - series-map 中地图区域取消选中后的事件。
- * @vue-event {Object} axisareaselected - 平行坐标轴 (Parallel)范围选取事件。
- * @vue-event {Object} focusnodeadjacency - graph的邻接节点高亮事件。
- * @vue-event {Object} unfocusnodeadjacency - graph的邻接节点取消高亮事件。
- * @vue-event {Object} brush - 选框添加事件。即发出 brush action 得到的事件。
- * @vue-event {Object} brushselected - 对外通知当前选中了什么。
- * @vue-event {Object} rendered - 渲染结束事件
- * @vue-event {Object} finished - 渲染完成事件。当渲染动画
- * @vue-event {Object} click - 鼠标事件.click
- * @vue-event {Object} dblclick - 鼠标事件.dblclick
- * @vue-event {Object} mouseover - 鼠标事件.mouseover
- * @vue-event {Object} mouseout - 鼠标事件.mouseout
- * @vue-event {Object} mousemove - 鼠标事件.mousemove
- * @vue-event {Object} mousedown - 鼠标事件.mousedown
- * @vue-event {Object} mouseup - 鼠标事件.mouseup
- * @vue-event {Object} globalout - 鼠标事件.globalout
- * @vue-event {Object} contextmenu - 鼠标事件.contextmenu
- */
 // 枚举事件类型
 const EVENTS = [
   'legendselectchanged',

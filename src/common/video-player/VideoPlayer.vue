@@ -8,7 +8,7 @@
       @play="onPlayerPlay($event)"
       @ended="onPlayerEnded($event)"
       @loadeddata="onPlayerLoadeddata($event)"
-    >></video-player>
+    ></video-player>
     <a-modal
       v-if="url"
       v-model="modalVisible"

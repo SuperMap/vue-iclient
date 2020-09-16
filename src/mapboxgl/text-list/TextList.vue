@@ -84,17 +84,11 @@
               v-for="(items, key, itemIndex) in filterProperty(rowData, 'idx')"
               :key="key"
               :title="items"
-              :style="[
-                listStyle.rowStyle,
-                { flex: getColumnWidth(itemIndex) },
-                getCellStyle(items, itemIndex)
-              ]"
+              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
             >
               <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.prefix }}</span>
               {{ items }}
-              <span
-                v-if="getColumns[itemIndex]"
-              >{{ getColumns[itemIndex].fixInfo.suffix }}</span>
+              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.suffix }}</span>
             </div>
           </div>
         </template>
@@ -237,7 +231,7 @@ class SmTextList extends Mixins(Theme, Timer) {
       return [];
     }
   })
-  highlightOptions: Object;
+  highlightOptions: Array<number>;
 
   @Prop({ default: true }) highlightCurrentRow: Boolean;
 

@@ -24,7 +24,7 @@ export interface positionTimeStampParams {
 }
 
 export interface directionParams {
-  font: string;
+  front: string;
   bottom: string;
 }
 
@@ -34,7 +34,7 @@ export interface trackLayerOptions {
   loaderUrl?: string;
   imgUrl?: string;
   duration?: number; // // 两个点之间的动画时长 unit: s
-  displayLine?: string; // realTime/preview
+  displayLine?: string; // TailLine/All
   layerStyle?: layerStyleParams;
   geoJSON?: GeoJSON.FeatureCollection;
   positionTimestamp?: positionTimeStampParams;
@@ -148,7 +148,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       return;
     }
     this.options.imgUrl = imgUrl;
-    if (!this.map || !this.options.loaderType || this.options.loaderType !== 'image') {
+    if (!this.map || !this.options.loaderType || this.options.loaderType !== 'IMAGE') {
       return;
     }
     this.map.loadImage(imgUrl, (error, image) => {
@@ -407,7 +407,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       case 'OBJ2':
         this._addCustomLayer(position);
         break;
-      case 'image':
+      case 'IMAGE':
         this._addImageLayer(position);
     }
     if (this.options.loaderType && (this.options.loaderUrl || this.options.imgUrl)) {
@@ -542,7 +542,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       features = [];
     } else {
       let coordinates = this.lineData;
-      if (this.options.displayLine === 'preview') {
+      if (this.options.displayLine === 'All') {
         // @ts-ignore
         coordinates = this.geoJSON.features.map(item => item.geometry.coordinates);
       }
@@ -591,13 +591,13 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     }
   }
 
-  private _getFontRotate(font: string): rotateInfoParams {
-    // 不管 font 的朝向如何，最终的朝向是 x 轴的正方向
+  private _getFontRotate(front: string): rotateInfoParams {
+    // 不管 front 的朝向如何，最终的朝向是 x 轴的正方向
     let rotateInfo: rotateInfoParams = {
       rotateAxisIndex: void 0,
       rotate: void 0
     };
-    switch (font) {
+    switch (front) {
       case '-x':
         rotateInfo.rotateAxisIndex = 2;
         rotateInfo.rotate = 180;
@@ -663,10 +663,10 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     const modelOrigin = positionCoordinate;
     const modelAltitude = 0;
     const modelRotate = [0, 0, 0];
-    const { font, bottom } = this.options.direction || { font: null, bottom: null };
+    const { front, bottom } = this.options.direction || { front: null, bottom: null };
     let bottomAxisIndex = 2;
-    if (font) {
-      const rotateInfo = this._getFontRotate(font);
+    if (front) {
+      const rotateInfo = this._getFontRotate(front);
       if (rotateInfo.rotateAxisIndex !== void 0) {
         modelRotate[rotateInfo.rotateAxisIndex] += (rotateInfo.rotate * Math.PI) / 180;
       }
