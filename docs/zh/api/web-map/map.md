@@ -76,12 +76,16 @@ export default {
 
 ### Attributes
 
+@Prop({ default: true }) defaultLoading: boolean;
+  @Prop({ default: false }) loading: boolean;
+
 | 参数       | 说明                                                                       | 类型    | 可选值 | 默认值 |
 | :--------- | :------------------------------------------------------------------------- | :------ | :----- | :----- |
 | mapOptions | [MapboxGL map options 对象](https://docs.mapbox.com/mapbox-gl-js/api/#map) | object  | -      | -      |
 | autoresize | 用来指定 webMap 实例在组件根元素尺寸变化时是否需要自动进行重绘             | boolean | -      | true   |
 | keepBounds | 当地图重绘时，是否用 mapOptions 中的 bounds                                | boolean | -      | false  |
-
+| defaultLoading | 是否默认使用 loading | boolean | - | true |
+| loading | 控制 loading 的开关 | boolean | - | false
 <!-- ## 子组件
 
 ```vue

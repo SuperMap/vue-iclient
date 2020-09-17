@@ -40,6 +40,9 @@
 | headerStyle     | 表头样式                      | <a href="#headerstyle">headerStyle </a>                                                                                                                                                                                                       | -      | []     |
 | thresholdsStyle | 阈值样式                      | <a href="#thresholdsstyle1">ThresholdsStyle1 </a>                                                                                                                                                                                             | -      | []     |
 | columns         | 排序和前后缀                  | <a href="#columns">columns </a>                                                                                                                                                                                                               | -      | []     |
+| highlightOptions | 需要高亮的行的 index 的列表 | array | - | []
+| highlightCurrentRow | 是否开启高亮当前行 | boolean | - | true |
+| highlightColor | 高亮颜色配置 | string \| function | - | #808080cc |
 
 ### headerStyle
 

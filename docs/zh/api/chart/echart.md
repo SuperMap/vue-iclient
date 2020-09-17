@@ -40,10 +40,19 @@ pageClass: chart
 
 ### datasetOptions
 
-| 参数       | 说明                                    | 类型    | 可选值                                                      | 默认值 |
+| 参数       | 说明                                    | 类型    | 可选值                                                                                                           | 默认值 |
+| :--------- | :-------------------------------------- | :------ | :--------------------------------------------------------------------------------------------------------------- | :----- |
+| seriesType | 图表类型                                | string  | 'line' \| 'bar' \| 'scatter' \| 'pie' \| 'radar' \| 'gauge' \| '2.5Bar' <a href="#series">2.5Bar 新增字段</a> \| | -      |
+| isStastic  | 是否统计数据                            | boolean | -                                                                                                                | false  |
+| isStack    | 图表是否堆叠，仅 ( line, bar, scatter ) | boolean | -                                                                                                                | false  |
+| xField     | 数据的字段，坐标值                      | string  | -                                                                                                                | -      |
+| yField     | 数据的字段，数据值                      | string  | -                                                                                                                | -      |
+
+### series
+
+::: tip
+[与 echarts series 配置相同](https://github.com/ecomfe/vue-echarts), 新增配置如下：
+:::
+| 参数 | 说明 | 类型 | 可选值 | 默认值 |
 | :--------- | :-------------------------------------- | :------ | :---------------------------------------------------------- | :----- |
-| seriesType | 图表类型                                | string  | 'line' \| 'bar' \| 'scatter' \| 'pie' \| 'radar' \| 'gauge' | -      |
-| isStastic  | 是否统计数据                            | boolean | -                                                           | false  |
-| isStack    | 图表是否堆叠，仅 ( line, bar, scatter ) | boolean | -                                                           | false  |
-| xField     | 数据的字段，坐标值                      | string  | -                                                           | -      |
-| yField     | 数据的字段，数据值                      | string  | -                                                           | -      |
+| shape | 图表形状 | string | 'square' \| 'rectangle' \| 'cylinder' \| | - |
