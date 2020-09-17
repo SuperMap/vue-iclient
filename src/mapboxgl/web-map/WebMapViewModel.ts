@@ -298,7 +298,11 @@ export default class WebMapViewModel extends WebMapBase {
         };
       }
       setTimeout(() => {
-        this.map = new mapboxgl.Map(this.mapOptions);
+        let fadeDuration = 0;
+        if (this.mapOptions.hasOwnProperty('fadeDuration')) {
+          fadeDuration = this.mapOptions.fadeDuration;
+        }
+        this.map = new mapboxgl.Map({...this.mapOptions, fadeDuration });
         this.map.on('load', () => {
           this.triggerEvent('addlayerssucceeded', {
             map: this.map,
@@ -377,7 +381,8 @@ export default class WebMapViewModel extends WebMapBase {
           };
         }
         return { url };
-      }
+      },
+      fadeDuration: 0
     });
     /**
      * @description Map 初始化成功。

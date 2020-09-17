@@ -4,23 +4,23 @@ import MapGetter from '../../../_mixin/map-getter';
 import VmUpdater from '../../../../common/_mixin/vm-updater';
 import TrackLayerViewModel, { layerStyleParams, positionTimeStampParams, directionParams } from './TrackLayerViewModel';
 // eslint-disable-next-line
-import { FeatureCollection } from 'geojson';
+import { Feature } from 'geojson';
 
 // @ts-ignore
 @Component({
   name: 'SmTrackLayer',
   viewModelProps: [
     'loaderType',
-    'loaderUrl',
-    'imgUrl',
+    'url',
     'displayLine',
-    'geoJSON',
-    'positionTimestamp',
+    'trackPoints',
+    'position',
     'layerStyle',
     'direction',
     'unit',
     'scale',
-    'fitBounds'
+    'fitBounds',
+    'followCamera'
   ]
 })
 // @ts-ignore
@@ -29,12 +29,11 @@ class TrackLayer extends Mixins(MapGetter, VmUpdater) {
 
   @Prop() layerId: string;
   @Prop() loaderType: string;
-  @Prop() loaderUrl: string;
-  @Prop() imgUrl: string;
+  @Prop() url: string;
   @Prop() displayLine: string;
   @Prop() layerStyle: layerStyleParams;
-  @Prop() geoJSON: FeatureCollection;
-  @Prop() positionTimestamp: positionTimeStampParams;
+  @Prop() trackPoints: Feature[];
+  @Prop() position: positionTimeStampParams;
   @Prop() direction: directionParams;
   @Prop() unit: string;
   @Prop() scale: number;

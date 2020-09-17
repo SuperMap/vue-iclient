@@ -31,13 +31,12 @@ export interface directionParams {
 export interface trackLayerOptions {
   layerId?: string;
   loaderType: string;
-  loaderUrl?: string;
-  imgUrl?: string;
+  url?: string;
   duration?: number; // // 两个点之间的动画时长 unit: s
   displayLine?: string; // TailLine/All
   layerStyle?: layerStyleParams;
-  geoJSON?: GeoJSON.FeatureCollection;
-  positionTimestamp?: positionTimeStampParams;
+  trackPoints?: GeoJSON.Feature[];
+  position?: positionTimeStampParams;
   direction?: directionParams;
   unit?: string;
   scale?: number;
@@ -65,7 +64,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   layerId: string;
   lineLayerId: string;
   options: trackLayerOptions;
-  geoJSON: GeoJSON.FeatureCollection;
+  trackPoints: GeoJSON.Feature[];
   lineData: [number, number][] = [];
   layerStyle: layerStyleParams = {};
   imageName: string = 'custom-image';
@@ -82,7 +81,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   rotateFactor: number = 0;
   animationFrameId: number;
   _animateLayerFn: () => void;
-  positionTimestamp: positionTimeStampParams;
+  position: positionTimeStampParams;
   originStartTimestamp: number;
   originNextTimestamp: number;
   animateStep: number;
@@ -94,12 +93,11 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     this.layerId = options.layerId || `tracklayer_${+new Date()}`;
     this.lineLayerId = `${this.layerId}-line`;
     this.layerStyle = options.layerStyle || {};
-    this.geoJSON = options.geoJSON;
-    this.positionTimestamp = options.positionTimestamp;
+    this.trackPoints = options.trackPoints;
+    this.position = options.position;
     this.options = {
       loaderType: options.loaderType,
-      loaderUrl: options.loaderUrl,
-      imgUrl: options.imgUrl,
+      url: options.url,
       displayLine: options.displayLine,
       direction: options.direction,
       unit: options.unit,
@@ -129,41 +127,38 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     if (!this.map) {
       return;
     }
-    this._init(true);
+    setTimeout(() => {
+      this._init(true);
+    }, 0);
   }
 
-  setLoaderUrl(loaderUrl: string) {
-    this.options.loaderUrl = loaderUrl;
-    if (!loaderUrl) {
+  setUrl(url: string) {
+    this.options.url = url;
+    if (!url) {
       this.removed();
       return;
     }
-    if (!this.map || !this.options.loaderType || !['OBJ2', 'GLTF'].includes(this.options.loaderType)) {
+    if (!this.map || !this.options.loaderType) {
       return;
     }
-    this._init(true);
-  }
-
-  setImgUrl(imgUrl: string) {
-    this.options.imgUrl = imgUrl;
-    if (!imgUrl) {
-      return;
+    if (this.options.loaderType === 'IMAGE') {
+      this.map.loadImage(url, (error, image) => {
+        if (error) {
+          console.error(error);
+          return;
+        }
+        if (this.map.hasImage(this.imageName)) {
+          this.map.removeImage(this.imageName);
+          this.imageName = 'custom-image-' + new Date().getTime();
+          this.map.addImage(this.imageName, image);
+          this.map.setLayoutProperty(this.layerId, 'icon-image', this.imageName);
+        } else {
+          this._init();
+        }
+      });
+    } else {
+      this._init(true);
     }
-    if (!this.map || !this.options.loaderType || this.options.loaderType !== 'IMAGE') {
-      return;
-    }
-    this.map.loadImage(imgUrl, (error, image) => {
-      if (error) {
-        console.error(error);
-        return;
-      }
-      if (this.map.hasImage(this.imageName)) {
-        // @ts-ignore
-        this.map.updateImage(this.imageName, image);
-      } else {
-        this._init();
-      }
-    });
   }
 
   setDisplayLine(displayLine: string) {
@@ -175,32 +170,32 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     this._addTrackLineLayer();
   }
 
-  setGeoJSON(geoJSON: GeoJSON.FeatureCollection) {
-    this.geoJSON = geoJSON;
+  setTrackPoints(trackPoints: GeoJSON.Feature[]) {
+    this.trackPoints = trackPoints;
     if (!this.map) {
       return;
     }
-    if (!geoJSON) {
+    if (!trackPoints) {
       this.removed();
     }
     this.lineData = [];
   }
 
-  setPositionTimestamp(timestampInfo: positionTimeStampParams) {
-    if (!this.geoJSON) {
+  setPosition(timestampInfo: positionTimeStampParams) {
+    if (!this.trackPoints) {
       return;
     }
     this.animationFrameId && cancelAnimationFrame(this.animationFrameId);
-    this.originStartTimestamp = this.positionTimestamp && this.positionTimestamp.prevTimestamp;
-    this.originNextTimestamp = this.positionTimestamp && this.positionTimestamp.nextTimestamp;
-    this.positionTimestamp = timestampInfo;
+    this.originStartTimestamp = this.position && this.position.prevTimestamp;
+    this.originNextTimestamp = this.position && this.position.nextTimestamp;
+    this.position = timestampInfo;
     let destCoordinates, matchNextPosition, matchStartPosition, animateStep;
-    const matchNextPositionIndex = this.geoJSON.features.findIndex(
+    const matchNextPositionIndex = this.trackPoints.findIndex(
       (item: GeoJSON.Feature) => item.properties.timestamp > timestampInfo.currentTimestamp
     );
     if (matchNextPositionIndex > -1) {
-      matchNextPosition = this.geoJSON.features[matchNextPositionIndex];
-      matchStartPosition = this.geoJSON.features[matchNextPositionIndex - 1];
+      matchNextPosition = this.trackPoints[matchNextPositionIndex];
+      matchStartPosition = this.trackPoints[matchNextPositionIndex - 1];
       // @ts-ignore
       destCoordinates = matchNextPosition.geometry.coordinates;
       this.destPosition = destCoordinates;
@@ -209,7 +204,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     }
     if (this.originStartTimestamp !== timestampInfo.prevTimestamp) {
       this.animateRemaining = 0;
-      const matchCurrentPosition = this.geoJSON.features.find(
+      const matchCurrentPosition = this.trackPoints.find(
         (item: GeoJSON.Feature) => item.properties.timestamp === timestampInfo.currentTimestamp
       );
       if (matchCurrentPosition) {
@@ -222,7 +217,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
         // @ts-ignore
         this.startPosition = this._getWayPoint(percent, matchStartPosition.geometry.coordinates, destCoordinates);
       }
-      this.lineData = this.geoJSON.features
+      this.lineData = this.trackPoints
         .slice(0, matchNextPositionIndex)
         // @ts-ignore
         .map(item => item.geometry.coordinates);
@@ -292,25 +287,25 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   }
 
   private _initPosition() {
-    if (this.positionTimestamp && this.geoJSON) {
-      const matchStartPositionIndex = this.geoJSON.features.findIndex(
-        (item: GeoJSON.Feature) => item.properties.timestamp === this.positionTimestamp.currentTimestamp
+    if (this.position && this.trackPoints) {
+      const matchStartPositionIndex = this.trackPoints.findIndex(
+        (item: GeoJSON.Feature) => item.properties.timestamp === this.position.currentTimestamp
       );
       if (matchStartPositionIndex > -1) {
-        const matchStartPosition = this.geoJSON.features[matchStartPositionIndex];
+        const matchStartPosition = this.trackPoints[matchStartPositionIndex];
         // @ts-ignore
         this.startPosition = matchStartPosition.geometry.coordinates;
         let nextPosition;
-        if (this.positionTimestamp.nextTimestamp) {
-          const matchNextPosition = this.geoJSON.features.find(
-            (item: GeoJSON.Feature) => item.properties.timestamp > this.positionTimestamp.nextTimestamp
+        if (this.position.nextTimestamp) {
+          const matchNextPosition = this.trackPoints.find(
+            (item: GeoJSON.Feature) => item.properties.timestamp > this.position.nextTimestamp
           );
           // @ts-ignore
           matchNextPosition && (nextPosition = matchNextPosition.geometry.coordinates);
         }
-        if (!nextPosition && this.geoJSON.features[matchStartPositionIndex + 1]) {
+        if (!nextPosition && this.trackPoints[matchStartPositionIndex + 1]) {
           // @ts-ignore
-          this.destPosition = this.geoJSON.features[matchStartPositionIndex + 1].geometry.coordinates;
+          this.destPosition = this.trackPoints[matchStartPositionIndex + 1].geometry.coordinates;
         }
       }
     }
@@ -364,14 +359,14 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
 
   private _animateLayer() {
     let remaining, gone, percent;
-    if (this.positionTimestamp.currentTimestamp === this.positionTimestamp.prevTimestamp) {
+    if (this.position.currentTimestamp === this.position.prevTimestamp) {
       const now = performance.now();
       remaining = this.animateTime - now;
       gone = this.animateStep - remaining;
       percent = gone / this.animateStep;
     } else {
-      remaining = this.destTimestamp - this.positionTimestamp.currentTimestamp;
-      gone = this.positionTimestamp.currentTimestamp - this.positionTimestamp.prevTimestamp;
+      remaining = this.destTimestamp - this.position.currentTimestamp;
+      gone = this.position.currentTimestamp - this.position.prevTimestamp;
       percent = gone / this.animateStep;
     }
     if (remaining > 0) {
@@ -389,7 +384,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
 
   private _initLayer(positionCoordinate: [number, number] = this.currentPosition) {
     const position = positionCoordinate || this.startPosition;
-    if (!position || !this.map) {
+    if (!position || !this.map || !this.options.url || !this.options.loaderType) {
       return;
     }
     if (this.options.followCamera) {
@@ -411,15 +406,10 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       case 'IMAGE':
         this._addImageLayer(position);
     }
-    if (this.options.loaderType && (this.options.loaderUrl || this.options.imgUrl)) {
-      this._addTrackLineLayer();
-    }
+    this._addTrackLineLayer();
   }
 
   private _addCustomLayer(positionCoordinate: [number, number]) {
-    if (!this.options.loaderUrl) {
-      return;
-    }
     this.currentPosition = positionCoordinate;
     this.modelTransform = this._getModelTransform(positionCoordinate);
     if (!this.map.getLayer(this.layerId)) {
@@ -475,10 +465,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   }
 
   private _addImageLayer(positionCoordinate: [number, number]) {
-    const url = this.options.imgUrl;
-    if (!url) {
-      return;
-    }
+    const url = this.options.url;
     const imageSource = this.map.getSource(this.layerId);
     const sourceData: GeoJSON.FeatureCollection = {
       type: 'FeatureCollection',
@@ -514,7 +501,9 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
             source: this.layerId,
             layout: {
               'icon-image': this.imageName,
-              'icon-size': this.options.scale || 1
+              'icon-size': this.options.scale || 1,
+              'icon-allow-overlap': true,
+              'icon-ignore-placement': true
             }
           });
         });
@@ -545,7 +534,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       let coordinates = this.lineData;
       if (this.options.displayLine === 'All') {
         // @ts-ignore
-        coordinates = this.geoJSON.features.map(item => item.geometry.coordinates);
+        coordinates = this.trackPoints.map(item => item.geometry.coordinates);
       }
       features = [
         {
@@ -743,7 +732,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       case 'GLTF':
         loader = new GLTFLoader();
         loader.load(
-          this.options.loaderUrl,
+          this.options.url,
           gltf => {
             const scaleFactor = this._getScaleFactor(gltf.scene);
             gltf.scene.scale.multiplyScalar(scaleFactor);
@@ -767,7 +756,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
         });
 
         loader.load(
-          this.options.loaderUrl,
+          this.options.url,
           object3d => {
             const scaleFactor = this._getScaleFactor(object3d);
             object3d.scale.multiplyScalar(scaleFactor);
