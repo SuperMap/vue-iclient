@@ -349,7 +349,7 @@ export default {
     });
     this._initAutoResize();
     this._initDataZoom();
-    if (this.options.series[0] && this.options.series[0].customType === 'customRingsSeries') {
+    if (this.options.series && this.options.series[0] && this.options.series[0].customType === 'customRingsSeries') {
       this.startEffect();
     }
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();

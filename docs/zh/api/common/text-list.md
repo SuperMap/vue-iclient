@@ -38,7 +38,7 @@
 | columnWidths    | 列表宽度                      | number[]                                                                                                                                                                                                                                      | -      | []     |
 | rowStyle        | 行样式                        | <a href="#rowstyle">rowStyle </a>                                                                                                                                                                                                             | -      | []     |
 | headerStyle     | 表头样式                      | <a href="#headerstyle">headerStyle </a>                                                                                                                                                                                                       | -      | []     |
-| thresholdsStyle | 阈值样式                      | <a href="#thresholdsstyle1">ThresholdsStyle1 </a>                                                                                                                                                                                             | -      | []     |
+| thresholdsStyle | 阈值样式                      | <a href="#thresholdsstyle">ThresholdsStyle </a>                                                                                                                                                                                             | -      | []     |
 | columns         | 排序和前后缀                  | <a href="#columns">columns </a>                                                                                                                                                                                                               | -      | []     |
 | highlightOptions | 需要高亮的行的 index 的列表 | array | - | []
 | highlightCurrentRow | 是否开启高亮当前行 | boolean | - | true |
@@ -62,7 +62,7 @@
 | evenStyle | 偶数行样式（目前只支持配置 background 属性） | object | -      | -      | - |
 | height    | 行的高度                                     | number | -      | -      | - |
 
-### ThresholdsStyle1
+### ThresholdsStyle
 
 ```json
 // 设置每列不同阈值下的背景颜色和字体颜色，示例如下：
