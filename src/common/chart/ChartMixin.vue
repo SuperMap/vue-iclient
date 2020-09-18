@@ -114,7 +114,7 @@ export default {
     options: {
       type: Object,
       default() {
-        return { series: [] };
+        return {};
       }
     },
     autoresize: {
@@ -183,6 +183,9 @@ export default {
       };
     },
     parseOptions() {
+      if (!this.options.series) {
+        return this.options;
+      }
       if (this.options.series.find(item => item.type === '2.5Bar')) {
         return {
           ...this.options,
@@ -461,6 +464,7 @@ export default {
           }
         });
         const serieColor =
+          this.options.series &&
           this.options.series[seriesIndex] &&
           this.options.series[seriesIndex].itemStyle &&
           this.options.series[seriesIndex].itemStyle.color;
@@ -831,16 +835,18 @@ export default {
       return mergeOptions;
     },
     _createRingShineSeries(series, optionsSeries) {
-      this.datasetOptions.forEach((datasetOption, index) => {
-        let { type, outerGap, isShine } = optionsSeries[index] || {};
-        if (type === 'pie' && outerGap >= 0) {
-          const data = series[index].data.map(val => val.value);
-          outerGap = outerGap || Math.min.apply(null, data) / 5;
-          series[index].data = this._createRingShineDataOption(series[index].data, outerGap, isShine);
-          delete optionsSeries[index].outerGap;
-          delete optionsSeries[index].isShine;
-        }
-      });
+      if (optionsSeries) {
+        this.datasetOptions.forEach((datasetOption, index) => {
+          let { type, outerGap, isShine } = optionsSeries[index] || {};
+          if (type === 'pie' && outerGap >= 0) {
+            const data = series[index].data.map(val => val.value);
+            outerGap = outerGap || Math.min.apply(null, data) / 5;
+            series[index].data = this._createRingShineDataOption(series[index].data, outerGap, isShine);
+            delete optionsSeries[index].outerGap;
+            delete optionsSeries[index].isShine;
+          }
+        });
+      }
       return series;
     },
     _createRingShineDataOption(data, outerGap, isShine) {
@@ -1100,16 +1106,18 @@ export default {
     mapNotLoadedTip() {},
     _dataZoomChanged() {
       let flag = false;
-      this.options.series.forEach((serie, index) => {
-        const labelConfig = serie.label && serie.label.normal;
-        flag = labelConfig.show && labelConfig.smart;
-      });
+      this.options.series &&
+        this.options.series.forEach((serie, index) => {
+          const labelConfig = serie.label && serie.label.normal;
+          flag = labelConfig.show && labelConfig.smart;
+        });
       if (flag) {
         this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, true);
       }
     },
     registerShape() {
       this.datasetOptions &&
+        this.options.series &&
         this.datasetOptions.forEach((item, index) => {
           const graphicIntance = this.$options.graphic;
           if (item.seriesType === '2.5Bar') {
@@ -1339,6 +1347,9 @@ export default {
     startEffect() {
       let angle = 0;
       this.startSpin = setInterval(() => {
+        if (!this.options.series) {
+          return;
+        }
         if (this.options.series[0].customType === 'customRingsSeries') {
           this.customSeries = [];
           angle += 3;
