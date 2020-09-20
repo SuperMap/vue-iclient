@@ -291,7 +291,7 @@ export default {
         if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
           this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
         } else {
-          this.echartOptions = Object.assign({}, this.options);
+          this.echartOptions = Object.assign({}, this.parseOptions);
         }
       },
       deep: true

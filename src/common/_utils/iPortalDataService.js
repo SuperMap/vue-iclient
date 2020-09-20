@@ -121,7 +121,7 @@ export default class iPortalDataService extends Events {
           return response.json();
         })
         .then(data => {
-          dataSourceName = data.datasourceNames[0];
+          dataSourceName = data.datasourceNames && data.datasourceNames[0];
           url = `${address}/data/datasources/${dataSourceName}/datasets`;
           // 请求获取数据集名
           SuperMap.FetchRequest.get(url, null, {
@@ -164,9 +164,11 @@ export default class iPortalDataService extends Events {
           return response.json();
         })
         .then(data => {
-          mapName = data[0].name;
-          path = data[0].path;
-          url = url = `${address}/maps/${mapName}/layers`;
+          if (data[0]) {
+            mapName = data[0].name;
+            path = data[0].path;
+          }
+          url = `${address}/maps/${mapName}/layers`;
           // 请求获取图层名
           SuperMap.FetchRequest.get(url, null, {
             withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
