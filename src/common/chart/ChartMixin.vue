@@ -662,7 +662,7 @@ export default {
                   serie.renderItem = (params, api) => {
                     const location = api.coord([api.value(0), api.value(1)]);
                     let fillColor = defaultColor || colorGroup[params.seriesIndex];
-                    if (_this.highlightOptions) {
+                    if (_this.highlightOptions && _this.highlightOptions.length > 0) {
                       const matchData = _this.highlightOptions.find(
                         item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
                       );
@@ -745,8 +745,29 @@ export default {
                   options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
                   dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
                   let cirCleColor = defaultColor || colorGroup[index];
+                  let cirCleColorFnList = [];
                   if (typeof cirCleColor === 'string') {
                     cirCleColor = this.setGradientColor(cirCleColor, '#fff');
+                  }
+                  if (this.highlightOptions && this.highlightOptions.length > 0) {
+                    const matchDataList = [];
+                    this.highlightOptions.forEach(item => {
+                      if (item.seriesIndex.includes(index)) {
+                        let color = item.color || this.highlightColor;
+                        if (typeof color === 'string') {
+                          color = this.setGradientColor(color, '#fff');
+                        }
+                        matchDataList.push({ dataIndex: item.dataIndex, color });
+                      }
+                    });
+                    if (matchDataList.length > 0) {
+                      cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map((item) => {
+                        return ({ dataIndex }) => {
+                          const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
+                          return matchData ? matchData.color : cirCleColor;
+                        };
+                      });
+                    }
                   }
                   extraSeries.push(
                     // 头部的圆片
@@ -758,7 +779,7 @@ export default {
                       z: 12,
                       itemStyle: {
                         normal: {
-                          color: cirCleColor
+                          color: cirCleColorFnList[0] || cirCleColor
                         }
                       },
                       data: dataOptions.series[index].data.map((item, dataIndex) => {
@@ -780,7 +801,7 @@ export default {
                       z: 12,
                       itemStyle: {
                         normal: {
-                          color: cirCleColor
+                          color: cirCleColorFnList[1] || cirCleColor
                         }
                       },
                       data: dataOptions.series[index].data
