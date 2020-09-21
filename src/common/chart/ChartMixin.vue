@@ -454,12 +454,12 @@ export default {
       series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
       series.forEach((serie, seriesIndex) => {
         const dataIndexs = highlightOptions.map(item => {
-          if (item.seriesIndex.includes(seriesIndex)) {
+          if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
             return item.dataIndex;
           }
         });
         const colors = highlightOptions.map(item => {
-          if (item.seriesIndex.includes(seriesIndex)) {
+          if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
             return item.color || color;
           }
         });
@@ -761,7 +761,7 @@ export default {
                       }
                     });
                     if (matchDataList.length > 0) {
-                      cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map((item) => {
+                      cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(item => {
                         return ({ dataIndex }) => {
                           const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
                           return matchData ? matchData.color : cirCleColor;
