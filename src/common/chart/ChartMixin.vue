@@ -603,7 +603,7 @@ export default {
           const dataZoom = options.dataZoom && options.dataZoom[0];
           options.series = options.series.map((serie, index) => {
             let label = serie.label && serie.label.normal;
-            if (serie.label) {
+            if (serie.label && !label.smart) {
               serie.label.normal = this._controlLabel(label, serie.maxLabels);
             }
             if (label && label.show && label.smart) {
