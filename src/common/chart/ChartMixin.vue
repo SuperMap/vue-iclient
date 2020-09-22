@@ -473,7 +473,7 @@ export default {
           const index = dataIndexs.indexOf(dataIndex);
           if (index > -1) {
             return colors[index];
-          } else if (isSet && serie.type === 'pie') {
+          } else if (serie.type === 'pie') {
             let colorGroup = this._handlerColorGroup(serie.data.length);
             return colorGroup[dataIndex];
           } else {
@@ -842,15 +842,15 @@ export default {
       }
 
       let series = dataOptions.series;
-      let isRingShine = !(options.series[0].outerGap === void 0);
-      if (series && series.length && series[0].type === 'pie' && !isRingShine) {
+      let isRingShine = options.series[0] && options.series[0].outerGap >= 0;
+      if (series && series.length && series[0].type === 'pie') {
         this.setItemStyleColor(false, series);
       }
       if (isRingShine) {
         dataOptions.series = this._createRingShineSeries(series, options.series);
       }
       if (this.highlightOptions && this.highlightOptions.length > 0) {
-        if (this.isRingShine) {
+        if (isRingShine) {
           dataOptions.series = this._createRingShineHighlight(series, this.highlightOptions);
         } else {
           this.setItemStyleColor(true, series);
@@ -870,7 +870,6 @@ export default {
             const data = series[index].data.map(val => val.value);
             outerGap = outerGap || Math.min.apply(null, data) / 5;
             series[index].data = this._createRingShineDataOption(series[index].data, outerGap, isShine);
-            this.isRingShine = true;
             delete optionsSeries[index].outerGap;
             delete optionsSeries[index].isShine;
           }
