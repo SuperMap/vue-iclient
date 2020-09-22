@@ -473,7 +473,7 @@ export default {
           const index = dataIndexs.indexOf(dataIndex);
           if (index > -1) {
             return colors[index];
-          } else if (serie.type === 'pie') {
+          } else if (isSet && serie.type === 'pie') {
             let colorGroup = this._handlerColorGroup(serie.data.length);
             return colorGroup[dataIndex];
           } else {
@@ -842,13 +842,20 @@ export default {
       }
 
       let series = dataOptions.series;
-      if (series && series.length && series[0].type === 'pie') {
+      let isRingShine = !(options.series[0].outerGap === void 0);
+      if (series && series.length && series[0].type === 'pie' && !isRingShine) {
         this.setItemStyleColor(false, series);
       }
-      if (this.highlightOptions && this.highlightOptions.length > 0) {
-        this.setItemStyleColor(true, series);
+      if (isRingShine) {
+        dataOptions.series = this._createRingShineSeries(series, options.series);
       }
-      dataOptions.series = this._createRingShineSeries(series, options.series);
+      if (this.highlightOptions && this.highlightOptions.length > 0) {
+        if (this.isRingShine) {
+          dataOptions.series = this._createRingShineHighlight(series, this.highlightOptions);
+        } else {
+          this.setItemStyleColor(true, series);
+        }
+      }
       const mergeOptions = merge(options, dataOptions);
       if (extraSeries.length > 0) {
         mergeOptions.series.push(...extraSeries);
@@ -863,6 +870,7 @@ export default {
             const data = series[index].data.map(val => val.value);
             outerGap = outerGap || Math.min.apply(null, data) / 5;
             series[index].data = this._createRingShineDataOption(series[index].data, outerGap, isShine);
+            this.isRingShine = true;
             delete optionsSeries[index].outerGap;
             delete optionsSeries[index].isShine;
           }
@@ -900,13 +908,11 @@ export default {
         };
         if (isShine) {
           dataItem.itemStyle = {
-            normal: {
-              borderWidth: 5,
-              shadowBlur: 10,
-              color: colors[i],
-              borderColor: colors[i],
-              shadowColor: colors[i]
-            }
+            borderWidth: 5,
+            shadowBlur: 10,
+            color: colors[i],
+            borderColor: colors[i],
+            shadowColor: colors[i]
           };
         }
         result.push(dataItem);
@@ -915,6 +921,29 @@ export default {
         }
       }
       return result;
+    },
+    _createRingShineHighlight(series, highlightOptions, color = this.highlightColor) {
+      series = series || [];
+      series = series.map((serie, seriesIndex) => {
+        const dataIndexs = highlightOptions.map(item => {
+          if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
+            return item.dataIndex;
+          }
+        });
+        const colors = highlightOptions.map(item => {
+          if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
+            return item.color || color;
+          }
+        });
+        const serieDatas = (serie && serie.data) || [];
+        dataIndexs.forEach((dataIndex, index) => {
+          serieDatas[dataIndex].itemStyle.color = colors[index];
+          serieDatas[dataIndex].itemStyle.borderColor = colors[index];
+          serieDatas[dataIndex].itemStyle.shadowColor = colors[index];
+        });
+        return serie;
+      });
+      return series;
     },
     _handlerColorGroup(serielDataLength) {
       if (typeof this.colorGroupsData[0] === 'object') {
