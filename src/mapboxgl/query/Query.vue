@@ -304,7 +304,6 @@ export default {
   removed() {
     this.queryResult = null;
     this.jobInfo = null;
-    this.jobInfos = [];
     this.jobButtonClicked();
     this.popup && this.popup.remove() && (this.popup = null);
   },
