@@ -1,5 +1,5 @@
 import { Events } from '../_types/event/Events';
-import { isXField, isYField } from './util';
+import { isXField, isYField, urlAppend } from './util';
 import * as convert from 'xml-js';
 
 const DEFAULT_WELLKNOWNSCALESET = [
@@ -230,8 +230,10 @@ export default class WebMapService extends Events {
       let restResourceURL = '';
       let kvpResourceUrl = '';
       const proxy = this.handleProxy();
+      let serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0`
+      serviceUrl = this.handleParentRes(serviceUrl);
       SuperMap.FetchRequest.get(
-        `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0`,
+        serviceUrl,
         null,
         {
           withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
@@ -435,8 +437,9 @@ export default class WebMapService extends Events {
     let dataSource = layer.dataSource;
     return new Promise((resolve, reject) => {
       const proxy = this.handleProxy();
-      SuperMap.FetchRequest.get(dataSource.url, null, {
-        withCredentials: this.handleWithCredentials(proxy, dataSource.url, this.withCredentials),
+      let serviceUrl = this.handleParentRes(dataSource.url);
+      SuperMap.FetchRequest.get(serviceUrl, null, {
+        withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
         proxy
       })
         .then(response => {
@@ -484,8 +487,9 @@ export default class WebMapService extends Events {
       onlyAttribute
     );
     const proxy = this.handleProxy();
+    let serviceUrl = this.handleParentRes(url);
     // @ts-ignore
-    let queryBySQLService = new SuperMap.QueryBySQLService(url, {
+    let queryBySQLService = new SuperMap.QueryBySQLService(serviceUrl, {
       proxy,
       withCredentials: this.handleWithCredentials(proxy, url, false),
       eventListeners: {
@@ -586,6 +590,7 @@ export default class WebMapService extends Events {
       requestUrl += `?token=${token}`;
     }
     const proxy = this.handleProxy();
+    requestUrl = this.handleParentRes(url);
     SuperMap.FetchRequest.get(requestUrl, null, {
       proxy,
       withCredentials: this.handleWithCredentials(proxy, requestUrl, false)
@@ -690,6 +695,7 @@ export default class WebMapService extends Events {
       url = `${url}&${this.accessKey}=${this.accessToken}`;
     }
     return new Promise((resolve, reject) => {
+      url = this.handleParentRes(url);
       const proxy = this.handleProxy();
       SuperMap.FetchRequest.get(url, null, {
         withCredentials: this.handleWithCredentials(proxy, url, this.withCredentials),
@@ -851,6 +857,7 @@ export default class WebMapService extends Events {
       //判断mvt服务是否可用
       let url = `${serviceUrl}/data/datasources/${datasourceName}/datasets/${datasetName}`;
       const proxy = this.handleProxy();
+      url = this.handleParentRes(url);
       return SuperMap.FetchRequest.get(url, null, {
         withCredentials: this.handleWithCredentials(proxy, url, false),
         proxy
@@ -872,7 +879,8 @@ export default class WebMapService extends Events {
 
   private _getDatasources(url) {
     const proxy = this.handleProxy();
-    const serviceUrl = `${url}/data/datasources.json`;
+    let serviceUrl = `${url}/data/datasources.json`;
+    serviceUrl = this.handleParentRes(serviceUrl);
     return SuperMap.FetchRequest.get(serviceUrl, null, {
       withCredentials: this.handleWithCredentials(proxy, serviceUrl, false),
       proxy
@@ -891,7 +899,8 @@ export default class WebMapService extends Events {
 
   private _getDataService(fileId, datasetName) {
     const proxy = this.handleProxy();
-    const serviceUrl = `${this.serverUrl}web/datas/${fileId}.json`;
+    let serviceUrl = `${this.serverUrl}web/datas/${fileId}.json`;
+    serviceUrl = this.handleParentRes(serviceUrl);
     return SuperMap.FetchRequest.get(serviceUrl, null, {
       withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
       proxy
@@ -908,7 +917,8 @@ export default class WebMapService extends Events {
 
   private _checkUploadToRelationship(fileId) {
     const proxy = this.handleProxy();
-    const serviceUrl = `${this.serverUrl}web/datas/${fileId}/datasets.json`;
+    let serviceUrl = `${this.serverUrl}web/datas/${fileId}/datasets.json`;
+    serviceUrl = this.handleParentRes(serviceUrl);
     return SuperMap.FetchRequest.get(serviceUrl, null, {
       withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
       proxy
@@ -959,7 +969,15 @@ export default class WebMapService extends Events {
 
     return defaultValue;
   }
-
+  public isIportalResourceUrl(serviceUrl){
+    return  (serviceUrl.startsWith(this.serverUrl) || (this.iportalServiceProxyUrl && serviceUrl.indexOf(this.iportalServiceProxyUrl) >= 0)) 
+  }
+  public handleParentRes(url, parentResId = this.mapId, parentResType = 'MAP'): string {
+    if(!this.isIportalResourceUrl(url)){
+      return url;
+    }
+    return urlAppend(url, `parentResType=${parentResType}&parentResId=${parentResId}`);
+  }
   private _formatGeoJSON(data): any {
     let features = data.features;
     features.forEach((row, index) => {
@@ -1075,11 +1093,11 @@ export default class WebMapService extends Events {
       let shortName = featureName.substr(0, 2);
       // 张家口市和张家界市
       if (shortName === '张家') {
-          shortName = featureName.substr(0, 3);
-      } 
+        shortName = featureName.substr(0, 3);
+      }
       // 阿拉善盟 阿拉尔市
       if (shortName === '阿拉') {
-          shortName = featureName.substr(0, 3);
+        shortName = featureName.substr(0, 3);
       }
       return !!fieldName.startsWith(shortName);
     }
@@ -1089,7 +1107,8 @@ export default class WebMapService extends Events {
   private _getTileLayerInfo(url, baseProjection) {
     const proxy = this.handleProxy();
     let epsgCode = baseProjection.split('EPSG:')[1];
-    const serviceUrl = `${url}/maps.json`;
+    let serviceUrl = `${url}/maps.json`;
+    serviceUrl = this.handleParentRes(serviceUrl);
     return SuperMap.FetchRequest.get(serviceUrl, null, {
       withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
       proxy
@@ -1157,7 +1176,8 @@ export default class WebMapService extends Events {
         }
       }
     };
-    getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, options);
+    const serviceUrl = this.handleParentRes(url);
+    getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(serviceUrl, options);
     getFeatureBySQLService.processAsync(getFeatureBySQLParams);
   }
 }

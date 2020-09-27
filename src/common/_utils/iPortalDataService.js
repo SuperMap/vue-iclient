@@ -1,5 +1,5 @@
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from './iServerRestService';
-import { isXField, isYField, handleWithCredentials } from './util';
+import { isXField, isYField, handleWithCredentials, handleDataParentRes } from './util';
 import { Events } from '../_types/event/Events';
 
 /**
@@ -15,12 +15,16 @@ import { Events } from '../_types/event/Events';
 export default class iPortalDataService extends Events {
   constructor(url, withCredentials, options = {}) {
     super();
-    this.url = url;
+    // this.url = url;
     this.withCredentials = withCredentials || false;
     this.epsgCode = options.epsgCode;
     this.iportalServiceProxyUrl = options.iportalServiceProxyUrl;
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
-    this.initSerivce(url);
+    this.resourceId = options.resourceId;
+    if (this.resourceId) {
+      this.url = handleDataParentRes(url, this.resourceId, 'DATA');
+    }
+    this.initSerivce(this.url);
   }
 
   initSerivce(url) {
@@ -94,7 +98,11 @@ export default class iPortalDataService extends Events {
           // 有rest服务并且address不为空（online的address服务为''）
           if (resultData && resultData.address) {
             // 如果有服务，获取数据源和数据集, 然后请求rest服务
-            this._getDatafromRest(resultData.serviceType, resultData.address, queryInfo);
+            let serviceUrl = resultData.address;
+            if (this.resourceId) {
+              serviceUrl = handleDataParentRes(serviceUrl, this.resourceId, 'DATA');
+            }
+            this._getDatafromRest(resultData.serviceType, serviceUrl, queryInfo);
           } else {
             this._getDatafromContent(datasetUrl, queryInfo);
           }
@@ -111,7 +119,7 @@ export default class iPortalDataService extends Events {
   }
   _getDatafromRest(serviceType, address, queryInfo) {
     if (serviceType === 'RESTDATA') {
-      let url = `${address}/data/datasources`;
+      let url = SuperMap.Util.urlPathAppend(address, 'data/datasources');
       let dataSourceName;
       let datasetName; // 请求获取数据源名
       SuperMap.FetchRequest.get(url, null, {
@@ -122,7 +130,7 @@ export default class iPortalDataService extends Events {
         })
         .then(data => {
           dataSourceName = data.datasourceNames && data.datasourceNames[0];
-          url = `${address}/data/datasources/${dataSourceName}/datasets`;
+          url = SuperMap.Util.urlPathAppend(address, `data/datasources/${dataSourceName}/datasets`);
           // 请求获取数据集名
           SuperMap.FetchRequest.get(url, null, {
             withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
@@ -137,7 +145,7 @@ export default class iPortalDataService extends Events {
                 {
                   datasetName,
                   dataSourceName,
-                  dataUrl: url.split('/datasources')[0]
+                  dataUrl: SuperMap.Util.urlPathAppend(address, 'data')
                 },
                 Object.assign({}, queryInfo, {
                   withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
@@ -153,7 +161,7 @@ export default class iPortalDataService extends Events {
         });
     } else {
       // 如果是地图服务
-      let url = `${address}/maps`;
+      let url = SuperMap.Util.urlPathAppend(address, 'maps');
       let mapName;
       let layerName;
       let path; // 请求获取地图名
@@ -167,8 +175,11 @@ export default class iPortalDataService extends Events {
           if (data[0]) {
             mapName = data[0].name;
             path = data[0].path;
+            if (this.resourceId) {
+              path = handleDataParentRes(path, this.resourceId, 'DATA');
+            }
           }
-          url = `${address}/maps/${mapName}/layers`;
+          url = SuperMap.Util.urlPathAppend(address, `maps/${mapName}/layers`);
           // 请求获取图层名
           SuperMap.FetchRequest.get(url, null, {
             withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
@@ -208,7 +219,8 @@ export default class iPortalDataService extends Events {
 
   _getDatafromContent(datasetUrl, queryInfo) {
     let result = {};
-    datasetUrl += '/content.json?pageSize=9999999&currentPage=1';
+    datasetUrl = SuperMap.Util.urlPathAppend(datasetUrl, 'content.json');
+    datasetUrl = SuperMap.Util.urlAppend(datasetUrl, 'pageSize=9999999&currentPage=1');
     // 获取图层数据
     SuperMap.FetchRequest.get(datasetUrl, null, {
       withCredentials: this.withCredentials

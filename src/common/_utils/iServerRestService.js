@@ -165,10 +165,15 @@ export default class iServerRestService extends Events {
     queryInfo.name = mapName;
     this.projectionUrl = `${dataUrl}/prjCoordSys`;
     if (queryInfo.keyWord) {
-      this._getRestMapFields(dataUrl, mapName, fields => {
-        queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
-        this._getMapFeatureBySql(dataUrl, queryInfo);
-      }, queryInfo.withCredentials);
+      this._getRestMapFields(
+        dataUrl,
+        mapName,
+        fields => {
+          queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
+          this._getMapFeatureBySql(dataUrl, queryInfo);
+        },
+        queryInfo.withCredentials
+      );
     } else {
       this._getMapFeatureBySql(dataUrl, queryInfo);
     }
@@ -241,7 +246,10 @@ export default class iServerRestService extends Events {
       withCredentials: queryInfo.withCredentials,
       eventListeners: {
         processCompleted: this._getFeaturesSucceed.bind(this),
-        processFailed: function() {}
+        processFailed: serviceResult => {
+          console.error(serviceResult.error);
+          this.fetchFailed(serviceResult.error);
+        }
       }
     });
     getFeatureBySQLService.processAsync(getFeatureBySQLParams);
