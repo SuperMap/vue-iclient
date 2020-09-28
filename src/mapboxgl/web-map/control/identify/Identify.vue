@@ -136,9 +136,11 @@ export default {
     },
     layersOnMap() {
       let layersOnMap = [];
-      for (let i = 0; i < this.layers.length; i++) {
-        if (this.map.getLayer(this.layers[i])) {
-          layersOnMap.push(this.layers[i]);
+      if (this.map) {
+        for (let i = 0; i < this.layers.length; i++) {
+          if (this.map.getLayer(this.layers[i])) {
+            layersOnMap.push(this.layers[i]);
+          }
         }
       }
       return layersOnMap;
@@ -313,6 +315,9 @@ export default {
       this.changeCursor('pointer', this.map);
     },
     removeCursorEvent(layers = this.layersOnMap) {
+      if (!this.map) {
+        return;
+      }
       this.map.off('click', this.sourceMapClickFn);
       layers.forEach(layer => {
         this.map.off('mousemove', layer, this.changeCursorPointer);
