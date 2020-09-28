@@ -337,9 +337,12 @@ export default class WebMapViewModel extends WebMapBase {
         this._unproject([mapInfo.visibleExtent[2], mapInfo.visibleExtent[3]])
       ];
     }
+    if (minZoom > maxZoom) {
+      [minZoom, maxZoom] = [maxZoom, minZoom];
+    }
     if (!bounds) {
       if (mapInfo.minScale && mapInfo.maxScale) {
-        zoomBase = this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection));
+        zoomBase = Math.min(this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection)),this._transformScaleToZoom(mapInfo.maxScale, mapboxgl.CRS.get(this.baseProjection)));
       } else {
         zoomBase = +Math.log2(
           this._getResolution(mapboxgl.CRS.get(this.baseProjection).getExtent()) / this._getResolution(mapInfo.extent)
@@ -347,6 +350,7 @@ export default class WebMapViewModel extends WebMapBase {
       }
       zoom += zoomBase;
     }
+
 
     // 初始化 map
     this.map = new mapboxgl.Map({
@@ -373,6 +377,9 @@ export default class WebMapViewModel extends WebMapBase {
         if (resourceType === 'Tile') {
           if (this.isSuperMapOnline && url.indexOf('http://') === 0) {
             url = `https://www.supermapol.com/apps/viewer/getUrlResource.png?url=${encodeURIComponent(url)}`;
+          }
+          if (this.webMapService.isIportalResourceUrl(url)) {
+            url = this.webMapService.handleParentRes(url);
           }
           const proxy = this.webMapService.handleProxy('image');
           return {

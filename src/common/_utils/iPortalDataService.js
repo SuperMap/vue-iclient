@@ -15,7 +15,7 @@ import { Events } from '../_types/event/Events';
 export default class iPortalDataService extends Events {
   constructor(url, withCredentials, options = {}) {
     super();
-    // this.url = url;
+    this.url = url;
     this.withCredentials = withCredentials || false;
     this.epsgCode = options.epsgCode;
     this.iportalServiceProxyUrl = options.iportalServiceProxyUrl;
