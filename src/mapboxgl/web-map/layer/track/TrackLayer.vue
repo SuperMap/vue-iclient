@@ -36,7 +36,7 @@ class TrackLayer extends Mixins(MapGetter, VmUpdater) {
   @Prop() position: positionTimeStampParams;
   @Prop() direction: directionParams;
   @Prop() unit: string;
-  @Prop() scale: number;
+  @Prop({ default: 1 }) scale: number;
   @Prop() fitBounds: boolean;
   @Prop() followCamera: boolean;
 

@@ -115,14 +115,13 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       throw new Error('map is requierd');
     }
     this.map = map;
-    this._initPosition();
-    this._init();
+    this._init(true);
   }
 
   setLoaderType(loaderType: string) {
     this.options.loaderType = loaderType;
     if (!loaderType) {
-      this.removed();
+      this.removeSourceAndLayer();
       return;
     }
     if (!this.map) {
@@ -136,7 +135,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   setUrl(url: string) {
     this.options.url = url;
     if (!url) {
-      this.removed();
+      this.removeSourceAndLayer();
       return;
     }
     if (!this.map || !this.options.loaderType) {
@@ -177,7 +176,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       return;
     }
     if (!trackPoints) {
-      this.removed();
+      this.removeSourceAndLayer();
     }
     this.lineData = [];
     this._init(true);
@@ -339,7 +338,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
 
   private _init(removedLayer?: boolean) {
     if (removedLayer) {
-      this.removed();
+      this.removeSourceAndLayer();
       this._initPosition();
     }
     this._setRotateFactor();
@@ -721,11 +720,26 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     return result;
   }
 
+  private _setMapZoom(scene: any, scaleFactor: number): void {
+    const bbox = new THREE.Box3().setFromObject(scene);
+    const size = bbox.getSize(new THREE.Vector3());
+    const maxSize = Math.max(size.x, size.y, size.z);
+    // @ts-ignore
+    const extent = this.map.getCRS().extent;
+    const maxExtent = Math.max(extent[2] - extent[0], extent[3] - extent[2]) / 512;
+    const unitFactor = this._getUnitFactor();
+    const resolution = (maxSize / unitFactor) * scaleFactor * 8 / this.map.getCanvas().width;
+    const zoom = Math.log2(maxExtent / resolution) ;
+    this.map.setZoom(zoom);
+    this.map.setCenter(this.currentPosition);
+  }
+
   private _getScaleFactor(scene: any): number {
     const meterFactor = this._getMeterFactor();
     if (this.options.fitBounds) {
       return this._getFitBoundsFactor(scene, meterFactor);
     }
+    this._setMapZoom(scene, this.options.scale);
     return meterFactor;
   }
 
@@ -795,7 +809,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     };
   }
 
-  removed() {
+  removeSourceAndLayer() {
     const { map, layerId, lineLayerId } = this;
     if (map) {
       if (layerId) {
@@ -808,6 +822,11 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
         this.lineData = [];
       }
     }
+  }
+
+  removed() {
+    this.removeSourceAndLayer();
+    this.map = null;
   }
 
   reset() {
