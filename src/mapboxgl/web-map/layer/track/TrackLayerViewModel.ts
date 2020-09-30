@@ -115,6 +115,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       throw new Error('map is requierd');
     }
     this.map = map;
+    this._initPosition();
     this._init();
   }
 
@@ -179,6 +180,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       this.removed();
     }
     this.lineData = [];
+    this._init(true);
   }
 
   setPosition(timestampInfo: positionTimeStampParams) {
@@ -289,10 +291,10 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   private _initPosition() {
     if (this.position && this.trackPoints) {
       const matchStartPositionIndex = this.trackPoints.findIndex(
-        (item: GeoJSON.Feature) => item.properties.timestamp === this.position.currentTimestamp
+        (item: GeoJSON.Feature) => item.properties.timestamp >= this.position.currentTimestamp
       );
-      if (matchStartPositionIndex > -1) {
-        const matchStartPosition = this.trackPoints[matchStartPositionIndex];
+      const matchStartPosition = matchStartPositionIndex > -1 ? this.trackPoints[matchStartPositionIndex] : this.trackPoints[0];
+      if (matchStartPosition) {
         // @ts-ignore
         this.startPosition = matchStartPosition.geometry.coordinates;
         let nextPosition;
@@ -338,6 +340,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   private _init(removedLayer?: boolean) {
     if (removedLayer) {
       this.removed();
+      this._initPosition();
     }
     this._setRotateFactor();
     this._initLayer();
