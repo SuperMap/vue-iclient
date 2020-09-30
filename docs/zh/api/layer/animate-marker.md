@@ -25,7 +25,7 @@
 =======
 | 参数         | 说明       | 类型              | 可选值                                                                                                | 默认值              |
 | :----------- | :--------- | :---------------- | :---------------------------------------------------------------------------------------------------- | :------------------ |
-| features     | 图层数据   | FeatureCollection | -                                                                                                     | -                   |
+| features     | 图层数据   | FeatureCollection。参考[OSCHINA](https://www.oschina.net/translate/geojson-spec?cmp) | -                                                                                                     | -                   |
 | type         | 图层类型   | string            | 'rotatingAperture' \| 'haloRing' \| 'breathingAperture' \| 'diffusedAperture' \| 'rotatingTextBorder' \| 'fluorescence' | 'breathingAperture' |
 | width        | 点宽度     | number            | -                                                                                                     | -                   |
 | height       | 点高度     | number            | -                                                                                                     | -                   |

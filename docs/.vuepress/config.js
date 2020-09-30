@@ -160,7 +160,8 @@ module.exports = {
                     'layer/mapv',
                     'layer/echarts',
                     'layer/deckgl',
-                    'layer/dataflow'
+                    'layer/dataflow',
+                    'layer/track'
                   ]
                 },
                 {
@@ -179,7 +180,8 @@ module.exports = {
                     'common/image',
                     'common/iframe',
                     'common/text-list',
-                    'common/border'
+                    'common/border',
+                    'common/video-player'
                   ]
                 }
               ]

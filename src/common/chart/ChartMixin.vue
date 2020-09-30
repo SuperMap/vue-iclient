@@ -39,65 +39,12 @@ import cloneDeep from 'lodash.clonedeep';
 import Card from '../_mixin/card';
 import Theme from '../_mixin/theme';
 import Timer from '../_mixin/timer';
-import { chartThemeUtil, handleMultiGradient } from '../_utils/style/theme/chart';
+import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
 import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
 import { addListener, removeListener } from 'resize-detector';
 
-/**
- * @module Chart
- * @category Components
- * @desc Chart 组件。除了prop: dataset和datasetOptions，其他的所有prop,event,computed, methods都是ECharts的配置，参考https://echarts.baidu.com/api.html#echartsInstance.dispose
- * @vue-prop {String} [iconClass='sm-components-icons-attribute']  - 设置组件图标的类名。
- * @vue-prop {Object} [dataset=null] - 数据来源,支持的参数类型为iPortalDataParameter/RestDataParameter/RestMapParameter。
- * @vue-prop {Array} datasetOptions - 数据来源的配置。
- * @vue-prop {Array} [colorGroup] - 图表颜色数组。
- * @vue-prop {Object} theme - 当前 ECharts 实例使用的主题。
- * @vue-prop {Object} initOptions - 用来初始化 ECharts 实例。
- * @vue-prop {Object} options - ECharts 实例的数据。修改这个 prop 会触发 ECharts 实例的 setOption 方法。如果直接修改 options 绑定的数据而对象引用保持不变，setOption 方法调用时将带有参数 notMerge: false。否则，如果为 options 绑定一个新的对象，setOption 方法调用时则将带有参数 notMerge: true。
- * @vue-prop {Boolean} [autoresize = true] - 用来指定 ECharts 实例在组件根元素尺寸变化时是否需要自动进行重绘。
- * @vue-prop {String} group - 实例的分组，会自动绑定到 ECharts 组件的同名属性上。
- * @vue-prop {Boolean} [manualUpdate = false] - 在性能敏感（数据量很大）的场景下，我们最好对于 options prop 绕过 Vue 的响应式系统。当将 manual-update prop 指定为 true 且不传入 options prop 时，数据将不会被监听。然后，你需要用 ref 获取组件实例以后手动调用 mergeOptions 方法来更新图表。
- * @vue-prop {Boolean} [autoPlay = false] - 是否自动播放，图表类型为 pie 时生效。
- * @vue-computed {String} computedOptions - 用来读取 ECharts 更新内部 options 后的实际数据。
- * @vue-event {Object} legendselectchanged - 切换图例选中状态后的事件。
- * @vue-event {Object} legendselected - 图例选中后的事件。
- * @vue-event {Object} legendunselected - 图例取消选中后的事件。
- * @vue-event {Object} legendscroll - 图例滚动事件。
- * @vue-event {Object} datazoom - 数据区域缩放后的事件。
- * @vue-event {Object} datarangeselected - 视觉映射组件中，range 值改变后触发的事件。
- * @vue-event {Object} timelinechanged - 时间轴中的时间点改变后的事件。
- * @vue-event {Object} timelineplaychanged - 时间轴中播放状态的切换事件。
- * @vue-event {Object} restore - 重置 option 事件。
- * @vue-event {Object} dataviewchanged - 工具栏中数据视图的修改事件。
- * @vue-event {Object} magictypechanged - 工具栏中动态类型切换的切换事件。
- * @vue-event {Object} geoselectchanged - geo 中地图区域切换选中状态的事件。
- * @vue-event {Object} geoselected - geo 中地图区域选中后的事件。
- * @vue-event {Object} geounselected - geo 中地图区域取消选中后的事件。
- * @vue-event {Object} pieselectchanged - series-pie 中饼图扇形切换选中状态的事件。
- * @vue-event {Object} pieselected - series-pie 中饼图扇形选中后的事件。
- * @vue-event {Object} pieunselected - series-pie 中饼图扇形取消选中后的事件。
- * @vue-event {Object} mapselectchanged - series-map 中地图区域切换选中状态的事件。
- * @vue-event {Object} mapselected - series-map 中地图区域选中后的事件。
- * @vue-event {Object} mapunselected - series-map 中地图区域取消选中后的事件。
- * @vue-event {Object} axisareaselected - 平行坐标轴 (Parallel)范围选取事件。
- * @vue-event {Object} focusnodeadjacency - graph的邻接节点高亮事件。
- * @vue-event {Object} unfocusnodeadjacency - graph的邻接节点取消高亮事件。
- * @vue-event {Object} brush - 选框添加事件。即发出 brush action 得到的事件。
- * @vue-event {Object} brushselected - 对外通知当前选中了什么。
- * @vue-event {Object} rendered - 渲染结束事件
- * @vue-event {Object} finished - 渲染完成事件。当渲染动画
- * @vue-event {Object} click - 鼠标事件.click
- * @vue-event {Object} dblclick - 鼠标事件.dblclick
- * @vue-event {Object} mouseover - 鼠标事件.mouseover
- * @vue-event {Object} mouseout - 鼠标事件.mouseout
- * @vue-event {Object} mousemove - 鼠标事件.mousemove
- * @vue-event {Object} mousedown - 鼠标事件.mousedown
- * @vue-event {Object} mouseup - 鼠标事件.mouseup
- * @vue-event {Object} globalout - 鼠标事件.globalout
- * @vue-event {Object} contextmenu - 鼠标事件.contextmenu
- */
 // 枚举事件类型
 const EVENTS = [
   'legendselectchanged',
@@ -200,6 +147,10 @@ export default {
       default() {
         return [];
       }
+    },
+    highlightColor: {
+      type: String,
+      default: '#01ffff'
     }
   },
   data() {
@@ -210,6 +161,8 @@ export default {
       datasetChange: false, // dataset是否改变
       dataSeriesCache: {},
       tablePopupProps: {},
+      startSpin: null,
+      customSeries: [],
       dataZoomHandler: function() {}
     };
   },
@@ -223,15 +176,43 @@ export default {
     computedOptions() {
       return this.smChart && this.smChart.computedOptions;
     },
-
     _chartStyle() {
       return {
         width: '100%',
         height: this.headerName ? 'calc(100% - 30px)' : '100%'
       };
     },
+    parseOptions() {
+      if (!this.options.series) {
+        return this.options;
+      }
+      if (this.options.series.find(item => item.type === '2.5Bar')) {
+        return {
+          ...this.options,
+          series: []
+        };
+      }
+      if (this.options.series[0] && this.options.series[0].customType === 'customRingsSeries') {
+        return {
+          ...this.options,
+          series: [...this.options.series, ...this.customSeries]
+        };
+      }
+      let series = this.options.series.map((serie, index) => {
+        if (serie.label) {
+          let cloneSerie = cloneDeep(serie);
+          cloneSerie.label.normal = this._controlLabel(cloneSerie.label.normal, cloneSerie.maxLabels);
+          return cloneSerie;
+        }
+        return serie;
+      });
+      return {
+        ...this.options,
+        series
+      };
+    },
     _chartOptions() {
-      return (this._isRequestData && this.echartOptions) || this.options;
+      return (this._isRequestData && this.echartOptions) || this.parseOptions;
     },
     // 是否传入dataset和datasetOptions
     _isRequestData() {
@@ -248,6 +229,16 @@ export default {
     },
     popupBackground() {
       return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
+    },
+    colorNumber() {
+      let length =
+        (this.datasetOptions && this.datasetOptions.length) ||
+        (this.echartOptions.series && this.echartOptions.series.length);
+      let colorNumber = this.colorGroupsData.length;
+      if (length && length > colorNumber) {
+        colorNumber = length;
+      }
+      return colorNumber;
     }
   },
   watch: {
@@ -272,40 +263,35 @@ export default {
     },
     dataset: {
       handler: function(newVal, oldVal) {
-        if (!isEqual(newVal, oldVal)) {
-          this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
-          this.datasetChange = true;
-        }
+        this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+        this.datasetChange = true;
       },
       deep: true
     },
     datasetOptions: {
       handler: function(newVal, oldVal) {
-        if (!isEqual(newVal, oldVal) && newVal.length) {
-          if (newVal) {
-            this._setChartTheme();
-          }
-          !this.echartsDataService &&
-            this._isRequestData &&
-            this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
-          this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
-          this.echartsDataService &&
-            this.dataSeriesCache &&
-            this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
+        if (!isEqual(newVal, oldVal)) {
+          this._setChartTheme();
+          this.registerShape();
         }
+        !this.echartsDataService &&
+          this._isRequestData &&
+          this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
+        this.echartsDataService && this.echartsDataService.setDatasetOptions(this.datasetOptions);
+        this.echartsDataService &&
+          this.dataSeriesCache &&
+          this._changeChartData(this.echartsDataService, this.datasetOptions, this.options);
       }
     },
     options: {
       handler: function(newVal, oldVal) {
-        if (!isEqual(newVal, oldVal)) {
-          if (this.datasetChange && !this.dataSeriesCache) {
-            return;
-          }
-          if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
-            this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
-          } else {
-            this.echartOptions = Object.assign({}, this.options);
-          }
+        if (this.datasetChange && !this.dataSeriesCache) {
+          return;
+        }
+        if (this.dataSeriesCache && JSON.stringify(this.dataSeriesCache) !== '{}') {
+          this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache);
+        } else {
+          this.echartOptions = Object.assign({}, this.parseOptions);
         }
       },
       deep: true
@@ -348,6 +334,7 @@ export default {
     // this.$on('theme-style-changed', () => {
     //   this._setChartTheme();
     // });
+    this.registerShape();
   },
   mounted() {
     // 设置echarts实例
@@ -365,6 +352,9 @@ export default {
     });
     this._initAutoResize();
     this._initDataZoom();
+    if (this.options.series && this.options.series[0] && this.options.series[0].customType === 'customRingsSeries') {
+      this.startEffect();
+    }
     !this._isRequestData && this.autoPlay && this._handlePieAutoPlay();
     // 请求数据, 合并echartopiton, 设置echartOptions
     this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
@@ -374,6 +364,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.pieAutoPlay); // clear 自动播放
+    clearInterval(this.startAngle);
     if (this.autoresize) {
       removeListener(this.$el, this.__resizeHandler);
     }
@@ -401,20 +392,92 @@ export default {
         { leading: true }
       );
     },
-    setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = 'red') {
+    getStringColor(color) {
+      if (color instanceof Object) {
+        return ((color.colorStops || [])[0] || {}).color;
+      }
+      return color;
+    },
+    setGradientColor(color, nextColor) {
+      if (typeof color === 'string') {
+        return new this.$options.graphic.LinearGradient(0, 0, 0, 1, [
+          { offset: 0, color },
+          { offset: 1, color: nextColor || color }
+        ]);
+      }
+      return color;
+    },
+    _initAxisLabel(axisLabel, data, visualMap, series) {
+      if (!this.xBar) {
+        return;
+      }
+      const sortSeriesIndex = this.datasetOptions.findIndex(item => item.sort !== 'unsort' && item.rankLabel);
+      if (sortSeriesIndex > -1 && axisLabel && data) {
+        for (let index = 0, len = data.length, rankIndex = len - 1; index < len; index++, rankIndex--) {
+          data[index] = rankIndex < 10 ? `0${rankIndex}${data[index]}` : `${rankIndex}${data[index]}`;
+        }
+        const firstVisualMap = visualMap && visualMap.find(item => item.seriesIndex === sortSeriesIndex);
+        axisLabel.rich = axisLabel.rich || {};
+        axisLabel.rich.default = {
+          backgroundColor: this.getStringColor(this.colorGroup[sortSeriesIndex]),
+          width: 20,
+          height: 20,
+          align: 'center',
+          borderRadius: 2
+        };
+        firstVisualMap &&
+          firstVisualMap.pieces.map(item => {
+            axisLabel.rich[`${parseInt(item.min)}_${parseInt(item.max)}`] = {
+              backgroundColor: item.color,
+              width: 20,
+              height: 20,
+              align: 'center',
+              borderRadius: 2
+            };
+          });
+        const serieData = series && series[sortSeriesIndex].data;
+        axisLabel.formatter = function(label, index) {
+          const orderNum = parseInt(label.slice(0, 2)) + 1;
+          const leftLabel = label.slice(2);
+          const labelValue = serieData && +serieData[index];
+          if (firstVisualMap) {
+            const matchItem = firstVisualMap.pieces.find(item => labelValue >= item.min && labelValue <= item.max);
+            if (matchItem) {
+              return [`{${parseInt(matchItem.min)}_${parseInt(matchItem.max)}|${orderNum}}  ${leftLabel}`].join('\n');
+            }
+          }
+          return [`{default|${orderNum}}  ${leftLabel}`].join('\n');
+        };
+      }
+    },
+    setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = this.highlightColor) {
       series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
       series.forEach((serie, seriesIndex) => {
         const dataIndexs = highlightOptions.map(item => {
-          if (item.seriesIndex.includes(seriesIndex)) return item.dataIndex;
+          if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
+            return item.dataIndex;
+          }
         });
-
+        const colors = highlightOptions.map(item => {
+          if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
+            return item.color || color;
+          }
+        });
+        const serieColor =
+          this.options.series &&
+          this.options.series[seriesIndex] &&
+          this.options.series[seriesIndex].itemStyle &&
+          this.options.series[seriesIndex].itemStyle.color;
         serie.itemStyle = serie.itemStyle || { color: '' };
         serie.itemStyle.color = ({ dataIndex }) => {
-          if (dataIndexs.indexOf(dataIndex) > -1) {
-            return color;
+          const index = dataIndexs.indexOf(dataIndex);
+          if (index > -1) {
+            return colors[index];
           } else if (serie.type === 'pie') {
-            let colorGroup = this._handlerColorGroup(serie);
+            let colorGroup = this._handlerColorGroup(serie.data.length);
             return colorGroup[dataIndex];
+          } else {
+            return serieColor;
           }
         };
       });
@@ -502,6 +565,7 @@ export default {
     _optionsHandler(options, dataOptions, dataZoomChanged) {
       dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
       options = options && cloneDeep(options); // clone 避免引起重复刷新
+      let extraSeries = [];
       if (options && options.legend && !options.legend.type) {
         options.legend.type = 'scroll';
       }
@@ -517,6 +581,7 @@ export default {
           axis = yAxis;
           dataOptions.yAxis = dataOptions.xAxis;
           delete dataOptions.xAxis;
+          this._initAxisLabel(yAxis.axisLabel, dataOptions.yAxis[0].data, options.visualMap, dataOptions.series);
         }
         if (dataOptions.series.length === 0) {
           axis = [{}];
@@ -532,12 +597,15 @@ export default {
         if (dataOptions.series.length === 0) {
           options.series = [];
         } else {
-          options.series = dataOptions.series.map((element, index) => {
-            return Object.assign({}, options.series[index] || {}, element);
+          options.series = options.series.map((element, index) => {
+            return Object.assign({}, element, dataOptions.series[index] || {});
           });
           const dataZoom = options.dataZoom && options.dataZoom[0];
-          options.series = options.series.map(serie => {
+          options.series = options.series.map((serie, index) => {
             let label = serie.label && serie.label.normal;
+            if (serie.label && !label.smart) {
+              serie.label.normal = this._controlLabel(label, serie.maxLabels);
+            }
             if (label && label.show && label.smart) {
               label.position = label.position || 'top';
               let data = serie.data;
@@ -582,27 +650,165 @@ export default {
                 return result;
               };
             } else if (serie && serie.type !== 'pie' && serie.type !== 'radar') {
-              label && delete label.formatter;
-            } else if (serie && serie.type === 'pie') {
-              // 控制label显示条数
-              if (serie.maxLabels) {
-                let formatMode;
-                if (label.formatter && typeof label.formatter === 'string') {
-                  formatMode = label.formatter;
-                }
-                label.formatter = function({ dataIndex, value, name, percent }) {
-                  const FORMATTER_MAP = {
-                    '{b}: {c}': `${name}: ${value}`,
-                    '{b}': `${name}`,
-                    '{c}': `${value}`,
-                    '{d}%': `${percent}%`
+              const colorGroup = getMultiColorGroup(this.colorGroupsData, this.colorNumber);
+              if (serie.type === '2.5Bar') {
+                const shape = serie.shape;
+                const defaultColor = serie.itemStyle && serie.itemStyle.color;
+                if (['square', 'rectangle'].includes(shape)) {
+                  const cubeType = shape;
+                  serie.type = 'custom';
+                  dataOptions.series[index] && (dataOptions.series[index].type = 'custom');
+                  const _this = this;
+                  serie.renderItem = (params, api) => {
+                    const location = api.coord([api.value(0), api.value(1)]);
+                    let fillColor = defaultColor || colorGroup[params.seriesIndex];
+                    if (_this.highlightOptions && _this.highlightOptions.length > 0) {
+                      const matchData = _this.highlightOptions.find(
+                        item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
+                      );
+                      if (matchData && (matchData.color || _this.highlightColor)) {
+                        fillColor = matchData.color || _this.highlightColor;
+                      }
+                    }
+                    let leftColor, rightColor, topColor;
+                    if (typeof fillColor === 'object') {
+                      const copyLeftColor = cloneDeep(fillColor);
+                      const copyRightColor = cloneDeep(fillColor);
+                      const copyTopColor = cloneDeep(fillColor);
+                      copyLeftColor.colorStops[0].color = getColorWithOpacity(copyLeftColor.colorStops[0].color, 0.4);
+                      copyLeftColor.colorStops[1].color = getColorWithOpacity(copyLeftColor.colorStops[1].color, 0.4);
+                      copyRightColor.colorStops[0].color = getColorWithOpacity(copyRightColor.colorStops[0].color, 0.7);
+                      copyRightColor.colorStops[1].color = getColorWithOpacity(copyRightColor.colorStops[1].color, 0.7);
+                      copyTopColor.colorStops[0].color = getColorWithOpacity(copyTopColor.colorStops[0].color, 0.85);
+                      copyTopColor.colorStops[1].color = getColorWithOpacity(copyTopColor.colorStops[1].color, 0.85);
+                      leftColor = copyLeftColor;
+                      rightColor = copyRightColor;
+                      topColor = copyTopColor;
+                    } else {
+                      leftColor = getColorWithOpacity(fillColor, 0.4);
+                      rightColor = getColorWithOpacity(fillColor, 0.7);
+                      topColor = getColorWithOpacity(fillColor, 0.85);
+                    }
+                    return {
+                      type: 'group',
+                      children: [
+                        {
+                          type: `Cube${cubeType}Left`,
+                          shape: {
+                            api,
+                            xValue: api.value(0),
+                            yValue: api.value(1),
+                            x: location[0],
+                            y: location[1],
+                            xAxisPoint: api.coord([api.value(0), 0])
+                          },
+                          style: {
+                            fill: leftColor
+                          }
+                        },
+                        {
+                          type: `Cube${cubeType}Right`,
+                          shape: {
+                            api,
+                            xValue: api.value(0),
+                            yValue: api.value(1),
+                            x: location[0],
+                            y: location[1],
+                            xAxisPoint: api.coord([api.value(0), 0])
+                          },
+                          style: {
+                            fill: rightColor
+                          }
+                        },
+                        {
+                          type: `Cube${cubeType}Top`,
+                          shape: {
+                            api,
+                            xValue: api.value(0),
+                            yValue: api.value(1),
+                            x: location[0],
+                            y: location[1],
+                            xAxisPoint: api.coord([api.value(0), 0])
+                          },
+                          style: {
+                            fill: topColor
+                          }
+                        }
+                      ]
+                    };
                   };
-                  let result = '';
-                  if (dataIndex < serie.maxLabels) {
-                    result = FORMATTER_MAP[formatMode];
+                } else if (shape === 'cylinder') {
+                  const baseWidth = '100%';
+                  const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
+                  serie.type = 'bar';
+                  serie.barGap = '-100%';
+                  options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
+                  dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
+                  let cirCleColor = defaultColor || colorGroup[index];
+                  let cirCleColorFnList = [];
+                  if (typeof cirCleColor === 'string') {
+                    cirCleColor = this.setGradientColor(cirCleColor, '#fff');
                   }
-                  return result;
-                };
+                  if (this.highlightOptions && this.highlightOptions.length > 0) {
+                    const matchDataList = [];
+                    this.highlightOptions.forEach(item => {
+                      if (item.seriesIndex.includes(index)) {
+                        let color = item.color || this.highlightColor;
+                        if (typeof color === 'string') {
+                          color = this.setGradientColor(color, '#fff');
+                        }
+                        matchDataList.push({ dataIndex: item.dataIndex, color });
+                      }
+                    });
+                    if (matchDataList.length > 0) {
+                      cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(item => {
+                        return ({ dataIndex }) => {
+                          const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
+                          return matchData ? matchData.color : cirCleColor;
+                        };
+                      });
+                    }
+                  }
+                  extraSeries.push(
+                    // 头部的圆片
+                    {
+                      name: '',
+                      type: 'pictorialBar',
+                      symbolOffset: [0, -8],
+                      symbolPosition: 'end',
+                      z: 12,
+                      itemStyle: {
+                        normal: {
+                          color: cirCleColorFnList[0] || cirCleColor
+                        }
+                      },
+                      data: dataOptions.series[index].data.map((item, dataIndex) => {
+                        return {
+                          value: item,
+                          symbolSize:
+                            !nextSerieDatas || (nextSerieDatas[dataIndex] && +item >= +nextSerieDatas[dataIndex])
+                              ? [baseWidth, 15]
+                              : [0, 15]
+                        };
+                      })
+                    },
+                    {
+                      // 底部的圆片
+                      name: '',
+                      type: 'pictorialBar',
+                      symbolSize: [baseWidth, 10],
+                      symbolOffset: [0, 5],
+                      z: 12,
+                      itemStyle: {
+                        normal: {
+                          color: cirCleColorFnList[1] || cirCleColor
+                        }
+                      },
+                      data: dataOptions.series[index].data
+                    }
+                  );
+                }
+                delete serie.shape;
               }
             }
             return serie;
@@ -620,11 +826,13 @@ export default {
           if (options.legend && options.series.length > 0 && options.series[0].type === 'pie') {
             options.legend.data = [];
             options.series.forEach(element => {
-              options.legend.data.push(
-                ...element.data.map(item => {
-                  return item.name;
-                })
-              );
+              if (element.data) {
+                options.legend.data.push(
+                  ...element.data.map(item => {
+                    return item.name;
+                  })
+                );
+              }
             });
           }
         }
@@ -634,17 +842,139 @@ export default {
       }
 
       let series = dataOptions.series;
-      if (series && series.length) {
+      let isRingShine = options.series[0] && options.series[0].outerGap >= 0;
+      if (series && series.length && series[0].type === 'pie') {
         this.setItemStyleColor(false, series);
       }
-      return merge(options, dataOptions);
-    },
-    _handlerColorGroup(serie) {
-      if (typeof this.colorGroupsData[0] === 'object') {
-        return handleMultiGradient(this.colorGroupsData, serie.data.length);
-      } else {
-        return SuperMap.ColorsPickerUtil.getGradientColors(this.colorGroupsData, serie.data.length, 'RANGE');
+      if (isRingShine) {
+        dataOptions.series = this._createRingShineSeries(series, options.series);
       }
+      if (this.highlightOptions && this.highlightOptions.length > 0) {
+        if (isRingShine) {
+          dataOptions.series = this._createRingShineHighlight(series, this.highlightOptions);
+        } else {
+          this.setItemStyleColor(true, series);
+        }
+      }
+      const mergeOptions = merge(options, dataOptions);
+      if (extraSeries.length > 0) {
+        mergeOptions.series.push(...extraSeries);
+      }
+      return mergeOptions;
+    },
+    _createRingShineSeries(series, optionsSeries) {
+      if (optionsSeries) {
+        this.datasetOptions.forEach((datasetOption, index) => {
+          let { type, outerGap, isShine } = optionsSeries[index] || {};
+          if (type === 'pie' && outerGap >= 0) {
+            const data = series[index].data.map(val => val.value);
+            outerGap = outerGap || Math.min.apply(null, data) / 5;
+            series[index].data = this._createRingShineDataOption(series[index].data, outerGap, isShine);
+            delete optionsSeries[index].outerGap;
+            delete optionsSeries[index].isShine;
+          }
+        });
+      }
+      return series;
+    },
+    _createRingShineDataOption(data, outerGap, isShine) {
+      if (!data) {
+        return;
+      }
+      const colors = this._handlerColorGroup(data.length);
+      const gapItem = {
+        value: outerGap,
+        name: '',
+        itemStyle: {
+          normal: {
+            label: {
+              show: false
+            },
+            labelLine: {
+              show: false
+            },
+            color: 'rgba(0, 0, 0, 0)',
+            borderColor: 'rgba(0, 0, 0, 0)',
+            borderWidth: 0
+          }
+        }
+      };
+      let result = [];
+      for (var i = 0; i < data.length; i++) {
+        let dataItem = {
+          value: data[i].value,
+          name: data[i].name
+        };
+        if (isShine) {
+          dataItem.itemStyle = {
+            borderWidth: 5,
+            shadowBlur: 10,
+            color: colors[i],
+            borderColor: colors[i],
+            shadowColor: colors[i]
+          };
+        }
+        result.push(dataItem);
+        if (data.length > 1) {
+          result.push(gapItem);
+        }
+      }
+      return result;
+    },
+    _createRingShineHighlight(series, highlightOptions, color = this.highlightColor) {
+      series = series || [];
+      series = series.map((serie, seriesIndex) => {
+        const dataIndexs = highlightOptions.map(item => {
+          if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
+            return item.dataIndex;
+          }
+        });
+        const colors = highlightOptions.map(item => {
+          if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
+            return item.color || color;
+          }
+        });
+        const serieDatas = (serie && serie.data) || [];
+        dataIndexs.forEach((dataIndex, index) => {
+          serieDatas[dataIndex].itemStyle.color = colors[index];
+          serieDatas[dataIndex].itemStyle.borderColor = colors[index];
+          serieDatas[dataIndex].itemStyle.shadowColor = colors[index];
+        });
+        return serie;
+      });
+      return series;
+    },
+    _handlerColorGroup(serielDataLength) {
+      if (typeof this.colorGroupsData[0] === 'object') {
+        return handleMultiGradient(this.colorGroupsData, serielDataLength);
+      } else {
+        return SuperMap.ColorsPickerUtil.getGradientColors(this.colorGroupsData, serielDataLength, 'RANGE');
+      }
+    },
+    // 控制label显示条数
+    _controlLabel(normalLabel, maxLabels) {
+      if (normalLabel && normalLabel.show && maxLabels) {
+        let endNormalLabel = cloneDeep(normalLabel);
+        let formatMode;
+        if (endNormalLabel.formatter && typeof endNormalLabel.formatter === 'string') {
+          formatMode = endNormalLabel.formatter;
+        }
+        endNormalLabel.formatter = function({ dataIndex, value, name, percent }) {
+          const FORMATTER_MAP = {
+            '{b}: {c}': `${name}: ${value}`,
+            '{b}': `${name}`,
+            '{c}': `${value}`,
+            '{d}%': `${percent}%`
+          };
+          let result = '';
+          if (dataIndex < maxLabels) {
+            result = FORMATTER_MAP[formatMode || '{c}'];
+          }
+          return result;
+        };
+        return endNormalLabel;
+      }
+      return normalLabel;
     },
     // 当datasetUrl不变，datasetOptions改变时
     _changeChartData(echartsDataService, datasetOptions, echartOptions) {
@@ -659,13 +989,7 @@ export default {
     },
     _setChartTheme() {
       if (!this.theme) {
-        let length =
-          (this.datasetOptions && this.datasetOptions.length) ||
-          (this.echartOptions.series && this.echartOptions.series.length);
-        let colorNumber = this.colorGroupsData.length;
-        if (length && length > colorNumber) {
-          colorNumber = length;
-        }
+        let colorNumber = this.colorNumber;
         this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, colorNumber);
       }
     },
@@ -831,14 +1155,258 @@ export default {
     mapNotLoadedTip() {},
     _dataZoomChanged() {
       let flag = false;
-      this.options.series.forEach((serie, index) => {
-        const labelConfig = serie.label && serie.label.normal;
-        flag = labelConfig.show && labelConfig.smart;
-      });
+      this.options.series &&
+        this.options.series.forEach((serie, index) => {
+          const labelConfig = serie.label && serie.label.normal;
+          flag = labelConfig.show && labelConfig.smart;
+        });
       if (flag) {
         this.echartOptions = this._optionsHandler(this.options, this.dataSeriesCache, true);
       }
-    }
+    },
+    registerShape() {
+      this.datasetOptions &&
+        this.options.series &&
+        this.datasetOptions.forEach((item, index) => {
+          const graphicIntance = this.$options.graphic;
+          if (item.seriesType === '2.5Bar') {
+            const cubeType = this.options.series[index].shape;
+            if (graphicIntance.getShapeClass(`Cube${cubeType}Left`)) {
+              return;
+            }
+            let CubeLeft, CubeRight, CubeTop;
+            switch (cubeType) {
+              case 'square':
+                // 绘制左侧面
+                CubeLeft = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    // 会canvas的应该都能看得懂，shape是从custom传入的
+                    const xAxisPoint = shape.xAxisPoint;
+                    const c0 = [shape.x, shape.y];
+                    const c1 = [shape.x - 13, shape.y - 13];
+                    const c2 = [xAxisPoint[0] - 13, xAxisPoint[1] - 13];
+                    const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                    ctx
+                      .moveTo(c0[0], c0[1])
+                      .lineTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .closePath();
+                  }
+                });
+                // 绘制右侧面
+                CubeRight = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const xAxisPoint = shape.xAxisPoint;
+                    const c1 = [shape.x, shape.y];
+                    const c2 = [xAxisPoint[0], xAxisPoint[1]];
+                    const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                    const c4 = [shape.x + 18, shape.y - 9];
+                    ctx
+                      .moveTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .lineTo(c4[0], c4[1])
+                      .closePath();
+                  }
+                });
+                // 绘制顶面
+                CubeTop = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const c1 = [shape.x, shape.y];
+                    const c2 = [shape.x + 18, shape.y - 9];
+                    const c3 = [shape.x + 5, shape.y - 22];
+                    const c4 = [shape.x - 13, shape.y - 13];
+                    ctx
+                      .moveTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .lineTo(c4[0], c4[1])
+                      .closePath();
+                  }
+                });
+                break;
+              case 'rectangle':
+                // 绘制左侧面
+                CubeLeft = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const xAxisPoint = shape.xAxisPoint;
+                    const c0 = [shape.x, shape.y];
+                    const c1 = [shape.x - 9, shape.y - 9];
+                    const c2 = [xAxisPoint[0] - 9, xAxisPoint[1] - 9];
+                    const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                    ctx
+                      .moveTo(c0[0], c0[1])
+                      .lineTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .closePath();
+                  }
+                });
+                CubeRight = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const xAxisPoint = shape.xAxisPoint;
+                    const c1 = [shape.x, shape.y];
+                    const c2 = [xAxisPoint[0], xAxisPoint[1]];
+                    const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                    const c4 = [shape.x + 18, shape.y - 9];
+                    ctx
+                      .moveTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .lineTo(c4[0], c4[1])
+                      .closePath();
+                  }
+                });
+                CubeTop = graphicIntance.extendShape({
+                  shape: {
+                    x: 0,
+                    y: 0
+                  },
+                  buildPath: function(ctx, shape) {
+                    const c1 = [shape.x, shape.y];
+                    const c2 = [shape.x + 18, shape.y - 9];
+                    const c3 = [shape.x + 9, shape.y - 18];
+                    const c4 = [shape.x - 9, shape.y - 9];
+                    ctx
+                      .moveTo(c1[0], c1[1])
+                      .lineTo(c2[0], c2[1])
+                      .lineTo(c3[0], c3[1])
+                      .lineTo(c4[0], c4[1])
+                      .closePath();
+                  }
+                });
+                break;
+            }
+            CubeLeft && graphicIntance.registerShape(`Cube${cubeType}Left`, CubeLeft);
+            CubeRight && graphicIntance.registerShape(`Cube${cubeType}Right`, CubeRight);
+            CubeTop && graphicIntance.registerShape(`Cube${cubeType}Top`, CubeTop);
+          }
+        });
+    },
+    getCirlPoint(x0, y0, r, angle) {
+      let x1 = x0 + r * Math.cos((angle * Math.PI) / 180);
+      let y1 = y0 + r * Math.sin((angle * Math.PI) / 180);
+      return {
+        x: x1,
+        y: y1
+      };
+    },
+    spinLine(startAngle, endAngle, angle, effectColor, radius) {
+      return (params, api) => {
+        return {
+          type: 'arc',
+          shape: {
+            cx: api.getWidth() / 2,
+            cy: api.getHeight() / 2,
+            r: (Math.min(api.getWidth(), api.getHeight()) / 2) * radius,
+            startAngle: ((startAngle + angle) * Math.PI) / 180,
+            endAngle: ((endAngle + angle) * Math.PI) / 180
+          },
+          style: {
+            stroke: effectColor,
+            fill: 'transparent',
+            lineWidth: 1.5
+          },
+          silent: true
+        };
+      };
+    },
+    spinPoint(angle, spinAngle, effectColor, radius) {
+      return (params, api) => {
+        let x0 = api.getWidth() / 2;
+        let y0 = api.getHeight() / 2;
+        let r = (Math.min(api.getWidth(), api.getHeight()) / 2) * radius;
+        let point = this.getCirlPoint(x0, y0, r, angle + spinAngle);
+        return {
+          type: 'circle',
+          shape: {
+            cx: point.x,
+            cy: point.y,
+            r: 4
+          },
+          style: {
+            stroke: effectColor,
+            fill: effectColor
+          },
+          silent: true
+        };
+      };
+    },
+    customRingsLine(startAngle, endAngle, angle, effectColor, effectRadius) {
+      let series = {
+        name: 'ring0',
+        type: 'custom',
+        coordinateSystem: 'none',
+        renderItem: null,
+        data: [0]
+      };
+      series.renderItem = this.spinLine(startAngle, endAngle, angle, effectColor, effectRadius);
+      return series;
+    },
+    customRingsPoint(startAngle, angle, effectColor, outEffectRadius) {
+      let series = {
+        name: 'ring4',
+        type: 'custom',
+        coordinateSystem: 'none',
+        renderItem: null,
+        data: [0]
+      };
+      series.renderItem = this.spinPoint(startAngle, angle, effectColor, outEffectRadius);
+      return series;
+    },
+    addEffect(angle) {
+      angle = angle || 0;
+      const effectColor = this.options.series[0].customOptions.color;
+      const effectRadius = this.options.series[0].customOptions.radius;
+      const outEffectRadius = effectRadius + 0.1;
+      // customRightBottomLine
+      this.customSeries.push(this.customRingsLine(0, 90, angle, effectColor, effectRadius));
+      // customRightTopLine
+      this.customSeries.push(this.customRingsLine(270, 40, -angle, effectColor, outEffectRadius));
+      // customLeftTopLine
+      this.customSeries.push(this.customRingsLine(180, 270, angle, effectColor, effectRadius));
+      // customLeftBottomLine
+      this.customSeries.push(this.customRingsLine(90, 220, -angle, effectColor, outEffectRadius));
+      if (this.options.series[0].customOptions.pointState === 'startPoint') {
+        this.customSeries.push(this.customRingsPoint(270, -angle, effectColor, outEffectRadius));
+        this.customSeries.push(this.customRingsPoint(90, -angle, effectColor, outEffectRadius));
+      }
+    },
+    startEffect() {
+      let angle = 0;
+      this.startSpin = setInterval(() => {
+        if (!this.options.series) {
+          return;
+        }
+        if (this.options.series[0].customType === 'customRingsSeries') {
+          this.customSeries = [];
+          angle += 3;
+          this.addEffect(angle);
+        }
+      }, 100);
+    },
+    customRenderItem() {}
   },
   // echarts所有静态方法
   /**

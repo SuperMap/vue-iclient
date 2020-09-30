@@ -57,7 +57,7 @@ new Vue({
 | :------- | :----------- | :----------------------------- | :----- | :----- |
 | title    | 标题         | string                         | -      | -      |
 | children | 子节点数组   | array                          | -      | -      |
-| mapInfo  | 地图配置对象 | <a href="#mapInfo">mapInfo</a> | -      | -      |
+| mapInfo  | 地图配置对象 | <a href="#mapinfo">mapInfo</a> | -      | -      |
 
 ### mapInfo
 

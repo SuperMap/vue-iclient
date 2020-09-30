@@ -85,8 +85,23 @@ const webpackConfig = merge(baseWebpackConfig, {
         amd: 'video.js'
       }
     },
-    /// \/static\/libs\//,
     function(context, request, callback) {
+      if (/three\/examples\/jsm\/loaders\/GLTFLoader/.test(request)) {
+        return callback(null, {
+          root: 'THREE.GLTFLoader',
+          commonjs: 'three/examples/jsm/loaders/GLTFLoader',
+          commonjs2: 'three/examples/jsm/loaders/GLTFLoader',
+          amd: 'three/examples/jsm/loaders/GLTFLoader'
+        });
+      }
+      if (/three\/examples\/jsm\/loaders\/OBJLoader2/.test(request)) {
+        return callback(null, {
+          root: 'THREE.OBJLoader2',
+          commonjs: 'three/examples/jsm/loaders/OBJLoader2',
+          commonjs2: 'three/examples/jsm/loaders/OBJLoader2',
+          amd: 'three/examples/jsm/loaders/OBJLoader2'
+        });
+      }
       if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
         return callback(null, {
           root: 'mapboxgl',

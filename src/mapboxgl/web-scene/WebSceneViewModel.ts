@@ -116,8 +116,9 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
 
   private _checkPrivate(result) {
     let { authorizeSetting, url, content } = result;
-    if (!url) {
-      this.sceneUrl = JSON.parse(content).layers[0].url;
+    const contentObj = JSON.parse(content);
+    if (!url && contentObj.layers.length > 0) {
+      this.sceneUrl = contentObj.layers[0].url;
     }
     let isPublic = false; // 默认私有
     authorizeSetting.map(item => {

@@ -1,6 +1,6 @@
 {
   "name": "@supermap/vue-iclient",
-  "version": "10.1.0-beta",
+  "version": "10.1.0",
   "description": "SuperMap iClient for Vue.js",
   "homepage": "https://iclient.supermap.io",
   "scripts": {
@@ -18,12 +18,14 @@
     "publish:all": "npm run build -leaflet && npm publish -leaflet && npm run build -mapboxgl && npm publish -mapboxgl"
   },
   "dependencies": {
+    "@mapbox/point-geometry": "^0.1.0",
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
     "@turf/center": "^6.0.1",
     "@turf/envelope": "^5.1.5",
     "@turf/helpers": "^6.1.4",
     "@turf/length": "^6.0.2",
+    "@turf/rhumb-bearing": "^6.0.1",
     "@turf/transform-scale": "^5.1.5",
     "@types/geojson": "^7946.0.7",
     "@types/leaflet": "^1.5.5",

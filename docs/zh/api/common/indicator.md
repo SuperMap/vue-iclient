@@ -27,7 +27,7 @@
 | fontSize            | 字体大小                                                                        | string \| number                                | -                                 | -                                        |
 | numSpacing          | 字体间距                                                                        | number                                          | -                                 | 0                                        |
 | indicatorColor      | 数据颜色                                                                        | string                                          | -                                 | -                                        |
-| numBackground       | 背景样式                                                                        | object                                          | -                                 | { color: 'rgba(0, 0, 0, 0)', image: '' } |
+| numBackground       | 背景样式                                                                        | object                                          | -                                 | { color: 'rgba(0, 0, 0, 0)', image: '', padding: 0 } |
 | thresholdsStyle     | 阈值样式                                                                        | <a href="#thresholdsstyle">ThresholdsStyle </a> | -                                 | []                                       |
 
 ### ThresholdsStyle

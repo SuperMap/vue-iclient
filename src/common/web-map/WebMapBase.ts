@@ -133,7 +133,7 @@ export default abstract class WebMapBase extends Events {
   public setZoom(zoom) {
     if (this.map) {
       this.mapOptions.zoom = zoom;
-      (zoom || zoom === 0) && this.map.setZoom(zoom);
+      (zoom || zoom === 0) && this.map.setZoom(zoom, { from: 'setZoom' });
     }
   }
 
@@ -234,8 +234,8 @@ export default abstract class WebMapBase extends Events {
 
   protected getMapurls(mapurl: { CLOUD?: string; CLOUD_BLACK?: string; OSM?: string } = {}) {
     let mapUrls = {
-      CLOUD: mapurl.CLOUD || 'http://t2.supermapcloud.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
-      CLOUD_BLACK: mapurl.CLOUD_BLACK || 'http://t3.supermapcloud.com/MapService/getGdp?x={x}&y={y}&z={z}',
+      CLOUD: mapurl.CLOUD || 'http://t2.dituhui.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
+      CLOUD_BLACK: mapurl.CLOUD_BLACK || 'http://t3.dituhui.com/MapService/getGdp?x={x}&y={y}&z={z}',
       OSM: mapurl.OSM || 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       GOOGLE:
         'https://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0',
@@ -353,7 +353,7 @@ export default abstract class WebMapBase extends Events {
         style.radius = radius;
         // 处理颜色
         if (colors && colors.length > 0) {
-          color = customSettings[i] && customSettings[i].color ? customSettings[i].color : rangeColors[i] || fillColor;;
+          color = customSettings[i] && customSettings[i].color ? customSettings[i].color : rangeColors[i] || fillColor;
           style.fillColor = color;
         }
         styleGroup.push({ radius, color, start, end, style });
@@ -508,7 +508,7 @@ export default abstract class WebMapBase extends Events {
       case 'dash':
         dashArr = [4 * w, 4 * w];
         break;
-       case 'dashrailway':
+      case 'dashrailway':
         dashArr = [8 * w, 12 * w];
         break;
       case 'dashdot':

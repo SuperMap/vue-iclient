@@ -73,4 +73,4 @@ slot 方式：
 | slideBackground  | 滑块背景颜色         | string                                          | -      | -                      |
 | autoresize       | 是否响应容器自适应   | boolean                                         | -      | true                   |
 
-> 注意：Compare 组件中渲染的优先级为 [beforeMapOptions, afterMapOptions] > [beforeMap, afterMap]，即 props > slot 。 且以 slot 方式加载的地图组件应分发 [load](/zh/api/web-map/map.md#Events) 事件，以便于获得 map 实例。
+> 注意：Compare 组件中渲染的优先级为 [beforeMapOptions, afterMapOptions] > [beforeMap, afterMap]，即 props > slot 。 且以 slot 方式加载的地图组件应分发 [load](/zh/api/web-map/map.md#events) 事件，以便于获得 map 实例。

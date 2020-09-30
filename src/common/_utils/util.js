@@ -159,3 +159,21 @@ export function handleWithCredentials(url, iportalServiceProxyUrl, defaultValue 
   }
   return url.indexOf(iportalServiceProxyUrl) >= 0 || defaultValue;
 }
+
+export function handleDataParentRes(url, parentResId, parentResType = 'DATA') {
+  if (!parentResId) {
+    return url;
+  }
+  return urlAppend(url, `parentResType=${parentResType}&parentResId=${parentResId}`);
+}
+export function urlAppend(url, paramStr) {
+  var newUrl = url;
+  if (paramStr) {
+    if (paramStr.indexOf('?') === 0) {
+      paramStr = paramStr.substring(1);
+    }
+    var parts = (url + ' ').split(/[?&]/);
+    newUrl += parts.pop() === ' ' ? paramStr : parts.length ? '&' + paramStr : '?' + paramStr;
+  }
+  return newUrl;
+}

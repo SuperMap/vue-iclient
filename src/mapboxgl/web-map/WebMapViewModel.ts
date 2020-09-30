@@ -51,7 +51,7 @@ interface webMapOptions {
   zoom?: number;
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
-  keepCenterZoom?: boolean
+  checkSameLayer?: boolean;
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
@@ -64,6 +64,7 @@ interface mapOptions {
   bearing?: number;
   pitch?: number;
   style?: any;
+  rasterTileSize?: number;
   container?: string;
   crs: string;
 }
@@ -80,6 +81,8 @@ export default class WebMapViewModel extends WebMapBase {
   bearing: number;
 
   pitch: number;
+
+  rasterTileSize: number;
 
   layerFilter: Function;
 
@@ -101,7 +104,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _layerTimerList: Array<any> = [];
 
-  private _keepCenterZoom: boolean;
+  private checkSameLayer: boolean;
 
   constructor(
     id: string | number | object,
@@ -130,8 +133,9 @@ export default class WebMapViewModel extends WebMapBase {
     this.bounds = mapOptions.bounds;
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
+    this.rasterTileSize = mapOptions.rasterTileSize || 256;
     this.layerFilter = layerFilter;
-    this._keepCenterZoom = options.keepCenterZoom;
+    this.checkSameLayer = options.checkSameLayer;
     this._legendList = {};
     if (map) {
       this.map = map;
@@ -165,7 +169,7 @@ export default class WebMapViewModel extends WebMapBase {
   public setCenter(center): void {
     if (this.map && this.centerValid(center)) {
       this.mapOptions.center = center;
-      this.map.setCenter(center);
+      this.map.setCenter(center, { from: 'setCenter' });
     }
   }
 
@@ -197,8 +201,19 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  public setKeepCenterZoom(keepCenterZoom): void {
-    this._keepCenterZoom = keepCenterZoom;
+  public setRasterTileSize(tileSize) {
+    if (this.map) {
+      if (tileSize <= 0) {
+        return;
+      }
+      let sources = this.map.getStyle().sources;
+      Object.keys(sources).forEach(sourceId => {
+        // @ts-ignore
+        if (sources[sourceId].type === 'raster' && sources[sourceId].rasterSource === 'iserver') {
+          this._updateRasterSource(sourceId, { tileSize });
+        }
+      });
+    }
   }
 
   protected cleanLayers() {
@@ -283,7 +298,11 @@ export default class WebMapViewModel extends WebMapBase {
         };
       }
       setTimeout(() => {
-        this.map = new mapboxgl.Map(this.mapOptions);
+        let fadeDuration = 0;
+        if (this.mapOptions.hasOwnProperty('fadeDuration')) {
+          fadeDuration = this.mapOptions.fadeDuration;
+        }
+        this.map = new mapboxgl.Map({...this.mapOptions, fadeDuration });
         this.map.on('load', () => {
           this.triggerEvent('addlayerssucceeded', {
             map: this.map,
@@ -318,9 +337,12 @@ export default class WebMapViewModel extends WebMapBase {
         this._unproject([mapInfo.visibleExtent[2], mapInfo.visibleExtent[3]])
       ];
     }
+    if (minZoom > maxZoom) {
+      [minZoom, maxZoom] = [maxZoom, minZoom];
+    }
     if (!bounds) {
       if (mapInfo.minScale && mapInfo.maxScale) {
-        zoomBase = this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection));
+        zoomBase = Math.min(this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection)),this._transformScaleToZoom(mapInfo.maxScale, mapboxgl.CRS.get(this.baseProjection)));
       } else {
         zoomBase = +Math.log2(
           this._getResolution(mapboxgl.CRS.get(this.baseProjection).getExtent()) / this._getResolution(mapInfo.extent)
@@ -329,16 +351,6 @@ export default class WebMapViewModel extends WebMapBase {
       zoom += zoomBase;
     }
 
-    if (this._keepCenterZoom && (!this.center || (this.center[0] === 0 && this.center[1] === 0)) && (!this.zoom || this.zoom === 1)) {
-      
-      if (this.mapOptions.center && this.mapOptions.zoom && this.mapOptions.zoom !== 1) {
-        this.center = this.mapOptions.center;
-        this.zoom = this.mapOptions.zoom;
-      } else {
-        this.center = center;
-        this.zoom = zoom;
-      }
-    }
 
     // 初始化 map
     this.map = new mapboxgl.Map({
@@ -366,6 +378,9 @@ export default class WebMapViewModel extends WebMapBase {
           if (this.isSuperMapOnline && url.indexOf('http://') === 0) {
             url = `https://www.supermapol.com/apps/viewer/getUrlResource.png?url=${encodeURIComponent(url)}`;
           }
+          if (this.webMapService.isIportalResourceUrl(url)) {
+            url = this.webMapService.handleParentRes(url);
+          }
           const proxy = this.webMapService.handleProxy('image');
           return {
             url: url,
@@ -373,7 +388,8 @@ export default class WebMapViewModel extends WebMapBase {
           };
         }
         return { url };
-      }
+      },
+      fadeDuration: 0
     });
     /**
      * @description Map 初始化成功。
@@ -482,7 +498,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  _initOverlayLayer(layerInfo: any, features?: any, mergeByField?: string) {
+  _initOverlayLayer(layerInfo: any, features: any = [], mergeByField?: string) {
     let { layerID, layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
     layerInfo.visible = visible ? 'visible' : 'none';
     features = this.mergeFeatures(layerID, features, mergeByField);
@@ -640,14 +656,21 @@ export default class WebMapViewModel extends WebMapBase {
   private _createVectorLayer(layerInfo: any, features: any): void {
     let type = layerInfo.featureType;
     const { layerID, minzoom, maxzoom, style, visible } = layerInfo;
-    const source: mapboxglTypes.GeoJSONSourceRaw = {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: features
-      }
+    const layerSource = this.map.getSource(layerID);
+    const sourceData: GeoJSON.FeatureCollection = {
+      type: 'FeatureCollection',
+      features: features
     };
-    this.map.addSource(layerID, source);
+    if (!layerSource) {
+      const source: mapboxglTypes.GeoJSONSourceRaw = {
+        type: 'geojson',
+        data: sourceData
+      };
+      this.map.addSource(layerID, source);
+    } else {
+      // @ts-ignore
+      layerSource.setData(sourceData);
+    }
     let styleArr = Array.isArray(style) ? style : [style];
     if (styleArr.length === 2) {
       // 道路
@@ -703,8 +726,10 @@ export default class WebMapViewModel extends WebMapBase {
   private _setLayerID(mapInfo): Array<object> {
     let sumInfo: object = {};
     const { baseLayer, layers = [] } = mapInfo;
-    let baseInfo = this._generateUniqueLayerId(baseLayer.name, 0);
-    baseLayer.name = baseInfo.newId;
+    if (!this.checkSameLayer) {
+      let baseInfo = this._generateUniqueLayerId(baseLayer.name, 0);
+      baseLayer.name = baseInfo.newId;
+    }
     const layerNames = layers.map(layer => layer.name);
     const _layers: Array<object> = layers.map((layer, index) => {
       if (!(layer.name in sumInfo)) {
@@ -716,9 +741,11 @@ export default class WebMapViewModel extends WebMapBase {
         sumInfo[layer.name] = sumInfo[layer.name] + 1;
       }
       let layerID = !!sumInfo[layer.name] ? `${layer.name}-${sumInfo[layer.name]}` : layer.name;
-      let { newId, newIndex } = this._generateUniqueLayerId(layerID, sumInfo[layer.name]);
-      sumInfo[layer.name] = newIndex;
-      layerID = newId;
+      if (!this.checkSameLayer || layer.layerType !== 'raster') {
+        let { newId, newIndex } = this._generateUniqueLayerId(layerID, sumInfo[layer.name]);
+        sumInfo[layer.name] = newIndex;
+        layerID = newId;
+      }
       return Object.assign(layer, { layerID });
     });
     mapInfo.layers = _layers;
@@ -1581,6 +1608,7 @@ export default class WebMapViewModel extends WebMapBase {
           this.map.moveLayer(`${targetlayerId}-label`);
         }
       }
+
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams,
@@ -1705,7 +1733,7 @@ export default class WebMapViewModel extends WebMapBase {
     let source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,
-      tileSize: 256,
+      tileSize: isIserver ? this.rasterTileSize : 256,
       // @ts-ignore
       rasterSource: isIserver ? 'iserver' : '',
       // @ts-ignore
@@ -1933,32 +1961,57 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _addLayer(layerInfo) {
     const { id } = layerInfo;
-    Array.isArray(this._cacheLayerId) && this._cacheLayerId.push(id);
+    this._cacheLayerId.push(id);
     layerInfo = Object.assign(layerInfo, { id });
+
     if (this.map.getLayer(id)) {
+      if (this.checkSameLayer && this._isSameRasterLayer(id, layerInfo)) return;
       this._updateLayer(layerInfo);
       return;
     }
-
     this.map.addLayer(layerInfo);
+  }
+
+  private _isSameRasterLayer(id, layerInfo) {
+    let {
+      source: { type, tiles }
+    } = layerInfo;
+    if (type === 'raster') {
+      let source = this.map.getSource(id);
+      if (
+        type === source.type &&
+        tiles &&
+        // @ts-ignore
+        source.tiles &&
+        // @ts-ignore
+        tiles[0] === source.tiles[0]
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  public setLayersVisible(isShow, ignoreIds) {
+    let show = isShow ? 'visible' : 'none';
+    if (this._cacheLayerId.length) {
+      this._cacheLayerId.forEach(layerId => {
+        if ((ignoreIds && !ignoreIds.includes(layerId)) || !ignoreIds) {
+          this.map.setLayoutProperty(layerId, 'visibility', show);
+        }
+      });
+    }
   }
 
   cleanWebMap() {
     if (this.map) {
-      this.triggerEvent('beforeremovemap',{});
-      const lastCenter = this.map.getCenter();
-      const lastZoom = this.map.getZoom();
+      this.triggerEvent('beforeremovemap', {});
       this.map.remove();
       this.map = null;
       this._legendList = {};
       this._sourceListModel = null;
-      if (!this._keepCenterZoom) {
-        this.center = null;
-        this.zoom = null;
-      } else {
-        this.center = lastCenter.toArray();
-        this.zoom = lastZoom;
-      }
+      this.center = null;
+      this.zoom = null;
       this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
       this._unprojectProjection = null;
     }
@@ -2006,26 +2059,32 @@ export default class WebMapViewModel extends WebMapBase {
       source: { type, tiles, data, proxy }
     } = layerInfo;
     const source = this.map.getSource(id);
-    if (type === 'geojson') {
-      Object.keys(paint).forEach(name => {
-        this.map.setPaintProperty(id, name, paint[name]);
-      });
-      // @ts-ignore
-      source && source.setData(data);
-    } else if (type === 'raster') {
-      if (source) {
+    if (source) {
+      if (type === 'geojson') {
+        Object.keys(paint).forEach(name => {
+          this.map.setPaintProperty(id, name, paint[name]);
+        });
         // @ts-ignore
-        source.proxy = proxy;
-        // @ts-ignore
-        source.tiles = tiles;
-        // @ts-ignore
-        this.map.style.sourceCaches[id].clearTiles();
-        // @ts-ignore
-        this.map.style.sourceCaches[id].update(this.map.transform);
-        // @ts-ignore
-        this.map.triggerRepaint();
+        source.setData(data);
+      } else if (type === 'raster') {
+        this._updateRasterSource(id, { proxy, tiles });
       }
     }
+  }
+
+  _updateRasterSource(sourceId, options) {
+    if (!sourceId) {
+      return;
+    }
+    let source = this.map.getSource(sourceId);
+
+    Object.assign(source, options);
+    // @ts-ignore
+    this.map.style.sourceCaches[sourceId].clearTiles();
+    // @ts-ignore
+    this.map.style.sourceCaches[sourceId].update(this.map.transform);
+    // @ts-ignore
+    this.map.triggerRepaint();
   }
 
   updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {

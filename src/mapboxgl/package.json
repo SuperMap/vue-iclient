@@ -1,10 +1,11 @@
 {
   "name": "@supermap/vue-iclient-mapboxgl",
   "description": "SuperMap iClient for Vue.js",
-  "version": "10.1.0-beta",
+  "version": "10.1.0",
   "homepage": "http://iclient.supermap.io",
   "main": "dist/index",
   "dependencies": {
+    "@mapbox/point-geometry": "^0.1.0",
     "@turf/center": "^6.0.1",
     "@types/geojson": "^7946.0.7",
     "@types/node": "^12.0.3",
@@ -36,6 +37,7 @@
     "@turf/envelope": "^5.1.5",
     "@turf/helpers": "^6.1.4",
     "@turf/length": "^6.0.2",
+    "@turf/rhumb-bearing": "^6.0.1",
     "@turf/transform-scale": "^5.1.5",
     "@types/mapbox-gl": "^0.51.11",
     "axios": "^0.19.0",
