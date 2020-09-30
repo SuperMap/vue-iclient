@@ -1,0 +1,52 @@
+@import 'ant-design-vue/es/button/style/mixin.less';
+
+.btn-danger() {
+  .button-variant-primary(@btn-danger-color, @btn-danger-bg, @btn-danger-border);
+}
+
+.button-variant-primary(@color, @background, @border) when(iscolor(@border)) {
+  .button-color(@color; @background; @border);
+
+  text-shadow: @btn-text-shadow;
+  box-shadow: @btn-primary-shadow;
+
+  &:hover,
+  &:focus {
+    .button-color(
+      @color, ~`colorPalette('@{background}', 5) `, ~`colorPalette('@{border}', 5) `
+    );
+  }
+
+  &:active,
+  &.active {
+    .button-color(
+      @color, ~`colorPalette('@{background}', 7) `, ~`colorPalette('@{border}', 7) `
+    );
+  }
+
+  .button-disabled();
+}
+
+.button-variant-primary(@color, @background, @border) when(@background = transparent) {
+  .button-color(@color; @background; @border);
+
+  text-shadow: @btn-text-shadow;
+  box-shadow: @btn-primary-shadow;
+
+  &:hover,
+  &:focus {
+    .button-color(
+      @color, transparent, ~`colorPalette('@{border}', 5) `
+    );
+  }
+
+  &:active,
+  &.active {
+    .button-color(
+      @color, transparent, ~`colorPalette('@{border}', 7) `
+    );
+  }
+
+  .button-disabled();
+}
+
