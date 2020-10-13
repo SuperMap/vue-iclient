@@ -461,8 +461,6 @@ export default {
         this.isQuery = false;
         this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.queryResult = e.result;
-        this.viewModel.getPopupFeature();
-        this.addPopupToFeature();
         this.jobButton.classList.remove('disabled');
         /**
          * @event querySucceeded
@@ -484,6 +482,7 @@ export default {
          */
         this.$emit('query-failed', e);
       });
+      this.addPopupToFeature();
     },
     addPopupToFeature() {
       this.viewModel.on('getfeatureinfosucceeded', e => {

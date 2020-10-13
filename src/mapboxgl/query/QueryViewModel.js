@@ -6,6 +6,9 @@ import { geti18n } from '../../common/_lang';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { getFeatureCenter, getValueCaseInsensitive } from '../../common/_utils/util';
 import { checkAndRectifyFeatures } from '../../common/_utils/iServerRestService';
+import bbox from '@turf/bbox';
+import envelope from '@turf/envelope';
+import transformScale from '@turf/transform-scale';
 
 /**
  * @class QueryViewModel
@@ -340,6 +343,15 @@ export default class QueryViewModel extends mapboxgl.Evented {
       }
     };
     this._addOverlayToMap(type, source, this.layerID);
+    const bounds = bbox(transformScale(envelope(source.data), 1.7));
+    this.map.fitBounds(
+      [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]]
+      ],
+      { maxZoom: 17 }
+    );
+    this.getPopupFeature();
   }
 
   /**
@@ -409,6 +421,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
    */
   addPopup(coordinates, popupContainer) {
     popupContainer.style.display = 'block';
+    this.map.flyTo({ center: coordinates });
     return new mapboxgl.Popup({
       className: 'sm-mapboxgl-tabel-popup',
       closeOnClick: true,
