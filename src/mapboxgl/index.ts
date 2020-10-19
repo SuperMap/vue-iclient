@@ -24,8 +24,39 @@ import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
+import cssVars from 'css-vars-ponyfill';
+// import 'ant-design-vue/dist/antd.css';
+import { dealWithTheme, ThemeStyleParams, StyleReplacerParams } from '../common/_utils/style/color/serialColors';
 
-const setTheme = (themeStyle = {}) => {
+function getCSSString(url: string, nextThemeStyle: ThemeStyleParams): Promise<StyleReplacerParams> {
+  return new Promise(resolve => {
+    const xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = () => {
+      if (xhr.readyState === 4 && xhr.status === 200) {
+        const styleData = dealWithTheme(xhr.responseText, nextThemeStyle);
+        resolve(styleData);
+      }
+    };
+    xhr.open('GET', url);
+    xhr.send();
+  });
+}
+
+const setAntdStyle = async (theme: ThemeStyleParams) => {
+  const data: StyleReplacerParams = await getCSSString('../../static/libs/ant-design-vue/antd.css', theme);
+  const antdStyleId = 'sm-component-style';
+  let antStyleTag = document.getElementById(antdStyleId);
+  if (!antStyleTag) {
+    antStyleTag = document.createElement('style');
+    antStyleTag.setAttribute('id', antdStyleId);
+    antStyleTag.setAttribute('type', 'text/css');
+    document.head.insertBefore(antStyleTag, document.head.firstChild);
+  }
+  antStyleTag.innerHTML = data.cssStyle;
+  return data.themeStyle;
+};
+
+const setTheme = async (themeStyle: any = {}) => {
   if (typeof themeStyle === 'string') {
     try {
       require(`../common/_utils/style/theme/${themeStyle}.scss`);
@@ -35,11 +66,14 @@ const setTheme = (themeStyle = {}) => {
     }
     themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
   }
-  globalEvent.$options.theme = themeStyle;
-  globalEvent.$emit('change-theme', themeStyle);
+  const nextThemeStyle = await setAntdStyle(themeStyle);
+  const nextTheme = Object.assign({}, themeStyle, nextThemeStyle);
+  globalEvent.$options.theme = nextTheme;
+  globalEvent.$emit('change-theme', nextTheme);
 };
 
 const install = function(Vue, opts: any = {}) {
+  cssVars();
   let theme = opts.theme || 'light';
   require('./style.scss');
   setTheme(theme);

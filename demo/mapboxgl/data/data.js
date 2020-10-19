@@ -385,7 +385,8 @@ export default {
           // 专题图hover 样式
           circleHoverStyle: { fillOpacity: 1 }
         }
-      }
+      },
+      input1: '123'
     };
   },
   methods: {
@@ -405,6 +406,10 @@ export default {
       };
       smcomponents.setTheme(transparent);
       document.getElementsByTagName('body')[0].style.background = 'rgba(0, 0, 0, 0.9)';
+    },
+    changeStyle3() {
+      smcomponents.setTheme('warmGray');
+      document.getElementsByTagName('body')[0].style.background = '#191515';
     },
     mapLoaded(e) {
       console.log(e);
@@ -451,6 +456,18 @@ export default {
       if (this.popup) {
         this.popup.remove();
       }
+    },
+    handleInput(e) {
+      console.log(`sm-input-input to ${this.input1}`);
+      console.dir(e);
+    },
+    handleInputChange(e) {
+      console.log(`sm-input-change to ${this.input1}`);
+      console.dir(e);
+    },
+    handlePressEnter(e) {
+      console.log(`sm-input-pressEnter to ${e}`);
+      console.dir(e);
     }
   }
 };

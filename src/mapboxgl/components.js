@@ -9,6 +9,8 @@ export { default as Border } from '../common/border/Border';
 export { default as Image } from '../common/image/Image';
 export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
 export { default as Iframe } from '../common/iframe/Iframe';
+export { default as Button } from '../common/button/Button';
+export { default as Input } from '../common/input/Input';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

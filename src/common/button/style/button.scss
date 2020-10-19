@@ -1,0 +1,27 @@
+.sm-component-btn {
+  &.sm-component-btn-default {
+    &:not([disabled]) {
+      color: var(--default-text-color);
+      &, &:hover, &:focus {
+        background-color: transparent;
+      }
+    }
+  }
+  &.sm-component-btn-danger {
+    &, &:hover, &:focus {
+      background-color: transparent;
+      color: var(--danger-bg-color);
+    }
+  }
+  &-disabled,
+  &.disabled,
+  &[disabled] {
+    &,
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      color: var(--disabled-text-color);
+    }
+  }
+}

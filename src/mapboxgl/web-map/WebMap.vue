@@ -117,6 +117,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
   viewModel: WebMapViewModel;
+  $message: any;
   // data
   @Provide() __resizeHandler;
 

@@ -2,6 +2,7 @@
 import { getLanguage, geti18n } from '../../common/_lang';
 import colorcolor from 'colorcolor';
 import getCenter from '@turf/center';
+import omit from 'omit.js';
 
 export function getDateTime(timeType) {
   return geti18n().d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
@@ -176,4 +177,21 @@ export function urlAppend(url, paramStr) {
     newUrl += parts.pop() === ' ' ? paramStr : parts.length ? '&' + paramStr : '?' + paramStr;
   }
   return newUrl;
+}
+
+export function objectWithoutProperties(obj, keys = []) {
+  const themeKeys = [
+    'background',
+    'textColor',
+    'colorGroup',
+    'clickColor',
+    'hoverColor',
+    'selectedColor',
+    'successColor',
+    'infoColor',
+    'warningColor',
+    'dangerColor'
+  ];
+  const omitKeys = [...new Set(themeKeys.concat(keys))];
+  return omit(obj, omitKeys);
 }

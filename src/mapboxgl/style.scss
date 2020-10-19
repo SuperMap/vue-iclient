@@ -15,6 +15,8 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/video-player/style/video-player.scss';
 @import '../common/iframe/style/iframe.scss';
 @import '../common/chart/style/chart.scss';
+@import '../common/button/style/button.scss';
+@import '../common/input/style/Input.scss';
 /** control */
 @import './web-map/control/scale/style/scale.scss';
 @import './web-map/control/zoom/style/zoom.scss';
