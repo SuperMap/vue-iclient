@@ -7,12 +7,12 @@
   }
 }
 
-@mixin e($element) {
+@mixin e($element, $separator: $element-separator) {
   $E: $element !global;
   $selector: &;
   $currentSelector: "";
     @each $unit in $element {
-        $currentSelector: #{$currentSelector + "." + $N + $element-separator+$unit+','};
+        $currentSelector: #{$currentSelector + "." + $N + $separator+$unit+','};
     }
 
   @at-root {

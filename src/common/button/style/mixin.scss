@@ -1,0 +1,8 @@
+@mixin button-default-color($text-color) {
+  color: $text-color;
+  &:not([disabled]) {
+    &, &:hover, &:focus {
+      background-color: transparent;
+    }
+  }
+}

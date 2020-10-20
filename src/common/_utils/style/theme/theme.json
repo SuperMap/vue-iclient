@@ -48,7 +48,7 @@
   {
     "title": "经典暖灰",
     "label": "warmGray",
-    "textColor": "rgba(255, 255, 255, 0.48)",
+    "textColor": "#fff",
     "background": "#191515",
     "selectedColor": "#e14d5726",
     "hoverColor": "#e5666f",
@@ -57,6 +57,7 @@
     "infoColor": "#3499E5",
     "warningColor": "#F0BD3E",
     "dangerColor": "#DC5849",
+    "disabledColor": "#ffffff14",
     "colorGroup": [
       "#e14d57",
       "#6be6c1",

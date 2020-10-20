@@ -1,4 +1,6 @@
-.sm-component-input {
+@import "../../_utils/style/mixins/mixins.scss";
+
+@include b(input) {
   &:focus {
     border-color: var(--focus-color);
     box-shadow: 0 0 0 2px var(--box-shadow-color);

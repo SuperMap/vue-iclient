@@ -1,13 +1,16 @@
-.sm-component-btn {
-  &.sm-component-btn-default {
-    &:not([disabled]) {
-      color: var(--default-text-color);
-      &, &:hover, &:focus {
-        background-color: transparent;
-      }
-    }
+@import "../../_utils/style/mixins/mixins.scss";
+@import "mixin.scss";
+
+
+@include b(btn) {
+  $--text-color: var(--default-text-color);
+  @include e(default, '-') {
+    @include button-default-color($--text-color);
   }
-  &.sm-component-btn-danger {
+  @include e(dashed, '-') {
+    @include button-default-color($--text-color);
+  }
+  @include e(danger, '-') {
     &, &:hover, &:focus {
       background-color: transparent;
       color: var(--danger-bg-color);

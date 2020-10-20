@@ -35,13 +35,13 @@ export default {
       return objectWithoutProperties(this.$props);
     },
     buttonStyle() {
-      let style = { '--border-base-color': this.borderBaseColorData };
+      let style = {
+        '--border-base-color': this.borderBaseColorData,
+        '--default-text-color': getColorWithOpacity(this.textColorsData, 0.65)
+      };
       switch (this.type) {
         case 'danger':
           style['--danger-bg-color'] = this.dangerColorData;
-          break;
-        case 'default':
-          style['--default-text-color'] = getColorWithOpacity(this.textColorsData, 0.65);
           break;
       }
       if (this.disabled) {
