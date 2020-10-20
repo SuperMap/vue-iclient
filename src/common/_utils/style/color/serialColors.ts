@@ -24,6 +24,8 @@ const $glod6 = '#faad14';
 const $red6 = '#f5222d';
 const $grey3 = '#f5f5f5';
 const $grey5 = '#d9d9d9';
+const $grey6 = '#bfbfbf';
+const $fadeBlack = 'rgba(0, 0, 0, 0.65)';
 
 const antdPrimaryColor = $blue6;
 const antdFunctionColors: functionColorParams = {
@@ -33,8 +35,10 @@ const antdFunctionColors: functionColorParams = {
   dangerColor: $red6
 };
 const antdOtherColors: ThemeStyleParams = {
+  textColor: $fadeBlack,
   disabledColor: $grey3,
-  borderBaseColor: $grey5
+  borderBaseColor: $grey5,
+  placeholderColor: $grey6
 };
 
 export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string[] {
@@ -103,14 +107,16 @@ export function dealWithTheme(prevCssStyle: string, nextThemeStyle: ThemeStylePa
   const serialColorsReplacer = getPrimarySerialColors(themeStyleData);
   let cssStyle = prevCssStyle.replace(/ant-/g, 'sm-component-');
   antdPrimarySerialColors.forEach((item: string, index: number) => {
-    cssStyle = cssStyle.replace(new RegExp(item, 'ig'), serialColorsReplacer[index]);
+    const nextItem = item.replace('(', '\\(').replace(')', '\\)');
+    cssStyle = cssStyle.replace(new RegExp(nextItem, 'ig'), serialColorsReplacer[index]);
   });
   const otherSerialColors = Object.assign({}, antdFunctionSerialColors, antdOtherColors);
   for (let key in otherSerialColors) {
     if (themeStyleData[key]) {
       const datas = typeof otherSerialColors[key] === 'string' ? [].concat(otherSerialColors[key]) : otherSerialColors[key];
       datas.forEach((item: string, index: number) => {
-        cssStyle = cssStyle.replace(new RegExp(item, 'ig'), themeStyleData[key]);
+        const nextItem = item.replace('(', '\\(').replace(')', '\\)');
+        cssStyle = cssStyle.replace(new RegExp(nextItem, 'ig'), themeStyleData[key]);
       });
     }
   }

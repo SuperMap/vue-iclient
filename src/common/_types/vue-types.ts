@@ -1,9 +1,9 @@
 import VueTypes from 'vue-types';
 
 VueTypes.defaults = {
-  func: () => undefined,
+  func: undefined,
   bool: false,
-  string: '',
+  string: undefined,
   number: undefined,
   array: () => [],
   object: () => ({}),

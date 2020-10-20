@@ -26,6 +26,8 @@ export default class Theme extends Vue {
 
   disabledColorData: string = '';
 
+  focusBackgroundData: string = '';
+
   colorGroupsData: Array<string> = [];
 
   @Prop() background: string;
@@ -49,6 +51,8 @@ export default class Theme extends Vue {
   @Prop() disabledColor: string;
 
   @Prop() borderBaseColor: string;
+
+  @Prop() focusBackground: string;
 
   @Prop() colorGroup: Array<string>;
 
