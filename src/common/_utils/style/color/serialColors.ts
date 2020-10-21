@@ -36,7 +36,7 @@ const antdFunctionColors: functionColorParams = {
 };
 const antdOtherColors: ThemeStyleParams = {
   textColor: $fadeBlack,
-  disabledColor: $grey3,
+  disabledBgColor: $grey3,
   borderBaseColor: $grey5,
   placeholderColor: $grey6
 };

@@ -386,7 +386,9 @@ export default {
           circleHoverStyle: { fillOpacity: 1 }
         }
       },
-      input1: '123'
+      input1: '123',
+      switch1: false,
+      switch2: true,
     };
   },
   methods: {
@@ -400,9 +402,9 @@ export default {
     },
     changeStyle2() {
       let transparent = {
+        style: 'dark',
         textColor: '#eee',
         background: 'rgba(0,0,0,0)',
-        disabledColor: "#ffffff14",
         colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
       };
       smcomponents.setTheme(transparent);

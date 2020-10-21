@@ -24,9 +24,21 @@ export default class Theme extends Vue {
 
   dangerColorData: string = '';
 
-  disabledColorData: string = '';
+  disabledBgColorData: string = '';
 
-  focusBackgroundData: string = '';
+  disabledBorderColorData: string = '';
+
+  buttonBorderDefaultColorData: string = '';
+
+  componentBackgroundData: string = '';
+
+  switchBackgroundData: string = '';
+
+  switchDisabledBgColorData: string = '';
+
+  switchDisabledAfterColorData: string = '';
+
+  switchDisabledOpacityData: string | number;
 
   colorGroupsData: Array<string> = [];
 
@@ -48,11 +60,23 @@ export default class Theme extends Vue {
 
   @Prop() dangerColor: string;
 
-  @Prop() disabledColor: string;
+  @Prop() disabledBgColor: string;
+
+  @Prop() disabledBorderColor: string;
 
   @Prop() borderBaseColor: string;
 
-  @Prop() focusBackground: string;
+  @Prop() buttonBorderDefaultColor: string;
+
+  @Prop() componentBackground: string;
+
+  @Prop() switchBackground: string;
+
+  @Prop() switchDisabledBgColor: string;
+
+  @Prop() switchDisabledAfterColor: string;
+
+  @Prop() switchDisabledOpacity: string | number;
 
   @Prop() colorGroup: Array<string>;
 
@@ -133,9 +157,7 @@ export default class Theme extends Vue {
 
   getSelfProps(): string[] {
     // @ts-ignore
-    const { mixins } = this.constructor.options;
-    const selfComponent = mixins.find(item => item.options && item.options.name === 'Theme');
-    return selfComponent ? Object.keys(selfComponent.options.props) : [];
+    return Object.keys(Theme.extendOptions.props);
   }
 
   getDataNameOfProp(prop: string) {

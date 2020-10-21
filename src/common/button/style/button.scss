@@ -3,12 +3,12 @@
 
 
 @include b(btn) {
-  $--text-color: var(--default-text-color);
+  $--default-border-color: var(--default-border-color);
   @include e(default, '-') {
-    @include button-default-color($--text-color);
+    @include button-default-color($--default-border-color);
   }
   @include e(dashed, '-') {
-    @include button-default-color($--text-color);
+    @include button-default-color($--default-border-color);
   }
   @include e(danger, '-') {
     &, &:hover, &:focus {
@@ -25,6 +25,11 @@
     &:active,
     &.active {
       color: var(--disabled-text-color);
+      border-color: var(--disabled-border-color);
     }
+  }
+
+  &::before {
+    background: transparent;
   }
 }

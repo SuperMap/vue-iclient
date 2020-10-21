@@ -1,0 +1,28 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import 'mixin.scss';
+
+@include b(switch) {
+  $prefix: &;
+  $--disabled-bg-color: var(--disabled-bg-color);
+  $--disabled-after-color: var(--disabled-after-color);
+  $--disabled-opacity: var(--disabled-opacity);
+  $--disabled-inner-opacity: var(--disabled-inner-opacity);
+
+  &:not(&-checked) {
+    background-color: var(--normal-bg-color);
+  }
+
+  @include e(loading disabled, '-') {
+    opacity: $--disabled-opacity;
+  }
+
+  @include e(loading, '-') {
+    @include disabled-color($--disabled-bg-color, $--disabled-after-color, $--disabled-inner-opacity, $prefix);
+  }
+
+  &-disabled,
+  &.disabled,
+  &[disabled] {
+    @include disabled-color($--disabled-bg-color, $--disabled-after-color, $--disabled-inner-opacity, $prefix);
+  }
+}

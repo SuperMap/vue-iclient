@@ -1,0 +1,17 @@
+@mixin disabled-color($disabled-bg-color, $disabled-after-color, $disabled-inner-opacity, $prefix) {
+  &,
+  &:hover,
+  &:focus,
+  &:active,
+  &.active {
+    background-color: $disabled-bg-color;
+    box-shadow: none;
+  }
+  &::after {
+    background-color: $disabled-after-color;
+  }
+
+  #{$prefix}-inner {
+    opacity: $disabled-inner-opacity;
+  }
+}

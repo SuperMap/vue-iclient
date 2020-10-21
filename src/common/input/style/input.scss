@@ -1,8 +1,50 @@
-@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/mixins/mixins.scss';
+@import 'mixin.scss';
 
 @include b(input) {
-  &:focus {
-    border-color: var(--focus-color);
-    box-shadow: 0 0 0 2px var(--box-shadow-color);
+  $--normal-bg-color: var(--normal-bg-color);
+  $--focus-border-color: var(--focus-border-color);
+  $--box-shadow-color: var(--box-shadow-color);
+
+  background-color: $--normal-bg-color;
+  @include input-focus-color(var(--focus-border-color), var(--box-shadow-color));
+  
+  @include e(number, '-') {
+    background-color: $--normal-bg-color;
+    @include input-focus-color($--focus-border-color, $--box-shadow-color);
   }
+
+  @include e(number-focused, '-') {
+    @include focus-color($--focus-border-color, $--box-shadow-color);
+  }
+
+  @include e(number-handler-wrap, '-') {
+    background-color: $--normal-bg-color;
+  }
+
+  @include e(number-handler, '-') {
+    outline: 0;
+    color: var(--arrow-text-color);
+  }
+
+  @include e(group-addon, '-') {
+    background-color: transparent;
+  }
+
+  &-disabled,
+  &.disabled,
+  &[disabled] {
+    &,
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      color: var(--disabled-text-color);
+      border-color: var(--disabled-border-color);
+    }
+  }
+
+  // &:-internal-autofill-selected {
+  //   background-color: inset 0 0 0 1000px rgab(255, 255, 255, 0)!important;
+  // }
 }

@@ -11,6 +11,12 @@ export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
 export { default as Iframe } from '../common/iframe/Iframe';
 export { default as Button } from '../common/button/Button';
 export { default as Input } from '../common/input/Input';
+export { default as InputGroup } from '../common/input/Group';
+export { default as InputSearch } from '../common/input/Search';
+export { default as InputPassword } from '../common/input/Password';
+export { default as InputNumber } from '../common/input/Number';
+export { default as Textarea } from '../common/input/TextArea';
+export { default as Switch } from '../common/switch/Switch.vue';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
