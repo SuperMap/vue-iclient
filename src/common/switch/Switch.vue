@@ -12,7 +12,6 @@ export const switchTypes = {
   checkedChildren: VueTypes.any,
   unCheckedChildren: VueTypes.any,
   size: VueTypes.oneOf(['small', 'large', 'default']).def('default'),
-  tabIndex: VueTypes.oneOfType([VueTypes.string, VueTypes.number]),
   disabled: VueTypes.bool,
   loading: VueTypes.bool
 };
@@ -20,11 +19,8 @@ export const switchTypes = {
 export default {
   name: 'SmSwitch',
   __ANT_SWITCH: true,
-  components: {
-    // Switch 属于保留字段 不能作为组件的 id
-    SwitchElement: Switch
-  },
   mixins: [Theme],
+  inheritAttrs: false,
   model: {
     prop: 'checked',
     event: 'change'

@@ -17,6 +17,9 @@ export { default as InputPassword } from '../common/input/Password';
 export { default as InputNumber } from '../common/input/Number';
 export { default as Textarea } from '../common/input/TextArea';
 export { default as Switch } from '../common/switch/Switch.vue';
+export { default as Select } from '../common/select/Select.vue';
+export { default as SelectOption } from '../common/select/Option.vue';
+export { default as SelectOptGroup } from '../common/select/OptGroup.vue';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

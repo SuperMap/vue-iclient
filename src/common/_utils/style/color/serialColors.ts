@@ -1,6 +1,6 @@
-import tinyColor from 'tinycolor2';
 import colorPalette from './colorPalette';
 import themeFactory from '../theme/theme.json';
+import { getColorWithOpacity } from '../../util';
 
 const firstThemeItem = themeFactory[1];
 
@@ -53,11 +53,7 @@ export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string
         if (nextThemeStyle.selectedColor) {
           nextColor = nextThemeStyle.selectedColor;
         } else {
-          nextColor = prevPrimaryColor
-            ? tinyColor(acceptColor)
-              .setAlpha(0.15)
-              .toHex8String()
-            : colorPalette(acceptColor, index);
+          nextColor = prevPrimaryColor ? getColorWithOpacity(acceptColor, 0.15) : colorPalette(acceptColor, index);
         }
         break;
       case 5:
@@ -113,7 +109,8 @@ export function dealWithTheme(prevCssStyle: string, nextThemeStyle: ThemeStylePa
   const otherSerialColors = Object.assign({}, antdFunctionSerialColors, antdOtherColors);
   for (let key in otherSerialColors) {
     if (themeStyleData[key]) {
-      const datas = typeof otherSerialColors[key] === 'string' ? [].concat(otherSerialColors[key]) : otherSerialColors[key];
+      const datas =
+        typeof otherSerialColors[key] === 'string' ? [].concat(otherSerialColors[key]) : otherSerialColors[key];
       datas.forEach((item: string, index: number) => {
         const nextItem = item.replace('(', '\\(').replace(')', '\\)');
         cssStyle = cssStyle.replace(new RegExp(nextItem, 'ig'), themeStyleData[key]);
@@ -124,9 +121,9 @@ export function dealWithTheme(prevCssStyle: string, nextThemeStyle: ThemeStylePa
     cssStyle,
     themeStyle: {
       ...themeStyleData,
-      selectedColor: serialColorsReplacer[2],
-      hoverColor: serialColorsReplacer[5],
-      clickColor: serialColorsReplacer[7]
+      selectedColor: serialColorsReplacer[1],
+      hoverColor: serialColorsReplacer[4],
+      clickColor: serialColorsReplacer[6]
     }
   };
 }

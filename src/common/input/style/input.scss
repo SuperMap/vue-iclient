@@ -12,19 +12,24 @@
   @include e(number, '-') {
     background-color: $--normal-bg-color;
     @include input-focus-color($--focus-border-color, $--box-shadow-color);
-  }
 
-  @include e(number-focused, '-') {
-    @include focus-color($--focus-border-color, $--box-shadow-color);
-  }
+    &-focused {
+      @include focus-color($--focus-border-color, $--box-shadow-color);
+    }
 
-  @include e(number-handler-wrap, '-') {
-    background-color: $--normal-bg-color;
+    &-input-wrap {
+      &:focus {
+        outline: 0;
+      } 
+    }
   }
 
   @include e(number-handler, '-') {
     outline: 0;
     color: var(--arrow-text-color);
+    &-wrap {
+      background-color: $--normal-bg-color;
+    } 
   }
 
   @include e(group-addon, '-') {

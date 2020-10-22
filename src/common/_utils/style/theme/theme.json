@@ -22,6 +22,8 @@
     "switchDisabledBgColor": "rgba(255, 255, 255, 0.15)",
     "switchDisabledAfterColor": "rgba(255, 255, 255, 0.15)",
     "switchDisabledOpacity": 1,
+    "selectDropdownBackground": "#414141",
+    "selectDropdownBoxshadow": "0px 2px 7px 0px rgba(0, 0, 0, 0.35)",
     "colorGroup": [
       "#3499e5",
       "#759aa0",
@@ -53,6 +55,8 @@
     "switchDisabledBgColor": "rgba(0, 0, 0, 0.25)",
     "switchDisabledAfterColor": "#fff",
     "switchDisabledOpacity": 0.4,
+    "selectDropdownBackground": "#fff",
+    "selectDropdownBoxshadow": "0 2px 8px rgba(0, 0, 0, 0.15)",
     "colorGroup": [
       "#0081e2",
       "#6be6c1",
@@ -75,6 +79,8 @@
     "dangerColor": "#DC5849",
     "disabledBgColor": "rgba(255, 255, 255, 0.08)",
     "disabledBorderColor": "rgba(255, 255, 255, 0.08)",
+    "componentBackground": "rgba(255, 255, 255, 0.04)",
+    "selectDropdownBackground": "#423939",
     "colorGroup": [
       "#e14d57",
       "#6be6c1",

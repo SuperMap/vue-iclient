@@ -40,6 +40,10 @@ export default class Theme extends Vue {
 
   switchDisabledOpacityData: string | number;
 
+  selectDropdownBackgroundData: string = '';
+
+  selectDropdownBoxshadowData: string = '';
+
   colorGroupsData: Array<string> = [];
 
   @Prop() background: string;
@@ -77,6 +81,10 @@ export default class Theme extends Vue {
   @Prop() switchDisabledAfterColor: string;
 
   @Prop() switchDisabledOpacity: string | number;
+
+  @Prop() selectDropdownBackground: string;
+
+  @Prop() selectDropdownBoxshadow: string;
 
   @Prop() colorGroup: Array<string>;
 

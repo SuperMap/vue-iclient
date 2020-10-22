@@ -1,7 +1,6 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Search from 'ant-design-vue/es/input/Search';
-import Button from '../button/Button.vue';
 import { inputTypes } from './Input.vue';
 import VueTypes from '../_types/vue-types';
 import Base from './BaseMixin.vue';
@@ -13,10 +12,6 @@ export const inputSearchTypes = {
 
 export default {
   name: 'SmInputSearch',
-  components: {
-    Search,
-    Button
-  },
   mixins: [Base],
   model: {
     prop: 'value',

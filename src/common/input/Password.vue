@@ -13,9 +13,6 @@ export const inputPasswordTypes = {
 
 export default {
   name: 'SmInputPassword',
-  components: {
-    Password
-  },
   mixins: [Base],
   model: {
     prop: 'value',

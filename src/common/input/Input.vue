@@ -21,9 +21,6 @@ export const inputTypes = {
 
 export default {
   name: 'SmInput',
-  components: {
-    Input
-  },
   mixins: [Base],
   model: {
     prop: 'value',

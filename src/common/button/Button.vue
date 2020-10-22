@@ -29,6 +29,7 @@ export default {
     Button
   },
   mixins: [Theme],
+  inheritAttrs: false,
   props: buttonTypes,
   computed: {
     buttonProps() {

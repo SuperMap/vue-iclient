@@ -1,0 +1,78 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import 'mixin.scss';
+
+@include b(select) {
+  $prefix: &;
+  $--normal-bg-color: var(--normal-bg-color);
+  $--focus-border-color: var(--focus-border-color);
+  $--box-shadow-color: var(--box-shadow-color);
+  $--arrow-text-color: var(--arrow-text-color);
+  $--dropdown-bg-color: var(--dropdown-bg-color);
+  $--dropdown-box-shadow: var(--dropdown-box-shadow);
+  $--selected-bg-color: var(--selected-bg-color);
+  $--selected-text-color: var(--selected-text-color);
+  $--disabled-text-color: var(--disabled-text-color);
+  $--disabled-border-color: var(--disabled-border-color);
+  $--hover-bg-color: var(--hover-bg-color);
+  $--group-title-text-color: var(--group-title-text-color);
+
+  @include e(focused, '-') {
+    &-selection {
+      @include select-focus-color($--focus-border-color, $--box-shadow-color);
+    }
+  }
+
+  @include e(selection, '-') {
+    background-color: $--normal-bg-color;
+    @include select-focus-color($--focus-border-color, $--box-shadow-color);
+  }
+
+  @include e(arrow, '-') {
+    color: $--arrow-text-color;
+  }
+
+  @include e(dropdown, '-') {
+    background-color: $--dropdown-bg-color;
+    box-shadow: $--dropdown-box-shadow;
+  }
+
+  @include e(dropdown-menu-item, '-') {
+    &:hover:not(&-disabled) {
+      background-color: $--hover-bg-color;
+    }
+    &-selected {
+      color: $--selected-text-color;
+      &, &:hover:not(&-disabled) {
+        background-color: $--selected-bg-color;
+      }
+      &:focus {
+        outline: 0;
+      }
+    }
+    &-disabled {
+      &,
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        color: $--disabled-text-color;
+      }
+    }
+    &-group-title {
+      color: $--group-title-text-color;
+    }
+  }
+
+  @include e(disabled, '-') {
+    color: var(--disabled-text-color);
+    #{$prefix}-selection {
+      &,
+      &:hover,
+      &:focus,
+      &:active,
+      &.active {
+        border-color: $--disabled-border-color;
+      }
+    }
+  }
+}
