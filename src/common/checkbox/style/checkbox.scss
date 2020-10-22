@@ -1,0 +1,51 @@
+@import "../../_utils/style/mixins/mixins.scss";
+
+
+@include b(checkbox) {
+  $prefix: &;
+  $--normal-bg-color: var(--normal-bg-color);
+  $--normal-border-color: var(--normal-border-color);
+  $--disabled-text-color: var(--disabled-text-color);
+  $--disabled-border-color: var(--disabled-border-color);
+  $--hover-border-color: var(--hover-border-color);
+
+  &:hover, &-wrapper:hover {
+    #{$prefix}-inner {
+      border-color: $--hover-border-color;
+    }
+  }
+
+  @include e(wrapper inner, '-') {
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  @include e(inner, '-') {
+    background-color: $--normal-bg-color;
+  }
+
+  @include e(input, '-') {
+    &:focus {
+      & + #{$prefix}-inner {
+        border-color: $--normal-border-color;
+      }
+    }
+  }
+  
+  @include e(disabled, '-') {
+    &#{$prefix}-checked {
+      #{$prefix}-inner {
+        &::after {
+          border-color: $--disabled-text-color;
+        }
+      }
+    }
+    #{$prefix}-inner {
+      border-color: $--disabled-border-color !important;
+    }
+    & + span {
+      color: $--disabled-text-color;
+    }
+  }
+}

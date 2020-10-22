@@ -16,6 +16,9 @@
       color: var(--danger-bg-color);
     }
   }
+  @include e(group, '-') {
+    color: var(--text-color);
+  }
   &-disabled,
   &.disabled,
   &[disabled] {

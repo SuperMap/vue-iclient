@@ -1,5 +1,5 @@
 <template>
-  <Button v-bind="buttonProps" :style="buttonStyle" prefixCls="sm-component-btn" v-on="buttonListeners">
+  <Button v-bind="buttonProps" :style="buttonStyle" v-on="buttonListeners">
     <slot />
   </Button>
 </template>
@@ -33,7 +33,7 @@ export default {
   props: buttonTypes,
   computed: {
     buttonProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs });
+      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-btn' });
     },
     buttonStyle() {
       const style = {};

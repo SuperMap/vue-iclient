@@ -10,16 +10,19 @@ export { default as Image } from '../common/image/Image';
 export { default as VideoPlayer } from '../common/video-player/VideoPlayer';
 export { default as Iframe } from '../common/iframe/Iframe';
 export { default as Button } from '../common/button/Button';
+export { default as ButtonGroup } from '../common/button/Group';
 export { default as Input } from '../common/input/Input';
 export { default as InputGroup } from '../common/input/Group';
 export { default as InputSearch } from '../common/input/Search';
 export { default as InputPassword } from '../common/input/Password';
 export { default as InputNumber } from '../common/input/Number';
 export { default as Textarea } from '../common/input/TextArea';
-export { default as Switch } from '../common/switch/Switch.vue';
-export { default as Select } from '../common/select/Select.vue';
-export { default as SelectOption } from '../common/select/Option.vue';
-export { default as SelectOptGroup } from '../common/select/OptGroup.vue';
+export { default as Switch } from '../common/switch/Switch';
+export { default as Select } from '../common/select/Select';
+export { default as SelectOption } from '../common/select/Option';
+export { default as SelectOptGroup } from '../common/select/OptGroup';
+export { default as Checkbox } from '../common/checkbox/Checkbox';
+export { default as CheckboxGroup } from '../common/checkbox/Group.vue';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

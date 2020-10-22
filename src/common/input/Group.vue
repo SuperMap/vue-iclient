@@ -1,5 +1,5 @@
 <template>
-  <Group v-bind="inputProps" prefixCls="sm-component-input-group" v-on="inputListeners">
+  <Group v-bind="inputProps" v-on="inputListeners">
     <slot></slot>
   </Group>
 </template>
@@ -24,7 +24,7 @@ export default {
   props: inputGroupTypes,
   computed: {
     inputProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs });
+      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-input-group' });
     },
     inputListeners() {
       return Object.assign({}, this.$listeners);
