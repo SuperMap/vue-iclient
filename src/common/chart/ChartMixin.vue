@@ -608,9 +608,9 @@ export default {
             }
             if (label && label.show && label.smart) {
               label.position = label.position || 'top';
-              let data = serie.data;
+              let data = serie.data || [];
               let startDataIndex = 0;
-              let endDataIndex = data.length - 1;
+              let endDataIndex = data.length > 0 ? data.length - 1 : 0;
               if (dataZoom && dataZoom.show !== false) {
                 if (dataZoom.start > dataZoom.end) {
                   let oldStart = dataZoom.start;
