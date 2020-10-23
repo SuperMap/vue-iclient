@@ -103,7 +103,7 @@ export {
     Handler,
     Http,
     Log,
-    Math,
+    MathTool,
     Matrix,
     Painter,
     PaintLayer,

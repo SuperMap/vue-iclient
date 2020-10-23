@@ -138,3 +138,4 @@ export { HeatMapLayer } from './overlay/HeatMapLayer';
 export { DeckglLayer } from './overlay/DeckglLayer';
 export * from './overlay/mapv';
 export * from './overlay/theme';
+export * from './control';
