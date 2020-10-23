@@ -93,7 +93,8 @@ export function getFunctionSerialColors(functionColors?: ThemeStyleParams): func
   return nextFunctionSerialColors;
 }
 
-export function dealWithTheme(prevCssStyle: string, nextThemeStyle: ThemeStyleParams): StyleReplacerParams {
+export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerParams {
+  const prevCssStyle = require('../theme/base').default;
   const defaultThemeStyle = nextThemeStyle.style || 'light';
   const defaultTheme = themeFactory.find((item: ThemeStyleParams) => item.label === defaultThemeStyle);
   // 合并 firstThemeItem 是因为可能其他 theme 没有完整的参数，如 disableColor
@@ -101,7 +102,7 @@ export function dealWithTheme(prevCssStyle: string, nextThemeStyle: ThemeStylePa
   const antdPrimarySerialColors = getPrimarySerialColors();
   const antdFunctionSerialColors = getFunctionSerialColors();
   const serialColorsReplacer = getPrimarySerialColors(themeStyleData);
-  let cssStyle = prevCssStyle.replace(/ant-/g, 'sm-component-');
+  let cssStyle = prevCssStyle;
   antdPrimarySerialColors.forEach((item: string, index: number) => {
     const nextItem = item.replace('(', '\\(').replace(')', '\\)');
     cssStyle = cssStyle.replace(new RegExp(nextItem, 'ig'), serialColorsReplacer[index]);

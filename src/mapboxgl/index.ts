@@ -28,22 +28,8 @@ import cssVars from 'css-vars-ponyfill';
 // import 'ant-design-vue/dist/antd.css';
 import { dealWithTheme, ThemeStyleParams, StyleReplacerParams } from '../common/_utils/style/color/serialColors';
 
-function getCSSString(url: string, nextThemeStyle: ThemeStyleParams): Promise<StyleReplacerParams> {
-  return new Promise(resolve => {
-    const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState === 4 && xhr.status === 200) {
-        const styleData = dealWithTheme(xhr.responseText, nextThemeStyle);
-        resolve(styleData);
-      }
-    };
-    xhr.open('GET', url);
-    xhr.send();
-  });
-}
-
-const setAntdStyle = async (theme: ThemeStyleParams) => {
-  const data: StyleReplacerParams = await getCSSString('../../static/libs/ant-design-vue/antd.css', theme);
+const setAntdStyle = (theme: ThemeStyleParams) => {
+  const data: StyleReplacerParams = dealWithTheme(theme);
   const antdStyleId = 'sm-component-style';
   let antStyleTag = document.getElementById(antdStyleId);
   if (!antStyleTag) {
@@ -56,7 +42,7 @@ const setAntdStyle = async (theme: ThemeStyleParams) => {
   return data.themeStyle;
 };
 
-const setTheme = async (themeStyle: any = {}) => {
+const setTheme = (themeStyle: any = {}) => {
   if (typeof themeStyle === 'string') {
     try {
       require(`../common/_utils/style/theme/${themeStyle}.scss`);
@@ -66,7 +52,7 @@ const setTheme = async (themeStyle: any = {}) => {
     }
     themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
   }
-  const nextThemeStyle = await setAntdStyle(themeStyle);
+  const nextThemeStyle = setAntdStyle(themeStyle);
   const nextTheme = Object.assign({}, themeStyle, nextThemeStyle);
   globalEvent.$options.theme = nextTheme;
   globalEvent.$emit('change-theme', nextTheme);
