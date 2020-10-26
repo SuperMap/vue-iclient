@@ -1,11 +1,8 @@
-import SmBorder from '../../src/common/border/Border.vue';
-import '../../src/common/border/style/border.scss';
 import { withKnobs, select, object } from '@storybook/addon-knobs';
 
 export default { title: 'border', decorators: [withKnobs] };
 
 export const BasicBorder = () => ({
-  components: { SmBorder },
   props: {
     type: {
       default: select(
@@ -37,7 +34,6 @@ BasicBorder.story = {
 };
 
 export const CustomBorder = () => ({
-  components: { SmBorder },
   props: {
     customBorder: {
       default: object('customBorder', {

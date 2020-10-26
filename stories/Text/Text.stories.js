@@ -1,11 +1,8 @@
-import SmText from '../../src/common/text/Text.vue';
-import '../../src/common/text/style/text.scss';
 import { withKnobs, text, select, object } from '@storybook/addon-knobs';
 
 export default { title: 'text', decorators: [withKnobs] };
 
 export const BasicText = () => ({
-  components: { SmText },
   props: {
     title: {
       default: text('title', '我是文本')
@@ -17,7 +14,6 @@ BasicText.story = {
   name: '文本'
 };
 export const SmallText = () => ({
-  components: { SmText },
   props: {
     fontStyle: {
       default: object('fontStyle', { fontSize: '14px', fontFamily: '微软雅黑' })
@@ -40,7 +36,6 @@ SmallText.story = {
 };
 
 export const LinkText = () => ({
-  components: { SmText },
   props: {
     title: {
       default: text('title', '链接')

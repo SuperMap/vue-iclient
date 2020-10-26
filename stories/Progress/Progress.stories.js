@@ -1,11 +1,8 @@
 import { withKnobs, text, select, number, boolean, color } from '@storybook/addon-knobs';
-import SmProgress from '../../src/common/progress/Progress.vue';
-import '../../src/common/progress/style/progress.scss';
 
 export default { title: 'progress', decorators: [withKnobs] };
 
 export const BasicProgress = () => ({
-  components: { SmProgress },
   props: {
     percent: {
       default: text('percent', '50')
@@ -18,7 +15,6 @@ BasicProgress.story = {
 };
 
 export const ColorProgress = () => ({
-  components: { SmProgress },
   props: {
     strokeColor: {
       default: color('strokeColor', 'red')
@@ -39,7 +35,6 @@ ColorProgress.story = {
 };
 
 export const ShowInfoProgress = () => ({
-  components: { SmProgress },
   props: {
     showInfo: {
       default: boolean('showInfo', true)
@@ -57,7 +52,6 @@ ShowInfoProgress.story = {
 };
 
 export const StausProgress = () => ({
-  components: { SmProgress },
   props: {
     status: {
       default: select('status', ['success', 'exception', 'normal', 'active'], 'success')
@@ -75,7 +69,6 @@ StausProgress.story = {
 };
 
 export const CircleProgress = () => ({
-  components: { SmProgress },
   props: {
     type: {
       default: select('type', ['line', 'circle', 'dashboard'], 'circle')
@@ -93,7 +86,6 @@ CircleProgress.story = {
 };
 
 export const DashboardProgress = () => ({
-  components: { SmProgress },
   props: {
     type: {
       default: select('type', ['dashboard'], 'dashboard')
@@ -121,7 +113,6 @@ DashboardProgress.story = {
 };
 
 export const BigProgress = () => ({
-  components: { SmProgress },
   props: {
     type: {
       default: select('type', ['line', 'circle'], 'circle')

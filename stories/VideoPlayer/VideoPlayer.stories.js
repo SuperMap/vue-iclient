@@ -1,11 +1,8 @@
 import { withKnobs, text, object } from '@storybook/addon-knobs';
-import SmVideoPlayer from '../../src/common/video-player/VideoPlayer.vue';
-import '../../src/common/video-player/style/video-player.scss';
 
 export default { title: 'video-player', decorators: [withKnobs] };
 
 export const BasicVideoPlayer = () => ({
-  components: { SmVideoPlayer },
   props: {
     url: {
       default: text('url', 'https://www.runoob.com/try/demo_source/mov_bbb.mp4')
@@ -18,7 +15,6 @@ BasicVideoPlayer.story = {
 };
 
 export const ControlVideoPlayer = () => ({
-  components: { SmVideoPlayer },
   props: {
     url: {
       default: text('url', 'https://www.runoob.com/try/demo_source/mov_bbb.mp4')

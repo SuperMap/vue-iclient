@@ -1,11 +1,8 @@
 import { withKnobs, text, boolean, object, color } from '@storybook/addon-knobs';
-import SmIcon from '../../src/common/icon/Icon.vue';
-import '../../src/common/icon/style/icon.scss';
 
 export default { title: 'icon', decorators: [withKnobs] };
 
 export const BasicIcon = () => ({
-  components: { SmIcon },
   props: {
     type: {
       default: text('type', 'info')
@@ -25,7 +22,6 @@ BasicIcon.story = {
 };
 
 export const SmallIcon = () => ({
-  components: { SmIcon },
   props: {
     type: {
       default: text('type', 'info')
@@ -55,7 +51,6 @@ const HeartSvg = {
   `
 };
 const HeartIcon = {
-  components: { SmIcon },
   template: `
     <sm-icon :component="HeartSvg" />
   `,
@@ -79,7 +74,6 @@ ComponentIcon.story = {
 };
 
 export const twoToneColorIcon = () => ({
-  components: { SmIcon },
   props: {
     type: {
       default: text('type', 'heart')

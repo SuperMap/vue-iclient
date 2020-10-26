@@ -1,11 +1,8 @@
-import SmTimeText from '../../src/common/time-text/TimeText.vue';
-import '../../src/common/time-text/style/time-text.scss';
 import { withKnobs, select, object } from '@storybook/addon-knobs';
 
 export default { title: 'time-text', decorators: [withKnobs] };
 
 export const BasicTimeText = () => ({
-  components: { SmTimeText },
   props: {
     timeType: {
       default: select('timeType', ['date', 'date+second', 'date+second+week'], 'date+second+week')
@@ -18,7 +15,6 @@ BasicTimeText.story = {
 };
 
 export const SmallTimeText = () => ({
-  components: { SmTimeText },
   props: {
     fontStyle: {
       default: object('fontStyle', { fontSize: '14px', fontFamily: '微软雅黑' })

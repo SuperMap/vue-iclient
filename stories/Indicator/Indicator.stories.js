@@ -1,11 +1,8 @@
-import SmIndicator from '../../src/common/indicator/Indicator.vue';
-import '../../src/common/indicator/style/indicator.scss';
 import { withKnobs, text, select, boolean, number, object, array, color } from '@storybook/addon-knobs';
 
 export default { title: 'indicator', decorators: [withKnobs] };
 
 export const BasicIndicator = () => ({
-  components: { SmIndicator },
   props: {
     title: {
       default: text('title', '建筑高度')
@@ -24,7 +21,6 @@ BasicIndicator.story = {
 };
 
 export const SmallIndicator = () => ({
-  components: { SmIndicator },
   props: {
     fontSize: {
       default: text('fontSize', '14px')
@@ -45,7 +41,6 @@ SmallIndicator.story = {
 };
 
 export const StyleIndicator = () => ({
-  components: { SmIndicator },
   props: {
     fontWeight: {
       default: select('fontWeight', ['border', 'normal', 'lighter'], 'border')
@@ -72,7 +67,6 @@ StyleIndicator.story = {
 };
 
 export const SeparatorIndicator = () => ({
-  components: { SmIndicator },
   props: {
     separator: {
       default: text('separator', '-')
@@ -95,7 +89,6 @@ SeparatorIndicator.story = {
 };
 
 export const AnimatedIndicator = () => ({
-  components: { SmIndicator },
   props: {
     animated: {
       default: boolean('animated', true)
@@ -115,7 +108,6 @@ AnimatedIndicator.story = {
 };
 
 export const ModeIndicator = () => ({
-  components: { SmIndicator },
   props: {
     mode: {
       default: select('animated', ['vertical', 'horizontal', 'vertical'])
@@ -135,7 +127,6 @@ ModeIndicator.story = {
 };
 
 export const NumIndicator = () => ({
-  components: { SmIndicator },
   props: {
     numSpacing: {
       default: number('numSpacing', 1)
@@ -162,7 +153,6 @@ NumIndicator.story = {
 };
 
 export const ShowTitleUnitIndicator = () => ({
-  components: { SmIndicator },
   props: {
     showTitleUnit: {
       default: boolean('showTitleUnit', false)
@@ -182,7 +172,6 @@ ShowTitleUnitIndicator.story = {
 };
 
 export const ThresholdsStyleIndicator = () => ({
-  components: { SmIndicator },
   props: {
     thresholdsStyle: {
       default: array('thresholdsStyle', [

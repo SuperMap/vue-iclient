@@ -1,11 +1,8 @@
-import SmImage from '../../src/common/image/Image.vue';
-import '../../src/common/image/style/image.scss';
 import { withKnobs, text, select } from '@storybook/addon-knobs';
 
 export default { title: 'image', decorators: [withKnobs] };
 
 export const BasicImage = () => ({
-  components: { SmImage },
   props: {
     src: {
       default: text('src', 'https://iclient.supermap.io/img/whatsNewLandUse.png')
@@ -18,7 +15,6 @@ BasicImage.story = {
 };
 
 export const RepeatImage = () => ({
-  components: { SmImage },
   props: {
     repeat: {
       default: select('repeat', ['center', 'noRepeat', 'repeatX', 'repeatY', 'repeatXY'], 'center')
@@ -34,7 +30,6 @@ RepeatImage.story = {
 };
 
 export const LinkImage = () => ({
-  components: { SmImage },
   props: {
     src: {
       default: text('src', 'https://iclient.supermap.io/img/whatsNewLandUse.png')

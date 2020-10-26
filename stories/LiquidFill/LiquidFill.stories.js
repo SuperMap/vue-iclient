@@ -1,11 +1,8 @@
 import { withKnobs, text, number, boolean, color } from '@storybook/addon-knobs';
-import SmLiquidFill from '../../src/common/liquidfill/LiquidFill.vue';
-import '../../src/common/liquidfill/style/liquidFill.scss';
 
 export default { title: 'liquidfill', decorators: [withKnobs] };
 
 export const Liquidfill = () => ({
-  components: { SmLiquidFill },
   props: {
     value: {
       default: text('value', '0.5')
@@ -18,7 +15,6 @@ Liquidfill.story = {
 };
 
 export const WaveLiquidfill = () => ({
-  components: { SmLiquidFill },
   props: {
     waveCount: {
       default: number('waveCount', '2')
@@ -39,7 +35,6 @@ WaveLiquidfill.story = {
 };
 
 export const ColorfulLiquidfill = () => ({
-  components: { SmLiquidFill },
   props: {
     waveColor: {
       default: color('waveColor', 'red')
