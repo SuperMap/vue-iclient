@@ -1,12 +1,12 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Password from 'ant-design-vue/es/input/Password';
-import { inputTypes } from './Input.vue';
+import inputProps from 'ant-design-vue/es/input/inputProps';
 import VueTypes from '../_types/vue-types';
 import Base from './BaseMixin.vue';
 
 export const inputPasswordTypes = {
-  ...inputTypes,
+  ...inputProps,
   action: VueTypes.oneOf(['click', 'hover']).def('click'),
   visibilityToggle: VueTypes.bool.def(true)
 };

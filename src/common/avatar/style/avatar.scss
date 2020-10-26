@@ -1,0 +1,12 @@
+@import "../../_utils/style/mixins/mixins.scss";
+
+@include b(avatar) {
+  $--normal-bg-color: var(--normal-bg-color);
+  $--normal-text-color: var(--normal-text-color);
+
+  background: $--normal-bg-color;
+  color: $--normal-text-color;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}

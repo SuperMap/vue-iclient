@@ -11,8 +11,7 @@ import Base from './BaseMixin.vue';
 
 export const checkboxTypes = {
   defaultChecked: VueTypes.bool,
-  // 定义了 checked 之后 defaultChecked 失效
-  // checked: VueTypes.bool,
+  checked: VueTypes.bool,
   disabled: VueTypes.bool,
   indeterminate: VueTypes.bool,
   autoFocus: VueTypes.bool

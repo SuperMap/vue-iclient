@@ -7,7 +7,7 @@ import Base from './BaseMixin.vue';
 export const groupTypes = {
   name: VueTypes.string,
   defaultValue: VueTypes.array,
-  // value: VueTypes.array,
+  value: VueTypes.array,
   options: VueTypes.array,
   disabled: VueTypes.bool
 };

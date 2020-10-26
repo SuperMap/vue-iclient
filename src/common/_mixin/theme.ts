@@ -44,6 +44,10 @@ export default class Theme extends Vue {
 
   selectDropdownBoxshadowData: string = '';
 
+  avatarBackgroundData: string = '';
+
+  avatarTextColorData: string = '';
+
   colorGroupsData: Array<string> = [];
 
   @Prop() background: string;
@@ -85,6 +89,10 @@ export default class Theme extends Vue {
   @Prop() selectDropdownBackground: string;
 
   @Prop() selectDropdownBoxshadow: string;
+
+  @Prop() avatarBackground: string;
+
+  @Prop() avatarTextColor: string;
 
   @Prop() colorGroup: Array<string>;
 

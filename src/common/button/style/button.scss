@@ -10,6 +10,12 @@
   @include e(dashed, '-') {
     @include button-default-color($--default-border-color);
   }
+  @include e(loading, '-') {
+    @include button-default-color($--default-border-color);
+  }
+  @include e(icon-only, '-') {
+    @include button-default-color($--default-border-color);
+  }
   @include e(danger, '-') {
     &, &:hover, &:focus {
       background-color: transparent;

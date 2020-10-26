@@ -6,20 +6,12 @@
 
 <script lang="ts">
 import Button from 'ant-design-vue/es/button/button';
-import VueTypes from '../_types/vue-types';
+import buttonProps from 'ant-design-vue/es/button/buttonTypes';
 import Theme from '../_mixin/theme';
 import { objectWithoutProperties, getColorWithOpacity } from '../_utils/util';
 
 export const buttonTypes = {
-  disabled: VueTypes.bool,
-  ghost: VueTypes.bool,
-  htmlType: VueTypes.oneOf(['button', 'submit', 'reset']).def('button'),
-  icon: VueTypes.any,
-  loading: VueTypes.oneOfType([VueTypes.bool, VueTypes.object]),
-  shape: VueTypes.oneOf(['circle', 'circle-outline', 'round']),
-  size: VueTypes.oneOf(['small', 'large', 'default']).def('default'),
-  type: VueTypes.oneOf(['primary', 'dashed', 'danger', 'link', 'default']).def('default'),
-  block: VueTypes.bool
+  ...buttonProps()
 };
 
 export default {

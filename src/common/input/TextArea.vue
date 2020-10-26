@@ -9,16 +9,11 @@
 
 <script lang="ts">
 import TextArea from 'ant-design-vue/es/input/TextArea';
-import VueTypes from '../_types/vue-types';
+import inputProps from 'ant-design-vue/es/input/inputProps';
 import Base from './BaseMixin.vue';
 
 export const textAreaTypes = {
-  defaultValue: VueTypes.string,
-  disabled: VueTypes.bool,
-  maxLength: VueTypes.number,
-  value: VueTypes.string,
-  allowClear: VueTypes.bool,
-  autoSize: VueTypes.oneOfType([VueTypes.bool, VueTypes.object])
+  ...inputProps
 };
 
 export default {

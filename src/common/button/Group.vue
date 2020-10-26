@@ -5,13 +5,12 @@
 </template>
 
 <script lang="ts">
-import ButtonGroup from 'ant-design-vue/es/button/button-group';
-import VueTypes from '../_types/vue-types';
+import ButtonGroup, { ButtonGroupProps } from 'ant-design-vue/es/button/button-group';
 import Theme from '../_mixin/theme';
 import { objectWithoutProperties } from '../_utils/util';
 
 export const buttonGroupTypes = {
-  size: VueTypes.oneOf(['small', 'large', 'default']).def('default')
+  ...ButtonGroupProps
 };
 
 export default {

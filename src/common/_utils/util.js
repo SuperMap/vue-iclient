@@ -193,5 +193,11 @@ export function objectWithoutProperties(obj, keys = []) {
     'dangerColor'
   ];
   const omitKeys = [...new Set(themeKeys.concat(keys))];
-  return omit(obj, omitKeys);
+  const filterProps = {};
+  for (let key in obj) {
+    if (obj[key] !== void 0) {
+      filterProps[key] = obj[key];
+    }
+  }
+  return omit(filterProps, omitKeys);
 }

@@ -24,6 +24,8 @@
     "switchDisabledOpacity": 1,
     "selectDropdownBackground": "#414141",
     "selectDropdownBoxshadow": "0px 2px 7px 0px rgba(0, 0, 0, 0.35)",
+    "avatarBackground": "#fff",
+    "avatarTextColor": "#ccc",
     "colorGroup": [
       "#3499e5",
       "#759aa0",
@@ -57,6 +59,8 @@
     "switchDisabledOpacity": 0.4,
     "selectDropdownBackground": "#fff",
     "selectDropdownBoxshadow": "0 2px 8px rgba(0, 0, 0, 0.15)",
+    "avatarBackground": "#ccc",
+    "avatarTextColor": "#fff",
     "colorGroup": [
       "#0081e2",
       "#6be6c1",

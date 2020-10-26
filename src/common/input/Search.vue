@@ -1,12 +1,12 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Search from 'ant-design-vue/es/input/Search';
-import { inputTypes } from './Input.vue';
+import inputProps from 'ant-design-vue/es/input/inputProps';
 import VueTypes from '../_types/vue-types';
 import Base from './BaseMixin.vue';
 
 export const inputSearchTypes = {
-  ...inputTypes,
+  ...inputProps,
   enterButton: VueTypes.any
 };
 

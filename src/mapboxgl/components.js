@@ -22,7 +22,8 @@ export { default as Select } from '../common/select/Select';
 export { default as SelectOption } from '../common/select/Option';
 export { default as SelectOptGroup } from '../common/select/OptGroup';
 export { default as Checkbox } from '../common/checkbox/Checkbox';
-export { default as CheckboxGroup } from '../common/checkbox/Group.vue';
+export { default as CheckboxGroup } from '../common/checkbox/Group';
+export { default as Avatar } from '../common/avatar/Avatar';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

@@ -1,57 +1,15 @@
 <script lang="ts">
 import { VNode } from 'vue';
-import Select from 'ant-design-vue/es/select';
+import Select, { SelectProps } from 'ant-design-vue/es/select';
 import VueTypes from '../_types/vue-types';
 import Theme from '../_mixin/theme';
 import { objectWithoutProperties, getColorWithOpacity } from '../_utils/util';
 
 export const selectTypes = {
-  size: VueTypes.oneOf(['small', 'large', 'default']).def('default'),
-  showAction: VueTypes.oneOfType([VueTypes.string, VueTypes.arrayOf(String)]),
-  notFoundContent: VueTypes.any,
-  transitionName: VueTypes.string,
-  choiceTransitionName: VueTypes.string,
-  showSearch: VueTypes.bool,
-  allowClear: VueTypes.bool,
-  disabled: VueTypes.bool,
-  placeholder: VueTypes.any,
-  defaultActiveFirstOption: VueTypes.bool.def(true),
-  dropdownClassName: VueTypes.string,
-  dropdownStyle: VueTypes.object,
-  dropdownMenuStyle: VueTypes.object,
-  dropdownMatchSelectWidth: VueTypes.bool.def(true),
-  filterOption: VueTypes.oneOfType([VueTypes.bool, VueTypes.func]),
-  autoFocus: VueTypes.bool,
-  backfill: VueTypes.bool,
-  showArrow: VueTypes.bool.def(true),
-  getPopupContainer: VueTypes.func,
-  defaultOpen: VueTypes.bool,
-  autoClearSearchValue: VueTypes.bool.def(true),
-  dropdownRender: VueTypes.func,
-  loading: VueTypes.bool,
-  labelInValue: VueTypes.bool,
-  maxTagCount: VueTypes.number,
-  maxTagTextLength: VueTypes.number,
-  maxTagPlaceholder: VueTypes.any,
-  optionFilterProp: VueTypes.string.def('value'),
-  optionLabelProp: VueTypes.string,
-  mode: VueTypes.oneOf(['default', 'multiple', 'tags']).def('default'),
-  defaultValue: VueTypes.oneOfType([
-    VueTypes.string,
-    VueTypes.arrayOf(String),
-    VueTypes.number,
-    VueTypes.arrayOf(Number)
-  ]),
-  // 定义这两个变量 显示不正确
-  // open: VueTypes.bool,
-  // value: VueTypes.oneOfType([VueTypes.string, VueTypes.arrayOf(String), VueTypes.number, VueTypes.arrayOf(Number)]),
-  firstActiveValue: VueTypes.oneOfType([VueTypes.string, VueTypes.arrayOf(String)]),
-  suffixIcon: VueTypes.any,
-  removeIcon: VueTypes.any,
-  clearIcon: VueTypes.any,
-  menuItemSelectedIcon: VueTypes.any,
-  tokenSeparators: VueTypes.arrayOf(String),
-  options: VueTypes.array.def(undefined)
+  ...SelectProps,
+  showSearch: VueTypes.bool.def(false),
+  transitionName: VueTypes.string.def('slide-up'),
+  choiceTransitionName: VueTypes.string.def('zoom')
 };
 
 export default {
