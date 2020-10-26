@@ -3,7 +3,13 @@ function resolve(dir) {
   return path.join(__dirname, '..', dir);
 }
 module.exports = {
-  stories: ['../**/*.stories.mdx', '../**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: [
+    '../**/*.stories.mdx',
+    '../**/Button.stories.@(js|jsx|ts|tsx)',
+    '../**/Input.stories.@(js|jsx|ts|tsx)',
+    '../**/Select.stories.@(js|jsx|ts|tsx)',
+    '../**/Checkbox.stories.@(js|jsx|ts|tsx)'
+  ],
   addons: [
     '@storybook/preset-scss',
     '@storybook/addon-actions/register',
