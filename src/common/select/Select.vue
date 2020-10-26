@@ -14,9 +14,6 @@ export const selectTypes = {
 
 export default {
   name: 'SmSelect',
-  components: {
-    Select
-  },
   mixins: [Theme],
   inheritAttrs: false,
   model: {

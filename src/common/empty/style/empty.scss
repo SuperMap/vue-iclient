@@ -1,0 +1,16 @@
+@import '../../_utils/style/mixins/mixins.scss';
+
+@include b(empty) {
+  width: 265px;
+  background-color: var(--empty-bg-color);
+  @include e(image, '-') {
+    height: auto;
+  }
+  img {
+    width: 52px;
+    height: 31px;
+  }
+  @include e(description, '-') {
+    color: var(--text-color);
+  }
+}

@@ -3,6 +3,7 @@ import { getLanguage, geti18n } from '../../common/_lang';
 import colorcolor from 'colorcolor';
 import getCenter from '@turf/center';
 import omit from 'omit.js';
+import tinyColor from 'tinycolor2';
 
 export function getDateTime(timeType) {
   return geti18n().d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
@@ -200,4 +201,10 @@ export function objectWithoutProperties(obj, keys = []) {
     }
   }
   return omit(filterProps, omitKeys);
+}
+
+export function getDarkenColor(color, amount) {
+  return tinyColor(color)
+    .darken(amount)
+    .toString();
 }

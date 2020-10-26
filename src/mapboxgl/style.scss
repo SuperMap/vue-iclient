@@ -21,6 +21,8 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/select/style/select.scss';
 @import '../common/checkbox/style/checkbox.scss';
 @import '../common/avatar/style/avatar.scss';
+@import '../common/empty/style/empty.scss';
+@import '../common/pagination/style/pagination.scss';
 /** control */
 @import './web-map/control/scale/style/scale.scss';
 @import './web-map/control/zoom/style/zoom.scss';

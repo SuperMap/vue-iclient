@@ -24,6 +24,8 @@ export { default as SelectOptGroup } from '../common/select/OptGroup';
 export { default as Checkbox } from '../common/checkbox/Checkbox';
 export { default as CheckboxGroup } from '../common/checkbox/Group';
 export { default as Avatar } from '../common/avatar/Avatar';
+export { default as Empty } from '../common/empty/Empty';
+export { default as Pagination } from '../common/pagination/Pagination';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

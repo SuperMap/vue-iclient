@@ -1,0 +1,58 @@
+@import '../../_utils/style/mixins/mixins.scss';
+
+@include b(pagination) {
+  $prefix: &;
+  $--default-border-color: var(--default-border-color);
+  $--prev-next-color: var(--prev-next-color);
+  $--active-bg-color: var(--active-bg-color);
+  $--disabled-text-color: var(--disabled-text-color);
+  $--disabled-active-bg-color: var(--disabled-active-bg-color);
+  $--disabled-bg-color: var(--disabled-bg-color);
+  $--disabled-border-color: var(--disabled-border-color);
+
+  &-item,
+  &-prev &-item-link,
+  &-next &-item-link {
+    border: 1px solid $--default-border-color;
+    background: transparent;
+  }
+
+  @include e(item-active, '-') {
+    background: $--active-bg-color;
+    &:focus a,
+    &:hover a,
+    a {
+      color: #ffffff;
+    }
+  }
+  &-disabled a,
+  &-disabled:hover a,
+  &-disabled:focus a,
+  &-disabled &-item-link,
+  &-disabled:hover &-item-link,
+  &-disabled:focus &-item-link {
+    color: $--disabled-text-color;
+  }
+  &#{$prefix}-disabled {
+    #{$prefix}-item a {
+      color: $--disabled-text-color;
+      border-color: $--disabled-border-color;
+    }
+    #{$prefix}-item-link {
+      &,
+      &:hover,
+      &:focus {
+        color: $--disabled-text-color;
+        border-color: $--disabled-border-color;
+      }
+    }
+  }
+  &#{$prefix}-disabled &-item-active {
+    background: $--disabled-active-bg-color;
+    border-color: $--disabled-border-color;
+  }
+  &-jump-prev &-item-container &-item-ellipsis,
+  &-jump-next &-item-container &-item-ellipsis {
+    color: $--prev-next-color;
+  }
+}
