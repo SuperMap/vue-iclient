@@ -302,7 +302,7 @@ export default class WebMapViewModel extends WebMapBase {
         if (this.mapOptions.hasOwnProperty('fadeDuration')) {
           fadeDuration = this.mapOptions.fadeDuration;
         }
-        this.map = new mapboxgl.Map({...this.mapOptions, fadeDuration });
+        this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
         this.map.on('load', () => {
           this.triggerEvent('addlayerssucceeded', {
             map: this.map,
@@ -342,7 +342,10 @@ export default class WebMapViewModel extends WebMapBase {
     }
     if (!bounds) {
       if (mapInfo.minScale && mapInfo.maxScale) {
-        zoomBase = Math.min(this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection)),this._transformScaleToZoom(mapInfo.maxScale, mapboxgl.CRS.get(this.baseProjection)));
+        zoomBase = Math.min(
+          this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection)),
+          this._transformScaleToZoom(mapInfo.maxScale, mapboxgl.CRS.get(this.baseProjection))
+        );
       } else {
         zoomBase = +Math.log2(
           this._getResolution(mapboxgl.CRS.get(this.baseProjection).getExtent()) / this._getResolution(mapInfo.extent)
@@ -350,7 +353,6 @@ export default class WebMapViewModel extends WebMapBase {
       }
       zoom += zoomBase;
     }
-
 
     // 初始化 map
     this.map = new mapboxgl.Map({
@@ -513,7 +515,7 @@ export default class WebMapViewModel extends WebMapBase {
 
     // mbgl 目前不能处理 geojson 复杂面情况
     // mbgl isssue https://github.com/mapbox/mapbox-gl-js/issues/7023
-    if (features && features[0] && features[0].geometry.type === 'Polygon') {
+    if (features && features[0] && features[0].geometry && features[0].geometry.type === 'Polygon') {
       features = handleMultyPolygon(features);
     }
 

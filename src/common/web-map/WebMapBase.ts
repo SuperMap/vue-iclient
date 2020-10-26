@@ -679,9 +679,9 @@ export default abstract class WebMapBase extends Events {
   protected transformFeatures(features) {
     features &&
       features.forEach((feature, index) => {
-        let geometryType = feature.geometry.type;
-        let coordinates = feature.geometry.coordinates;
-        if (coordinates.length === 0) {
+        let geometryType = feature.geometry && feature.geometry.type;
+        let coordinates = feature.geometry && feature.geometry.coordinates;
+        if (!coordinates || coordinates.length === 0) {
           return;
         }
         if (geometryType === 'LineString') {
