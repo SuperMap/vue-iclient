@@ -17,7 +17,6 @@ export default {
         '--focus-border-color': this.getColor(0)
       };
       if (this.disabled) {
-        style['--disabled-text-color'] = getColorWithOpacity(this.textColorsData, 0.25);
         style['--disabled-border-color'] = this.disabledBorderColorData;
       }
       return style;

@@ -34,11 +34,7 @@ export default {
         '--focus-border-color': this.getColor(0)
       };
       if (this.disabled) {
-        style['--disabled-text-color'] = getColorWithOpacity(this.textColorsData, 0.25);
         style['--disabled-border-color'] = this.disabledBorderColorData;
-      }
-      if (this.showArrow) {
-        style['--arrow-text-color'] = getColorWithOpacity(this.textColorsData, 0.45);
       }
       return style;
     },
@@ -48,9 +44,8 @@ export default {
         '--dropdown-box-shadow': this.selectDropdownBoxshadowData,
         '--selected-bg-color': this.selectedColorData,
         '--selected-text-color': getColorWithOpacity(this.textColorsData, 1),
-        '--disabled-text-color': getColorWithOpacity(this.textColorsData, 0.25),
         '--hover-bg-color': this.hoverColorData,
-        '--group-title-text-color': getColorWithOpacity(this.textColorsData, 0.45)
+        '--selected-icon-text-color': getColorWithOpacity(this.textColorsData, 0.87)
       };
       return Object.assign({}, this.dropdownStyle, style);
     },

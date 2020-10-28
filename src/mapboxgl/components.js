@@ -26,6 +26,10 @@ export { default as CheckboxGroup } from '../common/checkbox/Group';
 export { default as Avatar } from '../common/avatar/Avatar';
 export { default as Empty } from '../common/empty/Empty';
 export { default as Pagination } from '../common/pagination/Pagination';
+export { default as DatePicker } from '../common/date-picker/DatePicker';
+export { default as RangePicker } from '../common/date-picker/RangePicker';
+export { default as MonthPicker } from '../common/date-picker/MonthPicker';
+export { default as WeekPicker } from '../common/date-picker/WeekPicker';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

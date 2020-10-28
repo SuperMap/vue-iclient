@@ -32,10 +32,6 @@
     } 
   }
 
-  @include e(group-addon, '-') {
-    background-color: transparent;
-  }
-
   &-disabled,
   &.disabled,
   &[disabled] {
@@ -44,7 +40,6 @@
     &:focus,
     &:active,
     &.active {
-      color: var(--disabled-text-color);
       border-color: var(--disabled-border-color);
     }
   }

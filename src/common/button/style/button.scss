@@ -1,23 +1,18 @@
 @import "../../_utils/style/mixins/mixins.scss";
-@import "mixin.scss";
 
 
 @include b(btn) {
   $--default-border-color: var(--default-border-color);
-  @include e(default, '-') {
-    @include button-default-color($--default-border-color);
+  &:not([disabled]):not(&-primary) {
+    border-color: $--default-border-color;
+    &,
+    &:hover, &:focus, &:active {
+      background: transparent;
+    }
   }
-  @include e(dashed, '-') {
-    @include button-default-color($--default-border-color);
-  }
-  @include e(loading, '-') {
-    @include button-default-color($--default-border-color);
-  }
-  @include e(icon-only, '-') {
-    @include button-default-color($--default-border-color);
-  }
+
   @include e(danger, '-') {
-    &, &:hover, &:focus {
+    &, &:hover, &:focus, &:active {
       background-color: transparent;
       color: var(--danger-bg-color);
     }
@@ -33,7 +28,6 @@
     &:focus,
     &:active,
     &.active {
-      color: var(--disabled-text-color);
       border-color: var(--disabled-border-color);
     }
   }

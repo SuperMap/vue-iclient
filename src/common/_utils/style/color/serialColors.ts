@@ -26,6 +26,10 @@ const $grey3 = '#f5f5f5';
 const $grey5 = '#d9d9d9';
 const $grey6 = '#bfbfbf';
 const $fadeBlack = 'rgba(0, 0, 0, 0.65)';
+const $fadeBlackSecondary = 'rgba(0, 0, 0, 0.45)';
+const $fadeBlackDisabled = 'rgba(0, 0, 0, 0.25)';
+const $borderColorSplit = '#e8e8e8';
+const $backgroundLight = '#fafafa';
 
 const antdPrimaryColor = $blue6;
 const antdFunctionColors: functionColorParams = {
@@ -35,10 +39,14 @@ const antdFunctionColors: functionColorParams = {
   dangerColor: $red6
 };
 const antdOtherColors: ThemeStyleParams = {
+  backgroundLight: $backgroundLight,
   textColor: $fadeBlack,
+  textColorSecondary: $fadeBlackSecondary,
   disabledBgColor: $grey3,
+  disabledTextColor: $fadeBlackDisabled,
   borderBaseColor: $grey5,
-  placeholderColor: $grey6
+  placeholderColor: $grey6,
+  borderColorSplit: $borderColorSplit
 };
 
 export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string[] {
@@ -113,8 +121,10 @@ export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerPa
       const datas =
         typeof otherSerialColors[key] === 'string' ? [].concat(otherSerialColors[key]) : otherSerialColors[key];
       datas.forEach((item: string, index: number) => {
-        const nextItem = item.replace('(', '\\(').replace(')', '\\)');
-        cssStyle = cssStyle.replace(new RegExp(nextItem, 'ig'), themeStyleData[key]);
+        if (!antdPrimarySerialColors.includes(item) && !serialColorsReplacer.includes(item)) {
+          const nextItem = item.replace('(', '\\(').replace(')', '\\)');
+          cssStyle = cssStyle.replace(new RegExp(nextItem, 'ig'), themeStyleData[key]);
+        }
       });
     }
   }

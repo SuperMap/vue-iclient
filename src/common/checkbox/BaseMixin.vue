@@ -1,6 +1,6 @@
 <script lang="ts">
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties, getColorWithOpacity } from '../_utils/util';
+import { objectWithoutProperties } from '../_utils/util';
 
 export default {
   mixins: [Theme],
@@ -20,7 +20,6 @@ export default {
         '--hover-border-color': this.hoverColorData
       };
       if (this.disabled) {
-        style['--disabled-text-color'] = getColorWithOpacity(this.textColorsData, 0.25);
         style['--disabled-border-color'] = this.disabledBorderColorData;
       }
       return style;

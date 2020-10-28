@@ -10,6 +10,8 @@ export default class Theme extends Vue {
 
   textColorsData: string = '';
 
+  textColorSecondaryData: string = '';
+
   selectedColorData: string = '';
 
   hoverColorData: string = '';
@@ -27,6 +29,8 @@ export default class Theme extends Vue {
   disabledBgColorData: string = '';
 
   disabledBorderColorData: string = '';
+
+  disabledTextColorData: string = '';
 
   buttonBorderDefaultColorData: string = '';
 
@@ -57,6 +61,8 @@ export default class Theme extends Vue {
   @Prop() background: string;
 
   @Prop() textColor: string;
+  
+  @Prop() textColorSecondary: string;
 
   @Prop() selectedColor: string;
 
@@ -75,6 +81,8 @@ export default class Theme extends Vue {
   @Prop() disabledBgColor: string;
 
   @Prop() disabledBorderColor: string;
+
+  @Prop() disabledTextColor: string;
 
   @Prop() borderBaseColor: string;
 

@@ -1,0 +1,251 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import 'mixin.scss';
+
+@include b(calendar-picker) {
+  $--icon-bg-color: var(--icon-bg-color);
+  $--icon-text-color: var(--icon-text-color);
+
+  @include e(icon, '-') {
+    color: $--icon-text-color;
+  }
+
+  @include e(clear, '-') {
+    background: $--icon-bg-color;
+  }
+}
+
+@include b(calendar) {
+  $prefix: &;
+  $--dropdown-bg-color: var(--dropdown-bg-color);
+  $--dropdown-box-shadow: var(--dropdown-box-shadow);
+  $--disabled-border-color: var(--disabled-border-color);
+  $--selected-year-month-color: var(--selected-year-month-color);
+  $--selected-text-color: var(--selected-text-color);
+  $--selected-bg-color: var(--selected-bg-color);
+  $--date-hover-color: var(--date-hover-color);
+  $--date-active-color: var(--date-active-color);
+  $--normal-text-color: var(--normal-text-color);
+
+  border-radius: 2px;
+  background-color: $--dropdown-bg-color;
+  box-shadow: $--dropdown-box-shadow;
+  border: none;
+
+  @include e(input, '-') {
+    background: $--dropdown-bg-color;
+  }
+
+  @include e(header, '-') {
+    #{$prefix}-century-select,
+    #{$prefix}-decade-select,
+    #{$prefix}-year-select,
+    #{$prefix}-month-select {
+      color: $--selected-year-month-color;
+    }
+  }
+
+  @include e(footer, '-') {
+    &-btn {
+      text-align: right;
+      padding-right: 10px;
+      a {
+        color: $--date-active-color;
+        &:hover {
+          color: $--date-hover-color;
+        }
+        &:active {
+          color: $--date-active-color;
+        }
+      }
+    }
+  }
+
+  @include e(date, '-') {
+    &:hover {
+      background: $--date-hover-color;
+    }
+    &:active {
+      background: $--date-active-color;
+    }
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  @include e(selected-day, '-') {
+    &:not(#{$prefix}-today) {
+      #{$prefix}-date {
+        color: $--selected-text-color;
+      }
+    }
+    &#{$prefix}-today {
+      #{$prefix}-date {
+        background: transparent;
+      }
+    }
+  }
+
+  @include e(today, '-') {
+    #{$prefix}-date {
+      &:hover {
+        background: $--date-hover-color;
+        border-color: transparent;
+        color: $--normal-text-color;
+      }
+    }
+  }
+
+  @include e(disabled-cell, '-') {
+    &#{$prefix}-selected-day {
+      #{$prefix}-date {
+        &::before {
+          background: transparent;
+        }
+      }
+    }
+    &#{$prefix}-selected-day {
+      border-color: $--disabled-border-color;
+      #{$prefix}-date {
+        &::before {
+          border-color: transparent;
+        }
+      }
+    }
+  }
+
+  @include e(time, '-') {
+    #{$prefix}-day-select {
+      color: $--selected-year-month-color;
+    }
+
+    &-picker {
+      background: $--dropdown-bg-color;
+      $prefix-time-picker-select: &;
+
+      &-select {
+        $prefix-time-picker-select: &;
+
+        li {
+          &:hover {
+            background: $--date-hover-color;
+          }
+          &:focus {
+            background: $--date-active-color;
+            color: #fff;
+          }
+          &#{$prefix-time-picker-select}-option-selected {
+            background: $--selected-bg-color;
+            color: $--selected-text-color;
+          }
+        }
+      }
+    }
+  }
+
+  @include e(month-panel, '-') {
+    $prefix-month-panel: &;
+
+    @include panel-item-color(
+      &,
+      $--dropdown-bg-color,
+      $--selected-year-month-color,
+      $--date-hover-color,
+      $--normal-text-color,
+      $--date-active-color,
+      $--selected-bg-color,
+      $--selected-text-color,
+      month
+    );
+
+    &-current-cell {
+      #{$prefix-month-panel}-month {
+        border: 1px solid $--date-active-color;
+        color: $--date-active-color;
+        background: transparent;
+      }
+    }
+  }
+
+  @include e(year-panel, '-') {
+    @include panel-item-color(
+      &,
+      $--dropdown-bg-color,
+      $--selected-year-month-color,
+      $--date-hover-color,
+      $--normal-text-color,
+      $--date-active-color,
+      $--selected-bg-color,
+      $--selected-text-color,
+      year
+    );
+  }
+
+  @include e(decade-panel, '-') {
+    @include panel-item-color(
+      &,
+      $--dropdown-bg-color,
+      $--selected-year-month-color,
+      $--date-hover-color,
+      $--normal-text-color,
+      $--date-active-color,
+      $--selected-bg-color,
+      $--selected-text-color,
+      decade
+    );
+  }
+
+  @include e(range, '-') {
+    &#{$prefix}-time {
+      #{$prefix}-time-picker-combobox {
+        background: $--dropdown-bg-color;
+      }
+    }
+
+    #{$prefix}-input,
+    #{$prefix}-time-picker-input {
+      background: $--dropdown-bg-color;
+    }
+
+    #{$prefix}-selected-start-date,
+    #{$prefix}-selected-end-date {
+      #{$prefix}-date {
+        background: $--selected-bg-color;
+        color: $--selected-text-color;
+      }
+    }
+
+    #{$prefix}-in-range-cell {
+      &::before {
+        background: transparent;
+      }
+    }
+  }
+
+  @include e(week-number, '-') {
+    #{$prefix}-body {
+      tr {
+        &#{$prefix}-active-week {
+          background: transparent;
+        }
+        &:hover {
+          background: transparent;
+        }
+        #{$prefix}-selected-date {
+          #{$prefix}-selected-day {
+            #{$prefix}-date {
+              color: $--selected-text-color;
+              background: $--selected-bg-color;
+            }
+          }
+        }
+        #{$prefix}-selected-day {
+          &:hover {
+            #{$prefix}-date {
+              background: $--date-hover-color;
+            }
+          }
+        }
+      }
+    }
+  }
+}

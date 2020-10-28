@@ -1,0 +1,45 @@
+@mixin panel-item-color(
+  $prefix-panel,
+  $--dropdown-bg-color,
+  $--selected-year-month-color,
+  $--date-hover-color,
+  $--normal-text-color,
+  $--date-active-color,
+  $--selected-bg-color,
+  $--selected-text-color,
+  $cell-name
+) {
+  background: $--dropdown-bg-color;
+
+  #{$prefix-panel}-header {
+    #{$prefix-panel}-century-select,
+    #{$prefix-panel}-decade-select,
+    #{$prefix-panel}-year-select,
+    #{$prefix-panel}-month-select {
+      color: $--selected-year-month-color;
+    }
+  }
+
+  #{$prefix-panel}-cell {
+    &:not(#{$prefix-panel}-cell-disabled) {
+      #{$prefix-panel}-#{$cell-name} {
+        &:hover {
+          background: $--date-hover-color;
+          color: $--normal-text-color;
+          border-color: transparent;
+        }
+        &:active {
+          background: $--date-active-color;
+          color: #fff;
+        }
+      }
+    }
+  }
+
+  #{$prefix-panel}-selected-cell {
+    #{$prefix-panel}-#{$cell-name} {
+      background: $--selected-bg-color;
+      color: $--selected-text-color;
+    }
+  }
+}
