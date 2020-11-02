@@ -18,8 +18,7 @@ export default {
       {
         props: this.datePickerProps,
         on: this.datePickerListeners,
-        scopedSlots: this.$scopedSlots,
-        style: this.datePickerStyle
+        scopedSlots: this.$scopedSlots
       },
       this.$slots['default']
     );

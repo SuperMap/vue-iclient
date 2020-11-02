@@ -91,6 +91,7 @@ export function getFunctionSerialColors(functionColors?: ThemeStyleParams): Func
 export function getExtralColors(themeStyleData: ThemeStyleParams, primarySerialColors: string[], functionColors: ThemeStyleParams): ExtraColorParams {
   const extraSerialColors: ExtraColorParams = {
     textColorWithoutOpacity: getColorWithOpacity(themeStyleData.textColor, 1),
+    backgroundWithoutOpacity: getColorWithOpacity(themeStyleData.background, 1),
     componentBackgroundWithoutOpacity: getColorWithOpacity(themeStyleData.componentBackground, 1),
     primaryShadowColor: getColorWithOpacity(primarySerialColors[4], 0.25),
     dangerShadowColor: getColorWithOpacity(functionColors.dangerColor[4], 0.25)
