@@ -1,12 +1,7 @@
-<template>
-  <Checkbox v-bind="checkboxProps" :style="checkboxStyle" v-on="checkboxListeners">
-    <slot />
-  </Checkbox>
-</template>
-
 <script lang="ts">
+import { VNode } from 'vue';
 import Checkbox from 'ant-design-vue/es/checkbox/Checkbox';
-import VueTypes from '../_types/vue-types';
+import VueTypes from '../_utils/vue-types';
 import Base from './BaseMixin.vue';
 
 export const checkboxTypes = {
@@ -20,9 +15,6 @@ export const checkboxTypes = {
 export default {
   name: 'SmCheckbox',
   __ANT_CHECKBOX: true,
-  components: {
-    Checkbox
-  },
   mixins: [Base],
   model: {
     prop: 'checked',
@@ -38,6 +30,17 @@ export default {
         }
       });
     }
+  },
+  render(h): VNode {
+    return h(
+      Checkbox,
+      {
+        props: this.checkboxProps,
+        on: this.checkboxListeners,
+        scopedSlots: this.$scopedSlots
+      },
+      this.$slots['default']
+    );
   }
 };
 </script>

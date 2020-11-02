@@ -1,5 +1,5 @@
 <template>
-  <ButtonGroup v-bind="buttonGroupProps" :style="buttonGroupStyle" v-on="buttonGroupListeners">
+  <ButtonGroup v-bind="buttonGroupProps" v-on="buttonGroupListeners">
     <slot />
   </ButtonGroup>
 </template>
@@ -24,10 +24,6 @@ export default {
   computed: {
     buttonGroupProps() {
       return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-btn-group' });
-    },
-    buttonGroupStyle() {
-      const style = { '--text-color': this.textColorsData };
-      return style;
     },
     buttonGroupListeners() {
       return Object.assign({}, this.$listeners);

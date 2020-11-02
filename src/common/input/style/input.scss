@@ -1,47 +1,44 @@
 @import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils//style/theme/theme.scss';
 @import 'mixin.scss';
 
 @include b(input) {
-  $--normal-bg-color: var(--normal-bg-color);
-  $--focus-border-color: var(--focus-border-color);
-  $--box-shadow-color: var(--box-shadow-color);
-
-  background-color: $--normal-bg-color;
-  @include input-focus-color(var(--focus-border-color), var(--box-shadow-color));
-  
-  @include e(number, '-') {
-    background-color: $--normal-bg-color;
-    @include input-focus-color($--focus-border-color, $--box-shadow-color);
-
-    &-focused {
-      @include focus-color($--focus-border-color, $--box-shadow-color);
-    }
-
-    &-input-wrap {
-      &:focus {
-        outline: 0;
-      } 
-    }
-  }
-
-  @include e(number-handler, '-') {
-    outline: 0;
-    color: var(--arrow-text-color);
-    &-wrap {
-      background-color: $--normal-bg-color;
-    } 
-  }
-
-  &-disabled,
-  &.disabled,
+  @include focus($primary-5, $primary-shadow-color);
   &[disabled] {
-    &,
-    &:hover,
-    &:focus,
-    &:active,
-    &.active {
-      border-color: var(--disabled-border-color);
+    @include disabled();
+  }
+  @include e(disabled, '-') {
+    @include disabled();
+  }
+  @include e(group-addon, '-') {
+    background-color: $background-color-light;
+  }
+  @include e(number, '-') {
+    @include focus($primary-5, $primary-shadow-color);
+    &-focused {
+      @include focus-color($primary-5, $primary-shadow-color);
     }
+    &-handler {
+      color: $text-color-secondary;
+      &:active {
+        background: $input-number-handler-active-bg;
+      }
+      &-up-inner, &-down-inner {
+        color: $text-color-secondary;
+      }
+    }
+  }
+  @include e(password, '-') {
+    @include suffix-icon();
+  }
+  @include e(search, '-') {
+    @include suffix-icon();
+  }
+  @include e(clear-icon, '-') {
+    @include clear-icon();
+  }
+  @include e(textarea-clear-icon, '-') {
+    @include clear-icon();
   }
 
   // &:-internal-autofill-selected {

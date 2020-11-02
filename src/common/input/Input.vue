@@ -25,8 +25,7 @@ export default {
           prefixCls: 'sm-component-input'
         },
         on: this.inputListeners,
-        scopedSlots: this.$scopedSlots,
-        style: this.inputStyle
+        scopedSlots: this.$scopedSlots
       }
     );
   }

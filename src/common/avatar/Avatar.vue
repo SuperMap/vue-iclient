@@ -1,7 +1,7 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Avatar from 'ant-design-vue/es/avatar/Avatar';
-import VueTypes from '../_types/vue-types';
+import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
 import { objectWithoutProperties } from '../_utils/util';
 
@@ -25,13 +25,6 @@ export default {
     avatarProps() {
       return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-avatar' });
     },
-    avatarStyle() {
-      const style = {
-        '--normal-bg-color': this.avatarBackgroundData,
-        '--normal-text-color': this.avatarTextColorData
-      };
-      return style;
-    },
     avatarListeners() {
       return Object.assign({}, this.$listeners);
     }
@@ -49,8 +42,7 @@ export default {
       {
         props: this.avatarProps,
         on: this.avatarListeners,
-        scopedSlots: this.$scopedSlots,
-        style: this.avatarStyle
+        scopedSlots: this.$scopedSlots
       },
       [this.$slots['default'], children]
     );

@@ -1,7 +1,7 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Group from 'ant-design-vue/es/checkbox/Group';
-import VueTypes from '../_types/vue-types';
+import VueTypes from '../_utils/vue-types';
 import Base from './BaseMixin.vue';
 
 export const groupTypes = {
@@ -36,8 +36,7 @@ export default {
       {
         props: this.checkboxProps,
         on: this.groupListeners,
-        scopedSlots: this.$scopedSlots,
-        style: this.checkboxStyle
+        scopedSlots: this.$scopedSlots
       },
       this.$slots['default']
     );

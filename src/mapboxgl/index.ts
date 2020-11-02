@@ -25,22 +25,8 @@ import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
 import cssVars from 'css-vars-ponyfill';
-// import 'ant-design-vue/dist/antd.css';
-import { dealWithTheme, ThemeStyleParams, StyleReplacerParams } from '../common/_utils/style/color/serialColors';
-
-const setAntdStyle = (theme: ThemeStyleParams) => {
-  const data: StyleReplacerParams = dealWithTheme(theme);
-  const antdStyleId = 'sm-component-style';
-  let antStyleTag = document.getElementById(antdStyleId);
-  if (!antStyleTag) {
-    antStyleTag = document.createElement('style');
-    antStyleTag.setAttribute('id', antdStyleId);
-    antStyleTag.setAttribute('type', 'text/css');
-    document.head.insertBefore(antStyleTag, document.head.firstChild);
-  }
-  antStyleTag.innerHTML = data.cssStyle;
-  return data.themeStyle;
-};
+import 'ant-design-vue/dist/antd.css';
+import { dealWithTheme } from '../common/_utils/style/color/serialColors';
 
 const setTheme = (themeStyle: any = {}) => {
   if (typeof themeStyle === 'string') {
@@ -52,8 +38,8 @@ const setTheme = (themeStyle: any = {}) => {
     }
     themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
   }
-  const nextThemeStyle = setAntdStyle(themeStyle);
-  const nextTheme = Object.assign({}, themeStyle, nextThemeStyle);
+  const nextThemeData = dealWithTheme(themeStyle);
+  const nextTheme = nextThemeData.themeStyle;
   globalEvent.$options.theme = nextTheme;
   globalEvent.$emit('change-theme', nextTheme);
 };
@@ -61,6 +47,7 @@ const setTheme = (themeStyle: any = {}) => {
 const install = function(Vue, opts: any = {}) {
   cssVars();
   let theme = opts.theme || 'light';
+  require('../common/_utils/style/theme/antd.less');
   require('./style.scss');
   setTheme(theme);
   registerProjection(opts.projections);

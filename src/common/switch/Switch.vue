@@ -1,7 +1,7 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Switch from 'ant-design-vue/es/switch';
-import VueTypes from '../_types/vue-types';
+import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
 import { objectWithoutProperties } from '../_utils/util';
 
@@ -31,18 +31,6 @@ export default {
       const props = objectWithoutProperties({ ...this.$props, ...this.$attrs });
       return Object.assign(props, { prefixCls: 'sm-component-switch' });
     },
-    switchStyle() {
-      const style = {
-        '--normal-bg-color': this.switchBackgroundData
-      };
-      if (this.disabled || this.loading) {
-        style['--disabled-bg-color'] = this.switchDisabledBgColorData;
-        style['--disabled-after-color'] = this.switchDisabledAfterColorData;
-        style['--disabled-opacity'] = this.switchDisabledOpacityData;
-        style['--disabled-inner-opacity'] = this.switchDisabledOpacityData >= 1 ? 0.4 : 1;
-      }
-      return style;
-    },
     switchListeners() {
       const vm = this;
       return Object.assign({}, this.$listeners, {
@@ -57,8 +45,7 @@ export default {
     return h(Switch, {
       props: this.switchProps,
       on: this.switchListeners,
-      scopedSlots: this.$scopedSlots,
-      style: this.switchStyle
+      scopedSlots: this.$scopedSlots
     });
   }
 };

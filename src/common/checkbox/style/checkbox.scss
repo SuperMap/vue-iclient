@@ -1,40 +1,18 @@
-@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
 
 
 @include b(checkbox) {
   $prefix: &;
-  $--normal-bg-color: var(--normal-bg-color);
-  $--normal-border-color: var(--normal-border-color);
-  $--disabled-border-color: var(--disabled-border-color);
-  $--hover-border-color: var(--hover-border-color);
-
-  &:hover, &-wrapper:hover {
-    #{$prefix}-inner {
-      border-color: $--hover-border-color;
-    }
+  &-wrapper:hover &-inner, &:hover &-inner, &-input:focus + &-inner {
+    border-color: $hover-color;
   }
-
-  @include e(wrapper inner, '-') {
-    &:focus {
-      outline: 0;
-    }
-  }
-
   @include e(inner, '-') {
-    background-color: $--normal-bg-color;
+    background-color: $component-background;
   }
-
-  @include e(input, '-') {
-    &:focus {
-      & + #{$prefix}-inner {
-        border-color: $--normal-border-color;
-      }
-    }
-  }
-  
   @include e(disabled, '-') {
     #{$prefix}-inner {
-      border-color: $--disabled-border-color !important;
+      border-color: $disabled-border-color !important;
     }
   }
 }

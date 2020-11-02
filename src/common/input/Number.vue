@@ -1,16 +1,7 @@
-<template>
-  <InputNumber
-    v-bind="inputProps"
-    :style="inputNumberStyle"
-    prefixCls="sm-component-input-number"
-    v-on="inputListeners"
-  />
-</template>
-
 <script lang="ts">
+import { VNode } from 'vue';
 import InputNumber, { InputNumberProps } from 'ant-design-vue/es/input-number';
 import Base from './BaseMixin.vue';
-import { getColorWithOpacity } from '../_utils/util';
 
 export const inputNumberTypes = {
   ...InputNumberProps
@@ -18,9 +9,6 @@ export const inputNumberTypes = {
 
 export default {
   name: 'SmInputNumber',
-  components: {
-    InputNumber
-  },
   mixins: [Base],
   model: {
     prop: 'value',
@@ -28,12 +16,6 @@ export default {
   },
   props: inputNumberTypes,
   computed: {
-    inputNumberStyle() {
-      const style = Object.assign({}, this.inputStyle, {
-        '--arrow-text-color': getColorWithOpacity(this.textColorsData, 0.45)
-      });
-      return style;
-    },
     inputListeners() {
       const vm = this;
       return Object.assign({}, this.$listeners, {
@@ -43,6 +25,19 @@ export default {
         }
       });
     }
+  },
+  render(h): VNode {
+    return h(
+      InputNumber,
+      {
+        props: {
+          ...this.inputProps,
+          prefixCls: 'sm-component-input-number'
+        },
+        on: this.inputListeners,
+        scopedSlots: this.$scopedSlots
+      }
+    );
   }
 };
 </script>

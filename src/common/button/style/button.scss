@@ -1,38 +1,44 @@
-@import "../../_utils/style/mixins/mixins.scss";
-
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import 'mixin.scss';
 
 @include b(btn) {
-  $--default-border-color: var(--default-border-color);
-  &:not([disabled]):not(&-primary) {
-    border-color: $--default-border-color;
-    &,
-    &:hover, &:focus, &:active {
-      background: transparent;
+  $prefix: &;
+  @include button-variant-other($btn-default-bg);
+
+  @include e(primary, '-') {
+    @include button-variant-primary(
+      $btn-primary-color,
+      $primary-5,
+      $primary-5,
+      $btn-primary-color,
+      $primary-7,
+      $primary-7
+    );
+  }
+  @include e(danger, '-') {
+    border-color: $btn-danger-border;
+    @include button-variant-primary($danger-5, transparent, $danger-5, $danger-7, transparent, $danger-7);
+  }
+  @include e(link, '-') {
+    &:hover,
+    &:focus,
+    &:active {
+      border-color: transparent;
     }
   }
-
-  @include e(danger, '-') {
-    &, &:hover, &:focus, &:active {
-      background-color: transparent;
-      color: var(--danger-bg-color);
+  @include e(background-ghost, '-') {
+    &#{$prefix}-primary {
+      @include button-variant-ghost($primary-5, transparent, $primary-5, $primary-7, transparent, $primary-7);
+    }
+    &#{$prefix}-danger {
+      @include button-variant-ghost($danger-5, transparent, $danger-5, $danger-7, transparent, $danger-7);
+    }
+    &#{$prefix}-link {
+      @include button-variant-ghost($primary-5, transparent, transparent, $primary-7, transparent, transparent);
     }
   }
   @include e(group, '-') {
-    color: var(--text-color);
-  }
-  &-disabled,
-  &.disabled,
-  &[disabled] {
-    &,
-    &:hover,
-    &:focus,
-    &:active,
-    &.active {
-      border-color: var(--disabled-border-color);
-    }
-  }
-
-  &::before {
-    background: transparent;
+    color: $btn-default-color;
   }
 }

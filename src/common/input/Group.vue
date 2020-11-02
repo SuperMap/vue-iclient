@@ -6,7 +6,7 @@
 
 <script lang="ts">
 import Group from 'ant-design-vue/es/input/Group';
-import VueTypes from '../_types/vue-types';
+import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
 import { objectWithoutProperties } from '../_utils/util';
 

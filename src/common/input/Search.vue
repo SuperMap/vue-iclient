@@ -2,7 +2,7 @@
 import { VNode } from 'vue';
 import Search from 'ant-design-vue/es/input/Search';
 import inputProps from 'ant-design-vue/es/input/inputProps';
-import VueTypes from '../_types/vue-types';
+import VueTypes from '../_utils/vue-types';
 import Base from './BaseMixin.vue';
 
 export const inputSearchTypes = {
@@ -46,8 +46,7 @@ export default {
         inputPrefixCls: 'sm-component-input'
       },
       on: this.inputListeners,
-      scopedSlots: this.$scopedSlots,
-      style: this.inputStyle
+      scopedSlots: this.$scopedSlots
     });
   }
 };

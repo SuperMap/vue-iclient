@@ -1,5 +1,5 @@
 <template>
-  <Button v-bind="buttonProps" :style="buttonStyle" v-on="buttonListeners">
+  <Button v-bind="buttonProps" v-on="buttonListeners">
     <slot />
   </Button>
 </template>
@@ -26,20 +26,6 @@ export default {
   computed: {
     buttonProps() {
       return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-btn' });
-    },
-    buttonStyle() {
-      const style = {
-        '--default-border-color': this.buttonBorderDefaultColorData
-      };
-      switch (this.type) {
-        case 'danger':
-          style['--danger-bg-color'] = this.dangerColorData;
-          break;
-      }
-      if (this.disabled) {
-        style['--disabled-border-color'] = this.disabledBorderColorData;
-      }
-      return style;
     },
     buttonListeners() {
       return Object.assign({}, this.$listeners);

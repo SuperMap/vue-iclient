@@ -1,7 +1,7 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Select from 'ant-design-vue/es/select';
-import VueTypes from '../_types/vue-types';
+import VueTypes from '../_utils/vue-types';
 import { objectWithoutProperties } from '../_utils/util';
 
 export const optionTypes = {

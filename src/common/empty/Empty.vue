@@ -1,7 +1,7 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Empty, { EmptyProps } from 'ant-design-vue/es/empty/index';
-import VueTypes from '../_types/vue-types';
+import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
 import { objectWithoutProperties } from '../_utils/util';
 

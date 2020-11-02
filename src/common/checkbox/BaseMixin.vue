@@ -12,17 +12,6 @@ export default {
         ...this.$attrs,
         prefixCls: 'sm-component-checkbox'
       });
-    },
-    checkboxStyle() {
-      const style = {
-        '--normal-bg-color': this.componentBackgroundData,
-        '--normal-border-color': this.borderBaseColorData,
-        '--hover-border-color': this.hoverColorData
-      };
-      if (this.disabled) {
-        style['--disabled-border-color'] = this.disabledBorderColorData;
-      }
-      return style;
     }
   },
   render(): void {}

@@ -1,64 +1,36 @@
 @import '../../_utils/style/mixins/mixins.scss';
-@import 'mixin.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import '../../input/style/mixin.scss';
 
 @include b(select) {
   $prefix: &;
-  $--normal-bg-color: var(--normal-bg-color);
-  $--focus-border-color: var(--focus-border-color);
-  $--box-shadow-color: var(--box-shadow-color);
-  $--dropdown-bg-color: var(--dropdown-bg-color);
-  $--dropdown-box-shadow: var(--dropdown-box-shadow);
-  $--selected-bg-color: var(--selected-bg-color);
-  $--selected-text-color: var(--selected-text-color);
-  $--disabled-border-color: var(--disabled-border-color);
-  $--hover-bg-color: var(--hover-bg-color);
-  $--selected-icon-text-color: var(--selected-icon-text-color);
-
-  @include e(focused, '-') {
-    &-selection {
-      @include select-focus-color($--focus-border-color, $--box-shadow-color);
-    }
-  }
-
+  
   @include e(selection, '-') {
-    background-color: $--normal-bg-color;
-    @include select-focus-color($--focus-border-color, $--box-shadow-color);
-  }
+    $prefix-selection: &;
+    #{$prefix}-focused &,
+    &:focus,
+    &:active {
+      @include focus-color($primary-5, $primary-shadow-color);
+    }
 
-  @include e(dropdown, '-') {
-    $prefix-dropdown: &;
-
-    background-color: $--dropdown-bg-color;
-    box-shadow: $--dropdown-box-shadow;
-    &#{$prefix-dropdown}--multiple {
-      #{$prefix-dropdown}-menu-item {
-        &:hover {
-          #{$prefix}-selected-icon {
-            color: $--selected-icon-text-color;
-          }
+    &__clear {
+      &:hover {
+        color: $text-color-secondary;
+      }
+    }
+    &--multiple {
+      #{$prefix-selection}__choice {
+        background-color: $tag-default-bg;
+        &__remove {
+          color: $text-color-secondary;
         }
       }
     }
   }
 
-  @include e(dropdown-menu-item, '-') {
-    &:hover:not(&-disabled) {
-      background-color: $--hover-bg-color;
-    }
-    &:focus {
-      outline: 0;
-    }
-    &-selected {
-      color: $--selected-text-color;
-      &, &:hover:not(&-disabled) {
-        background-color: $--selected-bg-color;
-      }
-      &:focus {
-        outline: 0;
-      }
-    }
-    &-active:not(&-disabled) {
-      background-color: $--selected-bg-color;
+  @include e(open, '-') {
+    #{$prefix}-selection {
+      @include focus-color($primary-5, $primary-shadow-color);
     }
   }
 
@@ -67,9 +39,46 @@
       &,
       &:hover,
       &:focus,
-      &:active,
-      &.active {
-        border-color: $--disabled-border-color;
+      &:active {
+        border-color: $disabled-border-color;
+      }
+
+      &-multiple {
+        #{$prefix}-selection__choice {
+          // color: fade(@black, 33%);
+          background: $background-color-base;
+        }
+      }
+    }
+  }
+
+  @include e(dropdown, '-') {
+    $prefix-dropdown: &;
+    &-menu {
+      &-item-group-title {
+        color: $text-color-secondary;
+      }
+      &-item {
+        &:hover:not(&-disabled) {
+          background-color: $select-item-hover-bg;
+        }
+        &-selected {
+          font-weight: normal;
+          background-color: $select-item-selected-bg;
+        }
+      }
+    }
+    &#{$prefix-dropdown}--multiple {
+      #{$prefix-dropdown}-menu-item {
+        &:hover {
+          #{$prefix}-selected-icon {
+            color: $icon-color-hover;
+          }
+        }
+        &-selected #{$prefix}-selected-icon,
+        &-selected:hover #{$prefix}-selected-icon {
+          color: $primary-color;
+        }
       }
     }
   }
