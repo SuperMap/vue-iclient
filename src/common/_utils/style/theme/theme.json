@@ -40,6 +40,7 @@
     "modalBackground": "#333333",
     "messageBackground": "#535353",
     "inputSuffixIconHoverColor": "#ccc",
+    "radioInnerDisabledBg": "rgba(255, 255, 255, 0.12)",
     "colorGroup": [
       "#3499e5",
       "#759aa0",
@@ -90,6 +91,7 @@
     "modalBackground": "#fff",
     "messageBackground": "#fff",
     "inputSuffixIconHoverColor": "#333",
+    "radioInnerDisabledBg": "rgba(0, 0, 0, 0.2)",
     "colorGroup": [
       "#0081e2",
       "#6be6c1",

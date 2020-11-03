@@ -167,9 +167,10 @@ $descriptions-bg: #fafafa;
 $dropdown-selected-color: $primary-6;
 
 // Empty
-$radio-dot-color: $primary-6;
 
 // Radio
+$radio-dot-color: $primary-6;
+$radio-inner-disabled-bg: var(--radio-inner-disabled-bg);
 
 // Radio buttons
 $radio-button-bg: $component-background;
