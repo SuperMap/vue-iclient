@@ -33,6 +33,8 @@ export { default as WeekPicker } from '../common/date-picker/WeekPicker';
 export { default as Radio } from '../common/radio/Radio';
 export { default as RadioGroup } from '../common/radio/Group';
 export { default as RadioButton } from '../common/radio/Button';
+export { default as Tabs } from '../common/tabs/Tabs';
+export { default as TabPane } from '../common/tabs/TabPane';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
