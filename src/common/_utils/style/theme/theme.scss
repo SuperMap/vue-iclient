@@ -167,6 +167,7 @@ $descriptions-bg: #fafafa;
 $dropdown-selected-color: $primary-6;
 
 // Empty
+$empty-background: var(--empty-background);
 
 // Radio
 $radio-dot-color: $primary-6;
@@ -348,7 +349,7 @@ $switch-after-bg: #fff;
 
 // Pagination
 $pagination-border-default-color: var(--pagination-border-default-color);
-
+$pagination-disabled-active-bg-color: var(--disabled-darken-bg-color10);
 $pagination-item-bg-active: $primary-6;
 
 // PageHeader

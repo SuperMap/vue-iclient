@@ -1,58 +1,124 @@
 @import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
 
 @include b(pagination) {
   $prefix: &;
-  $--default-border-color: var(--default-border-color);
-  $--prev-next-color: var(--prev-next-color);
-  $--active-bg-color: var(--active-bg-color);
-  $--disabled-text-color: var(--disabled-text-color);
-  $--disabled-active-bg-color: var(--disabled-active-bg-color);
-  $--disabled-bg-color: var(--disabled-bg-color);
-  $--disabled-border-color: var(--disabled-border-color);
 
-  &-item,
-  &-prev &-item-link,
-  &-next &-item-link {
-    border: 1px solid $--default-border-color;
-    background: transparent;
-  }
-
-  @include e(item-active, '-') {
-    background: $--active-bg-color;
-    &:focus a,
-    &:hover a,
-    a {
-      color: #ffffff;
-    }
-  }
-  &-disabled a,
-  &-disabled:hover a,
-  &-disabled:focus a,
-  &-disabled &-item-link,
-  &-disabled:hover &-item-link,
-  &-disabled:focus &-item-link {
-    color: $--disabled-text-color;
-  }
-  &#{$prefix}-disabled {
-    #{$prefix}-item a {
-      color: $--disabled-text-color;
-      border-color: $--disabled-border-color;
-    }
-    #{$prefix}-item-link {
-      &,
-      &:hover,
-      &:focus {
-        color: $--disabled-text-color;
-        border-color: $--disabled-border-color;
+  &-item {
+    border-color: $pagination-border-default-color;
+    &:focus,
+    &:hover {
+      border-color: $primary-5;
+      a {
+        color: $primary-5;
       }
     }
   }
-  &#{$prefix}-disabled &-item-active {
-    background: $--disabled-active-bg-color;
-    border-color: $--disabled-border-color;
+
+  &-item:hover,
+  &-item:focus {
+    border-color: $primary-5;
+    > a {
+      color: $primary-5;
+    }
   }
-  &-jump-prev &-item-container &-item-ellipsis,
-  &-jump-next &-item-container &-item-ellipsis {
-    color: $--prev-next-color;
+
+  &-item-active {
+    background: transparent;
+    border-color: $primary-5;
+    a {
+      color: $primary-5;
+    }
+
+    &:focus,
+    &:hover {
+      border-color: $primary-5;
+    }
+
+    &:focus a,
+    &:hover a {
+      color: $primary-5;
+    }
+  }
+
+  &-jump-prev,
+  &-jump-next {
+    @include b(pagination) {
+      &-item-container {
+        @include b(pagination) {
+          &-item-link-icon {
+            color: $primary-5;
+          }
+        }
+      }
+    }
+  }
+
+  &-prev,
+  &-next {
+    @include b(pagination) {
+      &-item-link {
+        border-color: $pagination-border-default-color;
+      }
+    }
+
+    &:focus,
+    &:hover {
+      @include b(pagination) {
+        &-item-link {
+          color: $primary-5;
+          border-color: $primary-5;
+        }
+      }
+    }
+  }
+
+  &-disabled {
+    &,
+    &:hover,
+    &:focus {
+      @include b(pagination) {
+        &-item-link {
+          color: $disabled-color;
+          border-color: $disabled-border-color;
+        }
+      }
+    }
+  }
+
+  &-simple &-simple-pager {
+    input {
+      border-color: $pagination-border-default-color;
+      &:hover {
+        border-color: $primary-5;
+      }
+    }
+  }
+
+  &#{$prefix}-disabled {
+    @include b(pagination) {
+      &-item {
+        background: transparent;
+        border-color: $disabled-border-color;
+      }
+      &-item-active {
+        background: $pagination-disabled-active-bg-color;
+        border-color: transparent;
+        a {
+          color: $disabled-color;
+        }
+      }
+    }
+    @include b(pagination) {
+      &-item-link {
+        &,
+        &:hover,
+        &:focus {
+          color: $disabled-color;
+          background: transparent;
+          border-color: $disabled-border-color;
+        }
+      }
+    }
   }
 }

@@ -18,9 +18,6 @@ export default {
   computed: {
     emptyProps() {
       return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-empty' });
-    },
-    emptyStyle() {
-      return { '--text-color': this.textColorsData, '--empty-bg-color': this.emptyBackgroundData };
     }
   },
   render(h): VNode {
@@ -28,8 +25,7 @@ export default {
       Empty,
       {
         props: this.emptyProps,
-        scopedSlots: this.$scopedSlots,
-        style: this.emptyStyle
+        scopedSlots: this.$scopedSlots
       },
       this.$slots['default']
     );

@@ -34,8 +34,6 @@ export default class Theme extends Vue {
 
   buttonBorderDefaultColorData: string = '';
 
-  paginationBorderDefaultColorData: string = '';
-
   componentBackgroundData: string = '';
 
   switchBackgroundData: string = '';
@@ -54,8 +52,6 @@ export default class Theme extends Vue {
 
   avatarTextColorData: string = '';
   
-  emptyBackgroundData: string = '';
-
   colorGroupsData: Array<string> = [];
 
   @Prop() background: string;
@@ -88,8 +84,6 @@ export default class Theme extends Vue {
 
   @Prop() buttonBorderDefaultColor: string;
 
-  @Prop() paginationBorderDefaultColor: string;
-
   @Prop() componentBackground: string;
 
   @Prop() switchBackground: string;
@@ -108,8 +102,6 @@ export default class Theme extends Vue {
 
   @Prop() avatarTextColor: string;
   
-  @Prop() emptyBackground: string;
-
   @Prop() colorGroup: Array<string>;
 
   get getBackgroundStyle() {

@@ -1,6 +1,6 @@
 import colorPalette from './colorPalette';
 import themeFactory from '../theme/theme.json';
-import { getColorWithOpacity } from '../../util';
+import { getColorWithOpacity, getDarkenColor } from '../../util';
 import { isArray } from '../../vue-types/utils';
 
 const firstThemeItem = themeFactory[1];
@@ -94,7 +94,8 @@ export function getExtralColors(themeStyleData: ThemeStyleParams, primarySerialC
     backgroundWithoutOpacity: getColorWithOpacity(themeStyleData.background, 1),
     componentBackgroundWithoutOpacity: getColorWithOpacity(themeStyleData.componentBackground, 1),
     primaryShadowColor: getColorWithOpacity(primarySerialColors[4], 0.25),
-    dangerShadowColor: getColorWithOpacity(functionColors.dangerColor[4], 0.25)
+    dangerShadowColor: getColorWithOpacity(functionColors.dangerColor[4], 0.25),
+    disabledDarkenBgColor10: getDarkenColor(themeStyleData.disabledBgColor, 10)
   };
   return extraSerialColors;
 }
