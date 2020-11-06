@@ -1,6 +1,6 @@
 import { withKnobs, text, select, boolean, number, object, array, color } from '@storybook/addon-knobs';
 
-export default { title: 'indicator', decorators: [withKnobs] };
+export default { title: 'BasicComponent/indicator', decorators: [withKnobs] };
 
 export const BasicIndicator = () => ({
   props: {

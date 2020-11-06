@@ -1,6 +1,6 @@
 import { withKnobs, text, select, number, boolean, color } from '@storybook/addon-knobs';
 
-export default { title: 'progress', decorators: [withKnobs] };
+export default { title: 'ChartComponent/progress', decorators: [withKnobs] };
 
 export const BasicProgress = () => ({
   props: {

@@ -1,6 +1,6 @@
 import { withKnobs, text } from '@storybook/addon-knobs';
 
-export default { title: 'iframe', decorators: [withKnobs] };
+export default { title: 'BasicComponent/iframe', decorators: [withKnobs] };
 
 export const Iframe = () => ({
   props: {

@@ -1,6 +1,6 @@
 import { withKnobs, select, object } from '@storybook/addon-knobs';
 
-export default { title: 'border', decorators: [withKnobs] };
+export default { title: 'BasicComponent/border', decorators: [withKnobs] };
 
 export const BasicBorder = () => ({
   props: {

@@ -7,13 +7,16 @@ import '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.css';
 import SmComponents from '../src/mapboxgl';
 
 Vue.use(Antd);
-Vue.use(SmComponents);
+Vue.use(SmComponents, { theme: 'dark' });
 initi18n(Vue);
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
   options: {
     showPanel: true,
-    panelPosition: 'right'
+    panelPosition: 'right',
+    storySort: {
+      order: ['MapComponent', 'ChartComponent', 'BasicComponent']
+    }
   }
 };

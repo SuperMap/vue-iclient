@@ -1,7 +1,7 @@
 import { withKnobs, text, array, number } from '@storybook/addon-knobs';
 
 export default {
-  title: 'web-map',
+  title: 'MapComponent/web-map',
   decorators: [withKnobs]
 };
 

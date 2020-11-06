@@ -1,6 +1,6 @@
 import { withKnobs, text, boolean, object, color } from '@storybook/addon-knobs';
 
-export default { title: 'icon', decorators: [withKnobs] };
+export default { title: 'BasicComponent/icon', decorators: [withKnobs] };
 
 export const BasicIcon = () => ({
   props: {
@@ -11,7 +11,7 @@ export const BasicIcon = () => ({
       default: text('theme', 'outlined')
     },
     autoPrefix: {
-      default: boolean('autoPrefix', 'true')
+      default: boolean('autoPrefix', true)
     }
   },
   template: `<sm-icon v-bind="$props"></sm-icon>`

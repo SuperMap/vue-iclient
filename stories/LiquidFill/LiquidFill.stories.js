@@ -1,6 +1,6 @@
 import { withKnobs, text, number, boolean, color } from '@storybook/addon-knobs';
 
-export default { title: 'liquidfill', decorators: [withKnobs] };
+export default { title: 'ChartComponent/liquidfill', decorators: [withKnobs] };
 
 export const Liquidfill = () => ({
   props: {
