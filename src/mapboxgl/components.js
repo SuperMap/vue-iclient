@@ -42,8 +42,14 @@ export { default as Tooltip } from '../common/tooltip/Tooltip';
 export { default as Breadcrumb } from '../common/breadcrumb/Breadcrumb';
 export { default as BreadcrumbItem } from '../common/breadcrumb/BreadcrumbItem';
 export { default as BreadcrumbSeparator } from '../common/breadcrumb/BreadcrumbSeparator';
-export { default as Message } from '../common/message/Message.js';
-export { default as Notification } from '../common/notification/Notification.js';
+export { default as Message } from '../common/message/Message';
+export { default as Notification } from '../common/notification/Notification';
+export { default as Layout } from '../common/layout/Layout';
+export { default as LayoutHeader } from '../common/layout/Header';
+export { default as LayoutFooter } from '../common/layout/Footer';
+export { default as LayoutContent } from '../common/layout/Content';
+export { default as LayoutSider } from '../common/layout/Sider';
+
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
 export { default as DataFlowLayer } from './web-map/layer/dataflow/DataFlowLayer';

@@ -27,7 +27,6 @@ import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
 import cssVars from 'css-vars-ponyfill';
-import 'ant-design-vue/dist/antd.css';
 import { dealWithTheme } from '../common/_utils/style/color/serialColors';
 // import Message from '../common/message/Message';
 // import Notification from '../common/notification/Notification';

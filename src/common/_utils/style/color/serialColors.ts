@@ -2,6 +2,7 @@ import colorPalette from './colorPalette';
 import themeFactory from '../theme/theme.json';
 import { getColorWithOpacity, getDarkenColor } from '../../util';
 import { isArray } from '../../vue-types/utils';
+import cssVars from 'css-vars-ponyfill';
 
 const firstThemeItem = themeFactory[1];
 
@@ -15,7 +16,7 @@ export interface FunctionColorParams {
 }
 
 export interface ExtraColorParams {
-  [prop: string]: string
+  [prop: string]: string;
 }
 
 export interface StyleReplacerParams {
@@ -38,6 +39,9 @@ const antdFunctionColors: FunctionColorParams = {
   dangerColor: $red6
 };
 
+const isBrowser = typeof window !== 'undefined';
+const isNativeSupport = isBrowser && window.CSS && window.CSS.supports && window.CSS.supports('(--a: 0)');
+
 export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string[] {
   const series = [];
   const nextThemeStyle = nextThemeInfo || {};
@@ -47,20 +51,16 @@ export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string
     let nextColor: string;
     switch (index) {
       case 2:
-        if (nextThemeStyle.selectedColor) {
-          nextColor = nextThemeStyle.selectedColor;
-        } else {
-          nextColor = prevPrimaryColor ? getColorWithOpacity(acceptColor, 0.15) : colorPalette(acceptColor, index);
-        }
+        nextColor = prevPrimaryColor ? getColorWithOpacity(acceptColor, 0.15) : colorPalette(acceptColor, index);
         break;
       case 5:
-        nextColor = nextThemeStyle.hoverColor || colorPalette(acceptColor, index);
+        nextColor = colorPalette(acceptColor, index);
         break;
       case 6:
         nextColor = acceptColor;
         break;
       case 7:
-        nextColor = nextThemeStyle.clickColor || colorPalette(acceptColor, index);
+        nextColor = colorPalette(acceptColor, index);
         break;
       default:
         nextColor = colorPalette(acceptColor, index);
@@ -88,7 +88,11 @@ export function getFunctionSerialColors(functionColors?: ThemeStyleParams): Func
   return nextFunctionSerialColors;
 }
 
-export function getExtralColors(themeStyleData: ThemeStyleParams, primarySerialColors: string[], functionColors: ThemeStyleParams): ExtraColorParams {
+export function getExtralColors(
+  themeStyleData: ThemeStyleParams,
+  primarySerialColors: string[],
+  functionColors: ThemeStyleParams
+): ExtraColorParams {
   const extraSerialColors: ExtraColorParams = {
     textColorWithoutOpacity: getColorWithOpacity(themeStyleData.textColor, 1),
     backgroundWithoutOpacity: getColorWithOpacity(themeStyleData.background, 1),
@@ -120,28 +124,30 @@ export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerPa
 function setRootStyle(themeData: StyleReplacerParams): void {
   const { themeStyle, primarySerialColors, functionSerialColors, extraSerialColors } = themeData;
   const primaryColor = themeStyle.colorGroup[0];
-  let varsDefine = `--primary-color: ${primaryColor};`;
+  const variables = {
+    '--primary-color': primaryColor
+  };
   const themeInfo = Object.assign({}, themeStyle, extraSerialColors);
   const themeKeys = Object.keys(themeInfo);
   primarySerialColors.forEach((color: string, index: number) => {
-    varsDefine += `\n\t  --primary-${index + 1}: ${color};`;
+    const varKey = `--primary-${index + 1}`;
+    variables[varKey] = color;
   });
   for (let key in functionSerialColors) {
     functionSerialColors[key].forEach((color: string, index: number) => {
-      varsDefine += `\n\t  --${key.replace('Color', '')}-${index + 1}: ${color};`;
+      const varKey = `--${key.replace('Color', '')}-${index + 1}`;
+      variables[varKey] = color;
     });
   }
   themeKeys.forEach((key: string) => {
     if (!isArray(themeInfo[key])) {
       const varKey = `--${key.replace(/[A-Z]/g, '-$&').toLowerCase()}`;
-      varsDefine += `\n\t  ${varKey}: ${themeInfo[key]};`;
+      variables[varKey] = themeInfo[key];
     }
   });
-  const rootStyle = `
-    :root {
-      ${varsDefine}
-    }
-  `;
+  const rootStyle = `:root ${JSON.stringify(variables, null, 2)
+    .replace(/",/g, ';')
+    .replace(/"/g, '')}`;
   const antdStyleId = 'sm-component-style';
   let antStyleTag = document.getElementById(antdStyleId);
   if (!antStyleTag) {
@@ -151,4 +157,15 @@ function setRootStyle(themeData: StyleReplacerParams): void {
     document.head.insertBefore(antStyleTag, document.head.firstChild);
   }
   antStyleTag.innerHTML = rootStyle;
-};
+  const options = {
+    include: 'style#sm-component-style, link[href*=vue-iclient-mapboxgl], link[href*=styles]',
+    silent: true,
+    onlyLegacy: true,
+    variables: {}
+  };
+  if (!isNativeSupport) {
+    options.onlyLegacy = false;
+    options.variables = variables;
+  }
+  cssVars(options);
+}
