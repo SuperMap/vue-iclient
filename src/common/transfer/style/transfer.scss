@@ -1,0 +1,48 @@
+@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/theme/theme.scss';
+
+@include b (transfer) {
+  $prefix: &;
+  @include e (disabled, '-') {
+    #{$prefix}-list {
+      background: $transfer-disabled-bg;
+    }
+  }
+
+  @include e (list, '-') {
+    #{$prefix}-search {
+      #{$prefix}-action {
+        color: $transfer-search-icon-Color;
+        .anticon-search {
+          color: $transfer-search-icon-Color;
+          &:hover {
+            color: $transfer-hover-color;
+          }
+        }
+      }
+    }
+
+    #{$prefix}-header {
+      background: $transfer-header-bg;
+      border-bottom-color: $transfer-border-color;
+    }
+
+    #{$prefix}-content {
+      #{$prefix}-item:not(#{$prefix}-item-disabled):hover {
+        background-color: $transfer-item-hover-color;
+      }
+
+      #{$prefix}-item-disabled {
+        color: $transfer-btn-disabled-color;
+      }
+
+      #{$prefix}-body-not-found {
+        color: $transfer-search-icon-Color;
+      }
+  
+      #{$prefix}-footer {
+        border-top-color: $transfer-border-color;
+      }
+    }
+  }
+}

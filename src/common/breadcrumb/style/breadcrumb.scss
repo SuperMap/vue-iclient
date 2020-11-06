@@ -1,0 +1,12 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(breadcrumb) {
+  color: $breadcrumb-base-color;
+  a {
+    color: $breadcrumb-link-color;
+  }
+  @include e(separator, '-') {
+    color: $breadcrumb-separator-color;
+  }
+}

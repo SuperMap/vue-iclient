@@ -1,0 +1,33 @@
+
+@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/theme/theme.scss';
+
+@include b (modal) {
+  @include e(title, '-') {
+    color: $heading-color;
+  }
+
+  @include e(content, '-') {
+    background-color: $modal-header-bg;
+  }
+
+  @include e(close, '-') {
+    color: $text-color-secondary;
+    background: transparent;
+  }
+
+  @include e(header, '-') {
+    background: $modal-header-bg;
+    border-bottom-color: $border-color-split;
+  }
+
+  @include e(footer, '-') {
+    background: $modal-footer-bg;
+    border-top-color: $border-color-split;
+  }
+
+  @include e(mask, '-') {
+    background-color: $modal-mask-bg;
+    filter: 'alpha(opacity=50)';
+  }
+}

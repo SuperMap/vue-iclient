@@ -1,0 +1,69 @@
+<script lang="ts">
+import Modal from 'ant-design-vue/es/modal';
+import Theme from '../_mixin/theme';
+import { VNode } from 'vue';
+import VueTypes from '../_utils/vue-types';
+import buttonTypes from 'ant-design-vue/es/button/buttonTypes';
+import { objectWithoutProperties } from '../_utils/util';
+
+var ButtonType = buttonTypes().type;
+
+export const modalTypes = {
+  prefixCls: VueTypes.string,
+  visible: VueTypes.bool,
+  confirmLoading: VueTypes.bool,
+  title: VueTypes.any,
+  closable: VueTypes.bool,
+  closeIcon: VueTypes.any,
+  afterClose: VueTypes.func,
+  centered: VueTypes.bool,
+  width: VueTypes.oneOfType([VueTypes.string, VueTypes.number]),
+  footer: VueTypes.any,
+  okText: VueTypes.any,
+  okType: ButtonType,
+  cancelText: VueTypes.any,
+  icon: VueTypes.any,
+  maskClosable: VueTypes.bool,
+  forceRender: VueTypes.bool,
+  okButtonProps: VueTypes.object,
+  cancelButtonProps: VueTypes.object,
+  destroyOnClose: VueTypes.bool,
+  wrapClassName: VueTypes.string,
+  maskTransitionName: VueTypes.string,
+  transitionName: VueTypes.string,
+  getContainer: VueTypes.func,
+  zIndex: VueTypes.number,
+  bodyStyle: VueTypes.object,
+  maskStyle: VueTypes.object,
+  mask: VueTypes.bool,
+  keyboard: VueTypes.bool,
+  wrapProps: VueTypes.object,
+  focusTriggerAfterClose: VueTypes.bool
+};
+
+export default {
+  name: 'SmModal',
+  mixins: [Theme],
+  inheritAttrs: false,
+  props: modalTypes,
+  computed: {
+    modalProps() {
+      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-modal' });
+    },
+    modalListeners() {
+      return Object.assign({}, this.$listeners);
+    }
+  },
+  render(h): VNode {
+    return h(
+      Modal,
+      {
+        props: this.modalProps,
+        scopedSlots: this.$scopedSlots,
+        on: this.modalListeners
+      },
+      this.$slots['default']
+    );
+  }
+};
+</script>

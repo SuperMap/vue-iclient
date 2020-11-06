@@ -12,14 +12,16 @@ import {
   Input,
   Slider,
   Table,
-  message,
   Modal,
   Tree,
-  Tabs
+  Tabs,
+  Steps,
+  Breadcrumb,
 } from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
 import themeFactory from '../common/_utils/style/theme/theme.json';
 import * as components from './components';
+// import { Message, Notification } from './components';
 import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import * as utils from './_utils';
@@ -27,6 +29,8 @@ import VueCesium from 'vue-cesium';
 import cssVars from 'css-vars-ponyfill';
 import 'ant-design-vue/dist/antd.css';
 import { dealWithTheme } from '../common/_utils/style/color/serialColors';
+// import Message from '../common/message/Message';
+// import Notification from '../common/notification/Notification';
 
 const setTheme = (themeStyle: any = {}) => {
   if (typeof themeStyle === 'string') {
@@ -66,16 +70,22 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Modal);
   Vue.use(Tree);
   Vue.use(Tabs);
+  Vue.use(Breadcrumb);
+  Vue.use(Steps);
   if (VueCesium) {
     Vue.use(VueCesium, {
       cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
     });
   }
-  Vue.prototype.$message = message;
+  // let message = components.Message;
+  Vue.prototype.$message = components.Message;
+  Vue.prototype.$notification = components.Notification;
   initi18n(Vue, opts);
   for (let component in components) {
-    const com = components[component];
-    Vue.component(com.options ? com.options.name : com.name, com);
+    if (!['Notification','Message'].includes(component)) {
+      const com = components[component];
+      Vue.component(com.options ? com.options.name : com.name, com);
+    }
   }
 };
 if (typeof window !== 'undefined' && window['Vue']) {

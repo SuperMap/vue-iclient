@@ -1,0 +1,78 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import 'mixin.scss';
+
+@include b(steps) {
+  $prefix: &;
+  $prefix-item: & + '-item';
+  @include step-item-status(
+    $prefix-item,
+    'process',
+    $process-icon-color,
+    $process-title-color,
+    $process-description-color,
+    $process-tail-color
+  );
+  @include step-item-status(
+    $prefix-item,
+    'finish',
+    $finish-icon-color,
+    $finish-title-color,
+    $finish-description-color,
+    $process-tail-color
+  );
+  @include step-item-status(
+    $prefix-item,
+    'wait',
+    $wait-icon-color,
+    $wait-title-color,
+    $wait-description-color,
+    $wait-tail-color
+  );
+  @include step-item-status(
+    $prefix-item,
+    'error',
+    $error-icon-color,
+    $error-title-color,
+    $error-description-color,
+    $error-tail-color
+  );
+  @include e(item, '-') {
+    &-subtitle {
+      color: $text-color-secondary;
+    }
+    &-description {
+      color: $text-color-secondary;
+    }
+    &-process &-icon {
+      background: $steps-background;
+    }
+
+    &:not(#{$prefix}-item-active) {
+      & > #{$prefix}-item-container[role='button'] {
+        &:hover {
+          #{$prefix}-item {
+            &-title,
+            &-subtitle,
+            &-description {
+              color: $hover-color;
+            }
+          }
+        }
+      }
+
+      &:not(#{$prefix}-item-process) {
+        & > #{$prefix}-item-container[role='button']:hover {
+          #{$prefix}-item {
+            &-icon {
+              border-color: $hover-color;
+              #{$prefix}-icon {
+                color: $hover-color;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -26,11 +26,17 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/date-picker/style/date-picker.scss';
 @import '../common/radio/style/radio.scss';
 @import '../common/tabs/style/tabs.scss';
+@import '../common/breadcrumb/style/breadcrumb.scss';
+@import '../common/steps/style/steps.scss';
+@import '../common/tooltip/style/tooltip.scss';
+@import '../common/modal/style/modal.scss';
+@import '../common/transfer/style/transfer.scss';
+@import '../common/message/style/message.scss';
+@import '../common/notification/style/notification.scss';
 /** control */
 @import './web-map/control/scale/style/scale.scss';
 @import './web-map/control/zoom/style/zoom.scss';
 @import './web-map/control/pan/style/pan.scss';
-@import './web-map/control/mini-map/style/mini-map.scss';
 @import './web-map/control/measure/style/measure.scss';
 @import './web-map/control/layer-list/style/layer-list.scss';
 @import './web-map/control/legend/style/legend.scss';

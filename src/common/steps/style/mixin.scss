@@ -1,0 +1,23 @@
+@mixin step-item-status($prefix ,$status, $icon-color, $title-color, $description-color, $tail-color) {
+  #{$prefix}-#{$status} #{$prefix}-icon {
+    border-color: $icon-color;
+    > #{$prefix}-icon {
+      color: $icon-color;
+      #{$prefix}-icon-dot {
+        background: $icon-color;
+      }
+    }
+  }
+  #{$prefix}-#{$status} > #{$prefix}-container > #{$prefix}-content > #{$prefix}-title {
+    color: $title-color;
+    &::after {
+      background-color: $tail-color;
+    }
+  }
+  #{$prefix}-#{$status} > #{$prefix}-container > #{$prefix}-content > #{$prefix}-description {
+    color: $description-color;
+  }
+  #{$prefix}-#{$status} > #{$prefix}-container > #{$prefix}-tail::after {
+    background-color: $tail-color;
+  }
+}
