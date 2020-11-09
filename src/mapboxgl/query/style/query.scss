@@ -3,7 +3,6 @@
 
 @include b(query) {
   color: #409eff;
-  font-family: $--text-font-family;
   @include e(header-icon) {
     cursor: pointer;
     float: left;
@@ -111,6 +110,9 @@
     margin-left: 7%;
     font-weight: 100;
     width: 84%;
+    .ant-select-arrow {
+      color: inherit;
+    }
   }
   @include e(a-button) {
     width: 100%;
@@ -144,7 +146,6 @@
     display: block;
     border-bottom: 1px solid;
     font-size: $--text-regular;
-    font-family: "微软雅黑";
     padding: 6px 0px;
     // background: #fff;
     color: #409eff;

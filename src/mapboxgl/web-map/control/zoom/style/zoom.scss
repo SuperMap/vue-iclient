@@ -14,6 +14,7 @@
     flex-direction: column;
   }
   @include e(button) {
+    width: 100%;
     height: 30px;
     padding: 0;
     border-radius: $--border-radius-base;
