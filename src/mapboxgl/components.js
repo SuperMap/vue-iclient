@@ -38,6 +38,7 @@ export { default as TabPane } from '../common/tabs/TabPane';
 export { default as Transfer } from '../common/transfer/Transfer';
 export { default as Modal } from '../common/modal/Modal';
 export { default as Steps } from '../common/steps/Steps';
+export { default as Step } from '../common/steps/Step';
 export { default as Tooltip } from '../common/tooltip/Tooltip';
 export { default as Breadcrumb } from '../common/breadcrumb/Breadcrumb';
 export { default as BreadcrumbItem } from '../common/breadcrumb/BreadcrumbItem';

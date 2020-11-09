@@ -1,7 +1,7 @@
 <template>
-  <BreadcrumbSeparator v-bind="breadcrumbSeparatorProps" prefixCls="sm-component-breadcrumb">
+  <breadcrumb-separator v-bind="breadcrumbSeparatorProps">
     <slot />
-  </BreadcrumbSeparator>
+  </breadcrumb-separator>
 </template>
 
 <script lang="ts">
@@ -16,15 +16,17 @@ export const breadcrumbSeparatorTypes = {
 
 export default {
   name: 'SmBreadcrumbSeparator',
-  __ANT_BREADCRUMB_Separator: true,
+  __ANT_BREADCRUMB_SEPARATOR: true,
   components: {
     BreadcrumbSeparator
   },
   mixins: [Theme],
+  inheritAttrs: false,
   props: breadcrumbSeparatorTypes,
   computed: {
     breadcrumbSeparatorProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-breadcrumb-separator' });
+      console.log('...this.$props, ...this.$attrs', ...this.$props, ...this.$attrs);
+      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-breadcrumb' });
     }
   }
 };

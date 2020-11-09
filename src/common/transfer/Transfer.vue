@@ -1,29 +1,13 @@
 <script lang="ts">
-import Transfer from 'ant-design-vue/es/transfer';
+import Transfer, { TransferProps } from 'ant-design-vue/es/transfer';
 import { VNode } from 'vue';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
 import { objectWithoutProperties } from '../_utils/util';
 
 export const transferTypes = {
-  prefixCls: VueTypes.string,
-  dataSource: VueTypes.array,
-  disabled: VueTypes.boolean,
-  targetKeys: VueTypes.arrayOf(VueTypes.string),
-  selectedKeys: VueTypes.arrayOf(VueTypes.string),
-  render: VueTypes.func,
-  listStyle: VueTypes.oneOfType([VueTypes.func, VueTypes.object]),
-  operationStyle: VueTypes.object,
-  titles: VueTypes.arrayOf(VueTypes.string),
-  operations: VueTypes.arrayOf(VueTypes.string),
-  showSearch: VueTypes.bool,
-  filterOption: VueTypes.func,
-  searchPlaceholder: VueTypes.string,
-  notFoundContent: VueTypes.any,
-  locale: VueTypes.object,
-  rowKey: VueTypes.func,
-  lazy: VueTypes.oneOfType([VueTypes.object, VueTypes.bool]),
-  showSelectAll: VueTypes.bool
+  ...TransferProps,
+  showSearch: VueTypes.bool
 };
 
 export default {
@@ -36,6 +20,42 @@ export default {
     },
     transferListeners() {
       return Object.assign({}, this.$listeners);
+    }
+  },
+  mounted() {
+    const replaceComponentClassNames = [
+      '.sm-component-transfer-operation>.ant-btn',
+      '.sm-component-transfer-list-content-item .ant-checkbox-wrapper',
+      '.sm-component-transfer-list-content-item .ant-checkbox',
+      '.sm-component-transfer-list-content-item .ant-checkbox-input',
+      '.sm-component-transfer-list-content-item .ant-checkbox-inner',
+      '.sm-component-transfer-list-body-search-wrapper .ant-input',
+      '.sm-component-transfer-list-header .ant-checkbox-wrapper',
+      '.sm-component-transfer-list-header .ant-checkbox',
+      '.sm-component-transfer-list-header .ant-checkbox-input',
+      '.sm-component-transfer-list-header .ant-checkbox-inner'
+    ];
+    this.$nextTick(() => {
+      replaceComponentClassNames.forEach((name) => {
+        this.replaceSubComponentClass(name);
+      });
+    });
+  },
+  methods: {
+    replaceSubComponentClass(className): void {
+      this.$nextTick(() => {
+        const addonComponents = this.$el.querySelectorAll(className);
+        if (!addonComponents) {
+          return;
+        }
+        this.replace(addonComponents);
+      });
+    },
+    replace(addonComponents) {
+      addonComponents.forEach(addonComponent => {
+        const classReplacer = addonComponent.className.replace(/ant-/gi, 'sm-component-');
+        addonComponent.setAttribute('class', classReplacer);
+      });
     }
   },
   render(h): VNode {

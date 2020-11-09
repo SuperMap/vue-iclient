@@ -15,6 +15,7 @@ export const breadcrumbTypes = {
 export default {
   name: 'SmBreadcrumb',
   mixins: [Theme],
+  inheritAttrs: false,
   props: breadcrumbTypes,
   computed: {
     breadcrumbProps() {

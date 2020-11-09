@@ -28,13 +28,22 @@ export default {
   },
   mixins: [Theme],
   inheritAttrs: false,
+  model: {
+    prop: 'current',
+    event: 'change'
+  },
   props: stepTypes,
   computed: {
     stepProps() {
       return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-steps' });
     },
     stepListeners() {
-      return Object.assign({}, this.$listeners);
+      const vm = this;
+      return Object.assign({}, this.$listeners, {
+        'change': function (value) {
+          vm.$emit('change', value);
+        }
+      });
     }
   }
 };

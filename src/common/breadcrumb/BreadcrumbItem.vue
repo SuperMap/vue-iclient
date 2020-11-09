@@ -15,10 +15,11 @@ export default {
   name: 'SmBreadcrumbItem',
   __ANT_BREADCRUMB_ITEM: true,
   mixins: [Theme],
+  inheritAttrs: false,
   props: breadcrumbItemTypes,
   computed: {
     breadcrumbItemProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-breadcrumb-item' });
+      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-breadcrumb' });
     }
   },
   render(h): VNode {
