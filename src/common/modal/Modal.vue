@@ -45,13 +45,22 @@ export default {
   name: 'SmModal',
   mixins: [Theme],
   inheritAttrs: false,
+  model: {
+    prop: 'visible',
+    event: 'change'
+  },
   props: modalTypes,
   computed: {
     modalProps() {
       return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-modal' });
     },
     modalListeners() {
-      return Object.assign({}, this.$listeners);
+      const vm = this;
+      return Object.assign({}, this.$listeners, {
+        'change': function (value) {
+          vm.$emit('change', value);
+        }
+      });
     }
   },
   render(h): VNode {

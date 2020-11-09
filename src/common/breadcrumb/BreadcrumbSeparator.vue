@@ -24,7 +24,7 @@ export default {
   props: breadcrumbSeparatorTypes,
   computed: {
     breadcrumbSeparatorProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs });
+      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-breadcrumb-separator' });
     }
   }
 };

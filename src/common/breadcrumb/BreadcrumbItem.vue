@@ -18,7 +18,7 @@ export default {
   props: breadcrumbItemTypes,
   computed: {
     breadcrumbItemProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs });
+      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-breadcrumb-item' });
     }
   },
   render(h): VNode {
