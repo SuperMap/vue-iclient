@@ -41,7 +41,7 @@ export default {
     return h(
       Step,
       {
-        props: this.tooltipProps,
+        props: this.stepProps,
         scopedSlots: this.$scopedSlots,
         on: this.stepListeners
       },
