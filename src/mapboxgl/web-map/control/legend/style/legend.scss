@@ -15,7 +15,7 @@
     border-radius: 10px;
     background-color: rgb(128, 128, 128);
   }
-  .sm-component-card__content {
+  .sm-component-collapse-card__content {
     box-shadow: unset;
     max-height: 400px;
   }
@@ -26,7 +26,7 @@
     padding: 0px;
     height: 100%;
   }
-  .sm-component-card__icon + .sm-component-card__content {
+  .sm-component-collapse-card__icon + .sm-component-collapse-card__content {
     .ant-collapse-item {
       &:last-child {
         .header-wrap {

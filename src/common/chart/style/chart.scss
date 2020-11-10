@@ -1,7 +1,7 @@
 @import "../../../common/_utils/style/mixins/mixins.scss";
 
 @include b(chart) {
-  & .sm-component-card__content {
+  & .sm-component-collapse-card__content {
     width: 400px;
     height: 200px;
     /* 去除阴影效果 */

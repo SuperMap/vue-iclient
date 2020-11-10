@@ -16,7 +16,7 @@ import {
   Tree,
   Tabs,
   Steps,
-  Breadcrumb,
+  Breadcrumb
 } from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
 import themeFactory from '../common/_utils/style/theme/theme.json';
@@ -26,20 +26,13 @@ import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
-import cssVars from 'css-vars-ponyfill';
 import { dealWithTheme } from '../common/_utils/style/color/serialColors';
 // import Message from '../common/message/Message';
 // import Notification from '../common/notification/Notification';
 
 const setTheme = (themeStyle: any = {}) => {
   if (typeof themeStyle === 'string') {
-    try {
-      require(`../common/_utils/style/theme/${themeStyle}.scss`);
-    } catch (e) {
-      themeStyle = 'light';
-      require(`../common/_utils/style/theme/${themeStyle}.scss`);
-    }
-    themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
+    themeStyle = themeFactory.find(item => item.label === themeStyle) || themeFactory[1];
   }
   const nextThemeData = dealWithTheme(themeStyle);
   const nextTheme = nextThemeData.themeStyle;
@@ -48,7 +41,6 @@ const setTheme = (themeStyle: any = {}) => {
 };
 
 const install = function(Vue, opts: any = {}) {
-  cssVars();
   let theme = opts.theme || 'light';
   require('../common/_utils/style/theme/antd.less');
   require('./style.scss');
@@ -81,7 +73,7 @@ const install = function(Vue, opts: any = {}) {
   Vue.prototype.$notification = components.Notification;
   initi18n(Vue, opts);
   for (let component in components) {
-    if (!['Notification','Message'].includes(component)) {
+    if (!['Notification', 'Message'].includes(component)) {
       const com = components[component];
       Vue.component(com.options ? com.options.name : com.name, com);
     }
