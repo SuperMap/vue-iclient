@@ -416,7 +416,7 @@ $transfer-hover-color: $text-color-secondary;
 $transfer-search-icon-Color: var(--transfer-search-icon-Color);
 $transfer-border-color: var(--transfer-border-color);
 $transfer-header-bg: $component-background;
-$transfer-item-hover-color: var(--transfer-item-hover-Color);
+$transfer-item-hover-color: $hover-color;
 $transfer-btn-disabled-color: var(--transfer-btn-disabled-color);
 // Message
 $message-background: var(--message-background);

@@ -9,6 +9,10 @@
     }
   }
 
+ &-list-content-item:not(#{$prefix}-list-content-item-disabled):hover {
+    background-color: $transfer-item-hover-color;
+  }
+
   @include e (list, '-') {
     #{$prefix}-search {
       #{$prefix}-action {
@@ -28,9 +32,7 @@
     }
 
     #{$prefix}-content {
-      #{$prefix}-item:not(#{$prefix}-item-disabled):hover {
-        background-color: $transfer-item-hover-color;
-      }
+      
 
       #{$prefix}-item-disabled {
         color: $transfer-btn-disabled-color;
