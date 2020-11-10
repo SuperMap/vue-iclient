@@ -245,19 +245,19 @@ export const IconDataPicker = () => ({
   template: `
   <div>
     <sm-date-picker @change="onChange">
-      <sm-icon slot="suffixIcon" type="smile" />
+      <sm-icon slot="suffixIcon" type="smile" style="padding: 0" />
     </sm-date-picker>
     <br />
     <sm-month-picker style="margin: 10px 0" placeholder="Select month" @change="onChange">
-      <sm-icon slot="suffixIcon" type="smile" />
+      <sm-icon slot="suffixIcon" type="smile" style="padding: 0" />
     </sm-month-picker>
     <br />
     <sm-range-picker style="margin-bottom: 10px" @change="onChange">
-      <sm-icon slot="suffixIcon" type="smile" />
+      <sm-icon slot="suffixIcon" type="smile" style="padding: 0" />
     </sm-range-picker>
     <br />
     <sm-week-picker style="margin: 10px 0" placeholder="Select week" @change="onChange">
-      <sm-icon slot="suffixIcon" type="smile" />
+      <sm-icon slot="suffixIcon" type="smile" style="padding: 0" />
     </sm-week-picker>
     <br />
     <sm-date-picker style="margin-bottom: 10px" suffix-icon="ab" @change="onChange" />

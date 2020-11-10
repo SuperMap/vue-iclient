@@ -17,7 +17,7 @@ Liquidfill.story = {
 export const WaveLiquidfill = () => ({
   props: {
     waveCount: {
-      default: number('waveCount', '2')
+      default: number('waveCount', 2)
     },
     waveAnimation: {
       default: boolean('waveAnimation', true)
