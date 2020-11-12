@@ -1,14 +1,8 @@
-<template>
-  <Steps v-bind="stepProps" v-on="stepListeners">
-    <slot />
-  </Steps>
-</template>
-
 <script lang="ts">
 import Steps from 'ant-design-vue/es/steps';
-import Theme from '../_mixin/theme';
 import VueTypes from '../_utils/vue-types';
-import { objectWithoutProperties } from '../_utils/util';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const stepTypes = {
   current: VueTypes.number,
@@ -23,10 +17,8 @@ export const stepTypes = {
 
 export default {
   name: 'SmSteps',
-  components: {
-    Steps
-  },
-  mixins: [Theme],
+  defaultComponent: Steps,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   model: {
     prop: 'current',
@@ -34,16 +26,13 @@ export default {
   },
   props: stepTypes,
   computed: {
-    stepProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-steps' });
-    },
-    stepListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         'change': function (value) {
           vm.$emit('change', value);
         }
-      });
+      };
     }
   }
 };

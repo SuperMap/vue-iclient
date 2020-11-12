@@ -1,9 +1,8 @@
 <script lang="ts">
-import { VNode } from 'vue';
 import { TabPane } from 'ant-design-vue/es/tabs';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const tabPaneTypes = {
   active: VueTypes.bool,
@@ -19,30 +18,9 @@ export const tabPaneTypes = {
 export default {
   name: 'SmTabPane',
   __ANT_TAB_PANE: true,
-  mixins: [Theme],
+  defaultComponent: TabPane,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
-  props: tabPaneTypes,
-  computed: {
-    tabPaneProps() {
-      return objectWithoutProperties({
-        ...this.$props,
-        ...this.$attrs
-      });
-    },
-    tabPaneListeners() {
-      return Object.assign({}, this.$listeners);
-    }
-  },
-  render(h): VNode {
-    return h(
-      TabPane,
-      {
-        props: this.tabPaneProps,
-        on: this.tabPaneListeners,
-        scopedSlots: this.$scopedSlots
-      },
-      this.$slots['default']
-    );
-  }
+  props: tabPaneTypes
 };
 </script>

@@ -1,14 +1,8 @@
-<template>
-  <Radio v-bind="radioProps" v-on="radioListeners">
-    <slot />
-  </Radio>
-</template>
-
 <script lang="ts">
 import Radio from 'ant-design-vue/es/radio/Radio';
 import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 import VueTypes from '../_utils/vue-types';
-import { objectWithoutProperties } from '../_utils/util';
 
 export const radioTypes = {
   defaultChecked: VueTypes.bool,
@@ -20,10 +14,8 @@ export const radioTypes = {
 
 export default {
   name: 'SmRadio',
-  components: {
-    Radio
-  },
-  mixins: [Theme],
+  defaultComponent: Radio,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   model: {
     prop: 'checked',
@@ -31,16 +23,13 @@ export default {
   },
   props: radioTypes,
   computed: {
-    radioProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-radio' });
-    },
-    radioListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         input: function(value) {
           vm.$emit('input', value);
         }
-      });
+      };
     }
   }
 };

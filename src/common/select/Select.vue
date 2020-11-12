@@ -1,9 +1,8 @@
 <script lang="ts">
-import { VNode } from 'vue';
 import Select, { SelectProps } from 'ant-design-vue/es/select';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const selectTypes = {
   ...SelectProps,
@@ -14,7 +13,8 @@ export const selectTypes = {
 
 export default {
   name: 'SmSelect',
-  mixins: [Theme],
+  defaultComponent: Select,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   model: {
     prop: 'value',
@@ -22,29 +22,14 @@ export default {
   },
   props: selectTypes,
   computed: {
-    selectProps() {
-      const props = objectWithoutProperties({ ...this.$props, ...this.$attrs });
-      return Object.assign(props, { prefixCls: 'sm-component-select' });
-    },
-    selectListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         change: function(value) {
           vm.$emit('change', value);
         }
-      });
+      };
     }
-  },
-  render(h): VNode {
-    return h(
-      Select,
-      {
-        props: this.selectProps,
-        on: this.selectListeners,
-        scopedSlots: this.$scopedSlots
-      },
-      this.$slots['default']
-    );
   }
 };
 </script>

@@ -1,6 +1,8 @@
 <script lang="ts">
+import Layout from 'ant-design-vue/es/layout';
 import { BasicProps } from 'ant-design-vue/es/layout/layout';
-import Base from './BaseMixin.vue';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const layoutTypes = {
   ...BasicProps
@@ -8,7 +10,16 @@ export const layoutTypes = {
 
 export default {
   name: 'SmLayout',
-  mixins: [Base],
-  props: layoutTypes
+  defaultComponent: Layout,
+  mixins: [Theme, AntdRender],
+  inheritAttrs: false,
+  props: layoutTypes,
+  computed: {
+    extralProps() {
+      return {
+        tagName: 'section'
+      };
+    }
+  }
 };
 </script>

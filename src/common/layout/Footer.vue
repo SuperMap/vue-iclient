@@ -1,6 +1,8 @@
 <script lang="ts">
+import Layout from 'ant-design-vue/es/layout';
 import { BasicProps } from 'ant-design-vue/es/layout/layout';
-import Base from './BaseMixin.vue';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const layoutFooterTypes = {
   ...BasicProps
@@ -8,14 +10,16 @@ export const layoutFooterTypes = {
 
 export default {
   name: 'SmLayoutFooter',
-  mixins: [Base],
+  defaultComponent: Layout.Footer,
+  mixins: [Theme, AntdRender],
+  inheritAttrs: false,
   props: layoutFooterTypes,
-  data() {
-    return {
-      suffix: 'layout-footer',
-      tagNameData: 'footer',
-      subComponentName: 'Footer'
-    };
+  computed: {
+    extralProps() {
+      return {
+        tagName: 'footer'
+      };
+    }
   }
 };
 </script>

@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { Component, Prop, Watch, Emit } from 'vue-property-decorator';
+import { Component, Prop, Emit } from 'vue-property-decorator';
 import globalEvent from '../_utils/global-event';
 
 @Component({
@@ -7,6 +7,10 @@ import globalEvent from '../_utils/global-event';
 })
 export default class Theme extends Vue {
   backgroundData: string = '';
+
+  backgroundLightData: string = '';
+
+  backgroundBaseData: string = '';
 
   textColorsData: string = '';
 
@@ -32,32 +36,18 @@ export default class Theme extends Vue {
 
   disabledTextColorData: string = '';
 
-  buttonBorderDefaultColorData: string = '';
-
   componentBackgroundData: string = '';
 
-  switchBackgroundData: string = '';
-
-  switchDisabledBgColorData: string = '';
-
-  switchDisabledAfterColorData: string = '';
-
-  switchDisabledOpacityData: string | number;
-
-  selectDropdownBackgroundData: string = '';
-
-  selectDropdownBoxshadowData: string = '';
-
-  avatarBackgroundData: string = '';
-
-  avatarTextColorData: string = '';
-  
   colorGroupsData: Array<string> = [];
 
   @Prop() background: string;
 
+  @Prop() backgroundLight: string;
+
+  @Prop() backgroundBase: string;
+
   @Prop() textColor: string;
-  
+
   @Prop() textColorSecondary: string;
 
   @Prop() selectedColor: string;
@@ -82,26 +72,8 @@ export default class Theme extends Vue {
 
   @Prop() borderBaseColor: string;
 
-  @Prop() buttonBorderDefaultColor: string;
-
   @Prop() componentBackground: string;
 
-  @Prop() switchBackground: string;
-
-  @Prop() switchDisabledBgColor: string;
-
-  @Prop() switchDisabledAfterColor: string;
-
-  @Prop() switchDisabledOpacity: string | number;
-
-  @Prop() selectDropdownBackground: string;
-
-  @Prop() selectDropdownBoxshadow: string;
-
-  @Prop() avatarBackground: string;
-
-  @Prop() avatarTextColor: string;
-  
   @Prop() colorGroup: Array<string>;
 
   get getBackgroundStyle() {

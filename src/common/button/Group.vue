@@ -1,13 +1,7 @@
-<template>
-  <ButtonGroup v-bind="buttonGroupProps" v-on="buttonGroupListeners">
-    <slot />
-  </ButtonGroup>
-</template>
-
 <script lang="ts">
 import ButtonGroup, { ButtonGroupProps } from 'ant-design-vue/es/button/button-group';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const buttonGroupTypes = {
   ...ButtonGroupProps
@@ -15,19 +9,9 @@ export const buttonGroupTypes = {
 
 export default {
   name: 'SmButtonGroup',
-  components: {
-    ButtonGroup
-  },
-  mixins: [Theme],
+  defaultComponent: ButtonGroup,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
-  props: buttonGroupTypes,
-  computed: {
-    buttonGroupProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-btn-group' });
-    },
-    buttonGroupListeners() {
-      return Object.assign({}, this.$listeners);
-    }
-  }
+  props: buttonGroupTypes
 };
 </script>

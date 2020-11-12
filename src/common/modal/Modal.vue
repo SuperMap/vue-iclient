@@ -1,10 +1,9 @@
 <script lang="ts">
 import Modal from 'ant-design-vue/es/modal';
 import Theme from '../_mixin/theme';
-import { VNode } from 'vue';
 import VueTypes from '../_utils/vue-types';
 import buttonTypes from 'ant-design-vue/es/button/buttonTypes';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 var ButtonType = buttonTypes().type;
 
@@ -43,7 +42,8 @@ export const modalTypes = {
 
 export default {
   name: 'SmModal',
-  mixins: [Theme],
+  defaultComponent: Modal,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   model: {
     prop: 'visible',
@@ -51,28 +51,14 @@ export default {
   },
   props: modalTypes,
   computed: {
-    modalProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-modal' });
-    },
-    modalListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         'change': function (value) {
           vm.$emit('change', value);
         }
-      });
+      };
     }
-  },
-  render(h): VNode {
-    return h(
-      Modal,
-      {
-        props: this.modalProps,
-        scopedSlots: this.$scopedSlots,
-        on: this.modalListeners
-      },
-      this.$slots['default']
-    );
   }
 };
 </script>

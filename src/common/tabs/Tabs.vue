@@ -1,9 +1,8 @@
 <script lang="ts">
-import { VNode } from 'vue';
 import Tabs from 'ant-design-vue/es/tabs';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const tabsTypes = {
   activeKey: VueTypes.oneOfType([VueTypes.string, VueTypes.number]),
@@ -20,7 +19,8 @@ export const tabsTypes = {
 
 export default {
   name: 'SmTabs',
-  mixins: [Theme],
+  defaultComponent: Tabs,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   model: {
     prop: 'activeKey',
@@ -28,28 +28,14 @@ export default {
   },
   props: tabsTypes,
   computed: {
-    tabsProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-tabs' });
-    },
-    tabsListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         change: function(value) {
           vm.$emit('change', value);
         }
-      });
+      };
     }
-  },
-  render(h): VNode {
-    return h(
-      Tabs,
-      {
-        props: this.tabsProps,
-        on: this.tabsListeners,
-        scopedSlots: this.$scopedSlots
-      },
-      this.$slots['default']
-    );
   }
 };
 </script>

@@ -1,9 +1,8 @@
 <script lang="ts">
-import { VNode } from 'vue';
 import Empty, { EmptyProps } from 'ant-design-vue/es/empty/index';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const emptyProps = {
   ...EmptyProps(),
@@ -12,23 +11,16 @@ export const emptyProps = {
 
 export default {
   name: 'SmEmpty',
-  mixins: [Theme],
+  defaultComponent: Empty,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   props: emptyProps,
   computed: {
-    emptyProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-empty' });
+    extralProps() {
+      return {
+        prefixCls: this.prefixCls || 'sm-component-empty'
+      };
     }
-  },
-  render(h): VNode {
-    return h(
-      Empty,
-      {
-        props: this.emptyProps,
-        scopedSlots: this.$scopedSlots
-      },
-      this.$slots['default']
-    );
   }
 };
 </script>

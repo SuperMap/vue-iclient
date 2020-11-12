@@ -1,8 +1,8 @@
 <script lang="ts">
-import { VNode } from 'vue';
 import Checkbox from 'ant-design-vue/es/checkbox/Checkbox';
 import VueTypes from '../_utils/vue-types';
-import Base from './BaseMixin.vue';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const checkboxTypes = {
   defaultChecked: VueTypes.bool,
@@ -15,32 +15,23 @@ export const checkboxTypes = {
 export default {
   name: 'SmCheckbox',
   __ANT_CHECKBOX: true,
-  mixins: [Base],
+  defaultComponent: Checkbox,
+  mixins: [Theme, AntdRender],
+  inheritAttrs: false,
   model: {
     prop: 'checked',
     event: 'input'
   },
   props: checkboxTypes,
   computed: {
-    checkboxListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         input: function(value) {
           vm.$emit('input', value);
         }
-      });
+      };
     }
-  },
-  render(h): VNode {
-    return h(
-      Checkbox,
-      {
-        props: this.checkboxProps,
-        on: this.checkboxListeners,
-        scopedSlots: this.$scopedSlots
-      },
-      this.$slots['default']
-    );
   }
 };
 </script>

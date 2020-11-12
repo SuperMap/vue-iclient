@@ -1,24 +1,24 @@
 <script lang="ts">
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export default {
-  mixins: [Theme],
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
+  model: {
+    prop: 'value',
+    event: 'change.value'
+  },
   computed: {
-    inputProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs });
-    },
-    inputListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         // 这里确保组件配合 `v-model` 的工作
         'change.value': function(value) {
           vm.$emit('change.value', value);
         }
-      });
+      };
     }
-  },
-  render(): void {}
+  }
 };
 </script>

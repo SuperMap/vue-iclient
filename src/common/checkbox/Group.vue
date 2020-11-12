@@ -1,8 +1,8 @@
 <script lang="ts">
-import { VNode } from 'vue';
 import Group from 'ant-design-vue/es/checkbox/Group';
 import VueTypes from '../_utils/vue-types';
-import Base from './BaseMixin.vue';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const groupTypes = {
   name: VueTypes.string,
@@ -14,32 +14,23 @@ export const groupTypes = {
 
 export default {
   name: 'SmCheckboxGroup',
-  mixins: [Base],
+  defaultComponent: Group,
+  mixins: [Theme, AntdRender],
+  inheritAttrs: false,
   model: {
     prop: 'value',
     event: 'change'
   },
   props: groupTypes,
   computed: {
-    groupListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         change: function(value) {
           vm.$emit('change', value);
         }
-      });
+      };
     }
-  },
-  render(h): VNode {
-    return h(
-      Group,
-      {
-        props: this.checkboxProps,
-        on: this.groupListeners,
-        scopedSlots: this.$scopedSlots
-      },
-      this.$slots['default']
-    );
   }
 };
 </script>

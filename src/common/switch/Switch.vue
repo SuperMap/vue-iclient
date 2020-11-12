@@ -1,9 +1,8 @@
 <script lang="ts">
-import { VNode } from 'vue';
 import Switch from 'ant-design-vue/es/switch';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const switchTypes = {
   autoFocus: VueTypes.bool,
@@ -19,7 +18,8 @@ export const switchTypes = {
 export default {
   name: 'SmSwitch',
   __ANT_SWITCH: true,
-  mixins: [Theme],
+  defaultComponent: Switch,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   model: {
     prop: 'checked',
@@ -27,26 +27,15 @@ export default {
   },
   props: switchTypes,
   computed: {
-    switchProps() {
-      const props = objectWithoutProperties({ ...this.$props, ...this.$attrs });
-      return Object.assign(props, { prefixCls: 'sm-component-switch' });
-    },
-    switchListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         // 这里确保组件配合 `v-model` 的工作
         'change.value': function(value) {
           vm.$emit('change.value', value);
         }
-      });
+      };
     }
-  },
-  render(h): VNode {
-    return h(Switch, {
-      props: this.switchProps,
-      on: this.switchListeners,
-      scopedSlots: this.$scopedSlots
-    });
   }
 };
 </script>

@@ -1,14 +1,8 @@
-<template>
-  <RadioButton v-bind="radioButtonProps" v-on="radioButtonListeners">
-    <slot />
-  </RadioButton>
-</template>
-
 <script lang="ts">
 import RadioButton from 'ant-design-vue/es/radio/RadioButton';
-import Theme from '../_mixin/theme';
 import { radioTypes } from './Radio.vue';
-import { objectWithoutProperties } from '../_utils/util';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const radioButtonTypes = {
   ...radioTypes
@@ -16,23 +10,9 @@ export const radioButtonTypes = {
 
 export default {
   name: 'SmRadioButton',
-  components: {
-    RadioButton
-  },
-  mixins: [Theme],
+  defaultComponent: RadioButton,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
-  props: radioButtonTypes,
-  computed: {
-    radioButtonProps() {
-      return objectWithoutProperties({
-        ...this.$props,
-        ...this.$attrs,
-        prefixCls: 'sm-component-radio-button'
-      });
-    },
-    radioButtonListeners() {
-      return Object.assign({}, this.$listeners);
-    }
-  }
+  props: radioButtonTypes
 };
 </script>

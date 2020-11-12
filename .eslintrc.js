@@ -19,7 +19,10 @@ module.exports = {
   extends: ['plugin:vue/recommended', '@vue/standard'],
   parserOptions: {
     parser: 'babel-eslint',
-    ecmaVersion: 6
+    ecmaVersion: 6,
+    ecmaFeatures: {
+      legacyDecorators: true
+    }
   },
   plugins: ['vue', 'import'],
 
@@ -65,7 +68,7 @@ module.exports = {
     'no-delete-var': 2,
     'prefer-const': 0,
     //Ensure imports point to a file/module that can be resolved
-     "import/no-unresolved": [2, {commonjs: true, amd: true}],
+    'import/no-unresolved': [2, { commonjs: true, amd: true }],
     //Ensure named imports correspond to a named export in the remote file
     'import/named': 2,
     //Ensure a default export is present, given a default import

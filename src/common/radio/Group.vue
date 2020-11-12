@@ -1,14 +1,8 @@
-<template>
-  <RadioGroup v-bind="radioGroupProps" v-on="radioGroupListeners">
-    <slot />
-  </RadioGroup>
-</template>
-
 <script lang="ts">
 import RadioGroup from 'ant-design-vue/es/radio/Group';
-import Theme from '../_mixin/theme';
 import VueTypes from '../_utils/vue-types';
-import { objectWithoutProperties } from '../_utils/util';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const radioGroupTypes = {
   defaultValue: VueTypes.any,
@@ -22,10 +16,8 @@ export const radioGroupTypes = {
 
 export default {
   name: 'SmRadioGroup',
-  components: {
-    RadioGroup
-  },
-  mixins: [Theme],
+  defaultComponent: RadioGroup,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   model: {
     prop: 'value',
@@ -33,21 +25,13 @@ export default {
   },
   props: radioGroupTypes,
   computed: {
-    radioGroupProps() {
-      return objectWithoutProperties({
-        ...this.$props,
-        ...this.$attrs,
-        prefixCls: 'sm-component-radio',
-        groupPrefixCls: 'sm-component-radio-group'
-      });
-    },
-    radioGroupListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         input: function(value) {
           vm.$emit('input', value);
         }
-      });
+      };
     }
   }
 };

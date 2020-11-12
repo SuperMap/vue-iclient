@@ -1,9 +1,8 @@
 <script lang="ts">
 import Tooltip from 'ant-design-vue/es/tooltip/Tooltip';
-import { VNode } from 'vue';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const tooltipTypes = {
   routes: VueTypes.array,
@@ -14,26 +13,9 @@ export const tooltipTypes = {
 
 export default {
   name: 'SmTooltip',
-  mixins: [Theme],
-  props: tooltipTypes,
-  computed: {
-    tooltipProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs });
-    },
-    tooltipListeners() {
-      return Object.assign({}, this.$listeners);
-    }
-  },
-  render(h): VNode {
-    return h(
-      Tooltip,
-      {
-        props: this.tooltipProps,
-        scopedSlots: this.$scopedSlots,
-        on: this.tooltipListeners
-      },
-      this.$slots['default']
-    );
-  }
+  defaultComponent: Tooltip,
+  mixins: [Theme, AntdRender],
+  inheritAttrs: false,
+  props: tooltipTypes
 };
 </script>

@@ -14,25 +14,20 @@ import {
   Table,
   Modal,
   Tree,
-  Tabs,
-  Steps,
-  Breadcrumb
+  Tabs
 } from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
 import themeFactory from '../common/_utils/style/theme/theme.json';
 import * as components from './components';
-// import { Message, Notification } from './components';
 import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
-import { dealWithTheme } from '../common/_utils/style/color/serialColors';
-// import Message from '../common/message/Message';
-// import Notification from '../common/notification/Notification';
+import { dealWithTheme, ThemeStyleParams } from '../common/_utils/style/color/serialColors';
 
-const setTheme = (themeStyle: any = {}) => {
+export const setTheme = (themeStyle: any = {}) => {
   if (typeof themeStyle === 'string') {
-    themeStyle = themeFactory.find(item => item.label === themeStyle) || themeFactory[1];
+    themeStyle = themeFactory.find((item: ThemeStyleParams) => item.label === themeStyle) || themeFactory[1];
   }
   const nextThemeData = dealWithTheme(themeStyle);
   const nextTheme = nextThemeData.themeStyle;
@@ -61,14 +56,11 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Modal);
   Vue.use(Tree);
   Vue.use(Tabs);
-  Vue.use(Breadcrumb);
-  Vue.use(Steps);
   if (VueCesium) {
     Vue.use(VueCesium, {
       cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
     });
   }
-  // let message = components.Message;
   Vue.prototype.$message = components.Message;
   Vue.prototype.$notification = components.Notification;
   initi18n(Vue, opts);

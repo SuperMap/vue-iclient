@@ -1,6 +1,8 @@
 <script lang="ts">
+import Layout from 'ant-design-vue/es/layout';
 import { SiderProps } from 'ant-design-vue/es/layout/Sider';
-import Base from './BaseMixin.vue';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const layoutSiderTypes = {
   ...SiderProps
@@ -9,26 +11,22 @@ export const layoutSiderTypes = {
 export default {
   name: 'SmLayoutSider',
   __ANT_LAYOUT_SIDER: true,
-  mixins: [Base],
+  defaultComponent: Layout.Sider,
+  mixins: [Theme, AntdRender],
+  inheritAttrs: false,
   model: {
     prop: 'collapsed',
     event: 'collapse'
   },
   props: layoutSiderTypes,
-  data() {
-    return {
-      suffix: 'layout-sider',
-      subComponentName: 'Sider'
-    };
-  },
   computed: {
-    layoutSiderListeners() {
+    extralListeners() {
       const vm = this;
-      return Object.assign({}, this.$listeners, {
+      return {
         'collapse': function() {
           vm.$emit('collapse', ...arguments);
         }
-      });
+      };
     }
   }
 };

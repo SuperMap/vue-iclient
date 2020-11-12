@@ -28,6 +28,8 @@
     }
   }
   @include e(background-ghost, '-') {
+    color: $btn-default-color;
+    border-color: $btn-default-border;
     &#{$prefix}-primary {
       @include button-variant-ghost($primary-5, transparent, $primary-5, $primary-7, transparent, $primary-7);
     }

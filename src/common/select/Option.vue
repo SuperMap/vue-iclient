@@ -1,8 +1,8 @@
 <script lang="ts">
-import { VNode } from 'vue';
 import Select from 'ant-design-vue/es/select';
 import VueTypes from '../_utils/vue-types';
-import { objectWithoutProperties } from '../_utils/util';
+import Theme from '../_mixin/theme';
+import AntdRender from '../_mixin/AntdRender';
 
 export const optionTypes = {
   disabled: VueTypes.bool,
@@ -14,21 +14,9 @@ export const optionTypes = {
 export default {
   name: 'SmSelectOption',
   isSelectOption: true,
+  defaultComponent: Select.Option,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
-  props: optionTypes,
-  computed: {
-    optionProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs });
-    },
-    optionListeners() {
-      return Object.assign({}, this.$listeners);
-    }
-  },
-  render(h): VNode {
-    return h(Select.Option, {
-      props: this.optionProps,
-      on: this.optionListeners
-    });
-  }
+  props: optionTypes
 };
 </script>

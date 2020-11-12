@@ -2,8 +2,7 @@
 import BreadcrumbItem from 'ant-design-vue/es/breadcrumb/BreadcrumbItem';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
-import { VNode } from 'vue';
+import AntdRender from '../_mixin/AntdRender';
 
 export const breadcrumbItemTypes = {
   href: VueTypes.string,
@@ -14,24 +13,9 @@ export const breadcrumbItemTypes = {
 export default {
   name: 'SmBreadcrumbItem',
   __ANT_BREADCRUMB_ITEM: true,
-  mixins: [Theme],
+  defaultComponent: BreadcrumbItem,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
-  props: breadcrumbItemTypes,
-  computed: {
-    breadcrumbItemProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-breadcrumb' });
-    }
-  },
-  render(h): VNode {
-    return h(
-      BreadcrumbItem,
-      {
-        props: this.breadcrumbItemProps,
-        scopedSlots: this.$scopedSlots,
-        on: this.breadcrumbItemListeners
-      },
-      this.$slots['default']
-    );
-  }
+  props: breadcrumbItemTypes
 };
 </script>

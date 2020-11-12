@@ -4,9 +4,9 @@ import { getColorWithOpacity, getDarkenColor } from '../../util';
 import { isArray } from '../../vue-types/utils';
 import cssVars from 'css-vars-ponyfill';
 
-const firstThemeItem = themeFactory[1];
+const lightTheme = themeFactory[1];
 
-export type ThemeStyleParams = typeof firstThemeItem;
+export type ThemeStyleParams = typeof lightTheme;
 
 export interface FunctionColorParams {
   successColor?: string | string[];
@@ -107,8 +107,8 @@ export function getExtralColors(
 export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerParams {
   const defaultThemeStyle = nextThemeStyle.style || 'light';
   const defaultTheme = themeFactory.find((item: ThemeStyleParams) => item.label === defaultThemeStyle);
-  // 合并 firstThemeItem 是因为可能其他 theme 没有完整的参数，如 disableColor
-  const themeStyleData = Object.assign({}, firstThemeItem, defaultTheme, nextThemeStyle);
+  // 合并 lightTheme 是因为可能其他 theme 没有完整的参数，如 disableColor
+  const themeStyleData = Object.assign({}, lightTheme, defaultTheme, nextThemeStyle);
   const serialColorsReplacer = getPrimarySerialColors(themeStyleData);
   const functionSerialColorsReplacer = getFunctionSerialColors(themeStyleData);
   const nextThemeData = {

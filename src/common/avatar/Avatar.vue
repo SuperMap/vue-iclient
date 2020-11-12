@@ -3,7 +3,7 @@ import { VNode } from 'vue';
 import Avatar from 'ant-design-vue/es/avatar/Avatar';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const avatarTypes = {
   icon: VueTypes.any,
@@ -18,34 +18,24 @@ export const avatarTypes = {
 
 export default {
   name: 'SmAvatar',
-  mixins: [Theme],
+  defaultComponent: Avatar,
+  mixins: [Theme, AntdRender],
   inheritAttrs: false,
   props: avatarTypes,
-  computed: {
-    avatarProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs, prefixCls: 'sm-component-avatar' });
-    },
-    avatarListeners() {
-      return Object.assign({}, this.$listeners);
+  methods: {
+    renderChildren(): VNode[] {
+      const h = this.$createElement;
+      const children = [];
+      if ((!this.icon || !this.$slots['icon']) && this.iconClass) {
+        children.push(
+          h('i', {
+            class: { [this.iconClass]: true },
+            slot: 'icon'
+          })
+        );
+      }
+      return [this.$slots['default'], children];
     }
-  },
-  render(h): VNode {
-    const children = [];
-    if ((!this.icon || !this.$slots['icon']) && this.iconClass) {
-      children.push(h('i', {
-        class: { [this.iconClass]: true },
-        slot: 'icon'
-      }));
-    }
-    return h(
-      Avatar,
-      {
-        props: this.avatarProps,
-        on: this.avatarListeners,
-        scopedSlots: this.$scopedSlots
-      },
-      [this.$slots['default'], children]
-    );
   }
 };
 </script>
