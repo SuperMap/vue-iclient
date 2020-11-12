@@ -2,13 +2,6 @@ import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
 import isequal from 'lodash.isequal';
 
-declare module 'vue/types/options' {
-  interface ComponentOptions<V extends Vue> {
-    viewModelProps?: Array<string>;
-    loaded?: Function;
-    removed?: Function;
-  }
-}
 @Component
 export default class VmUpdater extends Vue {
   viewModel: any;

@@ -385,7 +385,10 @@ export default {
           // 专题图hover 样式
           circleHoverStyle: { fillOpacity: 1 }
         }
-      }
+      },
+      input1: '123',
+      switch1: false,
+      switch2: true,
     };
   },
   methods: {
@@ -399,12 +402,17 @@ export default {
     },
     changeStyle2() {
       let transparent = {
+        style: 'dark',
         textColor: '#eee',
         background: 'rgba(0,0,0,0)',
         colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
       };
       smcomponents.setTheme(transparent);
       document.getElementsByTagName('body')[0].style.background = 'rgba(0, 0, 0, 0.9)';
+    },
+    changeStyle3() {
+      smcomponents.setTheme('warmGray');
+      document.getElementsByTagName('body')[0].style.background = '#191515';
     },
     mapLoaded(e) {
       console.log(e);
@@ -451,6 +459,18 @@ export default {
       if (this.popup) {
         this.popup.remove();
       }
+    },
+    handleInput(e) {
+      console.log(`sm-input-input to ${this.input1}`);
+      console.dir(e);
+    },
+    handleInputChange(e) {
+      console.log(`sm-input-change to ${this.input1}`);
+      console.dir(e);
+    },
+    handlePressEnter(e) {
+      console.log(`sm-input-pressEnter to ${e}`);
+      console.dir(e);
     }
   }
 };

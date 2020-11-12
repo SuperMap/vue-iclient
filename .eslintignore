@@ -4,3 +4,4 @@
 /test/unit/coverage/
 /demo
 *.spec.js
+/**/*.d.ts

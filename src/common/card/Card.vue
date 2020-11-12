@@ -1,9 +1,9 @@
 <template>
-  <div class="sm-component-card">
+  <div class="sm-component-collapse-card">
     <div
       v-if="iconClass"
       :class="{
-        ['sm-component-card__icon']: true,
+        ['sm-component-collapse-card__icon']: true,
         ['is-' + position]: true,
         [`is-click-${isShow ? 'out' : 'in'}`]: true,
         ['is-not-header']: !headerName
@@ -13,22 +13,22 @@
     >
       <div
         :style="[iconStyle]"
-        :class="{ [iconClass]: true, ['is-auto-rotate']: autoRotate, ['sm-component-card__component-icon']: true }"
+        :class="{ [iconClass]: true, ['is-auto-rotate']: autoRotate, ['sm-component-collapse-card__component-icon']: true }"
       ></div>
     </div>
     <transition name="sm-component-zoom-in" @after-leave="toggleTransition('leave')" @enter="toggleTransition('enter')">
       <div
         v-show="isShow"
         :class="{
-          ['sm-component-card__content']: true,
+          ['sm-component-collapse-card__content']: true,
           ['is-not-header']: !headerName,
           ['is-' + position]: true,
           ['is-icon']: iconClass
         }"
         :style="[getCardStyle]"
       >
-        <div v-if="headerName" class="sm-component-card__header" :style="[getBackgroundStyle, getTextColorStyle]">
-          <span class="sm-component-card__header-name">{{ headerName }}</span>
+        <div v-if="headerName" class="sm-component-collapse-card__header" :style="[getBackgroundStyle, getTextColorStyle]">
+          <span class="sm-component-collapse-card__header-name">{{ headerName }}</span>
         </div>
         <slot></slot>
       </div>
@@ -131,7 +131,7 @@ export default {
     },
     toggleTransition(type) {
       this.$nextTick(() => {
-        const iconDom = this.$el.querySelector('.sm-component-card__icon');
+        const iconDom = this.$el.querySelector('.sm-component-collapse-card__icon');
         if (iconDom) {
           iconDom.style.position = type === 'leave' ? 'relative' : 'absolute';
         }

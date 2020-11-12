@@ -1,0 +1,12 @@
+
+@mixin disabled($prefix) {
+  background-color: $switch-disabled-bg-color;
+
+  #{$prefix}-loading-icon,
+  &:after {
+    background-color: $switch-disabled-after-color;
+  }
+  #{$prefix}-inner {
+    color: $switch-disabled-after-color;
+  }
+}

@@ -36,6 +36,7 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
   viewModel: NcpMapViewModel;
+  $message: any;
   // data
   @Provide() __resizeHandler;
 

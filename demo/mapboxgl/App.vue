@@ -63,17 +63,29 @@
      <sm-border type="border1" style="width: 460px; height: 260px; float:left">
         <sm-chart :colorGroup="['red','blue']" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
     </sm-border>
+    <div class="buttons">
+      <sm-button type="primary">主按钮</sm-button>
+      <sm-button type="default">次按钮</sm-button>
+      <sm-button type="danger">危险按钮</sm-button>
+      <sm-button disabled>禁用按钮</sm-button>
+      <sm-button type="dashed">Dash按钮</sm-button>
+      <sm-button type="link">文字按钮</sm-button>
+    </div>
+    <div class="inputs">
+      <sm-input v-model="input1" @change="handleInputChange" @input="handleInput" @pressEnter="handlePressEnter" @focus.native="handleInputChange" />
+    </div>
 
     <div class="changeTheme">
-      <a-button @click="changeStyle">深色主题</a-button>
-      <a-button @click="changeStyle1">浅色主题</a-button>
-      <a-button @click="changeStyle2">透明主题</a-button>
+      <sm-button @click="changeStyle">深色主题</sm-button>
+      <sm-button @click="changeStyle1">浅色主题</sm-button>
+      <sm-button @click="changeStyle3">暖灰色主题</sm-button>
+      <sm-button @click="changeStyle2">透明主题</sm-button>
       <!-- <a-button @click="changeMapID">changeMapID</a-button> -->
     </div>
   </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import Vue from 'vue';
 import smcomponents from '../../src/mapboxgl';
 import data from './data/data.js';
@@ -81,12 +93,11 @@ import data from './data/data.js';
 var host = 'http://support.supermap.com.cn:8090';
 export default Vue.extend({
   name: 'App',
-  mixins: [data]  // demo data
+  mixins: [data] // demo data
 });
 </script>
 
-
-<style lang='scss'>
+<style lang="scss">
 body {
   margin: 0;
   // overflow: hidden;
@@ -101,10 +112,19 @@ body {
   width: 100%;
   height: 100%;
 }
+#app > div {
+  margin-bottom: 10px;
+}
 .changeTheme {
   position: absolute;
   left: 50%;
   transform: translate(-100px);
   bottom: 20px;
+}
+.buttons > button {
+  margin-right: 5px;
+}
+.inputs > input {
+  width: 8%;
 }
 </style>

@@ -1,0 +1,14 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(empty) {
+  width: 265px;
+  background-color: $empty-background;
+  @include e(image, '-') {
+    height: auto;
+  }
+  img {
+    width: 52px;
+    height: 31px;
+  }
+}

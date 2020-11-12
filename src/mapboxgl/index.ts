@@ -12,7 +12,6 @@ import {
   Input,
   Slider,
   Table,
-  message,
   Modal,
   Tree,
   Tabs
@@ -24,23 +23,21 @@ import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
+import { dealWithTheme, ThemeStyleParams } from '../common/_utils/style/color/serialColors';
 
-const setTheme = (themeStyle = {}) => {
+export const setTheme = (themeStyle: any = {}) => {
   if (typeof themeStyle === 'string') {
-    try {
-      require(`../common/_utils/style/theme/${themeStyle}.scss`);
-    } catch (e) {
-      themeStyle = 'light';
-      require(`../common/_utils/style/theme/${themeStyle}.scss`);
-    }
-    themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
+    themeStyle = themeFactory.find((item: ThemeStyleParams) => item.label === themeStyle) || themeFactory[1];
   }
-  globalEvent.$options.theme = themeStyle;
-  globalEvent.$emit('change-theme', themeStyle);
+  const nextThemeData = dealWithTheme(themeStyle);
+  const nextTheme = nextThemeData.themeStyle;
+  globalEvent.$options.theme = nextTheme;
+  globalEvent.$emit('change-theme', nextTheme);
 };
 
 const install = function(Vue, opts: any = {}) {
   let theme = opts.theme || 'light';
+  require('../common/_utils/style/theme/antd.less');
   require('./style.scss');
   setTheme(theme);
   registerProjection(opts.projections);
@@ -64,11 +61,14 @@ const install = function(Vue, opts: any = {}) {
       cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
     });
   }
-  Vue.prototype.$message = message;
+  Vue.prototype.$message = components.Message;
+  Vue.prototype.$notification = components.Notification;
   initi18n(Vue, opts);
   for (let component in components) {
-    const com = components[component];
-    Vue.component(com.options ? com.options.name : com.name, com);
+    if (!['Notification', 'Message'].includes(component)) {
+      const com = components[component];
+      Vue.component(com.options ? com.options.name : com.name, com);
+    }
   }
 };
 if (typeof window !== 'undefined' && window['Vue']) {

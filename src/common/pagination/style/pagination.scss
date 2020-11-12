@@ -1,0 +1,124 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(pagination) {
+  $prefix: &;
+
+  &-item {
+    border-color: $pagination-border-default-color;
+    &:focus,
+    &:hover {
+      border-color: $primary-5;
+      a {
+        color: $primary-5;
+      }
+    }
+  }
+
+  &-item:hover,
+  &-item:focus {
+    border-color: $primary-5;
+    > a {
+      color: $primary-5;
+    }
+  }
+
+  &-item-active {
+    background: transparent;
+    border-color: $primary-5;
+    a {
+      color: $primary-5;
+    }
+
+    &:focus,
+    &:hover {
+      border-color: $primary-5;
+    }
+
+    &:focus a,
+    &:hover a {
+      color: $primary-5;
+    }
+  }
+
+  &-jump-prev,
+  &-jump-next {
+    @include b(pagination) {
+      &-item-container {
+        @include b(pagination) {
+          &-item-link-icon {
+            color: $primary-5;
+          }
+        }
+      }
+    }
+  }
+
+  &-prev,
+  &-next {
+    @include b(pagination) {
+      &-item-link {
+        border-color: $pagination-border-default-color;
+      }
+    }
+
+    &:focus,
+    &:hover {
+      @include b(pagination) {
+        &-item-link {
+          color: $primary-5;
+          border-color: $primary-5;
+        }
+      }
+    }
+  }
+
+  &-disabled {
+    &,
+    &:hover,
+    &:focus {
+      @include b(pagination) {
+        &-item-link {
+          color: $disabled-color;
+          border-color: $disabled-border-color;
+        }
+      }
+    }
+  }
+
+  &-simple &-simple-pager {
+    input {
+      border-color: $pagination-border-default-color;
+      &:hover {
+        border-color: $primary-5;
+      }
+    }
+  }
+
+  &#{$prefix}-disabled {
+    @include b(pagination) {
+      &-item {
+        background: transparent;
+        border-color: $disabled-border-color;
+      }
+      &-item-active {
+        background: $pagination-disabled-active-bg-color;
+        border-color: transparent;
+        a {
+          color: $disabled-color;
+        }
+      }
+    }
+    @include b(pagination) {
+      &-item-link {
+        &,
+        &:hover,
+        &:focus {
+          color: $disabled-color;
+          background: transparent;
+          border-color: $disabled-border-color;
+        }
+      }
+    }
+  }
+}

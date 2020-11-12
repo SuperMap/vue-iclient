@@ -1,0 +1,75 @@
+@mixin calendarPanelHeader($prefix) {
+  #{$prefix}-prev-century-btn,
+  #{$prefix}-next-century-btn,
+  #{$prefix}-prev-decade-btn,
+  #{$prefix}-next-decade-btn,
+  #{$prefix}-prev-month-btn,
+  #{$prefix}-next-month-btn,
+  #{$prefix}-prev-year-btn,
+  #{$prefix}-next-year-btn {
+    color: $text-color-secondary;
+  }
+}
+
+@mixin disabled($color: $btn-disable-color, $background: $btn-disable-bg, $border: $btn-disable-border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+}
+
+@mixin button-disabled($color: $btn-disable-color, $background: $btn-disable-bg, $border: $btn-disable-border) {
+  &-disabled,
+  &.disabled,
+  &[disabled] {
+    &,
+    &:hover,
+    &:focus,
+    &:active,
+    &.active {
+      @include disabled($color, $background, $border);
+    }
+  }
+}
+
+@mixin panel-item($prefix-panel, $panel-name) {
+  background: $select-dropdown-bg;
+
+  &-header {
+    @include calendarPanelHeader($prefix-panel);
+  }
+
+  &-selected-cell {
+    #{$prefix-panel}-#{$panel-name} {
+      background: $primary-color;
+
+      &:hover {
+        background: $primary-color;
+      }
+    }
+  }
+
+  &-#{$panel-name} {
+    &:hover {
+      background: $selected-color;
+      border-color: transparent;
+    }
+    @at-root {
+      a#{&}:hover {
+        color: #fff;
+      }
+    }
+  }
+}
+
+@mixin today($prefix) {
+  #{$prefix}-date {
+    color: $primary-color;
+    border-color: $primary-color;
+    background: transparent;
+    &:hover {
+      background: $selected-color;
+      border-color: transparent;
+      color: #fff;
+    }
+  }
+}

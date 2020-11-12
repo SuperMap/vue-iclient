@@ -1,7 +1,7 @@
 @import "../../_utils/style/mixins/mixins.scss";
 @import "../../_utils/style/common/var.scss";
 
-@include b(card) {
+@include b(collapse-card) {
   position: relative;
   overflow: visible;
   @include e(icon) {
@@ -54,28 +54,28 @@
     @include when(top-left) {
       top: 0;
       left: 0;
-      & .sm-component-card__component-icon.is-auto-rotate {
+      & .sm-component-collapse-card__component-icon.is-auto-rotate {
         transform: rotate(45deg);
       }
     }
     @include when(bottom-left) {
       top: 0;
       left: 0;
-      & .sm-component-card__component-icon.is-auto-rotate {
+      & .sm-component-collapse-card__component-icon.is-auto-rotate {
         transform: rotate(45deg);
       }
     }
     @include when(top-right) {
       top: 0;
       right: 0;
-      & .sm-component-card__component-icon.is-auto-rotate {
+      & .sm-component-collapse-card__component-icon.is-auto-rotate {
         transform: rotate(135deg);
       }
     }
     @include when(bottom-right) {
       top: 0;
       right: 0;
-      & .sm-component-card__component-icon.is-auto-rotate {
+      & .sm-component-collapse-card__component-icon.is-auto-rotate {
         transform: rotate(135deg);
       }
     }
@@ -131,7 +131,7 @@
     }
     @include when(top-left) {
       @include when(icon) {
-        & > .sm-component-card__header {
+        & > .sm-component-collapse-card__header {
           padding-left: 38px;
         }
       }
@@ -139,7 +139,7 @@
     }
     @include when(bottom-left) {
       @include when(icon) {
-        & > .sm-component-card__header {
+        & > .sm-component-collapse-card__header {
           padding-left: 38px;
         }
       }

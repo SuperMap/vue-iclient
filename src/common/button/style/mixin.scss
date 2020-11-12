@@ -1,0 +1,47 @@
+@mixin button-color($color, $background, $border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+}
+
+@mixin button-variant-primary($hover-color, $hover-bg, $hover-border, $active-color, $active-bg, $active-border) {
+  &:hover,
+  &:focus {
+    @include button-color($hover-color, $hover-bg, $hover-border);
+  }
+  &:active {
+    @include button-color($active-color, $active-bg, $active-border);
+  }
+}
+
+@mixin button-variant-other($background) {
+  &:hover,
+  &:focus {
+    @include button-color($primary-5, $background, $primary-5);
+  }
+  &:active,
+  &.active {
+    @include button-color($primary-7, $background, $primary-7);
+  }
+}
+
+@mixin button-variant-ghost($hover-color, $hover-bg, $hover-border, $active-color, $active-bg, $active-border) {
+  &:hover,
+  &:focus {
+    @if $hover-border == transparent {
+      @include button-color($hover-color, transparent, transparent);
+    }
+    @if $hover-border != transparent {
+      @include button-color($hover-color, transparent, $hover-border);
+    }
+  }
+  &:active,
+  &.active {
+    @if $active-border == transparent {
+      @include button-color($active-color, transparent, transparent);
+    }
+    @if $active-border != transparent {
+      @include button-color($active-color, transparent, $active-border);
+    }
+  }
+}

@@ -1,0 +1,18 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(notification) {
+  &-notice {
+    background: $message-background;
+    &-message {
+      color: $heading-color;
+    }
+
+    &-close {
+      color: $notification-close-color;
+      &:hover {
+        color: $notification-close-hover-color;
+      }
+    }
+  }
+}
