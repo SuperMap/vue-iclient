@@ -6,7 +6,6 @@ import antdZhCN from 'ant-design-vue/es/locale/zh_CN';
 import antdEnUS from 'ant-design-vue/es/locale/en_US';
 import clonedeep from 'lodash.clonedeep';
 import VueI18n from 'vue-i18n';
-import { message } from 'ant-design-vue';
 
 const dateTimeFormats = {
   en: enLocale.dateTimeFormat,
@@ -16,12 +15,12 @@ let i18n = {};
 let rooti18n;
 const messages = {
   en: {
-    ...enLocale,
-    ...antdEnUS
+    ...antdEnUS,
+    ...enLocale
   },
   zh: {
-    ...zhLocale,
-    ...antdZhCN
+    ...antdZhCN,
+    ...zhLocale
   }
 };
 export function getLanguage() {
@@ -50,7 +49,7 @@ export function geti18n(n) {
 export function setLocale(locales) {
   i18n.mergeLocaleMessage && i18n.mergeLocaleMessage(i18n.locale, locales);
 }
-export const lang = clonedeep(message);
+export const lang = clonedeep(messages);
 export function initi18n(Vue, config) {
   config = config || {};
   if (config.i18n) {
