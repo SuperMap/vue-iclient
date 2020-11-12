@@ -6,7 +6,7 @@
 
 <script>
 import { getDateTime } from '../_utils/util';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 
 export default {
   name: 'SmTimeText',

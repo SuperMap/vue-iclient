@@ -209,10 +209,10 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/theme';
+import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
-import Card from '../../../../common/_mixin/card';
+import Card from '../../../../common/_mixin/Card';
 import LegendViewModel from './LegendViewModel';
 import { getColorWithOpacity } from '../../../../common/_utils/util';
 

@@ -1,6 +1,6 @@
 <script lang="ts">
 import Radio from 'ant-design-vue/es/radio/Radio';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 import VueTypes from '../_utils/vue-types';
 

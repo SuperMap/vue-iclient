@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import Theme from '../../../common/_mixin/theme';
+import Theme from '../../../common/_mixin/Theme';
 import Pagination from './Pagination';
 
 export default {

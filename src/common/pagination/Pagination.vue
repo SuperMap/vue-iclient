@@ -1,7 +1,7 @@
 <script lang="ts">
 import Pagination from 'ant-design-vue/es/pagination/index';
 import { PaginationProps } from 'ant-design-vue/es/pagination/Pagination';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 
 export const paginationTypes = {

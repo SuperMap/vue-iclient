@@ -94,7 +94,7 @@
   </div>
 </template>
 <script>
-import Theme from '../../common/_mixin/theme';
+import Theme from '../../common/_mixin/Theme';
 import MapGetter from '../_mixin/map-getter';
 import Control from '../_mixin/control';
 

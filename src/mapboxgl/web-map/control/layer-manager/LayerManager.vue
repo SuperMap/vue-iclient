@@ -35,9 +35,9 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/theme';
+import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
-import Card from '../../../../common/_mixin/card';
+import Card from '../../../../common/_mixin/Card';
 import MapGetter from '../../../_mixin/map-getter';
 import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';

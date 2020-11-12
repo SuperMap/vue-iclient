@@ -2,7 +2,7 @@
 import { Step } from 'ant-design-vue/es/vc-steps';
 import { VNode } from 'vue';
 import VueTypes from '../_utils/vue-types';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import { objectWithoutProperties } from '../_utils/util';
 
 export const stepTypes = {

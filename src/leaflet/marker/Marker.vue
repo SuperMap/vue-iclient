@@ -1,7 +1,7 @@
 
 <script>
 import MapGetter from '../_mixin/map-getter';
-import Theme from '../../common/_mixin/theme';
+import Theme from '../../common/_mixin/Theme';
 import MarkerViewModel from './MarkerViewModel';
 import Options from '../_mixin/Options.js';
 

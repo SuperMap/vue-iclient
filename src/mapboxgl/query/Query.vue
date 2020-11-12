@@ -122,9 +122,9 @@
   </sm-card>
 </template>
 <script>
-import Theme from '../../common/_mixin/theme';
+import Theme from '../../common/_mixin/Theme';
 import Control from '../_mixin/control';
-import Card from '../../common/_mixin/card';
+import Card from '../../common/_mixin/Card';
 import MapGetter from '../_mixin/map-getter';
 import LineStyle from '../_types/LineStyle';
 import FillStyle from '../_types/FillStyle';

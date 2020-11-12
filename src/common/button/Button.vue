@@ -1,7 +1,7 @@
 <script lang="ts">
 import Button from 'ant-design-vue/es/button/button';
 import buttonProps from 'ant-design-vue/es/button/buttonTypes';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 
 export const buttonTypes = {

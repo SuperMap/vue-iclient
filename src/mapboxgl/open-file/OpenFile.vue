@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import Theme from '../../common/_mixin/theme';
+import Theme from '../../common/_mixin/Theme';
 import Control from '../_mixin/control';
 import MapGetter from '../_mixin/map-getter';
 import OpenFileViewModel from './OpenFileViewModel';
@@ -26,7 +26,7 @@ import GeojsonLayer from '../web-map/layer/geojson/GeojsonLayer';
 import CircleStyle from '../_types/CircleStyle';
 import FillStyle from '../_types/FillStyle';
 import LineStyle from '../_types/LineStyle';
-import VmUpdater from '../../common/_mixin/vm-updater';
+import VmUpdater from '../../common/_mixin/VmUpdater';
 import Vue from 'vue';
 
 export default {

@@ -12,7 +12,7 @@
 </template>
 
 <script>
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import { parseUrl } from '../_utils/util';
 
 export default {

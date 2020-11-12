@@ -7,7 +7,7 @@
 
 <script lang='ts'>
 import WebMapViewModel from './WebMapViewModel';
-import VmUpdater from '../../common/_mixin/vm-updater';
+import VmUpdater from '../../common/_mixin/VmUpdater';
 import mapEvent from '../_types/map-event';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';

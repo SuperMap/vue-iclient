@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import Theme from '../../../common/_mixin/theme';
+import Theme from '../../../common/_mixin/Theme';
 
 export default {
   name: 'LinedataResult',

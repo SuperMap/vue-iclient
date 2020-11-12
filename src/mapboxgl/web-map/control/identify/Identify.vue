@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/theme';
+import Theme from '../../../../common/_mixin/Theme';
 import MapGetter from '../../../_mixin/map-getter';
 import IdentifyViewModel from './IdentifyViewModel';
 import CircleStyle from '../../../_types/CircleStyle';

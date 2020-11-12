@@ -13,7 +13,7 @@
 
 <script>
 import MapGetter from '../_mixin/map-getter';
-import Theme from '../../common/_mixin/theme';
+import Theme from '../../common/_mixin/Theme';
 import IdentifyViewModel from './IdentifyViewModel';
 
 export default {

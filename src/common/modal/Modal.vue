@@ -1,6 +1,6 @@
 <script lang="ts">
 import Modal from 'ant-design-vue/es/modal';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import VueTypes from '../_utils/vue-types';
 import buttonTypes from 'ant-design-vue/es/button/buttonTypes';
 import AntdRender from '../_mixin/AntdRender';

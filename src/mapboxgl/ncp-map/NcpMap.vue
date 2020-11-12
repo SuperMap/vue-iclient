@@ -9,7 +9,7 @@
 import NcpMapViewModel, { dataOptions, mapOptions } from './NcpMapViewModel';
 import mapEvent from '../_types/map-event';
 import MapEvents from '../web-map/_mixin/map-events';
-import VmUpdater from '../../common/_mixin/vm-updater';
+import VmUpdater from '../../common/_mixin/VmUpdater';
 import { Component, Prop, Mixins, Emit, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';

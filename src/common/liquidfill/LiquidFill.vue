@@ -3,11 +3,11 @@
 </template>
 <script>
 import echarts from 'echarts';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import 'echarts-liquidfill';
 import { ResizeSensor } from 'css-element-queries';
-import Timer from '../_mixin/timer';
-import ThirdService from '../_mixin/thirdService';
+import Timer from '../_mixin/Timer';
+import ThirdService from '../_mixin/ThirdService';
 
 export default {
   name: 'SmLiquidFill',

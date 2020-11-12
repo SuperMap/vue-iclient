@@ -1,7 +1,7 @@
 <script lang="ts">
 import Layout from 'ant-design-vue/es/layout';
 import { SiderProps } from 'ant-design-vue/es/layout/Sider';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 
 export const layoutSiderTypes = {

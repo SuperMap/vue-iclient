@@ -1,7 +1,7 @@
 <script lang="ts">
 import Group from 'ant-design-vue/es/checkbox/Group';
 import VueTypes from '../_utils/vue-types';
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 
 export const groupTypes = {

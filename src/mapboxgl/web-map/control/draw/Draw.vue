@@ -25,8 +25,8 @@
 
 <script>
 import drawEvent from '../../../_types/draw-event';
-import Theme from '../../../../common/_mixin/theme';
-import Card from '../../../../common/_mixin/card';
+import Theme from '../../../../common/_mixin/Theme';
+import Card from '../../../../common/_mixin/Card';
 import MapGetter from '../../../_mixin/map-getter';
 import Control from '../../../_mixin/control';
 import DrawViewModel from './DrawViewModel';

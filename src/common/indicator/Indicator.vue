@@ -33,8 +33,8 @@
 </template>
 
 <script>
-import Theme from '../_mixin/theme';
-import Timer from '../_mixin/timer';
+import Theme from '../_mixin/Theme';
+import Timer from '../_mixin/Timer';
 import RestService from '../../common/_utils/RestService';
 import CountTo from './CountTo';
 
