@@ -63,6 +63,12 @@ const install = function(Vue, opts: any = {}) {
   }
   Vue.prototype.$message = components.Message;
   Vue.prototype.$notification = components.Notification;
+  Vue.prototype.$info = components.Modal.info;
+  Vue.prototype.$success = components.Modal.success;
+  Vue.prototype.$error = components.Modal.error;
+  Vue.prototype.$warning = components.Modal.warning;
+  Vue.prototype.$confirm = components.Modal.confirm;
+  Vue.prototype.$destroyAll = components.Modal.destroyAll;
   initi18n(Vue, opts);
   for (let component in components) {
     if (!['Notification', 'Message'].includes(component)) {

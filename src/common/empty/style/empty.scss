@@ -2,7 +2,6 @@
 @import '../../_utils/style/theme/theme.scss';
 
 @include b(empty) {
-  width: 265px;
   background-color: $empty-background;
   @include e(image, '-') {
     height: auto;

@@ -37,6 +37,7 @@
       @include button-variant-ghost($danger-5, transparent, $danger-5, $danger-7, transparent, $danger-7);
     }
     &#{$prefix}-link {
+      color: $btn-default-color;
       @include button-variant-ghost($primary-5, transparent, transparent, $primary-7, transparent, transparent);
     }
   }

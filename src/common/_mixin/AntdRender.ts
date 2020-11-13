@@ -1,6 +1,6 @@
 import Vue, { VNode, CreateElement } from 'vue';
 import { Component, Prop, Provide } from 'vue-property-decorator';
-import defaultRenderEmpty from 'ant-design-vue/es/config-provider/renderEmpty';
+import defaultRenderEmpty from '../empty/RenderEmpty';
 import { getOptionProps, getComponentFromProp } from 'ant-design-vue/es/_util/props-util';
 
 @Component
@@ -16,14 +16,20 @@ export default class BaseRender extends Vue {
 
   @Provide('configProvider')
   configProvider = {
-    ...this.$props,
+    getPopupContainer: this.getPopupContainer,
+    prefixCls: this.prefixCls,
+    csp: this.csp,
+    autoInsertSpaceInButton: this.autoInsertSpaceInButton,
+    locale: Object.assign({}, this.locale, this.$i18n.getLocaleMessage(this.$i18n.locale)),
+    pageHeader: this.pageHeader,
+    pageHeatransformCellTextder: this.transformCellText,
     getPrefixCls: this.getPrefixCls,
     renderEmpty: this.renderEmptyComponent
   };
 
   @Provide('localeData')
   localeData = {
-    antLocale: Object.assign({}, this.locale || this.$i18n.getLocaleMessage(this.$i18n.locale), { exist: true })
+    antLocale: Object.assign({}, this.locale, this.$i18n.getLocaleMessage(this.$i18n.locale), { exist: true })
   }
 
   get extralProps() {

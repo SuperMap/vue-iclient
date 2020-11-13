@@ -1,9 +1,8 @@
 <script lang="ts">
-import { Step } from 'ant-design-vue/es/vc-steps';
-import { VNode } from 'vue';
+import Steps from 'ant-design-vue/es/steps';
 import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/Theme';
-import { objectWithoutProperties } from '../_utils/util';
+import AntdRender from '../_mixin/AntdRender';
 
 export const stepTypes = {
   prefixCls: VueTypes.string,
@@ -27,26 +26,8 @@ export const stepTypes = {
 
 export default {
   name: 'SmStep',
-  mixins: [Theme],
-  props: stepTypes,
-  computed: {
-    stepProps() {
-      return objectWithoutProperties({ ...this.$props, ...this.$attrs });
-    },
-    stepListeners() {
-      return Object.assign({}, this.$listeners);
-    }
-  },
-  render(h): VNode {
-    return h(
-      Step,
-      {
-        props: this.stepProps,
-        scopedSlots: this.$scopedSlots,
-        on: this.stepListeners
-      },
-      this.$slots['default']
-    );
-  }
+  defaultComponent: Steps.Step,
+  mixins: [Theme, AntdRender],
+  props: stepTypes
 };
 </script>

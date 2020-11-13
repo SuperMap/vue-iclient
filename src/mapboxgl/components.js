@@ -36,7 +36,7 @@ export { default as RadioButton } from '../common/radio/Button';
 export { default as Tabs } from '../common/tabs/Tabs';
 export { default as TabPane } from '../common/tabs/TabPane';
 export { default as Transfer } from '../common/transfer/Transfer';
-export { default as Modal } from '../common/modal/Modal';
+export { default as Modal } from '../common/modal';
 export { default as Steps } from '../common/steps/Steps';
 export { default as Step } from '../common/steps/Step';
 export { default as Tooltip } from '../common/tooltip/Tooltip';

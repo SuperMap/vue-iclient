@@ -246,9 +246,14 @@ $popover-arrow-color: $popover-bg;
 $popover-arrow-outer-color: $popover-bg;
 
 // Modal
-$modal-header-bg: var(--modal-background);
+$modal-background: var(--modal-background);
+$modal-header-bg: $modal-background;
+$modal-header-border-color-split: $border-color-split;
+$modal-heading-color: $heading-color;
+$modal-content-bg: $modal-background;
 $modal-footer-bg: transparent;
-$modal-mask-bg: fade($black, 45%);
+$modal-footer-border-color-split: $border-color-split;
+$modal-mask-bg: rgba($black, 0.45);
 
 // Progress
 $progress-default-color: $processing-color;
@@ -358,25 +363,7 @@ $breadcrumb-link-color: $text-color-secondary;
 $breadcrumb-separator-color: $text-color-secondary;
 
 // Step
-$step-tail-color: var(--step-tail-color);
-$step-wait-color: var(--step-wait-color);
-$process-icon-color: $info-color;
-$process-title-color: var(--step-process-title-color);
-$process-description-color: $text-color;
-$process-tail-color: $step-tail-color;
-$wait-icon-color: $step-wait-color;
-$wait-title-color: $text-color-secondary;
-$wait-description-color: $text-color-secondary;
-$wait-tail-color: $step-tail-color;
-$finish-icon-color: $info-color;
-$finish-title-color: $text-color;
-$finish-description-color: $text-color-secondary;
-$finish-tail-color: $info-color;
-$error-icon-color: $danger-3;
-$error-title-color: $danger-3;
-$error-description-color: $danger-3;
-$error-tail-color: $step-tail-color;
-$steps-background: var(--step-icon-background);
+
 
 // Tooltip
 $tooltip-background: var(--tooltip-background);
@@ -412,12 +399,8 @@ $skeleton-color: #f2f2f2;
 
 // Transfer
 $transfer-disabled-bg: $disabled-bg;
-$transfer-hover-color: $text-color-secondary;
-$transfer-search-icon-Color: var(--transfer-search-icon-Color);
-$transfer-border-color: var(--transfer-border-color);
-$transfer-header-bg: $component-background;
-$transfer-item-hover-color: $hover-color;
-$transfer-btn-disabled-color: var(--transfer-btn-disabled-color);
+$transfer-item-hover-color: var(--transfer-item-hover-color);
+
 // Message
 $message-background: var(--message-background);
 // Notification
