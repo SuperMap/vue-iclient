@@ -590,7 +590,7 @@ export default class WebMapService extends Events {
       requestUrl += `?token=${token}`;
     }
     const proxy = this.handleProxy();
-    requestUrl = this.handleParentRes(url);
+    requestUrl = this.handleParentRes(requestUrl);
     SuperMap.FetchRequest.get(requestUrl, null, {
       proxy,
       withCredentials: this.handleWithCredentials(proxy, requestUrl, false)

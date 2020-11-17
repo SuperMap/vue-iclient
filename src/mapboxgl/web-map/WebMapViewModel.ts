@@ -95,6 +95,8 @@ export default class WebMapViewModel extends WebMapBase {
   private _fieldMaxValue: any;
 
   private _handleDataflowFeaturesCallback: Function;
+  
+  private _initDataflowLayerCallback: Function;
 
   private _dataflowService: any;
 
@@ -802,30 +804,38 @@ export default class WebMapViewModel extends WebMapBase {
   private _createDataflowLayer(layerInfo) {
     let dataflowService = new mapboxgl.supermap.DataFlowService(layerInfo.wsUrl).initSubscribe();
     this._handleDataflowFeaturesCallback = this._handleDataflowFeatures.bind(this, layerInfo);
+    this._initDataflowLayerCallback = this._initDataflowLayer.bind(this, layerInfo);
+    dataflowService.on('subscribesucceeded', this._initDataflowLayerCallback);
     dataflowService.on('messageSucceeded', this._handleDataflowFeaturesCallback);
     this._dataflowService = dataflowService;
   }
-
+  private _initDataflowLayer(layerInfo) {
+    this._addLayerSucceeded();
+  }
   private _handleDataflowFeatures(layerInfo, e) {
-    let features = JSON.parse(e.data);
+    let features = [JSON.parse(e.data)];
     // this.transformFeatures([features]); // TODO 坐标系
     this.triggerEvent('dataflowfeatureupdated', {
       features,
       identifyField: layerInfo.identifyField,
       layerID: layerInfo.layerID
     });
+
+    if(layerInfo.projection === 'EPSG:3857'){
+      features = this.transformFeatures(features);
+    }
     if (layerInfo.filterCondition) {
       //过滤条件
       let condition = this.replaceFilterCharacter(layerInfo.filterCondition);
       let sql = 'select * from json where (' + condition + ')';
       let filterResult = window['jsonsql'].query(sql, {
-        attributes: features.properties
+        attributes: features[0].properties
       });
       if (filterResult && filterResult.length > 0) {
-        this._addDataflowLayer(layerInfo, features);
+        this._addDataflowLayer(layerInfo, features[0]);
       }
     } else {
-      this._addDataflowLayer(layerInfo, features);
+      this._addDataflowLayer(layerInfo, features[0]);
     }
   }
 
@@ -853,7 +863,7 @@ export default class WebMapViewModel extends WebMapBase {
     let layerID = layerInfo.layerID;
     if (layerInfo.layerType === 'DATAFLOW_HEAT') {
       if (!this.map.getSource(layerID)) {
-        this._createHeatLayer(layerInfo, [feature]);
+        this._createHeatLayer(layerInfo, [feature],false);
       } else {
         this._updateDataFlowFeature(layerID, feature, layerInfo);
       }
@@ -867,9 +877,9 @@ export default class WebMapViewModel extends WebMapBase {
           layerInfo.identifyField
         );
         if (['BASIC_POINT', 'SVG_POINT', 'IMAGE_POINT'].includes(layerStyle.type)) {
-          this._createGraphicLayer(layerInfo, [feature], null, iconRotateExpression);
+          this._createGraphicLayer(layerInfo, [feature], null, iconRotateExpression,false);
         } else {
-          this._createSymbolLayer(layerInfo, [feature], null, iconRotateExpression);
+          this._createSymbolLayer(layerInfo, [feature], null, iconRotateExpression,false);
         }
       } else {
         this._updateDataFlowFeature(layerID, feature, layerInfo, 'point');
@@ -1086,7 +1096,7 @@ export default class WebMapViewModel extends WebMapBase {
     });
   }
 
-  private _createSymbolLayer(layerInfo: any, features: any, textSizeExpresion?, textRotateExpresion?): void {
+  private _createSymbolLayer(layerInfo: any, features: any, textSizeExpresion?, textRotateExpresion?,addToMap = true): void {
     // 用来请求symbol_point字体文件
     let target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
@@ -1128,10 +1138,12 @@ export default class WebMapViewModel extends WebMapBase {
       type: 'FeatureCollection',
       features: features
     });
-    this._addLayerSucceeded();
+    if(addToMap){
+      this._addLayerSucceeded();
+    }
   }
 
-  private _createGraphicLayer(layerInfo: any, features: any, iconSizeExpression?, iconRotateExpression?) {
+  private _createGraphicLayer(layerInfo: any, features: any, iconSizeExpression?, iconRotateExpression?, addToMap = true) {
     let { layerID, minzoom, maxzoom, style } = layerInfo;
     let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
@@ -1166,7 +1178,9 @@ export default class WebMapViewModel extends WebMapBase {
           minzoom: minzoom || 0,
           maxzoom: maxzoom || 22
         });
-        this._addLayerSucceeded();
+        if(addToMap){
+          this._addLayerSucceeded();
+        }
       });
     } else if (style.type === 'SVG_POINT') {
       let svgUrl = style.url;
@@ -1200,7 +1214,9 @@ export default class WebMapViewModel extends WebMapBase {
               minzoom: minzoom || 0,
               maxzoom: maxzoom || 22
             });
-            this._addLayerSucceeded();
+            if(addToMap){
+              this._addLayerSucceeded();
+            }
           });
       });
     } else {
@@ -1211,7 +1227,9 @@ export default class WebMapViewModel extends WebMapBase {
         }
       };
       this._addOverlayToMap('POINT', source, layerID, layerStyle, minzoom, maxzoom);
-      this._addLayerSucceeded();
+      if(addToMap){
+        this._addLayerSucceeded();
+      }
     }
   }
 
@@ -1408,7 +1426,7 @@ export default class WebMapViewModel extends WebMapBase {
     });
   }
 
-  private _createHeatLayer(layerInfo: any, features: any): void {
+  private _createHeatLayer(layerInfo: any, features: any, addToMap = true): void {
     const { minzoom, maxzoom } = layerInfo;
     let style = layerInfo.themeSetting;
     let layerOption = {
@@ -1483,7 +1501,9 @@ export default class WebMapViewModel extends WebMapBase {
       minzoom: minzoom || 0,
       maxzoom: maxzoom || 22
     });
-    this._addLayerSucceeded();
+    if(addToMap){
+      this._addLayerSucceeded();
+    }
   }
 
   private _changeWeight(features: any, weightFeild: string): void {
@@ -2014,7 +2034,7 @@ export default class WebMapViewModel extends WebMapBase {
       this._sourceListModel = null;
       this.center = null;
       this.zoom = null;
-      this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback);
+      this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback) && this._dataflowService.off('subscribesucceeded', this._initDataflowLayerCallback);
       this._unprojectProjection = null;
     }
     if (this._layerTimerList.length) {
