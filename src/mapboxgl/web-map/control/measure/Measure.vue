@@ -6,7 +6,7 @@
     :header-name="headerName || $t('measure.mapMeasure')"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="background"
+    :background="getBackground"
     :textColor="textColor"
     class="sm-component-measure"
   >
@@ -197,7 +197,7 @@ export default {
         this.changeSelectInputStyle();
       }
     },
-    backgroundData: {
+    getBackground: {
       handler() {
         this.changeSelectInputStyle();
       }

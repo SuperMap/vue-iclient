@@ -4,8 +4,14 @@
 @import 'mixin.scss';
 
 @include b(calendar-picker) {
+  $calendar-picker-prefix: &;
+  &:hover {
+    #{$calendar-picker-prefix}-clear + #{$calendar-picker-prefix}-icon {
+      opacity: 0;
+    }
+  }
+
   @include e(clear, '-') {
-    background: $body-background-without-opacity;
     &:hover {
       color: $text-color-secondary;
     }

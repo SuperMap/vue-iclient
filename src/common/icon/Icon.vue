@@ -3,15 +3,12 @@
     <i
       v-if="!!iconClass"
       :class="customIconClass"
-      :style="[iconStyle, colorStyle]"
-      :theme="theme"
-      :twoToneColor="twoToneColor"
-      :component="component"
+      :style="iconStyle"
     />
     <a-icon
       v-else
       :type="type"
-      :style="[iconStyle, colorStyle]"
+      :style="iconStyle"
       :theme="theme"
       :twoToneColor="twoToneColor"
       :component="component"
@@ -51,9 +48,6 @@ export default {
     }
   },
   computed: {
-    colorStyle() {
-      return !this.iconStyle || !this.iconStyle.color ? this.getColorStyle(0) : { color: this.iconStyle.color };
-    },
     customIconClass() {
       return this.autoPrefix ? 'sm-components-icons-' + this.iconClass : this.iconClass;
     }

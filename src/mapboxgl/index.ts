@@ -1,4 +1,3 @@
-import globalEvent from '../common/_utils/global-event';
 import { registerProjection } from '../common/_utils/epsg-define';
 import {
   Progress,
@@ -17,23 +16,12 @@ import {
   Tabs
 } from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
-import themeFactory from '../common/_utils/style/theme/theme.json';
 import * as components from './components';
 import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
-import { dealWithTheme, ThemeStyleParams } from '../common/_utils/style/color/serialColors';
-
-export const setTheme = (themeStyle: any = {}) => {
-  if (typeof themeStyle === 'string') {
-    themeStyle = themeFactory.find((item: ThemeStyleParams) => item.label === themeStyle) || themeFactory[1];
-  }
-  const nextThemeData = dealWithTheme(themeStyle);
-  const nextTheme = nextThemeData.themeStyle;
-  globalEvent.$options.theme = nextTheme;
-  globalEvent.$emit('change-theme', nextTheme);
-};
+import { setTheme } from '../common/_utils/style/theme/set-theme';
 
 const install = function(Vue, opts: any = {}) {
   let theme = opts.theme || 'light';

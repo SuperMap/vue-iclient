@@ -55,7 +55,7 @@ export default {
         this.setLayers();
       }
     },
-    backgroundData() {
+    getBackground() {
       this.changeStyle();
     }
   },
@@ -231,8 +231,8 @@ export default {
     changeStyle() {
       const wrapper = document.querySelector('.leaflet-popup-content-wrapper');
       const tip = document.querySelector('.leaflet-popup-tip');
-      wrapper && (wrapper.style.background = this.backgroundData);
-      tip && (tip.style.background = this.backgroundData);
+      wrapper && (wrapper.style.background = this.getBackground);
+      tip && (tip.style.background = this.getBackground);
     }
   }
 };

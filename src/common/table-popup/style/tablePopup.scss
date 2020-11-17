@@ -1,5 +1,9 @@
-@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
 @include b(table-popup) {
+  color: $text-color;
+  background: $component-background;
   @include e(table) {
     &.ant-table-wrapper {
       padding: 18px 5px 5px 8px;
@@ -13,8 +17,8 @@
     }
     .ant-table-thead > tr > th {
       background-color: transparent;
-      color: var(--table-popup-active-color--text);
-      border-bottom: 1px solid var(--table-popup-active-color--text);
+      color: $primary-color;
+      border-bottom: 1px solid $primary-color;
       padding: 0px 10px 10px 16px;
     }
     .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
@@ -27,7 +31,7 @@
     .ant-table-row {
       &:hover {
         transition: all 0s, height 0s !important;
-        color: var(--table-popup-active-color--text);
+        color: $primary-color;
       }
     }
     overflow: scroll;
@@ -40,7 +44,6 @@
     height: 20px;
     font-size: 18px;
     pointer-events: none;
-    color: var(--table-popup-color--text);
   }
   ::-webkit-scrollbar {
     display: none;

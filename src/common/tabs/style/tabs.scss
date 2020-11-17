@@ -52,7 +52,7 @@
         }
       }
       #{$prefix}-tab-active {
-        background: $component-background;
+        background: transparent;
         border-bottom-color: $body-background-without-opacity;
       }
       #{$prefix}-tab-disabled {

@@ -226,14 +226,10 @@ export default class QueryViewModel extends mapboxgl.Evented {
         // 是否有rest服务
         if (data.dataItemServices && data.dataItemServices.length > 0) {
           let dataItemServices = data.dataItemServices;
-          let resultData;
-          dataItemServices.forEach(item => {
-            if (item.serviceType === 'RESTDATA' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            }
-          }, this);
+          let resultData = dataItemServices.find(
+            item =>
+              (item.serviceType === 'RESTDATA' || item.serviceType === 'RESTMAP') && item.serviceStatus === 'PUBLISHED'
+          );
           if (resultData) {
             // 如果有服务，获取数据源和数据集, 然后请求rest服务
             this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);

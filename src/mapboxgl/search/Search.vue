@@ -89,7 +89,7 @@
       ref="searchTablePopup"
       v-bind="tablePopupProps"
       :text-color="textColor"
-      :background="background"
+      :background="getBackground"
     />
   </div>
 </template>
@@ -220,7 +220,7 @@ export default {
       return this.searchResult.length > 0;
     },
     popupBackground() {
-      return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
+      return this.getBackground && getColorWithOpacity(this.getBackground, 0.5);
     }
   },
   watch: {
@@ -233,7 +233,7 @@ export default {
         }
       }
     },
-    backgroundData() {
+    getBackground() {
       this.changeResultPopupArrowStyle();
     }
   },

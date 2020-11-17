@@ -36,8 +36,6 @@ export default class Theme extends Vue {
 
   disabledTextColorData: string = '';
 
-  componentBackgroundData: string = '';
-
   colorGroupsData: Array<string> = [];
 
   @Prop() background: string;
@@ -71,8 +69,6 @@ export default class Theme extends Vue {
   @Prop() disabledTextColor: string;
 
   @Prop() borderBaseColor: string;
-
-  @Prop() componentBackground: string;
 
   @Prop() colorGroup: Array<string>;
 

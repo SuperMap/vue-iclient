@@ -13,8 +13,13 @@
       @include focus-color($primary-5, $primary-shadow-color);
     }
 
+    &:hover {
+      #{$prefix-selection}__clear + #{$prefix}-arrow {
+        opacity: 0;
+      }
+    }
+
     &__clear {
-      background: $body-background-without-opacity;
       &:hover {
         color: $text-color-secondary;
       }

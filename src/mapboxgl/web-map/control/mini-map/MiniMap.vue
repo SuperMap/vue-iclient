@@ -6,7 +6,7 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="background"
+    :background="getBackground"
     :textColor="textColor"
     class="sm-component-minimap"
     @content-show-state="handleMinimapResize"

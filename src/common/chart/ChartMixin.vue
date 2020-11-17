@@ -24,7 +24,7 @@
       ref="chartTablePopup"
       v-bind="tablePopupProps"
       :text-color="textColor"
-      :background="background"
+      :background="getBackground"
     />
   </sm-card>
 </template>
@@ -228,7 +228,7 @@ export default {
       return this.options && this.options.yAxis && this.options.yAxis.type === 'category';
     },
     popupBackground() {
-      return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
+      return this.getBackground && getColorWithOpacity(this.getBackground, 0.5);
     },
     colorNumber() {
       let length =
@@ -255,7 +255,7 @@ export default {
         this._setChartTheme();
       }
     },
-    backgroundData(newVal, oldVal) {
+    getBackground(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this._setChartTheme();
         this.changePopupArrowStyle();
@@ -990,7 +990,7 @@ export default {
     _setChartTheme() {
       if (!this.theme) {
         let colorNumber = this.colorNumber;
-        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, colorNumber);
+        this.chartTheme = chartThemeUtil(this.getBackground, this.textColorsData, this.colorGroupsData, colorNumber);
       }
     },
     // 获取echart实例

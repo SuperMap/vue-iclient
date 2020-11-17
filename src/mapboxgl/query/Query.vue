@@ -6,7 +6,7 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="background"
+    :background="getBackground"
     :textColor="textColor"
     class="sm-component-query"
   >
@@ -116,7 +116,7 @@
       v-show="false"
       ref="queryTablePopup"
       v-bind="tablePopupProps"
-      :background="background"
+      :background="getBackground"
       :textColor="textColor"
     />
   </sm-card>
@@ -244,7 +244,7 @@ export default {
   },
   computed: {
     popupBackground() {
-      return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
+      return this.getBackground && getColorWithOpacity(this.getBackground, 0.5);
     }
   },
   watch: {
@@ -280,7 +280,7 @@ export default {
         }
       }
     },
-    backgroundData() {
+    getBackground() {
       this.changeResultPopupArrowStyle();
     },
     layerStyle() {
@@ -414,13 +414,13 @@ export default {
       setTimeout(() => {
         const optionListContainer = this.$el.querySelectorAll('.ant-select-dropdown-content');
         for (let item of optionListContainer) {
-          item.style.background = this.backgroundData;
+          item.style.background = this.getBackground;
         }
         const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
         for (let item of optionList) {
           if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
             item.style.color = this.getColorStyle(0).color;
-            item.style.background = this.backgroundData;
+            item.style.background = this.getBackground;
           } else {
             item.style.color = this.textColorsData;
             item.style.background = 'transparent';

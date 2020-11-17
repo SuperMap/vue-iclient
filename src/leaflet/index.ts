@@ -1,4 +1,3 @@
-import globalEvent from '../common/_utils/global-event';
 import { registerProjection } from '../common/_utils/epsg-define';
 import {
   Progress,
@@ -12,29 +11,19 @@ import {
   Input,
   Slider,
   Table,
-  message,
   Modal,
   Tree,
   Tabs
 } from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
-import themeFactory from '../common/_utils/style/theme/theme.json';
 import * as components from './components';
 import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
-
-const setTheme = (themeStyle = {}) => {
-  if (typeof themeStyle === 'string') {
-    themeStyle = themeFactory.filter(item => item.label === themeStyle)[0] || {};
-  }
-  globalEvent.$options.theme = themeStyle;
-  globalEvent.$emit('change-theme', themeStyle);
-};
+import { setTheme } from '../common/_utils/style/theme/set-theme';
 
 const install = function(Vue, opts: any = {}) {
   let theme = opts.theme || 'light';
-
-  require(`../common/_utils/style/theme/${theme}.scss`);
+  require('../common/_utils/style/theme/antd.less');
   require('./style.scss');
   setTheme(theme);
   registerProjection(opts.projections);
@@ -53,11 +42,20 @@ const install = function(Vue, opts: any = {}) {
   Vue.use(Modal);
   Vue.use(Tree);
   Vue.use(Tabs);
-  Vue.prototype.$message = message;
+  Vue.prototype.$message = components.Message;
+  Vue.prototype.$notification = components.Notification;
+  Vue.prototype.$info = components.Modal.info;
+  Vue.prototype.$success = components.Modal.success;
+  Vue.prototype.$error = components.Modal.error;
+  Vue.prototype.$warning = components.Modal.warning;
+  Vue.prototype.$confirm = components.Modal.confirm;
+  Vue.prototype.$destroyAll = components.Modal.destroyAll;
   initi18n(Vue, opts);
   for (let component in components) {
-    const com = components[component];
-    Vue.component(com.options ? com.options.name : com.name, com);
+    if (!['Notification', 'Message'].includes(component)) {
+      const com = components[component];
+      Vue.component(com.options ? com.options.name : com.name, com);
+    }
   }
 };
 if (typeof window !== 'undefined' && window['Vue']) {

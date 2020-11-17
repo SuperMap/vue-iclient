@@ -17,7 +17,7 @@ export default {
     }
   },
   watch: {
-    backgroundData() {
+    getBackground() {
       this.changePopupStyle();
     },
     options() {
@@ -79,10 +79,10 @@ export default {
       const popupTip = document.querySelector('.leaflet-popup-tip');
       const popupCloseBtn = document.querySelector('.leaflet-container a.leaflet-popup-close-button:hover');
       if (popupContent) {
-        popupContent.style.background = this.backgroundData;
+        popupContent.style.background = this.getBackground;
       }
       if (popupTip) {
-        popupTip.style.background = this.backgroundData;
+        popupTip.style.background = this.getBackground;
       }
       if (popupCloseBtn) {
         popupTip.style.color = this.textColorsData;

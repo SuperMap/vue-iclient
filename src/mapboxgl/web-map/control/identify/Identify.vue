@@ -157,7 +157,7 @@ export default {
     layerStyle() {
       this.setViewModel();
     },
-    backgroundData() {
+    getBackground() {
       this.changeResultPopupArrowStyle();
     }
   },
@@ -294,10 +294,10 @@ export default {
       const identifyLeftAnchor = document.querySelector('.mapboxgl-popup-anchor-left .mapboxgl-popup-tip');
       const identifyRightAnchor = document.querySelector('.mapboxgl-popup-anchor-right .mapboxgl-popup-tip');
 
-      identifyTopAnchor && (identifyTopAnchor.style.borderBottomColor = this.backgroundData);
-      identifyBottomAnchor && (identifyBottomAnchor.style.borderTopColor = this.backgroundData);
-      identifyLeftAnchor && (identifyLeftAnchor.style.borderRightColor = this.backgroundData);
-      identifyRightAnchor && (identifyRightAnchor.style.borderLeftColor = this.backgroundData);
+      identifyTopAnchor && (identifyTopAnchor.style.borderBottomColor = this.getBackground);
+      identifyBottomAnchor && (identifyBottomAnchor.style.borderTopColor = this.getBackground);
+      identifyLeftAnchor && (identifyLeftAnchor.style.borderRightColor = this.getBackground);
+      identifyRightAnchor && (identifyRightAnchor.style.borderLeftColor = this.getBackground);
     },
     changeClickedLayersCursor(layers = [], map = this.map) {
       layers &&

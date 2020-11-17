@@ -7,7 +7,7 @@
     :header-name="mode === 'simple' ? '' : headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="background"
+    :background="getBackground"
     :textColor="textColor"
     class="sm-component-legend"
   >

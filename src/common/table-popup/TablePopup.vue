@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-table-popup" :style="[backgroundStyle, getTextColorStyle, styleObject]">
+  <div class="sm-component-table-popup" :style="[backgroundStyle, getTextColorStyle]">
     <div class="sm-component-table-popup__close">x</div>
     <a-table
       class="sm-component-table-popup__table"
@@ -33,13 +33,8 @@ export default {
     }
   },
   computed: {
-    styleObject() {
-      return {
-        '--table-popup-active-color--text': this.colorGroupsData[0]
-      };
-    },
     backgroundStyle() {
-      return { background: this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData };
+      return { background: this.getBackground && getColorWithOpacity(this.getBackground, 0.5) };
     }
   }
 };

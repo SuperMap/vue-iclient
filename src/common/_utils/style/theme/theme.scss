@@ -359,7 +359,9 @@ $page-header-back-color: #000;
 
 // Breadcrumb
 $breadcrumb-base-color: $text-color-secondary;
+$breadcrumb-last-item-color: $text-color;
 $breadcrumb-link-color: $text-color-secondary;
+$breadcrumb-link-color-hover: $primary-5;
 $breadcrumb-separator-color: $text-color-secondary;
 
 // Step
