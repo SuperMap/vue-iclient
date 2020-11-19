@@ -1,7 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import { Empty } from 'ant-design-vue';
 
-export default { title: 'BasicComponent/empty', decorators: [withKnobs] };
+export default { title: 'Basic/empty', decorators: [withKnobs] };
 
 export const BasicEmpty = () => ({
   template: `

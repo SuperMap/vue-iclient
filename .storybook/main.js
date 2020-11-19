@@ -23,6 +23,7 @@ module.exports = {
     },
     '@storybook/addon-actions/register',
     '@storybook/addon-knobs/register',
+    '@storybook/addon-toolbars',
     'storybook-readme'
   ],
   webpackFinal: async (config, { configType }) => {

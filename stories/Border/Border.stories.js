@@ -1,6 +1,7 @@
 import { withKnobs, select, object } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'BasicComponent/border', decorators: [withKnobs] };
+export default { title: 'Basic/border', decorators: [withKnobs] };
 
 export const BasicBorder = () => ({
   props: {
@@ -30,7 +31,7 @@ export const BasicBorder = () => ({
 });
 
 BasicBorder.story = {
-  name: '边框'
+  name: toI18n('basicComponent.basic')
 };
 
 export const CustomBorder = () => ({
@@ -47,5 +48,5 @@ export const CustomBorder = () => ({
 });
 
 CustomBorder.story = {
-  name: '自定义边框'
+  name: toI18n('basicComponent.custom')
 };

@@ -4,14 +4,26 @@
 @include b(notification) {
   &-notice {
     background: $message-background;
+
     &-message {
       color: $heading-color;
     }
 
+    @at-root {
+      .#{$iconfont-css-prefix}#{&}-icon {
+        &-warning {
+          color: $warning-color;
+        }
+        &-error {
+          color: $error-color;
+        }
+      }
+    }
+
     &-close {
-      color: $notification-close-color;
+      color: $text-color-secondary;
       &:hover {
-        color: $notification-close-hover-color;
+        color: $text-color;
       }
     }
   }

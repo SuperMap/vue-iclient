@@ -1,0 +1,68 @@
+{
+  "customizeTheme": {
+    "default": "默认",
+    "custom": "自定义",
+    "dark": "深色主题",
+    "light": "浅色色主题"
+  },
+  "basicComponent": {
+    "basic": "基本用法",
+    "custom": "自定义",
+    "avatar": {
+      "title": "Avatar 头像",
+      "type": "类型",
+      "autosetFontSize": "自动调整字符大小"
+    },
+    "input": {
+      "title": "Input 输入框"
+    },
+    "inputNumber": {
+      "title": "InputNumber 数字输入框"
+    },
+    "switch": {
+      "title": "Switch 开关"
+    },
+    "select": {
+      "title": "Select 选择器"
+    },
+    "empty": {
+      "title": "Empty 空状态"
+    },
+    "datePicker": {
+      "title": "DatePicker 日期选择框"
+    },
+    "radio": {
+      "title": "Radio 单选框"
+    },
+    "transfer": {
+      "title": "Transfer 穿梭框"
+    },
+    "tooltip": {
+      "title": "Tooltip 文字提示"
+    },
+    "message": {
+      "title": "Message 全局提示"
+    },
+    "modal": {
+      "title": "Modal 对话框"
+    },
+    "button": {
+      "confirm": "确定",
+      "cancel": "取消"
+    },
+    "breadcrum": {
+      "attrSeparator": "属性分隔符",
+      "componentSeparator": "组件分隔符",
+      "withIcon": "带有图标的"
+    }
+  },
+  "chartComponent": {
+    "liquidfill": {
+      "type": "波浪",
+      "color": "颜色"
+    }
+  },
+  "mapComponent": {
+    "iportalMap": "Iportal 地图"
+  }
+}

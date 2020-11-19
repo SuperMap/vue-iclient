@@ -1,6 +1,7 @@
 import { withKnobs, text, number, boolean, color } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'ChartComponent/liquidfill', decorators: [withKnobs] };
+export default { title: 'Chart/liquidfill', decorators: [withKnobs] };
 
 export const Liquidfill = () => ({
   props: {
@@ -11,7 +12,7 @@ export const Liquidfill = () => ({
   template: `<sm-liquid-fill style="width:200px; height:200px" v-bind="$props"></sm-liquid-fill>`
 });
 Liquidfill.story = {
-  name: '水球'
+  name: toI18n('basicComponent.basic')
 };
 
 export const WaveLiquidfill = () => ({
@@ -31,7 +32,7 @@ export const WaveLiquidfill = () => ({
   template: `<sm-liquid-fill style="width:200px; height:200px" v-bind="$props" :value="value"></sm-liquid-fill>`
 });
 WaveLiquidfill.story = {
-  name: '水球波浪'
+  name: toI18n('chartComponent.liquidfill.type')
 };
 
 export const ColorfulLiquidfill = () => ({
@@ -60,5 +61,5 @@ export const ColorfulLiquidfill = () => ({
   template: `<sm-liquid-fill style="width:200px; height:200px" v-bind="$props" :value="value"></sm-liquid-fill>`
 });
 ColorfulLiquidfill.story = {
-  name: '水球颜色'
+  name: toI18n('chartComponent.liquidfill.color')
 };

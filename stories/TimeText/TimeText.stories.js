@@ -1,6 +1,6 @@
 import { withKnobs, select, object } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/time-text', decorators: [withKnobs] };
+export default { title: 'Basic/time-text', decorators: [withKnobs] };
 
 export const BasicTimeText = () => ({
   props: {

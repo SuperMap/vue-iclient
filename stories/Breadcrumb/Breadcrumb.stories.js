@@ -1,6 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'BasicComponent/breadcrumb', decorators: [withKnobs] };
+export default { title: 'Basic/breadcrumb', decorators: [withKnobs] };
 
 export const BasicBreadcrumb = () => ({
   template: `
@@ -13,7 +14,7 @@ export const BasicBreadcrumb = () => ({
   `
 });
 BasicBreadcrumb.story = {
-  name: '基本用法'
+  name: toI18n('basicComponent.basic')
 };
 
 export const IconBreadcrumb = () => ({
@@ -33,7 +34,7 @@ export const IconBreadcrumb = () => ({
   `
 });
 IconBreadcrumb.story = {
-  name: '带图标的面包屑'
+  name: toI18n('basicComponent.breadcrum.withIcon')
 };
 
 export const SeparatorBreadcrumb = () => ({
@@ -64,7 +65,7 @@ export const SeparatorBreadcrumb = () => ({
   `
 });
 SeparatorBreadcrumb.story = {
-  name: '自定义分隔符'
+  name: toI18n('basicComponent.breadcrum.attrSeparator')
 };
 
 // export const DropDownBreadcrumb = () => ({
@@ -118,5 +119,5 @@ export const CustomBreadcrumb = () => ({
   `
 });
 CustomBreadcrumb.story = {
-  name: '标签自定义分隔符'
+  name: toI18n('basicComponent.breadcrum.componentSeparator')
 };

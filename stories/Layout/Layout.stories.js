@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/layout', decorators: [withKnobs] };
+export default { title: 'Basic/layout', decorators: [withKnobs] };
 
 export const BasicLayout = () => ({
   template: `

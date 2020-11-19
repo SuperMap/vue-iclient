@@ -146,7 +146,7 @@ function setRootStyle(themeData: StyleReplacerParams): void {
     }
   });
   const rootStyle = `:root ${JSON.stringify(variables, null, 2)
-    .replace(/",/g, ';')
+    .replace(/(:.+),/g, '$1;')
     .replace(/"/g, '')}`;
   const antdStyleId = 'sm-component-style';
   let antStyleTag = document.getElementById(antdStyleId);

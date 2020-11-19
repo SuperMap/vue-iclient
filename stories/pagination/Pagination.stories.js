@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/pagination', decorators: [withKnobs] };
+export default { title: 'Basic/pagination', decorators: [withKnobs] };
 
 export const BasicPagination = () => ({
   template: `

@@ -1,7 +1,8 @@
 import { withKnobs, text, array, number } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'MapComponent/web-map',
+  title: 'Map/web-map',
   decorators: [withKnobs]
 };
 
@@ -21,5 +22,5 @@ export const WebMap = () => ({
   template: '<sm-web-map style="height:700px" v-bind="$props"></sm-web-map>'
 });
 WebMap.story = {
-  name: '地图'
+  name: toI18n('mapComponent.iportalMap')
 };

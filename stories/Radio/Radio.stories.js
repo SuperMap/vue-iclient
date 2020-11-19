@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/radio', decorators: [withKnobs] };
+export default { title: 'Basic/radio', decorators: [withKnobs] };
 
 export const BasicRadio = () => ({
   template: `<sm-radio>Radio</sm-radio>`

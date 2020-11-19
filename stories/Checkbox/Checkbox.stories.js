@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/checkbox', decorators: [withKnobs] };
+export default { title: 'Basic/checkbox', decorators: [withKnobs] };
 
 export const BasicCheckbox = () => ({
   template: `

@@ -1,6 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'BasicComponent/avatar', decorators: [withKnobs] };
+export default { title: 'Basic/avatar', decorators: [withKnobs] };
 
 export const BasicAvatar = () => ({
   template: `<div>
@@ -20,7 +21,7 @@ export const BasicAvatar = () => ({
   </div>`
 });
 BasicAvatar.story = {
-  name: '基本头像'
+  name: toI18n('basicComponent.basic')
 };
 
 export const AvatarType = () => ({
@@ -41,7 +42,7 @@ export const AvatarType = () => ({
   `
 });
 AvatarType.story = {
-  name: '头像类型'
+  name: toI18n('basicComponent.avatar.type')
 };
 
 const UserList = ['U', 'Lucy', 'Tom', 'Edward'];
@@ -81,5 +82,5 @@ export const AvatarSize = () => ({
   `
 });
 AvatarSize.story = {
-  name: '自动调整字符大小'
+  name: toI18n('basicComponent.avatar.autosetFontSize')
 };

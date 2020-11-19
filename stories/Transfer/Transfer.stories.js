@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/transfer', decorators: [withKnobs] };
+export default { title: 'Basic/transfer', decorators: [withKnobs] };
 
 export const BasicTransfer = () => ({
   data() {

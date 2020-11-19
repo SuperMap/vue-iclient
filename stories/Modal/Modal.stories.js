@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/modal', decorators: [withKnobs] };
+export default { title: 'Basic/modal', decorators: [withKnobs] };
 
 export const BasicModal = () => ({
   data() {

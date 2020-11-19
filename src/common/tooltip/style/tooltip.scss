@@ -2,13 +2,4 @@
 @import '../../_utils/style/theme/theme.scss';
 
 @include b (tooltip) {
-  @include e(inner, '-') {
-    background-color: $tooltip-background;
-  }
-
-  &-arrow {
-    &::before {
-      background-color: $tooltip-background;
-    }
-  }
 }

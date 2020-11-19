@@ -1,6 +1,6 @@
 import { withKnobs, text, select } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/image', decorators: [withKnobs] };
+export default { title: 'Basic/image', decorators: [withKnobs] };
 
 export const BasicImage = () => ({
   props: {

@@ -206,7 +206,6 @@ $input-number-handler-bg: $component-background;
 $input-number-handler-border-color: $border-color-base;
 $input-addon-bg: $background-color-light;
 $input-disabled-bg: $disabled-bg;
-$input-suffix-icon-hover-color: var(--input-suffix-icon-hover-color);
 
 // Form
 $label-required-color: $highlight-color;
@@ -366,10 +365,6 @@ $breadcrumb-separator-color: $text-color-secondary;
 
 // Step
 
-
-// Tooltip
-$tooltip-background: var(--tooltip-background);
-
 // Slider
 $slider-rail-background-color: $background-color-base;
 $slider-rail-background-color-hover: #e1e1e1;
@@ -405,9 +400,9 @@ $transfer-item-hover-color: var(--transfer-item-hover-color);
 
 // Message
 $message-background: var(--message-background);
+
 // Notification
-$notification-close-hover-color: var(--notification-close-hover-color);
-$notification-close-color: var(--notification-close-color);
+
 // Alert
 $alert-success-border-color: $success-3;
 $alert-success-bg-color: $success-1;

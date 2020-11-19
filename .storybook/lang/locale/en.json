@@ -1,0 +1,68 @@
+{
+  "customizeTheme": {
+    "default": "Default",
+    "custom": "Custom",
+    "dark": "Dark Theme",
+    "light": "Light Theme"
+  },
+  "basicComponent": {
+    "basic": "Basic Usage",
+    "custom": "Custom",
+    "avatar": {
+      "title": "Avatar",
+      "type": "Type",
+      "autosetFontSize": "Autoset Font Size"
+    },
+    "input": {
+      "title": "Input"
+    },
+    "inputNumber": {
+      "title": "InputNumber"
+    },
+    "switch": {
+      "title": "Switch"
+    },
+    "select": {
+      "title": "Select"
+    },
+    "empty": {
+      "title": "Empty"
+    },
+    "datePicker": {
+      "title": "DatePicker"
+    },
+    "radio": {
+      "title": "Radio"
+    },
+    "transfer": {
+      "title": "Transfer"
+    },
+    "tooltip": {
+      "title": "Tooltip"
+    },
+    "message": {
+      "title": "Message"
+    },
+    "modal": {
+      "title": "Modal"
+    },
+    "button": {
+      "confirm": "confirm",
+      "cancel": "cancel"
+    },
+    "breadcrum": {
+      "attrSeparator": "Attribute Separator",
+      "componentSeparator": "Component Separator",
+      "withIcon": "With an Icon"
+    }
+  },
+  "chartComponent": {
+    "liquidfill": {
+      "type": "Wave",
+      "color": "Color"
+    }
+  },
+  "mapComponent": {
+    "iportalMap": "Iportal Map"
+  }
+}

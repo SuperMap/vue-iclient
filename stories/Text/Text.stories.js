@@ -1,6 +1,6 @@
 import { withKnobs, text, select, object } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/text', decorators: [withKnobs] };
+export default { title: 'Basic/text', decorators: [withKnobs] };
 
 export const BasicText = () => ({
   props: {

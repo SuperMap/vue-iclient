@@ -18,7 +18,7 @@ export default {
   computed: {
     extralProps() {
       return {
-        prefixCls: this.prefixCls || 'sm-component-password',
+        prefixCls: this.prefixCls || 'sm-component-input-password',
         inputPrefixCls: this.inputPrefixCls || 'sm-component-input'
       };
     }

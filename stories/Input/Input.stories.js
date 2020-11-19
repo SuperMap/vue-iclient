@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/input', decorators: [withKnobs] };
+export default { title: 'Basic/input', decorators: [withKnobs] };
 
 export const BasicInput = () => ({
   template: `<sm-input style="width:160px;" placeholder="Basic input"></sm-input>`

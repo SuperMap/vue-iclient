@@ -1,6 +1,6 @@
 import { withKnobs, text, boolean, object, color } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/icon', decorators: [withKnobs] };
+export default { title: 'Basic/icon', decorators: [withKnobs] };
 
 export const BasicIcon = () => ({
   props: {

@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/message', decorators: [withKnobs] };
+export default { title: 'Basic/message', decorators: [withKnobs] };
 
 export const BasicMessage = () => ({
   methods: {

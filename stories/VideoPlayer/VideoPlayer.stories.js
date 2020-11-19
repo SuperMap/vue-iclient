@@ -1,6 +1,6 @@
 import { withKnobs, text, object } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/video-player', decorators: [withKnobs] };
+export default { title: 'Basic/video-player', decorators: [withKnobs] };
 
 export const BasicVideoPlayer = () => ({
   props: {

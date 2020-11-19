@@ -1,7 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import moment from 'moment';
 
-export default { title: 'BasicComponent/dataPicker', decorators: [withKnobs] };
+export default { title: 'Basic/dataPicker', decorators: [withKnobs] };
 
 export const BasicDataPicker = () => ({
   template: `

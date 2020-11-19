@@ -1,6 +1,6 @@
 import { withKnobs } from '@storybook/addon-knobs';
 
-export default { title: 'BasicComponent/switch', decorators: [withKnobs] };
+export default { title: 'Basic/switch', decorators: [withKnobs] };
 
 export const BasicSwitch = () => ({
   template: '<sm-switch default-checked/>'
