@@ -5,9 +5,12 @@
       class="sm-component-video-player__player sm-component-video-player__player--main"
       :options="playerOptions"
       :playsinline="true"
+      :data-autoplay="autoplay"
+      :data-isLive="isRtmp"
       @play="onPlayerPlay($event)"
       @ended="onPlayerEnded($event)"
       @loadeddata="onPlayerLoadeddata($event)"
+      @hook:mounted="getPlayer"
     ></video-player>
     <a-modal
       v-if="url"
@@ -18,12 +21,13 @@
       :maskClosable="false"
     >
       <video-player
-        ref="modalVideoPlayer"
+        ref="videoPlayer"
         class="sm-component-video-player__player"
         :options="modalPlayerOptions"
         :playsinline="true"
         @play="onModalPlayerPlay($event)"
         @loadeddata="onModalPlayerLoadeddata($event)"
+        @hook:mounted="getPlayer"
       ></video-player>
     </a-modal>
   </div>
@@ -33,7 +37,12 @@
 import Vue from 'vue';
 import { Component, Watch, Prop } from 'vue-property-decorator';
 import 'video.js/dist/video-js.css';
-import { videoPlayer } from 'vue-video-player';
+import 'video.js';
+import flvjs from 'flv.js/dist/flv';
+import 'videojs-flvjs-es6';
+import 'videojs-contrib-hls';
+import 'videojs-flash';
+import { videoPlayer } from 'vue-videojs7';
 import cloneDeep from 'lodash.clonedeep';
 
 interface playerOptions {
@@ -44,12 +53,17 @@ interface playerOptions {
   fluid?: Boolean;
   language?: string;
   playbackRates?: Array<string>;
-  sources?: Array<{ type: string; src: string }>;
+  sources?: Array<{ type?: string; src: string }>;
   preload?: string;
   poster?: string;
   controlBar?: any;
   notSupportedMessage?: string;
+  techOrder?: Array<string>;
+  flash?: any;
+  flvjs?: any;
 }
+// @ts-ignore
+window.flvjs = flvjs;
 
 @Component({
   name: 'SmVideoPlayer',
@@ -62,17 +76,15 @@ class SmVideoPlayer extends Vue {
 
   modalVisible: Boolean = false;
 
-  modalVideoPlayer: any;
-
-  playerOptions: playerOptions = {};
-
-  modalPlayerOptions: playerOptions = {};
-
   $message: any;
 
   $t: any;
 
   @Prop() url: string; // 视频地址
+
+  @Prop({ default: 'https://vjs.zencdn.net/swf/5.4.2/video-js.swf' }) swf: string;
+
+  @Prop({ default: 3000 }) replayTime: number; // 黑屏重新播放rtmp
 
   @Prop({
     default: () => {
@@ -87,62 +99,183 @@ class SmVideoPlayer extends Vue {
     controlBar?: Boolean; // 是否显示控制条
   };
 
-  get player() {
-    // @ts-ignore
-    return this.$refs.videoPlayer.player;
+  get isRtmp() {
+    return this.checkUrl(this.url) && this.url.includes('rtmp://');
   }
 
+  get isFlv() {
+    // @ts-ignore
+    return flvjs.isSupported() && this.checkUrl(this.url) && this.url.includes('.flv');
+  }
+
+  get playerOptions() {
+    const options = this.handlePlayerOptions(this.options) || {};
+    const autoplay = this.isRtmp || this.options.autoplay;
+    return Object.assign({}, options, { autoplay });
+  }
+
+  get modalPlayerOptions() {
+    const options = this.handlePlayerOptions(this.options) || {};
+    return Object.assign({}, options, { autoplay: true, preload: 'none', height: '600' });
+  }
+
+  get autoplay() {
+    return this.options.autoplay && this.checkUrl(this.url);
+  }
   @Watch('modalVisible')
   modalVisibleChanged() {
-    if (this.modalVisible && this.modalVideoPlayer) {
-      this.modalVideoPlayer.currentTime(0);
-      this.modalVideoPlayer.play();
+    // @ts-ignore
+    this.smPlayer = this.$refs.videoPlayer && this.$refs.videoPlayer.player;
+    // @ts-ignore
+    if (this.modalVisible && this.smPlayer) {
+      // @ts-ignore
+      this.smPlayer.currentTime(0);
+      // @ts-ignore
+      this.smPlayer.play();
     }
   }
 
   @Watch('url')
   urlChanged() {
-    this.handlePlayerOptions();
+    this.initFlvPlayer();
+    this.handlePlayerOptions(this.options);
+  }
+
+  @Watch('playerOptions')
+  playerOptionsChanged() {
+    // @ts-ignore
+    if (this.flvPlayer && this.isFlv) {
+      // @ts-ignore
+      this.supportFlv(this.flvPlayer);
+      return;
+    }
+    // @ts-ignore
+    if (this.smPlayer && this.smPlayer.el_) {
+      // @ts-ignore
+      this.smPlayer.load();
+    }
   }
 
   @Watch('options')
   optionsChanged() {
-    this.handlePlayerOptions();
+    this.handlePlayerOptions(this.options);
   }
 
-  created() {
-    this.handlePlayerOptions();
+  @Watch('options.popupToPlay')
+  popupChanged() {
+    if (this.options.popupToPlay) {
+      // @ts-ignore
+      this.smPlayer = this.$refs.videoPlayer && this.$refs.videoPlayer.player;
+    }
   }
 
-  handlePlayerOptions() {
+  mounted() {
+    setTimeout(() => {
+      this.initFlvPlayer();
+      // @ts-ignore
+      this.supportFlv(this.flvPlayer);
+    }, 5000);
+  }
+
+  getPlayer() {
+    setTimeout(() => {
+      const ref = this.$refs.videoPlayer;
+      // @ts-ignore
+      this.smPlayer = ref && ref.player;
+      setTimeout(() => {
+        // @ts-ignore
+        this.video = ref && ref.$refs && ref.$refs.video;
+        this.replayRtmp();
+      });
+    });
+  }
+
+  replayRtmp() {
+    // @ts-ignore
+    if (this.isRtmp && this.smPlayer) {
+      // @ts-ignore
+      this.smPlayer.on('play', e => {
+        // @ts-ignore
+        this.timer = setTimeout(() => {
+          // @ts-ignore
+          clearTimeout(this.timer);
+          // @ts-ignore
+          this.smPlayer.reset();
+          setTimeout(() => {
+            // @ts-ignore
+            this.smPlayer.src(this.playerOptions.sources);
+          });
+        }, this.replayTime);
+      });
+      // @ts-ignore
+      this.smPlayer.on('canplay', e => {
+        // @ts-ignore
+        clearTimeout(this.timer);
+      });
+    }
+  }
+
+  initFlvPlayer() {
+    if (this.isFlv) {
+      // @ts-ignore
+      this.flvPlayer = flvjs.createPlayer({
+        type: 'flv',
+        url: this.url
+      });
+    } else {
+      // @ts-ignore
+      this.flvPlayer = null;
+    }
+  }
+
+  supportFlv(flvPlayer) {
+    if (flvPlayer && this.isFlv) {
+      // @ts-ignore;
+      const videoElement = this.$refs.videoPlayer && this.$refs.videoPlayer.$refs && this.$refs.videoPlayer.$refs.video;
+      flvPlayer.attachMediaElement(videoElement);
+      // @ts-ignore;
+      flvPlayer.load();
+      // @ts-ignore;
+      flvPlayer.play();
+    }
+  }
+
+  handlePlayerOptions(options) {
     if (!this.url) {
-      return;
+      return {};
     }
     if (!this.checkUrl(this.url)) {
       this.$message.warning(this.$t('warning.unsupportedVideoAddress'), 1);
-      if (this.playerOptions.sources) {
-        this.playerOptions.sources[0].src = '';
-        this.modalPlayerOptions.sources[0].src = '';
-      }
-      return;
+      return {};
     }
-
-    let sourcesType = this.url.split('.');
-    let commonOptions = {
+    let commonOptions: playerOptions = {
       height: '100%',
-      autoplay: this.options.autoplay !== null ? this.options.autoplay : false,
-      muted: this.options.muted !== null ? this.options.muted : true,
-      loop: this.options.loop !== null ? this.options.loop : false,
+      autoplay: options.autoplay !== null ? options.autoplay : false,
+      muted: options.muted !== null ? options.muted : true,
+      loop: options.loop !== null ? options.loop : false,
       fluid: false,
       language: 'zh-CN',
-      playbackRates: [0.7, 1.0, 1.5, 2.0],
+      playbackRates: ['0.7', '1.0', '1.5', '2.0'],
       sources: [
         {
-          type: `video/${sourcesType[sourcesType.length - 1]}`,
-          src: `${this.options.autoplay && !this.options.popupToPlay ? this.url : this.url + '#t=0.8'}` // t=xx && preload=metadata 可以保证加载某一帧作为封面，目前没有更好的方案；
+          src: this.url // t=xx && preload=metadata 可以保证加载某一帧作为封面，目前没有更好的方案；
         }
       ],
-      preload: 'metadata',
+      techOrder: ['flvjs', 'flash', 'html5'],
+      flash: {
+        hls: {
+          withCredentials: false
+        },
+        swf: this.swf
+      },
+      flvjs: {
+        mediaDataSource: {
+          isLive: true,
+          cors: true,
+          hasAudio: false
+        }
+      },
+      preload: 'auto',
       poster: '',
       controlBar: {
         timeDivider: false,
@@ -152,16 +285,23 @@ class SmVideoPlayer extends Vue {
       },
       notSupportedMessage: this.$t('warning.unavailableVideo')
     };
-    this.playerOptions = cloneDeep(commonOptions);
-    this.modalPlayerOptions = cloneDeep(commonOptions);
-    this.modalPlayerOptions.sources[0].src = this.url;
-    this.modalPlayerOptions.autoplay = true;
-    this.modalPlayerOptions.preload = 'none';
-    this.modalPlayerOptions.height = '600';
+    if (!this.url.includes('rtmp') && this.url.includes('.flv')) {
+      // @ts-ignore
+      commonOptions.sources[0].type = 'video/x-flv';
+    }
+    if (this.url.includes('rtmp')) {
+      // @ts-ignore
+      commonOptions.sources[0].type = 'rtmp/flv';
+    }
+    if (this.url.includes('.m3u8')) {
+      // @ts-ignore
+      commonOptions.sources[0].type = 'application/x-mpegURL';
+    }
+    return commonOptions;
   }
 
   onPlayerPlay(player) {
-    if (!this.checkUrl(this.url)) {
+    if (!player || !this.checkUrl(this.url)) {
       return;
     }
     if (this.isFirst && this.options.popupToPlay) {
@@ -186,7 +326,8 @@ class SmVideoPlayer extends Vue {
     this.handleControlBar(player);
   }
   onModalPlayerLoadeddata(player) {
-    this.modalVideoPlayer = player;
+    // @ts-ignore
+    this.smPlayer = player;
     player.play(); // 强制进行 play， issues- https://github.com/surmon-china/vue-video-player/issues/224
     this.handleControlBar(player);
   }
@@ -199,7 +340,7 @@ class SmVideoPlayer extends Vue {
   }
 
   onPlayerLoadeddata(player) {
-    if (!this.checkUrl(this.url)) {
+    if (!player || !this.checkUrl(this.url)) {
       return;
     }
     this.options.popupToPlay && player.pause();
@@ -219,7 +360,13 @@ class SmVideoPlayer extends Vue {
     let match;
     if (
       url === '' ||
-      (!this.isMatchUrl(url) || (url.indexOf('ogg') < 0 && url.indexOf('mp4') < 0 && url.indexOf('webm') < 0))
+      !this.isMatchUrl(url) ||
+      (url.indexOf('ogg') < 0 &&
+        url.indexOf('mp4') < 0 &&
+        url.indexOf('webm') < 0 &&
+        url.indexOf('m3u8') < 0 &&
+        url.indexOf('flv') < 0 &&
+        url.indexOf('rtmp') < 0)
     ) {
       match = false;
     } else {
@@ -229,7 +376,7 @@ class SmVideoPlayer extends Vue {
   }
 
   isMatchUrl(str) {
-    const reg = new RegExp('(https?|http|file|ftp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
+    const reg = new RegExp('(https?|http|file|ftp|rtmp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
     return reg.test(str);
   }
 }

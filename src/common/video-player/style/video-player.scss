@@ -201,6 +201,23 @@
     width: 100%;
     height: 100%;
   }
+  .sm-component-video-player__player[data-autoplay='true'] > .video-js .vjs-big-play-button {
+    display: none;
+  }
+  .sm-component-video-player__player[data-islive='true'] {
+    pointer-events: none;
+    & > .video-js .vjs-control-bar {
+      pointer-events: auto;
+      .vjs-time-control,
+      .vjs-progress-control {
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .vjs-play-control {
+        display: none;
+      }
+    }
+  }
 }
 .sm-component-video-player-modal {
   .ant-modal-close {
