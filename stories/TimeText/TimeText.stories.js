@@ -1,34 +1,32 @@
-import { withKnobs, select, object } from '@storybook/addon-knobs';
+import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/time-text', decorators: [withKnobs] };
 
 export const BasicTimeText = () => ({
-  props: {
-    timeType: {
-      default: select('timeType', ['date', 'date+second', 'date+second+week'], 'date+second+week')
-    }
-  },
-  template: '<SmTimeText  v-bind="$props"></SmTimeText>'
+  template: `
+  <SmTimeText  timeType="date+second+week"></SmTimeText>
+  `
 });
 BasicTimeText.story = {
-  name: '时间'
+  name: toI18n('basicComponent.basic')
 };
 
 export const SmallTimeText = () => ({
-  props: {
-    fontStyle: {
-      default: object('fontStyle', { fontSize: '14px', fontFamily: '微软雅黑' })
-    }
-  },
   data() {
     return {
+      fontStyle: { fontSize: '14px', fontFamily: '微软雅黑' },
       middleStyle: { fontSize: '18px', fontFamily: '微软雅黑' },
       largeStyle: { fontSize: '24px', fontFamily: '微软雅黑' }
     };
   },
-  template:
-    '<div style="width: 300px; height:200px; display: flex; flex-direction:column; justify-content: space-between"><sm-time-text v-bind="$props"></sm-time-text><sm-time-text v-bind="$props" :fontStyle="middleStyle"></sm-time-text><sm-time-text v-bind="$props" :fontStyle="largeStyle"></sm-time-text></div>'
+  template: `
+  <div style="width: 300px; height:200px; display: flex; flex-direction:column; justify-content: space-between">
+    <sm-time-text :fontStyle="fontStyle"></sm-time-text>
+    <sm-time-text :fontStyle="middleStyle"></sm-time-text>
+    <sm-time-text :fontStyle="largeStyle"></sm-time-text>
+  </div>`
 });
 SmallTimeText.story = {
-  name: '不同大小的时间'
+  name: toI18n('basicComponent.timeText.size')
 };

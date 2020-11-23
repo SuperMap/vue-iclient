@@ -4,7 +4,8 @@ import { toI18n } from '../../.storybook/lang';
 export default { title: 'Basic/avatar', decorators: [withKnobs] };
 
 export const BasicAvatar = () => ({
-  template: `<div>
+  template: `
+  <div>
     <div>
       <sm-avatar :size="64" icon="user" />
       <sm-avatar size="large" icon="user" />
@@ -62,7 +63,7 @@ export const AvatarSize = () => ({
     }
   },
   template: `
-    <div>
+  <div>
     <sm-avatar
       shape="square"
       size="large"
@@ -74,7 +75,7 @@ export const AvatarSize = () => ({
       type="primary"
       size="small"
       :style="{ marginLeft: 16, verticalAlign: 'middle' }"
-      @click="changeValue"
+      v-on:click="changeValue"
     >
       改变
     </sm-button>

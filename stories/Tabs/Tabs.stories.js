@@ -1,10 +1,11 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/tabs', decorators: [withKnobs] };
 
 export const BasicTabs = () => ({
   template: `
-   <div>
+  <div>
     <sm-tabs default-active-key="1">
       <sm-tab-pane key="1" tab="Tab 1">
         Content of Tab Pane 1
@@ -20,7 +21,7 @@ export const BasicTabs = () => ({
   `
 });
 BasicTabs.story = {
-  name: '基本标签页'
+  name: toI18n('basicComponent.basic')
 };
 
 export const DisabledTabs = () => ({
@@ -39,7 +40,7 @@ export const DisabledTabs = () => ({
   `
 });
 DisabledTabs.story = {
-  name: '禁用某一项'
+  name: toI18n('basicComponent.disabled')
 };
 
 export const IconTabs = () => ({
@@ -63,7 +64,7 @@ export const IconTabs = () => ({
   `
 });
 IconTabs.story = {
-  name: '有图标的标签页'
+  name: toI18n('basicComponent.tabs.icon')
 };
 
 export const SlideTabs = () => ({
@@ -72,13 +73,8 @@ export const SlideTabs = () => ({
       mode: 'top'
     };
   },
-  methods: {
-    callback(val) {
-      console.log(val);
-    }
-  },
   template: `
-   <div style="width: 500px">
+  <div style="width: 500px">
     <sm-radio-group v-model="mode" :style="{ marginBottom: '8px' }">
       <sm-radio-button value="top">
         Horizontal
@@ -91,8 +87,6 @@ export const SlideTabs = () => ({
       default-active-key="1"
       :tab-position="mode"
       :style="{ height: '200px' }"
-      @prevClick="callback"
-      @nextClick="callback"
     >
       <sm-tab-pane v-for="i in 30" :key="i" :tab="i"> Content of tab {{ i }} </sm-tab-pane>
     </sm-tabs>
@@ -100,7 +94,7 @@ export const SlideTabs = () => ({
   `
 });
 SlideTabs.story = {
-  name: '可滑动标签页'
+  name: toI18n('basicComponent.tabs.slide')
 };
 
 export const TabsContent = () => ({
@@ -122,7 +116,7 @@ export const TabsContent = () => ({
   `
 });
 TabsContent.story = {
-  name: '附加内容'
+  name: toI18n('basicComponent.tabs.extraContent')
 };
 
 export const TabsSize = () => ({
@@ -159,7 +153,7 @@ export const TabsSize = () => ({
   `
 });
 TabsSize.story = {
-  name: '大小号标签'
+  name: toI18n('basicComponent.tabs.size')
 };
 
 export const TabsLocation = () => ({
@@ -167,11 +161,6 @@ export const TabsLocation = () => ({
     return {
       tabPosition: 'top'
     };
-  },
-  methods: {
-    callback(val) {
-      console.log(val);
-    }
   },
   template: `
    <div style="width: 500px">
@@ -204,17 +193,12 @@ export const TabsLocation = () => ({
   `
 });
 TabsLocation.story = {
-  name: '标签的位置'
+  name: toI18n('basicComponent.tabs.position')
 };
 
 export const CardTabs = () => ({
-  methods: {
-    callback(key) {
-      console.log(key);
-    }
-  },
   template: `
-  <sm-tabs type="card" @change="callback">
+  <sm-tabs type="card" >
     <sm-tab-pane key="1" tab="Tab 1">
       Content of Tab Pane 1
     </sm-tab-pane>
@@ -228,7 +212,7 @@ export const CardTabs = () => ({
   `
 });
 CardTabs.story = {
-  name: '卡片式标签'
+  name: toI18n('basicComponent.tabs.cardTypeTab')
 };
 
 export const AddDeleteTabs = () => ({
@@ -257,9 +241,6 @@ export const AddDeleteTabs = () => ({
     };
   },
   methods: {
-    callback(key) {
-      console.log(key);
-    },
     onEdit(targetKey, action) {
       this[action](targetKey);
     },
@@ -295,7 +276,7 @@ export const AddDeleteTabs = () => ({
     }
   },
   template: `
-  <sm-tabs v-model="activeKey" type="editable-card" @edit="onEdit">
+  <sm-tabs v-model="activeKey" type="editable-card" v-on:edit="onEdit">
     <sm-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title" :closable="pane.closable">
       {{ pane.content }}
     </sm-tab-pane>
@@ -303,17 +284,12 @@ export const AddDeleteTabs = () => ({
   `
 });
 AddDeleteTabs.story = {
-  name: '添加删除标签页'
+  name: toI18n('basicComponent.tabs.addCloseTab')
 };
 
 export const CardTabsContainer = () => ({
   data() {
     return {};
-  },
-  methods: {
-    callback(key) {
-      console.log(key);
-    }
   },
   template: `
   <div style="background: rgba(250,250,252,.1);">
@@ -338,7 +314,7 @@ export const CardTabsContainer = () => ({
   `
 });
 CardTabsContainer.story = {
-  name: '卡片式标签容器'
+  name: toI18n('basicComponent.tabs.containerTypeTab')
 };
 
 export const CustomAddTabs = () => ({
@@ -361,9 +337,6 @@ export const CustomAddTabs = () => ({
     };
   },
   methods: {
-    callback(key) {
-      console.log(key);
-    },
     onEdit(targetKey, action) {
       this[action](targetKey);
     },
@@ -401,11 +374,11 @@ export const CustomAddTabs = () => ({
   template: `
   <div>
     <div :style="{ marginBottom: '16px' }">
-      <sm-button @click="add">
+      <sm-button v-on:click="add">
         ADD
       </sm-button>
     </div>
-    <sm-tabs v-model="activeKey" hide-add type="editable-card" @edit="onEdit">
+    <sm-tabs v-model="activeKey" hide-add type="editable-card" v-on:edit="onEdit">
       <sm-tab-pane v-for="pane in panes" :key="pane.key" :tab="pane.title" :closable="pane.closable">
         {{ pane.content }}
       </sm-tab-pane>
@@ -414,5 +387,5 @@ export const CustomAddTabs = () => ({
   `
 });
 CustomAddTabs.story = {
-  name: '自定义新增标签触发器'
+  name: toI18n('basicComponent.tabs.customizedTrigger')
 };

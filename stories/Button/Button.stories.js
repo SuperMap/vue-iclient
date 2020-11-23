@@ -1,9 +1,11 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/button', decorators: [withKnobs] };
 
 export const ButtonType = () => ({
-  template: `  <div>
+  template: `  
+  <div>
     <sm-button type="primary">
       Primary
     </sm-button>
@@ -20,14 +22,16 @@ export const ButtonType = () => ({
     <sm-button type="link">
       Link
     </sm-button>
-  </div>`
+  </div>
+  `
 });
 ButtonType.story = {
-  name: '按钮类型'
+  name: toI18n('basicComponent.button.type')
 };
 
 export const ButtonGroup = () => ({
-  template: `<div>
+  template: `
+  <div>
     <h4 style="color:#fff;">Basic</h4>
     <sm-button-group>
       <sm-button>Cancel</sm-button>
@@ -59,21 +63,23 @@ export const ButtonGroup = () => ({
 
     <h4 style="color:#fff;margin-top:10px">With Icon</h4>
     <sm-button-group>
-      <sm-button type="primary"> <sm-icon type="left" />Go back </sm-button>
-      <sm-button type="primary"> Go forward<sm-icon type="right" /> </sm-button>
+      <sm-button type="primary"> <sm-icon type="left" style="color: #FFFFFF" />Go back </sm-button>
+      <sm-button type="primary"> Go forward<sm-icon type="right" style="color: #FFFFFF" /> </sm-button>
     </sm-button-group>
     <sm-button-group>
       <sm-button icon="cloud" />
       <sm-button icon="cloud-download" />
     </sm-button-group>
-  </div>`
+  </div>
+  `
 });
 ButtonGroup.story = {
-  name: '按钮组合'
+  name: toI18n('basicComponent.button.group')
 };
 
 export const DisabledState = () => ({
-  template: `<div>
+  template: `
+  <div>
     <sm-button style="margin:8px 10px" type="primary">
       Primary
     </sm-button>
@@ -99,7 +105,7 @@ export const DisabledState = () => ({
     <sm-button style="margin:8px 10px" type="link" disabled>
       Link(disabled)
     </sm-button>
-    <div style="padding: 10px; background: rgb(190, 200, 200, 0.25)">
+    <div style="padding: 10px; ">
       <sm-button style="margin:8px 10px" ghost>
         Ghost
       </sm-button>
@@ -107,15 +113,16 @@ export const DisabledState = () => ({
         Ghost(disabled)
       </sm-button>
     </div>
-  </div>`
+  </div>
+  `
 });
 DisabledState.story = {
-  name: '不可用状态'
+  name: toI18n('basicComponent.disabled')
 };
 
 export const GhostButton = () => ({
   template: `
-  <div style="padding: 10px; background: rgb(190, 200, 200, 0.25)">
+  <div style="padding: 10px; ">
     <sm-button type="primary" ghost>
       Primary
     </sm-button>
@@ -135,7 +142,7 @@ export const GhostButton = () => ({
   `
 });
 GhostButton.story = {
-  name: '幽灵按钮'
+  name: toI18n('basicComponent.button.ghost')
 };
 
 export const ButtonSize = () => ({
@@ -151,7 +158,7 @@ export const ButtonSize = () => ({
   },
   template: `
   <div style="color:#fff">
-    <sm-radio-group :value="size" @change="handleSizeChange">
+    <sm-radio-group :value="size" v-on:change="handleSizeChange">
       <sm-radio-button value="large">
         Large
       </sm-radio-button>
@@ -201,7 +208,7 @@ export const ButtonSize = () => ({
   `
 });
 ButtonSize.story = {
-  name: '按钮尺寸'
+  name: toI18n('basicComponent.button.size')
 };
 
 export const BlockButton = () => ({
@@ -226,5 +233,5 @@ export const BlockButton = () => ({
   `
 });
 BlockButton.story = {
-  name: 'block按钮'
+  name: toI18n('basicComponent.button.block')
 };

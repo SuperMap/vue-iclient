@@ -1,4 +1,5 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/tooltip', decorators: [withKnobs] };
 
@@ -13,7 +14,7 @@ export const BasicTooltip = () => ({
   `
 });
 BasicTooltip.story = {
-  name: '基本用法'
+  name: toI18n('basicComponent.basic')
 };
 
 export const ArrowTooltip = () => ({
@@ -29,7 +30,7 @@ export const ArrowTooltip = () => ({
   `
 });
 ArrowTooltip.story = {
-  name: '箭头指向'
+  name: toI18n('basicComponent.tooltip.arrowPoint')
 };
 
 export const LocationTooltip = () => ({
@@ -40,19 +41,19 @@ export const LocationTooltip = () => ({
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">TL</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">TL</sm-button>
       </sm-tooltip>
       <sm-tooltip placement="top">
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">Top</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">Top</sm-button>
       </sm-tooltip>
       <sm-tooltip placement="topRight">
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">TR</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">TR</sm-button>
       </sm-tooltip>
     </div>
     <div :style="{ width: '70px', float: 'left' }">
@@ -60,19 +61,19 @@ export const LocationTooltip = () => ({
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">LT</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">LT</sm-button>
       </sm-tooltip>
       <sm-tooltip placement="left">
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">Left</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">Left</sm-button>
       </sm-tooltip>
       <sm-tooltip placement="leftBottom">
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">LB</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">LB</sm-button>
       </sm-tooltip>
     </div>
     <div :style="{ width: '70px', marginLeft: '304px' }">
@@ -80,19 +81,19 @@ export const LocationTooltip = () => ({
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">RT</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">RT</sm-button>
       </sm-tooltip>
       <sm-tooltip placement="right">
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">Right</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">Right</sm-button>
       </sm-tooltip>
       <sm-tooltip placement="rightBottom">
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">RB</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">RB</sm-button>
       </sm-tooltip>
     </div>
     <div :style="{ marginLeft: '70px', clear: 'both', whiteSpace: 'nowrap' }">
@@ -100,26 +101,26 @@ export const LocationTooltip = () => ({
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">BL</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">BL</sm-button>
       </sm-tooltip>
       <sm-tooltip placement="bottom">
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">Bottom</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">Bottom</sm-button>
       </sm-tooltip>
       <sm-tooltip placement="bottomRight">
         <template slot="title">
           <span>prompt text</span>
         </template>
-        <sm-button style="width: 70px; text-align: center; padding: 0; margin-right: 8px; margin-bottom: 8px;">BR</sm-button>
+        <sm-button style="width: 70px; text-align: center; padding: 0; margin: 0 8px 8px 0">BR</sm-button>
       </sm-tooltip>
     </div>
   </div>
   `
 });
 LocationTooltip.story = {
-  name: '位置'
+  name: toI18n('basicComponent.tooltip.placement')
 };
 
 export const AutomaticTooltip = () => ({
@@ -157,5 +158,5 @@ export const AutomaticTooltip = () => ({
   `
 });
 AutomaticTooltip.story = {
-  name: '自动调整位置'
+  name: toI18n('basicComponent.tooltip.adjustPlacementAutomatically')
 };

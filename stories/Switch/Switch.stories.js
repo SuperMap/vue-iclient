@@ -1,12 +1,15 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/switch', decorators: [withKnobs] };
 
 export const BasicSwitch = () => ({
-  template: '<sm-switch default-checked/>'
+  template: `
+  <sm-switch default-checked/>
+  `
 });
 BasicSwitch.story = {
-  name: '基本开关'
+  name: toI18n('basicComponent.basic')
 };
 
 export const DisabledSwitch = () => ({
@@ -24,19 +27,19 @@ export const DisabledSwitch = () => ({
   <div>
     <sm-switch default-checked :disabled="disabled" style="margin-bottom:5px" />
     <br />
-    <sm-button type="primary" @click="onToggle">
+    <sm-button type="primary" v-on:click="onToggle">
       Toggle disabled
     </sm-button>
   </div>
-    `
+  `
 });
 DisabledSwitch.story = {
-  name: '不可用开关'
+  name: toI18n('basicComponent.disabled')
 };
 
 export const IconSwitch = () => ({
   template: `
-    <div>
+  <div>
     <sm-switch style="margin:10px 0" checked-children="开" un-checked-children="关" default-checked />
     <br />
     <sm-switch checked-children="1" un-checked-children="0" />
@@ -49,12 +52,12 @@ export const IconSwitch = () => ({
   `
 });
 IconSwitch.story = {
-  name: '带文字和图标的开关'
+  name: toI18n('basicComponent.switch.textIcon')
 };
 
 export const SwitchSize = () => ({
   template: `
- <div>
+  <div>
     <sm-switch default-checked />
     <br />
     <sm-switch size="small" default-checked />
@@ -62,7 +65,7 @@ export const SwitchSize = () => ({
   `
 });
 SwitchSize.story = {
-  name: '两种大小开关'
+  name: toI18n('basicComponent.switch.size')
 };
 
 export const LoadingSwitch = () => ({
@@ -75,5 +78,5 @@ export const LoadingSwitch = () => ({
   `
 });
 LoadingSwitch.story = {
-  name: '加载中开关'
+  name: toI18n('basicComponent.switch.loading')
 };

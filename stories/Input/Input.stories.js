@@ -1,17 +1,20 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/input', decorators: [withKnobs] };
 
 export const BasicInput = () => ({
-  template: `<sm-input style="width:160px;" placeholder="Basic input"></sm-input>`
+  template: `
+  <sm-input style="width:160px;" placeholder="Basic input"></sm-input>
+  `
 });
 BasicInput.story = {
-  name: '基本输入框'
+  name: toI18n('basicComponent.basic')
 };
 
 export const PrefixInput = () => ({
   template: `
-    <div class="components-input-demo-presuffix">
+  <div class="components-input-demo-presuffix">
     <sm-input ref="userNameInput" placeholder="Basic usage">
       <sm-icon style="padding:0" slot="prefix" type="user" />
       <sm-tooltip slot="suffix" title="Extra information">
@@ -25,7 +28,7 @@ export const PrefixInput = () => ({
   `
 });
 PrefixInput.story = {
-  name: '含前后缀的输入框'
+  name: toI18n('basicComponent.input.prefixSuffix')
 };
 
 export const SearchInput = () => ({
@@ -39,7 +42,7 @@ export const SearchInput = () => ({
   `
 });
 SearchInput.story = {
-  name: '搜索框loading'
+  name: toI18n('basicComponent.input.searchWithLoading')
 };
 
 export const LabelInput = () => ({
@@ -83,21 +86,21 @@ export const LabelInput = () => ({
   `
 });
 LabelInput.story = {
-  name: '含前后置标签的输入框'
+  name: toI18n('basicComponent.input.prePostTab')
 };
 
 export const DeleteInput = () => ({
   template: `
- <div>
+  <div>
     <sm-input placeholder="input with clear icon" allow-clear />
     <br />
     <br />
     <sm-textarea placeholder="textarea with clear icon" allow-clear />
- </div>
+  </div>
   `
 });
 DeleteInput.story = {
-  name: '含删除标签的输入框'
+  name: toI18n('basicComponent.input.clearIcon')
 };
 
 export const TextareaInput = () => ({
@@ -118,7 +121,7 @@ export const TextareaInput = () => ({
   `
 });
 TextareaInput.story = {
-  name: '适应文本高度店的文本域'
+  name: toI18n('basicComponent.input.fitHeight')
 };
 
 export const SearchButtonInput = () => ({
@@ -143,7 +146,7 @@ export const SearchButtonInput = () => ({
   `
 });
 SearchButtonInput.story = {
-  name: '带搜索按钮的输入框'
+  name: toI18n('basicComponent.input.searchBox')
 };
 
 export const SizeInput = () => ({
@@ -156,23 +159,23 @@ export const SizeInput = () => ({
   `
 });
 SizeInput.story = {
-  name: '三种大小的输入框'
+  name: toI18n('basicComponent.input.size')
 };
 
 export const Textarea = () => ({
   template: `
-    <sm-textarea placeholder="Basic usage" :rows="4" />
+  <sm-textarea placeholder="Basic usage" :rows="4" />
   `
 });
 Textarea.story = {
-  name: '文本域'
+  name: toI18n('basicComponent.input.textArea')
 };
 
 export const PasswordInput = () => ({
   template: `
-    <sm-input-password placeholder="input password" />
+  <sm-input-password placeholder="input password" />
   `
 });
 PasswordInput.story = {
-  name: '密码输入框'
+  name: toI18n('basicComponent.input.passwordBox')
 };

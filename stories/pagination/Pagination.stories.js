@@ -1,14 +1,15 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/pagination', decorators: [withKnobs] };
 
 export const BasicPagination = () => ({
   template: `
-    <sm-pagination :total="50" />
+  <sm-pagination :total="50" />
   `
 });
 BasicPagination.story = {
-  name: '基本分页'
+  name: toI18n('basicComponent.basic')
 };
 
 export const MorePagination = () => ({
@@ -17,7 +18,7 @@ export const MorePagination = () => ({
   `
 });
 MorePagination.story = {
-  name: '更多分页'
+  name: toI18n('basicComponent.pagination.more')
 };
 
 export const ChangePagination = () => ({
@@ -46,12 +47,46 @@ export const ChangePagination = () => ({
   `
 });
 ChangePagination.story = {
-  name: '改变分页'
+  name: toI18n('basicComponent.pagination.changer')
+};
+
+export const CustomDropdownOptionsPagination = () => ({
+  data() {
+    return {
+      pageSizeOptions: ['10', '20', '30', '40', '50'],
+      current: 1,
+      pageSize: 10,
+      total: 50
+    };
+  },
+  methods: {
+    onShowSizeChange(current, pageSize) {
+      this.pageSize = pageSize;
+    }
+  },
+  template: `
+  <a-pagination
+    v-model="current"
+    :page-size-options="pageSizeOptions"
+    :total="total"
+    show-size-changer
+    :page-size="pageSize"
+    @showSizeChange="onShowSizeChange"
+  >
+    <template slot="buildOptionText" slot-scope="props">
+      <span v-if="props.value !== '50'">{{ props.value }}条/页</span>
+      <span v-if="props.value === '50'">全部</span>
+    </template>
+  </a-pagination>
+  `
+});
+CustomDropdownOptionsPagination.story = {
+  name: toI18n('basicComponent.pagination.customDropdownOptions')
 };
 
 export const JumpPagination = () => ({
   template: `
- <div>
+  <div>
     <sm-pagination show-quick-jumper :default-current="2" :total="500" />
     <br />
     <sm-pagination
@@ -65,7 +100,7 @@ export const JumpPagination = () => ({
   `
 });
 JumpPagination.story = {
-  name: '可跳转的分页'
+  name: toI18n('basicComponent.pagination.jumper')
 };
 
 export const SmallPagination = () => ({
@@ -88,16 +123,35 @@ export const SmallPagination = () => ({
   `
 });
 SmallPagination.story = {
-  name: '迷你分页'
+  name: toI18n('basicComponent.pagination.mini')
 };
 
 export const SimplePagination = () => ({
   template: `
-    <sm-pagination simple :default-current="2" :total="50" />
+  <sm-pagination simple :default-current="2" :total="50" />
   `
 });
 SimplePagination.story = {
-  name: '简单分页'
+  name: toI18n('basicComponent.pagination.simple')
+};
+
+export const ControlledPagination = () => ({
+  data() {
+    return {
+      current: 3
+    };
+  },
+  methods: {
+    onChange(current) {
+      this.current = current;
+    }
+  },
+  template: `
+  <sm-pagination :current="current" :total="50" @change="onChange" />
+  `
+});
+ControlledPagination.story = {
+  name: toI18n('basicComponent.pagination.controlled')
 };
 
 export const ShowSumPagination = () => ({
@@ -134,7 +188,7 @@ export const ShowSumPagination = () => ({
   `
 });
 ShowSumPagination.story = {
-  name: '通过showTotal展示总数的分页'
+  name: toI18n('basicComponent.pagination.totalNumber')
 };
 
 export const PrevNextPagination = () => ({
@@ -149,9 +203,9 @@ export const PrevNextPagination = () => ({
     }
   },
   template: `
-    <sm-pagination :total="500" :item-render="itemRender" />
+  <sm-pagination :total="500" :item-render="itemRender" />
   `
 });
 PrevNextPagination.story = {
-  name: '上/下一步改为文字的分页'
+  name: toI18n('basicComponent.pagination.prevAndNext')
 };

@@ -1,15 +1,13 @@
-import { withKnobs, text } from '@storybook/addon-knobs';
+import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/iframe', decorators: [withKnobs] };
 
 export const Iframe = () => ({
-  props: {
-    src: {
-      default: text('src', 'https://www.baidu.com/')
-    }
-  },
-  template: `<sm-iframe style="width:100%; height:600px" v-bind="$props"></sm-iframe>`
+  template: `
+  <sm-iframe style="width:100%; height:600px" src="https://www.baidu.com/"></sm-iframe>
+  `
 });
 Iframe.story = {
-  name: 'iframe'
+  name: toI18n('basicComponent.basic')
 };

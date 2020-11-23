@@ -1,12 +1,15 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/radio', decorators: [withKnobs] };
 
 export const BasicRadio = () => ({
-  template: `<sm-radio>Radio</sm-radio>`
+  template: `
+  <sm-radio>Radio</sm-radio>
+  `
 });
 BasicRadio.story = {
-  name: '基本单选框'
+  name: toI18n('basicComponent.basic')
 };
 
 export const DisabledRadio = () => ({
@@ -21,7 +24,7 @@ export const DisabledRadio = () => ({
     }
   },
   template: `
-    <div>
+  <div>
     <sm-radio :default-checked="false" :disabled="disabled">
       Disabled
     </sm-radio>
@@ -30,7 +33,7 @@ export const DisabledRadio = () => ({
       Disabled
     </sm-radio>
     <div :style="{ marginTop: 20 }">
-      <sm-button type="primary" @click="toggleDisabled">
+      <sm-button type="primary" v-on:click="toggleDisabled">
         Toggle disabled
       </sm-button>
     </div>
@@ -38,7 +41,7 @@ export const DisabledRadio = () => ({
   `
 });
 DisabledRadio.story = {
-  name: '不可用单选框'
+  name: toI18n('basicComponent.disabled')
 };
 
 export const RadioStyle = () => ({
@@ -47,15 +50,10 @@ export const RadioStyle = () => ({
       value: 'a'
     };
   },
-  methods: {
-    onChange(e) {
-      console.log(`checked = ${e.target.value}`);
-    }
-  },
   template: `
+  <div>
     <div>
-    <div>
-      <sm-radio-group v-model="value" @change="onChange">
+      <sm-radio-group v-model="value" >
         <sm-radio-button value="a">
           Hangzhou
         </sm-radio-button>
@@ -71,7 +69,7 @@ export const RadioStyle = () => ({
       </sm-radio-group>
     </div>
     <div :style="{ marginTop: '16px' }">
-      <sm-radio-group default-value="a" @change="onChange">
+      <sm-radio-group default-value="a" >
         <sm-radio-button value="a">
           Hangzhou
         </sm-radio-button>
@@ -87,7 +85,7 @@ export const RadioStyle = () => ({
       </sm-radio-group>
     </div>
     <div :style="{ marginTop: '16px' }">
-      <sm-radio-group disabled default-value="a" @change="onChange">
+      <sm-radio-group disabled default-value="a" >
         <sm-radio-button value="a">
           Hangzhou
         </sm-radio-button>
@@ -106,12 +104,12 @@ export const RadioStyle = () => ({
   `
 });
 RadioStyle.story = {
-  name: '按钮样式'
+  name: toI18n('basicComponent.radio.style')
 };
 
 export const RadioButtomStyle = () => ({
   template: `
-    <div>
+  <div>
     <div>
       <sm-radio-group default-value="a" button-style="solid">
         <sm-radio-button value="a">
@@ -148,7 +146,7 @@ export const RadioButtomStyle = () => ({
   `
 });
 RadioButtomStyle.story = {
-  name: '填底的按钮样式'
+  name: toI18n('basicComponent.radio.solidButton')
 };
 
 export const VerticalRadioGroup = () => ({
@@ -162,13 +160,8 @@ export const VerticalRadioGroup = () => ({
       }
     };
   },
-  methods: {
-    onChange(e) {
-      console.log('radio checked', e.target.value);
-    }
-  },
   template: `
-    <sm-radio-group v-model="value" @change="onChange">
+  <sm-radio-group v-model="value" >
     <sm-radio :style="radioStyle" :value="1">
       Option A
     </sm-radio>
@@ -186,7 +179,7 @@ export const VerticalRadioGroup = () => ({
   `
 });
 VerticalRadioGroup.story = {
-  name: '垂直的RadioGroup'
+  name: toI18n('basicComponent.radio.verticalRadioGroup')
 };
 
 export const RadioGroup = () => ({
@@ -225,34 +218,23 @@ export const RadioGroup = () => ({
       value3: 'Apple'
     };
   },
-  methods: {
-    onChange1(e) {
-      console.log('radio1 checked', e.target.value);
-    },
-    onChange2(e) {
-      console.log('radio2 checked', e.target.value);
-    },
-    onChange3(e) {
-      console.log('radio3 checked', e.target.value);
-    }
-  },
   template: `
     <div>
-    <sm-radio-group :options="plainOptions" :default-value="value1" @change="onChange1" />
+    <sm-radio-group :options="plainOptions" :default-value="value1" />
     <br />
-    <sm-radio-group v-model="value2" :options="options" @change="onChange2" />
+    <sm-radio-group v-model="value2" :options="options" />
     <br />
-    <sm-radio-group v-model="value3" :options="optionsWithDisabled" disabled @change="onChange3" />
+    <sm-radio-group v-model="value3" :options="optionsWithDisabled" disabled />
   </div>
   `
 });
 RadioGroup.story = {
-  name: 'RadioGroup组合'
+  name: toI18n('basicComponent.radio.radioGroupOptional')
 };
 
 export const GroupRadioName = () => ({
   template: `
-    <sm-radio-group name="radioGroup" :default-value="1">
+  <sm-radio-group name="radioGroup" :default-value="1">
     <sm-radio :value="1">
       A
     </sm-radio>
@@ -269,7 +251,7 @@ export const GroupRadioName = () => ({
   `
 });
 GroupRadioName.story = {
-  name: '单选组合_配合name使用'
+  name: toI18n('basicComponent.radio.radioGroupWithName')
 };
 
 export const GroupRadio = () => ({
@@ -278,14 +260,9 @@ export const GroupRadio = () => ({
       value: 1
     };
   },
-  methods: {
-    onChange(e) {
-      console.log('radio checked', e.target.value);
-    }
-  },
   template: `
   <div>
-    <sm-radio-group v-model="value" @change="onChange">
+    <sm-radio-group v-model="value" >
       <sm-radio :value="1">
         A
       </sm-radio>
@@ -303,7 +280,7 @@ export const GroupRadio = () => ({
   `
 });
 GroupRadio.story = {
-  name: '单选组合'
+  name: toI18n('basicComponent.radio.radioGroup')
 };
 
 export const RadioSize = () => ({
@@ -361,5 +338,5 @@ export const RadioSize = () => ({
   `
 });
 RadioSize.story = {
-  name: '大小组合'
+  name: toI18n('basicComponent.radio.size')
 };

@@ -7,18 +7,12 @@ module.exports = {
   addons: [
     '@storybook/preset-scss',
     {
-      name: '@storybook/addon-storysource',
+      name: '@storybook/addon-docs',
       options: {
-        rule: {
-          test: [/\.stories\.js?$/], //This is default
-          include: [path.resolve(__dirname, '../stories')], // You can specify directories
-        },
-        loaderOptions: {
-          prettierConfig: {
-            printWidth: 80,
-            singleQuote: false
-          },
-        },
+        configureJSX: true,
+        sourceLoaderOptions: {
+          injectStoryParameters: false
+        }
       },
     },
     '@storybook/addon-actions/register',

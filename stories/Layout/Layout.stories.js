@@ -1,10 +1,11 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/layout', decorators: [withKnobs] };
 
 export const BasicLayout = () => ({
   template: `
-    <div style="text-align: center;">
+  <div style="text-align: center;">
     <sm-layout style="background: rgba(16, 142, 233, 1); color: #fff; min-height: 120px; line-height: 120px; margin-bottom: 48px;">
       <sm-layout-header style="background: #7dbcea; color: #fff;">Header</sm-layout-header>
       <sm-layout-content>Content</sm-layout-content>
@@ -41,5 +42,5 @@ export const BasicLayout = () => ({
   `
 });
 BasicLayout.story = {
-  name: '基本布局'
+  name: toI18n('basicComponent.basic')
 };

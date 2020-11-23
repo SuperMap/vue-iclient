@@ -1,4 +1,5 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/modal', decorators: [withKnobs] };
 
@@ -19,10 +20,10 @@ export const BasicModal = () => ({
   },
   template: `
   <div>
-    <sm-button type="primary" @click="showModal">
+    <sm-button type="primary" v-on:click="showModal">
       Open Modal
     </sm-button>
-    <sm-modal v-model="visible" title="Basic Modal" @ok="handleOk">
+    <sm-modal v-model="visible" title="Basic Modal" v-on:ok="handleOk">
       <p>Some contents...</p>
       <p>Some contents...</p>
       <p>Some contents...</p>
@@ -31,136 +32,137 @@ export const BasicModal = () => ({
   `
 });
 BasicModal.story = {
-  name: '基本用法'
+  name: toI18n('basicComponent.basic')
 };
 
-// export const ConfirmModal = () => ({
-//   methods: {
-//     showConfirm() {
-//       this.$confirm({
-//         title: 'Do you Want to delete these items?',
-//         content: h => <div style = "color:red;" > Some descriptions </div>,
-//         onOk() {
-//           console.log('OK');
-//         },
-//         onCancel() {
-//           console.log('Cancel');
-//         },
-//         class: 'test'
-//       });
-//     },
-//     showDeleteConfirm() {
-//       this.$confirm({
-//         title: 'Are you sure delete this task?',
-//         content: 'Some descriptions',
-//         okText: 'Yes',
-//         okType: 'danger',
-//         cancelText: 'No',
-//         onOk() {
-//           console.log('OK');
-//         },
-//         onCancel() {
-//           console.log('Cancel');
-//         }
-//       });
-//     },
-//     showPropsConfirm() {
-//       this.$confirm({
-//         title: 'Are you sure delete this task?',
-//         content: 'Some descriptions',
-//         okText: 'Yes',
-//         okType: 'danger',
-//         okButtonProps: {
-//           props: {
-//             disabled: true
-//           }
-//         },
-//         cancelText: 'No',
-//         onOk() {
-//           console.log('OK');
-//         },
-//         onCancel() {
-//           console.log('Cancel');
-//         }
-//       });
-//     }
-//   },
-//   template: `
-//   <div>
-//     <sm-button @click="showConfirm">
-//       Confirm
-//     </sm-button>
-//     <sm-button type="dashed" @click="showDeleteConfirm">
-//       Delete
-//     </sm-button>
-//     <sm-button type="dashed" @click="showPropsConfirm">
-//       With extra props
-//     </sm-button>
-//   </div>
-//   `
-// });
-// ConfirmModal.story = {
-//   name: '确认对话框'
-// };
+export const ConfirmModal = () => ({
+  methods: {
+    showConfirm() {
+      this.$confirm({
+        title: 'Do you Want to delete these items?',
+        content: 'Some descriptions',
+        class: 'test'
+      });
+    },
+    showDeleteConfirm() {
+      this.$confirm({
+        title: 'Are you sure delete this task?',
+        content: 'Some descriptions',
+        okText: 'Yes',
+        okType: 'danger',
+        cancelText: 'No'
+      });
+    },
+    showPropsConfirm() {
+      this.$confirm({
+        title: 'Are you sure delete this task?',
+        content: 'Some descriptions',
+        okText: 'Yes',
+        okType: 'danger',
+        okButtonProps: {
+          props: {
+            disabled: true
+          }
+        },
+        cancelText: 'No'
+      });
+    }
+  },
+  template: `
+  <div>
+    <sm-button v-on:click="showConfirm">
+      Confirm
+    </sm-button>
+    <sm-button type="dashed" v-on:click="showDeleteConfirm">
+      Delete
+    </sm-button>
+    <sm-button type="dashed" v-on:click="showPropsConfirm">
+      With extra props
+    </sm-button>
+  </div>
+  `
+});
+ConfirmModal.story = {
+  name: toI18n('basicComponent.modal.confirmationModalDialog')
+};
 
-// export const MessagecModal = () => ({
-//   methods: {
-//     info() {
-//       const h = this.$createElement;
-//       this.$info({
-//         title: 'This is a notification message',
-//         content: h('div', {}, [
-//           h('p', 'some messages...some messages...'),
-//           h('p', 'some messages...some messages...')
-//         ]),
-//         onOk() {}
-//       });
-//     },
-//     success() {
-//       this.$success({
-//         title: 'This is a success message',
-//         // JSX support
-//         content: (
-//           <div>
-//             <p>some messages...some messages...</p>
-//             <p>some messages...some messages...</p>
-//           </div>
-//         )
-//       });
-//     },
-//     error() {
-//       this.$error({
-//         title: 'This is an error message',
-//         content: 'some messages...some messages...'
-//       });
-//     },
-//     warning() {
-//       this.$warning({
-//         title: 'This is a warning message',
-//         content: 'some messages...some messages...'
-//       });
-//     }
-//   },
-//   template: `
-//   <div>
-//     <sm-button @click="info">
-//       Info
-//     </sm-button>
-//     <sm-button @click="success">
-//       Success
-//     </sm-button>
-//     <sm-button @click="error">
-//       Error
-//     </sm-button>
-//     <sm-button @click="warning">
-//       Warning
-//     </sm-button>
-//   </div>
-//   `
-// });
-// MessagecModal.story = {
-//   name: '信息提示'
-// };
+export const MessagecModal = () => ({
+  methods: {
+    info() {
+      this.$info({
+        title: 'This is a notification message',
+        content: 'some messages...some messages...'
+      });
+    },
+    success() {
+      this.$success({
+        title: 'This is a success message',
+        content: 'some messages...some messages...'
+      });
+    },
+    error() {
+      this.$error({
+        title: 'This is an error message',
+        content: 'some messages...some messages...'
+      });
+    },
+    warning() {
+      this.$warning({
+        title: 'This is a warning message',
+        content: 'some messages...some messages...'
+      });
+    }
+  },
+  template: `
+  <div>
+    <sm-button v-on:click="info">
+      Info
+    </sm-button>
+    <sm-button v-on:click="success">
+      Success
+    </sm-button>
+    <sm-button v-on:click="error">
+      Error
+    </sm-button>
+    <sm-button v-on:click="warning">
+      Warning
+    </sm-button>
+  </div>
+  `
+});
+MessagecModal.story = {
+  name: toI18n('basicComponent.modal.informationModalDialog')
+};
+
+export const updateDestroyModal = () => ({
+  methods: {
+    countDown() {
+      let secondsToGo = 5;
+      const modal = this.$success({
+        title: 'This is a notification message',
+        content: `This modal will be destroyed after ${secondsToGo} second.`
+      });
+      const interval = setInterval(() => {
+        secondsToGo -= 1;
+        modal.update({
+          content: `This modal will be destroyed after ${secondsToGo} second.`
+        });
+      }, 1000);
+      setTimeout(() => {
+        clearInterval(interval);
+        modal.destroy();
+      }, secondsToGo * 1000);
+    }
+  },
+  template: `
+  <sm-button @click="countDown">
+    Open modal to close in 5s
+  </sm-button>
+  `
+});
+updateDestroyModal.story = {
+  name: toI18n('basicComponent.modal.manualToUpdateDestroy')
+};
 
 export const FooterPropsModal = () => ({
   data() {
@@ -173,17 +175,15 @@ export const FooterPropsModal = () => ({
       this.visible = true;
     },
     handleOk(e) {
-      console.log(e);
       this.visible = false;
     },
     handleCancel(e) {
-      console.log(e);
       this.visible = false;
     }
   },
   template: `
   <div>
-    <sm-button type="primary" @click="showModal">
+    <sm-button type="primary" v-on:click="showModal">
       Open Modal with customized button props
     </sm-button>
     <sm-modal
@@ -191,7 +191,7 @@ export const FooterPropsModal = () => ({
       title="Basic Modal"
       :ok-button-props="{ props: { disabled: true } }"
       :cancel-button-props="{ props: { disabled: true } }"
-      @ok="handleOk"
+      v-on:ok="handleOk"
     >
       <p>Some contents...</p>
       <p>Some contents...</p>
@@ -201,7 +201,7 @@ export const FooterPropsModal = () => ({
   `
 });
 FooterPropsModal.story = {
-  name: '页脚按钮属性'
+  name: toI18n('basicComponent.modal.customizeFooterProps')
 };
 
 export const AsyncColseModal = () => ({
@@ -225,21 +225,20 @@ export const AsyncColseModal = () => ({
       }, 2000);
     },
     handleCancel(e) {
-      console.log('Clicked cancel button');
       this.visible = false;
     }
   },
   template: `
   <div>
-    <sm-button type="primary" @click="showModal">
+    <sm-button type="primary" v-on:click="showModal">
       Open Modal with async logic
     </sm-button>
     <sm-modal
       title="Title"
       :visible="visible"
       :confirm-loading="confirmLoading"
-      @ok="handleOk"
-      @cancel="handleCancel"
+      v-on:ok="handleOk"
+      v-on:cancel="handleCancel"
     >
       <p>{{ ModalText }}</p>
     </sm-modal>
@@ -247,7 +246,7 @@ export const AsyncColseModal = () => ({
   `
 });
 AsyncColseModal.story = {
-  name: '异步关闭对话框'
+  name: toI18n('basicComponent.modal.asynchronouslyClose')
 };
 
 export const AsyncConfirmModal = () => ({
@@ -260,19 +259,18 @@ export const AsyncConfirmModal = () => ({
           return new Promise((resolve, reject) => {
             setTimeout(Math.random() > 0.5 ? resolve : reject, 1000);
           }).catch(() => console.log('Oops errors!'));
-        },
-        onCancel() {}
+        }
       });
     }
   },
   template: `
-  <sm-button @click="showConfirm">
+  <sm-button v-on:click="showConfirm">
     Confirm
   </sm-button>
   `
 });
 AsyncConfirmModal.story = {
-  name: '延迟确认对话框'
+  name: toI18n('basicComponent.modal.confirmationModalDialogPromise')
 };
 
 export const CustomFooterModal = () => ({
@@ -299,15 +297,15 @@ export const CustomFooterModal = () => ({
   },
   template: `
   <div>
-    <sm-button type="primary" @click="showModal">
+    <sm-button type="primary" v-on:click="showModal">
       Open Modal with customized footer
     </sm-button>
     <sm-modal v-model="visible" title="Title" on-ok="handleOk">
       <template slot="footer">
-        <sm-button key="back" @click="handleCancel">
+        <sm-button key="back" v-on:click="handleCancel">
           Return
         </sm-button>
-        <sm-button key="submit" type="primary" :loading="loading" @click="handleOk">
+        <sm-button key="submit" type="primary" :loading="loading" v-on:click="handleOk">
           Submit
         </sm-button>
       </template>
@@ -321,7 +319,7 @@ export const CustomFooterModal = () => ({
   `
 });
 CustomFooterModal.story = {
-  name: '自定义页脚'
+  name: toI18n('basicComponent.modal.customFooter')
 };
 
 export const CustomButtonModal = () => ({
@@ -348,24 +346,24 @@ export const CustomButtonModal = () => ({
   },
   template: `
   <div>
-    <sm-button type="primary" @click="showModal">
+    <sm-button type="primary" v-on:click="showModal">
       Modal
     </sm-button>
-    <sm-modal v-model="visible" title="Modal" ok-text="确认" cancel-text="取消" @ok="hideModal">
+    <sm-modal v-model="visible" title="Modal" ok-text="确认" cancel-text="取消" v-on:ok="hideModal">
       <p>Bla bla ...</p>
       <p>Bla bla ...</p>
       <p>Bla bla ...</p>
     </sm-modal>
     <br />
     <br />
-    <sm-button @click="confirm">
+    <sm-button v-on:click="confirm">
       Confirm
     </sm-button>
   </div>
   `
 });
 CustomButtonModal.story = {
-  name: '自定义按钮文字'
+  name: toI18n('basicComponent.modal.internationalization')
 };
 
 export const CustomLocationModal = () => ({
@@ -382,29 +380,29 @@ export const CustomLocationModal = () => ({
   },
   template: `
   <div id="components-modal-demo-position">
-    <sm-button type="primary" @click="() => setModal1Visible(true)">
+    <sm-button type="primary" v-on:click="() => setModal1Visible(true)">
       Display a modal dialog at 20px to Top
     </sm-button>
     <sm-modal
       title="20px to Top"
       style="top: 20px;"
       :visible="modal1Visible"
-      @ok="() => setModal1Visible(false)"
-      @cancel="() => setModal1Visible(false)"
+      v-on:ok="() => setModal1Visible(false)"
+      v-on:cancel="() => setModal1Visible(false)"
     >
       <p>some contents...</p>
       <p>some contents...</p>
       <p>some contents...</p>
     </sm-modal>
     <br /><br />
-    <sm-button type="primary" @click="() => (modal2Visible = true)">
+    <sm-button type="primary" v-on:click="() => (modal2Visible = true)">
       Vertically centered modal dialog
     </sm-button>
     <sm-modal
       v-model="modal2Visible"
       title="Vertically centered modal dialog"
       centered
-      @ok="() => (modal2Visible = false)"
+      v-on:ok="() => (modal2Visible = false)"
     >
       <p>some contents...</p>
       <p>some contents...</p>
@@ -414,7 +412,7 @@ export const CustomLocationModal = () => ({
   `
 });
 CustomLocationModal.story = {
-  name: '自定义位置'
+  name: toI18n('basicComponent.modal.customLocation')
 };
 
 export const DestroyModal = () => ({
@@ -443,11 +441,11 @@ export const DestroyModal = () => ({
     }
   },
   template: `
-  <sm-button @click="showConfirm">
+  <sm-button v-on:click="showConfirm">
     Confirm
   </sm-button>
   `
 });
 DestroyModal.story = {
-  name: '销毁确认对话框'
+  name: toI18n('basicComponent.modal.destroyModalDialog')
 };

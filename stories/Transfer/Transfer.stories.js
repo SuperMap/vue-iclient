@@ -1,4 +1,5 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/transfer', decorators: [withKnobs] };
 
@@ -24,27 +25,16 @@ export const BasicTransfer = () => ({
   methods: {
     handleChange(nextTargetKeys, direction, moveKeys) {
       this.targetKeys = nextTargetKeys;
-
-      console.log('targetKeys: ', nextTargetKeys);
-      console.log('direction: ', direction);
-      console.log('moveKeys: ', moveKeys);
     },
     handleSelectChange(sourceSelectedKeys, targetSelectedKeys) {
       this.selectedKeys = [...sourceSelectedKeys, ...targetSelectedKeys];
-
-      console.log('sourceSelectedKeys: ', sourceSelectedKeys);
-      console.log('targetSelectedKeys: ', targetSelectedKeys);
-    },
-    handleScroll(direction, e) {
-      console.log('direction:', direction);
-      console.log('target:', e.target);
     },
     handleDisable(disabled) {
       this.disabled = disabled;
     }
   },
   template: `
-    <div>
+  <div>
     <sm-transfer
       :data-source="mockData"
       :titles="['Source', 'Target']"
@@ -52,22 +42,21 @@ export const BasicTransfer = () => ({
       :selected-keys="selectedKeys"
       :render="item => item.title"
       :disabled="disabled"
-      @change="handleChange"
-      @selectChange="handleSelectChange"
-      @scroll="handleScroll"
+      v-on:change="handleChange"
+      v-on:selectChange="handleSelectChange"
     />
     <sm-switch
       un-checked-children="enabled"
       checked-children="disabled"
       :checked="disabled"
       style="margin-top: 16px"
-      @change="handleDisable"
+      v-on:change="handleDisable"
     />
   </div>
   `
 });
 BasicTransfer.story = {
-  name: '基本用法'
+  name: toI18n('basicComponent.basic')
 };
 
 export const SearchTransfer = () => ({
@@ -105,9 +94,6 @@ export const SearchTransfer = () => ({
     handleChange(targetKeys, direction, moveKeys) {
       console.log(targetKeys, direction, moveKeys);
       this.targetKeys = targetKeys;
-    },
-    handleSearch(dir, value) {
-      console.log('search:', dir, value);
     }
   },
   template: `
@@ -117,13 +103,12 @@ export const SearchTransfer = () => ({
     :filter-option="filterOption"
     :target-keys="targetKeys"
     :render="item => item.title"
-    @change="handleChange"
-    @search="handleSearch"
+    v-on:change="handleChange"
   />
   `
 });
 SearchTransfer.story = {
-  name: '带搜索框的'
+  name: toI18n('basicComponent.transfer.search')
 };
 
 export const SeniorTransfer = () => ({
@@ -156,7 +141,6 @@ export const SeniorTransfer = () => ({
       this.targetKeys = targetKeys;
     },
     handleChange(targetKeys, direction, moveKeys) {
-      console.log(targetKeys, direction, moveKeys);
       this.targetKeys = targetKeys;
     },
     renderItem(item) {
@@ -178,14 +162,14 @@ export const SeniorTransfer = () => ({
     :operations="['to right', 'to left']"
     :target-keys="targetKeys"
     :render="renderItem"
-    @change="handleChange"
+    v-on:change="handleChange"
   >
     <sm-button
       slot="footer"
       slot-scope="props"
       size="small"
       style="float:right;margin: 5px"
-      @click="getMock"
+      v-on:click="getMock"
     >
       reload
     </sm-button>
@@ -196,7 +180,7 @@ export const SeniorTransfer = () => ({
   `
 });
 SeniorTransfer.story = {
-  name: '高级用法'
+  name: toI18n('basicComponent.transfer.advanced')
 };
 
 export const CustomRowTransfer = () => ({
@@ -236,7 +220,6 @@ export const CustomRowTransfer = () => ({
       };
     },
     handleChange(targetKeys, direction, moveKeys) {
-      console.log(targetKeys, direction, moveKeys);
       this.targetKeys = targetKeys;
     }
   },
@@ -249,10 +232,10 @@ export const CustomRowTransfer = () => ({
     }"
     :target-keys="targetKeys"
     :render="renderItem"
-    @change="handleChange"
+    v-on:change="handleChange"
   />
   `
 });
 CustomRowTransfer.story = {
-  name: '自定义渲染行数据'
+  name: toI18n('basicComponent.transfer.customDatasource')
 };

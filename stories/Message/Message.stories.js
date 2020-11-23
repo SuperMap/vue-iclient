@@ -1,4 +1,5 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/message', decorators: [withKnobs] };
 
@@ -9,13 +10,13 @@ export const BasicMessage = () => ({
     }
   },
   template: `
-  <sm-button type="primary" @click="info">
+  <sm-button type="primary" v-on:click="info">
     Display normal message
   </sm-button>
   `
 });
 BasicMessage.story = {
-  name: '基本提示'
+  name: toI18n('basicComponent.basic')
 };
 
 export const LoadingMessage = () => ({
@@ -28,13 +29,13 @@ export const LoadingMessage = () => ({
     }
   },
   template: `
-  <sm-button @click="success">
+  <sm-button v-on:click="success">
     Display a sequence of message
   </sm-button>
   `
 });
 LoadingMessage.story = {
-  name: 'Promise 接口'
+  name: toI18n('basicComponent.message.loading')
 };
 
 export const DelayedMessage = () => ({
@@ -47,13 +48,13 @@ export const DelayedMessage = () => ({
     }
   },
   template: `
-  <sm-button @click="success">
+  <sm-button v-on:click="success">
     Customized display duration
   </sm-button>
   `
 });
 DelayedMessage.story = {
-  name: '修改延时'
+  name: toI18n('basicComponent.message.customizeDuration')
 };
 
 export const OtherTypesMessage = () => ({
@@ -70,20 +71,20 @@ export const OtherTypesMessage = () => ({
   },
   template: `
   <div>
-    <sm-button @click="success">
+    <sm-button v-on:click="success">
       Success
     </sm-button>
-    <sm-button @click="error">
+    <sm-button v-on:click="error">
       Error
     </sm-button>
-    <sm-button @click="warning">
+    <sm-button v-on:click="warning">
       Warning
     </sm-button>
   </div>
   `
 });
 OtherTypesMessage.story = {
-  name: '其他类型'
+  name: toI18n('basicComponent.message.type')
 };
 
 export const UpdatedMessage = () => ({
@@ -100,11 +101,11 @@ export const UpdatedMessage = () => ({
     }
   },
   template: `
-  <sm-button type="primary" @click="openMessage">
+  <sm-button type="primary" v-on:click="openMessage">
     Open the message box
   </sm-button>
   `
 });
-OtherTypesMessage.story = {
-  name: '更新消息内容'
+UpdatedMessage.story = {
+  name: toI18n('basicComponent.message.updateContent')
 };

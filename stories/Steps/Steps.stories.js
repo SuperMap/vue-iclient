@@ -1,4 +1,5 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/steps', decorators: [withKnobs] };
 
@@ -15,10 +16,10 @@ export const BasicSteps = () => ({
     <sm-step title="In Progress" sub-title="Left 00:00:08" description="This is a description." />
     <sm-step title="Waiting" description="This is a description." />
   </sm-steps>
-   `
+  `
 });
 BasicSteps.story = {
-  name: '基本用法'
+  name: toI18n('basicComponent.basic')
 };
 
 export const SmallSteps = () => ({
@@ -28,10 +29,10 @@ export const SmallSteps = () => ({
     <sm-step title="In Progress" />
     <sm-step title="Waiting" />
   </sm-steps>
-   `
+  `
 });
 SmallSteps.story = {
-  name: '迷你版'
+  name: toI18n('basicComponent.steps.mini')
 };
 
 export const IconSteps = () => ({
@@ -50,10 +51,10 @@ export const IconSteps = () => ({
       <sm-icon slot="icon" type="smile-o" />
     </sm-step>
   </sm-steps>
-   `
+  `
 });
 IconSteps.story = {
-  name: '带图标的步骤条'
+  name: toI18n('basicComponent.steps.withIcon')
 };
 
 export const ChangeSteps = () => ({
@@ -93,38 +94,38 @@ export const ChangeSteps = () => ({
       {{ steps[current].content }}
     </div>
     <div style="margin-top: 24px">
-      <sm-button v-if="current < steps.length - 1" type="primary" @click="next">
+      <sm-button v-if="current < steps.length - 1" type="primary" v-on:click="next">
         Next
       </sm-button>
       <sm-button
         v-if="current == steps.length - 1"
         type="primary"
-        @click="$message.success('Processing complete!')"
+        v-on:click="$message.success('Processing complete!')"
       >
         Done
       </sm-button>
-      <sm-button v-if="current > 0" style="margin-left: 8px" @click="prev">
+      <sm-button v-if="current > 0" style="margin-left: 8px" v-on:click="prev">
         Previous
       </sm-button>
     </div>
   </div>
-   `
+  `
 });
 ChangeSteps.story = {
-  name: '步骤切换'
+  name: toI18n('basicComponent.steps.switchStep')
 };
 
 export const VerticalSteps = () => ({
   template: `
- <sm-steps direction="vertical" :current="1">
+  <sm-steps direction="vertical" :current="1">
     <sm-step title="Finished" description="This is a description." />
     <sm-step title="In Progress" description="This is a description." />
     <sm-step title="Waiting" description="This is a description." />
   </sm-steps>
-   `
+  `
 });
 VerticalSteps.story = {
-  name: '竖直方向的步骤条'
+  name: toI18n('basicComponent.steps.vertical')
 };
 
 export const VerticalSmallSteps = () => ({
@@ -134,10 +135,10 @@ export const VerticalSmallSteps = () => ({
     <sm-step title="In Progress" description="This is a description." />
     <sm-step title="Waiting" description="This is a description." />
   </sm-steps>
-   `
+  `
 });
 VerticalSmallSteps.story = {
-  name: '竖直方向的小型步骤条'
+  name: toI18n('basicComponent.steps.verticalMiniVersion')
 };
 
 export const RunErrorSteps = () => ({
@@ -147,10 +148,10 @@ export const RunErrorSteps = () => ({
     <sm-step title="In Progress" description="This is a description." />
     <sm-step title="Waiting" description="This is a description." />
   </sm-steps>
-   `
+  `
 });
 RunErrorSteps.story = {
-  name: '步骤运行错误'
+  name: toI18n('basicComponent.steps.errorStatus')
 };
 
 export const PointSteps = () => ({
@@ -170,30 +171,91 @@ export const PointSteps = () => ({
       <sm-step title="Waiting" description="This is a description." />
     </sm-steps>
   </div>
-   `
+  `
 });
 PointSteps.story = {
-  name: '点状步骤条'
+  name: toI18n('basicComponent.steps.dotStyle')
 };
 
-export const CustomPointSteps = () => ({
+export const ClickableSteps = () => ({
+  data() {
+    return {
+      current: 0
+    };
+  },
+  methods: {
+    onChange(current) {
+      console.log('onChange:', current);
+      this.current = current;
+    }
+  },
   template: `
   <div>
-    <sm-steps :current="1">
-      <sm-popover slot="progressDot" slot-scope="{ index, status, prefixCls }">
-        <template slot="content">
-          <span>step {{ index }} status: {{ status }}</span>
-        </template>
-        <span/>
-      </sm-popover>
-      <sm-step title="Finished" description="You can hover on the dot." />
-      <sm-step title="In Progress" description="You can hover on the dot." />
-      <sm-step title="Waiting" description="You can hover on the dot." />
-      <sm-step title="Waiting" description="You can hover on the dot." />
+    <sm-steps :current="current" @change="onChange">
+      <sm-step title="Step 1" description="This is a description." />
+      <sm-step title="Step 2" description="This is a description." />
+      <sm-step title="Step 3" description="This is a description." />
+    </sm-steps>
+    <sm-divider />
+    <sm-steps v-model="current" direction="vertical">
+      <sm-step title="Step 1" description="This is a description." />
+      <sm-step title="Step 2" description="This is a description." />
+      <sm-step title="Step 3" description="This is a description." />
     </sm-steps>
   </div>
-   `
+  `
 });
-CustomPointSteps.story = {
-  name: '自定义点状步骤条'
+ClickableSteps.story = {
+  name: toI18n('basicComponent.steps.clickable')
+};
+
+export const NavigationSteps = () => ({
+  data() {
+    return {
+      current: 0,
+      stepStyle: {
+        marginBottom: '60px',
+        boxShadow: '0px -1px 0 0 #e8e8e8 inset'
+      }
+    };
+  },
+  template: `
+  <div>
+    <sm-steps v-model="current" type="navigation" size="small" :style="stepStyle">
+      <sm-step
+        title="Step 1"
+        sub-title="00:00:05"
+        status="finish"
+        description="This is a description."
+      />
+      <sm-step
+        title="Step 2"
+        sub-title="00:01:02"
+        status="process"
+        description="This is a description."
+      />
+      <sm-step
+        title="Step 3"
+        sub-title="waiting for longlong time"
+        status="wait"
+        description="This is a description."
+      />
+    </sm-steps>
+    <sm-steps v-model="current" type="navigation" :style="stepStyle">
+      <sm-step status="finish" title="Step 1" />
+      <sm-step status="process" title="Step 2" />
+      <sm-step status="wait" title="Step 3" />
+      <sm-step status="wait" title="Step 4" />
+    </sm-steps>
+    <sm-steps v-model="current" type="navigation" size="small" :style="stepStyle">
+      <sm-step status="finish" title="finish 1" />
+      <sm-step status="finish" title="finish 2" />
+      <sm-step status="process" title="current process" />
+      <sm-step status="wait" title="wait" disabled />
+    </sm-steps>
+  </div>
+  `
+});
+NavigationSteps.story = {
+  name: toI18n('basicComponent.steps.navigationSteps')
 };

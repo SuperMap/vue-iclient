@@ -8,61 +8,203 @@
   "basicComponent": {
     "basic": "Basic Usage",
     "custom": "Custom",
+    "disabled": "Disabled",
     "avatar": {
       "title": "Avatar",
       "type": "Type",
       "autosetFontSize": "Autoset Font Size"
     },
+    "breadcrum": {
+      "attrSeparator": "Attribute Separator",
+      "componentSeparator": "Component Separator",
+      "withIcon": "With an Icon"
+    },
+    "button": {
+      "type": "Type",
+      "group": "Group",
+      "ghost": "Ghost",
+      "size": "Size",
+      "block": "Block Property",
+      "confirm": "confirm",
+      "cancel": "cancel"
+    },
+    "checkbox": {
+      "checkAll": "Check all",
+      "group": "Group",
+      "controlled": "Controlled"
+    },
+    "datePicker": {
+      "title": "DatePicker",
+      "extraFooter": "Extra Footer",
+      "disabledDateTime": "Disabled Date & Time",
+      "controlledPanels": "Controlled Panels",
+      "size": "Size",
+      "chooseTime": "Choose Time",
+      "suffix": "Suffix",
+      "customizedDateRendering": "Customized Date Rendering",
+      "format": "Format",
+      "presetRanges": "Preset Ranges",
+      "customizedRangePicker": "Customized Range Picker"
+    },
+    "empty": {
+      "title": "Empty",
+      "noDescription": "No description"
+    },
+    "icon": {
+      "size": "Size",
+      "color": "Color"
+    },
+    "image": {
+      "repeat": "Repeat",
+      "link": "Link"
+    },
+    "indicator": {
+      "size": "Size",
+      "style": "Style",
+      "separator": "Separator",
+      "animated": "Animated",
+      "mode": "Mode",
+      "numberStyle": "NumberStyle",
+      "showTitleUnit": "Show Title & Unit",
+      "thresholdsStyle": "thresholdsStyle"
+    },
     "input": {
-      "title": "Input"
+      "title": "Input",
+      "prefixSuffix": "Prefix And Suffix",
+      "searchWithLoading": "Search box with loading",
+      "prePostTab": "Pre / Post tab",
+      "clearIcon": "With Clear Icon",
+      "fitHeight": "Autosizing the height to fit the content",
+      "searchBox": "Search box",
+      "size": "Size",
+      "textArea": "TextArea",
+      "passwordBox": "Password Box"
+    },
+    "message": {
+      "title": "Message",
+      "loading": "Loading",
+      "customizeDuration": "Customize Duration",
+      "type": "Type",
+      "updateContent": "Update Message Content"
+    },
+    "modal": {
+      "title": "Modal",
+      "confirmationModalDialog": "Confirmation modal dialog",
+      "informationModalDialog": "Information modal dialog",
+      "manualToUpdateDestroy": "Manual to update destroy",
+      "customizeFooterProps": "Customize footer buttons props",
+      "asynchronouslyClose": "Asynchronously close",
+      "confirmationModalDialogPromise": "Confirmation modal dialog use promise",
+      "customFooter": "Custom Footer",
+      "internationalization": "Internationalization",
+      "customLocation": "To customize the position of modal",
+      "destroyModalDialog": "Destroy confirmation modal dialog"
+    },
+    "pagination": {
+      "more": "More",
+      "changer": "Changer",
+      "jumper": "Jumper",
+      "customDropdownOptions": "Custom dropdown options",
+      "mini": "Mini",
+      "simple": "Simple",
+      "controlled": "Controlled",
+      "totalNumber": "Total Number",
+      "prevAndNext": "Prev And Next"
+    },
+    "radio": {
+      "title": "Radio",
+      "style": "Style",
+      "solidButton": "Solid radio button",
+      "verticalRadioGroup": "Vertical RadioGroup",
+      "radioGroupOptional": "RadioGroup group - optional",
+      "radioGroupWithName": "Radio.Group with name",
+      "radioGroup": "Radio Group",
+      "size": "Size"
+    },
+    "select": {
+      "title": "Select",
+      "size": "Size",
+      "tags": "Tags",
+      "automaticTokenization": "Automatic Tokenization",
+      "multipleSelection": "Multiple Selection",
+      "optionGroup": "Option Group",
+      "withSearchField": "Select with search field",
+      "suffix": "Suffix",
+      "customDropdown": "Custom Dropdown",
+      "getValue": "Get value of selected item",
+      "coordinate": "Coordinate",
+      "searchUsers": "Search and Select Users",
+      "hideAlreadySelected": "Hide Already Selected",
+      "customSelectionRender": "Custom selection render"
+    },
+    "steps": {
+      "mini": "Mini",
+      "withIcon": "With an Icon",
+      "switchStep": "Switch Step",
+      "vertical": "Vertical",
+      "verticalMiniVersion": "Vertical Mini Version",
+      "errorStatus": "Error Status",
+      "dotStyle": "Dot Style",
+      "clickable": "Clickable",
+      "navigationSteps": "Navigation Steps"
     },
     "inputNumber": {
       "title": "InputNumber"
     },
     "switch": {
-      "title": "Switch"
+      "title": "Switch",
+      "textIcon": "Text & icon",
+      "size": "Size",
+      "loading": "Loading"
     },
-    "select": {
-      "title": "Select"
+    "tabs": {
+      "icon": "Icon",
+      "slide": "Slide",
+      "extraContent": "Extra Content",
+      "size": "Size",
+      "position": "Position",
+      "cardTypeTab": "Card Type Tab",
+      "addCloseTab": "Add & Close Tab",
+      "containerTypeTab": "Container of card type Tab",
+      "customizedTrigger": "Customized trigger of new tab"
     },
-    "empty": {
-      "title": "Empty"
+    "text": {
+      "size": "Size",
+      "link": "Link"
     },
-    "datePicker": {
-      "title": "DatePicker"
-    },
-    "radio": {
-      "title": "Radio"
+    "timeText": {
+      "size": "Size"
     },
     "transfer": {
-      "title": "Transfer"
+      "title": "Transfer",
+      "search": "Search",
+      "advanced": "Advanced",
+      "customDatasource": "Custom Datasource"
     },
     "tooltip": {
-      "title": "Tooltip"
+      "title": "Tooltip",
+      "arrowPoint": "Arrow pointing at the center",
+      "placement": "Placement",
+      "adjustPlacementAutomatically": "Adjust placement automatically"
     },
-    "message": {
-      "title": "Message"
-    },
-    "modal": {
-      "title": "Modal"
-    },
-    "button": {
-      "confirm": "confirm",
-      "cancel": "cancel"
-    },
-    "breadcrum": {
-      "attrSeparator": "Attribute Separator",
-      "componentSeparator": "Component Separator",
-      "withIcon": "With an Icon"
+    "videoPlayer": {
+      "controlBar": "Control Bar"
     }
   },
   "chartComponent": {
     "liquidfill": {
       "type": "Wave",
       "color": "Color"
+    },
+    "progress": {
+      "color": "Color",
+      "number": "Number",
+      "state": "State",
+      "type": "Type",
+      "width": "Width"
     }
   },
   "mapComponent": {
-    "iportalMap": "Iportal Map"
-  }
+      "iportalMap": "Iportal Map"
+    }
 }

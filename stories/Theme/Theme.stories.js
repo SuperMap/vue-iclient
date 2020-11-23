@@ -72,7 +72,8 @@ export const DefaultTheme = () => ({
       this.selectedKeys = [...sourceSelectedKeys, ...targetSelectedKeys];
     }
   },
-  template: `<div>
+  template: `
+  <div>
     <div style="margin-bottom: 15px;">
       <sm-button :type="theme === 'dark' ? 'primary' : 'default'" @click="setDefaultTheme('dark')">{{ $t('customizeTheme.dark') }}</sm-button>
       <sm-button :type="theme === 'light' ? 'primary' : 'default'" @click="setDefaultTheme('light')">{{ $t('customizeTheme.light') }}</sm-button>

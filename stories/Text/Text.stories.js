@@ -1,54 +1,43 @@
-import { withKnobs, text, select, object } from '@storybook/addon-knobs';
+import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/text', decorators: [withKnobs] };
 
 export const BasicText = () => ({
-  props: {
-    title: {
-      default: text('title', '我是文本')
-    }
-  },
-  template: '<sm-text v-bind="$props"></sm-text>'
+  template: `
+  <sm-text title="我是文本"></sm-text>
+  `
 });
 BasicText.story = {
-  name: '文本'
+  name: toI18n('basicComponent.basic')
 };
+
 export const SmallText = () => ({
-  props: {
-    fontStyle: {
-      default: object('fontStyle', { fontSize: '14px', fontFamily: '微软雅黑' })
-    },
-    title: {
-      default: text('title', '我是文本')
-    }
-  },
   data() {
     return {
+      title: '我是文本',
+      fontStyle: { fontSize: '14px', fontFamily: '微软雅黑' },
       middleStyle: { fontSize: '18px', fontFamily: '微软雅黑' },
       largeStyle: { fontSize: '24px', fontFamily: '微软雅黑' }
     };
   },
-  template:
-    '<div style="width: 300px; height:200px; display: flex; flex-direction:column; justify-content:space-between;"><sm-text v-bind="$props"></sm-text><sm-text v-bind="$props" :fontStyle="middleStyle"></sm-text><sm-text v-bind="$props" :fontStyle="largeStyle"></sm-text></div>'
+  template: `
+  <div style="width: 300px; height:200px; display: flex; flex-direction:column; justify-content:space-between;">
+    <sm-text :title="title" :fontStyle="fontStyle"></sm-text>
+    <sm-text :title="title" :fontStyle="middleStyle"></sm-text>
+    <sm-text :title="title" :fontStyle="largeStyle"></sm-text>
+  </div>
+  `
 });
 SmallText.story = {
-  name: '不同大小的文体'
+  name: toI18n('basicComponent.text.size')
 };
 
 export const LinkText = () => ({
-  props: {
-    title: {
-      default: text('title', '链接')
-    },
-    href: {
-      default: text('href', 'http://www.baidu.com')
-    },
-    target: {
-      default: select('target', ['_self', '_blank', '_parent', '_top', 'framename'], '_self')
-    }
-  },
-  template: '<sm-text v-bind="$props"></sm-text>'
+  template: `
+  <sm-text title="链接" href="http://www.baidu.com" target="_blank"></sm-text>
+  `
 });
 LinkText.story = {
-  name: '带链接的文本'
+  name: toI18n('basicComponent.text.link')
 };

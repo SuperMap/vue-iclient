@@ -1,26 +1,27 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 import moment from 'moment';
 
-export default { title: 'Basic/dataPicker', decorators: [withKnobs] };
+export default { title: 'Basic/datePicker', decorators: [withKnobs] };
 
-export const BasicDataPicker = () => ({
+export const BasicDatePicker = () => ({
   template: `
-    <div>
-        <sm-date-picker />
-        <br />
-        <sm-month-picker style="margin:10px 0" placeholder="Select month" />
-        <br />
-        <sm-range-picker style="margin-bottom:10px"  />
-        <br />
-        <sm-week-picker placeholder="Select week" />
-    </div>
+  <div>
+    <sm-date-picker />
+    <br />
+    <sm-month-picker style="margin:10px 0" placeholder="Select month" />
+    <br />
+    <sm-range-picker style="margin-bottom:10px"  />
+    <br />
+    <sm-week-picker placeholder="Select week" />
+  </div>
   `
 });
-BasicDataPicker.story = {
-  name: '基本用法'
+BasicDatePicker.story = {
+  name: toI18n('basicComponent.basic')
 };
 
-export const DisabledDataPicker = () => ({
+export const DisabledDatePicker = () => ({
   methods: {
     moment,
     range(start, end) {
@@ -30,12 +31,10 @@ export const DisabledDataPicker = () => ({
       }
       return result;
     },
-
     disabledDate(current) {
       // Can not select days before today and today
       return current && current < moment().endOf('day');
     },
-
     disabledDateTime() {
       return {
         disabledHours: () => this.range(0, 24).splice(4, 20),
@@ -43,7 +42,6 @@ export const DisabledDataPicker = () => ({
         disabledSeconds: () => [55, 56]
       };
     },
-
     disabledRangeTime(_, type) {
       if (type === 'start') {
         return {
@@ -82,11 +80,11 @@ export const DisabledDataPicker = () => ({
   </div>
   `
 });
-DisabledDataPicker.story = {
-  name: '不可选择日期和时间'
+DisabledDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.disabledDateTime')
 };
 
-export const FooterDataPicker = () => ({
+export const FooterDatePicker = () => ({
   template: `
   <div>
     <sm-date-picker>
@@ -119,11 +117,11 @@ export const FooterDataPicker = () => ({
   </div>
   `
 });
-FooterDataPicker.story = {
-  name: '额外的页脚'
+FooterDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.extraFooter')
 };
 
-export const ControlDataPicker = () => ({
+export const ControlDatePicker = () => ({
   data() {
     return {
       mode1: 'time',
@@ -153,8 +151,8 @@ export const ControlDataPicker = () => ({
     <sm-date-picker
       :mode="mode1"
       show-time
-      @openChange="handleOpenChange1"
-      @panelChange="handlePanelChange1"
+      v-on:openChange="handleOpenChange1"
+      v-on:panelChange="handlePanelChange1"
     />
     <br />
     <sm-range-picker
@@ -163,17 +161,17 @@ export const ControlDataPicker = () => ({
       :value="value"
       :mode="mode2"
       style="margin-top: 10px"
-      @panelChange="handlePanelChange2" 
-      @change="handleChange"
+      v-on:panelChange="handlePanelChange2" 
+      v-on:change="handleChange"
     />
   </div>
   `
 });
-ControlDataPicker.story = {
-  name: '受控面板'
+ControlDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.controlledPanels')
 };
 
-export const SizeDataPicker = () => ({
+export const SizeDatePicker = () => ({
   data() {
     return {
       size: 'default'
@@ -203,78 +201,62 @@ export const SizeDataPicker = () => ({
   </div>
   `
 });
-SizeDataPicker.story = {
-  name: '三种大小'
+SizeDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.size')
 };
 
-export const TimeDataPicker = () => ({
-  methods: {
-    onChange(value, dateString) {
-      console.log('Selected Time: ', value);
-      console.log('Formatted Selected Time: ', dateString);
-    },
-    onOk(value) {
-      console.log('onOk: ', value);
-    }
-  },
+export const TimeDatePicker = () => ({
   template: `
   <div>
-    <sm-date-picker show-time placeholder="Select Time" @change="onChange" @ok="onOk" />
+    <sm-date-picker show-time placeholder="Select Time"  />
     <br />
     <sm-range-picker
       :show-time="{ format: 'HH:mm' }"
       format="YYYY-MM-DD HH:mm"
       :placeholder="['Start Time', 'End Time']"
       style="margin-top: 10px"
-      @change="onChange"
-      @ok="onOk"
     />
   </div>
   `
 });
-TimeDataPicker.story = {
-  name: '日期时间选择'
+TimeDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.chooseTime')
 };
 
-export const IconDataPicker = () => ({
-  methods: {
-    onChange(date, dateString) {
-      console.log(date, dateString);
-    }
-  },
+export const IconDatePicker = () => ({
   template: `
   <div>
-    <sm-date-picker @change="onChange">
+    <sm-date-picker >
       <sm-icon slot="suffixIcon" type="smile" style="padding: 0" />
     </sm-date-picker>
     <br />
-    <sm-month-picker style="margin: 10px 0" placeholder="Select month" @change="onChange">
+    <sm-month-picker style="margin: 10px 0" placeholder="Select month" >
       <sm-icon slot="suffixIcon" type="smile" style="padding: 0" />
     </sm-month-picker>
     <br />
-    <sm-range-picker style="margin-bottom: 10px" @change="onChange">
+    <sm-range-picker style="margin-bottom: 10px" >
       <sm-icon slot="suffixIcon" type="smile" style="padding: 0" />
     </sm-range-picker>
     <br />
-    <sm-week-picker style="margin: 10px 0" placeholder="Select week" @change="onChange">
+    <sm-week-picker style="margin: 10px 0" placeholder="Select week" >
       <sm-icon slot="suffixIcon" type="smile" style="padding: 0" />
     </sm-week-picker>
     <br />
-    <sm-date-picker style="margin-bottom: 10px" suffix-icon="ab" @change="onChange" />
+    <sm-date-picker style="margin-bottom: 10px" suffix-icon="ab"  />
     <br />
-    <sm-month-picker style="margin: 10px 0" suffix-icon="ab" placeholder="Select month" @change="onChange" />
+    <sm-month-picker style="margin: 10px 0" suffix-icon="ab" placeholder="Select month"  />
     <br />
-    <sm-range-picker style="margin-bottom: 10px" suffix-icon="ab" @change="onChange" />
+    <sm-range-picker style="margin-bottom: 10px" suffix-icon="ab"  />
     <br />
-    <sm-week-picker suffix-icon="ab" placeholder="Select week" @change="onChange" />
+    <sm-week-picker suffix-icon="ab" placeholder="Select week"  />
   </div>
   `
 });
-IconDataPicker.story = {
-  name: '后缀图标'
+IconDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.suffix')
 };
 
-export const CustomDataPicker = () => ({
+export const CustomDatePicker = () => ({
   methods: {
     getCurrentStyle(current, today) {
       const style = {};
@@ -313,11 +295,11 @@ export const CustomDataPicker = () => ({
     </div>
   `
 });
-CustomDataPicker.story = {
-  name: '定制日期单元格'
+CustomDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.customizedDateRendering')
 };
 
-export const DisabledAllDataPicker = () => ({
+export const DisabledAllDatePicker = () => ({
   data() {
     this.dateFormat = 'YYYY-MM-DD';
     return {};
@@ -338,11 +320,11 @@ export const DisabledAllDataPicker = () => ({
   </div>
   `
 });
-DisabledAllDataPicker.story = {
-  name: '禁用日期选择器'
+DisabledAllDatePicker.story = {
+  name: toI18n('basicComponent.disabled')
 };
 
-export const FormatDataPicker = () => ({
+export const FormatDatePicker = () => ({
   data() {
     return {
       dateFormat: 'YYYY/MM/DD',
@@ -372,11 +354,11 @@ export const FormatDataPicker = () => ({
   </div>
   `
 });
-FormatDataPicker.story = {
-  name: '日期格式'
+FormatDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.format')
 };
 
-export const PresetDataPicker = () => ({
+export const PresetDatePicker = () => ({
   data() {
     return {
       dateFormat: 'YYYY/MM/DD',
@@ -384,34 +366,30 @@ export const PresetDataPicker = () => ({
     };
   },
   methods: {
-    moment,
-    onChange(dates, dateStrings) {
-      console.log('From: ', dates[0], ', to: ', dates[1]);
-      console.log('From: ', dateStrings[0], ', to: ', dateStrings[1]);
-    }
+    moment
   },
   template: `
   <div>
     <sm-range-picker
       :ranges="{ Today: [moment(), moment()], 'This Month': [moment(), moment().endOf('month')] }"
       style="margin-bottom: 10px"
-      @change="onChange"
+      
     />
     <br />
     <sm-range-picker
       :ranges="{ Today: [moment(), moment()], 'This Month': [moment(), moment().endOf('month')] }"
       show-time
       format="YYYY/MM/DD HH:mm:ss"
-      @change="onChange"
+      
     />
   </div>
   `
 });
-PresetDataPicker.story = {
-  name: '预设范围'
+PresetDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.presetRanges')
 };
 
-export const CustomScopeDataPicker = () => ({
+export const CustomScopeDatePicker = () => ({
   data() {
     return {
       startValue: null,
@@ -459,7 +437,7 @@ export const CustomScopeDataPicker = () => ({
       show-time
       format="YYYY-MM-DD HH:mm:ss"
       placeholder="Start"
-      @openChange="handleStartOpenChange"
+      v-on:openChange="handleStartOpenChange"
     />
     <sm-date-picker
       v-model="endValue"
@@ -468,16 +446,16 @@ export const CustomScopeDataPicker = () => ({
       format="YYYY-MM-DD HH:mm:ss"
       placeholder="End"
       :open="endOpen"
-      @openChange="handleEndOpenChange"
+      v-on:openChange="handleEndOpenChange"
     />
   </div>
   `
 });
-CustomScopeDataPicker.story = {
-  name: '自定义日期范围选择'
+CustomScopeDatePicker.story = {
+  name: toI18n('basicComponent.datePicker.customizedRangePicker')
 };
 
-export const CustomStyleDataPicker = () => ({
+export const CustomStyleDatePicker = () => ({
   data() {
     return {
       time1: undefined,
@@ -485,20 +463,13 @@ export const CustomStyleDataPicker = () => ({
     };
   },
   methods: {
-    onChange(value, dateString) {
-      console.log('Selected Time: ', value);
-      console.log('Formatted Selected Time: ', dateString);
-    },
-    onOk(value) {
-      console.log('onOk: ', value);
-    },
     clearTime() {
       this.time1 = undefined;
     }
   },
   template: `
   <div>
-    <sm-date-picker v-model="time1" placeholder="Select Time" @change="onChange" @ok="onOk">
+    <sm-date-picker v-model="time1" placeholder="Select Time" >
       <span>{{ time1 ? time1 : 'SelectTime' }}</span>
     </sm-date-picker>
     <br />
@@ -510,6 +481,6 @@ export const CustomStyleDataPicker = () => ({
   </div>
   `
 });
-CustomStyleDataPicker.story = {
-  name: '自定义渲染'
+CustomStyleDatePicker.story = {
+  name: toI18n('basicComponent.custom')
 };

@@ -1,4 +1,5 @@
 import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/checkbox', decorators: [withKnobs] };
 
@@ -8,92 +9,80 @@ export const BasicCheckbox = () => ({
   `
 });
 BasicCheckbox.story = {
-  name: '基本多选框多选框'
+  name: toI18n('basicComponent.basic')
 };
 
-const plainOptions = ['Apple', 'Pear', 'Orange'];
-const defaultCheckedList = ['Apple', 'Orange'];
 export const AllCheckbox = () => ({
   data() {
     return {
-      checkedList: defaultCheckedList,
+      checkedList: ['Apple', 'Orange'],
       indeterminate: true,
       checkAll: false,
-      plainOptions
+      plainOptions: ['Apple', 'Pear', 'Orange']
     };
   },
   methods: {
     onChange(checkedList) {
-      this.indeterminate = !!checkedList.length && checkedList.length < plainOptions.length;
-      this.checkAll = checkedList.length === plainOptions.length;
+      this.indeterminate = !!checkedList.length && checkedList.length < this.plainOptions.length;
+      this.checkAll = checkedList.length === this.plainOptions.length;
     },
     onCheckAllChange(e) {
       Object.assign(this, {
-        checkedList: e.target.checked ? plainOptions : [],
+        checkedList: e.target.checked ? this.plainOptions : [],
         indeterminate: false,
         checkAll: e.target.checked
       });
     }
   },
   template: `
-    <div>
+  <div>
     <div :style="{ borderBottom: '1px solid #E9E9E9' }">
-      <sm-checkbox :indeterminate="indeterminate" :checked="checkAll" @change="onCheckAllChange">
+      <sm-checkbox :indeterminate="indeterminate" :checked="checkAll" v-on:change="onCheckAllChange">
         Check all
       </sm-checkbox>
     </div>
     <br />
-    <sm-checkbox-group v-model="checkedList" :options="plainOptions" @change="onChange" />
+    <sm-checkbox-group v-model="checkedList" :options="plainOptions" v-on:change="onChange" />
   </div>
   `
 });
 AllCheckbox.story = {
-  name: '全选多选框'
+  name: toI18n('basicComponent.checkbox.checkAll')
 };
 
-const options = [
-  { label: 'Apple', value: 'Apple' },
-  { label: 'Pear', value: 'Pear' },
-  { label: 'Orange', value: 'Orange' }
-];
-const optionsWithDisabled = [
-  { value: 'Apple' },
-  { label: 'Pear', value: 'Pear' },
-  { label: 'Orange', value: 'Orange', disabled: false }
-];
 export const CheckboxGroup = () => ({
   data() {
     return {
-      plainOptions,
-      options,
-      optionsWithDisabled,
+      plainOptions: ['Apple', 'Pear', 'Orange'],
+      options: [
+        { label: 'Apple', value: 'Apple' },
+        { label: 'Pear', value: 'Pear' },
+        { label: 'Orange', value: 'Orange' }
+      ],
+      optionsWithDisabled: [
+        { value: 'Apple' },
+        { label: 'Pear', value: 'Pear' },
+        { label: 'Orange', value: 'Orange', disabled: false }
+      ],
       value: []
     };
   },
-  methods: {
-    onChange(checkedValues) {
-      console.log('checked = ', checkedValues);
-      console.log('value = ', this.value);
-    }
-  },
   template: `
-    <div>
+  <div>
     <sm-checkbox-group
       v-model="value"
       name="checkboxgroup"
       :options="plainOptions"
-      @change="onChange"
     />
     <br />
-    <sm-checkbox-group :options="plainOptions" :default-value="['Apple']" @change="onChange" />
+    <sm-checkbox-group :options="plainOptions" :default-value="['Apple']" />
     <br />
-    <sm-checkbox-group :options="options" :value="['Pear']" @change="onChange" />
+    <sm-checkbox-group :options="options" :value="['Pear']" />
     <br />
     <sm-checkbox-group
       :options="optionsWithDisabled"
       disabled
       :default-value="['Apple']"
-      @change="onChange"
     >
       <span slot="label" slot-scope="{ value }" style="color: red">{{ value }}</span>
     </sm-checkbox-group>
@@ -101,7 +90,7 @@ export const CheckboxGroup = () => ({
   `
 });
 CheckboxGroup.story = {
-  name: 'Checkbox组'
+  name: toI18n('basicComponent.checkbox.group')
 };
 
 export const ControledCheckbox = () => ({
@@ -129,17 +118,17 @@ export const ControledCheckbox = () => ({
     }
   },
   template: `
-    <div>
+  <div>
     <p :style="{ marginBottom: '20px' }">
-      <sm-checkbox :checked="checked" :disabled="disabled" @change="onChange">
+      <sm-checkbox :checked="checked" :disabled="disabled" v-on:change="onChange">
         {{ label }}
       </sm-checkbox>
     </p>
     <p>
-      <sm-button type="primary" size="small" @click="toggleChecked">
+      <sm-button type="primary" size="small" v-on:click="toggleChecked">
         {{ !checked ? 'Check' : 'Uncheck' }}
       </sm-button>
-      <sm-button :style="{ marginLeft: '10px' }" type="primary" size="small" @click="toggleDisable">
+      <sm-button :style="{ marginLeft: '10px' }" type="primary" size="small" v-on:click="toggleDisable">
         {{ !disabled ? 'Disable' : 'Enable' }}
       </sm-button>
     </p>
@@ -147,5 +136,5 @@ export const ControledCheckbox = () => ({
   `
 });
 ControledCheckbox.story = {
-  name: '受控的checkbox'
+  name: toI18n('basicComponent.checkbox.controlled')
 };

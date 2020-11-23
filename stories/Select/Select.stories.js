@@ -1,11 +1,12 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import debounce from 'lodash/debounce';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/select', decorators: [withKnobs] };
 
 export const BasicSelect = () => ({
   template: `
-     <div>
+  <div>
     <sm-select default-value="lucy" style="width: 120px">
       <sm-select-option value="jack">
         Jack
@@ -31,10 +32,10 @@ export const BasicSelect = () => ({
       </sm-select-option>
     </sm-select>
   </div>
-   `
+  `
 });
 BasicSelect.story = {
-  name: '基本选择器'
+  name: toI18n('basicComponent.basic')
 };
 
 export const SelectSize = () => ({
@@ -87,23 +88,23 @@ export const SelectSize = () => ({
       </sm-select-option>
     </sm-select>
   </div>
-   `
+  `
 });
 SelectSize.story = {
-  name: '三种大小选择器'
+  name: toI18n('basicComponent.select.size')
 };
 
 export const TagsSelect = () => ({
   template: `
-   <sm-select mode="tags" style="width: 100%" placeholder="Tags Mode">
+  <sm-select mode="tags" style="width: 100%" placeholder="Tags Mode">
     <sm-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
       {{ (i + 9).toString(36) + i }}
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 TagsSelect.story = {
-  name: '标签选择器'
+  name: toI18n('basicComponent.select.tags')
 };
 
 export const ParticiplesSelect = () => ({
@@ -113,10 +114,10 @@ export const ParticiplesSelect = () => ({
       {{ (i + 9).toString(36) + i }}
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 ParticiplesSelect.story = {
-  name: '自动分词选择器'
+  name: toI18n('basicComponent.select.automaticTokenization')
 };
 
 export const SelectMore = () => ({
@@ -131,10 +132,10 @@ export const SelectMore = () => ({
       {{ (i + 9).toString(36) + i }}
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 SelectMore.story = {
-  name: '多选选择器'
+  name: toI18n('basicComponent.select.multipleSelection')
 };
 
 export const GroupSelect = () => ({
@@ -155,10 +156,10 @@ export const GroupSelect = () => ({
       </sm-select-option>
     </sm-select-opt-group>
   </sm-select>
-   `
+  `
 });
 GroupSelect.story = {
-  name: '分组选择器'
+  name: toI18n('basicComponent.select.optionGroup')
 };
 
 export const SearchSelect = () => ({
@@ -168,7 +169,7 @@ export const SearchSelect = () => ({
     }
   },
   template: `
- <sm-select
+  <sm-select
     show-search
     placeholder="Select a person"
     option-filter-prop="children"
@@ -185,10 +186,10 @@ export const SearchSelect = () => ({
       Tom
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 SearchSelect.story = {
-  name: '搜索选择器'
+  name: toI18n('basicComponent.select.withSearchField')
 };
 
 export const IconSelect = () => ({
@@ -216,10 +217,10 @@ export const IconSelect = () => ({
       </sm-select-option>
     </sm-select>
   </div>
-   `
+  `
 });
 IconSelect.story = {
-  name: '后缀图标选择器'
+  name: toI18n('basicComponent.select.suffix')
 };
 
 let index = 0;
@@ -233,7 +234,6 @@ export const ExtendSelect = () => ({
   data: () => ({ items: ['jack', 'lucy'] }),
   methods: {
     addItem() {
-      console.log('addItem');
       this.items.push(`New item ${index++}`);
     }
   },
@@ -254,10 +254,10 @@ export const ExtendSelect = () => ({
       {{ item }}
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 ExtendSelect.story = {
-  name: '扩展菜单选择器'
+  name: toI18n('basicComponent.select.customDropdown')
 };
 
 export const TextSelect = () => ({
@@ -274,10 +274,10 @@ export const TextSelect = () => ({
       Lucy (101)
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 TextSelect.story = {
-  name: '可获取选项的文本的选择器'
+  name: toI18n('basicComponent.select.getValue')
 };
 
 const provinceData = ['Zhejiang', 'Jiangsu'];
@@ -301,7 +301,7 @@ export const LinkageSelect = () => ({
     }
   },
   template: `
- <div>
+  <div>
     <sm-select :default-value="provinceData[0]" style="width: 120px" @change="handleProvinceChange">
       <sm-select-option v-for="province in provinceData" :key="province">
         {{ province }}
@@ -316,7 +316,7 @@ export const LinkageSelect = () => ({
    `
 });
 LinkageSelect.story = {
-  name: '联动选择器'
+  name: toI18n('basicComponent.select.coordinate')
 };
 
 export const SearchUserSelect = () => ({
@@ -375,10 +375,10 @@ export const SearchUserSelect = () => ({
       {{ d.text }}
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 SearchUserSelect.story = {
-  name: '可搜索用户的选择器'
+  name: toI18n('basicComponent.select.searchUsers')
 };
 
 const OPTIONS = ['Apples', 'Nails', 'Bananas', 'Helicopters'];
@@ -410,10 +410,10 @@ export const HiddenSelect = () => ({
       {{ item }}
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 HiddenSelect.story = {
-  name: '隐藏已选项的选择器'
+  name: toI18n('basicComponent.select.hideAlreadySelected')
 };
 
 export const LabelPropSelect = () => ({
@@ -423,7 +423,7 @@ export const LabelPropSelect = () => ({
     };
   },
   template: `
- <sm-select
+  <sm-select
     v-model="value"
     mode="multiple"
     style="width: 100%"
@@ -455,8 +455,8 @@ export const LabelPropSelect = () => ({
       Korea (韩国)
     </sm-select-option>
   </sm-select>
-   `
+  `
 });
 LabelPropSelect.story = {
-  name: '定制回填内容的选择器'
+  name: toI18n('basicComponent.select.customSelectionRender')
 };

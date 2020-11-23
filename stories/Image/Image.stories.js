@@ -1,48 +1,43 @@
-import { withKnobs, text, select } from '@storybook/addon-knobs';
+import { withKnobs } from '@storybook/addon-knobs';
+import { toI18n } from '../../.storybook/lang';
 
 export default { title: 'Basic/image', decorators: [withKnobs] };
 
 export const BasicImage = () => ({
-  props: {
-    src: {
-      default: text('src', 'https://iclient.supermap.io/img/whatsNewLandUse.png')
-    }
-  },
-  template: '<sm-image style="width:600px; height:400px" v-bind="$props"></sm-image>'
+  template: `
+  <sm-image 
+  style="width:600px; height:400px" 
+  src="https://iclient.supermap.io/img/whatsNewLandUse.png"></sm-image>
+  `
 });
 BasicImage.story = {
-  name: '图片'
+  name: toI18n('basicComponent.basic')
 };
 
 export const RepeatImage = () => ({
-  props: {
-    repeat: {
-      default: select('repeat', ['center', 'noRepeat', 'repeatX', 'repeatY', 'repeatXY'], 'center')
-    },
-    src: {
-      default: text('src', 'https://iclient.supermap.io/img/whatsNewLandUse.png')
-    }
-  },
-  template: '<sm-image style="width:600px; height:400px" v-bind="$props"></sm-image>'
+  template: `
+  <sm-image 
+  style="width: 600px; height: 400px" 
+  repeat="center"
+  src="https://iclient.supermap.io/img/whatsNewLandUse.png">
+  </sm-image>
+  `
 });
 RepeatImage.story = {
-  name: '图片重复'
+  name: toI18n('basicComponent.image.repeat')
 };
 
 export const LinkImage = () => ({
-  props: {
-    src: {
-      default: text('src', 'https://iclient.supermap.io/img/whatsNewLandUse.png')
-    },
-    href: {
-      default: text('href', 'http://www.baidu.com')
-    },
-    target: {
-      default: select('target', ['_self', '_blank', '_parent', '_top', 'framename'], '_self')
-    }
-  },
-  template: '<sm-image style="width:600px; height:400px" v-bind="$props"></sm-image>'
+  template: `
+  <sm-image 
+  style="width:600px; height:400px" 
+  src="https://iclient.supermap.io/img/whatsNewLandUse.png"
+  href="http://www.baidu.com"
+  target="_blank"
+  >
+  </sm-image>
+  `
 });
 LinkImage.story = {
-  name: '带链接的图片'
+  name: toI18n('basicComponent.image.link')
 };
