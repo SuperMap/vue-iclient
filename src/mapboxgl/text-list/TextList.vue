@@ -196,7 +196,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     clickColor: null
   };
 
-  hoverColor: string = 'rgba(128, 128,128, 0.8 )';
+  rowHoverColor: string = 'rgba(128, 128,128, 0.8 )';
 
   curRollingStartIndex: number = 0;
 
@@ -375,7 +375,7 @@ class SmTextList extends Mixins(Theme, Timer) {
       }
       if (this.activeHoverRowIndex === index) {
         return {
-          background: this.hoverColor
+          background: this.rowHoverColor
         };
       }
       if ((rawIndex + 1) % 2 !== 0) {
@@ -714,7 +714,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   handleMouseEnter(item, rowIndex, event) {
     this.activeHoverRowIndex = rowIndex;
     if (this.highlightColor && typeof this.highlightColor === 'function') {
-      this.hoverColor = this.highlightColor(item, rowIndex, event);
+      this.rowHoverColor = this.highlightColor(item, rowIndex, event);
     }
     this.$emit('cell-mouse-enter', item, rowIndex, event);
   }
