@@ -43,7 +43,6 @@ import 'videojs-flvjs-es6';
 import 'videojs-contrib-hls';
 import 'videojs-flash';
 import { videoPlayer } from 'vue-videojs7';
-import cloneDeep from 'lodash.clonedeep';
 
 interface playerOptions {
   height?: string;
