@@ -3,7 +3,7 @@ import 'ant-design-vue/dist/antd.css';
 import '../static/libs/mapboxgl/mapbox-gl-enhance.css';
 import '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.css';
 import SmComponents from '../src/mapboxgl';
-import i18n, { getLanguage } from './lang';
+import i18n, { getLanguage, setLanguage, getStoryGlobalI18n } from './lang';
 
 Vue.use(SmComponents, { theme: 'dark', i18n });
 
@@ -54,7 +54,7 @@ export const globalTypes = {
   locale: {
     name: 'Locale',
     description: 'Internationalization locale',
-    defaultValue: 'zh',
+    defaultValue: getLanguage(),
     toolbar: {
       icon: 'globe',
       items: [
@@ -69,8 +69,9 @@ export const decorators = [() => {
   return {
     template: '<story />',
     updated() {
-      const lang = getLanguage();
-      if (this.$i18n.locale !== lang) {
+      const storeLang = getStoryGlobalI18n();
+      if (storeLang && this.$i18n.locale !== storeLang) {
+        setLanguage(storeLang);
         window.location.reload();
       }
     },

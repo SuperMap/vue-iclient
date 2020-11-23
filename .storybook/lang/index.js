@@ -19,12 +19,7 @@ const i18n = new VueI18n({
 Vue.prototype.i18n = i18n;
 
 export function getLanguage() {
-  let store = sessionStorage.getItem('@storybook/preview/store');
-  let lang = Cookies.get('language');;
-  if (store && !lang) {
-    store = JSON.parse(store);
-    lang = store.globals.locale;
-  }
+  let lang = Cookies.get('language') || getStoryGlobalI18n();
   if (!lang) {
     if (navigator.appName === 'Netscape') {
       lang = navigator.language;
@@ -43,6 +38,15 @@ export function getLanguage() {
     return lang;
   }
   return 'zh';
+}
+
+export function setLanguage(lang) {
+  Cookies.set('language', lang);
+}
+
+export function getStoryGlobalI18n() {
+  const store = sessionStorage.getItem('@storybook/preview/store');
+  return store && JSON.parse(store).globals.locale;
 }
 
 export function geti18n() {
