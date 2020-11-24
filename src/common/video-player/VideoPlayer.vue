@@ -10,7 +10,7 @@
       @play="onPlayerPlay($event)"
       @ended="onPlayerEnded($event)"
       @loadeddata="onPlayerLoadeddata($event)"
-      @hook:mounted="getPlayer"
+      @ready="getPlayer"
     ></video-player>
     <a-modal
       v-if="url"
@@ -27,7 +27,7 @@
         :playsinline="true"
         @play="onModalPlayerPlay($event)"
         @loadeddata="onModalPlayerLoadeddata($event)"
-        @hook:mounted="getPlayer"
+        @ready="getPlayer"
       ></video-player>
     </a-modal>
   </div>
@@ -137,6 +137,7 @@ class SmVideoPlayer extends Vue {
   @Watch('url')
   urlChanged() {
     this.initFlvPlayer();
+    this.replayRtmp();
     this.handlePlayerOptions(this.options);
   }
 
@@ -191,23 +192,21 @@ class SmVideoPlayer extends Vue {
 
   replayRtmp() {
     // @ts-ignore
-    if (this.isRtmp && this.smPlayer) {
+    if (this.isRtmp && this.smPlayer && this.smPlayer.el_) {
       // @ts-ignore
-      this.smPlayer.on('play', e => {
+      this.smPlayer.one('play', e => {
         // @ts-ignore
         this.timer = setTimeout(() => {
           // @ts-ignore
           clearTimeout(this.timer);
           // @ts-ignore
           this.smPlayer.reset();
-          setTimeout(() => {
-            // @ts-ignore
-            this.smPlayer.src(this.playerOptions.sources);
-          });
+          // @ts-ignore
+          this.smPlayer.src(this.playerOptions.sources);
         }, this.replayTime);
       });
       // @ts-ignore
-      this.smPlayer.on('canplay', e => {
+      this.smPlayer.one('canplay', e => {
         // @ts-ignore
         clearTimeout(this.timer);
       });
