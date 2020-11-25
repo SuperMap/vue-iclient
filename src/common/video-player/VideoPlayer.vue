@@ -7,6 +7,7 @@
       :playsinline="true"
       :data-autoplay="autoplay"
       :data-isLive="isRtmp"
+      :data-popupplay="`${options.popupToPlay}`"
       @play="onPlayerPlay($event)"
       @ended="onPlayerEnded($event)"
       @loadeddata="onPlayerLoadeddata($event)"
@@ -21,10 +22,13 @@
       :maskClosable="false"
     >
       <video-player
-        ref="videoPlayer"
+        ref="modalVideoPlayer"
         class="sm-component-video-player__player"
         :options="modalPlayerOptions"
         :playsinline="true"
+        :data-autoplay="autoplay"
+        :data-isLive="isRtmp"
+        :data-popupplay="`${options.popupToPlay}`"
         @play="onModalPlayerPlay($event)"
         @loadeddata="onModalPlayerLoadeddata($event)"
         @ready="getPlayer"
@@ -43,6 +47,7 @@ import 'videojs-flvjs-es6';
 import 'videojs-contrib-hls';
 import 'videojs-flash';
 import { videoPlayer } from 'vue-videojs7';
+import clonedeep from 'lodash.clonedeep';
 
 interface playerOptions {
   height?: string;
@@ -75,9 +80,17 @@ class SmVideoPlayer extends Vue {
 
   modalVisible: Boolean = false;
 
+  playerOptions: playerOptions = {};
+
+  modalPlayerOptions: playerOptions = {};
+
   $message: any;
 
   $t: any;
+
+  modalVideoPlayer: any;
+
+  smPlayer: any;
 
   @Prop() url: string; // 视频地址
 
@@ -107,106 +120,98 @@ class SmVideoPlayer extends Vue {
     return flvjs.isSupported() && this.checkUrl(this.url) && this.url.includes('.flv');
   }
 
-  get playerOptions() {
-    const options = this.handlePlayerOptions(this.options) || {};
-    const autoplay = this.isRtmp || this.options.autoplay;
-    return Object.assign({}, options, { autoplay });
-  }
-
-  get modalPlayerOptions() {
-    const options = this.handlePlayerOptions(this.options) || {};
-    return Object.assign({}, options, { autoplay: true, preload: 'none', height: '600' });
-  }
-
   get autoplay() {
     return this.options.autoplay && this.checkUrl(this.url);
   }
+
+  get player() {
+    return this.modalVisible ? this.modalVideoPlayer : this.smPlayer;
+  }
+
   @Watch('modalVisible')
   modalVisibleChanged() {
-    // @ts-ignore
-    this.smPlayer = this.$refs.videoPlayer && this.$refs.videoPlayer.player;
-    // @ts-ignore
-    if (this.modalVisible && this.smPlayer) {
+    if (this.modalVisible && this.modalVideoPlayer) {
+      this.handlePlayerOptions();
       // @ts-ignore
-      this.smPlayer.currentTime(0);
-      // @ts-ignore
-      this.smPlayer.play();
+      if (this.flvPlayer && this.isFlv) {
+        // @ts-ignore
+        this.supportFlv(this.flvPlayer);
+        return;
+      }
+      this.modalVideoPlayer.currentTime(0);
+      this.modalVideoPlayer.play();
+    }
+    if (!this.modalVisible && this.modalVideoPlayer) {
+      this.modalVideoPlayer.reset();
     }
   }
 
   @Watch('url')
   urlChanged() {
     this.initFlvPlayer();
+    this.handlePlayerOptions();
     this.replayRtmp();
-    this.handlePlayerOptions(this.options);
+    // @ts-ignore
+    if (this.flvPlayer && this.isFlv) {
+      this.initFlvPlayer();
+      // @ts-ignore
+      this.supportFlv(this.flvPlayer);
+    }
   }
 
   @Watch('playerOptions')
   playerOptionsChanged() {
-    // @ts-ignore
-    if (this.flvPlayer && this.isFlv) {
-      // @ts-ignore
-      this.supportFlv(this.flvPlayer);
-      return;
-    }
-    // @ts-ignore
-    if (this.smPlayer && this.smPlayer.el_) {
-      // @ts-ignore
-      this.smPlayer.load();
+    if (this.player && this.player.el_) {
+      this.player.load();
     }
   }
 
   @Watch('options')
   optionsChanged() {
-    this.handlePlayerOptions(this.options);
+    this.handlePlayerOptions();
   }
 
   @Watch('options.popupToPlay')
   popupChanged() {
     if (this.options.popupToPlay) {
       // @ts-ignore
-      this.smPlayer = this.$refs.videoPlayer && this.$refs.videoPlayer.player;
+      this.modalVideoPlayer = this.$refs.modalVideoPlayer && this.$refs.modalVideoPlayer.player;
     }
   }
-
-  mounted() {
-    setTimeout(() => {
-      this.initFlvPlayer();
-      // @ts-ignore
-      this.supportFlv(this.flvPlayer);
-    }, 5000);
+  created() {
+    this.handlePlayerOptions();
   }
-
   getPlayer() {
     setTimeout(() => {
-      const ref = this.$refs.videoPlayer;
       // @ts-ignore
-      this.smPlayer = ref && ref.player;
+      this.smPlayer = this.$refs.videoPlayer && this.$refs.videoPlayer.player;
+      // @ts-ignore
+      this.modalVideoPlayer = this.$refs.modalVideoPlayer && this.$refs.modalVideoPlayer.player;
       setTimeout(() => {
-        // @ts-ignore
-        this.video = ref && ref.$refs && ref.$refs.video;
         this.replayRtmp();
       });
+      if (this.isFirst) {
+        setTimeout(() => {
+          this.initFlvPlayer();
+          // @ts-ignore
+          this.supportFlv(this.flvPlayer);
+        }, 5000);
+      }
     });
   }
 
-  replayRtmp() {
-    // @ts-ignore
-    if (this.isRtmp && this.smPlayer && this.smPlayer.el_) {
-      // @ts-ignore
-      this.smPlayer.one('play', e => {
+  replayRtmp(player = this.player) {
+    if (this.isRtmp && player && player.el_) {
+      player.one('play', e => {
         // @ts-ignore
         this.timer = setTimeout(() => {
           // @ts-ignore
           clearTimeout(this.timer);
-          // @ts-ignore
-          this.smPlayer.reset();
-          // @ts-ignore
-          this.smPlayer.src(this.playerOptions.sources);
+          player.reset();
+          player.src(clonedeep(this.playerOptions.sources));
         }, this.replayTime);
       });
-      // @ts-ignore
-      this.smPlayer.one('canplay', e => {
+      player.one('canplay', e => {
         // @ts-ignore
         clearTimeout(this.timer);
       });
@@ -228,9 +233,15 @@ class SmVideoPlayer extends Vue {
 
   supportFlv(flvPlayer) {
     if (flvPlayer && this.isFlv) {
+      const videoPlayer = this.modalVisible ? this.$refs.modalVideoPlayer : this.$refs.videoPlayer;
       // @ts-ignore;
-      const videoElement = this.$refs.videoPlayer && this.$refs.videoPlayer.$refs && this.$refs.videoPlayer.$refs.video;
+      const videoElement = videoPlayer && videoPlayer.$refs && videoPlayer.$refs.video;
+      if (!videoElement) {
+        return;
+      }
       flvPlayer.attachMediaElement(videoElement);
+      // @ts-ignore;
+      flvPlayer.unload();
       // @ts-ignore;
       flvPlayer.load();
       // @ts-ignore;
@@ -238,12 +249,16 @@ class SmVideoPlayer extends Vue {
     }
   }
 
-  handlePlayerOptions(options) {
+  handlePlayerOptions(options = this.options) {
     if (!this.url) {
       return {};
     }
     if (!this.checkUrl(this.url)) {
       this.$message.warning(this.$t('warning.unsupportedVideoAddress'), 1);
+      if (this.playerOptions.sources) {
+        this.playerOptions.sources[0].src = '';
+        this.modalPlayerOptions.sources[0].src = '';
+      }
       return {};
     }
     let commonOptions: playerOptions = {
@@ -295,6 +310,8 @@ class SmVideoPlayer extends Vue {
       // @ts-ignore
       commonOptions.sources[0].type = 'application/x-mpegURL';
     }
+    this.playerOptions = Object.assign({}, commonOptions, { autoplay: this.isRtmp || options.autoplay });
+    this.modalPlayerOptions = Object.assign({}, commonOptions, { autoplay: true, preload: 'none', height: '600' });
     return commonOptions;
   }
 
@@ -325,7 +342,7 @@ class SmVideoPlayer extends Vue {
   }
   onModalPlayerLoadeddata(player) {
     // @ts-ignore
-    this.smPlayer = player;
+    this.modalVideoPlayer = player;
     player.play(); // 强制进行 play， issues- https://github.com/surmon-china/vue-video-player/issues/224
     this.handleControlBar(player);
   }
