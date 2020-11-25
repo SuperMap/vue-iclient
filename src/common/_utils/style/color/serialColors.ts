@@ -4,7 +4,7 @@ import { getColorWithOpacity, getDarkenColor } from '../../util';
 import { isArray } from '../../vue-types/utils';
 import cssVars from 'css-vars-ponyfill';
 
-const lightTheme = themeFactory[1];
+const lightTheme = themeFactory && themeFactory[1];
 
 export type ThemeStyleParams = typeof lightTheme;
 
@@ -44,8 +44,11 @@ const isNativeSupport = isBrowser && window.CSS && window.CSS.supports && window
 
 export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string[] {
   const series = [];
-  const nextThemeStyle = nextThemeInfo || {};
-  const prevPrimaryColor = nextThemeStyle.colorGroup && nextThemeStyle.colorGroup[0];
+  const nextThemeStyle = nextThemeInfo;
+  let prevPrimaryColor: string;
+  if (nextThemeStyle && nextThemeStyle.colorGroup && nextThemeStyle.colorGroup[0]) {
+    prevPrimaryColor = nextThemeStyle.colorGroup[0];
+  }
   const acceptColor: string = prevPrimaryColor || antdPrimaryColor;
   for (let index = 1; index <= 10; index++) {
     let nextColor: string;
@@ -91,7 +94,7 @@ export function getFunctionSerialColors(functionColors?: ThemeStyleParams): Func
 export function getExtralColors(
   themeStyleData: ThemeStyleParams,
   primarySerialColors: string[],
-  functionColors: ThemeStyleParams
+  functionColors: FunctionColorParams
 ): ExtraColorParams {
   const extraSerialColors: ExtraColorParams = {
     textColorWithoutOpacity: getColorWithOpacity(themeStyleData.textColor, 1),
