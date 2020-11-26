@@ -1042,7 +1042,7 @@ export default class WebMapService extends Events {
     const proxy = this.handleProxy();
     const dataUrl = `${this.serverUrl}apps/dataviz/libs/administrative_data/${dataFileName}`;
     return SuperMap.FetchRequest.get(dataUrl, null, {
-      withCredentials: this.handleWithCredentials(proxy, dataUrl, this.withCredentials),
+      withCredentials: false,
       proxy,
       withoutFormatSuffix: true
     })
