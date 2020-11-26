@@ -114,8 +114,13 @@ export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerPa
   const themeStyleData = Object.assign({}, lightTheme, defaultTheme, nextThemeStyle);
   const serialColorsReplacer = getPrimarySerialColors(themeStyleData);
   const functionSerialColorsReplacer = getFunctionSerialColors(themeStyleData);
+  const nextThemeStyleData = Object.assign({}, themeStyleData, {
+    selectedColor: serialColorsReplacer[1],
+    hoverColor: serialColorsReplacer[4],
+    clickColor: serialColorsReplacer[6]
+  });
   const nextThemeData = {
-    themeStyle: themeStyleData,
+    themeStyle: nextThemeStyleData,
     primarySerialColors: serialColorsReplacer,
     functionSerialColors: functionSerialColorsReplacer,
     extraSerialColors: getExtralColors(themeStyleData, serialColorsReplacer, functionSerialColorsReplacer)

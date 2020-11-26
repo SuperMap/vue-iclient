@@ -76,7 +76,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
   }
 
   private _addFireLayer(): void {
-    if (!this.features || !this.map) {
+    if (!this.map || !this.features || !this.features.features) {
       return;
     }
     let feature = this.features.features[0];
