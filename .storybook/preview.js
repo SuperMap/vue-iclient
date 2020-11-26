@@ -29,6 +29,12 @@ ${otherSource}
 
 export const parameters = {
   actions: { argTypesRegex: '^on[A-Z].*' },
+  viewMode: 'docs',
+  previewTabs: {
+    canvas: {
+      hidden: true
+    }
+  },
   options: {
     showPanel: true,
     panelPosition: 'right',

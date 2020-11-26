@@ -92,7 +92,7 @@
     "@storybook/addons": "^6.0.26",
     "@storybook/preset-scss": "^1.0.3",
     "@storybook/theming": "^6.0.26",
-    "@storybook/vue": "^6.0.26",
+    "@storybook/vue": "^6.1.4",
     "@turf/bbox-polygon": "^5.0.4",
     "@turf/buffer": "^5.0.4",
     "@turf/union": "^5.0.4",

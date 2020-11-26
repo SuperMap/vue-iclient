@@ -15,10 +15,8 @@ module.exports = {
         }
       },
     },
-    '@storybook/addon-actions/register',
     '@storybook/addon-knobs/register',
-    '@storybook/addon-toolbars',
-    'storybook-readme'
+    '@storybook/addon-toolbars'
   ],
   webpackFinal: async (config, { configType }) => {
     config.resolve.alias['core-js/modules'] = '@storybook/core/node_modules/core-js/modules';

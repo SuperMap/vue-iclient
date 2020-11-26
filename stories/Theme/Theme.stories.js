@@ -4,7 +4,15 @@ import { toI18n } from '../../.storybook/lang';
 
 export default {
   title: 'CustomizeTheme/theme',
-  decorators: [withKnobs]
+  decorators: [withKnobs],
+  parameters: {
+    viewMode: 'story',
+    previewTabs: {
+      canvas: {
+        hidden: false
+      }
+    }
+  }
 };
 
 export const DefaultTheme = () => ({
