@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-collapse-card">
+  <div class="sm-component-collapse-card" :style="getTextColorStyle">
     <div
       v-if="iconClass"
       :class="{
@@ -8,13 +8,10 @@
         [`is-click-${isShow ? 'out' : 'in'}`]: true,
         ['is-not-header']: !headerName
       }"
-      :style="[getBackgroundStyle, getTextColorStyle, iconStyleObject]"
+      :style="[collapseCardHeaderBgStyle, collapseCardHeaderTextColorStyle]"
       @click="iconClicked"
     >
-      <div
-        :style="[iconStyle]"
-        :class="{ [iconClass]: true, ['is-auto-rotate']: autoRotate, ['sm-component-collapse-card__component-icon']: true }"
-      ></div>
+      <i :style="iconStyle" :class="{ [iconClass]: true, ['is-auto-rotate']: autoRotate }" />
     </div>
     <transition name="sm-component-zoom-in" @after-leave="toggleTransition('leave')" @enter="toggleTransition('enter')">
       <div
@@ -25,12 +22,18 @@
           ['is-' + position]: true,
           ['is-icon']: iconClass
         }"
-        :style="[getCardStyle]"
+        :style="getCardStyle"
       >
-        <div v-if="headerName" class="sm-component-collapse-card__header" :style="[getBackgroundStyle, getTextColorStyle]">
+        <div
+          v-if="headerName"
+          class="sm-component-collapse-card__header"
+          :style="[collapseCardHeaderBgStyle, collapseCardHeaderTextColorStyle]"
+        >
           <span class="sm-component-collapse-card__header-name">{{ headerName }}</span>
         </div>
-        <slot></slot>
+        <div :style="getCardStyle" class="sm-component-collapse-card__body">
+          <slot></slot>
+        </div>
       </div>
     </transition>
   </div>
@@ -70,12 +73,7 @@ export default {
   computed: {
     getCardStyle() {
       const style = { background: 'transparent' };
-      return !this.iconClass && !this.headerName ? style : this.getBackgroundStyle;
-    },
-    iconStyleObject() {
-      return {
-        '--icon-color--hover': this.colorGroupsData[0]
-      };
+      return !this.iconClass && !this.headerName ? style : this.collapseCardBackgroundStyle;
     },
     iconStyle() {
       return {

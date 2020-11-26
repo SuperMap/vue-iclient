@@ -34,6 +34,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/message/style/message.scss';
 @import '../common/notification/style/notification.scss';
 @import '../common/layout/style/layout.scss';
+@import '../common/spin/style/spin.scss';
 
 @import './web-map/style/web-map.scss';
 @import './identify/style/identify.scss';

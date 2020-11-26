@@ -9,7 +9,7 @@ body {
   white-space: nowrap;
 }
 .hidden {
-  display: none;
+  display: none !important;
 }
 
 .clearfix:after {

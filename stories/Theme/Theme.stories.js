@@ -248,7 +248,6 @@ export const CustomTheme = () => ({
     messageBackground: { default: color('messageBackground', '#535353') },
     modalBackground: { default: color('modalBackground', '#333') },
     radioInnerDisabledBg: { default: color('inputSuffixIconHoverColor', 'rgba(255, 255, 255, 0.12)') },
-    transferItemHoverColor: { default: color('transferItemHoverColor', 'rgba(255, 255, 255, 0.08)') },
     colorGroup: { default: array('colorGroup', ['#e14d57', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad']) }
   },
   template: `<div>

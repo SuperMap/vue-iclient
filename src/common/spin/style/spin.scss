@@ -1,0 +1,14 @@
+@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/theme/theme.scss';
+
+@include b (spin) {
+  color: $primary-color;
+
+  @include e(tip, '-') {
+    color: $text-color-secondary;
+  }
+
+  @include e(dot-item, '-') {
+    background-color: $primary-color;
+  }
+}

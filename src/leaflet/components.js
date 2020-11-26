@@ -51,6 +51,7 @@ export { default as LayoutHeader } from '../common/layout/Header';
 export { default as LayoutFooter } from '../common/layout/Footer';
 export { default as LayoutContent } from '../common/layout/Content';
 export { default as LayoutSider } from '../common/layout/Sider';
+export { default as Spin } from '../common/spin';
 
 export { default as Identify } from './identify/Identify';
 export { default as Popup } from './popup/Popup';

@@ -396,7 +396,7 @@ $skeleton-color: #f2f2f2;
 
 // Transfer
 $transfer-disabled-bg: $disabled-bg;
-$transfer-item-hover-color: var(--transfer-item-hover-color);
+$transfer-item-hover-color: $select-item-hover-bg;
 
 // Message
 $message-background: var(--message-background);
@@ -425,3 +425,7 @@ $list-footer-background: transparent;
 $timeline-color: $border-color-split;
 $timeline-dot-color: $primary-6;
 $timeline-dot-bg: $component-background;
+
+// collapse-card
+$collapse-card-bg: var(--collapse-card-background);
+$collapse-card-header-bg: var(--collapse-card-header-bg);

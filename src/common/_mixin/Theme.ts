@@ -36,6 +36,12 @@ export default class Theme extends Vue {
 
   disabledTextColorData: string = '';
 
+  collapseCardBackgroundData: string = '';
+
+  collapseCardHeaderBgData: string = '';
+
+  collapseCardHeaderTextColorData: string = '';
+
   colorGroupsData: Array<string> = [];
 
   @Prop() background: string;
@@ -70,6 +76,12 @@ export default class Theme extends Vue {
 
   @Prop() borderBaseColor: string;
 
+  @Prop() collapseCardBackground: string;
+
+  @Prop() collapseCardHeaderBg: string;
+
+  @Prop() collapseCardHeaderTextColor: string;
+
   @Prop() colorGroup: Array<string>;
 
   get getBackgroundStyle() {
@@ -78,9 +90,27 @@ export default class Theme extends Vue {
     };
   }
 
+  get collapseCardBackgroundStyle() {
+    return {
+      background: this.collapseCardBackgroundData
+    };
+  }
+
+  get collapseCardHeaderBgStyle() {
+    return {
+      background: this.collapseCardHeaderBgData
+    };
+  }
+
   get getTextColorStyle() {
     return {
       color: this.textColorsData
+    };
+  }
+
+  get collapseCardHeaderTextColorStyle() {
+    return {
+      color: this.collapseCardHeaderTextColorData
     };
   }
 
@@ -123,6 +153,7 @@ export default class Theme extends Vue {
         const dataName: string = this.getDataNameOfProp(prop);
         this[dataName] = themeStyle[prop];
       });
+      this.collapseCardHeaderTextColorData = themeStyle['headingColor'];
       this.themeStyleChanged();
     });
   }
@@ -134,15 +165,22 @@ export default class Theme extends Vue {
       const dataName: string = this.getDataNameOfProp(prop);
       this[dataName] = this[prop] || (theme && theme[prop]);
     });
+    this.collapseCardHeaderTextColorData = this.collapseCardHeaderTextColor || this.textColor || theme['headingColor'];
   }
 
   registerPropListener(): void {
     const vm = this;
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
-      this.$watch(prop, function(next, prev) {
+      this.$watch(prop, function(next) {
         const dataName: string = this.getDataNameOfProp(prop);
         vm[dataName] = next;
+        if (prop === 'background') {
+          vm.collapseCardBackgroundData = next;
+          vm.collapseCardHeaderBgData = next;
+        } else if (prop === 'textColor') {
+          this.collapseCardHeaderTextColorData = next;
+        }
       });
     });
   }

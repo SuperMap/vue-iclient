@@ -6,117 +6,120 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="getBackground"
+    :background="background"
     :textColor="textColor"
     class="sm-component-query"
   >
-    <div class="sm-component-query__body" :style="[getBackgroundStyle, getTextColorStyle]">
+    <div class="sm-component-query__body" :style="getTextColorStyle">
       <div class="sm-component-query__choose-panel clearfix">
         <div
-          class="sm-component-query__job-button is-active"
+          :class="{ 'sm-component-query__job-button': true, 'is-active': activeTab === 'job', disabled: isQuery }"
           :title="$t('query.queryJob')"
-          :style="activeTab === 'job' ? getColorStyle(0) : ''"
-          @click="jobButtonClicked"
+          @click="activeTab = 'job'"
         >
           {{ $t('query.queryJob') }}
         </div>
         <div
-          class="sm-component-query__result-button"
+          :class="{ 'sm-component-query__result-button': true, 'is-active': activeTab === 'result' }"
           :title="$t('query.queryResult')"
-          :style="activeTab === 'result' ? getColorStyle(0) : ''"
-          @click="resultButtonClicked"
+          @click="activeTab = 'result'"
         >
           {{ $t('query.queryResult') }}
         </div>
       </div>
-      <div class="sm-component-query__job-info">
+      <div :class="{ 'sm-component-query__job-info': true, hidden: activeTab !== 'job' }">
         <div
           v-for="(jobInfo, index) in jobInfos"
           v-show="jobInfos.length > 0"
           :key="index"
+          :style="activePanelIndex === index && collapseCardHeaderTextColorStyle"
           class="sm-component-query__job-info-panel"
         >
           <div
             class="sm-component-query__job-info-header"
-            :style="getTextColorStyle"
-            @click="jobInfoClicked"
-            @mouseleave="resetHoverStyle"
-            @mouseenter="changeHoverStyle"
+            @click="activePanelIndex = activePanelIndex === index ? null : index"
           >
-            <span class="sm-components-icons-preview"></span>
             <span :title="jobInfo.queryParameter.name" class="sm-component-query__job-info-name">{{
               jobInfo.queryParameter.name
             }}</span>
-            <div class="sm-components-icons-legend-unfold"></div>
+            <i
+              :class="
+                activePanelIndex !== index ? 'sm-components-icons-legend-unfold' : 'sm-components-icons-legend-fold'
+              "
+            />
           </div>
-          <div v-if="jobInfo.queryParameter.attributeFilter" class="sm-component-query__job-info-body hidden">
+          <div
+            v-if="jobInfo.queryParameter.attributeFilter"
+            :class="{ 'sm-component-query__job-info-body': true, hidden: activePanelIndex !== index }"
+          >
             <div class="sm-component-query__attribute">
               <div>{{ $t('query.attributeCondition') }}</div>
-              <div class="sm-component-query__attribute-name" :style="getColorStyle(0)">
+              <div class="sm-component-query__attribute-name">
                 {{ jobInfo.queryParameter.attributeFilter }}
               </div>
             </div>
             <div class="sm-component-query__spatial-filter">
               <div>{{ $t('query.spatialFilter') }}</div>
-              <a-select
+              <sm-select
                 v-model="jobInfo.spaceFilter"
                 class="sm-component-query__a-select"
                 :get-popup-container="getPopupContainer"
-                @dropdownVisibleChange="changeChosenStyle"
+                :style="getTextColorStyle"
               >
-                <a-select-option v-for="item in selectOptions" :key="item.value" :value="item.value">{{
-                  item.label
-                }}</a-select-option>
-              </a-select>
+                <sm-select-option v-for="item in selectOptions" :key="item.value" :value="item.value">
+                  {{ item.label }}
+                </sm-select-option>
+              </sm-select>
             </div>
             <div class="sm-component-query__query-button">
-              <a-button
+              <sm-button
                 type="primary"
                 size="small"
                 class="sm-component-query__a-button"
-                :style="{ backgroundColor: getColorStyle(0).color, color: getTextColor }"
                 @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)"
               >
                 {{ $t('query.applicate') }}
-              </a-button>
+              </sm-button>
             </div>
           </div>
         </div>
       </div>
-      <div class="sm-component-query__result-info hidden">
+      <div :class="{ 'sm-component-query__result-info': true, hidden: activeTab !== 'result' }">
         <div v-show="!queryResult && !isQuery" class="sm-component-query__no-result hidden">
-          {{ $t('query.noResult') }}
+          <sm-empty :description="$t('query.noResult')" />
         </div>
         <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
-          <a-spin :tip="$t('query.querying')">
-            <a-icon slot="indicator" type="loading" style="font-size: 24px" spin />
-          </a-spin>
+          <sm-spin :tip="$t('query.querying')">
+            <sm-icon slot="indicator" type="loading" style="font-size: 24px" spin />
+          </sm-spin>
         </div>
-        <div v-if="queryResult" class="sm-component-query__result-header" :style="getColorStyle(0)">
-          <span :title="queryResult.name" class="sm-component-query__header-name">{{ queryResult.name }}</span>
-          <span class="sm-components-icons-close" @click="clearResult"></span>
-        </div>
-        <div v-if="queryResult" class="sm-component-query__result-body">
-          <ul>
-            <li
-              v-for="(item, index) in queryResult.result"
-              :key="index"
-              :title="getInfoOfSmid(item.properties)"
-              @click="queryResultListClicked"
-              @mouseenter="changeChosenResultStyle"
-              @mouseleave="resetChosenResultStyle"
-            >
-              {{ getInfoOfSmid(item.properties) }}
-            </li>
-          </ul>
-        </div>
+        <template v-if="queryResult">
+          <div class="sm-component-query__result-header" :style="collapseCardHeaderTextColorStyle">
+            <span :title="queryResult.name" class="sm-component-query__header-name">{{ queryResult.name }}</span>
+            <i class="sm-components-icons-delete" @click="clearResult" />
+          </div>
+          <div class="sm-component-query__result-body">
+            <ul>
+              <li
+                v-for="(item, index) in queryResult.result"
+                :key="index"
+                :title="getInfoOfSmid(item.properties)"
+                role="option"
+                :aria-selected="activeResultIndex === index"
+                @click="queryResultListClicked($event, index)"
+              >
+                {{ getInfoOfSmid(item.properties) }}
+              </li>
+            </ul>
+          </div>
+        </template>
       </div>
     </div>
     <TablePopup
       v-show="false"
       ref="queryTablePopup"
       v-bind="tablePopupProps"
-      :background="getBackground"
+      :background="background"
       :textColor="textColor"
     />
   </sm-card>
@@ -129,27 +132,26 @@ import MapGetter from '../_mixin/map-getter';
 import LineStyle from '../_types/LineStyle';
 import FillStyle from '../_types/FillStyle';
 import CircleStyle from '../_types/CircleStyle';
-// import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
-// import RestDataParameter from '../../common/_types/RestDataParameter';
-// import RestMapParameter from '../../common/_types/RestMapParameter';
 import QueryViewModel from './QueryViewModel.js';
+import SmSelect from '../../common/select/Select';
+import SmSelectOption from '../../common/select/Option';
+import SmButton from '../../common/button/Button';
+import SmEmpty from '../../common/empty/Empty';
+import SmSpin from '../../common/spin/Spin';
+import SmIcon from '../../common/icon/Icon';
 import TablePopup from '../../common/table-popup/TablePopup';
 import { getColorWithOpacity, getValueCaseInsensitive } from '../../common/_utils/util';
 import isEqual from 'lodash.isequal';
 
-// let validators = (value, propType) => {
-//   let valid = true;
-//   value.forEach(item => {
-//     if (!(item instanceof propType)) {
-//       valid = false;
-//     }
-//   });
-//   return valid;
-// };
-
 export default {
   name: 'SmQuery',
   components: {
+    SmSelect,
+    SmSelectOption,
+    SmButton,
+    SmEmpty,
+    SmSpin,
+    SmIcon,
     TablePopup
   },
   mixins: [MapGetter, Control, Theme, Card],
@@ -204,21 +206,12 @@ export default {
     },
     iportalData: {
       type: Array
-      // validator(value) {
-      //   return validators(value, iPortalDataParameter);
-      // }
     },
     restData: {
       type: Array
-      // validator(value) {
-      //   return validators(value, RestDataParameter);
-      // }
     },
     restMap: {
       type: Array
-      // validator(value) {
-      //   return validators(value, RestMapParameter);
-      // }
     }
   },
   data() {
@@ -237,6 +230,8 @@ export default {
       ],
       queryResult: null,
       activeTab: 'job',
+      activePanelIndex: null,
+      activeResultIndex: null,
       isQuery: false,
       jobInfos: [],
       tablePopupProps: {}
@@ -266,20 +261,6 @@ export default {
         this.formatJobInfos();
       }
     },
-    colorGroupsData: {
-      handler() {
-        this.changeSelectInputStyle();
-        this.changeLoadingStyle();
-      }
-    },
-    textColorsData: {
-      handler() {
-        const results = this.$el.querySelectorAll('.sm-component-query__result-body li');
-        for (let result of results) {
-          result.style.color = this.getTextColor;
-        }
-      }
-    },
     getBackground() {
       this.changeResultPopupArrowStyle();
     },
@@ -288,10 +269,6 @@ export default {
     }
   },
   mounted() {
-    this.resultButton = this.$el.querySelector('.sm-component-query__result-button');
-    this.jobButton = this.$el.querySelector('.sm-component-query__job-button');
-    this.resultInfoContainer = this.$el.querySelector('.sm-component-query__result-info');
-    this.jobInfoContainer = this.$el.querySelector('.sm-component-query__job-info');
     this.formatJobInfos();
     this.registerEvents();
   },
@@ -304,7 +281,7 @@ export default {
   removed() {
     this.queryResult = null;
     this.jobInfo = null;
-    this.jobButtonClicked();
+    this.activeTab = 'job';
     this.popup && this.popup.remove() && (this.popup = null);
   },
   methods: {
@@ -338,17 +315,11 @@ export default {
       }
       this.queryResult = null;
       this.popup && this.popup.remove() && (this.popup = null);
-      this.jobButton.classList.add('disabled');
-      this.resultButtonClicked();
+      this.isQuery = true;
+      this.activeTab = 'result';
       this.jobInfo = jobInfo;
       this.selectValue = value;
       this.query(this.jobInfo, this.selectValue);
-      this.changeLoadingStyle();
-      this.isQuery = true;
-    },
-    changeLoadingStyle() {
-      const spinDom = this.$el.querySelector('.ant-spin');
-      spinDom && (spinDom.style.color = this.getColorStyle(0).color);
     },
     /**
      * 开始查询。
@@ -358,110 +329,24 @@ export default {
     query(parameter, bounds) {
       this.viewModel.query(parameter, bounds);
     },
-    jobButtonClicked() {
-      if (this.resultButton) {
-        this.activeTab = 'job';
-        this.resultButton.classList.remove('is-active');
-        this.jobButton.classList.add('is-active');
-        this.jobInfoContainer.classList.remove('hidden');
-        this.resultInfoContainer.classList.add('hidden');
-      }
-    },
-    resultButtonClicked() {
-      this.activeTab = 'result';
-      this.jobButton.classList.remove('is-active');
-      this.resultButton.classList.add('is-active');
-      this.resultInfoContainer.classList.remove('hidden');
-      this.jobInfoContainer.classList.add('hidden');
-    },
-    jobInfoClicked(e) {
-      let className = e.target.className;
-      let parentNode;
-      if (
-        className === 'sm-components-icons-preview' ||
-        className === 'sm-component-query__job-info-name' ||
-        className === 'sm-components-icons-legend-unfold' ||
-        className === 'sm-components-icons-legend-fold'
-      ) {
-        parentNode = e.target.parentNode.parentNode;
-        e.stopPropagation();
-      } else {
-        parentNode = e.target.parentNode;
-        e.preventDefault();
-      }
-      let classList = parentNode.querySelector('.sm-component-query__job-info-body').classList;
-      let foldIcon = parentNode.querySelector('.sm-component-query__job-info-header').children[2];
-      if (classList.contains('hidden')) {
-        classList.remove('hidden');
-        foldIcon.classList.add('sm-components-icons-legend-fold');
-        foldIcon.classList.remove('sm-components-icons-legend-unfold');
-        this.changeSelectInputStyle();
-      } else {
-        classList.add('hidden');
-        foldIcon.classList.add('sm-components-icons-legend-unfold');
-        foldIcon.classList.remove('sm-components-icons-legend-fold');
-      }
-    },
-    changeSelectInputStyle() {
-      const selectInputList = this.$el.querySelectorAll('.ant-select-selection');
-      for (let item of selectInputList) {
-        item.style.borderColor = this.getTextColor;
-        item.style.color = this.getTextColor;
-        item.style.backgroundColor = 'transparent';
-      }
-    },
-    changeChosenStyle(visible, e) {
-      setTimeout(() => {
-        const optionListContainer = this.$el.querySelectorAll('.ant-select-dropdown-content');
-        for (let item of optionListContainer) {
-          item.style.background = this.getBackground;
-        }
-        const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
-        for (let item of optionList) {
-          if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
-            item.style.color = this.getColorStyle(0).color;
-            item.style.background = this.getBackground;
-          } else {
-            item.style.color = this.textColorsData;
-            item.style.background = 'transparent';
-          }
-          item.addEventListener('mouseover', () => {
-            item.style.color = this.getColorStyle(0).color;
-          });
-          item.addEventListener('mouseout', () => {
-            !item.classList.contains('ant-select-dropdown-menu-item-selected') &&
-              (item.style.color = this.textColorsData);
-          });
-        }
-      }, 0);
-    },
-    changeChosenResultStyle(e) {
-      const { target } = e;
-      target.style.color = this.getColorStyle(0).color;
-    },
-    resetChosenResultStyle(e) {
-      const { target } = e;
-      target.style.color = this.getTextColor;
-    },
     changeResultPopupArrowStyle() {
       const searchResultPopupArrow = this.popup && this.popup['_tip'];
       if (searchResultPopupArrow) {
         searchResultPopupArrow.style.borderTopColor = this.popupBackground;
       }
     },
-    queryResultListClicked(e) {
+    queryResultListClicked(e, index) {
+      this.activeResultIndex = index;
       this.popup && this.popup.remove() && (this.popup = null);
       let filter = e.target.innerHTML;
       let feature = this.viewModel.getFilterFeature(filter.split('：')[1].trim());
       this.addPopup(feature);
     },
-
     registerEvents() {
       this.viewModel.on('querysucceeded', e => {
         this.isQuery = false;
         this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.queryResult = e.result;
-        this.jobButton.classList.remove('disabled');
         /**
          * @event querySucceeded
          * @desc 查询成功后触发。
@@ -474,7 +359,6 @@ export default {
         this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.clearResult();
         this.$message.warning(e.message.toString());
-        this.jobButton.classList.remove('disabled');
         /**
          * @event queryFailed
          * @desc 查询失败后触发。
@@ -509,14 +393,6 @@ export default {
         });
       }
     },
-    changeHoverStyle(e) {
-      const { target } = e;
-      target.style.color = this.getColorStyle(0).color;
-    },
-    resetHoverStyle(e) {
-      const { target } = e;
-      target.style.color = this.getTextColorStyle.color;
-    },
     getPopupContainer(triggerNode) {
       return triggerNode.parentNode;
     },
@@ -524,6 +400,7 @@ export default {
       this.queryResult = null;
       this.popup && this.popup.remove() && (this.popup = null);
       this.jobInfo = null;
+      this.activeResultIndex = null;
       this.viewModel && this.viewModel.removed();
     },
     getInfoOfSmid(properties) {
