@@ -6,7 +6,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/text/style/text.scss';
 @import '../common/time-text/style/time-text.scss';
 @import '../common/icon/style/icon.scss';
-@import '../common/card/style/card.scss';
+@import '../common/collapse-card/style/collapse-card.scss';
 @import '../common/liquidfill/style/liquidFill.scss';
 @import '../common/progress/style/progress.scss';
 @import '../common/table-popup/style/tablePopup.scss';
@@ -35,6 +35,8 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/notification/style/notification.scss';
 @import '../common/layout/style/layout.scss';
 @import '../common/spin/style/spin.scss';
+@import '../common/card/style/card.scss';
+
 /** control */
 @import './web-map/control/scale/style/scale.scss';
 @import './web-map/control/zoom/style/zoom.scss';

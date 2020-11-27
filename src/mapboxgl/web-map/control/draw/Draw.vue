@@ -1,5 +1,5 @@
 <template>
-  <sm-card
+  <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
@@ -20,7 +20,7 @@
         <i :class="`sm-components-icons-${item.icon}`"></i>
       </span>
     </div>
-  </sm-card>
+  </sm-collapse-card>
 </template>
 
 <script>

@@ -1,6 +1,6 @@
 
 <template>
-  <sm-card
+  <sm-collapse-card
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
@@ -14,7 +14,7 @@
     <div id="miniMap" class="miniMap">
       <a-spin v-if="spinning" size="small" :tip="$t('info.loading')" :spinning="spinning" />
     </div>
-  </sm-card>
+  </sm-collapse-card>
 </template>
 
 <script>

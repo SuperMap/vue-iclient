@@ -6,7 +6,7 @@
       :style="[{'--icon-color--hover': colorGroupsData[0]}, getBackgroundStyle]"
       @click="showSearch = !showSearch; showIcon = !showIcon"
     >
-      <a-icon type="search" />
+      <i class="sm-components-icons-search" />
     </div>
     <transition name="sm-component-zoom-in" @after-leave="showIcon = !showIcon">
       <div
@@ -97,10 +97,10 @@
 import Theme from '../../common/_mixin/Theme';
 import MapGetter from '../_mixin/map-getter';
 import Control from '../_mixin/control';
-
 import SearchViewModel from './SearchViewModel';
 import TablePopup from '../../common/table-popup/TablePopup';
 import { getColorWithOpacity } from '../../common/_utils/util';
+import SmIcon from '../../common/icon/Icon';
 // import iPortalDataParameter from "../commontypes/iPortalDataParameter";
 // import RestDataParameter from "../commontypes/RestDataParameter";
 // import RestMapParameter from "../commontypes/RestMapParameter";
@@ -119,7 +119,8 @@ import { getColorWithOpacity } from '../../common/_utils/util';
 export default {
   name: 'SmSearch',
   components: {
-    TablePopup
+    TablePopup,
+    SmIcon
   },
   mixins: [Control, MapGetter, Theme],
   props: {

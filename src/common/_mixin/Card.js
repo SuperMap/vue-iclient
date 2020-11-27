@@ -1,7 +1,7 @@
-import Card from '../card/Card';
+import SmCollapseCard from '../collapse-card/CollapseCard';
 
 export default {
-  components: { 'sm-card': Card },
+  components: { SmCollapseCard },
   data() {
     return {
       isShow: true

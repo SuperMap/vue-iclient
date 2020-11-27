@@ -1,5 +1,5 @@
 <template>
-  <sm-card
+  <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
@@ -26,7 +26,7 @@
       :text-color="textColor"
       :background="getBackground"
     />
-  </sm-card>
+  </sm-collapse-card>
 </template>
 <script>
 import 'echarts';

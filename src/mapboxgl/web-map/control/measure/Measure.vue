@@ -1,5 +1,5 @@
 <template>
-  <sm-card
+  <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
@@ -61,7 +61,7 @@
         <div class="sm-component-measure__result">{{ getResult }}</div>
       </div>
     </div>
-  </sm-card>
+  </sm-collapse-card>
 </template>
 
 <script>

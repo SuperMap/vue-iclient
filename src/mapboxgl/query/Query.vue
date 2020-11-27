@@ -1,5 +1,5 @@
 <template>
-  <sm-card
+  <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
@@ -32,7 +32,7 @@
           v-for="(jobInfo, index) in jobInfos"
           v-show="jobInfos.length > 0"
           :key="index"
-          :style="activePanelIndex === index && collapseCardHeaderTextColorStyle"
+          :style="collapseCardHeaderTextColorStyle"
           class="sm-component-query__job-info-panel"
         >
           <div
@@ -122,7 +122,7 @@
       :background="background"
       :textColor="textColor"
     />
-  </sm-card>
+  </sm-collapse-card>
 </template>
 <script>
 import Theme from '../../common/_mixin/Theme';

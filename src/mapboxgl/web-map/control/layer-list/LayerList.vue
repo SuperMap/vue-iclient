@@ -1,16 +1,16 @@
 <template>
-  <sm-card
+  <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="getBackground"
+    :background="background"
     :textColor="textColor"
     class="sm-component-layer-list"
   >
-    <a-card class="sm-component-layer-list__a-card" :style="[getBackgroundStyle]">
+    <a-card class="sm-component-layer-list__a-card" :bordered="false" :style="[getBackgroundStyle]">
       <div class="sm-component-layer-list__content">
         <a-collapse
           v-for="(name, index) in sourceNames"
@@ -51,7 +51,7 @@
             >
           </a-collapse-panel>
 
-          <a-card v-else class="sm-component-layer-list__elcarditem" :style="[getTextColorStyle]">
+          <a-card v-else class="sm-component-layer-list__elcarditem" :bordered="false" :style="[getTextColorStyle]">
             <a-icon
               type="eye"
               :class="[sourceList[name].visibility === 'visible' ? 'visible' : 'none']"
@@ -69,24 +69,28 @@
         </a-collapse>
       </div>
     </a-card>
-  </sm-card>
+  </sm-collapse-card>
 </template>
 
 <script>
 import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
-import Card from '../../../../common/_mixin/Card';
+import BaseCard from '../../../../common/_mixin/Card';
+import SmCard from '../../../../common/card/Card';
 import LayerListViewModel from './LayerListViewModel';
 
 export default {
   name: 'SmLayerList',
+  components: {
+    SmCard
+  },
   filters: {
     isVisible(visibility) {
       return visibility === 'visible';
     }
   },
-  mixins: [MapGetter, Control, Theme, Card],
+  mixins: [MapGetter, Control, Theme, BaseCard],
   props: {
     collapsed: {
       type: Boolean, // 是否折叠
