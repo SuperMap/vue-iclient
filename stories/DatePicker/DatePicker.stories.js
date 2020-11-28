@@ -2,7 +2,7 @@ import { withKnobs } from '@storybook/addon-knobs';
 import { toI18n } from '../../.storybook/lang';
 import moment from 'moment';
 
-export default { title: 'Basic/datePicker', decorators: [withKnobs] };
+export default { title: 'Basic Components/datePicker', decorators: [withKnobs] };
 
 export const BasicDatePicker = () => ({
   template: `

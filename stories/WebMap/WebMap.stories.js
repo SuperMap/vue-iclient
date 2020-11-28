@@ -2,7 +2,7 @@ import { withKnobs } from '@storybook/addon-knobs';
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Map/web-map',
+  title: 'Map Components/web-map',
   decorators: [withKnobs]
 };
 

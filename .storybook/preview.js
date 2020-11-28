@@ -7,7 +7,7 @@ import i18n, { getLanguage, setLanguage, getStoryGlobalI18n } from './lang';
 
 Vue.use(SmComponents, { theme: 'dark', i18n });
 
-const TEMPLATESOURCE = function (templateSource, beforTemplateSource = '', afterTemplateSource = '') {
+const TEMPLATESOURCE = function(templateSource, beforTemplateSource = '', afterTemplateSource = '') {
   const beforSource = beforTemplateSource.trim();
   const afterSource = afterTemplateSource.trim();
   let otherSource = '';
@@ -17,8 +17,8 @@ export default {
   ${beforSource}
   ${afterSource}
 }
-`
-  };
+`;
+  }
   return `
 <template>
   ${templateSource.trim()}
@@ -39,7 +39,7 @@ export const parameters = {
     showPanel: true,
     panelPosition: 'right',
     storySort: {
-      order: ['CustomizeTheme', 'Map', 'Chart', 'Basic']
+      order: ['Design', ['Theme', 'Custom-Theme'], 'Map Components', 'Chart Components', 'Basic Components']
     }
   },
   docs: {
@@ -47,9 +47,10 @@ export const parameters = {
       const templateReg = /(?<=template:\s\`)(.|\s)*?(?=\s*\`)/g;
       const beforTemplateReg = /(?<=\(\{)(.|\s)*?(?=\s\stemplate:\s\`)/g;
       const afterTemplateReg = /(?<=\`,)(.|\s)*?(?=\}\))/g;
-      const templateSource = source.match(templateReg)[0];
-      const beforTemplateSource = source.match(beforTemplateReg)[0];
-      const afterTemplateSource = source.match(afterTemplateReg) ? source.match(afterTemplateReg)[0] : '';
+      const sourceSrc = source || storyId.parameters.storySource.source;
+      const templateSource = sourceSrc.match(templateReg)[0];
+      const beforTemplateSource = sourceSrc.match(beforTemplateReg)[0];
+      const afterTemplateSource = sourceSrc.match(afterTemplateReg) ? sourceSrc.match(afterTemplateReg)[0] : '';
       const resultSource = TEMPLATESOURCE(templateSource, beforTemplateSource, afterTemplateSource);
       return resultSource;
     }
@@ -66,21 +67,23 @@ export const globalTypes = {
       items: [
         { value: 'en', right: '🇺🇸', title: 'English' },
         { value: 'zh', right: '🇨🇳', title: '中文' }
-      ],
-    },
-  },
+      ]
+    }
+  }
 };
 
-export const decorators = [() => {
-  return {
-    template: '<story />',
-    updated() {
-      const storeLang = getStoryGlobalI18n();
-      if (storeLang && this.$i18n.locale !== storeLang) {
-        setLanguage(storeLang);
-        window.location.reload();
-      }
-    },
-    i18n
+export const decorators = [
+  () => {
+    return {
+      template: '<story />',
+      updated() {
+        const storeLang = getStoryGlobalI18n();
+        if (storeLang && this.$i18n.locale !== storeLang) {
+          setLanguage(storeLang);
+          window.location.reload();
+        }
+      },
+      i18n
+    };
   }
-}];
+];

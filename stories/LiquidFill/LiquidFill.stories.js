@@ -1,7 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'Chart/liquidfill', decorators: [withKnobs] };
+export default { title: 'Chart Components/liquidfill', decorators: [withKnobs] };
 
 export const Liquidfill = () => ({
   template: `

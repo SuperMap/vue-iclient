@@ -1,7 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'Basic/image', decorators: [withKnobs] };
+export default { title: 'Basic Components/image', decorators: [withKnobs] };
 
 export const BasicImage = () => ({
   template: `

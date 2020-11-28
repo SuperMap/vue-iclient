@@ -1,7 +1,7 @@
 import { withKnobs } from '@storybook/addon-knobs';
 import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'Basic/border', decorators: [withKnobs] };
+export default { title: 'Basic Components/border', decorators: [withKnobs] };
 
 export const BasicBorder = () => ({
   template: `
