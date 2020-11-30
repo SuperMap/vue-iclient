@@ -17,6 +17,7 @@ import {
 } from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
 import * as components from './components';
+import '../common/_assets/iconfont/icon-sm-components-old.css';
 import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import { setTheme } from '../common/_utils/style/theme/set-theme';

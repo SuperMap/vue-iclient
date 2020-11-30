@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <sm-web-map
-      server-url="http://support.supermap.com.cn:8092/"
+      server-url="https://iportal.supermap.io/iportal"
       :map-id="mapID"
       :style="{height:'700px'}"
       @load="mapLoaded"

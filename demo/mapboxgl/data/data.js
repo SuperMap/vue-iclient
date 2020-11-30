@@ -177,7 +177,7 @@ export default {
     }
 
     return {
-      mapID: '1649097980',
+      mapID: '801571284',
       layerStyles: {
         line: new smcomponents.commontypes.LineStyle({ 'line-width': 3, 'line-color': '#3fb1e3' }),
         circle: new smcomponents.commontypes.CircleStyle({ 'circle-color': '#3fb1e3', 'circle-radius': 6 }),
