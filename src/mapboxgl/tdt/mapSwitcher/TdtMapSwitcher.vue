@@ -6,27 +6,29 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="getBackground"
+    :background="background"
     :textColor="textColor"
+    :split-line="splitLine"
     class="sm-component-map-switch"
   >
-    <div class="sm-component-map-switch__panel" :style="[getBackgroundStyle, getTextColorStyle]">
+    <div class="sm-component-map-switch__panel" :style="headingTextColorStyle">
       <div class="sm-component-map-switch__layers-wrap">
         <div class="sm-component-map-switch__content-holder">
           <div class="sm-component-map-switch__layers">
-            <div class="layer-item map-item" @click="changeBaseLayer('vec')">
+            <div :class="['layer-item map-item', { 'active-item': currentSelect === 'vec' }]" @click="changeBaseLayer('vec')">
               <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.vector') }}</div>
             </div>
-            <div class="layer-item image-item" @click="changeBaseLayer('img')">
+            <div :class="['layer-item image-item', { 'active-item': currentSelect === 'img' }]" @click="changeBaseLayer('img')">
               <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.image') }}</div>
             </div>
-            <div class="layer-item landform-item" @click="changeBaseLayer('ter')">
+            <div :class="['layer-item landform-item', { 'active-item': currentSelect === 'ter' }]" @click="changeBaseLayer('ter')">
               <div class="sm-component-map-switch__layer-name">{{ $t('tdtMapSwitcher.terrain') }}</div>
             </div>
           </div>
           <div v-if="currentSelect" class="sm-component-map-switch__labelSetting">
-            <span>{{ $t('tdtMapSwitcher.placeName') }}</span>
-            <a-checkbox :checked="labelChecked" @change="togglerLabelLayer($event.target.checked)" />
+            <sm-checkbox :checked="labelChecked" @change="togglerLabelLayer($event.target.checked)">
+              {{ $t('tdtMapSwitcher.placeName') }}
+            </sm-checkbox>
           </div>
         </div>
       </div>
@@ -39,19 +41,27 @@ import Control from '../../_mixin/control.js';
 import MapGetter from '../../_mixin/map-getter';
 import Card from '../../../common/_mixin/Card';
 import Theme from '../../../common/_mixin/Theme';
+import SmCheckbox from '../../../common/checkbox/Checkbox';
 import TdtMapSwitcherViewModel from './TdtMapSwitcherViewModel';
 
 export default {
   name: 'SmTdtMapSwitcher',
+  components: {
+    SmCheckbox
+  },
   mixins: [Control, MapGetter, Card, Theme],
   props: {
     collapsed: {
       type: Boolean, // 是否折叠
       default: true
     },
+    splitLine: {
+      type: Boolean,
+      default: false
+    },
     iconClass: {
       type: String,
-      default: 'sm-components-icons-baselayer'
+      default: 'sm-components-icon-map-switch'
     },
     headerName: {
       type: String,

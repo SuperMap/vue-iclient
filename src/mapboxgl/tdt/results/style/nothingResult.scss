@@ -1,16 +1,25 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
 
 @include b(tdtNoResults) {
+  padding-top: 10px;
   .title {
-    padding-left: 20px;
+    padding-left: 16px;
+    .region {
+      color: $primary-color;
+    }
   }
   .data-content {
     padding: 10px 20px;
 
     .data-list {
+      p {
+        margin-bottom: 6px;
+      }
       a {
         font-weight: 700;
         text-decoration: underline;
+        color: $primary-color;
       }
     }
   }
@@ -18,7 +27,7 @@
   .didyoumean-content {
     a {
       font-weight: 700;
-      text-decoration: underline;
+      color: $primary-color;
     }
   }
 }

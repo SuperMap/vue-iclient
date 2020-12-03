@@ -8,9 +8,10 @@
     :collapsed="collapsed"
     :background="background"
     :textColor="textColor"
+    :split-line="splitLine"
     class="sm-component-query"
   >
-    <div class="sm-component-query__body" :style="getTextColorStyle">
+    <div class="sm-component-query__body" :style="normalTextColorStyle">
       <div class="sm-component-query__choose-panel clearfix">
         <div
           :class="{ 'sm-component-query__job-button': true, 'is-active': activeTab === 'job', disabled: isQuery }"
@@ -27,12 +28,12 @@
           {{ $t('query.queryResult') }}
         </div>
       </div>
-      <div :class="{ 'sm-component-query__job-info': true, hidden: activeTab !== 'job' }">
+      <div v-if="activeTab === 'job'" class="sm-component-query__job-info">
         <div
           v-for="(jobInfo, index) in jobInfos"
           v-show="jobInfos.length > 0"
           :key="index"
-          :style="collapseCardHeaderTextColorStyle"
+          :style="headingTextColorStyle"
           class="sm-component-query__job-info-panel"
         >
           <div
@@ -44,7 +45,7 @@
             }}</span>
             <i
               :class="
-                activePanelIndex !== index ? 'sm-components-icons-legend-unfold' : 'sm-components-icons-legend-fold'
+                activePanelIndex !== index ? 'sm-components-icon-solid-triangle-right' : 'sm-components-icon-solid-triangle-down'
               "
             />
           </div>
@@ -64,7 +65,7 @@
                 v-model="jobInfo.spaceFilter"
                 class="sm-component-query__a-select"
                 :get-popup-container="getPopupContainer"
-                :style="getTextColorStyle"
+                :style="normalTextColorStyle"
               >
                 <sm-select-option v-for="item in selectOptions" :key="item.value" :value="item.value">
                   {{ item.label }}
@@ -84,8 +85,8 @@
           </div>
         </div>
       </div>
-      <div :class="{ 'sm-component-query__result-info': true, hidden: activeTab !== 'result' }">
-        <div v-show="!queryResult && !isQuery" class="sm-component-query__no-result hidden">
+      <div v-else class="sm-component-query__result-info">
+        <div v-show="!queryResult && !isQuery" class="sm-component-query__no-result">
           <sm-empty :description="$t('query.noResult')" />
         </div>
         <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
@@ -94,9 +95,9 @@
           </sm-spin>
         </div>
         <template v-if="queryResult">
-          <div class="sm-component-query__result-header" :style="collapseCardHeaderTextColorStyle">
+          <div class="sm-component-query__result-header" :style="headingTextColorStyle">
             <span :title="queryResult.name" class="sm-component-query__header-name">{{ queryResult.name }}</span>
-            <i class="sm-components-icons-delete" @click="clearResult" />
+            <i class="sm-components-icon-delete" @click="clearResult" />
           </div>
           <div class="sm-component-query__result-body">
             <ul>
@@ -119,8 +120,8 @@
       v-show="false"
       ref="queryTablePopup"
       v-bind="tablePopupProps"
-      :background="background"
       :textColor="textColor"
+      :background="background"
     />
   </sm-collapse-card>
 </template>
@@ -140,7 +141,7 @@ import SmEmpty from '../../common/empty/Empty';
 import SmSpin from '../../common/spin/Spin';
 import SmIcon from '../../common/icon/Icon';
 import TablePopup from '../../common/table-popup/TablePopup';
-import { getColorWithOpacity, getValueCaseInsensitive } from '../../common/_utils/util';
+import { setPopupArrowStyle, getValueCaseInsensitive } from '../../common/_utils/util';
 import isEqual from 'lodash.isequal';
 
 export default {
@@ -160,9 +161,13 @@ export default {
       type: Boolean, // 是否折叠
       default: true
     },
+    splitLine: {
+      type: Boolean,
+      default: false
+    },
     iconClass: {
       type: String,
-      default: 'sm-components-icons-ditusousuo'
+      default: 'sm-components-icon-search-list'
     },
     headerName: {
       type: String,
@@ -237,11 +242,6 @@ export default {
       tablePopupProps: {}
     };
   },
-  computed: {
-    popupBackground() {
-      return this.getBackground && getColorWithOpacity(this.getBackground, 0.5);
-    }
-  },
   watch: {
     iportalData(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
@@ -260,9 +260,6 @@ export default {
         this.clearResult();
         this.formatJobInfos();
       }
-    },
-    getBackground() {
-      this.changeResultPopupArrowStyle();
     },
     layerStyle() {
       this.viewModel && (this.viewModel.layerStyle = this.$props.layerStyle);
@@ -329,12 +326,6 @@ export default {
     query(parameter, bounds) {
       this.viewModel.query(parameter, bounds);
     },
-    changeResultPopupArrowStyle() {
-      const searchResultPopupArrow = this.popup && this.popup['_tip'];
-      if (searchResultPopupArrow) {
-        searchResultPopupArrow.style.borderTopColor = this.popupBackground;
-      }
-    },
     queryResultListClicked(e, index) {
       this.activeResultIndex = index;
       this.popup && this.popup.remove() && (this.popup = null);
@@ -345,7 +336,6 @@ export default {
     registerEvents() {
       this.viewModel.on('querysucceeded', e => {
         this.isQuery = false;
-        this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.queryResult = e.result;
         /**
          * @event querySucceeded
@@ -356,7 +346,6 @@ export default {
       });
       this.viewModel.on('queryfailed', e => {
         this.isQuery = false;
-        this.$el.querySelector('.sm-component-query__no-result').classList.remove('hidden');
         this.clearResult();
         this.$message.warning(e.message.toString());
         /**
@@ -389,7 +378,7 @@ export default {
 
         this.$nextTick(() => {
           this.popup = this.viewModel.addPopup(featuerInfo.coordinates, this.$refs.queryTablePopup.$el);
-          this.changeResultPopupArrowStyle();
+          setPopupArrowStyle(this.tablePopupBgData);
         });
       }
     },

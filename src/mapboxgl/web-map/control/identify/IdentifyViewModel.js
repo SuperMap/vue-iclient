@@ -36,7 +36,8 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
       popupContainer.style.display = 'block';
       this.popup = new mapboxgl.Popup({
         maxWidth: 'none',
-        className: 'sm-mapboxgl-identify-popup'
+        className: 'sm-mapboxgl-identify-popup sm-mapboxgl-tabel-popup',
+        closeButton: false
       })
         .setLngLat(coordinates)
         .setDOMContent(popupContainer)

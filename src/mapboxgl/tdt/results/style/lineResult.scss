@@ -1,29 +1,35 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
 
 @include b(tdtLineResults) {
+  padding: 0 16px;
   .link-to-points {
     display: block;
     font-weight: 700;
     text-decoration: underline;
     line-height: 36px;
-    padding: 0 20px;
+    color: $primary-color;
   }
   .title {
     height: 30px;
     line-height: 30px;
-    padding-left: 20px
   }
   .content {
     overflow: auto;
     max-height: 300px;
-    &::-webkit-scrollbar {
-      display: none;
-    }
     .line-groups {
-      padding: 0 20px;
+      padding: 0;
       list-style: none;
       .line-item {
         margin-bottom: 10px;
+        &.active-item {
+          .name {
+            color: $primary-color;
+          }
+        }
+        &:hover {
+          background: $search-result-item-hover-bg;
+        }
         .line-icon,
         .line-info {
           display: inline-block;
@@ -53,6 +59,9 @@
             }
             &.show-details {
               cursor: pointer;
+              i {
+                font-size: 12px;
+              }
             }
           }
           .detail-info {
@@ -68,6 +77,9 @@
               li {
                 padding: 4px 20px;
                 cursor: pointer;
+                &:hvoer {
+                  color: $primary-color;
+                }
               }
             }
           }

@@ -8,6 +8,7 @@
     :collapsed="collapsed"
     :background="getBackground"
     :textColor="textColor"
+    :split-line="splitLine"
     class="sm-component-layer-manager"
   >
     <a-card :style="[getBackgroundStyle]" class="sm-component-layer-manager__a-card">
@@ -51,6 +52,10 @@ export default {
     collapsed: {
       type: Boolean, // 是否折叠
       default: true
+    },
+    splitLine: {
+      type: Boolean,
+      default: false
     },
     iconClass: {
       type: String,

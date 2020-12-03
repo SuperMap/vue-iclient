@@ -208,3 +208,21 @@ export function getDarkenColor(color, amount) {
     .darken(amount)
     .toString();
 }
+const ARROW_POSITION_MAP = {
+  top: 'Bottom',
+  bottom: 'Top',
+  left: 'Right',
+  right: 'Left'
+}
+export function setPopupArrowStyle(color) {
+  const popup = document.querySelector('.sm-mapboxgl-tabel-popup');
+  if (popup) {
+    let position = popup.className.replace(/.+mapboxgl-popup-anchor-([a-z]+)/, '$1');
+    if (ARROW_POSITION_MAP[position]) {
+      const popupArrow = document.querySelector('.sm-mapboxgl-tabel-popup .mapboxgl-popup-tip');
+      if (popupArrow) {
+        popupArrow.style[`border${ARROW_POSITION_MAP[position]}Color`] = color;
+      }
+    }
+  }
+}

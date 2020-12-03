@@ -209,7 +209,6 @@ export default {
   },
   tdtRoute: {
     title: 'Route',
-    clearRoute: 'Clear route',
     pleaseEnterStartPoint: 'Please enter the starting address',
     pleaseEnterEndPoint: 'Please enter the destination address',
     search: 'Search',

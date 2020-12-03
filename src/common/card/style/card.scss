@@ -5,7 +5,7 @@
   $card-prefix: &;
 
   @include e(actions, '-') {
-    background: $background-color-light;
+    background: $card-actions-background;
     > li {
       color: $text-color-secondary;
       > span {
@@ -33,7 +33,7 @@
 
   @include e(meta, '-') {
     &-title {
-      color: $heading-color;
+      color: $card-head-color;
     }
 
     &-description {

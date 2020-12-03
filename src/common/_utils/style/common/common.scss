@@ -9,7 +9,7 @@ body {
   white-space: nowrap;
 }
 .hidden {
-  display: none !important;
+  display: none;
 }
 
 .clearfix:after {
@@ -21,4 +21,14 @@ body {
 
 .disabled {
   pointer-events: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: rgba(245, 245, 245, 0);
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #bbb;
 }

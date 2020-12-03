@@ -6,6 +6,7 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :split-line="splitLine"
     class="sm-component-chart"
   >
     <v-chart
@@ -24,7 +25,7 @@
       ref="chartTablePopup"
       v-bind="tablePopupProps"
       :text-color="textColor"
-      :background="getBackground"
+      :background="background"
     />
   </sm-collapse-card>
 </template>
@@ -42,7 +43,7 @@ import Timer from '../_mixin/Timer';
 import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
-import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
+import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from '../_utils/util';
 import { addListener, removeListener } from 'resize-detector';
 
 // 枚举事件类型
@@ -95,6 +96,14 @@ export default {
     iconClass: {
       type: String,
       default: 'sm-components-icons-attribute'
+    },
+    collapsed: {
+      type: Boolean,
+      default: true
+    },
+    splitLine: {
+      type: Boolean,
+      default: false
     },
     dataset: {
       type: Object,
@@ -227,9 +236,6 @@ export default {
     xBar() {
       return this.options && this.options.yAxis && this.options.yAxis.type === 'category';
     },
-    popupBackground() {
-      return this.getBackground && getColorWithOpacity(this.getBackground, 0.5);
-    },
     colorNumber() {
       let length =
         (this.datasetOptions && this.datasetOptions.length) ||
@@ -258,7 +264,6 @@ export default {
     getBackground(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this._setChartTheme();
-        this.changePopupArrowStyle();
       }
     },
     dataset: {
@@ -1121,7 +1126,7 @@ export default {
         const propsData = this.generateTableData(properties);
         this.tablePopupProps = { ...propsData };
         this.$nextTick(() => {
-          this.viewModel.setPopupContent(coordinates, this.$refs.chartTablePopup.$el, this.changePopupArrowStyle);
+          this.viewModel.setPopupContent(coordinates, this.$refs.chartTablePopup.$el, () => setPopupArrowStyle(this.tablePopupBgData));
         });
       } else {
         const mapNotLoaded = this.mapNotLoadedTip();
@@ -1151,7 +1156,6 @@ export default {
       }
       return propsData;
     },
-    changePopupArrowStyle() {},
     mapNotLoadedTip() {},
     _dataZoomChanged() {
       let flag = false;

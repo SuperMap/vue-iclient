@@ -1,10 +1,11 @@
-@import "../../../common/_utils/style/mixins/mixins.scss";
+@import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
 @import '../../../common/select/style/select.scss';
 @import '../../../common/button/style/button.scss';
 @import '../../../common/empty/style/empty.scss';
 @import '../../../common/spin/style/spin.scss';
-@import '../../../common//icon/style/icon.scss';
+@import '../../../common/icon/style/icon.scss';
+@import '../../../common/table-popup/style/tablePopup.scss';
 
 @include b(query) {
   $query-prefix: &;
@@ -18,15 +19,6 @@
     overflow-y: auto;
     & > div {
       width: 100%;
-    }
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-      background-color: $collapse-card-bg;
-    }
-    &::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: #bbb;
     }
   }
   @include e(choose-panel) {
@@ -65,7 +57,8 @@
     &:hover {
       color: $hover-color !important;
     }
-    & > #{$query-prefix}__job-info-name, & > #{$query-prefix}__header-name {
+    & > #{$query-prefix}__job-info-name,
+    & > #{$query-prefix}__header-name {
       display: inline-block;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -154,16 +147,16 @@
       padding: 0;
       margin: 0;
       & > li {
-        padding: 6px 16px;
+        padding: 6px 16px 6px 24px;
         line-height: 20px;
         cursor: pointer;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         &:hover {
-          color: $hover-color
+          color: $hover-color;
         }
-        &[aria-selected="true"] {
+        &[aria-selected='true'] {
           color: $primary-color;
           background-color: $select-item-hover-bg;
         }

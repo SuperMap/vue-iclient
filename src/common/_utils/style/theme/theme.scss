@@ -3,6 +3,7 @@ $ant-prefix: sm-component;
 
 // ICONFONT
 $iconfont-css-prefix: anticon;
+$iconfont-class-prefix: sm-components-icon;
 
 // An override for the html selector for theme prefixes
 $html-selector: html;
@@ -283,7 +284,7 @@ $table-header-bg: $background-color-light;
 $table-header-color: $heading-color;
 $table-header-sort-bg: $background-color-base;
 $table-body-sort-bg: rgba(0, 0, 0, 0.01);
-$table-row-hover-bg: $primary-1;
+$table-row-hover-bg: $select-item-hover-bg;
 $table-selected-row-color: inherit;
 $table-selected-row-bg: #fafafa;
 $table-body-selected-sort-bg: $table-selected-row-bg;
@@ -292,6 +293,8 @@ $table-expanded-row-bg: #fbfbfb;
 $table-footer-bg: $background-color-light;
 $table-footer-color: $heading-color;
 $table-header-bg-sm: transparent;
+$table-header-sort-active-bg: var(--table-header-sort-active-bg);
+$table-header-filter-active-bg: var(--table-header-filter-active-bg);
 
 // Tag
 $tag-default-bg: $background-color-light;
@@ -429,3 +432,8 @@ $timeline-dot-bg: $component-background;
 // collapse-card
 $collapse-card-bg: var(--collapse-card-background);
 $collapse-card-header-bg: var(--collapse-card-header-bg);
+
+// Search
+$search-arrow-icon-bg: var(--search-arrow-icon-bg);
+$search-result-item-hover-bg: $select-item-hover-bg;
+

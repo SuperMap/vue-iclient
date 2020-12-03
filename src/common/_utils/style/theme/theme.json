@@ -42,6 +42,7 @@
     "radioInnerDisabledBg": "rgba(255, 255, 255, 0.12)",
     "collapseCardHeaderBg": "#4a4a4a",
     "collapseCardBackground": "#414141",
+    "searchArrowIconBg": "#383838",
     "colorGroup": [
       "#3499e5",
       "#759aa0",
@@ -93,6 +94,7 @@
     "radioInnerDisabledBg": "rgba(0, 0, 0, 0.2)",
     "collapseCardHeaderBg": "#fafafa",
     "collapseCardBackground": "#fff",
+    "searchArrowIconBg": "rgba(207, 216, 220, 0.2)",
     "colorGroup": [
       "#0081e2",
       "#6be6c1",
@@ -104,7 +106,7 @@
   {
     "title": "经典暖灰",
     "label": "warmGray",
-    "textColor": "#fff",
+    "textColor": "rgba(255, 255, 255, 0.65)",
     "textColorSecondary": "rgba(255, 255, 255, 0.45)",
     "background": "#191515",
     "backgroundLight": "#1f1a1a",
@@ -130,6 +132,7 @@
     "modalBackground": "#333333",
     "collapseCardHeaderBg": "#4a4a4a",
     "collapseCardBackground": "#414141",
+    "searchArrowIconBg": "#383838",
     "colorGroup": [
       "#e14d57",
       "#6be6c1",

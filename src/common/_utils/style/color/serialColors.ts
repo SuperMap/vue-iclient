@@ -96,13 +96,16 @@ export function getExtralColors(
   primarySerialColors: string[],
   functionColors: FunctionColorParams
 ): ExtraColorParams {
+  const tableHeaderSortActiveBg = getDarkenColor(themeStyleData.backgroundColorLight, 3);
   const extraSerialColors: ExtraColorParams = {
     textColorWithoutOpacity: getColorWithOpacity(themeStyleData.textColor, 1),
     backgroundWithoutOpacity: getColorWithOpacity(themeStyleData.background, 1),
     componentBackgroundWithoutOpacity: getColorWithOpacity(themeStyleData.componentBackground, 1),
     primaryShadowColor: getColorWithOpacity(primarySerialColors[4], 0.25),
     dangerShadowColor: getColorWithOpacity(functionColors.dangerColor[4], 0.25),
-    disabledDarkenBgColor10: getDarkenColor(themeStyleData.disabledBgColor, 10)
+    disabledDarkenBgColor10: getDarkenColor(themeStyleData.disabledBgColor, 10),
+    tableHeaderSortActiveBg,
+    tableHeaderFilterActiveBg: getDarkenColor(tableHeaderSortActiveBg, 5)
   };
   return extraSerialColors;
 }

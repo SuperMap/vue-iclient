@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-collapse-card" :style="getTextColorStyle">
+  <div class="sm-component-collapse-card" :style="normalTextColorStyle">
     <div
       v-if="iconClass"
       :class="{
@@ -8,7 +8,7 @@
         [`is-click-${isShow ? 'out' : 'in'}`]: true,
         ['is-not-header']: !headerName
       }"
-      :style="[collapseCardHeaderBgStyle, collapseCardHeaderTextColorStyle]"
+      :style="[collapseCardHeaderBgStyle, headingTextColorStyle]"
       @click="iconClicked"
     >
       <i :style="iconStyle" :class="{ [iconClass]: true, ['is-auto-rotate']: autoRotate }" />
@@ -26,8 +26,8 @@
       >
         <div
           v-if="headerName"
-          class="sm-component-collapse-card__header"
-          :style="[collapseCardHeaderBgStyle, collapseCardHeaderTextColorStyle]"
+          :class="{'sm-component-collapse-card__header': true, 'with-split-line': splitLine}"
+          :style="[collapseCardHeaderBgStyle, headingTextColorStyle]"
         >
           <span class="sm-component-collapse-card__header-name">{{ headerName }}</span>
         </div>
@@ -60,6 +60,10 @@ export default {
       type: String
     },
     collapsed: {
+      type: Boolean,
+      default: false
+    },
+    splitLine: {
       type: Boolean,
       default: false
     }

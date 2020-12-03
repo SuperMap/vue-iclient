@@ -8,6 +8,7 @@
     :collapsed="collapsed"
     :background="getBackground"
     :textColor="textColor"
+    :split-line="splitLine"
     class="sm-component-measure"
   >
     <div class="sm-component-measure__panel" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -81,6 +82,10 @@ export default {
     collapsed: {
       type: Boolean, // 是否折叠
       default: true
+    },
+    splitLine: {
+      type: Boolean,
+      default: false
     },
     iconClass: {
       type: String,

@@ -36,6 +36,8 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/layout/style/layout.scss';
 @import '../common/spin/style/spin.scss';
 @import '../common/card/style/card.scss';
+@import '../common/collapse/style/collapse.scss';
+@import '../common/table/style/table.scss';
 
 /** control */
 @import './web-map/control/scale/style/scale.scss';

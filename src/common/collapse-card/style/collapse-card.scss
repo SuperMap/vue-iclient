@@ -82,10 +82,12 @@
 
   @include e(header) {
     padding: 6px 0px 6px 8px;
-    border-bottom: 1px solid $border-color-split;
     color: $heading-color;
     background: $collapse-card-header-bg;
     border-radius: 4px 4px 0 0;
+    &.with-split-line {
+      border-bottom: 1px solid $border-color-split;
+    }
   }
   @include e(content) {
     box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);

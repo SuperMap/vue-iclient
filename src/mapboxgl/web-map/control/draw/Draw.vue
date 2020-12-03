@@ -6,6 +6,7 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :split-line="splitLine"
     class="sm-component-draw"
   >
     <div class="sm-component-draw__panel" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -50,6 +51,10 @@ export default {
     collapsed: {
       type: Boolean, // 是否折叠
       default: true
+    },
+    splitLine: {
+      type: Boolean,
+      default: false
     },
     layerStyle: {
       type: Object

@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
 import globalEvent from '../_utils/global-event';
+import { getColorWithOpacity } from '../_utils/util';
 
 @Component({
   name: 'Theme'
@@ -13,8 +14,6 @@ export default class Theme extends Vue {
   backgroundBaseData: string = '';
 
   textColorsData: string = '';
-
-  textColorSecondaryData: string = '';
 
   selectedColorData: string = '';
 
@@ -34,13 +33,11 @@ export default class Theme extends Vue {
 
   disabledBorderColorData: string = '';
 
-  disabledTextColorData: string = '';
-
   collapseCardBackgroundData: string = '';
 
   collapseCardHeaderBgData: string = '';
 
-  collapseCardHeaderTextColorData: string = '';
+  tablePopupBgData: string = '';
 
   colorGroupsData: Array<string> = [];
 
@@ -51,8 +48,6 @@ export default class Theme extends Vue {
   @Prop() backgroundBase: string;
 
   @Prop() textColor: string;
-
-  @Prop() textColorSecondary: string;
 
   @Prop() selectedColor: string;
 
@@ -72,13 +67,7 @@ export default class Theme extends Vue {
 
   @Prop() disabledBorderColor: string;
 
-  @Prop() disabledTextColor: string;
-
   @Prop() borderBaseColor: string;
-
-  @Prop() collapseCardBackground: string;
-
-  @Prop() collapseCardHeaderBg: string;
 
   @Prop() collapseCardHeaderTextColor: string;
 
@@ -102,15 +91,39 @@ export default class Theme extends Vue {
     };
   }
 
+  get tablePopupBgStyle() {
+    return {
+      background: this.tablePopupBgData
+    };
+  }
+
   get getTextColorStyle() {
     return {
       color: this.textColorsData
     };
   }
 
-  get collapseCardHeaderTextColorStyle() {
+  get headingTextColorStyle() {
     return {
-      color: this.collapseCardHeaderTextColorData
+      color: getColorWithOpacity(this.textColorsData, 0.85)
+    };
+  }
+
+  get normalTextColorStyle() {
+    return {
+      color: getColorWithOpacity(this.textColorsData, 0.65)
+    };
+  }
+
+  get secondaryTextColorStyle() {
+    return {
+      color: getColorWithOpacity(this.textColorsData, 0.45)
+    };
+  }
+
+  get disabledTextColorStyle() {
+    return {
+      color: getColorWithOpacity(this.textColorsData, 0.25)
     };
   }
 
@@ -153,7 +166,9 @@ export default class Theme extends Vue {
         const dataName: string = this.getDataNameOfProp(prop);
         this[dataName] = themeStyle[prop];
       });
-      this.collapseCardHeaderTextColorData = themeStyle['headingColor'];
+      this.collapseCardHeaderBgData = themeStyle['collapseCardHeaderBg'];
+      this.collapseCardBackgroundData = themeStyle['collapseCardBackground'];
+      this.tablePopupBgData = themeStyle['messageBackground'];
       this.themeStyleChanged();
     });
   }
@@ -165,7 +180,9 @@ export default class Theme extends Vue {
       const dataName: string = this.getDataNameOfProp(prop);
       this[dataName] = this[prop] || (theme && theme[prop]);
     });
-    this.collapseCardHeaderTextColorData = this.collapseCardHeaderTextColor || this.textColor || theme['headingColor'];
+    this.collapseCardHeaderBgData = this.background || (theme && theme['collapseCardHeaderBg']);
+    this.collapseCardBackgroundData = this.background || (theme && theme['collapseCardBackground']);
+    this.tablePopupBgData = this.background || (theme && theme['messageBackground']);
   }
 
   registerPropListener(): void {
@@ -178,8 +195,7 @@ export default class Theme extends Vue {
         if (prop === 'background') {
           vm.collapseCardBackgroundData = next;
           vm.collapseCardHeaderBgData = next;
-        } else if (prop === 'textColor') {
-          this.collapseCardHeaderTextColorData = next;
+          vm.tablePopupBgData = next;
         }
       });
     });

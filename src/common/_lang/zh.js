@@ -209,7 +209,6 @@ export default {
   },
   tdtRoute: {
     title: '路线',
-    clearRoute: '清除路线',
     pleaseEnterStartPoint: '请输入起点',
     pleaseEnterEndPoint: '请输入终点',
     search: '搜索',

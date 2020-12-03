@@ -1,0 +1,129 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import '../../input/style/mixin.scss';
+
+@include b(table) {
+  $table-prefix: &;
+  
+  &-thead > tr > th {
+    background: $table-header-bg;
+    // .#{$iconfont-css-prefix}-filter,
+    // #{$table-prefix}-filter-icon {
+    //   color: $table-header-icon-color;
+    // }
+    #{$table-prefix}-filter-selected.#{$iconfont-css-prefix} {
+      color: $primary-color;
+    }
+    #{$table-prefix}-column-sorter {
+      #{$table-prefix}-column-sorter-inner {
+        // color: $table-header-icon-color;
+        #{$table-prefix}-column-sorter-up,
+        #{$table-prefix}-column-sorter-down {
+          &.on {
+            color: $primary-color;
+          }
+        }
+      }
+    }
+    &#{$table-prefix}-column-has-actions {
+      &#{$table-prefix}-column-has-filters {
+        .#{$iconfont-css-prefix}-filter,
+        #{$table-prefix}-filter-icon {
+          &#{$table-prefix}-filter-open {
+            color: $text-color-secondary;
+            background: $table-header-filter-active-bg;
+          }
+        }
+        &:hover {
+          .#{$iconfont-css-prefix}-filter,
+          #{$table-prefix}-filter-icon {
+            &:hover {
+              color: $text-color-secondary;
+              background: $table-header-filter-active-bg;
+            }
+          }
+        }
+      }
+      &#{$table-prefix}-column-has-sorters {
+        &:hover {
+          background: $table-header-sort-active-bg;
+          .#{$iconfont-css-prefix}-filter,
+          #{$table-prefix}-filter-icon {
+            background: $table-header-sort-active-bg;
+          }
+        }
+        &:active {
+          #{$table-prefix}-column-sorter-up:not(.on),
+          #{$table-prefix}-column-sorter-down:not(.on) {
+            color: $text-color-secondary;
+          }
+        }
+      }
+    }
+  }
+
+  // &-thead > tr,
+  // &-tbody > tr {
+  //   &#{$table-prefix}-row-selected > td {
+  //     &#{$table-prefix}-column-sort {
+  //       background: $table-body-selected-sort-bg;
+  //     }
+  //   }
+  //   &:hover {
+  //     &#{$table-prefix}-row-selected > td {
+  //       background: $table-selected-row-hover-bg;
+  //       &#{$table-prefix}-column-sort {
+  //         background: $table-body-selected-sort-bg;
+  //       }
+  //     }
+  //   }
+  // }
+
+  &-footer {
+    background: $table-footer-bg;
+    &::before {
+      background: $table-footer-bg;
+    }
+  }
+
+  &-tbody > tr#{$table-prefix}-row-selected td {
+    background: $table-selected-row-bg;
+  }
+
+  &-thead > tr > th#{$table-prefix}-column-sort {
+    background: $table-header-sort-bg;
+  }
+
+  &-header {
+    background: $table-header-bg;
+  }
+
+  &-filter-dropdown {
+    .#{$ant-prefix}-dropdown-menu {
+      .#{$ant-prefix}-dropdown-submenu-contain-selected {
+        .#{$ant-prefix}-dropdown-menu-submenu-title::after {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+
+  // &-selection {
+  //   .#{$iconfont-css-prefix}-down {
+  //     color: $table-header-icon-color; // #bfbfbf
+  //   }
+  //   &-menu {
+  //     .#{$ant-prefix}-action-down {
+  //       color: $table-header-icon-color;
+  //     }
+  //   }
+  // }
+
+  // tr&-expanded-row {
+  //   &,
+  //   &:hover {
+  //     background: $table-expanded-row-bg;
+  //   }
+  // }
+  
+}
