@@ -59,6 +59,9 @@ export { default as CollapsePanel } from '../common/collapse/Panel';
 export { default as Table } from '../common/table/Table';
 export { default as TableColumn } from '../common/table/Column';
 export { default as TableColumnGroup } from '../common/table/ColumnGroup';
+export { default as Slider } from '../common/slider/Slider';
+export { default as Tree } from '../common/tree/Tree';
+export { default as DirectoryTree } from '../common/tree/DirectoryTree';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

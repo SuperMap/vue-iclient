@@ -94,7 +94,7 @@ export default {
   },
   measure: {
     mapMeasure: 'Measure',
-    measureResult: 'Measurement Result',
+    measureResult: 'Measurement Result:',
     distance: 'Distance',
     area: 'Area',
     delete: 'Empty',

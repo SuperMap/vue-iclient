@@ -25,7 +25,7 @@ import VueCesium from 'vue-cesium';
 import { setTheme } from '../common/_utils/style/theme/set-theme';
 
 const install = function(Vue, opts: any = {}) {
-  let theme = opts.theme || 'light';
+  let theme = opts.theme || 'dark';
   require('../common/_utils/style/theme/antd.less');
   require('./style.scss');
   setTheme(theme);

@@ -6,28 +6,25 @@
     :header-name="headerName || $t('measure.mapMeasure')"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="getBackground"
+    :background="background"
     :textColor="textColor"
     :split-line="splitLine"
     class="sm-component-measure"
   >
-    <div class="sm-component-measure__panel" :style="[getBackgroundStyle, getTextColorStyle]">
-      <!-- <div class="sm-component-measure__panelTitle">
-          <span class="sm-component-measure__title">{{$t("measure.mapMeasure")}}</span>
-      </div>-->
+    <div class="sm-component-measure__panel" :style="headingTextColorStyle">
       <div class="sm-component-measure__panelContent">
         <span
           v-for="group in modeGroups"
           v-show="group.mode !== 'delete' || (!continueDraw && group.mode === 'delete')"
           :key="group.mode"
-          :style="activeMode === group.mode ? getColorStyle(0) : ''"
           :title="group.title"
-          class="sm-component-measure__modeIcon"
+          :style="collapseCardHeaderBgStyle"
+          :class="{'sm-component-measure__modeIcon': true, 'is-active':activeMode === group.mode}"
           @click="changeMeasureMode(group.mode)"
         >
           <i :class="group.iconClass"></i>
         </span>
-        <a-select
+        <sm-select
           v-show="getDistanceSelect"
           v-model="activeDistanceUnit"
           :placeholder="$t('measure.selectPlaceholder')"
@@ -36,11 +33,11 @@
           @change="updateUnit"
           @dropdownVisibleChange="changeChosenStyle"
         >
-          <a-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
+          <sm-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
             {{ value }}
-          </a-select-option>
-        </a-select>
-        <a-select
+          </sm-select-option>
+        </sm-select>
+        <sm-select
           v-show="getAreaSelect"
           v-model="activeAreaUnit"
           :placeholder="$t('measure.selectPlaceholder')"
@@ -49,15 +46,15 @@
           @change="updateUnit"
           @dropdownVisibleChange="changeChosenStyle"
         >
-          <a-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
+          <sm-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
             {{ value }}
-          </a-select-option>
-        </a-select>
+          </sm-select-option>
+        </sm-select>
         <div v-show="!showUnitSelect && activeMode" class="sm-component-measure__unit sm-component-measure__default">
           {{ getUnitLabel }}
         </div>
       </div>
-      <div v-show="getResult" class="sm-component-measure__calculateResult" :style="getTextColorStyle">
+      <div v-show="getResult" class="sm-component-measure__calculateResult">
         <div class="sm-component-measure__calcuTitle">{{ $t('measure.measureResult') }}</div>
         <div class="sm-component-measure__result">{{ getResult }}</div>
       </div>
@@ -70,6 +67,8 @@ import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import Card from '../../../../common/_mixin/Card';
+import SmSelect from '../../../../common/select/Select';
+import SmSelectOption from '../../../../common/select/Option';
 import MeasureViewModel from './MeasureViewModel';
 import drawEvent from '../../../_types/draw-event';
 import uniqueId from 'lodash.uniqueid';
@@ -77,6 +76,10 @@ import '../../../../../static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 
 export default {
   name: 'SmMeasure',
+  components: {
+    SmSelect,
+    SmSelectOption
+  },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
     collapsed: {
@@ -89,7 +92,7 @@ export default {
     },
     iconClass: {
       type: String,
-      default: 'sm-components-icons-measure'
+      default: 'sm-components-icon-measure'
     },
     headerName: {
       type: String
@@ -139,17 +142,17 @@ export default {
         {
           mode: 'draw_line_string',
           title: this.$t('measure.distance'),
-          iconClass: 'sm-components-icons-line-layer'
+          iconClass: 'sm-components-icon-line'
         },
         {
           mode: 'draw_polygon',
           title: this.$t('measure.area'),
-          iconClass: 'sm-components-icons-polygon-layer'
+          iconClass: 'sm-components-icon-ploygon'
         },
         {
           mode: 'delete',
           title: this.$t('measure.delete'),
-          iconClass: 'sm-components-icons-delete'
+          iconClass: 'sm-components-icon-delete'
         }
       ],
       activeMode: '',
@@ -196,16 +199,6 @@ export default {
     areaDefaultUnit: function(newVal) {
       this.activeAreaUnit = newVal;
       this.updateUnit(newVal);
-    },
-    textColorsData: {
-      handler() {
-        this.changeSelectInputStyle();
-      }
-    },
-    getBackground: {
-      handler() {
-        this.changeSelectInputStyle();
-      }
     }
   },
   created() {
@@ -219,7 +212,6 @@ export default {
     this.viewModel.on('update-unit', this.updateUnitFn);
   },
   mounted() {
-    this.changeSelectInputStyle();
     drawEvent.$on('draw-reset', this.drawResetFn);
   },
   beforeDestroy() {
@@ -250,36 +242,8 @@ export default {
         this.result = '';
       }
     },
-    changeSelectInputStyle() {
-      const selectDoms = this.$el.querySelectorAll('.ant-select-selection');
-      for (let selectDom of selectDoms) {
-        if (selectDom) {
-          selectDom.style.borderColor = this.getTextColor;
-          selectDom.style.color = this.getTextColor;
-          selectDom.style.backgroundColor = this.getBackground;
-        }
-      }
-    },
-    changeChosenStyle(visible) {
-      setTimeout(() => {
-        const optionList = this.$el.querySelectorAll('.ant-select-dropdown-menu-item');
-        const dropdownDoms = this.$el.querySelectorAll('.ant-select-dropdown');
-        for (let item of optionList) {
-          if (item.classList.contains('ant-select-dropdown-menu-item-selected')) {
-            item.style.color = this.getColorStyle(0).color;
-            item.style.backgroundColor = this.getBackground;
-          } else {
-            item.style.color = this.getTextColor;
-            item.style.backgroundColor = 'transparent';
-          }
-        }
-        for (let dropdownDom of dropdownDoms) {
-          if (dropdownDom) {
-            dropdownDom.style.backgroundColor = this.getBackground;
-          }
-        }
-      }, 0);
-    },
+
+
     // 切换量算模式
     changeMeasureMode(mode) {
       setTimeout(() => {

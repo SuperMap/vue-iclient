@@ -6,32 +6,31 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="getBackground"
+    :background="background"
     :textColor="textColor"
     :split-line="splitLine"
     class="sm-component-layer-manager"
   >
-    <a-card :style="[getBackgroundStyle]" class="sm-component-layer-manager__a-card">
+    <sm-card :style="[collapseCardBackgroundStyle]" class="sm-component-layer-manager__sm-card">
       <div class="sm-component-layer-manager__content">
-        <a-tree
+        <sm-directory-tree
           checkable
           :defaultExpandAll="defaultExpandAll"
           :treeData="treeData"
           :checkedKeys="checkedKeys"
           :replaceFields="replaceFields"
           @check="checkNode"
-          @expand="expandNode"
         >
           <template slot="title" slot-scope="{ title }">
             <div class="item-title">
-              <span :style="getTextColorStyle">
+              <span :style="headingTextColorStyle">
                 {{ title }}
               </span>
             </div>
           </template>
-        </a-tree>
+        </sm-directory-tree>
       </div>
-    </a-card>
+    </sm-card>
   </sm-collapse-card>
 </template>
 
@@ -39,6 +38,7 @@
 import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
 import Card from '../../../../common/_mixin/Card';
+import SmDirectoryTree from '../../../../common/tree/DirectoryTree';
 import MapGetter from '../../../_mixin/map-getter';
 import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
@@ -47,6 +47,9 @@ import isequal from 'lodash.isequal';
 
 export default {
   name: 'SmLayerManager',
+  components: {
+    SmDirectoryTree
+  },
   mixins: [Theme, Control, MapGetter, Card],
   props: {
     collapsed: {
@@ -59,7 +62,7 @@ export default {
     },
     iconClass: {
       type: String,
-      default: 'sm-components-icons-layer-style'
+      default: 'sm-components-icon-layer-manager'
     },
     headerName: {
       type: String,
@@ -99,25 +102,13 @@ export default {
       },
       deep: true,
       immediate: true
-    },
-    textColorsData: {
-      handler() {
-        this.changeCheckBoxStyle();
-        this.changeArrowStyle();
-      }
     }
   },
   created() {
     this.viewModel = new LayerManagerViewModel();
   },
-  mounted() {
-    this.changeCheckBoxStyle();
-    this.changeArrowStyle();
-  },
   methods: {
     checkNode(key, e) {
-      this.changeCheckBoxStyle();
-      this.changeArrowStyle();
       this.checkedKeys = key;
       if (e.checked) {
         e.checkedNodes &&
@@ -138,10 +129,6 @@ export default {
         const data = e.node.dataRef;
         this.viewModel.removeLayerLoop(data);
       }
-    },
-    expandNode() {
-      this.changeCheckBoxStyle();
-      this.changeArrowStyle();
     },
     addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter }) {
       if (!this.mapIsLoad) {
@@ -166,32 +153,6 @@ export default {
         return;
       }
       this.viewModel.removeIServerLayer(nodeKey);
-    },
-    changeCheckBoxStyle() {
-      setTimeout(() => {
-        const checkBoxsList = this.$el.querySelectorAll('.ant-tree-checkbox');
-        for (let item of checkBoxsList) {
-          let childrens = item.childNodes;
-          let checkbox = childrens[0];
-          if (item.classList.contains('ant-tree-checkbox-checked')) {
-            checkbox.style.borderColor = this.getColor(0);
-            checkbox.style.backgroundColor = this.getColor(0);
-          } else {
-            checkbox.style.borderColor = '#DCDFE6';
-            checkbox.style.backgroundColor = '#fff';
-          }
-        }
-      }, 0);
-    },
-    changeArrowStyle() {
-      setTimeout(() => {
-        const switcherList = this.$el.querySelectorAll('.ant-tree-switcher');
-        if (switcherList.length) {
-          switcherList.forEach(switcher => {
-            switcher.style.color = this.getTextColor;
-          });
-        }
-      }, 0);
     },
     insertProperty(layers) {
       this.eachNode(layers, function(node, parentNode) {
@@ -234,8 +195,6 @@ export default {
         });
       }
       this.checkedKeys = [];
-      this.changeCheckBoxStyle();
-      this.changeArrowStyle();
     }
   },
   loaded() {

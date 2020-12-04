@@ -11,6 +11,8 @@
 
 @--red-6: var(--danger-color);
 
+@hover-color: var(--hover-color); // equal $primary-5
+
 // -------- Colors -----------
 @info-color: var(--info-color);
 @success-color: var(--success-color);
@@ -315,12 +317,12 @@
 @breadcrumb-link-color-hover: @primary-5;
 
 // Slider
-@slider-rail-background-color-hover: #e1e1e1;
-@slider-track-background-color: @primary-3;
-@slider-track-background-color-hover: @primary-4;
-@slider-handle-background-color: @component-background;
-@slider-handle-color: @primary-3;
-@slider-handle-color-hover: @primary-4;
+@slider-rail-background-color-hover: var(--slider-rail-background-color);
+@slider-track-background-color: @primary-6;
+@slider-track-background-color-hover: @hover-color;
+@slider-handle-background-color: #fff;
+@slider-handle-color: @primary-6;
+@slider-handle-color-hover: @hover-color;
 // @slider-handle-color-focus: tint(@primary-color, 20%);
 // @slider-handle-color-focus-shadow: fade(@primary-color, 20%);
 @slider-handle-color-tooltip-open: @primary-6;

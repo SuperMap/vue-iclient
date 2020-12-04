@@ -6,14 +6,14 @@
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
-    :background="getBackground"
+    :background="background"
     :textColor="textColor"
     :split-line="splitLine"
     class="sm-component-minimap"
     @content-show-state="handleMinimapResize"
   >
     <div id="miniMap" class="miniMap">
-      <a-spin v-if="spinning" size="small" :tip="$t('info.loading')" :spinning="spinning" />
+      <sm-spin v-if="spinning" size="small" :tip="$t('info.loading')" :spinning="spinning" />
     </div>
   </sm-collapse-card>
 </template>
@@ -24,9 +24,13 @@ import MiniMapViewModel from './MiniMapViewModel';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import Card from '../../../../common/_mixin/Card';
+import SmSpin from '../../../../common/spin/Spin';
 
 export default {
   name: 'SmMiniMap',
+  components: {
+    SmSpin
+  },
   mixins: [MapGetter, Control, Card, Theme],
   props: {
     collapsed: {
@@ -39,7 +43,7 @@ export default {
     },
     iconClass: {
       type: String,
-      default: 'sm-components-icons-return'
+      default: 'sm-components-icon-arrow-left'
     },
     autoRotate: {
       type: Boolean,

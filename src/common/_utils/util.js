@@ -208,12 +208,14 @@ export function getDarkenColor(color, amount) {
     .darken(amount)
     .toString();
 }
+
 const ARROW_POSITION_MAP = {
   top: 'Bottom',
   bottom: 'Top',
   left: 'Right',
   right: 'Left'
-}
+};
+
 export function setPopupArrowStyle(color) {
   const popup = document.querySelector('.sm-mapboxgl-tabel-popup');
   if (popup) {

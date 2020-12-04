@@ -94,7 +94,7 @@ export default {
   },
   measure: {
     mapMeasure: '量算',
-    measureResult: '测量结果',
+    measureResult: '测量结果：',
     distance: '距离',
     area: '面积',
     delete: '清空',

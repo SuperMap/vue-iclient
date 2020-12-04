@@ -6,6 +6,7 @@
   overflow: visible;
   font-size: 12px;
   @include e(icon) {
+    display: block;
     z-index: 100;
     background: $collapse-card-header-bg;
     color: $heading-color;

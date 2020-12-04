@@ -43,6 +43,7 @@
     "collapseCardHeaderBg": "#4a4a4a",
     "collapseCardBackground": "#414141",
     "searchArrowIconBg": "#383838",
+    "sliderRailBackgroundColor": "#6B6B6B",
     "colorGroup": [
       "#3499e5",
       "#759aa0",
@@ -95,6 +96,7 @@
     "collapseCardHeaderBg": "#fafafa",
     "collapseCardBackground": "#fff",
     "searchArrowIconBg": "rgba(207, 216, 220, 0.2)",
+    "sliderRailBackgroundColor": "#f5f5f5",
     "colorGroup": [
       "#0081e2",
       "#6be6c1",

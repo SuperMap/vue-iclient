@@ -1,26 +1,24 @@
 <template>
   <div class="sm-component-zoom">
-    <div class="sm-component-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
-      <a-button
+    <div class="sm-component-zoom__buttons" :style="[collapseCardHeaderBgStyle]">
+      <sm-button
         autofocus="false"
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
-        icon="plus"
         :disabled="!canZoomIn"
-        :style="
-          activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]
-        "
+
         @click="zoomIn"
-      ></a-button>
-      <a-button
+      >
+        <span class="sm-components-icon-plus"></span>
+      </sm-button>
+      <div class="sm-component-zoom__button--split"></div>
+      <sm-button
         autofocus="false"
         class="sm-component-zoom__button sm-component-zoom__button--zoomout"
-        icon="minus"
         :disabled="!canZoomOut"
-        :style="
-          activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]
-        "
         @click="zoomOut"
-      ></a-button>
+      >
+        <span class="sm-components-icon-minus"></span>
+      </sm-button>
       <div
         v-if="showZoom"
         class="sm-component-zoom__show-zoom"
@@ -28,7 +26,7 @@
       >{{ Math.round(zoomPosition) }}</div>
     </div>
     <div v-show="showZoomSlider" class="sm-component-zoom__slider">
-      <a-slider
+      <sm-slider
         v-model="zoomPosition"
         :min="min"
         :max="max"
@@ -36,7 +34,7 @@
         vertical
         :style="getColorStyle(0)"
         @change="sliderChange"
-      ></a-slider>
+      ></sm-slider>
     </div>
   </div>
 </template>
@@ -46,9 +44,15 @@ import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
 import { getColorWithOpacity } from '../../../../common/_utils/util';
+import SmButton from '../../../../common/button/Button';
+import SmSlider from '../../../../common/slider/Slider';
 
 export default {
   name: 'SmZoom',
+  components: {
+    SmButton,
+    SmSlider
+  },
   mixins: [MapGetter, Control, Theme],
   props: {
     showZoom: {
@@ -85,18 +89,8 @@ export default {
       };
     }
   },
-  watch: {
-    colorGroupsData: {
-      handler() {
-        this.changeSliderStyle();
-      }
-    }
-  },
   created() {
     this.viewModel = new ZoomViewModel();
-  },
-  mounted() {
-    this.changeSliderStyle();
   },
   methods: {
     sliderChange() {
@@ -158,12 +152,6 @@ export default {
       if (!this.canZoomOut) {
         return this.getMaxZoom();
       }
-    },
-    changeSliderStyle() {
-      const sliderBar = document.querySelector('.ant-slider-track');
-      const sliderBtn = document.querySelector('.ant-slider-handle');
-      sliderBar && (sliderBar.style.backgroundColor = this.getColorStyle(0).color);
-      sliderBtn && (sliderBtn.style.borderColor = this.getColorStyle(0).color);
     }
   },
   loaded() {

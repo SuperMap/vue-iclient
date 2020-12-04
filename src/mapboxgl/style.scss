@@ -38,6 +38,8 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/card/style/card.scss';
 @import '../common/collapse/style/collapse.scss';
 @import '../common/table/style/table.scss';
+@import '../common/slider/style/slider.scss';
+@import '../common/tree/style/tree.scss';
 
 /** control */
 @import './web-map/control/scale/style/scale.scss';
@@ -49,6 +51,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './web-map/control/draw/style/draw.scss';
 @import './web-map/control/identify/style/identify.scss';
 @import './web-map/control/layer-manager/style/layer-manager.scss';
+@import './web-map/control/mini-map/style/mini-map.scss';
 @import './tdt/results/style/areaResult.scss';
 @import './tdt/results/style/lineResult.scss';
 @import './tdt/results/style/nothingResult.scss';

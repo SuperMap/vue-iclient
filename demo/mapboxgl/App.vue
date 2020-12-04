@@ -1,86 +1,31 @@
 <template>
   <div id="app">
-    <sm-web-map
-      server-url="https://iportal.supermap.io/iportal"
-      :map-id="mapID"
-      :style="{height:'700px'}"
-      @load="mapLoaded"
-    >
-      <!-- <sm-pan></sm-pan>
-      <sm-zoom :show-zoom-slider="true"></sm-zoom>
-      <sm-layer-list position="top-right"/>
-      <sm-legend :layerNames="['UNIQUE-民航数-0']" position="bottom-right" :collapsed="false"></sm-legend> -->
-      <sm-query
-        :iportal-data="iportalDataQuery"
-        :rest-data="restDataQuery"
-        :rest-map="restMapQuery"
-        position="top-right"
-      ></sm-query>
-      <sm-tdt-route
-        position="top-right"
-      ></sm-tdt-route>
-      <sm-search
-        position="top-right"
-        :layer-names="layerSourceNames"
-        :address-match="addressMatch"
-        :rest-map="restMapSearch"
-        :rest-data="restDataSearch"
-        :iportal-data="iportalData"
-        :online-local-search="onlineLocalSearch"
-        :alwaysCenter="false"
-      ></sm-search>
-      <sm-tdt-search
-        position="top-right"
-      ></sm-tdt-search>
-      <sm-measure position="top-right"></sm-measure>
-      <sm-draw position="top-right"></sm-draw>
-      <sm-raster-tile-layer v-bind="rasteLayerOptions"></sm-raster-tile-layer>
-      <sm-vector-tile-layer
-        style-options="http://iclient.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"
-      ></sm-vector-tile-layer>
-    </sm-web-map>
-    <!-- <sm-web-map
-      :mapOptions='mapOptions'
-      :style="{height:'700px'}"
-      @load="mapLoaded"
-    ></sm-web-map>-->
-    
-    <sm-indicator title="人均收入" unit="元" indicatorColor='red' textColor='red' :num="12323412" fontSize="18"></sm-indicator>
-    <sm-text
-      title="文本框"
-      textColor='red'
-      :fontStyle="{ fontSize: '18px', lineHeight: '18px', fontWeight: '700', textAlign: 'center' }"
-    ></sm-text>
-    <sm-time-text :fontStyle="{ fontSize: '18', fontWeight: '700' }" timeType="date+second+week"></sm-time-text>
-    <!-- <sm-chart :style="{display:'inline-block'}" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> -->
-    <sm-liquid-fill borderColor='blue' waveColor='red' :style="{width:'10%',display:'inline-block'}" :value="0.3" :waveCount="1" position="bottom-right"/>
-    <sm-progress strokeColor='red' :style="{width:'10%',display:'inline-block'}" type="circle" :percent="80"></sm-progress>
+    <!-- <div style="border: 1px solid red; width: 600px; height: 500px; margin-left: 60px; float: left">
+      <sm-compare>
+        <sm-web-map server-url="https://iserver.supermap.io/iserver/services/map-world/rest/maps/World" slot="beforeMap"></sm-web-map>
+        <sm-web-map server-url="https://iserver.supermap.io/iserver/services/map-world/rest/maps/World" slot="afterMap"></sm-web-map>
+      </sm-compare>
+    </div> -->
 
-    <sm-border type="border12" style="width: 460px; height: 260px; float:left">
-        <sm-chart :colorGroup="['red','blue']" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
-    </sm-border>
-     
-     <sm-border type="border1" style="width: 460px; height: 260px; float:left">
-        <sm-chart :colorGroup="['red','blue']" :options="echartOption" :dataset="dataset" :datasetOptions="datasetOptions" iconClass=''></sm-chart> 
-    </sm-border>
-    <div class="buttons">
-      <sm-button type="primary">主按钮</sm-button>
-      <sm-button type="default">次按钮</sm-button>
-      <sm-button type="danger">危险按钮</sm-button>
-      <sm-button disabled>禁用按钮</sm-button>
-      <sm-button type="dashed">Dash按钮</sm-button>
-      <sm-button type="link">文字按钮</sm-button>
+    <div style="border: 1px solid red; width: 600px; height: 500px; margin-left: 60px; float: left;">
+      <sm-web-map server-url="https://iserver.supermap.io/iserver/services/map-world/rest/maps/World">
+        <sm-measure position="top-right"></sm-measure>
+        <sm-zoom position="top-left"></sm-zoom>
+        <sm-mini-map position="bottom-right"></sm-mini-map>
+        <sm-open-file position="top-right"></sm-open-file>
+        <sm-layer-manager position="top-right"></sm-layer-manager>
+      </sm-web-map>
     </div>
-    <div class="inputs">
-      <sm-input v-model="input1" @change="handleInputChange" @input="handleInput" @pressEnter="handlePressEnter" @focus.native="handleInputChange" />
-    </div>
+
+  <div style="border: 1px solid red; width: 600px; height: 500px; margin-left: 60px; float: left;">
+    <sm-directory-tree :treeData="treeData"> </sm-directory-tree>
+  </div>
 
     <div class="changeTheme">
       <sm-button @click="changeStyle">深色主题</sm-button>
       <sm-button @click="changeStyle1">浅色主题</sm-button>
       <sm-button @click="changeStyle3">暖灰色主题</sm-button>
       <sm-button @click="changeStyle2">透明主题</sm-button>
-      <!-- <a-button @click="changeMapID">changeMapID</a-button> -->
     </div>
   </div>
 </template>
@@ -93,7 +38,40 @@ import data from './data/data.js';
 var host = 'http://support.supermap.com.cn:8090';
 export default Vue.extend({
   name: 'App',
-  mixins: [data] // demo data
+  mixins: [data], // demo data
+  data() {
+    return {
+      treeData: [
+        {
+          title: 'parent 1',
+          key: '0-0',
+          children: [
+            {
+              title: 'parent 1-0',
+              key: '0-0-0',
+              children: [
+                { title: 'leaf', key: '0-0-0-0' },
+                { title: 'leaf', key: '0-0-0-1' },
+              ],
+            },
+            {
+              title: 'parent 1-1',
+              key: '0-0-1',
+              children: [{ title: 'leafleaf', key: '0-0-1-1' }],
+            },
+          ],
+        },
+      ],
+    };
+  },
+  methods: {
+    onSelect(selectedKeys, info) {
+      console.log('selected', selectedKeys, info);
+    },
+    onCheck(checkedKeys, info) {
+      console.log('onCheck', checkedKeys, info);
+    },
+  },
 });
 </script>
 
@@ -126,5 +104,10 @@ body {
 }
 .inputs > input {
   width: 8%;
+}
+.sm-text {
+  &::before {
+    content: '\e64a';
+  }
 }
 </style>
