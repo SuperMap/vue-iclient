@@ -31,7 +31,6 @@
           class="sm-component-measure__unit"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
-          @dropdownVisibleChange="changeChosenStyle"
         >
           <sm-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
             {{ value }}
@@ -44,7 +43,6 @@
           class="sm-component-measure__unit"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
-          @dropdownVisibleChange="changeChosenStyle"
         >
           <sm-select-option v-for="(value, key, index) in getUnitOptions" :key="index" :title="value" :value="key">
             {{ value }}
@@ -72,6 +70,7 @@ import SmSelectOption from '../../../../common/select/Option';
 import MeasureViewModel from './MeasureViewModel';
 import drawEvent from '../../../_types/draw-event';
 import uniqueId from 'lodash.uniqueid';
+import { setPopupArrowStyle } from '../../../../common/_utils/util';
 import '../../../../../static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 
 export default {
@@ -189,6 +188,12 @@ export default {
     },
     getDistanceSelect() {
       return this.activeMode === 'draw_line_string' && this.showUnitSelect;
+    },
+    popupStyle() {
+      return {
+        background: this.tablePopupBgStyle.background,
+        color: this.normalTextColorStyle.color
+      };
     }
   },
   watch: {
@@ -199,6 +204,9 @@ export default {
     areaDefaultUnit: function(newVal) {
       this.activeAreaUnit = newVal;
       this.updateUnit(newVal);
+    },
+    popupStyle(next) {
+      this.setPopupStyle(next);
     }
   },
   created() {
@@ -242,8 +250,6 @@ export default {
         this.result = '';
       }
     },
-
-
     // 切换量算模式
     changeMeasureMode(mode) {
       setTimeout(() => {
@@ -264,7 +270,7 @@ export default {
             return;
           }
           if (this.activeMode !== mode || !this.continueDraw) {
-            this.viewModel.openDraw(mode, activeUnit);
+            this.viewModel.openDraw(mode, activeUnit, this.setPopupStyle);
             this.activeMode = mode;
             this.continueDraw && drawEvent.$emit('draw-reset', { componentName: this.componentName });
           } else {
@@ -297,6 +303,16 @@ export default {
       this.activeMode = null;
       this.result = '';
       this.viewModel && this.viewModel.clearAllFeatures();
+    },
+    setPopupStyle(styleData = this.popupStyle) {
+      const popupContentList = document.querySelectorAll('.sm-component-measure__popup .mapboxgl-popup-content');
+      if (popupContentList) {
+        popupContentList.forEach(item => {
+          item.style.color = styleData.color;
+          item.style.background = styleData.background;
+        });
+      }
+      setPopupArrowStyle(styleData.background);
     }
   }
 };

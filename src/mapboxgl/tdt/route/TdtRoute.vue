@@ -85,7 +85,7 @@
         <div v-if="!showRoutePlan && status" class="route-result">
           <div class="start-point">
             <div class="title">
-              <sm-icon type="question-circle" theme="filled" />
+              <i class="sm-components-icon-solid-question" />
               <span @click="resetStatus('toSetStart')">{{ $t('tdtRoute.startPoint') }}：{{ start }}</span>
             </div>
             <div v-if="status === 'toSetStart' && componentId" class="content">
@@ -94,7 +94,7 @@
           </div>
           <div class="end-point">
             <div class="title">
-              <sm-icon type="question-circle" theme="filled" />
+              <i class="sm-components-icon-solid-question" />
               <span @click="resetStatus('toSetEnd')">{{ $t('tdtRoute.endPoint') }}：{{ end }}</span>
             </div>
             <div v-if="status === 'toSetEnd' && componentId" class="content">
@@ -132,7 +132,6 @@ import StatisticsResult from '../results/StatisticsResult';
 import NothingResult from '../results/NothingResult';
 import SmButton from '../../../common/button/Button';
 import SmInput from '../../../common/input/Input';
-import SmIcon from '../../../common/icon/Icon';
 
 export default {
   name: 'SmTdtRoute',
@@ -142,8 +141,7 @@ export default {
     StatisticsResult,
     NothingResult,
     SmButton,
-    SmInput,
-    SmIcon
+    SmInput
   },
   mixins: [MapGetter, Control, Theme, Card],
   props: {

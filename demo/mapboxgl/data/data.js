@@ -4,6 +4,7 @@ import demoData from '../../data/demo.json';
 import earthquake from '../../data/earthquake.json';
 import themeLayerData from '../../data/themeLayerData.json';
 import deckglLayerData from '../../data/sf-bike-parking.json';
+import axios from 'axios';
 
 export default {
   data() {
@@ -175,8 +176,9 @@ export default {
       var fea = new mapboxgl.supermap.ThemeFeature(geo, attrs);
       rankFeatures.push(fea);
     }
-
+    const tdtKey = '1d109683f4d84198e37a38c442d68311';
     return {
+      componentType: 'map-sub-components',
       mapID: '801571284',
       layerStyles: {
         line: new smcomponents.commontypes.LineStyle({ 'line-width': 3, 'line-color': '#3fb1e3' }),
@@ -195,7 +197,11 @@ export default {
       },
       iportalDataQuery: [
         new smcomponents.commontypes.iPortalDataParameter({
-          url: 'http://192.168.12.28:8092/web/datas/1962026684',
+          url: 'http://192.168.11.94:8190/iportal/web/datas/3332747',
+          attributeFilter: 'SmID>0'
+        }),
+        new smcomponents.commontypes.iPortalDataParameter({
+          url: 'http://192.168.11.94:8190/iportal/web/datas/1050165341',
           attributeFilter: 'SmID>0'
         })
       ],
@@ -280,7 +286,7 @@ export default {
       },
       chartTitle: '',
       dataset: new smcomponents.commontypes.iPortalDataParameter({
-        url: 'http://support.supermap.com.cn:8092/web/datas/1920557079',
+        url: "https://iportal.supermap.io/iportal/web/datas/676516522",
         maxFeatures: 20
       }),
       // echarts中涉及到超图数据series和坐标轴的字段的配置
@@ -389,6 +395,93 @@ export default {
       input1: '123',
       switch1: false,
       switch2: true,
+      checkbox1: [],
+      plainOptions: [
+        { value: 'Apple' },
+        { label: 'Pear', value: 'Pear' },
+        { label: 'Orange', value: 'Orange', disabled: false }
+      ],
+      plainOptions1: ['Apple', 'Pear', 'Orange'],
+      radioStyle: {
+        display: 'block',
+        height: '30px',
+        lineHeight: '30px'
+      },
+      tabPosition: 'top',
+      treeDatas: [
+          {
+              title: '直辖市',
+              children: [
+                  {
+                      title: '上海',
+                      mapInfo: {
+                          serverUrl: 'https://www.supermapol.com/',
+                          mapId: 394538195,
+                          layerFilter: function(layer) {
+                              if (layer.name === '上海_县级行政区划图@公众数据') {
+                                  return true;
+                              }
+                              return false;
+                          }
+                      }
+                  },
+                  {
+                      title: '天津',
+                      mapInfo: {
+                          serverUrl: 'https://www.supermapol.com/',
+                          mapId: 849848633,
+                          layerFilter: function(layer) {
+                              if (layer.name === '天津_县级行政区划图@公众数据') {
+                                  return true;
+                              }
+                              return false;
+                          }
+                      }
+                  },
+                  {
+                      title: '北京',
+                      mapInfo: {
+                          serverUrl: 'https://www.supermapol.com/',
+                          mapId: 1837435007,
+                          layerFilter: function(layer) {
+                              if (layer.name === '北京_县级行政区划图@公众数据') {
+                                  return true;
+                              }
+                              return false;
+                          }
+                      }
+                  },
+                  {
+                      title: '重庆',
+                      mapInfo: {
+                          serverUrl: 'https://www.supermapol.com/',
+                          mapId: 1589273415,
+                          layerFilter: function(layer) {
+                              if (layer.name === '重庆_县级行政区划图@公众数据') {
+                                  return true;
+                              }
+                              return false;
+                          }
+                      }
+                  }
+              ]
+          }
+      ],
+      mapSwitcherData: {
+        select: '',
+        label: false,
+        tk: tdtKey
+      },
+      routeData: {
+        carUrl: 'https://api.tianditu.gov.cn/drive',
+        busUrl: 'https://api.tianditu.gov.cn/transit',
+        searchUrl: 'https://api.tianditu.gov.cn/search',
+        tk: tdtKey
+      },
+      searchData: {
+        searchUrl: 'https://api.tianditu.gov.cn/search',
+        tk: tdtKey
+      }
     };
   },
   methods: {
@@ -416,6 +509,10 @@ export default {
     },
     mapLoaded(e) {
       console.log(e);
+      const _this = this;
+      axios.get('https://iclient.supermap.io/examples/data/fire.json').then((response) => {
+        _this.fireFeatures = response.data;
+      });
     },
     changeMapID() {
       this.mapID = '676816598';

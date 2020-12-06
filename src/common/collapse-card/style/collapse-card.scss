@@ -2,11 +2,12 @@
 @import '../../../common/_utils/style/theme/theme.scss';
 
 @include b(collapse-card) {
+  $collapse-card-prefix: &;
+
   position: relative;
   overflow: visible;
   font-size: 12px;
   @include e(icon) {
-    display: block;
     z-index: 100;
     background: $collapse-card-header-bg;
     color: $heading-color;
@@ -21,6 +22,9 @@
       background: #ffffff;
       border-color: $hover-color !important;
       color: $hover-color !important;
+    }
+    > i {
+      display: block;
     }
     @include when(not-header) {
       @include when(bottom-right) {
@@ -89,6 +93,10 @@
     &.with-split-line {
       border-bottom: 1px solid $border-color-split;
     }
+    + #{$collapse-card-prefix}__body {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
   }
   @include e(content) {
     box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
@@ -144,6 +152,6 @@
   }
   @include e(body) {
     height: 100%;
-    border-radius: 0 0 4px 4px;
+    border-radius: 4px;
   }
 }

@@ -847,7 +847,7 @@ export default {
       }
 
       let series = dataOptions.series;
-      let isRingShine = options.series[0] && options.series[0].outerGap >= 0;
+      let isRingShine = options.series && options.series[0] && options.series[0].outerGap >= 0;
       if (series && series.length && series[0].type === 'pie') {
         this.setItemStyleColor(false, series);
       }

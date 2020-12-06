@@ -2,6 +2,7 @@
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import "../../../../../common/collapse-card/style/collapse-card.scss";
 @import '../../../../../common/select/style/select.scss';
+@import '../../../../../common/table-popup/style/tablePopup.scss';
 
 @include b(measure) {
 
@@ -88,7 +89,10 @@
   }
 }
 .sm-component-measure__popup {
-  .mapboxgl-popup-content {
-    padding: 6px 10px 6px;
+  &.sm-mapboxgl-tabel-popup {
+    .mapboxgl-popup-content {
+      padding: 5px 16px;
+      border-radius: 4px;
+    }
   }
 }

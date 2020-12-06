@@ -297,26 +297,6 @@
       color: $heading-color;
     }
   }
-  &.mapboxgl-popup-anchor-bottom {
-    .mapboxgl-popup-tip {
-      border-top-color: $collapse-card-bg;
-    }
-  }
-  &.mapboxgl-popup-anchor-top {
-    .mapboxgl-popup-tip {
-      border-bottom-color: $collapse-card-bg;
-    }
-  }
-  &.mapboxgl-popup-anchor-left {
-    .mapboxgl-popup-tip {
-      border-right-color: $collapse-card-bg;
-    }
-  }
-  &.mapboxgl-popup-anchor-right {
-    .mapboxgl-popup-tip {
-      border-left-color: $collapse-card-bg;
-    }
-  }
   .mapboxgl-popup-content {
     background: $collapse-card-bg;
   }
