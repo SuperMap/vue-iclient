@@ -312,8 +312,8 @@ class MeasureViewModel extends mapboxgl.Evented {
         .setText(`${result} ${uniti18n}`)
         .addTo(this.map);
       this.areaTipNodesList[feature.id] = popup;
-      this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
     }
+    this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
   }
 
   _resetEvent() {
