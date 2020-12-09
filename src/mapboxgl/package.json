@@ -34,7 +34,6 @@
     "vue-property-decorator": "^8.2.1",
     "vue-videojs7": "^0.1.5",
     "video.js": "^7.10.2",
-    "videojs-contrib-hls": "^5.12.2",
     "videojs-flash": "^2.1.0",
     "videojs-flvjs-es6": "^1.0.1",
     "xml-js": "1.6.8",

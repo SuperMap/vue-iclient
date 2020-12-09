@@ -44,7 +44,6 @@ import 'video.js/dist/video-js.css';
 import 'video.js';
 import flvjs from 'flv.js/dist/flv';
 import 'videojs-flvjs-es6';
-import 'videojs-contrib-hls';
 import 'videojs-flash';
 import { videoPlayer } from 'vue-videojs7';
 import clonedeep from 'lodash.clonedeep';
