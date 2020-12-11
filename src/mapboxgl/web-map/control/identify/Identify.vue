@@ -52,37 +52,29 @@ export default {
       type: Object,
       default() {
         return {
-          line: {
-            paint: new LineStyle({
-              'line-width': 3,
-              'line-color': '#409eff',
-              'line-opacity': 1
-            })
-          },
-          circle: {
-            paint: new CircleStyle({
-              'circle-color': '#409eff',
-              'circle-opacity': 0.6,
-              'circle-radius': 8,
-              'circle-stroke-width': 2,
-              'circle-stroke-color': '#409eff',
-              'circle-stroke-opacity': 1
-            })
-          },
-          fill: {
-            paint: new FillStyle({
-              'fill-color': '#409eff',
-              'fill-opacity': 0.6,
-              'fill-outline-color': '#409eff'
-            })
-          },
-          stokeLine: {
-            paint: new LineStyle({
-              'line-width': 3,
-              'line-color': '#409eff',
-              'line-opacity': 1
-            })
-          }
+          line: new LineStyle({
+            'line-width': 3,
+            'line-color': '#409eff',
+            'line-opacity': 1
+          }),
+          circle: new CircleStyle({
+            'circle-color': '#409eff',
+            'circle-opacity': 0.6,
+            'circle-radius': 8,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#409eff',
+            'circle-stroke-opacity': 1
+          }),
+          fill: new FillStyle({
+            'fill-color': '#409eff',
+            'fill-opacity': 0.6,
+            'fill-outline-color': '#409eff'
+          }),
+          stokeLine: new LineStyle({
+            'line-width': 3,
+            'line-color': '#409eff',
+            'line-opacity': 1
+          })
         };
       }
     },

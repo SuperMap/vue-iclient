@@ -78,21 +78,21 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
       type = 'fill';
       paint = {};
     }
-    this.layerStyle = this._setDefaultPaintWidth(this.map, type, id, defaultPaintTypes[type], this.layerStyle);
+    let layerStyle = this._setDefaultPaintWidth(this.map, type, id, defaultPaintTypes[type], this.layerStyle);
     if (type === 'circle' || type === 'line' || type === 'fill') {
-      let layerStyle = this.layerStyle[type];
+      layerStyle = layerStyle[type];
       let highlightLayer = Object.assign({}, layer, {
         id: id + '-identify-SM-highlighted',
         type,
         paint: (layerStyle && layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
-        layout: (layerStyle && layerStyle.layout) || {},
+        layout: (layerStyle && layerStyle.layout) || { visibility: 'visible' },
         filter
       });
       this.map.addLayer(highlightLayer);
     }
     if (type === 'fill') {
       let strokeLayerID = id + '-identify-SM-StrokeLine';
-      let stokeLineStyle = this.layerStyle.strokeLine || this.layerStyle.stokeLine || {};
+      let stokeLineStyle = layerStyle.strokeLine || layerStyle.stokeLine || {};
       let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
         'line-width': 3,
         'line-color': HIGHLIGHT_COLOR,
@@ -102,6 +102,7 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
         id: strokeLayerID,
         type: 'line',
         paint: lineStyle,
+        layout: { visibility: 'visible' },
         filter
       });
       this.map.addLayer(highlightLayer);

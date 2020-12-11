@@ -205,6 +205,9 @@
     }
   },
   "mapComponent": {
-      "iportalMap": "iPortal Map"
-    }
+    "iportalMap": "iPortal Map"
+  },
+  "gisComponent": {
+    "identify": "identify"
+  }
 }

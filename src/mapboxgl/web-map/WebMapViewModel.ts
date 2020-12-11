@@ -15,7 +15,6 @@ import WebMapBase from '../../common/web-map/WebMapBase';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import { getProjection, registerProjection, toEpsgCode } from '../../common/_utils/epsg-define';
 import proj4 from 'proj4';
-
 const WORLD_WIDTH = 360;
 // 迁徙图最大支持要素数量
 /**
@@ -95,7 +94,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _fieldMaxValue: any;
 
   private _handleDataflowFeaturesCallback: Function;
-  
+
   private _initDataflowLayerCallback: Function;
 
   private _dataflowService: any;
@@ -267,13 +266,16 @@ export default class WebMapViewModel extends WebMapBase {
   _handleLayerInfo(mapInfo, _taskID): void {
     mapInfo = this._setLayerID(mapInfo);
     this._layers = [];
-    const { layers, baseLayer } = mapInfo;
+    const { layers, baseLayer, grid } = mapInfo;
 
     typeof this.layerFilter === 'function' && this.layerFilter(baseLayer) && this._initBaseLayer(mapInfo);
     if (!layers || layers.length === 0) {
       this._sendMapToUser(0, 0);
     } else {
       this._initOverlayLayers(layers, _taskID);
+    }
+    if (grid && grid.graticule) {
+      this._initGraticuleLayer(grid.graticule);
     }
   }
 
@@ -562,6 +564,65 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
+  _initGraticuleLayer(graticuleInfo: any) {
+    const options = this._createGraticuleOptions(graticuleInfo);
+    const graticuleLayers = new mapboxgl.supermap.GraticuleLayer(this.map, options);
+    this.map.addLayer(graticuleLayers);
+  }
+
+  private _createGraticuleOptions(graticuleInfo) {
+    if (!graticuleInfo) {
+      return null;
+    }
+    let { strokeColor, lineDash, strokeWidth, extent, interval, lonLabelStyle, latLabelStyle } = graticuleInfo;
+    const strokeStyle = {
+      lineColor: strokeColor,
+      lindDasharray: this._getGraticuleDash(lineDash),
+      lineWidth: strokeWidth
+    };
+    lonLabelStyle = {
+      textFont: lonLabelStyle.fontFamily.split(','),
+      textSize: lonLabelStyle.fontSize,
+      textAnchor: latLabelStyle.textBaseline,
+      textColor: lonLabelStyle.fill,
+      textHaloColor: lonLabelStyle.outlineColor,
+      textHaloWidth: lonLabelStyle.outlineWidth
+    };
+    latLabelStyle = {
+      textFont: latLabelStyle.fontFamily.split(','),
+      textSize: latLabelStyle.fontSize,
+      textAnchor: latLabelStyle.textBaseline,
+      textColor: latLabelStyle.fill,
+      textHaloColor: latLabelStyle.outlineColor,
+      textHaloWidth: latLabelStyle.outlineWidth
+    };
+    // @ts-ignore
+    extent = extent || this.map.getCRS().extent;
+    extent = [this._unproject([extent[0], extent[1]]), this._unproject([extent[2], extent[3]])];
+    return {
+      minZoom: 1,
+      strokeStyle,
+      extent,
+      interval: interval && interval[0],
+      lngLabelStyle: lonLabelStyle,
+      latLabelStyle
+    };
+  }
+
+  private _getGraticuleDash(lineDash) {
+    const getLineDash = map => {
+      map.on('zoomend', () => {
+        if (map.getZoom() < 3) {
+          map.setPaintProperty('sm-graticule-layer', 'line-dasharray', [0.1, 5]);
+        } else {
+          map.setPaintProperty('sm-graticule-layer', 'line-dasharray', lineDash);
+        }
+      });
+      return lineDash;
+    };
+    return getLineDash;
+  }
+
   private _createTiandituLayer(mapInfo: any): void {
     let tiandituUrls = this._getTiandituUrl(mapInfo);
     let { labelLayerVisible, name, visible } = mapInfo.baseLayer;
@@ -821,7 +882,7 @@ export default class WebMapViewModel extends WebMapBase {
       layerID: layerInfo.layerID
     });
 
-    if(layerInfo.projection === 'EPSG:3857'){
+    if (layerInfo.projection === 'EPSG:3857') {
       features = this.transformFeatures(features);
     }
     if (layerInfo.filterCondition) {
@@ -863,7 +924,7 @@ export default class WebMapViewModel extends WebMapBase {
     let layerID = layerInfo.layerID;
     if (layerInfo.layerType === 'DATAFLOW_HEAT') {
       if (!this.map.getSource(layerID)) {
-        this._createHeatLayer(layerInfo, [feature],false);
+        this._createHeatLayer(layerInfo, [feature], false);
       } else {
         this._updateDataFlowFeature(layerID, feature, layerInfo);
       }
@@ -877,9 +938,9 @@ export default class WebMapViewModel extends WebMapBase {
           layerInfo.identifyField
         );
         if (['BASIC_POINT', 'SVG_POINT', 'IMAGE_POINT'].includes(layerStyle.type)) {
-          this._createGraphicLayer(layerInfo, [feature], null, iconRotateExpression,false);
+          this._createGraphicLayer(layerInfo, [feature], null, iconRotateExpression, false);
         } else {
-          this._createSymbolLayer(layerInfo, [feature], null, iconRotateExpression,false);
+          this._createSymbolLayer(layerInfo, [feature], null, iconRotateExpression, false);
         }
       } else {
         this._updateDataFlowFeature(layerID, feature, layerInfo, 'point');
@@ -1096,7 +1157,13 @@ export default class WebMapViewModel extends WebMapBase {
     });
   }
 
-  private _createSymbolLayer(layerInfo: any, features: any, textSizeExpresion?, textRotateExpresion?,addToMap = true): void {
+  private _createSymbolLayer(
+    layerInfo: any,
+    features: any,
+    textSizeExpresion?,
+    textRotateExpresion?,
+    addToMap = true
+  ): void {
     // 用来请求symbol_point字体文件
     let target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
@@ -1138,12 +1205,18 @@ export default class WebMapViewModel extends WebMapBase {
       type: 'FeatureCollection',
       features: features
     });
-    if(addToMap){
+    if (addToMap) {
       this._addLayerSucceeded();
     }
   }
 
-  private _createGraphicLayer(layerInfo: any, features: any, iconSizeExpression?, iconRotateExpression?, addToMap = true) {
+  private _createGraphicLayer(
+    layerInfo: any,
+    features: any,
+    iconSizeExpression?,
+    iconRotateExpression?,
+    addToMap = true
+  ) {
     let { layerID, minzoom, maxzoom, style } = layerInfo;
     let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
@@ -1178,7 +1251,7 @@ export default class WebMapViewModel extends WebMapBase {
           minzoom: minzoom || 0,
           maxzoom: maxzoom || 22
         });
-        if(addToMap){
+        if (addToMap) {
           this._addLayerSucceeded();
         }
       });
@@ -1214,7 +1287,7 @@ export default class WebMapViewModel extends WebMapBase {
               minzoom: minzoom || 0,
               maxzoom: maxzoom || 22
             });
-            if(addToMap){
+            if (addToMap) {
               this._addLayerSucceeded();
             }
           });
@@ -1227,7 +1300,7 @@ export default class WebMapViewModel extends WebMapBase {
         }
       };
       this._addOverlayToMap('POINT', source, layerID, layerStyle, minzoom, maxzoom);
-      if(addToMap){
+      if (addToMap) {
         this._addLayerSucceeded();
       }
     }
@@ -1501,7 +1574,7 @@ export default class WebMapViewModel extends WebMapBase {
       minzoom: minzoom || 0,
       maxzoom: maxzoom || 22
     });
-    if(addToMap){
+    if (addToMap) {
       this._addLayerSucceeded();
     }
   }
@@ -2034,7 +2107,9 @@ export default class WebMapViewModel extends WebMapBase {
       this._sourceListModel = null;
       this.center = null;
       this.zoom = null;
-      this._dataflowService && this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback) && this._dataflowService.off('subscribesucceeded', this._initDataflowLayerCallback);
+      this._dataflowService &&
+        this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback) &&
+        this._dataflowService.off('subscribesucceeded', this._initDataflowLayerCallback);
       this._unprojectProjection = null;
     }
     if (this._layerTimerList.length) {
