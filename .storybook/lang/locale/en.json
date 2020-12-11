@@ -205,6 +205,14 @@
     }
   },
   "mapComponent": {
-      "iportalMap": "Iportal Map"
-    }
+      "iportalMap": "iPortal Map"
+  },
+  "gisComponent": {
+    "layerList": "Layer List",
+    "layerManager": "Layer Manager",
+    "miniMap": "Mini Map",
+    "expandLayerList": "Expand Layer List",
+    "measure": "Measure",
+    "openFile": "Open File"
+  }
 }

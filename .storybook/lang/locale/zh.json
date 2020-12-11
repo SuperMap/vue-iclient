@@ -205,6 +205,14 @@
     }
   },
   "mapComponent": {
-    "iportalMap": "Iportal 地图"
+    "iportalMap": "iPortal 地图"
+  },
+  "gisComponent": {
+    "layerList": "图层列表",
+    "expandLayerList": "二级列表",
+    "layerManager": "图层管理",
+    "miniMap": "鹰眼图",
+    "measure": "量算",
+    "openFile": "打开文件"
   }
 }
