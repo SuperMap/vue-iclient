@@ -15,22 +15,22 @@
       <div
         v-show="showSearch || mode === 'toolBar'"
         class="sm-component-search__content sm-component-tdtSearch__content"
-        :style="[{ 'transform-origin': position.includes('left') ? 'top left' : 'top right' }, collapseCardHeaderBgStyle]"
+        :style="[
+          { 'transform-origin': position.includes('left') ? 'top left' : 'top right' },
+          collapseCardHeaderBgStyle
+        ]"
       >
-        <div :class="{'sm-component-search__input': true, 'with-split-line': splitLine}" :aria-orientation="position.includes('left') ? 'left' : 'right'" :style="collapseCardHeaderBgStyle">
-          <div
-            v-if="mode === 'control'"
-            class="sm-component-search__arrow-icon"
-            @click="showSearch = !showSearch"
-          >
+        <div
+          :class="{ 'sm-component-search__input': true, 'with-split-line': splitLine }"
+          :aria-orientation="position.includes('left') ? 'left' : 'right'"
+          :style="collapseCardHeaderBgStyle"
+        >
+          <div v-if="mode === 'control'" class="sm-component-search__arrow-icon" @click="showSearch = !showSearch">
             <i
               :class="position.includes('left') ? 'sm-components-icon-double-left' : 'sm-components-icon-double-right'"
             />
           </div>
-          <div
-            class="sm-component-search__search-icon"
-            @click="searchButtonClicked"
-          >
+          <div class="sm-component-search__search-icon" @click="searchButtonClicked">
             <sm-icon :type="prefixType"></sm-icon>
           </div>
           <sm-input
@@ -50,21 +50,29 @@
         </div>
         <div :style="collapseCardBackgroundStyle">
           <div v-if="resultSuggestions" class="sm-component-search__result" :style="normalTextColorStyle">
-            <ul class="sm-component-tdtSearch__suggestions">
+            <ul class="sm-component-tdtSearch__suggestions" :style="headingTextColorStyle">
               <li
                 v-for="(item, i) in searchResult"
                 :key="i"
                 :title="item.name"
-                :class="{ 'active': hoverIndex === i, 'add-ellipsis': true }"
+                :class="{ active: hoverIndex === i, 'add-ellipsis': true }"
                 @click="searchResultListClicked(item.name)"
               >
                 <span class="name">{{ item.name }}</span>
-                <span v-if="showAddress(item.name, item.address)" class="address">{{ item.address }}</span>
+                <span v-if="showAddress(item.name, item.address)" class="address" :style="secondaryTextColorStyle">{{
+                  item.address
+                }}</span>
               </li>
             </ul>
           </div>
 
-          <component :is="componentId" v-else v-bind="componentProps" v-on="componentListeners"></component>
+          <component
+            :is="componentId"
+            v-else
+            v-bind="componentProps"
+            :text-color="textColor"
+            v-on="componentListeners"
+          ></component>
         </div>
       </div>
     </transition>
@@ -354,8 +362,8 @@ export default {
     setHighlightIcon(hotPointID) {
       this.viewModel && this.viewModel.setHighlightIcon(hotPointID);
     },
-    showLineDetail(uuid) {
-      this.viewModel && this.viewModel.showLineDetail(uuid);
+    showLineDetail(uuid, addLine) {
+      this.viewModel && this.viewModel.showLineDetail(uuid, addLine);
     },
     resetSource() {
       this.viewModel && this.viewModel.reset();

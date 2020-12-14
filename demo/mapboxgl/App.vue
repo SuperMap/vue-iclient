@@ -36,7 +36,6 @@
         />
         <sm-search
           position="top-right"
-          :show-title="false"
           :layer-names="layerSourceNames"
           :address-match="addressMatch"
           :rest-map="restMapSearch"

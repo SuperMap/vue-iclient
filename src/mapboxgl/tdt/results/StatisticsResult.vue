@@ -20,7 +20,7 @@
       </div>
       <div v-show="showMore" class="cities-group">
         <div class="results">
-          <a-tree prefixCls="sm-component-tree" showLine :treeData="data" :defaultExpandedKeys="['0-0-0']" :style="normalTextColorStyle">
+          <sm-tree showLine :treeData="data" :defaultExpandedKeys="['0-0-0']" :style="normalTextColorStyle">
             <template slot="title" slot-scope="{ title, info }">
               <div class="city-item add-ellipsis" @click="searchDetail(info)">
                 <a href="javascript:void(0)">
@@ -29,7 +29,7 @@
                 </a>
               </div>
             </template>
-          </a-tree>
+          </sm-tree>
         </div>
       </div>
     </div>
@@ -38,9 +38,13 @@
 
 <script>
 import Theme from '../../../common/_mixin/Theme';
+import SmTree from '../../../common/tree/Tree';
 
 export default {
   name: 'StatisticsResult',
+  components: {
+    SmTree
+  },
   mixins: [Theme],
   props: {
     keyWord: {

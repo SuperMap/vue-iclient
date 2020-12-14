@@ -1,4 +1,5 @@
 @import '../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../common/spin/style/spin.scss';
 
 @include b(text-list) {
   width: 500px;
@@ -6,7 +7,7 @@
   overflow: hidden;
   background-color: transparent;
   position: relative;
-  & > .ant-spin {
+  & > .#{$ant-prefix}-spin {
     position: absolute;
     top: 0;
     left: 0;

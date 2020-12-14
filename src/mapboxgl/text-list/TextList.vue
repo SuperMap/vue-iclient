@@ -94,7 +94,7 @@
         </template>
       </div>
     </div>
-    <a-spin v-if="spinning" size="large" :tip="$t('info.loading')" :spinning="spinning" />
+    <sm-spin v-if="spinning" size="large" :tip="$t('info.loading')" :spinning="spinning" />
   </div>
 </template>
 
@@ -108,6 +108,7 @@ import Timer from '../../common/_mixin/Timer';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import merge from 'lodash.merge';
 import clonedeep from 'lodash.clonedeep';
+import SmSpin from '../../common/spin/Spin.vue';
 
 interface HeaderStyleParams {
   show?: boolean;
@@ -147,7 +148,10 @@ interface ColumnParams {
 }
 
 @Component({
-  name: 'SmTextList'
+  name: 'SmTextList',
+  components: {
+    SmSpin
+  }
 })
 class SmTextList extends Mixins(Theme, Timer) {
   animate: Boolean = false;

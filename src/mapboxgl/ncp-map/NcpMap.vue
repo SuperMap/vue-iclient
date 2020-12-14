@@ -1,7 +1,7 @@
 <template>
   <div :id="target" class="sm-component-ncp-map">
     <slot></slot>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
+    <sm-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
@@ -13,9 +13,13 @@ import VmUpdater from '../../common/_mixin/VmUpdater';
 import { Component, Prop, Mixins, Emit, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
+import SmSpin from '../../common/spin/Spin.vue';
 
 @Component({
   name: 'SmNcpMap',
+  components: {
+    SmSpin
+  },
   viewModelProps: [
     'mapOptions.center',
     'mapOptions.zoom',
