@@ -15,7 +15,6 @@
         :key="item.icon"
         :class="['sm-component-draw__draw-item', {'sm-component-draw__draw-active': activeMode && activeMode === item.value}]"
         :title="item.title"
-        :style="{'--icon-color--hover': colorGroupsData[0]}"
         @click="updateMode(item.value)"
       >
         <i :class="`sm-components-icons-${item.icon}`"></i>

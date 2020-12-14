@@ -43,9 +43,6 @@
         color: inherit;
       }
     }
-    > li > span.#{$prefix}-node-content-wrapper {
-      color: inherit;
-    }
 
     &.#{$prefix}-directory {
       padding: 0 16px;

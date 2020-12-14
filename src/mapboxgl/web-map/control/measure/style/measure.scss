@@ -13,8 +13,8 @@
   @include e(panelContent) {
     position: relative;
     width: 100%;
-    text-align: center;
     // overflow: hidden;
+    display: flex;
   }
   @include e(modeWrap) {
     text-align: left;
@@ -22,20 +22,12 @@
     padding: 10px 0;
   }
 
-
-  @include e(title) {
-    font-size: $--text-primary;
-    font-weight: 600;
-  }
-
   @include e(modeIcon) {
     width: 40px;
     height: 28px;
-    display: inline-block;
     line-height: 25px;
     text-align: center;
     font-size: 22px;
-    vertical-align: middle;
     &:first-child {
       border-radius: 4px 0px 0px 4px;
       margin-right: 1px;
@@ -48,13 +40,12 @@
     }
     i {
       cursor: pointer;
-      font-size: $--text-regular;
+      font-size: 14px;
     }
   }
 
   @include e(unit) {
-    vertical-align: middle;
-    width: 142px;
+    flex: 1;
     position: relative;
     margin-left: 8px;
     &,
