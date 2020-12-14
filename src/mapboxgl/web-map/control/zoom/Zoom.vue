@@ -5,10 +5,9 @@
         autofocus="false"
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
         :disabled="!canZoomIn"
-
         @click="zoomIn"
       >
-        <span class="sm-components-icon-plus"></span>
+        <span class="sm-components-icon-plus" :style="getTextColorStyle"></span>
       </sm-button>
       <div class="sm-component-zoom__button--split"></div>
       <sm-button
@@ -17,7 +16,7 @@
         :disabled="!canZoomOut"
         @click="zoomOut"
       >
-        <span class="sm-components-icon-minus"></span>
+        <span class="sm-components-icon-minus" :style="getTextColorStyle"></span>
       </sm-button>
       <div
         v-if="showZoom"

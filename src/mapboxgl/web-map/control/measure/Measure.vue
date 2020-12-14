@@ -29,6 +29,7 @@
           v-model="activeDistanceUnit"
           :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
+          :style="normalTextColorStyle"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
         >
@@ -41,6 +42,7 @@
           v-model="activeAreaUnit"
           :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
+          :style="normalTextColorStyle"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
         >
@@ -53,8 +55,8 @@
         </div>
       </div>
       <div v-show="getResult" class="sm-component-measure__calculateResult">
-        <div class="sm-component-measure__calcuTitle">{{ $t('measure.measureResult') }}</div>
-        <div class="sm-component-measure__result">{{ getResult }}</div>
+        <div class="sm-component-measure__calcuTitle" :style="headingTextColorStyle">{{ $t('measure.measureResult') }}</div>
+        <div class="sm-component-measure__result" :style="normalTextColorStyle">{{ getResult }}</div>
       </div>
     </div>
   </sm-collapse-card>

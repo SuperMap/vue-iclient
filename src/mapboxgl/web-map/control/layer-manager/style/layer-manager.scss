@@ -35,10 +35,12 @@
     &-switcher {
       float: right;
     }
-
     li {
       span.#{$prefix}-iconEle {
         display: none;
+      }
+      .#{$prefix}-node-content-wrapper {
+        color: inherit;
       }
     }
     > li > span.#{$prefix}-node-content-wrapper {

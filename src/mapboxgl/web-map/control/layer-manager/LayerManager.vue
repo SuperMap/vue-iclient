@@ -19,6 +19,7 @@
           :treeData="treeData"
           :checkedKeys="checkedKeys"
           :replaceFields="replaceFields"
+          :style="normalTextColorStyle"
           @check="checkNode"
         >
           <template slot="title" slot-scope="{ title }">
