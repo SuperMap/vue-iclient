@@ -94,13 +94,14 @@ module.exports = {
         label: '简体中文',
         selectText: '选择语言',
         nav: [
-          // {
-          //   text: '指南',
-          //   link: '/zh/guide/'
-          // },
           {
             text: '组件',
             link: '/zh/api/'
+          },
+          {
+            text: 'Storybook',
+            link: '../../../../../storybook/vue/index.html',
+            target:'_blank'
           }
         ],
         sidebar: {
