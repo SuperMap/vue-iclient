@@ -206,8 +206,5 @@
   },
   "mapComponent": {
     "iportalMap": "iPortal 地图"
-  },
-  "gisComponent": {
-    "identify": "点选查询"
   }
 }
