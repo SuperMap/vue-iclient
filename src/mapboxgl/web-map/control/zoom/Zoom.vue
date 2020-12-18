@@ -83,7 +83,7 @@ export default {
     },
     showZoomStyle() {
       return {
-        color: getColorWithOpacity(this.getBackground, 1),
+        color: getColorWithOpacity(this.getBackground, 1, false),
         background: this.getTextColor
       };
     }

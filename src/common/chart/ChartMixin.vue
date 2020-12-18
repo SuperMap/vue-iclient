@@ -24,6 +24,7 @@
       v-show="false"
       ref="chartTablePopup"
       v-bind="tablePopupProps"
+      :split-line="splitLine"
       :text-color="textColor"
       :background="background"
     />
@@ -95,7 +96,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'sm-components-icons-attribute'
+      default: 'sm-components-icon-chart'
     },
     collapsed: {
       type: Boolean,

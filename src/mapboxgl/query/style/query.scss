@@ -17,6 +17,8 @@
     transition: all 0.5s;
     padding-top: 8px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     & > div {
       width: 100%;
     }
@@ -106,11 +108,9 @@
   }
 
   @include e(result-info) {
+    flex: 1;
     overflow: auto;
-    height: 86%;
     padding: 0 16px;
-    display: flex;
-    flex-direction: column;
   }
 
   @include e(result-header) {
@@ -125,7 +125,7 @@
     }
   }
   @include e(no-result result-loading result-body) {
-    flex: 1;
+    height: 100%;
     margin: 0 -16px;
     background-color: $background-color-base;
   }

@@ -82,6 +82,7 @@
       v-show="false"
       ref="searchTablePopup"
       v-bind="tablePopupProps"
+      :split-line="splitLine"
       :text-color="textColor"
       :background="background"
     />

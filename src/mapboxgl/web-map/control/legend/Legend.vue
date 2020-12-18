@@ -185,9 +185,9 @@ export default {
   filters: {
     selectLayerType(featureType) {
       return {
-        POLYGON: 'sm-components-icons-polygon-layer',
-        POINT: 'sm-components-icons-point-layer',
-        LINE: 'sm-components-icons-line-layer'
+        POLYGON: 'sm-components-icon-ploygon',
+        POINT: 'sm-components-icon-multi-point',
+        LINE: 'sm-components-icon-line'
       }[featureType];
     }
   },

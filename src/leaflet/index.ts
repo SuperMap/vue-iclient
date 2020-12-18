@@ -1,8 +1,6 @@
 import { registerProjection } from '../common/_utils/epsg-define';
-import { Icon } from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
 import * as components from './components';
-import '../common/_assets/iconfont/icon-sm-components-old.css';
 import '../common/_assets/iconfont/icon-sm-components.css';
 import * as commontypes from './_types';
 import { setTheme } from '../common/_utils/style/theme/set-theme';
@@ -14,7 +12,6 @@ const install = function(Vue, opts: any = {}) {
   setTheme(theme);
   registerProjection(opts.projections);
 
-  Vue.use(Icon);
   Vue.prototype.$message = components.Message;
   Vue.prototype.$notification = components.Notification;
   Vue.prototype.$info = components.Modal.info;

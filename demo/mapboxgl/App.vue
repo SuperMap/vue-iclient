@@ -136,7 +136,7 @@
         </sm-select>
         <sm-select default-value="lucy" style="width: 200px">
           <sm-select-opt-group>
-            <span slot="label"><a-icon type="user" />Manager</span>
+            <span slot="label"><sm-icon type="user" />Manager</span>
             <sm-select-option value="jack">
               Jack
             </sm-select-option>
@@ -178,11 +178,11 @@
       </div>
 
       <div class="avatars">
-        <sm-avatar size="large" iconClass="sm-components-icons-marker-layer"> </sm-avatar>
+        <sm-avatar size="large" iconClass="sm-components-icon-search"/>
         <sm-avatar icon="user" />
         <sm-avatar size="small" icon="user" />
         <sm-avatar>U</sm-avatar>
-        <sm-avatar></sm-avatar>
+        <sm-avatar />
         <sm-avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
       </div>
 

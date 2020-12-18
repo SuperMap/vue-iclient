@@ -49,16 +49,16 @@
     position: relative;
     margin-left: 8px;
     &,
-    .sm-component-select-selection--single {
+    .#{$ant-prefix}-select-selection--single {
       height: 28px;
     }
-    .sm-component-select-selection__rendered {
+    .#{$ant-prefix}-select-selection__rendered {
       line-height: 28px;
+      font-size: 12px;
     }
   }
 
   @include e(default) {
-    font-size: 14px;
     display: inline-block;
     height: 28px;
     line-height: 28px;
@@ -70,12 +70,7 @@
   }
 
   @include e(calcuTitle) {
-    font-size: 12px;
     padding: 12px 0;
-  }
-
-  @include e(result) {
-    font-size: 14px;
   }
 }
 .sm-component-measure__popup {

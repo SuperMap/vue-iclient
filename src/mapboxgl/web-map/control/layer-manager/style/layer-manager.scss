@@ -23,6 +23,7 @@
   .#{$ant-prefix}-tree {
     $prefix: #{$ant-prefix}-tree;
     padding: 12px;
+    font-size: inherit;
     &-child-tree {
       border-top: 1px solid $border-color-split;
     }

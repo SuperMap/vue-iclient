@@ -60,6 +60,7 @@
             <div class="content">
               <sm-input
                 v-model="end"
+                allowClear
                 :placeholder="$t('tdtRoute.pleaseEnterEndPoint')"
                 :title="$t('tdtRoute.pleaseEnterEndPoint')"
                 :style="headingTextColorStyle"

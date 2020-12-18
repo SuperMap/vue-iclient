@@ -17,7 +17,7 @@
         :title="item.title"
         @click="updateMode(item.value)"
       >
-        <i :class="`sm-components-icons-${item.icon}`"></i>
+        <i :class="`sm-components-icon-${item.icon}`"></i>
       </span>
     </div>
   </sm-collapse-card>
@@ -39,7 +39,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'sm-components-icons-edit'
+      default: 'sm-components-icon-edit'
     },
     headerName: {
       type: String,
@@ -62,9 +62,9 @@ export default {
   data() {
     return {
       modes: [
-        { icon: 'point-layer', value: 'draw_point', title: 'Point Tool' },
-        { icon: 'line-layer', value: 'draw_line_string', title: 'LineString Tool' },
-        { icon: 'polygon-layer', value: 'draw_polygon', title: 'Polygon Tool' },
+        { icon: 'point', value: 'draw_point', title: 'Point Tool' },
+        { icon: 'line', value: 'draw_line_string', title: 'LineString Tool' },
+        { icon: 'ploygon', value: 'draw_polygon', title: 'Polygon Tool' },
         { icon: 'delete', value: 'trash', title: 'Delete' }
       ],
       activeMode: null

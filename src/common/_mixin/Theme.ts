@@ -165,6 +165,9 @@ export default class Theme extends Vue {
       $props.forEach((prop: string) => {
         const dataName: string = this.getDataNameOfProp(prop);
         this[dataName] = themeStyle[prop];
+        if (prop === 'textColor') {
+          this[dataName] = getColorWithOpacity(this[dataName], 1, false);
+        }
       });
       this.collapseCardHeaderBgData = themeStyle['collapseCardHeaderBg'];
       this.collapseCardBackgroundData = themeStyle['collapseCardBackground'];
@@ -179,6 +182,9 @@ export default class Theme extends Vue {
     $props.forEach((prop: string) => {
       const dataName: string = this.getDataNameOfProp(prop);
       this[dataName] = this[prop] || (theme && theme[prop]);
+      if (prop === 'textColor' && !this[prop]) {
+        this[dataName] = getColorWithOpacity(this[dataName], 1, false);
+      }
     });
     this.collapseCardHeaderBgData = this.background || (theme && theme['collapseCardHeaderBg']);
     this.collapseCardBackgroundData = this.background || (theme && theme['collapseCardBackground']);

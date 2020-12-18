@@ -17,7 +17,7 @@
 | isShowTitle | 显示图层名                                                                        | boolean  | -                                                            | false                             |
 | isShowField | 显示专题字段                                                                      | boolean  | -                                                            | false                             |
 | position    | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效） | string   | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'bottom-right'                    |
-| iconClass   | 收缩按钮 Icon 类名                                                                | string   | -                                                            | 'sm-components-icons-layer-style' |
+| iconClass   | 收缩按钮 Icon 类名                                                                | string   | -                                                            | 'sm-components-icon-list' |
 | headerName  | 标题名                                                                            | string   | -                                                            | '图例'                            |
 | autoRotate  | 收缩按钮是否自动旋转                                                              | boolean  | -                                                            | false                             |
 | collapsed   | 是否默认折叠（iconClass 参数存在时生效）                                          | boolean  | -                                                            | true                              |

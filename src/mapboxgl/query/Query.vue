@@ -120,6 +120,7 @@
       v-show="false"
       ref="queryTablePopup"
       v-bind="tablePopupProps"
+      :split-line="splitLine"
       :textColor="textColor"
       :background="background"
     />

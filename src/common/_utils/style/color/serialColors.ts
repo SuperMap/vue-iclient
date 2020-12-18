@@ -98,9 +98,9 @@ export function getExtralColors(
 ): ExtraColorParams {
   const tableHeaderSortActiveBg = getDarkenColor(themeStyleData.backgroundColorLight, 3);
   const extraSerialColors: ExtraColorParams = {
-    textColorWithoutOpacity: getColorWithOpacity(themeStyleData.textColor, 1),
-    backgroundWithoutOpacity: getColorWithOpacity(themeStyleData.background, 1),
-    componentBackgroundWithoutOpacity: getColorWithOpacity(themeStyleData.componentBackground, 1),
+    textColorWithoutOpacity: getColorWithOpacity(themeStyleData.textColor, 1, false),
+    backgroundWithoutOpacity: getColorWithOpacity(themeStyleData.background, 1, false),
+    componentBackgroundWithoutOpacity: getColorWithOpacity(themeStyleData.componentBackground, 1, false),
     primaryShadowColor: getColorWithOpacity(primarySerialColors[4], 0.25),
     dangerShadowColor: getColorWithOpacity(functionColors.dangerColor[4], 0.25),
     disabledDarkenBgColor10: getDarkenColor(themeStyleData.disabledBgColor, 10),

@@ -78,7 +78,7 @@ describe('mesure', () => {
       expect(measureWrapper.vm.mapTarget).toBe('map');
       const spychangeMode = jest.spyOn(measureWrapper.vm, 'changeMeasureMode');
       jest.useFakeTimers();
-      measureWrapper.find('i.sm-components-icons-line-layer').trigger('click');
+      measureWrapper.find('i.sm-components-icon-line').trigger('click');
       measureWrapper.vm.$on('loaded', () => {
         try {
           jest.runOnlyPendingTimers();
@@ -136,7 +136,7 @@ describe('mesure', () => {
       expect(measureWrapper.vm.mapTarget).toBe('map');
       const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
       jest.useFakeTimers();
-      measureWrapper.find('i.sm-components-icons-line-layer').trigger('click');
+      measureWrapper.find('i.sm-components-icon-line').trigger('click');
       measureWrapper.vm.$nextTick(() => {
         try {
           jest.runOnlyPendingTimers();
@@ -192,7 +192,7 @@ describe('mesure', () => {
         expect(measureWrapper.vm.mapTarget).toBe('map');
         const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
         jest.useFakeTimers();
-        measureWrapper.find('i.sm-components-icons-line-layer').trigger('click');
+        measureWrapper.find('i.sm-components-icon-line').trigger('click');
         measureWrapper.vm.$nextTick(() => {
           jest.runOnlyPendingTimers();
           expect(spychangeMode).toBeCalled();
@@ -259,7 +259,7 @@ describe('mesure', () => {
         expect(measureWrapper.vm.mapTarget).toBe('map');
         const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
         jest.useFakeTimers();
-        measureWrapper.find('i.sm-components-icons-polygon-layer').trigger('click');
+        measureWrapper.find('i.sm-components-icon-polygon').trigger('click');
         measureWrapper.vm.$nextTick(() => {
           jest.runOnlyPendingTimers();
           expect(spychangeMode).toBeCalled();
@@ -327,7 +327,7 @@ describe('mesure', () => {
         expect(measureWrapper.vm.mapTarget).toBe('map');
         const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
         jest.useFakeTimers();
-        measureWrapper.find('i.sm-components-icons-polygon-layer').trigger('click');
+        measureWrapper.find('i.sm-components-icon-polygon').trigger('click');
 
         measureWrapper.vm.$nextTick(() => {
           jest.runOnlyPendingTimers();
