@@ -1,20 +1,4 @@
 import { registerProjection } from '../common/_utils/epsg-define';
-import {
-  Progress,
-  Icon,
-  Card,
-  Collapse,
-  Checkbox,
-  Select,
-  Button,
-  Spin,
-  Input,
-  Slider,
-  Table,
-  Modal,
-  Tree,
-  Tabs
-} from 'ant-design-vue';
 import { lang, setLocale, initi18n } from '../common/_lang';
 import * as components from './components';
 import '../common/_assets/iconfont/icon-sm-components.css';
@@ -30,20 +14,6 @@ const install = function(Vue, opts: any = {}) {
   setTheme(theme);
   registerProjection(opts.projections);
 
-  Vue.use(Button);
-  Vue.use(Checkbox);
-  Vue.use(Card);
-  Vue.use(Slider);
-  Vue.use(Select);
-  Vue.use(Collapse);
-  Vue.use(Input);
-  Vue.use(Table);
-  Vue.use(Progress);
-  Vue.use(Icon);
-  Vue.use(Spin);
-  Vue.use(Modal);
-  Vue.use(Tree);
-  Vue.use(Tabs);
   if (VueCesium) {
     Vue.use(VueCesium, {
       cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'

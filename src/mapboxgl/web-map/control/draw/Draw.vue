@@ -1,11 +1,12 @@
 <template>
-  <sm-card
+  <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :split-line="splitLine"
     class="sm-component-draw"
   >
     <div class="sm-component-draw__panel" :style="[getBackgroundStyle, getTextColorStyle]">
@@ -14,13 +15,12 @@
         :key="item.icon"
         :class="['sm-component-draw__draw-item', {'sm-component-draw__draw-active': activeMode && activeMode === item.value}]"
         :title="item.title"
-        :style="{'--icon-color--hover': colorGroupsData[0]}"
         @click="updateMode(item.value)"
       >
-        <i :class="`sm-components-icons-${item.icon}`"></i>
+        <i :class="`sm-components-icon-${item.icon}`"></i>
       </span>
     </div>
-  </sm-card>
+  </sm-collapse-card>
 </template>
 
 <script>
@@ -39,7 +39,7 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'sm-components-icons-edit'
+      default: 'sm-components-icon-edit'
     },
     headerName: {
       type: String,
@@ -51,6 +51,10 @@ export default {
       type: Boolean, // 是否折叠
       default: true
     },
+    splitLine: {
+      type: Boolean,
+      default: false
+    },
     layerStyle: {
       type: Object
     }
@@ -58,9 +62,9 @@ export default {
   data() {
     return {
       modes: [
-        { icon: 'point-layer', value: 'draw_point', title: 'Point Tool' },
-        { icon: 'line-layer', value: 'draw_line_string', title: 'LineString Tool' },
-        { icon: 'polygon-layer', value: 'draw_polygon', title: 'Polygon Tool' },
+        { icon: 'point', value: 'draw_point', title: 'Point Tool' },
+        { icon: 'line', value: 'draw_line_string', title: 'LineString Tool' },
+        { icon: 'ploygon', value: 'draw_polygon', title: 'Polygon Tool' },
         { icon: 'delete', value: 'trash', title: 'Delete' }
       ],
       activeMode: null

@@ -4,7 +4,7 @@
     <template v-for="(controlProps, controlName) in controlComponents">
       <component :is="controlName" :key="controlName" v-bind="controlProps"></component>
     </template>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
+    <sm-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
@@ -16,6 +16,7 @@ import MapEvents from './_mixin/map-events';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
+import SmSpin from '../../common/spin/Spin.vue';
 
 interface commonControlParam {
   show?: boolean;
@@ -93,6 +94,9 @@ interface controlProps {
 
 @Component({
   name: 'SmWebMap',
+  components: {
+    SmSpin
+  },
   viewModelProps: [
     'mapId',
     'serverUrl',

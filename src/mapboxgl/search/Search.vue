@@ -1,40 +1,43 @@
 <template>
-  <div id="sm-component-search" class="sm-component-search" :style="getTextColorStyle">
+  <div id="sm-component-search" class="sm-component-search" :style="headingTextColorStyle">
     <div
       v-if="showIcon && mode === 'control'"
       class="sm-component-search__toggle-icon"
-      :style="[{'--icon-color--hover': colorGroupsData[0]}, getBackgroundStyle]"
-      @click="showSearch = !showSearch; showIcon = !showIcon"
+      :style="collapseCardHeaderBgStyle"
+      @click="
+        showSearch = !showSearch;
+        showIcon = !showIcon;
+      "
     >
-      <a-icon type="search" />
+      <i class="sm-components-icon-search" />
     </div>
     <transition name="sm-component-zoom-in" @after-leave="showIcon = !showIcon">
       <div
         v-show="showSearch || mode === 'toolBar'"
         class="sm-component-search__content"
-        :style="[{'transform-origin': position.includes('left') ? 'top left' : 'top right'}, getBackgroundStyle]"
+        :style="[
+          { 'transform-origin': position.includes('left') ? 'top left' : 'top right' },
+          collapseCardHeaderBgStyle
+        ]"
       >
-        <div class="sm-component-search__input">
-          <div
-            v-if="mode === 'control'"
-            class="sm-component-search__arrow-icon"
-            :style="{ float: position.includes('left') ? 'right' : 'left'}"
-            @click="showSearch = !showSearch"
-          >
-            <a-icon :type="position.includes('left') ? 'double-left' : 'double-right'" />
+        <div
+          :class="{'sm-component-search__input': true, 'with-split-line': splitLine}"
+          :aria-orientation="position.includes('left') ? 'left' : 'right'"
+          :style="collapseCardHeaderBgStyle"
+        >
+          <div v-if="mode === 'control'" class="sm-component-search__arrow-icon" @click="showSearch = !showSearch">
+            <i
+              :class="position.includes('left') ? 'sm-components-icon-double-left' : 'sm-components-icon-double-right'"
+            />
           </div>
-          <div
-            :class="['sm-component-search__search-icon', { 'right': position.includes('right') }]"
-            :style="[getBackgroundStyle, getColorStyle(0)]"
-            @click="searchButtonClicked"
-          >
-            <a-icon :type="prefixType" />
+          <div class="sm-component-search__search-icon" @click="searchButtonClicked">
+            <sm-icon :type="prefixType" />
           </div>
-          <a-input
+          <sm-input
             v-model="searchKey"
             :class="['sm-component-search__a-input', { 'toolBar-input': mode === 'toolBar' }]"
             :placeholder="$t('search.inputPlaceHolder')"
-            :style="[getBackgroundStyle]"
+            allowClear
             @input="searchInput"
             @compositionstart="isInputing = true"
             @compositionend="isInputing = false"
@@ -42,42 +45,33 @@
             @focus="isActive = !isActive"
             @blur="isActive = !isActive"
             @keyup="changeResultHover"
-          >
-            <a-icon
-              v-show="isActive"
-              slot="suffix"
-              type="close-circle"
-              :style="getColorStyle(0)"
-              @mousedown="inputValueCleared"
-            />
-          </a-input>
+            @change="e => !e.target.value && inputValueCleared()"
+          />
         </div>
-        <div
-          v-show="resultSuggestions"
-          class="sm-component-search__result"
-          :style="[getBackgroundStyle]"
-        >
-          <div
-            v-for="(result,index) in searchResult"
-            :key="index"
-            class="sm-component-search__panel"
-          >
-            <span
-              v-if="result.source && showTitle && result.result.length"
-              class="sm-component-search__panel-header"
-              :style="getColorStyle(0)"
-            >{{ result.source }}</span>
-            <div v-if="result.result" class="sm-component-search__panel-body">
-              <ul :class="{'noMarginBottom': !showTitle}">
+        <div v-show="resultSuggestions" class="sm-component-search__result" :style="collapseCardBackgroundStyle">
+          <div v-for="(result, index) in searchResult" :key="index" class="sm-component-search__panel">
+            <div v-if="result.source && showTitle && result.result.length" class="sm-component-search__panel-header-wrapper">
+              <div class="sm-component-search__panel-header">
+                <i class="sm-components-icon-list" />
+                <span class="add-ellipsis">
+                  {{ result.source }}
+                </span>
+              </div>
+            </div>
+            <div v-if="result.result" class="sm-component-search__panel-body" :style="normalTextColorStyle">
+              <ul :class="{ noMarginBottom: !showTitle }">
                 <li
-                  v-for="(item,i) in result.result"
+                  v-for="(item, i) in result.result"
                   :key="i"
                   :title="item.filterVal || item.name || item.address"
-                  :class="{'active': keyupHoverInfo.groupIndex === index && keyupHoverInfo.hoverIndex === i }"
+                  :class="{
+                    active: keyupHoverInfo.groupIndex === index && keyupHoverInfo.hoverIndex === i,
+                    'add-ellipsis': true
+                  }"
                   @click="searchResultListClicked(item, $event)"
-                  @mouseenter="changeChosenResultStyle"
-                  @mouseleave="resetChosenResultStyle"
-                >{{ item.filterVal || item.name || item.address }}</li>
+                >
+                  {{ item.filterVal || item.name || item.address }}
+                </li>
               </ul>
             </div>
           </div>
@@ -88,8 +82,9 @@
       v-show="false"
       ref="searchTablePopup"
       v-bind="tablePopupProps"
+      :split-line="splitLine"
       :text-color="textColor"
-      :background="getBackground"
+      :background="background"
     />
   </div>
 </template>
@@ -97,28 +92,17 @@
 import Theme from '../../common/_mixin/Theme';
 import MapGetter from '../_mixin/map-getter';
 import Control from '../_mixin/control';
-
 import SearchViewModel from './SearchViewModel';
+import SmIcon from '../../common/icon/Icon';
+import SmInput from '../../common/input/Input';
 import TablePopup from '../../common/table-popup/TablePopup';
-import { getColorWithOpacity } from '../../common/_utils/util';
-// import iPortalDataParameter from "../commontypes/iPortalDataParameter";
-// import RestDataParameter from "../commontypes/RestDataParameter";
-// import RestMapParameter from "../commontypes/RestMapParameter";
-// import AddressMatchParameter from "../commontypes/AddressMatchParameter";
-
-// let validators = (value, propType) => {
-//   let valid = true;
-//   value.forEach(item => {
-//     if (!(item instanceof propType)) {
-//       valid = false;
-//     }
-//   });
-//   return valid;
-// };
+import { setPopupArrowStyle } from '../../common/_utils/util';
 
 export default {
   name: 'SmSearch',
   components: {
+    SmIcon,
+    SmInput,
     TablePopup
   },
   mixins: [Control, MapGetter, Theme],
@@ -141,27 +125,15 @@ export default {
     },
     restMap: {
       type: Array
-      // validator(value) {
-      //   return validators(value, RestMapParameter);
-      // }
     },
     restData: {
       type: Array
-      // validator(value) {
-      //   return validators(value, RestDataParameter);
-      // }
     },
     iportalData: {
       type: Array
-      // validator(value) {
-      //   return validators(value, iPortalDataParameter);
-      // }
     },
     addressMatch: {
       type: Array
-      // validator(value) {
-      //   return validators(value, AddressMatchParameter);
-      // }
     },
     mode: {
       type: String,
@@ -193,6 +165,10 @@ export default {
       // 是否折叠组件
       type: Boolean,
       default: false
+    },
+    splitLine: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -218,32 +194,12 @@ export default {
         return false;
       }
       return this.searchResult.length > 0;
-    },
-    popupBackground() {
-      return this.getBackground && getColorWithOpacity(this.getBackground, 0.5);
-    }
-  },
-  watch: {
-    textColorsData: {
-      handler() {
-        this.changeSearchInputStyle();
-        const results = this.$el.querySelectorAll('.sm-component-search__panel li');
-        for (let result of results) {
-          result.style.color = this.getTextColor;
-        }
-      }
-    },
-    getBackground() {
-      this.changeResultPopupArrowStyle();
     }
   },
   created() {
     this.showSearch = !this.collapsed;
     this.showIcon = this.collapsed;
     this.viewModel = new SearchViewModel(this.$props);
-  },
-  mounted() {
-    this.changeSearchInputStyle();
   },
   removed() {
     this.clearResult(true);
@@ -253,24 +209,6 @@ export default {
     this.marker && this.marker.remove() && (this.marker = null);
   },
   methods: {
-    changeSearchInputStyle() {
-      const serachInput = this.$el.querySelector('.ant-input');
-      serachInput.style.color = this.getTextColor;
-    },
-    changeChosenResultStyle(e) {
-      const { target } = e;
-      target.style.color = this.getColorStyle(0).color;
-    },
-    resetChosenResultStyle(e) {
-      const { target } = e;
-      target.style.color = this.getTextColor;
-    },
-    changeResultPopupArrowStyle() {
-      const searchResultPopupArrow = document.querySelector('.sm-component-search-result-popup .mapboxgl-popup-tip');
-      if (searchResultPopupArrow) {
-        searchResultPopupArrow.style.borderTopColor = this.popupBackground;
-      }
-    },
     /**
      * 清除搜索结果。
      */
@@ -411,7 +349,7 @@ export default {
         this.viewModel.setPopupContent(
           popupData.coordinates,
           this.$refs.searchTablePopup.$el,
-          this.changeResultPopupArrowStyle
+          () => setPopupArrowStyle(this.tablePopupBgData)
         );
       });
     },

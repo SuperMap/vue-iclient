@@ -1,55 +1,41 @@
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
+@import '../../table/style/table.scss';
 
 @include b(table-popup) {
+  $table-prefix: #{$ant-prefix}-table;
   color: $text-color;
-  background: $component-background;
+  border-radius: 4px;
+  &:not(.with-split-line) {
+    .#{$table-prefix}-thead > tr > th {
+      border-bottom: none;
+    }
+  }
   @include e(table) {
-    &.ant-table-wrapper {
-      padding: 18px 5px 5px 8px;
-      .ant-table-content {
+    &.#{$table-prefix}-wrapper {
+      .#{$table-prefix}-content {
         max-height: 250px;
         overflow: auto;
       }
     }
-    .ant-table {
+    &
+    .#{$table-prefix} {
       color: inherit;
+      font-size: 12px;
     }
-    .ant-table-thead > tr > th {
-      background-color: transparent;
-      color: $primary-color;
-      border-bottom: 1px solid $primary-color;
-      padding: 0px 10px 10px 16px;
+    .#{$table-prefix}-thead > tr, .#{$table-prefix}-tbody > tr {
+      & > th, & > td {
+        padding: 4px 16px;
+      }
     }
-    .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
-      background-color: transparent !important;
-    }
-    .ant-table-tbody > tr > td {
+    .#{$table-prefix}-tbody > tr > td {
       transition: all 0s, height 0s;
       border-bottom-color: transparent;
     }
-    .ant-table-row {
+    .#{$table-prefix}-row {
       &:hover {
-        transition: all 0s, height 0s !important;
         color: $primary-color;
       }
     }
-    overflow: scroll;
   }
-  @include e(close) {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    width: 20px;
-    height: 20px;
-    font-size: 18px;
-    pointer-events: none;
-  }
-  ::-webkit-scrollbar {
-    display: none;
-    -ms-overflow-style: none;
-  }
-}
-.sm-mapboxgl-tabel-popup .mapboxgl-popup-close-button {
-  color: transparent;
 }

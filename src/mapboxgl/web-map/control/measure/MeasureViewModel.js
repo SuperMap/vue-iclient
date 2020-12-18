@@ -76,7 +76,8 @@ class MeasureViewModel extends mapboxgl.Evented {
   }
 
   // 开启绘制
-  openDraw(mode, activeUnit) {
+  openDraw(mode, activeUnit, setPopupStyle) {
+    this.setPopupStyle = setPopupStyle;
     drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, true);
     this._resetDraw();
     this._resetEvent();
@@ -184,7 +185,7 @@ class MeasureViewModel extends mapboxgl.Evented {
         popup = new mapboxgl.Popup({
           closeButton: false,
           closeOnClick: false,
-          className: 'sm-component-measure__popup'
+          className: 'sm-component-measure__popup sm-mapboxgl-tabel-popup'
         });
       }
       popup.setLngLat(lastPointPos);
@@ -214,6 +215,7 @@ class MeasureViewModel extends mapboxgl.Evented {
       }
       popup.setText(`${this._getFormatResult(this.result)} ${uniti18n}`);
       popup.addTo(this.map);
+      this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
       this.cachePolygonUnit['value'] = this.result;
       this.cachePolygonUnit['unit'] = this.activeUnit;
       this.tipHoverDiv = popup;
@@ -229,7 +231,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     const popup = new mapboxgl.Popup({
       closeButton: false,
       closeOnClick: false,
-      className: 'sm-component-measure__popup'
+      className: 'sm-component-measure__popup sm-mapboxgl-tabel-popup'
     });
     if (this.measureNodes.length > 1) {
       let line = {
@@ -260,6 +262,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     }
     popup.setLngLat([lng, lat]);
     popup && popup.addTo(this.map);
+    this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
     // 这里的key-id只是一个临时的值 在绘画完成后(会生成一个featureId) 这时会把id这个key转换成真实的id值
     this.lenTipNodesList.id = this.lenTipNodesList.id || [];
     this.lenTipNodesList.id.push(popup);
@@ -296,13 +299,13 @@ class MeasureViewModel extends mapboxgl.Evented {
     const result = this._getFormatResult(popupResult);
     if (this.continueDraw) {
       this.tipHoverDiv &&
-        this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
+      this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
     } else {
       this._removeHoverPopup();
       const popup = new mapboxgl.Popup({
         closeButton: false,
         closeOnClick: false,
-        className: 'sm-component-measure__popup'
+        className: 'sm-component-measure__popup sm-mapboxgl-tabel-popup'
       });
       popup
         .setLngLat(centerResult.geometry.coordinates)
@@ -310,6 +313,7 @@ class MeasureViewModel extends mapboxgl.Evented {
         .addTo(this.map);
       this.areaTipNodesList[feature.id] = popup;
     }
+    this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
   }
 
   _resetEvent() {

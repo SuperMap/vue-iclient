@@ -1,73 +1,106 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
 
 @include b(tdtLineResults) {
+  padding: 8px 0;
+  .link-to-points, .title {
+    line-height: 20px;
+    padding: 0 16px;
+  }
   .link-to-points {
     display: block;
     font-weight: 700;
-    text-decoration: underline;
-    line-height: 36px;
-    padding: 0 20px;
+    color: $primary-color;
+    margin-bottom: 9px;
   }
   .title {
-    height: 30px;
-    line-height: 30px;
-    padding-left: 20px
+    margin-bottom: 7px;
   }
   .content {
-    overflow: auto;
-    max-height: 300px;
-    &::-webkit-scrollbar {
-      display: none;
-    }
+    padding: 0 8px;
     .line-groups {
-      padding: 0 20px;
+      padding: 0;
       list-style: none;
       .line-item {
         margin-bottom: 10px;
-        .line-icon,
-        .line-info {
-          display: inline-block;
-          vertical-align: top;
+        background: $background-color-base;
+        .cover-info {
+          display: flex;
+          align-items: center;
+          height: 88px;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.12);
         }
-        .line-icon {
-          background: url("#{$--tdt-assets-path}/sprite.png") no-repeat -148px -183px;
-          width: 14px;
-          height: 16px;
-          margin-top: 5px;
+        .name, .line-info{
+          height: 100%;
+        }
+        .name {
+          line-height: 88px;
+          text-align: center;
+          max-width: 20%;
+          min-width: 50px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          background: rgba(0, 0, 0, 0.12);
         }
         .line-info {
-          margin-left: 10px;
-          p {
-            padding: 3px 2px;
-            margin: 0;
-            &.name {
-              overflow: hidden;
-              white-space: nowrap;
-              text-overflow: ellipsis;
-              max-width: 200px;
-            }
-            &.count {
-              span {
-                font-weight: 700;
+          flex: 1;
+          padding: 8px 0;
+          .description-holder {
+            display: flex;
+            align-items: center;
+            padding: 0 4px;
+          }
+          .description {
+            font-size: 14px;
+            line-height: 20px;
+            margin-left: 4px;
+            > div {
+              &:first-child {
+                margin-bottom: 4px;
               }
-            }
-            &.show-details {
-              cursor: pointer;
             }
           }
-          .detail-info {
-            .time {
-              span {
-                font-weight: 700;
+          .time {
+            padding-left: 24px;
+          }
+        }
+        p {
+          padding: 0;
+          margin: 0;
+          &.time {
+            margin-top: 8px;
+          }
+        }
+        .detail-info {
+          .detail-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 16px;
+            p {
+              line-height: 32px;
+              &.show-details {
+                cursor: pointer;
+                color: $primary-color;
+              }
+              i {
+                font-size: 12px;
               }
             }
-            .lines {
-              list-style: none;
-              margin: 5px 0;
-              padding: 0;
-              li {
-                padding: 4px 20px;
-                cursor: pointer;
+          }
+          .lines {
+            list-style: none;
+            margin: 2px 0 0;
+            padding: 0;
+            li {
+              padding: 2px 24px;
+              cursor: pointer;
+              &:hover {
+                color: $hover-color !important;
+              }
+              &.active-station {
+                color: $primary-color !important;
               }
             }
           }

@@ -13,7 +13,7 @@
       @loadeddata="onPlayerLoadeddata($event)"
       @ready="getPlayer"
     ></video-player>
-    <a-modal
+    <sm-modal
       v-if="url"
       v-model="modalVisible"
       wrapClassName="sm-component-video-player-modal"
@@ -33,7 +33,7 @@
         @loadeddata="onModalPlayerLoadeddata($event)"
         @ready="getPlayer"
       ></video-player>
-    </a-modal>
+    </sm-modal>
   </div>
 </template>
 
@@ -47,6 +47,7 @@ import 'videojs-flvjs-es6';
 import 'videojs-flash';
 import { videoPlayer } from 'vue-videojs7';
 import clonedeep from 'lodash.clonedeep';
+import SmModal from '../modal';
 
 interface playerOptions {
   height?: string;
@@ -71,7 +72,8 @@ window.flvjs = flvjs;
 @Component({
   name: 'SmVideoPlayer',
   components: {
-    videoPlayer
+    videoPlayer,
+    SmModal
   }
 })
 class SmVideoPlayer extends Vue {

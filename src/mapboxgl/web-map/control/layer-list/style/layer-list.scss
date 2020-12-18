@@ -1,119 +1,117 @@
-@import "../../../../../common/_utils/style/mixins/mixins.scss";
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/card/style/card.scss';
+@import '../../../../../common/collapse/style/collapse.scss';
 
 @include b(layer-list) {
-  // overflow-y: auto;
+  $layer-list-prefix: &;
+  $collapse-prefix: #{$ant-prefix}-collapse;
+  
   z-index: 10;
-  // max-height: 500px;
-  &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-    background-color: rgba(245, 245, 245, 0);
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: rgb(128, 128, 128);
-  }
-  .ant-card-body {
-    padding: 10px 15px 8px;
-  }
   @include e(content) {
     width: 100%;
     height: 100%;
+    padding: 0 16px;
+    .#{$collapse-prefix} {
+      background: transparent;
+      border-radius: 0;
+      color: inherit;
+    }
   }
-  @include e(a-card ) {
-    border-radius: 0;
-    border: none;
+  @include e(a-card) {
+    padding-top: 4px;
+    border-radius: 4px;
+    background: transparent;
+    > div {
+      padding: 0;
+    }
   }
 
   @include e(collapse) {
-    background: transparent;
-    &:last-child{
-      & .sm-component-layer-list__elcarditem{
-        border-bottom: unset;
-      }
-    }
-    .ant-collapse-item {
-      &:last-child {
-        border-bottom-color: transparent;
-      }
-      &.ant-collapse-no-arrow {
-        .ant-collapse-header {
-          padding: 8px 5px;
+    &.#{$collapse-prefix} {
+      > .#{$collapse-prefix}-item {
+        border-bottom: none;
+        .#{$iconfont-class-prefix}-solid-triangle-right {
+          display: inline-block;
         }
-      }
-    }
-    .ant-collapse-header {
-      border-bottom: none;
-      font-size: 14px;
-      // padding-left: 20px;
-      background: transparent;
-      .anticon-eye {
-        font-size: 16px;
-        margin-right: 8px;
-      }
-      .visible {
-        color: $--color-primary;
-      }
-      .none {
-        color: #c0c4cc;
-      }
-      .header-wrap {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        .header-text {
-          margin-right: 5px;
-          & > i, & > span {
-            vertical-align: middle;
+        .#{$iconfont-class-prefix}-solid-triangle-down {
+          display: none;
+        }
+        &.#{$collapse-prefix}-item-active {
+          .#{$iconfont-class-prefix}-solid-triangle-right {
+            display: none;
           }
-          & > span {
-            max-width: 200px;
+          .#{$iconfont-class-prefix}-solid-triangle-down {
             display: inline-block;
           }
         }
+        > .#{$collapse-prefix}-header {
+          color: inherit;
+        }
+        .#{$collapse-prefix}-content {
+          max-height: 400px;
+          overflow-y: auto;
+          background-color: $background-color-base;
+          margin: 0 -16px;
+          padding: 0 16px 0 8px;
+        }
+        .#{$collapse-prefix}-content-box {
+          padding-bottom: 4px;
+          padding-right: 0;
+        }
       }
     }
-    .ant-collapse-content  {
-      .ant-collapse-content-box {
-        line-height: 3;
-        overflow: hidden;
-        padding-left: 36px;
-        padding-top: 0;
-        .ant-checkbox-wrapper {
-          margin-left: 0;
-          white-space: nowrap;
-          display: block;
+    .#{$collapse-prefix}-header, #{$layer-list-prefix}__elcarditem {
+      padding: 6px 0 !important;
+      border-bottom: 1px solid $border-color-split;
+    }
+    &:last-child {
+      .#{$collapse-prefix}-header, #{$layer-list-prefix}__elcarditem {
+        border-bottom-color: transparent;
+      }
+    }
+    
+    .#{$iconfont-class-prefix}-partially-visible, .#{$iconfont-class-prefix}-visible {
+      color: $primary-color;
+    }
+    .#{$iconfont-class-prefix}-hidden {
+      color: $disabled-color;
+    }
+    #{$layer-list-prefix}__sourcelayeritem, #{$layer-list-prefix}__elcarditem, .header-wrap {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      line-height: 20px;
+      i {
+        font-size: 12px;
+        cursor: pointer;
+        &:first-child {
+          margin-right: 9px;
+          font-size: 14px;
+        }
+      }
+    }
+    .header-wrap {
+      justify-content: space-between;
+      .header-text {
+        font-size: 0;
+        & > i,
+        & > span {
+          vertical-align: middle;
+        }
+        & > span {
+          max-width: 200px;
+          display: inline-block;
+          font-size: 12px;
         }
       }
     }
   }
-
-  @include e(collapseitem) {
-    .ant-collapse-header {
-      padding: 8px 5px;
-    }
+  @include e(sourcelayeritem) {
+    padding: 6px 0;
   }
-
-  @include e(elcarditem) {
-    position: relative;
-    border: none;
-    border-bottom: 1px solid #ececec;
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none !important;
-    .ant-collapse-body {
-      padding: 8px 5px;
-      // height: 32px;
-      // line-height: 32px;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      .anticon-eye {
-        font-size: 16px;
-        margin-right: 12px;
-        cursor: pointer;
-      }
-    }
+  @include e(disabled) {
+    color: $disabled-color !important;
   }
   @include e(layergroupname) {
     max-width: 200px;

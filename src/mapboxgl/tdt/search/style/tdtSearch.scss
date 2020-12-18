@@ -1,17 +1,19 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../common/input/style/input.scss';
+@import '../../../../common/icon/style/icon.scss';
 
 @include b(tdtSearch) {
   max-height: 300px;
   @include e(suggestions) {
     li {
-      max-width: 95%;
       .name {
         font-size: 14px;
       }
       .address {
         font-size: 12px;
         margin-left: 5px;
-        color: #b8b8b8;
+        color: $text-color-secondary;
       }
     }
   }
@@ -20,19 +22,14 @@
     height: 100%;
     overflow: auto;
     max-height: 300px;
-    &::-webkit-scrollbar {
-      display: none;
-    }
   }
   @include e(pointer) {
     cursor: pointer;
   }
   .sm-component-search__result {
     max-height: 200px;
-    &::-webkit-scrollbar {
-      display: none;
-    }
     max-width: 315px;
+    padding-top: 0;
     .title {
       height: 36px;
       line-height: 36px;

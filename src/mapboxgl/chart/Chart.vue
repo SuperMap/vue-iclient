@@ -10,14 +10,6 @@ export default {
   mixins: [ChartCommon, MapGetter, Control],
   created() {
     this.viewModel = new ChartViewModel();
-  },
-  methods: {
-    changePopupArrowStyle() {
-      const popupArrow = document.querySelector('.sm-component-chart-result-popup .mapboxgl-popup-tip');
-      if (popupArrow) {
-        popupArrow.style.borderTopColor = this.popupBackground;
-      }
-    }
   }
 };
 </script>

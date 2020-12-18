@@ -1,3 +1,5 @@
+@import '../../modal/style/modal.scss';
+
 // TODO 待重构 考虑下 modal 中的 player
 
 .sm-component-video-player__player > .video-js {
@@ -225,7 +227,7 @@
   }
 }
 .sm-component-video-player-modal {
-  .ant-modal-close {
+  .sm-component-modal-close {
     color: #a2a3a5;
     right: -5%;
     top: -3%;
@@ -233,10 +235,10 @@
       color: #ff5c38;
     }
   }
-  .ant-modal-close-x {
+  .sm-component-modal-close-x {
     font-size: 40px;
   }
-  .ant-modal-body {
+  .sm-component-modal-body {
     padding: 0;
     .sm-component-video-player__player[data-autoplay='true'] > .video-js .vjs-big-play-button {
       display: none;

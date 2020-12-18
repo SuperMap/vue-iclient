@@ -79,10 +79,28 @@ const webpackConfig = merge(baseWebpackConfig, {
         amd: 'three'
       },
       'video.js': {
-        root: '_videojs',
+        root: 'videojs',
         commonjs: 'video.js',
         commonjs2: 'video.js',
         amd: 'video.js'
+      },
+      'videojs-contrib-hls': {
+        root: 'videojsContribHls',
+        commonjs: 'videojs-contrib-hls',
+        commonjs2: 'videojs-contrib-hls',
+        amd: 'videojs-contrib-hls'
+      },
+      'videojs-flash': {
+        root: 'videojsFlash',
+        commonjs: 'videojs-flash',
+        commonjs2: 'videojs-flash',
+        amd: 'videojs-flash'
+      },
+      'videojs-flvjs-es6': {
+        root: 'videojsFlvjs',
+        commonjs: 'videojs-flvjs-es6',
+        commonjs2: 'videojs-flvjs-es6',
+        amd: 'videojs-flvjs-es6'
       }
     },
     function(context, request, callback) {

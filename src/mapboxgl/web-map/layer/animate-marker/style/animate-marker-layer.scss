@@ -1,5 +1,4 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
-@import '../../../../../common/_utils/style/common/var.scss';
 
 @include b(animate-marker) {
   @include m(rotating-aperture) {

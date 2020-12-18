@@ -182,6 +182,8 @@ export default class SearchViewModel extends mapboxgl.Evented {
     const popup = new mapboxgl.Popup({
       className: 'sm-mapboxgl-tabel-popup sm-component-search-result-popup',
       closeOnClick: true,
+      closeButton: false,
+      maxWidth: 'none',
       anchor: 'bottom'
     });
     const marker = new mapboxgl.Marker();

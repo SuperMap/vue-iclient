@@ -48,6 +48,10 @@ export default class BaseRender extends Vue {
     return { ...this.$listeners, ...this.extralListeners };
   }
 
+  get componentStyle() {
+    return null;
+  }
+
   getPrefixCls(suffixCls: string, customizePrefixCls: string) {
     const { prefixCls = 'sm-component' } = this.$props;
     if (customizePrefixCls) return customizePrefixCls;
@@ -74,6 +78,7 @@ export default class BaseRender extends Vue {
       Component,
       {
         props: this.componentProps,
+        style: this.componentStyle,
         attrs: this.$attrs,
         on: this.componentListeners,
         scopedSlots: this.$scopedSlots

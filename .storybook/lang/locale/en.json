@@ -189,6 +189,15 @@
     },
     "videoPlayer": {
       "controlBar": "Control Bar"
+    },
+    "slider": {
+      "icon": "Slider with icon",
+      "vertical": "Vertical",
+      "reverse": "Reverse",
+      "withNumber": "Slider with InputNumber",
+      "customTip": "Customize tooltip",
+      "graduted": "Graduated slider",
+      "controlTip": "Control visible of ToolTip"
     }
   },
   "chartComponent": {
@@ -205,6 +214,26 @@
     }
   },
   "mapComponent": {
-    "iportalMap": "iPortal Map"
+      "iportalMap": "iPortal Map"
+  },
+  "gisComponent": {
+    "layerList": "Layer List",
+    "layerManager": "Layer Manager",
+    "miniMap": "Mini Map",
+    "expandLayerList": "Expand Layer List",
+    "measure": "Measure",
+    "openFile": "Open File",
+    "identify": "Click on the query",
+    "zoom": "Zoom",
+    "slider": "Open Slider",
+    "compare": "Compare",
+    "pan": "Pan",
+    "legend": "Legend",
+    "panlLegend": "Detailed Legend",
+    "query": "Data Query",
+    "poi": "POI Search",
+    "tdtPoi": "TDT-POI Search",
+    "tdtMapSwitcher": "TDT-Map Switcher",
+    "TdtRoute": "TDT-Route"
   }
 }

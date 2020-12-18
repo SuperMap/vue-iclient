@@ -1,45 +1,35 @@
 <template>
   <div v-if="data" class="statistics-results-container sm-component-tdtStatisticsResults">
-    <div class="title">
+    <div :class="{ title: true, 'without-split-line': !priorityCitys || !priorityCitys.length }">
       {{ $t('tdtResults.on') }}
       <span v-if="prompt" class="region">{{ prompt.name }}</span>
       {{ $t('tdtResults.cityHadResults') }}
     </div>
     <div class="content">
-      <div class="priority-cities">
-        <div
-          v-for="(item, index) in priorityCitys"
-          :key="index"
-          class="city-item"
-          @click="searchDetail(item)"
-        >
-          <a :style="getColorStyle(0)" href="javascript:void(0)">
+      <div v-if="priorityCitys && priorityCitys.length > 0" class="priority-cities">
+        <div v-for="(item, index) in priorityCitys" :key="index" class="city-item add-ellipsis" @click="searchDetail(item)">
+          <a href="javascript:void(0)">
             {{ item.name }}
-            <span :style="getTextColorStyle">({{ item.count }})</span>
+            <span>({{ item.count }})</span>
           </a>
         </div>
       </div>
       <div class="more-cities" @click="showMore = !showMore">
         <span>{{ $t('tdtResults.moreCity') }}</span>
-        <a-icon :type="showMore ? 'caret-up' : 'caret-down'" />
+        <i :class="showMore ? 'sm-components-icon-solid-triangle-up' : 'sm-components-icon-solid-triangle-down'" />
       </div>
       <div v-show="showMore" class="cities-group">
         <div class="results">
-          <a-tree
-            showLine
-            :treeData="data"
-            :defaultExpandedKeys="['0-0-0']"
-            :style="`--icon-color: ${getTextColor}`"
-          >
-            <template slot="title" slot-scope="{title, info}">
-              <div class="city-item" @click="searchDetail(info)">
-                <a :style="getColorStyle(0)" href="javascript:void(0)">
+          <sm-tree showLine :treeData="data" :defaultExpandedKeys="['0-0-0']" :style="normalTextColorStyle">
+            <template slot="title" slot-scope="{ title, info }">
+              <div class="city-item add-ellipsis" @click="searchDetail(info)">
+                <a href="javascript:void(0)">
                   {{ title }}
-                  <span :style="getTextColorStyle">({{ info.count }})</span>
+                  <span>（{{ info.count }}）</span>
                 </a>
               </div>
             </template>
-          </a-tree>
+          </sm-tree>
         </div>
       </div>
     </div>
@@ -48,9 +38,13 @@
 
 <script>
 import Theme from '../../../common/_mixin/Theme';
+import SmTree from '../../../common/tree/Tree';
 
 export default {
   name: 'StatisticsResult',
+  components: {
+    SmTree
+  },
   mixins: [Theme],
   props: {
     keyWord: {

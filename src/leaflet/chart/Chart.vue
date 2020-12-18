@@ -19,12 +19,6 @@ export default {
   methods: {
     clearPopup() {
       this.viewModel && this.viewModel.clear();
-    },
-    changePopupArrowStyle() {
-      const popupArrow = document.querySelector('.sm-component-chart-result-popup .leaflet-popup-tip');
-      if (popupArrow) {
-        popupArrow.style.background = this.popupBackground;
-      }
     }
   }
 };

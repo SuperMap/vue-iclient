@@ -75,12 +75,19 @@ export function isYField(data) {
   );
 }
 
-export function getColorWithOpacity(color, opacity) {
-  if (color.indexOf('rgba') > -1) {
-    return color.substring(0, color.lastIndexOf(',') + 1) + opacity + ')';
+export function getColorWithOpacity(color, opacity, isStack = true) {
+  if (!color) {
+    return color;
   }
-  let newColor = colorcolor(color, 'rgb');
-  return 'rgba' + newColor.substring(3, newColor.length - 1) + `,${opacity})`;
+  const originColor = tinyColor(color);
+  const originOpacity = originColor.getAlpha();
+  if (isStack) {
+    originColor.setAlpha(originOpacity * opacity);
+  } else {
+    originColor.setAlpha(opacity);
+  }
+  const nextColor = originColor.toRgbString();
+  return nextColor;
 }
 
 export function parseUrl(url) {
@@ -207,4 +214,26 @@ export function getDarkenColor(color, amount) {
   return tinyColor(color)
     .darken(amount)
     .toString();
+}
+
+const ARROW_POSITION_MAP = {
+  top: 'Bottom',
+  bottom: 'Top',
+  left: 'Right',
+  right: 'Left'
+};
+
+export function setPopupArrowStyle(color) {
+  const popup = document.querySelectorAll('.sm-mapboxgl-tabel-popup');
+  if (popup) {
+    popup.forEach(item => {
+      let position = item.className.replace(/.+mapboxgl-popup-anchor-([a-z]+)/, '$1');
+      if (ARROW_POSITION_MAP[position]) {
+        const popupArrow = item.querySelector('.mapboxgl-popup-tip');
+        if (popupArrow) {
+          popupArrow.style[`border${ARROW_POSITION_MAP[position]}Color`] = color;
+        }
+      }
+    });
+  }
 }

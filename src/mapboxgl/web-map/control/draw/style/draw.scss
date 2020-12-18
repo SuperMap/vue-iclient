@@ -1,4 +1,5 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
 
 @include b(draw) {
   @include e(panel) {
@@ -15,14 +16,14 @@
     text-align: center;
     cursor: pointer;
     &:hover {
-      color: var(--icon-color--hover);
+      color: $hover-color;
     }
     i {
-      font-size: $--text-regular;
+      font-size: 14px;
     }
   }
 
   @include e(draw-active) {
-    color: var(--icon-color--hover);
+    color: $primary-color;
   }
 }

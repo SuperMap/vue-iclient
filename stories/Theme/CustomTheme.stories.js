@@ -1,7 +1,6 @@
 import { withKnobs, color, number, array, select } from '@storybook/addon-knobs';
 import { setTheme } from '../../src/common/_utils/style/theme/set-theme';
 import { toI18n } from '../../.storybook/lang';
-import { DocsContainer } from '@storybook/addon-docs/blocks';
 
 export default {
   title: 'Design/Custom-Theme',

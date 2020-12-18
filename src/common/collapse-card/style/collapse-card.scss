@@ -1,0 +1,157 @@
+@import "../../_utils/style/mixins/mixins.scss";
+@import '../../../common/_utils/style/theme/theme.scss';
+
+@include b(collapse-card) {
+  $collapse-card-prefix: &;
+
+  position: relative;
+  overflow: visible;
+  font-size: 12px;
+  @include e(icon) {
+    z-index: 100;
+    background: $collapse-card-header-bg;
+    color: $heading-color;
+    cursor: pointer;
+    box-sizing: border-box;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    text-align: center;
+    &:hover {
+      background: #ffffff;
+      border-color: $hover-color !important;
+      color: $hover-color !important;
+    }
+    > i {
+      display: block;
+    }
+    @include when(not-header) {
+      @include when(bottom-right) {
+        bottom: 0;
+        top: unset;
+      }
+      @include when(bottom-left) {
+        bottom: 0;
+        top: unset;
+      }
+    }
+    @include when(click-in) {
+      border-radius: 4px;
+      @include when(top-right) {
+        float: right;
+      }
+      @include when(bottom-right) {
+        float: right;
+      }
+      @include when(top-left) {
+        float: left !important;
+      }
+      @include when(bottom-left) {
+        float: left !important;
+      }
+    }
+    @include when(click-out) {
+      border: none;
+      background: transparent !important;
+    }
+    @include when(top-left) {
+      top: 0;
+      left: 0;
+      & .sm-component-collapse-card__component-icon.is-auto-rotate {
+        transform: rotate(45deg);
+      }
+    }
+    @include when(bottom-left) {
+      top: 0;
+      left: 0;
+      & .sm-component-collapse-card__component-icon.is-auto-rotate {
+        transform: rotate(45deg);
+      }
+    }
+    @include when(top-right) {
+      top: 0;
+      right: 0;
+      & .sm-component-collapse-card__component-icon.is-auto-rotate {
+        transform: rotate(135deg);
+      }
+    }
+    @include when(bottom-right) {
+      top: 0;
+      right: 0;
+      & .sm-component-collapse-card__component-icon.is-auto-rotate {
+        transform: rotate(135deg);
+      }
+    }
+  }
+
+  @include e(header) {
+    padding: 6px 0px 6px 8px;
+    color: $heading-color;
+    background: $collapse-card-header-bg;
+    border-radius: 4px 4px 0 0;
+    &.with-split-line {
+      border-bottom: 1px solid $border-color-split;
+    }
+    + #{$collapse-card-prefix}__body {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+  @include e(content) {
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
+    background: $collapse-card-bg;
+    position: relative;
+    border-radius: 4px;
+    &.sm-component-zoom-in-enter-active {
+      animation: zoom-in .5s;
+    }
+    &.sm-component-zoom-in-leave-active {
+      animation: zoom-in .5s reverse;
+    }
+    @keyframes zoom-in {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    @include when(top-left) {
+      @include when(icon) {
+        & > .sm-component-collapse-card__header {
+          padding-left: 38px;
+        }
+      }
+      transform-origin: top left;
+    }
+    @include when(bottom-left) {
+      @include when(icon) {
+        & > .sm-component-collapse-card__header {
+          padding-left: 38px;
+        }
+      }
+      transform-origin: top left;
+    }
+    @include when(not-header) {
+      @include when(bottom-right) {
+        transform-origin: bottom right;
+      }
+      @include when(bottom-left) {
+        transform-origin: bottom left;
+      }
+    }
+    @include when(bottom-right) {
+      transform-origin: top right;
+    }
+    @include when(top-right) {
+      transform-origin: top right;
+    }
+  }
+  @include e(body) {
+    height: 100%;
+    border-radius: 4px;
+  }
+}

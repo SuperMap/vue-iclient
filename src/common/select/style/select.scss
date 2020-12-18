@@ -49,12 +49,16 @@
         border-color: $disabled-border-color;
       }
 
-      &-multiple {
+      &--multiple {
         #{$prefix}-selection__choice {
-          // color: fade(@black, 33%);
-          background: $background-color-base;
+          color: $disabled-color;
+          background: $disabled-bg;
         }
       }
+    }
+
+    #{$prefix}-arrow {
+      color: $disabled-color;
     }
   }
 
@@ -71,6 +75,7 @@
         &-selected {
           font-weight: normal;
           background-color: $select-item-selected-bg;
+          color: #fff;
         }
       }
     }
@@ -87,5 +92,9 @@
         }
       }
     }
+  }
+
+  @include e(arrow, '-') {
+    color: $text-color-secondary;
   }
 }

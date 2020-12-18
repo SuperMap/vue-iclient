@@ -1,40 +1,36 @@
 <template>
-  <div :class="['sm-component-pan', panImgClass, mapboxglClass]">
-    <div class="sm-component-pan__center" @click="panToCenter"></div>
-    <div
-      class="sm-component-pan__icon is-left"
-      @click="panToLeft"
-      @mouseleave="setPanImg"
-      @mouseenter="setPanWestImg"
-    ></div>
-    <div
-      class="sm-component-pan__icon is-right"
-      @click="panToRight"
-      @mouseleave="setPanImg"
-      @mouseenter="setPanEastImg"
-    ></div>
-    <div
-      class="sm-component-pan__icon is-top"
-      @click="panToTop"
-      @mouseleave="setPanImg"
-      @mouseenter="setPanNorthImg"
-    ></div>
-    <div
-      class="sm-component-pan__icon is-bottom"
-      @click="panToBottom"
-      @mouseleave="setPanImg"
-      @mouseenter="setPanSouthImg"
-    ></div>
+  <div :class="['sm-component-pan', mapboxglClass]" :style="[collapseCardHeaderBgStyle, secondaryTextColorStyle]">
+    <div class="sm-component-pan__item" @click="panToCenter">
+      <div class="sm-component-pan__center" :style="collapseCardHeaderBgStyle" />
+      <i class="sm-components-icon-fullscreen" />
+    </div>
+    <div class="sm-component-pan__item" @click="panToLeft">
+      <div class="sm-component-pan__icon is-left" />
+      <i class="sm-components-icon-solid-triangle-left" />
+    </div>
+    <div class="sm-component-pan__item" @click="panToRight">
+      <div class="sm-component-pan__icon is-right" />
+      <i class="sm-components-icon-solid-triangle-right" />
+    </div>
+    <div class="sm-component-pan__item" @click="panToTop">
+      <div class="sm-component-pan__icon is-top" />
+      <i class="sm-components-icon-solid-triangle-up" />
+    </div>
+    <div class="sm-component-pan__item" @click="panToBottom">
+      <div class="sm-component-pan__icon is-bottom" />
+      <i class="sm-components-icon-solid-triangle-down" />
+    </div>
   </div>
 </template>
 <script>
-import PanViewModel from './PanViewModel.js';
+import PanViewModel from './PanViewModel';
 import MapGetter from '../../../_mixin/map-getter';
 import Control from '../../../_mixin/control';
+import Theme from '../../../../common/_mixin/Theme';
 
 export default {
   name: 'SmPan',
-  mixins: [MapGetter, Control],
+  mixins: [MapGetter, Control, Theme],
   props: {
     panLength: {
       type: Number,
@@ -44,7 +40,6 @@ export default {
   data() {
     return {
       center: null,
-      panImgClass: 'sm-component-pan--default',
       mapboxglClass: ''
     };
   },
@@ -57,23 +52,15 @@ export default {
       this.panTo(this.lnglat);
     },
     panToLeft() {
-      // this.lnglat.lng -= this.panLength;
-      // this.panTo(this.lnglat);
       this.panBy([-this.panLength, 0]);
     },
     panToRight() {
-      // this.lnglat.lng += this.panLength;
-      // this.panTo(this.lnglat);
       this.panBy([this.panLength, 0]);
     },
     panToTop() {
-      // this.lnglat.lat -= this.panLength;
-      // this.panTo(this.lnglat);
       this.panBy([0, -this.panLength]);
     },
     panToBottom() {
-      // this.lnglat.lat += this.panLength;
-      // this.panTo(this.lnglat);
       this.panBy([0, this.panLength]);
     },
     panTo(lnglat) {
@@ -89,22 +76,6 @@ export default {
         return;
       }
       this.viewModel.panBy(point);
-    },
-
-    setPanImg() {
-      this.panImgClass = 'sm-component-pan--default';
-    },
-    setPanWestImg() {
-      this.panImgClass = 'sm-component-pan--west';
-    },
-    setPanEastImg() {
-      this.panImgClass = 'sm-component-pan--east';
-    },
-    setPanNorthImg() {
-      this.panImgClass = 'sm-component-pan--north';
-    },
-    setPanSouthImg() {
-      this.panImgClass = 'sm-component-pan--south';
     }
   },
   loaded() {

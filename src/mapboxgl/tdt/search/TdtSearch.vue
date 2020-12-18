@@ -1,47 +1,43 @@
 <template>
-  <div class="sm-component-search sm-component-tdtSearch" :style="getTextColorStyle">
+  <div class="sm-component-search sm-component-tdtSearch" :style="headingTextColorStyle">
     <div
       v-if="showIcon && mode === 'control'"
       class="sm-component-search__toggle-icon"
-      :style="[{ '--icon-color--hover': colorGroupsData[0] }, getBackgroundStyle]"
+      :style="collapseCardHeaderBgStyle"
       @click="
         showSearch = !showSearch;
         showIcon = !showIcon;
       "
     >
-      <i class="sm-component-tdtSearch__pointer sm-components-icons-preview"></i>
+      <i class="sm-component-tdtSearch__pointer sm-components-icon-search"></i>
     </div>
     <transition name="sm-component-zoom-in" @after-leave="showIcon = !showIcon">
       <div
         v-show="showSearch || mode === 'toolBar'"
         class="sm-component-search__content sm-component-tdtSearch__content"
-        :style="[{ 'transform-origin': position.includes('left') ? 'top left' : 'top right' }, getBackgroundStyle]"
+        :style="[
+          { 'transform-origin': position.includes('left') ? 'top left' : 'top right' },
+          collapseCardHeaderBgStyle
+        ]"
       >
-        <div class="sm-component-search__input">
-          <div
-            v-if="mode === 'control'"
-            class="sm-component-search__arrow-icon"
-            :style="{ float: position.includes('left') ? 'right' : 'left' }"
-            @click="showSearch = !showSearch"
-          >
-            <a-icon :type="position.includes('left') ? 'double-left' : 'double-right'" />
-          </div>
-          <div
-            :class="['sm-component-search__search-icon', { right: position.includes('right') }]"
-            :style="[getBackgroundStyle, getColorStyle(0)]"
-            @click="searchButtonClicked"
-          >
+        <div
+          :class="{ 'sm-component-search__input': true, 'with-split-line': splitLine }"
+          :aria-orientation="position.includes('left') ? 'left' : 'right'"
+          :style="collapseCardHeaderBgStyle"
+        >
+          <div v-if="mode === 'control'" class="sm-component-search__arrow-icon" @click="showSearch = !showSearch">
             <i
-              v-if="prefixType === 'search'"
-              class="sm-component-tdtSearch__pointer sm-components-icons-preview"
-            ></i>
-            <a-icon v-else :type="prefixType"></a-icon>
+              :class="position.includes('left') ? 'sm-components-icon-double-left' : 'sm-components-icon-double-right'"
+            />
           </div>
-          <a-input
+          <div class="sm-component-search__search-icon" @click="searchButtonClicked">
+            <sm-icon :type="prefixType"></sm-icon>
+          </div>
+          <sm-input
             v-model="searchKey"
             :class="['sm-component-search__a-input', { 'toolBar-input': mode === 'toolBar' }]"
             :placeholder="$t('search.inputPlaceHolder')"
-            :style="[getBackgroundStyle]"
+            allowClear
             @input="searchInput"
             @compositionstart="isInputing = true"
             @compositionend="isInputing = false"
@@ -49,38 +45,34 @@
             @mouseenter="isHover = !isHover"
             @mouseleave="isHover = !isHover"
             @keyup="changeResultHover"
-          >
-            <a-icon
-              v-show="searchKey"
-              slot="suffix"
-              type="close-circle"
-              class="sm-component-tdtSearch__pointer"
-              :style="getColorStyle(0)"
-              @click="inputValueCleared"
-              @mouseenter="isHover = !isHover"
-              @mouseleave="isHover = !isHover"
-            />
-          </a-input>
+            @change="e => !e.target.value && inputValueCleared()"
+          />
         </div>
-        <div :style="[getBackgroundStyle]">
-          <div v-if="resultSuggestions" class="sm-component-search__result">
-            <ul class="sm-component-tdtSearch__suggestions">
+        <div :style="collapseCardBackgroundStyle">
+          <div v-if="resultSuggestions" class="sm-component-search__result" :style="normalTextColorStyle">
+            <ul class="sm-component-tdtSearch__suggestions" :style="headingTextColorStyle">
               <li
                 v-for="(item, i) in searchResult"
                 :key="i"
                 :title="item.name"
-                :class="{ active: hoverIndex === i }"
+                :class="{ active: hoverIndex === i, 'add-ellipsis': true }"
                 @click="searchResultListClicked(item.name)"
-                @mouseenter="changeChosenResultStyle"
-                @mouseleave="resetChosenResultStyle"
               >
                 <span class="name">{{ item.name }}</span>
-                <span v-if="showAddress(item.name, item.address)" class="address">{{ item.address }}</span>
+                <span v-if="showAddress(item.name, item.address)" class="address" :style="secondaryTextColorStyle">{{
+                  item.address
+                }}</span>
               </li>
             </ul>
           </div>
 
-          <component :is="componentId" v-else v-bind="componentProps" v-on="componentListeners"></component>
+          <component
+            :is="componentId"
+            v-else
+            v-bind="componentProps"
+            :text-color="textColor"
+            v-on="componentListeners"
+          ></component>
         </div>
       </div>
     </transition>
@@ -96,6 +88,8 @@ import LinesResult from '../results/LinesResult';
 import AreaResult from '../results/AreaResult';
 import StatisticsResult from '../results/StatisticsResult';
 import NothingResult from '../results/NothingResult';
+import SmIcon from '../../../common/icon/Icon';
+import SmInput from '../../../common/input/Input';
 
 export default {
   name: 'SmTdtSearch',
@@ -104,7 +98,9 @@ export default {
     LinesResult,
     AreaResult,
     StatisticsResult,
-    NothingResult
+    NothingResult,
+    SmIcon,
+    SmInput
   },
   mixins: [Control, MapGetter, Theme],
   props: {
@@ -129,6 +125,10 @@ export default {
     },
     collapsed: {
       // 是否折叠组件
+      type: Boolean,
+      default: false
+    },
+    splitLine: {
       type: Boolean,
       default: false
     }
@@ -164,15 +164,6 @@ export default {
     }
   },
   watch: {
-    textColorsData: {
-      handler() {
-        this.changeSearchInputStyle();
-        const results = this.$el.querySelectorAll('.sm-component-search__result li');
-        for (let result of results) {
-          result.style.color = this.getTextColor;
-        }
-      }
-    },
     data(newVal, oldVal) {
       this.viewModel && this.viewModel.setData(this.data);
     }
@@ -186,9 +177,6 @@ export default {
     });
     this.viewModel.on('search-selected-info', this.searchSelectedInfo);
   },
-  mounted() {
-    this.changeSearchInputStyle();
-  },
   removed() {
     this.clearResult(true);
   },
@@ -198,18 +186,6 @@ export default {
     this.$options.removed.call(this);
   },
   methods: {
-    changeSearchInputStyle() {
-      const serachInput = this.$el.querySelector('.ant-input');
-      serachInput.style.color = this.getTextColor;
-    },
-    changeChosenResultStyle(e) {
-      const { target } = e;
-      target.style.color = this.getColorStyle(0).color;
-    },
-    resetChosenResultStyle(e) {
-      const { target } = e;
-      target.style.color = this.getTextColor;
-    },
     search(params) {
       this.clearResult();
       const mapNotLoaded = this.mapNotLoadedTip();
@@ -386,8 +362,8 @@ export default {
     setHighlightIcon(hotPointID) {
       this.viewModel && this.viewModel.setHighlightIcon(hotPointID);
     },
-    showLineDetail(uuid) {
-      this.viewModel && this.viewModel.showLineDetail(uuid);
+    showLineDetail(uuid, addLine) {
+      this.viewModel && this.viewModel.showLineDetail(uuid, addLine);
     },
     resetSource() {
       this.viewModel && this.viewModel.reset();

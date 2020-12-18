@@ -421,6 +421,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
     return new mapboxgl.Popup({
       className: 'sm-mapboxgl-tabel-popup',
       closeOnClick: true,
+      closeButton: false,
+      maxWidth: 'none',
       anchor: 'bottom'
     })
       .setLngLat(coordinates)

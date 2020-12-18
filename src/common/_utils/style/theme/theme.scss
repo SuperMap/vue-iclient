@@ -3,6 +3,7 @@ $ant-prefix: sm-component;
 
 // ICONFONT
 $iconfont-css-prefix: anticon;
+$iconfont-class-prefix: sm-components-icon;
 
 // An override for the html selector for theme prefixes
 $html-selector: html;
@@ -283,7 +284,7 @@ $table-header-bg: $background-color-light;
 $table-header-color: $heading-color;
 $table-header-sort-bg: $background-color-base;
 $table-body-sort-bg: rgba(0, 0, 0, 0.01);
-$table-row-hover-bg: $primary-1;
+$table-row-hover-bg: $select-item-hover-bg;
 $table-selected-row-color: inherit;
 $table-selected-row-bg: #fafafa;
 $table-body-selected-sort-bg: $table-selected-row-bg;
@@ -292,6 +293,8 @@ $table-expanded-row-bg: #fbfbfb;
 $table-footer-bg: $background-color-light;
 $table-footer-color: $heading-color;
 $table-header-bg-sm: transparent;
+$table-header-sort-active-bg: var(--table-header-sort-active-bg);
+$table-header-filter-active-bg: var(--table-header-filter-active-bg);
 
 // Tag
 $tag-default-bg: $background-color-light;
@@ -366,13 +369,13 @@ $breadcrumb-separator-color: $text-color-secondary;
 // Step
 
 // Slider
-$slider-rail-background-color: $background-color-base;
-$slider-rail-background-color-hover: #e1e1e1;
-$slider-track-background-color: $primary-3;
-$slider-track-background-color-hover: $primary-4;
-$slider-handle-background-color: $component-background;
-$slider-handle-color: $primary-3;
-$slider-handle-color-hover: $primary-4;
+$slider-rail-background-color: var(--slider-rail-background-color);
+$slider-rail-background-color-hover: $slider-rail-background-color;
+$slider-track-background-color: $primary-6;
+$slider-track-background-color-hover: $hover-color;
+$slider-handle-background-color: #fff;
+$slider-handle-color: $primary-6;
+$slider-handle-color-hover: $hover-color;
 // $slider-handle-color-focus: tint($primary-color, 20%);
 // $slider-handle-color-focus-shadow: fade($primary-color, 20%);
 $slider-handle-color-tooltip-open: $primary-6;
@@ -396,7 +399,7 @@ $skeleton-color: #f2f2f2;
 
 // Transfer
 $transfer-disabled-bg: $disabled-bg;
-$transfer-item-hover-color: var(--transfer-item-hover-color);
+$transfer-item-hover-color: $select-item-hover-bg;
 
 // Message
 $message-background: var(--message-background);
@@ -425,3 +428,14 @@ $list-footer-background: transparent;
 $timeline-color: $border-color-split;
 $timeline-dot-color: $primary-6;
 $timeline-dot-bg: $component-background;
+
+// collapse-card
+$collapse-card-bg: var(--collapse-card-background);
+$collapse-card-header-bg: var(--collapse-card-header-bg);
+
+// Search
+$search-arrow-icon-bg: var(--search-arrow-icon-bg);
+$search-result-item-hover-bg: $select-item-hover-bg;
+
+// pan
+$pan-item-hover-bg: $select-item-hover-bg;

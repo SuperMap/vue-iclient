@@ -65,7 +65,7 @@ export const CustomDropdownOptionsPagination = () => ({
     }
   },
   template: `
-  <a-pagination
+  <sm-pagination
     v-model="current"
     :page-size-options="pageSizeOptions"
     :total="total"
@@ -77,7 +77,7 @@ export const CustomDropdownOptionsPagination = () => ({
       <span v-if="props.value !== '50'">{{ props.value }}条/页</span>
       <span v-if="props.value === '50'">全部</span>
     </template>
-  </a-pagination>
+  </sm-pagination>
   `
 });
 CustomDropdownOptionsPagination.story = {

@@ -3,9 +3,8 @@
     v-show="false"
     ref="Popup"
     class="sm-component-identify"
-    :style="[getBackgroundStyle, getTextColorStyle]"
+    :style="[tablePopupBgStyle, normalTextColorStyle]"
   >
-    <div class="sm-component-identify__close">x</div>
     <ul
       :class="[
         autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
@@ -27,6 +26,7 @@ import IdentifyViewModel from './IdentifyViewModel';
 import CircleStyle from '../../../_types/CircleStyle';
 import FillStyle from '../../../_types/FillStyle';
 import LineStyle from '../../../_types/LineStyle';
+import { setPopupArrowStyle } from '../../../../common/_utils/util';
 
 export default {
   name: 'SmIdentify',
@@ -148,9 +148,6 @@ export default {
     },
     layerStyle() {
       this.setViewModel();
-    },
-    getBackground() {
-      this.changeResultPopupArrowStyle();
     }
   },
   loaded() {
@@ -264,7 +261,7 @@ export default {
         this.$nextTick(() => {
           this.isHide = false; // 显示内容
           this.viewModel.addPopup(coordinates, this.$refs.Popup);
-          this.changeResultPopupArrowStyle();
+          setPopupArrowStyle(this.tablePopupBgData);
         });
       }
     },
@@ -272,24 +269,6 @@ export default {
     addOverlayToMap(layer, filter) {
       // 先移除之前的高亮layer
       this.viewModel.addOverlayToMap(layer, filter);
-    },
-    // 箭头颜色（适应主题色）
-    changeResultPopupArrowStyle() {
-      const identifyBottomAnchor =
-        document.querySelector('.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip') ||
-        document.querySelector('.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip') ||
-        document.querySelector('.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip');
-      const identifyTopAnchor =
-        document.querySelector('.mapboxgl-popup-anchor-top .mapboxgl-popup-tip') ||
-        document.querySelector('.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip') ||
-        document.querySelector('.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip');
-      const identifyLeftAnchor = document.querySelector('.mapboxgl-popup-anchor-left .mapboxgl-popup-tip');
-      const identifyRightAnchor = document.querySelector('.mapboxgl-popup-anchor-right .mapboxgl-popup-tip');
-
-      identifyTopAnchor && (identifyTopAnchor.style.borderBottomColor = this.getBackground);
-      identifyBottomAnchor && (identifyBottomAnchor.style.borderTopColor = this.getBackground);
-      identifyLeftAnchor && (identifyLeftAnchor.style.borderRightColor = this.getBackground);
-      identifyRightAnchor && (identifyRightAnchor.style.borderLeftColor = this.getBackground);
     },
     changeClickedLayersCursor(layers = [], map = this.map) {
       layers &&

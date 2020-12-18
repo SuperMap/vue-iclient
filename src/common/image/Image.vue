@@ -6,7 +6,7 @@
       :target="target"
     >
       <div v-if="src" class="sm-component-image__content" :style="[repeatStyle,imgUrl]"></div>
-      <i v-else class="sm-components-icons-x-bmp sm-component-image__defaultImg"></i>
+      <i v-else class="sm-components-icon-tupian sm-component-image__defaultImg"></i>
     </a>
   </div>
 </template>

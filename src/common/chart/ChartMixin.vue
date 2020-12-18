@@ -1,11 +1,12 @@
 <template>
-  <sm-card
+  <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :split-line="splitLine"
     class="sm-component-chart"
   >
     <v-chart
@@ -23,10 +24,11 @@
       v-show="false"
       ref="chartTablePopup"
       v-bind="tablePopupProps"
+      :split-line="splitLine"
       :text-color="textColor"
-      :background="getBackground"
+      :background="background"
     />
-  </sm-card>
+  </sm-collapse-card>
 </template>
 <script>
 import 'echarts';
@@ -42,7 +44,7 @@ import Timer from '../_mixin/Timer';
 import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
-import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
+import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from '../_utils/util';
 import { addListener, removeListener } from 'resize-detector';
 
 // 枚举事件类型
@@ -94,7 +96,15 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'sm-components-icons-attribute'
+      default: 'sm-components-icon-chart'
+    },
+    collapsed: {
+      type: Boolean,
+      default: true
+    },
+    splitLine: {
+      type: Boolean,
+      default: false
     },
     dataset: {
       type: Object,
@@ -227,9 +237,6 @@ export default {
     xBar() {
       return this.options && this.options.yAxis && this.options.yAxis.type === 'category';
     },
-    popupBackground() {
-      return this.getBackground && getColorWithOpacity(this.getBackground, 0.5);
-    },
     colorNumber() {
       let length =
         (this.datasetOptions && this.datasetOptions.length) ||
@@ -258,7 +265,6 @@ export default {
     getBackground(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this._setChartTheme();
-        this.changePopupArrowStyle();
       }
     },
     dataset: {
@@ -842,7 +848,7 @@ export default {
       }
 
       let series = dataOptions.series;
-      let isRingShine = options.series[0] && options.series[0].outerGap >= 0;
+      let isRingShine = options.series && options.series[0] && options.series[0].outerGap >= 0;
       if (series && series.length && series[0].type === 'pie') {
         this.setItemStyleColor(false, series);
       }
@@ -1121,7 +1127,7 @@ export default {
         const propsData = this.generateTableData(properties);
         this.tablePopupProps = { ...propsData };
         this.$nextTick(() => {
-          this.viewModel.setPopupContent(coordinates, this.$refs.chartTablePopup.$el, this.changePopupArrowStyle);
+          this.viewModel.setPopupContent(coordinates, this.$refs.chartTablePopup.$el, () => setPopupArrowStyle(this.tablePopupBgData));
         });
       } else {
         const mapNotLoaded = this.mapNotLoadedTip();
@@ -1151,7 +1157,6 @@ export default {
       }
       return propsData;
     },
-    changePopupArrowStyle() {},
     mapNotLoadedTip() {},
     _dataZoomChanged() {
       let flag = false;

@@ -1,7 +1,7 @@
 <template>
   <div :id="target" class="sm-component-web-map">
     <slot v-if="ready"></slot>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
+    <sm-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
@@ -13,9 +13,13 @@ import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-deco
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
 import MapEvents from './_mixin/map-events';
+import SmSpin from '../../common/spin/Spin.vue';
 
 @Component({
   name: 'SmWebMap',
+  components: {
+    SmSpin
+  },
   viewModelProps: [
     'mapId',
     'serverUrl',

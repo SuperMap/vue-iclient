@@ -1,8 +1,10 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
 
 @include b(tdtPointsResults) {
+  padding-top: 10px;
   .title{
-    padding-left: 20px;
+    padding-left: 16px;
   }
   .buoy-icon {
     background-image: url("#{$--tdt-assets-path}/sprite.png");
@@ -82,38 +84,39 @@
     overflow: hidden;
     & > li {
       list-style: none;
-      padding: 12px 0 12px 20px;
+      padding: 6px 16px;
       cursor: pointer;
       font-size: 12px;
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: center;
+      &:hover {
+        background: $search-result-item-hover-bg;
+      }
       .buoy-icon {
         width: 30px;
-        // position: absolute;
-        // left: 22px;
-        // top: 15px;
       }
       .route-info {
-        width: 70%;
-        // float: left;
+        width: 65%;
+        margin-left: 5px;
         span {
           display: block;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          line-height: 24px;
+          line-height: 22px;
         }
       }
       .set-start-point {
+        flex: 1;
         display: none;
-        line-height: 24px;
-        float: right;
-        padding-right: 4px;
+        text-align: right;
+        line-height: 20px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        color: $primary-color;
       }
     }
   }

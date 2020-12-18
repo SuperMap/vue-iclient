@@ -1,4 +1,5 @@
 @import '../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../common/_utils/style/theme/theme.scss';
 
 @include b(compare) {
   position: relative;
@@ -14,6 +15,7 @@
   & > .mapboxgl-compare {
     z-index: 999;
     user-select: none;
+    background-color: #d9d9d9;
     .compare-swiper-vertical,
     .compare-swiper-horizontal {
       box-shadow: inset 0 0 0 2px;
@@ -21,8 +23,20 @@
       margin: 0;
       box-shadow: none;
       border: 2px solid;
+      color: #d9d9d9;
+      background-color: $primary-6;
       box-sizing: content-box;
       background-size: contain;
+      background-image: none;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      &::before {
+        font-family: 'sm-components-icon-' !important;
+        content: '\e64a';
+      }
     }
     .compare-swiper-horizontal {
       transform: translate(-50%, -50%) rotate(90deg);
@@ -32,4 +46,3 @@
     }
   }
 }
-

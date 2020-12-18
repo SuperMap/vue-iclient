@@ -1,7 +1,8 @@
 <template>
   <div v-if="data" class="search-results-container nothing-results-container sm-component-tdtNoResults">
     <div class="title">
-      <span v-if="prompt" class="region">{{ $t('tdtResults.on') }}{{ prompt.name }}</span>
+      {{ $t('tdtResults.on') }}
+      <span v-if="prompt" class="region">{{ prompt.name }}</span>
       {{ $t('tdtResults.searchNoResult') }}
     </div>
     <div class="content">
@@ -16,8 +17,9 @@
               <a
                 href="https://www.tianditu.gov.cn/feedback/#/newPlace"
                 target="_bank"
-                :style="getColorStyle(0)"
-              >{{ $t('tdtResults.addThisAddress') }}</a>
+              >
+                {{ $t('tdtResults.addThisAddress') }}
+              </a>
             </p>
           </div>
         </div>
@@ -26,9 +28,10 @@
             {{ $t('tdtResults.uWantTo') }}：
             <a
               href="javascript:void(0)"
-              :style="getColorStyle(0)"
               @click="searchResult"
-            >{{ noResultInfo.DidYouMean }}</a>
+            >
+              {{ noResultInfo.DidYouMean }}
+            </a>
           </p>
         </div>
       </div>

@@ -50,6 +50,19 @@ export { default as LayoutHeader } from '../common/layout/Header';
 export { default as LayoutFooter } from '../common/layout/Footer';
 export { default as LayoutContent } from '../common/layout/Content';
 export { default as LayoutSider } from '../common/layout/Sider';
+export { default as Spin } from '../common/spin';
+export { default as Card } from '../common/card/Card';
+export { default as CardGrid } from '../common/card/Grid';
+export { default as CardMeta } from '../common/card/Meta';
+export { default as Collapse } from '../common/collapse/Collapse';
+export { default as CollapsePanel } from '../common/collapse/Panel';
+export { default as Table } from '../common/table/Table';
+export { default as TableColumn } from '../common/table/Column';
+export { default as TableColumnGroup } from '../common/table/ColumnGroup';
+export { default as Slider } from '../common/slider/Slider';
+export { default as Tree } from '../common/tree/Tree';
+export { default as DirectoryTree } from '../common/tree/DirectoryTree';
+export { default as TreeNode } from '../common/tree/TreeNode';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
