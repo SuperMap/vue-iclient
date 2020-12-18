@@ -84,11 +84,11 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs2: 'video.js',
         amd: 'video.js'
       },
-      'videojs-contrib-hls': {
-        root: 'videojsContribHls',
-        commonjs: 'videojs-contrib-hls',
-        commonjs2: 'videojs-contrib-hls',
-        amd: 'videojs-contrib-hls'
+      'flv.js': {
+        root: 'flvjs',
+        commonjs: 'flv.js',
+        commonjs2: 'flv.js',
+        amd: 'flv.js'
       },
       'videojs-flash': {
         root: 'videojsFlash',
