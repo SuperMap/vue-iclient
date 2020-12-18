@@ -189,6 +189,15 @@
     },
     "videoPlayer": {
       "controlBar": "控制条"
+    },
+    "slider": {
+      "icon": "图标",
+      "vertical": "竖直",
+      "reverse": "反向",
+      "withNumber": "带输入框的",
+      "customTip": "自定义提示",
+      "graduted": "带标签的",
+      "controlTip": "控制提示"
     }
   },
   "chartComponent": {
@@ -213,6 +222,18 @@
     "layerManager": "图层管理",
     "miniMap": "鹰眼图",
     "measure": "量算",
-    "openFile": "打开文件"
+    "openFile": "打开文件",
+    "identify": "点选查询",
+    "zoom": "缩放",
+    "slider": "打开滑动条",
+    "compare": "卷帘",
+    "pan": "平移",
+    "legend": "图例",
+    "panlLegend": "详细图例",
+    "query": "数据查询",
+    "poi": "POI 搜索",
+    "tdtPoi": "天地图-POI 搜索",
+    "tdtMapSwitcher": "天地图-地图切换",
+    "TdtRoute": "天地图-路线规划"
   }
 }
