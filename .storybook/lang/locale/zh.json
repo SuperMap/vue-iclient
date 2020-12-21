@@ -198,6 +198,27 @@
       "customTip": "自定义提示",
       "graduted": "带标签的",
       "controlTip": "控制提示"
+    },
+    "table": {
+      "cellAutoEllipsis": "单元格自动省略",
+      "border": "带边框",
+      "columnRowMerge": "行/列合并",
+      "fixHeaderAndColumn": "固定头和列",
+      "filterAndSort": "筛选和排序"
+    },
+    "collapse": {
+      "accordion": "手风琴",
+      "nestedPanel": "面板嵌套",
+      "customPanel": "自定义面板",
+      "hideArrow": "隐藏箭头"
+    },
+    "notification": {
+      "customStyle": "自定义样式",
+      "position": "位置",
+      "icon": "带有图标的通知提醒框",
+      "autoCloseDelay": "自动关闭的延时",
+      "customButton": "自定义按钮",
+      "updateInfoContent": "更新消息内容"
     }
   },
   "chartComponent": {

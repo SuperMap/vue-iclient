@@ -198,6 +198,27 @@
       "customTip": "Customize tooltip",
       "graduted": "Graduated slider",
       "controlTip": "Control visible of ToolTip"
+    },
+    "table": {
+      "cellAutoEllipsis": "Cell Auto Ellipsis",
+      "border": "Border",
+      "columnRowMerge": "Column Row Merge",
+      "fixHeaderAndColumn": "Fix Header Column",
+      "filterAndSort": "Filter And Sort"
+    },
+    "collapse": {
+      "accordion": "Accordion",
+      "nestedPanel": "Nested Panel",
+      "customPanel": "Custom Panel",
+      "hideArrow": "Hide Arrow"
+    },
+    "notification": {
+      "customStyle": "Custom Style",
+      "position": "Position",
+      "icon": "Icon",
+      "autoCloseDelay": "Close Delay",
+      "customButton": "Custom Button",
+      "updateInfoContent": "Update Info Content"
     }
   },
   "chartComponent": {
