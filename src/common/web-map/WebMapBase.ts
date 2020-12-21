@@ -8,6 +8,7 @@ import canvg from 'canvg';
 
 import WebMapService from '../_utils/WebMapService';
 import { getColorWithOpacity } from '../_utils/util';
+import { getProjection, registerProjection } from '../../common/_utils/epsg-define';
 
 // 迁徙图最大支持要素数量
 const MAX_MIGRATION_ANIMATION_COUNT = 1000;
@@ -255,10 +256,22 @@ export default abstract class WebMapBase extends Events {
     getLayerFunc &&
       getLayerFunc
         .then(
-          result => {
+          async result => {
             if (this.mapId && this._taskID !== _taskID) {
               return;
             }
+            if (result && layer.projection) {
+              if (!getProjection(layer.projection)) {
+                const epsgWKT = await this.webMapService.getEpsgCodeInfo(
+                  layer.projection.split(':')[1],
+                  this.serverUrl
+                );
+                if (epsgWKT) {
+                  registerProjection(layer.projection, epsgWKT);
+                }
+              }
+            }
+
             this._getLayerFeaturesSucceeded(result, layer);
           },
           error => {
@@ -658,18 +671,28 @@ export default abstract class WebMapBase extends Events {
     let styleGroup = [];
     names.forEach((name, index) => {
       let color = curentColors[index];
+      let itemStyle = { ...style };
       if (name in customSettings) {
-        color = customSettings[name];
+        const customStyle = customSettings[name];
+        if (typeof customStyle === 'object') {
+          itemStyle = Object.assign(itemStyle, customStyle);
+        } else {
+          if (typeof customStyle === 'string') {
+            color = customSettings[name];
+          }
+          if (featureType === 'LINE') {
+            itemStyle.strokeColor = color;
+          } else {
+            itemStyle.fillColor = color;
+          }
+        }
       }
-      if (featureType === 'LINE') {
-        style.strokeColor = color;
-      } else {
-        style.fillColor = color;
-      }
+
       styleGroup.push({
         color: color,
-        style: { ...style },
-        value: name
+        style: itemStyle,
+        value: name,
+        themeField: themeField
       });
     }, this);
 
