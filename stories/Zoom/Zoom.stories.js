@@ -3,7 +3,7 @@ import {
 } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/zoom'
+  title: 'GIS Components/zoom'
 };
 
 export const zoom = () => ({

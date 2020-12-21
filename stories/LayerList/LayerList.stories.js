@@ -1,7 +1,7 @@
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/layerList'
+  title: 'GIS Components/layerList'
 };
 export const LayerList = () => ({
   template: `

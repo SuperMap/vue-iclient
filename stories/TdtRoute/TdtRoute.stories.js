@@ -3,7 +3,7 @@ import {
 } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/tdtRoute'
+  title: 'GIS Components/tdtRoute'
 };
 
 export const TdtRoute = () => ({
@@ -19,7 +19,7 @@ export const TdtRoute = () => ({
   },
   template: `
   <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
-    <sm-tdt-route position="top-left" :data="routeData" />
+    <sm-tdt-route :data="routeData" />
   </sm-web-map>
   `
 });

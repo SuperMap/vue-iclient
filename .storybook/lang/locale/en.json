@@ -219,6 +219,24 @@
       "autoCloseDelay": "Close Delay",
       "customButton": "Custom Button",
       "updateInfoContent": "Update Info Content"
+    },
+    "spin": {
+      "insideContainer": "Inside a Container",
+      "customizedDescription": "Customized Description",
+      "customIndicator": "Custom Indicator",
+      "size": "Size",
+      "embeddedMode": "Embedded Mode",
+      "delay": "Delay"
+    },
+    "card": {
+      "customizedContent": "Customized Content",
+      "loadingCard": "Loading Card",
+      "simple": "Simple",
+      "noBorder": "No Border",
+      "grid": "Grid",
+      "inner": "Inner",
+      "supportMoreContent": "support More Content",
+      "WithTabs": "With Tabs"
     }
   },
   "chartComponent": {
@@ -246,6 +264,7 @@
     "openFile": "Open File",
     "identify": "Click on the query",
     "zoom": "Zoom",
+    "showZoom": "Show Zoom",
     "slider": "Open Slider",
     "compare": "Compare",
     "pan": "Pan",

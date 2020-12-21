@@ -39,7 +39,7 @@ export const parameters = {
     showPanel: true,
     panelPosition: 'right',
     storySort: {
-      order: ['Design', ['Theme', 'Custom-Theme'], 'Map Components', 'Chart Components', 'Basic Components']
+      order: ['Design', ['Theme', 'Custom-Theme'], 'Map Components', 'GIS Components','Chart Components', 'Basic Components']
     }
   },
   docs: {

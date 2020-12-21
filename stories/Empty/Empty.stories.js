@@ -1,7 +1,6 @@
-import { withKnobs } from '@storybook/addon-knobs';
 import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'Basic Components/empty', decorators: [withKnobs] };
+export default { title: 'Basic Components/empty' };
 
 export const BasicEmpty = () => ({
   template: `

@@ -219,6 +219,24 @@
       "autoCloseDelay": "自动关闭的延时",
       "customButton": "自定义按钮",
       "updateInfoContent": "更新消息内容"
+    },
+    "spin": {
+      "insideContainer": "容器中",
+      "customizedDescription": "自定义文案",
+      "customIndicator": "自定义指示标",
+      "size": "大小",
+      "embeddedMode": "卡片加载中",
+      "delay": "延迟"
+    },
+    "card": {
+      "customizedContent": "自定义内容",
+      "loadingCard": "预加载",
+      "simple": "简洁",
+      "noBorder": "无边框",
+      "grid": "网格型",
+      "inner": "内部",
+      "supportMoreContent": "支持更多内容",
+      "WithTabs": "带页签的"
     }
   },
   "chartComponent": {
@@ -246,6 +264,7 @@
     "openFile": "打开文件",
     "identify": "点选查询",
     "zoom": "缩放",
+    "showZoom": "展示级别",
     "slider": "打开滑动条",
     "compare": "卷帘",
     "pan": "平移",

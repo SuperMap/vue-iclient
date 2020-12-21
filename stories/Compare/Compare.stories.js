@@ -1,7 +1,7 @@
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/compare'
+  title: 'GIS Components/compare'
 };
 
 export const compare = () => ({

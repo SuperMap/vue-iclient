@@ -1,7 +1,7 @@
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/measure'
+  title: 'GIS Components/measure'
 };
 export const Measure = () => ({
   template: `

@@ -4,7 +4,7 @@ import {
 import smcomponents from '../../src/mapboxgl';
 
 export default {
-  title: 'Gis Component/poi'
+  title: 'GIS Components/poi'
 };
 
 export const poi = () => ({
@@ -41,7 +41,6 @@ export const poi = () => ({
   template: `
   <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
     <sm-search
-    position="top-right"
     :layer-names="['UNIQUE-民航数-0']"
     :address-match="addressMatch"
     :rest-map="restMapSearch"

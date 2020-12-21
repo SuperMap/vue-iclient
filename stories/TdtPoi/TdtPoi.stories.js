@@ -4,7 +4,7 @@ import {
 import smcomponents from '../../src/mapboxgl';
 
 export default {
-  title: 'Gis Component/tdtPoi'
+  title: 'GIS Components/tdtPoi'
 };
 
 export const tdtPoi = () => ({
@@ -45,7 +45,6 @@ export const tdtPoi = () => ({
   template: `
     <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
       <sm-tdt-search
-      position="top-left"
       :layer-names="layerSourceNames"
       :address-match="addressMatch"
       :rest-map="restMapSearch"

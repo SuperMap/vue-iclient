@@ -3,7 +3,7 @@ import {
 } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/tdtMapSwitcher'
+  title: 'GIS Components/tdtMapSwitcher'
 };
 
 export const tdtMapSwitcher = () => ({
@@ -18,7 +18,7 @@ export const tdtMapSwitcher = () => ({
   },
   template: `
   <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
-    <sm-tdt-map-switcher position="top-left" :data="mapSwitcherData" />
+    <sm-tdt-map-switcher :data="mapSwitcherData" />
   </sm-web-map>
   `
 });

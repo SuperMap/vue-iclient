@@ -1,7 +1,7 @@
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/layerManager'
+  title: 'GIS Components/layerManager'
 };
 export const layerManager = () => ({
   template: `

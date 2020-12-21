@@ -1,7 +1,7 @@
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/miniMap'
+  title: 'GIS Components/miniMap'
 };
 export const miniMap = () => ({
   template: `

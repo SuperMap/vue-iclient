@@ -1,7 +1,7 @@
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/identify'
+  title: 'GIS Components/identify'
 };
 
 export const identify = () => ({

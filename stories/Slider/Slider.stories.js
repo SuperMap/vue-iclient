@@ -3,7 +3,7 @@ import {
 } from '../../.storybook/lang';
 
 export default {
-  title: 'Basic/slider'
+  title: 'Basic Components/slider'
 };
 
 export const BasicSlider = () => ({

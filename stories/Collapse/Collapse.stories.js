@@ -13,17 +13,17 @@ export const BasicCollapse = () => ({
     };
   },
   template: `
-    <sm-collapse>
-      <sm-collapse-panel key="1" header="This is panel header 1">
-        <p>{{ text }}</p>
-      </sm-collapse-panel>
-      <sm-collapse-panel key="2" header="This is panel header 2" :disabled="false">
-        <p>{{ text }}</p>
-      </sm-collapse-panel>
-      <sm-collapse-panel key="3" header="This is panel header 3" disabled>
-        <p>{{ text }}</p>
-      </sm-collapse-panel>
-    </sm-collapse>
+  <sm-collapse>
+    <sm-collapse-panel key="1" header="This is panel header 1">
+      <p>{{ text }}</p>
+    </sm-collapse-panel>
+    <sm-collapse-panel key="2" header="This is panel header 2" :disabled="false">
+      <p>{{ text }}</p>
+    </sm-collapse-panel>
+    <sm-collapse-panel key="3" header="This is panel header 3" disabled>
+      <p>{{ text }}</p>
+    </sm-collapse-panel>
+  </sm-collapse>
   `
 });
 BasicCollapse.story = {
@@ -91,17 +91,17 @@ export const CustomPanel = () => ({
     };
   },
   template: `
-    <sm-collapse>
-      <sm-collapse-panel key="1" header="This is panel header 1" :style="customStyle">
-        <p>{{ text }}</p>
-      </sm-collapse-panel>
-      <sm-collapse-panel key="2" header="This is panel header 2" :style="customStyle">
-        <p>{{ text }}</p>
-      </sm-collapse-panel>
-      <sm-collapse-panel key="3" header="This is panel header 3" :style="customStyle">
-        <p>{{ text }}</p>
-      </sm-collapse-panel>
-    </sm-collapse>
+  <sm-collapse>
+    <sm-collapse-panel key="1" header="This is panel header 1" :style="customStyle">
+      <p>{{ text }}</p>
+    </sm-collapse-panel>
+    <sm-collapse-panel key="2" header="This is panel header 2" :style="customStyle">
+      <p>{{ text }}</p>
+    </sm-collapse-panel>
+    <sm-collapse-panel key="3" header="This is panel header 3" :style="customStyle">
+      <p>{{ text }}</p>
+    </sm-collapse-panel>
+  </sm-collapse>
   `
 });
 
@@ -116,18 +116,18 @@ export const HideArrow = () => ({
     };
   },
   template: `
-    <sm-collapse default-active-key="1">
-      <sm-collapse-panel key="1" header="This is panel header with arrow icon">
-        <p>{{ text }}</p>
-      </sm-collapse-panel>
-      <sm-collapse-panel
-        key="2"
-        header="This is panel header with no arrow icon"
-        :show-arrow="false"
-      >
-        <p>{{ text }}</p>
-      </sm-collapse-panel>
-    </sm-collapse>
+  <sm-collapse default-active-key="1">
+    <sm-collapse-panel key="1" header="This is panel header with arrow icon">
+      <p>{{ text }}</p>
+    </sm-collapse-panel>
+    <sm-collapse-panel
+      key="2"
+      header="This is panel header with no arrow icon"
+      :show-arrow="false"
+    >
+      <p>{{ text }}</p>
+    </sm-collapse-panel>
+  </sm-collapse>
   `
 });
 

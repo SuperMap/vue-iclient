@@ -1,7 +1,7 @@
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/pan'
+  title: 'GIS Components/pan'
 };
 
 export const pan = () => ({

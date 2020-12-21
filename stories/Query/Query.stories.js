@@ -4,7 +4,7 @@ import {
 import smcomponents from '../../src/mapboxgl';
 
 export default {
-  title: 'Gis Component/query'
+  title: 'GIS Components/query'
 };
 
 export const query = () => ({
@@ -23,7 +23,6 @@ export const query = () => ({
   <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
     <sm-query
     :rest-map="restMapQuery"
-    position="top-right"
     />
   </sm-web-map>
   `

@@ -1,7 +1,7 @@
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Gis Component/openFile'
+  title: 'GIS Components/openFile'
 };
 export const OpenFile = () => ({
   template: `

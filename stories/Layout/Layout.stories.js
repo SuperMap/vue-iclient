@@ -1,7 +1,6 @@
-import { withKnobs } from '@storybook/addon-knobs';
 import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'Basic Components/layout', decorators: [withKnobs] };
+export default { title: 'Basic Components/layout' };
 
 export const BasicLayout = () => ({
   template: `

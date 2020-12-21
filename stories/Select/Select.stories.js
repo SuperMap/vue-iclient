@@ -1,8 +1,7 @@
-import { withKnobs } from '@storybook/addon-knobs';
 import debounce from 'lodash/debounce';
 import { toI18n } from '../../.storybook/lang';
 
-export default { title: 'Basic Components/select', decorators: [withKnobs] };
+export default { title: 'Basic Components/select' };
 
 export const BasicSelect = () => ({
   template: `
