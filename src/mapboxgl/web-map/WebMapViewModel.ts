@@ -568,6 +568,7 @@ export default class WebMapViewModel extends WebMapBase {
     const options = this._createGraticuleOptions(graticuleInfo);
     const graticuleLayers = new mapboxgl.supermap.GraticuleLayer(this.map, options);
     this.map.addLayer(graticuleLayers);
+    this._setGraticuleDash(graticuleInfo.lineDash, graticuleLayers);
   }
 
   private _createGraticuleOptions(graticuleInfo) {
@@ -577,7 +578,7 @@ export default class WebMapViewModel extends WebMapBase {
     let { strokeColor, lineDash, strokeWidth, extent, interval, lonLabelStyle, latLabelStyle } = graticuleInfo;
     const strokeStyle = {
       lineColor: strokeColor,
-      lindDasharray: this._getGraticuleDash(lineDash),
+      lindDasharray: lineDash,
       lineWidth: strokeWidth
     };
     lonLabelStyle = {
@@ -609,18 +610,14 @@ export default class WebMapViewModel extends WebMapBase {
     };
   }
 
-  private _getGraticuleDash(lineDash) {
-    const getLineDash = map => {
-      map.on('zoomend', () => {
-        if (map.getZoom() < 3) {
-          map.setPaintProperty('sm-graticule-layer', 'line-dasharray', [0.1, 5]);
-        } else {
-          map.setPaintProperty('sm-graticule-layer', 'line-dasharray', lineDash);
-        }
-      });
-      return lineDash;
-    };
-    return getLineDash;
+  private _setGraticuleDash(lindDasharray, graticuleLayers) {
+    this.map.on('zoomend', () => {
+      if (this.map.getZoom() < 3) {
+        graticuleLayers.setStrokeStyle({ lindDasharray: [0.1, 3] });
+      } else {
+        graticuleLayers.setStrokeStyle({ lindDasharray });
+      }
+    });
   }
 
   private _createTiandituLayer(mapInfo: any): void {
