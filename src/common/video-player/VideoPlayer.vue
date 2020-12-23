@@ -41,8 +41,8 @@
 import Vue from 'vue';
 import { Component, Watch, Prop } from 'vue-property-decorator';
 import 'video.js/dist/video-js.css';
-import 'video.js';
-import flvjs from 'flv.js/dist/flv';
+import _videojs from 'video.js';
+import flvjs from 'flv.js';
 import 'videojs-flvjs-es6';
 import 'videojs-flash';
 import { videoPlayer } from 'vue-videojs7';
@@ -66,8 +66,6 @@ interface playerOptions {
   flash?: any;
   flvjs?: any;
 }
-// @ts-ignore
-window.flvjs = flvjs;
 
 @Component({
   name: 'SmVideoPlayer',
@@ -117,6 +115,10 @@ class SmVideoPlayer extends Vue {
   }
 
   get isFlv() {
+    if (!flvjs && this.checkUrl(this.url) && this.url.includes('.flv')) {
+      console.error(this.$t('warning.flvPlayer'));
+      return false;
+    }
     // @ts-ignore
     return flvjs.isSupported() && this.checkUrl(this.url) && this.url.includes('.flv');
   }
@@ -179,6 +181,13 @@ class SmVideoPlayer extends Vue {
       this.modalVideoPlayer = this.$refs.modalVideoPlayer && this.$refs.modalVideoPlayer.player;
     }
   }
+
+  beforeCreate() {
+    if (!_videojs) {
+      console.error(this.$t('warning.videojs'));
+    }
+  }
+
   created() {
     this.handlePlayerOptions();
   }

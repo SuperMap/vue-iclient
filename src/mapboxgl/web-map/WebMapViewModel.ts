@@ -566,7 +566,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   _initGraticuleLayer(graticuleInfo: any) {
     const options = this._createGraticuleOptions(graticuleInfo);
-    const graticuleLayers = new mapboxgl.supermap.GraticuleLayer(this.map, options);
+    const graticuleLayers = new mapboxgl.supermap.GraticuleLayer(options);
     this.map.addLayer(graticuleLayers);
     this._setGraticuleDash(graticuleInfo.lineDash, graticuleLayers);
   }

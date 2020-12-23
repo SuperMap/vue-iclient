@@ -28,7 +28,9 @@ export default {
     unsupportedVideoAddress: '视频地址不合法',
     unavailableVideo: '此视频暂无法播放，请稍后再试',
     mapNotLoaded: '关联的地图尚未加载完整，请稍后',
-    unassociatedMap: '您需要配置关联地图！'
+    unassociatedMap: '您需要配置关联地图！',
+    videojs: '请引入video.js插件: https://github.com/videojs/video.js； 当播放rtmp时，安装flash相关插件：https://github.com/videojs/videojs-flash',
+    flvPlayer: '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
   success: {},
   info: {
