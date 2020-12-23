@@ -75,7 +75,7 @@
   },
   "keywords": [
     "SuperMap",
-    "MapboxGL",
+    "MapboxGL v1",
     "Vue"
   ],
   "scripts": {
