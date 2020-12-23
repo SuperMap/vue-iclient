@@ -49,7 +49,7 @@
           />
         </div>
         <div :style="collapseCardBackgroundStyle">
-          <div v-if="resultSuggestions" class="sm-component-search__result" :style="normalTextColorStyle">
+          <div v-if="resultSuggestions" class="sm-component-search__result" :style="getTextColorStyle">
             <ul class="sm-component-tdtSearch__suggestions" :style="headingTextColorStyle">
               <li
                 v-for="(item, i) in searchResult"

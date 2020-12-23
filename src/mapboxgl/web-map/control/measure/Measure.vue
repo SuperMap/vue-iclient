@@ -29,7 +29,7 @@
           v-model="activeDistanceUnit"
           :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
-          :style="normalTextColorStyle"
+          :style="getTextColorStyle"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
         >
@@ -42,7 +42,7 @@
           v-model="activeAreaUnit"
           :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
-          :style="normalTextColorStyle"
+          :style="getTextColorStyle"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
         >
@@ -56,7 +56,7 @@
       </div>
       <div v-show="getResult" class="sm-component-measure__calculateResult">
         <div class="sm-component-measure__calcuTitle" :style="headingTextColorStyle">{{ $t('measure.measureResult') }}</div>
-        <div class="sm-component-measure__result" :style="normalTextColorStyle">{{ getResult }}</div>
+        <div class="sm-component-measure__result" :style="getTextColorStyle">{{ getResult }}</div>
       </div>
     </div>
   </sm-collapse-card>
@@ -194,7 +194,7 @@ export default {
     popupStyle() {
       return {
         background: this.tablePopupBgStyle.background,
-        color: this.normalTextColorStyle.color
+        color: this.getTextColorStyle.color
       };
     }
   },

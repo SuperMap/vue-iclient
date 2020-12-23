@@ -111,6 +111,8 @@
     flex: 1;
     overflow: auto;
     padding: 0 16px;
+    display: flex;
+    flex-direction: column;
   }
 
   @include e(result-header) {
@@ -125,7 +127,7 @@
     }
   }
   @include e(no-result result-loading result-body) {
-    height: 100%;
+    flex: 1;
     margin: 0 -16px;
     background-color: $background-color-base;
   }

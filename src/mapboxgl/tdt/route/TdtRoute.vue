@@ -11,35 +11,25 @@
     :split-line="splitLine"
     class="sm-component-tdtRoute"
   >
-    <div class="sm-component-tdtRoute__panel" :style="normalTextColorStyle">
+    <div class="sm-component-tdtRoute__panel" :style="getTextColorStyle">
       <div class="sm-component-tdtRoute__header">
         <div class="route-navbar">
           <div class="route-tabs">
-            <div
-              :class="['car-icon', { active: routeActive === 'car' }]"
-              @click="routeActive = 'car'"
-            >
-              <i class="sm-components-icon-car"/>
+            <div :class="['car-icon', { active: routeActive === 'car' }]" @click="routeActive = 'car'">
+              <i class="sm-components-icon-car" />
             </div>
-            <div
-              :class="['bus-icon', { active: routeActive === 'bus' }]"
-              @click="routeActive = 'bus'"
-            >
-              <i class="sm-components-icon-bus"/>
+            <div :class="['bus-icon', { active: routeActive === 'bus' }]" @click="routeActive = 'bus'">
+              <i class="sm-components-icon-bus" />
             </div>
           </div>
-          <div
-            class="clear-route"
-            :style="secondaryTextColorStyle"
-            @click="clearRoute"
-          >
+          <div class="clear-route" :style="secondaryTextColorStyle" @click="clearRoute">
             <i class="sm-components-icon-close" />
           </div>
         </div>
         <div class="route-panel">
           <div class="start-route">
             <div class="icon-wrapper">
-              <div class="icon"></div>
+              <div class="icon" />
             </div>
             <div class="content">
               <sm-input
@@ -47,7 +37,7 @@
                 allowClear
                 :placeholder="$t('tdtRoute.pleaseEnterStartPoint')"
                 :title="$t('tdtRoute.pleaseEnterStartPoint')"
-                :style="headingTextColorStyle"
+                :style="[headingTextColorStyle, getBackgroundStyle]"
                 @keyup.13="searchClicked"
                 @change="e => !e.target.value && clearStart()"
               />
@@ -55,7 +45,7 @@
           </div>
           <div class="end-route">
             <div class="icon-wrapper">
-              <div class="icon"></div>
+              <div class="icon" />
             </div>
             <div class="content">
               <sm-input
@@ -63,7 +53,7 @@
                 allowClear
                 :placeholder="$t('tdtRoute.pleaseEnterEndPoint')"
                 :title="$t('tdtRoute.pleaseEnterEndPoint')"
-                :style="headingTextColorStyle"
+                :style="[headingTextColorStyle, getBackgroundStyle]"
                 @keyup.13="searchClicked"
                 @change="e => !e.target.value && clearEnd()"
               />
@@ -73,10 +63,7 @@
             <i class="sm-components-icon-change" />
           </div>
           <div class="search-btn">
-            <sm-button
-              type="primary"
-              @click="searchClicked"
-            >
+            <sm-button type="primary" @click="searchClicked">
               {{ $t('tdtRoute.search') }}
             </sm-button>
           </div>
@@ -99,7 +86,12 @@
               <span @click="resetStatus('toSetEnd')">{{ $t('tdtRoute.endPoint') }}：{{ end }}</span>
             </div>
             <div v-if="status === 'toSetEnd' && componentId" class="content">
-              <component :is="componentId" v-bind="componentProps" :text-color="textColor" v-on="componentListeners"></component>
+              <component
+                :is="componentId"
+                v-bind="componentProps"
+                :text-color="textColor"
+                v-on="componentListeners"
+              ></component>
             </div>
           </div>
         </div>
@@ -216,12 +208,6 @@ export default {
       if (val === 'finished') {
         this.searchRoute();
       }
-    },
-    textColorsData: {
-      handler() {
-        this.changeSearchInputStyle();
-        this.componentProps = Object.assign({}, this.componentProps, this.$props);
-      }
     }
   },
   beforeDestroy() {
@@ -233,16 +219,7 @@ export default {
       data: this.data
     });
   },
-  mounted() {
-    this.changeSearchInputStyle();
-  },
   methods: {
-    changeSearchInputStyle() {
-      const serachInput = this.$el.querySelectorAll('.ant-input');
-      serachInput.forEach(item => {
-        item.style.color = this.getTextColor;
-      });
-    },
     switchRoute() {
       if (this.start || this.end) {
         [this.start, this.end] = [this.end, this.start];

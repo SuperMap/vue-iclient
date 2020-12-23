@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-collapse-card" :style="normalTextColorStyle">
+  <div class="sm-component-collapse-card" :style="getTextColorStyle">
     <div
       v-if="iconClass"
       :class="{

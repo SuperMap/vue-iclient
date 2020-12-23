@@ -1,7 +1,7 @@
 <template>
   <div
     :class="{ 'sm-component-table-popup': true, 'with-split-line': splitLine }"
-    :style="[tablePopupBgStyle, normalTextColorStyle]"
+    :style="[tablePopupBgStyle, getTextColorStyle]"
   >
     <sm-table
       class="sm-component-table-popup__table"

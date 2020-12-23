@@ -36,7 +36,7 @@ export default {
     },
     extralProps() {
       const dealWithProps = {
-        percent: this.finalValue,
+        percent: +this.finalValue,
         strokeColor: this.colorData
       };
       if (this.type === 'circle') {
@@ -45,7 +45,7 @@ export default {
       return dealWithProps;
     },
     componentStyle() {
-      return Object.assign({}, this.getBackgroundStyle, this.normalTextColorStyle);
+      return Object.assign({}, this.getBackgroundStyle, this.getTextColorStyle);
     }
   },
   watch: {

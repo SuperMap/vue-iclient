@@ -1,28 +1,27 @@
 <template>
   <div class="sm-component-zoom">
-    <div class="sm-component-zoom__buttons" :style="[collapseCardHeaderBgStyle]">
+    <div class="sm-component-zoom__buttons" :style="[collapseCardHeaderBgStyle, getTextColorStyle]">
       <sm-button
-        autofocus="false"
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
         :disabled="!canZoomIn"
         @click="zoomIn"
       >
-        <span class="sm-components-icon-plus" :style="getTextColorStyle"></span>
+        <i class="sm-components-icon-plus" />
       </sm-button>
-      <div class="sm-component-zoom__button--split"></div>
+      <div class="sm-component-zoom__button--split" />
       <sm-button
-        autofocus="false"
-        class="sm-component-zoom__button sm-component-zoom__button--zoomout"
+        :class="['sm-component-zoom__button sm-component-zoom__button--zoomout', showZoom && 'follow-zoom-value']"
         :disabled="!canZoomOut"
         @click="zoomOut"
       >
-        <span class="sm-components-icon-minus" :style="getTextColorStyle"></span>
+        <i class="sm-components-icon-minus" />
       </sm-button>
-      <div
-        v-if="showZoom"
-        class="sm-component-zoom__show-zoom"
-        :style="showZoomStyle"
-      >{{ Math.round(zoomPosition) }}</div>
+      <template v-if="showZoom">
+        <div class="sm-component-zoom__button--split" />
+        <sm-button class="sm-component-zoom__button sm-component-zoom__button--show-zoom">
+          <span>{{ Math.round(zoomPosition) }}</span>
+        </sm-button>
+      </template>
     </div>
     <div v-show="showZoomSlider" class="sm-component-zoom__slider">
       <sm-slider
@@ -33,7 +32,7 @@
         vertical
         :style="getColorStyle(0)"
         @change="sliderChange"
-      ></sm-slider>
+      />
     </div>
   </div>
 </template>
@@ -42,7 +41,6 @@ import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
-import { getColorWithOpacity } from '../../../../common/_utils/util';
 import SmButton from '../../../../common/button/Button';
 import SmSlider from '../../../../common/slider/Slider';
 
@@ -72,21 +70,6 @@ export default {
       canZoomIn: true,
       canZoomOut: true
     };
-  },
-  computed: {
-    activieBgColor() {
-      const color = this.getColorStyle(0).color;
-      return {
-        backgroundColor: this.getBackground,
-        borderColor: color
-      };
-    },
-    showZoomStyle() {
-      return {
-        color: getColorWithOpacity(this.getBackground, 1, false),
-        background: this.getTextColor
-      };
-    }
   },
   created() {
     this.viewModel = new ZoomViewModel();

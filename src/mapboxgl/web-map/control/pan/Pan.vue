@@ -1,7 +1,7 @@
 <template>
   <div :class="['sm-component-pan', mapboxglClass]" :style="[collapseCardHeaderBgStyle, secondaryTextColorStyle]">
     <div class="sm-component-pan__item" @click="panToCenter">
-      <div class="sm-component-pan__center" :style="collapseCardHeaderBgStyle" />
+      <div class="sm-component-pan__center" />
       <i class="sm-components-icon-fullscreen" />
     </div>
     <div class="sm-component-pan__item" @click="panToLeft">

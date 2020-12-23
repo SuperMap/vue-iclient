@@ -2,7 +2,7 @@
   <sm-tabs
     v-model="activeTab"
     :class="['sm-component-tdtRoutePlan', 'route-plan', { 'route-bus-plan': searchType == 'bus' }]"
-    :style="normalTextColorStyle"
+    :style="getTextColorStyle"
     type="card"
     size="small"
     @change="styleChanged"
@@ -54,20 +54,22 @@
                     <div class="line-name">
                       <template v-for="(lineName, i) in route.lineNames">
                         <div :key="lineName.name">
-                          <i :class="`${lineName.type} route-icon`"></i>
+                          <i :class="`${lineName.type} route-icon`" />
                           <span>{{ lineName.name }}</span>
                           <span v-if="i < route.lineNames.length - 1" class="right-direction">&gt;</span>
                         </div>
                       </template>
                     </div>
                     <div class="line-info" :style="secondaryTextColorStyle">
-                      <span>{{
-                        `${
-                          route.switchTimes
-                            ? $t('tdtResults.switchTimes', { switchTimes: route.switchTimes })
-                            : $t('tdtResults.noSwitch')
-                        }`
-                      }}</span>
+                      <span>
+                        {{
+                          `${
+                            route.switchTimes
+                              ? $t('tdtResults.switchTimes', { switchTimes: route.switchTimes })
+                              : $t('tdtResults.noSwitch')
+                          }`
+                        }}
+                      </span>
                       <span>{{ $t('tdtResults.distance', { distance: route.distance }) }}</span>
                       <span class="time">{{ route.time }}</span>
                     </div>
@@ -75,7 +77,7 @@
                   <div v-if="expandDetail[idx]" class="line-details">
                     <div class="start-label">
                       <div class="icon-holder">
-                        <div class="icon"></div>
+                        <div class="icon" />
                       </div>
                       <span>{{ start.name }}</span>
                     </div>
@@ -83,7 +85,7 @@
                       <template v-for="(line, j) in route.features.features">
                         <li :key="j" @click="busPlanClicked($event, j, idx)">
                           <div class="icon-holder">
-                            <i :class="[line.properties.type, 'route-icon']"></i>
+                            <i :class="[line.properties.type, 'route-icon']" />
                           </div>
                           <template v-if="!line.properties.lineName">
                             <span>
@@ -112,7 +114,7 @@
                     </ul>
                     <div class="dest-label">
                       <div class="icon-holder">
-                        <div class="icon"></div>
+                        <div class="icon" />
                       </div>
                       <span>{{ dest.name }}</span>
                     </div>
@@ -126,9 +128,9 @@
             <span :style="headingTextColorStyle">{{ dest.name }}</span>
           </div>
         </template>
-        <div v-if="!routePlan" style="text-align:center">
-          <sm-spin :spinning="spinning" size="large" />
-          <div v-if="isError && !spinning">{{ $t('tdtResults.noSearchResults') }}</div>
+        <div v-if="!routePlan" class="loading-and-tip-holder">
+          <sm-spin :spinning="spinning" />
+          <sm-empty v-if="isError && !spinning" :description="$t('tdtResults.noSearchResults')" />
         </div>
       </sm-tab-pane>
     </template>
@@ -139,6 +141,7 @@ import SmTabs from '../../../common/tabs/Tabs';
 import SmTabPane from '../../../common/tabs/TabPane';
 import SmSpin from '../../../common/spin/Spin';
 import SmCheckbox from '../../../common/checkbox/Checkbox';
+import SmEmpty from '../../../common/empty/Empty';
 import Theme from '../../../common/_mixin/Theme';
 
 export default {
@@ -147,7 +150,8 @@ export default {
     SmTabs,
     SmTabPane,
     SmSpin,
-    SmCheckbox
+    SmCheckbox,
+    SmEmpty
   },
   mixins: [Theme],
   props: {

@@ -58,6 +58,12 @@
       text-align: center;
       .#{$ant-prefix}-input {
         height: 28px;
+        background-color: transparent;
+      }
+      .#{$ant-prefix}-input-affix-wrapper {
+        > * {
+          color: inherit;
+        }
       }
       .icon-wrapper,
       .switch-route {

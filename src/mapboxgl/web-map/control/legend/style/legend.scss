@@ -108,7 +108,7 @@
         & > ul {
           flex: 1;
           max-width: 100%;
-          max-height: 200px;
+          max-height: 300px;
           overflow-y: auto;
         }
       }
@@ -127,11 +127,13 @@
 
       @include e(rank-icon) {
         flex: 1;
+        text-align: center;
         & > i {
           display: inline-block;
           vertical-align: middle;
         }
         + span {
+          margin-left: 5px;
           width: 74%;
         }
       }
@@ -170,6 +172,9 @@
         line-height: 20px;
         display: flex;
         align-items: center;
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
       
       @include e(item) {

@@ -19,7 +19,7 @@
           :treeData="treeData"
           :checkedKeys="checkedKeys"
           :replaceFields="replaceFields"
-          :style="normalTextColorStyle"
+          :style="getTextColorStyle"
           @check="checkNode"
         >
           <template slot="title" slot-scope="{ title }">
@@ -38,9 +38,10 @@
 <script>
 import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
-import Card from '../../../../common/_mixin/Card';
-import SmDirectoryTree from '../../../../common/tree/DirectoryTree';
+import BaseCard from '../../../../common/_mixin/Card';
 import MapGetter from '../../../_mixin/map-getter';
+import SmCard from '../../../../common/card/Card';
+import SmDirectoryTree from '../../../../common/tree/DirectoryTree';
 import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
 import clonedeep from 'lodash.clonedeep';
@@ -49,9 +50,10 @@ import isequal from 'lodash.isequal';
 export default {
   name: 'SmLayerManager',
   components: {
+    SmCard,
     SmDirectoryTree
   },
-  mixins: [Theme, Control, MapGetter, Card],
+  mixins: [Theme, Control, MapGetter, BaseCard],
   props: {
     collapsed: {
       type: Boolean, // 是否折叠

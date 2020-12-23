@@ -136,6 +136,7 @@ function setRootStyle(themeData: StyleReplacerParams): void {
   const { themeStyle, primarySerialColors, functionSerialColors, extraSerialColors } = themeData;
   const primaryColor = themeStyle.colorGroup[0];
   const variables = {
+    '--antd-wave-shadow-color': primaryColor,
     '--primary-color': primaryColor
   };
   const themeInfo = Object.assign({}, themeStyle, extraSerialColors);

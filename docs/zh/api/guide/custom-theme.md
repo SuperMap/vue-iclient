@@ -29,6 +29,8 @@ VueiClient.setTheme({ theme: 'light' });
 | background | 背景颜色 | string    | -      | -      |
 | colorGroup | 颜色数组 | string[ ] | -      | -      |
 
+> 以上是一些最常用的通用变量，所有样式变量可以在 [这里](https://github.com/SuperMap/vue-iclient/blob/dev/src/common/_utils/style/theme/theme.json) 找到。
+
 如下例所示：
 
 ```js

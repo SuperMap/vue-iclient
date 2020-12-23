@@ -11,7 +11,7 @@
     :split-line="splitLine"
     class="sm-component-query"
   >
-    <div class="sm-component-query__body" :style="normalTextColorStyle">
+    <div class="sm-component-query__body" :style="getTextColorStyle">
       <div class="sm-component-query__choose-panel clearfix">
         <div
           :class="{ 'sm-component-query__job-button': true, 'is-active': activeTab === 'job', disabled: isQuery }"
@@ -65,7 +65,7 @@
                 v-model="jobInfo.spaceFilter"
                 class="sm-component-query__a-select"
                 :get-popup-container="getPopupContainer"
-                :style="normalTextColorStyle"
+                :style="getTextColorStyle"
               >
                 <sm-select-option v-for="item in selectOptions" :key="item.value" :value="item.value">
                   {{ item.label }}

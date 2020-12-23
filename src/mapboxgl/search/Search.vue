@@ -58,7 +58,7 @@
                 </span>
               </div>
             </div>
-            <div v-if="result.result" class="sm-component-search__panel-body" :style="normalTextColorStyle">
+            <div v-if="result.result" class="sm-component-search__panel-body" :style="getTextColorStyle">
               <ul :class="{ noMarginBottom: !showTitle }">
                 <li
                   v-for="(item, i) in result.result"

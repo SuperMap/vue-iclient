@@ -57,12 +57,6 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs2: 'vue-cesium',
         amd: 'vue-cesium'
       },
-      'ant-design-vue': {
-        root: 'antd',
-        commonjs: 'ant-design-vue',
-        commonjs2: 'ant-design-vue',
-        amd: 'ant-design-vue'
-      },
       xlsx: {
         root: 'XLSX',
         commonjs: 'xlsx',

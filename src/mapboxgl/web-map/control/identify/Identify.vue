@@ -3,7 +3,7 @@
     v-show="false"
     ref="Popup"
     class="sm-component-identify"
-    :style="[tablePopupBgStyle, normalTextColorStyle]"
+    :style="[tablePopupBgStyle, getTextColorStyle]"
   >
     <ul
       :class="[

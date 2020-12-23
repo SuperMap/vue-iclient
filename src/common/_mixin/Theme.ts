@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
 import globalEvent from '../_utils/global-event';
-import { getColorWithOpacity } from '../_utils/util';
+import { getDerivedColorsByTextColor } from '../_utils/util';
 
 @Component({
   name: 'Theme'
@@ -9,29 +9,7 @@ import { getColorWithOpacity } from '../_utils/util';
 export default class Theme extends Vue {
   backgroundData: string = '';
 
-  backgroundLightData: string = '';
-
-  backgroundBaseData: string = '';
-
   textColorsData: string = '';
-
-  selectedColorData: string = '';
-
-  hoverColorData: string = '';
-
-  clickColorData: string = '';
-
-  successColorData: string = '';
-
-  infoColorData: string = '';
-
-  warningColorData: string = '';
-
-  dangerColorData: string = '';
-
-  disabledBgColorData: string = '';
-
-  disabledBorderColorData: string = '';
 
   collapseCardBackgroundData: string = '';
 
@@ -43,33 +21,7 @@ export default class Theme extends Vue {
 
   @Prop() background: string;
 
-  @Prop() backgroundLight: string;
-
-  @Prop() backgroundBase: string;
-
   @Prop() textColor: string;
-
-  @Prop() selectedColor: string;
-
-  @Prop() hoverColor: string;
-
-  @Prop() clickColor: string;
-
-  @Prop() successColor: string;
-
-  @Prop() infoColor: string;
-
-  @Prop() warningColor: string;
-
-  @Prop() dangerColor: string;
-
-  @Prop() disabledBgColor: string;
-
-  @Prop() disabledBorderColor: string;
-
-  @Prop() borderBaseColor: string;
-
-  @Prop() collapseCardHeaderTextColor: string;
 
   @Prop() colorGroup: Array<string>;
 
@@ -105,25 +57,19 @@ export default class Theme extends Vue {
 
   get headingTextColorStyle() {
     return {
-      color: getColorWithOpacity(this.textColorsData, 0.85)
-    };
-  }
-
-  get normalTextColorStyle() {
-    return {
-      color: getColorWithOpacity(this.textColorsData, 0.65)
+      color: getDerivedColorsByTextColor(this.textColorsData, 0.85)
     };
   }
 
   get secondaryTextColorStyle() {
     return {
-      color: getColorWithOpacity(this.textColorsData, 0.45)
+      color: getDerivedColorsByTextColor(this.textColorsData, 0.45)
     };
   }
 
   get disabledTextColorStyle() {
     return {
-      color: getColorWithOpacity(this.textColorsData, 0.25)
+      color: getDerivedColorsByTextColor(this.textColorsData, 0.25)
     };
   }
 
@@ -165,9 +111,6 @@ export default class Theme extends Vue {
       $props.forEach((prop: string) => {
         const dataName: string = this.getDataNameOfProp(prop);
         this[dataName] = themeStyle[prop];
-        if (prop === 'textColor') {
-          this[dataName] = getColorWithOpacity(this[dataName], 1, false);
-        }
       });
       this.collapseCardHeaderBgData = themeStyle['collapseCardHeaderBg'];
       this.collapseCardBackgroundData = themeStyle['collapseCardBackground'];
@@ -177,21 +120,19 @@ export default class Theme extends Vue {
   }
 
   initThemeData(): void {
-    let theme = globalEvent.$options.theme;
+    const theme = globalEvent.$options.theme || {};
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
       const dataName: string = this.getDataNameOfProp(prop);
-      this[dataName] = this[prop] || (theme && theme[prop]);
-      if (prop === 'textColor' && !this[prop]) {
-        this[dataName] = getColorWithOpacity(this[dataName], 1, false);
-      }
+      this[dataName] = this[prop] || theme[prop];
     });
-    this.collapseCardHeaderBgData = this.background || (theme && theme['collapseCardHeaderBg']);
-    this.collapseCardBackgroundData = this.background || (theme && theme['collapseCardBackground']);
-    this.tablePopupBgData = this.background || (theme && theme['messageBackground']);
+    this.collapseCardHeaderBgData = this.background || theme['collapseCardHeaderBg'];
+    this.collapseCardBackgroundData = this.background || theme['collapseCardBackground'];
+    this.tablePopupBgData = this.background || theme['messageBackground'];
   }
 
   registerPropListener(): void {
+    const theme = globalEvent.$options.theme || {};
     const vm = this;
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
@@ -199,9 +140,9 @@ export default class Theme extends Vue {
         const dataName: string = this.getDataNameOfProp(prop);
         vm[dataName] = next;
         if (prop === 'background') {
-          vm.collapseCardBackgroundData = next;
-          vm.collapseCardHeaderBgData = next;
-          vm.tablePopupBgData = next;
+          vm.collapseCardBackgroundData = next || theme['collapseCardBackground'];
+          vm.collapseCardHeaderBgData = next || theme['collapseCardHeaderBg'];
+          vm.tablePopupBgData = next || theme['messageBackground'];
         }
       });
     });

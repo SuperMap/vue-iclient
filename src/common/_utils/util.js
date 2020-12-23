@@ -90,6 +90,18 @@ export function getColorWithOpacity(color, opacity, isStack = true) {
   return nextColor;
 }
 
+export function getDerivedColorsByTextColor(textColor, opacity) {
+  if (!textColor) {
+    return textColor;
+  }
+  const baseTextColorOpacity = 0.65;
+  const originTextColor = tinyColor(textColor);
+  const originOpacity = originTextColor.getAlpha();
+  originTextColor.setAlpha(originOpacity * opacity / baseTextColorOpacity);
+  const derivedColor = originTextColor.toRgbString();
+  return derivedColor;
+}
+
 export function parseUrl(url) {
   const urlRe = /^(\w+):\/\/([^/?]*)(\/[^?]+)?\??(.+)?/;
   return url.match(urlRe);
@@ -187,27 +199,8 @@ export function urlAppend(url, paramStr) {
   return newUrl;
 }
 
-export function objectWithoutProperties(obj, keys = []) {
-  const themeKeys = [
-    'background',
-    'textColor',
-    'colorGroup',
-    'clickColor',
-    'hoverColor',
-    'selectedColor',
-    'successColor',
-    'infoColor',
-    'warningColor',
-    'dangerColor'
-  ];
-  const omitKeys = [...new Set(themeKeys.concat(keys))];
-  const filterProps = {};
-  for (let key in obj) {
-    if (obj[key] !== void 0) {
-      filterProps[key] = obj[key];
-    }
-  }
-  return omit(filterProps, omitKeys);
+export function objectWithoutProperties(obj, omitKeys = []) {
+  return omit(obj, omitKeys);
 }
 
 export function getDarkenColor(color, amount) {

@@ -20,7 +20,7 @@
       </div>
       <div v-show="showMore" class="cities-group">
         <div class="results">
-          <sm-tree showLine :treeData="data" :defaultExpandedKeys="['0-0-0']" :style="normalTextColorStyle">
+          <sm-tree showLine :treeData="data" :defaultExpandedKeys="['0-0-0']" :style="getTextColorStyle">
             <template slot="title" slot-scope="{ title, info }">
               <div class="city-item add-ellipsis" @click="searchDetail(info)">
                 <a href="javascript:void(0)">

@@ -54,7 +54,7 @@
                 'sm-component-layer-list__sourcelayeritem': true,
                 'sm-component-layer-list__disabled': sourcelayerValue[0].visibility !== 'visible'
               }"
-              :style="normalTextColorStyle"
+              :style="getTextColorStyle"
             >
               <i
                 :class="

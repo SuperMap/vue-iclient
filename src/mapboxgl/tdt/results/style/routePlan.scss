@@ -1,5 +1,6 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../common/empty/style/empty.scss';
 
 @include b(tdtRoutePlan) {
   $tabs-prefix: #{$ant-prefix}-tabs;
@@ -30,6 +31,9 @@
     font-size: 12px;
     border-radius: 0;
     background: transparent;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
     &.#{$tabs-prefix}-tab-active {
       border-color: $primary-color;
       border-right-color: $primary-color;
@@ -278,6 +282,15 @@
       font-size: 12px;
       cursor: pointer;
     }
+  }
+  .loading-and-tip-holder {
+    text-align: center;
+    padding: 6px 0;
+  }
+  .#{$ant-prefix}-empty {
+    background-color: transparent;
+    margin: 0;
+    font-size: 12px;
   }
 }
 
