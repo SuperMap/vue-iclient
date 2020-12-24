@@ -19,9 +19,9 @@ Legend.story = {
 
 export const PanlLegend = () => ({
   template: `
-    <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
-      <sm-legend style="width:160px" isShowTitle isShowField mode="panel" :layerNames="['民航数据']" position="top-left" :collapsed="false" />
-    </sm-web-map>
+  <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
+    <sm-legend style="width:160px" isShowTitle isShowField mode="panel" :layerNames="['民航数据']" position="top-left" :collapsed="false" />
+  </sm-web-map>
     `
 });
 PanlLegend.story = {

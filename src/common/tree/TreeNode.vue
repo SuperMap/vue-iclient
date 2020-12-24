@@ -1,5 +1,5 @@
 <script lang="ts">
-import Tree from 'ant-design-vue/es/tree/Tree';
+import Tree from 'ant-design-vue/es/tree';
 import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 import VueTypes from '../_utils/vue-types';
@@ -40,6 +40,7 @@ export const treeNodeTypes = {
 export default {
   name: 'SmTreeNode',
   __ANT_TREE_NODE: true,
+  isTreeNode: 1,
   defaultComponent: Tree.TreeNode,
   mixins: [Theme, AntdRender],
   inheritAttrs: false,

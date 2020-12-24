@@ -237,6 +237,17 @@
       "inner": "Inner",
       "supportMoreContent": "support More Content",
       "WithTabs": "With Tabs"
+    },
+    "tree": {
+      "controlled": "Controlled Tree",
+      "replaceFields": "ReplaceFields",
+      "draggable": "Draggable",
+      "withLine": "Tree with Line",
+      "directory": "Directory",
+      "customizeIcon": "Customize Icon",
+      "loadDataAsynchronously": "load Data Asynchronously",
+      "searchable": "Searchable",
+      "customizeCollapseExpandIcon": "customize Collapse/Expand Icon"
     }
   },
   "chartComponent": {
@@ -250,6 +261,35 @@
       "state": "State",
       "type": "Type",
       "width": "Width"
+    },
+    "charBar": {
+      "bar": "Histogram",
+      "barSquare": "Cube histogram",
+      "barRectangle": "Cuboid histogram",
+      "barCylinder": "Cylindrical histogram",
+      "xbar": "Bar",
+      "rankXbar": "Rank Bar"
+    },
+    "scatter": {
+      "scatter": "Scatter"
+    },
+    "line": {
+      "line": "Line"
+    },   
+    "radar": {
+      "radar": "Radar"
+    },
+    "pie": {
+      "pie": "Pie",
+      "rose": "Nightingale Rose",
+      "ring": "Doughnut",
+      "shineRing": "Luminous Doughnut"
+    },
+    "gauge": {
+      "gauge": "Gauge",
+      "markGauge": "Mark Gauge",
+      "shineGauge": "Luminous Gauge",
+      "spinGauge": "Spinning Gauge"
     }
   },
   "mapComponent": {

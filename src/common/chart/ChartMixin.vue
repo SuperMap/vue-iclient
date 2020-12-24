@@ -609,7 +609,7 @@ export default {
           const dataZoom = options.dataZoom && options.dataZoom[0];
           options.series = options.series.map((serie, index) => {
             let label = serie.label && serie.label.normal;
-            if (serie.label && !label.smart) {
+            if (label && !label.smart) {
               serie.label.normal = this._controlLabel(label, serie.maxLabels);
             }
             if (label && label.show && label.smart) {
@@ -748,7 +748,7 @@ export default {
                   const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
                   serie.type = 'bar';
                   serie.barGap = '-100%';
-                  options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
+                  options.tooltip && options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
                   dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
                   let cirCleColor = defaultColor || colorGroup[index];
                   let cirCleColorFnList = [];

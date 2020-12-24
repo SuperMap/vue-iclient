@@ -237,6 +237,17 @@
       "inner": "内部",
       "supportMoreContent": "支持更多内容",
       "WithTabs": "带页签的"
+    },
+    "tree": {
+      "controlled": "受控操作",
+      "replaceFields": "自定义字段",
+      "draggable": "拖拽",
+      "withLine": "连接线",
+      "directory": "目录",
+      "customizeIcon": "自定义图标",
+      "loadDataAsynchronously": "异步加载数据",
+      "searchable": "可搜索",
+      "customizeCollapseExpandIcon": "自定义展开/折叠图标"
     }
   },
   "chartComponent": {
@@ -250,6 +261,35 @@
       "state": "状态",
       "type": "进度环",
       "width": "宽度"
+    },
+    "charBar": {
+      "bar": "柱状图",
+      "barSquare": "正方体柱状图",
+      "barRectangle": "长方体柱状图",
+      "barCylinder": "圆柱体柱状图",
+      "xbar": "条形图",
+      "rankXbar": "排名条形图"
+    },
+    "scatter": {
+      "scatter": "散点图"
+    },
+    "line": {
+      "line": "折线图"
+    },
+    "radar": {
+      "radar": "雷达图"
+    },
+    "pie": {
+      "pie": "饼图",
+      "rose": "南丁格尔玫瑰图",
+      "ring": "环形图",
+      "shineRing": "发光环形图"
+    },
+    "gauge": {
+      "gauge": "仪表盘",
+      "markGauge": "刻度仪表盘",
+      "shineGauge": "发光仪表盘",
+      "spinGauge": "旋转仪表盘"
     }
   },
   "mapComponent": {

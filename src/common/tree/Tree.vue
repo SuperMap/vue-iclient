@@ -1,5 +1,6 @@
 <script lang="ts">
-import Tree, { TreeProps } from 'ant-design-vue/es/tree/Tree';
+import Tree from 'ant-design-vue/es/tree';
+import { TreeProps } from 'ant-design-vue/es/tree/Tree';
 import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 
