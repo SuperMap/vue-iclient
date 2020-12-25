@@ -11,7 +11,7 @@
     :split-line="splitLine"
     class="sm-component-legend"
   >
-    <sm-card :bordered="false">
+    <sm-card :bordered="false" :style="mode !== 'simple' && collapseCardBackgroundStyle">
       <sm-collapse
         v-if="(mode === 'panel' || (layerNames.length > 1 && mode !== 'simple')) && JSON.stringify(legendList) !== '{}'"
         v-model="activeLegend"
@@ -200,6 +200,12 @@ export default {
     splitLine: {
       type: Boolean,
       default: false
+    },
+    headerName: {
+      type: String,
+      default: function() {
+        return this.$t('legend.title');
+      }
     },
     iconClass: {
       type: String,
