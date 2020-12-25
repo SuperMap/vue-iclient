@@ -284,7 +284,7 @@ class SmVideoPlayer extends Vue {
           src: this.url // t=xx && preload=metadata 可以保证加载某一帧作为封面，目前没有更好的方案；
         }
       ],
-      techOrder: ['flvjs', 'flash', 'html5'],
+      techOrder: ['html5'],
       flash: {
         hls: {
           withCredentials: false
@@ -309,11 +309,17 @@ class SmVideoPlayer extends Vue {
       notSupportedMessage: this.$t('warning.unavailableVideo')
     };
     if (!this.url.includes('rtmp') && this.url.includes('.flv')) {
+      commonOptions.techOrder = ['flvjs', 'html5'];
       // @ts-ignore
       commonOptions.sources[0].type = 'video/x-flv';
     }
+    if (this.url.includes('.mp4')) {
+      // @ts-ignore
+      commonOptions.sources[0].type = 'video/mp4';
+    }
     if (this.url.includes('rtmp')) {
       // @ts-ignore
+      commonOptions.techOrder = ['flash', 'html5'];
       commonOptions.sources[0].type = 'rtmp/flv';
     }
     if (this.url.includes('.m3u8')) {
