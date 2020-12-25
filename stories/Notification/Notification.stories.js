@@ -64,20 +64,19 @@ export const Position = () => ({
   template: `
   <div>
     <sm-button type="primary" v-on:click="openNotification('topLeft')">
-      <a-icon type="radius-upleft" />
+      <sm-icon type="radius-upleft" />
       topLeft
     </sm-button>
     <sm-button type="primary" v-on:click="openNotification('topRight')">
-      <a-icon type="radius-upright" />
+      <sm-icon type="radius-upright" />
       topRight
     </sm-button>
-    <a-divider />
     <sm-button type="primary" v-on:click="openNotification('bottomLeft')">
-      <a-icon type="radius-bottomleft" />
+      <sm-icon type="radius-bottomleft" />
       bottomLeft
     </sm-button>
     <sm-button type="primary" v-on:click="openNotification('bottomRight')">
-      <a-icon type="radius-bottomright" />
+      <sm-icon type="radius-bottomright" />
       bottomRight
     </sm-button>
   </div>

@@ -12,26 +12,22 @@ export const tdtPoi = () => ({
     return {
       addressMatch: [
         new smcomponents.commontypes.AddressMatchParameter({
-          url: 'http://support.supermap.com.cn:8090/iserver/services/addressmatch-Address/restjsr/v1/address'
+          url: 'https://iserver.supermap.io/iserver/services/addressmatch-Address/restjsr/v1/address'
         })
       ],
       restMapSearch: [
         new smcomponents.commontypes.RestMapParameter({
-          url: 'http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World',
+          url: 'https://iserver.supermap.io/iserver/services/map-world/rest/maps/World',
           layerName: 'Capitals@World.1'
         })
       ],
       restDataSearch: [
         new smcomponents.commontypes.RestDataParameter({
-          url: 'http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data',
+          url: 'https://iserver.supermap.io/iserver/services/data-world/rest/data',
           dataName: ['World:Countries']
         })
       ],
-      iportalData: [
-        new smcomponents.commontypes.iPortalDataParameter({
-          url: 'http://192.168.12.28:8092/web/datas/659519047'
-        })
-      ],
+
       onlineLocalSearch: {
         enable: true,
         city: '北京市'
@@ -45,11 +41,9 @@ export const tdtPoi = () => ({
   template: `
     <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
       <sm-tdt-search
-      :layer-names="layerSourceNames"
       :address-match="addressMatch"
       :rest-map="restMapSearch"
       :rest-data="restDataSearch"
-      :iportal-data="iportalData"
       :online-local-search="onlineLocalSearch"
       :alwaysCenter="false"
       :data="searchData"

@@ -12,7 +12,7 @@ export const query = () => ({
     return {
       restMapQuery: [
         new smcomponents.commontypes.RestMapParameter({
-          url: 'http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World',
+          url: 'https://iserver.supermap.io/iserver/services/map-world/rest/maps/World',
           attributeFilter: 'SmID>0',
           layerName: 'Capitals@World.1'
         })

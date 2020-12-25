@@ -1,4 +1,5 @@
 @import "../../../../../common/_utils/style/mixins/mixins.scss";
+@import '../../../../../common/_utils/style/theme/theme.scss';
 @import "../../../../../common/spin/style/spin.scss";
 @import "../../../../../common/collapse-card/style/collapse-card.scss";
 
@@ -6,6 +7,9 @@
   .miniMap {
     height: 180px;
     width: 250px;
+  }
+  .sm-component-collapse-card__icon.is-click-out {
+    color: $primary-color !important;
   }
   .sm-component-spin {
     position: absolute;
