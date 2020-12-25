@@ -20,7 +20,10 @@
           class="sm-component-layer-list__collapse"
         >
           <sm-collapse-panel
-            v-if="typeof sourceList[name].sourceLayerList === 'object'"
+            v-if="
+              typeof sourceList[name].sourceLayerList === 'object' &&
+                Object.keys(sourceList[name].sourceLayerList).length > 0
+            "
             class="sm-component-layer-list__collapseitem"
             :showArrow="false"
           >
@@ -79,9 +82,7 @@
           >
             <i
               :class="
-                sourceList[name].visibility === 'visible'
-                  ? 'sm-components-icon-visible'
-                  : 'sm-components-icon-hidden'
+                sourceList[name].visibility === 'visible' ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'
               "
               @click.stop="toggleLayerGroupVisibility(name, sourceList[name].visibility)"
             />
