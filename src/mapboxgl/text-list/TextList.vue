@@ -252,9 +252,9 @@ class SmTextList extends Mixins(Theme, Timer) {
     if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
       this.getFeaturesFromDataset();
     } else {
-      // this.featuresData = [];
-      // this.listData = [];
-      // this.animateContent = [];
+      this.featuresData = [];
+      this.listData = [];
+      this.animateContent = [];
       clearInterval(this.startInter);
     }
   }
