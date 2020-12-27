@@ -1,4 +1,4 @@
-/* Copyright© 2000 - 2020 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2021 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
@@ -113,7 +113,7 @@ export default class WebMapViewModel extends WebMapBase {
     // @ts-ignore fix-mapoptions
     mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
     map?: mapboxglTypes.Map,
-    layerFilter: Function = function() {
+    layerFilter: Function = function () {
       return true;
     }
   ) {
@@ -1304,35 +1304,87 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createUniqueLayer(layerInfo: any, features: any): void {
+    const symbolConvertFunctionFactory = {
+      unicode: ({ unicode }): string => {
+        return String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
+      },
+      fontSize: ({ fontSize }): number => {
+        if (fontSize) {
+          return parseFloat(fontSize);
+        }
+        return 12;
+      },
+      rotation: ({ rotation }): number => {
+        return ((rotation || 0) * 180) / Math.PI;
+      },
+      fillColor: ({ fillColor, fillOpacity }): string => {
+        return getColorWithOpacity(fillColor, fillOpacity);
+      },
+      strokeColor: ({ strokeColor, strokeOpacity }): string => {
+        return getColorWithOpacity(strokeColor || 'rgba(0,0,0,0)', strokeOpacity);
+      },
+      strokeWidth: ({ strokeWidth }): string => {
+        return strokeWidth || 0;
+      },
+      offsetX: ({ offsetX, offsetY }): [number, number] => {
+        return [offsetX / 2 || 0, offsetY / 2 || 0];
+      }
+    };
+    const defaultValueFactory = {
+      unicode: '',
+      fontSize: 12,
+      rotation: 0,
+      strokeColor: 'rgba(0,0,0,0)',
+      fillColor: 'rgba(0,0,0,0)',
+      strokeWidth: 0,
+      offsetX: [0, 0]
+    };
     let styleGroup = this.getUniqueStyleGroup(layerInfo, features);
     features = this.getFilterFeatures(layerInfo.filterCondition, features);
     const { layerID, minzoom, maxzoom, style } = layerInfo;
-    let themeField = layerInfo.themeSetting.themeField;
-    Object.keys(features[0].properties).forEach(key => {
-      key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
-    });
+    let themeField = styleGroup[0].themeField;
     let type = layerInfo.featureType;
-    let expression = ['match', ['get', 'index']];
 
-    features.forEach(row => {
-      styleGroup.forEach(item => {
-        if (item.value === row.properties[themeField]) {
-          expression.push(row.properties['index'], item.color);
-        }
-      });
+    const defultLayerStyle = layerInfo.style;
+    //样式expression池 样式key值为webmap的样式key值
+    const expressionMap = {};
+    // 自定义单值值对应的样式
+    const customStyleMap = {};
+    styleGroup.map(style => {
+      customStyleMap[style.value] = style;
     });
-    expression.push('#ffffff');
-
-    // 图例相关
-    this._initLegendConfigInfo(layerInfo, styleGroup);
-
-    let visible = layerInfo.visible;
-    let layerStyle = {
-      style: this._transformStyleToMapBoxGl(style, type, expression),
-      layout: {
-        visibility: visible
+    //遍历要素，判断该要素是不是在自定义单值中，若是在对应样式match expression中增加改要素的索引
+    features.forEach(({ properties }) => {
+      const customStyle = customStyleMap[properties[themeField]];
+      if (customStyle) {
+        const itemStyle = customStyle.style;
+        for (const key in itemStyle) {
+          if (Object.prototype.hasOwnProperty.call(itemStyle, key)) {
+            let itemStyleElement = itemStyle[key];
+            if (itemStyleElement !== defultLayerStyle[key]) {
+              if (!expressionMap[key]) {
+                expressionMap[key] = ['match', ['get', 'index']];
+              }
+              expressionMap[key].push(
+                properties['index'],
+                symbolConvertFunctionFactory[key] ? symbolConvertFunctionFactory[key](itemStyle) : itemStyleElement
+              );
+            }
+          }
+        }
       }
-    };
+    });
+    // 给每个expression增加最后一个默认值
+    for (const key in expressionMap) {
+      if (Object.prototype.hasOwnProperty.call(expressionMap, key)) {
+        const expression = expressionMap[key];
+        const defaultStyleItem = defultLayerStyle[key] || defaultValueFactory[key];
+        expression.push(defaultStyleItem === undefined ? null : defaultStyleItem);
+      }
+    }
+
+    // Todo 图例相关
+    this._initLegendConfigInfo(layerInfo, styleGroup);
 
     let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
@@ -1341,10 +1393,299 @@ export default class WebMapViewModel extends WebMapBase {
         features: features
       }
     };
-    this._addOverlayToMap(type, source, layerID, layerStyle, minzoom, maxzoom);
-    type === 'POLYGON' &&
-      style.strokeColor &&
-      this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
+    const sourceID = layerID;
+    this.map.addSource(sourceID, source);
+
+    let visible = layerInfo.visible;
+    const layerCreateFcuntion = (type, sourceID, layerID, style, minzoom, maxzoom, filter?) => {
+      const layerStyle = {
+        style: this._transformStyleToMapBoxGl({ ...style }, type),
+        layout: {
+          visibility: visible
+        }
+      };
+      this._addOverlayToMap(type, sourceID, layerID, layerStyle, minzoom, maxzoom, filter);
+    };
+    if (['POLYGON', 'LINE'].includes(type)) {
+      // linedash不能用表达式处理，需用多个图层
+      const lineDashExpression = expressionMap['lineDash'];
+      //非自定义要素过滤表达式
+      const defaultFilterExpression: any = ['all'];
+      let handlerLine = false;
+      let fristName = '';
+      if (lineDashExpression && lineDashExpression.length > 1) {
+        delete expressionMap['lineDash'];
+        const filterField = lineDashExpression[1];
+        const tempLayerID = type === 'POLYGON' ? layerID + '-strokeLine' : layerID;
+        for (let index = 2; index < lineDashExpression.length - 1; index += 2) {
+          const filterExpression = ['==', filterField, lineDashExpression[index]];
+          defaultFilterExpression.push(['!=', filterField, lineDashExpression[index]]);
+          const additionalLayerName = `${tempLayerID}-additional-linedasharray-${index / 2}`;
+          if (!fristName) {
+            fristName = additionalLayerName;
+          }
+          layerCreateFcuntion(
+            'LINE',
+            sourceID,
+            additionalLayerName,
+            { ...style, ...expressionMap, lineDash: lineDashExpression[index + 1] },
+            minzoom,
+            maxzoom,
+            filterExpression
+          );
+        }
+        if (defaultFilterExpression.length > 1) {
+          layerCreateFcuntion(
+            'LINE',
+            sourceID,
+            tempLayerID,
+            { ...style, ...expressionMap, lineDash: lineDashExpression[lineDashExpression.length] },
+            minzoom,
+            maxzoom,
+            defaultFilterExpression
+          );
+        }
+        handlerLine = true;
+      }
+      //没有自定义虚线的情况
+      if (type === 'LINE' && !handlerLine) {
+        layerCreateFcuntion(
+          'LINE',
+          sourceID,
+          layerID,
+          { ...style, ...expressionMap },
+          minzoom,
+          maxzoom,
+          defaultFilterExpression
+        );
+      }
+      // 面
+      if (type === 'POLYGON') {
+        layerCreateFcuntion(
+          'POLYGON',
+          sourceID,
+          layerID,
+          { ...style, ...expressionMap },
+          minzoom,
+          maxzoom
+        );
+        // 面且没有虚线
+        if (!handlerLine) {
+          layerCreateFcuntion(
+            'LINE',
+            sourceID,
+            layerID + '-strokeLine',
+            { ...style, ...expressionMap },
+            minzoom,
+            maxzoom,
+            defaultFilterExpression
+          );
+          if (fristName) {
+            this.map.moveLayer(layerID + '-strokeLine', fristName);
+          }
+        }
+      }
+    } else {
+      const defaultFilterExpression: any = ['all'];
+      const unicodeExpression = expressionMap['unicode'];
+      // SYMBOL_POINT
+      if (unicodeExpression) {
+        const classNameExpression = expressionMap['className'];
+        delete expressionMap['unicode'];
+        delete expressionMap['classname'];
+        const additionalLayerName = `${layerID}-additional-symbol`;
+        const filterExpression: any = ['any'];
+        // defaultExpression.push(['!=', filterField, lineDashExpression[index]]);
+        for (let index = 2; index < classNameExpression.length - 1; index += 2) {
+          defaultFilterExpression.push(['!=', classNameExpression[1], classNameExpression[index]]);
+          filterExpression.push(['==', classNameExpression[1], classNameExpression[index]]);
+        }
+        // this._createSymbolLayer()
+        // 用来请求symbol_point字体文件
+        let target = document.getElementById(`${this.target}`);
+        target.classList.add('supermapol-icons-map');
+        const symbolStyle = { ...style, ...expressionMap };
+        this._addLayer({
+          id: additionalLayerName,
+          type: 'symbol',
+          source: sourceID,
+          paint: {
+            'text-color': symbolStyle.fillColor,
+            // 'text-opacity': style.fillOpacity === 0 ? 0.1 : style.fillOpacity,
+            'text-halo-color': symbolStyle.strokeColor,
+            'text-halo-width': symbolStyle.strokeWidth
+          },
+          layout: {
+            'text-field': unicodeExpression,
+            'text-size': symbolStyle.fontSize || 12,
+            'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
+            'text-rotate': symbolStyle.rotation || 0,
+            'text-offset': symbolStyle.offsetX || [0, 0],
+            'text-allow-overlap': true,
+            visibility: visible
+          },
+          minzoom: minzoom || 0,
+          maxzoom: maxzoom || 22,
+          filter: filterExpression
+        });
+      }
+      //IMAGE_POINT 或者 SVG_POINT
+      const imageInfoExpression = expressionMap['imageInfo'] || [];
+      const urlExpression = expressionMap['url'] || [];
+      if (imageInfoExpression.length > 0 || urlExpression.length > 0) {
+        delete expressionMap['imageInfo'];
+        delete expressionMap['url'];
+        const imageList = [];
+        // image表达式 和 过滤表达式
+        const imageExpresssion = imageInfoExpression.length > 0 ? [imageInfoExpression[0], imageInfoExpression[1]] : [];
+        const svgExpresssion = urlExpression.length > 0 ? [urlExpression[0], urlExpression[1]] : [];
+        const imagefilterExpression: any = ['any'];
+        const svgfilterExpression: any = ['any'];
+        for (let index = 2; index < imageInfoExpression.length - 1; index += 2) {
+          const element = imageInfoExpression[index + 1];
+          imageList.push(element.url);
+          imageExpresssion.push(imageInfoExpression[index]);
+          imageExpresssion.push(element.url);
+          defaultFilterExpression.push(['!=', imageInfoExpression[1], imageInfoExpression[index]]);
+          imagefilterExpression.push(['==', imageInfoExpression[1], imageInfoExpression[index]]);
+        }
+        for (let index = 2; index < urlExpression.length - 1; index += 2) {
+          const element = urlExpression[index + 1];
+          imageList.push(element);
+          svgExpresssion.push(urlExpression[index]);
+          svgExpresssion.push(element);
+          defaultFilterExpression.push(['!=', urlExpression[1], urlExpression[index]]);
+          svgfilterExpression.push(['==', urlExpression[1], urlExpression[index]]);
+        }
+        imageExpresssion.push('');
+        svgExpresssion.push('');
+
+        const loadImagePromise = src => {
+          return new Promise((resolve, reject) => {
+            if (src.indexOf('svg') < 0) {
+              this.map.loadImage(src, (error, image) => {
+                if (error) {
+                  console.log(error);
+                  resolve(error);
+                  return;
+                }
+                !this.map.hasImage(src) && this.map.addImage(src, image);
+                resolve({ src, image });
+              });
+            } else {
+              if (!this._svgDiv) {
+                this._svgDiv = document.createElement('div');
+                document.body.appendChild(this._svgDiv);
+              }
+              this.getCanvasFromSVG(src, this._svgDiv, canvas => {
+                this.handleSvgColor(defultLayerStyle, canvas);
+                this.map.loadImage(canvas.toDataURL('img/png'), (error, image) => {
+                  if (error) {
+                    console.log(error);
+                    resolve(error);
+                    return;
+                  }
+                  // sdf: true 可以设置icon-color
+                  !this.map.hasImage(src) && this.map.addImage(src, image, { sdf: true });
+                  resolve({ src, image });
+                });
+              });
+            }
+          });
+        };
+        const promiseList = [];
+        imageList.forEach(src => {
+          promiseList.push(loadImagePromise(src));
+        });
+        const symbolStyle = { ...style, ...expressionMap };
+        Promise.all(promiseList).then(images => {
+          const imageSize = {};
+          const radiusMap = {};
+          const radiusExpress = expressionMap['radius'] || [];
+          for (let index = 2; index < radiusExpress.length - 1; index += 2) {
+            radiusMap[radiusExpress[index]] = radiusExpress[index + 1];
+          }
+          images.forEach(image => {
+            if (image && image.src) {
+              imageSize[image.src] = image.image.width;
+            }
+          });
+          // icon-color在一个图层中能全起作用或者全不起作用   所以image和svg分两个图层
+          // icon-size和图片大小有关系
+          if (imageExpresssion.length > 1) {
+            const iconSizeExpression: any = ['match', ['get', 'index']];
+            for (let index = 2; index < imageExpresssion.length - 1; index += 2) {
+              const featureIndex = imageExpresssion[index];
+              const featureSrc = imageExpresssion[index + 1];
+              const iconSize =
+                Number.parseFloat(((radiusMap[featureIndex] || 8) / imageSize[featureSrc]).toFixed(2)) * 2;
+              iconSizeExpression.push(featureIndex);
+              iconSizeExpression.push(iconSize);
+            }
+            iconSizeExpression.push(1);
+
+            this._addLayer({
+              id: `${layerID}-additional-image`,
+              type: 'symbol',
+              source: sourceID,
+              layout: {
+                'icon-image': imageExpresssion,
+                'icon-anchor': 'bottom-right',
+                'icon-size': iconSizeExpression,
+                'icon-allow-overlap': true,
+                visibility: layerInfo.visible,
+                'icon-offset': symbolStyle.offsetX || [0, 0],
+                'icon-rotate': symbolStyle.rotation || 0
+              },
+              minzoom: minzoom || 0,
+              maxzoom: maxzoom || 22,
+              filter: imagefilterExpression
+            });
+          }
+          if (svgExpresssion.length > 1) {
+            const iconSizeExpression: any = ['match', ['get', 'index']];
+            for (let index = 2; index < svgExpresssion.length - 1; index += 2) {
+              const featureIndex = svgExpresssion[index];
+              const featureSrc = svgExpresssion[index + 1];
+              const iconSize =
+                Number.parseFloat(((radiusMap[featureIndex] || 8) / imageSize[featureSrc]).toFixed(2)) * 2;
+              iconSizeExpression.push(featureIndex);
+              iconSizeExpression.push(iconSize);
+            }
+            iconSizeExpression.push(1);
+            this._addLayer({
+              id: `${layerID}-additional-svg`,
+              type: 'symbol',
+              source: sourceID,
+              layout: {
+                'icon-image': svgExpresssion,
+                'icon-anchor': 'bottom-right',
+                'icon-size': 1,
+                'icon-allow-overlap': true,
+                visibility: layerInfo.visible,
+                'icon-offset': symbolStyle.offsetX || [0, 0],
+                'icon-rotate': symbolStyle.rotation || 0
+              },
+              paint: {
+                'icon-color': symbolStyle.fillColor
+              },
+              minzoom: minzoom || 0,
+              maxzoom: maxzoom || 22,
+              filter: svgfilterExpression
+            });
+          }
+        });
+      }
+      layerCreateFcuntion(
+        'POINT',
+        sourceID,
+        layerID,
+        { ...style, ...expressionMap },
+        minzoom,
+        maxzoom,
+        defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
+      );
+    }
     this._addLayerSucceeded();
   }
 
@@ -1402,7 +1743,7 @@ export default class WebMapViewModel extends WebMapBase {
           this.map.loadImage(src, (error, image) => {
             if (error) {
               console.log(error);
-              resolve();
+              resolve(error);
               return;
             }
             !this.map.hasImage(src) && this.map.addImage(src, image);
@@ -1418,7 +1759,7 @@ export default class WebMapViewModel extends WebMapBase {
             this.map.loadImage(canvas.toDataURL('img/png'), (error, image) => {
               if (error) {
                 console.log(error);
-                resolve();
+                resolve(error);
                 return;
               }
               !this.map.hasImage(src) && this.map.addImage(src, image);
@@ -1767,13 +2108,21 @@ export default class WebMapViewModel extends WebMapBase {
         newObj['fill-color'] = expression;
       }
     }
-    if (style.lineDash && style.lineDash !== 'solid' && type === 'LINE') {
-      newObj['line-dasharray'] = this.getDashStyle(style.lineDash);
+    if (style.lineDash && !newObj['line-dasharray']) {
+      if (Array.isArray(style['lineDash'])) {
+        newObj['line-dasharray'] = style['lineDash'];
+      } else if (style.lineDash !== 'solid' && type === 'LINE') {
+        newObj['line-dasharray'] = this.getDashStyle(style.lineDash);
+      }
     }
-    if (style.type === 'POINT' || style.type === 'BASIC_POINT' || type === 'POINT') {
-      const offsetX = style.offsetX || 0;
-      const offsetY = style.offsetY || 0;
-      newObj['circle-translate'] = [offsetX * style['radius'], offsetY * style['radius']];
+    if (style.lineDash && !newObj['circle-translate']) {
+      if (Array.isArray(style['circleTranslate'])) {
+        newObj['circle-translate'] = style['circleTranslate'];
+      } else if (style.type === 'POINT' || style.type === 'BASIC_POINT' || type === 'POINT') {
+        const offsetX = style.offsetX || 0;
+        const offsetY = style.offsetY || 0;
+        newObj['circle-translate'] = [offsetX * style['radius'], offsetY * style['radius']];
+      }
     }
 
     return newObj;
@@ -1792,7 +2141,8 @@ export default class WebMapViewModel extends WebMapBase {
     layerID: string,
     layerStyle: any,
     minzoom: number,
-    maxzoom: number
+    maxzoom: number,
+    filter?: string
   ): void {
     let mbglTypeMap = {
       POINT: 'circle',
@@ -1801,7 +2151,7 @@ export default class WebMapViewModel extends WebMapBase {
     };
     let mbglType = mbglTypeMap[type];
     if (mbglType === 'circle' || mbglType === 'line' || mbglType === 'fill') {
-      this._addLayer({
+      const style: any = {
         id: layerID,
         type: mbglType,
         source: source,
@@ -1809,7 +2159,11 @@ export default class WebMapViewModel extends WebMapBase {
         layout: layerStyle.layout || {},
         minzoom: minzoom || 0,
         maxzoom: maxzoom || 22
-      });
+      };
+      if (filter) {
+        style.filter = filter;
+      }
+      this._addLayer(style);
     }
   }
 
@@ -1829,7 +2183,10 @@ export default class WebMapViewModel extends WebMapBase {
       // @ts-ignore
       rasterSource: isIserver ? 'iserver' : '',
       // @ts-ignore
-      prjCoordSys: isIserver ? { epsgCode: this.baseProjection.split(':')[1] } : '',
+      prjCoordSys:
+        isIserver && !this.isOnlineBaseLayer(url[0], this.baseProjection)
+          ? { epsgCode: this.baseProjection.split(':')[1] }
+          : '',
       proxy: this.baseLayerProxy
     };
     if (bounds) {
@@ -2188,5 +2545,11 @@ export default class WebMapViewModel extends WebMapBase {
       const type = this.webMapService.getDatasourceType(layerInfo);
       this.getLayerFeatures(layerInfo, this._taskID, type);
     }
+  }
+  isOnlineBaseLayer(url, projection) {
+    return (
+      url.startsWith('https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark') &&
+      projection === 'EPSG:3857'
+    );
   }
 }
