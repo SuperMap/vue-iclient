@@ -39,12 +39,16 @@
             {{ $t('legend.themeField') }}:{{ layerValue.themeField }}
           </div>
           <div v-if="layerValue.layerType === 'UNIQUE'" class="sm-component-legend__wrap">
-            <ul class="sm-component-legend__point">
-              <li v-for="(item, i) in layerValue.styleGroup" :key="i" class="sm-component-legend__item">
-                <i :class="layerValue.featureType | selectLayerType" :style="{ color: item.color }"></i>
-                <span class="sm-component-legend__field-value add-ellipsis">{{ item.value }}</span>
-              </li>
-            </ul>
+            <div class="sm-component-legend__point">
+              <div v-for="(item, j) in layerValue.styleGroup" :key="j" class="sm-component-legend__item">
+                <div class="sm-component-legend__rank-icon">
+                  <i :class="layerValue.featureType | selectLayerType(item.style)" :style="uniqueSymbolStyle(item)" />
+                </div>
+                <span class="add-ellipsis">
+                  {{ item.value }}
+                </span>
+              </div>
+            </div>
           </div>
 
           <div v-if="layerValue.layerType === 'HEAT'" class="sm-component-legend__wrap">
@@ -105,16 +109,18 @@
         <div v-if="isShowField" class="sm-component-legend__themefield add-ellipsis" :style="secondaryTextColorStyle">
           {{ $t('legend.themeField') }}:{{ layerValue.themeField }}
         </div>
-
         <div v-if="layerValue.layerType === 'UNIQUE'" class="sm-component-legend__wrap">
-          <ul class="sm-component-legend__point">
-            <li v-for="(item, k) in layerValue.styleGroup" :key="k" class="sm-component-legend__item">
-              <i :class="layerValue.featureType | selectLayerType" :style="{ color: item.color }"></i>
-              <span class="sm-component-legend__field-value add-ellipsis">{{ item.value }}</span>
-            </li>
-          </ul>
+          <div class="sm-component-legend__point">
+            <div v-for="(item, j) in layerValue.styleGroup" :key="j" class="sm-component-legend__item">
+              <div class="sm-component-legend__rank-icon">
+                <i :class="layerValue.featureType | selectLayerType(item.style)" :style="uniqueSymbolStyle(item)" />
+              </div>
+              <span class="add-ellipsis">
+                {{ item.value }}
+              </span>
+            </div>
+          </div>
         </div>
-
         <div v-if="layerValue.layerType === 'HEAT'" class="sm-component-legend__wrap">
           <div class="sm-component-legend__heatbox">
             <div
@@ -183,12 +189,18 @@ export default {
     SmCollapsePanel
   },
   filters: {
-    selectLayerType(featureType) {
-      return {
-        POLYGON: 'sm-components-icon-ploygon',
-        POINT: 'sm-components-icon-multi-point',
-        LINE: 'sm-components-icon-line'
-      }[featureType];
+    selectLayerType(featureType, style) {
+      if (style.className) {
+        return style.className;
+      }
+      if (style.type === 'BASIC_POINT') {
+        return {
+          POLYGON: 'sm-components-icon-ploygon',
+          POINT: 'sm-components-icon-multi-point',
+          LINE: 'sm-components-icon-line'
+        }[featureType];
+      }
+      return '';
     }
   },
   mixins: [MapGetter, Control, Theme, BaseCard],
@@ -203,7 +215,7 @@ export default {
     },
     headerName: {
       type: String,
-      default: function() {
+      default: function () {
         return this.$t('legend.title');
       }
     },
@@ -245,8 +257,39 @@ export default {
     };
   },
   computed: {
+    uniqueSymbolStyle() {
+      return function (styleItem) {
+        const { style, radius, color } = styleItem;
+        let generateStyle = {};
+        switch (style.type) {
+          case 'BASIC_POINT':
+            generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+            break;
+          case 'SYMBOL_POINT':
+            generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+            generateStyle.fontSize = `${radius * 2}px`;
+            break;
+          case 'IMAGE_POINT':
+            generateStyle.background = `url(${style.imageInfo.url})`;
+            generateStyle.backgroundSize = 'contain';
+            generateStyle.width = `${(style.radius || radius) * 2}px`;
+            generateStyle.height = `${(style.radius || radius) * 2}px`;
+            break;
+          case 'SVG_POINT':
+            generateStyle['-webkit-mask'] = `url(${style.url})`;
+            generateStyle.backgroundColor = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+            generateStyle['-webkit-mask-size'] = 'contain';
+            generateStyle.width = `${(style.radius || radius) * 2}px`;
+            generateStyle.height = `${(style.radius || radius) * 2}px`;
+            break;
+          default:
+            break;
+        }
+        return generateStyle;
+      };
+    },
     rankSymbolStyle() {
-      return function(styleItem) {
+      return function (styleItem) {
         const { style, radius, color } = styleItem;
         let generateStyle = {};
         switch (style.type) {
@@ -286,7 +329,7 @@ export default {
     }
   },
   watch: {
-    layerNames: function(newVal) {
+    layerNames: function (newVal) {
       this.layerNames = newVal;
       this.initLegendList();
     }
