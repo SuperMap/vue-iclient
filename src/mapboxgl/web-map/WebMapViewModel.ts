@@ -170,7 +170,10 @@ export default class WebMapViewModel extends WebMapBase {
   public setCenter(center): void {
     if (this.map && this.centerValid(center)) {
       this.mapOptions.center = center;
-      this.map.setCenter(center, { from: 'setCenter' });
+      let { lng, lat } = this.map.getCenter();
+      if (center[0] !== +lng.toFixed(4) || center[1] !== +lat.toFixed(4)) {
+        this.map.setCenter(center, { from: 'setCenter' });
+      }
     }
   }
 
@@ -184,14 +187,18 @@ export default class WebMapViewModel extends WebMapBase {
   public setBearing(bearing): void {
     if (this.map) {
       this.mapOptions.bearing = bearing;
-      (bearing || bearing === 0) && this.map.setBearing(bearing);
+      if (bearing !== +this.map.getBearing().toFixed(2)) {
+        (bearing || bearing === 0) && this.map.setBearing(bearing);
+      }
     }
   }
 
   public setPitch(pitch): void {
     if (this.map) {
       this.mapOptions.pitch = pitch;
-      (pitch || pitch === 0) && this.map.setPitch(pitch);
+      if (pitch !== +this.map.getPitch().toFixed(2)) {
+        (pitch || pitch === 0) && this.map.setPitch(pitch);
+      }
     }
   }
 

@@ -69,7 +69,7 @@ export default {
     // 根据波浪数渲染数据
     calcData() {
       let data = [];
-      const formatValue = isNaN(this.finalValue) ? 0 : parseFloat(this.finalValue);
+      const formatValue = isNaN(+this.finalValue) ? 0 : parseFloat(+this.finalValue);
       for (let i = 0; i < this.waveCount; i++) {
         data.push(formatValue - i * 0.05);
       }

@@ -134,7 +134,9 @@ export default abstract class WebMapBase extends Events {
   public setZoom(zoom) {
     if (this.map) {
       this.mapOptions.zoom = zoom;
-      (zoom || zoom === 0) && this.map.setZoom(zoom, { from: 'setZoom' });
+      if (zoom !== +this.map.getZoom().toFixed(2)) {
+        (zoom || zoom === 0) && this.map.setZoom(zoom, { from: 'setZoom' });
+      }
     }
   }
 
