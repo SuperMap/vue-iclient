@@ -2468,6 +2468,7 @@ export default class WebMapViewModel extends WebMapBase {
       this._sourceListModel = null;
       this.center = null;
       this.zoom = null;
+      this._layers = [];
       this._dataflowService &&
         this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback) &&
         this._dataflowService.off('subscribesucceeded', this._initDataflowLayerCallback);
