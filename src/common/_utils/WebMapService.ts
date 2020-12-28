@@ -220,7 +220,30 @@ export default class WebMapService extends Events {
     }
     return pro;
   }
-
+  public getWmsInfo(layerInfo, mapCRS) {
+    return new Promise((resolve, reject) => {
+      const proxy = this.handleProxy();
+      const serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMS`;
+      SuperMap.FetchRequest.get(serviceUrl, null, {
+        withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
+        withoutFormatSuffix: true,
+        proxy
+      })
+        .then(response => {
+          return response.text();
+        })
+        .then(capabilitiesText => {
+          let converts = convert || window.convert;
+          const capabilities = JSON.parse(
+            converts.xml2json(capabilitiesText, {
+              compact: true,
+              spaces: 4
+            })
+          ).WMS_Capabilities;
+          resolve({ version: capabilities['_attributes']['version'] });
+        });
+    });
+  }
   public getWmtsInfo(layerInfo, mapCRS) {
     return new Promise((resolve, reject) => {
       let isMatched = false;

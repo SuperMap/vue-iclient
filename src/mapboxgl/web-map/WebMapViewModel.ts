@@ -717,9 +717,30 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createWMSLayer(layerInfo: any): void {
-    let WMSUrl = this._getWMSUrl(layerInfo);
-    const layerId = layerInfo.layerID || layerInfo.name;
-    this._addBaselayer([WMSUrl], layerId, layerInfo.visible);
+    this.webMapService
+      // @ts-ignore
+      .getWmsInfo(layerInfo)
+      .then(
+        (result: any) => {
+          const layerId = layerInfo.layerID || layerInfo.name;
+          if (result) {
+            let wmsUrl = this._getWMSUrl(layerInfo, result.version);
+
+            this._addBaselayer([wmsUrl], layerId, layerInfo.visible);
+          }
+        },
+        error => {
+          throw new Error(error);
+        }
+      )
+      .catch(error => {
+        /**
+         * @event WebMapViewModel#getmapinfofailed
+         * @description 获取地图信息失败。
+         * @property {Object} error - 失败原因。
+         */
+        this.triggerEvent('getmapinfofailed', { error });
+      });
   }
 
   private _createVectorLayer(layerInfo: any, features: any): void {
@@ -770,10 +791,10 @@ export default class WebMapViewModel extends WebMapBase {
       this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
   }
 
-  private _getWMSUrl(mapInfo: any): string {
+  private _getWMSUrl(mapInfo: any, version = '1.1.1'): string {
     let url = mapInfo.url;
     url = url.split('?')[0];
-    let options = {
+    let options: any = {
       service: 'WMS',
       request: 'GetMap',
       layers:
@@ -783,11 +804,15 @@ export default class WebMapViewModel extends WebMapBase {
       styles: '',
       format: 'image/png',
       transparent: 'true',
-      version: '1.1.1',
+      version,
       width: 256,
-      height: 256,
-      srs: this.baseProjection
+      height: 256
     };
+    if (version === '1.3.0') {
+      options.crs = this.baseProjection;
+    } else {
+      options.srs = this.baseProjection;
+    }
     url += `${this._getParamString(options, url)}&bbox={bbox-epsg-3857}`;
     return url;
   }
@@ -1468,14 +1493,7 @@ export default class WebMapViewModel extends WebMapBase {
       }
       // 面
       if (type === 'POLYGON') {
-        layerCreateFcuntion(
-          'POLYGON',
-          sourceID,
-          layerID,
-          { ...style, ...expressionMap },
-          minzoom,
-          maxzoom
-        );
+        layerCreateFcuntion('POLYGON', sourceID, layerID, { ...style, ...expressionMap }, minzoom, maxzoom);
         // 面且没有虚线
         if (!handlerLine) {
           layerCreateFcuntion(
