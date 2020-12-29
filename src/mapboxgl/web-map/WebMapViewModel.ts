@@ -1191,7 +1191,8 @@ export default class WebMapViewModel extends WebMapBase {
     features: any,
     textSizeExpresion?,
     textRotateExpresion?,
-    addToMap = true
+    addToMap = true,
+    filter?
   ): void {
     // 用来请求symbol_point字体文件
     let target = document.getElementById(`${this.target}`);
@@ -1201,20 +1202,27 @@ export default class WebMapViewModel extends WebMapBase {
     let text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
     const textSize = textSizeExpresion || (style.fontSize && parseFloat(style.fontSize)) || 12;
     const rotate = ((layerInfo.style['rotation'] || 0) * 180) / Math.PI;
-    this._addLayer({
-      id: layerID,
-      type: 'symbol',
-      source: {
+    if (!this.map.getSource(layerID)) {
+      this.map.addSource(layerID, {
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
           features: []
         }
-      },
+      });
+    }
+    const layerOptions: any = {
+      id: layerID,
+      type: 'symbol',
+      source: layerID,
       paint: {
-        'text-color': getColorWithOpacity(style.fillColor, style.fillOpacity),
+        'text-color': Array.isArray(style.fillColor)
+          ? style.fillColor
+          : getColorWithOpacity(style.fillColor, style.fillOpacity),
         // 'text-opacity': style.fillOpacity === 0 ? 0.1 : style.fillOpacity,
-        'text-halo-color': getColorWithOpacity(style.strokeColor || 'rgba(0,0,0,0)', style.strokeOpacity),
+        'text-halo-color': Array.isArray(style.strokeColor)
+          ? style.strokeColor
+          : getColorWithOpacity(style.strokeColor || 'rgba(0,0,0,0)', style.strokeOpacity),
         'text-halo-width': style.strokeWidth || 0
       },
       layout: {
@@ -1222,13 +1230,17 @@ export default class WebMapViewModel extends WebMapBase {
         'text-size': textSize,
         'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
         'text-rotate': textRotateExpresion || rotate || 0,
-        'text-offset': [style.offsetX / 2 || 0, style.offsetY / 2 || 0],
+        'text-offset': Array.isArray(style.offsetX) ? style.offsetX : [style.offsetX / 2 || 0, style.offsetY / 2 || 0],
         'text-allow-overlap': true,
         visibility: layerInfo.visible
       },
       minzoom: minzoom || 0,
       maxzoom: maxzoom || 22
-    });
+    };
+    if (filter) {
+      layerOptions.filter = filter;
+    }
+    this._addLayer(layerOptions);
     // @ts-ignore
     this.map.getSource(layerID).setData({
       type: 'FeatureCollection',
@@ -1244,9 +1256,11 @@ export default class WebMapViewModel extends WebMapBase {
     features: any,
     iconSizeExpression?,
     iconRotateExpression?,
-    addToMap = true
+    addToMap = true,
+    filter?
   ) {
     let { layerID, minzoom, maxzoom, style } = layerInfo;
+
     let source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
@@ -1254,6 +1268,9 @@ export default class WebMapViewModel extends WebMapBase {
         features: features
       }
     };
+    if (!this.map.getSource(layerID)) {
+      this.map.addSource(layerID, source);
+    }
     const iconID = `imageIcon-${layerID}`;
     if (style.type === 'IMAGE_POINT') {
       let imageInfo = style.imageInfo;
@@ -1264,10 +1281,10 @@ export default class WebMapViewModel extends WebMapBase {
         }
         let iconSize = Number.parseFloat((style.radius / image.width).toFixed(2)) * 2;
         !this.map.hasImage(iconID) && this.map.addImage(iconID, image);
-        this._addLayer({
+        const layerOptions: any = {
           id: layerID,
           type: 'symbol',
-          source: source,
+          source: layerID,
           layout: {
             'icon-image': iconID,
             'icon-anchor': 'bottom-right',
@@ -1279,7 +1296,11 @@ export default class WebMapViewModel extends WebMapBase {
           },
           minzoom: minzoom || 0,
           maxzoom: maxzoom || 22
-        });
+        };
+        if (filter) {
+          layerOptions.filter = filter;
+        }
+        this._addLayer(layerOptions);
         if (addToMap) {
           this._addLayerSucceeded();
         }
@@ -1291,7 +1312,7 @@ export default class WebMapViewModel extends WebMapBase {
         document.body.appendChild(this._svgDiv);
       }
       this.getCanvasFromSVG(svgUrl, this._svgDiv, canvas => {
-        this.handleSvgColor(style, canvas);
+        // this.handleSvgColor(style, canvas);
         let imgUrl = canvas.toDataURL('img/png');
         imgUrl &&
           this.map.loadImage(imgUrl, (error, image) => {
@@ -1299,13 +1320,13 @@ export default class WebMapViewModel extends WebMapBase {
               console.log(error);
             }
             let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2)) * 2;
-            !this.map.hasImage(iconID) && this.map.addImage(iconID, image);
-            this._addLayer({
+            !this.map.hasImage(svgUrl) && this.map.addImage(svgUrl, image, { sdf: true });
+            const layerOptions: any = {
               id: layerID,
               type: 'symbol',
-              source: source,
+              source: layerID,
               layout: {
-                'icon-image': iconID,
+                'icon-image': svgUrl,
                 'icon-size': iconSizeExpression || iconSize,
                 'icon-anchor': 'bottom-right',
                 visibility: layerInfo.visible,
@@ -1313,9 +1334,16 @@ export default class WebMapViewModel extends WebMapBase {
                 'icon-allow-overlap': true,
                 'icon-rotate': iconRotateExpression || ((layerInfo.style['rotation'] || 0) * 180) / Math.PI
               },
+              paint: {
+                'icon-color': style.fillColor
+              },
               minzoom: minzoom || 0,
               maxzoom: maxzoom || 22
-            });
+            };
+            if (filter) {
+              layerOptions.filter = filter;
+            }
+            this._addLayer(layerOptions);
             if (addToMap) {
               this._addLayerSucceeded();
             }
@@ -1328,7 +1356,7 @@ export default class WebMapViewModel extends WebMapBase {
           visibility: layerInfo.visible
         }
       };
-      this._addOverlayToMap('POINT', source, layerID, layerStyle, minzoom, maxzoom);
+      this._addOverlayToMap('POINT', layerID, layerID, layerStyle, minzoom, maxzoom);
       if (addToMap) {
         this._addLayerSucceeded();
       }
@@ -1494,6 +1522,9 @@ export default class WebMapViewModel extends WebMapBase {
       // 面
       if (type === 'POLYGON') {
         layerCreateFcuntion('POLYGON', sourceID, layerID, { ...style, ...expressionMap }, minzoom, maxzoom);
+        if (fristName) {
+          this.map.moveLayer(layerID, fristName);
+        }
         // 面且没有虚线
         if (!handlerLine) {
           layerCreateFcuntion(
@@ -1515,7 +1546,7 @@ export default class WebMapViewModel extends WebMapBase {
       const unicodeExpression = expressionMap['unicode'];
       // SYMBOL_POINT
       if (unicodeExpression) {
-        const classNameExpression = expressionMap['className'];
+        const classNameExpression = expressionMap['className'] || [];
         delete expressionMap['unicode'];
         delete expressionMap['classname'];
         const additionalLayerName = `${layerID}-additional-symbol`;
@@ -1530,7 +1561,7 @@ export default class WebMapViewModel extends WebMapBase {
         let target = document.getElementById(`${this.target}`);
         target.classList.add('supermapol-icons-map');
         const symbolStyle = { ...style, ...expressionMap };
-        this._addLayer({
+        const layerOptions: any = {
           id: additionalLayerName,
           type: 'symbol',
           source: sourceID,
@@ -1542,17 +1573,23 @@ export default class WebMapViewModel extends WebMapBase {
           },
           layout: {
             'text-field': unicodeExpression,
-            'text-size': symbolStyle.fontSize || 12,
+            'text-size':
+              typeof symbolStyle.fontSize === 'string' ? parseInt(symbolStyle.fontSize) : symbolStyle.fontSize || 12,
             'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
             'text-rotate': symbolStyle.rotation || 0,
-            'text-offset': symbolStyle.offsetX || [0, 0],
+            'text-offset': Array.isArray(symbolStyle.offsetX)
+              ? symbolStyle.offsetX
+              : [symbolStyle.offsetX / 2 || 0, symbolStyle.offsetY / 2 || 0],
             'text-allow-overlap': true,
             visibility: visible
           },
           minzoom: minzoom || 0,
-          maxzoom: maxzoom || 22,
-          filter: filterExpression
-        });
+          maxzoom: maxzoom || 22
+        };
+        if (filterExpression.length > 1) {
+          layerOptions.filter = filterExpression;
+        }
+        this._addLayer(layerOptions);
       }
       //IMAGE_POINT 或者 SVG_POINT
       const imageInfoExpression = expressionMap['imageInfo'] || [];
@@ -1701,15 +1738,39 @@ export default class WebMapViewModel extends WebMapBase {
           }
         });
       }
-      layerCreateFcuntion(
-        'POINT',
-        sourceID,
-        layerID,
-        { ...style, ...expressionMap },
-        minzoom,
-        maxzoom,
-        defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
-      );
+      if (style.type === 'SYMBOL_POINT') {
+        const tmpLayerInfo = { ...layerInfo };
+        tmpLayerInfo.style = { ...style, ...expressionMap, type: style.type };
+        this._createSymbolLayer(
+          tmpLayerInfo,
+          features,
+          '',
+          '',
+          true,
+          defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
+        );
+      } else if (style.type === 'IMAGE_POINT' || style.type === 'SVG_POINT') {
+        const tmpLayerInfo = { ...layerInfo };
+        tmpLayerInfo.style = { ...style, ...expressionMap, type: style.type };
+        this._createGraphicLayer(
+          tmpLayerInfo,
+          features,
+          '',
+          '',
+          true,
+          defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
+        );
+      } else {
+        layerCreateFcuntion(
+          'POINT',
+          sourceID,
+          layerID,
+          { ...style, ...expressionMap },
+          minzoom,
+          maxzoom,
+          defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
+        );
+      }
     }
     this._addLayerSucceeded();
   }

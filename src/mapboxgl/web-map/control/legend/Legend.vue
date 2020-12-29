@@ -194,14 +194,15 @@ export default {
       if (style.className) {
         return style.className;
       }
-      if (style.type === 'BASIC_POINT') {
-        return {
-          POLYGON: 'sm-components-icon-ploygon',
-          POINT: 'sm-components-icon-multi-point',
-          LINE: 'sm-components-icon-line'
-        }[featureType];
+      const result = {
+        POLYGON: 'sm-components-icon-ploygon',
+        POINT: 'sm-components-icon-multi-point',
+        LINE: 'sm-components-icon-line'
+      }[featureType];
+      if (featureType === 'POINT' && style.type !== 'BASIC_POINT') {
+        return '';
       }
-      return '';
+      return result;
     }
   },
   mixins: [MapGetter, Control, Theme, BaseCard],
@@ -284,6 +285,7 @@ export default {
             generateStyle.height = `${(style.radius || radius) * 2}px`;
             break;
           default:
+            generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
             break;
         }
         return generateStyle;
