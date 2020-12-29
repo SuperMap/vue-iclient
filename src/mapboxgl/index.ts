@@ -6,6 +6,7 @@ import * as commontypes from './_types';
 import * as utils from './_utils';
 import VueCesium from 'vue-cesium';
 import { setTheme } from '../common/_utils/style/theme/set-theme';
+import Base from 'ant-design-vue/es/base';
 
 const install = function(Vue, opts: any = {}) {
   let theme = opts.theme || 'light';
@@ -19,6 +20,7 @@ const install = function(Vue, opts: any = {}) {
       cesiumPath: opts.cesiumPath || '../../static/libs/Cesium/Cesium.js'
     });
   }
+  Vue.use(Base);
   Vue.prototype.$message = components.Message;
   Vue.prototype.$notification = components.Notification;
   Vue.prototype.$info = components.Modal.info;

@@ -15,7 +15,7 @@ interface ModalInstanceConstructor extends ModalInstanceType {
 
 const defaultPrefixCls = 'sm-component-modal';
 const btnDefaultPrefixCls = 'sm-component-btn';
-['info', 'success', 'error', 'warn', 'warning', 'confirm', 'destroyAll'].forEach((item: string) => {
+['info', 'success', 'error', 'warn', 'warning', 'confirm'].forEach((item: string) => {
   const typeCallback = AntdModal[item];
   Modal[item] = function(config: any) {
     const { props: okButtonProps = {} } = config.okButtonProps || {};
@@ -41,5 +41,8 @@ const btnDefaultPrefixCls = 'sm-component-btn';
   };
 });
 
+Modal['destroyAll'] = function() {
+  return AntdModal['destroyAll']();
+};
 const ModalInstance: ModalInstanceConstructor = Modal;
 export default ModalInstance;
