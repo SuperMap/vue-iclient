@@ -135,12 +135,6 @@ class SmVideoPlayer extends Vue {
   modalVisibleChanged() {
     if (this.modalVisible && this.modalVideoPlayer) {
       this.handlePlayerOptions();
-      // @ts-ignore
-      if (this.flvPlayer && this.isFlv) {
-        // @ts-ignore
-        this.supportFlv(this.flvPlayer);
-        return;
-      }
       this.modalVideoPlayer.currentTime(0);
       this.modalVideoPlayer.play();
     }
@@ -151,15 +145,8 @@ class SmVideoPlayer extends Vue {
 
   @Watch('url')
   urlChanged() {
-    this.initFlvPlayer();
     this.handlePlayerOptions();
     this.replayRtmp();
-    // @ts-ignore
-    if (this.flvPlayer && this.isFlv) {
-      this.initFlvPlayer();
-      // @ts-ignore
-      this.supportFlv(this.flvPlayer);
-    }
   }
 
   @Watch('playerOptions')
@@ -200,12 +187,12 @@ class SmVideoPlayer extends Vue {
       setTimeout(() => {
         this.replayRtmp();
       });
-      if (this.isFirst) {
-        setTimeout(() => {
-          this.initFlvPlayer();
-          // @ts-ignore
-          this.supportFlv(this.flvPlayer);
-        }, 5000);
+      const player = this.modalVisible ? this.modalVideoPlayer : this.smPlayer;
+      if (player) {
+        player.muted(this.options.muted);
+        if (this.options.muted) {
+          player.volume(0);
+        }
       }
     });
   }
@@ -225,37 +212,6 @@ class SmVideoPlayer extends Vue {
         // @ts-ignore
         clearTimeout(this.timer);
       });
-    }
-  }
-
-  initFlvPlayer() {
-    if (this.isFlv) {
-      // @ts-ignore
-      this.flvPlayer = flvjs.createPlayer({
-        type: 'flv',
-        url: this.url
-      });
-    } else {
-      // @ts-ignore
-      this.flvPlayer = null;
-    }
-  }
-
-  supportFlv(flvPlayer) {
-    if (flvPlayer && this.isFlv) {
-      const videoPlayer = this.modalVisible ? this.$refs.modalVideoPlayer : this.$refs.videoPlayer;
-      // @ts-ignore;
-      const videoElement = videoPlayer && videoPlayer.$refs && videoPlayer.$refs.video;
-      if (!videoElement) {
-        return;
-      }
-      flvPlayer.attachMediaElement(videoElement);
-      // @ts-ignore;
-      flvPlayer.unload();
-      // @ts-ignore;
-      flvPlayer.load();
-      // @ts-ignore;
-      flvPlayer.play();
     }
   }
 
@@ -295,7 +251,7 @@ class SmVideoPlayer extends Vue {
         mediaDataSource: {
           isLive: true,
           cors: true,
-          hasAudio: false
+          hasAudio: true
         }
       },
       preload: 'auto',
@@ -309,7 +265,7 @@ class SmVideoPlayer extends Vue {
       notSupportedMessage: this.$t('warning.unavailableVideo')
     };
     if (!this.url.includes('rtmp') && this.url.includes('.flv')) {
-      commonOptions.techOrder = ['flvjs', 'html5'];
+      commonOptions.techOrder = ['html5', 'flvjs'];
       // @ts-ignore
       commonOptions.sources[0].type = 'video/x-flv';
     }
