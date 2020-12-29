@@ -206,7 +206,7 @@ export default class WebMapService extends Events {
         pro = this._getFeaturesFromHosted(layer, baseProjection);
         break;
       case 'rest_data':
-        pro = this._getFeaturesFromRestData(layer);
+        pro = this._getFeaturesFromRestData(layer, baseProjection);
         break;
       case 'rest_map':
         pro = this._getFeaturesFromRestMap(layer);
@@ -239,8 +239,9 @@ export default class WebMapService extends Events {
               compact: true,
               spaces: 4
             })
-          ).WMS_Capabilities;
-          resolve({ version: capabilities['_attributes']['version'] });
+          );
+          const wmsCapabilities = capabilities.WMT_MS_Capabilities || capabilities.WMS_Capabilities;
+          resolve({ version: wmsCapabilities['_attributes']['version'] });
         });
     });
   }
@@ -392,7 +393,7 @@ export default class WebMapService extends Events {
     }
   }
 
-  private _getFeaturesFromRestData(layer) {
+  private _getFeaturesFromRestData(layer, baseProjection?) {
     //从restData获取数据
     let features;
     let dataSource = layer.dataSource;
@@ -410,7 +411,8 @@ export default class WebMapService extends Events {
         },
         err => {
           reject(err);
-        }
+        },
+        baseProjection
       );
     });
   }
@@ -1170,7 +1172,8 @@ export default class WebMapService extends Events {
     url: string,
     datasetNames: Array<string>,
     processCompleted: Function,
-    processFaild: Function
+    processFaild: Function,
+    baseProjection?
   ): void {
     let getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
     getFeatureParam = new SuperMap.FilterParameter({
@@ -1185,6 +1188,13 @@ export default class WebMapService extends Events {
       maxFeatures: -1,
       returnContent: true
     });
+    if (baseProjection) {
+      if (baseProjection === 'EPSG:3857') {
+        getFeatureBySQLParams.targetEpsgCode = 4326;
+      } else {
+        getFeatureBySQLParams.targetEpsgCode = +baseProjection.split(':')[1];
+      }
+    }
     const proxy = this.handleProxy();
     let options = {
       proxy,

@@ -530,7 +530,7 @@ export default class WebMapViewModel extends WebMapBase {
       features = handleMultyPolygon(features);
     }
 
-    if (features && projection && (projection !== this.baseProjection || projection === 'EPSG:3857')) {
+    if (features && projection && (projection !== this.baseProjection || projection === 'EPSG:3857') && (layerInfo.dataSource && layerInfo.dataSource.type !== 'REST_DATA')) {
       this._unprojectProjection = this._defineProj4(projection);
       features = this.transformFeatures(features);
     }
