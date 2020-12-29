@@ -48,12 +48,28 @@
       margin-top: 10px;
     }
   }
-  .is-top-left {
-    .#{$collapse-prefix} {
-      .#{$collapse-prefix}-item {
-        padding: 0 30px 0;
+  .is-not-header {
+    &.is-top-left, &.is-bottom-left {
+      .#{$collapse-prefix} {
+        .#{$collapse-prefix}-item {
+          padding-left: 30px;
+        }
+        .#{$collapse-prefix}-content {
+          margin-left: -30px;
+        }
       }
     }
+    &.is-top-right, &.is-bottom-right {
+      .#{$collapse-prefix} {
+        .#{$collapse-prefix}-item {
+          padding-right: 30px;
+        }
+        .#{$collapse-prefix}-content {
+          margin-right: -30px;
+        }
+      }
+    }
+
   }
 
   @include e(panel) {
@@ -73,6 +89,7 @@
       &:last-child {
         .#{$collapse-prefix}-header {
           border-bottom: none;
+          border-radius: 0;
         }
         &.#{$collapse-prefix}-item-active {
           .#{$collapse-prefix}-header {
@@ -92,11 +109,6 @@
           padding-right: 8px;
         }
       }
-    }
-  }
-  .is-top-left {
-    .#{$collapse-prefix}-content {
-      margin: 0 -30px;
     }
   }
   .#{$collapse-prefix}-content {

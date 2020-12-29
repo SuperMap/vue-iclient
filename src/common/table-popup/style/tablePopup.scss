@@ -16,6 +16,14 @@
       .#{$table-prefix}-content {
         max-height: 250px;
         overflow: auto;
+        .#{$table-prefix}-placeholder {
+          background: transparent;
+          border-top: none;
+          color: inherit;
+          .#{$ant-prefix}-empty {
+            background-color: transparent;
+          }
+        }
       }
     }
     &
