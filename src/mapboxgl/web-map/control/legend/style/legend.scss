@@ -55,6 +55,13 @@
       }
     }
   }
+
+  @include e(panel) {
+    .#{$collapse-prefix}-header {
+      display: none;
+    }
+  }
+
   .#{$collapse-prefix} {
     border: 0;
     background: transparent;
@@ -180,7 +187,7 @@
           margin-bottom: 0;
         }
       }
-      
+
       @include e(item) {
         list-style: none;
         > i {

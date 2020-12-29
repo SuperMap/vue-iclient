@@ -22,6 +22,7 @@
           :key="layerKey"
           :disabled="!isShowTitle"
           :showArrow="false"
+          :class="[isShowTitle?'':'sm-component-legend__panel']"
         >
           <template slot="header">
             <div v-if="isShowTitle" class="header-wrap" :style="headingTextColorStyle">
@@ -348,6 +349,7 @@ export default {
           }
         });
         this.activeLegend = JSON.stringify(this.legendList) !== '{}' ? Object.keys(this.legendList)[0] : [];
+        this.activeLegend = this.isShowTitle ? this.activeLegend : Object.keys(this.legendList);
       }
     },
     getIntegerRangeInfo(start, end) {
