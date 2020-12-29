@@ -1,12 +1,14 @@
 import {
   toI18n
 } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'Basic Components/collapse'
 };
 
 export const BasicCollapse = () => ({
+  mixins: [theme],
   data() {
     return {
       text: `A dog is a type of domesticated animal.Known for its loyalty and faithfulness,it can be found as a welcome guest in many households across the world.`

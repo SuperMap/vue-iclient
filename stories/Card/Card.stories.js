@@ -1,12 +1,14 @@
 import {
   toI18n
 } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'Basic Components/card'
 };
 
 export const card = () => ({
+  mixins: [theme],
   template: `
   <div>
     <sm-card title="Default size card" style="width: 300px">

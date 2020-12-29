@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/modal' };
 
 export const BasicModal = () => ({
+  mixins: [theme],
   data() {
     return {
       visible: false
@@ -430,6 +432,11 @@ export const DestroyModal = () => ({
             cancelText: 'Click to destroy all',
             onCancel() {
               self.destroyAll();
+            },
+            okButtonProps: {
+              props: {
+                disabled: false
+              }
             }
           });
         }, i * 500);

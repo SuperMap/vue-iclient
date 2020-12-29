@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/message' };
 
 export const BasicMessage = () => ({
+  mixins: [theme],
   methods: {
     info() {
       this.$message.info('This is a normal message');

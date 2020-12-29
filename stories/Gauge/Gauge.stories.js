@@ -1,12 +1,14 @@
 import {
   toI18n
 } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'Chart Components/gauge'
 };
 
 export const Gauge = () => ({
+  mixins: [theme],
   data() {
     return {
       dataset: {

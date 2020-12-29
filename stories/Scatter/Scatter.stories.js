@@ -1,12 +1,14 @@
 import {
   toI18n
 } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'Chart Components/scatter'
 };
 
 export const Scatter = () => ({
+  mixins: [theme],
   data() {
     return {
       dataset: {

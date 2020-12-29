@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/indicator' };
 
 export const BasicIndicator = () => ({
+  mixins: [theme],
   template: `
   <sm-indicator title="建筑高度" unit="米" num="1588"></sm-indicator>
   `

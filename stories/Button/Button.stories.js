@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/button' };
 
 export const ButtonType = () => ({
+  mixins: [theme],
   template: `  
   <div>
     <sm-button type="primary">

@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/radio' };
 
 export const BasicRadio = () => ({
+  mixins: [theme],
   template: `
   <sm-radio>Radio</sm-radio>
   `

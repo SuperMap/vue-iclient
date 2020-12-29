@@ -1,12 +1,14 @@
 import {
   toI18n
 } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'Basic Components/spin'
 };
 
 export const spin = () => ({
+  mixins: [theme],
   template: `
   <sm-spin />
   `

@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/tooltip' };
 
 export const BasicTooltip = () => ({
+  mixins: [theme],
   template: `
   <sm-tooltip>
     <template slot="title">

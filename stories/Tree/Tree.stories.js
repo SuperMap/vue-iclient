@@ -1,12 +1,14 @@
 import {
   toI18n
 } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'Basic Components/tree'
 };
 
 export const BasicTree = () => ({
+  mixins: [theme],
   data() {
     return {
       treeData: [{

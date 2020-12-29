@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/tabs' };
 
 export const BasicTabs = () => ({
+  mixins: [theme],
   template: `
   <div>
     <sm-tabs default-active-key="1">

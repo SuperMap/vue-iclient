@@ -1,12 +1,14 @@
 import {
   toI18n
 } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'GIS Components/legend'
 };
 
 export const Legend = () => ({
+  mixins: [theme],
   template: `
   <sm-web-map target="map111" style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
     <sm-legend :layerNames="['民航数据']" :collapsed="false" position="top-left" />

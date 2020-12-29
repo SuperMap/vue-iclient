@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/layout' };
 
 export const BasicLayout = () => ({
+  mixins: [theme],
   template: `
   <div style="text-align: center;">
     <sm-layout style="background: rgba(16, 142, 233, 1); color: #fff; min-height: 120px; line-height: 120px; margin-bottom: 48px;">

@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/time-text' };
 
 export const BasicTimeText = () => ({
+  mixins: [theme],
   template: `
   <SmTimeText  timeType="date+second+week"></SmTimeText>
   `

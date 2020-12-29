@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/border' };
 
 export const BasicBorder = () => ({
+  mixins: [theme],
   template: `
   <sm-border style="width:600px; height:400px" type="border1"></sm-border>
   `

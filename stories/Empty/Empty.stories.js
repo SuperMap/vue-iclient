@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/empty' };
 
 export const BasicEmpty = () => ({
+  mixins: [theme],
   template: `
   <sm-empty />
   `

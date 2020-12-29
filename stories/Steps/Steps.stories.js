@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/steps' };
 
 export const BasicSteps = () => ({
+  mixins: [theme],
   template: `
   <sm-steps :current="1">
     <sm-step>

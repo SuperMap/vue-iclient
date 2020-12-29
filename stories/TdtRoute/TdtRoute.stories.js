@@ -1,12 +1,14 @@
 import {
   toI18n
 } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'GIS Components/tdtRoute'
 };
 
 export const TdtRoute = () => ({
+  mixins: [theme],
   data() {
     return {
       routeData: {

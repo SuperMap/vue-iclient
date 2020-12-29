@@ -1,9 +1,11 @@
 import { toI18n } from '../../.storybook/lang';
 import moment from 'moment';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/datePicker' };
 
 export const BasicDatePicker = () => ({
+  mixins: [theme],
   template: `
   <div>
     <sm-date-picker />

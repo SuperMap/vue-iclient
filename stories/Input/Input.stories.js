@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/input' };
 
 export const BasicInput = () => ({
+  mixins: [theme],
   template: `
   <sm-input style="width:160px;" placeholder="Basic input"></sm-input>
   `

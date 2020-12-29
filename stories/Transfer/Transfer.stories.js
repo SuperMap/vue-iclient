@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/transfer' };
 
 export const BasicTransfer = () => ({
+  mixins: [theme],
   data() {
     const mockData = [];
     for (let i = 0; i < 20; i++) {

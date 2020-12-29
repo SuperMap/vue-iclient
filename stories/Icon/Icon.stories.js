@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/icon' };
 
 export const BasicIcon = () => ({
+  mixins: [theme],
   template: `
   <sm-icon type="info" theme="outlined" :autoPrefix="true">
   </sm-icon>`

@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Chart Components/liquidfill' };
 
 export const Liquidfill = () => ({
+  mixins: [theme],
   template: `
   <sm-liquid-fill style="width:200px; height:200px" value="0.5"></sm-liquid-fill>
   `

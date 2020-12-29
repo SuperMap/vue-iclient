@@ -1,9 +1,11 @@
 import debounce from 'lodash/debounce';
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/select' };
 
 export const BasicSelect = () => ({
+  mixins: [theme],
   template: `
   <div>
     <sm-select default-value="lucy" style="width: 120px">

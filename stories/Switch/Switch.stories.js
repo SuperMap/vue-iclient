@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/switch' };
 
 export const BasicSwitch = () => ({
+  mixins: [theme],
   template: `
   <sm-switch default-checked/>
   `

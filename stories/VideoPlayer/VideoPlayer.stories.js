@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/video-player' };
 
 export const BasicVideoPlayer = () => ({
+  mixins: [theme],
   template: `
   <sm-video-player 
   style="width:600px; height:400px" 
@@ -19,11 +21,7 @@ export const ControlVideoPlayer = () => ({
   data() {
     return {
       options: {
-        muted: true,
-        loop: false,
-        autoPlay: false,
-        controlBar: true,
-        popupToplay: false
+        controlBar: false
       }
     };
   },

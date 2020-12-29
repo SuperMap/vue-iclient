@@ -1,9 +1,11 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'GIS Components/layerList'
 };
 export const LayerList = () => ({
+  mixins: [theme],
   template: `
   <sm-web-map style="height:700px" serverUrl="https://iportal.supermap.io/iportal" mapId="801571284">
     <sm-layer-list :collapsed="false"></sm-layer-list>

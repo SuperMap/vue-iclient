@@ -2,12 +2,14 @@ import {
   toI18n
 } from '../../.storybook/lang';
 import smcomponents from '../../src/mapboxgl';
+import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: 'GIS Components/poi'
 };
 
 export const poi = () => ({
+  mixins: [theme],
   data() {
     return {
       addressMatch: [

@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/pagination' };
 
 export const BasicPagination = () => ({
+  mixins: [theme],
   template: `
   <sm-pagination :total="50" />
   `

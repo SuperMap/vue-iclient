@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Basic Components/breadcrumb' };
 
 export const BasicBreadcrumb = () => ({
+  mixins: [theme],
   template: `
   <sm-breadcrumb>
       <sm-breadcrumb-item>Home</sm-breadcrumb-item>

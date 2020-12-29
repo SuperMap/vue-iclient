@@ -1,8 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
+import theme from '../setThemeMixin/setTheme';
 
 export default { title: 'Chart Components/progress' };
 
 export const BasicProgress = () => ({
+  mixins: [theme],
   template: `
   <sm-progress 
   style="width:600px; height:60px; background: rgba(0, 0, 0, 0);" 
