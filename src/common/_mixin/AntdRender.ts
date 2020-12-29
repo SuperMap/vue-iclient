@@ -20,7 +20,7 @@ export default class BaseRender extends Vue {
     prefixCls: this.prefixCls,
     csp: this.csp,
     autoInsertSpaceInButton: this.autoInsertSpaceInButton,
-    locale: Object.assign({}, this.locale, this.$i18n.getLocaleMessage(this.$i18n.locale)),
+    locale: Object.assign({}, this.locale, this.$i18n && this.$i18n.getLocaleMessage(this.$i18n.locale)),
     pageHeader: this.pageHeader,
     pageHeatransformCellTextder: this.transformCellText,
     getPrefixCls: this.getPrefixCls,
@@ -29,8 +29,8 @@ export default class BaseRender extends Vue {
 
   @Provide('localeData')
   localeData = {
-    antLocale: Object.assign({}, this.locale, this.$i18n.getLocaleMessage(this.$i18n.locale), { exist: true })
-  }
+    antLocale: Object.assign({}, this.locale, this.$i18n && this.$i18n.getLocaleMessage(this.$i18n.locale), { exist: true })
+  };
 
   get extralProps() {
     return {};
@@ -68,8 +68,18 @@ export default class BaseRender extends Vue {
     return Component;
   }
 
-  renderChildren() {
-    return this.$slots['default'];
+  renderChildren(createElement) {
+    const slotComponents = [].concat(this.$slots['default'] || []);
+    for (let key in this.$slots) {
+      if (key !== 'default') {
+        slotComponents.push(
+          createElement('template', {
+            slot: key
+          }, this.$slots[key])
+        );
+      }
+    }
+    return slotComponents;
   }
 
   render(h: CreateElement): VNode {
@@ -83,7 +93,7 @@ export default class BaseRender extends Vue {
         on: this.componentListeners,
         scopedSlots: this.$scopedSlots
       },
-      this.renderChildren()
+      this.renderChildren(h)
     );
   }
 }

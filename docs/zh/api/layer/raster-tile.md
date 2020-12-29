@@ -17,6 +17,4 @@
 | tiles       | 地图 url（mapUrl 参数与 tiles 参数二选一）             | [tiles](https://docs.mapbox.com/mapbox-gl-js/style-spec/#sources-raster-dem-tiles)         | -              | -      |
 | bounds      | 图层显示范围                                           | [bounds](https://docs.mapbox.com/mapbox-gl-js/style-spec/#sources-vector-bounds)           | -              | -      |
 | attribution | 版权信息                                               | [attribution](https://docs.mapbox.com/mapbox-gl-js/style-spec/#sources-vector-attribution) | -              | -      |
-| scheme      | 瓦片金字塔                                                     | [scheme](https://docs.mapbox.com/mapbox-gl-js/style-spec/#sources-vector-scheme)           | 'xyz' \| 'tms' | 'xyz'  |
-| visible     | 地图是否可见                                           | boolean                                                                                    | -              | true   |
-| opacity     | 地图透明度                                             | number                                                                                     | -              | 1      |
+| scheme      | 瓦片金字塔                                             | [scheme](https://docs.mapbox.com/mapbox-gl-js/style-spec/#sources-vector-scheme)           | 'xyz' \| 'tms' | 'xyz'  |

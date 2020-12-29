@@ -12,6 +12,10 @@ export default {
       type: Object,
       required: true
     },
+    maxzoom: {
+      type: Number,
+      default: 14
+    },
     radius: {
       type: Number,
       default: 50
