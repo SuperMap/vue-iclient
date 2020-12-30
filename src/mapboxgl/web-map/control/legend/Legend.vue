@@ -22,7 +22,7 @@
           :key="layerKey"
           :disabled="!isShowTitle"
           :showArrow="false"
-          :class="[isShowTitle?'':'sm-component-legend__panel']"
+          :class="[isShowTitle ? '' : 'sm-component-legend__panel']"
         >
           <template slot="header">
             <div v-if="isShowTitle" class="header-wrap" :style="headingTextColorStyle">
@@ -54,10 +54,9 @@
 
           <div v-if="layerValue.layerType === 'HEAT'" class="sm-component-legend__wrap">
             <div class="sm-component-legend__heatbox">
-              <div
-                class="sm-component-legend__heat"
-                :style="{ background: `linear-gradient(to top,${layerValue.styleGroup.join(',')})` }"
-              ></div>
+              <div class="sm-component-legend__heat">
+                <i :style="{ background: `linear-gradient(to top,${layerValue.styleGroup.join(',')})` }" />
+              </div>
               <div class="sm-component-legend__heatText">
                 <span class="sm-component-legend__top">
                   <i class="sm-components-icon-solid-triangle-left" />
@@ -74,7 +73,9 @@
           <div v-if="layerValue.layerType === 'RANGE'" class="sm-component-legend__wrap">
             <div class="sm-component-legend__range">
               <div v-for="(item, j) in layerValue.styleGroup" :key="j" class="sm-component-legend__range-item">
-                <div :style="{ background: item.color }"></div>
+                <div>
+                  <i :style="{ background: item.color }" />
+                </div>
                 <span class="add-ellipsis">
                   <i class="sm-components-icon-solid-triangle-left" />
                   {{ showRangeInfo(item, layerKey) }}
@@ -124,10 +125,9 @@
         </div>
         <div v-if="layerValue.layerType === 'HEAT'" class="sm-component-legend__wrap">
           <div class="sm-component-legend__heatbox">
-            <div
-              class="sm-component-legend__heat"
-              :style="{ background: `linear-gradient(to top,${layerValue.styleGroup.join(',')})` }"
-            ></div>
+            <div class="sm-component-legend__heat">
+              <i :style="{ background: `linear-gradient(to top,${layerValue.styleGroup.join(',')})` }" />
+            </div>
             <div class="sm-component-legend__heatText">
               <span class="sm-component-legend__top">
                 <i class="sm-components-icon-solid-triangle-left" />
@@ -144,7 +144,9 @@
         <div v-if="layerValue.layerType === 'RANGE'" class="sm-component-legend__wrap">
           <div class="sm-component-legend__range">
             <div v-for="(item, l) in layerValue.styleGroup" :key="l" class="sm-component-legend__range-item">
-              <div :style="{ background: item.color }"></div>
+              <div>
+                <i :style="{ background: item.color }" />
+              </div>
               <span class="add-ellipsis">
                 <i class="sm-components-icon-solid-triangle-left" />
                 {{ showRangeInfo(item, layerKey) }}
@@ -217,7 +219,7 @@ export default {
     },
     headerName: {
       type: String,
-      default: function () {
+      default: function() {
         return this.$t('legend.title');
       }
     },
@@ -260,7 +262,7 @@ export default {
   },
   computed: {
     uniqueSymbolStyle() {
-      return function (styleItem) {
+      return function(styleItem) {
         const { style, radius, color } = styleItem;
         let generateStyle = {};
         switch (style.type) {
@@ -292,7 +294,7 @@ export default {
       };
     },
     rankSymbolStyle() {
-      return function (styleItem) {
+      return function(styleItem) {
         const { style, radius, color } = styleItem;
         let generateStyle = {};
         switch (style.type) {
@@ -332,7 +334,7 @@ export default {
     }
   },
   watch: {
-    layerNames: function (newVal) {
+    layerNames: function(newVal) {
       this.layerNames = newVal;
       this.initLegendList();
     }

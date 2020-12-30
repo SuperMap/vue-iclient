@@ -56,6 +56,7 @@
         }
         .#{$collapse-prefix}-content {
           margin-left: -30px;
+          padding-left: 30px;
         }
       }
     }
@@ -126,7 +127,6 @@
         align-items: center;
         height: 100%;
         min-width: 80px;
-        padding-left: 2px;
         & > div,
         & > ul {
           flex: 1;
@@ -138,39 +138,37 @@
       @include e(range) {
         @include e(range-item) {
           & > div {
-            width: 14px;
-            height: 14px;
-          }
-          > span {
-            padding-left: 10px;
-            flex: 1;
+            > i {
+              display: inline-block;
+              width: 14px;
+              height: 14px;
+            }
           }
         }
       }
 
       @include e(rank-icon) {
-        flex: 1;
-        text-align: center;
         & > i {
           display: inline-block;
           vertical-align: middle;
-        }
-        + span {
-          margin-left: 5px;
-          width: 74%;
         }
       }
 
       @include e(heatbox) {
         display: flex;
-        overflow: hidden;
+        overflow: hidden !important;
+        height: 120px;
       }
 
       @include e(heat) {
-        width: 14px;
-        height: 120px;
+        height: 100%;
+        > i {
+          display: inline-block;
+          width: 14px;
+          height: 100%;
+        }
       }
-      @include e(heatText range-item rank-item rank-item) {
+      @include e(heatText range-item rank-item) {
         span {
           i {
             font-size: inherit;
@@ -181,8 +179,7 @@
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        flex: 1;
-        padding-left: 10px;
+        height: 100%;
       }
 
       @include e(point) {
@@ -190,11 +187,21 @@
         margin: 0;
       }
 
-      @include e(item range-item rank-item) {
+      @include e(heatbox item range-item rank-item) {
         margin-bottom: 8px;
         line-height: 20px;
         display: flex;
         align-items: center;
+        > * {
+          &:first-child {
+            flex: 1;
+            text-align: right;
+          }
+          &:last-child {
+            width: 80%;
+            padding-left: 10px;
+          }
+        }
         &:last-child {
           margin-bottom: 0;
         }
