@@ -96,7 +96,7 @@ export function getExtralColors(
   primarySerialColors: string[],
   functionColors: FunctionColorParams
 ): ExtraColorParams {
-  const tableHeaderSortActiveBg = getDarkenColor(themeStyleData.backgroundColorLight, 3);
+  const tableHeaderSortActiveBg = getDarkenColor(themeStyleData.backgroundLight, 3);
   const extraSerialColors: ExtraColorParams = {
     textColorWithoutOpacity: getColorWithOpacity(themeStyleData.textColor, 1, false),
     backgroundWithoutOpacity: getColorWithOpacity(themeStyleData.background, 1, false),
