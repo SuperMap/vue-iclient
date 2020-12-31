@@ -38,7 +38,7 @@
     "canvg": "~1.5.3",
     "colorcolor": "^1.1.1",
     "css-element-queries": "^1.2.0",
-    "css-vars-ponyfill": "^2.2.1",
+    "css-vars-ponyfill": "2.2.1",
     "echarts": "^4.8.0",
     "echarts-liquidfill": "^2.0.5",
     "flv.js": "^1.5.0",

@@ -167,17 +167,19 @@ function setRootStyle(themeData: StyleReplacerParams): void {
     antStyleTag.setAttribute('id', antdStyleId);
     antStyleTag.setAttribute('type', 'text/css');
     document.head.insertBefore(antStyleTag, document.head.firstChild);
+    const options = {
+      include: 'style#sm-component-style, link[href*=vue-iclient-mapboxgl], link[href*=styles]',
+      silent: true,
+      onlyLegacy: true,
+      variables: {},
+      watch: false
+    };
+    if (!isNativeSupport) {
+      options.onlyLegacy = false;
+      options.watch = true;
+      options.variables = variables;
+    }
+    cssVars(options);
   }
   antStyleTag.innerHTML = rootStyle;
-  const options = {
-    include: 'style#sm-component-style, link[href*=vue-iclient-mapboxgl], link[href*=styles]',
-    silent: true,
-    onlyLegacy: true,
-    variables: {}
-  };
-  if (!isNativeSupport) {
-    options.onlyLegacy = false;
-    options.variables = variables;
-  }
-  cssVars(options);
 }
