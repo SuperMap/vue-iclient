@@ -1,0 +1,22 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import 'mixin.scss';
+
+@include b(switch) {
+  $prefix: &;
+
+  background-color: $switch-background;
+  &-loading-icon,
+  &:after {
+    background-color: $switch-after-bg;
+  }
+  &[disabled] {
+    @include disabled($prefix);
+  }
+  @include e(disabled, '-') {
+    @include disabled($prefix);
+  }
+  @include e(checked, '-') {
+    background-color: $switch-color;
+  }
+}

@@ -1,0 +1,319 @@
+{
+  "customizeTheme": {
+    "default": "默认",
+    "custom": "自定义",
+    "dark": "深色主题",
+    "light": "浅色色主题"
+  },
+  "basicComponent": {
+    "basic": "基本用法",
+    "custom": "自定义",
+    "disabled": "不可用",
+    "avatar": {
+      "title": "Avatar 头像",
+      "type": "类型",
+      "autosetFontSize": "自动调整字符大小"
+    },
+    "breadcrum": {
+      "attrSeparator": "属性分隔符",
+      "componentSeparator": "组件分隔符",
+      "withIcon": "带有图标的"
+    },
+    "button": {
+      "type": "类型",
+      "group": "组合",
+      "ghost": "幽灵",
+      "size": "大小",
+      "block": "block 属性",
+      "confirm": "确定",
+      "cancel": "取消"
+    },
+    "checkbox": {
+      "checkAll": "全选",
+      "group": "组合",
+      "controlled": "受控的"
+    },
+    "datePicker": {
+      "title": "DatePicker 日期选择框",
+      "extraFooter": "额外的页脚",
+      "disabledDateTime": "不可选择日期和时间",
+      "controlledPanels": "受控面板",
+      "size": "大小",
+      "chooseTime": "时间选择",
+      "suffix": "后缀",
+      "customizedDateRendering": "定制日期单元格",
+      "format": "格式",
+      "presetRanges": "预设范围",
+      "customizedRangePicker": "自定义日期范围选择"
+    },
+    "empty": {
+      "title": "Empty 空状态",
+      "noDescription": "无描述"
+    },
+    "icon": {
+      "size": "大小",
+      "color": "颜色"
+    },
+    "image": {
+      "repeat": "重复",
+      "link": "链接"
+    },
+    "indicator": {
+      "size": "大小",
+      "style": "样式",
+      "separator": "分隔符",
+      "animated": "动画",
+      "mode": "模式",
+      "numberStyle": "数字样式",
+      "showTitleUnit": "展示标题和单位",
+      "thresholdsStyle": "阈值样式"
+    },
+    "input": {
+      "title": "Input 输入框",
+      "prefixSuffix": "前缀和后缀",
+      "searchWithLoading": "搜索框 loading",
+      "prePostTab": "前置/后置标签",
+      "clearIcon": "移除标签",
+      "fitHeight": "适应文本高度的文本域",
+      "searchBox": "搜索框",
+      "size": "大小",
+      "textArea": "文本域",
+      "passwordBox": "密码框"
+    },
+    "message": {
+      "title": "Message 全局提示",
+      "loading": "加载中",
+      "customizeDuration": "修改延时",
+      "type": "类型",
+      "updateContent": "更新消息内容"
+    },
+    "modal": {
+      "title": "Modal 对话框",
+      "confirmationModalDialog": "确认对话框",
+      "informationModalDialog": "信息提示",
+      "customizeFooterProps": "自定义页脚按钮属性",
+      "manualToUpdateDestroy": "手动跟新和移除",
+      "asynchronouslyClose": "异步关闭",
+      "confirmationModalDialogPromise": "确认对话框(promise)",
+      "customFooter": "自定义页脚",
+      "internationalization": "国际化",
+      "customLocation": "自定义位置",
+      "destroyModalDialog": "销毁确认对话框"
+    },
+    "pagination": {
+      "more": "更多",
+      "changer": "改变",
+      "jumper": "跳转",
+      "customDropdownOptions": "自定义下拉选项",
+      "mini": "迷你",
+      "simple": "简洁",
+      "controlled": "受控",
+      "totalNumber": "总数",
+      "prevAndNext": "上一页和下一页"
+    },
+    "radio": {
+      "title": "Radio 单选框",
+      "style": "样式",
+      "solidButton": "填底的按钮样式",
+      "verticalRadioGroup": "RadioGroup 垂直",
+      "radioGroupOptional": "RadioGroup 组合 - 配置方式",
+      "radioGroupWithName": "单选组合 - 配合 name 使用",
+      "radioGroup": "单选组合",
+      "size": "大小"
+    },
+    "select": {
+      "title": "Select 选择器",
+      "size": "大小",
+      "tags": "标签",
+      "automaticTokenization": "自动分词",
+      "multipleSelection": "多选",
+      "optionGroup": "分组",
+      "withSearchField": "带搜索框",
+      "suffix": "后缀",
+      "customDropdown": "扩展菜单",
+      "getValue": "获取选项文本",
+      "coordinate": "联动",
+      "searchUsers": "搜索用户",
+      "hideAlreadySelected": "隐藏已选择选项",
+      "customSelectionRender": "定制回填内容"
+    },
+    "steps": {
+      "mini": "迷你版",
+      "withIcon": "带图标",
+      "switchStep": "步骤切换",
+      "vertical": "竖直方向",
+      "verticalMiniVersion": "竖直方向的迷你版",
+      "errorStatus": "运行错误",
+      "dotStyle": "点状步骤条",
+      "clickable": "可点击",
+      "navigationSteps": "导航步骤条"
+    },
+    "inputNumber": {
+      "title": "InputNumber 数字输入框"
+    },
+    "switch": {
+      "title": "Switch 开关",
+      "textIcon": "文字或图标",
+      "size": "大小",
+      "loading": "加载中"
+    },
+    "tabs": {
+      "icon": "图标",
+      "slide": "滑动",
+      "extraContent": "附加内容",
+      "size": "大小",
+      "position": "位置",
+      "cardTypeTab": "卡片式页签",
+      "addCloseTab": "新增和关闭页签",
+      "containerTypeTab": "卡片式页签容器",
+      "customizedTrigger": "自定义新增页签触发器"
+    },
+    "text": {
+      "size": "大小",
+      "link": "链接"
+    },
+    "timeText": {
+      "size": "大小"
+    },
+    "transfer": {
+      "title": "Transfer 穿梭框",
+      "search": "带搜索框",
+      "advanced": "高级用法",
+      "customDatasource": "自定义渲染行数据"
+    },
+    "tooltip": {
+      "title": "Tooltip 文字提示",
+      "arrowPoint": "箭头指向",
+      "placement": "位置",
+      "adjustPlacementAutomatically": "自动调整位置"
+    },
+    "videoPlayer": {
+      "controlBar": "控制条"
+    },
+    "slider": {
+      "icon": "图标",
+      "vertical": "竖直",
+      "reverse": "反向",
+      "withNumber": "带输入框的",
+      "customTip": "自定义提示",
+      "graduted": "带标签的",
+      "controlTip": "控制提示"
+    },
+    "table": {
+      "cellAutoEllipsis": "单元格自动省略",
+      "border": "带边框",
+      "columnRowMerge": "行/列合并",
+      "fixHeaderAndColumn": "固定头和列",
+      "filterAndSort": "筛选和排序"
+    },
+    "collapse": {
+      "accordion": "手风琴",
+      "nestedPanel": "面板嵌套",
+      "customPanel": "自定义面板",
+      "hideArrow": "隐藏箭头"
+    },
+    "notification": {
+      "customStyle": "自定义样式",
+      "position": "位置",
+      "icon": "带有图标的通知提醒框",
+      "autoCloseDelay": "自动关闭的延时",
+      "customButton": "自定义按钮",
+      "updateInfoContent": "更新消息内容"
+    },
+    "spin": {
+      "insideContainer": "容器中",
+      "customizedDescription": "自定义文案",
+      "customIndicator": "自定义指示标",
+      "size": "大小",
+      "embeddedMode": "卡片加载中",
+      "delay": "延迟"
+    },
+    "card": {
+      "customizedContent": "自定义内容",
+      "loadingCard": "预加载",
+      "simple": "简洁",
+      "noBorder": "无边框",
+      "grid": "网格型",
+      "inner": "内部",
+      "supportMoreContent": "支持更多内容",
+      "WithTabs": "带页签的"
+    },
+    "tree": {
+      "controlled": "受控操作",
+      "replaceFields": "自定义字段",
+      "draggable": "拖拽",
+      "withLine": "连接线",
+      "directory": "目录",
+      "customizeIcon": "自定义图标",
+      "loadDataAsynchronously": "异步加载数据",
+      "searchable": "可搜索",
+      "customizeCollapseExpandIcon": "自定义展开/折叠图标"
+    }
+  },
+  "chartComponent": {
+    "liquidfill": {
+      "type": "波浪",
+      "color": "颜色"
+    },
+    "progress": {
+      "color": "颜色",
+      "number": "数值",
+      "state": "状态",
+      "type": "进度环",
+      "width": "宽度"
+    },
+    "charBar": {
+      "bar": "柱状图",
+      "barSquare": "正方体柱状图",
+      "barRectangle": "长方体柱状图",
+      "barCylinder": "圆柱体柱状图",
+      "xbar": "条形图",
+      "rankXbar": "排名条形图"
+    },
+    "scatter": {
+      "scatter": "散点图"
+    },
+    "line": {
+      "line": "折线图"
+    },
+    "radar": {
+      "radar": "雷达图"
+    },
+    "pie": {
+      "pie": "饼图",
+      "rose": "南丁格尔玫瑰图",
+      "ring": "环形图",
+      "shineRing": "发光环形图"
+    },
+    "gauge": {
+      "gauge": "仪表盘",
+      "markGauge": "刻度仪表盘",
+      "shineGauge": "发光仪表盘",
+      "spinGauge": "旋转仪表盘"
+    }
+  },
+  "mapComponent": {
+    "iportalMap": "iPortal 地图"
+  },
+  "gisComponent": {
+    "layerList": "图层列表",
+    "expandLayerList": "二级列表",
+    "layerManager": "图层管理",
+    "miniMap": "鹰眼图",
+    "measure": "量算",
+    "openFile": "打开文件",
+    "identify": "点选查询",
+    "zoom": "缩放",
+    "showZoom": "展示级别",
+    "slider": "打开滑动条",
+    "compare": "卷帘",
+    "pan": "平移",
+    "legend": "图例",
+    "panlLegend": "详细图例",
+    "query": "数据查询",
+    "poi": "POI 搜索",
+    "tdtPoi": "天地图-POI 搜索",
+    "tdtMapSwitcher": "天地图-地图切换",
+    "TdtRoute": "天地图-路线规划"
+  }
+}

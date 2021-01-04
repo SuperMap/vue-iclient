@@ -1,0 +1,109 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(radio) {
+  $prefix: &;
+
+  &-wrap:hover &-inner,
+  &:hover &-inner,
+  &-input:focus + &-inner {
+    border-color: $radio-dot-color;
+  }
+  @include e(input, '-') {
+    &:focus {
+      + #{$prefix}-inner {
+        box-shadow: none;
+      }
+    }
+  }
+  @include e(checked, '-') {
+    &::after {
+      border-color: $radio-dot-color;
+    }
+    #{$prefix}-inner {
+      border-color: $radio-dot-color;
+    }
+  }
+  @include e(inner, '-') {
+    &::after {
+      background-color: $radio-dot-color;
+    }
+  }
+  @include e(disabled, '-') {
+    #{$prefix}-inner {
+      border-color: $disabled-border-color !important;
+      &::after {
+        background-color: $radio-inner-disabled-bg;
+      }
+    }
+  }
+  @include e(button-wrapper, '-') {
+    $prefix-button-wrapper: &;
+    &:hover {
+      color: $radio-dot-color;
+    }
+    &:focus-within {
+      outline: none;
+    }
+    &-checked:not(&-disabled) {
+      color: $radio-dot-color;
+      border-color: $radio-dot-color;
+      box-shadow: -1px 0 0 0 $radio-dot-color;
+
+      &::before {
+        background-color: $radio-dot-color !important;
+      }
+      &:first-child {
+        border-color: $radio-dot-color;
+      }
+      &:hover {
+        color: $radio-button-hover-color;
+        border-color: $radio-button-hover-color;
+        box-shadow: -1px 0 0 0 $radio-button-hover-color;
+      }
+      &:active {
+        color: $radio-button-active-color;
+        border-color: $radio-button-active-color;
+        box-shadow: -1px 0 0 0 $radio-button-active-color;
+      }
+      &:focus-within {
+        outline: none;
+      }
+    }
+    &-disabled {
+      border-color: $disabled-border-color;
+      &:first-child,
+      &:hover {
+        color: $disabled-color;
+        border-color: $disabled-border-color;
+      }
+      &:first-child {
+        border-left-color: $disabled-border-color;
+      }
+      &#{$prefix-button-wrapper}-checked {
+        color: $disabled-color;
+        background-color: $border-color-base;
+        border-color: $disabled-border-color;
+      }
+    }
+  }
+  @include e(group, '-') {
+    $prefix-button-wrapper: #{$prefix}-button-wrapper;
+    &-solid {
+      #{$prefix-button-wrapper}-checked:not(#{$prefix-button-wrapper}-disabled) {
+        color: #fff;
+        background: $radio-dot-color;
+        border-color: $radio-dot-color;
+        &:hover {
+          color: #fff;
+        }
+        &:active {
+          color: #fff;
+        }
+        &:focus-within {
+          outline: none;
+        }
+      }
+    }
+  }
+}

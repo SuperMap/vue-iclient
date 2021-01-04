@@ -1,0 +1,47 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import 'mixin.scss';
+
+@include b(btn) {
+  $prefix: &;
+  @include button-variant-other($btn-default-bg);
+
+  @include e(primary, '-') {
+    @include button-variant-primary(
+      $btn-primary-color,
+      $primary-5,
+      $primary-5,
+      $btn-primary-color,
+      $primary-7,
+      $primary-7
+    );
+  }
+  @include e(danger, '-') {
+    border-color: $btn-danger-border;
+    @include button-variant-primary($danger-5, transparent, $danger-5, $danger-7, transparent, $danger-7);
+  }
+  @include e(link, '-') {
+    &:hover,
+    &:focus,
+    &:active {
+      border-color: transparent;
+    }
+  }
+  @include e(background-ghost, '-') {
+    color: $btn-default-color;
+    border-color: $btn-default-border;
+    &#{$prefix}-primary {
+      @include button-variant-ghost($primary-5, transparent, $primary-5, $primary-7, transparent, $primary-7);
+    }
+    &#{$prefix}-danger {
+      @include button-variant-ghost($danger-5, transparent, $danger-5, $danger-7, transparent, $danger-7);
+    }
+    &#{$prefix}-link {
+      color: $btn-default-color;
+      @include button-variant-ghost($primary-5, transparent, transparent, $primary-7, transparent, transparent);
+    }
+  }
+  @include e(group, '-') {
+    color: $btn-default-color;
+  }
+}

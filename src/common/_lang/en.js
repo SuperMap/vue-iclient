@@ -28,7 +28,9 @@ export default {
     unsupportedVideoAddress: 'The video address is illegal',
     unavailableVideo: 'This video is temporarily unavailable, please try again later',
     mapNotLoaded: 'The associated map has not been loaded yet, please wait for a second',
-    unassociatedMap: 'You need to configure the associated map!'
+    unassociatedMap: 'You need to configure the associated map!',
+    videojs: 'Please import video.js plugin: https://github.com/videojs/video.js, When playing rtmp, install flash related plugin: https://github.com/videojs/videojs-flash',
+    flvPlayer: 'Please import flv related plugin: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
   success: {},
   info: {
@@ -94,7 +96,7 @@ export default {
   },
   measure: {
     mapMeasure: 'Measure',
-    measureResult: 'Measurement Result',
+    measureResult: 'Measurement Result:',
     distance: 'Distance',
     area: 'Area',
     delete: 'Empty',
@@ -209,7 +211,6 @@ export default {
   },
   tdtRoute: {
     title: 'Route',
-    clearRoute: 'Clear route',
     pleaseEnterStartPoint: 'Please enter the starting address',
     pleaseEnterEndPoint: 'Please enter the destination address',
     search: 'Search',

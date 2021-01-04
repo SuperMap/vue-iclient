@@ -27,10 +27,11 @@ Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路�
 
 ### Attributes
 
-| 参数     | 说明                                              | 类型                | 可选值 | 默认值 |
-| :------- | :------------------------------------------------ | :------------------ | :----- | :----- |
-| sceneUrl | SuperMap iPortal 场景或 SuperMap iServer 场景地址 | string              | -      | -      |
-| options  | 可选参数                                          | [options](#options) | -      | -      |
+| 参数       | 说明                                              | 类型                | 可选值 | 默认值                             |
+| :--------- | :------------------------------------------------ | :------------------ | :----- | :--------------------------------- |
+| sceneUrl   | SuperMap iPortal 场景或 SuperMap iServer 场景地址 | string              | -      | -                                  |
+| cesiumPath | Cesium 插件相对根目录的路径                         | string              | -      | '../../static/libs/Cesium/Cesium.js' |
+| options    | 可选参数                                          | [options](#options) | -      | -                                  |
 
 ### options
 

@@ -57,12 +57,6 @@ const webpackConfig = merge(baseWebpackConfig, {
         commonjs2: 'vue-cesium',
         amd: 'vue-cesium'
       },
-      'ant-design-vue': {
-        root: 'antd',
-        commonjs: 'ant-design-vue',
-        commonjs2: 'ant-design-vue',
-        amd: 'ant-design-vue'
-      },
       xlsx: {
         root: 'XLSX',
         commonjs: 'xlsx',
@@ -79,10 +73,28 @@ const webpackConfig = merge(baseWebpackConfig, {
         amd: 'three'
       },
       'video.js': {
-        root: '_videojs',
+        root: 'videojs',
         commonjs: 'video.js',
         commonjs2: 'video.js',
         amd: 'video.js'
+      },
+      'flv.js': {
+        root: 'flvjs',
+        commonjs: 'flv.js',
+        commonjs2: 'flv.js',
+        amd: 'flv.js'
+      },
+      'videojs-flash': {
+        root: 'videojsFlash',
+        commonjs: 'videojs-flash',
+        commonjs2: 'videojs-flash',
+        amd: 'videojs-flash'
+      },
+      'videojs-flvjs-es6': {
+        root: 'videojsFlvjs',
+        commonjs: 'videojs-flvjs-es6',
+        commonjs2: 'videojs-flvjs-es6',
+        amd: 'videojs-flvjs-es6'
       }
     },
     function(context, request, callback) {
@@ -165,7 +177,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.HashedModuleIdsPlugin(),
     new webpack.BannerPlugin(`
     ${pkg.name}.(${pkg.homepage})
-    Copyright© 2000 - 2020 SuperMap Software Co.Ltd
+    Copyright© 2000 - 2021 SuperMap Software Co.Ltd
     license: ${pkg.license}
     version: v${pkg.version}
    `),

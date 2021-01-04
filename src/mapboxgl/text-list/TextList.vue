@@ -94,7 +94,7 @@
         </template>
       </div>
     </div>
-    <a-spin v-if="spinning" size="large" :tip="$t('info.loading')" :spinning="spinning" />
+    <sm-spin v-if="spinning" size="large" :tip="$t('info.loading')" :spinning="spinning" />
   </div>
 </template>
 
@@ -103,11 +103,12 @@ import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
 import getFeatures from '../../common/_utils/get-features';
-import Theme from '../../common/_mixin/theme';
-import Timer from '../../common/_mixin/timer';
+import Theme from '../../common/_mixin/Theme';
+import Timer from '../../common/_mixin/Timer';
 import { getColorWithOpacity } from '../../common/_utils/util';
 import merge from 'lodash.merge';
 import clonedeep from 'lodash.clonedeep';
+import SmSpin from '../../common/spin/Spin.vue';
 
 interface HeaderStyleParams {
   show?: boolean;
@@ -147,7 +148,10 @@ interface ColumnParams {
 }
 
 @Component({
-  name: 'SmTextList'
+  name: 'SmTextList',
+  components: {
+    SmSpin
+  }
 })
 class SmTextList extends Mixins(Theme, Timer) {
   animate: Boolean = false;
@@ -196,7 +200,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     clickColor: null
   };
 
-  hoverColor: string = 'rgba(128, 128,128, 0.8 )';
+  rowHoverColor: string = 'rgba(128, 128,128, 0.8 )';
 
   curRollingStartIndex: number = 0;
 
@@ -248,9 +252,9 @@ class SmTextList extends Mixins(Theme, Timer) {
     if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
       this.getFeaturesFromDataset();
     } else {
-      // this.featuresData = [];
-      // this.listData = [];
-      // this.animateContent = [];
+      this.featuresData = [];
+      this.listData = [];
+      this.animateContent = [];
       clearInterval(this.startInter);
     }
   }
@@ -375,7 +379,7 @@ class SmTextList extends Mixins(Theme, Timer) {
       }
       if (this.activeHoverRowIndex === index) {
         return {
-          background: this.hoverColor
+          background: this.rowHoverColor
         };
       }
       if ((rawIndex + 1) % 2 !== 0) {
@@ -714,7 +718,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   handleMouseEnter(item, rowIndex, event) {
     this.activeHoverRowIndex = rowIndex;
     if (this.highlightColor && typeof this.highlightColor === 'function') {
-      this.hoverColor = this.highlightColor(item, rowIndex, event);
+      this.rowHoverColor = this.highlightColor(item, rowIndex, event);
     }
     this.$emit('cell-mouse-enter', item, rowIndex, event);
   }

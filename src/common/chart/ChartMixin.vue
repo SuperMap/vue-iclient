@@ -1,11 +1,12 @@
 <template>
-  <sm-card
+  <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
     :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
+    :split-line="splitLine"
     class="sm-component-chart"
   >
     <v-chart
@@ -23,10 +24,11 @@
       v-show="false"
       ref="chartTablePopup"
       v-bind="tablePopupProps"
+      :split-line="splitLine"
       :text-color="textColor"
       :background="background"
     />
-  </sm-card>
+  </sm-collapse-card>
 </template>
 <script>
 import 'echarts';
@@ -36,13 +38,13 @@ import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
 import debounce from 'lodash/debounce';
 import cloneDeep from 'lodash.clonedeep';
-import Card from '../_mixin/card';
-import Theme from '../_mixin/theme';
-import Timer from '../_mixin/timer';
+import Card from '../_mixin/Card';
+import Theme from '../_mixin/Theme';
+import Timer from '../_mixin/Timer';
 import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from '../_utils/style/theme/chart';
 import EchartsDataService from '../_utils/EchartsDataService';
 import TablePopup from '../table-popup/TablePopup';
-import { getFeatureCenter, getColorWithOpacity } from '../_utils/util';
+import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from '../_utils/util';
 import { addListener, removeListener } from 'resize-detector';
 
 // 枚举事件类型
@@ -94,7 +96,15 @@ export default {
   props: {
     iconClass: {
       type: String,
-      default: 'sm-components-icons-attribute'
+      default: 'sm-components-icon-chart'
+    },
+    collapsed: {
+      type: Boolean,
+      default: true
+    },
+    splitLine: {
+      type: Boolean,
+      default: false
     },
     dataset: {
       type: Object,
@@ -227,9 +237,6 @@ export default {
     xBar() {
       return this.options && this.options.yAxis && this.options.yAxis.type === 'category';
     },
-    popupBackground() {
-      return this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData;
-    },
     colorNumber() {
       let length =
         (this.datasetOptions && this.datasetOptions.length) ||
@@ -255,10 +262,9 @@ export default {
         this._setChartTheme();
       }
     },
-    backgroundData(newVal, oldVal) {
+    getBackground(newVal, oldVal) {
       if (!isEqual(newVal, oldVal)) {
         this._setChartTheme();
-        this.changePopupArrowStyle();
       }
     },
     dataset: {
@@ -603,14 +609,14 @@ export default {
           const dataZoom = options.dataZoom && options.dataZoom[0];
           options.series = options.series.map((serie, index) => {
             let label = serie.label && serie.label.normal;
-            if (serie.label && !label.smart) {
+            if (label && !label.smart) {
               serie.label.normal = this._controlLabel(label, serie.maxLabels);
             }
             if (label && label.show && label.smart) {
               label.position = label.position || 'top';
-              let data = serie.data;
+              let data = serie.data || [];
               let startDataIndex = 0;
-              let endDataIndex = data.length - 1;
+              let endDataIndex = data.length > 0 ? data.length - 1 : 0;
               if (dataZoom && dataZoom.show !== false) {
                 if (dataZoom.start > dataZoom.end) {
                   let oldStart = dataZoom.start;
@@ -742,7 +748,7 @@ export default {
                   const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
                   serie.type = 'bar';
                   serie.barGap = '-100%';
-                  options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
+                  options.tooltip && options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
                   dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
                   let cirCleColor = defaultColor || colorGroup[index];
                   let cirCleColorFnList = [];
@@ -842,7 +848,7 @@ export default {
       }
 
       let series = dataOptions.series;
-      let isRingShine = options.series[0] && options.series[0].outerGap >= 0;
+      let isRingShine = options.series && options.series[0] && options.series[0].outerGap >= 0;
       if (series && series.length && series[0].type === 'pie') {
         this.setItemStyleColor(false, series);
       }
@@ -990,7 +996,7 @@ export default {
     _setChartTheme() {
       if (!this.theme) {
         let colorNumber = this.colorNumber;
-        this.chartTheme = chartThemeUtil(this.backgroundData, this.textColorsData, this.colorGroupsData, colorNumber);
+        this.chartTheme = chartThemeUtil(this.getBackground, this.textColorsData, this.colorGroupsData, colorNumber);
       }
     },
     // 获取echart实例
@@ -1121,7 +1127,7 @@ export default {
         const propsData = this.generateTableData(properties);
         this.tablePopupProps = { ...propsData };
         this.$nextTick(() => {
-          this.viewModel.setPopupContent(coordinates, this.$refs.chartTablePopup.$el, this.changePopupArrowStyle);
+          this.viewModel.setPopupContent(coordinates, this.$refs.chartTablePopup.$el, () => setPopupArrowStyle(this.tablePopupBgData));
         });
       } else {
         const mapNotLoaded = this.mapNotLoadedTip();
@@ -1151,7 +1157,6 @@ export default {
       }
       return propsData;
     },
-    changePopupArrowStyle() {},
     mapNotLoadedTip() {},
     _dataZoomChanged() {
       let flag = false;

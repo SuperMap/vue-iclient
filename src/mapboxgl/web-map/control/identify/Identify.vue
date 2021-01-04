@@ -3,9 +3,8 @@
     v-show="false"
     ref="Popup"
     class="sm-component-identify"
-    :style="[getBackgroundStyle, getTextColorStyle]"
+    :style="[tablePopupBgStyle, getTextColorStyle]"
   >
-    <div class="sm-component-identify__close">x</div>
     <ul
       :class="[
         autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
@@ -21,12 +20,13 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/theme';
+import Theme from '../../../../common/_mixin/Theme';
 import MapGetter from '../../../_mixin/map-getter';
 import IdentifyViewModel from './IdentifyViewModel';
 import CircleStyle from '../../../_types/CircleStyle';
 import FillStyle from '../../../_types/FillStyle';
 import LineStyle from '../../../_types/LineStyle';
+import { setPopupArrowStyle } from '../../../../common/_utils/util';
 
 export default {
   name: 'SmIdentify',
@@ -52,37 +52,29 @@ export default {
       type: Object,
       default() {
         return {
-          line: {
-            paint: new LineStyle({
-              'line-width': 3,
-              'line-color': '#409eff',
-              'line-opacity': 1
-            })
-          },
-          circle: {
-            paint: new CircleStyle({
-              'circle-color': '#409eff',
-              'circle-opacity': 0.6,
-              'circle-radius': 8,
-              'circle-stroke-width': 2,
-              'circle-stroke-color': '#409eff',
-              'circle-stroke-opacity': 1
-            })
-          },
-          fill: {
-            paint: new FillStyle({
-              'fill-color': '#409eff',
-              'fill-opacity': 0.6,
-              'fill-outline-color': '#409eff'
-            })
-          },
-          stokeLine: {
-            paint: new LineStyle({
-              'line-width': 3,
-              'line-color': '#409eff',
-              'line-opacity': 1
-            })
-          }
+          line: new LineStyle({
+            'line-width': 3,
+            'line-color': '#409eff',
+            'line-opacity': 1
+          }),
+          circle: new CircleStyle({
+            'circle-color': '#409eff',
+            'circle-opacity': 0.6,
+            'circle-radius': 8,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#409eff',
+            'circle-stroke-opacity': 1
+          }),
+          fill: new FillStyle({
+            'fill-color': '#409eff',
+            'fill-opacity': 0.6,
+            'fill-outline-color': '#409eff'
+          }),
+          stokeLine: new LineStyle({
+            'line-width': 3,
+            'line-color': '#409eff',
+            'line-opacity': 1
+          })
         };
       }
     },
@@ -156,9 +148,6 @@ export default {
     },
     layerStyle() {
       this.setViewModel();
-    },
-    backgroundData() {
-      this.changeResultPopupArrowStyle();
     }
   },
   loaded() {
@@ -272,7 +261,7 @@ export default {
         this.$nextTick(() => {
           this.isHide = false; // 显示内容
           this.viewModel.addPopup(coordinates, this.$refs.Popup);
-          this.changeResultPopupArrowStyle();
+          setPopupArrowStyle(this.tablePopupBgData);
         });
       }
     },
@@ -280,24 +269,6 @@ export default {
     addOverlayToMap(layer, filter) {
       // 先移除之前的高亮layer
       this.viewModel.addOverlayToMap(layer, filter);
-    },
-    // 箭头颜色（适应主题色）
-    changeResultPopupArrowStyle() {
-      const identifyBottomAnchor =
-        document.querySelector('.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip') ||
-        document.querySelector('.mapboxgl-popup-anchor-bottom-left .mapboxgl-popup-tip') ||
-        document.querySelector('.mapboxgl-popup-anchor-bottom-right .mapboxgl-popup-tip');
-      const identifyTopAnchor =
-        document.querySelector('.mapboxgl-popup-anchor-top .mapboxgl-popup-tip') ||
-        document.querySelector('.mapboxgl-popup-anchor-top-left .mapboxgl-popup-tip') ||
-        document.querySelector('.mapboxgl-popup-anchor-top-right .mapboxgl-popup-tip');
-      const identifyLeftAnchor = document.querySelector('.mapboxgl-popup-anchor-left .mapboxgl-popup-tip');
-      const identifyRightAnchor = document.querySelector('.mapboxgl-popup-anchor-right .mapboxgl-popup-tip');
-
-      identifyTopAnchor && (identifyTopAnchor.style.borderBottomColor = this.backgroundData);
-      identifyBottomAnchor && (identifyBottomAnchor.style.borderTopColor = this.backgroundData);
-      identifyLeftAnchor && (identifyLeftAnchor.style.borderRightColor = this.backgroundData);
-      identifyRightAnchor && (identifyRightAnchor.style.borderLeftColor = this.backgroundData);
     },
     changeClickedLayersCursor(layers = [], map = this.map) {
       layers &&

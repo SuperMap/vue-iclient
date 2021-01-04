@@ -350,19 +350,19 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     return feature;
   }
 
-  showLineDetail(uuid) {
+  showLineDetail(uuid, addLine = true) {
     if (!uuid) return;
 
     if (!this.groupLineList[uuid]) {
       this._transitByUuid(uuid).then(res => {
         if (res) {
           this.groupLineList[uuid] = res;
-          this._addLines(this._generateLinesFeatures(res));
+          addLine && this._addLines(this._generateLinesFeatures(res));
           this.fire('get-transit-data-succeeded', { data: this.groupLineList });
         }
       });
     } else {
-      this._addLines(this._generateLinesFeatures(this.groupLineList[uuid]));
+      addLine && this._addLines(this._generateLinesFeatures(this.groupLineList[uuid]));
     }
   }
 

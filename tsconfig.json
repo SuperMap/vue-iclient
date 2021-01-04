@@ -37,5 +37,5 @@
   },
   "include": ["src/**/*", "demo/**/*"],
   "exclude": ["node_modules"],
-  "files": ["src/sfc.d.ts", "src/image.d.ts"]
+  "files": ["src/sfc.d.ts", "src/image.d.ts", "src/vue-options.d.ts"]
 }

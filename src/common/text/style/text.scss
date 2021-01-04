@@ -1,4 +1,5 @@
-@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
 
 @include b(text) {
   display: inline-flex;
@@ -6,15 +7,17 @@
   justify-content: center;
   line-height: 1.5;
   padding: 4px;
+  color: $text-color;
+  background: $component-background;
   @include e(href) {
     display: inline-block;
-    &:hover{
+    color: $text-color;
+    &:hover {
       cursor: pointer;
-      color: #40a9ff !important;
+      color: $hover-color !important;
     }
   }
   @include e(span) {
-    white-space:pre-wrap;
+    white-space: pre-wrap;
   }
-  
 }

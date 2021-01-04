@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 import borderConfigs from './assets/border.config.json';
 import UniqueId from 'lodash.uniqueid';
 import { addListener, removeListener } from 'resize-detector';

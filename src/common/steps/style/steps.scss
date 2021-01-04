@@ -1,0 +1,98 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import 'mixin.scss';
+
+@include b(steps) {
+  $prefix: &;
+  $prefix-item: & + '-item';
+  @include e(item, '-') {
+    &-icon {
+      border-color: $text-color-secondary;
+      > #{$prefix}-icon {
+        color: $primary-color;
+      }
+    }
+    &-tail {
+      &::after {
+        background: $border-color-base;
+      }
+    }
+
+    &-title {
+      &::after {
+        background: $border-color-base;
+      }
+    }
+    &-subtitle {
+      color: $text-color-secondary;
+    }
+    &-description {
+      color: $text-color-secondary;
+    }
+    @include step-item-status(wait, $prefix);
+    @include step-item-status(process, $prefix);
+    @include step-item-status(finish, $prefix);
+    @include step-item-status(error, $prefix);
+    &#{$prefix}-next-error &-title::after {
+      background: $error-color;
+    }
+
+    &-custom {
+      #{$prefix-item}-icon {
+        background: none;
+      }
+      &#{$prefix-item}-process {
+        #{$prefix-item}-icon {
+          > #{$prefix}-icon {
+            color: $primary-color;
+          }
+        }
+      }
+    }
+  }
+
+  & #{$prefix-item}:not(#{$prefix-item}-active) {
+    > #{$prefix-item}-container[role='button'] {
+      &:hover {
+        #{$prefix-item} {
+          &-title,
+          &-subtitle,
+          &-description {
+            color: $hover-color;
+          }
+        }
+      }
+    }
+    &:not(#{$prefix-item}-item-process) {
+      > #{$prefix-item}-container[role='button'] {
+        &:hover {
+          #{$prefix-item} {
+            &-icon {
+              border-color: $hover-color;
+              #{$prefix}-icon {
+                color: $hover-color;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @include e(small, '-') {
+    #{$prefix-item}-description {
+      color: $text-color-secondary;
+    }
+  }
+
+  @include e(navigation, '-') {
+    #{$prefix-item} {
+      &::after {
+        border-color: $text-color-secondary;
+      }
+      &::before {
+        background-color: $primary-color;
+      }
+    }
+  }
+}

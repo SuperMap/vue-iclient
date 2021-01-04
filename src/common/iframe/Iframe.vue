@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import Theme from '../_mixin/theme';
+import Theme from '../_mixin/Theme';
 
 export default {
   name: 'SmIframe',

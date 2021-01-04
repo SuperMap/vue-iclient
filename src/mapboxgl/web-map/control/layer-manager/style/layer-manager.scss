@@ -1,19 +1,124 @@
-@import "../../../../../common/_utils/style/mixins/mixins.scss";
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/tree/style/tree.scss';
+@import '../../../../../common/collapse-card/style/collapse-card.scss';
+@import '../../../../../common/card/style/card.scss';
 
 @include b(layer-manager) {
-  .ant-card {
+  .sm-component-card {
     height: 100%;
-    .ant-card-body {
-      padding: 14px;
+    .sm-component-card-body {
+      padding: 0px;
     }
   }
   @include e(content) {
     width: 100%;
     height: 100%;
   }
-  @include e(a-card) {
+  @include e(sm-card) {
     border-radius: 0;
     border: none;
-    height: 100%;
+  }
+
+  .#{$ant-prefix}-tree {
+    $prefix: #{$ant-prefix}-tree;
+    padding: 12px;
+    font-size: inherit;
+    &-child-tree {
+      border-top: 1px solid $border-color-split;
+    }
+    &-checkbox-inner {
+      background-color: $component-background;
+    }
+    &-checkbox-checked .#{$prefix}-checkbox-inner {
+      background-color: $primary-color;
+    }
+    &-switcher {
+      float: right;
+    }
+    li {
+      span.#{$prefix}-iconEle {
+        display: none;
+      }
+      .#{$prefix}-node-content-wrapper {
+        color: inherit;
+      }
+    }
+
+    &.#{$prefix}-directory {
+      padding: 0 16px;
+      > li,
+      &.#{$prefix}-child-tree > li {
+        .#{$prefix}-child-tree > li span.#{$prefix}-node-content-wrapper.#{$prefix}-node-selected,
+        span.#{$prefix}-node-content-wrapper.#{$prefix}-node-selected {
+          color: inherit;
+        }
+        span {
+          &.#{$prefix}-node-content-wrapper {
+            &:hover {
+              &::before {
+                background: $select-item-hover-bg !important;
+              }
+            }
+          }
+        }
+        &.#{$prefix}-treenode-selected {
+          > span {
+            &.#{$prefix}-checkbox {
+              .#{$prefix}-checkbox-inner {
+                border-color: $border-color-base;
+              }
+
+              &.#{$prefix}-checkbox-checked {
+                &::after {
+                  border-color: $border-color-base;
+                }
+
+                .#{$prefix}-checkbox-inner {
+                  background: $primary-color;
+
+                  &::after {
+                    border-color: $white;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      .#{$prefix}-child-tree > li {
+        &.#{$prefix}-treenode-selected {
+          > span {
+            &.#{$prefix}-checkbox {
+              .#{$prefix}-checkbox-inner {
+                border-color: $primary-color;
+              }
+              &.#{$prefix}-checkbox-checked {
+                .#{$prefix}-checkbox-inner {
+                  background: $primary-color;
+                  &::after {
+                    border-color: $white;
+                  }
+                }
+                &::after {
+                  border-color: transparent;
+                }
+              }
+            }
+            &.#{$prefix}-checkbox {
+              .#{$prefix}-checkbox-inner {
+                border-color: $border-color-base;
+              }
+              &:hover .#{$prefix}-checkbox-inner {
+                border-color: $primary-color;
+              }
+            }
+            &.#{$prefix}-node-content-wrapper::before {
+              background: transparent;
+            }
+          }
+        }
+      }
+    }
   }
 }

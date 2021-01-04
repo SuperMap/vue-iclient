@@ -1,0 +1,47 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils//style/theme/theme.scss';
+@import 'mixin.scss';
+
+@include b(input) {
+  @include focus($primary-5, $primary-shadow-color);
+  &[disabled] {
+    @include disabled();
+  }
+  @include e(disabled, '-') {
+    @include disabled();
+  }
+  @include e(group-addon, '-') {
+    background-color: $background-color-light;
+  }
+  @include e(number, '-') {
+    @include focus($primary-5, $primary-shadow-color);
+    &-focused {
+      @include focus-color($primary-5, $primary-shadow-color);
+    }
+    &-handler {
+      color: $text-color-secondary;
+      &:active {
+        background: $input-number-handler-active-bg;
+      }
+      &-up-inner, &-down-inner {
+        color: $text-color-secondary;
+      }
+    }
+  }
+  @include e(password, '-') {
+    @include suffix-icon();
+  }
+  @include e(search, '-') {
+    @include suffix-icon();
+  }
+  @include e(clear-icon, '-') {
+    @include clear-icon();
+  }
+  @include e(textarea-clear-icon, '-') {
+    @include clear-icon();
+  }
+
+  // &:-internal-autofill-selected {
+  //   background-color: inset 0 0 0 1000px rgab(255, 255, 255, 0)!important;
+  // }
+}

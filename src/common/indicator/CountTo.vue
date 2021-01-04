@@ -47,7 +47,7 @@ export default {
           return {};
         }
         const reg = /\d+(\.\d+)?([a-z]+)/gi;
-        const fontUnit = this.fontSize ? this.fontSize.replace(reg, '$2') : '';
+        const fontUnit = this.fontSize && isNaN(this.fontSize) ? this.fontSize.replace(reg, '$2') : 'px';
         let styleObj = { backgroundColor: this.numBackground.color, padding: this.numBackground.padding };
         if (this.numBackground.image) {
           styleObj = Object.assign(styleObj, {

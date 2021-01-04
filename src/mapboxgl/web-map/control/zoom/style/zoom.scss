@@ -1,60 +1,74 @@
-@import "../../../../../common/_utils/style/mixins/mixins.scss";
-@import "../../../../../common/_utils/style/common/var.scss";
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/button/style/button.scss';
+@import '../../../../../common/slider/style/slider.scss';
 
 @include b(zoom) {
-  // width: 38px; /*因为slider的总宽度为38px,无法重置居中，所以父元素设为38px*/
   @include e(buttons) {
     width: 30px;
     margin: 0 auto;
-    border-radius: $--border-radius-base;
-    box-shadow: $--box-shadow-base;
-    // background: $--fill-base;
+    border-radius: 2px;
+    box-shadow: 0px 1px 2px 0px $shadow-color;
     overflow: hidden;
     display: flex;
     flex-direction: column;
+    background: $collapse-card-header-bg;
   }
   @include e(button) {
+    width: 100%;
     height: 30px;
     padding: 0;
-    border-radius: $--border-radius-base;
-    margin-left: 0 !important;
-    &:hover {
-      border-color: #d9d9d9;
-      color: rgba(0, 0, 0, 0.65);
+    border-radius: 2px;
+    border: none;
+    color: inherit;
+    &[ant-click-animating-without-extra-node='true'] {
+      &::after {
+        display: none;
+      }
     }
-    &:focus {
-      border-color: #d9d9d9;
-      color: rgba(0, 0, 0, 0.65);
+    @include m(zoomin) {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
     }
-    @include m(zoomin){
-      border-bottom-right-radius: 0 !important;
-      border-bottom-left-radius: 0 !important;
+    @include m(zoomout) {
+      border-top-right-radius: 0;
+      border-top-left-radius: 0;
+      &.follow-zoom-value {
+        border-radius: 0;
+      }
     }
-    @include m(zoomout){
-      border-radius: 0 !important;
+    @include m(show-zoom) {
+      border-top-right-radius: 0;
+      border-top-left-radius: 0;
+      height: 20px;
+      line-height: 20px;
+      font-size: 12px;
+      cursor: default;
+      &:hover {
+        color: inherit !important;
+      }
     }
-  }
-  @include e(show-zoom) {
-    height: 20px;
-    line-height: 20px;
-    text-align: center;
-    border-bottom-right-radius: $--border-radius-base;
-    border-bottom-left-radius: $--border-radius-base;
-    border: 1px solid #d9d9d9;
-    border-top: none;
+    @include m(split) {
+      width: 100%;
+      height: 1px;
+      background-color: $border-color-split;
+    }
   }
   @include e(slider) {
     height: 300px;
     margin-top: 20px;
-    .ant-slider {
-      &.ant-slider-vertical {
+    .sm-component-slider {
+      &.sm-component-slider-vertical {
         margin: 6px auto;
+        .sm-component-slider-rail {
+          width: 6px;
+        }
       }
-      .ant-slider-step,
-      .ant-slider-track {
+      .sm-component-slider-step,
+      .sm-component-slider-track {
         width: 6px;
       }
-      .ant-slider-handle {
+      .sm-component-slider-handle {
         margin-left: -4px;
       }
     }

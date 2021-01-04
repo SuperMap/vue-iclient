@@ -1,0 +1,371 @@
+@import 'ant-design-vue/dist/antd.less';
+
+// The prefix to use on all css classes
+@ant-prefix: sm-component;
+
+// ICONFONT
+@iconfont-css-prefix: anticon;
+
+// An override for the html selector for theme prefixes
+@html-selector: html;
+
+@--red-6: var(--danger-color);
+
+@hover-color: var(--hover-color); // equal $primary-5
+
+// -------- Colors -----------
+@info-color: var(--info-color);
+@success-color: var(--success-color);
+@processing-color: @primary-6;
+@highlight-color: @--red-6;
+@normal-color: #d9d9d9;
+@white: #fff;
+@black: #000;
+
+// Color used by default to control hover and active backgrounds
+@primary-1: var(--primary-1);
+@primary-2: var(--primary-2);
+@primary-3: var(--primary-3);
+@primary-4: var(--primary-4);
+@primary-5: var(--primary-5);
+@primary-6: var(--primary-6);
+@primary-7: var(--primary-7);
+@primary-8: var(--primary-8);
+@primary-9: var(--primary-9);
+@primary-10: var(--primary-10);
+
+@success-1: var(--success-1);
+@success-2: var(--success-2);
+@success-3: var(--success-3);
+@success-4: var(--success-4);
+@success-5: var(--success-5);
+@success-6: var(--success-6); // equal @success-color
+@success-7: var(--success-7);
+
+@info-1: var(--info-1);
+@info-2: var(--info-2);
+@info-3: var(--info-3);
+@info-4: var(--info-4);
+@info-5: var(--info-5);
+@info-6: var(--info-6); // equal @info-color
+@info-7: var(--info-7);
+
+@warning-1: var(--warning-1);
+@warning-2: var(--warning-2);
+@warning-3: var(--warning-3);
+@warning-4: var(--warning-4);
+@warning-5: var(--warning-5);
+@warning-6: var(--warning-6); // equal @warning-color
+@warning-7: var(--warning-7);
+
+@danger-1: var(--danger-1);
+@danger-2: var(--danger-2);
+@danger-3: var(--danger-3);
+@danger-4: var(--danger-4);
+@danger-5: var(--danger-5);
+@danger-6: var(--danger-6); // equal @danger-color
+@danger-7: var(--danger-7);
+
+// Background color for `<body>`
+@body-background: var(--background);
+
+// Base background/text color for most components
+@component-background: var(--component-background);
+@text-color: var(--text-color);
+@text-color-inverse: @white;
+@icon-color: inherit;
+@icon-color-hover: var(--icon-color-hover);
+@heading-color: var(--heading-color);
+@heading-color-dark: fade(@white, 100%);
+@text-color-dark: fade(@white, 85%);
+@text-color-secondary-dark: fade(@white, 65%);
+@text-selection-bg: @primary-6;
+
+// The background colors for active and hover states for things like
+// list items or table cells.
+@item-active-bg: @primary-1;
+@item-hover-bg: @primary-1;
+
+// LINK
+@link-color: @primary-6;
+@link-hover-color: @primary-5;
+@link-active-color: @primary-7;
+
+// Border color
+@border-color-base: var(--border-color-base); // base border outline a component
+@border-color-split: var(--border-color-split); // split border inside a component
+@border-color-inverse: @white;
+
+// Outline
+
+// Disabled states
+@disabled-color: var(--disabled-text-color);
+@disabled-color-dark: fade(@white, 35%);
+@--disabled-bg: var(--disabled-bg-color);
+
+// Shadow
+@shadow-color: var(--shadow-color);
+@shadow-color-inverse: @component-background;
+@shadow-1-up: 0 -2px 7px @shadow-color;
+@shadow-1-down: 0 2px 7px @shadow-color;
+@shadow-1-left: -2px 0 7px @shadow-color;
+@shadow-1-right: 2px 0 7px @shadow-color;
+@shadow-2: 0 4px 12px @shadow-color;
+@box-shadow-base: @shadow-1-down;
+
+// Buttons
+@btn-shadow: none;
+@btn-primary-shadow: none;
+@btn-text-shadow: none;
+
+@btn-primary-color: #fff;
+@btn-primary-bg: @primary-6;
+
+@btn-default-color: @text-color;
+@btn-default-bg: transparent;
+@btn-default-border: var(--button-border-default-color);
+
+@btn-danger-color: @--red-6;
+@btn-danger-bg: transparent;
+@btn-danger-border: @--red-6;
+
+@btn-ghost-color: @text-color;
+@btn-ghost-bg: transparent;
+@btn-ghost-border: @border-color-base;
+
+@btn-disable-color: @disabled-color;
+@btn-disable-bg: @--disabled-bg;
+@btn-disable-border: var(--disabled-border-color);
+
+@btn-group-border: @primary-5;
+
+// Checkbox
+@checkbox-color: @primary-6;
+@checkbox-check-color: #fff;
+
+// Descriptions
+@descriptions-bg: #fafafa;
+
+// Dropdown
+@dropdown-selected-color: @primary-6;
+
+// Empty
+
+// Radio
+
+// Radio buttons
+@radio-button-bg: @component-background;
+@radio-button-checked-bg: @component-background;
+@radio-button-color: @text-color;
+@radio-button-hover-color: @primary-5;
+@radio-button-active-color: @primary-7;
+
+// Layout
+@layout-body-background: #f0f2f5;
+@layout-header-background: #001529;
+@layout-footer-background: @layout-body-background;
+@layout-sider-background: @layout-header-background;
+@layout-trigger-background: #002140;
+@layout-trigger-color: #fff;
+
+// Layout light theme
+@layout-sider-background-light: #fff;
+@layout-trigger-background-light: #fff;
+@layout-trigger-color-light: @text-color;
+
+// Input
+@input-placeholder-color: var(--placeholder-color);
+@input-color: @text-color;
+@input-border-color: @border-color-base;
+@input-bg: @component-background;
+@input-hover-border-color: @primary-5;
+@input-number-hover-border-color: @input-hover-border-color;
+@input-number-handler-hover-bg: @primary-5;
+@input-number-handler-bg: @component-background;
+@input-number-handler-border-color: @border-color-base;
+@input-disabled-bg: @--disabled-bg;
+
+// Form
+@label-required-color: @highlight-color;
+@label-color: @heading-color;
+@form-warning-input-bg: @input-bg;
+@form-error-input-bg: @input-bg;
+
+// Select
+@select-border-color: @border-color-base;
+@select-item-selected-color: var(--text-color-without-opacity);
+@select-dropdown-bg: var(--select-dropdown-background);
+@select-item-active-bg: var(--selected-color);
+@select-item-hover-bg: var(--select-item-hover-bg);
+@select-background: @component-background;
+
+// Anchor
+@anchor-border-color: @border-color-split;
+
+// Tooltip
+// Tooltip text color
+@tooltip-color: #fff;
+// Tooltip background color
+@tooltip-bg: var(--tooltip-background);
+// Tooltip arrow color
+@tooltip-arrow-color: @tooltip-bg;
+
+// Popover
+// Popover body background color
+@popover-bg: @component-background;
+// Popover text color
+@popover-color: @text-color;
+// Popover arrow color
+@popover-arrow-color: @popover-bg;
+// Popover outer arrow width
+// Popover outer arrow color
+@popover-arrow-outer-color: @popover-bg;
+
+// Modal
+@modal-header-bg: var(--modal-background);
+@modal-header-border-color-split: @border-color-split;
+@modal-heading-color: @heading-color;
+@modal-footer-bg: transparent;
+@modal-footer-border-color-split: @border-color-split;
+@modal-mask-bg: fade(@black, 45%);
+
+// Progress
+@progress-default-color: @processing-color;
+@progress-text-color: @text-color;
+
+// Menu
+@menu-bg: @component-background;
+@menu-popup-bg: @component-background;
+@menu-item-color: @text-color;
+@menu-highlight-color: @primary-6;
+@menu-item-active-bg: @item-active-bg;
+
+// dark theme
+@menu-dark-color: @text-color-secondary-dark;
+@menu-dark-bg: @layout-header-background;
+@menu-dark-arrow-color: #fff;
+@menu-dark-submenu-bg: #000c17;
+@menu-dark-highlight-color: #fff;
+@menu-dark-item-active-bg: @primary-6;
+@menu-dark-selected-item-icon-color: @white;
+@menu-dark-selected-item-text-color: @white;
+@menu-dark-item-hover-bg: transparent;
+
+// Table
+@table-header-color: @heading-color;
+@table-body-sort-bg: rgba(0, 0, 0, 0.01);
+@table-row-hover-bg: @select-item-hover-bg;
+@table-selected-row-color: inherit;
+@table-selected-row-bg: #fafafa;
+@table-body-selected-sort-bg: @table-selected-row-bg;
+@table-selected-row-hover-bg: @table-selected-row-bg;
+@table-expanded-row-bg: #fbfbfb;
+@table-footer-color: @heading-color;
+@table-header-bg-sm: transparent;
+
+// Tag
+@tag-default-color: @text-color;
+
+// TimePicker
+
+// Badge
+@badge-text-color: @component-background;
+
+// Rate
+// @rate-star-color: @yellow-6;
+@rate-star-bg: @border-color-split;
+
+// Card
+@card-head-color: @heading-color;
+@card-head-background: transparent;
+@card-skeleton-bg: #cfd8dc;
+@card-background: @component-background;
+@card-shadow: 0 2px 8px rgba(0, 0, 0, 0.09);
+
+// Comment
+@comment-author-time-color: #ccc;
+@comment-action-hover-color: #595959;
+
+// Tabs
+@tabs-card-active-color: @primary-6;
+@tabs-ink-bar-color: @primary-6;
+@tabs-highlight-color: @primary-6;
+@tabs-hover-color: @primary-5;
+@tabs-active-color: @primary-7;
+@tabs-card-tab-active-border-top: 2px solid transparent;
+
+// BackTop
+@back-top-color: #fff;
+@back-top-hover-bg: @text-color;
+
+// Avatar
+@avatar-bg: var(--avatar-background);
+@avatar-color: var(--avatar-text-color);
+
+// Switch
+@switch-disabled-opacity: var(--switch-disabled-opacity);
+@switch-shadow-color: fade(#00230b, 20%);
+
+// Pagination
+@pagination-item-bg-active: @primary-6;
+
+// PageHeader
+@page-header-back-color: #000;
+
+// Breadcrumb
+@breadcrumb-last-item-color: @text-color;
+@breadcrumb-link-color-hover: @primary-5;
+
+// Slider
+@slider-rail-background-color-hover: var(--slider-rail-background-color);
+@slider-track-background-color: @primary-6;
+@slider-track-background-color-hover: @hover-color;
+@slider-handle-background-color: #fff;
+@slider-handle-color: @primary-6;
+@slider-handle-color-hover: @hover-color;
+// @slider-handle-color-focus: tint(@primary-color, 20%);
+// @slider-handle-color-focus-shadow: fade(@primary-color, 20%);
+@slider-handle-color-tooltip-open: @primary-6;
+@slider-dot-border-color: @border-color-split;
+// @slider-dot-border-color-active: tint(@primary-color, 50%);
+@slider-disabled-color: @disabled-color;
+@slider-disabled-background-color: @component-background;
+
+// Tree
+@tree-directory-selected-color: #fff;
+@tree-directory-selected-bg: @primary-6;
+@tree-node-hover-bg: @item-hover-bg;
+@tree-node-selected-bg: @primary-2;
+
+// Collapse
+@collapse-content-bg: @component-background;
+
+// Skeleton
+@skeleton-color: #f2f2f2;
+
+// Transfer
+@transfer-disabled-bg: @--disabled-bg;
+
+// Message
+
+// Alert
+@alert-success-border-color: @success-3;
+@alert-success-bg-color: @success-1;
+@alert-success-icon-color: @success-color;
+@alert-info-border-color: @info-3;
+@alert-info-bg-color:@info-1;
+@alert-info-icon-color: @info-color;
+@alert-warning-border-color: @warning-3;
+@alert-warning-bg-color: @warning-1;
+@alert-error-border-color: @danger-3;
+@alert-error-bg-color: @danger-1;
+@alert-error-icon-color: @--red-6;
+
+// List
+@list-header-background: transparent;
+@list-footer-background: transparent;
+
+// Timeline
+@timeline-color: @border-color-split;
+@timeline-dot-color: @primary-6;
+@timeline-dot-bg: @component-background;

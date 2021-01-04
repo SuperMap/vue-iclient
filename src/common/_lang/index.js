@@ -2,6 +2,8 @@
 import Cookies from 'js-cookie';
 import enLocale from './en';
 import zhLocale from './zh';
+import antdZhCN from 'ant-design-vue/es/locale/zh_CN';
+import antdEnUS from 'ant-design-vue/es/locale/en_US';
 import clonedeep from 'lodash.clonedeep';
 import VueI18n from 'vue-i18n';
 
@@ -13,9 +15,11 @@ let i18n = {};
 let rooti18n;
 const messages = {
   en: {
+    ...antdEnUS,
     ...enLocale
   },
   zh: {
+    ...antdZhCN,
     ...zhLocale
   }
 };
@@ -45,10 +49,7 @@ export function geti18n(n) {
 export function setLocale(locales) {
   i18n.mergeLocaleMessage && i18n.mergeLocaleMessage(i18n.locale, locales);
 }
-export const lang = {
-  en: clonedeep(enLocale),
-  zh: clonedeep(zhLocale)
-};
+export const lang = clonedeep(messages);
 export function initi18n(Vue, config) {
   config = config || {};
   if (config.i18n) {
@@ -57,8 +58,8 @@ export function initi18n(Vue, config) {
       i18n.setDateTimeFormat('en', enLocale.dateTimeFormat);
       i18n.setDateTimeFormat('zh', zhLocale.dateTimeFormat);
     }
-    i18n.mergeLocaleMessage && i18n.mergeLocaleMessage('en', enLocale);
-    i18n.mergeLocaleMessage && i18n.mergeLocaleMessage('zh', zhLocale);
+    i18n.mergeLocaleMessage && i18n.mergeLocaleMessage('en', lang.en);
+    i18n.mergeLocaleMessage && i18n.mergeLocaleMessage('zh', lang.zh);
   } else if (!Vue.prototype.hasOwnProperty('$i18n')) {
     Object.defineProperty(Vue.prototype, '$i18n', {
       get: function get() {

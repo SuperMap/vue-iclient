@@ -206,7 +206,7 @@ export default class WebMapService extends Events {
         pro = this._getFeaturesFromHosted(layer, baseProjection);
         break;
       case 'rest_data':
-        pro = this._getFeaturesFromRestData(layer);
+        pro = this._getFeaturesFromRestData(layer, baseProjection);
         break;
       case 'rest_map':
         pro = this._getFeaturesFromRestMap(layer);
@@ -220,7 +220,31 @@ export default class WebMapService extends Events {
     }
     return pro;
   }
-
+  public getWmsInfo(layerInfo, mapCRS) {
+    return new Promise((resolve, reject) => {
+      const proxy = this.handleProxy();
+      const serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMS`;
+      SuperMap.FetchRequest.get(serviceUrl, null, {
+        withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
+        withoutFormatSuffix: true,
+        proxy
+      })
+        .then(response => {
+          return response.text();
+        })
+        .then(capabilitiesText => {
+          let converts = convert || window.convert;
+          const capabilities = JSON.parse(
+            converts.xml2json(capabilitiesText, {
+              compact: true,
+              spaces: 4
+            })
+          );
+          const wmsCapabilities = capabilities.WMT_MS_Capabilities || capabilities.WMS_Capabilities;
+          resolve({ version: wmsCapabilities['_attributes']['version'] });
+        });
+    });
+  }
   public getWmtsInfo(layerInfo, mapCRS) {
     return new Promise((resolve, reject) => {
       let isMatched = false;
@@ -230,17 +254,13 @@ export default class WebMapService extends Events {
       let restResourceURL = '';
       let kvpResourceUrl = '';
       const proxy = this.handleProxy();
-      let serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0`
+      let serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0`;
       serviceUrl = this.handleParentRes(serviceUrl);
-      SuperMap.FetchRequest.get(
-        serviceUrl,
-        null,
-        {
-          withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
-          withoutFormatSuffix: true,
-          proxy
-        }
-      )
+      SuperMap.FetchRequest.get(serviceUrl, null, {
+        withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
+        withoutFormatSuffix: true,
+        proxy
+      })
         .then(response => {
           return response.text();
         })
@@ -373,7 +393,7 @@ export default class WebMapService extends Events {
     }
   }
 
-  private _getFeaturesFromRestData(layer) {
+  private _getFeaturesFromRestData(layer, baseProjection?) {
     //从restData获取数据
     let features;
     let dataSource = layer.dataSource;
@@ -391,7 +411,8 @@ export default class WebMapService extends Events {
         },
         err => {
           reject(err);
-        }
+        },
+        baseProjection
       );
     });
   }
@@ -590,15 +611,15 @@ export default class WebMapService extends Events {
       requestUrl += `?token=${token}`;
     }
     const proxy = this.handleProxy();
-    requestUrl = this.handleParentRes(url);
+    requestUrl = this.handleParentRes(requestUrl);
     SuperMap.FetchRequest.get(requestUrl, null, {
       proxy,
       withCredentials: this.handleWithCredentials(proxy, requestUrl, false)
     })
-      .then(function(response) {
+      .then(function (response) {
         return response.json();
       })
-      .then(function(result) {
+      .then(function (result) {
         if (!result) {
           faild();
           return;
@@ -607,7 +628,7 @@ export default class WebMapService extends Events {
           layerInfo.featureType = result.featureMetaData.featureType.toUpperCase();
           layerInfo.dataSource = { dataTypes: {} };
           if (result.featureMetaData.fieldInfos && result.featureMetaData.fieldInfos.length > 0) {
-            result.featureMetaData.fieldInfos.forEach(function(data) {
+            result.featureMetaData.fieldInfos.forEach(function (data) {
               let name = data.name.trim();
               if (data.type === 'TEXT') {
                 layerInfo.dataSource.dataTypes[name] = 'STRING';
@@ -623,7 +644,7 @@ export default class WebMapService extends Events {
         layerInfo.name = result.urls[0].url.split('iserver/services/')[1].split('/dataflow')[0];
         success();
       })
-      .catch(function() {
+      .catch(function () {
         faild();
       });
   }
@@ -778,10 +799,10 @@ export default class WebMapService extends Events {
       //判断是否和底图坐标系一直
       if (info.epsgCode == baseProjection.split('EPSG:')[1]) {
         return SuperMap.FetchRequest.get(`${info.url}/tilefeature.mvt`)
-          .then(function(response) {
+          .then(function (response) {
             return response.json();
           })
-          .then(function(result) {
+          .then(function (result) {
             info.isMvt = result.error && result.error.code === 400;
             return info;
           })
@@ -969,11 +990,14 @@ export default class WebMapService extends Events {
 
     return defaultValue;
   }
-  public isIportalResourceUrl(serviceUrl){
-    return  (serviceUrl.startsWith(this.serverUrl) || (this.iportalServiceProxyUrl && serviceUrl.indexOf(this.iportalServiceProxyUrl) >= 0)) 
+  public isIportalResourceUrl(serviceUrl) {
+    return (
+      serviceUrl.startsWith(this.serverUrl) ||
+      (this.iportalServiceProxyUrl && serviceUrl.indexOf(this.iportalServiceProxyUrl) >= 0)
+    );
   }
   public handleParentRes(url, parentResId = this.mapId, parentResType = 'MAP'): string {
-    if(!this.isIportalResourceUrl(url)){
+    if (!this.isIportalResourceUrl(url)) {
       return url;
     }
     return urlAppend(url, `parentResType=${parentResType}&parentResId=${parentResId}`);
@@ -1013,9 +1037,9 @@ export default class WebMapService extends Events {
 
       // 属性信息
       let attributes = {};
-      for (let index in dataContent.colTitles) {
-        let key = dataContent.colTitles[index];
-        attributes[key] = dataContent.rows[i][index];
+      for (let index = 0; index < dataContent.colTitles.length; index++) {
+        const element = dataContent.colTitles[index].trim();
+        attributes[element] = dataContent.rows[i][index];
       }
       attributes['index'] = i + '';
       // 目前csv 只支持处理点，所以先生成点类型的 geojson
@@ -1042,7 +1066,7 @@ export default class WebMapService extends Events {
     const proxy = this.handleProxy();
     const dataUrl = `${this.serverUrl}apps/dataviz/libs/administrative_data/${dataFileName}`;
     return SuperMap.FetchRequest.get(dataUrl, null, {
-      withCredentials: this.handleWithCredentials(proxy, dataUrl, this.withCredentials),
+      withCredentials: false,
       proxy,
       withoutFormatSuffix: true
     })
@@ -1148,7 +1172,8 @@ export default class WebMapService extends Events {
     url: string,
     datasetNames: Array<string>,
     processCompleted: Function,
-    processFaild: Function
+    processFaild: Function,
+    baseProjection?
   ): void {
     let getFeatureParam, getFeatureBySQLService, getFeatureBySQLParams;
     getFeatureParam = new SuperMap.FilterParameter({
@@ -1163,6 +1188,13 @@ export default class WebMapService extends Events {
       maxFeatures: -1,
       returnContent: true
     });
+    if (baseProjection) {
+      if (baseProjection === 'EPSG:3857') {
+        getFeatureBySQLParams.targetEpsgCode = 4326;
+      } else {
+        getFeatureBySQLParams.targetEpsgCode = +baseProjection.split(':')[1];
+      }
+    }
     const proxy = this.handleProxy();
     let options = {
       proxy,
@@ -1179,5 +1211,22 @@ export default class WebMapService extends Events {
     const serviceUrl = this.handleParentRes(url);
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(serviceUrl, options);
     getFeatureBySQLService.processAsync(getFeatureBySQLParams);
+  }
+
+  public async getEpsgCodeInfo(epsgCode, iPortalUrl) {
+    const url = iPortalUrl.slice(-1) === '/' ? iPortalUrl : `${iPortalUrl}/`;
+    let codeUrl = `${url}epsgcodes/${epsgCode}.json`;
+    const wkt = await SuperMap.FetchRequest.get(codeUrl, null)
+      .then(response => {
+        return response.json();
+      })
+      .then(epsgcodeInfo => {
+        return epsgcodeInfo.wkt;
+      })
+      .catch(err => {
+        console.error(err);
+        return undefined;
+      });
+    return wkt;
   }
 }

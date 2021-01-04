@@ -1,34 +1,30 @@
 <template>
   <div class="sm-component-zoom">
-    <div class="sm-component-zoom__buttons" :style="[getBackgroundStyle, getTextColorStyle]">
-      <a-button
-        autofocus="false"
+    <div class="sm-component-zoom__buttons" :style="[collapseCardHeaderBgStyle, getTextColorStyle]">
+      <sm-button
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
-        icon="plus"
         :disabled="!canZoomIn"
-        :style="
-          activeZoomMode === 'zoomInBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]
-        "
         @click="zoomIn"
-      ></a-button>
-      <a-button
-        autofocus="false"
-        class="sm-component-zoom__button sm-component-zoom__button--zoomout"
-        icon="minus"
+      >
+        <i class="sm-components-icon-plus" />
+      </sm-button>
+      <div class="sm-component-zoom__button--split" />
+      <sm-button
+        :class="['sm-component-zoom__button sm-component-zoom__button--zoomout', showZoom && 'follow-zoom-value']"
         :disabled="!canZoomOut"
-        :style="
-          activeZoomMode === 'zoomOutBtn' ? [getColorStyle(0), activieBgColor] : [getTextColorStyle, getBackgroundStyle]
-        "
         @click="zoomOut"
-      ></a-button>
-      <div
-        v-if="showZoom"
-        class="sm-component-zoom__show-zoom"
-        :style="showZoomStyle"
-      >{{ Math.round(zoomPosition) }}</div>
+      >
+        <i class="sm-components-icon-minus" />
+      </sm-button>
+      <template v-if="showZoom">
+        <div class="sm-component-zoom__button--split" />
+        <sm-button class="sm-component-zoom__button sm-component-zoom__button--show-zoom">
+          <span>{{ Math.round(zoomPosition) }}</span>
+        </sm-button>
+      </template>
     </div>
     <div v-show="showZoomSlider" class="sm-component-zoom__slider">
-      <a-slider
+      <sm-slider
         v-model="zoomPosition"
         :min="min"
         :max="max"
@@ -36,19 +32,24 @@
         vertical
         :style="getColorStyle(0)"
         @change="sliderChange"
-      ></a-slider>
+      />
     </div>
   </div>
 </template>
 <script>
-import Theme from '../../../../common/_mixin/theme';
+import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
-import { getColorWithOpacity } from '../../../../common/_utils/util';
+import SmButton from '../../../../common/button/Button';
+import SmSlider from '../../../../common/slider/Slider';
 
 export default {
   name: 'SmZoom',
+  components: {
+    SmButton,
+    SmSlider
+  },
   mixins: [MapGetter, Control, Theme],
   props: {
     showZoom: {
@@ -70,33 +71,8 @@ export default {
       canZoomOut: true
     };
   },
-  computed: {
-    activieBgColor() {
-      const color = this.getColorStyle(0).color;
-      return {
-        backgroundColor: this.getBackground,
-        borderColor: color
-      };
-    },
-    showZoomStyle() {
-      return {
-        color: getColorWithOpacity(this.getBackground, 1),
-        background: this.getTextColor
-      };
-    }
-  },
-  watch: {
-    colorGroupsData: {
-      handler() {
-        this.changeSliderStyle();
-      }
-    }
-  },
   created() {
     this.viewModel = new ZoomViewModel();
-  },
-  mounted() {
-    this.changeSliderStyle();
   },
   methods: {
     sliderChange() {
@@ -158,12 +134,6 @@ export default {
       if (!this.canZoomOut) {
         return this.getMaxZoom();
       }
-    },
-    changeSliderStyle() {
-      const sliderBar = document.querySelector('.ant-slider-track');
-      const sliderBtn = document.querySelector('.ant-slider-handle');
-      sliderBar && (sliderBar.style.backgroundColor = this.getColorStyle(0).color);
-      sliderBtn && (sliderBtn.style.borderColor = this.getColorStyle(0).color);
     }
   },
   loaded() {

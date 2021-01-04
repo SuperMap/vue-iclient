@@ -1,106 +1,121 @@
 <template>
-  <a-tabs
+  <sm-tabs
     v-model="activeTab"
-    :class="['sm-component-tdtRoutePlan', 'route-plan', {'route-bus-plan': searchType == 'bus'}]"
-    :style="themeStyle"
+    :class="['sm-component-tdtRoutePlan', 'route-plan', { 'route-bus-plan': searchType == 'bus' }]"
+    :style="getTextColorStyle"
     type="card"
     size="small"
     @change="styleChanged"
   >
-    <template v-for="(item,index) in tabMap[searchType]">
-      <a-tab-pane :key="index" :tab="item">
-        <template v-if="routePlan && searchType==='car'">
-          <div
-            class="distance"
-          >{{ $t('tdtResults.totalMiles') }}：{{ $t('tdtResults.distance', {'distance': routePlan.distance}) }}</div>
+    <template v-for="(item, index) in tabMap[searchType]">
+      <sm-tab-pane :key="index" :tab="item">
+        <template v-if="routePlan && searchType === 'car'">
+          <div class="distance">
+            {{ $t('tdtResults.totalMiles') }}：{{ $t('tdtResults.distance', { distance: routePlan.distance }) }}
+            <sm-checkbox class="show-all-info" @change="checkboxChanged">
+              {{ $t('tdtResults.showDetails') }}
+            </sm-checkbox>
+          </div>
+          <div class="start-position-title">
+            <i class="icon" />
+            <span :style="headingTextColorStyle">{{ start.name }}</span>
+          </div>
           <div class="route-plan-container">
-            <div class="start-label">
-              <div class="icon"></div>
-              <span class="name" :title="start.name">{{ start.name }}</span>
-              <a-checkbox
-                class="show-all-info"
-                :style="themeStyle"
-                @change="checkboxChanged"
-              >{{ $t('tdtResults.showDetails') }}</a-checkbox>
-            </div>
             <ul class="level-1">
-              <template v-for="(route,idx) in (routePlan.features.features.slice(1))">
-                <li :key="idx" @click="routePlanClicked($event, route.properties.id, index)">
-                  <span>{{ idx+1 }}.</span>
-                  <span>{{ route.properties.strguide.strguide }}</span>
+              <template v-for="(route, idx) in routePlan.features.features.slice(1)">
+                <li :key="idx" :class="{'car-info': true, 'detail-item': expandDetail[idx]}" @click="routePlanClicked($event, route.properties.id, index)">
+                  <div>{{ `${idx + 1}、${route.properties.strguide.strguide}` }}</div>
                   <ul v-if="expandDetail[idx]" class="level-2">
-                    <template v-for="(strguide,j) in route.properties.strguide.routeInfo">
+                    <template v-for="(strguide, j) in route.properties.strguide.routeInfo">
                       <li :key="j">
-                        <span>{{ j+1 }})</span>
-                        <span>{{ strguide }}</span>
+                        <span :style="secondaryTextColorStyle">{{ strguide }}</span>
                       </li>
                     </template>
                   </ul>
                 </li>
               </template>
             </ul>
-            <div class="dest-label">
-              <div class="icon"></div>
-              <span>{{ dest.name }}</span>
-            </div>
+          </div>
+          <div class="dest-position-title">
+            <i class="icon" />
+            <span :style="headingTextColorStyle">{{ dest.name }}</span>
           </div>
         </template>
-        <template v-if="routePlan && searchType==='bus' && activeTab === index">
+        <template v-if="routePlan && searchType === 'bus' && activeTab === index">
+          <div class="start-position-title">
+            <i class="icon" />
+            <span :style="headingTextColorStyle">{{ start.name }}</span>
+          </div>
           <div class="route-plan-container">
             <ul class="level-1">
               <template v-for="(route, idx) in routePlan">
-                <li :key="idx" :class="['bus-info']" @click="busInfoClicked($event, idx)">
+                <li :key="idx" class="bus-info" @click="busInfoClicked($event, idx)">
                   <div class="line-header">
                     <div class="line-name">
                       <template v-for="(lineName, i) in route.lineNames">
                         <div :key="lineName.name">
-                          <i :class="`${lineName.type} route-icon`"></i>
+                          <i :class="`${lineName.type} route-icon`" />
                           <span>{{ lineName.name }}</span>
-                          <span v-if="i < route.lineNames.length - 1" class="right-direction">></span>
+                          <span v-if="i < route.lineNames.length - 1" class="right-direction">&gt;</span>
                         </div>
                       </template>
                     </div>
-                    <div class="line-info">
-                      <span>{{ `${route.switchTimes ? $t('tdtResults.switchTimes', {'switchTimes': route.switchTimes}) : $t('tdtResults.noSwitch')}` }}</span>
-                      <span>/{{ $t('tdtResults.distance', {'distance': route.distance}) }}</span>
+                    <div class="line-info" :style="secondaryTextColorStyle">
+                      <span>
+                        {{
+                          `${
+                            route.switchTimes
+                              ? $t('tdtResults.switchTimes', { switchTimes: route.switchTimes })
+                              : $t('tdtResults.noSwitch')
+                          }`
+                        }}
+                      </span>
+                      <span>{{ $t('tdtResults.distance', { distance: route.distance }) }}</span>
                       <span class="time">{{ route.time }}</span>
                     </div>
                   </div>
                   <div v-if="expandDetail[idx]" class="line-details">
                     <div class="start-label">
-                      <div class="icon"></div>
+                      <div class="icon-holder">
+                        <div class="icon" />
+                      </div>
                       <span>{{ start.name }}</span>
                     </div>
-                    <i class="route-point route-icon"></i>
                     <ul class="level-2">
                       <template v-for="(line, j) in route.features.features">
                         <li :key="j" @click="busPlanClicked($event, j, idx)">
-                          <i :class="[line.properties.type,'route-icon']"></i>
+                          <div class="icon-holder">
+                            <i :class="[line.properties.type, 'route-icon']" />
+                          </div>
                           <template v-if="!line.properties.lineName">
-                            <span>从{{ line.properties.stationStart.name||start.name }}{{ $t('tdtResults.walk') }}</span>
                             <span>
-                              <a
-                                href="javascript:void(0)"
-                              >{{ line.properties.stationEnd.name||dest.name }}</a>
+                              从{{ line.properties.stationStart.name || start.name }}{{ $t('tdtResults.walk') }}
+                            </span>
+                            <span>
+                              <a href="javascript:void(0)">{{ line.properties.stationEnd.name || dest.name }}</a>
                             </span>
                           </template>
                           <template v-else>
-                            <span>{{ $t('tdtResults.take') }}{{ line.properties.lineName }}{{ $t('tdtResults.on') }}</span>
+                            <span>
+                              {{ $t('tdtResults.take') }}{{ line.properties.lineName }}{{ $t('tdtResults.on') }}
+                            </span>
                             <span>
                               <a href="javascript:void(0)">{{ line.properties.stationEnd.name }}</a>
-                              {{ line.properties.segmentStationCount ? $t('tdtResults.getOff'):$t('tdtResults.getOn') }}
+                              {{
+                                line.properties.segmentStationCount ? $t('tdtResults.getOff') : $t('tdtResults.getOn')
+                              }}
                             </span>
-                            <span
-                              v-if="line.properties.segmentStationCount"
-                              class="time"
-                            >{{ line.properties.segmentStationCount }}{{ $t('tdtResults.station') }}</span>
+                            <span v-if="line.properties.segmentStationCount" class="station-count" :style="disabledTextColorStyle">
+                              {{ line.properties.segmentStationCount }}{{ $t('tdtResults.station') }}
+                            </span>
                           </template>
-                          <i class="route-point route-icon"></i>
                         </li>
                       </template>
                     </ul>
                     <div class="dest-label">
-                      <div class="icon"></div>
+                      <div class="icon-holder">
+                        <div class="icon" />
+                      </div>
                       <span>{{ dest.name }}</span>
                     </div>
                   </div>
@@ -108,18 +123,37 @@
               </template>
             </ul>
           </div>
+          <div class="dest-position-title">
+            <i class="icon" />
+            <span :style="headingTextColorStyle">{{ dest.name }}</span>
+          </div>
         </template>
-        <div v-if="!routePlan" style="text-align:center">
-          <a-spin :spinning="spinning" size="large"></a-spin>
-          <div v-if="isError">{{ $t('tdtResults.noSearchResults') }}</div>
+        <div v-if="!routePlan" class="loading-and-tip-holder">
+          <sm-spin :spinning="spinning" />
+          <sm-empty v-if="isError && !spinning" :description="$t('tdtResults.noSearchResults')" />
         </div>
-      </a-tab-pane>
+      </sm-tab-pane>
     </template>
-  </a-tabs>
+  </sm-tabs>
 </template>
 <script>
+import SmTabs from '../../../common/tabs/Tabs';
+import SmTabPane from '../../../common/tabs/TabPane';
+import SmSpin from '../../../common/spin/Spin';
+import SmCheckbox from '../../../common/checkbox/Checkbox';
+import SmEmpty from '../../../common/empty/Empty';
+import Theme from '../../../common/_mixin/Theme';
+
 export default {
   name: 'RoutePlan',
+  components: {
+    SmTabs,
+    SmTabPane,
+    SmSpin,
+    SmCheckbox,
+    SmEmpty
+  },
+  mixins: [Theme],
   props: {
     routePlan: { type: [Object, Array] },
     start: { type: Object },
@@ -160,23 +194,15 @@ export default {
       immediate: true,
       handler() {
         this.searchType === 'bus' && (this.expandDetail = [true]);
-      }
-    },
-    textColorsData: {
-      handler() {
-        this.changeSearchInputStyle();
+        if (this.activeTab >= this.tabMap[this.searchType].length) {
+          this.activeTab = 0;
+        }
       }
     }
   },
   methods: {
-    changeSearchInputStyle() {
-      const serachInput = this.$el.querySelectorAll('.show-all-info');
-      serachInput.forEach(item => {
-        item.style.color = this.getTextColor;
-      });
-    },
     styleChanged(val) {
-      this.expandDetail = val === 'car' ? [] : [true];
+      this.expandDetail = [true];
       this.$emit('style-changed', val);
     },
     routePlanClicked(e, index, parentIndex) {
@@ -204,5 +230,4 @@ export default {
   }
 };
 </script>
-<style lang='scss'>
-</style>
+<style lang="scss"></style>

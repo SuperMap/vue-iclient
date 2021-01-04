@@ -1,0 +1,32 @@
+@mixin focus-color($border, $shadow) {
+  border-color: $border;
+  box-shadow: 0 0 0 2px $shadow;
+}
+
+@mixin focus($border, $shadow) {
+  &:focus {
+    @include focus-color($border, $shadow);
+  }
+}
+
+@mixin disabled {
+  border-color: $disabled-border-color;
+  &:hover {
+    border-color: $disabled-border-color;
+  }
+}
+
+@mixin suffix-icon {
+  &-icon {
+    color: $text-color-secondary;
+    &:hover {
+      color: $icon-color-hover;
+    }
+  }
+}
+
+@mixin clear-icon {
+  &:hover {
+    color: $text-color-secondary;
+  }
+}

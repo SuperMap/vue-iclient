@@ -1,21 +1,23 @@
 <template>
-  <div v-if="showComponent" class="sm-component-pagination pagination-container">
+  <div v-if="showComponent" class="sm-component-tdt-pagination pagination-container">
     <ul id="paginationUl" @click="handleClick" >
-      <li type="home">{{ $t('tdtResults.homePage') }}</li>
-      <li v-if="realPage !== 1" type="prevPage">{{ $t('tdtResults.prevPage') }}</li>
+      <li type="home" class="home-item">{{ $t('tdtResults.homePage') }}</li>
+      <li v-if="realPage !== 1" type="prevPage" class="prev-item">{{ $t('tdtResults.prevPage') }}</li>
       <li
         v-for="(page, index) in pageList"
         :key="page"
         :type="attrType(index)"
-        :style="index === activePage && `background: ${getColor(0)}; border-color: ${getColor(0)}; color: ${getTextColor}`"
-      >{{ page }}</li>
-      <li v-if="realPage !== totalPage" type="nextPage">{{ $t('tdtResults.nextPage') }}</li>
+        :class="{ 'pagination-item': true, 'active-item': index === activePage }"
+      >
+        {{ page }}
+      </li>
+      <li v-if="realPage !== totalPage" type="nextPage" class="next-item">{{ $t('tdtResults.nextPage') }}</li>
     </ul>
   </div>
 </template>
 
 <script>
-import Theme from '../../../common/_mixin/theme';
+import Theme from '../../../common/_mixin/Theme';
 
 export default {
   name: 'PaginationContainer',

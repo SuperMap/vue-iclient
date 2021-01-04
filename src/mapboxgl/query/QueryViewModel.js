@@ -6,6 +6,9 @@ import { geti18n } from '../../common/_lang';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { getFeatureCenter, getValueCaseInsensitive } from '../../common/_utils/util';
 import { checkAndRectifyFeatures } from '../../common/_utils/iServerRestService';
+import bbox from '@turf/bbox';
+import envelope from '@turf/envelope';
+import transformScale from '@turf/transform-scale';
 
 /**
  * @class QueryViewModel
@@ -223,14 +226,10 @@ export default class QueryViewModel extends mapboxgl.Evented {
         // 是否有rest服务
         if (data.dataItemServices && data.dataItemServices.length > 0) {
           let dataItemServices = data.dataItemServices;
-          let resultData;
-          dataItemServices.forEach(item => {
-            if (item.serviceType === 'RESTDATA' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            } else if (item.serviceType === 'RESTMAP' && item.serviceStatus === 'PUBLISHED') {
-              resultData = item;
-            }
-          }, this);
+          let resultData = dataItemServices.find(
+            item =>
+              (item.serviceType === 'RESTDATA' || item.serviceType === 'RESTMAP') && item.serviceStatus === 'PUBLISHED'
+          );
           if (resultData) {
             // 如果有服务，获取数据源和数据集, 然后请求rest服务
             this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);
@@ -340,6 +339,15 @@ export default class QueryViewModel extends mapboxgl.Evented {
       }
     };
     this._addOverlayToMap(type, source, this.layerID);
+    const bounds = bbox(transformScale(envelope(source.data), 1.7));
+    this.map.fitBounds(
+      [
+        [bounds[0], bounds[1]],
+        [bounds[2], bounds[3]]
+      ],
+      { maxZoom: 17 }
+    );
+    this.getPopupFeature();
   }
 
   /**
@@ -409,9 +417,12 @@ export default class QueryViewModel extends mapboxgl.Evented {
    */
   addPopup(coordinates, popupContainer) {
     popupContainer.style.display = 'block';
+    this.map.flyTo({ center: coordinates });
     return new mapboxgl.Popup({
       className: 'sm-mapboxgl-tabel-popup',
       closeOnClick: true,
+      closeButton: false,
+      maxWidth: 'none',
       anchor: 'bottom'
     })
       .setLngLat(coordinates)

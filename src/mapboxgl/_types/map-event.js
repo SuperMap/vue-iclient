@@ -15,8 +15,10 @@ export default new Vue({
     this.mapCache[mapTarget] = map;
   },
   deleteMap: function(mapTarget) {
-    globalEvent.$emit('delete-map', mapTarget);
-    delete this.mapCache[mapTarget];
+    if (this.mapCache[mapTarget]) {
+      globalEvent.$emit('delete-map', mapTarget);
+      delete this.mapCache[mapTarget];
+    }
   },
   getWebMap: function(webmapTarget) {
     return this.webMapCache[webmapTarget];

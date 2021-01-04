@@ -1,20 +1,39 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
 
-@include b(pagination) {
+@include b(tdt-pagination) {
   #paginationUl {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 50px;
     text-align: center;
     font-size: 12px;
-    padding-top: 11px;
+    padding-top: 8px;
+    padding-bottom: 16px;
     li {
       display: inline-block;
-      padding: 4px 8px;
-      border: 1px solid #ccc;
       margin: 0 1px;
+      padding: 0;
       cursor: pointer;
+      height: 22px;
+      line-height: 22px;
+      &.home-item, &.prev-item, &.next-item {
+        padding: 0 6px;
+      }
+      &.pagination-item {
+        padding: 0;
+        width: 22px;
+        text-align: center;
+      }
+      &.active-item {
+        background: $primary-color;
+        color: #fff;
+        border-radius: 2px;
+      }
+      &:hover {
+        background: none;
+        color: $hover-color;
+      }
     }
   }
 }

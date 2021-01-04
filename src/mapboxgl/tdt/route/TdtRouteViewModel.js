@@ -42,7 +42,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       keyWord,
       queryType: '7',
       start: '0',
-      count: '4',
+      count: '7',
       level: Math.round(map.getZoom()),
       mapBound: this._toBBoxString()
     };

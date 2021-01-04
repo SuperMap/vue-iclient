@@ -1,6 +1,43 @@
 @import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/theme/theme.scss';
 
 @include b(progress) {
+  $progress-prefix: &;
+
   text-align: center;
   width: 100%;
+
+  @include e(inner, '-') {
+    background-color: $progress-remaining-color;
+  }
+  @include e(circle-trail, '-') {
+    stroke: $progress-remaining-color;
+  }
+  @include e(text, '-') {
+    color: $text-color-secondary;
+    color: inherit;
+  }
+  @include e(status-exception, '-') {
+    #{$progress-prefix}-bg {
+      background-color: $error-color;
+    }
+    #{$progress-prefix}-text {
+      color: $error-color;
+    }
+    #{$progress-prefix}-inner:not(#{$progress-prefix}-circle-gradient) {
+      #{$progress-prefix}-circle-path {
+        stroke: $error-color;
+      }
+    }
+  }
+  #{$progress-prefix}-circle#{$progress-prefix}-status-exception {
+    #{$progress-prefix}-text {
+      color: $error-color;
+    }
+  }
+  @include e(circle, '-') {
+    #{$progress-prefix}-text {
+      color: inherit;
+    }
+  }
 }

@@ -1,0 +1,95 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(tabs) {
+  $prefix: &;
+
+  @include e(bar, '-') {
+    border-bottom-color: $border-color-base;
+  }
+
+  @include e(bottom, '-') {
+    & &-bar {
+      border-top-color: $border-color-base;
+    }
+  }
+
+  @include e(tab-prev tab-next, '-') {
+    color: $text-color-secondary;
+  }
+
+  @include e(left-bar, '-') {
+    #{$prefix} & {
+      border-right-color: $border-color-base;
+    }
+  }
+
+  @include e(right-bar, '-') {
+    #{$prefix} & {
+      border-left-color: $border-color-base;
+    }
+  }
+
+  @include e(left-content, '-') {
+    #{$prefix} & {
+      border-left-color: transparent;
+    }
+  }
+
+  @include e(right-content, '-') {
+    #{$prefix} & {
+      border-right-color: transparent;
+    }
+  }
+
+  &#{&}-card {
+    #{$prefix}-card-bar {
+      #{$prefix}-tab {
+        background: $tabs-card-head-background;
+        border-color: $border-color-base;
+        #{$prefix}-close-x {
+          color: $text-color-secondary;
+        }
+      }
+      #{$prefix}-tab-active {
+        background: transparent;
+        border-bottom-color: $body-background-without-opacity;
+      }
+      #{$prefix}-tab-disabled {
+        #{$prefix}-close-x {
+          color: $disabled-color;
+          &:hover {
+            color: $disabled-color;
+          }
+        }
+      }
+    }
+  }
+
+  @include e(extra-content, '-') {
+    #{$prefix}-new-tab {
+      border-color: $border-color-base;
+    }
+  }
+
+  @include e(vertical, '-') {
+    &#{$prefix}-card {
+      #{$prefix}-card-bar {
+        &#{$prefix}-left-bar,
+        &#{$prefix}-right-bar {
+          #{$prefix}-tab {
+            border-bottom-color: $border-color-base;
+          }
+        }
+      }
+    }
+  }
+
+  & #{&}-card-bar#{&}-bottom-bar &-tab {
+    border-bottom-color: $border-color-base;
+  }
+
+  & #{&}-card-bar#{&}-bottom-bar &-tab-active {
+    color: $primary-color;
+  }
+}

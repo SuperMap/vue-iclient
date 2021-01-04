@@ -1,8 +1,8 @@
 <script>
 import Popper from '../_mixin/Popper.js';
 import Options from '../_mixin/Options.js';
-import VmUpdater from '../../common/_mixin/vm-updater';
-import Theme from '../../common/_mixin/theme';
+import VmUpdater from '../../common/_mixin/VmUpdater';
+import Theme from '../../common/_mixin/Theme';
 import MapGetter from '../_mixin/map-getter';
 import PopupViewModel from './PopupViewModel';
 
@@ -17,7 +17,7 @@ export default {
     }
   },
   watch: {
-    backgroundData() {
+    getBackground() {
       this.changePopupStyle();
     },
     options() {
@@ -79,10 +79,10 @@ export default {
       const popupTip = document.querySelector('.leaflet-popup-tip');
       const popupCloseBtn = document.querySelector('.leaflet-container a.leaflet-popup-close-button:hover');
       if (popupContent) {
-        popupContent.style.background = this.backgroundData;
+        popupContent.style.background = this.getBackground;
       }
       if (popupTip) {
-        popupTip.style.background = this.backgroundData;
+        popupTip.style.background = this.getBackground;
       }
       if (popupCloseBtn) {
         popupTip.style.color = this.textColorsData;

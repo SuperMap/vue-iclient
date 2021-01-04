@@ -1,0 +1,23 @@
+
+@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/theme/theme.scss';
+
+@include b (modal) {
+  @include e(content, '-') {
+    background-color: $modal-content-bg;
+  }
+
+  @include e(close, '-') {
+    color: $text-color-secondary;
+  }
+
+  @include e(confirm, '-') {
+    &-error &-body > .#{$iconfont-css-prefix} {
+      color: $error-color;
+    }
+    &-warning &-body > .#{$iconfont-css-prefix},
+    &-confirm &-body > .#{$iconfont-css-prefix} {
+      color: $warning-color;
+    }
+  }
+}

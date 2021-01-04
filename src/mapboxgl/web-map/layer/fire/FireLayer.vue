@@ -2,7 +2,7 @@
 import { Component, Mixins, Prop } from 'vue-property-decorator';
 import MapGetter from '../../../_mixin/map-getter';
 import Layer from '../../../_mixin/layer';
-import VmUpdater from '../../../../common/_mixin/vm-updater';
+import VmUpdater from '../../../../common/_mixin/VmUpdater';
 import FireLayerViewModel from './FireLayerViewModel';
 // eslint-disable-next-line
 import { FeatureCollection } from 'geojson';

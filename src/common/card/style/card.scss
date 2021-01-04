@@ -1,163 +1,43 @@
-@import "../../_utils/style/mixins/mixins.scss";
-@import "../../_utils/style/common/var.scss";
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
 
 @include b(card) {
-  position: relative;
-  overflow: visible;
-  @include e(icon) {
-    z-index: 100;
-    background: $--icon-color-fill-base;
-    color: $--color-text-regular;
-    cursor: pointer;
-    text-align: center;
-    box-sizing: border-box;
-    padding: 6px;
-    font-size: 16px;
-    width: 30px;
-    height: 30px;
-    &:hover {
-      background: #ffffff;
-      border-color: var(--icon-color--hover) !important;
-      color: var(--icon-color--hover) !important;
-    }
-    @include when(not-header) {
-      @include when(bottom-right) {
-        bottom: 0;
-        top: unset;
-      }
-      @include when(bottom-left) {
-        bottom: 0;
-        top: unset;
-      }
-    }
-    @include when(click-in) {
-      border-radius: 4px;
-      border: $--border-base;
-      @include when(top-right) {
-        float: right;
-      }
-      @include when(bottom-right) {
-        float: right;
-      }
-      @include when(top-left) {
-        float: left !important;
-      }
-      @include when(bottom-left) {
-        float: left !important;
-      }
-    }
-    @include when(click-out) {
-      border: unset;
-      height: 29px;
-      background: unset !important;
-    }
-    @include when(top-left) {
-      top: 0;
-      left: 0;
-      & .sm-component-card__component-icon.is-auto-rotate {
-        transform: rotate(45deg);
-      }
-    }
-    @include when(bottom-left) {
-      top: 0;
-      left: 0;
-      & .sm-component-card__component-icon.is-auto-rotate {
-        transform: rotate(45deg);
-      }
-    }
-    @include when(top-right) {
-      top: 0;
-      right: 0;
-      & .sm-component-card__component-icon.is-auto-rotate {
-        transform: rotate(135deg);
-      }
-    }
-    @include when(bottom-right) {
-      top: 0;
-      right: 0;
-      & .sm-component-card__component-icon.is-auto-rotate {
-        transform: rotate(135deg);
+  $card-prefix: &;
+
+  @include e(actions, '-') {
+    background: $card-actions-background;
+    > li {
+      color: $text-color-secondary;
+      > span {
+        &:hover {
+          color: $primary-color;
+        }
+
+        a:not(#{$ant-prefix}-btn),
+        > .anticon {
+          color: $text-color-secondary;
+
+          &:hover {
+            color: $primary-color;
+          }
+        }
       }
     }
   }
 
-  @include e(component-icon) {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
+  @include e(type-inner, '-') {
+    #{$card-prefix}-head {
+      background: $background-color-light;
+    }
   }
 
-  @include e(header) {
-    padding: 5px 0px 5px 10px;
-    border-bottom: 1px solid #e9e9e9;
-    color: #595959;
-    font-size: 15px;
-    background: #fafafa;
-    font-weight: 700;
-    height: 30px;
-  }
-  @include e(header-name) {
-    display: inline-block;
-    text-align: center;
-    padding-right: 30px;
-  }
-  @include e(header-span) {
-    display: inline-block;
-    padding-left: 10px;
-    font-size: $--text-primary;
-    font-weight: 700;
-  }
-  @include e(content) {
-    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
-    background: $--fill-base;
-    position: relative;
-    &.sm-component-zoom-in-enter-active {
-      animation: zoom-in .5s;
+  @include e(meta, '-') {
+    &-title {
+      color: $card-head-color;
     }
-    &.sm-component-zoom-in-leave-active {
-      animation: zoom-in .5s reverse;
-    }
-    @keyframes zoom-in {
-      0% {
-        transform: scale(0);
-        opacity: 0;
-      }
-      100% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-    @include when(top-left) {
-      @include when(icon) {
-        & > .sm-component-card__header {
-          padding-left: 38px;
-        }
-      }
-      transform-origin: top left;
-    }
-    @include when(bottom-left) {
-      @include when(icon) {
-        & > .sm-component-card__header {
-          padding-left: 38px;
-        }
-      }
-      transform-origin: top left;
-    }
-    @include when(not-header) {
-      @include when(bottom-right) {
-        transform-origin: bottom right;
-      }
-      @include when(bottom-left) {
-        transform-origin: bottom left;
-      }
-    }
-    @include when(bottom-right) {
-      transform-origin: top right;
-    }
-    @include when(top-right) {
-      transform-origin: top right;
+
+    &-description {
+      color: $text-color-secondary;
     }
   }
 }

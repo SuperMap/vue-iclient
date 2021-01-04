@@ -17,24 +17,23 @@
       >
         <div :class="`buoy-icon buoy-icon-${index + 1}`"></div>
         <div class="route-info">
-          <span class="name" :title="item.name" :style="getColorStyle(0)">{{ item.name }}</span>
-          <span v-if="item.phone" class="phone">{{ $t('tdtResults.phone') }}：{{ item.phone }}</span>
+          <span class="name" :title="item.name" :style="headingTextColorStyle">{{ item.name }}</span>
+          <span v-if="item.phone" class="phone" :style="secondaryTextColorStyle">{{ $t('tdtResults.phone') }}：{{ item.phone }}</span>
           <span
             class="address"
             :title="item.address"
+            :style="secondaryTextColorStyle"
           >{{ $t('tdtResults.address') }}：{{ item.address }}</span>
         </div>
         <div
           v-if="from === 'Route' && resultBelongTo === 'start'"
           class="set-start-point"
           :title="$t('tdtResults.setStartPonint')"
-          :style="getColorStyle(0)"
           @click="resetStartPoint(item)"
         >{{ $t('tdtResults.setStartPonint') }}</div>
         <div
           v-if="from === 'Route' && resultBelongTo === 'end'"
           class="set-start-point"
-          :style="getColorStyle(0)"
           :title="$t('tdtResults.setEndPonint')"
           @click="resetEndPoint(item)"
         >{{ $t('tdtResults.setEndPonint') }}</div>
@@ -51,7 +50,7 @@
 </template>
 
 <script>
-import Theme from '../../../common/_mixin/theme';
+import Theme from '../../../common/_mixin/Theme';
 import Pagination from './Pagination';
 
 export default {
@@ -124,12 +123,10 @@ export default {
       const buoy = parent.querySelector('.buoy-icon');
       const resetPointDom = parent.querySelector('.set-start-point');
       if (type === 'mouseenter') {
-        target.style.background = this.getBackground;
         resetPointDom && (resetPointDom.style.display = 'block');
         buoy && buoy.classList.add('buoy-icon-active');
         this.setHighlightIcon(info.hotPointID);
       } else {
-        target.style.background = 'inherit';
         resetPointDom && (resetPointDom.style.display = 'none');
         buoy && buoy.classList.remove('buoy-icon-active');
         this.setHighlightIcon();

@@ -1,70 +1,51 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../common/button/style/button.scss';
+@import '../../../../common/input/style/input.scss';
 
 @include b(tdtRoute) {
   width: 310px;
   @include e(header) {
-    width: 90%;
-    margin: auto;
+    padding: 8px 16px 12px;
     .route-navbar {
       width: 100%;
+      display: flex;
       justify-content: space-between;
-      margin: auto;
-      overflow: hidden;
-      .car-icon {
-        margin-right: 20px;
+      align-items: center;
+      border-bottom: 1px solid $border-color-base;
+      .route-tabs {
+        width: 90%;
+        overflow: hidden;
       }
       .car-icon,
       .bus-icon {
-        width: 30px;
-        height: 30px;
-        float: left;
+        width: 50%;
+        font-size: 16px;
         cursor: pointer;
-        margin-top: 3px;
+        float: left;
+        text-align: center;
+        padding-bottom: 6px;
         &.active {
-          background: #3385ff;
-          border-radius: 15px;
-        }
-        i {
-          display: block;
-          background-image: url("#{$--tdt-assets-path}/sprite.png");
-          background-repeat: no-repeat;
-          margin: 0 auto;
-        }
-      }
-      .car-icon {
-        padding-top: 7px;
-        &.active {
-          i {
-            background-position: -88px -183px;
-          }
-        }
-        i {
-          width: 21px;
-          height: 16px;
-          background-position: -32px -180px;
-        }
-      }
-      .bus-icon {
-        padding-top: 5px;
-        &.active {
-          i {
-            background-position: -117px -178px;
-          }
-        }
-        i {
-          width: 20px;
-          height: 22px;
-          background-position: -62px -178px;
+          border-bottom: 2px solid $primary-color;
+          color: $primary-color;
         }
       }
       .clear-route {
-        height: 36px;
-        line-height: 36px;
-        float: right;
-        font-style: italic;
-        color: #000;
+        flex: 1;
         cursor: pointer;
-        font-size: 13px;
+        text-align: right;
+        position: relative;
+        padding-bottom: 6px;
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 40%;
+          left: 0;
+          height: 58%;
+          transform: translateY(-50%);
+          border-left: 1px solid $border-color-split;
+        }
       }
     }
 
@@ -75,105 +56,88 @@
       width: 100%;
       margin-top: 10px;
       text-align: center;
+      .#{$ant-prefix}-input {
+        height: 28px;
+        background-color: transparent;
+      }
+      .#{$ant-prefix}-input-affix-wrapper {
+        > * {
+          color: inherit;
+        }
+      }
+      .icon-wrapper,
+      .switch-route {
+        width: 20px;
+        height: 20px;
+      }
       .start-route,
       .end-route {
         display: flex;
         align-items: center;
         .icon-wrapper {
-          width: 30px;
-          height: 30px;
           display: flex;
           align-items: center;
-          justify-content: center;
         }
         .icon {
-          width: 16px;
-          height: 16px;
-          border-radius: 8px;
-          background: #fff;
-          border: 2px solid;
+          width: 10px;
+          height: 10px;
+          border-radius: 5px;
+          border: 1px solid;
         }
         .content {
-          display: flex;
-          align-items: center;
           width: 100%;
-          .ant-input-affix-wrapper {
-            width: 100%;
-            padding-right: 25px;
-            margin-left: 14px;
-            display: block;
-            border: 1px solid #e1dcdc;
-            &:hover {
-              .ant-input {
-                border-color: transparent;
-              }
-            }
-            .ant-input {
-              background: transparent;
-              border-color: transparent;
-              padding-left: 11px;
-              &:focus {
-                box-shadow: none;
-              }
-            }
-          }
-          .ant-input-suffix {
-            font-size: 16px;
-            right: 6px;
-          }
         }
       }
       .start-route {
         .icon {
-          border-color: rgb(50, 188, 95);
+          border-color: #2BA250;
         }
       }
       .end-route {
-        margin-top: 20px;
+        margin-top: 8px;
         .icon {
-          border-color: rgb(250, 89, 106);
+          border-color:#E5666F;
         }
       }
       .switch-route {
         position: absolute;
-        top: 26px;
-        width: 30px;
-        height: 30px;
-        i {
-          transform: rotateX(180deg) rotate(90deg);
-          margin-top: 11px;
-        }
+        top: 20%;
+        left: -3px;
+        text-align: left;
       }
     }
 
     .search-btn {
-      padding: 10px 0;
-      text-align: right;
+      margin-top: 12px;
+      margin-left: 20px;
+      > * {
+        width: 100%;
+      }
     }
   }
   @include e(content) {
     max-height: 200px;
     overflow: auto;
-    &::-webkit-scrollbar {
-      display: none;
-    }
+    background: $background-color-base;
     .route-result {
       width: 100%;
       margin: auto;
+      padding-top: 4px;
       .start-point,
       .end-point {
         & > .title {
-          height: 30px;
-          line-height: 30px;
+          display: flex;
+          align-items: center;
+          padding-left: 16px;
+          padding-bottom: 4px;
           i,
           span {
             display: inline-block;
             vertical-align: middle;
           }
           i {
-            color: #fa596a;
-            font-size: 17px;
-            margin: 0 10px;
+            color: $error-color;
+            font-size: 14px;
           }
           span {
             max-width: 80%;
@@ -182,6 +146,7 @@
             white-space: nowrap;
             font-size: 12px;
             cursor: pointer;
+            margin-left: 5px;
           }
         }
 
@@ -194,6 +159,9 @@
             }
           }
         }
+      }
+      .#{$ant-prefix}-tdtPointsResults {
+        padding-top: 0;
       }
     }
   }

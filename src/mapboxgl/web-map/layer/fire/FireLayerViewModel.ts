@@ -76,6 +76,9 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
   }
 
   private _addFireLayer(): void {
+    if (!this.map || !this.features || !this.features.features) {
+      return;
+    }
     let feature = this.features.features[0];
     if (feature.geometry.type !== 'Point') {
       throw new Error("Feature's type must be point");

@@ -1,0 +1,30 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(notification) {
+  &-notice {
+    background: $message-background;
+
+    &-message {
+      color: $heading-color;
+    }
+
+    @at-root {
+      .#{$iconfont-css-prefix}#{&}-icon {
+        &-warning {
+          color: $warning-color;
+        }
+        &-error {
+          color: $error-color;
+        }
+      }
+    }
+
+    &-close {
+      color: $text-color-secondary;
+      &:hover {
+        color: $text-color;
+      }
+    }
+  }
+}

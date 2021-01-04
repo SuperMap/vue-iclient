@@ -17,6 +17,8 @@ export default class ChartViewModel extends mapboxgl.Evented {
     this.popup = new mapboxgl.Popup({
       className: 'sm-mapboxgl-tabel-popup sm-component-chart-result-popup',
       closeOnClick: true,
+      closeButton: false,
+      maxWidth: 'none',
       anchor: 'bottom'
     });
     this.marker = new mapboxgl.Marker();

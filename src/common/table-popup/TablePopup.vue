@@ -1,22 +1,27 @@
 <template>
-  <div class="sm-component-table-popup" :style="[backgroundStyle, getTextColorStyle, styleObject]">
-    <div class="sm-component-table-popup__close">x</div>
-    <a-table
+  <div
+    :class="{ 'sm-component-table-popup': true, 'with-split-line': splitLine }"
+    :style="[tablePopupBgStyle, getTextColorStyle]"
+  >
+    <sm-table
       class="sm-component-table-popup__table"
       :data-source="data"
       :columns="columns"
       :rowKey="(record, index) => index"
       :pagination="false"
-      :style="backgroundStyle"
-    ></a-table>
+    />
   </div>
 </template>
 <script>
-import Theme from '../_mixin/theme';
-import { getColorWithOpacity } from '../_utils/util';
+import Theme from '../_mixin/Theme';
+import SmTable from '../table/Table';
+import { setPopupArrowStyle } from '../_utils/util';
 
 export default {
   name: 'SmTablePopup',
+  components: {
+    SmTable
+  },
   mixins: [Theme],
   props: {
     data: {
@@ -30,16 +35,38 @@ export default {
       default() {
         return [];
       }
+    },
+    splitLine: {
+      type: Boolean,
+      default: false
     }
   },
-  computed: {
-    styleObject() {
-      return {
-        '--table-popup-active-color--text': this.colorGroupsData[0]
-      };
+  watch: {
+    'collapseCardHeaderBgStyle.background'(next) {
+      this.setTheadStyle('background', next);
     },
-    backgroundStyle() {
-      return { background: this.backgroundData ? getColorWithOpacity(this.backgroundData, 0.5) : this.backgroundData };
+    'tablePopupBgStyle.background'(next) {
+      setPopupArrowStyle(next);
+    },
+    'headingTextColorStyle.color'(next) {
+      this.setTheadStyle('color', next);
+    }
+  },
+  mounted() {
+    this.setTheadStyle('color', this.headingTextColorStyle.color);
+    this.setTheadStyle('background', this.collapseCardHeaderBgStyle.background);
+  },
+  methods: {
+    setTheadStyle(attr, value) {
+      if (!this.$el) {
+        return;
+      }
+      const thList = this.$el.querySelectorAll('tr > th');
+      if (thList) {
+        thList.forEach(item => {
+          item.style[attr] = value;
+        });
+      }
     }
   }
 };

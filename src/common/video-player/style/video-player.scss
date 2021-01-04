@@ -1,9 +1,9 @@
+@import '../../modal/style/modal.scss';
+
 // TODO 待重构 考虑下 modal 中的 player
 
 .sm-component-video-player__player > .video-js {
   width: 100%;
-  font-family: 'PingFang SC', 'Helvetica Neue', 'Hiragino Sans GB', 'Segoe UI', 'Microsoft YaHei', '微软雅黑',
-    sans-serif;
 }
 .sm-component-video-player__player.sm-component-video-player__player--main > .video-js {
   height: 100%;
@@ -122,8 +122,6 @@
   padding: 0;
   line-height: 2em;
   font-size: 1.1em;
-  font-family: 'PingFang SC', 'Helvetica Neue', 'Hiragino Sans GB', 'Segoe UI', 'Microsoft YaHei', '微软雅黑',
-    sans-serif;
 }
 
 .sm-component-video-player__player > .video-js .vjs-time-tooltip,
@@ -205,9 +203,31 @@
     width: 100%;
     height: 100%;
   }
+  .sm-component-video-player__player[data-popupplay='false'].sm-component-video-player__player[data-autoplay='true']
+    > .video-js
+    .vjs-big-play-button {
+    display: none;
+  }
+  .sm-component-video-player__player[data-islive='true'] {
+    pointer-events: none;
+    & > .video-js .vjs-control-bar {
+      pointer-events: auto;
+      .vjs-time-control,
+      .vjs-progress-control {
+        visibility: hidden;
+        pointer-events: none;
+      }
+      .vjs-play-control {
+        display: none;
+      }
+    }
+  }
+  .sm-component-video-player__player[data-popupplay='true'] {
+    pointer-events: auto;
+  }
 }
 .sm-component-video-player-modal {
-  .ant-modal-close {
+  .sm-component-modal-close {
     color: #a2a3a5;
     right: -5%;
     top: -3%;
@@ -215,11 +235,28 @@
       color: #ff5c38;
     }
   }
-  .ant-modal-close-x {
+  .sm-component-modal-close-x {
     font-size: 40px;
   }
-  .ant-modal-body {
+  .sm-component-modal-body {
     padding: 0;
+    .sm-component-video-player__player[data-autoplay='true'] > .video-js .vjs-big-play-button {
+      display: none;
+    }
+    .sm-component-video-player__player[data-islive='true'] {
+      pointer-events: none;
+      & > .video-js .vjs-control-bar {
+        pointer-events: auto;
+        .vjs-time-control,
+        .vjs-progress-control {
+          visibility: hidden;
+          pointer-events: none;
+        }
+        .vjs-play-control {
+          display: none;
+        }
+      }
+    }
   }
   background: rgba(0, 0, 0, 0.7);
 }

@@ -1,17 +1,20 @@
-@import "../../../../../common/_utils/style/mixins/mixins.scss";
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import "../../../../../common/collapse-card/style/collapse-card.scss";
+@import '../../../../../common/select/style/select.scss';
+@import '../../../../../common/table-popup/style/tablePopup.scss';
 
 @include b(measure) {
+
   @include e(panel) {
-    padding: 8px;
-    // overflow: hidden;
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.26);
+    padding: 16px;
     cursor: default;
   }
   @include e(panelContent) {
     position: relative;
     width: 100%;
-    text-align: center;
     // overflow: hidden;
+    display: flex;
   }
   @include e(modeWrap) {
     text-align: left;
@@ -19,75 +22,62 @@
     padding: 10px 0;
   }
 
-  @include e(panelTitle) {
-    width: 100%;
-    height: 33px;
-    line-height: 34px;
-    border-bottom: 1px solid #e9e9e9;
-    color: #595959;
-  }
-
-  @include e(title) {
-    font-size: $--text-primary;
-    font-weight: 600;
-  }
-
   @include e(modeIcon) {
-    display: inline-block;
-    width: 36px;
-    height: 36px;
-    line-height: 36px;
+    width: 40px;
+    height: 28px;
+    line-height: 25px;
     text-align: center;
     font-size: 22px;
-    vertical-align: middle;
+    &:first-child {
+      border-radius: 4px 0px 0px 4px;
+      margin-right: 1px;
+    }
+    &:nth-child(2) {
+      border-radius: 0px 4px 4px 0px;
+    }
+    @include when(active) {
+      background: $primary-color !important;
+    }
     i {
       cursor: pointer;
-      font-size: $--text-regular;
+      font-size: 14px;
     }
   }
 
   @include e(unit) {
-    vertical-align: middle;
-    width: 140px;
+    flex: 1;
     position: relative;
-    padding-left: 14px;
-    margin-left: 6px;
-    &::before {
-      position: absolute;
-      left: 0;
-      top: 10px;
-      width: 2px;
-      height: 16px;
-      background: #c0c4cc;
-      content: "";
+    margin-left: 8px;
+    &,
+    .#{$ant-prefix}-select-selection--single {
+      height: 28px;
+    }
+    .#{$ant-prefix}-select-selection__rendered {
+      line-height: 28px;
+      font-size: 12px;
     }
   }
 
   @include e(default) {
-    font-size: 14px;
     display: inline-block;
     height: 28px;
     line-height: 28px;
   }
 
-  @include e(calcuTitle) {
-    font-size: $--text-regular;
-    border-bottom: 1px solid #c0c4cc;
-    padding: 8px 0;
-    text-align: center;
+  @include e(calculateResult) {
+    border-top: 1px solid $border-color-split;
+    margin-top: 16px;
   }
 
-  @include e(result) {
-    padding: 10px 0 20px 4px;
-    font-size: 14px;
-  }
-  .ant-select-dropdown-menu-item-selected,
-  .ant-select-dropdown-menu-item-selected:hover {
-    background: transparent;
+  @include e(calcuTitle) {
+    padding: 12px 0;
   }
 }
 .sm-component-measure__popup {
-  .mapboxgl-popup-content {
-    padding: 6px 10px 6px;
+  &.sm-mapboxgl-tabel-popup {
+    .mapboxgl-popup-content {
+      padding: 5px 16px;
+      border-radius: 4px;
+    }
   }
 }

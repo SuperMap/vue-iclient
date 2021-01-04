@@ -1,0 +1,67 @@
+$colors: (
+  process-icon-color: $primary-color,
+  process-icon-bg-color: $primary-color,
+  process-tail-color: $border-color-base,
+  finish-icon-color: $primary-color,
+  finish-icon-text-color: $primary-color,
+  finish-icon-bg-color: transparent,
+  finish-description-color: $text-color-secondary,
+  finish-tail-color: $primary-color,
+  wait-icon-color: $text-color-secondary,
+  wait-icon-text-color: $text-color-secondary,
+  wait-icon-bg-color: transparent,
+  wait-title-color: $text-color-secondary,
+  wait-description-color: $text-color-secondary,
+  wait-tail-color: $border-color-base,
+  error-icon-color: $error-color,
+  error-icon-text-color: $error-color,
+  error-icon-bg-color: transparent,
+  error-title-color: $error-color,
+  error-description-color: $error-color,
+  error-tail-color: $border-color-base
+);
+
+@function color($key) {
+  @return map-get($colors, $key);
+}
+
+@mixin step-item-status($status, $steps-prefix-cls) {
+  $icon-color: color(#{$status}-icon-color);
+  $icon-text-color: color(#{$status}-icon-text-color);
+  $icon-bg-color: color(#{$status}-icon-bg-color);
+  $title-color: color(#{$status}-title-color);
+  $description-color: color(#{$status}-description-color);
+  $tail-color: color(#{$status}-tail-color);
+  $steps-item-prefix-cls: &;
+  &-#{$status} {
+    #{$steps-item-prefix-cls}-icon {
+      background-color: $icon-bg-color;
+      border-color: $icon-color;
+      > #{$steps-prefix-cls}-icon {
+        color: $icon-text-color;
+        #{$steps-prefix-cls}-icon-dot {
+          background: $icon-color;
+        }
+      }
+    }
+
+    > #{$steps-item-prefix-cls}-container {
+      > #{$steps-item-prefix-cls}-content {
+        > #{$steps-item-prefix-cls}-title {
+          color: $title-color;
+          &::after {
+            background-color: $tail-color;
+          }
+        }
+        > #{$steps-item-prefix-cls}-description {
+          color: $description-color;
+        }
+      }
+      > #{$steps-item-prefix-cls}-tail {
+        &::after {
+          background-color: $tail-color;
+        }
+      }
+    }
+  }
+}

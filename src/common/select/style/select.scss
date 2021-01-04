@@ -1,0 +1,100 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import '../../input/style/mixin.scss';
+
+@include b(select) {
+  $prefix: &;
+  
+  @include e(selection, '-') {
+    $prefix-selection: &;
+    #{$prefix}-focused &,
+    &:focus,
+    &:active {
+      @include focus-color($primary-5, $primary-shadow-color);
+    }
+
+    &:hover {
+      #{$prefix-selection}__clear + #{$prefix}-arrow {
+        opacity: 0;
+      }
+    }
+
+    &__clear {
+      &:hover {
+        color: $text-color-secondary;
+      }
+    }
+    &--multiple {
+      #{$prefix-selection}__choice {
+        background-color: $tag-default-bg;
+        &__remove {
+          color: $text-color-secondary;
+        }
+      }
+    }
+  }
+
+  @include e(open, '-') {
+    #{$prefix}-selection {
+      @include focus-color($primary-5, $primary-shadow-color);
+    }
+  }
+
+  @include e(disabled, '-') {
+    #{$prefix}-selection {
+      &,
+      &:hover,
+      &:focus,
+      &:active {
+        border-color: $disabled-border-color;
+      }
+
+      &--multiple {
+        #{$prefix}-selection__choice {
+          color: $disabled-color;
+          background: $disabled-bg;
+        }
+      }
+    }
+
+    #{$prefix}-arrow {
+      color: $disabled-color;
+    }
+  }
+
+  @include e(dropdown, '-') {
+    $prefix-dropdown: &;
+    &-menu {
+      &-item-group-title {
+        color: $text-color-secondary;
+      }
+      &-item {
+        &:hover:not(&-disabled) {
+          background-color: $select-item-hover-bg;
+        }
+        &-selected {
+          font-weight: normal;
+          background-color: $select-item-selected-bg;
+          color: #fff;
+        }
+      }
+    }
+    &#{$prefix-dropdown}--multiple {
+      #{$prefix-dropdown}-menu-item {
+        &:hover {
+          #{$prefix}-selected-icon {
+            color: $icon-color-hover;
+          }
+        }
+        &-selected #{$prefix}-selected-icon,
+        &-selected:hover #{$prefix}-selected-icon {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+
+  @include e(arrow, '-') {
+    color: $text-color-secondary;
+  }
+}

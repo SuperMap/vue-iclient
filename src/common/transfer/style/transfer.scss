@@ -1,0 +1,48 @@
+@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/theme/theme.scss';
+
+@include b (transfer) {
+  $prefix: &;
+
+  @include e(list, '-') {
+    &-search-action {
+      .#{$iconfont-css-prefix}:hover {
+        color: $text-color-secondary;
+      }
+    }
+
+    &-header {
+      color: $heading-color;
+      border-bottom-color: $border-color-base;
+    }
+
+    &-content {
+      &-item:not(&-item-disabled):hover {
+        background-color: $transfer-item-hover-color;
+        .#{$namespace}-checkbox-inner {
+          border-color: $hover-color;
+        }
+      }
+    }
+
+    &-footer {
+      border-top-color: $border-color-base;
+    }
+  }
+
+  @include e(customize-list, '-') {
+    $table-prefix-cls: #{$ant-prefix}-table;
+    .#{$table-prefix-cls}-wrapper {
+      .#{$table-prefix-cls}-small {
+        > .#{$table-prefix-cls}-content {
+          > .#{$table-prefix-cls}-body > table > .#{$table-prefix-cls}-thead > tr > th {
+            background: $table-header-bg;
+          }
+          .#{$table-prefix-cls}-row:last-child td {
+            border-bottom-color: $border-color-base;
+          }
+        }
+      }
+    }
+  }
+}

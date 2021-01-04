@@ -1,191 +1,166 @@
-@import "../../../common/_utils/style/mixins/mixins.scss";
-@import "../../../common/_utils/style/common/var.scss";
+@import '../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../common/_utils/style/theme/theme.scss';
+@import '../../../common/select/style/select.scss';
+@import '../../../common/button/style/button.scss';
+@import '../../../common/empty/style/empty.scss';
+@import '../../../common/spin/style/spin.scss';
+@import '../../../common/icon/style/icon.scss';
+@import '../../../common/table-popup/style/tablePopup.scss';
 
 @include b(query) {
-  color: #409eff;
-  font-family: $--text-font-family;
-  @include e(header-icon) {
-    cursor: pointer;
-    float: left;
-  }
-  @include e(header-span) {
-    display: inline-block;
-    padding-left: 10px;
-    font-size: $--text-primary;
-    font-weight: 700;
-  }
+  $query-prefix: &;
+
   @include e(body) {
     min-width: 200px;
     max-height: 400px;
     transform-origin: top left;
-    transition: $--all-transition;
-    background: $--fill-base;
-    padding: 10px 15px;
+    transition: all 0.5s;
+    padding-top: 8px;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
     & > div {
       width: 100%;
     }
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-      background-color: $--fill-base;
-    }
-    &::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: #bbb;
-    }
   }
   @include e(choose-panel) {
-    font-size: $--text-regular;
-    // color: #303133;
+    padding: 0 16px;
+    margin-bottom: 4px;
   }
   @include e((job-button, result-button)) {
-    padding: 0 0 10px 0;
+    padding-bottom: 7px;
     text-align: center;
     width: 50%;
-    border-bottom: 2px solid rgb(228, 231, 237);
+    border-bottom: 1px solid $border-color-base;
     float: left;
     cursor: pointer;
     @include when(active) {
-      // color: #409eff;
-      border-bottom: 2px solid;
-      font-weight: bolder;
+      color: $primary-color;
+      border-bottom: 2px solid $primary-color;
+      padding-bottom: 6px;
     }
   }
   @include e(job-info-panel) {
-    margin-top: 4px;
-    border-bottom: 1px solid #ececec;
+    padding: 0 16px;
     &:last-child {
-      border-color: transparent;
+      #{$query-prefix}__job-info-header {
+        border-color: transparent;
+      }
     }
   }
-  @include e(job-info-header) {
+  @include e(job-info-header result-header) {
     cursor: pointer;
-    // color: #303133;
-    padding: 10px 5px 2px;
+    padding: 6px 8px 6px 0;
+    border-bottom: 1px solid $border-color-split;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
     &:hover {
-      color: #409eff;
-      // background: rgb(245, 245, 245);
+      color: $hover-color !important;
     }
-    & > .sm-components-icons-preview {
-      // color: #409eff;
-      font-size: $--text-regular;
-      position: relative;
-      top: -5px;
-    }
-    & > .sm-component-query__job-info-name {
-      margin-left: 10px;
-      margin-right: 10px;
-      font-size: $--text-regular;
+    & > #{$query-prefix}__job-info-name,
+    & > #{$query-prefix}__header-name {
       display: inline-block;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      max-width: 85%;
+      line-height: 20px;
     }
-    & > .sm-components-icons-legend-unfold,
-    & > .sm-components-icons-legend-fold {
-      color: #c0c4cc;
-      font-size: 10px;
-      float: right;
-      margin-right: 3px;
+    & > i {
+      font-size: 12px;
     }
   }
   @include e(job-info-body) {
-    margin-top: 10px;
-    border: 1px solid rgb(228, 231, 237);
-    border-radius: 4px;
-    padding: 5px;
+    padding: 8px 16px 12px;
+    margin: 0 -16px;
+    background-color: $background-color-base;
   }
   @include e((attribute, spatial-filter)) {
-    // color: rgba(0, 0, 0, 0.45);
-    font-size: $--text-regular;
-    font-weight: 700;
+    > div {
+      &:first-child {
+        line-height: 16px;
+      }
+    }
   }
   @include e(attribute-name) {
     text-align: center;
-    // color: #666;
-    font-weight: 700;
+    color: $primary-color;
+    font-size: 14px;
+    line-height: 22px;
+    margin: 4px 0 12px;
   }
   @include e(a-select) {
-    margin-top: 10px;
-    margin-left: 7%;
-    font-weight: 100;
-    width: 84%;
+    margin-top: 8px;
+    font-size: 12px;
+    width: 100%;
   }
+  @include e(query-button) {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid $border-color-split;
+  }
+
   @include e(a-button) {
     width: 100%;
-    margin-top: 15px;
-    font-weight: bolder;
-    border-color: transparent;
-    &:hover {
-      border-color: transparent;
-    }
+    height: 28px;
   }
 
   @include e(result-info) {
-    margin-top: 10px;
+    flex: 1;
     overflow: auto;
-    // background-color: #fff;
-    line-height: normal;
-    // max-width: 300px;
-    height: 86%;
-    &::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-      background-color: rgba(245, 245, 245, 0);
-    }
-    &::-webkit-scrollbar-thumb {
-      border-radius: 10px;
-      background-color: #bbb;
-    }
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
   }
 
   @include e(result-header) {
-    display: block;
-    border-bottom: 1px solid;
-    font-size: $--text-regular;
-    font-family: "微软雅黑";
-    padding: 6px 0px;
-    // background: #fff;
-    color: #409eff;
-    margin: 7px;
-    font-weight: bolder;
-    .sm-components-icons-close {
-      float: right;
-      font-size: 10px;
-      margin-top: 5px;
-      cursor: pointer;
+    color: $heading-color;
+    > span {
+      cursor: default;
+    }
+    &:hover {
+      > i {
+        color: $error-color !important;
+      }
     }
   }
-  @include e(header-name) {
-    display: inline-block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    width: 90%;
+  @include e(no-result result-loading result-body) {
+    flex: 1;
+    margin: 0 -16px;
+    background-color: $background-color-base;
   }
   @include e(no-result result-loading) {
-    height: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 20px 0;
+  }
+  @include e(no-result) {
+    > div {
+      background-color: transparent;
+    }
   }
   @include e(result-body) {
+    padding: 4px 0 12px;
     & > ul {
       list-style: none;
-      margin-left: -32px;
-      font-size: $--text-regular;
-      // color: rgb(145, 145, 145);
+      padding: 0;
+      margin: 0;
       & > li {
-        padding: 8px 0;
-        display: block;
+        padding: 6px 16px 6px 24px;
+        line-height: 20px;
         cursor: pointer;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         &:hover {
-          color: #409eff;
-          // background: rgb(245, 245, 245);
+          color: $hover-color;
+        }
+        &[aria-selected='true'] {
+          color: $primary-color;
+          background-color: $select-item-hover-bg;
         }
       }
     }

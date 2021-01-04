@@ -1,170 +1,101 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../common/empty/style/empty.scss';
 
 @include b(tdtRoutePlan) {
-  .route-plan-popup {
-    background: #fff;
-    min-width: 371px;
-    z-index: 5;
-    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4);
-    color: rgb(0, 0, 0);
-    .tdt_popup_content {
-      padding: 20px 20px 0 20px;
-    }
-    .info_container {
-      p {
-        font-size: 12px;
-        margin-top: 10px;
-      }
-      cursor: default;
-      word-wrap: break-word;
-      width: 330px;
-      .title {
-        font-weight: 700;
-        font-size: 14px;
-        border-bottom: 1px solid #ccc;
-        padding: 5px 0;
-        span {
-          display: inline-block;
-          width: 240px;
-          height: 20px;
-          overflow: hidden;
-          white-space: nowrap;
-        }
-      }
-    }
-  }
-
+  $tabs-prefix: #{$ant-prefix}-tabs;
+  
+  background: $background-color-base;
   font-size: 12px;
-  padding: 0 4px;
-  /* color: rgb(0, 0, 0); */
+  padding: 0 16px;
+
   .route-icon {
     width: 16px;
     height: 16px;
     background: url("#{$--tdt-assets-path}/sprite.png");
     background-repeat: no-repeat;
     display: inline-block;
-    margin-top: 4px;
-    margin-right: 5px;
-  }
-  .icon {
-    display: inline-block;
-    vertical-align: middle;
-    width: 16px;
-    height: 16px;
-    border-radius: 8px;
-    background: #fff;
-    border: 2px solid;
-    margin-right: 2px;
-    margin-top: -4px;
   }
   &.route-bus-plan {
-    .ant-tabs-tab {
+    .#{$tabs-prefix}-tab {
       width: 25% !important;
     }
   }
-  &.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab {
+  &.#{$tabs-prefix}.#{$tabs-prefix}-card .#{$tabs-prefix}-card-bar .#{$tabs-prefix}-tab {
     padding: 0;
     width: 33%;
+    height: 28px;
     text-align: center;
     margin-right: 0;
     line-height: 26px;
     font-size: 12px;
-    border-bottom: 1px solid #e8e8e8;
-    border-right-color: transparent;
     border-radius: 0;
     background: transparent;
-    &:last-child {
-      border-right-color: #e8e8e8;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    &.#{$tabs-prefix}-tab-active {
+      border-color: $primary-color;
+      border-right-color: $primary-color;
     }
-    /* &.ant-tabs-tab-active {
-        background: #f0f7ff;
-      } */
+    &:not(.#{$tabs-prefix}-tab-active) {
+      border-style: dashed;
+    }
+    &:not(:last-child):not(.#{$tabs-prefix}-tab-active) {
+      border-right-color: transparent;
+    }
+    &:first-child {
+      border-radius: 4px 0 0 4px;
+    }
+    &:last-child {
+      border-radius: 0 4px 4px 0;
+    }
   }
-  &.ant-tabs .ant-tabs-small-bar .ant-tabs-tab {
+  &.#{$tabs-prefix} .#{$tabs-prefix}-small-bar .#{$tabs-prefix}-tab {
     padding: 0;
   }
-  .ant-tabs-nav {
+  .#{$tabs-prefix}-nav {
     width: 100%;
   }
-  .ant-tabs-bar {
-    margin: 20px 0;
+  .#{$tabs-prefix}-bar {
+    margin: 12px 0;
     border-bottom: none;
   }
-  &.ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-nav-container {
+  &.#{$tabs-prefix}.#{$tabs-prefix}-card .#{$tabs-prefix}-card-bar .#{$tabs-prefix}-nav-container {
     height: 28px;
   }
   .distance {
-    text-align: left;
-    /* background: #f0f7ff; */
-    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
   }
-  .start-label,
-  .dest-label {
-    padding: 10px;
-  }
-  .start-label {
-    overflow: hidden;
-    .icon {
-      border-color: rgb(50, 188, 95);
-      vertical-align: unset;
-    }
-    .name {
-      display: inline-block;
-      max-width: 110px;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      white-space: nowrap;
-    }
-    border-color: rgb(50, 188, 95);
-    width: 100%;
-    line-height: 16px;
-  }
-  .show-all-info {
-    float: right;
-    color: #fff;
-  }
-  .ant-checkbox-wrapper {
+  .#{$ant-prefix}-checkbox-wrapper {
     font-size: 12px;
-    & + span {
-      padding-right: 0;
-    }
+    color: inherit;
   }
   li,
   ul {
     margin: 0;
     padding: 0;
     list-style: none;
-    line-height: 22px;
+    line-height: 20px;
   }
   .line-details {
     position: relative;
-    & > .route-point {
-      left: 15px;
-      margin-top: 6px;
+    margin-top: 12px;
+    &::after {
+      content: '';
+      position: absolute;
+      top: 16px;
+      bottom: 15px;
+      left: 8px;
+      border-left: 1px dashed $border-color-split;
     }
     .level-2 {
-      margin-top: 6px;
+      margin-top: 16px;
     }
-    .start-label,
-    .dest-label {
-      .icon {
-        vertical-align: middle;
-        margin-right: 5px;
-      }
-    }
-  }
-  .route-point {
-    position: absolute;
-    left: 3px;
-    top: 24px;
-    width: 4px;
-    height: 12px;
-    background-repeat: no-repeat;
-    background-position: -335px -188px;
   }
   .walk {
-    margin-left: 2px;
-    margin-right: 5px;
     width: 9px;
     height: 16px;
     background-position: -242px -184px;
@@ -181,78 +112,161 @@
   }
   .line-info {
     span {
-      color: #999;
+      padding: 0 8px;
+      &:first-child {
+        padding-left: 0;
+      }
+      &:nth-of-type(2) {
+        border: 1px solid $border-color-split;
+        border-top: none;
+        border-bottom: none;
+      }
     }
   }
   .line-name {
+    margin-bottom: 4px;
     & > div {
-      display: inline-block;
-      height: 24px;
-      line-height: 24px;
-      span {
-        display: inline-block;
-        vertical-align: top;
+      display: inline-flex;
+      align-items: center;
+      > i {
+        margin-right: 9px;
       }
     }
   }
   .right-direction {
-    margin-right: 8px;
+    margin: 0 6px;
     font-weight: 700;
   }
-  span.time {
-    float: right;
-    margin-right: 10px;
-    color: #999;
+  .icon-holder {
+    margin-right: 8px;
+    width: 16px;
+    height: 16px;
+    text-align: center;
+    .icon {
+      display: inline-block;
+    }
+  }
+  .icon {
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+  }
+  .start-label {
+    .icon {
+      background: #2BA250;
+    }
+    .name {
+      display: inline-block;
+      max-width: 110px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+  .dest-label {
+    .icon {
+      background: #E5666F;
+    }
+  }
+  .start-label, .dest-label, .start-position-title, .dest-position-title {
+    display: flex;
+    align-items: center;
+    line-height: 20px;
+  }
+  .start-position-title, .dest-position-title {
+    i {
+      display: block;
+      margin-right: 8px;
+    }
+  }
+  .start-position-title {
+    margin-bottom: 4px;
+    i {
+      border: 1px solid #2BA250;
+    }
+  }
+  .dest-position-title {
+    margin: 8px 0;
+    i {
+      border: 1px solid #E5666F;
+    }
   }
   .level-1 {
     & > li {
-      .line-header {
-        cursor: pointer;
-        padding-left: 10px;
-        padding-top: 5px;
-        padding-bottom: 5px;
-      }
-      /* &:not(.expand):hover {
-          background: #f2f2f2;
-        } */
-      padding: 15px 10px;
-      border-top: 1px solid #e5e5e5;
+      padding: 8px 0;
+      border-top: 1px solid $border-color-split;
       cursor: pointer;
-      & > span:nth-child(1) {
-        color: #2f87eb;
+      &.detail-item {
+        > div {
+          color: $primary-color;
+          margin-bottom: 8px;
+        }
+      }
+      &:last-of-type {
+        border-bottom: 1px solid $border-color-split;
       }
       &.bus-info {
         .level-2 {
           li {
-            height: 44px;
-            span {
-              display: inline-block;
-              vertical-align: top;
+            margin-bottom: 16px;
+            overflow: hidden;
+            > * {
+              &:not(.station-count) {
+                float: left;
+              }
+              &.station-count {
+                float: right;
+              }
             }
           }
         }
       }
+      &.car-info {
+        .level-2 {
+          li {
+            padding-left: 13px;
+            padding-bottom: 8px;
+            &:last-of-type {
+              padding-bottom: 0;
+              &::after {
+                display: none;
+              }
+            }
+            &::before {
+              content: '';
+              position: absolute;
+              left: 0;
+              top: 6px;
+              width: 5px;
+              height: 5px;
+              border-radius: 50%;
+              background: #2BA250;
+            }
+            &::after {
+              content: '';
+              position: absolute;
+              top: 11px;
+              bottom: -5px;
+              left: 2px;
+              border-left: 1px dashed $border-color-split;
+            }
+          }
+        }
+      }
+      .line-header {
+        cursor: pointer;
+        line-height: 20px;
+      }
     }
   }
   .level-2 {
-    margin-left: 10px;
     li {
       position: relative;
       cursor: pointer;
       a {
         text-decoration: none;
-        color: #2f87eb;
+        color: $primary-color;
       }
-    }
-    .route-icon {
-      margin-right: 10px;
-      margin-left: 1px;
-    }
-  }
-
-  .dest-label {
-    .icon {
-      border-color: rgb(250, 89, 106);
     }
   }
   .route-plan-container {
@@ -268,5 +282,35 @@
       font-size: 12px;
       cursor: pointer;
     }
+  }
+  .loading-and-tip-holder {
+    text-align: center;
+    padding: 6px 0;
+  }
+  .#{$ant-prefix}-empty {
+    background-color: transparent;
+    margin: 0;
+    font-size: 12px;
+  }
+}
+
+.route-plan-popup {
+  color: $text-color;
+  font-size: 12px;
+  line-height: 20px;
+  .info_container {
+    cursor: default;
+    word-wrap: break-word;
+    p {
+      margin: 0;
+      margin-top: 8px;
+    }
+    .title {
+      border-bottom: 1px solid $border-color-split;
+      color: $heading-color;
+    }
+  }
+  .mapboxgl-popup-content {
+    background: $collapse-card-bg;
   }
 }

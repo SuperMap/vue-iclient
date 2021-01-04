@@ -1,6 +1,6 @@
-@import "./var.scss";
 body {
-  font-family: Microsoft YaHei, sans-serif !important;
+  font-family: -apple-system, 'BlinkMacSystemFont', 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei',
+    Helvetica Neue, Helvetica, Arial, sans-serif, Apple Color Emoji, 'Segoe UI Emoji', Segoe UI Symbol !important;
 }
 .add-ellipsis {
   text-overflow: ellipsis;
@@ -12,7 +12,7 @@ body {
 }
 
 .clearfix:after {
-  content: " ";
+  content: ' ';
   height: 0;
   display: block;
   clear: both;
@@ -20,4 +20,14 @@ body {
 
 .disabled {
   pointer-events: none;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: rgba(245, 245, 245, 0);
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  background-color: #bbb;
 }

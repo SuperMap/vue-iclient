@@ -23,6 +23,7 @@ interface Window {
   canvg: any;
   isLocal: boolean;
   server: string;
+  CSS: any;
 }
 
 declare var window: Window;

@@ -12,7 +12,7 @@
 
 | 参数       | 说明                                                                            | 类型    | 可选值                                                       | 默认值                             |
 | :--------- | :------------------------------------------------------------------------------ | :------ | :----------------------------------------------------------- | :--------------------------------- |
-| iconClass  | 收缩按钮 Icon 类名                                                              | string  | -                                                            | 'sm-components-icons-baselayer'    |
+| iconClass  | 收缩按钮 Icon 类名                                                              | string  | -                                                            | 'sm-components-icon-map-switch'    |
 | collapsed  | 是否折叠                                                                        | boolean | -                                                            | true                               |
 | autoRotate | 是否自动旋转                                                                    | boolean | -                                                            | false                              |
 | headerName | 标题名                                                                          | string  | -                                                            | '地图切换'                         |

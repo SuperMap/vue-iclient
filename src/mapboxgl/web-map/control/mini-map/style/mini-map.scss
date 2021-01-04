@@ -1,12 +1,17 @@
 @import "../../../../../common/_utils/style/mixins/mixins.scss";
-@import "../../../../../common/_utils/style/common/var.scss";
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import "../../../../../common/spin/style/spin.scss";
+@import "../../../../../common/collapse-card/style/collapse-card.scss";
 
 @include b(minimap) {
   .miniMap {
     height: 180px;
     width: 250px;
   }
-  .ant-spin {
+  .sm-component-collapse-card__icon.is-click-out {
+    color: $primary-color !important;
+  }
+  .sm-component-spin {
     position: absolute;
     top: 0;
     left: 0;

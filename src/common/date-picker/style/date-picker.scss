@@ -1,0 +1,264 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import '../../button/style/mixin.scss';
+@import 'mixin.scss';
+
+@include b(calendar-picker) {
+  $calendar-picker-prefix: &;
+  &:hover {
+    #{$calendar-picker-prefix}-clear + #{$calendar-picker-prefix}-icon {
+      opacity: 0;
+    }
+  }
+
+  @include e(clear, '-') {
+    &:hover {
+      color: $text-color-secondary;
+    }
+  }
+}
+
+@include b(calendar) {
+  $prefix: &;
+
+  border-radius: 2px;
+  background-color: $select-dropdown-bg;
+  border: none;
+
+  @include e(input, '-') {
+    background: $select-dropdown-bg;
+  }
+
+  @include e(header, '-') {
+    @include calendarPanelHeader($prefix);
+  }
+
+  @include e(date, '-') {
+    &:hover {
+      background: $selected-color;
+      color: #fff;
+    }
+    &:active {
+      background: $click-color;
+    }
+    &:focus {
+      outline: 0;
+    }
+  }
+
+  @include e(selected-day, '-') {
+    #{$prefix}-date {
+      background: $primary-color;
+      color: #fff;
+    }
+  }
+
+  @include e(today, '-') {
+    @include today($prefix);
+  }
+
+  @include e(disabled-cell, '-') {
+    #{$prefix}-date {
+      background: $disabled-bg;
+      border-color: transparent;
+      color: $disabled-color;
+      &:hover {
+        background: $disabled-bg;
+      }
+    }
+
+    &#{$prefix}-selected-day {
+      #{$prefix}-date {
+        &::before {
+          background: transparent;
+        }
+      }
+    }
+  }
+
+  @include e(footer, '-') {
+    &-btn {
+      text-align: right;
+      padding-right: 10px;
+      a {
+        color: $primary-color;
+        &:hover {
+          color: $hover-color;
+        }
+        &:active {
+          color: $click-color;
+        }
+      }
+    }
+  }
+  & #{&}-clear-btn {
+    &:hover::after {
+      color: $text-color-secondary;
+    }
+  }
+  & #{&}-ok-btn {
+    @include button-variant-primary(
+      $btn-primary-color,
+      $primary-5,
+      $primary-5,
+      $btn-primary-color,
+      $primary-7,
+      $primary-7
+    );
+    @include button-disabled();
+  }
+
+  @include e(today-btn, '-') {
+    &#{&}-disabled {
+      &:hover,
+      &:focus,
+      &:active {
+        @include disabled($background: transparent);
+      }
+    }
+  }
+
+  @include e(range, '-') {
+    &-picker-separator {
+      color: $text-color-secondary;
+    }
+    &-middle {
+      color: $text-color-secondary;
+    }
+    // #{$prefix}-today
+    //   :not(#{$prefix}-disabled-cell)
+    //   :not(#{$prefix}-last-month-cell)
+    //   :not(#{$prefix}-next-month-btn-day) {
+    //   #{$prefix}-date {
+    //     background: transparent;
+    //   }
+    // }
+
+    #{$prefix}-selected-start-date,
+    #{$prefix}-selected-end-date {
+      #{$prefix}-date {
+        background: $primary-color;
+        &:hover {
+          background: $primary-color;
+        }
+      }
+    }
+
+    #{$prefix}-input,
+    #{$prefix}-time-picker-input {
+      background: $select-dropdown-bg;
+    }
+
+    #{$prefix}-in-range-cell {
+      &::before {
+        background: $selected-color;
+      }
+    }
+
+    &#{$prefix}-time {
+      #{$prefix}-time-picker-combobox {
+        background: $select-dropdown-bg;
+      }
+    }
+  }
+
+  @include e(time, '-') {
+    &-picker {
+      background-color: $select-dropdown-bg;
+
+      &-inner {
+        background-color: $select-dropdown-bg;
+      }
+
+      &-select {
+        $prefix-time-picker-select: &;
+
+        li {
+          &:hover {
+            background: $selected-color;
+            color: #fff;
+          }
+          &:focus {
+            background: $click-color;
+            color: #fff;
+          }
+          &#{$prefix-time-picker-select}-option-selected {
+            background: $primary-color;
+            color: #fff;
+          }
+          &#{$prefix-time-picker-select}-option-disabled {
+            @include disabled($background: transparent);
+          }
+        }
+      }
+    }
+  }
+  
+  @include e(month-panel, '-') {
+    $prefix-month-panel: &;
+    @include panel-item(&, month);
+
+    &-cell {
+      &-disabled {
+        #{$prefix-month-panel}-month {
+          &,
+          &:hover {
+            background: $disabled-bg;
+          }
+        }
+      }
+    }
+
+    &-current-cell {
+      #{$prefix-month-panel}-month {
+        border: 1px solid $primary-color;
+        color: $primary-color;
+        background: transparent;
+      }
+    }
+  }
+
+  @include e(year-panel, '-') {
+    @include panel-item(&, year);
+  }
+
+  @include e(decade-panel, '-') {
+    @include panel-item(&, decade);
+  }
+
+  @include e(week-number, '-') {
+    #{$prefix}-body {
+      tr {
+        &:hover {
+          background: $selected-color;
+        }
+        &#{$prefix}-active-week {
+          background: $selected-color;
+          font-weight: normal;
+        }
+        #{$prefix}-selected-day {
+          &:hover {
+            #{$prefix}-date {
+              background: $selected-color;
+              color: #fff;
+            }
+          }
+        }
+        #{$prefix}-selected-date {
+          #{$prefix}-selected-day {
+            &,
+            &:hover {
+              #{$prefix}-date {
+                background: $primary-color;
+                color: #fff;
+              }
+            }
+          }
+          &#{$prefix}-today {
+            @include today($prefix);
+          }
+        }
+      }
+    }
+  }
+}

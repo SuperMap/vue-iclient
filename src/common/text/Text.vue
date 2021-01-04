@@ -8,9 +8,9 @@
 </template>
 
 <script>
-import Theme from '../_mixin/theme';
-import Timer from '../_mixin/timer';
-import ThirdService from '../_mixin/thirdService';
+import Theme from '../_mixin/Theme';
+import Timer from '../_mixin/Timer';
+import ThirdService from '../_mixin/ThirdService';
 
 export default {
   name: 'SmText',

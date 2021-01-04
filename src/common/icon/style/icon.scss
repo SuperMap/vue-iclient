@@ -1,13 +1,12 @@
-@import "../../_utils/style/mixins/mixins.scss";
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
 
 @include b(icon) {
   display: inline-flex;
-  padding: 4px;
-  & i {
-    display: flex;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
+  justify-content: center;
+  align-items: center;
+  color: $primary-color;
+  > i {
+    font-size: inherit;
   }
 }

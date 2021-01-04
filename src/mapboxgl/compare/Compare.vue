@@ -1,7 +1,7 @@
 <script lang="ts">
 import Vue, { VNode } from 'vue';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
-import Theme from '../../common/_mixin/theme';
+import Theme from '../../common/_mixin/Theme';
 import CompareViewModel, { mapType, orientationTypes, compareOptions } from './CompareViewModel';
 import debounce from 'lodash/debounce';
 import { addListener, removeListener } from 'resize-detector';

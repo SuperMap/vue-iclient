@@ -1,5 +1,4 @@
 @import '../common/_utils/style/mixins/mixins.scss';
-@import '../common/_utils/style/common/var.scss';
 
 @include b(identify) {
   list-style: none;
@@ -10,15 +9,6 @@
   overflow: auto;
   font-size: 14px;
   background: transparent;
-  &::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
-    background-color: $--fill-base;
-  }
-  &::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    background-color: #bbb;
-  }
   @include e(body) {
     display: flex;
     justify-content: space-between;

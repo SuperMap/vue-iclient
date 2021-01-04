@@ -1,42 +1,50 @@
 @import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../common/checkbox/style/checkbox.scss';
 
 @include b(map-switch) {
+  $map-switch-prefix: &;
+
   @include e(panel) {
     @include e(layers-wrap) {
-      padding: 15px;
+      padding: 16px 16px 4px;
       overflow: hidden;
-      @include e(content-holder) {
-        max-width: 246px;
-        padding: 10px 10px 5px;
-        border-radius: 4px;
-        overflow: hidden;
-        box-sizing: border-box;
-      }
 
       @include e(layers) {
         overflow: hidden;
+        margin-bottom: 17px;
         .layer-item {
           width: 64px;
           height: 64px;
+          border-radius: 2px;
           position: relative;
-          margin-right: 4px;
-          display: inline-block;
+          margin-right: 8px;
+          float: left;
           background: url('#{$--tdt-assets-path}/sprite.png') no-repeat;
           cursor: pointer;
+          border: 1px solid transparent;
+          &:hover {
+            border-color: $hover-color;
+          }
           &.map-item {
             background-position: -240px -53px;
           }
           &.image-item {
-            background-position: -6px -51px;
+            background-position: -6px -53px;
           }
           &.landform-item {
-            background-position: -84px -51px;
+            background-position: -84px -53px;
           }
           &.threed-item {
             background-position: -162px -51px;
           }
           &:last-of-type {
             margin-right: 0;
+          }
+          &.active-item {
+            #{$map-switch-prefix}__layer-name {
+              background: $primary-color;
+            }
           }
 
           img {
@@ -46,26 +54,25 @@
 
           @include e(layer-name) {
             position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 20px;
-            line-height: 20px;
+            bottom: -1px;
+            width: 64px;
+            height: 16px;
+            line-height: 16px;
             text-align: center;
             z-index: 10;
-            background: rgba(0, 0, 0, 0.65);
+            background: rgba(0, 0, 0, 0.25);
+            box-sizing: content-box;
             color: #fff;
-            font-size: 14px;
           }
         }
       }
 
       @include e(labelSetting) {
-        height: 40px;
+        height: 32px;
         display: flex;
         align-items: center;
         justify-content: space-between;
-        border-top: 1px solid #eee;
-        font-size: 14px;
+        border-top: 1px solid $border-color-split;
       }
     }
   }

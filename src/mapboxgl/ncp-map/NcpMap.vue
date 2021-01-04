@@ -1,7 +1,7 @@
 <template>
   <div :id="target" class="sm-component-ncp-map">
     <slot></slot>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
+    <sm-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
@@ -9,13 +9,17 @@
 import NcpMapViewModel, { dataOptions, mapOptions } from './NcpMapViewModel';
 import mapEvent from '../_types/map-event';
 import MapEvents from '../web-map/_mixin/map-events';
-import VmUpdater from '../../common/_mixin/vm-updater';
+import VmUpdater from '../../common/_mixin/VmUpdater';
 import { Component, Prop, Mixins, Emit, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
+import SmSpin from '../../common/spin/Spin.vue';
 
 @Component({
   name: 'SmNcpMap',
+  components: {
+    SmSpin
+  },
   viewModelProps: [
     'mapOptions.center',
     'mapOptions.zoom',
@@ -36,6 +40,7 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
   viewModel: NcpMapViewModel;
+  $message: any;
   // data
   @Provide() __resizeHandler;
 

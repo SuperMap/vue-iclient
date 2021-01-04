@@ -4,18 +4,19 @@
     <template v-for="(controlProps, controlName) in controlComponents">
       <component :is="controlName" :key="controlName" v-bind="controlProps"></component>
     </template>
-    <a-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
+    <sm-spin v-if="spinning" size="large" :tip="$t('webmap.loadingTip')" :spinning="spinning" />
   </div>
 </template>
 
 <script lang="ts">
 import WebMapViewModel from './WebMapViewModel';
 import mapEvent from '../_types/map-event';
-import VmUpdater from '../../common/_mixin/vm-updater';
+import VmUpdater from '../../common/_mixin/VmUpdater';
 import MapEvents from './_mixin/map-events';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash/debounce';
+import SmSpin from '../../common/spin/Spin.vue';
 
 interface commonControlParam {
   show?: boolean;
@@ -93,6 +94,9 @@ interface controlProps {
 
 @Component({
   name: 'SmWebMap',
+  components: {
+    SmSpin
+  },
   viewModelProps: [
     'mapId',
     'serverUrl',
@@ -117,6 +121,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
   viewModel: WebMapViewModel;
+  $message: any;
   // data
   @Provide() __resizeHandler;
 
