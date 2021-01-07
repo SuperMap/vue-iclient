@@ -63,6 +63,7 @@ export { default as Slider } from '../common/slider/Slider';
 export { default as Tree } from '../common/tree/Tree';
 export { default as DirectoryTree } from '../common/tree/DirectoryTree';
 export { default as TreeNode } from '../common/tree/TreeNode';
+export { default as ColorPicker } from '../common/color-picker/ColorPicker';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

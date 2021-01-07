@@ -1,5 +1,6 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/collapse-card/style/collapse-card.scss';
 
 @include b(draw) {
   @include e(panel) {

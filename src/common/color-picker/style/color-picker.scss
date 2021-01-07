@@ -1,0 +1,33 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(colorpicker) {
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid $border-color-base;
+  width: 230px;
+  background: $component-background;
+  @include e(current) {
+    height: 100%;
+    padding: 0 15px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    .current-color {
+      height: 8px;
+      flex: 1;
+    }
+    .delete-icon {
+      position: absolute;
+      right: 0;
+      top: 0;
+      color: $text-color-secondary;
+    }
+  }
+  .vc-chrome {
+    width: 100%;
+    position: relative;
+    z-index: 10;
+  }
+}
