@@ -39,7 +39,7 @@ export const parameters = {
     showPanel: true,
     panelPosition: 'right',
     storySort: {
-      order: ['Design', ['Theme', 'Custom-Theme'], 'Map Components', 'GIS Components','Chart Components', 'Basic Components']
+      order: ['Design', ['Theme', 'Custom Theme'], '设计', ['主题', '自定义主题'], 'Map Components', '地图组件', 'Map SubComponents',  '地图子组件', 'Chart Components',  '图表组件', 'Basic Components','基础组件']
     }
   },
   docs: {
@@ -80,7 +80,7 @@ export const decorators = [
         const storeLang = getStoryGlobalI18n();
         if (storeLang && this.$i18n.locale !== storeLang) {
           setLanguage(storeLang);
-          window.location.reload();
+          parent.location.reload()
         }
       },
       i18n

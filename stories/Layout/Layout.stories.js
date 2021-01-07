@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/layout' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.layout.title')}`,
+  id: 'BasicComponents/layout'
+};
 
 export const BasicLayout = () => ({
   mixins: [theme],

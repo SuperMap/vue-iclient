@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Basic Components/card'
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.card.title')}`,
+  id: 'BasicComponents/card'
 };
 
 export const card = () => ({

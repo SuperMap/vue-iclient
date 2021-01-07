@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/compare'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.compare.title')}`,
+  id: 'GISComponents/compare'
 };
 
 export const compare = () => ({
@@ -17,5 +18,5 @@ export const compare = () => ({
   `
 });
 compare.story = {
-  name: toI18n('gisComponent.compare')
+  name: toI18n('gisComponent.basic')
 };

@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/pagination' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.pagination.title')}`,
+  id: 'BasicComponents/pagination'
+};
 
 export const BasicPagination = () => ({
   mixins: [theme],

@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/input' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.input.title')}`,
+  id: 'BasicComponents/input'
+};
 
 export const BasicInput = () => ({
   mixins: [theme],

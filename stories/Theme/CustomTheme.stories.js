@@ -3,7 +3,8 @@ import { setTheme } from '../../src/common/_utils/style/theme/set-theme';
 import { toI18n } from '../../.storybook/lang';
 
 export default {
-  title: 'Design/Custom-Theme',
+  title: `${toI18n('customizeTheme.title')}/${toI18n('customizeTheme.customTheme')}`,
+  id: 'Design/CustomTheme',
   decorators: [withKnobs],
   parameters: {
     viewMode: 'story',

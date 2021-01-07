@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/indicator' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.indicator.title')}`,
+  id: 'BasicComponents/indicator'
+};
 
 export const BasicIndicator = () => ({
   mixins: [theme],

@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Basic Components/spin'
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.spin.title')}`,
+  id: 'BasicComponents/spin'
 };
 
 export const spin = () => ({

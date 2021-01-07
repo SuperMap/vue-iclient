@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/miniMap'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.miniMap.title')}`,
+  id: 'GISComponents/miniMap'
 };
 export const miniMap = () => ({
   mixins: [theme],
@@ -13,5 +14,5 @@ export const miniMap = () => ({
     `
 });
 miniMap.story = {
-  name: toI18n('gisComponent.miniMap')
+  name: toI18n('gisComponent.basic')
 };

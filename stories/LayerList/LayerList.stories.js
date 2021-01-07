@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/layerList'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.layerList.title')}`,
+  id: 'GISComponents/layerList'
 };
 export const LayerList = () => ({
   mixins: [theme],
@@ -14,7 +15,7 @@ export const LayerList = () => ({
 });
 
 LayerList.story = {
-  name: toI18n('gisComponent.layerList')
+  name: toI18n('gisComponent.basic')
 };
 
 export const ExpandLayerList = () => ({
@@ -27,5 +28,5 @@ export const ExpandLayerList = () => ({
 });
 
 ExpandLayerList.story = {
-  name: toI18n('gisComponent.expandLayerList')
+  name: toI18n('gisComponent.layerList.expandLayerList')
 };

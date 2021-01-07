@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Chart Components/pie'
+  title: `${toI18n('chartComponent.title')}/${toI18n('chartComponent.pie.title')}`,
+  id: 'ChartComponents/pie'
 };
 
 export const Pie = () => ({
@@ -89,7 +90,7 @@ export const Pie = () => ({
   `
 });
 Pie.story = {
-  name: toI18n('chartComponent.pie.pie')
+  name: toI18n('chartComponent.basic')
 };
 
 export const Rose = () => ({

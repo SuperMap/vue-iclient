@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Basic Components/notification'
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.indicator.title')}`,
+  id: 'BasicComponents/notification'
 };
 export const BasicNotification = () => ({
   mixins: [theme],

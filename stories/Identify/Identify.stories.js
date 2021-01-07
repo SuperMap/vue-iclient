@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/identify'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.identify.title')}`,
+  id: 'GISComponents/identify'
 };
 
 export const identify = () => ({
@@ -14,5 +15,5 @@ export const identify = () => ({
   `
 });
 identify.story = {
-  name: toI18n('gisComponent.identify')
+  name: toI18n('gisComponent.basic')
 };
