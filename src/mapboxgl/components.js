@@ -87,6 +87,7 @@ export { default as TrackLayer } from './web-map/layer/track/TrackLayer';
 /** control */
 export { default as Legend } from './web-map/control/legend/Legend';
 export { default as LayerList } from './web-map/control/layer-list/LayerList';
+export { default as LayerColor } from './web-map/control/layer-color/LayerColor';
 export { default as Measure } from './web-map/control/measure/Measure';
 export { default as MiniMap } from './web-map/control/mini-map/MiniMap';
 export { default as Pan } from './web-map/control/pan/Pan';

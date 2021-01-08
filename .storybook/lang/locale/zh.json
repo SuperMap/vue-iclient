@@ -340,6 +340,9 @@
       "title": "LayerList 图层列表",
       "expandLayerList": "二级列表"
     },
+    "layerColor": {
+      "title": "LauerColor 图层颜色"
+    },
     "layerManager": {
       "title": "LayerManager 图层管理"
     },

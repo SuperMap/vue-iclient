@@ -1,0 +1,55 @@
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/card/style/card.scss';
+@import '../../../../../common/collapse/style/collapse.scss';
+
+@include b(layer-color) {
+  $layer-color-prefix: &;
+  z-index: 10;
+  @include e(content) {
+    max-height: 400px;
+    height: 100%;
+    padding: 0 16px;
+    font-size: 12px;
+  }
+  @include e(layer) {
+    margin: 8px 0px;
+    .sm-component-select {
+      display: block;
+      margin-bottom: 4px;
+      .sm-component-select-selection {
+        max-width: 176px;
+      }
+    }
+  }
+  @include e(layer-color-type) {
+    margin: 8px 0px;
+    .sm-component-select {
+      display: block;
+      margin-bottom: 4px;
+      .sm-component-select-selection {
+        max-width: 176px;
+      }
+    }
+  }
+  @include e(color-picker) {
+    margin: 8px 0px;
+    .sm-component-colorpicker {
+      max-width: 176px;
+    }
+  }
+  @include e(btn-group) {
+    margin-bottom: 8px;
+    .sm-component-btn {
+      margin-right: 5px;
+    }
+  }
+  @include e(a-card) {
+    padding-top: 4px;
+    border-radius: 4px;
+    background: transparent;
+    > div {
+      padding: 0;
+    }
+  }
+}

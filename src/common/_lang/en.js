@@ -73,6 +73,24 @@ export default {
   layerList: {
     title: 'Layer'
   },
+  layerColor: {
+    title: 'LayerColor',
+    layer: 'Layer',
+    property: 'Property',
+    color: 'Color',
+    reset: 'Reset',
+    select: 'Select',
+    deselect: 'Deselect',
+    circleColor: 'circleColor',
+    circleStrokeColor: 'circleStrokeColor',
+    lineColor: 'lineColor',
+    fillColor: 'fillColor',
+    fillOutlineColor: 'fillOutlineColor',
+    iconColor: 'iconColor',
+    iconHaloColor: 'iconHaloColor',
+    textColor: 'textColor',
+    textHaloColor: 'textHaloColor'
+  },
   miniMap: {},
   pan: {},
   scale: {},

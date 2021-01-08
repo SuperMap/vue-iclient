@@ -340,6 +340,9 @@
       "title": "Layer List",
       "expandLayerList": "Expand Layer List"
     },
+    "layerColor": {
+      "title": "Layer Color"
+    },
     "layerManager": {
       "title": "Layer Manager"
     },

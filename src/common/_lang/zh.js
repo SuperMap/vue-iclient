@@ -29,7 +29,8 @@ export default {
     unavailableVideo: '此视频暂无法播放，请稍后再试',
     mapNotLoaded: '关联的地图尚未加载完整，请稍后',
     unassociatedMap: '您需要配置关联地图！',
-    videojs: '请引入video.js插件: https://github.com/videojs/video.js； 当播放rtmp时，安装flash相关插件：https://github.com/videojs/videojs-flash',
+    videojs:
+      '请引入video.js插件: https://github.com/videojs/video.js； 当播放rtmp时，安装flash相关插件：https://github.com/videojs/videojs-flash',
     flvPlayer: '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
   success: {},
@@ -72,6 +73,24 @@ export default {
   },
   layerList: {
     title: '图层'
+  },
+  layerColor: {
+    title: '图层颜色',
+    layer: '图层',
+    property: '属性',
+    color: '颜色',
+    reset: '重置',
+    select: '选取',
+    deselect: '取消',
+    circleColor: '点填充色',
+    circleStrokeColor: '点描边色',
+    lineColor: '线填充色',
+    fillColor: '面填充色',
+    fillOutlineColor: '面边线色',
+    iconColor: '图标色',
+    iconHaloColor: '图标描边色',
+    textColor: '文本色',
+    textHaloColor: '文本描边色'
   },
   miniMap: {},
   pan: {},
