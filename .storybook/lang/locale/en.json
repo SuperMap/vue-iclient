@@ -387,6 +387,9 @@
     },
     "tdtRoute": {
       "title": "TianDiTu-Route"
+    },
+    "coordinateCoversion": {
+      "title": "Coordinate Coversion"
     }
   }
 }

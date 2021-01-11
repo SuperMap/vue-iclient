@@ -33,7 +33,9 @@ export default {
       '请引入video.js插件: https://github.com/videojs/video.js； 当播放rtmp时，安装flash相关插件：https://github.com/videojs/videojs-flash',
     flvPlayer: '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
-  success: {},
+  success: {
+    copySucccess: '复制成功'
+  },
   info: {
     loading: '加载中',
     pressEscToExit: '按下 ESC 键或点击关闭按钮退出'
@@ -48,7 +50,14 @@ export default {
     squaremiles: '平方英里',
     squaremeters: '平方米',
     squareyards: '平方码',
-    squarefeet: '平方英尺'
+    squarefeet: '平方英尺',
+    XY: 'XY',
+    BASEMAP: 'BASEMAP',
+    UTM: 'UTM',
+    DD: 'DD',
+    DOM: 'DOM',
+    DMS: 'DMS',
+    Mercator: 'Mercator'
   },
   error: {},
   commontypes: {
@@ -261,6 +270,12 @@ export default {
     TiandituCva: '天地图矢量注记',
     TiandituCta: '天地图地形注记',
     TiandituCia: '天地图影像注记'
+  },
+  coordinateConversion: {
+    inputPlaceHolder: '请输入坐标',
+    copy: '复制',
+    location: '定位至',
+    capture: '捕捉'
   },
   // layer
   dataFlow: {

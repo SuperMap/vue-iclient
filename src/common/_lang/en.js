@@ -29,10 +29,12 @@ export default {
     unavailableVideo: 'This video is temporarily unavailable, please try again later',
     mapNotLoaded: 'The associated map has not been loaded yet, please wait for a second',
     unassociatedMap: 'You need to configure the associated map!',
-    videojs: 'Please import video.js plugin: https://github.com/videojs/video.js, When playing rtmp, install flash related plugin: https://github.com/videojs/videojs-flash',
-    flvPlayer: 'Please import flv related plugin: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
+    videojs:
+      'Please import video.js plugin: https://github.com/videojs/video.js, When playing rtmp, install flash related plugin: https://github.com/videojs/videojs-flash',
+    flvPlayer:
+      'Please import flv related plugin: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
-  success: {},
+  success: { copySucccess: 'copy success' },
   info: {
     loading: 'Loading...',
     pressEscToExit: 'Press the ESC key or click the close button to exit'
@@ -47,7 +49,14 @@ export default {
     squaremiles: 'sq mi',
     squaremeters: 'sq m',
     squareyards: 'sq yd',
-    squarefeet: 'sq ft'
+    squarefeet: 'sq ft',
+    XY: 'XY',
+    BASEMAP: 'BASEMAP',
+    UTM: 'UTM',
+    DD: 'DD',
+    DOM: 'DOM',
+    DMS: 'DMS',
+    Mercator: 'Mercator'
   },
   error: {},
   commontypes: {
@@ -260,6 +269,12 @@ export default {
     TiandituCva: 'TiandituCvaLabel',
     TiandituCta: 'TiandituCtaLabel',
     TiandituCia: 'TiandituCiaLabel'
+  },
+  coordinateConversion: {
+    inputPlaceHolder: 'Input coordinate',
+    copy: 'copy',
+    location: 'location',
+    capture: 'capture'
   },
   // layer
   dataFlow: {

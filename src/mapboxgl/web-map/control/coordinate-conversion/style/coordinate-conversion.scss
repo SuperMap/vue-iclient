@@ -1,0 +1,67 @@
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/card/style/card.scss';
+@import '../../../../../common/collapse/style/collapse.scss';
+@import '../../../../../common/input/style/input.scss';
+@import '../../../../../common/select/style/select.scss';
+@import '../../../../../common/icon/style/icon.scss';
+
+@include b(coordinate-conversion) {
+  $coordinate-conversion-prefix: &;
+  $collapse-prefix: #{$ant-prefix}-collapse;
+  z-index: 10;
+  @include e(content) {
+    display: inline-flex;
+    width: 100%;
+    height: 100%;
+    .#{$collapse-prefix} {
+      background: transparent;
+      border-radius: 0;
+      color: inherit;
+    }
+  }
+  @include e(a-card) {
+    padding-top: 4px;
+    border-radius: 4px;
+    background: transparent;
+    > div {
+      padding: 0;
+    }
+  }
+  .sm-component-card-body {
+    padding: 5px 0px 5px 32px;
+  }
+
+  .sm-component-collapse-card__icon {
+    &,
+    i {
+      height: 36px;
+      line-height: 36px;
+    }
+  }
+
+  @include e(format) {
+    width: 20%;
+  }
+  @include e(a-input) {
+    width: 100%;
+  }
+
+  @include e(icons) {
+    display: inline-flex;
+    padding: 0 5px;
+    .sm-component-icon {
+      padding: 0 2px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    & .sm-component-coordinate-conversion__hover {
+      color: #ccc;
+    }
+    & .sm-component-coordinate-conversion__disabled {
+      color: #ccc;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+  }
+}

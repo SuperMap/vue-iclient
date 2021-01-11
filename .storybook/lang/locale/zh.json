@@ -387,6 +387,9 @@
     },
     "tdtRoute": {
       "title": "TianDiTu Route 天地图路线规划"
+    },
+    "coordinateCoversion": {
+      "title": "Coordinate Coversion 坐标转换"
     }
   }
 }
