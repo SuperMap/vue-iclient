@@ -91,14 +91,11 @@ export default {
     select: 'Select',
     deselect: 'Deselect',
     circleColor: 'circleColor',
-    circleStrokeColor: 'circleStrokeColor',
+    strokeColor: 'circleStrokeColor',
     lineColor: 'lineColor',
     fillColor: 'fillColor',
-    fillOutlineColor: 'fillOutlineColor',
     iconColor: 'iconColor',
-    iconHaloColor: 'iconHaloColor',
-    textColor: 'textColor',
-    textHaloColor: 'textHaloColor'
+    textColor: 'textColor'
   },
   miniMap: {},
   pan: {},

@@ -15,34 +15,45 @@
       <div class="sm-component-layer-color__content">
         <div class="sm-component-layer-color__layer">
           <span>{{ $t('layerColor.layer') }}</span>
-          <sm-select v-model="selectSource">
-            <sm-select-option v-for="(source, index) in sourceNames" :key="index" :value="source">
-              {{ source }}
-            </sm-select-option>
-          </sm-select>
           <sm-select v-model="selectLayer">
-            <sm-select-option v-for="(layerInfo, index) in selectSourceLayers" :key="index" :value="layerInfo.value">
-              {{ layerInfo.value }}
-            </sm-select-option>
+            <sm-opt-group v-for="(source, index) in sourceNames" :key="index" :label="source">
+              <sm-select-option
+                v-for="(layerInfo, index1) in selectSourceLayers(source)"
+                :key="index1"
+                :value="layerInfo.value"
+              >
+                {{ layerInfo.value }}
+              </sm-select-option>
+            </sm-opt-group>
           </sm-select>
         </div>
-        <div v-if="propertyList.length > 1" class="sm-component-layer-color__layer-color-type">
+        <!-- <div v-if="propertyList.length > 1" class="sm-component-layer-color__layer-color-type">
           <span>{{ $t('layerColor.property') }}</span>
           <sm-select v-model="selectProperty">
             <sm-select-option v-for="(property, index) in propertyList" :key="index" :value="property">
               {{ propertyMap[property] }}
             </sm-select-option>
           </sm-select>
-        </div>
-        <div class="sm-component-layer-color__color-picker">
-          <span>{{ $t('layerColor.color') }}</span>
-          <sm-color-picker v-show="selectLayer" v-model="colorValue"></sm-color-picker>
+        </div> -->
+        <div v-for="(propertyInfo, index) in propertyList" :key="index" class="sm-component-layer-color__color-picker">
+          <span>{{ propertyMap[propertyInfo.name] }}</span>
+          <sm-color-picker
+            v-show="selectLayer"
+            :value="propertyInfo.color"
+            @change="
+              color => {
+                changePropertyColor(propertyInfo.name, color);
+              }
+            "
+          ></sm-color-picker>
         </div>
         <div class="sm-component-layer-color__btn-group">
+          <sm-button v-if="allowIdentify" type="primary" size="small" @click="toggleSelectLayer">{{
+            isSelect ? this.$t('layerColor.deselect') : this.$t('layerColor.select')
+          }}</sm-button>
           <sm-button v-if="allowReset" type="primary" size="small" @click="resetAllLayerColor">{{
             $t('layerColor.reset')
           }}</sm-button>
-          <sm-button v-if="allowIdentify" type="primary" size="small" @click="toggleSelectLayer">{{ isSelect ? this.$t('layerColor.deselect') : this.$t('layerColor.select') }}</sm-button>
         </div>
       </div>
     </sm-card>
@@ -60,6 +71,7 @@ import LayerColorViewModel from './LayerColorViewModel';
 import clonedeep from 'lodash.clonedeep';
 import SmSelect from '../../../../common/select/Select';
 import SmColorPicker from '../../../../common/color-picker/ColorPicker';
+import SmOptGroup from '../../../../common/select/OptGroup';
 
 const TYPE_MAP = {
   circle: ['circle-color', 'circle-stroke-color'],
@@ -74,7 +86,8 @@ export default {
     SmCard,
     SmSelect,
     SmCollapsePanel,
-    SmColorPicker
+    SmColorPicker,
+    SmOptGroup
   },
   mixins: [MapGetter, Control, Theme, BaseCard],
   props: {
@@ -108,62 +121,44 @@ export default {
   data() {
     return {
       sourceNames: [],
-      layerList: {},
-      selectSource: '',
+      layerList: [],
       selectLayer: '',
       selectProperty: '',
       propertyList: [],
-      colorValue: '',
       propertyMap: {
         'circle-color': this.$t('layerColor.circleColor'),
-        'circle-stroke-color': this.$t('layerColor.circleStrokeColor'),
+        'circle-stroke-color': this.$t('layerColor.strokeColor'),
         'line-color': this.$t('layerColor.lineColor'),
         'fill-color': this.$t('layerColor.fillColor'),
-        'fill-outline-color': this.$t('layerColor.fillOutlineColor'),
+        'fill-outline-color': this.$t('layerColor.strokeColor'),
         'icon-color': this.$t('layerColor.iconColor'),
-        'icon-halo-color': this.$t('layerColor.iconHaloColor'),
+        'icon-halo-color': this.$t('layerColor.strokeColor'),
         'text-color': this.$t('layerColor.textColor'),
-        'text-halo-color': this.$t('layerColor.textHaloColor')
+        'text-halo-color': this.$t('layerColor.strokeColor')
       },
       isSelect: false
     };
   },
   computed: {
     selectSourceLayers() {
-      return this.layerList[this.selectSource];
+      return function (sourceName) {
+        let res = this.layerList.filter(layerInfo => {
+          return layerInfo.source === sourceName;
+        });
+        return res;
+      };
     }
   },
   watch: {
-    colorValue(val) {
-      this.setLayerColor(val);
-    },
-    sourceNames() {
-      if (!this.selectSource) {
-        this.selectSource = this.sourceNames[0];
-      }
-      this.setSelectLayer();
-    },
     layerList() {
-      if (!this.selectLayer && this.selectSourceLayers) {
-        this.selectLayer = this.selectSourceLayers[0].value;
+      if (!this.selectLayer && this.layerList.length) {
+        this.selectLayer = this.layerList[0].value;
       }
-      this.setSelectLayer();
+      this.updateProperty(this.selectLayer);
     },
     selectLayer(val) {
       if (val) {
-        this.propertyList = this._getLayerColorProperty(val);
-        this.selectProperty = this.propertyList[0];
-        this.setSelectLayer();
-      }
-    },
-    selectSource(val) {
-      if (val) {
-        this.selectLayer = this.selectSourceLayers[0].value;
-      }
-    },
-    selectProperty(val) {
-      if (val) {
-        this.setSelectLayer();
+        this.updateProperty(val);
       }
     }
   },
@@ -172,17 +167,17 @@ export default {
     this.viewModel.on('changeSelectLayer', this._changeSelectLayer);
   },
   methods: {
-    setSelectLayer() {
-      if (this.selectLayer && this.selectProperty) {
-        const color = this.viewModel.getLayerColor(this.selectLayer, this.selectProperty);
+    getPropertyColor(propertyName) {
+      if (this.selectLayer) {
+        const color = this.viewModel.getLayerColor(this.selectLayer, propertyName);
         if (typeof color === 'string') {
-          this.colorValue = color || '';
+          return color || '';
         }
       }
     },
     transformDatas(sourceList) {
       let _sourceList = clonedeep(sourceList);
-      let layerList = {};
+      let layerList = [];
       let sourceNames = [];
       Object.keys(_sourceList).forEach(sourceName => {
         let source = _sourceList[sourceName];
@@ -191,11 +186,9 @@ export default {
         }
         sourceNames.push(source.id);
         let layers = source.layers;
-        if (!layerList[source.id]) {
-          layerList[source.id] = [];
-        }
         layers.forEach(layer => {
-          layerList[source.id].push({
+          layerList.push({
+            source: source.id,
             value: layer.id,
             type: layer.type
           });
@@ -211,20 +204,17 @@ export default {
         this.layerList = layerList;
       });
     },
-    setLayerColor(color) {
-      if (this.selectLayer && this.selectProperty) {
-        this.viewModel.setLayerColor(this.selectLayer, this.selectProperty, color);
-      }
-    },
     _getLayerColorProperty(layerId) {
-      const layerInfo = this.selectSourceLayers.find(layerInfo => {
+      const layerInfo = this.layerList.find(layerInfo => {
         return layerInfo.value === layerId;
       });
-      return TYPE_MAP[layerInfo.type];
+      const propertyList = TYPE_MAP[layerInfo.type];
+      return propertyList.map(name => {
+        return { name, color: '' };
+      });
     },
     resetAllLayerColor() {
       this.viewModel.resetAllColor();
-      this.setSelectLayer();
     },
     toggleSelectLayer() {
       if (this.isSelect) {
@@ -235,12 +225,26 @@ export default {
         this.isSelect = true;
       }
     },
+    changePropertyColor(property, color) {
+      if (this.selectLayer) {
+        this.viewModel.setLayerColor(this.selectLayer, property, color);
+      }
+    },
+    updateProperty(layerId) {
+      this.propertyList = this._getLayerColorProperty(layerId);
+      if (this.propertyList.length) {
+        for (let info of this.propertyList) {
+          let color = this.getPropertyColor(info.name);
+          if (color) {
+            info.color = color;
+          }
+        }
+      }
+    },
     _changeSelectLayer(featureInfo) {
       const {
-        source,
         layer: { id }
       } = featureInfo;
-      this.selectSource = source;
       this.selectLayer = id;
     }
   },

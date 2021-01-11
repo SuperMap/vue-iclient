@@ -14,28 +14,27 @@
   }
   @include e(layer) {
     margin: 8px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     .sm-component-select {
-      display: block;
       margin-bottom: 4px;
-      .sm-component-select-selection {
-        max-width: 176px;
-      }
-    }
-  }
-  @include e(layer-color-type) {
-    margin: 8px 0px;
-    .sm-component-select {
-      display: block;
-      margin-bottom: 4px;
-      .sm-component-select-selection {
-        max-width: 176px;
-      }
+      max-width: 200px;
+      min-width: 176px;
     }
   }
   @include e(color-picker) {
     margin: 8px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    >span {
+      margin-right: 5px;
+    }
     .sm-component-colorpicker {
-      max-width: 176px;
+      max-width: 200px;
+      min-width: 176px;
+      width: 0px;
     }
   }
   @include e(btn-group) {
