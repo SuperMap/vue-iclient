@@ -25,7 +25,7 @@ let origin = argv.original;
 let entry = './demo/mapboxgl/main.ts';
 
 if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
-  let type = origin[2].replace("-", "");
+  let type = origin[2].replace('-', '');
   entry = `./demo/${type}/main.ts`;
 }
 
@@ -84,6 +84,7 @@ module.exports = {
           resolve('node_modules/vue-videojs7'),
           resolve('node_modules/flv.js/src'),
           resolve('node_modules/videojs-flvjs-es6/src'),
+          resolve('node_modules/geographic-coordinate-converter/coordinate-converter')
         ]
       },
       {
