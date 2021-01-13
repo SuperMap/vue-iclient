@@ -56,7 +56,7 @@ export default {
     DD: 'DD',
     DOM: 'DOM',
     DMS: 'DMS',
-    Mercator: 'Mercator'
+    Mercator: 'Web Mercator'
   },
   error: {},
   commontypes: {

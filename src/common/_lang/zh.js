@@ -51,13 +51,13 @@ export default {
     squaremeters: '平方米',
     squareyards: '平方码',
     squarefeet: '平方英尺',
-    XY: 'XY',
-    BASEMAP: 'BASEMAP',
+    XY: '经纬度',
+    BASEMAP: '底图',
     UTM: 'UTM',
-    DD: 'DD',
-    DOM: 'DOM',
-    DMS: 'DMS',
-    Mercator: 'Mercator'
+    DD: '度',
+    DOM: '度分',
+    DMS: '度分秒',
+    Mercator: 'Web墨卡托'
   },
   error: {},
   commontypes: {

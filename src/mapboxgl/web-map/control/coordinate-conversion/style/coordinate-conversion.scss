@@ -41,10 +41,11 @@
   }
 
   @include e(format) {
-    width: 20%;
+    width: 30%;
+    min-width: 20%;
   }
   @include e(a-input) {
-    width: 100%;
+    width: 70%;
   }
 
   @include e(icons) {

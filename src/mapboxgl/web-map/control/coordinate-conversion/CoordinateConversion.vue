@@ -21,6 +21,7 @@
           class="sm-component-coordinate-conversion__format"
           :style="getTextColorStyle"
           :get-popup-container="getPopupContainer"
+          :dropdownMatchSelectWidth="true"
           size="small"
           @change="changeFormat"
         >
@@ -210,9 +211,6 @@ export default {
       this.viewModel._flyTo([lng, lat]);
     },
     changeFormat(val) {
-      if (!this.isCapture) {
-        this.handleCapture();
-      }
       this.activeDisplayFormat = this.displayFormat[val];
       this.inputValue = this.formatCoordinate(this.coordinate);
     },
@@ -345,7 +343,7 @@ export default {
     getDOM(coordinate, format) {
       let { lng, lat } = coordinate;
       lng = this.getWrapNum(lng);
-      const value = CoordinateConverter.fromDecimal([lng, lat]).toDegreeMinutes();
+      const value = CoordinateConverter.fromDecimal([lat, lng]).toDegreeMinutes();
       return this.replaceUnit(value);
     },
     getDMS(coordinate, format) {
