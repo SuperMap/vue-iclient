@@ -75,7 +75,11 @@
         &-selected {
           font-weight: normal;
           background-color: $select-item-selected-bg;
-          color: #fff;
+          color: $text-color-without-opacity;
+        }
+        .#{$ant-prefix}-empty {
+          background-color: transparent;
+          color: inherit;
         }
       }
     }

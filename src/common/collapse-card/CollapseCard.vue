@@ -42,7 +42,7 @@
 import Theme from '../_mixin/Theme';
 
 export default {
-  name: 'SmCard',
+  name: 'SmCollapseCard',
   mixins: [Theme],
   props: {
     iconPosition: {

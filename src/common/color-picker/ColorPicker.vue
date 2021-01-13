@@ -1,11 +1,8 @@
 <template>
   <div ref="colorpicker" class="sm-component-colorpicker">
     <div class="sm-component-colorpicker__current" @click="togglePicker">
-      <template v-if="colorValue">
-        <div class="current-color" :style="`background-color: ${colorValue}`"></div>
-        <i v-if="deleteIcon" class="sm-components-icon-close delete-icon" @click.stop="deleteColor" />
-      </template>
-      <i v-else class="sm-components-icon-close" />
+      <div class="current-color" :style="`background-color: ${colorValue}`"></div>
+      <i v-if="colorValue && deleteIcon" class="sm-components-icon-close delete-icon" @click.stop="deleteColor" />
     </div>
     <chrome-picker v-show="displayPicker" :value="colors" @input="updateFromPicker" />
   </div>

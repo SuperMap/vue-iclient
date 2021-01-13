@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import Control from '../../_mixin/control.js';
+import Control from '../../_mixin/control';
 import MapGetter from '../../_mixin/map-getter';
 import Card from '../../../common/_mixin/Card';
 import Theme from '../../../common/_mixin/Theme';
