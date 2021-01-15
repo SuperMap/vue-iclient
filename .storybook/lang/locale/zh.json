@@ -355,7 +355,7 @@
       "expandLayerList": "二级列表"
     },
     "layerColor": {
-      "title": "LauerColor 图层颜色"
+      "title": "LayerColor 图层颜色"
     },
     "featureTable": {
       "title": "FeatureTable 属性表"

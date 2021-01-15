@@ -8,8 +8,7 @@ export default {
 export const LayerColor = () => ({
   mixins: [theme],
   template: `
-  <sm-web-map style="height:700px" serverUrl="https://iportal.supermap.io/iportal" mapId="801571284">
-    <sm-vector-tile-layer styleOptions="https://iserver.supermap.io/iserver/services/map-Population/rest/maps/PopulationDistribution/tileFeature/vectorstyles.json?type=MapBox_GL&styleonly=true"></sm-vector-tile-layer>
+  <sm-web-map style="height:700px" serverUrl="https://www.supermapol.com/" mapId="505367620">
     <sm-layer-color :collapsed="false"></sm-layer-color>
   </sm-web-map>
     `
