@@ -1,0 +1,10 @@
+@import '../../../common/_utils/style/mixins/mixins.scss';
+
+@include b(time-range) {
+  width: 400px;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  pointer-events: auto;
+  cursor: pointer;
+}

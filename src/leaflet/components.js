@@ -65,6 +65,9 @@ export { default as Tree } from '../common/tree/Tree';
 export { default as DirectoryTree } from '../common/tree/DirectoryTree';
 export { default as TreeNode } from '../common/tree/TreeNode';
 export { default as ColorPicker } from '../common/color-picker/ColorPicker';
+export { default as TimeSlider } from '../common/time-slider/TimeSlider';
+export { default as TimeRange } from '../common/time-range/TimeRange';
+export { default as TimeLine } from '../common/time-line/TimeLine';
 
 export { default as Identify } from './identify/Identify';
 export { default as Popup } from './popup/Popup';

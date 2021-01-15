@@ -42,6 +42,9 @@ export default class HeatMapLayerViewModel extends mapboxgl.Evented {
   }
 
   _initializeHeatMapLayer() {
+    if (!this.map) {
+      return;
+    }
     this.map.addSource(this.layerId, {
       type: 'geojson',
       data: this.data

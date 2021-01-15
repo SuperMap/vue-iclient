@@ -1,0 +1,104 @@
+// This is the container for all progress bar-related components/elements.
+.sm-component-time-slider .sm-progress-control {
+  cursor: pointer;
+  @include flex(auto);
+  @include display-flex(center);
+  min-width: 4em;
+  touch-action: none;
+}
+
+.sm-component-time-slider .sm-progress-control.disabled {
+  cursor: default;
+}
+
+.sm-live .sm-progress-control {
+  display: none;
+}
+
+.sm-liveui .sm-progress-control {
+  @include display-flex(center);
+}
+
+.sm-no-flex .sm-progress-control {
+  width: auto;
+}
+
+.sm-component-time-slider .sm-progress-holder {
+  @include flex(auto);
+  @include transition(all 0.2s);
+}
+
+.sm-component-time-slider .sm-progress-holder .sm-play-progress {
+  position: absolute;
+  display: block;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+// .sm-time-tooltip
+.sm-component-time-slider .sm-time-tooltip {
+  @include background-color-with-alpha(#fff, 0.8);
+  @include border-radius(0.3em);
+  width: 4em;
+  color: #000;
+  float: right;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1em;
+  padding: 2px;
+  pointer-events: none;
+  position: absolute;
+  top: -3.4em;
+  visibility: hidden;
+  z-index: 1;
+}
+
+.sm-component-time-slider .sm-progress-holder:focus .sm-time-tooltip {
+  display: none;
+}
+
+.sm-component-time-slider .sm-progress-control:hover .sm-time-tooltip,
+.sm-component-time-slider .sm-progress-control:hover .sm-progress-holder:focus .sm-time-tooltip {
+  display: inline;
+  visibility: visible;
+}
+.sm-component-time-slider .sm-progress-control .sm-mouse-display {
+  display: none;
+  position: absolute;
+  width: 1px;
+  height: 100%;
+  background-color: #000;
+  z-index: 1;
+}
+
+.sm-no-flex .sm-progress-control .sm-mouse-display {
+  z-index: 0;
+}
+
+.sm-component-time-slider .sm-progress-control:hover .sm-mouse-display {
+  display: block;
+}
+
+.sm-user-inactive .sm-progress-control .sm-mouse-display {
+  visibility: hidden;
+  opacity: 0;
+  $trans: visibility 1s, opacity 1s;
+  @include transition($trans);
+}
+
+.sm-user-inactive.sm-no-flex .sm-progress-control .sm-mouse-display {
+  display: none;
+}
+
+.sm-mouse-display .sm-time-tooltip {
+  color: #fff;
+  right: -16.375px;
+  pointer-events: none;
+  user-select: none;
+  @include background-color-with-alpha(#000, 0.8);
+}
+
+.sm-mouse-display {
+  pointer-events: none;
+  top: -5px
+}

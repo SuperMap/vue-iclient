@@ -64,6 +64,9 @@ export { default as Tree } from '../common/tree/Tree';
 export { default as DirectoryTree } from '../common/tree/DirectoryTree';
 export { default as TreeNode } from '../common/tree/TreeNode';
 export { default as ColorPicker } from '../common/color-picker/ColorPicker';
+export { default as TimeSlider } from '../common/time-slider/TimeSlider';
+export { default as TimeRange } from '../common/time-range/TimeRange';
+export { default as TimePlayer } from '../common/time-line/TimeLine';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

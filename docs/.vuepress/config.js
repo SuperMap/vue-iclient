@@ -101,7 +101,7 @@ module.exports = {
           {
             text: 'Storybook',
             link: '../../../../../storybook/vue/index.html',
-            target:'_blank'
+            target: '_blank'
           }
         ],
         sidebar: {
@@ -135,7 +135,8 @@ module.exports = {
                     'control/open-file',
                     'control/identify',
                     'control/layer-manager',
-                    'control/fill-extrusion'
+                    'control/fill-extrusion',
+                    'control/coordinate-conversion'
                   ]
                 },
                 {
@@ -184,7 +185,10 @@ module.exports = {
                     'common/iframe',
                     'common/text-list',
                     'common/border',
-                    'common/video-player'
+                    'common/video-player',
+                    'common/time-line',
+                    'common/time-range',
+                    'common/time-slider'
                   ]
                 }
               ]

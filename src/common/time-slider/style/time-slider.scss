@@ -1,0 +1,101 @@
+@import '../../../common/_utils/style/mixins/mixins.scss';
+@import './_utilities.scss';
+@import './_progress.scss';
+
+@include b(time-slider) {
+  width: 600px;
+  height: 80px;
+  display: inline-flex;
+  align-items: center;
+  margin: 0 auto;
+  padding: 0 5%;
+  color: #3ea8d7;
+  cursor: pointer;
+  .sm-control {
+    position: relative;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    @include flex(none);
+  }
+  .sm-play-control {
+    text-shadow: none;
+    border: none;
+    outline: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  .sm-icon-play {
+    font-size: 25px;
+    outline: none;
+  }
+  .sm-progress-control {
+    width: calc(100% - 40px);
+    left: 20px;
+    box-sizing: border-box;
+    .sm-progress-holder {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      outline: none;
+    }
+  }
+  .sm-load-progress {
+    width: 100%;
+    outline: none;
+    & div {
+      width: 100%;
+      border-radius: 3px;
+    }
+  }
+  .sm-load-progress:before {
+    content: '';
+    display: block;
+    position: relative;
+    top: -5px;
+    width: 4px;
+    height: calc(100% + 10px);
+    box-sizing: border-box;
+    border: 1px solid;
+    border-radius: 50%/50% 50%;
+    pointer-events: none;
+    touch-action: none;
+    user-select: none;
+  }
+  .sm-play-progress {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 3px;
+    outline: none;
+    touch-action: none;
+    pointer-events: none;
+  }
+  /* timer */
+  .sm-time-control {
+    @include flex(none);
+    font-size: 1em;
+    line-height: 3em;
+    padding: 0 2px;
+    width: auto;
+  }
+  .sm-time-divider {
+    text-align: center;
+  }
+  .sm-time-node {
+    position: absolute;
+    width: 100%;
+    padding: 10px 5px;
+    user-select: none;
+    .sm-start-node {
+      position: absolute;
+      left: -20px;
+    }
+    .sm-end-node {
+      position: absolute;
+      right: -20px;
+    }
+  }
+}

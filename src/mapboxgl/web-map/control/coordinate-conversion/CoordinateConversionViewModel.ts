@@ -14,7 +14,7 @@ export default class CoordinateConversionViewModel extends mapboxgl.Evented {
     this._clickCallbackFn = this._clickCallback.bind(this);
   }
 
-  setMap(mapInfo) {
+  public setMap(mapInfo) {
     const { map } = mapInfo;
     this.map = map || null;
     this._bindMouseMove();
@@ -39,7 +39,7 @@ export default class CoordinateConversionViewModel extends mapboxgl.Evented {
     return coordinate;
   }
 
-  _bindMouseMove(map = this.map) {
+  _bindMouseMove(map: mapboxglTypes.Map = this.map) {
     if (!map) {
       return;
     }
@@ -47,7 +47,7 @@ export default class CoordinateConversionViewModel extends mapboxgl.Evented {
     map.on('mousemove', this._getCoordinateFn);
   }
 
-  _bindClick(map = this.map) {
+  private _bindClick(map: mapboxglTypes.Map = this.map) {
     if (!map) {
       return;
     }
@@ -55,26 +55,26 @@ export default class CoordinateConversionViewModel extends mapboxgl.Evented {
     map.on('click', this._clickCallbackFn);
   }
 
-  _unbindMouseMove(map = this.map) {
+  private _unbindMouseMove(map: mapboxglTypes.Map = this.map) {
     map && map.off('mousemove', this._getCoordinateFn);
   }
 
-  _unbindClick(map = this.map) {
+  private _unbindClick(map: mapboxglTypes.Map = this.map) {
     map && map.off('click', this._clickCallbackFn);
   }
 
-  _clickCallback(e) {
+  private _clickCallback(e) {
     const coordinate = this._getCoordinate(e);
     this._addMarker(coordinate);
   }
 
-  _changeCursor(cursorType = 'default', map = this.map) {
+  private _changeCursor(cursorType: string = 'default', map: mapboxglTypes.Map = this.map) {
     if (map && map.getCanvas()) {
       map.getCanvas().style.cursor = cursorType;
     }
   }
 
-  _addMarker(coordinate, map = this.map) {
+  private _addMarker(coordinate: mapboxglTypes.LngLatLike, map: mapboxglTypes.Map = this.map) {
     this._clearMarker();
     if (!map) {
       return;
@@ -82,7 +82,7 @@ export default class CoordinateConversionViewModel extends mapboxgl.Evented {
     this.marker = new mapboxgl.Marker().setLngLat(coordinate).addTo(map);
   }
 
-  _flyTo(coordinate, map = this.map) {
+  _flyTo(coordinate: mapboxglTypes.LngLatLike, map: mapboxglTypes.Map = this.map) {
     if (!map) {
       return;
     }

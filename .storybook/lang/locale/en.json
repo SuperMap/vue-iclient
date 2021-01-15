@@ -280,6 +280,20 @@
       "loadDataAsynchronously": "load Data Asynchronously",
       "searchable": "Searchable",
       "customizeCollapseExpandIcon": "customize Collapse/Expand Icon"
+    },
+    "timeSlider": {
+      "title": "TimeSlider",
+      "style": "Diffreent Style",
+      "duration": "Duration"
+    },
+    "timeLine": {
+      "title": "TimeLine",
+      "style": "Diffreent Style",
+      "formatter": "Formatter"
+    },
+    "timeRange": {
+      "title": "TimeRange",
+      "style": "Diffreent Style"
     }
   },
   "chartComponent": {
@@ -311,7 +325,7 @@
     },
     "line": {
       "title": "Line"
-    },   
+    },
     "radar": {
       "title": "Radar"
     },

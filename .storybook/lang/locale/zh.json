@@ -280,6 +280,20 @@
       "loadDataAsynchronously": "异步加载数据",
       "searchable": "可搜索",
       "customizeCollapseExpandIcon": "自定义展开/折叠图标"
+    },
+    "timeSlider": {
+      "title": "TimeSlider 时间轴（条）",
+      "style": "不同样式",
+      "duration": "总时长"
+    },
+    "timeLine": {
+      "title": "TimeLine 时间轴（点）",
+      "style": "不同样式",
+      "formatter": "总时长"
+    },
+    "timeRange": {
+      "title": "TimeRange 时间轴（段）",
+      "style": "不同样式"
     }
   },
   "chartComponent": {
