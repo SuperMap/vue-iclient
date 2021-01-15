@@ -17,3 +17,29 @@ export const compare = () => ({
 compare.story = {
   name: toI18n('gisComponent.basic')
 };
+
+export const changeComparePitch = () => ({
+  mixins: [theme],
+  data() {
+    return {
+      mapOptions: {
+        bearing: -30,
+        pitch: 15
+      }
+    };
+  },
+  template: `
+  <sm-web-map
+    target="map222"
+    style="width: 100%; height:700px" 
+    mapId="1329428269" 
+    serverUrl="https://iportal.supermap.io/iportal"
+    :mapOptions="mapOptions"
+    >
+    <sm-compass visualizePitch/>
+  </sm-web-map>
+  `
+});
+changeComparePitch.story = {
+  name: toI18n('gisComponent.compass.changeComparePitch')
+};

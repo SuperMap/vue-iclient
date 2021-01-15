@@ -415,7 +415,8 @@
       "title": "FillExtrusion Layer"
     },
     "compass": {
-      "title": "Compass"
+      "title": "Compass",
+      "changeComparePitch": "change Pitch"
     },
     "draw": {
       "title": "Draw"

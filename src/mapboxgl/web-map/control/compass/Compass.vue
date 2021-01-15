@@ -48,12 +48,12 @@ export default {
   },
   methods: {
     reset() {
-      return this.viewModel && (this.visualizePitch ? this.viewModel.resetNorthPitch() : this.viewModel.resetNorth());
-    }
-  },
-  loaded() {
-    // CompassViewModel 旋转地图，改变transform的值
-    this.viewModel.rotateEventOn((angle, pitch) => {
+      return this.visualizePitch ? this.viewModel.resetNorthPitch() : this.viewModel.resetNorth();
+    },
+    initAngle() {
+      return this.viewModel.initAngle();
+    },
+    createTransform(angle, pitch) {
       this.transform = this.visualizePitch
         ? 'scale(' +
           1 / Math.pow(Math.cos(pitch * (Math.PI / 180)), 0.5) +
@@ -63,6 +63,13 @@ export default {
           angle * (180 / Math.PI) +
           'deg)'
         : 'rotate(' + angle * (180 / Math.PI) + 'deg)';
+    }
+  },
+  loaded() {
+    this.createTransform(this.initAngle().angle, this.initAngle().pitch);
+    // CompassViewModel 旋转地图，改变transform的值
+    this.viewModel.rotateEventOn((angle, pitch) => {
+      this.createTransform(angle, pitch);
     });
   }
 };

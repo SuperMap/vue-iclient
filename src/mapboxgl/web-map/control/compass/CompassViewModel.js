@@ -14,6 +14,16 @@ export default class CompassViewModel extends mapboxgl.Evented {
     this.map = map;
   }
   /**
+   * @function CompassViewModel.prototype.initAngle
+   * @description 获取初始化地图后的倾斜角度和俯仰角度。
+   */
+  initAngle() {
+    return {
+      angle: this.map.transform.angle,
+      pitch: this.map.transform.pitch
+    };
+  }
+  /**
    * @function CompassViewModel.prototype.resetNorth
    * @description 以动态转换的方式将地图旋转到 0 度方位角（正北方）。
    */

@@ -415,7 +415,8 @@
       "title": "FillExtrusionLayer 三维拉伸图层"
     },
     "compass": {
-      "title": "Compass 指南针"
+      "title": "Compass 指南针",
+      "changeComparePitch": "改变指南针俯仰角度"
     },
     "draw": {
       "title": "Draw 绘制"
