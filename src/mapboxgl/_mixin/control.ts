@@ -6,7 +6,7 @@ import mapEvent from '../_types/map-event';
 export default class Control extends Vue {
   parentIsWebMapOrMap: boolean;
   filterDelayLoad: boolean;
-  isShow: boolean = false;
+  isShow: boolean = true;
   map: mapboxglTypes.Map;
   control: mapboxglTypes.IControl;
 

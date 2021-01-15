@@ -179,6 +179,17 @@ export default {
   layerManager: {
     title: 'Layer Manager'
   },
+  fillExtrusion: {
+    title: 'Fill Extrusion',
+    polygonLayer: 'Polygon Layer',
+    height: 'Height',
+    choiceField: 'Select field',
+    customField: 'Custom field',
+    customNum: 'Custom value',
+    fillColor: 'Fill color',
+    layerOpacity: 'Layer opacity',
+    reset: 'Reset'
+  },
   tdtResults: {
     on: 'on ',
     station: ' station',

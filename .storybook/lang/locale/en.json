@@ -390,6 +390,12 @@
     },
     "coordinateCoversion": {
       "title": "Coordinate Coversion"
+    },
+    "fillExtrusion": {
+      "title": "FillExtrusion"
+    },
+    "fillExtrusionLayer": {
+      "title": "FillExtrusion Layer"
     }
   }
 }

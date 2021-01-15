@@ -180,6 +180,17 @@ export default {
   layerManager: {
     title: '图层管理'
   },
+  fillExtrusion: {
+    title: '三维拉伸',
+    polygonLayer: '面图层',
+    height: '高度',
+    choiceField: '选择字段',
+    customField: '自定义字段',
+    customNum: '自定义数值',
+    fillColor: '填充颜色',
+    layerOpacity: '图层透明度',
+    reset: '重置'
+  },
   tdtResults: {
     on: '在',
     station: '站',

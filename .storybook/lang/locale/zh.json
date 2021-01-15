@@ -390,6 +390,12 @@
     },
     "coordinateCoversion": {
       "title": "Coordinate Coversion 坐标转换"
+    },
+    "fillExtrusion": {
+      "title": "FillExtrusion 三维拉伸"
+    },
+    "fillExtrusionLayer": {
+      "title": "FillExtrusionLayer 三维拉伸图层"
     }
   }
 }

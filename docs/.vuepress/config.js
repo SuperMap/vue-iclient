@@ -134,7 +134,8 @@ module.exports = {
                     'control/search',
                     'control/open-file',
                     'control/identify',
-                    'control/layer-manager'
+                    'control/layer-manager',
+                    'control/fill-extrusion'
                   ]
                 },
                 {
@@ -162,7 +163,8 @@ module.exports = {
                     'layer/echarts',
                     'layer/deckgl',
                     'layer/dataflow',
-                    'layer/track'
+                    'layer/track',
+                    'layer/fill-extrusion'
                   ]
                 },
                 {

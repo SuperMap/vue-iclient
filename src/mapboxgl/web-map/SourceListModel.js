@@ -92,8 +92,10 @@ class SourceListModel {
     this.detailLayers &&
       this.detailLayers.forEach(layer => {
         if (!this.sourceList[layer['source']]) {
+          const source = this.map.getSource(layer['source']);
           this.sourceList[layer['source']] = new SourceModel({
-            source: layer['source']
+            source: layer['source'],
+            type: source && source.type
           });
           this.sourceNames.push(layer['source']);
         }
