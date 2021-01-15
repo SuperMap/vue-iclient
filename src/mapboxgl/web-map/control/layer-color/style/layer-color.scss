@@ -19,8 +19,7 @@
     justify-content: space-between;
     .sm-component-select {
       margin-bottom: 4px;
-      max-width: 200px;
-      min-width: 176px;
+      width: 176px;
     }
   }
   @include e(color-picker) {
@@ -32,9 +31,7 @@
       margin-right: 5px;
     }
     .sm-component-colorpicker {
-      max-width: 200px;
-      min-width: 176px;
-      width: 0px;
+      width: 176px;
     }
   }
   @include e(btn-group) {

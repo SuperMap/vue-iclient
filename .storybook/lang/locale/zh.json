@@ -357,6 +357,9 @@
     "layerColor": {
       "title": "LauerColor 图层颜色"
     },
+    "featureTable": {
+      "title": "FeatureTable 属性表"
+    },
     "layerManager": {
       "title": "LayerManager 图层管理"
     },

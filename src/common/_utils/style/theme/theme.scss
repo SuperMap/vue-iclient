@@ -286,7 +286,7 @@ $table-header-sort-bg: $background-color-base;
 $table-body-sort-bg: rgba(0, 0, 0, 0.01);
 $table-row-hover-bg: $select-item-hover-bg;
 $table-selected-row-color: inherit;
-$table-selected-row-bg: #fafafa;
+$table-selected-row-bg: $selected-color;
 $table-body-selected-sort-bg: $table-selected-row-bg;
 $table-selected-row-hover-bg: $table-selected-row-bg;
 $table-expanded-row-bg: #fbfbfb;

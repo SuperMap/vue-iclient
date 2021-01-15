@@ -1,0 +1,27 @@
+@import '../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../common/_utils/style/theme/theme.scss';
+
+@include b(feature-table) {
+  $feature-table-prefix: &;
+  height: 100%;
+  width: 100%;
+  .sm-component-table-wrapper {
+    overflow: auto;
+    height: calc(100% - 46px);
+  }
+  @include e(header) {
+    height: 30px;
+    margin: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  @include e(count) {
+    margin-left: 15px;
+    >span {
+      margin-right: 8px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+}

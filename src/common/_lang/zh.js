@@ -98,6 +98,13 @@ export default {
     iconColor: '图标颜色',
     textColor: '文本颜色'
   },
+  featureTable: {
+    feature: '要素',
+    selected: '已选择',
+    clearSelected: '清除选中',
+    zoomToFeatures: '缩放至已选要素',
+    columnsControl: '显示/隐藏列'
+  },
   miniMap: {},
   pan: {},
   scale: {},

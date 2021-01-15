@@ -97,6 +97,13 @@ export default {
     iconColor: 'iconColor',
     textColor: 'textColor'
   },
+  featureTable: {
+    feature: 'Feature',
+    selected: 'Selected',
+    clearSelected: 'Clear Selected',
+    zoomToFeatures: 'ZoomTo Features',
+    columnsControl: 'Show/Hide Columns'
+  },
   miniMap: {},
   pan: {},
   scale: {},

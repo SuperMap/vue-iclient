@@ -67,6 +67,10 @@ export { default as ColorPicker } from '../common/color-picker/ColorPicker';
 export { default as TimeSlider } from '../common/time-slider/TimeSlider';
 export { default as TimeRange } from '../common/time-range/TimeRange';
 export { default as TimePlayer } from '../common/time-line/TimeLine';
+export { default as Menu } from '../common/menu/Menu';
+export { default as MenuItem } from '../common/menu/MenuItem';
+export { default as SubMenu } from '../common/menu/SubMenu';
+export { default as Dropdown } from '../common/dropdown/Dropdown';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
@@ -114,6 +118,7 @@ export { default as OpenFile } from './open-file/OpenFile';
 export { default as Query } from './query/Query';
 export { default as Search } from './search/Search';
 export { default as TextList } from './text-list/TextList';
+export { default as FeatureTable } from './feature-table/FeatureTable';
 
 export { default as NcpMap } from './ncp-map/NcpMap';
 export { default as Compare } from './compare/Compare';

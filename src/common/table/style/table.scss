@@ -98,6 +98,14 @@
     background: $table-header-bg;
   }
 
+  &-tbody > tr {
+    &:hover {
+      &#{$table-prefix}-row-selected > td {
+        background: $table-selected-row-hover-bg;
+      }
+    }
+  }
+
   &-filter-dropdown {
     .#{$ant-prefix}-dropdown-menu {
       .#{$ant-prefix}-dropdown-submenu-contain-selected {

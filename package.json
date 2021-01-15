@@ -44,6 +44,7 @@
     "echarts-liquidfill": "^2.0.5",
     "flv.js": "^1.5.0",
     "geographic-coordinate-converter": "^1.0.0",
+    "interactjs": "^1.10.2",
     "js-cookie": "^2.2.0",
     "leaflet": "1.5.1",
     "lodash.assignin": "^4.2.0",
