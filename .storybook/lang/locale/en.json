@@ -396,6 +396,12 @@
     },
     "fillExtrusionLayer": {
       "title": "FillExtrusion Layer"
+    },
+    "compass": {
+      "title": "Compass"
+    },
+    "draw": {
+      "title": "Draw"
     }
   }
 }

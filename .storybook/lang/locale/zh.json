@@ -396,6 +396,12 @@
     },
     "fillExtrusionLayer": {
       "title": "FillExtrusionLayer 三维拉伸图层"
+    },
+    "compass": {
+      "title": "Compass 指南针"
+    },
+    "draw": {
+      "title": "Draw 绘制"
     }
   }
 }

@@ -102,6 +102,7 @@ export { default as TdtSearch } from './tdt/search/TdtSearch';
 export { default as TdtRoute } from './tdt/route/TdtRoute';
 export { default as TdtMapSwitcher } from './tdt/mapSwitcher/TdtMapSwitcher';
 export { default as CoordinateConversion } from './web-map/control/coordinate-conversion/CoordinateConversion';
+export { default as Compass } from './web-map/control/compass/Compass';
 
 export { default as Chart } from './chart/Chart';
 export { default as WebMap } from './web-map/WebMap';

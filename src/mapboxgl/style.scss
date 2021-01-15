@@ -55,6 +55,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './web-map/control/mini-map/style/mini-map.scss';
 @import './web-map/control/coordinate-conversion/style/coordinate-conversion.scss';
 @import './web-map/control/fill-extrusion/style/fill-extrusion.scss';
+@import './web-map/control/compass/style/compass.scss';
 @import './tdt/results/style/areaResult.scss';
 @import './tdt/results/style/lineResult.scss';
 @import './tdt/results/style/nothingResult.scss';

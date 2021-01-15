@@ -9,12 +9,13 @@
     :split-line="splitLine"
     class="sm-component-draw"
   >
-    <div class="sm-component-draw__panel" :style="[getBackgroundStyle, getTextColorStyle]">
+    <div class="sm-component-draw__panel" :style="getTextColorStyle">
       <span
         v-for="item in modes"
         :key="item.icon"
         :class="['sm-component-draw__draw-item', {'sm-component-draw__draw-active': activeMode && activeMode === item.value}]"
         :title="item.title"
+        :style="collapseCardHeaderBgStyle"
         @click="updateMode(item.value)"
       >
         <i :class="`sm-components-icon-${item.icon}`"></i>

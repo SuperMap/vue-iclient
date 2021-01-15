@@ -1,10 +1,10 @@
 # 绘制
 
-<!-- <sm-iframe src="https://iclient.supermap.io/examples/component/components_pan_vue.html"></sm-iframe> -->
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_draw_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map server-url="https://iportal.supermap.io/iportal/" map-id="801571284">
-  <sm-draw position="top-left"></sm-draw>
+  <sm-draw :collapsed="false"></sm-draw>
 </sm-web-map>
 ```
 

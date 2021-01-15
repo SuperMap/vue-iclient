@@ -4,20 +4,33 @@
 
 @include b(draw) {
   @include e(panel) {
-    padding: 8px;
+    padding: 16px;
+    padding-right: 0px;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.26);
   }
 
   @include e(draw-item) {
     display: inline-block;
     vertical-align: middle;
-    width: 36px;
-    height: 36px;
-    line-height: 36px;
+    width: 40px;
+    height: 28px;
+    line-height: 28px;
     text-align: center;
     cursor: pointer;
     &:hover {
       color: $hover-color;
+    }
+    &:first-child {
+      border-radius: 4px 0px 0px 4px;
+    }
+    &:nth-child(2) {
+      margin: 0 1px;
+    }
+    &:nth-child(3) {
+      border-radius: 0px 4px 4px 0px;
+    }
+    &:last-child {
+      background-color: transparent !important;
     }
     i {
       font-size: 14px;
@@ -25,6 +38,7 @@
   }
 
   @include e(draw-active) {
-    color: $primary-color;
+    background-color: $primary-color !important;
+    color: $white !important;
   }
 }
