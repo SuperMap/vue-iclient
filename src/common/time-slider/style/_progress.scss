@@ -40,7 +40,6 @@
 .sm-component-time-slider .sm-time-tooltip {
   @include background-color-with-alpha(#fff, 0.8);
   @include border-radius(0.3em);
-  width: 4em;
   color: #000;
   float: right;
   font-family: Arial, Helvetica, sans-serif;
@@ -65,7 +64,6 @@
 .sm-component-time-slider .sm-progress-control .sm-mouse-display {
   display: none;
   position: absolute;
-  width: 1px;
   height: 100%;
   background-color: #000;
   z-index: 1;
@@ -76,7 +74,8 @@
 }
 
 .sm-component-time-slider .sm-progress-control:hover .sm-mouse-display {
-  display: block;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .sm-user-inactive .sm-progress-control .sm-mouse-display {
@@ -100,5 +99,4 @@
 
 .sm-mouse-display {
   pointer-events: none;
-  top: -5px
 }

@@ -42,7 +42,8 @@
     "xml-js": "1.6.8",
     "utm": "^1.1.1",
     "clipboard": "^2.0.6",
-    "geographic-coordinate-converter": "^1.0.0"
+    "geographic-coordinate-converter": "^1.0.0",
+    "interactjs": "^1.10.2"
   },
   "peerDependencies": {
     "vue": ">=2.5.0"

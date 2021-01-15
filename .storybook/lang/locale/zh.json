@@ -284,12 +284,12 @@
     "timeSlider": {
       "title": "TimeSlider 时间轴（条）",
       "style": "不同样式",
-      "duration": "总时长"
+      "duration": "时长"
     },
     "timeLine": {
       "title": "TimeLine 时间轴（点）",
       "style": "不同样式",
-      "formatter": "总时长"
+      "formatter": "格式"
     },
     "timeRange": {
       "title": "TimeRange 时间轴（段）",

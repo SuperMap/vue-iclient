@@ -278,9 +278,11 @@ export default class SmTimeSlider extends Mixins(Theme) {
       return progress;
     }
     this.progress_ = progress;
-    this.requestNamedAnimationFrame('Slider#update', () => {
-      this.sliderBarWidth = (progress * 100).toFixed(2) + '%';
-    });
+    if (!this.draggable) {
+      this.requestNamedAnimationFrame('Slider#update', () => {
+        this.sliderBarWidth = (progress * 100).toFixed(2) + '%';
+      });
+    }
     this.sliderBarWidth = (progress * 100).toFixed(2) + '%';
     return progress;
   }

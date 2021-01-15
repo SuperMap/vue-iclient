@@ -56,7 +56,7 @@ export const StyleTimeSlider = () => ({
           backgroundColor: 'transparent'
         },
         checkpointStyle: { color: 'blue', borderColor: 'blue' },
-        themeStyle: {}
+        themeStyle: { color: 'red' }
       }
     };
   },
