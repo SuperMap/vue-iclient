@@ -14,7 +14,6 @@
 
 <script lang='ts'>
 import Theme from '../_mixin/Theme';
-// @ts-ignore
 import ECharts from 'vue-echarts';
 import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';
 import UniqueId from 'lodash.uniqueid';

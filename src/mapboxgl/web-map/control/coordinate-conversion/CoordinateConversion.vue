@@ -39,6 +39,7 @@
           size="small"
           allowClear
           @input="handleInput"
+          @change="handleBlur"
           @blur="handleBlur"
         ></sm-input>
         <div class="sm-component-coordinate-conversion__icons">
@@ -50,14 +51,15 @@
           ></sm-icon>
           <sm-icon
             type="edit"
-            :class="[isCapture && 'sm-component-coordinate-conversion__hover']"
-            :title="$t('coordinateConversion.capture')"
+            :class="[!isCapture && 'sm-component-coordinate-conversion__hover']"
+            :title="isCapture?$t('coordinateConversion.capture'):$t('coordinateConversion.realTime')"
             @click="handleCapture"
           ></sm-icon>
           <sm-icon
             v-if="isLocation"
             type="environment"
             :title="$t('coordinateConversion.location')"
+            :class="[enableLocation && 'sm-component-coordinate-conversion__hover', 'sm-component-coordinate-conversion__location']"
             @click="handleLocation"
           ></sm-icon>
         </div>
@@ -126,8 +128,9 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   activeDisplayFormat: string = 'X°‎, Y°‎';
   inputValue: string = '';
   iconValue: string = '';
-  coordinate: Coordinate = { lng: 0, lat: 0 };
+  coordinate: Coordinate | null= { lng: 0, lat: 0 };
   clipboard:any;
+  enableLocation: boolean = true;
   @Prop({ default: 'sm-components-icon-change' }) iconClass: string;
   @Prop({ default: false }) collapsed: boolean;
   @Prop({ default: true }) isLocation: boolean;
@@ -189,11 +192,17 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     if (!this.isCapture) {
       this.handleCapture();
     }
+    this.inputValue = e.target.value;
+    this.enableLocation = true;
   }
   handleBlur(e) {
     this.coordinate = this.reverseCoordinateFormat(e.target.value);
   }
   handleLocation(val, map = this.map) {
+    if (!this.coordinate) {
+      return;
+    }
+    this.enableLocation = false;
     if (!this.isCapture) {
       this.handleCapture();
     }
@@ -205,7 +214,11 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     this.activeDisplayFormat = this.displayFormat[val];
     this.inputValue = this.formatCoordinate(this.coordinate);
   }
-  formatCoordinate(coordinate: Coordinate, format = this.activeDisplayFormat, map = this.map) {
+  formatCoordinate(coordinate: Coordinate | null, format = this.activeDisplayFormat, map = this.map) {
+    if (!coordinate) {
+      this.viewModel._clearMarker();
+      return null;
+    }
     switch (this.activeFormat) {
       case 'XY':
         return this.getXY(coordinate, format);
@@ -234,6 +247,10 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   reverseCoordinateFormat(value = this.inputValue, format = this.activeDisplayFormat) {
     value = value.replace(/^\s+|\s+$ /, '');
     let coor: Array<string | number> = value.split(' ');
+    if (!value) {
+      this.viewModel._clearMarker();
+      return null;
+    }
     switch (this.activeFormat) {
       case 'XY':
         return this.getCoorByXY(value, format);

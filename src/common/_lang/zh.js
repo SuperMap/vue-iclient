@@ -290,7 +290,8 @@ export default {
     inputPlaceHolder: '请输入坐标',
     copy: '复制',
     location: '定位至',
-    capture: '捕捉'
+    capture: '捕捉',
+    realTime: '实时'
   },
   // layer
   dataFlow: {

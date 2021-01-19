@@ -44,8 +44,9 @@ type Label = {
 type lineStyle = {
   height: string;
 };
-
-@Component
+@Component({
+  name: 'SmTimeSlider'
+})
 export default class SmTimeSlider extends Mixins(Theme) {
   mouseTime: string | number = 0;
   mouseLeft = 0;

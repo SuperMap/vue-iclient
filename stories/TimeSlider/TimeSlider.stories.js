@@ -13,8 +13,16 @@ export const BasicTimeSlider = () => ({
       data: [1599810915, 1599810920, 1599810925, 1599810930, 1599810935, 1599810940, 1599810945]
     };
   },
+  methods: {
+    changed(e) {
+      console.log(e);
+    },
+    playChanged(e) {
+      console.log('play state', e);
+    }
+  },
   template: `
-  <SmTimeSlider :data="data"></SmTimeSlider>
+  <SmTimeSlider :data="data" style="width:100%" @timeplayerchanged="changed" @timeplayerplaychanged="playChanged"></SmTimeSlider>
   `
 });
 BasicTimeSlider.story = {
@@ -29,10 +37,10 @@ export const DurationTimeSlider = () => ({
     };
   },
   template: `
-  <SmTimeSlider :duration="duration"></SmTimeSlider>
+  <SmTimeSlider :duration="duration" style="width:100%"></SmTimeSlider>
   `
 });
-BasicTimeSlider.story = {
+DurationTimeSlider.story = {
   name: toI18n('basicComponent.timeSlider.duration')
 };
 
@@ -60,7 +68,7 @@ export const StyleTimeSlider = () => ({
       }
     };
   },
-  template: `<SmTimeSlider v-bind="timeSliderProps"></SmTimeSlider>`
+  template: `<SmTimeSlider v-bind="timeSliderProps" style="width:100%"></SmTimeSlider>`
 });
 StyleTimeSlider.story = {
   name: toI18n('basicComponent.timeSlider.style')

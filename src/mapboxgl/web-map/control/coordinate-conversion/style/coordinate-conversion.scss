@@ -6,6 +6,16 @@
 @import '../../../../../common/select/style/select.scss';
 @import '../../../../../common/icon/style/icon.scss';
 
+@mixin disabled($color: $btn-disable-color, $background: $btn-disable-bg, $border: $btn-disable-border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+}
+
+@mixin active($color: $primary-color) {
+  color: $primary-color;
+}
+
 @include b(coordinate-conversion) {
   $coordinate-conversion-prefix: &;
   $collapse-prefix: #{$ant-prefix}-collapse;
@@ -41,13 +51,12 @@
   }
 
   @include e(format) {
-    width: 30%;
+    width: 95px;
     min-width: 20%;
   }
   @include e(a-input) {
     width: 70%;
   }
-
   @include e(icons) {
     display: inline-flex;
     padding: 0 5px;
@@ -60,9 +69,13 @@
       color: #ccc;
     }
     & .sm-component-coordinate-conversion__disabled {
-      color: #ccc;
+      @include disabled();
       cursor: not-allowed;
-      pointer-events: none;
+    }
+  }
+  @include e(location) {
+    &:hover {
+      @include active();
     }
   }
 }

@@ -3,7 +3,7 @@ import theme from '../setThemeMixin/setTheme';
 
 export default {
   title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.timeRange.title')}`,
-  id: 'BasicComponents/time-slider'
+  id: 'BasicComponents/time-range'
 };
 
 export const BasicTimeRange = () => ({
@@ -24,8 +24,13 @@ export const BasicTimeRange = () => ({
       ]
     };
   },
+  methods: {
+    changed(e) {
+      console.log(e);
+    }
+  },
   template: `
-  <SmTimeRange :data="data"></SmTimeRange>
+  <SmTimeRange :data="data" style="width:100%" @datazoom="changed"></SmTimeRange>
   `
 });
 BasicTimeRange.story = {
@@ -61,7 +66,7 @@ export const StyleTimeRange = () => ({
       }
     };
   },
-  template: `<SmTimeRange v-bind="timeRangeProps"></SmTimeRange>`
+  template: `<SmTimeRange v-bind="timeRangeProps" style="width:100%"></SmTimeRange>`
 });
 StyleTimeRange.story = {
   name: toI18n('basicComponent.timeRange.style')

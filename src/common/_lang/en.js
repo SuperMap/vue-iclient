@@ -289,7 +289,8 @@ export default {
     inputPlaceHolder: 'Input coordinate',
     copy: 'copy',
     location: 'location',
-    capture: 'capture'
+    capture: 'capture',
+    realTime: 'real-time'
   },
   // layer
   dataFlow: {
