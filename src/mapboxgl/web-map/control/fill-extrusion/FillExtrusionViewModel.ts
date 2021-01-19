@@ -28,6 +28,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   sourceLayerList: sourceLayerListParams;
   _initSourceListFn: (data: mapboxglTypes.MapStyleDataEvent) => void;
+  fire: any;
 
   constructor() {
     super();
@@ -97,7 +98,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
   }
 
   removed(): void {
-    this.sourceNames = [];
+    this.sourceLayerList = {};
     this.map.off('styledata', this._initSourceListFn);
   }
 }
