@@ -5,9 +5,14 @@ import transformScale from '@turf/transform-scale';
  * @class FeatureTableViewModel
  * @description FeatureTable viewModel.
  * @param {Object} map - map实例对象。
- * @fires layersUpdated - 图层更新
+ * @fires mapLoaded - 地图加载
  * @extends mapboxgl.Evented
  */
+
+interface MapEventCallBack {
+  (e: mapboxglTypes.MapMouseEvent): void;
+}
+
 
 const HIGHLIGHT_COLOR = '#01ffff';
 const defaultPaintTypes = {
@@ -40,9 +45,24 @@ const mbglStyle = {
 };
 
 class FeatureTableViewModel extends mapboxgl.Evented {
+  map: mapboxglTypes.Map;
+
+  layerStyle: Object;
+
+  selectedKeys: Array<string>;
+
+  diffKeys: Array<string>;
+
+  fire: any;
+
+  layerName: string
+
+  selectLayerFn: MapEventCallBack
+
   constructor(options) {
     super();
     this.layerStyle = options.layerStyle || {};
+    this.layerName = options.layerName;
     this.selectedKeys = [];
     this.diffKeys = [];
     this.selectLayerFn = this._selectLayerFn.bind(this);
@@ -55,8 +75,10 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   }
 
   _selectLayerFn(e) {
-    let pos = [e.point.x, e.point.y];
-    const featuresInfo = this.map.queryRenderedFeatures(pos);
+    let pos:mapboxglTypes.LngLatLike = [e.point.x, e.point.y];
+    const featuresInfo = this.map.queryRenderedFeatures(pos, {
+      layers: [this.layerName]
+    });
     if (featuresInfo && featuresInfo.length) {
       this.fire('changeSelectLayer', featuresInfo[0]);
     }
@@ -70,42 +92,98 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.map.off('click', this.selectLayerFn);
   }
 
-  bindQueryRenderedFeatures(feature) {
-    if (!feature || !feature.geometry) {
-      return;
+  //  数据变动 enabled change应该清空地图状态
+  zoomToFeatures(selectedKeys) {
+    if (Object.keys(selectedKeys).length) {
+      let features = Object.keys(selectedKeys).map(key => {
+        return selectedKeys[key];
+      });
+      const geojson = {
+        type: 'FeatureCollection',
+        features
+      };
+      let bounds = bbox(transformScale(geojson, 2));
+      this.map.fitBounds(
+        [
+          [bounds[0], bounds[1]],
+          [bounds[2], bounds[3]]
+        ],
+        { maxZoom: this.map.getMaxZoom() }
+      );
     }
-    let coords = feature.geometry.coordinates;
-    let point = this.map.project(coords);
-    let features = this.map.queryRenderedFeatures(point);
-    return features;
   }
 
-  addOverlayToMap(layer, filter, selectedKeys, associateWithMap) {
-    let { centerToFeature } = associateWithMap;
-    if (!layer) {
-      return;
+  _inMapExtent(featureObj) {
+    const mapbounds:mapboxglTypes.LngLatBoundsLike = this.map.getBounds();
+    if (this.diffKeys.length) {
+      return this.diffKeys.every(key => {
+        let latlng = featureObj[key].geometry.coordinates;
+        // @ts-ignore
+        return mapbounds.contains(latlng);
+      });
     }
+    return false;
+  }
+
+  addOverlaysToMap(selectedKeys, associateWithMap) {
+    // 先去掉缓存
+    // 去掉被移除的
+    this.selectedKeys.forEach((key, index) => {
+      if (!Object.keys(selectedKeys).includes(key)) {
+        this.selectedKeys.splice(index, 1);
+      }
+    });
+    // 添加被添加的
+    Object.keys(selectedKeys).forEach(key => {
+      if (!this.selectedKeys.includes(key)) {
+        this.selectedKeys.push(key);
+        this.diffKeys.push(key);
+      }
+    });
+    let filter:any= ['any'];
+    let feature: any = {};
+    this.selectedKeys.forEach(key => {
+      const feature = selectedKeys[key];
+      if (feature) {
+        filter.push(['==', 'index', feature.properties['index']]);
+      }
+    });
+    this.addOverlayToMap(filter, selectedKeys, associateWithMap);
+  }
+
+  addOverlayToMap(filter, selectedKeys, associateWithMap) {
+    let { centerToFeature } = associateWithMap;
+    let layer = this.map.getLayer(this.layerName);
     let { type, id, paint } = layer;
     // 如果是面的strokline,处理成面
     if (id.includes('-strokeLine') && type === 'line') {
       type = 'fill';
       paint = {};
     }
-    let layerStyle = this._setDefaultPaintWidth(this.map, type, id, defaultPaintTypes[type], this.layerStyle);
+    let layerStyle = this._setDefaultPaintWidth(type, id, defaultPaintTypes[type], this.layerStyle);
+    id = id + '-feature-table-SM-highlighted';
+    if (!this.diffKeys.length && !this.selectedKeys.length) {
+      this.map.setFilter(id, filter);
+      this.removeOverlayer();
+    }
+
     if (['circle', 'fill', 'line'].includes(type)) {
-      id = id + '-feature-table-SM-highlighted';
-      layerStyle = layerStyle[type];
-      let highlightLayer = Object.assign({}, layer, {
-        id,
-        type,
-        paint: (layerStyle && layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
-        layout: (layerStyle && layerStyle.layout) || { visibility: 'visible' },
-        filter
-      });
-      this.map.addLayer(highlightLayer);
-      let latlng = selectedKeys[this.diffKeys[0]].geometry.coordinates;
-      if ((centerToFeature && latlng) || (!centerToFeature && !this._inMapExtent(latlng))) {
-        this.map.flyTo({ center: latlng });
+      if (this.map.getLayer(id)) {
+        this.map.setFilter(id, filter);
+      } else {
+        layerStyle = layerStyle[type];
+        let highlightLayer = Object.assign({}, layer, {
+          id,
+          type,
+          paint: (layerStyle && layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
+          layout: (layerStyle && layerStyle.layout) || { visibility: 'visible' },
+          filter
+        });
+        this.map.addLayer(highlightLayer);
+      }
+
+      if ((this.diffKeys.length && centerToFeature) || (!centerToFeature && !this._inMapExtent(selectedKeys))) {
+        this.zoomToFeatures(selectedKeys);
       }
     }
     if (type === 'fill') {
@@ -127,66 +205,9 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     }
     this.diffKeys = [];
   }
-  //  数据变动 enabled change应该清空地图状态
-  zoomToFeatures(selectedKeys, associateWithMap) {
-    let { zoomToFeature } = associateWithMap;
-    if (!zoomToFeature) {
-      if (Object.keys(selectedKeys).length) {
-        let features = Object.keys(selectedKeys).map(key => {
-          return selectedKeys[key];
-        });
-        const geojson = {
-          type: 'FeatureCollection',
-          features
-        };
-        let bounds = bbox(transformScale(geojson, 2));
-        this.map.fitBounds(
-          [
-            [bounds[0], bounds[1]],
-            [bounds[2], bounds[3]]
-          ],
-          { maxZoom: this.map.getMaxZoom() }
-        );
-      }
-    }
-  }
 
-  _inMapExtent(latlng) {
-    const mapbounds = this.map.getBounds();
-    return mapbounds && mapbounds.contains(latlng);
-  }
-
-  addOverlaysToMap(selectedKeys, associateWithMap) {
+  removeOverlayer() {
     const layers = this.map.getStyle().layers;
-    this.removeOverlayer(layers);
-    // 先去掉缓存
-    // 去掉被移除的
-    this.selectedKeys.forEach((key, index) => {
-      if (!Object.keys(selectedKeys).includes[key]) {
-        this.selectedKeys.splice(index, 1);
-      }
-    });
-    // 添加被添加的
-    Object.keys(selectedKeys).forEach(key => {
-      if (!this.selectedKeys.includes[key]) {
-        this.selectedKeys.push(key);
-        this.diffKeys.push(key);
-      }
-    });
-    let filter:any = ['any'];
-    let feature:any = {};
-    Object.keys(selectedKeys).forEach(key => {
-      const features = this.bindQueryRenderedFeatures(selectedKeys[key]);
-      if (features && features.length) {
-        feature = features[0];
-        filter.push(['==', 'index', feature.properties['index']]);
-      }
-    });
-    this.addOverlayToMap(feature.layer, filter, selectedKeys, associateWithMap);
-  }
-
-  removeOverlayer(layers = this.layers) {
-    layers = layers || this.map.getStyle().layers;
     layers &&
       layers.forEach(layerInfo => {
         let layerId = layerInfo.id;
@@ -199,14 +220,14 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       });
   }
 
-  _setDefaultPaintWidth(map, type, layerId, paintTypes, layerStyle) {
+  _setDefaultPaintWidth(type, layerId, paintTypes, layerStyle) {
     if (!paintTypes) {
       return;
     }
     paintTypes.forEach(paintType => {
       let mapPaintProperty;
       if (type !== 'fill') {
-        mapPaintProperty = map.getLayer(layerId) && map.getPaintProperty(layerId, paintType);
+        mapPaintProperty = this.map.getLayer(layerId) && this.map.getPaintProperty(layerId, paintType);
       } else {
         type = 'stokeLine';
       }
@@ -219,6 +240,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   }
 
   _initFeatures(layerName) {
+    // @ts-ignore
     return this.map.getSource(layerName).getData().features;
   }
 

@@ -3,20 +3,28 @@
     <div class="sm-component-feature-table__header">
       <div class="sm-component-feature-table__count">
         <span v-if="layerName" class="layer-name">{{ layerName }}</span>
-        <span v-if="statistics.showTotal" class="total-numbers">({{ this.$t('featureTable.feature') }}：{{ tableData.length || 0 }},</span>
-        <span v-if="statistics.showSelect" class="select-numbers">{{ this.$t('featureTable.selected') }}：{{ selectedRowKeys.length || 0 }})</span>
+        <span v-if="statistics.showTotal" class="total-numbers">({{ this.$t('featureTable.feature') }}：{{ tableData.length || 0 }},</span
+        >
+        <span v-if="statistics.showSelect" class="select-numbers">{{ this.$t('featureTable.selected') }}：{{ selectedRowKeys.length || 0 }})</span
+        >
       </div>
       <div class="sm-component-feature-table__menu">
         <sm-dropdown v-if="toolbar.enabled">
           <div class="ant-dropdown-link"><sm-icon type="menu" /></div>
           <sm-menu slot="overlay">
             <sm-menu-item>
-              <div v-if="toolbar.showClearSelected" @click="clearSelectedRowKeys">{{ this.$t('featureTable.clearSelected') }}</div>
+              <div v-if="toolbar.showClearSelected" @click="clearSelectedRowKeys">
+                {{ this.$t('featureTable.clearSelected') }}
+              </div>
             </sm-menu-item>
             <sm-menu-item v-if="toolbar.showZoomToFeature">
               <div @click="setZoomToFeature">{{ this.$t('featureTable.zoomToFeatures') }}</div>
             </sm-menu-item>
-            <sm-sub-menu v-if="toolbar.showColumnsControl" key="columnsControl" :title="this.$t('featureTable.columnsControl')">
+            <sm-sub-menu
+              v-if="toolbar.showColumnsControl"
+              key="columnsControl"
+              :title="this.$t('featureTable.columnsControl')"
+            >
               <sm-menu-item v-for="(column, index) in columns" :key="index">
                 <sm-checkbox :checked="column.visible" @change="handleColumnVisible(column)" />
                 {{ column.title }}
@@ -194,7 +202,7 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
   }
   @Watch('layerName')
   layerNameChanged(val) {
-    this.viewModel = new FeatureTableViewModel({ layerStyle: this.layerStyle });
+    this.initViewModel({ layerName: val, layerStyle: this.layerStyle });
     this._initFeatures();
   }
 
@@ -219,39 +227,35 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
 
   created() {
     this.featureMap = {};
-    this.viewModel = new FeatureTableViewModel({ layerStyle: this.layerStyle });
+    this.initViewModel({ layerName: this.layerName, layerStyle: this.layerStyle });
     this._eventsInit();
   }
 
+  initViewModel(options) {
+    this.viewModel = new FeatureTableViewModel(options);
+  }
+
   handleFeatures(data) {
-    if (
-      Array.isArray(data) &&
-      data.length &&
-      data[0].hasOwnProperty('properties') &&
-      data[0].hasOwnProperty('geometry')
-    ) {
-      let features = data;
-      let content = [];
-      let headers = features[0].properties;
-      this.handleColumns(headers);
-      features &&
-        features.forEach((feature, index) => {
-          let properties = feature.properties;
-          let coordinates = feature.geometry && feature.geometry.coordinates;
+    let features = data;
+    let content = [];
+    let headers = features[0].properties;
+    this.handleColumns(headers);
+    features &&
+      features.forEach((feature, index) => {
+        let properties = feature.properties;
+        let coordinates = feature.geometry && feature.geometry.coordinates;
 
-          if (!properties) {
-            return;
-          }
+        if (!properties) {
+          return;
+        }
 
-          if (coordinates && coordinates.length) {
-            this.featureMap[index] = feature;
-          }
-          properties.key = index;
-          JSON.stringify(properties) !== '{}' && content.push(properties);
-        });
-      return content;
-    }
-    return data;
+        if (coordinates && coordinates.length) {
+          this.featureMap[index] = feature;
+        }
+        properties.key = index;
+        JSON.stringify(properties) !== '{}' && content.push(properties);
+      });
+    return content;
   }
   handleMapSelectedFeature(feature) {
     let index = +feature.properties.index;
