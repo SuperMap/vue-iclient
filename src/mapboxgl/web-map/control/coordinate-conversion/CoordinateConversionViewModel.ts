@@ -6,7 +6,16 @@ import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
  * @extends mapboxgl.Evented
  */
 
+interface MapEventCallBack {
+  (e: mapboxglTypes.MapMouseEvent): void;
+}
 export default class CoordinateConversionViewModel extends mapboxgl.Evented {
+  map: mapboxglTypes.Map;
+  marker: mapboxglTypes.Marker;
+  _getCoordinateFn: MapEventCallBack;
+  _clickCallbackFn: MapEventCallBack;
+  fire: any;
+  
   constructor() {
     super();
     this.marker = null;
