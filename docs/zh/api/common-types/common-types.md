@@ -8,6 +8,16 @@ import VueiClient from '@supermap/vue-iclient-mapboxgl';
 let CircleStyle = new VueiClient.commontypes.CircleStyle();
 ```
 
+## LayerStyle
+
+点样式
+
+| 参数   | 说明                   | 类型                                                                       | 可选值 | 默认值 |
+| :----- | :--------------------- | :------------------------------------------------------------------------- | :----- | :----- |
+| circle | MapboxGL 点图层样式配置 | [CircleStyle](#circlestyle)                                                | -      | -      |
+| line   | MapboxGL 线图层样式配置 | [LineStyle](#linestyle)                                                    | -      | -      |
+| fill   | MapboxGL 面图层样式配置 | [FillStyle](#fillstyle)                                                    | -      | -      |
+
 ## CircleStyle
 
 点样式
