@@ -71,6 +71,9 @@ export { default as Menu } from '../common/menu/Menu';
 export { default as MenuItem } from '../common/menu/MenuItem';
 export { default as SubMenu } from '../common/menu/SubMenu';
 export { default as Dropdown } from '../common/dropdown/Dropdown';
+export { default as TreeSelect } from '../common/tree-select/TreeSelect.vue';
+export { default as TreeSelectNode } from '../common/tree-select/TreeSelectNode.vue';
+export { default as LayerSelect } from '../common/layer-select/LayerSelect.vue';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
