@@ -46,7 +46,7 @@
     "@turf/rhumb-bearing": "^6.0.1",
     "@turf/transform-scale": "^5.1.5",
     "@types/mapbox-gl": "^0.51.11",
-    "axios": "^0.19.0",
+    "axios": "^0.21.1",
     "lodash.assignin": "^4.2.0",
     "mapbox-gl-compare": "^0.4.0",
     "mapv": "^2.0.34",
