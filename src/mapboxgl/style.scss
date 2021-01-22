@@ -45,7 +45,8 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/time-slider/style/time-slider.scss';
 @import '../common/time-line/style/time-line.scss';
 @import '../common/time-range/style/time-range.scss';
-@import '../common/tree-select//style/tree-select.scss';
+@import '../common/tree-select/style/tree-select.scss';
+@import '../common/layer-select/style/layer-select.scss';
 
 /** control */
 @import './web-map/control/scale/style/scale.scss';

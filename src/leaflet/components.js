@@ -68,6 +68,13 @@ export { default as ColorPicker } from '../common/color-picker/ColorPicker';
 export { default as TimeSlider } from '../common/time-slider/TimeSlider';
 export { default as TimeRange } from '../common/time-range/TimeRange';
 export { default as TimeLine } from '../common/time-line/TimeLine';
+export { default as Menu } from '../common/menu/Menu';
+export { default as MenuItem } from '../common/menu/MenuItem';
+export { default as SubMenu } from '../common/menu/SubMenu';
+export { default as Dropdown } from '../common/dropdown/Dropdown';
+export { default as TreeSelect } from '../common/tree-select/TreeSelect';
+export { default as TreeSelectNode } from '../common/tree-select/TreeSelectNode';
+export { default as LayerSelect } from '../common/layer-select/LayerSelect';
 
 export { default as Identify } from './identify/Identify';
 export { default as Popup } from './popup/Popup';

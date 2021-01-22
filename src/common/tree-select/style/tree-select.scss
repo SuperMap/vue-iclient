@@ -1,6 +1,6 @@
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
-@import '../../input/style/mixin.scss';
+@import '../../select/style/select.scss';
 
 @include b(select-tree) {
   $prefix: &;
@@ -23,6 +23,9 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      &:hover {
+        background-color: $select-item-hover-bg;
+      }
     }
   }
 }

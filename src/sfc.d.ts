@@ -38,3 +38,9 @@ declare module '*.json' {
   const value: any;
   export default value;
 }
+
+interface mapInfoType {
+  map: mapboxglTypes.Map;
+  webmap: any;
+  mapTarget: string;
+}

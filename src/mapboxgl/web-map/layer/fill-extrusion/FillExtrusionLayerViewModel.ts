@@ -41,6 +41,17 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
     this._udpateLayer();
   }
 
+  setFilter(filter: any[]) {
+    if (!this.map) {
+      return;
+    }
+    this.options.filter = filter;
+    const layerId = this.options.layerId;
+    if (this.map.getLayer(layerId)) {
+      this.map.setFilter(layerId, filter);
+    }
+  }
+
   setSourceId(sourceId: string) {
     if (!this.map || !this.map.getSource(sourceId)) {
       return;

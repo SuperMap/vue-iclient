@@ -71,9 +71,9 @@ export { default as Menu } from '../common/menu/Menu';
 export { default as MenuItem } from '../common/menu/MenuItem';
 export { default as SubMenu } from '../common/menu/SubMenu';
 export { default as Dropdown } from '../common/dropdown/Dropdown';
-export { default as TreeSelect } from '../common/tree-select/TreeSelect.vue';
-export { default as TreeSelectNode } from '../common/tree-select/TreeSelectNode.vue';
-export { default as LayerSelect } from '../common/layer-select/LayerSelect.vue';
+export { default as TreeSelect } from '../common/tree-select/TreeSelect';
+export { default as TreeSelectNode } from '../common/tree-select/TreeSelectNode';
+export { default as LayerSelect } from '../common/layer-select/LayerSelect';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';
@@ -108,11 +108,12 @@ export { default as Draw } from './web-map/control/draw/Draw';
 export { default as Identify } from './web-map/control/identify/Identify';
 export { default as LayerManager } from './web-map/control/layer-manager/LayerManager';
 export { default as FillExtrusion } from './web-map/control/fill-extrusion/FillExtrusion';
+export { default as CoordinateConversion } from './web-map/control/coordinate-conversion/CoordinateConversion';
+export { default as Compass } from './web-map/control/compass/Compass';
+
 export { default as TdtSearch } from './tdt/search/TdtSearch';
 export { default as TdtRoute } from './tdt/route/TdtRoute';
 export { default as TdtMapSwitcher } from './tdt/mapSwitcher/TdtMapSwitcher';
-export { default as CoordinateConversion } from './web-map/control/coordinate-conversion/CoordinateConversion';
-export { default as Compass } from './web-map/control/compass/Compass';
 
 export { default as Chart } from './chart/Chart';
 export { default as WebMap } from './web-map/WebMap';

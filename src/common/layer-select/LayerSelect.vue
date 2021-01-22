@@ -3,6 +3,7 @@
     :value="cValue"
     :tree-data="treeData"
     v-bind="$attrs"
+    :multiple="false"
     :dropdownMatchSelectWidth="true"
     @change="handleNodeChange"
   />
@@ -15,16 +16,44 @@ import MapGetter from '../../mapboxgl/_mixin/map-getter';
 import TreeSelect from '../tree-select/TreeSelect.vue';
 import LayerSelectViewModel from './LayerSelectViewModel';
 
+interface selectedDataParam {
+  type: string;
+  id: string;
+}
+
+interface treeSelectDataOption {
+  title: string;
+  value: string;
+  key: string;
+  disabled: boolean;
+  selectable: boolean;
+  children?: treeSelectDataOption[];
+}
+
+interface layerOption {
+  id: string;
+  type: string;
+  visibility: string;
+  maxzoom: number;
+  minzoom: number;
+  source: string;
+  sourceLayer: string;
+}
+
 @Component({
   name: 'SmLayerSelect',
   components: {
     TreeSelect
+  },
+  model: {
+    prop: 'value',
+    event: 'changedata'
   }
 })
-class SmFeatureTable extends Mixins(MapGetter, Theme) {
-  treeData: Array<Object> = [];
-  defaultValue: String = '';
+class LayerSelect extends Mixins(MapGetter, Theme) {
+  treeData: treeSelectDataOption[] = [];
   sourceListDataCache: Object;
+
   @Prop({
     default: () => {
       return {
@@ -33,16 +62,12 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
       };
     }
   })
-  value: Object;
+  value: selectedDataParam;
+  @Prop() defaultValue: selectedDataParam;
   @Prop() filter: Function;
 
   get cValue() {
-    // @ts-ignore
-    if (!this.value.id || !this.value.type) {
-      return this.defaultValue || '';
-    }
-    // @ts-ignore
-    return `${this.value.id}+${this.value.type}`;
+    return this.getSelectedValue(this.value) || this.getSelectedValue(this.defaultValue);
   }
 
   created() {
@@ -50,8 +75,14 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
     this.viewModel.on('layersupdated', this.layerUpdate);
   }
 
+  getSelectedValue(selectedData: selectedDataParam): string {
+    if (!selectedData || !selectedData.id || !selectedData.type) {
+      return '';
+    }
+    return `${selectedData.id}+${selectedData.type}`;
+  }
+
   layerUpdate({ sourceList }) {
-    console.log('sourceList', sourceList);
     this.treeData = this.handleDatas(sourceList);
   }
   handleNodeChange(val, label) {
@@ -60,27 +91,31 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
     this.$emit('change', { id, type }, label, extra);
     this.$emit('changedata', { id, type });
   }
-  handleDatas(sourceList) {
-    const treeData = [];
+  handleDatas(sourceList): treeSelectDataOption[] {
+    const treeData: treeSelectDataOption[] = [];
     this.sourceListDataCache = {};
     Object.keys(sourceList).forEach((sourceName, sIndex) => {
       let { id, type, visibility } = sourceList[sourceName];
       let disabled = false;
+      let selectable = true;
       if (this.filter) {
         let res = this.filter(sourceList[sourceName], 'source') || {};
-        disabled = res && res.disabled;
+        disabled = res.disabled;
+        selectable = res.selectable;
 
         if (typeof res.show === 'boolean' && res.show === false) {
           return;
         }
       }
-      const sourceInfo = {
+      const sourceValue = `${sourceName}+source`;
+      const sourceInfo: treeSelectDataOption = {
         title: sourceName,
-        value: `${sourceName}+source`,
+        value: sourceValue,
         key: `${sIndex}`,
-        disabled: !!disabled
+        disabled: !!disabled,
+        selectable: selectable
       };
-      this.sourceListDataCache[`${sourceName}+source`] = {
+      this.sourceListDataCache[sourceValue] = {
         id,
         type,
         visibility
@@ -89,38 +124,45 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
         const sourceChildren = [];
         Object.keys(sourceList[sourceName].sourceLayerList).forEach((sourceLayerName, slIndex) => {
           let disabled = false;
+          let selectable = true;
+          const sourceLayerOption = {
+            id: null,
+            source: id,
+            sourceLayer: sourceLayerName
+          };
           if (this.filter) {
-            let res = this.filter(sourceLayerName, 'sourceLayer') || {};
+            let res = this.filter(sourceLayerOption, 'sourceLayer') || {};
             disabled = res.disabled;
+            selectable = res.selectable;
 
             if (typeof res.show === 'boolean' && res.show === false) {
               return;
             }
           }
-          const sourceLayerInfo = {
+          const sourceLayerValue = `${sourceLayerName}+sourceLayer`;
+          const sourceLayerInfo: treeSelectDataOption = {
             title: sourceLayerName,
-            value: `${sourceLayerName}+sourceLayer`,
+            value: sourceLayerValue,
             key: `${sIndex}-${slIndex}`,
-            disabled: !!disabled
+            disabled: !!disabled,
+            selectable
           };
 
-          let layers = sourceList[sourceName].sourceLayerList[sourceLayerName];
+          this.sourceListDataCache[sourceLayerValue] = sourceLayerOption;
+          let layers: layerOption[] = sourceList[sourceName].sourceLayerList[sourceLayerName];
           const sourceLayerChildren = this.handleLayers(layers, `${sIndex}-${slIndex}`);
           if (sourceLayerChildren.length) {
-            // @ts-ignore
             sourceLayerInfo.children = sourceLayerChildren;
           }
           sourceChildren.push(sourceLayerInfo);
         });
         if (sourceChildren.length) {
-          // @ts-ignore
           sourceInfo.children = sourceChildren;
         }
       } else {
-        let layers = sourceList[sourceName].layers;
+        let layers: layerOption[] = sourceList[sourceName].layers;
         const layerChildren = this.handleLayers(layers, sIndex);
         if (layerChildren.length) {
-          // @ts-ignore
           sourceInfo.children = layerChildren;
         }
       }
@@ -128,30 +170,30 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
     });
     return treeData;
   }
-  handleLayers(layers, keyString) {
+  handleLayers(layers: layerOption[], keyString: number | string): treeSelectDataOption[] {
     const layerChildren = [];
     layers.forEach((layerInfo, lIndex) => {
       let { id, maxzoom, minzoom, source, sourceLayer, type, visibility } = layerInfo;
       let disabled = false;
+      let selectable = true;
       if (this.filter) {
         let res = this.filter(layerInfo, 'layer') || {};
-        disabled = res && res.disabled;
+        disabled = res.disabled;
+        selectable = res.selectable;
 
         if (typeof res.show === 'boolean' && res.show === false) {
           return;
         }
       }
+      const layerValue = `${layerInfo.id}+layer`;
       layerChildren.push({
         title: layerInfo.id,
-        value: `${layerInfo.id}+layer`,
+        value: layerValue,
         key: `${keyString}-${lIndex}`,
-        disabled: !!disabled
+        disabled: !!disabled,
+        selectable
       });
-      if (!this.defaultValue && !disabled) {
-        this.defaultValue = `${layerInfo.id}+layer`;
-        this.$emit('changedata', { id: `${layerInfo.id}`, type: 'layer' });
-      }
-      this.sourceListDataCache[`${layerInfo.id}+layer`] = {
+      this.sourceListDataCache[layerValue] = {
         id,
         maxzoom,
         minzoom,
@@ -162,7 +204,7 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
       };
     });
     return layerChildren;
-  };
+  }
 
   beforeDestory() {
     this.sourceListDataCache = {};
@@ -171,5 +213,5 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
   }
 }
 
-export default SmFeatureTable;
+export default LayerSelect;
 </script>

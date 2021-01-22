@@ -189,12 +189,14 @@ export default {
   fillExtrusion: {
     title: 'Fill Extrusion',
     polygonLayer: 'Polygon Layer',
-    height: 'Height',
-    choiceField: 'Select field',
-    customField: 'Custom field',
-    customNum: 'Custom value',
+    height: 'Height(meter)',
+    fieldName: 'Field Name',
+    customFieldPlaceholder: 'Fill in the field name',
+    customNum: 'Custom height',
+    multiple: 'Multiple',
     fillColor: 'Fill color',
-    layerOpacity: 'Layer opacity',
+    layerOpacity: 'Opacity',
+    hideOriginalLayer: 'Hide original layer',
     reset: 'Reset'
   },
   tdtResults: {

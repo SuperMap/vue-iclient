@@ -334,8 +334,7 @@ export default {
     }
   },
   watch: {
-    layerNames: function(newVal) {
-      this.layerNames = newVal;
+    layerNames: function() {
       this.initLegendList();
     }
   },

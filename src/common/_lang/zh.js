@@ -190,12 +190,14 @@ export default {
   fillExtrusion: {
     title: '三维拉伸',
     polygonLayer: '面图层',
-    height: '高度',
-    choiceField: '选择字段',
-    customField: '自定义字段',
-    customNum: '自定义数值',
+    height: '高度（米）',
+    fieldName: '字段名',
+    customFieldPlaceholder: '填写字段名称',
+    customNum: '自定义高度',
+    multiple: '倍数',
     fillColor: '填充颜色',
-    layerOpacity: '图层透明度',
+    layerOpacity: '透明度',
+    hideOriginalLayer: '隐藏原图层',
     reset: '重置'
   },
   tdtResults: {
