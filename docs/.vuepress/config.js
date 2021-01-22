@@ -192,6 +192,11 @@ module.exports = {
                   ]
                 }
               ]
+            },
+            {
+              title: '基础类型',
+              collapsable: false,
+              children: ['common-types/common-types']
             }
           ]
         }

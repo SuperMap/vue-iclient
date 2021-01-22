@@ -91,7 +91,7 @@ export default class Control extends Vue {
     return this.mapTarget || parentTarget || Object.keys(mapEvent.$options.getAllMaps())[0];
   }
 
-  controlLoadMapSucceed(map, target): void {
+  controlLoadMapSucceed(map: mapboxglTypes.Map, target: string): void {
     const targetName = this.getControlMapName();
     if (target === targetName) {
       this.mapLoaded(map);
