@@ -18,7 +18,7 @@
         <sm-select
           v-model="activeFormat"
           :placeholder="$t('measure.selectPlaceholder')"
-          class="sm-component-coordinate-conversion__format"
+          class="sm-component-coordinate-conversion__a-select"
           :style="getTextColorStyle"
           :get-popup-container="getPopupContainer"
           :dropdownMatchSelectWidth="true"
@@ -43,25 +43,22 @@
           @blur="handleBlur"
         ></sm-input>
         <div class="sm-component-coordinate-conversion__icons">
-          <sm-icon
-            type="copy"
-            :class="[isCapture?'sm-component-coordinate-conversion__copy':'sm-component-coordinate-conversion__disabled']"
+          <div
+            :class="[isCapture?'sm-component-coordinate-conversion__copy':'sm-component-coordinate-conversion__not-enable','sm-components-icon-copy']"
             :data-clipboard-text="isCapture?inputValue:''"
             :title="$t('coordinateConversion.copy')"
-          ></sm-icon>
-          <sm-icon
-            type="edit"
-            :class="[!isCapture && 'sm-component-coordinate-conversion__hover']"
+          ></div>
+          <div
+            v-if="isLocation"
+            :title="$t('coordinateConversion.location')"
+            :class="[enableLocation && 'sm-component-coordinate-conversion__hovered', 'sm-component-coordinate-conversion__location','sm-components-icon-locate']"
+            @click="handleLocation"
+          ></div>
+          <div
+            :class="[!isCapture && 'sm-component-coordinate-conversion__hovered','sm-components-icon-click']"
             :title="isCapture?$t('coordinateConversion.capture'):$t('coordinateConversion.realTime')"
             @click="handleCapture"
-          ></sm-icon>
-          <sm-icon
-            v-if="isLocation"
-            type="environment"
-            :title="$t('coordinateConversion.location')"
-            :class="[enableLocation && 'sm-component-coordinate-conversion__hover', 'sm-component-coordinate-conversion__location']"
-            @click="handleLocation"
-          ></sm-icon>
+          ></div>
         </div>
       </div>
     </sm-card>
@@ -72,7 +69,6 @@ import Theme from '../../../../common/_mixin/Theme';
 import MapGetter from '../../../_mixin/map-getter';
 import Control from '../../../_mixin/control';
 import BaseCard from '../../../../common/_mixin/Card';
-import SmIcon from '../../../../common/icon/Icon.vue';
 import SmInput from '../../../../common/input/Input.vue';
 import SmSelect from '../../../../common/select/Select.vue';
 import SmCard from '../../../../common/card/Card.vue';
@@ -104,7 +100,6 @@ type Coordinate = {
 @Component({
   name: 'SmCoordinateConversion',
   components: {
-    SmIcon,
     SmInput,
     SmSelect,
     SmCard,
@@ -128,10 +123,10 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   activeDisplayFormat: string = 'X°‎, Y°‎';
   inputValue: string = '';
   iconValue: string = '';
-  coordinate: Coordinate | null= { lng: 0, lat: 0 };
-  clipboard:any;
+  coordinate: Coordinate | null = { lng: 0, lat: 0 };
+  clipboard: any;
   enableLocation: boolean = true;
-  @Prop({ default: 'sm-components-icon-change' }) iconClass: string;
+  @Prop({ default: 'sm-components-icon-coordinate-coversion' }) iconClass: string;
   @Prop({ default: false }) collapsed: boolean;
   @Prop({ default: true }) isLocation: boolean;
   @Prop({

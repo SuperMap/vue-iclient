@@ -1,5 +1,7 @@
 # 时间轴（条）
 
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_timeline_tracklayer.html"></sm-iframe>
+
 ```vue
 <sm-time-slider :duration="6000">
 </sm-time-slider>

@@ -292,7 +292,8 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       const matchStartPositionIndex = this.trackPoints.findIndex(
         (item: GeoJSON.Feature) => item.properties.timestamp >= this.position.currentTimestamp
       );
-      const matchStartPosition = matchStartPositionIndex > -1 ? this.trackPoints[matchStartPositionIndex] : this.trackPoints[0];
+      const matchStartPosition =
+        matchStartPositionIndex > -1 ? this.trackPoints[matchStartPositionIndex] : this.trackPoints[0];
       if (matchStartPosition) {
         // @ts-ignore
         this.startPosition = matchStartPosition.geometry.coordinates;
@@ -728,8 +729,8 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     const extent = this.map.getCRS().extent;
     const maxExtent = Math.max(extent[2] - extent[0], extent[3] - extent[2]) / 512;
     const unitFactor = this._getUnitFactor();
-    const resolution = (maxSize / unitFactor) * scaleFactor * 8 / this.map.getCanvas().width;
-    const zoom = Math.log2(maxExtent / resolution) ;
+    const resolution = ((maxSize / unitFactor) * scaleFactor * 8) / this.map.getCanvas().width;
+    const zoom = Math.log2(maxExtent / resolution);
     this.map.setZoom(zoom);
     this.map.setCenter(this.currentPosition);
   }
@@ -775,10 +776,14 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
         loader.load(
           this.options.url,
           object3d => {
+            object3d = object3d.detail ? object3d.detail.loaderRootNode : object3d;
             const scaleFactor = this._getScaleFactor(object3d);
             object3d.scale.multiplyScalar(scaleFactor);
-
-            loader.addMaterials({ tester: material }, true);
+            if (loader.addMaterials) {
+              loader.addMaterials({ tester: material }, true);
+            } else if (loader.setMaterials) {
+              loader.setMaterials({ tester: material }, true);
+            }
             this.scene.add(object3d);
           },
           xhr => {

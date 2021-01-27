@@ -26,6 +26,8 @@ import UniqueId from 'lodash.uniqueid';
 })
 export default class SmTimeLine extends Mixins(Theme) {
   chartId = UniqueId(`TimeLine-`);
+  timer: any = null;
+  playState: boolean = false;
 
   @Prop({ default: false }) autoPlay: boolean;
   @Prop({ default: true }) loop: boolean;
@@ -76,6 +78,8 @@ export default class SmTimeLine extends Mixins(Theme) {
   })
   controlStyle: Object;
 
+  @Prop() nextEnable: boolean | null;
+
   get color() {
     return this.getColor(0);
   }
@@ -109,9 +113,17 @@ export default class SmTimeLine extends Mixins(Theme) {
     return Object.assign({}, options);
   }
   @Emit('timelinechanged')
-  timelineChange(val) {}
+  timelineChange(val) {
+    if (typeof this.nextEnable === 'boolean') {
+      this.nextStep(val.currentIndex);
+    }
+    return val;
+  }
   @Emit('timelineplaychanged')
-  timelineplaychanged(val) {}
+  timelineplaychanged(val) {
+    this.playState = val.playState;
+    return val;
+  }
   setPlayState(status) {
     if (this.$refs[this.chartId]) {
       // @ts-ignore
@@ -120,6 +132,24 @@ export default class SmTimeLine extends Mixins(Theme) {
         playState: status
       });
     }
+  }
+  nextStep(currentIndex) {
+    if (this.timer) {
+      clearInterval(this.timer);
+    }
+    const playState = this.playState;
+    this.setPlayState(false);
+    this.timer = setInterval(() => {
+      if (this.nextEnable) {
+        clearInterval(this.timer);
+        this.timer = null;
+        if (playState) {
+          setTimeout(() => {
+            this.setPlayState(true);
+          }, Number(this.playInterval));
+        }
+      }
+    }, 100);
   }
 }
 </script>

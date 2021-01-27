@@ -100,7 +100,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     function(context, request, callback) {
       if (/three\/examples\/jsm\/loaders\/GLTFLoader/.test(request)) {
         return callback(null, {
-          root: 'THREE.GLTFLoader',
+          root: 'THREE',
           commonjs: 'three/examples/jsm/loaders/GLTFLoader',
           commonjs2: 'three/examples/jsm/loaders/GLTFLoader',
           amd: 'three/examples/jsm/loaders/GLTFLoader'
@@ -108,7 +108,7 @@ const webpackConfig = merge(baseWebpackConfig, {
       }
       if (/three\/examples\/jsm\/loaders\/OBJLoader2/.test(request)) {
         return callback(null, {
-          root: 'THREE.OBJLoader2',
+          root: 'THREE',
           commonjs: 'three/examples/jsm/loaders/OBJLoader2',
           commonjs2: 'three/examples/jsm/loaders/OBJLoader2',
           amd: 'three/examples/jsm/loaders/OBJLoader2'
