@@ -13,7 +13,19 @@ import { geti18n } from '../../../../common/_lang';
  */
 
 export default class DrawViewModel extends mapboxgl.Evented {
-  constructor(componentName) {
+  map: mapboxglTypes.Map;
+  mapTarget: string;
+  componentName: string;
+  featureIds: Array<string>;
+  activeFeature: any;
+  dashedLayerIds: Array<string>;
+  layerStyleList: Object;
+  linesStaticFilter: Array<string>;
+  defaultStyle: any;
+  fire: any;
+  draw: any;
+
+  constructor(componentName: string) {
     super();
     this.componentName = componentName;
     this.featureIds = []; // 收集当前draw所画的点线面的id
@@ -22,7 +34,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
     this.layerStyleList = {}; // 收集虚线图层的修改的样式信息
   }
 
-  setMap(mapInfo) {
+  setMap(mapInfo: mapInfoType) {
     const { map, mapTarget } = mapInfo;
     this.map = map;
     this.mapTarget = mapTarget;
@@ -30,7 +42,9 @@ export default class DrawViewModel extends mapboxgl.Evented {
   }
 
   _addDrawControl() {
+    // @ts-ignore
     this.draw = drawEvent.$options.getDraw(this.mapTarget);
+    // @ts-ignore
     drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
     this.map.on('draw.create', this._drawCreate.bind(this));
     this.map.on('draw.selectionchange', this._selectionChange.bind(this));
@@ -72,14 +86,14 @@ export default class DrawViewModel extends mapboxgl.Evented {
     // 计算长度和面积的结果
     const { geometry = {} } = feature;
     const coordinates = geometry.coordinates;
-    let result = '';
-    let unit;
+    let result: number;
+    let unit: string;
     let coordinateOfMaxLatitude = [];
     if (geometry.type === 'Point') {
-      result = turfLength(feature, 'kilometers');
+      result = turfLength(feature, { units: 'kilometers' });
       coordinateOfMaxLatitude = coordinates;
     } else if (geometry.type === 'LineString') {
-      result = turfLength(feature, 'kilometers');
+      result = turfLength(feature, { units: 'kilometers' });
       unit = geti18n().t('unit.kilometers');
       coordinateOfMaxLatitude = this._calcMaxLatitudeInCoordinate(coordinates);
     } else if (geometry.type === 'Polygon') {
@@ -115,7 +129,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
     return data[indexOfMax];
   }
 
-  _getFetureStyle(id) {
+  _getFetureStyle(id: string) {
     let layerStyle;
     for (let key in this.layerStyleList) {
       if (this.layerStyleList[key] && this.layerStyleList[key][id]) {
@@ -126,13 +140,14 @@ export default class DrawViewModel extends mapboxgl.Evented {
   }
 
   // 开启绘制
-  openDraw(mode) {
+  openDraw(mode: string) {
+    // @ts-ignore
     drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, true);
     // 绘画线或面
     this.draw.changeMode(mode);
   }
 
-  trash(id) {
+  trash(id: string) {
     if (id) {
       // 给外部调用的API 如天地图传入一个id 删除指定点线面
       this.draw.delete(id);
@@ -147,7 +162,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
       return;
     }
     const selectedIds = this.draw.getSelectedIds();
-    selectedIds.forEach(item => {
+    selectedIds.forEach((item: string) => {
       const matchIndex = this.featureIds.findIndex(id => id === item);
       if (matchIndex > -1) {
         this.featureIds.splice(matchIndex, 1);
@@ -176,8 +191,8 @@ export default class DrawViewModel extends mapboxgl.Evented {
     }
   }
 
-  setDashFilterData(init) {
-    const newFilter = this.dashedLayerIds.reduce(function(filter, layerId) {
+  setDashFilterData(init: Array<string>) {
+    const newFilter = this.dashedLayerIds.reduce(function (filter, layerId) {
       filter.push(layerId);
       return filter;
     }, init);
@@ -197,7 +212,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
     this.map.setFilter('draw-line-static.hot', ['all', this.linesStaticFilter, notDashedFilter]);
   }
 
-  setPaintProperty(key, paint, isDashedLayer) {
+  setPaintProperty(key: string, paint, isDashedLayer: boolean) {
     for (let name in paint) {
       const value = this.setValueOfPaintKey(key, name);
       switch (key) {
@@ -232,7 +247,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
     }
   }
 
-  setValueOfPaintKey(key, name) {
+  setValueOfPaintKey(key: string, name: string) {
     let data = [];
     const featureStyle = this.layerStyleList[key];
     for (let id in featureStyle) {
@@ -280,6 +295,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
   }
 
   _isDrawing() {
+    // @ts-ignore
     return this.draw && drawEvent.$options.getDrawingState(this.mapTarget, this.componentName);
   }
 }

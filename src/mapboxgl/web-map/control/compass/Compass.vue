@@ -1,70 +1,29 @@
 <template>
   <div class="sm-component-compass" :style="[collapseCardHeaderBgStyle, getTextColorStyle]">
-    <sm-button
-      class="sm-component-compass__content"
-      @click="reset"
-    >
+    <sm-button class="sm-component-compass__content" @click="reset">
       <i :class="iconClass" :style="needleStyle"></i>
     </sm-button>
   </div>
 </template>
-<script>
+<script lang="ts">
 import Theme from '../../../../common/_mixin/Theme';
 import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import CompassViewModel from './CompassViewModel';
 import SmButton from '../../../../common/button/Button.vue';
+import { Component, Prop, Mixins } from 'vue-property-decorator';
+import VmUpdater from '../../../../common/_mixin/VmUpdater';
 
-export default {
+interface needleStyleParams {
+  transform?: string;
+}
+
+@Component({
   name: 'SmCompass',
   components: {
     SmButton
   },
-  mixins: [MapGetter, Control, Theme],
-  props: {
-    iconClass: {
-      type: String,
-      default: 'sm-components-icon-compass'
-    },
-    visualizePitch: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      transform: ''
-    };
-  },
-  computed: {
-    needleStyle() {
-      return {
-        transform: this.transform
-      };
-    }
-  },
-  created() {
-    this.viewModel = new CompassViewModel();
-  },
-  methods: {
-    reset() {
-      return this.visualizePitch ? this.viewModel.resetNorthPitch() : this.viewModel.resetNorth();
-    },
-    initAngle() {
-      return this.viewModel.initAngle();
-    },
-    createTransform(angle, pitch) {
-      this.transform = this.visualizePitch
-        ? 'scale(' +
-          1 / Math.pow(Math.cos(pitch * (Math.PI / 180)), 0.5) +
-          ') rotateX(' +
-          pitch +
-          'deg) rotateZ(' +
-          angle * (180 / Math.PI) +
-          'deg)'
-        : 'rotate(' + angle * (180 / Math.PI) + 'deg)';
-    }
-  },
+  viewModelProps: ['visualizePitch'],
   loaded() {
     this.createTransform(this.initAngle().angle, this.initAngle().pitch);
     // CompassViewModel 旋转地图，改变transform的值
@@ -72,5 +31,37 @@ export default {
       this.createTransform(angle, pitch);
     });
   }
-};
+})
+class Compass extends Mixins(MapGetter, Control, Theme, VmUpdater) {
+  needleStyle: needleStyleParams = {
+    transform: ''
+  };
+
+  @Prop({ default: 'sm-components-icon-compass' }) iconClass: string;
+  @Prop({ default: false }) visualizePitch: boolean;
+
+  created() {
+    this.viewModel = new CompassViewModel({ visualizePitch: this.visualizePitch });
+  }
+
+  reset() {
+    return this.viewModel && (this.visualizePitch ? this.viewModel.resetNorthPitch() : this.viewModel.resetNorth());
+  }
+  initAngle() {
+    return this.viewModel.initAngle();
+  }
+  createTransform(angle, pitch) {
+    this.needleStyle.transform = this.visualizePitch
+      ? 'scale(' +
+        1 / Math.pow(Math.cos(pitch * (Math.PI / 180)), 0.5) +
+        ') rotateX(' +
+        pitch +
+        'deg) rotateZ(' +
+        angle * (180 / Math.PI) +
+        'deg)'
+      : 'rotate(' + angle * (180 / Math.PI) + 'deg)';
+  }
+}
+
+export default Compass;
 </script>
