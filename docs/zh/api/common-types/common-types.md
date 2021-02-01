@@ -253,6 +253,7 @@ let iServerMapParameter = new VueiClient.commontypes.iServerMapParameter({
 | maxFeatures     | 要素最大返回数 | number             | -      | 20                       |
 | name            | 服务名称       | string             | -      | 'SuperMap Rest 地图服务' |
 | proxy           | 代理地址       | string \| function | -      | -                        |
+> 注意：旧的 RestMapParameter 基础类型仍然生效，且配置（与 iServerMapParameter 一致）不变。
 
 ## iServerDataParameter
 
@@ -274,6 +275,7 @@ let iServerDataParameter = new VueiClient.commontypes.iServerDataParameter({
 | maxFeatures     | 要素最大返回数 | number             | -      | 20                       |
 | name            | 服务名称       | string             | -      | 'SuperMap Rest 数据服务' |
 | proxy           | 代理地址       | string \| function | -      | -                        |
+> 注意：旧的 RestDataParameter 基础类型仍然生效，且配置（与 iServerDataParameter 一致）不变。
 
 ## iPortalDataParameter
 
