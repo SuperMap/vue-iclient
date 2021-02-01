@@ -390,7 +390,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
       return;
     }
     let highLightList = this.handleCoords(this.selectedRowKeys);
-    this.viewModel && this.viewModel.zoomToFeatures(highLightList, this.associateWithMap);
+    this.viewModel && this.viewModel.zoomToFeatures(highLightList, { zoomToFeature: true });
   }
   clearSelectedRowKeys() {
     this.selectedRowKeys = [];

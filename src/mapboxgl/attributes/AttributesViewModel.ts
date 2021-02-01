@@ -93,7 +93,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   //  数据变动 enabled change应该清空地图状态
   zoomToFeatures(selectedKeys, associateWithMap) {
-    let { zoomToFeatures } = associateWithMap;
+    let { zoomToFeature } = associateWithMap;
     if (Object.keys(selectedKeys).length) {
       let features = Object.keys(selectedKeys).map(key => {
         return selectedKeys[key];
@@ -108,7 +108,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           [bounds[0], bounds[1]],
           [bounds[2], bounds[3]]
         ],
-        { maxZoom: zoomToFeatures ? this.map.getMaxZoom() : this.map.getZoom() }
+        { maxZoom: zoomToFeature ? this.map.getMaxZoom() : this.map.getZoom() }
       );
     }
   }

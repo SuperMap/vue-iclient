@@ -1,6 +1,9 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
 class LayerColorViewModel extends mapboxgl.Evented {
+  map: mapboxglTypes.Map;
+  fire: any;
+  recordResetLayerColor: Object;
   constructor() {
     super();
     this.recordResetLayerColor = {};
@@ -53,8 +56,7 @@ class LayerColorViewModel extends mapboxgl.Evented {
   }
 
   _selectLayerFn(e) {
-    let pos = [e.point.x, e.point.y];
-    const featuresInfo = this.map.queryRenderedFeatures(pos);
+    const featuresInfo = this.map.queryRenderedFeatures([e.point.x, e.point.y]);
     if (featuresInfo && featuresInfo.length) {
       this.fire('changeSelectLayer', featuresInfo[0]);
     }

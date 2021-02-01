@@ -137,7 +137,8 @@ module.exports = {
                     'control/layer-manager',
                     'control/fill-extrusion',
                     'control/coordinate-conversion',
-                    'control/fly-to'
+                    'control/fly-to',
+                    'control/layer-color'
                   ]
                 },
                 {
@@ -189,7 +190,8 @@ module.exports = {
                     'common/video-player',
                     'common/time-line',
                     'common/time-range',
-                    'common/time-slider'
+                    'common/time-slider',
+                    'common/attributes',
                   ]
                 }
               ]
