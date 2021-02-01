@@ -1,13 +1,8 @@
-import { geti18n } from '../_lang';
+import iServerDataParameter from './iServerDataParameter';
 
-export default class RestDataParameter {
+export default class RestDataParameter extends iServerDataParameter {
+  // eslint-disable-next-line
   constructor(options) {
-    this.type = 'iServer';
-    this.url = options.url;
-    this.dataName = options.dataName;
-    this.attributeFilter = options.attributeFilter || null;
-    this.maxFeatures = options.maxFeatures || 20;
-    this.name = options.name || geti18n().t('commontypes.restData');
-    this.proxy = options.proxy;
+    super(options);
   }
 }

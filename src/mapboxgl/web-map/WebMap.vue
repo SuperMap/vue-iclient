@@ -125,7 +125,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   // data
   @Provide() __resizeHandler;
 
-  @Prop() mapId: string | number;
+  @Prop() mapId: string | number | Object;
   @Prop({ default: 'map' }) target: string;
   @Prop({ default: 'https://www.supermapol.com' }) serverUrl: string;
   @Prop() accessToken: string;

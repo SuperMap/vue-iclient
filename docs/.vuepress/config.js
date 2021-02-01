@@ -136,7 +136,8 @@ module.exports = {
                     'control/identify',
                     'control/layer-manager',
                     'control/fill-extrusion',
-                    'control/coordinate-conversion'
+                    'control/coordinate-conversion',
+                    'control/fly-to'
                   ]
                 },
                 {

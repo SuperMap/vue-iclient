@@ -420,6 +420,11 @@
     },
     "draw": {
       "title": "Draw"
+    },
+    "flyTo": {
+      "title": "FlyTo",
+      "manualSwitch": "Manual Switch",
+      "hidenController": "Hide Controller"
     }
   }
 }

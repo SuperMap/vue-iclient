@@ -1,13 +1,8 @@
-import { geti18n } from '../_lang';
+import iServerMapParameter from './iServerMapParameter';
 
-export default class RestMapParameter {
+export default class RestMapParameter extends iServerMapParameter {
+  // eslint-disable-next-line
   constructor(options) {
-    this.type = 'iServer';
-    this.url = options.url;
-    this.layerName = options.layerName;
-    this.attributeFilter = options.attributeFilter || null;
-    this.maxFeatures = options.maxFeatures || 20;
-    this.name = options.name || geti18n().t('commontypes.restMap');
-    this.proxy = options.proxy;
+    super(options);
   }
 }

@@ -199,6 +199,9 @@ export default {
     hideOriginalLayer: 'Hide original layer',
     reset: 'Reset'
   },
+  flyTo: {
+    title: 'Fly To'
+  },
   tdtResults: {
     on: 'on ',
     station: ' station',

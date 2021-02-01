@@ -67,12 +67,13 @@ let layerStyle = {
 
 图层样式
 
-| 参数       | 说明                        | 类型                        | 可选值 | 默认值 |
-| :--------- | :-------------------------- | :-------------------------- | :----- | :----- |
-| circle     | MapboxGL 点图层样式配置     | [CircleStyle](#circlestyle) | -      | -      |
-| line       | MapboxGL 线图层样式配置     | [LineStyle](#linestyle)     | -      | -      |
-| fill       | MapboxGL 面图层样式配置     | [FillStyle](#fillstyle)     | -      | -      |
-| strokeLine | MapboxGL 面图层边框样式配置 | [LineStyle](#linestyle)     | -      | -      |
+| 参数       | 说明                         | 类型                        | 可选值 | 默认值 |
+| :--------- | :--------------------------- | :-------------------------- | :----- | :----- |
+| circle     | MapboxGL 点图层样式配置      | [CircleStyle](#circlestyle) | -      | -      |
+| symbol     | MapboxGL symbol 图层样式配置 | [SymbolStyle](#symbolstyle) | -      | -      |
+| line       | MapboxGL 线图层样式配置      | [LineStyle](#linestyle)     | -      | -      |
+| fill       | MapboxGL 面图层样式配置      | [FillStyle](#fillstyle)     | -      | -      |
+| strokeLine | MapboxGL 面图层边框样式配置  | [LineStyle](#linestyle)     | -      | -      |
 
 ## CircleStyle
 
@@ -232,47 +233,47 @@ let heatMapStyle = new VueiClient.commontypes.HeatMapStyle(
 | paint  | MapboxGL 点图层 Paint 配置  | [paint](https://docs.mapbox.com/mapbox-gl-js/style-spec/#paint-property)   | -      | -      |
 | layout | MapboxGL 点图层 Layout 配置 | [layout](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
 
-## RestMapParameter
+## iServerMapParameter
 
 ```js
 import VueiClient from '@supermap/vue-iclient-mapboxgl';
 
-let restMapParameter = new VueiClient.commontypes.RestMapParameter({
+let iServerMapParameter = new VueiClient.commontypes.iServerMapParameter({
   url: 'http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World',
   attributeFilter: 'SmID>0',
   layerName: 'Capitals@World.1'
 });
 ```
 
-| 参数            | 说明           | 类型   | 可选值 | 默认值                   |
-| :-------------- | :------------- | :----- | :----- | :----------------------- |
-| type            | 服务类型       | string | -      | 'iServer'                |
-| url             | 服务地址       | string | -      | -                        |
-| layerName       | 查询图层名     | string | -      | -                        |
-| attributeFilter | 属性过滤条件   | string | -      | -                        |
-| maxFeatures     | 要素最大返回数 | number | -      | 20                       |
-| name            | 服务名称       | string | -      | 'SuperMap Rest 地图服务' |
+| 参数            | 说明           | 类型               | 可选值 | 默认值                   |
+| :-------------- | :------------- | :----------------- | :----- | :----------------------- |
+| url             | 服务地址       | string             | -      | -                        |
+| layerName       | 查询图层名     | string             | -      | -                        |
+| attributeFilter | 属性过滤条件   | string             | -      | -                        |
+| maxFeatures     | 要素最大返回数 | number             | -      | 20                       |
+| name            | 服务名称       | string             | -      | 'SuperMap Rest 地图服务' |
+| proxy           | 代理地址       | string \| function | -      | -                        |
 
-## RestDataParameter
+## iServerDataParameter
 
 ```js
 import VueiClient from '@supermap/vue-iclient-mapboxgl';
 
-let restDataParameter = new VueiClient.commontypes.RestDataParameter({
+let iServerDataParameter = new VueiClient.commontypes.iServerDataParameter({
   url: host + 'http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data',
   attributeFilter: "NAME='Huang He'",
   dataName: ['World:Countries']
 });
 ```
 
-| 参数            | 说明           | 类型     | 可选值 | 默认值                   |
-| :-------------- | :------------- | :------- | :----- | :----------------------- |
-| type            | 服务类型       | string   | -      | 'iServer'                |
-| url             | 服务地址       | string   | -      | -                        |
-| dataName        | 查询数据集名   | string[] | -      | -                        |
-| attributeFilter | 属性过滤条件   | string   | -      | -                        |
-| maxFeatures     | 要素最大返回数 | number   | -      | 20                       |
-| name            | 服务名称       | string   | -      | 'SuperMap Rest 数据服务' |
+| 参数            | 说明           | 类型               | 可选值 | 默认值                   |
+| :-------------- | :------------- | :----------------- | :----- | :----------------------- |
+| url             | 服务地址       | string             | -      | -                        |
+| dataName        | 查询数据集名   | string[]           | -      | -                        |
+| attributeFilter | 属性过滤条件   | string             | -      | -                        |
+| maxFeatures     | 要素最大返回数 | number             | -      | 20                       |
+| name            | 服务名称       | string             | -      | 'SuperMap Rest 数据服务' |
+| proxy           | 代理地址       | string \| function | -      | -                        |
 
 ## iPortalDataParameter
 
@@ -287,7 +288,6 @@ let iPortalDataParameter = new VueiClient.commontypes.iPortalDataParameter({
 
 | 参数            | 说明                | 类型    | 可选值 | 默认值                  |
 | :-------------- | :------------------ | :------ | :----- | :---------------------- |
-| type            | 服务类型            | string  | -      | 'iPortal'               |
 | url             | 服务地址            | string  | -      | -                       |
 | attributeFilter | 属性过滤条件        | string  | -      | -                       |
 | maxFeatures     | 要素最大返回数      | number  | -      | 20                      |
@@ -329,8 +329,7 @@ let geoJSONParameter = new VueiClient.commontypes.GeoJSONParameter({
 });
 ```
 
-| 参数        | 说明           | 类型                            | 可选值 | 默认值    |
-| :---------- | :------------- | :------------------------------ | :----- | :-------- |
-| type        | 服务类型       | string                          | -      | 'geoJSON' |
-| geoJSON     | GeoJSON 数据   | [GeoJSON](https://geojson.org/) | -      | -         |
-| maxFeatures | 要素最大返回数 | number                          | -      | 20        |
+| 参数        | 说明           | 类型                            | 可选值 | 默认值 |
+| :---------- | :------------- | :------------------------------ | :----- | :----- |
+| geoJSON     | GeoJSON 数据   | [GeoJSON](https://geojson.org/) | -      | -      |
+| maxFeatures | 要素最大返回数 | number                          | -      | 20     |

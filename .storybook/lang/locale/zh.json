@@ -420,6 +420,11 @@
     },
     "draw": {
       "title": "Draw 绘制"
+    },
+    "flyTo": {
+      "title": "FlyTo 飞行定位",
+      "manualSwitch": "手动切换",
+      "hidenController": "隐藏控制器"
     }
   }
 }

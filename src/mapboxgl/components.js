@@ -110,6 +110,7 @@ export { default as LayerManager } from './web-map/control/layer-manager/LayerMa
 export { default as FillExtrusion } from './web-map/control/fill-extrusion/FillExtrusion';
 export { default as CoordinateConversion } from './web-map/control/coordinate-conversion/CoordinateConversion';
 export { default as Compass } from './web-map/control/compass/Compass';
+export { default as FlyTo } from './web-map/control/fly-to/FlyTo';
 
 export { default as TdtSearch } from './tdt/search/TdtSearch';
 export { default as TdtRoute } from './tdt/route/TdtRoute';

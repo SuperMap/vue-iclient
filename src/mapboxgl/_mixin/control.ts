@@ -72,7 +72,7 @@ export default class Control extends Vue {
   addTo(): void {
     this.control = this.initControl();
     this.map.addControl(this.control, this.position);
-    this.$el.classList.add('mapboxgl-ctrl');
+    this.$el && this.$el.classList && this.$el.classList.add('mapboxgl-ctrl');
   }
 
   remove(): void {
@@ -104,7 +104,7 @@ export default class Control extends Vue {
     if (this.filterDelayLoad) {
       this.isShow = true;
       const $el = <HTMLElement>this.$el;
-      $el.style && ($el.style.display = 'block');
+      $el && $el.style && ($el.style.display = 'block');
     }
   }
 }

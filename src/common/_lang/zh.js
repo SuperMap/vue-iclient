@@ -200,6 +200,9 @@ export default {
     hideOriginalLayer: '隐藏原图层',
     reset: '重置'
   },
+  flyTo: {
+    title: '飞行定位'
+  },
   tdtResults: {
     on: '在',
     station: '站',

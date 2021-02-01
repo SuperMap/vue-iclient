@@ -412,7 +412,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createMVTBaseLayer(layerInfo) {
     let url = layerInfo.dataSource.url;
-    if (url.indexOf('/restjsr/') > -1) {
+    if (url.indexOf('/restjsr/') > -1 && !(/\/style\.json$/.test(url))) {
       url += '/style.json';
     }
     // @ts-ignore
