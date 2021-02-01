@@ -1,9 +1,14 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
 
+interface MapEventCallBack {
+  (e: mapboxglTypes.MapMouseEvent): void;
+}
+
 class LayerColorViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   fire: any;
   recordResetLayerColor: Object;
+  selectLayerFn: MapEventCallBack;
   constructor() {
     super();
     this.recordResetLayerColor = {};
