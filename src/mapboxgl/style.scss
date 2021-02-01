@@ -45,6 +45,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/time-range/style/time-range.scss';
 @import '../common/tree-select/style/tree-select.scss';
 @import '../common/layer-select/style/layer-select.scss';
+@import '../common/dropdown/style/dropdown.scss';
 
 /** control */
 @import './web-map/control/scale/style/scale.scss';
@@ -80,8 +81,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './query/style/query.scss';
 @import './open-file/style/open-file.scss';
 @import './text-list/style/text-list.scss';
-@import './feature-table/style/feature-table.scss';
-
+@import './attributes/style/attributes.scss';
 /* layer */
 @import './web-map/layer/animate-marker/style/animate-marker-layer.scss';
 /* tdt */

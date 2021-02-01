@@ -1,35 +1,15 @@
 import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from '../../SourceListModel';
 
 class LayerColorViewModel extends mapboxgl.Evented {
   constructor() {
     super();
-    this.sourceList = {};
-    this.sourceNames = [];
     this.recordResetLayerColor = {};
     this.selectLayerFn = this._selectLayerFn.bind(this);
   }
 
-  _updateLayers() {
-    this.fire('layersUpdated');
-  }
   setMap(mapInfo) {
     const { map } = mapInfo;
     this.map = map;
-    this.updateFn = this._updateLayers.bind(this);
-    this.map.on('styledata', this.updateFn);
-  }
-
-  initLayerList() {
-    this.sourceListModel = new SourceListModel({
-      map: this.map
-    });
-    this.sourceList = this.sourceListModel.getSourceList();
-    this.sourceNames = this.sourceListModel.getSourceNames().reverse();
-    return this.sourceList;
-  }
-  getSourceNames() {
-    return this.sourceNames;
   }
 
   setLayerColor(layerId, property, color) {
@@ -86,12 +66,6 @@ class LayerColorViewModel extends mapboxgl.Evented {
 
   endSelectLayer() {
     this.map.off('click', this.selectLayerFn);
-  }
-
-  removed() {
-    this.sourceList = {};
-    this.sourceNames = [];
-    this.map.off('styledata', this.updateFn);
   }
 }
 export default LayerColorViewModel;

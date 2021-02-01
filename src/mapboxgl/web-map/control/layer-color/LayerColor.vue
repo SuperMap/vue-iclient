@@ -15,30 +15,19 @@
       <div class="sm-component-layer-color__content">
         <div class="sm-component-layer-color__layer">
           <span>{{ $t('layerColor.layer') }}</span>
-          <sm-select v-model="selectLayer">
-            <sm-opt-group v-for="(source, index) in sourceNames" :key="index" :label="source">
-              <sm-select-option
-                v-for="(layerInfo, index1) in selectSourceLayers(source)"
-                :key="index1"
-                :value="layerInfo.value"
-              >
-                {{ layerInfo.value }}
-              </sm-select-option>
-            </sm-opt-group>
-          </sm-select>
+          <sm-layer-select ref="layerSelectRef" v-model="selectLayer" :filter="filtercb" @change="handleLayerChange" />
         </div>
-        <!-- <div v-if="propertyList.length > 1" class="sm-component-layer-color__layer-color-type">
-          <span>{{ $t('layerColor.property') }}</span>
-          <sm-select v-model="selectProperty">
-            <sm-select-option v-for="(property, index) in propertyList" :key="index" :value="property">
-              {{ propertyMap[property] }}
-            </sm-select-option>
-          </sm-select>
-        </div> -->
+        <div :class="['sm-component-layer-color__capture', isSelect && 'selected']">
+          <sm-icon
+            v-if="allowCapture"
+            iconClass="layer-picker"
+            :title="$t('layerColor.capture')"
+            @click.native="toggleSelectLayer"
+          ></sm-icon>
+        </div>
         <div v-for="(propertyInfo, index) in propertyList" :key="index" class="sm-component-layer-color__color-picker">
           <span>{{ propertyMap[propertyInfo.name] }}</span>
           <sm-color-picker
-            v-show="selectLayer"
             :value="propertyInfo.color"
             @change="
               color => {
@@ -48,9 +37,6 @@
           ></sm-color-picker>
         </div>
         <div class="sm-component-layer-color__btn-group">
-          <sm-button v-if="allowIdentify" type="primary" size="small" @click="toggleSelectLayer">{{
-            isSelect ? this.$t('layerColor.deselect') : this.$t('layerColor.select')
-          }}</sm-button>
           <sm-button v-if="allowReset" type="primary" size="small" @click="resetAllLayerColor">{{
             $t('layerColor.reset')
           }}</sm-button>
@@ -68,10 +54,9 @@ import BaseCard from '../../../../common/_mixin/Card';
 import SmCard from '../../../../common/card/Card';
 import SmCollapsePanel from '../../../../common/collapse/Panel';
 import LayerColorViewModel from './LayerColorViewModel';
-import clonedeep from 'lodash.clonedeep';
-import SmSelect from '../../../../common/select/Select';
 import SmColorPicker from '../../../../common/color-picker/ColorPicker';
 import SmOptGroup from '../../../../common/select/OptGroup';
+import SmLayerSelect from '../../../../common/layer-select/LayerSelect';
 
 const TYPE_MAP = {
   circle: ['circle-color', 'circle-stroke-color'],
@@ -84,10 +69,10 @@ export default {
   name: 'SmLayerColor',
   components: {
     SmCard,
-    SmSelect,
     SmCollapsePanel,
     SmColorPicker,
-    SmOptGroup
+    SmOptGroup,
+    SmLayerSelect
   },
   mixins: [MapGetter, Control, Theme, BaseCard],
   props: {
@@ -97,7 +82,7 @@ export default {
     },
     iconClass: {
       type: String,
-      default: 'sm-components-icon-layer-list'
+      default: 'sm-components-icon-layer-color'
     },
     splitLine: {
       type: Boolean,
@@ -113,7 +98,7 @@ export default {
       type: Boolean,
       default: true
     },
-    allowIdentify: {
+    allowCapture: {
       type: Boolean,
       default: true
     }
@@ -121,8 +106,10 @@ export default {
   data() {
     return {
       sourceNames: [],
-      layerList: [],
-      selectLayer: '',
+      selectLayer: {
+        id: '',
+        type: ''
+      },
       selectProperty: '',
       propertyList: [],
       propertyMap: {
@@ -139,29 +126,6 @@ export default {
       isSelect: false
     };
   },
-  computed: {
-    selectSourceLayers() {
-      return function (sourceName) {
-        let res = this.layerList.filter(layerInfo => {
-          return layerInfo.source === sourceName;
-        });
-        return res;
-      };
-    }
-  },
-  watch: {
-    layerList() {
-      if (!this.selectLayer && this.layerList.length) {
-        this.selectLayer = this.layerList[0].value;
-      }
-      this.updateProperty(this.selectLayer);
-    },
-    selectLayer(val) {
-      if (val) {
-        this.updateProperty(val);
-      }
-    }
-  },
   created() {
     this.viewModel = new LayerColorViewModel();
     this.viewModel.on('changeSelectLayer', this._changeSelectLayer);
@@ -169,49 +133,24 @@ export default {
   methods: {
     getPropertyColor(propertyName) {
       if (this.selectLayer) {
-        const color = this.viewModel.getLayerColor(this.selectLayer, propertyName);
+        const { id } = this.selectLayer;
+        const color = this.viewModel.getLayerColor(id, propertyName);
         if (typeof color === 'string') {
           return color || '';
         }
       }
     },
-    transformDatas(sourceList) {
-      let _sourceList = clonedeep(sourceList);
-      let layerList = [];
-      let sourceNames = [];
-      Object.keys(_sourceList).forEach(sourceName => {
-        let source = _sourceList[sourceName];
-        if (source.type === 'raster') {
-          return;
-        }
-        sourceNames.push(source.id);
-        let layers = source.layers;
-        layers.forEach(layer => {
-          layerList.push({
-            source: source.id,
-            value: layer.id,
-            type: layer.type
-          });
-        });
-      });
-      return { layerList, sourceNames };
-    },
-    layerUpdate() {
-      this.$nextTick(() => {
-        this.sourceList = this.viewModel && this.viewModel.initLayerList();
-        const { layerList, sourceNames } = this.transformDatas(this.sourceList);
-        this.sourceNames = sourceNames;
-        this.layerList = layerList;
-      });
-    },
-    _getLayerColorProperty(layerId) {
-      const layerInfo = this.layerList.find(layerInfo => {
-        return layerInfo.value === layerId;
-      });
-      const propertyList = TYPE_MAP[layerInfo.type];
-      return propertyList.map(name => {
-        return { name, color: '' };
-      });
+    filtercb(item, type) {
+      if (item.type === 'raster') {
+        return {
+          show: false
+        };
+      }
+      if (type === 'sourceLayer' || type === 'source') {
+        return {
+          disabled: true
+        };
+      }
     },
     resetAllLayerColor() {
       this.viewModel.resetAllColor();
@@ -227,11 +166,11 @@ export default {
     },
     changePropertyColor(property, color) {
       if (this.selectLayer) {
-        this.viewModel.setLayerColor(this.selectLayer, property, color);
+        this.viewModel.setLayerColor(this.selectLayer.id, property, color);
       }
     },
-    updateProperty(layerId) {
-      this.propertyList = this._getLayerColorProperty(layerId);
+    updateProperty(layerId, type) {
+      this.propertyList = this._getLayerColorProperty(layerId, type);
       if (this.propertyList.length) {
         for (let info of this.propertyList) {
           let color = this.getPropertyColor(info.name);
@@ -241,26 +180,28 @@ export default {
         }
       }
     },
+    _getLayerColorProperty(layerId, type) {
+      const propertyList = TYPE_MAP[type];
+      return propertyList.map(name => {
+        return { name, color: '' };
+      });
+    },
+    handleLayerChange({ id, type }, label, extra) {
+      this.selectLayer.id = id;
+      this.selectLayer.type = type;
+      this.updateProperty(id, extra.type);
+    },
     _changeSelectLayer(featureInfo) {
       const {
-        layer: { id }
+        layer: { id, type }
       } = featureInfo;
-      this.selectLayer = id;
+      this.selectLayer.id = id;
+      this.selectLayer.type = type;
+      this.updateProperty(id, type);
     }
   },
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add('layer-color-container');
-    this.layerUpdate();
-    this.layerUpdateFn = this.layerUpdate.bind(this);
-    this.viewModel.on('layersUpdated', this.layerUpdateFn);
-  },
-  removed() {
-    this.sourceList = {};
-    this.sourceNames = [];
-  },
-  beforeDestory() {
-    this.viewModel && this.viewModel.off('layersUpdated', this.layerUpdateFn);
-    this.$options.removed.call(this);
   }
 };
 </script>

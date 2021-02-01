@@ -96,14 +96,16 @@ export default {
     lineColor: '线颜色',
     fillColor: '面颜色',
     iconColor: '图标颜色',
-    textColor: '文本颜色'
+    textColor: '文本颜色',
+    capture: '捕获'
   },
-  featureTable: {
+  attributes: {
     feature: '要素',
     selected: '已选择',
     clearSelected: '清除选中',
     zoomToFeatures: '缩放至已选要素',
-    columnsControl: '显示/隐藏列'
+    columnsControl: '显示/隐藏列',
+    refreshData: '刷新数据'
   },
   miniMap: {},
   pan: {},

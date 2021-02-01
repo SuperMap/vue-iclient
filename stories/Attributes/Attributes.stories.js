@@ -2,10 +2,10 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.featureTable.title')}`,
-  id: 'GISComponents/featureTable'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.attributes.title')}`,
+  id: 'GISComponents/attributes'
 };
-export const FeatureTable = () => ({
+export const Attributes = () => ({
   mixins: [theme],
   data() {
     return {
@@ -32,12 +32,12 @@ export const FeatureTable = () => ({
   <div>
     <sm-web-map style="height:400px" serverUrl="https://www.supermapol.com/" mapId="505367620"></sm-web-map>
     <div style="positon:relative;height:400px;width:100%">
-      <sm-feature-table layerName="全国671个气象站观测数据" :fieldConfigs="fieldConfigs"></sm-feature-table>
+      <sm-attributes layerName="全国671个气象站观测数据" :fieldConfigs="fieldConfigs"></sm-attributes>
     </div>
   </div>
     `
 });
 
-FeatureTable.story = {
+Attributes.story = {
   name: toI18n('gisComponent.basic')
 };

@@ -95,14 +95,16 @@ export default {
     lineColor: 'lineColor',
     fillColor: 'fillColor',
     iconColor: 'iconColor',
-    textColor: 'textColor'
+    textColor: 'textColor',
+    capture: 'Capture'
   },
-  featureTable: {
+  attributes: {
     feature: 'Feature',
     selected: 'Selected',
     clearSelected: 'Clear Selected',
     zoomToFeatures: 'ZoomTo Features',
-    columnsControl: 'Show/Hide Columns'
+    columnsControl: 'Show/Hide Columns',
+    refreshData: 'RefreshData'
   },
   miniMap: {},
   pan: {},

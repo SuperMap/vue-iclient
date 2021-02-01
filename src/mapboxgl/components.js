@@ -123,7 +123,7 @@ export { default as OpenFile } from './open-file/OpenFile';
 export { default as Query } from './query/Query';
 export { default as Search } from './search/Search';
 export { default as TextList } from './text-list/TextList';
-export { default as FeatureTable } from './feature-table/FeatureTable';
+export { default as Attributes } from './attributes/Attributes';
 
 export { default as NcpMap } from './ncp-map/NcpMap';
 export { default as Compare } from './compare/Compare';

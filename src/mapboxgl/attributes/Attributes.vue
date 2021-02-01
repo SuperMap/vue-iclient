@@ -1,29 +1,32 @@
 <template>
-  <div class="sm-component-feature-table">
-    <div class="sm-component-feature-table__header">
-      <div class="sm-component-feature-table__count">
-        <span v-if="layerName" class="layer-name">{{ layerName }}</span>
-        <span v-if="statistics.showTotal" class="total-numbers">({{ this.$t('featureTable.feature') }}：{{ tableData.length || 0 }},</span
+  <div class="sm-component-attributes">
+    <div class="sm-component-attributes__header">
+      <div class="sm-component-attributes__count">
+        <span v-if="layerName && !dataset" class="layer-name">{{ layerName }}</span>
+        <span v-if="statistics.showTotal" class="total-numbers">({{ this.$t('attributes.feature') }}：{{ tableData.length || 0 }},</span
         >
-        <span v-if="statistics.showSelect" class="select-numbers">{{ this.$t('featureTable.selected') }}：{{ selectedRowKeys.length || 0 }})</span
+        <span v-if="statistics.showSelect" class="select-numbers">{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }})</span
         >
       </div>
-      <div class="sm-component-feature-table__menu">
-        <sm-dropdown v-if="toolbar.enabled">
-          <div class="ant-dropdown-link"><sm-icon type="menu" /></div>
+      <div class="sm-component-attributes__menu">
+        <sm-dropdown v-if="toolbar.enabled" placement="bottomRight">
+          <div class="ant-dropdown-link"><sm-icon :icon-style="{ color: '#ccc' }" type="menu" /></div>
           <sm-menu slot="overlay">
             <sm-menu-item>
               <div v-if="toolbar.showClearSelected" @click="clearSelectedRowKeys">
-                {{ this.$t('featureTable.clearSelected') }}
+                {{ this.$t('attributes.clearSelected') }}
               </div>
             </sm-menu-item>
             <sm-menu-item v-if="toolbar.showZoomToFeature">
-              <div @click="setZoomToFeature">{{ this.$t('featureTable.zoomToFeatures') }}</div>
+              <div @click="setZoomToFeature">{{ this.$t('attributes.zoomToFeatures') }}</div>
+            </sm-menu-item>
+            <sm-menu-item v-if="toolbar.showRefresh">
+              <div @click="refreshData">{{ this.$t('attributes.refreshData') }}</div>
             </sm-menu-item>
             <sm-sub-menu
               v-if="toolbar.showColumnsControl"
               key="columnsControl"
-              :title="this.$t('featureTable.columnsControl')"
+              :title="this.$t('attributes.columnsControl')"
             >
               <sm-menu-item v-for="(column, index) in columns" :key="index">
                 <sm-checkbox :checked="column.visible" @change="handleColumnVisible(column)" />
@@ -41,6 +44,8 @@
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       :pagination="paginationOptions"
       :bordered="table.showBorder"
+      :loading="loading"
+      table-layout="fixed"
       @change="handleChange"
     />
   </div>
@@ -54,9 +59,11 @@ import SmTable from '../../common/table/Table.vue';
 import CircleStyle from '../_types/CircleStyle';
 import FillStyle from '../_types/FillStyle';
 import LineStyle from '../_types/LineStyle';
-import FeatureTableViewModel from './FeatureTableViewModel';
+import AttributesViewModel from './AttributesViewModel';
 import clonedeep from 'lodash.clonedeep';
+import mergewith from 'lodash.mergewith';
 import isequal from 'lodash.isequal';
+import getFeatures from '../../common/_utils/get-features';
 
 interface PaginationParams {
   current?: number;
@@ -74,6 +81,7 @@ interface FieldConfigParams {
   sorter?: Function | boolean;
   sortOrder?: boolean | string;
   sortDirections?: Array<string>;
+  width?: string | number;
 }
 
 interface AssociateWithMapParams {
@@ -98,15 +106,16 @@ interface ToolbarParams {
   showZoomToFeature?: boolean;
   showClearSelected?: boolean;
   showColumnsControl?: boolean;
+  showRefresh?: boolean;
 }
 
 @Component({
-  name: 'SmFeatureTable',
+  name: 'SmAttributes',
   components: {
     SmTable
   }
 })
-class SmFeatureTable extends Mixins(MapGetter, Theme) {
+class SmAttributes extends Mixins(MapGetter, Theme) {
   tableData: Array<Object> = [];
   selectedRowKeys: Array<number> = [];
   columns: Array<Object> = [];
@@ -117,7 +126,13 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
 
   featureMap: Object;
 
+  openKeys: Array<string> = [];
+
+  loading: boolean = false;
+
   @Prop() layerName: string; // 图层名
+
+  @Prop() dataset: any;
 
   @Prop({
     default: () => {
@@ -141,7 +156,13 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
 
   @Prop({
     default: () => {
-      return { enabled: true, showZoomToFeature: true, showClearSelected: true, showColumnsControl: true };
+      return {
+        enabled: true,
+        showZoomToFeature: true,
+        showClearSelected: true,
+        showColumnsControl: true,
+        showRefresh: true
+      };
     }
   })
   toolbar: ToolbarParams;
@@ -186,7 +207,7 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
 
   @Watch('associateWithMap', { deep: true })
   associateWithMapChanged(val) {
-    if (val.enabled) {
+    if (this.associateMap) {
       this.viewModel.startSelectFeature();
     } else {
       this.viewModel.endSelectFeature();
@@ -194,8 +215,8 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
   }
   @Watch('selectedRowKeys')
   selectedRowKeysChanged(val) {
-    this.$emit('rowSelect', val, this.featureMap);
-    if (this.associateWithMap) {
+    this.$emit('rowSelect', val);
+    if (this.associateMap) {
       let highLightList = this.handleCoords(val);
       this.viewModel.addOverlaysToMap(highLightList, this.associateWithMap);
     }
@@ -211,6 +232,21 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
     if (!isequal(this.paginationOptions, val.pagination)) {
       this.paginationOptions = val.pagination;
     }
+  }
+
+  @Watch('dataset', { deep: true, immediate: true })
+  datasetChanged(newVal, oldVal) {
+    if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
+      this.getFeaturesFromDataset();
+    } else {
+      this.featureMap = {};
+      this.initViewModel({ layerName: this.layerName, layerStyle: this.layerStyle });
+      this._eventsInit();
+    }
+  }
+
+  get associateMap() {
+    return this.associateWithMap.enabled && !this.dataset;
   }
 
   get compColumns() {
@@ -232,7 +268,21 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
   }
 
   initViewModel(options) {
-    this.viewModel = new FeatureTableViewModel(options);
+    this.viewModel = new AttributesViewModel(options);
+  }
+
+  getFeaturesFromDataset(initLoading = true) {
+    let { url, geoJSON } = this.dataset;
+    this.loading = true;
+    if (url || geoJSON) {
+      let dataset = clonedeep(this.dataset);
+      getFeatures(dataset).then(data => {
+        if (data && data.features) {
+          this.tableData = this.handleFeatures(data.features);
+          this.loading = false;
+        }
+      });
+    }
   }
 
   handleFeatures(data) {
@@ -250,9 +300,9 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
         }
 
         if (coordinates && coordinates.length) {
-          this.featureMap[index] = feature;
+          this.featureMap[properties.index] = feature;
         }
-        properties.key = index;
+        properties.key = +properties.index;
         JSON.stringify(properties) !== '{}' && content.push(properties);
       });
     return content;
@@ -273,7 +323,7 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
     }
   }
   handleScrollSelectedFeature(featureIndex, tableWrap) {
-    const rowHeight = document.querySelector('.sm-component-feature-table .sm-component-table-row').clientHeight;
+    const rowHeight = document.querySelector('.sm-component-attributes .sm-component-table-row').clientHeight;
     const selectFeatureScrollTop = (featureIndex + 1) * rowHeight;
     if (selectFeatureScrollTop > tableWrap.clientHeight) {
       tableWrap.scrollTop = selectFeatureScrollTop;
@@ -282,11 +332,11 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
   handleColumns(headers) {
     let columns = [];
 
-    Object.keys(headers).forEach(propertyName => {
+    Object.keys(headers).forEach((propertyName, index) => {
       if (propertyName === 'index') {
         return;
       }
-      const columnConfig = {
+      let columnConfig = {
         title: propertyName,
         dataIndex: propertyName,
         visible: true
@@ -306,7 +356,11 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
 
           copyConfig.dataIndex = copyConfig.value;
           delete copyConfig.value;
-          Object.assign(columnConfig, copyConfig);
+          columnConfig = mergewith(columnConfig, copyConfig, (obj, src) => {
+            if (typeof src === 'undefined') {
+              return obj;
+            }
+          });
         }
       }
 
@@ -332,7 +386,7 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
     return highLightList;
   }
   setZoomToFeature() {
-    if (!this.associateWithMap.enabled) {
+    if (!this.associateMap) {
       return;
     }
     let highLightList = this.handleCoords(this.selectedRowKeys);
@@ -346,10 +400,9 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
     this.$emit('change', pagination, filters, sorter, { currentDataSource });
   }
   _eventsInit() {
-    const { enabled } = this.associateWithMap;
     this.viewModel.on('mapLoaded', map => {
       this._initFeatures();
-      if (enabled) {
+      if (this.associateMap) {
         this.viewModel.startSelectFeature();
       } else {
         this.viewModel.endSelectFeature();
@@ -361,13 +414,29 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
   }
 
   _initFeatures() {
-    if (this.layerName) {
+    if (this.layerName && !this.dataset) {
+      this.loading = true;
       const features = this.viewModel._initFeatures(this.layerName);
       this.tableData = this.handleFeatures(features);
+      setTimeout(() => {
+        this.loading = false;
+      }, 0);
     }
   }
 
-  loaded() {}
+  refreshData() {
+    this.selectedRowKeys = [];
+    this.tableData = [];
+    this.paginationOptions.current = 1;
+    if (this.associateMap) {
+      this._initFeatures();
+    } else {
+      if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
+        this.getFeaturesFromDataset();
+      }
+    }
+  }
+
   removed() {
     this.viewModel.off('mapLoaded');
     this.viewModel.off('changeSelectLayer');
@@ -378,5 +447,5 @@ class SmFeatureTable extends Mixins(MapGetter, Theme) {
   }
 }
 
-export default SmFeatureTable;
+export default SmAttributes;
 </script>

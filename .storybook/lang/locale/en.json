@@ -357,8 +357,8 @@
     "layerColor": {
       "title": "Layer Color"
     },
-    "featureTable": {
-      "title": "Feature Table"
+    "attributes": {
+      "title": "Attributes"
     },
     "layerManager": {
       "title": "Layer Manager"

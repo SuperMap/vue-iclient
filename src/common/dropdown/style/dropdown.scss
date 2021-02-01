@@ -1,0 +1,12 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(dropdown) {
+  $prefix: &;
+  &-menu-item:hover, &-menu-submenu-title:hover {
+    background-color: $dropdown-menu-item-hover-bg;
+  }
+  &-menu {
+    background-color: $dropdown-background;
+  }
+}
