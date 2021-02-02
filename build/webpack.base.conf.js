@@ -84,7 +84,10 @@ module.exports = {
           resolve('node_modules/vue-videojs7'),
           resolve('node_modules/flv.js/src'),
           resolve('node_modules/videojs-flvjs-es6/src'),
-          resolve('node_modules/geographic-coordinate-converter')
+          resolve('node_modules/geographic-coordinate-converter'),
+          resolve('node_modules/swiper'),
+          resolve('node_modules/vue-awesome-swiper'),
+          resolve('node_modules/dom7')
         ]
       },
       {

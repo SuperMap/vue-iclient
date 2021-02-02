@@ -294,6 +294,14 @@
     "timeRange": {
       "title": "TimeRange",
       "style": "Diffreent Style"
+    },
+    "slideshow": {
+      "title": "Slideshow",
+      "switchEffect": "Switch Effect",
+      "vertical": "Vertical",
+      "navigationButtons": "Navigation Buttons",
+      "pagination": "Pagination",
+      "scrollbar": "Scrollbar"
     }
   },
   "chartComponent": {
