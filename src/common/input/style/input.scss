@@ -3,12 +3,16 @@
 @import 'mixin.scss';
 
 @include b(input) {
+  $input-prefix: &;
   @include focus($primary-5, $primary-shadow-color);
   &[disabled] {
     @include disabled();
   }
   @include e(disabled, '-') {
     @include disabled();
+  }
+  @include e(md, '-') {
+    @include input-md();
   }
   @include e(group-addon, '-') {
     background-color: $background-color-light;
@@ -27,6 +31,12 @@
         color: $text-color-secondary;
       }
     }
+    &-md {
+      @include input-md();
+      input {
+        @include input-md();
+      }
+    }
   }
   @include e(password, '-') {
     @include suffix-icon();
@@ -39,6 +49,12 @@
   }
   @include e(textarea-clear-icon, '-') {
     @include clear-icon();
+  }
+  @include e(group, '-') {
+    &-md #{$input-prefix},
+    &-md > &-addon {
+      @include input-md();
+    }
   }
 
   // &:-internal-autofill-selected {

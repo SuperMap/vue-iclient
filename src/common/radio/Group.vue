@@ -10,7 +10,7 @@ export const radioGroupTypes = {
   disabled: VueTypes.bool,
   name: VueTypes.string,
   options: VueTypes.array,
-  size: VueTypes.oneOf(['small', 'large', 'default']).def('default'),
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle']).def('default'),
   buttonStyle: VueTypes.string.def('outline')
 };
 
@@ -31,6 +31,16 @@ export default {
         input: function(value) {
           vm.$emit('input', value);
         }
+      };
+    },
+    extralProps() {
+      return {
+        size: this.size === 'middle' ? undefined : this.size
+      };
+    },
+    componentClass() {
+      return {
+        'sm-component-radio-group-middle': this.size === 'middle'
       };
     }
   }

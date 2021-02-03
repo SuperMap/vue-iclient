@@ -1,11 +1,13 @@
 <script lang="ts">
 import Button from 'ant-design-vue/es/button/button';
 import buttonProps from 'ant-design-vue/es/button/buttonTypes';
+import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 
 export const buttonTypes = {
-  ...buttonProps()
+  ...buttonProps(),
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
 };
 
 export default {
@@ -14,6 +16,18 @@ export default {
   defaultComponent: Button,
   mixins: [Theme, AntdRender],
   inheritAttrs: false,
-  props: buttonTypes
+  props: buttonTypes,
+  computed: {
+    extralProps() {
+      return {
+        size: this.size === 'middle' ? undefined : this.size
+      };
+    },
+    componentClass() {
+      return {
+        'sm-component-btn-md': this.size === 'middle'
+      };
+    }
+  }
 };
 </script>

@@ -13,9 +13,12 @@
   >
     <div class="sm-component-fill-extrusion__content">
       <div class="content-item">
-        <label>{{ $t('fillExtrusion.polygonLayer') }}</label>
+        <label :title="$t('fillExtrusion.polygonLayer')" :style="headingTextColorStyle">
+          {{ $t('fillExtrusion.polygonLayer') }}
+        </label>
         <sm-layer-select
           v-model="editLayerSelected"
+          size="middle"
           :style="getBackgroundStyle"
           :dropdown-style="collapseCardBackgroundStyle"
           :get-popup-container="triggerNode => triggerNode.parentElement"
@@ -25,65 +28,95 @@
       </div>
       <template v-if="currentFillExtrusionOption">
         <div class="content-item">
-          <label>{{ $t('fillExtrusion.hideOriginalLayer') }}</label>
-          <sm-switch v-model="currentFillExtrusionOption.hideOriginLayer" :style="disabledTextColorStyle" />
+          <label :title="$t('fillExtrusion.hideOriginalLayer')" :style="headingTextColorStyle">
+            {{ $t('fillExtrusion.hideOriginalLayer') }}
+          </label>
+          <sm-switch
+            v-model="currentFillExtrusionOption.hideOriginLayer"
+            size="small"
+            :style="disabledTextColorStyle"
+          />
         </div>
-        <div class="content-item">
-          <label />
-          <sm-radio-group v-model="currentFillExtrusionOption.heightFieldWay" name="radiogroup">
-            <sm-radio v-if="currentFillExtrusionOption.fields.length > 0" value="default">
-              {{ $t('fillExtrusion.fieldName') }}
-            </sm-radio>
-            <sm-radio v-else value="customField">
-              {{ $t('fillExtrusion.fieldName') }}
-            </sm-radio>
-            <sm-radio value="customNum">
-              {{ $t('fillExtrusion.customNum') }}
-            </sm-radio>
+        <div class="content-item height-item">
+          <label :title="$t('fillExtrusion.height')" :style="headingTextColorStyle">
+            {{ $t('fillExtrusion.height') }}
+          </label>
+          <sm-radio-group v-model="currentFillExtrusionOption.heightFieldWay" name="radiogroup" size="middle">
+            <sm-radio-button v-if="currentFillExtrusionOption.fields.length > 0" value="default">
+              <span :style="currentFillExtrusionOption.heightFieldWay === 'default' ? headingTextColorStyle : null">
+                {{ $t('fillExtrusion.fieldName') }}
+              </span>
+            </sm-radio-button>
+            <sm-radio-button v-else value="customField">
+              <span :style="currentFillExtrusionOption.heightFieldWay === 'customField' ? headingTextColorStyle : null">
+                {{ $t('fillExtrusion.fieldName') }}
+              </span>
+            </sm-radio-button>
+            <sm-radio-button value="customNum">
+              <span :style="currentFillExtrusionOption.heightFieldWay === 'customNum' ? headingTextColorStyle : null">
+                {{ $t('fillExtrusion.customNum') }}
+              </span>
+            </sm-radio-button>
           </sm-radio-group>
         </div>
-        <div class="content-item">
-          <label>{{ $t('fillExtrusion.height') }}</label>
-          <sm-select
-            v-if="currentFillExtrusionOption.heightFieldWay === 'default'"
-            v-model="currentFillExtrusionOption.heightField"
-            :options="currentFillExtrusionOption.fields"
-            :style="getBackgroundStyle"
-            :dropdownStyle="collapseCardBackgroundStyle"
-            :getPopupContainer="triggerNode => triggerNode.parentElement"
-          />
-          <sm-input
-            v-if="currentFillExtrusionOption.heightFieldWay === 'customField'"
-            v-model="currentFillExtrusionOption.customField"
-            :style="getBackgroundStyle"
-            :placeholder="$t('fillExtrusion.customFieldPlaceholder')"
-          />
-          <div v-if="currentFillExtrusionOption.heightFieldWay === 'customNum'" class="content-holder">
-            <sm-slider v-model="currentFillExtrusionOption.height" :min="0" :max="1000" />
-            <sm-input-number v-model="currentFillExtrusionOption.height" :style="getBackgroundStyle" />
+        <div class="sub-content-holder">
+          <div class="content-item">
+            <label :title="$t('fillExtrusion.heightValue')" :style="headingTextColorStyle">
+              {{ $t('fillExtrusion.heightValue') }}
+            </label>
+            <sm-select
+              v-if="currentFillExtrusionOption.heightFieldWay === 'default'"
+              v-model="currentFillExtrusionOption.heightField"
+              size="middle"
+              :options="currentFillExtrusionOption.fields"
+              :style="getBackgroundStyle"
+              :dropdownStyle="collapseCardBackgroundStyle"
+              :getPopupContainer="triggerNode => triggerNode.parentElement"
+            />
+            <sm-input
+              v-if="currentFillExtrusionOption.heightFieldWay === 'customField'"
+              v-model="currentFillExtrusionOption.customField"
+              size="middle"
+              :style="getBackgroundStyle"
+              :placeholder="$t('fillExtrusion.customFieldPlaceholder')"
+            />
+            <div v-if="currentFillExtrusionOption.heightFieldWay === 'customNum'" class="content-holder">
+              <sm-slider v-model="currentFillExtrusionOption.height" :min="0" :max="1000" />
+              <sm-input-number v-model="currentFillExtrusionOption.height" size="middle" :style="getBackgroundStyle" />
+            </div>
+          </div>
+          <div v-if="currentFillExtrusionOption.heightFieldWay !== 'customNum'" class="content-item">
+            <label :title="$t('fillExtrusion.multiple')" :style="headingTextColorStyle">
+              {{ $t('fillExtrusion.multiple') }}
+            </label>
+            <sm-input-number v-model="currentFillExtrusionOption.multiple" size="middle" :style="getBackgroundStyle" />
           </div>
         </div>
-        <div v-if="currentFillExtrusionOption.heightFieldWay !== 'customNum'" class="content-item">
-          <label>{{ $t('fillExtrusion.multiple') }}</label>
-          <sm-input-number v-model="currentFillExtrusionOption.multiple" :style="getBackgroundStyle" />
-        </div>
         <div class="content-item">
-          <label>{{ $t('fillExtrusion.fillColor') }}</label>
+          <label :title="$t('fillExtrusion.fillColor')" :style="headingTextColorStyle">
+            {{ $t('fillExtrusion.fillColor') }}
+          </label>
           <sm-color-picker v-model="currentFillExtrusionOption.color" />
         </div>
         <div class="content-item">
-          <label>{{ $t('fillExtrusion.layerOpacity') }}</label>
-          <sm-input-number
-            v-model="currentFillExtrusionOption.opacity"
-            :max="1"
-            :min="0"
-            :step="0.1"
-            :style="getBackgroundStyle"
-          />
+          <label :title="$t('fillExtrusion.layerOpacity')" :style="headingTextColorStyle">
+            {{ $t('fillExtrusion.layerOpacity') }}
+          </label>
+          <div class="content-holder">
+            <sm-slider v-model="currentFillExtrusionOption.opacity" :min="0" :max="1" :step="0.1" />
+            <sm-input-number
+              v-model="currentFillExtrusionOption.opacity"
+              :max="1"
+              :min="0"
+              :step="0.1"
+              size="middle"
+              :style="getBackgroundStyle"
+            />
+          </div>
         </div>
         <div class="content-item">
           <label />
-          <sm-button type="primary" @click="restSourceLayers">{{ $t('fillExtrusion.reset') }}</sm-button>
+          <sm-button type="primary" size="middle" @click="restSourceLayers">{{ $t('fillExtrusion.reset') }}</sm-button>
         </div>
       </template>
     </div>
@@ -105,7 +138,7 @@ import SmLayerSelect from '../../../../common/layer-select/LayerSelect.vue';
 import SmSelect from '../../../../common/select/Select.vue';
 import SmSwitch from '../../../../common/switch/Switch.vue';
 import SmRadioGroup from '../../../../common/radio/Group.vue';
-import SmRadio from '../../../../common/radio/Radio.vue';
+import SmRadioButton from '../../../../common/radio/Button.vue';
 import SmInput from '../../../../common/input/Input.vue';
 import SmInputNumber from '../../../../common/input/Number.vue';
 import SmSlider from '../../../../common/slider/Slider.vue';
@@ -178,7 +211,7 @@ const TYPE_TO_FIELD_LIST = {
     SmSelect,
     SmSwitch,
     SmRadioGroup,
-    SmRadio,
+    SmRadioButton,
     SmInput,
     SmInputNumber,
     SmSlider,
@@ -191,6 +224,7 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
   sourceList: sourceListParams[];
   fillExtrusionOptions: fillExtrusionParams[] = [];
   editLayerSelected: fillLayerSelectedOption = null;
+  currentLayerChanged: boolean;
 
   @Prop({ default: false }) collapsed: boolean;
   @Prop({ default: 'sm-components-icon-layer-list' }) iconClass: string;
@@ -237,16 +271,14 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
     return this.fillExtrusionOptions.filter(item => !!item.layerId);
   }
 
-  get fillExtrusionListWithoutLayerId(): fillExtrusionParams[] {
-    return this.fillExtrusionOptions.filter(item => !item.layerId);
-  }
-
   @Watch('currentFillExtrusionOption.hideOriginLayer')
-  handleLayerShowChanged(next) {
-    if (!this.currentFillExtrusionOption || !this.currentFillExtrusionOption.layerId) {
+  handleLayerShowChanged(next: boolean, prev: boolean) {
+    const layerId = this.currentFillExtrusionOption && this.currentFillExtrusionOption.layerId;
+    this.currentLayerChanged = false;
+    if (prev === void 0 || !layerId || this.currentLayerChanged) {
       return;
     }
-    this.handleHideOriginLayerChanged(this.currentFillExtrusionOption.layerId, next);
+    this.handleHideOriginLayerChanged(this.currentFillExtrusionOption, next);
   }
 
   @Watch('currentListenerFields')
@@ -270,7 +302,7 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
               changeData[item] = next[item];
               if (item === 'hideOriginLayer') {
                 changedLayerList.push({
-                  layerId: option.layerId,
+                  option: option,
                   hideOriginLayer: next[item]
                 });
               }
@@ -280,8 +312,8 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
         }
         return option;
       });
-      changedLayerList.forEach(option => {
-        this.handleHideOriginLayerChanged(option.layerId, option.hideOriginLayer);
+      changedLayerList.forEach(item => {
+        this.handleHideOriginLayerChanged(item.option, item.hideOriginLayer);
       });
     }
   }
@@ -388,6 +420,7 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
     const layer = this.getMatchLayerData(selectedData, extra);
     const layerId: string = layer.id;
     const matchOption = this.getMatchFillExtrusionOption(selectedData);
+    this.currentLayerChanged = true;
     if (matchOption) {
       return;
     }
@@ -430,7 +463,7 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
         ...options,
         this.initFillExtrusionOptions({
           ...optionData,
-          fillExtrusionLayerId: `${sourceLayer || sourceName}-fill-extrusion-${+new Date()}`
+          fillExtrusionLayerId: undefined
         })
       );
     } else {
@@ -473,14 +506,21 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
     };
   }
 
-  handleHideOriginLayerChanged(layerId: string, hideOriginLayer: boolean) {
+  handleHideOriginLayerChanged(item: fillExtrusionParams, hideOriginLayer: boolean) {
     const value = hideOriginLayer ? 'none' : 'visible';
-    this.viewModel.toggleShowCorrespondingLayer(layerId, value);
+    const fillExtrusionLayerIdList = this.fillExtrusionList.map(item => item.fillExtrusionLayerId);
+    this.viewModel.toggleShowCorrespondingLayer({
+      value,
+      layerId: item.layerId,
+      fillExtrusionLayerIdList,
+      source: item.sourceName,
+      sourceLayer: item.sourceLayer
+    });
   }
 
   restSourceLayers(): void {
     this.fillExtrusionList.forEach(item => {
-      this.handleHideOriginLayerChanged(item.layerId, false);
+      this.handleHideOriginLayerChanged(item, false);
     });
     this.fillExtrusionOptions = [];
     this.editLayerSelected = null;

@@ -33,6 +33,14 @@ interface layeEnhanceParams extends mapboxglTypes.Layer {
   serialize?: () => mapboxglTypes.Layer;
 }
 
+interface showLayerParam {
+  value: string;
+  layerId: string;
+  fillExtrusionLayerIdList: string[];
+  source: string;
+  sourceLayer: string;
+}
+
 export default class FillExtrusionViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
 
@@ -79,11 +87,23 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
     return sourceData;
   }
 
-  toggleShowCorrespondingLayer(layerId: string, value: string): void {
-    if (!layerId || !this.map) {
+  toggleShowCorrespondingLayer(data: showLayerParam): void {
+    if (!data && (!data.source && !data.sourceLayer) || !this.map) {
       return;
     }
-    this.map.setLayoutProperty(layerId, 'visibility', value);
+    const sourceList = this._getSourceList();
+    const sourceInfo = sourceList[data.source];
+    if (sourceInfo && sourceInfo.layers.length > 0) {
+      sourceInfo.layers.forEach((layer: any) => {
+        let filterCondition = layer.source === data.source;
+        if (data.sourceLayer) {
+          filterCondition = layer.sourceLayer === data.sourceLayer;
+        }
+        if (filterCondition && (layer.id === data.layerId || !data.fillExtrusionLayerIdList.includes(layer.id) && layer.type !== 'fill')) {
+          this.map.setLayoutProperty(layer.id, 'visibility', data.value);
+        }
+      })
+    }
   }
 
   private _getSourceList() {

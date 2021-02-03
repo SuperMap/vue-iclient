@@ -105,5 +105,11 @@
         }
       }
     }
+    &-middle {
+      #{$prefix-button-wrapper} {
+        height: $input-height-md;
+        line-height: $input-height-md - 2px;
+      }
+    }
   }
 }

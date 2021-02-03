@@ -1,9 +1,11 @@
 <script lang="ts">
 import InputNumber, { InputNumberProps } from 'ant-design-vue/es/input-number';
+import VueTypes from '../_utils/vue-types';
 import Base from './BaseMixin.vue';
 
 export const inputNumberTypes = {
-  ...InputNumberProps
+  ...InputNumberProps,
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
 };
 
 export default {
@@ -23,6 +25,16 @@ export default {
         change: function(value) {
           vm.$emit('change', value);
         }
+      };
+    },
+    extralProps() {
+      return {
+        size: this.size === 'middle' ? undefined : this.size
+      };
+    },
+    componentClass() {
+      return {
+        'sm-component-input-number-md': this.size === 'middle'
       };
     }
   }

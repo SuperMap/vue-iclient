@@ -8,7 +8,8 @@ export const selectTypes = {
   ...SelectProps,
   showSearch: VueTypes.bool.def(false),
   transitionName: VueTypes.string.def('slide-up'),
-  choiceTransitionName: VueTypes.string.def('zoom')
+  choiceTransitionName: VueTypes.string.def('zoom'),
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
 };
 
 export default {
@@ -28,6 +29,16 @@ export default {
         change: function(value) {
           vm.$emit('change', value);
         }
+      };
+    },
+    extralProps() {
+      return {
+        size: this.size === 'middle' ? undefined : this.size
+      };
+    },
+    componentClass() {
+      return {
+        'sm-component-select-md': this.size === 'middle'
       };
     }
   }

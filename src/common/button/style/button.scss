@@ -43,5 +43,35 @@
   }
   @include e(group, '-') {
     color: $btn-default-color;
+    &-md > #{$prefix},
+    &-md > span > #{$prefix} {
+      @include button-md-size();
+      line-height: $btn-height-md - 2px;
+    }
+    &-md > #{$prefix}.#{$ant-prefix}-btn-icon-only {
+      @include square($btn-height-md);
+      padding-right: 0;
+      padding-left: 0;
+    }
+  }
+  @include e(md, '-') {
+    @include button-md-size();
+  }
+  @include e(icon-only, '-') {
+    &#{$prefix}-md {
+      @include square($btn-height-md);
+      @include button-md-size();
+    }
+  }
+  @include e(circle circle-outline, '-') {
+    &#{$prefix}-md {
+      min-width: $btn-height-md;
+    }
+  }
+  @include e(round, '-') {
+    &#{$prefix}-md {
+      @include button-md-size();
+      padding: 0 $btn-height-md / 2;
+    }
   }
 }

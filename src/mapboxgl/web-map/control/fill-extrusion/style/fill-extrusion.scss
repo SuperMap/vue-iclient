@@ -10,21 +10,27 @@
 @import '../../../../../common/color-picker/style/color-picker.scss';
 
 @include b(fill-extrusion) {
-  width: 300px;
+  width: 284px;
   @include e(content) {
     width: 100%;
     height: 100%;
-    padding: 4px 16px 6px;
+    padding: 16px;
     .content-item {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
-      &:last-child {
-        margin-bottom: 0;
+      &:not(.height-item) {
+        margin-bottom: 14px;
+        &:last-child {
+          margin-bottom: 0;
+        }
       }
       > label {
         margin-right: 12px;
         width: 25%;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        color: $heading-color;
         & + *:not(.#{$ant-prefix}-switch) {
           flex: 1;
           &.#{$ant-prefix}-btn {
@@ -33,22 +39,19 @@
           }
         }
       }
-      .#{$ant-prefix}-radio-group, .#{$ant-prefix}-radio-wrapper {
+      .#{$ant-prefix}-radio-group, .#{$ant-prefix}-radio-button-wrapper {
         font-size: inherit;
         color: inherit;
       }
       .#{$ant-prefix}-radio-group {
         display: flex;
       }
-      .#{$ant-prefix}-radio-wrapper {
+      .#{$ant-prefix}-radio-button-wrapper {
         flex: 1;
-        &:last-child {
-          margin-right: 0;
-        }
-        span.#{$ant-prefix}-radio + * {
-          padding-left: 3px;
-          padding-right: 0;
-        }
+        text-align: center;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
       }
       .#{$ant-prefix}-input-affix-wrapper {
         background-color: $component-background;
@@ -79,14 +82,6 @@
           }
         }
       }
-      .#{$ant-prefix}-switch {
-        height: 20px;
-        line-height: 18px;
-        &::after {
-          width: 16px;
-          height: 16px;
-        }
-      }
       .#{$ant-prefix}-slider {
         margin-top: 0;
         margin-bottom: 0;
@@ -96,6 +91,7 @@
       }
       .#{$ant-prefix}-colorpicker {
         width: auto;
+        height: 28px;
       }
       .#{$ant-prefix}-btn {
         font-size: inherit;
@@ -107,6 +103,19 @@
           flex: 1;
           &:last-child {
             margin-left: 6px;
+          }
+        }
+      }
+    }
+    .sub-content-holder {
+      background-color: $background-color-base;
+      margin: 8px 0 12px;
+      padding: 8px 0;
+      .content-item {
+        > label {
+          padding-left: 12px;
+          & + * {
+            margin-right: 10px;
           }
         }
       }

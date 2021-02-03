@@ -5,7 +5,7 @@ import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 
 export const inputGroupTypes = {
-  size: VueTypes.oneOf(['small', 'large', 'default']).def('default'),
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle']).def('default'),
   compact: VueTypes.bool
 };
 
@@ -14,6 +14,18 @@ export default {
   defaultComponent: Group,
   mixins: [Theme, AntdRender],
   inheritAttrs: false,
-  props: inputGroupTypes
+  props: inputGroupTypes,
+  computed: {
+    extralProps() {
+      return {
+        size: this.size === 'middle' ? undefined : this.size
+      };
+    },
+    componentClass() {
+      return {
+        'sm-component-input-group-md': this.size === 'middle'
+      };
+    }
+  }
 };
 </script>

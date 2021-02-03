@@ -1,10 +1,12 @@
 <script lang="ts">
 import TreeSelect, { TreeSelectProps } from 'ant-design-vue/es/tree-select';
+import VueTypes from '../_utils/vue-types';
 import Theme from '../_mixin/Theme';
 import AntdRender from '../_mixin/AntdRender';
 
 export const treeSelectTypes = {
-  ...TreeSelectProps()
+  ...TreeSelectProps(),
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
 };
 
 export default {
@@ -24,6 +26,16 @@ export default {
         'check': function () {
           vm.$emit('check', ...arguments);
         }
+      };
+    },
+    extralProps() {
+      return {
+        size: this.size === 'middle' ? undefined : this.size
+      };
+    },
+    componentClass() {
+      return {
+        'sm-component-select-md': this.size === 'middle'
       };
     }
   }
