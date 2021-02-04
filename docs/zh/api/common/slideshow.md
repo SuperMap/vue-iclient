@@ -22,7 +22,7 @@
 | autoplay             | 是否自动播放。参照[swiper](https://www.swiper.com.cn/api/autoplay/16.html)           | boolean \|  object           | -                                             | -                |
 | mousewheel           | 是否开启鼠标滚轮控制播放                                                              | boolean          | -                                             | false            |
 | keyboard             | 是否开启键盘控制播放                                                                 | boolean          | -                                             | false            |
-| grabCursor           | 鼠标覆盖时指针会变成手掌形状，拖动时指针会变成抓手形状                                 | boolean          | -                                             | false            |
+| grabCursor           | 鼠标覆盖时指针会变成手掌形状，拖动时指针会变成抓手形状                                 | boolean          | -                                             | true             |
 | navigation           | 前进后退按钮参数。参照[swiper](https://www.swiper.com.cn/api/navigation/355.html)     | object           | -                                             | -                |
 | pagination           | 分页器导航参数。参照[swiper](https://www.swiper.com.cn/api/pagination/362.html)       | object           | -                                             | -                |
 | scrollbar            | 滚动条参数。参照[swiper](https://www.swiper.com.cn/api/scrollbar/369.html)            | object           | -                                             | -                |

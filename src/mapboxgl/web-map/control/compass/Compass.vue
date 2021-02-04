@@ -1,6 +1,6 @@
 <template>
-  <div class="sm-component-compass" :style="[collapseCardHeaderBgStyle, getTextColorStyle]">
-    <sm-button class="sm-component-compass__content" @click="reset">
+  <div class="sm-component-compass">
+    <sm-button :style="[collapseCardHeaderBgStyle, getTextColorStyle]" class="sm-component-compass__content" @click="reset">
       <i :class="iconClass" :style="needleStyle"></i>
     </sm-button>
   </div>

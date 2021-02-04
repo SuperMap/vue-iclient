@@ -37,7 +37,7 @@ class Slideshow extends Mixins(Theme) {
   @Prop() navigation: Object;
   @Prop() pagination: Object;
   @Prop() scrollbar: Object;
-  @Prop({ default: false }) grabCursor: boolean;
+  @Prop({ default: true }) grabCursor: boolean;
   @Prop() autoplay: boolean | Object;
   @Prop({ default: 'slide' }) effect: string; // slide cube coverflow flip
 

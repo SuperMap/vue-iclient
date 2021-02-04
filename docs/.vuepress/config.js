@@ -128,6 +128,7 @@ module.exports = {
                     'control/pan',
                     'control/zoom',
                     'control/scale',
+                    'control/compass',
                     'control/measure',
                     'control/draw',
                     'control/query',
@@ -192,6 +193,7 @@ module.exports = {
                     'common/time-range',
                     'common/time-slider',
                     'common/attributes',
+                    'common/slideshow',
                   ]
                 }
               ]
