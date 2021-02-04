@@ -120,17 +120,9 @@ export default {
   },
   mixins: [MapGetter, Control, Theme, BaseCard],
   props: {
-    collapsed: {
-      type: Boolean, // 是否折叠
-      default: true
-    },
     iconClass: {
       type: String,
       default: 'sm-components-icon-layer-list'
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
     },
     headerName: {
       type: String,

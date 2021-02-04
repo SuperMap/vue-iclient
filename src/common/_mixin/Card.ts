@@ -17,5 +17,6 @@ export default class CardMixin extends Vue {
   @Prop() headerName: string;
   @Prop() iconClass: string;
   @Prop({ default: false }) autoRotate: boolean;
-  @Prop({ default: false }) collapsed: boolean;
+  @Prop({ default: true }) collapsed: boolean;
+  @Prop({ default: false }) splitLine: boolean; // 标题与内容的分割线
 };

@@ -97,10 +97,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
   };
   isSelect: boolean = false;
 
-  @Prop({ default: true }) collapsed: boolean;
   @Prop({ default: 'sm-components-icon-layer-color' }) iconClass: string;
-  @Prop({ default: false }) splitLine: boolean;
-  // @ts-ignore
   @Prop({
     default() {
       return this.$t('layerColor.title');

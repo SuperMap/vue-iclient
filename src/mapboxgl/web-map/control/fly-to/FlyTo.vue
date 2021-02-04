@@ -41,8 +41,6 @@ export default class FlyTo extends Mixins(MapGetter, Control, VmUpdater, BaseCar
   @Prop() activeIndex: number;
   @Prop({ default: true }) showController: boolean;
   @Prop({ default: 'sm-components-icon-bofang3' }) iconClass: string;
-  @Prop({ default: false }) splitLine: boolean;
-  @Prop({ default: true }) collapsed: boolean;
   @Prop({
     default() {
       return this.$t('flyTo.title');

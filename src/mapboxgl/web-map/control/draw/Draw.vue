@@ -64,8 +64,6 @@ class Draw extends Mixins(MapGetter, Control, Theme, Card) {
     }
   })
   headerName: string;
-  @Prop({ default: true }) collapsed: boolean;
-  @Prop({ default: false }) splitLine: boolean;
   @Prop() layerStyle: Object;
 
   @Watch('layerStyle', { deep: true })

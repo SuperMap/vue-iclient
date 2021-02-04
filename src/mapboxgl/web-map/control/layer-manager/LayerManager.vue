@@ -55,14 +55,6 @@ export default {
   },
   mixins: [Theme, Control, MapGetter, BaseCard],
   props: {
-    collapsed: {
-      type: Boolean, // 是否折叠
-      default: true
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
-    },
     iconClass: {
       type: String,
       default: 'sm-components-icon-layer-manager'

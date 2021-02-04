@@ -98,14 +98,6 @@ export default {
       type: String,
       default: 'sm-components-icon-chart'
     },
-    collapsed: {
-      type: Boolean,
-      default: true
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
-    },
     dataset: {
       type: Object,
       default() {

@@ -51,14 +51,6 @@ export default {
   },
   mixins: [Control, MapGetter, Card, Theme],
   props: {
-    collapsed: {
-      type: Boolean, // 是否折叠
-      default: true
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
-    },
     iconClass: {
       type: String,
       default: 'sm-components-icon-map-switch'
