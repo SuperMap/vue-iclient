@@ -18,11 +18,12 @@
   width: 389px;
   height: 32px;
   border-radius: 4px;
+  box-sizing: border-box;
   @include e(content) {
     display: inline-flex;
     align-items: center;
     width: 100%;
-    height: 30px;
+    height: 100%;
     .#{$collapse-prefix} {
       background: transparent;
       border-radius: 0;
@@ -37,12 +38,35 @@
       padding: 0;
     }
   }
+  .sm-component-collapse-card__content {
+    width: 100%;
+  }
   .sm-component-card-body {
     height: 32px;
     padding: 0;
-    padding-left: 36px;
+  }
+  .sm-component-collapse-card__body {
+    width: calc(100% - 36px);
   }
 
+  .is-bottom-right,
+  .is-top-right {
+    .sm-component-coordinate-conversion__auto-width {
+      margin-left: 9px;
+    }
+    .sm-component-collapse-card__body {
+      margin-right: 36px;
+    }
+  }
+  .is-bottom-left,
+  .is-top-left {
+    .sm-component-coordinate-conversion__icons {
+      padding-right: 9px;
+    }
+    .sm-component-collapse-card__body {
+      margin-left: 36px;
+    }
+  }
   .sm-component-collapse-card__icon {
     &,
     i {
@@ -58,26 +82,31 @@
   .sm-component-card-body::after {
     display: none;
   }
-
+  @include e(auto-width) {
+    display: inline-flex;
+    width: calc(100% - 86px);
+  }
+  .not-show-location {
+    .sm-component-coordinate-conversion__auto-width {
+      display: inline-flex;
+      width: calc(100% - 53px);
+    }
+  }
   @include e(a-select) {
-    width: 23.1%;
+    width: 36.3%;
     height: 24px;
-    border-radius: 4px;
-    border: 1px solid $border-color-base;
-    box-sizing: border-box;
+    color: inherit;
   }
   @include e(a-input) {
-    width: 49.5%;
+    width: 78%;
     height: 24px;
     margin-left: 4px;
     margin-right: 8px;
-    border-radius: 4px;
-    border: 1px solid $border-color-base;
-    box-sizing: border-box;
+    color: inherit;
     background: $component-background;
   }
-  @include e(hovered) {
-    color: #ccc;
+  .sm-component-input-affix-wrapper .sm-component-input {
+    color: inherit;
   }
 
   @include e(not-enable) {
@@ -86,14 +115,19 @@
   }
 
   @include e(location) {
-    color: $primary-color;
+    color: inherit;
+    &:hover {
+      color: $primary-color;
+    }
+  }
+  @include e(copyed) {
+    color: inherit;
     &:hover {
       color: $primary-color;
     }
   }
   @include e(icons) {
     display: inline-flex;
-    color: $primary-color;
     div {
       position: relative;
       width: 24px;
@@ -101,7 +135,7 @@
       border-radius: 4px;
       font-size: 15px;
       cursor: pointer;
-      background: $select-item-hover-bg;
+      background: $disabled-bg;
     }
     div:before {
       display: block;
@@ -118,6 +152,14 @@
     }
     div:nth-child(3) {
       margin-left: 4px;
+    }
+    .sm-component-coordinate-conversion__captured {
+      color: $btn-primary-color;
+      background: $primary-color;
+    }
+    .sm-component-coordinate-conversion__not-captured {
+      color: $text-color;
+      background: $disabled-bg;
     }
   }
 }
