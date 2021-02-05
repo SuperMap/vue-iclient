@@ -113,6 +113,11 @@ type Coordinate = {
   }
 })
 class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard) {
+  // eslint-disable-next-line
+  map: mapboxglTypes.Map;
+  viewModel: any;
+  $message: any;
+  $t: any;
   clickCaptureTimes: number = 0;
   defaultFormatOptions: Object = {
     BASEMAP: this.$t('unit.BASEMAP'),
@@ -132,6 +137,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   coordinate: Coordinate | null = null;
   clipboard: any;
   enableLocation: boolean = true;
+
   @Prop({ default: 'sm-components-icon-coordinate-coversion' }) iconClass: string;
   @Prop({ default: false }) collapsed: boolean;
   @Prop({ default: true }) showLocation: boolean;
@@ -251,7 +257,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
         return formatFn(coordinate, format);
     }
   }
-  reverseCoordinateFormat(value = this.inputValue, format = this.activeDisplayFormat) {
+  reverseCoordinateFormat(value: string = this.inputValue, format: string = this.activeDisplayFormat) {
     value = value.replace(/^\s+|\s+$ /, '');
     let coor: Array<string | number> = value.split(' ');
     if (!value) {
@@ -305,14 +311,15 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     const coor = sourceEpsgCode === toEpsgCode ? [lng, lat] : proj4(sourceProjection, toProjection, [lng, lat]);
     return { lng: coor[0], lat: coor[1] };
   }
-  getEpsgCode(map = this.map) {
+  // eslint-disable-next-line
+  getEpsgCode(map: mapboxglTypes.Map = this.map) {
     if (!map) {
       return '';
     }
     // @ts-ignore
     return this.map.getCRS().epsgCode;
   }
-  getWrapNum(x, includeMax = true, includeMin = true, range = [-180, 180]) {
+  getWrapNum(x: number, includeMax: boolean = true, includeMin: boolean = true, range: Array<number> = [-180, 180]) {
     var max = range[1];
     var min = range[0];
     var d = max - min;
@@ -328,78 +335,82 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     }
     return ((((x - min) % d) + d) % d) + min;
   }
-  getWE(lng) {
+  getWE(lng?: number) {
     if (lng === 0) {
       return '';
     }
     return lng > 0 ? 'E' : 'W';
   }
-  getNS(lat) {
+  getNS(lat?: number) {
     if (lat === 0) {
       return '';
     }
     return lat > 0 ? 'N' : 'S';
   }
-  getXY(coordinate: Coordinate, format) {
+  getXY(coordinate: Coordinate, format?: string) {
     let { lng, lat } = coordinate;
     const newLat: any = lat.toFixed(7);
     lat = newLat * 1;
+    // @ts-ignore
     lng = this.getWrapNum(lng).toFixed(7) * 1;
-    let XY = format.replace('X', lng);
-    XY = XY.replace('Y', lat);
+    let XY = format.replace('X', lng + '');
+    XY = XY.replace('Y', lat + '');
     return XY;
   }
-  getDD(coordinate: Coordinate, format) {
+  getDD(coordinate: Coordinate, format?: string) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
     const newLat: any = lat.toFixed(7);
     lat = newLat * 1;
+    // @ts-ignore
     lng = this.getWrapNum(lng).toFixed(7) * 1;
-    let XY = format.replace('X', lng);
-    XY = XY.replace('Y', lat);
+    let XY = format.replace('X', lng + '');
+    XY = XY.replace('Y', lat + '');
     XY = XY.replace('E', this.getWE(lng));
     XY = XY.replace('N', this.getNS(lat));
     return XY;
   }
-  getDOM(coordinate: Coordinate, format?) {
+  getDOM(coordinate: Coordinate, format?: string) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
     const value = CoordinateConverter.fromDecimal([lat, lng]).toDegreeMinutes();
     return this.replaceUnit(value);
   }
-  getDMS(coordinate: Coordinate, format?) {
+  getDMS(coordinate: Coordinate, format?: string) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
     const value = CoordinateConverter.fromDecimal([lat, lng]).toDegreeMinutesSeconds();
     return this.replaceUnit(value);
   }
-  getCoorByXY(value, format?) {
+  getCoorByXY(value?: string, format?: string) {
     value = this.replaceUnit(value);
     value = value.replace(/‎|°|\s+/g, '');
     const coordinates = value.split(',');
+    // @ts-ignore
     return { lng: coordinates[0] * 1, lat: coordinates[1] * 1 };
   }
-  getCoorByDD(value, format?) {
+  getCoorByDD(value?: string, format?: string) {
     value = this.replaceUnit(value);
     value = value.replace(/‎|°|\s+/g, '');
     value = value.replace(/E|N|W|S/gi, '');
     const coordinates = value.split(',');
+    // @ts-ignore
     return { lng: coordinates[1] * 1, lat: coordinates[0] * 1 };
   }
-  getCoorByDOM(value, format?) {
+  getCoorByDOM(value?: string, format?: string) {
     value = this.reverseUnit(value);
     return CoordinateConverter.fromDegreeMinutes(value);
   }
-  getCoorByDMS(value, format) {
+  getCoorByDMS(value?: string, format?: string) {
     value = this.reverseUnit(value);
     return CoordinateConverter.fromDegreeMinutesSeconds(value);
   }
-  replaceUnit(value) {
+  replaceUnit(value?: string) {
     value = value.replace(/º/g, '°');
     value = value.replace(/\'\'/g, '"');
     return value;
   }
-  reverseUnit(value) {
+  reverseUnit(value?: string) {
     value = value.replace(/°/g, 'º');
     value = value.replace(/\"/g, "''");
     value = value.replace(/‎|,/g, '');
