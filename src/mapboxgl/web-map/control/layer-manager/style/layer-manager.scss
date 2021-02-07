@@ -121,4 +121,17 @@
       }
     }
   }
+
+  .is-not-header {
+    &.is-top-left, &.is-bottom-left {
+      .sm-component-card-body {
+        padding-left: 30px;
+      }
+    }
+    &.is-top-right, &.is-bottom-right {
+      .sm-component-card-body {
+        padding-right: 30px;
+      }
+    }
+  }
 }

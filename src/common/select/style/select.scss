@@ -123,4 +123,11 @@
   @include e(arrow, '-') {
     color: $text-color-secondary;
   }
+
+  @include e(not-found, '-') {
+    .#{$ant-prefix}-empty {
+      background-color: transparent;
+      color: inherit;
+    }
+  }
 }

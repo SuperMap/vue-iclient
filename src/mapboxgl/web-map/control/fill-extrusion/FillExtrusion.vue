@@ -143,6 +143,7 @@ import SmInput from '../../../../common/input/Input.vue';
 import SmInputNumber from '../../../../common/input/Number.vue';
 import SmSlider from '../../../../common/slider/Slider.vue';
 import SmColorPicker from '../../../../common/color-picker/ColorPicker.vue';
+import SmButton from '../../../../common/button/Button.vue';
 import SmFillExtrusionLayer from '../../layer/fill-extrusion/FillExtrusionLayer.vue';
 import FillExtrusionViewModel, {
   sourceListParams,
@@ -216,7 +217,11 @@ const TYPE_TO_FIELD_LIST = {
     SmInputNumber,
     SmSlider,
     SmColorPicker,
+    SmButton,
     SmFillExtrusionLayer
+  },
+  removed() {
+    this.restSourceLayers();
   }
 })
 export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, BaseCard) {
@@ -320,9 +325,10 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
     this.viewModel = new FillExtrusionViewModel();
   }
 
-  filterSourceAndLayer(data: any, type: string): filterOption {
+  // eslint-disable-next-line
+  filterSourceAndLayer(data: any, type: string, map: mapboxglTypes.Map): filterOption {
     if (['source', 'sourceLayer'].includes(type)) {
-      const sourceOption = this.viewModel.getSourceOption(data.source || data, data.sourceLayer);
+      const sourceOption = this.viewModel.getSourceOption(data.source || data, data.sourceLayer, map);
       if (!sourceOption || !sourceOption.layers) {
         return {
           show: false

@@ -74,9 +74,12 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
     return featureCollecctions && ((featureCollecctions.features || [])[0] || {}).properties;
   }
 
-  getSourceOption(source: any, sourceLayer?: string): sourceListParams {
-    if (!this.map) {
+  getSourceOption(source: any, sourceLayer: string, map?: mapboxglTypes.Map): sourceListParams {
+    if (!map && !this.map) {
       return null;
+    }
+    if (map && !this.map) {
+      this.map = map;
     }
     let selectedSourceModel = typeof source === 'object' && source;
     if (!selectedSourceModel && typeof source === 'string') {
@@ -114,7 +117,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
     return sourceList;
   }
 
-  private _getSourceLayers(sourceModel: any, sourceLayer?: string): sourceListParams {
+  private _getSourceLayers(sourceModel: any, sourceLayer: string): sourceListParams {
     let layers = null;
     let sourceLayers = sourceModel.sourceLayerList ? {} : null;
     const layerList = sourceLayers && sourceLayer ? sourceModel.sourceLayerList[sourceLayer] : sourceModel.layers;

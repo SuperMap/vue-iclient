@@ -141,6 +141,7 @@
           & > div {
             > i {
               display: inline-block;
+              vertical-align: text-bottom;
               width: 14px;
               height: 14px;
             }
@@ -220,10 +221,6 @@
         max-width: 86%;
       }
 
-      @include e(themefield) {
-        margin-bottom: 4px;
-      }
-
       @include e(title) {
         width: 85%;
         & + i {
@@ -231,5 +228,9 @@
         }
       }
     }
+  }
+  
+  @include e(wrap) {
+    padding-top: 10px;
   }
 }

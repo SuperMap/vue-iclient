@@ -138,7 +138,7 @@ export default class Theme extends Vue {
     $props.forEach((prop: string) => {
       this.$watch(prop, function(next) {
         const dataName: string = this.getDataNameOfProp(prop);
-        vm[dataName] = next;
+        vm[dataName] = next || theme[prop];
         if (prop === 'background') {
           vm.collapseCardBackgroundData = next || theme['collapseCardBackground'];
           vm.collapseCardHeaderBgData = next || theme['collapseCardHeaderBg'];

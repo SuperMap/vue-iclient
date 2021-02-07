@@ -99,7 +99,7 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
       let disabled = false;
       let selectable = true;
       if (this.filter) {
-        let res = this.filter(sourceList[sourceName], 'source') || {};
+        let res = this.filter(sourceList[sourceName], 'source', this.map) || {};
         disabled = res.disabled;
         selectable = res.selectable;
 
@@ -131,7 +131,7 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
             sourceLayer: sourceLayerName
           };
           if (this.filter) {
-            let res = this.filter(sourceLayerOption, 'sourceLayer') || {};
+            let res = this.filter(sourceLayerOption, 'sourceLayer', this.map) || {};
             disabled = res.disabled;
             selectable = res.selectable;
 
@@ -177,7 +177,7 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
       let disabled = false;
       let selectable = true;
       if (this.filter) {
-        let res = this.filter(layerInfo, 'layer') || {};
+        let res = this.filter(layerInfo, 'layer', this.map) || {};
         disabled = res.disabled;
         selectable = res.selectable;
 

@@ -7,9 +7,12 @@
 @import '../../../../../common/radio/style/radio.scss';
 @import '../../../../../common/input/style/input.scss';
 @import '../../../../../common/slider/style/slider.scss';
+@import '../../../../../common/button/style/button.scss';
 @import '../../../../../common/color-picker/style/color-picker.scss';
 
 @include b(fill-extrusion) {
+  $fill-extrusion-prefix: &;
+  $collapse-card-prefix: #{$ant-prefix}-collapse-card;
   width: 284px;
   @include e(content) {
     width: 100%;
@@ -118,6 +121,18 @@
             margin-right: 10px;
           }
         }
+      }
+    }
+  }
+  .is-not-header {
+    &.is-top-left, &.is-bottom-left {
+      #{$fill-extrusion-prefix}__content {
+        padding-left: 32px;
+      }
+    }
+    &.is-top-right, &.is-bottom-right {
+      #{$fill-extrusion-prefix}__content {
+        padding-right: 32px;
       }
     }
   }
