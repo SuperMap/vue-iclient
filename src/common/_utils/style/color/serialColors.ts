@@ -54,16 +54,16 @@ export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string
     let nextColor: string;
     switch (index) {
       case 2:
-        nextColor = prevPrimaryColor ? getColorWithOpacity(acceptColor, 0.15) : colorPalette(acceptColor, index);
+        nextColor = nextThemeStyle.selectedColor || getColorWithOpacity(acceptColor, 0.15);
         break;
       case 5:
-        nextColor = colorPalette(acceptColor, index);
+        nextColor = nextThemeStyle.hoverColor || colorPalette(acceptColor, index);
         break;
       case 6:
         nextColor = acceptColor;
         break;
       case 7:
-        nextColor = colorPalette(acceptColor, index);
+        nextColor = nextThemeStyle.clickColor || colorPalette(acceptColor, index);
         break;
       default:
         nextColor = colorPalette(acceptColor, index);
@@ -114,8 +114,10 @@ export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerPa
   const defaultThemeStyle = nextThemeStyle.style || 'light';
   const defaultTheme = themeFactory.find((item: ThemeStyleParams) => item.label === defaultThemeStyle);
   // 合并 lightTheme 是因为可能其他 theme 没有完整的参数，如 disableColor
+  const serialColorsReplacer = getPrimarySerialColors(
+    Object.assign({ colorGroup: defaultTheme && defaultTheme.colorGroup }, nextThemeStyle)
+  );
   const themeStyleData = Object.assign({}, lightTheme, defaultTheme, nextThemeStyle);
-  const serialColorsReplacer = getPrimarySerialColors(themeStyleData);
   const functionSerialColorsReplacer = getFunctionSerialColors(themeStyleData);
   const nextThemeStyleData = Object.assign({}, themeStyleData, {
     selectedColor: serialColorsReplacer[1],
