@@ -20,7 +20,7 @@
 
 ### Events
 
-| name         | 说明               | 回调参数  |
-| :----------- | :----------------- | :-------- |
-| draw-created | 绘制完成事件       | popupInfo |
-| draw-removed | 删掉绘制的图层事件 | -         |
+| name         | 说明               | 回调参数                 |
+| :----------- | :----------------- | :----------------------- |
+| draw-created | 绘制完成事件       | function(option: object) |
+| draw-removed | 删掉绘制的图层事件 | -                        |

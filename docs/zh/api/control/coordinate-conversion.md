@@ -13,7 +13,7 @@
 | 参数         | 说明                                                                                                                                           | 类型    | 可选值 | 默认值                                    |
 | :----------- | :--------------------------------------------------------------------------------------------------------------------------------------------- | :------ | :----- | :---------------------------------------- |
 | showLocation | 是否开启定位至                                                                                                                                 | boolean | -      | true                                      |
-| formats      | 自定义转换方法，key 值是 title,包含 format, toWGS84 属性 ,format 将经纬度坐标转换成对应格式；toWGS84 将对应坐标转换成经纬度，返回值为{lng,lat} | object  | -      | -                                         |
+| formats      | 自定义转换方法。key 值是 title,包含 format, toWGS84 属性 ,format 将经纬度坐标转换成对应格式；toWGS84 将对应坐标转换成经纬度，返回值为{lng,lat} | object  | -      | -                                         |
 | iconClass    | 收缩按钮的 Font class 类名                                                                                                                     | string  | -      | 'sm-components-icon-coordinate-coversion' |
 | collapsed    | 是否默认折叠（iconClass 参数存在时生效）                                                                                                       | boolean | -      | false                                     |
 

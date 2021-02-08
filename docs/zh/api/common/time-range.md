@@ -24,4 +24,4 @@
 
 | name     | 说明                 | 回调参数                                   | 参数说明                                                                       |
 | :------- | :------------------- | :----------------------------------------- | :----------------------------------------------------------------------------- |
-| datazoom | 数据区域缩放后的事件 | ({type,start,end, startValue?, endValue?}) | 具体参考[echarts 文档](https://echarts.apache.org/zh/api.html#events.datazoom) |
+| datazoom | 数据区域缩放后的事件 | function({type,start,end, startValue?, endValue?}) | 具体参考[echarts 文档](https://echarts.apache.org/zh/api.html#events.datazoom) |

@@ -14,8 +14,8 @@
 
 | 参数        | 说明                                                  | 类型                                                                                 | 可选值 | 默认值                           |
 | :---------- | :---------------------------------------------------- | :----------------------------------------------------------------------------------- | :----- | :------------------------------- |
-| restData    | SuperMap iServer 数据服务查询配置                     | [iServerDataParameter](/zh/api/common-types/common-types.md#iserverdataparameter)[ ] | -      | -                                |
-| restMap     | SuperMap iServer 地图服务查询配置                     | [iServerMapParameter](/zh/api/common-types/common-types.md#iservermapparameter)[ ]   | -      | -                                |
+| restData    | SuperMap iServer 数据服务                     | [iServerDataParameter](/zh/api/common-types/common-types.md#iserverdataparameter)[ ] | -      | -                                |
+| restMap     | SuperMap iServer 地图服务                     | [iServerMapParameter](/zh/api/common-types/common-types.md#iservermapparameter)[ ]   | -      | -                                |
 | iportalData | SuperMap iPortal 资源中心数据（该数据需要发布成服务） | [iPortalDataParameter](/zh/api/common-types/common-types.md#iportaldataparameter)[ ] | -      | -                                |
 | maxFeatures | 要素最大返回数                                        | number                                                                               | -      | 200                               |
 | layerStyle  | 查询结果的图层样式                                    | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle)                        | -      | -                                |

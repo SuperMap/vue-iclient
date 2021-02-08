@@ -25,7 +25,7 @@
 
 ### Events
 
-| name                  | 说明               | 回调参数                                                              | 参数说明                                                                                                              |
-| :-------------------- | :----------------- | :-------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
-| timeplayerchanged     | 时间点改变后的事件 | ({ currentTimeStamp, lastIndex, nextIndex }) \| ({ currentDuration }) | 如果 props 传入 data， 则返回{ currentTimeStamp, lastIndex, nextIndex }；如果传入 duration，则返回{ currentDuration } |
-| timeplayerplaychanged | 播放状态的切换事件 | (playState)                                                           | 当前播放状态                                                                                                          |
+| name                  | 说明               | 回调参数                                                                      | 参数说明                                                                                                              |
+| :-------------------- | :----------------- | :---------------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------- |
+| timeplayerchanged     | 时间点改变后的事件 | function({ currentTimeStamp, lastIndex, nextIndex }) \| ({ currentDuration }) | 如果 props 传入 data， 则返回{ currentTimeStamp, lastIndex, nextIndex }；如果传入 duration，则返回{ currentDuration } |
+| timeplayerplaychanged | 播放状态的切换事件 | function(playState)                                                           | 当前播放状态                                                                                                          |

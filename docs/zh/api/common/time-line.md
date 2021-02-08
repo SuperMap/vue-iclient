@@ -31,5 +31,5 @@
 
 | name                | 说明                         | 回调参数              | 参数说明                                                                                  |
 | :------------------ | :--------------------------- | :-------------------- | :---------------------------------------------------------------------------------------- |
-| timelinechanged     | 时间轴中的时间点改变后的事件 | ({type,currentIndex}) | 具体参考[echarts 文档](https://echarts.apache.org/zh/api.html#events.timelinechanged)     |
-| timelineplaychanged | 时间轴中播放状态的切换事件   | ({type,playState})    | 具体参考[echarts 文档](https://echarts.apache.org/zh/api.html#events.timelineplaychanged) |
+| timelinechanged     | 时间轴中的时间点改变后的事件 | function({type,currentIndex}) | 具体参考[echarts 文档](https://echarts.apache.org/zh/api.html#events.timelinechanged)     |
+| timelineplaychanged | 时间轴中播放状态的切换事件   | function({type,playState})    | 具体参考[echarts 文档](https://echarts.apache.org/zh/api.html#events.timelineplaychanged) |

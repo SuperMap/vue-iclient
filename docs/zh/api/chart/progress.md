@@ -18,6 +18,6 @@ pageClass: progress
 | :------ | :------------------------------------------------------------------------------ | :--------------- | :----- | :----- |
 | percent | 百分比 | number \| string | - | - |
 | trailColor | 进度条底色 | string | - | '#f3f3f3' |
-| size | 进度条的带下。若类型为 number，则表示圆形进度条画布宽度 | number \| string | 'small' \| 'default' \| 'large' | 'default' |
+| size | 进度条的尺寸。若类型为 number，则表示圆形进度条画布宽度 | number \| string | 'small' \| 'default' \| 'large' | 'default' |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[第三方服务混入参数](/zh/api/mixin/mixin.md#thirdservice)和[定时刷新混入参数](/zh/api/mixin/mixin.md#timer)

@@ -10,12 +10,12 @@
 
 ### Attributes
 
-| 参数         | 说明                         | 类型                    | 可选值                 | 默认值                                                    |
-| :----------- | :--------------------------- | :---------------------- | :--------------------- | :-------------------------------------------------------- |
-| data         | 天地图搜索服务和许可服务配置 | object                  | -                      | {searchUrl: 'https://api.tianditu.gov.cn/search', tk: ''} |
-| mode         | 搜索框样式                   | string                  | 'control' \| 'toolBar' | 'control'                                                 |
-| resultRender | 查询结果后的回调方法         | function(searchResults) | -                      | -                                                         |
-| collapsed    | 是否默认折叠                 | boolean                 | -                      | false                                                     |
-| splitLine    | 搜索框与查询结果的分割线     | boolean                 | -                      | false                                                     |
+| 参数         | 说明                                    | 类型                    | 可选值                 | 默认值                                                    |
+| :----------- | :-------------------------------------- | :---------------------- | :--------------------- | :-------------------------------------------------------- |
+| data         | 天地图搜索服务和许可服务配置            | object                  | -                      | {searchUrl: 'https://api.tianditu.gov.cn/search', tk: ''} |
+| mode         | 设置 POI 搜索的模式为 Control 或 工具栏 | string                  | 'control' \| 'toolBar' | 'control'                                                 |
+| resultRender | 查询结果后的回调方法                    | function(searchResults) | -                      | -                                                         |
+| collapsed    | 是否默认折叠                            | boolean                 | -                      | false                                                     |
+| splitLine    | 搜索框与查询结果的分割线                | boolean                 | -                      | false                                                     |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
