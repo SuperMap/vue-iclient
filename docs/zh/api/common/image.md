@@ -13,3 +13,4 @@
 | href | 超链接地址 | string | - | - |
 | target | 跳转窗口方式 | string | - | '_self' |
 
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)

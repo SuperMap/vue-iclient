@@ -115,6 +115,8 @@ interface HeaderStyleParams {
   height?: number;
   background?: string;
   color?: string;
+  sortBtnSelectColor?: string;
+  sortBtnColor?: string;
 }
 
 interface RowStyleParams {

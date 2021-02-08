@@ -21,6 +21,8 @@
 | themeStyle      | 组件的样式， 例如 fontSize 和 color                                                                                                                   | CSSProperties | -      | -      |
 | checkpointStyle | 滑块的样式，包含 color, border-color 属性                                                                                                             | object        | -      | -      |
 
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)
+
 ### Events
 
 | name                  | 说明               | 回调参数                                                              | 参数说明                                                                                                              |

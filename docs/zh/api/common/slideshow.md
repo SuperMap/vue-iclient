@@ -28,6 +28,8 @@
 | scrollbar            | 滚动条参数。参照[swiper](https://www.swiper.com.cn/api/scrollbar/369.html)            | object           | -                                             | -                |
 | effect               | 幻灯片播放效果                                                                        | string           | 'slide' \| 'cube' \| 'coverflow' \| 'flip'    | 'slide'          |
 
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)
+
 ### Events
 
 | 参数      | 说明                                         | 回调参数               |

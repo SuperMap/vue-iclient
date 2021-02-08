@@ -1,6 +1,6 @@
 # 地图切换
 
-<!-- <sm-iframe src="https://iclient.supermap.io/examples/component/components_webmap_vue.html"></sm-iframe> -->
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_tianditu_switch_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map server-url="https://iportal.supermap.io/iportal/" map-id="801571284">
@@ -10,11 +10,10 @@
 
 ### Attributes
 
-| 参数       | 说明                                                                            | 类型    | 可选值                                                       | 默认值                             |
-| :--------- | :------------------------------------------------------------------------------ | :------ | :----------------------------------------------------------- | :--------------------------------- |
-| iconClass  | 收缩按钮 Icon 类名                                                              | string  | -                                                            | 'sm-components-icon-map-switch'    |
-| collapsed  | 是否折叠                                                                        | boolean | -                                                            | true                               |
-| autoRotate | 是否自动旋转                                                                    | boolean | -                                                            | false                              |
-| headerName | 标题名                                                                          | string  | -                                                            | '地图切换'                         |
-| position   | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left'                         |
-| data       | 地图切换配置                                                                    | object  | -                                                            | {select: '', label: false, tk: ''} |
+| 参数       | 说明                       | 类型   | 可选值 | 默认值                             |
+| :--------- | :------------------------- | :----- | :----- | :--------------------------------- |
+| data       | 地图切换配置               | object | -      | {select: '', label: false, tk: ''} |
+| iconClass  | 收缩按钮的 Font class 类名 | string | -      | 'sm-components-icon-map-switch'    |
+| headerName | 标题名                     | string | -      | '地图切换'                         |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)

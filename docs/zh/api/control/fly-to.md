@@ -1,6 +1,6 @@
 # 飞行定位
 
-<sm-iframe src="https://iclient.supermap.io/examples/component/components_flyTo_vue.html"></sm-iframe>
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_flyto_vue.html"></sm-iframe>
 
 ```vue
 <template>
@@ -33,23 +33,21 @@ new Vue({
 
 ### Attributes
 
-| 参数           | 说明                                                                            | 类型                                                                       | 可选值                                                       | 默认值                          |
-| :------------- | :------------------------------------------------------------------------------ | :------------------------------------------------------------------------- | :----------------------------------------------------------- | :------------------------------ |
-| data           | 坐标，支持自定义坐标和飞行配置项                                                | array<[number, number]> \| array<<a href="#customobject">CustomObject</a>> | -                                                            | -                               |
-| flyOptions     | [默认飞行配置项](https://docs.mapbox.com/mapbox-gl-js/api/map/#map#flyto)（data 数据项中没有自定义飞行配置项时，默认飞行配置项才生效。）       | object                                                                     | -                                                            | -                               |
-| autoplay       | 是否自动播放                                                                    | boolean                                                                    | -                                                            | true                            |
-| interval       | 自动播放的时间间隔，单位为毫秒                                                  | number                                                                     | -                                                            | 3000                            |
-| immediate      | 首次加载时是否立即播放                                                            | boolean                                                                    | -                                                            | false                           |
-| loop           | 是否循环播放                                                                    | boolean                                                                    | -                                                            | true                            |
-| initialIndex   | 首次加载播放的数据项索引，从 0 开始                                           | number                                                                     | -                                                            | 0                               |
-| activeIndex    | 激活播放的数据项索引，从 0 开始                                               | number                                                                     | -                                                            | -                               |
-| showController | 是否显示控制器界面                                                              | boolean                                                                    | -                                                            | true                            |
-| position       | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string                                                                     | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left'                      |
-| iconClass      | 收缩按钮 Icon 类名                                                              | string                                                                     | -                                                            | 'sm-components-icon-layer-list' |
-| headerName     | 标题名                                                                          | string                                                                     | -                                                            | '飞行定位'                      |
-| autoRotate     | 收缩按钮是否自动旋转                                                            | boolean                                                                    | -                                                            | false                           |
-| collapsed      | 是否默认折叠（iconClass 参数存在时生效）                                        | boolean                                                                    | -                                                            | true                            |
-| splitLine      | 标题与内容的分割线                                                              | boolean                                                                    | -                                                            | false                           |
+| 参数           | 说明                                                                                                                                     | 类型                                                                       | 可选值 | 默认值                     |
+| :------------- | :--------------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------- | :----- | :------------------------- |
+| data           | 坐标。支持自定义坐标和飞行配置项                                                                                                         | array<[number, number]> \| array<<a href="#customobject">CustomObject</a>> | -      | -                          |
+| flyOptions     | [默认飞行配置项](https://docs.mapbox.com/mapbox-gl-js/api/map/#map#flyto)（data 数据项中没有自定义飞行配置项时，默认飞行配置项才生效。） | object                                                                     | -      | -                          |
+| autoplay       | 是否自动播放                                                                                                                             | boolean                                                                    | -      | true                       |
+| interval       | 自动播放的时间间隔。单位为毫秒                                                                                                           | number                                                                     | -      | 3000                       |
+| immediate      | 首次加载时是否立即播放                                                                                                                   | boolean                                                                    | -      | false                      |
+| loop           | 是否循环播放                                                                                                                             | boolean                                                                    | -      | true                       |
+| initialIndex   | 首次加载播放的数据项索引。从 0 开始                                                                                                      | number                                                                     | -      | 0                          |
+| activeIndex    | 激活播放的数据项索引。从 0 开始                                                                                                          | number                                                                     | -      | -                          |
+| showController | 是否显示控制器界面                                                                                                                       | boolean                                                                    | -      | true                       |
+| iconClass      | 收缩按钮的 Font class 类名                                                                                                               | string                                                                     | -      | 'sm-components-icon-flyto' |
+| headerName     | 标题名                                                                                                                                   | string                                                                     | -      | '飞行定位'                 |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
 
 ### CustomObject
 

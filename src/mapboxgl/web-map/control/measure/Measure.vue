@@ -3,7 +3,7 @@
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
-    :header-name="headerName || $t('measure.mapMeasure')"
+    :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     :background="background"
@@ -90,8 +90,10 @@ export default {
       default: 'sm-components-icon-measure'
     },
     headerName: {
-      type: String
-      // default: geti18n().t('commontypes.iportalData') // '量算'
+      type: String,
+      default() {
+        return this.$t('measure.mapMeasure');
+      }
     },
     showUnitSelect: {
       // 配置单位选择框是否显示，若不显示，则显示对应的默认单位

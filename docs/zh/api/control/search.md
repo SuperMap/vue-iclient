@@ -33,5 +33,7 @@ POI 搜索组件，搜索源支持 SuperMap online 本地搜索服务、SuperMap
 | showTitle            | 是否显示搜索源名称                                                              | boolean                                                                              | -                                                            | true                             |
 | showResult           | 是否显示下拉搜索结果                                                            | boolean                                                                              | -                                                            | true                             |
 | resultRender         | 自定义渲染搜索结果回调函数                                                      | Function                                                                             | -                                                            | -                                |
-| position             | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string                                                                               | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left'                       |
 | collapsed            | 是否默认折叠                                                                    | boolean                                                                              | -                                                            | false                            |
+| splitLine  | 搜索框与查询结果的分割线                                                                            | boolean | -                                                            | false      |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)

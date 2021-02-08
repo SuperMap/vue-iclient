@@ -10,18 +10,17 @@
 
 ### Attributes
 
-| 参数       | 说明                                                                            | 类型                                                                                                                                                                                          | 可选值                                                       | 默认值                     |
-| :--------- | :------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----------------------------------------------------------- | :------------------------- |
-| iconClass  | 收缩按钮 Icon 类名                                                              | string                                                                                                                                                                                        | -                                                            | 'sm-components-icon-edit' |
-| autoRotate | 是否自动旋转                                                                    | boolean                                                                                                                                                                                       | -                                                            | false                      |
-| collapsed  | 是否折叠                                                                        | boolean                                                                                                                                                                                       | -                                                            | true                       |
-| headerName | 标题名                                                                          | string                                                                                                                                                                                        | -                                                            | '绘制'                     |
-| position   | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string                                                                                                                                                                                        | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | -                          |
-| layerStyle | 绘制图层的样式                                                                  | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle)                                                                                | -                                                            | -                          |
+| 参数       | 说明                       | 类型                                                          | 可选值 | 默认值                    |
+| :--------- | :------------------------- | :------------------------------------------------------------ | :----- | :------------------------ |
+| layerStyle | 绘制图层的样式             | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle) | -      | -                         |
+| iconClass  | 收缩按钮的 Font class 类名 | string                                                        | -      | 'sm-components-icon-edit' |
+| headerName | 标题名                     | string                                                        | -      | '绘制'                    |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
 
 ### Events
 
 | name         | 说明               | 回调参数  |
 | :----------- | :----------------- | :-------- |
-| draw-created | 绘制结束事件       | popupInfo |
+| draw-created | 绘制完成事件       | popupInfo |
 | draw-removed | 删掉绘制的图层事件 | -         |

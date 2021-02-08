@@ -18,3 +18,5 @@
 | bounds      | 图层显示范围                                           | [bounds](https://docs.mapbox.com/mapbox-gl-js/style-spec/#sources-vector-bounds)           | -              | -      |
 | attribution | 版权信息                                               | [attribution](https://docs.mapbox.com/mapbox-gl-js/style-spec/#sources-vector-attribution) | -              | -      |
 | scheme      | 瓦片金字塔                                             | [scheme](https://docs.mapbox.com/mapbox-gl-js/style-spec/#sources-vector-scheme)           | 'xyz' \| 'tms' | 'xyz'  |
+
+> 支持 [Layer 混入参数](/zh/api/mixin/mixin.md#layer)

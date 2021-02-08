@@ -22,7 +22,10 @@ interface swiperOptionsType {
 }
 
 @Component({
-  name: 'SmSlideshow'
+  name: 'SmSlideshow',
+  model: {
+    prop: 'activeIndex'
+  }
 })
 class Slideshow extends Mixins(Theme) {
   swiper: any;

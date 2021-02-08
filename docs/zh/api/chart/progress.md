@@ -12,14 +12,12 @@ pageClass: progress
 ### Attributes
 
 ::: tip
-与 [ant-design](https://www.antdv.com/components/progress/#API) 配置相同, 新增配置如下：
+与 [ant-design-vue](https://www.antdv.com/components/progress/#API) 配置相同, 新增配置如下：
 :::
 | 参数 | 说明 | 类型 | 可选值 | 默认值 |
 | :------ | :------------------------------------------------------------------------------ | :--------------- | :----- | :----- |
 | percent | 百分比 | number \| string | - | - |
-| url | 服务地址 | string | - | - |
-| proxy | 服务代理 | string | - | - |
-| field | 指定[服务响应数据](/zh/api/service-response-data-requirements/index.md)中的字段 | string | - | - |
-| startTiming | 是否开启定时刷新 | boolean | - | false |
-| frequency | 请求间隔 | number \| string | - | 3 |
 | trailColor | 进度条底色 | string | - | '#f3f3f3' |
+| size | 进度条的带下。若类型为 number，则表示圆形进度条画布宽度 | number \| string | 'small' \| 'default' \| 'large' | 'default' |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[第三方服务混入参数](/zh/api/mixin/mixin.md#thirdservice)和[定时刷新混入参数](/zh/api/mixin/mixin.md#timer)

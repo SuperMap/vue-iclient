@@ -9,14 +9,6 @@
 
 | 参数                | 说明                                                                                      | 类型                                            | 可选值                            | 默认值                                               |
 | :------------------ | :---------------------------------------------------------------------------------------- | :---------------------------------------------- | :-------------------------------- | :--------------------------------------------------- |
-| url                 | 服务地址                                                                                  | string                                          | -                                 | -                                                    |
-| proxy               | 服务代理                                                                                  | string                                          | -                                 | -                                                    |
-| numField            | 数字字段，指定[服务响应数据](/zh/api/service-response-data-requirements/index.md)中的字段 | string                                          | -                                 | -                                                    |
-| titleField          | 标题字段，指定[服务响应数据](/zh/api/service-response-data-requirements/index.md)中的字段 | string                                          | -                                 | -                                                    |
-| unitField           | 单位字段，指定[服务响应数据](/zh/api/service-response-data-requirements/index.md)中的字段 | string                                          | -                                 | -                                                    |
-| startTiming         | 是否开启定时刷新                                                                          | boolean                                         | -                                 | false                                                |
-| frequency           | 请求间隔                                                                                  | number \| string                                | -                                 | 3                                                    |
-| showTitleUnit       | 是否显示标题和单位                                                                        | boolean                                         | -                                 | true                                                 |
 | title               | 标题                                                                                      | string                                          | -                                 | '指标标题'                                           |
 | unit                | 单位                                                                                      | string                                          | -                                 | '单位'                                               |
 | num                 | 数据                                                                                      | string \| number                                | -                                 | 0                                                    |
@@ -24,6 +16,7 @@
 | mode                | 排列方式                                                                                  | string                                          | 'vertical' \| 'horizontal'        | 'vertical'                                           |
 | separator           | 千分符                                                                                    | string                                          | -                                 | ','（英文逗号）                                      |
 | separatorBackground | 分隔符背景                                                                                | boolean                                         | -                                 | false                                                |
+| showTitleUnit       | 是否显示标题和单位                                                                        | boolean                                         | -                                 | true                                                 |
 | animated            | 数字动画                                                                                  | boolean                                         | -                                 | false                                                |
 | duration            | 动画时长                                                                                  | string \| number                                | -                                 | 1000                                                 |
 | fontWeight          | 字体粗细                                                                                  | string \| number                                | 'lighter' \| 'normal' \| 'bolder' | 'border'                                             |
@@ -32,7 +25,14 @@
 | numSpacing          | 字体间距                                                                                  | number                                          | -                                 | 0                                                    |
 | indicatorColor      | 数据颜色                                                                                  | string                                          | -                                 | -                                                    |
 | numBackground       | 背景样式                                                                                  | object                                          | -                                 | { color: 'rgba(0, 0, 0, 0)', image: '', padding: 0 } |
-| thresholdsStyle     | 阈值样式                                                                                  | <a href="#thresholdsstyle">ThresholdsStyle </a> | -                                 | []                                                   |
+| thresholdsStyle     | 阈值样式                                                                                  | <a href="#thresholdsstyle">ThresholdsStyle </a> | -                                 | -                                                   |
+| url                 | 服务地址                                                                                  | string                                          | -                                 | -                                                    |
+| proxy               | 服务代理                                                                                  | string                                          | -                                 | -                                                    |
+| numField            | 数字字段，指定[服务响应数据](/zh/api/service-response-data-requirements/index.md)中的字段 | string                                          | -                                 | -                                                    |
+| titleField          | 标题字段，指定[服务响应数据](/zh/api/service-response-data-requirements/index.md)中的字段 | string                                          | -                                 | -                                                    |
+| unitField           | 单位字段，指定[服务响应数据](/zh/api/service-response-data-requirements/index.md)中的字段 | string                                          | -                                 | -                                                    |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[定时刷新混入参数](/zh/api/mixin/mixin.md#timer)
 
 ### ThresholdsStyle
 

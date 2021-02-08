@@ -11,19 +11,21 @@
 
 | 参数            | 说明                                                                                                             | 类型            | 可选值 | 默认值 |
 | :-------------- | :--------------------------------------------------------------------------------------------------------------- | :-------------- | :----- | :----- |
-| data            | 时间轴节点数组，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.data)                        | array           | -      | -     |
+| data            | 时间轴节点数组，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.data)              | array           | -      | -      |
 | autoPlay        | 是否自动播放                                                                                                     | boolean         | -      | false  |
-| nextEnable      | 是否播放下一个点                                                                                                 | boolean \| null | -      | -      |
+| nextEnable      | 是否播放下一个点                                                                                                 | boolean | -      | -      |
 | autoPlay        | 是否自动播放                                                                                                     | boolean         | -      | false  |
 | loop            | 是否循环播放                                                                                                     | boolean         | -      | true   |
-| playInterval    | 播放间隔，单位毫秒（ms）                                                                                         | string          | number | -      | 3000 |
-| currentIndex    | 当前选中项是哪项                                                                                                 | string          | -      | '#ddd' |
+| playInterval    | 播放间隔，单位毫秒（ms）                                                                                         | string          | -      | 3000   |
+| currentIndex    | 当前选中项是哪项                                                                                                 | number          | -      | 0      |
 | lineStyle       | 轴线样式，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.lineStyle)               | object          | -      | -      |
 | label           | 轴的文本标签，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.label)               | object          | -      | -      |
 | itemStyle       | 图形样式，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.itemStyle)               | object          | -      | -      |
 | emphasis        | 高亮样式，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.emphasis)                | object          | -      | -      |
 | checkpointStyle | 当前项的图形样式，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.checkpointStyle) | object          | -      | -      |
 | controlStyle    | 控制按钮样式，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.controlStyle)        | object          | -      | -      |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)
 
 ### Events
 

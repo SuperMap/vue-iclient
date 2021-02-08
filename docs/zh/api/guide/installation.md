@@ -1,3 +1,7 @@
+---
+pageClass: installation
+---
+
 # 安装
 
 你可以通过以下两种方式安装 Vue-iClient-MapboxGL。

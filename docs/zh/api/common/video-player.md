@@ -11,7 +11,7 @@
 | url     | 视频地址                              | string | -      | -      |
 | swf     | 视频插件                             | string | -      | 'https://vjs.zencdn.net/swf/5.4.2/video-js.swf'     |
 | replayTime     | 黑屏重放rtmp的时间间隔                              | number | -      | 3000     |
-| options | 视频配置 <a href="#options">配置项</a> | object | -      | -      |
+| options | 视频配置。<a href="#options">配置项</a> | object | -      | -      |
 
 ### options
 

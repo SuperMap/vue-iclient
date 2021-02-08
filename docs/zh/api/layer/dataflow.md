@@ -99,3 +99,5 @@
 | geometry      | 指定几何范围。该范围内的要素才能被订阅                                                                                                                                              | object                                                                                                                                                                                        | -      | -      |
 | excludeField  | 排除字段                                                                                                                                                                            | object                                                                                                                                                                                        | -      | -      |
 | layerStyle    | 图层样式                                                                                                                                                                            | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle)                                         | -      | -      |
+
+> 支持 [Layer 混入参数](/zh/api/mixin/mixin.md#layer)

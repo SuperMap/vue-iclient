@@ -12,13 +12,14 @@
 
 ### Attributes
 
-| 参数        | 说明                                                                            | 类型                                                                                 | 可选值                                                       | 默认值                           |
-| :---------- | :------------------------------------------------------------------------------ | :----------------------------------------------------------------------------------- | :----------------------------------------------------------- | :------------------------------- |
-| restData    | SuperMap iServer 数据服务查询配置                                               | [iServerDataParameter](/zh/api/common-types/common-types.md#iserverdataparameter)[ ]       | -                                                            | -                                |
-| restMap     | SuperMap iServer 地图服务查询配置                                               | [iServerMapParameter](/zh/api/common-types/common-types.md#iservermapparameter)[ ]         | -                                                            | -                                |
-| iportalData | SuperMap iPortal 资源中心数据（该数据需要发布成服务）                           | [iPortalDataParameter](/zh/api/common-types/common-types.md#iportaldataparameter)[ ] | -                                                            | -                                |
-| position    | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string                                                                               | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left'                       |
-| iconClass   | 收缩按钮 Icon 类名                                                              | string                                                                               | -                                                            | 'sm-components-icon-search-list' |
-| headerName  | 标题名                                                                          | string                                                                               | -                                                            | '查询'                           |
-| autoRotate  | 收缩按钮是否自动旋转                                                            | boolean                                                                              | -                                                            | false                            |
-| collapsed   | 是否默认折叠（iconClass 参数存在时生效）                                        | boolean                                                                              | -                                                            | true                             |
+| 参数        | 说明                                                  | 类型                                                                                 | 可选值 | 默认值                           |
+| :---------- | :---------------------------------------------------- | :----------------------------------------------------------------------------------- | :----- | :------------------------------- |
+| restData    | SuperMap iServer 数据服务查询配置                     | [iServerDataParameter](/zh/api/common-types/common-types.md#iserverdataparameter)[ ] | -      | -                                |
+| restMap     | SuperMap iServer 地图服务查询配置                     | [iServerMapParameter](/zh/api/common-types/common-types.md#iservermapparameter)[ ]   | -      | -                                |
+| iportalData | SuperMap iPortal 资源中心数据（该数据需要发布成服务） | [iPortalDataParameter](/zh/api/common-types/common-types.md#iportaldataparameter)[ ] | -      | -                                |
+| maxFeatures | 要素最大返回数                                        | number                                                                               | -      | 200                               |
+| layerStyle  | 查询结果的图层样式                                    | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle)                        | -      | -                                |
+| iconClass   | 收缩按钮的 Font class 类名                            | string                                                                               | -      | 'sm-components-icon-search-list' |
+| headerName  | 标题名                                                | string                                                                               | -      | '查询'                           |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)

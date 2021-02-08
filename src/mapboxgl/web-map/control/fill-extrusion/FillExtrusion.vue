@@ -231,7 +231,7 @@ export default class FillExtrusion extends Mixins(MapGetter, Control, Theme, Bas
   editLayerSelected: fillLayerSelectedOption = null;
   currentLayerChanged: boolean;
 
-  @Prop({ default: 'sm-components-icon-layer-list' }) iconClass: string;
+  @Prop({ default: 'sm-components-icon-fill-extension' }) iconClass: string;
   @Prop({
     default() {
       return this.$t('fillExtrusion.title');

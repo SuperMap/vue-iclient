@@ -1,6 +1,6 @@
 # POI 搜索
 
-<!-- <sm-iframe src="https://iclient.supermap.io/examples/component/components_webmap_vue.html"></sm-iframe> -->
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_tianditu_search_vue.html"></sm-iframe>
 
 ```vue
 <sm-web-map server-url="https://iportal.supermap.io/iportal/" map-id="801571284">
@@ -10,10 +10,12 @@
 
 ### Attributes
 
-| 参数         | 说明                                                                            | 类型                    | 可选值                                                       | 默认值                                                   |
-| :----------- | :------------------------------------------------------------------------------ | :---------------------- | :----------------------------------------------------------- | :------------------------------------------------------- |
-| collapsed    | 是否折叠                                                                        | boolean                 | -                                                            | false                                                    |
-| position     | 显示位置，添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string                  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left'                                               |
-| mode         | 搜索框样式                                                                      | string                  | 'control' \| 'toolBar'                                       | 'control'                                                |
-| resultRender | 查询结果后的回调方法                                                            | function(searchResults) | -                                                            | -                                                        |
-| data         | 天地图搜索服务和许可服务配置                                                    | object                  | -                                                            | {searchUrl: 'https://api.tianditu.gov.cn/search', tk: ''} |
+| 参数         | 说明                         | 类型                    | 可选值                 | 默认值                                                    |
+| :----------- | :--------------------------- | :---------------------- | :--------------------- | :-------------------------------------------------------- |
+| data         | 天地图搜索服务和许可服务配置 | object                  | -                      | {searchUrl: 'https://api.tianditu.gov.cn/search', tk: ''} |
+| mode         | 搜索框样式                   | string                  | 'control' \| 'toolBar' | 'control'                                                 |
+| resultRender | 查询结果后的回调方法         | function(searchResults) | -                      | -                                                         |
+| collapsed    | 是否默认折叠                 | boolean                 | -                      | false                                                     |
+| splitLine    | 搜索框与查询结果的分割线     | boolean                 | -                      | false                                                     |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)

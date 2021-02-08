@@ -82,3 +82,5 @@
 | :--------- | :----------------------------------------------------------------------------------------------------- | :--------------------------------------------------------- | :----- | :------------------ |
 | features   | 图层要素                                                                                               | FeatureCollection。参考[OSCHINA](https://www.oschina.net/translate/geojson-spec?cmp) | -      | -                   |
 | modelScale | 指定 CSS 属性 transform 缩放的比例。参考 [MDN](https://developer.mozilla.org/zh-CN/docs/Web/CSS/scale) | number                                                     | -      | 5.41843220338983e-6 |
+
+> 支持 [Layer 混入参数](/zh/api/mixin/mixin.md#layer)

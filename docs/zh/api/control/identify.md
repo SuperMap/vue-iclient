@@ -10,9 +10,16 @@
 
 ### Attributes
 
-| 参数           | 说明                                                                   | 类型                                                             | 可选值 | 默认值 |
-| :------------- | :--------------------------------------------------------------------- | :--------------------------------------------------------------- | :----- | :----- |
-| layers         | 点选查询的图层 id 的数组                                                | string[]                                                          | -      | -
-| fields         | 弹窗显示的属性，默认显示图层的所有字段，与layers一一对应                 | array[]                                                           | -      | -
-| clickTolerance | 点击命中检测容限，以像素为单位。将获取点击位置周围指定像素半径内的要素    | number                                                          | 5      |-
-| layerStyle     | 高亮要素样式                                                           | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle)    | -      | -      |
+| 参数           | 说明                                                                   | 类型                                                          | 可选值 | 默认值 |
+| :------------- | :--------------------------------------------------------------------- | :------------------------------------------------------------ | :----- | :----- |
+| layers         | 点选查询的图层 id 的数组                                               | string[ ]                                                     | -      | -      |
+| fields         | 弹窗显示的属性，默认显示图层的所有字段，与 layers 一一对应             | array[ ]                                                      | -      | -      |
+| clickTolerance | 点击命中检测容限，以像素为单位。将获取点击位置周围指定像素半径内的要素 | number                                                        | 5      | -      |
+| layerStyle     | 高亮要素样式                                                           | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle) | -      | -      |
+| autoResize     | 自适应宽度                                                             | boolean                                                       | -      | true   |
+| keyMaxWidth    | 键列的最大宽度                                                         | number                                                        | -      | 110    |
+| valueMaxWidth  | 值列的最大宽度                                                         | number                                                        | -      | 170    |
+| keyWidth       | 键列的宽度                                                             | number                                                        | -      | 110    |
+| valueWidth     | 值列的宽度                                                             | number                                                        | -      | 170    |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)
