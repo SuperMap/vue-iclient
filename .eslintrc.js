@@ -18,7 +18,7 @@ module.exports = {
   },
   extends: ['plugin:vue/recommended', '@vue/standard'],
   parserOptions: {
-    parser: 'babel-eslint',
+    parser: '@babel/eslint-parser',
     ecmaVersion: 6,
     ecmaFeatures: {
       legacyDecorators: true
