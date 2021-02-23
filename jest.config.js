@@ -21,11 +21,11 @@ module.exports = {
   transform: {
     '^.+\\.ts$': '<rootDir>/node_modules/ts-jest',
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
-    '.*\\.(vue)$': '<rootDir>/node_modules/vue-jest'
-    // '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': '<rootDir>/node_modules/jest-transform-stub'
+    '.*\\.(vue)$': '<rootDir>/node_modules/vue-jest',
+    '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': '<rootDir>/node_modules/jest-transform-stub'
   },
   snapshotSerializers: ['<rootDir>/node_modules/jest-serializer-vue'],
-  setupFiles: ['<rootDir>/test/unit/setup.js', 'jest-canvas-mock'],
+  setupFiles: ['<rootDir>/test/unit/setup.js', '<rootDir>/test/jest.init.js', 'jest-canvas-mock'],
   // mapCoverage: true,
   coverageDirectory: '<rootDir>/test/unit/coverage',
   collectCoverageFrom: [

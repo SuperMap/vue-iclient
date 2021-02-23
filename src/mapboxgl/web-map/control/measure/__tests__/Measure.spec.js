@@ -17,7 +17,7 @@ localVue.use(Spin);
 
 jest.mock('@i18n/_lang', () => require('@mocks/i18n'));
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance.js', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@mapbox/mapbox-gl-draw', () => require('@mocks/mapboxgl_draw'));
+jest.mock('@libs/mapbox-gl-draw/mapbox-gl-draw', () => require('@mocks/mapboxgl_draw'));
 jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
 
 describe('mesure', () => {

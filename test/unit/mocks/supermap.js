@@ -15,12 +15,13 @@ import {
   fieldsJson,
   datas_beijing
 } from './services';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 var SuperMap = (window.SuperMap = window.SuperMap || {});
 SuperMap.Widgets = window.SuperMap.Widgets || {};
 SuperMap.Widgets.FileReaderUtil = {};
 SuperMap.ColorsPickerUtil = {};
-SuperMap.ColorsPickerUtil.getGradientColors = function() {
+SuperMap.ColorsPickerUtil.getGradientColors = function () {
   return [
     '#d53e4f',
     '#d6404f',
@@ -252,8 +253,7 @@ var isXField = (SuperMap.Widgets.FileReaderUtil.isXField = jest.fn());
 var isYField = (SuperMap.Widgets.FileReaderUtil.isYField = jest.fn());
 
 var FetchRequest = (SuperMap.FetchRequest = {
-  get: function(url, params, options) {
-    console.log(url);
+  get: function (url, params, options) {
     return new Promise((resolve, reject) => {
       if (url.indexOf('1962026684') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas))));
@@ -326,7 +326,13 @@ var results_getFeaturesBySQLService = {
             geometry: {
               type: 'MultiPolygon',
               coordinates: [
-                [[[101.84004968, 26.0859968692659], [101.95654423, 26.0888446242659], [101.84004968, 26.0859968692659]]]
+                [
+                  [
+                    [101.84004968, 26.0859968692659],
+                    [101.95654423, 26.0888446242659],
+                    [101.84004968, 26.0859968692659]
+                  ]
+                ]
               ]
             }
           }

@@ -21,6 +21,7 @@ localVue.use(Select);
 localVue.use(Button);
 localVue.prototype.$message = message;
 
+jest.mock('@i18n/_lang', () => require('@mocks/i18n'));
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
 jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
 

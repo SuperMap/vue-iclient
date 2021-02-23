@@ -49,7 +49,7 @@ describe('WebMap.vue', () => {
     })
   })
 
-  it('initial_Control', (done) => {
+  xit('initial_Control', (done) => {
     const spy = jest.spyOn(mapboxgl, "Map");
     const wrapper = mount(SmWebMap,
       {
