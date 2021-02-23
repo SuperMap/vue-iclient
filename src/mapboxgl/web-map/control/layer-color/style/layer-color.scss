@@ -2,62 +2,61 @@
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/card/style/card.scss';
 @import '../../../../../common/collapse/style/collapse.scss';
+@import '../../../../../common/button/style/button.scss';
+@import '../../../../../common/color-picker/style/color-picker.scss';
+@import '../../../../../common/layer-select/style/layer-select.scss';
+@import '../../../../../common/icon/style/icon.scss';
 
 @include b(layer-color) {
   $layer-color-prefix: &;
   z-index: 10;
   @include e(content) {
-    max-height: 400px;
-    height: 100%;
     padding: 0 16px;
     font-size: 12px;
   }
   @include e(layer) {
-    margin: 12px 36px 12px 0px;
+    margin: 12px 0px 12px 0px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    >span {
+    > span {
       width: 62px;
       display: inline-block;
     }
   }
   .sm-component-select {
     margin-bottom: 4px;
-    width: 174px;
+    width: calc(100% - 62px);
     height: 28px;
   }
   @include e(capture) {
     font-size: 16px;
     width: 28px;
     height: 28px;
-    background-color: #4A4A4A;
     border-radius: 4px;
     position: absolute;
     right: 16px;
     top: 18px;
+    cursor: pointer;
     .sm-component-icon {
-      color: #ccc;
+      color: inherit;
       width: 100%;
       height: 100%;
     }
     &.selected {
-      color: #ccc;
-      background-color: #3499E5;
+      background-color: $primary-6;
     }
   }
   @include e(color-picker) {
-    margin: 12px 36px 12px 0px;
+    margin: 12px 0px 12px 0px;
     display: flex;
     align-items: center;
-    justify-content: space-between;
     > span {
       margin-right: 12px;
       width: 50px;
       display: inline-block;
     }
     .sm-component-colorpicker {
-      width: 174px;
+      width: calc(100% - 62px);
       height: 28px;
     }
   }
@@ -71,5 +70,8 @@
     > div {
       padding: 0;
     }
+  }
+  .select-margin {
+    margin-right: 36px;
   }
 }

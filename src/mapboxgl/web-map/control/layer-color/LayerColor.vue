@@ -13,9 +13,15 @@
   >
     <sm-card class="sm-component-layer-color__a-card" :bordered="false" :style="headingTextColorStyle">
       <div class="sm-component-layer-color__content">
-        <div class="sm-component-layer-color__layer">
+        <div :class="['sm-component-layer-color__layer', allowCapture && 'select-margin']">
           <span>{{ $t('layerColor.layer') }}</span>
-          <sm-layer-select ref="layerSelectRef" v-model="selectLayer" :filter="filtercb" @change="handleLayerChange" />
+          <sm-layer-select
+            ref="layerSelectRef"
+            v-model="selectLayer"
+            :filter="filtercb"
+            :background="background"
+            @change="handleLayerChange"
+          />
         </div>
         <div :class="['sm-component-layer-color__capture', isSelect && 'selected']">
           <sm-icon
@@ -25,7 +31,11 @@
             @click.native="toggleSelectLayer"
           ></sm-icon>
         </div>
-        <div v-for="(propertyInfo, index) in propertyList" :key="index" class="sm-component-layer-color__color-picker">
+        <div
+          v-for="(propertyInfo, index) in propertyList"
+          :key="index"
+          :class="['sm-component-layer-color__color-picker', allowCapture && 'select-margin']"
+        >
           <span>{{ propertyMap[propertyInfo.name] }}</span>
           <sm-color-picker
             :value="propertyInfo.color"
@@ -53,6 +63,7 @@ import Control from '../../../_mixin/control';
 import MapGetter from '../../../_mixin/map-getter';
 import BaseCard from '../../../../common/_mixin/Card';
 import SmCard from '../../../../common/card/Card.vue';
+import SmButton from '../../../../common/button/Button.vue';
 import LayerColorViewModel from './LayerColorViewModel';
 import SmColorPicker from '../../../../common/color-picker/ColorPicker.vue';
 import SmLayerSelect from '../../../../common/layer-select/LayerSelect.vue';
@@ -73,6 +84,7 @@ interface selectLayerParams {
   name: 'SmLayerColor',
   components: {
     SmCard,
+    SmButton,
     SmColorPicker,
     SmLayerSelect
   }
