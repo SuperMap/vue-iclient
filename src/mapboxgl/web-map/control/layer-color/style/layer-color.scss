@@ -32,6 +32,7 @@
     font-size: 16px;
     width: 28px;
     height: 28px;
+    background-color: $disabled-bg;
     border-radius: 4px;
     position: absolute;
     right: 16px;
@@ -44,6 +45,7 @@
     }
     &.selected {
       background-color: $primary-6;
+      color: $btn-disable-color;
     }
   }
   @include e(color-picker) {

@@ -54,9 +54,9 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   fire: any;
 
-  layerName: string
+  layerName: string;
 
-  selectLayerFn: MapEventCallBack
+  selectLayerFn: MapEventCallBack;
 
   constructor(options) {
     super();
@@ -74,7 +74,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   }
 
   _selectLayerFn(e) {
-    let pos:mapboxglTypes.LngLatLike = [e.point.x, e.point.y];
+    let pos: mapboxglTypes.LngLatLike = [e.point.x, e.point.y];
     const featuresInfo = this.map.queryRenderedFeatures(pos, {
       layers: [this.layerName]
     });
@@ -114,29 +114,29 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   }
 
   _inMapExtent(featureObj) {
-    const mapbounds:mapboxglTypes.LngLatBoundsLike = this.map.getBounds();
+    const mapbounds: mapboxglTypes.LngLatBoundsLike = this.map.getBounds();
     if (this.diffKeys.length) {
       return this.diffKeys.every(key => {
         let { type, coordinates } = featureObj[key].geometry;
         if (['MultiLineString', 'Polygon'].includes(type)) {
-          return coordinates.some((line) => {
-            return line.some((coordinate) => {
+          return coordinates.some(line => {
+            return line.some(coordinate => {
               // @ts-ignore
               return mapbounds.contains(coordinate);
-            })
-          })
+            });
+          });
         } else if (['MultiPoint', 'LineString'].includes(type)) {
-          return coordinates.some((coordinate) => {
+          return coordinates.some(coordinate => {
             // @ts-ignore
             return mapbounds.contains(coordinate);
-          })
+          });
         } else if (type === 'MultiPolygon') {
-          return coordinates[0].some((polygon) => {
-            return polygon.some((coordinate) => {
+          return coordinates[0].some(polygon => {
+            return polygon.some(coordinate => {
               // @ts-ignore
               return mapbounds.contains(coordinate);
-            })
-          })
+            });
+          });
         }
         // @ts-ignore
         return mapbounds.contains(coordinates);
@@ -160,7 +160,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         this.diffKeys.push(key);
       }
     });
-    let filter:any= ['any'];
+    let filter: any = ['any'];
     // let feature: any = {};
     this.selectedKeys.forEach(key => {
       const feature = selectedKeys[key];
@@ -204,7 +204,12 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         this.map.addLayer(highlightLayer);
       }
 
-      if (this.diffKeys.length && (centerToFeature || zoomToFeatures || (!zoomToFeatures && Object.keys(selectedKeys).length && !this._inMapExtent(selectedKeys)))) {
+      if (
+        this.diffKeys.length &&
+        (centerToFeature ||
+          zoomToFeatures ||
+          (!zoomToFeatures && Object.keys(selectedKeys).length && !this._inMapExtent(selectedKeys)))
+      ) {
         this.zoomToFeatures(selectedKeys, associateWithMap);
       }
     }
@@ -219,17 +224,15 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           'line-color': HIGHLIGHT_COLOR,
           'line-opacity': 1
         };
-        let testObj = {
+        let highlightLayer = Object.assign({}, layer, {
           id: strokeLayerID,
           type: 'line',
           paint: lineStyle,
           layout: { visibility: 'visible' },
           filter
-        };
-        let highlightLayer = Object.assign({}, layer, testObj);
+        });
         this.map.addLayer(highlightLayer);
       }
-     
     }
     this.diffKeys = [];
   }
@@ -246,6 +249,13 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           this.map.getLayer(layerId + '-attributes-SM-StrokeLine') &&
           this.map.removeLayer(layerId + '-attributes-SM-StrokeLine');
       });
+  }
+
+  reset(options) {
+    this.layerStyle = options.layerStyle || {};
+    this.layerName = options.layerName;
+    this.selectedKeys = [];
+    this.diffKeys = [];
   }
 
   _setDefaultPaintWidth(type, layerId, paintTypes, layerStyle) {

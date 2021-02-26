@@ -104,7 +104,9 @@ export default {
     clearSelected: 'Clear Selected',
     zoomToFeatures: 'ZoomTo Features',
     columnsControl: 'Show/Hide Columns',
-    refreshData: 'RefreshData'
+    refreshData: 'RefreshData',
+    search: 'Search',
+    reset: 'Reset'
   },
   miniMap: {},
   pan: {},

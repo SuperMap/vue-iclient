@@ -47,7 +47,45 @@
       :loading="loading"
       table-layout="fixed"
       @change="handleChange"
-    />
+    >
+      <div
+        slot="filterDropdown"
+        slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
+        style="padding: 8px;"
+      >
+        <sm-input
+          v-ant-ref="c => (searchInput = c)"
+          :placeholder="`Search ${column.dataIndex}`"
+          :value="selectedKeys[0]"
+          style="width: 188px; margin-bottom: 8px; display: block;"
+          @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
+          @pressEnter="() => handleSearch(selectedKeys, confirm, column.dataIndex)"
+        />
+        <sm-button
+          type="primary"
+          icon="search"
+          size="small"
+          style="width: 90px; margin-right: 8px;"
+          @click="() => handleSearch(selectedKeys, confirm, column.dataIndex)"
+        >
+          {{ $t('attributes.search') }}
+        </sm-button>
+        <sm-button size="small" style="width: 90px;" @click="() => handleReset(clearFilters)">
+          {{ $t('attributes.reset') }}
+        </sm-button>
+      </div>
+      <sm-icon slot="filterIcon" icon-class="search" />
+      <template slot="customRender" slot-scope="text, record, index, column">
+        <span v-if="searchText && searchedColumn === column.dataIndex">
+          <template v-for="fragment in text.toString().split(new RegExp(`(?<=${searchText})|(?=${searchText})`, 'i'))">
+            <template>{{ fragment }}</template>
+          </template>
+        </span>
+        <template v-else>
+          {{ text }}
+        </template>
+      </template>
+    </sm-table>
   </div>
 </template>
 
@@ -56,6 +94,13 @@ import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import Theme from '../../common/_mixin/Theme';
 import MapGetter from '../_mixin/map-getter';
 import SmTable from '../../common/table/Table.vue';
+import SmDropdown from '../../common/dropdown/Dropdown.vue';
+import SmMenu from '../../common/menu/Menu.vue';
+import SmMenuItem from '../../common/menu/MenuItem.vue';
+import SmSubMenu from '../../common/menu/SubMenu.vue';
+import SmButton from '../../common/button/Button.vue';
+import SmInput from '../../common/input/Input.vue';
+import SmIcon from '../../common/icon/Icon.vue';
 import CircleStyle from '../_types/CircleStyle';
 import FillStyle from '../_types/FillStyle';
 import LineStyle from '../_types/LineStyle';
@@ -75,13 +120,13 @@ interface FieldConfigParams {
   value: string;
   visible?: boolean;
   align?: string;
-  filtered?: boolean;
+  filterMultiple?: boolean;
   onFilter?: Function;
   onFilterDropdownVisibleChange?: Function;
   sorter?: Function | boolean;
-  sortOrder?: boolean | string;
-  sortDirections?: Array<string>;
+  defaultSortOrder?: string;
   width?: string | number;
+  search?: boolean;
 }
 
 interface AssociateWithMapParams {
@@ -112,7 +157,14 @@ interface ToolbarParams {
 @Component({
   name: 'SmAttributes',
   components: {
-    SmTable
+    SmTable,
+    SmDropdown,
+    SmMenu,
+    SmMenuItem,
+    SmSubMenu,
+    SmButton,
+    SmInput,
+    SmIcon
   }
 })
 class SmAttributes extends Mixins(MapGetter, Theme) {
@@ -129,6 +181,12 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   openKeys: Array<string> = [];
 
   loading: boolean = false;
+
+  searchText: string = '';
+
+  searchInput: any = null;
+
+  searchedColumn: string = '';
 
   @Prop() layerName: string; // 图层名
 
@@ -223,7 +281,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   }
   @Watch('layerName')
   layerNameChanged(val) {
-    this.initViewModel({ layerName: val, layerStyle: this.layerStyle });
+    this.viewModel.reset({ layerName: val, layerStyle: this.layerStyle });
     this._initFeatures();
   }
 
@@ -246,7 +304,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   }
 
   get associateMap() {
-    return this.associateWithMap.enabled && !this.dataset;
+    return this.associateWithMap.enabled;
   }
 
   get compColumns() {
@@ -361,6 +419,20 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
               return obj;
             }
           });
+          // @ts-ignore
+          if (columnConfig.search) {
+            // @ts-ignore
+            if (!columnConfig.onFilter) {
+              // @ts-ignore
+              columnConfig.onFilter = (value, record) => record[propertyName].indexOf(value) === 0;
+            }
+            // @ts-ignore
+            columnConfig.scopedSlots = {
+              filterDropdown: 'filterDropdown',
+              filterIcon: 'filterIcon',
+              customRender: 'customRender'
+            };
+          }
         }
       }
 
@@ -435,6 +507,17 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
         this.getFeaturesFromDataset();
       }
     }
+  }
+
+  handleSearch(selectedKeys, confirm, dataIndex) {
+    confirm();
+    this.searchText = selectedKeys[0];
+    this.searchedColumn = dataIndex;
+  }
+
+  handleReset(clearFilters) {
+    clearFilters();
+    this.searchText = '';
   }
 
   removed() {

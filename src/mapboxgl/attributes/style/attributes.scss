@@ -27,6 +27,13 @@
           }
         }
       }
+
+      tr > th .anticon-filter, tr > th .sm-component-table-filter-icon {
+        right: 15px;
+        > i {
+          height: 16px;
+        }
+      }
     }
   }
   @include e(header) {

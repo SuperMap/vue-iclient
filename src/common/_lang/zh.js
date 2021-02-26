@@ -105,7 +105,9 @@ export default {
     clearSelected: '清除选中',
     zoomToFeatures: '缩放至已选要素',
     columnsControl: '显示/隐藏列',
-    refreshData: '刷新数据'
+    refreshData: '刷新数据',
+    search: '搜索',
+    reset: '重置'
   },
   miniMap: {},
   pan: {},

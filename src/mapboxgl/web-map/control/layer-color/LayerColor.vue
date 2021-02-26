@@ -25,7 +25,7 @@
         </div>
         <div :class="['sm-component-layer-color__capture', isSelect && 'selected']">
           <sm-icon
-            v-if="allowCapture"
+            v-if="capture"
             iconClass="layer-picker"
             :title="$t('layerColor.capture')"
             @click.native="toggleSelectLayer"
@@ -47,7 +47,7 @@
           ></sm-color-picker>
         </div>
         <div class="sm-component-layer-color__btn-group">
-          <sm-button v-if="allowReset" type="primary" size="small" @click="resetAllLayerColor">{{
+          <sm-button v-if="reset" type="primary" size="small" @click="resetAllLayerColor">{{
             $t('layerColor.reset')
           }}</sm-button>
         </div>
@@ -116,8 +116,8 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
   })
   headerName: string;
-  @Prop({ default: true }) allowReset: boolean;
-  @Prop({ default: true }) allowCapture: boolean;
+  @Prop({ default: true }) reset: boolean;
+  @Prop({ default: true }) capture: boolean;
 
   created() {
     this.viewModel = new LayerColorViewModel();
@@ -187,6 +187,9 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.selectLayer.id = id;
     this.selectLayer.type = type;
     this.updateProperty(id, extra.type);
+    if (this.isSelect) {
+      this.toggleSelectLayer();
+    }
   }
   _changeSelectLayer(featureInfo) {
     const {
