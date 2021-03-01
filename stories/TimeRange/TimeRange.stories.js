@@ -55,14 +55,14 @@ export const StyleTimeRange = () => ({
         ],
         handleStyle: { color: '#fff' },
         textStyle: {
-          color: '#fff',
+          color: 'rgba(255, 255, 255, 0.85)',
           fontSize: 12,
           fontWeight: 'normal',
           fontFamily: '微软雅黑'
         },
-        backgroundColor: 'red',
-        borderColor: 'yellow',
-        fillerColor: 'green'
+        backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        borderColor: '#91A4C4',
+        fillerColor: '#5A9B9C'
       }
     };
   },

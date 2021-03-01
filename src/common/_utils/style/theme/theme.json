@@ -21,6 +21,7 @@
     "disabledBorderColor": "rgba(255, 255, 255, 0.08)",
     "disabledTextColor": "rgba(255, 255, 255, 0.25)",
     "borderColorBase": "rgba(255, 255, 255, 0.15)",
+    "handleColor": "#d9d9d9",
     "borderColorSplit": "rgba(255, 255, 255, 0.12)",
     "shadowColor": "rgba(0, 0, 0, 0.35)",
     "placeholderColor": "rgba(255, 255, 255, 0.45)",
@@ -37,6 +38,7 @@
     "avatarBackground": "#fff",
     "avatarTextColor": "#ccc",
     "tooltipBackground": "#535353",
+    "tooltipColor": "rgba(255, 255, 255, 0.85)",
     "modalBackground": "#333333",
     "messageBackground": "#535353",
     "radioInnerDisabledBg": "rgba(255, 255, 255, 0.12)",
@@ -44,13 +46,7 @@
     "collapseCardBackground": "#414141",
     "searchArrowIconBg": "#383838",
     "sliderRailBackgroundColor": "rgba(255, 255, 255, 0.25)",
-    "colorGroup": [
-      "#3499e5",
-      "#759aa0",
-      "#e69d87",
-      "#8dc1a9",
-      "#ea7e53"
-    ]
+    "colorGroup": ["#3499e5", "#759aa0", "#e69d87", "#8dc1a9", "#ea7e53"]
   },
   {
     "title": "经典浅色",
@@ -74,6 +70,7 @@
     "disabledBorderColor": "#d9d9d9",
     "disabledTextColor": "rgba(0, 0, 0, 0.25)",
     "borderColorBase": "#d9d9d9",
+    "handleColor": "#d9d9d9",
     "borderColorSplit": "#e8e8e8",
     "shadowColor": "rgba(0, 0, 0, 0.15)",
     "placeholderColor": "#bfbfbf",
@@ -90,6 +87,7 @@
     "avatarBackground": "#ccc",
     "avatarTextColor": "#fff",
     "tooltipBackground": "rgba(0, 0, 0, 0.75)",
+    "tooltipColor": "#fff",
     "modalBackground": "#fff",
     "messageBackground": "#fff",
     "radioInnerDisabledBg": "rgba(0, 0, 0, 0.2)",
@@ -97,13 +95,7 @@
     "collapseCardBackground": "#fff",
     "searchArrowIconBg": "rgba(207, 216, 220, 0.2)",
     "sliderRailBackgroundColor": "rgba(0, 0, 0, 0.25)",
-    "colorGroup": [
-      "#0081e2",
-      "#6be6c1",
-      "#626c91",
-      "#a0a7e6",
-      "#c4ebad"
-    ]
+    "colorGroup": ["#0081e2", "#6be6c1", "#626c91", "#a0a7e6", "#c4ebad"]
   },
   {
     "title": "经典暖灰",
@@ -126,6 +118,7 @@
     "disabledBorderColor": "rgba(255, 255, 255, 0.08)",
     "disabledTextColor": "rgba(255, 255, 255, 0.25)",
     "borderColorBase": "rgba(255, 255, 255, 0.15)",
+    "handleColor": "#d9d9d9",
     "borderColorSplit": "rgba(255, 255, 255, 0.12)",
     "componentBackground": "rgba(255, 255, 255, 0.04)",
     "selectDropdownBackground": "#423939",
@@ -135,155 +128,83 @@
     "collapseCardHeaderBg": "#4a4a4a",
     "collapseCardBackground": "#414141",
     "searchArrowIconBg": "#383838",
-    "colorGroup": [
-      "#e14d57",
-      "#6be6c1",
-      "#626c91",
-      "#a0a7e6",
-      "#c4ebad"
-    ]
+    "colorGroup": ["#e14d57", "#6be6c1", "#626c91", "#a0a7e6", "#c4ebad"]
   },
   {
     "title": "绿色渐变",
     "label": "green-g",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#064049",
-      "#165A65",
-      "#1F717F",
-      "#3097AB",
-      "#9AEAF4"
-    ]
+    "colorGroup": ["#064049", "#165A65", "#1F717F", "#3097AB", "#9AEAF4"]
   },
   {
     "title": "蓝色渐变",
     "label": "blue-g",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#243BCC",
-      "#1C55FF",
-      "#0C75FF",
-      "#338FFF",
-      "#00CDF1"
-    ]
+    "colorGroup": ["#243BCC", "#1C55FF", "#0C75FF", "#338FFF", "#00CDF1"]
   },
   {
     "title": "橙红渐变",
     "label": "red-g",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#770000",
-      "#882241",
-      "#BE3144",
-      "#F05940",
-      "#FF8417"
-    ]
+    "colorGroup": ["#770000", "#882241", "#BE3144", "#F05940", "#FF8417"]
   },
   {
     "title": "紫色渐变",
     "label": "purple-g",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#2F2AA4",
-      "#5432D3",
-      "#8B3B86",
-      "#9740B1",
-      "#7B6CF5"
-    ]
+    "colorGroup": ["#2F2AA4", "#5432D3", "#8B3B86", "#9740B1", "#7B6CF5"]
   },
   {
     "title": "深蓝黑色",
     "label": "bluedark-dark",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#15D1F2",
-      "#499BFF",
-      "#2C61FF",
-      "#243BCC",
-      "#67A9FF"
-    ]
+    "colorGroup": ["#15D1F2", "#499BFF", "#2C61FF", "#243BCC", "#67A9FF"]
   },
   {
     "title": "墨绿黑色",
     "label": "green-dark",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#2D808D",
-      "#53A8B6",
-      "#7AC2D0",
-      "#BCE4E9",
-      "#F1FDFF"
-    ]
+    "colorGroup": ["#2D808D", "#53A8B6", "#7AC2D0", "#BCE4E9", "#F1FDFF"]
   },
   {
     "title": "浅蓝黑色",
     "label": "blue-dark",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#00E9FF",
-      "#BBE7FF",
-      "#6AE5C1",
-      "#46ABFF",
-      "#363EFF"
-    ]
+    "colorGroup": ["#00E9FF", "#BBE7FF", "#6AE5C1", "#46ABFF", "#363EFF"]
   },
   {
     "title": "浅灰黑色",
     "label": "grey-dark",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#52606D",
-      "#8894A0",
-      "#BACBDB",
-      "#D3DDE8",
-      "#F2F5F8"
-    ]
+    "colorGroup": ["#52606D", "#8894A0", "#BACBDB", "#D3DDE8", "#F2F5F8"]
   },
   {
     "title": "深紫黑色",
     "label": "purple-dark",
     "textColor": "#fff",
     "background": "rgba(0,0,0,0.6)",
-    "colorGroup": [
-      "#7B6CF6",
-      "#5432D3",
-      "#241F92",
-      "#8B3B86",
-      "#E6A5FF"
-    ]
+    "colorGroup": ["#7B6CF6", "#5432D3", "#241F92", "#8B3B86", "#E6A5FF"]
   },
   {
     "title": "深蓝白色",
     "label": "blue-light",
     "textColor": "#000",
     "background": "rgba(255,255,255,0.6)",
-    "colorGroup": [
-      "#243BCC",
-      "#2C61FF",
-      "#499BFF",
-      "#15D1F2",
-      "#67A9FF"
-    ]
+    "colorGroup": ["#243BCC", "#2C61FF", "#499BFF", "#15D1F2", "#67A9FF"]
   },
   {
     "title": "深红白色",
     "label": "red-light",
     "textColor": "#000",
     "background": "rgba(255,255,255,0.6)",
-    "colorGroup": [
-      "#F05940",
-      "#BE3144",
-      "#882241",
-      "#770000",
-      "#FF8418"
-    ]
+    "colorGroup": ["#F05940", "#BE3144", "#882241", "#770000", "#FF8418"]
   }
 ]

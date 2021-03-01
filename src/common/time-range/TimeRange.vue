@@ -18,6 +18,8 @@ import ECharts from 'vue-echarts';
 import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';
 import UniqueId from 'lodash.uniqueid';
 
+const ThemeStyleName = ['headingColor', 'primaryColor', 'disabledBgColor', 'textColorSecondary', 'handleColor'];
+
 @Component({
   name: 'SmTimeRange',
   components: {
@@ -26,6 +28,13 @@ import UniqueId from 'lodash.uniqueid';
 })
 class SmTimeRange extends Mixins(Theme) {
   chartId = UniqueId(`TimeRange-`);
+  headingColor: string = 'rgba(255, 255, 255, 0.85)';
+  primaryColor: string = '#e14d57';
+  disabledBgColor: string = 'rgba(255, 255, 255, 0.08)';
+  textColorSecondary: string = 'rgba(255, 255, 255, 0.45)';
+  handleColor: string = '#d9d9d9';
+  themeStyleName: string[] = ThemeStyleName;
+
   @Prop({ default: 0 }) startValue: string | number;
   @Prop({ default: 1 }) endValue: string | number;
   @Prop({
@@ -34,18 +43,18 @@ class SmTimeRange extends Mixins(Theme) {
     }
   })
   data: Array<any>;
-  @Prop({ default: 'rgba(47,69,84,0)' }) backgroundColor: string;
-  @Prop({ default: '#ddd' }) borderColor: string;
-  @Prop({ default: 'rgba(167,183,204,0.4)' }) fillerColor: string;
+  @Prop() backgroundColor: string;
+  @Prop() borderColor: string;
+  @Prop() fillerColor: string;
   @Prop({
     default() {
-      return { color: '#ccc' };
+      return {};
     }
   })
   textStyle: Object;
   @Prop({
     default() {
-      return { color: '#ccc' };
+      return {};
     }
   })
   handleStyle: Object;
@@ -65,12 +74,19 @@ class SmTimeRange extends Mixins(Theme) {
           endValue: this.endValue,
           left: 0,
           top: 'middle',
-          right: 5,
-          backgroundColor: this.backgroundColor || this.getBackground,
-          borderColor: this.borderColor,
-          fillerColor: this.fillerColor || getColorWithOpacity(this.getTextColor, 0.3),
-          textStyle: Object.assign({ color: this.getTextColor }, this.textStyle || {}),
-          handleStyle: Object.assign({ color: this.getColor(1) }, this.handleStyle || {})
+          right: 1,
+          backgroundColor: this.backgroundColor || this.disabledBgColor || this.getBackground,
+          borderColor: this.borderColor || this.textColorSecondary,
+          fillerColor: this.fillerColor || this.primaryColor || getColorWithOpacity(this.getTextColor, 0.3),
+          textStyle: Object.assign(
+            {
+              fontFamily: 'MicrosoftYaHei',
+              fontSize: 12,
+              color: this.headingColor
+            },
+            this.textStyle || {}
+          ),
+          handleStyle: Object.assign({ color: this.handleColor }, this.handleStyle || {})
         }
       ],
       xAxis: [

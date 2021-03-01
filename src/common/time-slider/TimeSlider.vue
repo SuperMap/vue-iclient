@@ -1,29 +1,35 @@
 <template>
   <div class="sm-component-time-slider" dir="ltr" :style="[getBackgroundStyle,newThemeStyle]">
-    <button class="sm-play-control sm-control sm-button sm-paused" @click="changePlayState">
+    <button
+      class="sm-play-control sm-button sm-paused"
+      :style="{color,...newThemeStyle}"
+      @click="changePlayState"
+    >
       <i
         :class="['sm-icon-play', playState ? 'sm-components-icon-zanting' : 'sm-components-icon-bofang3']"
       />
     </button>
-    <div class="sm-progress-control sm-control" :style="{background: '#515659',...lineStyle}">
-      <div class="sm-progress-holder" @click="handleMouseClick" @mousemove="handleMouseMove">
-        <div
-          class="sm-load-progress"
-          :style="{ ...lineStyleHeight, 'padding-left': sliderBarWidth }"
-        ></div>
-        <div class="sm-mouse-display" :style="{ left: mouseLeft + 'px' }">
-          <div v-show="mouseCurrent" class="sm-time-tooltip">{{ mouseCurrent }}</div>
-        </div>
-        <div
-          class="sm-play-progress sm-slider-bar"
-          :style="{ ...playProgressStyle, width: sliderBarWidth }"
-        >
-          <!-- <div class="sm-play-seek-bar draggable" :style="{...checkpointStyle}"></div> -->
-          <!-- <div v-show="current" class="sm-time-tooltip" style="right: -19.6797px;">{{ current }}</div> -->
-        </div>
-        <div v-show="showLabel" class="sm-time-node" :style="newLabelStyle">
-          <div class="sm-start-node">{{ startFormat }}</div>
-          <div class="sm-end-node">{{ endFormat }}</div>
+    <div class="sm-progress-control-wrapper" :style="lineStyleHeight">
+      <div
+        :class="['sm-progress-control',uniqueId]"
+        :style="{...lineStyle,...lineStyleHeight}"
+        @click="handleMouseClick"
+      >
+        <div class="sm-progress-holder">
+          <div class="sm-load-progress" :style="{ width: sliderBarWidth }"></div>
+          <div class="sm-mouse-display" :style="{ left: mouseLeft + 'px' }">
+            <div v-show="mouseCurrent" class="sm-time-tooltip">
+              <span class="sm-time-tooltip-content">{{ mouseCurrent }}</span>
+            </div>
+          </div>
+          <div
+            class="sm-play-progress sm-slider-bar"
+            :style="{ ...playProgressStyle, width: sliderBarWidth }"
+          ></div>
+          <div v-show="showLabel" class="sm-time-node" :style="newLabelStyle">
+            <div class="sm-start-node">{{ startFormat }}</div>
+            <div class="sm-end-node">{{ endFormat }}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -31,9 +37,9 @@
 </template>
 <script lang ='ts'>
 import Theme from '../_mixin/Theme';
-import { getColorWithOpacity } from '../_utils/util';
 import interact from 'interactjs';
 import moment from 'moment';
+import UniqueId from 'lodash.uniqueid';
 import { Component, Prop, Mixins, Emit, Watch } from 'vue-property-decorator';
 
 type Label = {
@@ -54,11 +60,12 @@ export default class SmTimeSlider extends Mixins(Theme) {
   playState = false;
   sliderBarWidth = '0%';
   status = false;
+  draggable: boolean = false;
   updateInterval: any;
   rafIds_: Object;
   namedRafs_: any;
-  draggable: boolean;
   progress_: number;
+  uniqueId: string = UniqueId(`${this.$options.name.toLowerCase()}-`);
 
   @Prop({ default: false }) autoPlay: boolean;
   @Prop({ default: true }) loop: boolean;
@@ -110,12 +117,12 @@ export default class SmTimeSlider extends Mixins(Theme) {
     return (this.label || {}).formatter;
   }
   get newThemeStyle() {
-    return Object.assign({ color: this.color }, this.themeStyle || {});
+    return Object.assign(this.themeStyle || {});
   }
   get newLabelStyle() {
-    const labelStyle = { ...this.label };
+    const labelStyle = { color: this.getTextColor, ...this.label };
     delete labelStyle.formatter;
-    return Object.assign({ color: this.color }, labelStyle || {});
+    return Object.assign(labelStyle || {});
   }
   get isDataDuration() {
     return !this.duration;
@@ -173,8 +180,13 @@ export default class SmTimeSlider extends Mixins(Theme) {
     if (this.lineStyle && this.lineStyle.hasOwnProperty('height')) {
       return { height: this.lineStyle.height };
     }
-    return { height: '5px' };
+    return { height: '6px' };
   }
+  get sliderBarSize() {
+    const height: number = parseFloat(this.lineStyleHeight.height);
+    return height <= 6 ? height * 2 : height * 1.5;
+  }
+
   get playProgressStyle() {
     const checkpointStyle = Object.assign(
       { 'border-color': this.color, background: this.color },
@@ -182,7 +194,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     );
 
     if (checkpointStyle && checkpointStyle.background) {
-      return { background: getColorWithOpacity(checkpointStyle.background, 0.6) };
+      return { background: checkpointStyle.background };
     }
     return {};
   }
@@ -195,16 +207,30 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return 0;
   }
+  @Watch('draggable')
+  draggableWatcher() {
+    this.bindMouseMove('mousemove', this.handleMouseMove);
+    this.bindMouseMove('click', this.handleMouseClick);
+  }
+
+  @Watch('sliderBarWidth')
+  sliderBarWidthWatcher() {
+    const left = this.sliderBarWidth === '100.00%' ? `calc(100% - ${this.sliderBarSize})` : this.sliderBarWidth;
+    this.modifySliderBarStyle(`left:${left} !important`);
+  }
+
+  @Watch('lineStyleHeight')
+  lineStyleWatcher() {
+    this.modifySliderBarStyle(`width:${this.sliderBarSize}px !important;height:${this.sliderBarSize}px !important`);
+  }
 
   @Watch('checkpointStyle', { immediate: true })
   checkpointStyleWatcher() {
     let style = '';
-    const checkpointStyle = Object.assign({ 'border-color': this.color, background: this.color }, this.checkpointStyle);
-    for (let key in checkpointStyle) {
+    for (let key in this.checkpointStyle) {
       style += `${key}: ${this.checkpointStyle[key]} !important;`;
     }
-    // @ts-ignore
-    document.styleSheets[0].addRule('.sm-component-time-player .sm-load-progress:before', style);
+    this.modifySliderBarStyle(style);
   }
 
   @Watch('currentTime', { immediate: true })
@@ -233,10 +259,16 @@ export default class SmTimeSlider extends Mixins(Theme) {
   }
 
   mounted() {
-    this.$nextTick(() => this.bindDrag('sm-load-progress'));
+    this.$nextTick(() => this.bindDrag(this.uniqueId));
     this.$on('playing', this.enableInterval_);
     this.$on('pause', this.disableInterval_);
     this.$on('end', this.disableInterval_);
+    this.bindMouseMove('mousemove', this.handleMouseMove);
+    this.bindMouseMove('click', this.handleMouseClick);
+    this.$on('theme-style-changed', () => {
+      const left = this.sliderBarWidth === '100.00%' ? `calc(100% - ${this.sliderBarSize})` : this.sliderBarWidth;
+      this.modifySliderBarStyle(`left:${left} !important`);
+    });
     this.init();
   }
   beforeDestroy() {
@@ -248,20 +280,41 @@ export default class SmTimeSlider extends Mixins(Theme) {
   init() {
     this.autoPlay ? this.emitPlaying() : this.emitPause();
   }
+  bindMouseMove(eventName, fn, className = this.uniqueId) {
+    const el = document.getElementsByClassName(className)[0];
+    if (this.draggable) {
+      // @ts-ignore
+      el.removeEventListener(eventName, fn);
+    } else {
+      // @ts-ignore
+      el.addEventListener(eventName, fn);
+    }
+  }
   bindDrag(className) {
     interact(`.${className}`).draggable({
       startAxis: 'x',
       lockAxis: 'x',
       enabled: true,
+      inertia: true,
+      modifiers: [
+        interact.modifiers.restrict({
+          restriction: 'self'
+        })
+      ],
       cursorChecker: (action, interactable, element, interacting) => {
         return 'pointer';
       },
       listeners: {
         start: event => {
-          this.handleDragStart(event, className);
+          this.draggable = true;
         },
         move: event => {
-          this.draggable && this.handleDragMove(event, className);
+          if (this.draggable) {
+            this.handleDragMove(event);
+          }
+        },
+        end: event => {
+          this.draggable = false;
         }
       }
     });
@@ -290,6 +343,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
   handleMouseClick(event, offsetX) {
     const newTime = this.getCurrentTime_(event, offsetX);
     this.setcurrentTime(newTime);
+    this.handleMouseMove(event, offsetX);
     if (this.playState) {
       setTimeout(this.updateDom, 1000);
     } else {
@@ -299,20 +353,10 @@ export default class SmTimeSlider extends Mixins(Theme) {
   handleMouseMove(event, offsetX) {
     const newTime = this.getCurrentTime_(event, offsetX);
     this.mouseTime = newTime;
-    this.mouseLeft = event.offsetX;
+    this.mouseLeft = event.offsetX || offsetX * this.getTotalDistance();
   }
-  handleDragStart(event, className) {
-    const totalDistance = this.getTotalDistance(className);
-    const percent = this.getPercent();
-    const position = percent * totalDistance;
-    if (this.mouseLeft + 5 < position || this.mouseLeft - 5 > position) {
-      this.draggable = false;
-    } else {
-      this.draggable = true;
-    }
-  }
-  handleDragMove(event, className) {
-    const totalDistance = this.getTotalDistance(className);
+  handleDragMove(event) {
+    const totalDistance = this.getTotalDistance();
     const distance = event.dx / totalDistance + this.getProgress();
     this.handleMouseClick(event, distance);
     this.handleMouseMove(event, distance);
@@ -327,7 +371,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return this.currentTime || 0;
   }
-  getTotalDistance(className = 'sm-load-progress') {
+  getTotalDistance(className = this.uniqueId) {
     // @ts-ignore
     return document.getElementsByClassName(className)[0].offsetWidth;
   }
@@ -342,9 +386,9 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return this.currentTime / this.duration;
   }
-  getCurrentTime_(event, percent, className = 'sm-load-progress') {
+  getCurrentTime_(event, percent) {
     const distance = event.offsetX;
-    const totalDistance = this.getTotalDistance(className);
+    const totalDistance = this.getTotalDistance();
     percent = percent || distance / totalDistance;
     let newTime = percent * (this.isDataDuration ? this.dataDuration : this.duration);
     if (newTime === Infinity) {
@@ -448,6 +492,30 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return date;
   }
+  timestamp2Date(timestamp) {
+    return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:mm:ss') : '';
+  }
+  duration2Date(duration = this.duration) {
+    const $moment = moment.duration(duration, 'milliseconds');
+    const hours = this.getZeroPlaceholder($moment.hours());
+    const minutes = this.getZeroPlaceholder($moment.minutes());
+    const seconds = this.getZeroPlaceholder($moment.seconds());
+    return [hours, minutes, seconds].join(':');
+  }
+  getZeroPlaceholder(val) {
+    if (val === 0) {
+      return '00';
+      // @ts-ignore
+    } else if (parseInt(val / 10) <= 0) {
+      return `0${val}`;
+    } else {
+      return val;
+    }
+  }
+  modifySliderBarStyle(style, ruleName = `.${this.uniqueId}::before`) {
+    // @ts-ignore
+    document.styleSheets[0].addRule(ruleName, style);
+  }
 
   @Emit('timeplayerchanged')
   timePlayerChange(currentTime = this.currentTime) {
@@ -470,35 +538,13 @@ export default class SmTimeSlider extends Mixins(Theme) {
       return { currentDuration: currentTimeStamp };
     }
   }
-  timestamp2Date(timestamp) {
-    return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:mm:ss') : '';
-  }
-  duration2Date(duration = this.duration) {
-    const $moment = moment.duration(duration, 'milliseconds');
-    const hours = this.getZeroPlaceholder($moment.hours());
-    const minutes = this.getZeroPlaceholder($moment.minutes());
-    const seconds = this.getZeroPlaceholder($moment.seconds());
-    return [hours, minutes, seconds].join(':');
-  }
-  getZeroPlaceholder(val) {
-    if (val === 0) {
-      return '00';
-      // @ts-ignore
-    } else if (parseInt(val / 10) <= 0) {
-      return `0${val}`;
-    } else {
-      return val;
-    }
-  }
 
   @Emit('playing')
   emitPlaying() {}
-
   @Emit('pause')
   emitPause() {}
   @Emit('end')
   emitEnd() {}
-
   @Emit('timeplayerplaychanged')
   emitTimePlayerPlay() {
     return this.playState;

@@ -1,20 +1,9 @@
-@mixin background-color-with-alpha($color, $alpha) {
-  background-color: $color;
-  background-color: rgba($color, $alpha);
-}
-
 @mixin transition($string: $transition--default) {
   -webkit-transition: $string;
   -moz-transition: $string;
   -ms-transition: $string;
   -o-transition: $string;
   transition: $string;
-}
-
-@mixin border-radius($radius) {
-  -webkit-border-radius: $radius;
-  -moz-border-radius: $radius;
-  border-radius: $radius;
 }
 
 @mixin display-flex($alignment: '', $justification: '') {

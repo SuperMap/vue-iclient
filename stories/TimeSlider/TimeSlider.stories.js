@@ -53,18 +53,18 @@ export const StyleTimeSlider = () => ({
         loop: true,
         timeType: 'time',
         duration: 6000,
-        lineStyle: { color: 'yellow', height: '5px', type: 'solid' },
+        lineStyle: { color: '#CB7C3F', height: '6px', type: 'solid' },
         label: {
           show: true,
-          color: 'green',
+          color: '#91A4C4',
           interval: 'auto',
           fontSize: 12,
           fontWeight: 'normal',
           fontFamily: '微软雅黑',
           backgroundColor: 'transparent'
         },
-        checkpointStyle: { color: 'blue', borderColor: 'blue' },
-        themeStyle: { color: 'red' }
+        checkpointStyle: { color: '#CB7C3F', background: '#5A9B9C' },
+        themeStyle: { color: '#A44A5D' }
       }
     };
   },

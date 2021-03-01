@@ -48,7 +48,7 @@
         </div>
         <div class="sm-component-coordinate-conversion__icons">
           <div
-            :class="[isCapture?'sm-component-coordinate-conversion__copyed':'sm-component-coordinate-conversion__not-enable','sm-components-icon-copy']"
+            :class="[isCapture&&`sm-component-coordinate-conversion__copyed${uniqueId}`,isCapture?'sm-component-coordinate-conversion__copyed':'sm-component-coordinate-conversion__not-enable','sm-components-icon-copy']"
             :data-clipboard-text="isCapture?inputValue:''"
             :title="$t('coordinateConversion.copy')"
           ></div>
@@ -82,6 +82,7 @@ import CoordinateConversionViewModel from './CoordinateConversionViewModel';
 import { getProjection } from '../../../../common/_utils/epsg-define';
 import ClipboardJS from 'clipboard';
 import proj4 from 'proj4';
+import UniqueId from 'lodash.uniqueid';
 import { CoordinateConverter } from 'geographic-coordinate-converter/coordinate-converter';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 
@@ -137,6 +138,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   coordinate: Coordinate | null = null;
   clipboard: any;
   enableLocation: boolean = true;
+  uniqueId: string = UniqueId(`${this.$options.name.toLowerCase()}-`);
 
   @Prop({ default: 'sm-components-icon-coordinate-coversion' }) iconClass: string;
   @Prop({ default: false }) collapsed: boolean;
@@ -174,8 +176,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     this.displayFormat = newDisplayFormat;
   }
   created() {
-    // 复制插件
-    let clipboard = (this.clipboard = new ClipboardJS('.sm-component-coordinate-conversion__copy'));
+    const clipboard = (this.clipboard = new ClipboardJS(`.sm-component-coordinate-conversion__copyed${this.uniqueId}`));
     clipboard.on('success', () => {
       this.$message.success(this.$t('success.copySucccess'));
     });

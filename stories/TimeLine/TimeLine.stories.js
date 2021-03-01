@@ -47,14 +47,14 @@ export const StyleTimeLine = () => ({
           }
         ],
         lineStyle: {
-          color: '#304654',
-          width: 3,
+          color: '#8C8C8C',
+          width: 2,
           type: 'solid'
         },
         label: {
           interval: 'auto',
           fontSize: 14,
-          color: 'yellow',
+          color: '#91A4C4',
           fontWeight: 'normal',
           fontFamily: '微软雅黑',
           backgroundColor: 'transparent',
@@ -73,13 +73,16 @@ export const StyleTimeLine = () => ({
             return data[index].value;
           }
         },
-        itemStyle: {},
+        itemStyle: {
+          color: '#fff',
+          borderColor: '#CB7C3F'
+        },
         controlStyle: {
           show: true,
-          color: 'green',
-          borderColor: 'green'
+          color: '#5A9B9C',
+          borderColor: '#5A9B9C'
         },
-        checkpointStyle: { color: 'red', borderColor: 'red' }
+        checkpointStyle: { color: '#CB7C3F', borderColor: '#fff' }
       }
     };
   },

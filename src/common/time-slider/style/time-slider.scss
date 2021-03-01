@@ -1,24 +1,23 @@
 @import '../../../common/_utils/style/mixins/mixins.scss';
-@import './_utilities.scss';
-@import './_progress.scss';
+@import './mixin.scss';
 
 @include b(time-slider) {
-  width: 600px;
+  width: 578px;
   height: 80px;
   display: inline-flex;
   align-items: center;
-  margin: 0 auto;
-  padding: 0 5%;
-  color: #3ea8d7;
+  box-sizing: border-box;
   cursor: pointer;
-  .sm-control {
+  font-size: 12px;
+  color: $text-color;
+  .sm-play-control {
     position: relative;
-    text-align: center;
     margin: 0;
     padding: 0;
-    @include flex(none);
-  }
-  .sm-play-control {
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
     text-shadow: none;
     border: none;
     outline: none;
@@ -26,76 +25,122 @@
     cursor: pointer;
   }
   .sm-icon-play {
-    font-size: 25px;
+    font-size: 24px;
     outline: none;
+  }
+  .sm-progress-control-wrapper {
+    position: relative;
+    width: calc(100% - 36px);
+    margin-left: 12px;
   }
   .sm-progress-control {
-    width: calc(100% - 40px);
-    left: 20px;
+    @include flex(auto);
+    @include display-flex(center);
+    position: relative;
+    width: 100%;
+    border-radius: 3px;
     box-sizing: border-box;
-    .sm-progress-holder {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      outline: none;
-    }
+    background: $text-color-secondary;
+    cursor: pointer;
+    -ms-touch-action: none;
+    touch-action: none;
+  }
+  .sm-progress-control::before {
+    content: '';
+    position: relative;
+    display: block;
+    width: 12px;
+    height: 12px;
+    box-sizing: border-box;
+    border: 2px solid $avatar-bg;
+    background: $primary-color;
+    border-radius: 50%;
+    z-index: 10;
+  }
+  .sm-progress-control:hover::before {
+    transform: scale(1.25);
+  }
+  .sm-progress-holder {
+    @include flex(auto);
+    @include transition(all 0.2s);
+    position: absolute;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    outline: none;
+    pointer-events: none;
   }
   .sm-load-progress {
+    position: absolute;
+    left: 0;
     width: 100%;
+    border-radius: 3px;
     outline: none;
-    & div {
-      width: 100%;
-      border-radius: 3px;
-    }
-  }
-  .sm-load-progress:before {
-    content: '';
-    display: block;
-    position: relative;
-    top: -5px;
-    width: 4px;
-    height: calc(100% + 10px);
-    box-sizing: border-box;
-    border: 1px solid;
-    border-radius: 50%/50% 50%;
-    pointer-events: none;
-    touch-action: none;
-    user-select: none;
+    z-index: 5;
   }
   .sm-play-progress {
     position: absolute;
     top: 0;
+    display: block;
     height: 100%;
     width: 100%;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
     border-radius: 3px;
     outline: none;
     touch-action: none;
-    pointer-events: none;
-  }
-  /* timer */
-  .sm-time-control {
-    @include flex(none);
-    font-size: 1em;
-    line-height: 3em;
-    padding: 0 2px;
-    width: auto;
-  }
-  .sm-time-divider {
-    text-align: center;
   }
   .sm-time-node {
     position: absolute;
+    top: 10px;
     width: 100%;
-    padding: 10px 5px;
+    height: 20px;
+    line-height: 20px;
     user-select: none;
     .sm-start-node {
       position: absolute;
-      left: -20px;
+      left: 0;
     }
     .sm-end-node {
       position: absolute;
-      right: -20px;
+      right: 0;
     }
+  }
+  .sm-mouse-display {
+    position: absolute;
+    display: none;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .sm-progress-control:hover .sm-mouse-display {
+    display: inline-block;
+    white-space: nowrap;
+  }
+  .sm-time-tooltip {
+    position: relative;
+    left: -50%;
+    top: -50px;
+    display: flex;
+    justify-content: center;
+    height: 33px;
+    padding: 6px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    color: $tooltip-color;
+    background: $tooltip-bg;
+    box-shadow: 0px 2px 7px 0px $shadow-color;
+    visibility: hidden;
+    z-index: 1;
+    pointer-events: none;
+    user-select: none;
+  }
+  .sm-progress-holder:focus .sm-time-tooltip {
+    visibility: hidden;
+  }
+  .sm-progress-control:hover .sm-time-tooltip,
+  .sm-progress-control:hover .sm-progress-holder:focus .sm-time-tooltip {
+    visibility: visible;
   }
 }

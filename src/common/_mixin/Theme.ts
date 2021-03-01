@@ -19,6 +19,8 @@ export default class Theme extends Vue {
 
   colorGroupsData: Array<string> = [];
 
+  themeStyleName: Array<string> = [];
+
   @Prop() background: string;
 
   @Prop() textColor: string;
@@ -116,6 +118,7 @@ export default class Theme extends Vue {
       this.collapseCardBackgroundData = themeStyle['collapseCardBackground'];
       this.tablePopupBgData = themeStyle['messageBackground'];
       this.themeStyleChanged();
+      this.initNeedTheme(themeStyle);
     });
   }
 
@@ -129,6 +132,16 @@ export default class Theme extends Vue {
     this.collapseCardHeaderBgData = this.background || theme['collapseCardHeaderBg'];
     this.collapseCardBackgroundData = this.background || theme['collapseCardBackground'];
     this.tablePopupBgData = this.background || theme['messageBackground'];
+  }
+
+  initNeedTheme(themeStyle) {
+    this.themeStyleName.forEach(name => {
+      if (name === 'primaryColor') {
+        this[name] = themeStyle.colorGroup && themeStyle.colorGroup[0];
+      } else {
+        this[name] = themeStyle[name];
+      }
+    });
   }
 
   registerPropListener(): void {

@@ -97,6 +97,33 @@
     height: 24px;
     color: inherit;
   }
+  .sm-component-select-sm .sm-component-select-selection__rendered {
+    margin-left: 7px;
+    line-height: 24px;
+  }
+  .sm-component-select-sm .sm-component-select-selection--single {
+    height: 24px;
+  }
+  .sm-component-select-dropdown-menu-item {
+    padding: 5px 12px;
+    line-height: 24px;
+  }
+  .sm-component-select,
+  .sm-component-select-dropdown-menu-item,
+  .sm-component-input,
+  .sm-component-input-affix-wrapper {
+    font-size: 14px;
+  }
+  .sm-component-input-sm {
+    height: 24px;
+    padding: 1px 7px;
+  }
+  .sm-component-input-affix-wrapper .sm-component-input:not(:last-child) {
+    padding-right: 30px;
+  }
+  .sm-component-input-affix-wrapper .sm-component-input-suffix {
+    right: 12px;
+  }
   @include e(a-input) {
     width: 78%;
     height: 24px;
