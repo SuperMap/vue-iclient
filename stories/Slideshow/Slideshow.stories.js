@@ -13,7 +13,7 @@ const attractions = [
   {
     'title': '长海',
     'subtitle': '则查洼沟景点-长海',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/changhai.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/changhai.jpg',
     'coordinates': [
       103.93424623295097,
       33.03730377719067
@@ -23,7 +23,7 @@ const attractions = [
   {
     'title': '五彩池',
     'subtitle': '则查洼沟景点-五彩池',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/wucaichi.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/wucaichi.jpg',
     'coordinates': [
       103.93303602365336,
       33.04646925591396
@@ -33,21 +33,21 @@ const attractions = [
   {
     'title': '上季节海',
     'subtitle': '则查洼沟景点-上季节海',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/shangjijiehai.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/shangjijiehai.jpg',
     'coordinates': [103.92902077067332, 33.05970589470181],
     'description': '上季节海毗邻五彩池，湖水随季节变化，时盈时涸。秋日雨季，湖水上涨，湖色湛蓝，夏日水浅呈翠绿色，初冬以后，湖水干涸，湖床上长满青草，海子又成了放牧草滩，草滩上生长着联合国一类保护植物--若希维奇'
   },
   {
     'title': '下季节海',
     'subtitle': '则查洼沟景点-下季节海',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/xiajijiehai.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/xiajijiehai.jpg',
     'coordinates': [103.91843444449766, 33.11997839989726],
     'description': '下季节海镶嵌在花繁草茂的山坳里，水量随着季节而变化，秋季时，雨量充沛，湖水饱满，下季节海的水色最湛蓝透明，远远望去就好像是鲜蓝的墨水。冬春季节，水位渐低，一直到初夏，湖水甚至全部干涸，湖床上长满了牧草，成为放牧牛马的福地。一到电秋天，叶子转黄，远远看去满树金光。'
   },
   {
     'title': '五花海',
     'subtitle': '日则沟景点-五花海',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/wuhuahai.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/wuhuahai.jpg',
     'coordinates': [
       103.88099726484862,
       33.159143349891465
@@ -57,7 +57,7 @@ const attractions = [
   {
     'title': '珍珠滩瀑布',
     'subtitle': '日则沟景点—珍珠滩瀑布',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/zhenzhutan.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/zhenzhutan.jpg',
     'coordinates': [
       103.88723487431847,
       33.16587890523388
@@ -67,7 +67,7 @@ const attractions = [
   {
     'title': '诺日朗瀑布',
     'subtitle': '日则沟景点—诺日朗瀑布',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/nuorilang.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/nuorilang.jpg',
     'coordinates': [
       103.90771770744831,
       33.163703206300525
@@ -77,7 +77,7 @@ const attractions = [
   {
     'title': '树正群海',
     'subtitle': '树正沟景点-树正群海',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/shuzhengqunhai.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/shuzhengqunhai.jpg',
     'coordinates': [
       103.89731764184347,
       33.19859679345478
@@ -87,7 +87,7 @@ const attractions = [
   {
     'title': '芦苇海',
     'subtitle': '树正沟景点-芦苇海',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/luweihai.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/luweihai.jpg',
     'coordinates': [
       103.9181730938379,
       33.23129463237716
@@ -97,7 +97,7 @@ const attractions = [
   {
     'title': '扎如寺',
     'subtitle': '扎如沟景点-扎如寺',
-    'image': 'http://localhost:8082/examples/data/jiuzhai/zharusi.jpg',
+    'image': 'https://iclient.supermap.io/examples/data/jiuzhai/zharusi.jpg',
     'coordinates': [
       103.93169934861643,
       33.25624201104978
@@ -143,13 +143,14 @@ export const slideshow = () => ({
     </sm-web-map>
     <sm-slideshow
       v-model="activeIndex"
-      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; background: rgba(65, 65, 65, 0.8);border-radius: 4px;"
+      :collapsed="false"
+      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; border-radius: 4px;"
       :autoplay="{delay: 4000}"
       v-on:change="slideChange"
     >
       <sm-slideshow-item v-for="item of content" :key="item.title">
         <h3>{{ item.title }}</h3>
-        <p style="padding: 8px;">{{ item.description }}</p>
+        <p style="padding: 0 13px 16px ;">{{ item.description }}</p>
         <img :src="item.image" style="width: 320px; height: 190px;" />
       </sm-slideshow-item>
     </sm-slideshow>
@@ -199,14 +200,15 @@ export const effectSlideshow = () => ({
     </sm-web-map>
     <sm-slideshow
       v-model="activeIndex"
-      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; background: rgba(65, 65, 65, 0.8);border-radius: 4px;"
+      :collapsed="false"
+      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; border-radius: 4px;"
       :autoplay="{delay: 4000}"
       :effect="effect"
       v-on:change="slideChange"
     >
       <sm-slideshow-item v-for="item of content" :key="item.title">
         <h3>{{ item.title }}</h3>
-        <p style="padding: 8px;">{{ item.description }}</p>
+        <p style="padding: 0 13px 16px ;">{{ item.description }}</p>
         <img :src="item.image" style="width: 320px; height: 190px;" />
       </sm-slideshow-item>
     </sm-slideshow>
@@ -255,14 +257,15 @@ export const verticalSlideshow = () => ({
     </sm-web-map>
     <sm-slideshow
       v-model="activeIndex"
-      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; background: rgba(65, 65, 65, 0.8);border-radius: 4px;"
+      :collapsed="false"
+      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; border-radius: 4px;"
       :autoplay="{delay: 4000}"
       direction="vertical"
       v-on:change="slideChange"
     >
       <sm-slideshow-item v-for="item of content" :key="item.title">
         <h3>{{ item.title }}</h3>
-        <p style="padding: 8px;">{{ item.description }}</p>
+        <p style="padding: 0 13px 16px ;">{{ item.description }}</p>
         <img :src="item.image" style="width: 320px; height: 190px;" />
       </sm-slideshow-item>
     </sm-slideshow>
@@ -314,14 +317,15 @@ export const navigationSlideshow = () => ({
     </sm-web-map>
     <sm-slideshow
       v-model="activeIndex"
-      style="position: absolute; top: 40px; left: 30px; width: 430px; height: 380px; background: rgba(65, 65, 65, 0.8);border-radius: 4px;"
+      :collapsed="false"
+      style="position: absolute; top: 40px; left: 30px; width: 430px; height: 380px; border-radius: 4px;"
       :autoplay="{delay: 4000}"
       :navigation="navigation"
       v-on:change="slideChange"
     >
       <sm-slideshow-item v-for="item of content" :key="item.title">
         <h3>{{ item.title }}</h3>
-        <p style="padding: 8px;">{{ item.description }}</p>
+        <p style="padding: 0 13px 16px ;">{{ item.description }}</p>
         <img :src="item.image" style="width: 320px; height: 190px;" />
       </sm-slideshow-item>
     </sm-slideshow>
@@ -374,14 +378,15 @@ export const paginationSlideshow = () => ({
     </sm-web-map>
     <sm-slideshow
       v-model="activeIndex"
-      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 380px; background: rgba(65, 65, 65, 0.8);border-radius: 4px;"
+      :collapsed="false"
+      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 380px; border-radius: 4px;"
       :autoplay="{delay: 4000}"
       :pagination="pagination"
       v-on:change="slideChange"
     >
       <sm-slideshow-item v-for="item of content" :key="item.title">
         <h3>{{ item.title }}</h3>
-        <p style="padding: 8px;">{{ item.description }}</p>
+        <p style="padding: 0 13px 16px ;">{{ item.description }}</p>
         <img :src="item.image" style="width: 320px; height: 190px;" />
       </sm-slideshow-item>
     </sm-slideshow>
@@ -433,7 +438,8 @@ export const scrollbarSlideshow = () => ({
     </sm-web-map>
     <sm-slideshow
       v-model="activeIndex"
-      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; background: rgba(65, 65, 65, 0.8);border-radius: 4px;"
+      :collapsed="false"
+      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; border-radius: 4px;"
       :autoplay="{delay: 4000}"
       direction="vertical"
       :scrollbar="scrollbar"
@@ -441,7 +447,7 @@ export const scrollbarSlideshow = () => ({
     >
       <sm-slideshow-item v-for="item of content" :key="item.title">
         <h3>{{ item.title }}</h3>
-        <p style="padding: 8px;">{{ item.description }}</p>
+        <p style="padding: 0 13px 16px ;">{{ item.description }}</p>
         <img :src="item.image" style="width: 320px; height: 190px;" />
       </sm-slideshow-item>
     </sm-slideshow>

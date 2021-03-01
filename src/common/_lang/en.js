@@ -82,6 +82,9 @@ export default {
   layerList: {
     title: 'Layer'
   },
+  slideshow: {
+    title: 'Slideshow'
+  },
   layerColor: {
     title: 'LayerColor',
     layer: 'Layer',

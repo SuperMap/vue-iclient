@@ -83,6 +83,9 @@ export default {
   layerList: {
     title: '图层'
   },
+  slideshow: {
+    title: '幻灯片'
+  },
   layerColor: {
     title: '图层颜色',
     layer: '图层',

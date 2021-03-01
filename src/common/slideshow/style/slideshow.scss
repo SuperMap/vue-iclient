@@ -2,13 +2,43 @@
 @import '../../_utils/style/theme/theme.scss';
 
 @include b(slideshow) {
-  width: 600px;
-  height: 400px;
-  text-align: center;
-  position: relative;
+  width: 264px;
+  height: 332px;
+  .sm-component-collapse-card__content {
+    height: inherit;
+  }
+  .sm-component-collapse-card__body {
+    height: calc(100% - 32px);
+  }
+  @include e(content) {
+    text-align: center;
+    margin-top: 10px;
+    height: 100%;
+  }
+  @include b(slideshowitem) {
+    img {
+      width: 196px;
+      height: 110px;
+    }
+  }
   .swiper-container {
     width: 100%;
     height: 100%;
   }
-  --swiper-navigation-size: 30px;/* 设置按钮大小 */
+  .swiper-button-prev,
+  .swiper-button-next {
+    color: $swiper-prev-next-background;
+    &::after {
+      content: '';
+    }
+    &:hover {
+      color: $primary-6 !important;
+    }
+  }
+  .swiper-button-active {
+    color: $primary-6;
+  }
+  .swiper-scrollbar-drag {
+    background: $swiper-scrollbar-background;
+  }
 }

@@ -1,6 +1,7 @@
 <script lang="ts">
 import Theme from '../_mixin/Theme';
 import { Swiper } from 'vue-awesome-swiper';
+import BaseCard from '../_mixin/Card';
 import 'swiper/css/swiper.css';
 import { getSlotOptions } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
@@ -27,7 +28,7 @@ interface swiperOptionsType {
     prop: 'activeIndex'
   }
 })
-class Slideshow extends Mixins(Theme) {
+class Slideshow extends Mixins(Theme, BaseCard) {
   swiper: any;
 
   @Prop() activeIndex: number;
@@ -43,6 +44,13 @@ class Slideshow extends Mixins(Theme) {
   @Prop({ default: true }) grabCursor: boolean;
   @Prop() autoplay: boolean | Object;
   @Prop({ default: 'slide' }) effect: string; // slide cube coverflow flip
+  @Prop({ default: 'sm-components-icon-swipe' }) iconClass: string;
+  @Prop({
+    default() {
+      return this.$t('slideshow.title');
+    }
+  })
+  headerName: string;
 
   get swiperOptions() {
     let options: swiperOptionsType = {
@@ -113,25 +121,55 @@ class Slideshow extends Mixins(Theme) {
     this.pagination && slots.push(h('div', { class: 'swiper-pagination', slot: 'pagination' }));
     this.scrollbar && slots.push(h('div', { class: 'swiper-scrollbar', slot: 'scrollbar' }));
     if (this.navigation) {
-      slots.push(h('div', { class: 'swiper-button-prev', slot: 'button-prev', style: this.getTextColorStyle }));
-      slots.push(h('div', { class: 'swiper-button-next', slot: 'button-next', style: this.getTextColorStyle }));
+      slots.push(
+        h('div', {
+          class: 'swiper-button-prev sm-components-icon-solid-right',
+          slot: 'button-prev'
+        })
+      );
+      slots.push(
+        h('div', {
+          class: 'swiper-button-next sm-components-icon-solid-left',
+          slot: 'button-next'
+        })
+      );
     }
+    console.log(this.collapsed, 'this.collapsed');
+    let collapseCardProps = {
+      iconClass: this.iconClass,
+      iconPosition: this.position,
+      headerName: this.headerName,
+      autoRotate: this.autoRotate,
+      collapsed: this.collapsed,
+      background: this.background,
+      textColor: this.textColor,
+      splitLine: this.splitLine
+    };
     return h(
-      'div',
+      'sm-collapse-card',
       {
         class: 'sm-component-slideshow',
-        style: [this.collapseCardBackgroundStyle, this.getTextColorStyle],
-        on: { mouseover: this.autoplayStop, mouseout: this.autoplayStart }
+        props: collapseCardProps
       },
       [
         h(
-          Swiper,
+          'div',
           {
-            props: { options: this.swiperOptions },
-            on: { slideChange: this._change },
-            ref: 'mySwiper'
+            class: 'sm-component-slideshow__content',
+            style: [this.collapseCardBackgroundStyle, this.getTextColorStyle],
+            on: { mouseover: this.autoplayStop, mouseout: this.autoplayStart }
           },
-          slots
+          [
+            h(
+              Swiper,
+              {
+                props: { options: this.swiperOptions },
+                on: { slideChange: this._change },
+                ref: 'mySwiper'
+              },
+              slots
+            )
+          ]
         )
       ]
     );
