@@ -14,7 +14,7 @@
     <sm-card class="sm-component-layer-list__a-card" :bordered="false" :style="headingTextColorStyle">
       <div class="sm-component-layer-list__content">
         <sm-collapse
-          v-for="(name, index) in sourceNames"
+          v-for="(name, index) in enableSource"
           :key="index"
           :bordered="false"
           class="sm-component-layer-list__collapse"
@@ -105,6 +105,7 @@ import SmCard from '../../../../common/card/Card';
 import SmCollapse from '../../../../common/collapse/Collapse';
 import SmCollapsePanel from '../../../../common/collapse/Panel';
 import LayerListViewModel from './LayerListViewModel';
+import intersection from 'lodash.intersection';
 
 export default {
   name: 'SmLayerList',
@@ -136,6 +137,11 @@ export default {
       sourceNames: [],
       sourceList: {}
     };
+  },
+  computed: {
+    enableSource() {
+      return intersection(this.sourceNames, Object.keys(this.sourceList));
+    }
   },
   created() {
     this.viewModel = new LayerListViewModel();
