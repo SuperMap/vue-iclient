@@ -1,5 +1,9 @@
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
+@import '../../../common/table/style/table.scss';
+@import '../../../common/checkbox/style/checkbox.scss';
+@import '../../../common/dropdown/style/dropdown.scss';
+@import '../../../common/pagination/style/pagination.scss';
 
 @include b(attributes) {
   $attributes-prefix: &;
@@ -9,6 +13,9 @@
   .sm-component-table-wrapper {
     overflow: auto;
     height: calc(100% - 46px);
+    &::-webkit-scrollbar-thumb {
+      background: $scrollbar-background;
+    }
     .sm-component-table-thead {
       .sm-component-table-column-has-actions {
         .sm-component-table-column-sorters {
@@ -28,7 +35,8 @@
         }
       }
 
-      tr > th .anticon-filter, tr > th .sm-component-table-filter-icon {
+      tr > th .anticon-filter,
+      tr > th .sm-component-table-filter-icon {
         right: 15px;
         > i {
           height: 16px;
@@ -55,5 +63,8 @@
     .sm-component-icon:hover {
       color: $primary-color !important;
     }
+  }
+  .ant-dropdown-link {
+    cursor: pointer;
   }
 }

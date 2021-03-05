@@ -2,11 +2,12 @@
   <div class="sm-component-attributes">
     <div class="sm-component-attributes__header">
       <div class="sm-component-attributes__count">
-        <span v-if="layerName && !dataset" class="layer-name">{{ layerName }}</span>
-        <span v-if="statistics.showTotal" class="total-numbers">({{ this.$t('attributes.feature') }}：{{ tableData.length || 0 }},</span
-        >
-        <span v-if="statistics.showSelect" class="select-numbers">{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }})</span
-        >
+        <span v-if="attributesTitle.enabled" class="layer-name">{{ attributesTitle.value }}</span>
+        <span v-if="statistics.showTotal || statistics.showSelect">（</span>
+        <span v-if="statistics.showTotal" class="total-numbers">{{ this.$t('attributes.feature') }}：{{ tableData.length || 0 }}</span>
+        <span v-if="statistics.showTotal && statistics.showSelect">，</span>
+        <span v-if="statistics.showSelect" class="select-numbers">{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span>
+        <span v-if="statistics.showTotal || statistics.showSelect">）</span>
       </div>
       <div class="sm-component-attributes__menu">
         <sm-dropdown v-if="toolbar.enabled" placement="bottomRight">
@@ -44,6 +45,7 @@
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
       :pagination="paginationOptions"
       :bordered="table.showBorder"
+      :showHeader="table.showHeader"
       :loading="loading"
       table-layout="fixed"
       @change="handleChange"
@@ -51,7 +53,7 @@
       <div
         slot="filterDropdown"
         slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
-        style="padding: 8px;"
+        :style="{ ...background, padding: '8px'}"
       >
         <sm-input
           v-ant-ref="c => (searchInput = c)"
@@ -101,6 +103,7 @@ import SmSubMenu from '../../common/menu/SubMenu.vue';
 import SmButton from '../../common/button/Button.vue';
 import SmInput from '../../common/input/Input.vue';
 import SmIcon from '../../common/icon/Icon.vue';
+import SmCheckbox from '../../common/checkbox/Checkbox.vue';
 import CircleStyle from '../_types/CircleStyle';
 import FillStyle from '../_types/FillStyle';
 import LineStyle from '../_types/LineStyle';
@@ -110,7 +113,13 @@ import mergewith from 'lodash.mergewith';
 import isequal from 'lodash.isequal';
 import getFeatures from '../../common/_utils/get-features';
 
+interface attributesTitleParams {
+  enabled?: boolean;
+  value?: string;
+}
+
 interface PaginationParams {
+  defaultCurrent?: number;
   current?: number;
   pageSize?: number;
 }
@@ -164,7 +173,8 @@ interface ToolbarParams {
     SmSubMenu,
     SmButton,
     SmInput,
-    SmIcon
+    SmIcon,
+    SmCheckbox
   }
 })
 class SmAttributes extends Mixins(MapGetter, Theme) {
@@ -173,7 +183,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   columns: Array<Object> = [];
   paginationOptions: PaginationParams = {
     pageSize: 15,
-    current: 1
+    defaultCurrent: 2
   };
 
   featureMap: Object;
@@ -189,6 +199,15 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   searchedColumn: string = '';
 
   @Prop() layerName: string; // 图层名
+
+  @Prop({
+    default: () => {
+      return {
+        enabled: false
+      };
+    }
+  })
+  attributesTitle: attributesTitleParams;
 
   @Prop() dataset: any;
 
@@ -265,7 +284,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
 
   @Watch('associateWithMap', { deep: true })
   associateWithMapChanged(val) {
-    if (this.associateMap) {
+    if (this.associateMap && this.layerName) {
       this.viewModel.startSelectFeature();
     } else {
       this.viewModel.endSelectFeature();
@@ -276,7 +295,13 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
     this.$emit('rowSelect', val);
     if (this.associateMap) {
       let highLightList = this.handleCoords(val);
-      this.viewModel.addOverlaysToMap(highLightList, this.associateWithMap);
+      this.viewModel.addOverlaysToMap(
+        highLightList,
+        this.associateWithMap,
+        this.featureMap,
+        this.layerStyle,
+        this.attributesTitle.value
+      );
     }
   }
   @Watch('layerName')
@@ -285,10 +310,10 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
     this._initFeatures();
   }
 
-  @Watch('table')
+  @Watch('table', { immediate: true })
   tableChanged(val) {
     if (!isequal(this.paginationOptions, val.pagination)) {
-      this.paginationOptions = val.pagination;
+      this.paginationOptions = Object.assign({}, this.paginationOptions, val.pagination);
     }
   }
 
@@ -372,7 +397,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
     }
     let pageNumber = Math.ceil((index + 1) / this.paginationOptions.pageSize);
     let featureIndex = index % this.paginationOptions.pageSize;
-    this.paginationOptions.current = pageNumber;
+    this.$set(this.paginationOptions, 'current', pageNumber);
     // @ts-ignore
     let tableWrap = this.$refs.tableInstance.$el;
     if (tableWrap && tableWrap.scrollHeight > tableWrap.clientHeight) {
@@ -391,9 +416,6 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
     let columns = [];
 
     Object.keys(headers).forEach((propertyName, index) => {
-      if (propertyName === 'index') {
-        return;
-      }
       let columnConfig = {
         title: propertyName,
         dataIndex: propertyName,
@@ -420,11 +442,16 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
             }
           });
           // @ts-ignore
+          if (columnConfig.sorter && (typeof columnConfig.sorter === 'boolean')) {
+            // @ts-ignore
+            columnConfig.sorter = (a, b) => a[propertyName] - b[propertyName];
+          }
+          // @ts-ignore
           if (columnConfig.search) {
             // @ts-ignore
             if (!columnConfig.onFilter) {
               // @ts-ignore
-              columnConfig.onFilter = (value, record) => record[propertyName].indexOf(value) === 0;
+              columnConfig.onFilter = (value, record) => (record[propertyName] + '').indexOf(value) === 0;
             }
             // @ts-ignore
             columnConfig.scopedSlots = {
@@ -435,10 +462,22 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
           }
         }
       }
-
       columns.push(columnConfig);
     });
-    this.columns = columns;
+    let columnOrder = [];
+    let columnsResult = [];
+    // @ts-ignore
+    this.fieldConfigs && this.fieldConfigs.forEach(element => {
+      columnOrder.push(element.value);
+    });
+    columnOrder.forEach(str => {
+      columns.forEach(element => {
+        if (element.dataIndex === str) {
+          columnsResult.push(element);
+        }
+      });
+    });
+    this.columns = columnsResult.length === 0 ? columns : columnsResult;
   }
   handleColumnVisible(column) {
     const columnIndex = this.columns.indexOf(column);
@@ -468,7 +507,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
     this.selectedRowKeys = [];
   }
   handleChange(pagination, filters, sorter, { currentDataSource }) {
-    this.paginationOptions.current = pagination.current;
+    this.$set(this.paginationOptions, 'current', pagination.current);
     this.$emit('change', pagination, filters, sorter, { currentDataSource });
   }
   _eventsInit() {
@@ -486,7 +525,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   }
 
   _initFeatures() {
-    if (this.layerName && !this.dataset) {
+    if (this.layerName) {
       this.loading = true;
       const features = this.viewModel._initFeatures(this.layerName);
       this.tableData = this.handleFeatures(features);
@@ -499,13 +538,13 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   refreshData() {
     this.selectedRowKeys = [];
     this.tableData = [];
-    this.paginationOptions.current = 1;
-    if (this.associateMap) {
-      this._initFeatures();
-    } else {
+    this.$set(this.paginationOptions, 'current', 1);
+    if (this.dataset) {
       if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
         this.getFeaturesFromDataset();
       }
+    } else {
+      this._initFeatures();
     }
   }
 

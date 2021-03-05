@@ -13,7 +13,7 @@
   >
     <sm-card class="sm-component-layer-color__a-card" :bordered="false" :style="headingTextColorStyle">
       <div class="sm-component-layer-color__content">
-        <div :class="['sm-component-layer-color__layer', allowCapture && 'select-margin']">
+        <div :class="['sm-component-layer-color__layer', capture && 'select-margin']">
           <span>{{ $t('layerColor.layer') }}</span>
           <sm-layer-select
             ref="layerSelectRef"
@@ -34,7 +34,7 @@
         <div
           v-for="(propertyInfo, index) in propertyList"
           :key="index"
-          :class="['sm-component-layer-color__color-picker', allowCapture && 'select-margin']"
+          :class="['sm-component-layer-color__color-picker', capture && 'select-margin']"
         >
           <span>{{ propertyMap[propertyInfo.name] }}</span>
           <sm-color-picker

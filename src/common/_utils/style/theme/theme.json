@@ -46,7 +46,7 @@
     "collapseCardBackground": "#414141",
     "searchArrowIconBg": "#383838",
     "sliderRailBackgroundColor": "rgba(255, 255, 255, 0.25)",
-    "swiperScrollbarBackground": "rgba(255, 255, 255, 0.15)",
+    "scrollbarBackground": "rgba(255, 255, 255, 0.15)",
     "swiperPrevNextBackground": "rgba(0, 0, 0, 0.18)",
     "colorGroup": [
       "#3499e5",
@@ -103,7 +103,7 @@
     "collapseCardBackground": "#fff",
     "searchArrowIconBg": "rgba(207, 216, 220, 0.2)",
     "sliderRailBackgroundColor": "rgba(0, 0, 0, 0.25)",
-    "swiperScrollbarBackground": "rgba(0, 0, 0, 0.5)",
+    "scrollbarBackground": "rgba(0, 0, 0, 0.15)",
     "swiperPrevNextBackground": "rgba(0, 0, 0, 0.18)",
     "colorGroup": [
       "#0081e2",

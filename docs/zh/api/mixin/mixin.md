@@ -10,7 +10,7 @@
 | textColor  | 字体颜色 | string    | -      | -      |
 | colorGroup | 主题色带 | string[ ] | -      | -      |
 
-## CollapseCard
+## CollapsedCard
 
 卡片参数
 

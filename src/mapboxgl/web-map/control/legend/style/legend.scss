@@ -187,6 +187,9 @@
       @include e(point) {
         padding: 0;
         margin: 0;
+        &::-webkit-scrollbar-thumb {
+          background: $scrollbar-background;
+        }
       }
 
       @include e(heatbox item range-item rank-item) {

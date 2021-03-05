@@ -58,6 +58,13 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   selectLayerFn: MapEventCallBack;
 
+  sourceId: string;
+
+  layerId: string;
+
+  strokeLayerID: string;
+
+
   constructor(options) {
     super();
     this.layerStyle = options.layerStyle || {};
@@ -84,11 +91,11 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   }
 
   startSelectFeature() {
-    this.map.on('click', this.selectLayerFn);
+    this.map && this.map.on('click', this.selectLayerFn);
   }
 
   endSelectFeature() {
-    this.map.off('click', this.selectLayerFn);
+    this.map && this.map.off('click', this.selectLayerFn);
   }
 
   //  数据变动 enabled change应该清空地图状态
@@ -145,7 +152,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     return false;
   }
 
-  addOverlaysToMap(selectedKeys, associateWithMap) {
+  addOverlaysToMap(selectedKeys, associateWithMap, featureMap, layerStyleOptions, attributesTitle) {
     // 先去掉缓存
     // 去掉被移除的
     this.selectedKeys.forEach((key, index) => {
@@ -168,39 +175,98 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         filter.push(['==', 'index', feature.properties['index']]);
       }
     });
-    this.addOverlayToMap(filter, selectedKeys, associateWithMap);
+    this.addOverlayToMap(
+      filter,
+      selectedKeys,
+      associateWithMap,
+      featureMap,
+      layerStyleOptions,
+      attributesTitle
+    );
   }
 
-  addOverlayToMap(filter, selectedKeys, associateWithMap) {
+  addOverlayToMap(filter, selectedKeys, associateWithMap, featureMap, layerStyleOptions, attributesTitle) {
     let { centerToFeature, zoomToFeatures } = associateWithMap;
+    if (!this.map) {
+      return;
+    }
     let layer = this.map.getLayer(this.layerName);
-    let { type, id, paint } = layer;
+    let type, id: string, paint;
+    let features = [];
+    if (!layer) {
+      for (const key in featureMap) {
+        features.push(featureMap[key]);
+      }
+      switch (features[0].geometry.type) {
+        case 'Point':
+          type = 'circle';
+          break;
+        case 'LineString':
+        case 'MultiLineString':
+          type = 'line';
+          break;
+        case 'Polygon':
+        case 'MultiPolygon':
+          type = 'fill';
+          break;
+        default:
+          break;
+      }
+      id = attributesTitle;
+      this.sourceId = id + '-attributes-SM-highlighted-source';
+      if (this.map.getSource(this.sourceId)) {
+        //@ts-ignore
+        this.map.getSource(this.sourceId).setData({
+          type: 'FeatureCollection',
+          features
+        })
+      } else {
+        this.map.addSource(this.sourceId, {
+          type: 'geojson',
+          data: {
+            type: 'FeatureCollection',
+            features
+          }
+        });
+      }
+    } else {
+      type = layer.type;
+      id = layer.id;
+      paint = layer.paint;
+    }
     // 如果是面的strokline,处理成面
     if (id.includes('-strokeLine') && type === 'line') {
       type = 'fill';
       paint = {};
     }
-    let layerStyle = this._setDefaultPaintWidth(type, id, defaultPaintTypes[type], this.layerStyle);
-    let layerId = id + '-attributes-SM-highlighted';
-    let strokeLayerID = id + '-attributes-SM-StrokeLine';
-    if (!this.diffKeys.length && !this.selectedKeys.length) {
-      this.map.getLayer(layerId) && this.map.setFilter(layerId, filter);
-      this.map.getLayer(strokeLayerID) && this.map.setFilter(strokeLayerID, filter);
-      this.removeOverlayer();
+    let layerStyle = this._setDefaultPaintWidth(
+      type,
+      id,
+      defaultPaintTypes[type],
+      layerStyleOptions || this.layerStyle
+    );
+    this.layerId = id + '-attributes-SM-highlighted';
+    this.strokeLayerID = id + '-attributes-SM-StrokeLine';
+    if (
+      (!this.diffKeys.length && !this.selectedKeys.length) ||
+      JSON.stringify(layerStyleOptions) !== JSON.stringify(this.layerStyle)
+    ) {
+      this.map.getLayer(this.layerId) && this.map.removeLayer(this.layerId);
+      this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
     }
-
     if (['circle', 'fill', 'line'].includes(type)) {
-      if (this.map.getLayer(layerId)) {
-        this.map.setFilter(layerId, filter);
+      if (this.map.getLayer(this.layerId)) {
+        this.map.setFilter(this.layerId, filter);
       } else {
-        layerStyle = layerStyle[type];
-        let highlightLayer = Object.assign({}, layer, {
-          id: layerId,
+        let highlight_layerStyle = layerStyle[type];
+        let highlightLayer = {
+          id: this.layerId,
           type,
-          paint: (layerStyle && layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
-          layout: (layerStyle && layerStyle.layout) || { visibility: 'visible' },
+          paint: (highlight_layerStyle && highlight_layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
+          layout: (highlight_layerStyle && highlight_layerStyle.layout) || { visibility: 'visible' },
           filter
-        });
+        };
+        highlightLayer = Object.assign({}, layer || { source: this.sourceId }, highlightLayer);
         this.map.addLayer(highlightLayer);
       }
 
@@ -214,9 +280,8 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       }
     }
     if (type === 'fill') {
-      let strokeLayerID = id + '-attributes-SM-StrokeLine';
-      if (this.map.getLayer(strokeLayerID)) {
-        this.map.setFilter(strokeLayerID, filter);
+      if (this.map.getLayer(this.strokeLayerID)) {
+        this.map.setFilter(this.strokeLayerID, filter);
       } else {
         let stokeLineStyle = layerStyle.strokeLine || layerStyle.stokeLine || {};
         let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
@@ -224,31 +289,19 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           'line-color': HIGHLIGHT_COLOR,
           'line-opacity': 1
         };
-        let highlightLayer = Object.assign({}, layer, {
-          id: strokeLayerID,
+        let highlightLayer =  {
+          id: this.strokeLayerID,
           type: 'line',
           paint: lineStyle,
           layout: { visibility: 'visible' },
           filter
-        });
+        };
+        highlightLayer = Object.assign({}, layer || { source: this.sourceId }, highlightLayer);
+        //@ts-ignore
         this.map.addLayer(highlightLayer);
       }
     }
     this.diffKeys = [];
-  }
-
-  removeOverlayer() {
-    const layers = this.map.getStyle().layers;
-    layers &&
-      layers.forEach(layerInfo => {
-        let layerId = layerInfo.id;
-        this.map &&
-          this.map.getLayer(layerId + '-attributes-SM-highlighted') &&
-          this.map.removeLayer(layerId + '-attributes-SM-highlighted');
-        this.map &&
-          this.map.getLayer(layerId + '-attributes-SM-StrokeLine') &&
-          this.map.removeLayer(layerId + '-attributes-SM-StrokeLine');
-      });
   }
 
   reset(options) {
@@ -277,11 +330,15 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     return layerStyle;
   }
 
-  _initFeatures(layerName) {
+  _initFeatures(layerName: string) {
     // @ts-ignore
     return this.map.getSource(layerName).getData().features;
   }
 
-  removed() {}
+  removed() {
+    this.map.getLayer(this.layerId) && this.map.removeLayer(this.layerId);
+    this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
+    this.map.getSource(this.sourceId) && this.map.removeSource(this.sourceId);
+  }
 }
 export default FeatureTableViewModel;

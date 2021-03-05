@@ -81,15 +81,15 @@
               :placeholder="$t('fillExtrusion.customFieldPlaceholder')"
             />
             <div v-if="currentFillExtrusionOption.heightFieldWay === 'customNum'" class="content-holder">
-              <sm-slider v-model="currentFillExtrusionOption.height" :min="0" :max="1000" />
-              <sm-input-number v-model="currentFillExtrusionOption.height" size="middle" :style="getBackgroundStyle" />
+              <sm-slider v-model="currentFillExtrusionOption.height" :min="0" :max="1000" :tipFormatter="()=>{ return currentFillExtrusionOption.height }" />
+              <sm-input-number v-model="currentFillExtrusionOption.height" size="middle" :min="0" :style="getBackgroundStyle" />
             </div>
           </div>
           <div v-if="currentFillExtrusionOption.heightFieldWay !== 'customNum'" class="content-item">
             <label :title="$t('fillExtrusion.multiple')" :style="headingTextColorStyle">
               {{ $t('fillExtrusion.multiple') }}
             </label>
-            <sm-input-number v-model="currentFillExtrusionOption.multiple" size="middle" :style="getBackgroundStyle" />
+            <sm-input-number v-model="currentFillExtrusionOption.multiple" size="middle" :min="0" :style="getBackgroundStyle" />
           </div>
         </div>
         <div class="content-item">

@@ -27,5 +27,12 @@
         background-color: $select-item-hover-bg;
       }
     }
+
+    @include e(not-found, '-') {
+      .#{$ant-prefix}-empty {
+        background-color: transparent;
+        color: inherit;
+      }
+    }
   }
 }

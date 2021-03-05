@@ -103,6 +103,7 @@ export default {
     capture: '捕获'
   },
   attributes: {
+    title: '属性表',
     feature: '要素',
     selected: '已选择',
     clearSelected: '清除选中',

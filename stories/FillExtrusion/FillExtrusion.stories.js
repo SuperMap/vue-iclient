@@ -11,6 +11,7 @@ export const fillExtrusion = () => ({
   data() {
     return {
       mapOptions: {
+        center: [116.4579293, 39.9282925],
         pitch: 60
       }
     };

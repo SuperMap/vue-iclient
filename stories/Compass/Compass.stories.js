@@ -36,7 +36,7 @@ export const changeComparePitch = () => ({
     serverUrl="https://iportal.supermap.io/iportal"
     :mapOptions="mapOptions"
     >
-    <sm-compass visualizePitch/>
+    <sm-compass :visualizePitch="true"/>
   </sm-web-map>
   `
 });

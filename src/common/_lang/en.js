@@ -102,6 +102,7 @@ export default {
     capture: 'Capture'
   },
   attributes: {
+    title: 'Attributes',
     feature: 'Feature',
     selected: 'Selected',
     clearSelected: 'Clear Selected',
