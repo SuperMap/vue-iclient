@@ -34,13 +34,24 @@
           }
         }
       }
-
+      tr > th {
+        padding: 6px 6px;
+        &.sm-component-table-column-sort {
+          background: $background-color-light;
+        }
+      }
       tr > th .anticon-filter,
       tr > th .sm-component-table-filter-icon {
         right: 15px;
-        > i {
-          height: 16px;
-        }
+      }
+    }
+    .sm-component-table-tbody {
+      >tr >td {
+        width: 128px;
+        padding: 6px 6px;
+        overflow: hidden;
+        white-space: nowrap;  
+        text-overflow: ellipsis; 
       }
     }
   }

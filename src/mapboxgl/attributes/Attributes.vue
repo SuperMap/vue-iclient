@@ -2,7 +2,7 @@
   <div class="sm-component-attributes">
     <div class="sm-component-attributes__header">
       <div class="sm-component-attributes__count">
-        <span v-if="attributesTitle.enabled" class="layer-name">{{ attributesTitle.value }}</span>
+        <span v-if="title.enabled" class="layer-name">{{ title.value }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
         <span v-if="statistics.showTotal" class="total-numbers">{{ this.$t('attributes.feature') }}：{{ tableData.length || 0 }}</span>
         <span v-if="statistics.showTotal && statistics.showSelect">，</span>
@@ -46,6 +46,8 @@
       :pagination="paginationOptions"
       :bordered="table.showBorder"
       :showHeader="table.showHeader"
+      :customHeaderRow="customHeaderRow"
+      :customRow="customRow"
       :loading="loading"
       table-layout="fixed"
       @change="handleChange"
@@ -113,7 +115,7 @@ import mergewith from 'lodash.mergewith';
 import isequal from 'lodash.isequal';
 import getFeatures from '../../common/_utils/get-features';
 
-interface attributesTitleParams {
+interface titleParams {
   enabled?: boolean;
   value?: string;
 }
@@ -136,6 +138,8 @@ interface FieldConfigParams {
   defaultSortOrder?: string;
   width?: string | number;
   search?: boolean;
+  customCell?: Function;
+  customHeaderCell?: Function;
 }
 
 interface AssociateWithMapParams {
@@ -200,6 +204,10 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
 
   @Prop() layerName: string; // 图层名
 
+  @Prop() customRow: Function;
+
+  @Prop() customHeaderRow: Function;
+
   @Prop({
     default: () => {
       return {
@@ -207,7 +215,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
       };
     }
   })
-  attributesTitle: attributesTitleParams;
+  title: titleParams;
 
   @Prop() dataset: any;
 
@@ -300,7 +308,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
         this.associateWithMap,
         this.featureMap,
         this.layerStyle,
-        this.attributesTitle.value
+        this.title.value
       );
     }
   }
@@ -442,7 +450,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
             }
           });
           // @ts-ignore
-          if (columnConfig.sorter && (typeof columnConfig.sorter === 'boolean')) {
+          if (columnConfig.sorter && typeof columnConfig.sorter === 'boolean') {
             // @ts-ignore
             columnConfig.sorter = (a, b) => a[propertyName] - b[propertyName];
           }
@@ -458,6 +466,17 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
               filterDropdown: 'filterDropdown',
               filterIcon: 'filterIcon',
               customRender: 'customRender'
+            };
+          }
+          // @ts-ignore
+          if (!columnConfig.customCell) {
+            // @ts-ignore
+            columnConfig.customCell = (record) => {
+              return {
+                attrs: {
+                  title: record[copyConfig.dataIndex]
+                }
+              };
             };
           }
         }
