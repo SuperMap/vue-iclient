@@ -10,6 +10,7 @@
 @include b(layer-color) {
   $layer-color-prefix: &;
   z-index: 10;
+  width: 320px;
   @include e(content) {
     padding: 0 16px;
     font-size: 12px;

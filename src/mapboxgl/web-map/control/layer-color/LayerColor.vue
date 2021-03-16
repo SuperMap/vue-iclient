@@ -23,9 +23,8 @@
             @change="handleLayerChange"
           />
         </div>
-        <div :class="['sm-component-layer-color__capture', isSelect && 'selected']">
+        <div v-if="capture" :class="['sm-component-layer-color__capture', isSelect && 'selected']">
           <sm-icon
-            v-if="capture"
             iconClass="layer-picker"
             :title="$t('layerColor.capture')"
             @click.native="toggleSelectLayer"
