@@ -22,6 +22,7 @@ export default class UniqueThemeLayerViewModel extends mapboxgl.Evented {
     this.themeLayer = new mapboxgl.supermap.UniqueThemeLayer(this.layerName, this.options);
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
+    this.fire('layerchange');
   }
 
   setOptions(options) {

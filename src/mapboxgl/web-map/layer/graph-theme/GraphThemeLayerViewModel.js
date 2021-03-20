@@ -47,6 +47,7 @@ export default class GraphThemeLayerViewModel extends mapboxgl.Evented {
     this.themeLayer = new mapboxgl.supermap.GraphThemeLayer(this.layerName, this.chartsType, this.options);
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
+    this.fire('layerchange');
   }
 
   removed() {

@@ -40,6 +40,7 @@ export default class RangeThemeLayerViewModel extends mapboxgl.Evented {
     this.themeLayer = new mapboxgl.supermap.RangeThemeLayer(this.layerName, this.options);
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
+    this.fire('layerchange');
   }
 
   removed() {

@@ -47,6 +47,7 @@ export default class RanksymbolThemeLayerViewModel extends mapboxgl.Evented {
     this.themeLayer = new mapboxgl.supermap.RankSymbolThemeLayer(this.layerName, this.symbolType, this.options);
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
+    this.fire('layerchange');
   }
 
   removed() {
