@@ -1,11 +1,12 @@
 <script>
 import MapGetter from '../../../_mixin/map-getter';
 import Layer from '../../../_mixin/layer';
+import themeLayerEvents from '../../_mixin/theme-layer';
 import RanksymbolThemeLayerViewModel from './RanksymbolThemeLayerViewModel.js';
 
 export default {
   name: 'SmRanksymbolThemeLayer',
-  mixins: [MapGetter, Layer],
+  mixins: [MapGetter, Layer, themeLayerEvents],
   props: {
     symbolType: {
       type: String,
@@ -47,6 +48,10 @@ export default {
   },
   created() {
     this.viewModel = new RanksymbolThemeLayerViewModel(this.$props);
+    this.viewModel.on('layerchange', this.bindLayerEvents);
+  },
+  removed() {
+    this.viewModel.off('layerChange', this.bindLayerEvents);
   },
   loaded() {
     this.$emit('load', this.viewModel.themeLayer, this.map);

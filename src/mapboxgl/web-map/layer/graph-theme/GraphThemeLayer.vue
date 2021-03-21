@@ -1,11 +1,12 @@
 <script>
 import MapGetter from '../../../_mixin/map-getter';
 import Layer from '../../../_mixin/layer';
+import themeLayerEvents from '../../_mixin/theme-layer';
 import GraphThemeLayerViewModel from './GraphThemeLayerViewModel.js';
 
 export default {
   name: 'SmGraphThemeLayer',
-  mixins: [MapGetter, Layer],
+  mixins: [MapGetter, Layer, themeLayerEvents],
   props: {
     chartsType: {
       type: String,
@@ -47,6 +48,10 @@ export default {
   },
   created() {
     this.viewModel = new GraphThemeLayerViewModel(this.$props);
+    this.viewModel.on('layerchange', this.bindLayerEvents);
+  },
+  removed() {
+    this.viewModel.off('layerchange', this.bindLayerEvents);
   },
   loaded() {
     this.$emit('load', this.viewModel.themeLayer, this.map);

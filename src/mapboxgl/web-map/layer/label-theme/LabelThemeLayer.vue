@@ -1,11 +1,12 @@
 <script>
 import MapGetter from '../../../_mixin/map-getter';
 import Layer from '../../../_mixin/layer';
+import themeLayerEvents from '../../_mixin/theme-layer';
 import LabelThemeLayerViewModel from './LabelThemeLayerViewModel.js';
 
 export default {
   name: 'SmLabelThemeLayer',
-  mixins: [MapGetter, Layer],
+  mixins: [MapGetter, Layer, themeLayerEvents],
   props: {
     layerName: {
       type: String,
@@ -41,6 +42,10 @@ export default {
   },
   created() {
     this.viewModel = new LabelThemeLayerViewModel(this.$props);
+    this.viewModel.on('layerchange', this.bindLayerEvents);
+  },
+  removed() {
+    this.viewModel.off('layerChange', this.bindLayerEvents);
   },
   loaded() {
     this.$emit('load', this.viewModel.themeLayer, this.map);
