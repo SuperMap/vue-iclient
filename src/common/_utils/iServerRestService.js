@@ -1,3 +1,5 @@
+import '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { Events } from '../_types/event/Events';
 import { getProjection } from './epsg-define';
 import proj4 from 'proj4';

@@ -1,3 +1,5 @@
+import '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { Events } from '../_types/event/Events';
 import { getDataType } from './util';
 import { statisticsFeatures } from './statistics';
