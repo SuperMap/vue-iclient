@@ -21,32 +21,33 @@ export default class GraphThemeLayerViewModel extends mapboxgl.Evented {
 
   setLayerName(layerName) {
     this.layerName = layerName;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   setChartsType(chartsType) {
     this.chartsType = chartsType;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   setData(data) {
     this.data = data;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   setOptions(options) {
     this.options = options;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   _init() {
     this.themeLayer = new mapboxgl.supermap.GraphThemeLayer(this.layerName, this.chartsType, this.options);
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
+  }
+
+  refresh() {
+    this.removed();
+    this._init();
     this.fire('layerchange');
   }
 
