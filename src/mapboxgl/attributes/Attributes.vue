@@ -1,6 +1,6 @@
 <template>
   <div class="sm-component-attributes">
-    <div class="sm-component-attributes__header">
+    <div class="sm-component-attributes__header" :style="getTextColorStyle">
       <div class="sm-component-attributes__count">
         <span v-if="title.enabled" class="layer-name">{{ title.value }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
