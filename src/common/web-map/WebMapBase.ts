@@ -430,15 +430,18 @@ export default abstract class WebMapBase extends Events {
       }
       return feature;
     });
-    if (!mergeByField) {
+    if (!mergeByField && features && features[0].geometry) {
       return features;
     }
     const source = this.map.getSource(layerId);
-    if (!source || !source._data.features) {
+    if ((!source || !source._data.features) && features && features[0].geometry) {
       return features;
     }
     const prevFeatures = source._data.features;
     const nextFeatures = [];
+    if (!mergeByField && prevFeatures) {
+      return prevFeatures;
+    }
     features.forEach((feature: any) => {
       const prevFeature = prevFeatures.find((item: any) => {
         if (isNaN(+item.properties[mergeByField]) && isNaN(+feature.properties[mergeByField])) {
@@ -585,7 +588,8 @@ export default abstract class WebMapBase extends Events {
       }
     }, this);
 
-    let segements = SuperMap.ArrayStatistic.getArraySegments(values, segmentMethod, segmentCount);
+    let segements =
+      values && values.length && SuperMap.ArrayStatistic.getArraySegments(values, segmentMethod, segmentCount);
     if (segements) {
       let itemNum = segmentCount;
       if (attributes && segements[0] === segements[attributes.length - 1]) {
