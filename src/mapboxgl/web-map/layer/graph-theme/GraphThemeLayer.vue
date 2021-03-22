@@ -48,13 +48,19 @@ export default {
   },
   created() {
     this.viewModel = new GraphThemeLayerViewModel(this.$props);
-    this.viewModel.on('layerchange', this.bindLayerEvents);
+    this.viewModel.on('layerchange', this.bindEvents);
+  },
+  methods: {
+    bindEvents() {
+      this.bindLayerEvents();
+      this.$emit('load', this.viewModel.themeLayer, this.map);
+    }
   },
   removed() {
-    this.viewModel.off('layerchange', this.bindLayerEvents);
+    this.viewModel.off('layerchange', this.bindEvents);
   },
   loaded() {
-    this.$emit('load', this.viewModel.themeLayer, this.map);
+    this.bindEvents();
   },
   render() {}
 };

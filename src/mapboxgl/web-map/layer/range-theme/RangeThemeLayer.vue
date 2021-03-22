@@ -41,13 +41,19 @@ export default {
   },
   created() {
     this.viewModel = new RangeThemeLayerViewModel(this.$props);
-    this.viewModel.on('layerchange', this.bindLayerEvents);
+    this.viewModel.on('layerchange', this.bindEvents);
+  },
+  methods: {
+    bindEvents() {
+      this.bindLayerEvents();
+      this.$emit('load', this.viewModel.themeLayer, this.map);
+    }
   },
   removed() {
-    this.viewModel.off('layerChange', this.bindLayerEvents);
+    this.viewModel.off('layerChange', this.bindEvents);
   },
   loaded() {
-    this.$emit('load', this.viewModel.themeLayer, this.map);
+    this.bindEvents();
   },
   render() {}
 };
