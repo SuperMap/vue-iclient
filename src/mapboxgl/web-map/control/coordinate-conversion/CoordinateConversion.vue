@@ -31,9 +31,9 @@
             <sm-select-option
               v-for="(value, key, index) in formatOptions"
               :key="index"
-              :title="value"
-              :value="key"
-            >{{ value }}</sm-select-option>
+              :title="value.i18n || value.title"
+              :value="value.title"
+            >{{ value.i18n || value.title }}</sm-select-option>
           </sm-select>
           <sm-input
             v-model="inputValue"
@@ -88,20 +88,17 @@ import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 
 const utm = require('utm');
 
-const displayFormat = {
-  XY: 'X°‎, Y°‎',
-  BASEMAP: `X Y`,
-  Mercator: `X Y`,
-  UTM: `ZB X Y`,
-  DD: 'Y° ‎N, X° ‎E',
-  DOM: `Y°‎ A' N, X°‎ B' E`,
-  DMS: `Y°‎ A' B" N, X°‎ C' D" E`
-};
-
 type Coordinate = {
   lng: number;
   lat: number;
 };
+interface FormatOption {
+  title: string;
+  i18n?: string;
+  display?: string;
+  toWGS84(val: string, format?: string): Coordinate;
+  fromWGS84(coordinate: Coordinate, format?: string): string;
+}
 
 @Component({
   name: 'SmCoordinateConversion',
@@ -120,18 +117,68 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   $message: any;
   $t: any;
   clickCaptureTimes: number = 0;
-  defaultFormatOptions: Object = {
-    BASEMAP: this.$t('unit.BASEMAP'),
-    Mercator: this.$t('unit.Mercator'),
-    XY: this.$t('unit.XY'),
-    UTM: this.$t('unit.UTM'),
-    DD: this.$t('unit.DD'),
-    DOM: this.$t('unit.DOM'),
-    DMS: this.$t('unit.DMS')
-  };
-  formatOptions: Object = { ...this.defaultFormatOptions };
+  defaultFormats: Array<FormatOption> = [
+    {
+      title: 'BASEMAP',
+      i18n: this.$t('unit.BASEMAP'),
+      display: `X Y`,
+      fromWGS84: this.getBaseMapCoordinate,
+      toWGS84: (value, format) => {
+        const coor: Array<string | number> = value.split(' ');
+        // @ts-ignore
+        const coor1: Coordinate = { lng: coor[0] * 1, lat: coor[1] * 1 };
+        return this.getEpsgCoordinate(coor1, 'EPSG:4326', this.getEpsgCode());
+      }
+    },
+    {
+      title: 'UTM',
+      i18n: this.$t('unit.UTM'),
+      fromWGS84: this.getUtm,
+      toWGS84: this.getCoorByUtm
+    },
+    {
+      title: 'Mercator',
+      i18n: this.$t('unit.Mercator'),
+      display: `X Y`,
+      fromWGS84: this.getMercatorCoordinate,
+      toWGS84: (value, format) => {
+        const coor: Array<string | number> = value.split(' ');
+        // @ts-ignore
+        const coor2: Coordinate = { lng: coor[0] * 1, lat: coor[1] * 1 };
+        return this.getEpsgCoordinate(coor2, 'EPSG:4326', 'EPSG:3857');
+      }
+    },
+    {
+      title: 'XY',
+      i18n: this.$t('unit.XY'),
+      display: 'X°‎, Y°‎',
+      fromWGS84: this.getXY,
+      toWGS84: this.getCoorByXY
+    },
+    {
+      title: 'DD',
+      i18n: this.$t('unit.DD'),
+      display: 'Y° ‎N, X° ‎E‎',
+      fromWGS84: this.getDD,
+      toWGS84: this.getCoorByDD
+    },
+    {
+      title: 'DOM',
+      i18n: this.$t('unit.DOM'),
+      display: `Y°‎ A' N, X°‎ B' E`,
+      fromWGS84: this.getDOM,
+      toWGS84: this.getCoorByDOM
+    },
+    {
+      title: 'DMS',
+      i18n: this.$t('unit.DMS'),
+      display: `Y°‎ A' B" N, X°‎ C' D" E`,
+      fromWGS84: this.getDMS,
+      toWGS84: this.getCoorByDMS
+    }
+  ];
+  formatOptions: Array<FormatOption> = [...this.defaultFormats];
   activeFormat: string = 'XY';
-  displayFormat: Object = displayFormat;
   activeDisplayFormat: string = 'X°‎, Y°‎';
   inputValue: string = '';
   iconValue: string = '';
@@ -145,10 +192,10 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   @Prop({ default: true }) showLocation: boolean;
   @Prop({
     default() {
-      return {};
+      return ['BASEMAP', 'Mercator', 'XY', 'UTM', 'DD', 'DOM', 'DMS'];
     }
   })
-  formats: Object;
+  formats: Array<string | FormatOption>;
 
   get isCapture() {
     return this.clickCaptureTimes % 2 !== 0;
@@ -165,15 +212,21 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
 
   @Watch('formats', { immediate: true })
   formatsWatcher() {
-    const newDisplayFormat = { ...displayFormat };
-    this.formatOptions = { ...this.defaultFormatOptions };
-    if (this.formats) {
-      for (let title in this.formats) {
-        newDisplayFormat[title] = '';
-        this.formatOptions[title] = title;
-      }
+    let formatOptions = [];
+    this.formats &&
+      this.formats.forEach((item, index) => {
+        if (typeof item === 'string') {
+          const defaultFormat = this.defaultFormats.find(val => val.title === item);
+          defaultFormat && formatOptions.push(defaultFormat);
+        } else if (typeof item === 'object') {
+          formatOptions.push(item);
+        }
+      });
+    if (formatOptions && formatOptions[0] && !this.formats.includes('XY')) {
+      this.activeFormat = formatOptions[0].title;
+      this.activeDisplayFormat = formatOptions[0].display || '';
     }
-    this.displayFormat = newDisplayFormat;
+    this.formatOptions = formatOptions;
   }
   created() {
     const clipboard = (this.clipboard = new ClipboardJS(`.sm-component-coordinate-conversion__copyed${this.uniqueId}`));
@@ -183,8 +236,9 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     this.viewModel = new CoordinateConversionViewModel();
     this.viewModel.on('getcoordinate', res => {
       const { coordinate } = res;
+      const formatOption = this.formatOptions.find(item => item.title === this.activeFormat);
       this.coordinate = coordinate;
-      this.inputValue = this.formatCoordinate(this.coordinate);
+      this.inputValue = this.formatCoordinate(this.coordinate, formatOption);
     });
   }
   beforeDestroy() {
@@ -204,7 +258,8 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     this.enableLocation = true;
   }
   handleBlur(e) {
-    this.coordinate = this.reverseCoordinateFormat(e.target.value);
+    const formatOption = this.formatOptions.find(item => item.title === this.activeFormat);
+    this.coordinate = this.reverseCoordinateFormat(e.target.value, formatOption);
   }
   handleChange(e) {
     if (!e.target.value) {
@@ -225,75 +280,31 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     this.viewModel._flyTo([lng, lat]);
   }
   changeFormat(val) {
-    this.activeDisplayFormat = this.displayFormat[val];
-    this.inputValue = this.formatCoordinate(this.coordinate);
+    const formatOption = this.formatOptions.find(item => item.title === val);
+    this.activeDisplayFormat = formatOption && formatOption.display;
+    this.inputValue = this.formatCoordinate(this.coordinate, formatOption);
   }
-  formatCoordinate(coordinate: Coordinate | null, format = this.activeDisplayFormat, map = this.map) {
-    if (!coordinate) {
+  formatCoordinate(coordinate: Coordinate | null, formatOption: FormatOption, format?: string) {
+    if (!coordinate || !formatOption) {
       this.viewModel._clearMarker();
       return null;
     }
-    switch (this.activeFormat) {
-      case 'XY':
-        return this.getXY(coordinate, format);
-      case 'DD':
-        return this.getDD(coordinate, format);
-      case 'DOM':
-        return this.getDOM(coordinate, format);
-      case 'DMS':
-        return this.getDMS(coordinate, format);
-      case 'BASEMAP':
-        return this.getBaseMapCoordinate(coordinate, format);
-      case 'Mercator':
-        return this.getMercatorCoordinate(coordinate, format);
-      case 'UTM':
-        let { easting, northing, zoneNum, zoneLetter } = utm.fromLatLon(
-          coordinate.lat,
-          this.getWrapNum(coordinate.lng)
-        );
-        return `${zoneNum}${zoneLetter} ${parseInt(easting)} ${parseInt(northing)}`;
-      default:
-        const formatFn =
-          (this.formats && this.formats[this.activeFormat] && this.formats[this.activeFormat].format) || this.getXY;
-        return formatFn(coordinate, format);
-    }
+    const fromWGS84 = formatOption.fromWGS84 || this.getXY;
+    return fromWGS84(coordinate, format || formatOption.display);
   }
-  reverseCoordinateFormat(value: string = this.inputValue, format: string = this.activeDisplayFormat) {
+  reverseCoordinateFormat(value: string = this.inputValue, formatOption: FormatOption, format?: string) {
     value = value.replace(/^\s+|\s+$ /, '');
-    let coor: Array<string | number> = value.split(' ');
-    if (!value) {
+    if (!value || !formatOption) {
       this.viewModel._clearMarker();
       return null;
     }
-    switch (this.activeFormat) {
-      case 'XY':
-        return this.getCoorByXY(value, format);
-      case 'DD':
-        return this.getCoorByDD(value, format);
-      case 'DOM':
-        return this.getCoorByDOM(value, format);
-      case 'DMS':
-        return this.getCoorByDMS(value, format);
-      case 'BASEMAP':
-        // @ts-ignore
-        const coor1: Coordinate = { lng: coor[0] * 1, lat: coor[1] * 1 };
-        return this.getEpsgCoordinate(coor1, 'EPSG:4326', this.getEpsgCode());
-      case 'Mercator':
-        // @ts-ignore
-        const coor2: Coordinate = { lng: coor[0] * 1, lat: coor[1] * 1 };
-        return this.getEpsgCoordinate(coor2, 'EPSG:4326', 'EPSG:3857');
-      case 'UTM':
-        const [zone, northing, easting] = value.split(' ');
-        let zoneNum: number = parseInt(zone);
-        const zoneLetter = Object.is(zoneNum, NaN) ? zone : zone.replace(zoneNum + '', '');
-        const { latitude, longitude } = utm.toLatLon(easting, northing, zoneNum, zoneLetter);
-        return { lng: longitude, lat: latitude };
-      default:
-        const toWGS84 =
-          (this.formats && this.formats[this.activeFormat] && this.formats[this.activeFormat].toWGS84) ||
-          this.getCoorByXY;
-        return toWGS84(value, format);
-    }
+    const toWGS84 = formatOption.toWGS84 || this.getCoorByXY;
+    return toWGS84(value, format);
+  }
+
+  getUtm(coordinate: Coordinate, format?: string) {
+    let { easting, northing, zoneNum, zoneLetter } = utm.fromLatLon(coordinate.lat, this.getWrapNum(coordinate.lng));
+    return `${zoneNum}${zoneLetter} ${parseInt(easting)} ${parseInt(northing)}`;
   }
   getMercatorCoordinate(coordinate: Coordinate, format?: string) {
     const { lng, lat } = this.getEpsgCoordinate(coordinate, 'EPSG:3857');
@@ -405,6 +416,13 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   getCoorByDMS(value?: string, format?: string) {
     value = this.reverseUnit(value);
     return CoordinateConverter.fromDegreeMinutesSeconds(value);
+  }
+  getCoorByUtm(value?: string, format?: string) {
+    const [zone, easting, northing] = value.split(' ');
+    let zoneNum: number = parseInt(zone);
+    const zoneLetter = Object.is(zoneNum, NaN) ? zone : zone.replace(zoneNum + '', '');
+    const { latitude, longitude } = utm.toLatLon(easting, northing, zoneNum, zoneLetter);
+    return { lng: longitude, lat: latitude };
   }
   replaceUnit(value?: string) {
     value = value.replace(/º/g, '°');
