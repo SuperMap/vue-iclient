@@ -194,20 +194,6 @@ export default {
   layerManager: {
     title: 'Layer Manager'
   },
-  fillExtrusion: {
-    title: 'Fill Extrusion',
-    polygonLayer: 'Polygon Layer',
-    height: 'Height(meter)',
-    heightValue: 'Height Value',
-    fieldName: 'Field Name',
-    customFieldPlaceholder: 'Fill in the field name',
-    customNum: 'Custom',
-    multiple: 'Multiple',
-    fillColor: 'Fill color',
-    layerOpacity: 'Opacity',
-    hideOriginalLayer: 'Hide original layer',
-    reset: 'Reset'
-  },
   flyTo: {
     title: 'Fly To'
   },

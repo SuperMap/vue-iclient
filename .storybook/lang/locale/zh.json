@@ -416,12 +416,6 @@
     "coordinateCoversion": {
       "title": "Coordinate Coversion 坐标转换"
     },
-    "fillExtrusion": {
-      "title": "FillExtrusion 三维拉伸"
-    },
-    "fillExtrusionLayer": {
-      "title": "FillExtrusionLayer 三维拉伸图层"
-    },
     "compass": {
       "title": "Compass 指南针",
       "changeComparePitch": "改变指南针俯仰角度"

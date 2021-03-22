@@ -95,7 +95,6 @@ export { default as VectorTileLayer } from './web-map/layer/vector-tile/VectorTi
 export { default as FireLayer } from './web-map/layer/fire/FireLayer';
 export { default as AnimateMarkerLayer } from './web-map/layer/animate-marker/AnimateMarkerLayer';
 export { default as TrackLayer } from './web-map/layer/track/TrackLayer';
-export { default as FillExtrusionLayer } from './web-map/layer/fill-extrusion/FillExtrusionLayer';
 
 /** control */
 export { default as Legend } from './web-map/control/legend/Legend';
@@ -109,7 +108,6 @@ export { default as Zoom } from './web-map/control/zoom/Zoom';
 export { default as Draw } from './web-map/control/draw/Draw';
 export { default as Identify } from './web-map/control/identify/Identify';
 export { default as LayerManager } from './web-map/control/layer-manager/LayerManager';
-export { default as FillExtrusion } from './web-map/control/fill-extrusion/FillExtrusion';
 export { default as CoordinateConversion } from './web-map/control/coordinate-conversion/CoordinateConversion';
 export { default as Compass } from './web-map/control/compass/Compass';
 export { default as FlyTo } from './web-map/control/fly-to/FlyTo';

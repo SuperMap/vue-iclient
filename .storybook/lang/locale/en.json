@@ -416,12 +416,6 @@
     "coordinateCoversion": {
       "title": "Coordinate Coversion"
     },
-    "fillExtrusion": {
-      "title": "FillExtrusion"
-    },
-    "fillExtrusionLayer": {
-      "title": "FillExtrusion Layer"
-    },
     "compass": {
       "title": "Compass",
       "changeComparePitch": "change Pitch"

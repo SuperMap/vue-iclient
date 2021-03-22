@@ -52,7 +52,6 @@ export default class LayerMixin extends Vue {
   @Prop() layout:
     | mapboxglTypes.BackgroundLayout
     | mapboxglTypes.FillLayout
-    | mapboxglTypes.FillExtrusionLayout
     | mapboxglTypes.LineLayout
     | mapboxglTypes.SymbolLayout
     | mapboxglTypes.RasterLayout
@@ -62,7 +61,6 @@ export default class LayerMixin extends Vue {
   @Prop() paint:
     | mapboxglTypes.BackgroundPaint
     | mapboxglTypes.FillPaint
-    | mapboxglTypes.FillExtrusionPaint
     | mapboxglTypes.LinePaint
     | mapboxglTypes.SymbolPaint
     | mapboxglTypes.RasterPaint
