@@ -1,8 +1,8 @@
 import Vue from 'vue';
-import { Component, Prop, Emit } from 'vue-property-decorator';
+import { Component, Prop, Emit, Watch } from 'vue-property-decorator';
 import globalEvent from '../_utils/global-event';
 import { getDerivedColorsByTextColor } from '../_utils/util';
-
+import { getPrimarySerialColors } from '../../common/_utils/style/color/serialColors';
 @Component({
   name: 'Theme'
 })
@@ -37,6 +37,12 @@ export default class Theme extends Vue {
     return {
       background: this.collapseCardBackgroundData
     };
+  }
+
+  get collapseCardBackgroundLightStyle() {
+    return {
+      background: getPrimarySerialColors({ colorGroup: [this.collapseCardBackgroundData] })[2]
+    }
   }
 
   get collapseCardHeaderBgStyle() {

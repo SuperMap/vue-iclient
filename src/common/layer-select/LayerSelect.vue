@@ -6,6 +6,7 @@
     :multiple="false"
     :dropdownStyle="collapseCardBackgroundStyle"
     :dropdownMatchSelectWidth="true"
+    :getPopupContainer="getPopupContainer"
     @change="handleNodeChange"
   />
 </template>
@@ -205,6 +206,10 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
       };
     });
     return layerChildren;
+  }
+
+  getPopupContainer(triggerNode) {
+    return triggerNode.parentNode;
   }
 
   beforeDestory() {
