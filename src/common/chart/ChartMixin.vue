@@ -153,6 +153,10 @@ export default {
     highlightColor: {
       type: String,
       default: '#01ffff'
+    },
+    isShow: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
