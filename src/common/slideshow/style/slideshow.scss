@@ -28,6 +28,7 @@
   .swiper-button-prev,
   .swiper-button-next {
     color: $swiper-prev-next-background;
+    font-size: 26px;
     &::after {
       content: '';
     }

@@ -1,3 +1,5 @@
+import '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from './iServerRestService';
 import { isXField, isYField, handleWithCredentials, handleDataParentRes } from './util';
 import { Events } from '../_types/event/Events';

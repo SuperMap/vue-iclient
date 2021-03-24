@@ -10,6 +10,9 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
+  .sm-component-table {
+    color: inherit;
+  }
   .sm-component-table-wrapper {
     overflow: auto;
     height: calc(100% - 46px);
@@ -35,6 +38,7 @@
         }
       }
       tr > th {
+        color: inherit;
         padding: 6px 6px;
         &.sm-component-table-column-sort {
           background: $background-color-light;
