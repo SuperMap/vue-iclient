@@ -66,7 +66,7 @@
                 class="sm-component-query__a-select"
                 :get-popup-container="getPopupContainer"
                 :style="getTextColorStyle"
-                :dropdown-style="collapseCardBackgroundStyle"
+                :dropdown-style="collapseCardBackgroundLightStyle"
               >
                 <sm-select-option v-for="item in selectOptions" :key="item.value" :value="item.value">
                   {{ item.label }}

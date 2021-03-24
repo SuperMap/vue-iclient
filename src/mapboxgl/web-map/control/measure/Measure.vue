@@ -30,7 +30,7 @@
           :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
           :style="getTextColorStyle"
-          :dropdownStyle="collapseCardBackgroundStyle"
+          :dropdownStyle="collapseCardBackgroundLightStyle"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
         >
@@ -44,7 +44,7 @@
           :placeholder="$t('measure.selectPlaceholder')"
           class="sm-component-measure__unit"
           :style="getTextColorStyle"
-          :dropdownStyle="collapseCardBackgroundStyle"
+          :dropdownStyle="collapseCardBackgroundLightStyle"
           :get-popup-container="getPopupContainer"
           @change="updateUnit"
         >
