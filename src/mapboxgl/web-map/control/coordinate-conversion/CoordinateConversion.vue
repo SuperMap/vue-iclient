@@ -85,7 +85,9 @@ import proj4 from 'proj4';
 import UniqueId from 'lodash.uniqueid';
 import { CoordinateConverter } from 'geographic-coordinate-converter/coordinate-converter';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
+
 const utm = require('utm');
+
 type Coordinate = {
   lng: number;
   lat: number;

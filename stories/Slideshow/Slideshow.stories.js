@@ -201,14 +201,14 @@ export const effectSlideshow = () => ({
     <sm-slideshow
       v-model="activeIndex"
       :collapsed="false"
-      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 360px; border-radius: 4px;"
+      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 380px; border-radius: 4px;"
       :autoplay="{delay: 4000}"
       :effect="effect"
       v-on:change="slideChange"
     >
       <sm-slideshow-item v-for="item of content" :key="item.title">
         <h3>{{ item.title }}</h3>
-        <p style="padding: 0 13px 16px ;">{{ item.description }}</p>
+        <p style="padding: 0 13px 10px ;">{{ item.description }}</p>
         <img :src="item.image" style="width: 320px; height: 190px;" />
       </sm-slideshow-item>
     </sm-slideshow>
@@ -379,14 +379,14 @@ export const paginationSlideshow = () => ({
     <sm-slideshow
       v-model="activeIndex"
       :collapsed="false"
-      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 380px; border-radius: 4px;"
+      style="position: absolute; top: 40px; left: 30px; width: 400px; height: 390px; border-radius: 4px;"
       :autoplay="{delay: 4000}"
       :pagination="pagination"
       v-on:change="slideChange"
     >
       <sm-slideshow-item v-for="item of content" :key="item.title">
         <h3>{{ item.title }}</h3>
-        <p style="padding: 0 13px 16px ;">{{ item.description }}</p>
+        <p style="padding: 0 13px 6px ;">{{ item.description }}</p>
         <img :src="item.image" style="width: 320px; height: 190px;" />
       </sm-slideshow-item>
     </sm-slideshow>
