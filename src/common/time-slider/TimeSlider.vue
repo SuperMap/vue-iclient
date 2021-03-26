@@ -64,7 +64,6 @@ export default class SmTimeSlider extends Mixins(Theme) {
   updateInterval: any;
   rafIds_: Object;
   namedRafs_: any;
-  progress_: number;
   uniqueId: string = UniqueId(`${this.$options.name.toLowerCase()}-`);
 
   @Prop({ default: false }) autoPlay: boolean;
@@ -215,7 +214,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
 
   @Watch('sliderBarWidth')
   sliderBarWidthWatcher() {
-    const left = this.sliderBarWidth === '100.00%' ? `calc(100% - ${this.sliderBarSize})` : this.sliderBarWidth;
+    const left = this.sliderBarWidth === '100.00%' ? `calc(100% - ${this.sliderBarSize}px)` : this.sliderBarWidth;
     this.modifySliderBarStyle(`left:${left} !important`);
   }
 
@@ -240,6 +239,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
       (!this.isDataDuration && this.currentTime >= this.duration)
     ) {
       if (!this.loop) {
+        this.updateDom();
         this.emitEnd();
       } else if (this.loop && this.playState) {
         this.currentTime = 0;
@@ -328,10 +328,6 @@ export default class SmTimeSlider extends Mixins(Theme) {
       return '';
     }
     const progress = this.getProgress();
-    if (progress === this.progress_) {
-      return progress;
-    }
-    this.progress_ = progress;
     if (!this.draggable) {
       this.requestNamedAnimationFrame('Slider#update', () => {
         this.sliderBarWidth = (progress * 100).toFixed(2) + '%';
@@ -367,9 +363,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
         time = 0;
       }
       this.currentTime = this.isDataDuration ? time * 1000 : time;
-      return '';
     }
-    return this.currentTime || 0;
   }
   getTotalDistance(className = this.uniqueId) {
     // @ts-ignore
@@ -390,6 +384,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     const distance = event.offsetX;
     const totalDistance = this.getTotalDistance();
     percent = percent || distance / totalDistance;
+    percent = Math.min(1, Math.max(0, percent));
     let newTime = percent * (this.isDataDuration ? this.dataDuration : this.duration);
     if (newTime === Infinity) {
       return '';
@@ -408,7 +403,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     this.updateInterval = setInterval(() => {
       this.currentTime += this.playbackRate;
       if (this.isDataDuration) {
-        this.currentTime = this.currentTime / 1000 >= this.dataDuration ? this.dataDuration : this.currentTime;
+        this.currentTime = this.currentTime / 1000 >= this.dataDuration ? this.dataDuration * 1000 : this.currentTime;
       } else {
         this.currentTime = this.currentTime >= this.duration ? this.duration : this.currentTime;
       }
