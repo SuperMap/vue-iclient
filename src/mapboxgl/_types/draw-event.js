@@ -151,6 +151,16 @@ export default new Vue({
             'circle-radius': 6,
             'circle-color': '#f75564'
           }
+        },
+        // point-active
+        {
+          id: 'draw-point-static-active',
+          type: 'circle',
+          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature'], ['==', 'active', 'true']],
+          paint: {
+            'circle-radius': 4,
+            'circle-color': '#FFF'
+          }
         }
       ]
     };
