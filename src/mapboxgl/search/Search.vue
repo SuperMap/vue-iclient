@@ -25,7 +25,11 @@
           :aria-orientation="position.includes('left') ? 'left' : 'right'"
           :style="collapseCardHeaderBgStyle"
         >
-          <div v-if="mode === 'control'" class="sm-component-search__arrow-icon" @click="showSearch = !showSearch">
+          <div
+            v-if="mode === 'control'"
+            class="sm-component-search__arrow-icon"
+            @click="showSearch = !showSearch"
+          >
             <i
               :class="position.includes('left') ? 'sm-components-icon-double-left' : 'sm-components-icon-double-right'"
             />
@@ -48,17 +52,30 @@
             @change="e => !e.target.value && inputValueCleared()"
           />
         </div>
-        <div v-show="resultSuggestions" class="sm-component-search__result" :style="collapseCardBackgroundStyle">
-          <div v-for="(result, index) in searchResult" :key="index" class="sm-component-search__panel">
-            <div v-if="result.source && showTitle && result.result.length" class="sm-component-search__panel-header-wrapper">
+        <div
+          v-show="resultSuggestions"
+          class="sm-component-search__result"
+          :style="collapseCardBackgroundStyle"
+        >
+          <div
+            v-for="(result, index) in searchResult"
+            :key="index"
+            class="sm-component-search__panel"
+          >
+            <div
+              v-if="result.source && showTitle && result.result.length"
+              class="sm-component-search__panel-header-wrapper"
+            >
               <div class="sm-component-search__panel-header">
                 <i class="sm-components-icon-list" />
-                <span class="add-ellipsis">
-                  {{ result.source }}
-                </span>
+                <span class="add-ellipsis">{{ result.source }}</span>
               </div>
             </div>
-            <div v-if="result.result" class="sm-component-search__panel-body" :style="getTextColorStyle">
+            <div
+              v-if="result.result"
+              class="sm-component-search__panel-body"
+              :style="getTextColorStyle"
+            >
               <ul :class="{ noMarginBottom: !showTitle }">
                 <li
                   v-for="(item, i) in result.result"
@@ -69,9 +86,7 @@
                     'add-ellipsis': true
                   }"
                   @click="searchResultListClicked(item, $event)"
-                >
-                  {{ item.filterVal || item.name || item.address }}
-                </li>
+                >{{ item.filterVal || item.name || item.address }}</li>
               </ul>
             </div>
           </div>
@@ -97,6 +112,7 @@ import SmIcon from '../../common/icon/Icon';
 import SmInput from '../../common/input/Input';
 import TablePopup from '../../common/table-popup/TablePopup';
 import { setPopupArrowStyle } from '../../common/_utils/util';
+import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmSearch',
@@ -196,6 +212,28 @@ export default {
       return this.searchResult.length > 0;
     }
   },
+  watch: {
+    iportalData(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.search();
+      }
+    },
+    restData(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.search();
+      }
+    },
+    restMap(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.search();
+      }
+    },
+    addressMatch(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.search();
+      }
+    }
+  },
   created() {
     this.showSearch = !this.collapsed;
     this.showIcon = this.collapsed;
@@ -206,23 +244,19 @@ export default {
   },
   beforeDestroy() {
     this.$message.destroy();
-    this.marker && this.marker.remove() && (this.marker = null);
   },
   methods: {
-    /**
-     * 清除搜索结果。
-     */
     clearResult(isClear) {
       this.$message.destroy();
       isClear && (this.searchKey = null);
       isClear && this.resetLastEvent();
       this.searchResult = [];
-      this.marker && this.marker.remove() && (this.marker = null);
       this.prefixType = 'search';
       this.keyupHoverInfo = {
         groupIndex: undefined,
         hoverIndex: undefined
       };
+      this.viewModel && this.viewModel.removed();
     },
     searchInput(e) {
       if (this.openSearchSuggestion && !this.isInputing) {
@@ -346,10 +380,8 @@ export default {
         this.tablePopupProps = { ...state };
       }
       this.$nextTick(() => {
-        this.viewModel.setPopupContent(
-          popupData.coordinates,
-          this.$refs.searchTablePopup.$el,
-          () => setPopupArrowStyle(this.tablePopupBgData)
+        this.viewModel.setPopupContent(popupData.coordinates, this.$refs.searchTablePopup.$el, () =>
+          setPopupArrowStyle(this.tablePopupBgData)
         );
       });
     },
