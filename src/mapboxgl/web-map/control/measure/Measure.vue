@@ -280,6 +280,7 @@ export default {
     },
     updateUnit(unit) {
       this.viewModel && this.viewModel.updateUnit(unit);
+      this.setPopupStyle();
     },
     getPopupContainer() {
       return this.$el.querySelector('.sm-component-measure__panelContent');
