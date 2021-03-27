@@ -148,6 +148,11 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
   }
   resetAllLayerColor() {
     this.viewModel.resetAllColor();
+    this.selectLayer = {
+      id: '',
+      type: ''
+    };
+    this.propertyList = [];
   }
   toggleSelectLayer() {
     if (this.isSelect) {
