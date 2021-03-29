@@ -67,12 +67,20 @@ class LayerColorViewModel extends mapboxgl.Evented {
     }
   }
 
+  _changeCursor(cursorType: string = '') {
+    if (this.map && this.map.getCanvas()) {
+      this.map.getCanvas().style.cursor = cursorType;
+    }
+  }
+
   startSelectLayer() {
     this.map.on('click', this.selectLayerFn);
+    this._changeCursor('pointer');
   }
 
   endSelectLayer() {
     this.map.off('click', this.selectLayerFn);
+    this._changeCursor();
   }
 }
 export default LayerColorViewModel;
