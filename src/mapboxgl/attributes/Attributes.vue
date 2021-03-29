@@ -2,7 +2,7 @@
   <div class="sm-component-attributes" :style="[getTextColorStyle, getBackgroundStyle]">
     <div class="sm-component-attributes__header">
       <div class="sm-component-attributes__count">
-        <span v-if="title.enabled" class="layer-name">{{ title.value }}</span>
+        <span v-if="title" class="layer-name">{{ title }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
         <span v-if="statistics.showTotal" class="total-numbers">{{ this.$t('attributes.feature') }}：{{ tableData.length || 0 }}</span>
         <span v-if="statistics.showTotal && statistics.showSelect">，</span>
@@ -115,11 +115,6 @@ import mergewith from 'lodash.mergewith';
 import isequal from 'lodash.isequal';
 import getFeatures from '../../common/_utils/get-features';
 
-interface titleParams {
-  enabled?: boolean;
-  value?: string;
-}
-
 interface PaginationParams {
   defaultCurrent?: number;
   current?: number;
@@ -208,14 +203,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
 
   @Prop() customHeaderRow: Function;
 
-  @Prop({
-    default: () => {
-      return {
-        enabled: false
-      };
-    }
-  })
-  title: titleParams;
+  @Prop()title: string;
 
   @Prop() dataset: any;
 
@@ -308,7 +296,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
         this.associateWithMap,
         this.featureMap,
         this.layerStyle,
-        this.title.value
+        this.title
       );
     }
   }
@@ -393,6 +381,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
         if (coordinates && coordinates.length) {
           this.featureMap[properties.index] = feature;
         }
+        !properties.index && (properties.index = index);
         properties.key = +properties.index;
         JSON.stringify(properties) !== '{}' && content.push(properties);
       });
