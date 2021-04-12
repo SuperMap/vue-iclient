@@ -7,9 +7,49 @@ export default {
 };
 export const LayerList = () => ({
   mixins: [theme],
+  data() {
+    return {
+      attributesOptions: {
+        getContainer: () => {
+          return document.querySelector('.sm-component-web-map');
+        },
+        style: {
+          width: '100%',
+          height: '300px',
+          background: 'rgba(0, 0, 0, 0.6)'
+        },
+        position: 'bottom',
+        props: {
+          associateWithMap: {
+            enabled: true,
+            zoomToFeature: true,
+            centerToFeature: true
+          },
+          fieldConfigs: [
+            { value: 'latitude', visible: false },
+            { value: 'longitude', visible: false },
+            { value: 'altitude', visible: false },
+            { value: 'geometry', visible: false },
+            { value: 'index', visible: true },
+            { value: '机场', visible: true },
+            { value: 'X坐标', visible: true },
+            { value: 'Y坐标', visible: true },
+            { value: '名次', visible: true },
+            { value: '2017旅客吞吐量（人次）', visible: false },
+            { value: '2016旅客吞吐量（人次）', visible: false },
+            { value: '同比增速%', visible: true },
+            { value: '2017货邮吞吐量（吨）', visible: false },
+            { value: '2016货邮吞吐量（吨）', visible: false },
+            { value: '2017起降架次（架次）', visible: false },
+            { value: '2016起降架次（架次）', visible: false }
+          ]
+        }
+      }
+    };
+  },
   template: `
   <sm-web-map style="height:700px" serverUrl="https://iportal.supermap.io/iportal" mapId="801571284">
-    <sm-layer-list :collapsed="false"></sm-layer-list>
+    <sm-layer-list :collapsed="false" :attributesOptions="attributesOptions"></sm-layer-list>
   </sm-web-map>
     `
 });

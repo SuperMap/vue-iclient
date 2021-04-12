@@ -182,7 +182,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   columns: Array<Object> = [];
   paginationOptions: PaginationParams = {
     pageSize: 15,
-    defaultCurrent: 2
+    defaultCurrent: 1
   };
 
   featureMap: Object;
@@ -415,6 +415,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
     Object.keys(headers).forEach((propertyName, index) => {
       let columnConfig = {
         title: propertyName,
+        width: '100px',
         dataIndex: propertyName,
         visible: true
       };
@@ -438,6 +439,11 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
               return obj;
             }
           });
+          // @ts-ignore
+          if (!columnConfig.width) {
+          // @ts-ignore
+            columnConfig.width = '100px';
+          }
           // @ts-ignore
           if (columnConfig.sorter && typeof columnConfig.sorter === 'boolean') {
             // @ts-ignore

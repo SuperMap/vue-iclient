@@ -36,17 +36,17 @@ class LayerListViewModel extends mapboxgl.Evented {
   getSourceNames() {
     return this.sourceNames;
   }
-  changeLayerVisible(sourcelayer, sourceName, visibility) {
+  changeLayerVisible(sourcelayer, sourceName: string, visibility: string) {
     this.sourceListModel.getLayersBySourceLayer(sourceName, sourcelayer).forEach(layer => {
       this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));
     });
   }
 
-  changeVisibility(visibility) {
+  changeVisibility(visibility: string) {
     return visibility === 'visible' ? 'none' : 'visible';
   }
 
-  changeLayerGroupVisibility(sourceName, visibility) {
+  changeLayerGroupVisibility(sourceName: string, visibility: string) {
     let sourceLayers = this.sourceListModel.getSourceLayersBySource(sourceName);
     if (sourceLayers) {
       for (let sourcelayer in sourceLayers) {
