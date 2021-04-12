@@ -11,13 +11,22 @@ import {
   datas_mapjson,
   charts_content,
   localSearch,
+  portal_data,
+  portal_data1,
+  chart_data,
   search_mapjson,
   fieldsJson,
-  datas_beijing
+  datas_beijing,
+  prj_data,
+  dataset_data,
+  datas_charts
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 var SuperMap = (window.SuperMap = window.SuperMap || {});
+
+SuperMap.SpatialQueryMode=
+{CONTAIN:"CONTAIN",CROSS:"CROSS",DISJOINT:"DISJOINT",IDENTITY:"IDENTITY",INTERSECT:"INTERSECT",NONE:"NONE",OVERLAP:"OVERLAP",TOUCH:"TOUCH",WITHIN:"WITHIN"};
 SuperMap.Widgets = window.SuperMap.Widgets || {};
 SuperMap.Widgets.FileReaderUtil = {};
 SuperMap.ColorsPickerUtil = {};
@@ -245,13 +254,25 @@ SuperMap.ColorsPickerUtil.getGradientColors = function () {
 
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesBySQLParameters = jest.fn());
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesByBoundsParameters = jest.fn());
+var QueryByGeometryParameters = (SuperMap.QueryByGeometryParameters = jest.fn());
 var QueryBySQLParameters = (SuperMap.QueryBySQLParameters = jest.fn());
 var GeoCodingParameter = (SuperMap.GeoCodingParameter = jest.fn());
 var FilterParameter = (SuperMap.FilterParameter = jest.fn());
 var QueryByBoundsParameters = (SuperMap.QueryByBoundsParameters = jest.fn());
 var isXField = (SuperMap.Widgets.FileReaderUtil.isXField = jest.fn());
 var isYField = (SuperMap.Widgets.FileReaderUtil.isYField = jest.fn());
-
+var Util = (SuperMap.Util = {
+  urlPathAppend: function(a,b){
+    return `${a}/${b}`;
+  },
+  urlAppend :function(a,b){
+    return `${a}/${b}`;
+  }
+});
+// var document = (window.document = jest.fn());
+// var documentElement = window.document.documentElement
+var document =  {}
+var documentElement  = (document.documentElement = {});
 var FetchRequest = (SuperMap.FetchRequest = {
   get: function (url, params, options) {
     return new Promise((resolve, reject) => {
@@ -270,7 +291,13 @@ var FetchRequest = (SuperMap.FetchRequest = {
       }
       // 1920557079/content.json?pageSize=9999999&currentPage=1
       // /web/datas/1920557079.json echarts
-      else if (url.indexOf('/web/datas/1920557079') > -1) {
+      else if (url.indexOf('datas/123/content.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(datas_charts))));
+      }
+      else if (url.indexOf('datas/676516522/content.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(datas_charts))));
+      }
+      else if (url.indexOf('iportal/web/datas') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_chart))));
       }
       // http://192.168.12.230:8092/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
@@ -288,8 +315,7 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(fakeLandUse))));
       }
       /// iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson.json
-      else if (url.indexOf('Countries/fields.rjson') > -1) {
-        console.log('rjson');
+      else if (url.indexOf('fields.rjson') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(fieldsJson))));
       } else if (url.indexOf('data_sichuan-2-/rest/data/datasources/supermap1_pg/datasets') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datasets))));
@@ -298,10 +324,28 @@ var FetchRequest = (SuperMap.FetchRequest = {
       }
       // http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos.json?keywords=%E5%8C%97%E4%BA%AC&city=%E5%8C%97%E4%BA%AC%E5%B8%82&pageSize=10&pageNum=1&key=fvV2osxwuZWlY0wJb8FEb2i5
       else if (url.indexOf('China/poiinfos.json') > -1) {
-        console.log('poiinfos json');
         process.nextTick(() => resolve(new Response(JSON.stringify(localSearch))));
       } else if (url.indexOf('geocoding.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(searchGeocoding))));
+      }
+      else if(url.indexOf('web/config/portal.json') > -1){
+      // resolve(new Response(JSON.stringify(portal_data)));
+      process.nextTick(() => resolve(new Response(JSON.stringify(portal_data1))));
+      }
+      else if (url.indexOf('iportal/web/maps') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(portal_data))));
+      }
+      else if (url.indexOf('/content.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(chart_data))));
+      }
+      else if (url.indexOf('/prjCoordSys') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(prj_data))));
+      }
+      else if (url.indexOf('/World/datasets/Countries') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(dataset_data))));
+      }
+      else {
+        process.nextTick(() =>  reject("未匹配到"))
       }
     });
   }

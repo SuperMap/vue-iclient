@@ -6,11 +6,7 @@ import RestMapParameter from '@types_common/RestMapParameter';
 import RestDataParameter from '@types_common/RestDataParameter';
 import iPortalDataParameter from '@types_common/iPortalDataParameter';
 import AddressMatchParameter from '@types_common/AddressMatchParameter';
-
 import { Icon, Input, message } from 'ant-design-vue';
-
-jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
 const localVue = createLocalVue();
 localVue.use(Input);
 localVue.use(Icon);
@@ -25,100 +21,101 @@ describe('Search.vue', () => {
     mapEvent.firstMapTarget = null;
     mapEvent.$options.mapCache = {};
     mapEvent.$options.webMapCache = {};
-
-    jest.restoreAllMocks();
     mapWrapper = mount(SmWebMap, {
       localVue,
       propsData: {
-        serverUrl: 'http://support.supermap.com.cn:8092/',
-        mapId: '1649097980'
-        //1649097980
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
       }
     });
   });
 
   afterEach(() => {
-    jest.restoreAllMocks();
-    if (wrapper && wrapper !== 'undefined') {
+    jest.resetAllMocks();
+    if (wrapper) {
       wrapper.destroy();
     }
-    if (mapWrapper && mapWrapper !== 'undefined') {
+    if (mapWrapper) {
       mapWrapper.destroy();
     }
-    wrapper = null;
-    mapWrapper = null;
   });
 
+  //layername
   it('layerNames', (done) => {
-    // var host = 'http://support.supermap.com.cn:8090';
+    wrapper = mount(SmSearch, {
+      localVue,
+      propsData: {
+        mapTarget: "map",
+        layerNames: ["UNIQUE-民航数-0"]
+      }
+    });
+    mapWrapper.vm.$on('load',() =>{
+        wrapper.vm.$on('loaded', () => {
+          expect(wrapper.vm.mapTarget).toBe('map');
+          const spyquery = jest.spyOn(wrapper.vm, 'search');
+          try {
+            wrapper.find("input.sm-component-input").setValue("北京市");
+            wrapper.find('.sm-component-search__search-icon').trigger('click');
+            wrapper.vm.$nextTick(() => {
+              expect(spyquery).toBeCalled();
+              spyquery.mockReset();
+              spyquery.mockRestore();
+              done()
+          })
+          } catch (exception) {
+            console.log("案例失败：" + exception.name + ':' + exception.message);
+            expect(false).toBeTruthy();
+            done();
+          }
+        });
+    });
+  });
+
+  //onlineLocalSearch
+  it('onlineLocalSearch', (done) => {
+    wrapper = mount(SmSearch, {
+      localVue,
+      propsData: { 
+        mapTarget: "map",
+        layerNames: ["UNIQUE-民航数-0"],
+        onlineLocalSearch:
+        {
+          enable: true,
+          city: "北京市"
+        }
+      }
+    });
+    mapWrapper.vm.$on('load',() =>{
+      wrapper.vm.$on('loaded', () => {
+        expect(wrapper.vm.mapTarget).toBe('map');
+        const spyquery = jest.spyOn(wrapper.vm, 'search');
+        try {
+          wrapper.find("input.sm-component-input").setValue("北京市");
+          wrapper.find('.sm-component-search__search-icon').trigger('click');
+          wrapper.vm.$nextTick(() => {
+            expect(spyquery).toBeCalled();
+            spyquery.mockReset();
+            spyquery.mockRestore();
+            done()
+        })
+        } catch (exception) {
+          console.log("案例失败：" + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+  });
+});
+
+//restMap
+  it('restMap', (done) => {
     wrapper = mount(SmSearch, {
       localVue,
       propsData: {
         layerNames: ["UNIQUE-民航数-0"],
-        onlineLocalSearch:
-        {
-          enable: false,
-          // city: '北京市'
-        }
-      }
-    });
-    mapWrapper.vm.viewModel.on({
-      "addlayerssucceeded": () => {
-        wrapper.vm.$on('loaded', () => {
-          try {
-            wrapper.vm.$on('search-succeeded', result => {
-              expect(result.searchResult[0].source).toEqual('UNIQUE-民航数-0');
-              expect(result.searchResult[0].result[0].filterVal).toContain('北京/首都');
-              done();
-            });
-            wrapper.vm.search('北京');
-          } catch (exception) {
-            console.log("案例失败：" + exception.name + ':' + exception.message);
-            expect(false).toBeTruthy();
-            done();
-          }
-        });
-      }
-    });
-  });
-
-  it('onlineLocalSearch', (done) => {
-    wrapper = mount(SmSearch, {
-      localVue
-    });
-    mapWrapper.vm.viewModel.on({
-      "addlayerssucceeded": () => {
-        wrapper.vm.$on('loaded', () => {
-          try {
-            wrapper.vm.$on('search-succeeded', result => {
-              expect(result.searchResult[0].source).toEqual('Online 本地搜索');
-              expect(result.searchResult[0].result[0].filterVal).toContain('北京');
-              done();
-            });
-            wrapper.vm.search('北京');
-          } catch (exception) {
-            console.log("案例失败：" + exception.name + ':' + exception.message);
-            expect(false).toBeTruthy();
-            done();
-          }
-        });
-      }
-    });
-  });
-
-  it('restMap', (done) => {
-    var host = 'http://support.supermap.com.cn:8090';
-    wrapper = mount(SmSearch, {
-      localVue,
-      propsData: {
-        onlineLocalSearch:
-        {
-          enable: false,
-          // city: '北京市'
-        },
         restMap: [
           new RestMapParameter({
-            url: host + '/iserver/services/map-world/rest/maps/World',
+            url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World',
             layerName: 'Capitals@World.1'
           })
         ]
@@ -127,15 +124,17 @@ describe('Search.vue', () => {
     mapWrapper.vm.viewModel.on({
       "addlayerssucceeded": () => {
         wrapper.vm.$on('loaded', () => {
+          const spyquery = jest.spyOn(wrapper.vm, 'search');
           try {
-            //需要确认下是否是bug
-            wrapper.vm.$on('search-succeeded', result => {
-              // wrapper.vm.viewModel.on('searchsucceeded', result => {
-              expect(result.searchResult[0].source).toEqual("SuperMap Rest Map");
-              expect(result.searchResult[0].result[0].properties.NAME).toEqual("四川省");
-              done();
-            });
-            wrapper.vm.search('四川');
+            wrapper.find("input.sm-component-input").setValue("北京市");
+            wrapper.find('.sm-component-search__search-icon').trigger('click');
+            wrapper.vm.$nextTick(() => {
+              expect(spyquery).toBeCalled();
+              spyquery.mockReset();
+              spyquery.mockRestore();
+              done()
+          })
+           wrapper.vm.search('北京');
           } catch (exception) {
             console.log("案例失败：" + exception.name + ':' + exception.message);
             expect(false).toBeTruthy();
@@ -146,38 +145,33 @@ describe('Search.vue', () => {
     });
   });
 
-  xit('restData', (done) => {
-    var host = 'http://support.supermap.com.cn:8090';
+  it('restData', (done) => {
     wrapper = mount(SmSearch, {
       localVue,
       propsData: {
-        onlineLocalSearch:
-        {
-          enable: false,
-          // city: '北京市'
-        },
+        layerNames: ["UNIQUE-民航数-0"],
         restData: [
           new RestDataParameter({
-            url: host + '/iserver/services/data-world/rest/data',
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
             dataName: ['World:Countries']
           })
         ]
       }
-    });
+    }); 
     mapWrapper.vm.viewModel.on({
       "addlayerssucceeded": () => {
         wrapper.vm.$on('loaded', () => {
+          const spyquery = jest.spyOn(wrapper.vm, 'search');
           try {
-            //与上面的案例，有关联，
-            wrapper.vm.$on('search-succeeded', result => {
-              // wrapper.vm.viewModel.on('searchsucceeded', result => {
-              // expect(result.result[0].source).toEqual("SuperMap Rest Data");
-              expect(result.searchResult[0].source).toEqual("SuperMap Rest Data");
-              expect(result.searchResult[0].result[0].properties.NAME).toEqual("四川省");
-              // expect(result.result[0].result[0].properties.NAME).toEqual("四川省");
-              done();
-            });
-            wrapper.vm.search('四川');
+            wrapper.find("input.sm-component-input").setValue("北京市");
+            wrapper.find('.sm-component-search__search-icon').trigger('click');
+            wrapper.vm.$nextTick(() => {
+              expect(spyquery).toBeCalled();
+              spyquery.mockReset();
+              spyquery.mockRestore();
+              done()
+          })
+           wrapper.vm.search('北京');
           } catch (exception) {
             console.log("案例失败：" + exception.name + ':' + exception.message);
             expect(false).toBeTruthy();
@@ -189,18 +183,13 @@ describe('Search.vue', () => {
   });
 
   it('iportal data', (done) => {
-    var host = 'http://support.supermap.com.cn:8090';
     wrapper = mount(SmSearch, {
       localVue,
       propsData: {
-        onlineLocalSearch:
-        {
-          enable: false,
-          // city: '北京市'
-        },
+        layerNames: ["UNIQUE-民航数-0"],
         iportalData: [
           new iPortalDataParameter({
-            url: 'http://192.168.12.230:8092/web/datas/2040117719'
+            url: 'https://fakeiportal.supermap.io/iportal/web/datas/123'
           })
         ],
       }
@@ -208,13 +197,17 @@ describe('Search.vue', () => {
     mapWrapper.vm.viewModel.on({
       "addlayerssucceeded": () => {
         wrapper.vm.$on('loaded', () => {
+          const spyquery = jest.spyOn(wrapper.vm, 'search');
           try {
-            wrapper.vm.$on('search-succeeded', result => {
-              expect(result.searchResult[0].source).toEqual("SuperMap iPortal Data");
-              expect(JSON.stringify(result.searchResult[0].result[0].properties)).toContain("黑龙江");
-              done();
-            });
-            wrapper.vm.search('黑龙江');
+            wrapper.find("input.sm-component-input").setValue("超图");
+            wrapper.find('.sm-component-search__search-icon').trigger('click');
+            wrapper.vm.$nextTick(() => {
+              expect(spyquery).toBeCalled();
+              spyquery.mockReset();
+              spyquery.mockRestore();
+              done()
+          })
+           wrapper.vm.search('超图');
           } catch (exception) {
             console.log("案例失败：" + exception.name + ':' + exception.message);
             expect(false).toBeTruthy();
@@ -226,18 +219,13 @@ describe('Search.vue', () => {
   });
 
   it('addressMatch', (done) => {
-    var host = 'http://support.supermap.com.cn:8090';
     wrapper = mount(SmSearch, {
       localVue,
       propsData: {
-        onlineLocalSearch:
-        {
-          enable: false,
-          // city: '北京市'
-        },
+        layerNames: ["UNIQUE-民航数-0"],
         addressMatch: [
           new AddressMatchParameter({
-            url: host + '/iserver/services/addressmatch-Address/restjsr/v1/address'
+            url: 'https://fakeiserver.supermap.io/iserver/iserver/services/addressmatch-Address/restjsr/v1/address'
           })
         ]
       }
@@ -245,15 +233,17 @@ describe('Search.vue', () => {
     mapWrapper.vm.viewModel.on({
       "addlayerssucceeded": () => {
         wrapper.vm.$on('loaded', () => {
+          const spyquery = jest.spyOn(wrapper.vm, 'search');
           try {
-            wrapper.vm.$on('search-succeeded', result => {
-              // 没有触发 search-succeeded 需要确认下是否是bug
-              // wrapper.vm.viewModel.on('searchsucceeded', result => {
-              expect(result.searchResult[0].source).toEqual("SuperMap AddressMatch");
-              expect(result.searchResult[0].result[0].address).toEqual("北京市海淀区中关村大街59号中国人民大学");
-              done();
-            });
-            wrapper.vm.search('中国');
+            wrapper.find("input.sm-component-input").setValue("超图");
+            wrapper.find('.sm-component-search__search-icon').trigger('click');
+            wrapper.vm.$nextTick(() => {
+              expect(spyquery).toBeCalled();
+              spyquery.mockReset();
+              spyquery.mockRestore();
+              done()
+          })
+           wrapper.vm.search('超图');
           } catch (exception) {
             console.log("案例失败：" + exception.name + ':' + exception.message);
             expect(false).toBeTruthy();

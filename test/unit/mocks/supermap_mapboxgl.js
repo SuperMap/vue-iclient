@@ -10,6 +10,10 @@ supermap.FeatureService = () => {
     getFeaturesByBounds: (param, callback) =>
       setTimeout(() => {
         callback(fakeDataServiceResult);
+      }, 0),
+      getFeaturesByGeometry: (param, callback) =>
+      setTimeout(() => {
+        callback(fakeDataServiceResult);
       }, 0)
   };
 };
@@ -23,7 +27,11 @@ supermap.QueryService = () => {
     queryByBounds: (param, callback) =>
       setTimeout(() => {
         callback(fakeMapServiceResult);
-      }, 0)
+      }, 0),
+      queryByGeometry: (param, callback) =>
+      setTimeout(() => {
+        callback(fakeMapServiceResult);
+      }, 0),
   };
 };
 
