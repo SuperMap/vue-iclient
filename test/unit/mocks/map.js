@@ -85,7 +85,6 @@ var Map = function (options) {
   // this.style = new Style();
   this.style = options.style;
   this.setStyle = function (style, options) {
-    console.log("set Style");
     // this.style = new Style(this, options || {});
     for (var i = 0, list = style.layers; i < list.length; i += 1) {
       var layer = list[i];
@@ -118,7 +117,7 @@ var Map = function (options) {
     // Settings
     'setMaxBounds', 'setMinZoom', 'setMaxZoom',
     // Layer properties
-    // 'setLayoutProperty',
+    'setLayoutProperty',
     'setPaintProperty'
   ];
   var genericSetter = functor(this);
@@ -176,7 +175,6 @@ var Map = function (options) {
 
   this.getSource = function (name) {
 
-    console.log("get source from map" + name);
     if (name === 'UNIQUE-民航数-0') {
       let chartResult = {
         // "features": {
@@ -238,7 +236,51 @@ var Map = function (options) {
         }.bind(this),
         loadTile: function () { }
       };
-    }
+    } 
+    if (name === 'ChinaDark') {
+        return {
+          setData: function (data) {
+            this._sources[name].data = data;
+            if (this._sources[name].type === 'geojson') {
+              const e = {
+                type: 'data',
+                sourceDataType: 'content',
+                sourceId: name,
+                isSourceLoaded: true,
+                dataType: 'source',
+                source: this._sources[name]
+              };
+              // typeof data === 'string' corresponds to an AJAX load
+              if (this._collectResourceTiming && data && (typeof data === 'string'))
+                e.resourceTiming = [_fakeResourceTiming(data)];
+              this.fire('data', e);
+            }
+          }.bind(this),
+          loadTile: function () { }
+        };
+      }else{
+        return {
+          setData: function (data) {
+          //   this._sources[name].data = data;
+          //   if (this._sources[name].type === 'geojson') {
+          //     const e = {
+          //       type: 'data',
+          //       sourceDataType: 'content',
+          //       sourceId: name,
+          //       isSourceLoaded: true,
+          //       dataType: 'source',
+          //       source: this._sources[name]
+          //     };
+          //     // typeof data === 'string' corresponds to an AJAX load
+          //     if (this._collectResourceTiming && data && (typeof data === 'string'))
+          //       e.resourceTiming = [_fakeResourceTiming(data)];
+          //     this.fire('data', e);
+          //   }
+          // }.bind(this),
+          },
+          loadTile: function () { }
+        };
+      }
   };
 
   this.loaded = function () {
@@ -274,13 +316,9 @@ var Map = function (options) {
   };
   this.off = function () { };
   this.addLayer = function (layer, before) {
-    console.log(layer.id);
-    console.log("add layer from map")
     this.overlayLayersManager[layer.id] = layer;
 
     // this._layers[id] = layer;
-    console.log("map addlayer")
-    console.log("mapboxgl addlayer");
     return this;
   };
 
@@ -294,7 +332,6 @@ var Map = function (options) {
     }
     // return this.style.getLayer(id);
     if (this._layers[id]) {
-      console.log(this._layers[id]);
       return this._layers[id];
     }
   };
@@ -615,6 +652,18 @@ var Map = function (options) {
   this.remove = function () {
     this._events = [];
     this.sources = [];
+  }
+
+  this.zoomIn = function(e){
+      this.zoom++;
+      return this.zoom;
+  }
+
+  this.zoomOut = function(e){
+      this.zoom--;
+      this.fire('wheel');
+      this.fire('zoomend',this.zoom);
+      return this.zoom;
   }
 }
 
