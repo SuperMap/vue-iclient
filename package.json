@@ -58,7 +58,6 @@
     "lodash.orderby": "^4.6.0",
     "lodash.tonumber": "^4.0.3",
     "lodash.uniqueid": "^4.0.1",
-    "m3u8-parser": "4.5.0",
     "mapbox-gl-compare": "^0.4.0",
     "mapv": "^2.0.34",
     "mux.js": "^5.6.7",
