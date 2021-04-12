@@ -331,7 +331,7 @@ export default class iPortalDataService extends Events {
     let content = typeof dataContent === 'string' ? JSON.parse(dataContent) : dataContent;
     let features = [];
     if (content instanceof Array) {
-      content.map(val => {
+      content.forEach(val => {
         if (val.hasOwnProperty('geometry')) {
           features.push({ properties: val.properties || val, geometry: val.geometry });
         } else {
