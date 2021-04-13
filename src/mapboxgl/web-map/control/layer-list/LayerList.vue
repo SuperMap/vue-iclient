@@ -22,7 +22,7 @@
           <sm-collapse-panel
             v-if="
               typeof sourceList[name].sourceLayerList === 'object' &&
-              Object.keys(sourceList[name].sourceLayerList).length > 0
+                Object.keys(sourceList[name].sourceLayerList).length > 0
             "
             class="sm-component-layer-list__collapseitem"
             :showArrow="false"
@@ -89,7 +89,7 @@
               />
               <div class="sm-component-layer-list__layergroupname add-ellipsis" :title="name">{{ name }}</div>
             </div>
-            <div v-if="sourceList[name].type === 'geojson'" class="sm-component-layer-list__attributes">
+            <div v-if="attributes.enabled && sourceList[name].type === 'geojson'" class="sm-component-layer-list__attributes">
               <i
                 :class="attributesIconClass"
                 :style="sourceList[name].visibility !== 'visible' && { cursor: 'not-allowed' }"
@@ -123,19 +123,46 @@ import BaseCard from '../../../../common/_mixin/Card';
 import SmCard from '../../../../common/card/Card.vue';
 import SmCollapse from '../../../../common/collapse/Collapse.vue';
 import SmCollapsePanel from '../../../../common/collapse/Panel.vue';
-import SmAttributes from '../../../attributes/Attributes.vue';
+import SmAttributes, {
+  PaginationParams,
+  FieldConfigParams,
+  AssociateWithMapParams,
+  StatisticsParams,
+  TableParams,
+  ToolbarParams
+} from '../../../attributes/Attributes.vue';
 import LayerListViewModel from './LayerListViewModel';
 import intersection from 'lodash.intersection';
 import isEqual from 'lodash.isequal';
 
-interface attributesOptionsParams {
+interface AttributesParams {
+  enabled: boolean,
   getContainer: Function;
   title: string;
   style: Object;
   iconClass: string;
   position: string; // top-right top-left bottom-right bottom-left top bottom left right
-  props: Object;
+  associateWithMap: AssociateWithMapParams;
+  statistics: StatisticsParams;
+  toolbar: ToolbarParams;
+  table: TableParams;
+  fieldConfig: FieldConfigParams;
+  pagination: PaginationParams;
+  customHeaderRow: Function;
+  customRow: Function;
 }
+
+const ATTRIBUTES_NEEDED_PROPS = [
+  'associateWithMap',
+  'statistics',
+  'toolbar',
+  'table',
+  'fieldConfig',
+  'pagination',
+  'iconClass',
+  'customHeaderRow',
+  'customRow'
+];
 
 @Component({
   name: 'SmLayerList',
@@ -183,11 +210,15 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
       return {};
     }
   })
-  attributesOptions: attributesOptionsParams;
+  attributes: AttributesParams;
 
-  @Watch('attributesOptions', { deep: true })
-  attributesOptionsChanged(newval, oldval) {
+  @Watch('attributes', { deep: true })
+  attributesChanged(newval, oldval) {
     if (this.displayAttributes) {
+      if (!newval.enabled) {
+        this.removeAttributes();
+        return;
+      }
       if (!isEqual(newval.getContainer, oldval.getContainer)) {
         this.removeAttributes();
         let container: HTMLElement;
@@ -197,7 +228,13 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
         this.displayAttributes = !this.displayAttributes;
       }
       const oldProps = this.attributesProps;
-      this.attributesProps = { ...oldProps, ...newval.props };
+      const newProps = Object.assign({}, newval);
+      for (const key in newProps) {
+        if (ATTRIBUTES_NEEDED_PROPS.indexOf(key) === -1) {
+          delete newProps[key];
+        }
+      }
+      this.attributesProps = { ...oldProps, ...newProps };
     }
   }
 
@@ -214,9 +251,9 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   get attributesStyle() {
     let attributesStyle;
     let position;
-    const style = this.attributesOptions.style;
-    if (this.attributesOptions.position) {
-      position = this.attributesOptions.position.split('-');
+    const style = this.attributes.style;
+    if (this.attributes.position) {
+      position = this.attributes.position.split('-');
       if (position.length === 2) {
         attributesStyle = `position: absolute; ${position[0]}: 0;${position[1]}: 0;`;
       } else if (['top', 'bottom'].indexOf(position[0]) !== -1) {
@@ -238,14 +275,14 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   get attributesContainer() {
     let container: HTMLElement;
     container =
-      this.attributesOptions && this.attributesOptions.getContainer
-        ? this.attributesOptions.getContainer()
+      this.attributes && this.attributes.getContainer
+        ? this.attributes.getContainer()
         : document.querySelector('.sm-component-web-map');
     return container;
   }
 
   get attributesIconClass() {
-    return (this.attributesOptions && this.attributesOptions.iconClass) || 'sm-components-icon-attribute';
+    return (this.attributes && this.attributes.iconClass) || 'sm-components-icon-attribute';
   }
 
   created() {
@@ -283,10 +320,9 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.displayAttributes = !this.displayAttributes;
   }
   handleAttributesProps(layerName: string) {
-    const props = this.attributesOptions && this.attributesOptions.props;
-    let withoutProps = ['layerName', 'dataset', 'mapTarget', 'title'];
+    const props = Object.assign({}, this.attributes);
     for (const key in props) {
-      if (withoutProps.indexOf(key) !== -1) {
+      if (ATTRIBUTES_NEEDED_PROPS.indexOf(key) === -1) {
         delete props[key];
       }
     }

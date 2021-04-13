@@ -115,13 +115,13 @@ import mergewith from 'lodash.mergewith';
 import isequal from 'lodash.isequal';
 import getFeatures from '../../common/_utils/get-features';
 
-interface PaginationParams {
+export interface PaginationParams {
   defaultCurrent?: number;
   current?: number;
   pageSize?: number;
 }
 
-interface FieldConfigParams {
+export interface FieldConfigParams {
   title?: string;
   value: string;
   visible?: boolean;
@@ -137,24 +137,24 @@ interface FieldConfigParams {
   customHeaderCell?: Function;
 }
 
-interface AssociateWithMapParams {
+export interface AssociateWithMapParams {
   enabled?: boolean;
   zoomToFeature?: boolean;
   centerToFeature?: boolean;
 }
 
-interface StatisticsParams {
+export interface StatisticsParams {
   showTotal?: boolean;
   showSelect?: boolean;
 }
 
-interface TableParams {
+export interface TableParams {
   showBorder?: boolean;
   showHeader?: boolean;
   pagination?: PaginationParams;
 }
 
-interface ToolbarParams {
+export interface ToolbarParams {
   enabled?: boolean;
   showZoomToFeature?: boolean;
   showClearSelected?: boolean;

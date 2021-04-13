@@ -8,7 +8,22 @@ import SourceListModel from '../../SourceListModel';
  * @fires layersUpdated - 图层更新
  * @extends mapboxgl.Evented
  */
+interface MapEventCallBack {
+  (e: mapboxglTypes.MapMouseEvent): void;
+}
 class LayerListViewModel extends mapboxgl.Evented {
+  map: mapboxglTypes.Map;
+
+  sourceList: Object;
+
+  sourceNames: Array<string>;
+
+  fire: any;
+
+  updateFn: MapEventCallBack;
+
+  sourceListModel: SourceListModel;
+
   constructor() {
     super();
     this.sourceList = {};
@@ -18,6 +33,7 @@ class LayerListViewModel extends mapboxgl.Evented {
   _updateLayers(data) {
     this.fire('layersUpdated');
   }
+
   setMap(mapInfo) {
     const { map } = mapInfo;
     this.map = map;
