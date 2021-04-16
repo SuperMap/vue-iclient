@@ -39,7 +39,7 @@
   </div>
 </template>
 <script>
-import Theme from '../_mixin/Theme';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 
 export default {
   name: 'SmCollapseCard',

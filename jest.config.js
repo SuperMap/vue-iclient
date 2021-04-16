@@ -9,7 +9,7 @@ module.exports = {
   // testRegex: "./test/.*\\.spec\\.(js|vue)$",
   testRegex: '.*\\.spec\\.js$',
   moduleNameMapper: {
-    '^@/(.*)$': '<rootDir>/src/$1',
+    '^vue-iclient/(.*)$': '<rootDir>/src/$1',
     '^@libs/(.*)$': '<rootDir>/static/libs/$1',
     '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
     '^@types_mapboxgl/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
@@ -17,8 +17,8 @@ module.exports = {
     '^@mixin/(.*)$': '<rootDir>/src/mapboxgl/_mixin/$1',
     '\\.(css|less)$': 'identity-obj-proxy',
     '@i18n/(.*)$': '<rootDir>/src/common/$1',
-    "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/test/unit/assetsTransformer.js", 
-    "\\.(css|less)$": "<rootDir>/test/unit/assetsTransformer.js"
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/test/unit/assetsTransformer.js',
+    '\\.(css|less)$': '<rootDir>/test/unit/assetsTransformer.js'
   },
   transform: {
     '^.+\\.ts$': '<rootDir>/node_modules/ts-jest',

@@ -2,7 +2,7 @@
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 
-export var Util = {};
+export let Util = {};
 /**
  * @name Util
  * @namespace
@@ -13,15 +13,15 @@ export var Util = {};
 Util.extend = function (destination, source) {
   destination = destination || {};
   if (source) {
-    for (var property in source) {
-      var value = source[property];
+    for (let property in source) {
+      let value = source[property];
       if (value !== undefined) {
         destination[property] = value;
       }
     }
-    var sourceIsEvt = typeof window.Event === 'function' && source instanceof window.Event;
+    let sourceIsEvt = typeof window.Event === 'function' && source instanceof window.Event;
 
-    if (!sourceIsEvt && source.hasOwnProperty && source.hasOwnProperty('toString')) {
+    if (!sourceIsEvt && source.hasOwnProperty && Object.prototype.hasOwnProperty.call(source, 'toString')) {
       destination.toString = source.toString;
     }
   }
@@ -34,9 +34,9 @@ Util.extend = function (destination, source) {
  */
 Util.copy = function (des, soc) {
   des = des || {};
-  var v;
+  let v;
   if (soc) {
-    for (var p in des) {
+    for (let p in des) {
       v = soc[p];
       if (typeof v !== 'undefined') {
         des[p] = v;
@@ -50,10 +50,10 @@ Util.copy = function (des, soc) {
  */
 Util.reset = function (obj) {
   obj = obj || {};
-  for (var p in obj) {
-    if (obj.hasOwnProperty(p)) {
+  for (let p in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, p)) {
       if (typeof obj[p] === 'object' && obj[p] instanceof Array) {
-        for (var i in obj[p]) {
+        for (let i in obj[p]) {
           if (obj[p][i].destroy) {
             obj[p][i].destroy();
           }
@@ -74,10 +74,10 @@ Util.reset = function (obj) {
  * @returns {Array.<HTMLElement>} HTML 元素数组。
  */
 Util.getElement = function () {
-  var elements = [];
+  let elements = [];
 
-  for (var i = 0, len = arguments.length; i < len; i++) {
-    var element = arguments[i];
+  for (let i = 0, len = arguments.length; i < len; i++) {
+    let element = arguments[i];
     if (typeof element === 'string') {
       element = document.getElementById(element);
     }
@@ -114,7 +114,7 @@ Util.isArray = function (a) {
  * @returns {Array} 执行删除操作后的数组。
  */
 Util.removeItem = function (array, item) {
-  for (var i = array.length - 1; i >= 0; i--) {
+  for (let i = array.length - 1; i >= 0; i--) {
     if (array[i] === item) {
       array.splice(i, 1);
     }
@@ -136,7 +136,7 @@ Util.indexOf = function (array, obj) {
     if (typeof array.indexOf === 'function') {
       return array.indexOf(obj);
     } else {
-      for (var i = 0, len = array.length; i < len; i++) {
+      for (let i = 0, len = array.length; i < len; i++) {
         if (array[i] === obj) {
           return i;
         }
@@ -147,10 +147,10 @@ Util.indexOf = function (array, obj) {
 };
 
 Util.getElement = function () {
-  var elements = [];
+  let elements = [];
 
-  for (var i = 0, len = arguments.length; i < len; i++) {
-    var element = arguments[i];
+  for (let i = 0, len = arguments.length; i < len; i++) {
+    let element = arguments[i];
     if (typeof element === 'string') {
       element = document.getElementById(element);
     }

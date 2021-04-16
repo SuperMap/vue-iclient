@@ -13,9 +13,9 @@
   </div>
 </template>
 <script>
-import Theme from '../_mixin/Theme';
-import SmTable from '../table/Table';
-import { setPopupArrowStyle } from '../_utils/util';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import SmTable from 'vue-iclient/src/common/table/Table.vue';
+import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 
 export default {
   name: 'SmTablePopup',

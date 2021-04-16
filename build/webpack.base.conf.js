@@ -28,7 +28,6 @@ if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
   let type = origin[2].replace('-', '');
   entry = `./demo/${type}/main.ts`;
 }
-
 module.exports = {
   context: path.resolve(__dirname, '../'),
   entry: {
@@ -42,13 +41,13 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js', '.vue', '.json'],
     alias: {
-      vue$: 'vue/dist/vue.esm.js'
-      // '@libs': resolve('libs')
+      vue$: 'vue/dist/vue.esm.js',
+      'vue-iclient': path.resolve(__dirname, '../')
     }
   },
   module: {
     rules: [
-      ...(config.dev.useEslint ? [createLintingRule()] : []),
+      // ...(config.dev.useEslint ? [createLintingRule()] : []),
       {
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,

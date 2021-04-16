@@ -1,21 +1,22 @@
 import Vue from 'vue';
-import { Component, Prop, Emit, Watch } from 'vue-property-decorator';
-import globalEvent from '../_utils/global-event';
-import { getDerivedColorsByTextColor } from '../_utils/util';
-import { getPrimarySerialColors } from '../../common/_utils/style/color/serialColors';
+import { Component, Prop, Emit } from 'vue-property-decorator';
+import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import { getDerivedColorsByTextColor } from 'vue-iclient/src/common/_utils/util';
+import { getPrimarySerialColors } from 'vue-iclient/src/common/_utils/style/color/serialColors';
+
 @Component({
   name: 'Theme'
 })
 export default class Theme extends Vue {
-  backgroundData: string = '';
+  backgroundData = '';
 
-  textColorsData: string = '';
+  textColorsData = '';
 
-  collapseCardBackgroundData: string = '';
+  collapseCardBackgroundData = '';
 
-  collapseCardHeaderBgData: string = '';
+  collapseCardHeaderBgData = '';
 
-  tablePopupBgData: string = '';
+  tablePopupBgData = '';
 
   colorGroupsData: Array<string> = [];
 
@@ -42,7 +43,7 @@ export default class Theme extends Vue {
   get collapseCardBackgroundLightStyle() {
     return {
       background: getPrimarySerialColors({ colorGroup: [this.collapseCardBackgroundData] })[2]
-    }
+    };
   }
 
   get collapseCardHeaderBgStyle() {
@@ -120,9 +121,9 @@ export default class Theme extends Vue {
         const dataName: string = this.getDataNameOfProp(prop);
         this[dataName] = themeStyle[prop];
       });
-      this.collapseCardHeaderBgData = themeStyle['collapseCardHeaderBg'];
-      this.collapseCardBackgroundData = themeStyle['collapseCardBackground'];
-      this.tablePopupBgData = themeStyle['messageBackground'];
+      this.collapseCardHeaderBgData = themeStyle.collapseCardHeaderBg;
+      this.collapseCardBackgroundData = themeStyle.collapseCardBackground;
+      this.tablePopupBgData = themeStyle.messageBackground;
       this.themeStyleChanged();
       this.initNeedTheme(themeStyle);
     });
@@ -135,9 +136,12 @@ export default class Theme extends Vue {
       const dataName: string = this.getDataNameOfProp(prop);
       this[dataName] = this[prop] || theme[prop];
     });
-    this.collapseCardHeaderBgData = this.background || theme['collapseCardHeaderBg'];
-    this.collapseCardBackgroundData = this.background || theme['collapseCardBackground'];
-    this.tablePopupBgData = this.background || theme['messageBackground'];
+    // @ts-ignore
+    this.collapseCardHeaderBgData = this.background || theme.collapseCardHeaderBg;
+    // @ts-ignore
+    this.collapseCardBackgroundData = this.background || theme.collapseCardBackground;
+    // @ts-ignore
+    this.tablePopupBgData = this.background || theme.messageBackground;
   }
 
   initNeedTheme(themeStyle) {
@@ -159,9 +163,12 @@ export default class Theme extends Vue {
         const dataName: string = this.getDataNameOfProp(prop);
         vm[dataName] = next || theme[prop];
         if (prop === 'background') {
-          vm.collapseCardBackgroundData = next || theme['collapseCardBackground'];
-          vm.collapseCardHeaderBgData = next || theme['collapseCardHeaderBg'];
-          vm.tablePopupBgData = next || theme['messageBackground'];
+          // @ts-ignore
+          vm.collapseCardBackgroundData = next || theme.collapseCardBackground;
+          // @ts-ignore
+          vm.collapseCardHeaderBgData = next || theme.collapseCardHeaderBg;
+          // @ts-ignore
+          vm.tablePopupBgData = next || theme.messageBackground;
         }
       });
     });

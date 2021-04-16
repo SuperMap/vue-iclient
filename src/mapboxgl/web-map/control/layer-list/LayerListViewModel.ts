@@ -1,5 +1,5 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from '../../SourceListModel';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
 
 /**
  * @class LayerListViewModel
@@ -30,7 +30,7 @@ class LayerListViewModel extends mapboxgl.Evented {
     this.sourceNames = [];
   }
 
-  _updateLayers(data) {
+  _updateLayers() {
     this.fire('layersUpdated');
   }
 
@@ -49,9 +49,11 @@ class LayerListViewModel extends mapboxgl.Evented {
     this.sourceNames = this.sourceListModel.getSourceNames().reverse();
     return this.sourceList;
   }
+
   getSourceNames() {
     return this.sourceNames;
   }
+
   changeLayerVisible(sourcelayer, sourceName: string, visibility: string) {
     this.sourceListModel.getLayersBySourceLayer(sourceName, sourcelayer).forEach(layer => {
       this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));
@@ -71,7 +73,7 @@ class LayerListViewModel extends mapboxgl.Evented {
         });
       }
     } else {
-      for (let layer of this.sourceList[sourceName]['layers']) {
+      for (let layer of this.sourceList[sourceName].layers) {
         this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));
       }
     }

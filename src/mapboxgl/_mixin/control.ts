@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import mapEvent from '../_types/map-event';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 @Component
 export default class Control extends Vue {
   parentIsWebMapOrMap: boolean;
   filterDelayLoad: boolean;
-  isShow: boolean = true;
+  isShow = true;
   map: mapboxglTypes.Map;
   control: mapboxglTypes.IControl;
 
@@ -60,7 +60,7 @@ export default class Control extends Vue {
   initControl(): mapboxglTypes.IControl {
     const self = this;
     return {
-      onAdd(map: mapboxglTypes.Map) {
+      onAdd() {
         return <HTMLElement>self.$el;
       },
       onRemove() {

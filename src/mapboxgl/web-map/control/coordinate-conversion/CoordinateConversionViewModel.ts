@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class CoordinateConversionViewModel
@@ -15,7 +15,6 @@ export default class CoordinateConversionViewModel extends mapboxgl.Evented {
   _getCoordinateFn: MapEventCallBack;
   _clickCallbackFn: MapEventCallBack;
   fire: any;
-  
   constructor() {
     super();
     this.marker = null;
@@ -77,7 +76,7 @@ export default class CoordinateConversionViewModel extends mapboxgl.Evented {
     this._addMarker(coordinate);
   }
 
-  private _changeCursor(cursorType: string = 'default', map: mapboxglTypes.Map = this.map) {
+  private _changeCursor(cursorType = 'default', map: mapboxglTypes.Map = this.map) {
     if (map && map.getCanvas()) {
       map.getCanvas().style.cursor = cursorType;
     }

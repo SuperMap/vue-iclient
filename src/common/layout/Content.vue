@@ -1,8 +1,8 @@
 <script lang="ts">
 import Layout from 'ant-design-vue/es/layout';
 import { BasicProps } from 'ant-design-vue/es/layout/layout';
-import Theme from '../_mixin/Theme';
-import AntdRender from '../_mixin/AntdRender';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
 export const layoutContentTypes = {
   ...BasicProps

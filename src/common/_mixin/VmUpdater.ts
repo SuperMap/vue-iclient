@@ -14,10 +14,12 @@ export default class VmUpdater extends Vue {
       this.watchViewModelOptions(this.$options.viewModelProps);
     }
   }
+
   // 组件设置vm实例
   public setViewModel(viewModel) {
     this.viewModel = viewModel;
   }
+
   // 给vm的props绑定监听
   watchViewModelOptions(viewModelProps) {
     // 给每个vm层的props绑定监听，然后操作vm层的视图变化,必须在vue实例化的时候调用
@@ -30,7 +32,7 @@ export default class VmUpdater extends Vue {
           if (!isequal(newVal, oldVal)) {
             if (item.includes('.')) {
               let itemArr = item.split('.');
-              item = itemArr[itemArr.length -1];
+              item = itemArr[itemArr.length - 1];
             }
             let setFun = 'set' + item.replace(item[0], item[0].toUpperCase());
             // 子组件的viewModel
@@ -42,4 +44,3 @@ export default class VmUpdater extends Vue {
     });
   }
 }
-

@@ -1,5 +1,5 @@
-import { geti18n } from '../_lang';
-import iServerBaseParameter, { iServerOptions } from './iServerBaseParameter';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
+import iServerBaseParameter, { iServerOptions } from 'vue-iclient/src/common/_types/iServerBaseParameter';
 
 export default class iServerDataParameter extends iServerBaseParameter {
   dataName: string;

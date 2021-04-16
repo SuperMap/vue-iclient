@@ -37,8 +37,8 @@
 </template>
 
 <script>
-import Theme from '../../../common/_mixin/Theme';
-import SmTree from '../../../common/tree/Tree';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import SmTree from 'vue-iclient/src/common/tree/Tree.vue';
 
 export default {
   name: 'StatisticsResult',

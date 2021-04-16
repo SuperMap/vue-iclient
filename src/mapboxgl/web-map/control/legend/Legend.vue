@@ -174,15 +174,15 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
-import BaseCard from '../../../../common/_mixin/Card';
-import SmCard from '../../../../common/card/Card';
-import SmCollapse from '../../../../common/collapse/Collapse';
-import SmCollapsePanel from '../../../../common/collapse/Panel';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import SmCard from 'vue-iclient/src/common/card/Card.vue';
+import SmCollapse from 'vue-iclient/src/common/collapse/Collapse.vue';
+import SmCollapsePanel from 'vue-iclient/src/common/collapse/Panel.vue';
 import LegendViewModel from './LegendViewModel';
-import { getColorWithOpacity } from '../../../../common/_utils/util';
+import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 
 export default {
   name: 'SmLegend',

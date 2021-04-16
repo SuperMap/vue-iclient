@@ -31,9 +31,9 @@
 </template>
 
 <script lang="ts">
-import Theme from '../_mixin/Theme';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
-import SmButton from '../button/Button.vue';
+import SmButton from 'vue-iclient/src/common/button/Button.vue';
 
 interface titleParams {
   title: string;
@@ -139,14 +139,17 @@ export default class Nav extends Mixins(Theme) {
       this.$emit('change', item, index);
     }
   }
+
   goTo(index) {
     this.activeIndex = index;
     this.emitEvent(this.items[index], index);
   }
+
   next() {
     this.activeIndex += 1;
     this.emitEvent(this.items[this.activeIndex], this.activeIndex);
   }
+
   prev() {
     this.activeIndex -= 1;
     this.emitEvent(this.items[this.activeIndex], this.activeIndex);

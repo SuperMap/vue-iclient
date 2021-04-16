@@ -1,7 +1,8 @@
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from '../web-map/SourceListModel';
-import { handleMultyPolygon } from '../_utils/geometry-util';
+import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
 import labelPoints from './config/label-points.json';
+
 export interface dataOptions {
   url?: string;
   name?: string;
@@ -62,7 +63,7 @@ const defaultThemeInfo = {
     }
   ]
 };
-const Backup_Identify_Field = '地区';
+const BackupIdentifyField = '地区';
 const WORLD_WIDTH = 360;
 export default class NcpMapViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
@@ -71,8 +72,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   themeUrl: string;
   proxyUrl: string;
   mapOptions: mapOptions;
-  defaultOverLayerId: string = '全省确诊人数';
-  baseLayerId: string = '中国地图';
+  defaultOverLayerId = '全省确诊人数';
+  baseLayerId = '中国地图';
   overLayerId: string;
   features: any;
   themeInfo: any = defaultThemeInfo;
@@ -172,7 +173,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
 
   private _creatNewLabelData(): GeoJSON.FeatureCollection {
     if (this.features.length > 0 && this.features[0].properties[this.themeInfo.identifyField] === undefined) {
-      this.themeInfo.identifyField = Backup_Identify_Field;
+      this.themeInfo.identifyField = BackupIdentifyField;
     }
     const labels = {};
     this.features.forEach(feature => {
@@ -187,6 +188,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     });
     return { type: 'FeatureCollection', features: newFeatures };
   }
+
   private _handleThemeInfo(): void {
     if (this.themeUrl) {
       SuperMap.FetchRequest.get(this.themeUrl, null, { withoutFormatSuffix: true, proxy: this.proxyUrl })
@@ -209,6 +211,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       this._sendMapToUser();
     }
   }
+
   private _toFillColor({ styleGroup, field, defaultColor = '#f5f5f5' }): mapboxglTypes.Expression {
     const fillColor: mapboxglTypes.Expression = ['case'];
     for (let index = styleGroup.length - 1; index >= 0; index--) {
@@ -220,6 +223,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     fillColor.push(defaultColor);
     return fillColor;
   }
+
   private _addOverLayer() {
     if (!this.features) return;
     const sourceData: GeoJSON.FeatureCollection = { type: 'FeatureCollection', features: this.features };
@@ -347,6 +351,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       this.map.getSource(`${this.overLayerId}-label`) && this.map.removeSource(`${this.overLayerId}-label`);
     }
   }
+
   private _restTheme(): void {
     if (this.map && this.map.getLayer(this.overLayerId)) {
       this.themeInfo = defaultThemeInfo;
@@ -410,6 +415,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     this.proxyUrl = proxyUrl;
     this.map && this._handleLayerInfo();
   }
+
   public setCenter(center): void {
     if (this.map && this.centerValid(center)) {
       this.mapOptions.center = center;
@@ -466,6 +472,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       url ? this._handleLayerInfo() : this._clearOverLayer();
     }
   }
+
   public setThemeUrl(url: string): void {
     if (this.map) {
       this.themeUrl = url;

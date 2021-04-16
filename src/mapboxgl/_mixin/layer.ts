@@ -34,6 +34,7 @@ export default class LayerMixin extends Vue {
     'touchend',
     'touchcancel'
   ];
+
   map: mapboxglTypes.Map;
   viewModel: any;
 
@@ -44,6 +45,7 @@ export default class LayerMixin extends Vue {
     }
   })
   layerId: string;
+
   @Prop() sourceId: string;
   @Prop() sourceLayer: string;
   @Prop({ default: 0 }) minzoom: number;
@@ -59,6 +61,7 @@ export default class LayerMixin extends Vue {
     | mapboxglTypes.CircleLayout
     | mapboxglTypes.HeatmapLayout
     | mapboxglTypes.HillshadeLayout;
+
   @Prop() paint:
     | mapboxglTypes.BackgroundPaint
     | mapboxglTypes.FillPaint
@@ -134,7 +137,7 @@ export default class LayerMixin extends Vue {
     this.remove();
   }
 
-  $_emitEvent(name: string, data = {}): void {
+  $emitEvent(name: string, data = {}): void {
     this.$emit(name, {
       map: this.map,
       layerId: this.layerId,
@@ -142,35 +145,35 @@ export default class LayerMixin extends Vue {
     });
   }
 
-  $_emitLayerMapEvent(event: any): void {
-    this.$_emitEvent(event.type, { mapboxEvent: event });
+  $emitLayerMapEvent(event: any): void {
+    this.$emitEvent(event.type, { mapboxEvent: event });
   }
 
-  $_bindLayerEvents(): void {
+  $bindLayerEvents(): void {
     Object.keys(this.$listeners).forEach((eventName: MapLayerEventType) => {
       if (this.eventList.includes(eventName)) {
-        this.map.on(eventName, this.layerId, this.$_emitLayerMapEvent);
+        this.map.on(eventName, this.layerId, this.$emitLayerMapEvent);
       }
     });
   }
 
-  $_unbindLayerEvents(events): void {
+  $unbindLayerEvents(events): void {
     if (this.map) {
       events.forEach((eventName: MapLayerEventType) => {
-        this.map.off(eventName, this.layerId, this.$_emitLayerMapEvent);
+        this.map.off(eventName, this.layerId, this.$emitLayerMapEvent);
       });
     }
   }
 
   move(beforeId: string): void {
     this.map.moveLayer(this.layerId, beforeId);
-    this.$_emitEvent('layer-moved', {
+    this.$emitEvent('layer-moved', {
       beforeId: beforeId
     });
   }
 
   remove(): void {
     this.viewModel && this.viewModel.removed && this.viewModel.removed();
-    this.$_emitEvent('layer-removed');
+    this.$emitEvent('layer-removed');
   }
 }

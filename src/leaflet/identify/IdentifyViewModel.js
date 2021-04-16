@@ -1,5 +1,5 @@
-import L from '../leaflet-wrapper';
-import '../../../static/libs/iclient-leaflet/iclient-leaflet.min.js';
+import L from 'vue-iclient/src/leaflet/leaflet-wrapper';
+import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
 import cloneDeep from 'lodash.clonedeep';
 /**
  * @class IdentifyViewModel
@@ -19,6 +19,7 @@ export default class IdentifyViewModel extends L.Evented {
     this.popup = null;
     this.lastLayerName = '';
   }
+
   /**
    * @function IdentifyViewModel.prototype.getLayerByName
    * @desc 获取。
@@ -97,6 +98,7 @@ export default class IdentifyViewModel extends L.Evented {
     geojson.properties = themeFeature.attributes;
     return geojson;
   }
+
   /**
    * @function IdentifyViewModel.prototype.removed
    * @desc 清除高亮图层。

@@ -1,18 +1,12 @@
 <template>
-  <div class="sm-component-time-slider" dir="ltr" :style="[getBackgroundStyle,newThemeStyle]">
-    <button
-      class="sm-play-control sm-button sm-paused"
-      :style="{color,...newThemeStyle}"
-      @click="changePlayState"
-    >
-      <i
-        :class="['sm-icon-play', playState ? 'sm-components-icon-zanting' : 'sm-components-icon-bofang3']"
-      />
+  <div class="sm-component-time-slider" dir="ltr" :style="[getBackgroundStyle, newThemeStyle]">
+    <button class="sm-play-control sm-button sm-paused" :style="{ color, ...newThemeStyle }" @click="changePlayState">
+      <i :class="['sm-icon-play', playState ? 'sm-components-icon-zanting' : 'sm-components-icon-bofang3']" />
     </button>
     <div class="sm-progress-control-wrapper" :style="lineStyleHeight">
       <div
-        :class="['sm-progress-control',uniqueId]"
-        :style="{...lineStyle,...lineStyleHeight}"
+        :class="['sm-progress-control', uniqueId]"
+        :style="{ ...lineStyle, ...lineStyleHeight }"
         @click="handleMouseClick"
       >
         <div class="sm-progress-holder">
@@ -22,10 +16,7 @@
               <span class="sm-time-tooltip-content">{{ mouseCurrent }}</span>
             </div>
           </div>
-          <div
-            class="sm-play-progress sm-slider-bar"
-            :style="{ ...playProgressStyle, width: sliderBarWidth }"
-          ></div>
+          <div class="sm-play-progress sm-slider-bar" :style="{ ...playProgressStyle, width: sliderBarWidth }"></div>
           <div v-show="showLabel" class="sm-time-node" :style="newLabelStyle">
             <div class="sm-start-node">{{ startFormat }}</div>
             <div class="sm-end-node">{{ endFormat }}</div>
@@ -35,8 +26,8 @@
     </div>
   </div>
 </template>
-<script lang ='ts'>
-import Theme from '../_mixin/Theme';
+<script lang="ts">
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import interact from 'interactjs';
 import moment from 'moment';
 import UniqueId from 'lodash.uniqueid';
@@ -76,12 +67,14 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
   })
   data: Array<any>;
+
   @Prop({
     default() {
       return {};
     }
   })
   label: Label;
+
   @Prop({
     default() {
       return {};
@@ -106,29 +99,36 @@ export default class SmTimeSlider extends Mixins(Theme) {
   get color() {
     return this.getColor(0);
   }
+
   get showLabel() {
     if (!this.label || !Object.prototype.hasOwnProperty.call(this.label, 'show')) {
       return true;
     }
     return this.label.show;
   }
+
   get formatter() {
     return (this.label || {}).formatter;
   }
+
   get newThemeStyle() {
     return Object.assign(this.themeStyle || {});
   }
+
   get newLabelStyle() {
     const labelStyle = { color: this.getTextColor, ...this.label };
     delete labelStyle.formatter;
     return Object.assign(labelStyle || {});
   }
+
   get isDataDuration() {
     return !this.duration;
   }
+
   get startValue() {
     return this.isDataDuration ? this.data[0] : 0;
   }
+
   get endValue() {
     if (!this.isDataDuration) {
       return this.duration;
@@ -140,18 +140,22 @@ export default class SmTimeSlider extends Mixins(Theme) {
     const end = this.data[length - 1];
     return end;
   }
+
   get startFormat() {
     if (this.startValue === void 0) {
       return '';
     }
     return this.formatTime(this.startValue);
   }
+
   get endFormat() {
     return this.formatTime(this.endValue);
   }
+
   get UPDATE_REFRESH_INTERVAL() {
     return this.playInterval / 30;
   }
+
   get playbackRate() {
     if (!this.isDataDuration) {
       return this.UPDATE_REFRESH_INTERVAL;
@@ -164,10 +168,12 @@ export default class SmTimeSlider extends Mixins(Theme) {
     const rate = this.dataDuration / (totalInterval / this.UPDATE_REFRESH_INTERVAL);
     return rate * 1000;
   }
+
   get current() {
     const current = (this.isDataDuration ? this.currentTime / 1000 : this.currentTime) + this.startValue;
     return this.formatTime(current);
   }
+
   get mouseCurrent() {
     if (this.isDataDuration && (!this.data || this.data.length === 0)) {
       return '';
@@ -175,12 +181,14 @@ export default class SmTimeSlider extends Mixins(Theme) {
     const current = this.mouseTime + this.startValue;
     return this.formatTime(current);
   }
+
   get lineStyleHeight() {
-    if (this.lineStyle && this.lineStyle.hasOwnProperty('height')) {
+    if (this.lineStyle && Object.prototype.hasOwnProperty.call(this.lineStyle, 'height')) {
       return { height: this.lineStyle.height };
     }
     return { height: '6px' };
   }
+
   get sliderBarSize() {
     const height: number = parseFloat(this.lineStyleHeight.height);
     return height <= 6 ? height * 2 : height * 1.5;
@@ -197,6 +205,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return {};
   }
+
   get dataDuration() {
     if (this.isDataDuration) {
       const data = this.data || [];
@@ -206,6 +215,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return 0;
   }
+
   @Watch('draggable')
   draggableWatcher() {
     this.bindMouseMove('mousemove', this.handleMouseMove);
@@ -271,6 +281,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     });
     this.init();
   }
+
   beforeDestroy() {
     this.$off('playing', this.enableInterval_);
     this.$off('pause', this.disableInterval_);
@@ -280,6 +291,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
   init() {
     this.autoPlay ? this.emitPlaying() : this.emitPause();
   }
+
   bindMouseMove(eventName, fn, className = this.uniqueId) {
     const el = document.getElementsByClassName(className)[0];
     if (this.draggable) {
@@ -290,6 +302,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
       el.addEventListener(eventName, fn);
     }
   }
+
   bindDrag(className) {
     interact(`.${className}`).draggable({
       startAxis: 'x',
@@ -301,11 +314,11 @@ export default class SmTimeSlider extends Mixins(Theme) {
           restriction: 'self'
         })
       ],
-      cursorChecker: (action, interactable, element, interacting) => {
+      cursorChecker: () => {
         return 'pointer';
       },
       listeners: {
-        start: event => {
+        start: () => {
           this.draggable = true;
         },
         move: event => {
@@ -313,16 +326,18 @@ export default class SmTimeSlider extends Mixins(Theme) {
             this.handleDragMove(event);
           }
         },
-        end: event => {
+        end: () => {
           this.draggable = false;
         }
       }
     });
   }
+
   changePlayState() {
     this.playState = !this.playState;
     this.playState ? this.emitPlaying() : this.emitPause();
   }
+
   updateDom() {
     if (!this.$el) {
       return '';
@@ -336,6 +351,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     this.sliderBarWidth = (progress * 100).toFixed(2) + '%';
     return progress;
   }
+
   handleMouseClick(event, offsetX) {
     const newTime = this.getCurrentTime_(event, offsetX);
     this.setcurrentTime(newTime);
@@ -346,17 +362,20 @@ export default class SmTimeSlider extends Mixins(Theme) {
       this.updateDom();
     }
   }
+
   handleMouseMove(event, offsetX) {
     const newTime = this.getCurrentTime_(event, offsetX);
     this.mouseTime = newTime;
     this.mouseLeft = event.offsetX || offsetX * this.getTotalDistance();
   }
+
   handleDragMove(event) {
     const totalDistance = this.getTotalDistance();
     const distance = event.dx / totalDistance + this.getProgress();
     this.handleMouseClick(event, distance);
     this.handleMouseMove(event, distance);
   }
+
   setcurrentTime(time) {
     if (typeof time !== 'undefined') {
       if (time < 0) {
@@ -365,13 +384,16 @@ export default class SmTimeSlider extends Mixins(Theme) {
       this.currentTime = this.isDataDuration ? time * 1000 : time;
     }
   }
+
   getTotalDistance(className = this.uniqueId) {
     // @ts-ignore
     return document.getElementsByClassName(className)[0].offsetWidth;
   }
+
   getProgress() {
     return Number(this.clamp(this.getPercent(), 0, 1).toFixed(4));
   }
+
   getPercent() {
     if (this.isDataDuration) {
       const currentTime = this.currentTime / 1000;
@@ -380,6 +402,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return this.currentTime / this.duration;
   }
+
   getCurrentTime_(event, percent) {
     const distance = event.offsetX;
     const totalDistance = this.getTotalDistance();
@@ -391,10 +414,12 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return newTime;
   }
+
   clamp(number, min, max) {
     number = Number(number);
     return Math.min(max, Math.max(min, isNaN(number) ? min : number));
   }
+
   enableInterval_() {
     this.playState = true;
     if (this.updateInterval) {
@@ -410,7 +435,8 @@ export default class SmTimeSlider extends Mixins(Theme) {
       this.updateDom();
     }, this.UPDATE_REFRESH_INTERVAL);
   }
-  disableInterval_(e) {
+
+  disableInterval_() {
     if (!this.updateInterval) {
       return;
     }
@@ -418,13 +444,14 @@ export default class SmTimeSlider extends Mixins(Theme) {
     this.updateInterval = null;
     this.playState = false;
   }
+
   requestAnimationFrame(fn) {
     // @ts-ignore
     if (!this.supportsRaf_) {
       return setTimeout(fn, 1000 / 60);
     }
 
-    var id;
+    let id;
 
     fn = fn.bind(this);
 
@@ -441,6 +468,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
 
     return id;
   }
+
   requestNamedAnimationFrame(name, fn) {
     if (!this.namedRafs_) {
       this.namedRafs_ = {};
@@ -449,13 +477,14 @@ export default class SmTimeSlider extends Mixins(Theme) {
     fn = fn.bind(this);
     const id = this.requestAnimationFrame(() => {
       fn();
-      if (this.namedRafs_.hasOwnProperty(name)) {
+      if (Object.prototype.hasOwnProperty.call(this.namedRafs_, name)) {
         delete this.namedRafs_.name;
       }
     });
     this.namedRafs_[name] = id;
     return name;
   }
+
   cancelNamedAnimationFrame(name) {
     if (!this.namedRafs_.has(name)) {
       return;
@@ -463,17 +492,19 @@ export default class SmTimeSlider extends Mixins(Theme) {
     this.cancelAnimationFrame(this.namedRafs_.get(name));
     this.namedRafs_.delete(name);
   }
+
   cancelAnimationFrame(id) {
     if (!this.rafIds_) {
       this.rafIds_ = {};
     }
 
-    if (this.rafIds_.hasOwnProperty(id)) {
+    if (Object.prototype.hasOwnProperty.call(this.rafIds_, id)) {
       delete this.rafIds_[id];
       window.cancelAnimationFrame(id);
     }
     return id;
   }
+
   formatTime(timestamp) {
     // timestamp
     if (this.formatter) {
@@ -487,9 +518,11 @@ export default class SmTimeSlider extends Mixins(Theme) {
     }
     return date;
   }
+
   timestamp2Date(timestamp) {
     return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:mm:ss') : '';
   }
+
   duration2Date(duration = this.duration) {
     const $moment = moment.duration(duration, 'milliseconds');
     const hours = this.getZeroPlaceholder($moment.hours());
@@ -497,6 +530,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     const seconds = this.getZeroPlaceholder($moment.seconds());
     return [hours, minutes, seconds].join(':');
   }
+
   getZeroPlaceholder(val) {
     if (val === 0) {
       return '00';
@@ -507,13 +541,14 @@ export default class SmTimeSlider extends Mixins(Theme) {
       return val;
     }
   }
+
   modifySliderBarStyle(style, ruleName = `.${this.uniqueId}::before`) {
     // @ts-ignore
     document.styleSheets[0].addRule(ruleName, style);
   }
 
   @Emit('timeplayerchanged')
-  timePlayerChange(currentTime = this.currentTime) {
+  timePlayerChange() {
     const currentTimeStamp = this.currentTime + this.startValue * 1000;
     if (this.isDataDuration) {
       // @ts-ignore
@@ -526,6 +561,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
             return true;
           }
         }
+        return false;
       });
       const nextIndex = lastIndex === -1 ? -1 : lastIndex + 1 <= this.data.length ? lastIndex + 1 : lastIndex;
       return { currentTimeStamp, lastIndex, nextIndex };
@@ -536,10 +572,13 @@ export default class SmTimeSlider extends Mixins(Theme) {
 
   @Emit('playing')
   emitPlaying() {}
+
   @Emit('pause')
   emitPause() {}
+
   @Emit('end')
   emitEnd() {}
+
   @Emit('timeplayerplaychanged')
   emitTimePlayerPlay() {
     return this.playState;

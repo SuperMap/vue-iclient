@@ -6,13 +6,13 @@
   </div>
 </template>
 <script lang="ts">
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import CompassViewModel from './CompassViewModel';
-import SmButton from '../../../../common/button/Button.vue';
+import SmButton from 'vue-iclient/src/common/button/Button.vue';
 import { Component, Prop, Mixins } from 'vue-property-decorator';
-import VmUpdater from '../../../../common/_mixin/VmUpdater';
+import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 
 interface needleStyleParams {
   transform?: string;
@@ -47,9 +47,11 @@ class Compass extends Mixins(MapGetter, Control, Theme, VmUpdater) {
   reset() {
     return this.viewModel && (this.visualizePitch ? this.viewModel.resetNorthPitch() : this.viewModel.resetNorth());
   }
+
   initAngle() {
     return this.viewModel.initAngle();
   }
+
   createTransform(angle, pitch) {
     this.needleStyle.transform = this.visualizePitch
       ? 'scale(' +

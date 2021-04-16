@@ -1,6 +1,7 @@
 /build/
 /config/
 /dist/
+/lib/
 /test/unit/coverage/
 /demo
 *.spec.js

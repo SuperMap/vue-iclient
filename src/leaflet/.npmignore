@@ -12,6 +12,8 @@ yarn-error.log*
 
 /dist/mapboxgl/
 /dist/leaflet/
+/lib/mapboxgl/
+/lib/leaflet/
 
 /static/libs/Cesium/
 /static/libs/deckgl/

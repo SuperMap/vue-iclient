@@ -1,11 +1,8 @@
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-// import iPortalDataParameter from '../../common/_types/iPortalDataParameter';
-// import RestDataParameter from '../../common/_types/RestDataParameter';
-// import RestMapParameter from '../../common/_types/RestMapParameter';
-import { geti18n } from '../../common/_lang';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import { getFeatureCenter, getValueCaseInsensitive } from '../../common/_utils/util';
-import { checkAndRectifyFeatures } from '../../common/_utils/iServerRestService';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
+import { checkAndRectifyFeatures } from 'vue-iclient/src/common/_utils/iServerRestService';
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
@@ -51,6 +48,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
     this.bounds = null;
     this.clearResultLayer();
   }
+
   /**
    * @function QueryViewModel.prototype.query
    * @desc 开始查询。
@@ -119,6 +117,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       });
     }
   }
+
   _queryByRestData(restDataParameter) {
     let maxFeatures = restDataParameter.maxFeatures || this.maxFeatures;
     let toIndex = maxFeatures === 1 ? 0 : maxFeatures - 1;
@@ -127,7 +126,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       options.proxy = restDataParameter.proxy;
     }
     if (this.bounds) {
-      var boundsParam = new SuperMap.GetFeaturesByBoundsParameters({
+      let boundsParam = new SuperMap.GetFeaturesByBoundsParameters({
         attributeFilter: restDataParameter.attributeFilter,
         datasetNames: restDataParameter.dataName,
         spatialQueryMode: 'INTERSECT',
@@ -155,6 +154,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       });
     }
   }
+
   async _mapQuerySucceed(serviceResult, restMapParameter, options) {
     let result = serviceResult.result;
     if (result && result.totalCount !== 0) {
@@ -429,6 +429,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       .setDOMContent(popupContainer)
       .addTo(this.map);
   }
+
   _addOverlayToMap(type, source, layerID) {
     let mbglStyle = {
       circle: {

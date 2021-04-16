@@ -11,7 +11,11 @@
     :split-line="splitLine"
     class="sm-component-layer-list"
   >
-    <sm-card class="sm-component-layer-list__a-card" :bordered="false" :style="headingTextColorStyle">
+    <sm-card
+      class="sm-component-layer-list__a-card"
+      :bordered="false"
+      :style="headingTextColorStyle"
+    >
       <div class="sm-component-layer-list__content">
         <sm-collapse
           v-for="(name, index) in enableSource"
@@ -67,9 +71,10 @@
                 "
                 @click.stop="toggleVisibility(sourcelayerKey, name, sourcelayerValue[0].visibility)"
               />
-              <div class="sm-component-layer-list__layergroupname add-ellipsis" :title="sourcelayerKey">
-                {{ sourcelayerKey }}
-              </div>
+              <div
+                class="sm-component-layer-list__layergroupname add-ellipsis"
+                :title="sourcelayerKey"
+              >{{ sourcelayerKey }}</div>
             </div>
           </sm-collapse-panel>
 
@@ -119,13 +124,13 @@
 
 <script lang="ts">
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
-import BaseCard from '../../../../common/_mixin/Card';
-import SmCard from '../../../../common/card/Card.vue';
-import SmCollapse from '../../../../common/collapse/Collapse.vue';
-import SmCollapsePanel from '../../../../common/collapse/Panel.vue';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import SmCard from 'vue-iclient/src/common/card/Card.vue';
+import SmCollapse from 'vue-iclient/src/common/collapse/Collapse.vue';
+import SmCollapsePanel from 'vue-iclient/src/common/collapse/Panel.vue';
 import SmAttributes, {
   PaginationParams,
   FieldConfigParams,
@@ -133,7 +138,7 @@ import SmAttributes, {
   StatisticsParams,
   TableParams,
   ToolbarParams
-} from '../../../attributes/Attributes.vue';
+} from 'vue-iclient/src/mapboxgl/attributes/Attributes.vue';
 import LayerListViewModel from './LayerListViewModel';
 import intersection from 'lodash.intersection';
 import isEqual from 'lodash.isequal';
@@ -292,12 +297,15 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   toggleVisibility(sourceLayer, sourceName, visibility: string) {
     this.viewModel && this.viewModel.changeLayerVisible(sourceLayer, sourceName, visibility);
   }
+
   addNewLayer() {
     this.viewModel.addNewLayer();
   }
+
   deleteLayer() {
     this.viewModel.deleteLayer();
   }
+
   toggleLayerGroupVisibility(sourceName, visibility: string) {
     if (visibility === 'visible') {
       this.closeAttributesIconClass();
@@ -305,6 +313,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
     this.viewModel && this.viewModel.changeLayerGroupVisibility(sourceName, visibility);
   }
+
   toggleAttributesVisibility(e, layerName: string) {
     if (e.target.className.indexOf('sm-components-icon-attribute-open') !== -1) {
       e.target.setAttribute('class', this.attributesIconClass);
@@ -319,6 +328,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.attributesContainer.appendChild(this.$refs.attributes.$el);
     this.displayAttributes = !this.displayAttributes;
   }
+
   handleAttributesProps(layerName: string) {
     const props = Object.assign({}, this.attributes);
     for (const key in props) {
@@ -328,18 +338,21 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
     this.attributesProps = { layerName, title: layerName, ...props };
   }
+
   layerUpdate() {
     this.$nextTick(() => {
       this.sourceList = this.viewModel && this.viewModel.initLayerList();
       this.sourceNames = this.viewModel && this.viewModel.getSourceNames();
     });
   }
+
   closeAttributesIconClass() {
     const attributesIcon = document.querySelectorAll('.sm-component-layer-list__attributes');
     attributesIcon.forEach(element => {
       element.children[0].setAttribute('class', this.attributesIconClass);
     });
   }
+
   removeAttributes() {
     // @ts-ignore
     if (this.$refs.attributes.$el && this.displayAttributes) {
@@ -350,6 +363,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
       attributesParentDom.removeChild(this.$refs.attributes.$el);
     }
   }
+
   beforeDestory() {
     this.viewModel && this.viewModel.off('layersUpdated', this.layerUpdateFn);
     this.$options.removed.call(this);

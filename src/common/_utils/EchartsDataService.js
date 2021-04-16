@@ -1,9 +1,9 @@
-import getFeatures from './get-features';
+import getFeatures from 'vue-iclient/src/common/_utils/get-features';
 import tonumber from 'lodash.tonumber';
 import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
-import { clearNumberComma, filterInvalidData } from './util';
-import { statisticsFeatures } from './statistics';
+import { clearNumberComma, filterInvalidData } from 'vue-iclient/src/common/_utils/util';
+import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
 
 // 三方服务请求的结果为单对象的时候，是否要转成多个features
 export function tranformSingleToMulti(data) {
@@ -312,7 +312,7 @@ export default class EchartsDataService {
    * @param {Chart-datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  解析好的Ydata，xdata
    */
-  _fieldsData(data, datasetOption, xBar = false) {
+  _fieldsData(data, datasetOption) {
     let fieldCaptions, fieldValues, xFieldIndex, yFieldIndex, fieldValueIndex, xData, yData, result;
     let { sort, yField, xField, isStastic } = datasetOption;
     fieldCaptions = data.fieldCaptions; // 所有x字段

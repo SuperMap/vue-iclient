@@ -13,7 +13,7 @@
 </template>
 
 <script lang='ts'>
-import Theme from '../_mixin/Theme';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import ECharts from 'vue-echarts';
 import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';
 import UniqueId from 'lodash.uniqueid';
@@ -56,24 +56,28 @@ export default class SmTimeLine extends Mixins(Theme) {
     }
   })
   data: Array<any>;
+
   @Prop({
     default() {
       return {};
     }
   })
   label: Object;
+
   @Prop({
     default() {
       return {};
     }
   })
   lineStyle: Object;
+
   @Prop({
     default() {
       return {};
     }
   })
   itemStyle: Object;
+
   @Prop({
     default() {
       return { label: {} };
@@ -100,6 +104,7 @@ export default class SmTimeLine extends Mixins(Theme) {
   get color() {
     return this.getColor(0);
   }
+
   get options() {
     let options = {
       baseOption: {
@@ -203,18 +208,21 @@ export default class SmTimeLine extends Mixins(Theme) {
     options.baseOption.timeline.emphasis.controlStyle = Object.assign({}, controlStyle, emphasisStyle.controlStyle);
     return Object.assign({}, options);
   }
+
   @Emit('timelinechanged')
   timelineChange(val) {
     if (typeof this.nextEnable === 'boolean') {
-      this.nextStep(val.currentIndex);
+      this.nextStep();
     }
     return val;
   }
+
   @Emit('timelineplaychanged')
   timelineplaychanged(val) {
     this.playState = val.playState;
     return val;
   }
+
   setPlayState(status) {
     if (this.$refs[this.chartId]) {
       // @ts-ignore
@@ -224,7 +232,8 @@ export default class SmTimeLine extends Mixins(Theme) {
       });
     }
   }
-  nextStep(currentIndex) {
+
+  nextStep() {
     if (this.timer) {
       clearInterval(this.timer);
     }

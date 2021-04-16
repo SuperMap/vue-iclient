@@ -1,7 +1,7 @@
-import colorPalette from './colorPalette';
-import themeFactory from '../theme/theme.json';
-import { getColorWithOpacity, getDarkenColor } from '../../util';
-import { isArray } from '../../vue-types/utils';
+import colorPalette from 'vue-iclient/src/common/_utils/style/color/colorPalette';
+import themeFactory from 'vue-iclient/src/common/_utils/style/theme/theme.json';
+import { getColorWithOpacity, getDarkenColor } from 'vue-iclient/src/common/_utils/util';
+import { isArray } from 'vue-iclient/src/common/_utils/vue-types/utils';
 import cssVars from 'css-vars-ponyfill';
 
 const lightTheme = themeFactory && themeFactory[1];
@@ -78,8 +78,8 @@ export function getFunctionSerialColors(functionColors?: ThemeStyleParams): Func
   const seriesIndex = [1, 2, 3, 4, 5, 6, 7];
   const acceptFunctionColors = functionColors || antdFunctionColors;
   const nextFunctionSerialColors: FunctionColorParams = {};
-  for (let key in acceptFunctionColors) {
-    if (antdFunctionColors.hasOwnProperty(key)) {
+  for (const key in acceptFunctionColors) {
+    if (Object.prototype.hasOwnProperty.call(antdFunctionColors, key)) {
       const color = acceptFunctionColors[key] || antdFunctionColors[key];
       nextFunctionSerialColors[key] = [];
       seriesIndex.forEach(item => {
@@ -147,7 +147,7 @@ function setRootStyle(themeData: StyleReplacerParams): void {
     const varKey = `--primary-${index + 1}`;
     variables[varKey] = color;
   });
-  for (let key in functionSerialColors) {
+  for (const key in functionSerialColors) {
     functionSerialColors[key].forEach((color: string, index: number) => {
       const varKey = `--${key.replace('Color', '')}-${index + 1}`;
       variables[varKey] = color;

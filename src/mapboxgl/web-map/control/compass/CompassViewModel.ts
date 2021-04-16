@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class CompassViewModel
@@ -38,7 +38,7 @@ export default class CompassViewModel extends mapboxgl.Evented {
   }
 
   setVisualizePitch(visualizePitch: boolean) {
-    this.visualizePitch = visualizePitch
+    this.visualizePitch = visualizePitch;
   }
 
   /**
@@ -51,6 +51,7 @@ export default class CompassViewModel extends mapboxgl.Evented {
       pitch: this.map.getPitch()
     };
   }
+
   /**
    * @function CompassViewModel.prototype._getAngle
    * @description 获取地图的旋转角度。
@@ -59,6 +60,7 @@ export default class CompassViewModel extends mapboxgl.Evented {
     // @ts-ignore
     return this.map.transform.angle;
   }
+
   /**
    * @function CompassViewModel.prototype.resetNorth
    * @description 以动态转换的方式将地图旋转到 0 度方位角（正北方）。
@@ -66,6 +68,7 @@ export default class CompassViewModel extends mapboxgl.Evented {
   resetNorth() {
     this.map.resetNorth();
   }
+
   /**
    * @function CompassViewModel.prototype.resetNorthPitch
    * @description 以动态转换的方式将地图旋转到 0 度方位角（正北方）和 0 度倾斜角。
@@ -73,6 +76,7 @@ export default class CompassViewModel extends mapboxgl.Evented {
   resetNorthPitch() {
     this.map.resetNorthPitch();
   }
+
   /**
    * @function CompassViewModel.prototype._rotatePitchEventFn
    * @description 获取地图的旋转角度。
@@ -82,6 +86,7 @@ export default class CompassViewModel extends mapboxgl.Evented {
       this.rotatePitchCallBack(this._getAngle(), this.map.getPitch());
     }
   }
+
   /**
    * @function CompassViewModel.prototype._rotatePitchEventFn
    * @description 获取地图的旋转角度。
@@ -91,6 +96,7 @@ export default class CompassViewModel extends mapboxgl.Evented {
       this.rotatePitchCallBack(this._getAngle(), this.map.getPitch());
     }
   }
+
   /**
    * @function CompassViewModel.prototype.changeEventOn
    * @description 倾斜或俯仰的角度改变事件监听后回调函数fn。

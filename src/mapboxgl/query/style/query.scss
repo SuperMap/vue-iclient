@@ -5,7 +5,7 @@
 @import '../../../common/empty/style/empty.scss';
 @import '../../../common/spin/style/spin.scss';
 @import '../../../common/icon/style/icon.scss';
-@import '../../../common/table-popup/style/tablePopup.scss';
+@import '../../../common/table-popup/style/table-popup.scss';
 
 @include b(query) {
   $query-prefix: &;

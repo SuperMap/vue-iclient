@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Component, Prop } from 'vue-property-decorator';
-import SmCollapseCard from '../collapse-card/CollapseCard.vue';
+import SmCollapseCard from 'vue-iclient/src/common/collapse-card/CollapseCard.vue';
 
 @Component({
   components: { SmCollapseCard }
@@ -19,4 +19,4 @@ export default class CardMixin extends Vue {
   @Prop({ default: false }) autoRotate: boolean;
   @Prop({ default: true }) collapsed: boolean;
   @Prop({ default: false }) splitLine: boolean; // 标题与内容的分割线
-};
+}

@@ -1,18 +1,18 @@
 import Vue, { VNode, CreateElement } from 'vue';
 import { Component, Prop, Provide } from 'vue-property-decorator';
-import defaultRenderEmpty from '../empty/RenderEmpty';
+import defaultRenderEmpty from 'vue-iclient/src/common/empty/RenderEmpty';
 import { getOptionProps, getComponentFromProp } from 'ant-design-vue/es/_util/props-util';
 
 @Component
 export default class BaseRender extends Vue {
-  @Prop() getPopupContainer: Function;
-  @Prop() prefixCls: string;
-  @Prop() renderEmpty: Function;
-  @Prop() csp: Object;
-  @Prop() autoInsertSpaceInButton: boolean;
-  @Prop() locale: Object;
-  @Prop() pageHeader: Object;
-  @Prop() transformCellText: Function;
+  @Prop() getPopupContainer!: Function;
+  @Prop() prefixCls!: string;
+  @Prop() renderEmpty!: Function;
+  @Prop() csp!: Object;
+  @Prop() autoInsertSpaceInButton!: boolean;
+  @Prop() locale!: Object;
+  @Prop() pageHeader!: Object;
+  @Prop() transformCellText!: Function;
 
   @Provide('configProvider')
   configProvider = {
@@ -25,7 +25,7 @@ export default class BaseRender extends Vue {
     pageHeatransformCellTextder: this.transformCellText,
     getPrefixCls: this.getPrefixCls,
     renderEmpty: this.renderEmptyComponent
-  };
+  }
 
   @Provide('localeData')
   localeData = {
@@ -73,8 +73,8 @@ export default class BaseRender extends Vue {
   }
 
   renderChildren(createElement) {
-    const slotComponents = [].concat(this.$slots['default'] || []);
-    for (let key in this.$slots) {
+    const slotComponents = [].concat(this.$slots.default || []);
+    for (const key in this.$slots) {
       if (key !== 'default') {
         slotComponents.push(
           createElement('template', {

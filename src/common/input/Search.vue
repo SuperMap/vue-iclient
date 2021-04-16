@@ -1,7 +1,7 @@
 <script lang="ts">
 import Search from 'ant-design-vue/es/input/Search';
 import inputProps from 'ant-design-vue/es/input/inputProps';
-import VueTypes from '../_utils/vue-types';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import Base from './BaseMixin.vue';
 
 export const inputSearchTypes = {

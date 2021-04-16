@@ -1,7 +1,7 @@
 <script lang="ts">
 import Input from 'ant-design-vue/es/input/Input';
 import inputProps from 'ant-design-vue/es/input/inputProps';
-import VueTypes from '../_utils/vue-types';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import Base from './BaseMixin.vue';
 
 export const inputTypes = {

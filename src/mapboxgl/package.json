@@ -3,7 +3,7 @@
   "description": "SuperMap iClient for Vue.js",
   "version": "11.0.0-dev",
   "homepage": "http://iclient.supermap.io",
-  "main": "dist/index",
+  "main": "lib/index",
   "dependencies": {
     "@mapbox/point-geometry": "^0.1.0",
     "@turf/center": "^6.0.1",
@@ -52,7 +52,7 @@
     "mapv": "^2.0.34",
     "shapefile": "^0.6.6",
     "three": "^0.106.1",
-    "vue-cesium": "0.0.22",
+    "vue-cesium": "^2.1.4",
     "xlsx": "0.12.13",
     "utm": "^1.1.1",
     "clipboard": "^2.0.6",

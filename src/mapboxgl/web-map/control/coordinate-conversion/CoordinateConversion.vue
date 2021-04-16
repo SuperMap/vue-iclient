@@ -10,14 +10,8 @@
     :textColor="textColor"
     class="sm-component-coordinate-conversion"
   >
-    <sm-card
-      :bordered="false"
-      :style="getTextColorStyle"
-      class="sm-component-coordinate-conversion__sm-card"
-    >
-      <div
-        :class="['sm-component-coordinate-conversion__content', !showLocation&&'not-show-location']"
-      >
+    <sm-card :bordered="false" :style="getTextColorStyle" class="sm-component-coordinate-conversion__sm-card">
+      <div :class="['sm-component-coordinate-conversion__content', !showLocation && 'not-show-location']">
         <div class="sm-component-coordinate-conversion__auto-width">
           <sm-select
             v-model="activeFormat"
@@ -34,7 +28,8 @@
               :key="index"
               :title="value.i18n || value.title"
               :value="value.title"
-            >{{ value.i18n || value.title }}</sm-select-option>
+              >{{ value.i18n || value.title }}</sm-select-option
+            >
           </sm-select>
           <sm-input
             v-model="inputValue"
@@ -49,19 +44,30 @@
         </div>
         <div class="sm-component-coordinate-conversion__icons">
           <div
-            :class="[isCapture&&`sm-component-coordinate-conversion__copyed${uniqueId}`,isCapture?'sm-component-coordinate-conversion__copyed':'sm-component-coordinate-conversion__not-enable','sm-components-icon-copy']"
-            :data-clipboard-text="isCapture?inputValue:''"
+            :class="[
+              isCapture && `sm-component-coordinate-conversion__copyed${uniqueId}`,
+              isCapture
+                ? 'sm-component-coordinate-conversion__copyed'
+                : 'sm-component-coordinate-conversion__not-enable',
+              'sm-components-icon-copy'
+            ]"
+            :data-clipboard-text="isCapture ? inputValue : ''"
             :title="$t('coordinateConversion.copy')"
           ></div>
           <div
             v-if="showLocation"
             :title="$t('coordinateConversion.location')"
-            :class="['sm-component-coordinate-conversion__location','sm-components-icon-locate']"
+            :class="['sm-component-coordinate-conversion__location', 'sm-components-icon-locate']"
             @click="handleLocation"
           ></div>
           <div
-            :class="[isCapture?'sm-component-coordinate-conversion__captured':'sm-component-coordinate-conversion__not-captured','sm-components-icon-click']"
-            :title="isCapture?$t('coordinateConversion.capture'):$t('coordinateConversion.realTime')"
+            :class="[
+              isCapture
+                ? 'sm-component-coordinate-conversion__captured'
+                : 'sm-component-coordinate-conversion__not-captured',
+              'sm-components-icon-click'
+            ]"
+            :title="isCapture ? $t('coordinateConversion.capture') : $t('coordinateConversion.realTime')"
             @click="handleCapture"
           ></div>
         </div>
@@ -70,17 +76,17 @@
   </sm-collapse-card>
 </template>
 <script lang="ts">
-import Theme from '../../../../common/_mixin/Theme';
-import MapGetter from '../../../_mixin/map-getter';
-import Control from '../../../_mixin/control';
-import BaseCard from '../../../../common/_mixin/Card';
-import SmInput from '../../../../common/input/Input.vue';
-import SmSelect from '../../../../common/select/Select.vue';
-import SmSelectOption from '../../../../common/select/Option.vue';
-import SmCard from '../../../../common/card/Card.vue';
-import SmCollapse from '../../../../common/collapse/Collapse.vue';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
+import SmSelect from 'vue-iclient/src/common/select/Select.vue';
+import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
+import SmCard from 'vue-iclient/src/common/card/Card.vue';
+import SmCollapse from 'vue-iclient/src/common/collapse/Collapse.vue';
 import CoordinateConversionViewModel from './CoordinateConversionViewModel';
-import { getProjection } from '../../../../common/_utils/epsg-define';
+import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 import ClipboardJS from 'clipboard';
 import proj4 from 'proj4';
 import UniqueId from 'lodash.uniqueid';
@@ -118,67 +124,8 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   $message: any;
   $t: any;
   clickCaptureTimes: number = 0;
-  defaultFormats: Array<FormatOption> = [
-    {
-      title: 'BASEMAP',
-      i18n: this.$t('unit.BASEMAP'),
-      display: `X Y`,
-      fromWGS84: this.getBaseMapCoordinate,
-      toWGS84: (value, format) => {
-        const coor: Array<string | number> = value.split(' ');
-        // @ts-ignore
-        const coor1: Coordinate = { lng: coor[0] * 1, lat: coor[1] * 1 };
-        return this.getEpsgCoordinate(coor1, 'EPSG:4326', this.getEpsgCode());
-      }
-    },
-    {
-      title: 'UTM',
-      i18n: this.$t('unit.UTM'),
-      fromWGS84: this.getUtm,
-      toWGS84: this.getCoorByUtm
-    },
-    {
-      title: 'Mercator',
-      i18n: this.$t('unit.Mercator'),
-      display: `X Y`,
-      fromWGS84: this.getMercatorCoordinate,
-      toWGS84: (value, format) => {
-        const coor: Array<string | number> = value.split(' ');
-        // @ts-ignore
-        const coor2: Coordinate = { lng: coor[0] * 1, lat: coor[1] * 1 };
-        return this.getEpsgCoordinate(coor2, 'EPSG:4326', 'EPSG:3857');
-      }
-    },
-    {
-      title: 'XY',
-      i18n: this.$t('unit.XY'),
-      display: 'X°‎, Y°‎',
-      fromWGS84: this.getXY,
-      toWGS84: this.getCoorByXY
-    },
-    {
-      title: 'DD',
-      i18n: this.$t('unit.DD'),
-      display: 'Y° ‎N, X° ‎E‎',
-      fromWGS84: this.getDD,
-      toWGS84: this.getCoorByDD
-    },
-    {
-      title: 'DOM',
-      i18n: this.$t('unit.DOM'),
-      display: `Y°‎ A' N, X°‎ B' E`,
-      fromWGS84: this.getDOM,
-      toWGS84: this.getCoorByDOM
-    },
-    {
-      title: 'DMS',
-      i18n: this.$t('unit.DMS'),
-      display: `Y°‎ A' B" N, X°‎ C' D" E`,
-      fromWGS84: this.getDMS,
-      toWGS84: this.getCoorByDMS
-    }
-  ];
-  formatOptions: Array<FormatOption> = [...this.defaultFormats];
+  defaultFormats: Array<FormatOption> = [];
+  formatOptions: Array<FormatOption> = [];
   activeFormat: string = 'XY';
   activeDisplayFormat: string = 'X°‎, Y°‎';
   inputValue: string = '';
@@ -215,7 +162,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   formatsWatcher() {
     let formatOptions = [];
     this.formats &&
-      this.formats.forEach((item, index) => {
+      this.formats.forEach(item => {
         if (typeof item === 'string') {
           const defaultFormat = this.defaultFormats.find(val => val.title === item);
           defaultFormat && formatOptions.push(defaultFormat);
@@ -229,7 +176,69 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     }
     this.formatOptions = formatOptions;
   }
+
   created() {
+    this.defaultFormats = [
+      {
+        title: 'BASEMAP',
+        i18n: this.$t('unit.BASEMAP'),
+        display: `X Y`,
+        fromWGS84: this.getBaseMapCoordinate,
+        toWGS84: value => {
+          const coor: Array<string | number> = value.split(' ');
+          // @ts-ignore
+          const coor1: Coordinate = { lng: coor[0] * 1, lat: coor[1] * 1 };
+          return this.getEpsgCoordinate(coor1, 'EPSG:4326', this.getEpsgCode());
+        }
+      },
+      {
+        title: 'UTM',
+        i18n: this.$t('unit.UTM'),
+        fromWGS84: this.getUtm,
+        toWGS84: this.getCoorByUtm
+      },
+      {
+        title: 'Mercator',
+        i18n: this.$t('unit.Mercator'),
+        display: `X Y`,
+        fromWGS84: this.getMercatorCoordinate,
+        toWGS84: value => {
+          const coor: Array<string | number> = value.split(' ');
+          // @ts-ignore
+          const coor2: Coordinate = { lng: coor[0] * 1, lat: coor[1] * 1 };
+          return this.getEpsgCoordinate(coor2, 'EPSG:4326', 'EPSG:3857');
+        }
+      },
+      {
+        title: 'XY',
+        i18n: this.$t('unit.XY'),
+        display: 'X°‎, Y°‎',
+        fromWGS84: this.getXY,
+        toWGS84: this.getCoorByXY
+      },
+      {
+        title: 'DD',
+        i18n: this.$t('unit.DD'),
+        display: 'Y° ‎N, X° ‎E‎',
+        fromWGS84: this.getDD,
+        toWGS84: this.getCoorByDD
+      },
+      {
+        title: 'DOM',
+        i18n: this.$t('unit.DOM'),
+        display: `Y°‎ A' N, X°‎ B' E`,
+        fromWGS84: this.getDOM,
+        toWGS84: this.getCoorByDOM
+      },
+      {
+        title: 'DMS',
+        i18n: this.$t('unit.DMS'),
+        display: `Y°‎ A' B" N, X°‎ C' D" E`,
+        fromWGS84: this.getDMS,
+        toWGS84: this.getCoorByDMS
+      }
+    ];
+    this.formatOptions = [...this.defaultFormats];
     const clipboard = (this.clipboard = new ClipboardJS(`.sm-component-coordinate-conversion__copyed${this.uniqueId}`));
     clipboard.on('success', () => {
       this.$message.success(this.$t('success.copySucccess'));
@@ -242,15 +251,19 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
       this.inputValue = this.formatCoordinate(this.coordinate, formatOption);
     });
   }
+
   beforeDestroy() {
     this.clipboard && this.clipboard.destroy();
   }
+
   getPopupContainer() {
     return this.$el.querySelector('.sm-component-coordinate-conversion__content');
   }
+
   handleCapture() {
     this.clickCaptureTimes++;
   }
+
   handleInput(e) {
     if (!this.isCapture) {
       this.handleCapture();
@@ -258,17 +271,20 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     this.inputValue = e.target.value;
     this.enableLocation = true;
   }
+
   handleBlur(e) {
     const formatOption = this.formatOptions.find(item => item.title === this.activeFormat);
     this.coordinate = this.reverseCoordinateFormat(e.target.value, formatOption);
   }
+
   handleChange(e) {
     if (!e.target.value) {
       this.enableLocation = false;
       this.coordinate = null;
     }
   }
-  handleLocation(val, map = this.map) {
+
+  handleLocation() {
     if (!this.coordinate) {
       return;
     }
@@ -280,11 +296,13 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     this.viewModel._addMarker([lng, lat]);
     this.viewModel._flyTo([lng, lat]);
   }
+
   changeFormat(val) {
     const formatOption = this.formatOptions.find(item => item.title === val);
     this.activeDisplayFormat = formatOption && formatOption.display;
     this.inputValue = this.formatCoordinate(this.coordinate, formatOption);
   }
+
   formatCoordinate(coordinate: Coordinate | null, formatOption: FormatOption, format?: string) {
     if (!coordinate || !formatOption) {
       this.viewModel._clearMarker();
@@ -293,6 +311,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     const fromWGS84 = formatOption.fromWGS84 || this.getXY;
     return fromWGS84(coordinate, format || formatOption.display);
   }
+
   reverseCoordinateFormat(value: string = this.inputValue, formatOption: FormatOption, format?: string) {
     value = value.replace(/^\s+|\s+$ /, '');
     if (!value || !formatOption) {
@@ -303,18 +322,21 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     return toWGS84(value, format);
   }
 
-  getUtm(coordinate: Coordinate, format?: string) {
+  getUtm(coordinate: Coordinate) {
     let { easting, northing, zoneNum, zoneLetter } = utm.fromLatLon(coordinate.lat, this.getWrapNum(coordinate.lng));
     return `${zoneNum}${zoneLetter} ${parseInt(easting)} ${parseInt(northing)}`;
   }
-  getMercatorCoordinate(coordinate: Coordinate, format?: string) {
+
+  getMercatorCoordinate(coordinate: Coordinate) {
     const { lng, lat } = this.getEpsgCoordinate(coordinate, 'EPSG:3857');
     return `${lng.toFixed(3)} ${lat.toFixed(3)}`;
   }
-  getBaseMapCoordinate(coordinate: Coordinate, format?: string) {
+
+  getBaseMapCoordinate(coordinate: Coordinate) {
     const { lng, lat } = this.getEpsgCoordinate(coordinate);
     return `${lng.toFixed(3)} ${lat.toFixed(3)}`;
   }
+
   getEpsgCoordinate(coordinate: Coordinate, toEpsgCode?: string, sourceEpsgCode: string = 'EPSG:4326') {
     const { lng, lat } = coordinate;
     toEpsgCode = toEpsgCode || this.getEpsgCode();
@@ -332,34 +354,38 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     // @ts-ignore
     return this.map.getCRS().epsgCode;
   }
+
   getWrapNum(x: number, includeMax: boolean = true, includeMin: boolean = true, range: Array<number> = [-180, 180]) {
-    var max = range[1];
-    var min = range[0];
-    var d = max - min;
+    let max = range[1];
+    let min = range[0];
+    let d = max - min;
     if (x === max && includeMax) {
       return x;
     }
     if (x === min && includeMin) {
       return x;
     }
-    var tmp = (((x - min) % d) + d) % d;
+    let tmp = (((x - min) % d) + d) % d;
     if (tmp === 0 && includeMax) {
       return max;
     }
     return ((((x - min) % d) + d) % d) + min;
   }
+
   getWE(lng?: number) {
     if (lng === 0) {
       return '';
     }
     return lng > 0 ? 'E' : 'W';
   }
+
   getNS(lat?: number) {
     if (lat === 0) {
       return '';
     }
     return lat > 0 ? 'N' : 'S';
   }
+
   getXY(coordinate: Coordinate, format?: string) {
     let { lng, lat } = coordinate;
     const newLat: any = lat.toFixed(7);
@@ -370,6 +396,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     XY = XY.replace('Y', lat + '');
     return XY;
   }
+
   getDD(coordinate: Coordinate, format?: string) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
@@ -383,26 +410,30 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     XY = XY.replace('N', this.getNS(lat));
     return XY;
   }
-  getDOM(coordinate: Coordinate, format?: string) {
+
+  getDOM(coordinate: Coordinate) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
     const value = CoordinateConverter.fromDecimal([lat, lng]).toDegreeMinutes();
     return this.replaceUnit(value);
   }
-  getDMS(coordinate: Coordinate, format?: string) {
+
+  getDMS(coordinate: Coordinate) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
     const value = CoordinateConverter.fromDecimal([lat, lng]).toDegreeMinutesSeconds();
     return this.replaceUnit(value);
   }
-  getCoorByXY(value?: string, format?: string) {
+
+  getCoorByXY(value?: string) {
     value = this.replaceUnit(value);
     value = value.replace(/‎|°|\s+/g, '');
     const coordinates = value.split(',');
     // @ts-ignore
     return { lng: coordinates[0] * 1, lat: coordinates[1] * 1 };
   }
-  getCoorByDD(value?: string, format?: string) {
+
+  getCoorByDD(value?: string) {
     value = this.replaceUnit(value);
     value = value.replace(/‎|°|\s+/g, '');
     value = value.replace(/E|N|W|S/gi, '');
@@ -410,26 +441,31 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     // @ts-ignore
     return { lng: coordinates[1] * 1, lat: coordinates[0] * 1 };
   }
-  getCoorByDOM(value?: string, format?: string) {
+
+  getCoorByDOM(value?: string) {
     value = this.reverseUnit(value);
     return CoordinateConverter.fromDegreeMinutes(value);
   }
-  getCoorByDMS(value?: string, format?: string) {
+
+  getCoorByDMS(value?: string) {
     value = this.reverseUnit(value);
     return CoordinateConverter.fromDegreeMinutesSeconds(value);
   }
-  getCoorByUtm(value?: string, format?: string) {
+
+  getCoorByUtm(value?: string) {
     const [zone, easting, northing] = value.split(' ');
     let zoneNum: number = parseInt(zone);
     const zoneLetter = Object.is(zoneNum, NaN) ? zone : zone.replace(zoneNum + '', '');
     const { latitude, longitude } = utm.toLatLon(easting, northing, zoneNum, zoneLetter);
     return { lng: longitude, lat: latitude };
   }
+
   replaceUnit(value?: string) {
     value = value.replace(/º/g, '°');
     value = value.replace(/\'\'/g, '"');
     return value;
   }
+
   reverseUnit(value?: string) {
     value = value.replace(/°/g, 'º');
     value = value.replace(/\"/g, "''");

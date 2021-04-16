@@ -10,13 +10,13 @@
 
 <script lang="ts">
 import WebMapViewModel from './WebMapViewModel';
-import mapEvent from '../_types/map-event';
-import VmUpdater from '../../common/_mixin/VmUpdater';
-import MapEvents from './_mixin/map-events';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
+import MapEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/map-events';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
-import debounce from 'lodash/debounce';
-import SmSpin from '../../common/spin/Spin.vue';
+import debounce from 'lodash.debounce';
+import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 
 interface commonControlParam {
   show?: boolean;
@@ -139,8 +139,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: false }) loading: boolean;
   @Prop() background: string;
   @Prop() iportalServiceProxyUrlPrefix: string;
-  @Prop()
-  mapOptions: any;
+  @Prop() mapOptions: any;
   @Prop({ default: true }) autoresize: boolean;
   @Prop({ default: false }) keepBounds: boolean;
   @Prop({

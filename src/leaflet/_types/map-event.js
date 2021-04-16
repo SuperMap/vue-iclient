@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import globalEvent from '../../common/_utils/global-event';
+import globalEvent from 'vue-iclient/src/common/_utils/global-event';
 
 export default new Vue({
   mapCache: {},

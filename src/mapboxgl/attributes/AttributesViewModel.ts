@@ -1,4 +1,4 @@
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
 import clonedeep from 'lodash.clonedeep';
@@ -260,7 +260,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.selectedKeys.forEach(key => {
       const feature = selectedKeys[key];
       if (feature) {
-        filter.push(['==', 'index', feature.properties['index']]);
+        filter.push(['==', 'index', feature.properties.index]);
       }
     });
     this.addOverlayToMap(filter, selectedKeys, layerStyleOptions, attributesTitle);
@@ -296,7 +296,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       id = attributesTitle;
       this.sourceId = id + '-attributes-SM-highlighted-source';
       if (this.map.getSource(this.sourceId)) {
-        //@ts-ignore
+        // @ts-ignore
         this.map.getSource(this.sourceId).setData({
           type: 'FeatureCollection',
           features
@@ -339,12 +339,12 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       if (this.map.getLayer(this.layerId)) {
         this.map.setFilter(this.layerId, filter);
       } else {
-        let highlight_layerStyle = layerStyle[type];
+        let highlightLayerStyle = layerStyle[type];
         let highlightLayer = {
           id: this.layerId,
           type,
-          paint: (highlight_layerStyle && highlight_layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
-          layout: (highlight_layerStyle && highlight_layerStyle.layout) || { visibility: 'visible' },
+          paint: (highlightLayerStyle && highlightLayerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
+          layout: (highlightLayerStyle && highlightLayerStyle.layout) || { visibility: 'visible' },
           filter
         };
         highlightLayer = Object.assign({}, layer || { source: this.sourceId }, highlightLayer);
@@ -378,7 +378,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           filter
         };
         highlightLayer = Object.assign({}, layer || { source: this.sourceId }, highlightLayer);
-        //@ts-ignore
+        // @ts-ignore
         this.map.addLayer(highlightLayer);
       }
     }
@@ -478,7 +478,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   toTableColumns(headers) {
     let columns = [];
 
-    Object.keys(headers).forEach((propertyName, index) => {
+    Object.keys(headers).forEach(propertyName => {
       let columnConfig = {
         title: propertyName,
         dataIndex: propertyName,
@@ -544,7 +544,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     let columnsResult = [];
     // @ts-ignore
     this.fieldConfigs && this.fieldConfigs.forEach(element => {
-        columnOrder.push(element.value);
+      columnOrder.push(element.value);
     });
     columnOrder.forEach(str => {
       columns.forEach(element => {

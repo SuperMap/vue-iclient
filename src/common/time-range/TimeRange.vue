@@ -12,8 +12,8 @@
 </template>
 
 <script lang="ts">
-import { getColorWithOpacity } from '../_utils/util';
-import Theme from '../_mixin/Theme';
+import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import ECharts from 'vue-echarts';
 import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';
 import UniqueId from 'lodash.uniqueid';
@@ -43,6 +43,7 @@ class SmTimeRange extends Mixins(Theme) {
     }
   })
   data: Array<any>;
+
   @Prop() backgroundColor: string;
   @Prop() borderColor: string;
   @Prop() fillerColor: string;
@@ -52,6 +53,7 @@ class SmTimeRange extends Mixins(Theme) {
     }
   })
   textStyle: Object;
+
   @Prop({
     default() {
       return {};
@@ -62,6 +64,7 @@ class SmTimeRange extends Mixins(Theme) {
   get color() {
     return this.getColor(0);
   }
+
   get options() {
     let options = {
       dataZoom: [
@@ -109,7 +112,7 @@ class SmTimeRange extends Mixins(Theme) {
   }
 
   @Emit('datazoom')
-  dataZoomChanged(val) {
+  dataZoomChanged() {
     // @ts-ignore
     let { startValue, endValue } = this.$refs[this.chartId].chart.getOption().dataZoom[0];
     return { startValue, endValue };

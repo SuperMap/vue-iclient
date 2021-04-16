@@ -1,5 +1,5 @@
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from '../../mapboxgl/web-map/SourceListModel';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
 
 /**
  * @class LayerSelectViewModel
@@ -24,6 +24,7 @@ class LayerSelectViewModel extends mapboxgl.Evented {
     const sourceList = sourceListModel.getSourceList();
     this.fire('layersupdated', { sourceList });
   }
+
   setMap(mapInfo: mapInfoType) {
     const { map } = mapInfo;
     this.map = map;

@@ -52,9 +52,9 @@ function getValue(hsv: any, i: number, isLight: boolean): number {
 }
 
 export default function colorPalette(color: string, index: number): string {
-  let isLight = index <= 6;
-  let hsv = tinycolor(color).toHsv();
-  let i = isLight ? lightColorCount + 1 - index : index - lightColorCount - 1;
+  const isLight = index <= 6;
+  const hsv = tinycolor(color).toHsv();
+  const i = isLight ? lightColorCount + 1 - index : index - lightColorCount - 1;
   return tinycolor({
     h: getHue(hsv, i, isLight),
     s: getSaturation(hsv, i, isLight),

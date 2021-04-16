@@ -1,10 +1,10 @@
-import '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import { Events } from '../_types/event/Events';
-import { getProjection } from './epsg-define';
+import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { Events } from 'vue-iclient/src/common/_types/event/Events';
+import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';
-import { isMatchUrl } from './util';
-import { statisticsFeatures } from './statistics';
+import { isMatchUrl } from 'vue-iclient/src/common/_utils/util';
+import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
 import cloneDeep from 'lodash.clonedeep';
 
 export function _getValueOfEpsgCode(epsgCode) {
@@ -136,6 +136,7 @@ export default class iServerRestService extends Events {
     }
     this._getDatasetInfoSucceed(datasetInfo, queryInfo);
   }
+
   /**
    * @function iServerRestService.prototype.getData
    * @description 请求数据。
@@ -180,6 +181,7 @@ export default class iServerRestService extends Events {
       this._getMapFeatureBySql(dataUrl, queryInfo);
     }
   }
+
   /**
    * @function iServerRestService.prototype.getDataFeatures
    * @description 请求数据服务数据。
@@ -207,6 +209,7 @@ export default class iServerRestService extends Events {
       this._getDataFeaturesBySql(dataUrl, queryInfo);
     }
   }
+
   _getMapFeatureBySql(url, queryInfo) {
     let queryBySQLParams, queryBySQLService;
     queryBySQLParams = new SuperMap.QueryBySQLParameters({
@@ -234,6 +237,7 @@ export default class iServerRestService extends Events {
     });
     queryBySQLService.processAsync(queryBySQLParams);
   }
+
   _getDataFeaturesBySql(url, queryInfo) {
     let getFeatureBySQLParams, getFeatureBySQLService;
     getFeatureBySQLParams = new SuperMap.GetFeaturesBySQLParameters({
@@ -340,6 +344,7 @@ export default class iServerRestService extends Events {
         this.fetchFailed(error);
       });
   }
+
   _getRestMapFields(url, layerName, callBack, withCredentials = false) {
     let param = new SuperMap.QueryBySQLParameters({
       queryParams: [
@@ -369,6 +374,7 @@ export default class iServerRestService extends Events {
     });
     queryBySQLSerice.processAsync(param);
   }
+
   _getAttributeFilterByKeywords(fields, keyWord) {
     let attributeFilter = '';
     fields &&
@@ -378,6 +384,7 @@ export default class iServerRestService extends Events {
       }, this);
     return attributeFilter;
   }
+
   /**
    * @function iServerRestService.prototype._checkUrl
    * @description 检查url是否符合要求

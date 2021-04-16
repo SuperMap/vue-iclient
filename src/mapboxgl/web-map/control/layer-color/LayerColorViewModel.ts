@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 interface MapEventCallBack {
   (e: mapboxglTypes.MapMouseEvent): void;
@@ -67,7 +67,7 @@ class LayerColorViewModel extends mapboxgl.Evented {
     }
   }
 
-  _changeCursor(cursorType: string = '') {
+  _changeCursor(cursorType = '') {
     if (this.map && this.map.getCanvas()) {
       this.map.getCanvas().style.cursor = cursorType;
     }

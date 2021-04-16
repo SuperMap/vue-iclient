@@ -1,6 +1,7 @@
-import globalEvent from '../../global-event';
-import themeFactory from './theme.json';
-import { dealWithTheme, ThemeStyleParams } from '../color/serialColors';
+import Vue from 'vue';
+import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import themeFactory from 'vue-iclient/src/common/_utils/style/theme/theme.json';
+import { dealWithTheme, ThemeStyleParams } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 
 export const setTheme = (themeStyle: any = {}) => {
   let acceptedThemeStyle = themeStyle;
@@ -23,4 +24,12 @@ export const setTheme = (themeStyle: any = {}) => {
   }
   globalEvent.$options.theme = nextTheme;
   globalEvent.$emit('change-theme', nextTheme);
+  // @ts-ignore
+  if (!Vue.iclient) {
+    // @ts-ignore
+    Vue.iclient = { theme: nextTheme };
+  } else {
+    // @ts-ignore
+    Vue.iclient.theme = nextTheme;
+  }
 };

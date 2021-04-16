@@ -1,7 +1,7 @@
 <script>
-import MapGetter from '../../../_mixin/map-getter';
-import Layer from '../../../_mixin/layer';
-import themeLayerEvents from '../../_mixin/theme-layer';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
+import themeLayerEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/theme-layer';
 import LabelThemeLayerViewModel from './LabelThemeLayerViewModel.js';
 
 export default {

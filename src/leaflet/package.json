@@ -3,7 +3,7 @@
   "description": "SuperMap iClient for Vue.js",
   "version": "11.0.0-dev",
   "homepage": "http://iclient.supermap.io",
-  "main": "dist/index",
+  "main": "lib/index",
   "dependencies": {
     "@types/leaflet": "^1.5.5",
     "leaflet": "1.5.1",

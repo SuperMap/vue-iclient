@@ -1,12 +1,12 @@
 <script lang="ts">
 import { CreateElement, VNode } from 'vue';
 import { Component, Mixins, Prop, Emit, Watch } from 'vue-property-decorator';
-import MapGetter from '../../../_mixin/map-getter';
-import Control from '../../../_mixin/control';
-import VmUpdater from '../../../../common/_mixin/VmUpdater';
-import BaseCard from '../../../../common/_mixin/Card';
-import Theme from '../../../../common/_mixin/Theme';
-import SmCollapseCard from '../../../../common/collapse-card/CollapseCard.vue';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
+import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import SmCollapseCard from 'vue-iclient/src/common/collapse-card/CollapseCard.vue';
 import FlyToViewModel, { flyToLocationOptions } from './FlyToViewModel';
 
 type centerParam = [number, number];

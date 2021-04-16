@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import { getDataType } from './util';
+import { getDataType } from 'vue-iclient/src/common/_utils/util';
 
 const EpsgDefine = new Vue({
   epsgCodes: {

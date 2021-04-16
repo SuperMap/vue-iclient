@@ -17,27 +17,7 @@
   @include e(group-addon, '-') {
     background-color: $background-color-light;
   }
-  @include e(number, '-') {
-    @include focus($primary-5, $primary-shadow-color);
-    &-focused {
-      @include focus-color($primary-5, $primary-shadow-color);
-    }
-    &-handler {
-      color: $text-color-secondary;
-      &:active {
-        background: $input-number-handler-active-bg;
-      }
-      &-up-inner, &-down-inner {
-        color: $text-color-secondary;
-      }
-    }
-    &-md {
-      @include input-md();
-      input {
-        @include input-md();
-      }
-    }
-  }
+  
   @include e(password, '-') {
     @include suffix-icon();
   }

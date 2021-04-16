@@ -62,7 +62,7 @@
         <sm-input
           :placeholder="`Search ${column.dataIndex}`"
           :value="selectedKeys[0]"
-          style="width: 188px; margin-bottom: 8px; display: block;"
+          style="width: 188px; margin-bottom: 8px; display: block"
           @change="e => setSelectedKeys(e.target.value ? [e.target.value] : [])"
           @pressEnter="() => handleSearch(selectedKeys, confirm, column.dataIndex)"
         />
@@ -70,12 +70,12 @@
           type="primary"
           icon="search"
           size="small"
-          style="width: 90px; margin-right: 8px;"
+          style="width: 90px; margin-right: 8px"
           @click="() => handleSearch(selectedKeys, confirm, column.dataIndex)"
         >
           {{ $t('attributes.search') }}
         </sm-button>
-        <sm-button size="small" style="width: 90px;" @click="() => handleReset(clearFilters)">
+        <sm-button size="small" style="width: 90px" @click="() => handleReset(clearFilters)">
           {{ $t('attributes.reset') }}
         </sm-button>
       </div>
@@ -96,24 +96,24 @@
 
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
-import Theme from '../../common/_mixin/Theme';
-import MapGetter from '../_mixin/map-getter';
-import SmTable from '../../common/table/Table.vue';
-import SmDropdown from '../../common/dropdown/Dropdown.vue';
-import SmMenu from '../../common/menu/Menu.vue';
-import SmMenuItem from '../../common/menu/MenuItem.vue';
-import SmSubMenu from '../../common/menu/SubMenu.vue';
-import SmButton from '../../common/button/Button.vue';
-import SmInput from '../../common/input/Input.vue';
-import SmIcon from '../../common/icon/Icon.vue';
-import SmCheckbox from '../../common/checkbox/Checkbox.vue';
-import CircleStyle from '../_types/CircleStyle';
-import FillStyle from '../_types/FillStyle';
-import LineStyle from '../_types/LineStyle';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import SmTable from 'vue-iclient/src/common/table/Table.vue';
+import SmDropdown from 'vue-iclient/src/common/dropdown/Dropdown.vue';
+import SmMenu from 'vue-iclient/src/common/menu/Menu.vue';
+import SmMenuItem from 'vue-iclient/src/common/menu/MenuItem.vue';
+import SmSubMenu from 'vue-iclient/src/common/menu/SubMenu.vue';
+import SmButton from 'vue-iclient/src/common/button/Button.vue';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
+import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
+import SmCheckbox from 'vue-iclient/src/common/checkbox/Checkbox.vue';
+import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
+import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
+import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 import AttributesViewModel from './AttributesViewModel';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
-import VmUpdater from '../../common/_mixin/VmUpdater';
+import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 
 export interface PaginationParams {
   defaultCurrent?: number;
@@ -339,14 +339,17 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       tableWrap.scrollTop = selectFeatureScrollTop;
     }
   }
+
   handleColumnVisible(column) {
     const columnIndex = this.columns.indexOf(column);
     column.visible = !column.visible;
     this.$set(this.columns, columnIndex, column);
   }
+
   changeSelectedRows(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys;
   }
+
   clearSelectedRows() {
     this.selectedRowKeys = [];
   }
@@ -400,6 +403,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     this.viewModel.off('changeSelectLayer');
     this.viewModel = null;
   }
+
   beforeDestory() {
     this.$options.removed.call(this);
   }

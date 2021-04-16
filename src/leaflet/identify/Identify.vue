@@ -1,10 +1,6 @@
 <template>
   <ul v-show="false" ref="Popup" :style="[getTextColorStyle]" :class="['sm-component-identify']">
-    <li
-      v-for="(value, key, index) in popupProps"
-      :key="index"
-      class="sm-component-identify__body"
-    >
+    <li v-for="(value, key, index) in popupProps" :key="index" class="sm-component-identify__body">
       <div class="sm-component-identify__left" :title="key">{{ key }}</div>
       <div class="sm-component-identify__right" :title="value">{{ value }}</div>
     </li>
@@ -12,8 +8,8 @@
 </template>
 
 <script>
-import MapGetter from '../_mixin/map-getter';
-import Theme from '../../common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/leaflet/_mixin/map-getter';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import IdentifyViewModel from './IdentifyViewModel';
 
 export default {
@@ -217,7 +213,7 @@ export default {
         // 过滤字段
         if (this.fields.length > 0) {
           this.fields.forEach(field => {
-            if (feature.properties.hasOwnProperty(field)) {
+            if (Object.prototype.hasOwnProperty.call(feature.properties, field)) {
               this.popupProps[field] = feature.properties[field];
             }
           });

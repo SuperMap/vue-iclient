@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2';
@@ -67,18 +67,18 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
   trackPoints: GeoJSON.Feature[];
   lineData: [number, number][] = [];
   layerStyle: layerStyleParams = {};
-  imageName: string = 'custom-image';
+  imageName = 'custom-image';
   camera: THREE.Camera;
   scene: THREE.Scene;
   renderer: THREE.WebGLRenderer;
   map: mapboxglTypes.Map;
   modelTransform: modelTransformParams;
-  animateTime: number = 0;
-  animateRemaining: number = 0;
+  animateTime = 0;
+  animateRemaining = 0;
   currentPosition: [number, number];
   startPosition: [number, number];
   destPosition: [number, number];
-  rotateFactor: number = 0;
+  rotateFactor = 0;
   animationFrameId: number;
   _animateLayerFn: () => void;
   position: positionTimeStampParams;
@@ -351,10 +351,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     if (pointInfo) {
       const startPoint = pointInfo.startPoint;
       const endPoint = pointInfo.endPoint;
-      const nextPoint = endPoint
-        .sub(startPoint)
-        .mult(percent)
-        .add(startPoint);
+      const nextPoint = endPoint.sub(startPoint).mult(percent).add(startPoint);
       const nextPosition = this.map.unproject(nextPoint).toArray();
       return nextPosition;
     }
@@ -695,6 +692,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
         return 1;
     }
   }
+
   private _getMeterFactor(): number {
     const modelScale = this.options.scale;
     let scaleFactor: number;
@@ -768,7 +766,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
         break;
       case 'OBJ2':
         loader = new OBJLoader2();
-        var material = new THREE.MeshBasicMaterial({
+        let material = new THREE.MeshBasicMaterial({
           color: 'red',
           wireframe: true
         });

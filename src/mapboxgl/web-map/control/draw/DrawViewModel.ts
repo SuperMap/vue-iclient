@@ -1,9 +1,9 @@
 import turfLength from '@turf/length';
 import turfArea from '@turf/area';
 import { convertArea } from '@turf/helpers';
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import drawEvent from '../../../_types/draw-event';
-import { geti18n } from '../../../../common/_lang';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 /**
  * @class DrawViewModel
@@ -11,7 +11,6 @@ import { geti18n } from '../../../../common/_lang';
  * @param {Object} webmap - webmap实例对象。
  * @extends mapboxgl.Evented
  */
-
 export default class DrawViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   mapTarget: string;

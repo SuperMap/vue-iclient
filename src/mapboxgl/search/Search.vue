@@ -104,14 +104,14 @@
   </div>
 </template>
 <script>
-import Theme from '../../common/_mixin/Theme';
-import MapGetter from '../_mixin/map-getter';
-import Control from '../_mixin/control';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import SearchViewModel from './SearchViewModel';
-import SmIcon from '../../common/icon/Icon';
-import SmInput from '../../common/input/Input';
-import TablePopup from '../../common/table-popup/TablePopup';
-import { setPopupArrowStyle } from '../../common/_utils/util';
+import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
+import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
+import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
 
 export default {
@@ -258,7 +258,7 @@ export default {
       };
       this.viewModel && this.viewModel.removed();
     },
-    searchInput(e) {
+    searchInput() {
       if (this.openSearchSuggestion && !this.isInputing) {
         if (this.searchKey) {
           this.isSuggestion = true;

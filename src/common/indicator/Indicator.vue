@@ -33,9 +33,9 @@
 </template>
 
 <script>
-import Theme from '../_mixin/Theme';
-import Timer from '../_mixin/Timer';
-import RestService from '../../common/_utils/RestService';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Timer from 'vue-iclient/src/common/_mixin/Timer';
+import RestService from 'vue-iclient/src/common/_utils/RestService';
 import CountTo from './CountTo';
 
 export default {
@@ -96,7 +96,7 @@ export default {
     mode: {
       type: String,
       default: 'vertical',
-      validator: function(val) {
+      validator: function() {
         return ['vertical', 'horizontal'];
       }
     },
@@ -228,7 +228,7 @@ export default {
               this.titleData = next;
               break;
             case 'titleField':
-              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+              if (this.fetchProperties && Object.prototype.hasOwnProperty.call(this.fetchProperties, next)) {
                 this.titleData = this.fetchProperties[this.titleField];
               } else {
                 this.titleData = this.title;
@@ -238,7 +238,7 @@ export default {
               this.unitData = next;
               break;
             case 'unitField':
-              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+              if (this.fetchProperties && Object.prototype.hasOwnProperty.call(this.fetchProperties, next)) {
                 this.unitData = this.fetchProperties[this.unitField];
               } else {
                 this.unitData = this.unit;
@@ -248,7 +248,7 @@ export default {
               this.changeNumData(next);
               break;
             case 'numField':
-              if (this.fetchProperties && this.fetchProperties.hasOwnProperty(next)) {
+              if (this.fetchProperties && Object.prototype.hasOwnProperty.call(this.fetchProperties, next)) {
                 this.changeNumData(this.fetchProperties[this.numField]);
               } else {
                 this.changeNumData(this.num);
@@ -268,11 +268,11 @@ export default {
       if (features && !!features.length) {
         const properties = features[0].properties;
         this.fetchProperties = properties;
-        this.unitData = properties.hasOwnProperty(this.unitField) ? properties[this.unitField] : this.unit;
-        properties.hasOwnProperty(this.numField)
+        this.unitData = Object.prototype.hasOwnProperty.call(properties, this.unitField) ? properties[this.unitField] : this.unit;
+        Object.prototype.hasOwnProperty.call(properties, this.numField)
           ? this.changeNumData(properties[this.numField])
           : this.changeNumData(this.num);
-        this.titleData = properties.hasOwnProperty(this.titleField) ? properties[this.titleField] : this.title;
+        this.titleData = Object.prototype.hasOwnProperty.call(properties, this.titleField) ? properties[this.titleField] : this.title;
       }
     },
     getData() {

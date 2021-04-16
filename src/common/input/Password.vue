@@ -1,7 +1,7 @@
 <script lang="ts">
 import Password from 'ant-design-vue/es/input/Password';
 import inputProps from 'ant-design-vue/es/input/inputProps';
-import VueTypes from '../_utils/vue-types';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import Base from './BaseMixin.vue';
 
 export const inputPasswordTypes = {

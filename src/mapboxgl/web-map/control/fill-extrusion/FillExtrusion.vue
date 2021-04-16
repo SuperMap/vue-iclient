@@ -13,9 +13,9 @@
   >
     <div class="sm-component-fill-extrusion__content">
       <div class="content-item">
-        <label :title="$t('fillExtrusion.polygonLayer')" :style="headingTextColorStyle">
-          {{ $t('fillExtrusion.polygonLayer') }}
-        </label>
+        <label :title="$t('fillExtrusion.polygonLayer')" :style="headingTextColorStyle">{{
+          $t('fillExtrusion.polygonLayer')
+        }}</label>
         <sm-layer-select
           v-model="editLayerSelected"
           size="middle"
@@ -28,9 +28,9 @@
       </div>
       <template v-if="currentFillExtrusionOption">
         <div class="content-item">
-          <label :title="$t('fillExtrusion.hideOriginalLayer')" :style="headingTextColorStyle">
-            {{ $t('fillExtrusion.hideOriginalLayer') }}
-          </label>
+          <label :title="$t('fillExtrusion.hideOriginalLayer')" :style="headingTextColorStyle">{{
+            $t('fillExtrusion.hideOriginalLayer')
+          }}</label>
           <sm-switch
             v-model="currentFillExtrusionOption.hideOriginLayer"
             size="small"
@@ -38,32 +38,33 @@
           />
         </div>
         <div class="content-item height-item">
-          <label :title="$t('fillExtrusion.height')" :style="headingTextColorStyle">
-            {{ $t('fillExtrusion.height') }}
-          </label>
+          <label :title="$t('fillExtrusion.height')" :style="headingTextColorStyle">{{
+            $t('fillExtrusion.height')
+          }}</label>
           <sm-radio-group v-model="currentFillExtrusionOption.heightFieldWay" name="radiogroup" size="middle">
             <sm-radio-button v-if="currentFillExtrusionOption.fields.length > 0" value="default">
-              <span :style="currentFillExtrusionOption.heightFieldWay === 'default' ? headingTextColorStyle : null">
-                {{ $t('fillExtrusion.fieldName') }}
-              </span>
+              <span :style="currentFillExtrusionOption.heightFieldWay === 'default' ? headingTextColorStyle : null">{{
+                $t('fillExtrusion.fieldName')
+              }}</span>
             </sm-radio-button>
             <sm-radio-button v-else value="customField">
-              <span :style="currentFillExtrusionOption.heightFieldWay === 'customField' ? headingTextColorStyle : null">
-                {{ $t('fillExtrusion.fieldName') }}
-              </span>
+              <span
+                :style="currentFillExtrusionOption.heightFieldWay === 'customField' ? headingTextColorStyle : null"
+              >{{ $t('fillExtrusion.fieldName') }}</span
+              >
             </sm-radio-button>
             <sm-radio-button value="customNum">
-              <span :style="currentFillExtrusionOption.heightFieldWay === 'customNum' ? headingTextColorStyle : null">
-                {{ $t('fillExtrusion.customNum') }}
-              </span>
+              <span :style="currentFillExtrusionOption.heightFieldWay === 'customNum' ? headingTextColorStyle : null">{{
+                $t('fillExtrusion.customNum')
+              }}</span>
             </sm-radio-button>
           </sm-radio-group>
         </div>
         <div class="sub-content-holder">
           <div class="content-item">
-            <label :title="$t('fillExtrusion.heightValue')" :style="headingTextColorStyle">
-              {{ $t('fillExtrusion.heightValue') }}
-            </label>
+            <label :title="$t('fillExtrusion.heightValue')" :style="headingTextColorStyle">{{
+              $t('fillExtrusion.heightValue')
+            }}</label>
             <sm-select
               v-if="currentFillExtrusionOption.heightFieldWay === 'default'"
               v-model="currentFillExtrusionOption.heightField"
@@ -81,27 +82,46 @@
               :placeholder="$t('fillExtrusion.customFieldPlaceholder')"
             />
             <div v-if="currentFillExtrusionOption.heightFieldWay === 'customNum'" class="content-holder">
-              <sm-slider v-model="currentFillExtrusionOption.height" :min="0" :max="1000" :tipFormatter="()=>{ return currentFillExtrusionOption.height }" />
-              <sm-input-number v-model="currentFillExtrusionOption.height" size="middle" :min="0" :style="getBackgroundStyle" />
+              <sm-slider
+                v-model="currentFillExtrusionOption.height"
+                :min="0"
+                :max="1000"
+                :tipFormatter="
+                  () => {
+                    return currentFillExtrusionOption.height;
+                  }
+                "
+              />
+              <sm-input-number
+                v-model="currentFillExtrusionOption.height"
+                size="middle"
+                :min="0"
+                :style="getBackgroundStyle"
+              />
             </div>
           </div>
           <div v-if="currentFillExtrusionOption.heightFieldWay !== 'customNum'" class="content-item">
-            <label :title="$t('fillExtrusion.multiple')" :style="headingTextColorStyle">
-              {{ $t('fillExtrusion.multiple') }}
-            </label>
-            <sm-input-number v-model="currentFillExtrusionOption.multiple" size="middle" :min="0" :style="getBackgroundStyle" />
+            <label :title="$t('fillExtrusion.multiple')" :style="headingTextColorStyle">{{
+              $t('fillExtrusion.multiple')
+            }}</label>
+            <sm-input-number
+              v-model="currentFillExtrusionOption.multiple"
+              size="middle"
+              :min="0"
+              :style="getBackgroundStyle"
+            />
           </div>
         </div>
         <div class="content-item">
-          <label :title="$t('fillExtrusion.fillColor')" :style="headingTextColorStyle">
-            {{ $t('fillExtrusion.fillColor') }}
-          </label>
+          <label :title="$t('fillExtrusion.fillColor')" :style="headingTextColorStyle">{{
+            $t('fillExtrusion.fillColor')
+          }}</label>
           <sm-color-picker v-model="currentFillExtrusionOption.color" />
         </div>
         <div class="content-item">
-          <label :title="$t('fillExtrusion.layerOpacity')" :style="headingTextColorStyle">
-            {{ $t('fillExtrusion.layerOpacity') }}
-          </label>
+          <label :title="$t('fillExtrusion.layerOpacity')" :style="headingTextColorStyle">{{
+            $t('fillExtrusion.layerOpacity')
+          }}</label>
           <div class="content-holder">
             <sm-slider v-model="currentFillExtrusionOption.opacity" :min="0" :max="1" :step="0.1" />
             <sm-input-number
@@ -130,21 +150,21 @@
 
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
-import BaseCard from '../../../../common/_mixin/Card';
-import SmLayerSelect from '../../../../common/layer-select/LayerSelect.vue';
-import SmSelect from '../../../../common/select/Select.vue';
-import SmSwitch from '../../../../common/switch/Switch.vue';
-import SmRadioGroup from '../../../../common/radio/Group.vue';
-import SmRadioButton from '../../../../common/radio/Button.vue';
-import SmInput from '../../../../common/input/Input.vue';
-import SmInputNumber from '../../../../common/input/Number.vue';
-import SmSlider from '../../../../common/slider/Slider.vue';
-import SmColorPicker from '../../../../common/color-picker/ColorPicker.vue';
-import SmButton from '../../../../common/button/Button.vue';
-import SmFillExtrusionLayer from '../../layer/fill-extrusion/FillExtrusionLayer.vue';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import SmLayerSelect from 'vue-iclient/src/common/layer-select/LayerSelect.vue';
+import SmSelect from 'vue-iclient/src/common/select/Select.vue';
+import SmSwitch from 'vue-iclient/src/common/switch/Switch.vue';
+import SmRadioGroup from 'vue-iclient/src/common/radio/Group.vue';
+import SmRadioButton from 'vue-iclient/src/common/radio/Button.vue';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
+import SmInputNumber from 'vue-iclient/src/common/input-number/InputNumber.vue';
+import SmSlider from 'vue-iclient/src/common/slider/Slider.vue';
+import SmColorPicker from 'vue-iclient/src/common/color-picker/ColorPicker.vue';
+import SmButton from 'vue-iclient/src/common/button/Button.vue';
+import SmFillExtrusionLayer from 'vue-iclient/src/mapboxgl/web-map/layer/fill-extrusion/FillExtrusionLayer.vue';
 import FillExtrusionViewModel, {
   sourceListParams,
   layerStyleParams,

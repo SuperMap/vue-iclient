@@ -1,11 +1,11 @@
 <script lang="ts">
 import Modal from 'ant-design-vue/es/modal';
-import Theme from '../_mixin/Theme';
-import VueTypes from '../_utils/vue-types';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import buttonTypes from 'ant-design-vue/es/button/buttonTypes';
-import AntdRender from '../_mixin/AntdRender';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
-var ButtonType = buttonTypes().type;
+let ButtonType = buttonTypes().type;
 
 export const modalTypes = {
   prefixCls: VueTypes.string,
@@ -54,7 +54,7 @@ export default {
     extralListeners() {
       const vm = this;
       return {
-        'change': function (value) {
+        change: function (value) {
           vm.$emit('change', value);
         }
       };

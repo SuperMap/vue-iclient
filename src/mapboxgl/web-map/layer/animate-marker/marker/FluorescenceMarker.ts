@@ -56,6 +56,7 @@ export default class FluorescenceMarker extends Marker {
       style.setProperty('--box-shadow-width', this.options.width + 'px');
     }
   }
+
   _setFluorescenceColor(style): void {
     if (this.options.colors && this.options.colors.length > 0) {
       style.setProperty('--box-shadow-color', this.options.colors[0]);

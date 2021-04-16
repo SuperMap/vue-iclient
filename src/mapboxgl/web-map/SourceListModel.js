@@ -1,5 +1,5 @@
-import SourceModel from './SourceModel';
-import LayerModel from './LayerModel';
+import SourceModel from 'vue-iclient/src/mapboxgl/web-map/SourceModel';
+import LayerModel from 'vue-iclient/src/mapboxgl/web-map/LayerModel';
 
 class SourceListModel {
   constructor(options) {
@@ -58,16 +58,16 @@ class SourceListModel {
   }
 
   getLayersBySourceLayer(sourceName, sourceLayer) {
-    return this.sourceList[sourceName]['sourceLayerList'][sourceLayer];
+    return this.sourceList[sourceName].sourceLayerList[sourceLayer];
   }
 
   getSourceLayersBySource(sourceName) {
-    return this.sourceList[sourceName]['sourceLayerList'];
+    return this.sourceList[sourceName].sourceLayerList;
   }
 
   addSourceStyle(sourceName, sourceStyle) {
     if (this.sourceList[sourceName]) {
-      this.sourceList[sourceName]['style'] = sourceStyle;
+      this.sourceList[sourceName].style = sourceStyle;
     }
   }
 
@@ -91,15 +91,15 @@ class SourceListModel {
   _initSource() {
     this.detailLayers &&
       this.detailLayers.forEach(layer => {
-        if (!this.sourceList[layer['source']]) {
-          const source = this.map.getSource(layer['source']);
-          this.sourceList[layer['source']] = new SourceModel({
-            source: layer['source'],
+        if (!this.sourceList[layer.source]) {
+          const source = this.map.getSource(layer.source);
+          this.sourceList[layer.source] = new SourceModel({
+            source: layer.source,
             type: source && source.type
           });
-          this.sourceNames.push(layer['source']);
+          this.sourceNames.push(layer.source);
         }
-        this.sourceList[layer['source']].addLayer(new LayerModel(layer), layer['sourceLayer']);
+        this.sourceList[layer.source].addLayer(new LayerModel(layer), layer.sourceLayer);
       });
   }
 }

@@ -128,22 +128,22 @@
   </sm-collapse-card>
 </template>
 <script>
-import Theme from '../../common/_mixin/Theme';
-import Control from '../_mixin/control';
-import Card from '../../common/_mixin/Card';
-import MapGetter from '../_mixin/map-getter';
-import LineStyle from '../_types/LineStyle';
-import FillStyle from '../_types/FillStyle';
-import CircleStyle from '../_types/CircleStyle';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import Card from 'vue-iclient/src/common/_mixin/Card';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
+import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
+import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import QueryViewModel from './QueryViewModel.js';
-import SmSelect from '../../common/select/Select';
-import SmSelectOption from '../../common/select/Option';
-import SmButton from '../../common/button/Button';
-import SmEmpty from '../../common/empty/Empty';
-import SmSpin from '../../common/spin/Spin';
-import SmIcon from '../../common/icon/Icon';
-import TablePopup from '../../common/table-popup/TablePopup';
-import { setPopupArrowStyle, getValueCaseInsensitive } from '../../common/_utils/util';
+import SmSelect from 'vue-iclient/src/common/select/Select.vue';
+import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
+import SmButton from 'vue-iclient/src/common/button/Button.vue';
+import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
+import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
+import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
+import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
+import { setPopupArrowStyle, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
 
 export default {

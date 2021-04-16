@@ -36,12 +36,12 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import BaseCard from '../../../../common/_mixin/Card';
-import MapGetter from '../../../_mixin/map-getter';
-import SmCard from '../../../../common/card/Card';
-import SmDirectoryTree from '../../../../common/tree/DirectoryTree';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import SmCard from 'vue-iclient/src/common/card/Card.vue';
+import SmDirectoryTree from 'vue-iclient/src/common/tree/DirectoryTree.vue';
 import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
 import clonedeep from 'lodash.clonedeep';
@@ -150,7 +150,7 @@ export default {
       this.viewModel.removeIServerLayer(nodeKey);
     },
     insertProperty(layers) {
-      this.eachNode(layers, function(node, parentNode) {
+      this.eachNode(layers, function (node) {
         // 为没有传key的节点生成key
         if (!node.key) {
           node.key = uniqueId('key_');
@@ -164,11 +164,11 @@ export default {
           node.disableCheckbox && (node.disableCheckbox = false);
           node.disabled && (node.disabled = false);
         }
-        if (!node['scopedSlots']) {
+        if (!node.scopedSlots) {
           if (node.children) {
-            node['scopedSlots'] = { title: 'title' };
+            node.scopedSlots = { title: 'title' };
           } else {
-            node['scopedSlots'] = { title: 'title', mapInfo: 'mapInfo' };
+            node.scopedSlots = { title: 'title', mapInfo: 'mapInfo' };
           }
         }
       });

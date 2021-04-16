@@ -1,5 +1,5 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from '../../SourceListModel';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
 import cloneDeep from 'lodash.clonedeep';
 
 export interface layerStyleParams {
@@ -21,7 +21,7 @@ export interface sourceListParams {
   id: string;
   layers: mapboxglTypes.Layer[];
   sourceLayers: {
-    [prop: string]: mapboxglTypes.Layer[]
+    [prop: string]: mapboxglTypes.Layer[];
   };
 }
 
@@ -43,10 +43,6 @@ interface showLayerParam {
 
 export default class FillExtrusionViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
-
-  constructor() {
-    super();
-  }
 
   setMap(mapInfo: mapInfoType) {
     const { map } = mapInfo;
@@ -91,7 +87,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
   }
 
   toggleShowCorrespondingLayer(data: showLayerParam): void {
-    if (!data && (!data.source && !data.sourceLayer) || !this.map) {
+    if ((!data && !data.source && !data.sourceLayer) || !this.map) {
       return;
     }
     const sourceList = this._getSourceList();
@@ -102,10 +98,13 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
         if (data.sourceLayer) {
           filterCondition = layer.sourceLayer === data.sourceLayer;
         }
-        if (filterCondition && (layer.id === data.layerId || !data.fillExtrusionLayerIdList.includes(layer.id) && layer.type !== 'fill')) {
+        if (
+          filterCondition &&
+          (layer.id === data.layerId || (!data.fillExtrusionLayerIdList.includes(layer.id) && layer.type !== 'fill'))
+        ) {
           this.map.setLayoutProperty(layer.id, 'visibility', data.value);
         }
-      })
+      });
     }
   }
 
@@ -119,7 +118,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
 
   private _getSourceLayers(sourceModel: any, sourceLayer: string): sourceListParams {
     let layers = null;
-    let sourceLayers = sourceModel.sourceLayerList ? {} : null;
+    const sourceLayers = sourceModel.sourceLayerList ? {} : null;
     const layerList = sourceLayers && sourceLayer ? sourceModel.sourceLayerList[sourceLayer] : sourceModel.layers;
     layerList.forEach((item: mapboxglTypes.Layer) => {
       if (item.type === 'fill') {
@@ -128,7 +127,8 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
         const nextLayer: mapboxglTypes.Layer = cloneDeep(layer.serialize());
         layers.push(nextLayer);
         if (sourceLayers) {
-          const sourceLayerName = item['sourceLayer'];
+          // @ts-ignore
+          const sourceLayerName = item.sourceLayer;
           if (!sourceLayers[sourceLayerName]) {
             sourceLayers[sourceLayerName] = [];
           }

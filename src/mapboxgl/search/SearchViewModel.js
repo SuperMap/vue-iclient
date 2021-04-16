@@ -1,11 +1,11 @@
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import iPortalDataService from '../../common/_utils/iPortalDataService';
-import iServerRestService from '../../common/_utils/iServerRestService';
-import { geti18n } from '../../common/_lang';
-import { getFeatureCenter } from '../../common/_utils/util';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
+import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
+import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
 
 /**
  * @class SearchViewModel
@@ -170,6 +170,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       });
     }
   }
+
   /**
    * @function SearchViewModel.prototype.addMarker
    * @description 向地图上添加 Marker。
@@ -189,17 +190,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
     const marker = new mapboxgl.Marker();
     this.popupList.push(popup);
     this.markerList.push(marker);
-    popup
-      .setLngLat(coordinates)
-      .setDOMContent(popupContainer)
-      .addTo(this.map);
+    popup.setLngLat(coordinates).setDOMContent(popupContainer).addTo(this.map);
     popup.on('open', () => {
       callback && callback();
     });
-    marker
-      .setLngLat(coordinates)
-      .setPopup(popup)
-      .addTo(this.map);
+    marker.setLngLat(coordinates).setPopup(popup).addTo(this.map);
     this.map.flyTo({ center: coordinates });
   }
 
@@ -218,6 +213,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       }, this);
     }, 0);
   }
+
   _searchFeaturesFailed(error, sourceName) {
     error && console.log(error);
     if (this.errorSourceList[sourceName]) return;
@@ -232,6 +228,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       this.fire('searchfailed' + this.searchTaskId, { error, sourceName }) &&
       (this.searchTaskId += 1);
   }
+
   _searchFeaturesSucceed(resultFeature, sourceName) {
     if (this.errorSourceList[sourceName]) {
       delete this.errorSourceList[sourceName];
@@ -294,10 +291,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
       restMap.epsgCode && (options.epsgCode = restMap.epsgCode);
       let iserverService = new iServerRestService(restMap.url, options);
       iserverService.on({
-        getdatafailed: e => {
+        getdatafailed: () => {
           this._searchFeaturesFailed('', restMap.name || sourceName);
         },
-        featureisempty: e => {
+        featureisempty: () => {
           this._searchFeaturesSucceed([], restMap.name || sourceName);
         },
         getdatasucceeded: e => {
@@ -324,10 +321,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
       restData.epsgCode && (options.epsgCode = restData.epsgCode);
       let iserverService = new iServerRestService(restData.url, options);
       iserverService.on({
-        getdatafailed: e => {
+        getdatafailed: () => {
           this._searchFeaturesFailed('', restData.name || sourceName);
         },
-        featureisempty: e => {
+        featureisempty: () => {
           this._searchFeaturesSucceed([], restData.name || sourceName);
         },
         getdatasucceeded: e => {
@@ -349,12 +346,14 @@ export default class SearchViewModel extends mapboxgl.Evented {
   _searchFromIportal(iportalDatas) {
     const sourceName = 'Iportal Search';
     iportalDatas.forEach(iportal => {
-      let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false, { epsgCode: iportal.epsgCode });
+      let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false, {
+        epsgCode: iportal.epsgCode
+      });
       iPortalService.on({
-        getdatafailed: e => {
+        getdatafailed: () => {
           this._searchFeaturesFailed('', iportal.name || sourceName);
         },
-        featureisempty: e => {
+        featureisempty: () => {
           this._searchFeaturesSucceed([], iportal.name || sourceName);
         },
         getdatasucceeded: e => {
@@ -411,9 +410,9 @@ export default class SearchViewModel extends mapboxgl.Evented {
           filterAttributeName: data[i].name || geoCodeParam.keyWords,
           filterAttributeValue: data[i].formatedAddress || data[i].address || geti18n().t('search.null')
         },
-        filterVal: `${data[i].name || geoCodeParam.keyWords}：${data[i].formatedAddress ||
-          data[i].address ||
-          geti18n().t('search.null')}`
+        filterVal: `${data[i].name || geoCodeParam.keyWords}：${
+          data[i].formatedAddress || data[i].address || geti18n().t('search.null')
+        }`
       };
       features.push(feature);
     }

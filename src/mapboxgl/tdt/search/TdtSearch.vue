@@ -79,17 +79,17 @@
   </div>
 </template>
 <script>
-import Theme from '../../../common/_mixin/Theme';
-import MapGetter from '../../_mixin/map-getter';
-import Control from '../../_mixin/control';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import TdtSearchViewModel from './TdtSearchViewModel';
-import PointsResult from '../results/PointsResult';
-import LinesResult from '../results/LinesResult';
-import AreaResult from '../results/AreaResult';
-import StatisticsResult from '../results/StatisticsResult';
-import NothingResult from '../results/NothingResult';
-import SmIcon from '../../../common/icon/Icon';
-import SmInput from '../../../common/input/Input';
+import PointsResult from '../results/PointsResult.vue';
+import LinesResult from '../results/LinesResult.vue';
+import AreaResult from '../results/AreaResult.vue';
+import StatisticsResult from '../results/StatisticsResult.vue';
+import NothingResult from '../results/NothingResult.vue';
+import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
 
 export default {
   name: 'SmTdtSearch',
@@ -164,7 +164,7 @@ export default {
     }
   },
   watch: {
-    data(newVal, oldVal) {
+    data() {
       this.viewModel && this.viewModel.setData(this.data);
     }
   },
@@ -208,7 +208,7 @@ export default {
         this.$message.warning(this.$t('search.noKey'));
       }
     },
-    searchInput(e) {
+    searchInput() {
       if (!this.isInputing) {
         if (this.searchKey) {
           this.isSuggestion = true;

@@ -13,9 +13,9 @@
 
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator';
-import Theme from '../../common/_mixin/Theme';
-import MapGetter from '../../mapboxgl/_mixin/map-getter';
-import TreeSelect from '../tree-select/TreeSelect.vue';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import TreeSelect from 'vue-iclient/src/common/tree-select/TreeSelect.vue';
 import LayerSelectViewModel from './LayerSelectViewModel';
 
 interface selectedDataParam {
@@ -65,6 +65,7 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
     }
   })
   value: selectedDataParam;
+
   @Prop() defaultValue: selectedDataParam;
   @Prop() filter: Function;
 
@@ -87,12 +88,14 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
   layerUpdate({ sourceList }) {
     this.treeData = this.handleDatas(sourceList);
   }
+
   handleNodeChange(val, label) {
     const [id, type] = val.split('+');
     const extra = this.sourceListDataCache[val] || {};
     this.$emit('change', { id, type }, label, extra);
     this.$emit('changedata', { id, type });
   }
+
   handleDatas(sourceList): treeSelectDataOption[] {
     const treeData: treeSelectDataOption[] = [];
     this.sourceListDataCache = {};
@@ -172,6 +175,7 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
     });
     return treeData;
   }
+
   handleLayers(layers: layerOption[], keyString: number | string): treeSelectDataOption[] {
     const layerChildren = [];
     layers.forEach((layerInfo, lIndex) => {

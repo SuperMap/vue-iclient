@@ -4,7 +4,7 @@
 
 ```vue
 <sm-web-map server-url="https://iportal.supermap.io/iportal/" map-id="801571284">
-  <sm-tdt-map-switcher position="top-left" :data="{tk:1d109683f4d84198e37a38c442d68311}" :collapsed="false"></sm-tdt-map-switcher>
+  <sm-tdt-map-switcher position="top-left" :data="{tk:'1d109683f4d84198e37a38c442d68311'}" :collapsed="false"></sm-tdt-map-switcher>
 </sm-web-map>
 ```
 

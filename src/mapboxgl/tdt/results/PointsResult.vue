@@ -50,8 +50,8 @@
 </template>
 
 <script>
-import Theme from '../../../common/_mixin/Theme';
-import Pagination from './Pagination';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Pagination from './Pagination.vue';
 
 export default {
   name: 'RouteResult',
@@ -111,7 +111,7 @@ export default {
     resetEndPoint(data) {
       this.$emit('reset-end-point', data);
     },
-    addPointToMap(info, index) {
+    addPointToMap(info) {
       if (this.from === 'Search') {
         let center = info.lonlat.split(' ');
         this.$emit('show-point-popup', { coordinates: [+center[0], +center[1]], data: info });

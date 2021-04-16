@@ -1,11 +1,12 @@
 import { CreateElement, VNode } from 'vue';
 import Empty from 'ant-design-vue/es/empty';
-import VueTypes from '../_utils/vue-types';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import defaultImage from './assets/image/empty.png';
 
 const RenderEmpty = {
   functional: true,
   inject: {
+    /* eslint-disable-next-line @typescript-eslint/no-empty-function */
     configProvider: { default: () => {} }
   },
   inheritAttrs: false,

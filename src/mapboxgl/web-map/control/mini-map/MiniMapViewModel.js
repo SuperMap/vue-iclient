@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 
 /**
@@ -79,10 +79,10 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   }
 
   loadMiniMap() {
-    var opts = this.options;
-    var parentMap = this._parentMap;
-    var miniMap = this._miniMap;
-    var interactions = [
+    let opts = this.options;
+    let parentMap = this._parentMap;
+    let miniMap = this._miniMap;
+    let interactions = [
       'dragPan',
       'scrollZoom',
       'boxZoom',
@@ -114,7 +114,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
       });
     }
 
-    var bounds = miniMap.getBounds();
+    let bounds = miniMap.getBounds();
 
     this._convertBoundsToPoints(bounds);
     this._addRectLayers();
@@ -154,8 +154,8 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   _mouseMove(e) {
     this._ticking = false;
 
-    var miniMap = this._miniMap;
-    var features = miniMap.queryRenderedFeatures(e.point, {
+    let miniMap = this._miniMap;
+    let features = miniMap.queryRenderedFeatures(e.point, {
       layers: ['trackingRectFill']
     });
 
@@ -168,9 +168,9 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
       this._previousPoint = this._currentPoint;
       this._currentPoint = [e.lngLat.lng, e.lngLat.lat];
 
-      var offset = [this._previousPoint[0] - this._currentPoint[0], this._previousPoint[1] - this._currentPoint[1]];
+      let offset = [this._previousPoint[0] - this._currentPoint[0], this._previousPoint[1] - this._currentPoint[1]];
 
-      var newBounds = this._moveTrackingRect(offset);
+      let newBounds = this._moveTrackingRect(offset);
 
       this._parentMap.fitBounds(newBounds, {
         duration: 80,
@@ -201,9 +201,9 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   }
 
   _moveTrackingRect(offset) {
-    var source = this._trackingRect;
-    var data = source._data;
-    var bounds = data.properties.bounds;
+    let source = this._trackingRect;
+    let data = source._data;
+    let bounds = data.properties.bounds;
     if (bounds) {
       bounds._ne.lat -= offset[1];
       bounds._ne.lng -= offset[0];
@@ -216,8 +216,8 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   }
 
   _setTrackingRectBounds(bounds) {
-    var source = this._trackingRect;
-    var data = source._data;
+    let source = this._trackingRect;
+    let data = source._data;
 
     data.properties.bounds = bounds;
     this._convertBoundsToPoints(bounds);
@@ -225,9 +225,9 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   }
 
   _convertBoundsToPoints(bounds) {
-    var ne = bounds._ne;
-    var sw = bounds._sw;
-    var trc = this._trackingRectCoordinates;
+    let ne = bounds._ne;
+    let sw = bounds._sw;
+    let trc = this._trackingRectCoordinates;
 
     ne = this._handleBounds(ne);
     sw = this._handleBounds(sw);
@@ -248,7 +248,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
       return;
     }
 
-    var parentBounds = this._parentMap.getBounds();
+    let parentBounds = this._parentMap.getBounds();
 
     this._setTrackingRectBounds(parentBounds);
 
@@ -266,9 +266,9 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   }
 
   _zoomAdjust() {
-    var miniMap = this._miniMap;
-    var parentMap = this._parentMap;
-    var parentZoom = parseFloat(parentMap.getZoom());
+    let miniMap = this._miniMap;
+    let parentMap = this._parentMap;
+    let parentZoom = parseFloat(parentMap.getZoom());
     miniMap.setCenter(parentMap.getCenter());
     let targetZoom = parentZoom - 5 > 0 ? parentZoom - 5 : 1;
     miniMap.setZoom(targetZoom);
@@ -292,6 +292,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     }
     return latlng;
   }
+
   _setStyle() {
     this._miniMap.setStyle(this._parentMap.getStyle(), {
       localIdeographFontFamily: this._parentMap._localIdeographFontFamily
@@ -300,8 +301,9 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._addRectLayers();
     this._update();
   }
+
   _addRectLayers() {
-    var opts = this.options;
+    let opts = this.options;
     this._miniMap.addSource('trackingRect', {
       type: 'geojson',
       data: {
@@ -343,8 +345,8 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   }
 
   removed() {
-    var parentMap = this._parentMap;
-    var miniMap = this._miniMap;
+    let parentMap = this._parentMap;
+    let miniMap = this._miniMap;
     parentMap && parentMap.off('move', this._updateFn);
     parentMap && parentMap.off('styledata', this._setStyleFn);
     miniMap && miniMap.off('mousemove', this._mouseMoveFn);

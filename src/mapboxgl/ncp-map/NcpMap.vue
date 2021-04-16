@@ -7,13 +7,13 @@
 
 <script lang="ts">
 import NcpMapViewModel, { dataOptions, mapOptions } from './NcpMapViewModel';
-import mapEvent from '../_types/map-event';
-import MapEvents from '../web-map/_mixin/map-events';
-import VmUpdater from '../../common/_mixin/VmUpdater';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import MapEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/map-events';
+import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import { Component, Prop, Mixins, Emit, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
-import debounce from 'lodash/debounce';
-import SmSpin from '../../common/spin/Spin.vue';
+import debounce from 'lodash.debounce';
+import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 
 @Component({
   name: 'SmNcpMap',

@@ -1,4 +1,4 @@
-import GridLayer from './GridLayer';
+import GridLayer from 'vue-iclient/src/leaflet/_mixin/GridLayer';
 
 export default {
   mixins: [GridLayer],

@@ -1,8 +1,8 @@
 <script lang="ts">
 import TreeSelect from 'ant-design-vue/es/tree-select';
-import Theme from '../_mixin/Theme';
-import AntdRender from '../_mixin/AntdRender';
-import VueTypes from '../_utils/vue-types';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 
 export const treeSelectNodeTypes = {
   eventKey: VueTypes.oneOfType([VueTypes.string, VueTypes.number]), // Pass by parent `cloneElement`

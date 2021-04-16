@@ -57,15 +57,15 @@
 
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator';
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
-import BaseCard from '../../../../common/_mixin/Card';
-import SmCard from '../../../../common/card/Card.vue';
-import SmButton from '../../../../common/button/Button.vue';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import SmCard from 'vue-iclient/src/common/card/Card.vue';
+import SmButton from 'vue-iclient/src/common/button/Button.vue';
 import LayerColorViewModel from './LayerColorViewModel';
-import SmColorPicker from '../../../../common/color-picker/ColorPicker.vue';
-import SmLayerSelect from '../../../../common/layer-select/LayerSelect.vue';
+import SmColorPicker from 'vue-iclient/src/common/color-picker/ColorPicker.vue';
+import SmLayerSelect from 'vue-iclient/src/common/layer-select/LayerSelect.vue';
 
 const TYPE_MAP = {
   circle: ['circle-color', 'circle-stroke-color'],
@@ -93,6 +93,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     id: '',
     type: ''
   };
+
   selectProperty: string = '';
   propertyList: Array<string> = [];
   propertyMap: Object = {
@@ -106,6 +107,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     'text-color': this.$t('layerColor.textColor'),
     'text-halo-color': this.$t('layerColor.strokeColor')
   };
+
   isSelect: boolean = false;
 
   @Prop({ default: 'sm-components-icon-layer-color' }) iconClass: string;
@@ -115,6 +117,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
   })
   headerName: string;
+
   @Prop({ default: true }) reset: boolean;
   @Prop({ default: true }) capture: boolean;
 
@@ -133,6 +136,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
     return '';
   }
+
   filtercb(item, type) {
     if (item.type === 'raster') {
       return {
@@ -146,6 +150,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
     return null;
   }
+
   resetAllLayerColor() {
     this.viewModel.resetAllColor();
     this.selectLayer = {
@@ -154,6 +159,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     };
     this.propertyList = [];
   }
+
   toggleSelectLayer() {
     if (this.isSelect) {
       this.viewModel.endSelectLayer();
@@ -163,11 +169,13 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
       this.isSelect = true;
     }
   }
+
   changePropertyColor(property, color) {
     if (this.selectLayer) {
       this.viewModel.setLayerColor(this.selectLayer.id, property, color);
     }
   }
+
   updateProperty(layerId, type) {
     this.propertyList = this._getLayerColorProperty(layerId, type);
     if (this.propertyList.length) {
@@ -181,12 +189,14 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
       }
     }
   }
+
   _getLayerColorProperty(layerId, type) {
     const propertyList = TYPE_MAP[type];
     return propertyList.map(name => {
       return { name, color: '' };
     });
   }
+
   handleLayerChange({ id, type }, label, extra) {
     this.selectLayer.id = id;
     this.selectLayer.type = type;
@@ -195,6 +205,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
       this.toggleSelectLayer();
     }
   }
+
   _changeSelectLayer(featureInfo) {
     const {
       layer: { id, type }
@@ -203,6 +214,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.selectLayer.type = type;
     this.updateProperty(id, type);
   }
+
   loaded() {
     !this.parentIsWebMapOrMap && this.$el.classList.add('layer-color-container');
   }

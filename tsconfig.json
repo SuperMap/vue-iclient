@@ -32,10 +32,12 @@
     // 是相对于"baseUrl"进行解析
     "paths": {
       "vue": ["node_modules/vue/types"],
-      "@/*": ["src/*"]
+      // 解决ts文件中的别名问题
+      "vue-iclient/*": ["./*"],
+      "*.ts": ["*"]
     }
   },
   "include": ["src/**/*", "demo/**/*"],
-  "exclude": ["node_modules"],
+  "exclude": ["node_modules", "dist", "lib"],
   "files": ["src/sfc.d.ts", "src/image.d.ts", "src/vue-options.d.ts"]
 }

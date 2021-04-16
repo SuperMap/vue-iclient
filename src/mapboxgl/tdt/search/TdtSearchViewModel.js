@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import {
   config,
   request,
@@ -15,7 +15,7 @@ import {
 } from '../_utils/service';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
-import { geti18n } from '../../../common/_lang';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 export default class TdtSearchViewModel extends mapboxgl.Evented {
   constructor(options) {
@@ -113,6 +113,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     this.data = Object.assign(this.data, data);
     this.style = 0;
   }
+
   _getPopupContent(from, data) {
     const container = document.createElement('div');
     container.className = 'popup-container';

@@ -47,6 +47,7 @@ export default class RotatingApertureMarker extends Marker {
       }
     }
   }
+
   _createMarker(): void {
     this.features.features.forEach(point => {
       let width = this.options.width && this.options.width >= 40 ? this.options.width : 50;
