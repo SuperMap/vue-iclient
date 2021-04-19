@@ -26,7 +26,7 @@ module.exports = {
         maxSize: 1024 * 1024 // 1MB
       }
     };
-    config.resolve.alias['core-js/modules'] = '@storybook/core/node_modules/core-js/modules';
+    // config.resolve.alias['core-js/modules'] = '@storybook/core/node_modules/core-js/modules';
     config.module.rules.push({
       test: /\.less$/,
       use: [
