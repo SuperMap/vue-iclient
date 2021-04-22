@@ -213,10 +213,13 @@ export default class iServerRestService extends Events {
       queryParams: [
         {
           name: queryInfo.name,
-          attributeFilter: queryInfo.attributeFilter
+          attributeFilter: queryInfo.attributeFilter,
+          orderBy: queryInfo.orderBy
         }
       ],
-      expectCount: queryInfo.maxFeatures
+      queryOption: this.options.hasGeometry ? 'ATTRIBUTEANDGEOMETRY' : 'ATTRIBUTE',
+      startRecord: this.options.fromIndex,
+      expectCount: this.options.toIndex ? (this.options.toIndex - this.options.fromIndex + 1) : queryInfo.maxFeatures
     });
     queryBySQLService = new SuperMap.QueryBySQLService(url, {
       proxy: this.options.proxy,
@@ -236,11 +239,13 @@ export default class iServerRestService extends Events {
     getFeatureBySQLParams = new SuperMap.GetFeaturesBySQLParameters({
       queryParameter: {
         name: queryInfo.name,
-        attributeFilter: queryInfo.attributeFilter
+        attributeFilter: queryInfo.attributeFilter,
+        orderBy: queryInfo.orderBy
       },
+      hasGeometry: this.options.hasGeometry,
       datasetNames: queryInfo.datasetNames,
-      fromIndex: 0,
-      toIndex: queryInfo.maxFeatures >= 1000 ? -1 : queryInfo.maxFeatures - 1,
+      fromIndex: this.options.fromIndex || 0,
+      toIndex: this.options.toIndex || (queryInfo.maxFeatures >= 1000 ? -1 : queryInfo.maxFeatures - 1),
       maxFeatures: -1
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
@@ -268,6 +273,7 @@ export default class iServerRestService extends Events {
       features = this.features.features;
       if (features && features.length > 0) {
         data = statisticsFeatures(features, recordsets.fields, recordsets.fieldCaptions, recordsets.fieldTypes);
+        data.totalCount = results.result.totalCount;
       } else {
         /**
          * @event iServerRestService#featureisempty
@@ -285,6 +291,7 @@ export default class iServerRestService extends Events {
       features = this.features.features;
       if (features && features.length > 0) {
         data = statisticsFeatures(features);
+        data.totalCount = results.result.totalCount;
       } else {
         this.triggerEvent('featureisempty', {
           results

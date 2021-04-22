@@ -1,6 +1,11 @@
 import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
+import clonedeep from 'lodash.clonedeep';
+import mergewith from 'lodash.mergewith';
+import difference from 'lodash.difference';
+import getFeatures from '../../common/_utils/get-features';
+
 /**
  * @class AttributesViewModel
  * @description Attributes viewModel.
@@ -11,6 +16,12 @@ import transformScale from '@turf/transform-scale';
 
 interface MapEventCallBack {
   (e: mapboxglTypes.MapMouseEvent): void;
+}
+
+interface AssociateWithMapParams {
+  enabled?: boolean;
+  zoomToFeature?: boolean;
+  centerToFeature?: boolean;
 }
 
 const HIGHLIGHT_COLOR = '#01ffff';
@@ -50,7 +61,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   selectedKeys: Array<string>;
 
-  diffKeys: Array<string>;
+  addKeys: Array<string>;
 
   fire: any;
 
@@ -64,13 +75,16 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   strokeLayerID: string;
 
+  associateWithMap: AssociateWithMapParams;
 
   constructor(options) {
     super();
-    this.layerStyle = options.layerStyle || {};
-    this.layerName = options.layerName;
     this.selectedKeys = [];
-    this.diffKeys = [];
+    this.addKeys = [];
+    this.featureMap = {};
+    Object.keys(options).forEach(option => {
+      this[option] = options[option];
+    });
     this.selectLayerFn = this._selectLayerFn.bind(this);
   }
 
@@ -78,6 +92,49 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     const { map } = mapInfo;
     this.map = map;
     this.fire('mapLoaded', map);
+    this.handleAssociateWithMap();
+    this.getDatas();
+  }
+
+  setLayerName(layerName) {
+    this.layerName = layerName;
+    this.getDatas();
+  }
+
+  setDataset(dataset) {
+    this.dataset = dataset;
+    this.getDatas();
+  }
+
+  setLazy(lazy) {
+    this.lazy = lazy;
+    this.getDatas();
+  }
+
+  setSorter(sorter) {
+    this.sorter = sorter;
+    this.getDatas();
+  }
+
+  setAssociateWithMap(associateWithMap) {
+    this.associateWithMap = associateWithMap;
+    this.handleAssociateWithMap();
+  }
+
+  setPaginationOptions(paginationOptions) {
+    this.paginationOptions = paginationOptions;
+    this.getDatas();
+  }
+
+  refresh() {
+    this.paginationOptions.current = 1;
+    this.getDatas();
+  }
+
+  setSearchText(searchText, searchedColumn) {
+    this.searchText = searchText;
+    this.searchedColumn = searchedColumn;
+    this.getDatas();
   }
 
   _selectLayerFn(e) {
@@ -90,40 +147,38 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     }
   }
 
-  startSelectFeature() {
+  enableSelectFeature() {
     this.map && this.map.on('click', this.selectLayerFn);
   }
 
-  endSelectFeature() {
+  disableSelectFeature() {
     this.map && this.map.off('click', this.selectLayerFn);
   }
 
-  //  数据变动 enabled change应该清空地图状态
-  zoomToFeatures(selectedKeys, associateWithMap) {
-    let { zoomToFeature } = associateWithMap;
+  zoomToFeatures(selectedKeys) {
+    let highLightList = this.handleCoords(selectedKeys);
     if (Object.keys(selectedKeys).length) {
-      let features = Object.keys(selectedKeys).map(key => {
-        return selectedKeys[key];
-      });
+      let features = Object.values(highLightList);
       const geojson = {
         type: 'FeatureCollection',
         features
       };
+      // @ts-ignore
       let bounds = bbox(transformScale(geojson, 2));
       this.map.fitBounds(
         [
           [bounds[0], bounds[1]],
           [bounds[2], bounds[3]]
         ],
-        { maxZoom: zoomToFeature ? this.map.getMaxZoom() : this.map.getZoom() }
+        { maxZoom: this.associateWithMap.zoomToFeature ? this.map.getMaxZoom() : this.map.getZoom() }
       );
     }
   }
 
   _inMapExtent(featureObj) {
     const mapbounds: mapboxglTypes.LngLatBoundsLike = this.map.getBounds();
-    if (this.diffKeys.length) {
-      return this.diffKeys.every(key => {
+    if (this.addKeys.length) {
+      return this.addKeys.every(key => {
         let { type, coordinates } = featureObj[key].geometry;
         if (['MultiLineString', 'Polygon'].includes(type)) {
           return coordinates.some(line => {
@@ -152,41 +207,23 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     return false;
   }
 
-  addOverlaysToMap(selectedKeys, associateWithMap, featureMap, layerStyleOptions, attributesTitle) {
-    // 先去掉缓存
-    // 去掉被移除的
-    this.selectedKeys.forEach((key, index) => {
-      if (!Object.keys(selectedKeys).includes(key)) {
-        this.selectedKeys.splice(index, 1);
-      }
-    });
-    // 添加被添加的
-    Object.keys(selectedKeys).forEach(key => {
-      if (!this.selectedKeys.includes(key)) {
-        this.selectedKeys.push(key);
-        this.diffKeys.push(key);
-      }
-    });
+  addOverlaysToMap(selectedKeys, layerStyleOptions, attributesTitle) {
+    selectedKeys = this.handleCoords(selectedKeys);
+    this.addKeys = difference(Object.keys(selectedKeys), this.selectedKeys);
+    this.selectedKeys = Object.keys(selectedKeys);
+    
     let filter: any = ['any'];
-    // let feature: any = {};
     this.selectedKeys.forEach(key => {
       const feature = selectedKeys[key];
       if (feature) {
         filter.push(['==', 'index', feature.properties['index']]);
       }
     });
-    this.addOverlayToMap(
-      filter,
-      selectedKeys,
-      associateWithMap,
-      featureMap,
-      layerStyleOptions,
-      attributesTitle
-    );
+    this.addOverlayToMap(filter, selectedKeys, layerStyleOptions, attributesTitle);
   }
 
-  addOverlayToMap(filter, selectedKeys, associateWithMap, featureMap, layerStyleOptions, attributesTitle) {
-    let { centerToFeature, zoomToFeatures } = associateWithMap;
+  addOverlayToMap(filter, selectedKeys, layerStyleOptions, attributesTitle) {
+    let { centerToFeature, zoomToFeature } = this.associateWithMap;
     if (!this.map) {
       return;
     }
@@ -194,8 +231,8 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     let type, id: string, paint;
     let features = [];
     if (!layer) {
-      for (const key in featureMap) {
-        features.push(featureMap[key]);
+      for (const key in this.featureMap) {
+        features.push(this.featureMap[key]);
       }
       switch (features[0].geometry.type) {
         case 'Point':
@@ -219,7 +256,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         this.map.getSource(this.sourceId).setData({
           type: 'FeatureCollection',
           features
-        })
+        });
       } else {
         this.map.addSource(this.sourceId, {
           type: 'geojson',
@@ -248,7 +285,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.layerId = id + '-attributes-SM-highlighted';
     this.strokeLayerID = id + '-attributes-SM-StrokeLine';
     if (
-      (!this.diffKeys.length && !this.selectedKeys.length) ||
+      (!this.addKeys.length && !this.selectedKeys.length) ||
       JSON.stringify(layerStyleOptions) !== JSON.stringify(this.layerStyle)
     ) {
       this.map.getLayer(this.layerId) && this.map.removeLayer(this.layerId);
@@ -271,12 +308,12 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       }
 
       if (
-        this.diffKeys.length &&
+        this.addKeys.length &&
         (centerToFeature ||
-          zoomToFeatures ||
-          (!zoomToFeatures && Object.keys(selectedKeys).length && !this._inMapExtent(selectedKeys)))
+          zoomToFeature ||
+          (!zoomToFeature && Object.keys(selectedKeys).length && !this._inMapExtent(selectedKeys)))
       ) {
-        this.zoomToFeatures(selectedKeys, associateWithMap);
+        this.zoomToFeatures(Object.keys(selectedKeys));
       }
     }
     if (type === 'fill') {
@@ -289,7 +326,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           'line-color': HIGHLIGHT_COLOR,
           'line-opacity': 1
         };
-        let highlightLayer =  {
+        let highlightLayer = {
           id: this.strokeLayerID,
           type: 'line',
           paint: lineStyle,
@@ -301,14 +338,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         this.map.addLayer(highlightLayer);
       }
     }
-    this.diffKeys = [];
-  }
-
-  reset(options) {
-    this.layerStyle = options.layerStyle || {};
-    this.layerName = options.layerName;
-    this.selectedKeys = [];
-    this.diffKeys = [];
+    this.addKeys = [];
   }
 
   _setDefaultPaintWidth(type, layerId, paintTypes, layerStyle) {
@@ -330,9 +360,181 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     return layerStyle;
   }
 
-  _initFeatures(layerName: string) {
+  _getFeaturesFromLayer(layerName: string) {
     // @ts-ignore
     return this.map.getSource(layerName).getData().features;
+  }
+
+  async getDatas() {
+    let features;
+    let totalCount;
+    if (this.useDataset()) {
+      const datas = await this._getFeaturesFromDataset();
+      features = datas.features;
+      totalCount = datas.totalCount;
+    } else {
+      features = this._getFeaturesFromLayer(this.layerName);
+      totalCount = features.length;
+    }
+    const content = this.toTableContent(features);
+    const columns = this.toTableColumns(features[0].properties);
+
+    this.fire('dataChanged', { content, totalCount, columns });
+  }
+
+  async _getFeaturesFromDataset() {
+    // @ts-ignore
+    const { url, geoJSON } = this.dataset;
+    if (url || geoJSON) {
+      let dataset = clonedeep(this.dataset);
+      // @ts-ignore
+      if (!this.associateWithMap.enabled) {
+        dataset.hasGeometry = false;
+      }
+      if (this.canLazyLoad()) {
+        if (this.searchText && this.searchedColumn) {
+          dataset.attributeFilter = `${this.searchedColumn} like '%${this.searchText}%'`;
+        }
+        // @ts-ignore
+        if (this.sorter && this.sorter.field && this.sorter.order) {
+          // @ts-ignore
+          let sortType = this.sorter.order === 'ascend' ? 'asc' : 'desc';
+          // @ts-ignore
+          dataset.orderBy = `${this.sorter.field} ${sortType}`;
+        }
+        dataset.fromIndex = this.paginationOptions.pageSize * (this.paginationOptions.current - 1 || 0);
+        dataset.toIndex = dataset.fromIndex + this.paginationOptions.pageSize - 1;
+      }
+
+      return await getFeatures(dataset);
+    }
+  }
+
+  toTableContent(features) {
+    let content = [];
+    features &&
+      features.forEach((feature, index) => {
+        let properties = feature.properties;
+        let coordinates = feature.geometry && feature.geometry.coordinates;
+        if (!properties) {
+          return;
+        }
+        !properties.index && (properties.index = index);
+        if (coordinates && coordinates.length) {
+          this.featureMap[properties.index] = feature;
+        }
+        properties.key = +properties.index;
+        JSON.stringify(properties) !== '{}' && content.push(properties);
+      });
+    return content;
+  }
+
+  toTableColumns(headers) {
+    let columns = [];
+
+    Object.keys(headers).forEach((propertyName, index) => {
+      let columnConfig = {
+        title: propertyName,
+        dataIndex: propertyName,
+        visible: true
+      };
+      if (typeof +headers[propertyName] === 'number' && !isNaN(+headers[propertyName])) {
+        // @ts-ignore
+        columnConfig.sorter = (a, b) => a[propertyName] - b[propertyName];
+      }
+      // @ts-ignore
+      if (this.fieldConfigs && this.fieldConfigs.length) {
+        // @ts-ignore
+        const config = this.fieldConfigs.find(fieldConfig => {
+          return fieldConfig.value === propertyName;
+        });
+        if (config) {
+          let copyConfig = clonedeep(config);
+
+          copyConfig.dataIndex = copyConfig.value;
+          delete copyConfig.value;
+          columnConfig = mergewith(columnConfig, copyConfig, (obj, src) => {
+            if (typeof src === 'undefined') {
+              return obj;
+            }
+          });
+          // @ts-ignore
+          if (columnConfig.sorter && typeof columnConfig.sorter === 'boolean') {
+            // @ts-ignore
+            columnConfig.sorter = (a, b) => a[propertyName] - b[propertyName];
+          }
+          // @ts-ignore
+          if (columnConfig.search) {
+            // @ts-ignore
+            if (!columnConfig.onFilter) {
+              // @ts-ignore
+              columnConfig.onFilter = (value, record) => {
+                return (record[propertyName] + '').includes(value);
+              };
+            }
+            // @ts-ignore
+            columnConfig.scopedSlots = {
+              filterDropdown: 'filterDropdown',
+              filterIcon: 'filterIcon',
+              customRender: 'customRender'
+            };
+          }
+          // @ts-ignore
+          if (!columnConfig.customCell) {
+            // @ts-ignore
+            columnConfig.customCell = record => {
+              return {
+                attrs: {
+                  title: record[copyConfig.dataIndex]
+                }
+              };
+            };
+          }
+        }
+      }
+      columns.push(columnConfig);
+    });
+    let columnOrder = [];
+    let columnsResult = [];
+    // @ts-ignore
+    this.fieldConfigs &&
+      this.fieldConfigs.forEach(element => {
+        columnOrder.push(element.value);
+      });
+    columnOrder.forEach(str => {
+      columns.forEach(element => {
+        if (element.dataIndex === str) {
+          columnsResult.push(element);
+        }
+      });
+    });
+    return columnsResult.length === 0 ? columns : columnsResult;
+  }
+
+  handleCoords(selectedKeys) {
+    let highLightList = {};
+    selectedKeys.forEach(key => {
+      if (this.featureMap[key]) {
+        highLightList[key] = this.featureMap[key];
+      }
+    });
+    return highLightList;
+  }
+
+  useDataset() {
+    return !!(this.dataset && (this.dataset.url || this.dataset.geoJSON));
+  }
+
+  canLazyLoad() {
+    return this.lazy && this.dataset && this.dataset.url && this.dataset.type === 'iServer';
+  }
+
+  handleAssociateWithMap() {
+    if (this.associateWithMap.enabled && this.layerName) {
+      this.enableSelectFeature();
+    } else {
+      this.disableSelectFeature();
+    }
   }
 
   removed() {
