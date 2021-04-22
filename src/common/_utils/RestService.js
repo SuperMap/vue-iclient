@@ -74,6 +74,7 @@ export default class RestService extends Events {
     if (this.transformed) {
       generateData.transformed = this.transformed;
     }
+    generateData.totalCount = generateData.features.length;
     const triggerData = Object.assign({}, generateData, statisticsFeatures(generateData.features));
     this.triggerEvent('getdatasucceeded', triggerData);
   }

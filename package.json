@@ -49,6 +49,7 @@
     "leaflet": "1.5.1",
     "lodash.assignin": "^4.2.0",
     "lodash.clonedeep": "^4.5.0",
+    "lodash.difference": "^4.5.0",
     "lodash.intersection": "^4.4.0",
     "lodash.isequal": "^4.5.0",
     "lodash.isnumber": "^3.0.3",

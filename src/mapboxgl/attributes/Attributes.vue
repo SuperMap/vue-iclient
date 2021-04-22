@@ -4,9 +4,11 @@
       <div class="sm-component-attributes__count">
         <span v-if="title" class="layer-name">{{ title }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
-        <span v-if="statistics.showTotal" class="total-numbers">{{ this.$t('attributes.feature') }}：{{ tableData.length || 0 }}</span>
+        <span v-if="statistics.showTotal" class="total-numbers" >{{ this.$t('attributes.feature') }}：{{ paginationOptions.total || 0 }}</span
+        >
         <span v-if="statistics.showTotal && statistics.showSelect">，</span>
-        <span v-if="statistics.showSelect" class="select-numbers">{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span>
+        <span v-if="statistics.showSelect" class="select-numbers" >{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span
+        >
         <span v-if="statistics.showTotal || statistics.showSelect">）</span>
       </div>
       <div class="sm-component-attributes__menu">
@@ -14,7 +16,7 @@
           <div class="ant-dropdown-link"><sm-icon :icon-style="{ color: '#ccc' }" type="menu" /></div>
           <sm-menu slot="overlay">
             <sm-menu-item>
-              <div v-if="toolbar.showClearSelected" @click="clearSelectedRowKeys">
+              <div v-if="toolbar.showClearSelected" @click="clearSelectedRows">
                 {{ this.$t('attributes.clearSelected') }}
               </div>
             </sm-menu-item>
@@ -42,7 +44,7 @@
       ref="tableInstance"
       :data-source="tableData"
       :columns="compColumns"
-      :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: onSelectChange }"
+      :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows }"
       :pagination="paginationOptions"
       :bordered="table.showBorder"
       :showHeader="table.showHeader"
@@ -55,10 +57,9 @@
       <div
         slot="filterDropdown"
         slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
-        :style="{ ...background, padding: '8px'}"
+        :style="{ ...background, padding: '8px' }"
       >
         <sm-input
-          v-ant-ref="c => (searchInput = c)"
           :placeholder="`Search ${column.dataIndex}`"
           :value="selectedKeys[0]"
           style="width: 188px; margin-bottom: 8px; display: block;"
@@ -111,14 +112,14 @@ import FillStyle from '../_types/FillStyle';
 import LineStyle from '../_types/LineStyle';
 import AttributesViewModel from './AttributesViewModel';
 import clonedeep from 'lodash.clonedeep';
-import mergewith from 'lodash.mergewith';
 import isequal from 'lodash.isequal';
-import getFeatures from '../../common/_utils/get-features';
+import VmUpdater from '../../common/_mixin/VmUpdater';
 
 interface PaginationParams {
   defaultCurrent?: number;
   current?: number;
   pageSize?: number;
+  total?: number;
 }
 
 interface FieldConfigParams {
@@ -174,9 +175,10 @@ interface ToolbarParams {
     SmInput,
     SmIcon,
     SmCheckbox
-  }
+  },
+  viewModelProps: ['layerName', 'dataset', 'lazy', 'associateWithMap', 'paginationOptions', 'sorter']
 })
-class SmAttributes extends Mixins(MapGetter, Theme) {
+class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   tableData: Array<Object> = [];
   selectedRowKeys: Array<number> = [];
   columns: Array<Object> = [];
@@ -185,15 +187,13 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
     defaultCurrent: 2
   };
 
-  featureMap: Object;
+  sorter: Object = {};
 
   openKeys: Array<string> = [];
 
   loading: boolean = false;
 
   searchText: string = '';
-
-  searchInput: any = null;
 
   searchedColumn: string = '';
 
@@ -203,9 +203,11 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
 
   @Prop() customHeaderRow: Function;
 
-  @Prop()title: string;
+  @Prop({ default: 'ddddddd' }) title: string;
 
   @Prop() dataset: any;
+
+  @Prop({ default: true }) lazy: boolean;
 
   @Prop({
     default: () => {
@@ -278,49 +280,18 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   })
   statistics: StatisticsParams;
 
-  @Watch('associateWithMap', { deep: true })
-  associateWithMapChanged(val) {
-    if (this.associateMap && this.layerName) {
-      this.viewModel.startSelectFeature();
-    } else {
-      this.viewModel.endSelectFeature();
-    }
-  }
   @Watch('selectedRowKeys')
   selectedRowKeysChanged(val) {
     this.$emit('rowSelect', val);
     if (this.associateMap) {
-      let highLightList = this.handleCoords(val);
-      this.viewModel.addOverlaysToMap(
-        highLightList,
-        this.associateWithMap,
-        this.featureMap,
-        this.layerStyle,
-        this.title
-      );
+      this.viewModel.addOverlaysToMap(val, this.layerStyle, this.title);
     }
-  }
-  @Watch('layerName')
-  layerNameChanged(val) {
-    this.viewModel.reset({ layerName: val, layerStyle: this.layerStyle });
-    this._initFeatures();
   }
 
   @Watch('table', { immediate: true })
   tableChanged(val) {
     if (!isequal(this.paginationOptions, val.pagination)) {
       this.paginationOptions = Object.assign({}, this.paginationOptions, val.pagination);
-    }
-  }
-
-  @Watch('dataset', { deep: true, immediate: true })
-  datasetChanged(newVal, oldVal) {
-    if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
-      this.getFeaturesFromDataset();
-    } else {
-      this.featureMap = {};
-      this.initViewModel({ layerName: this.layerName, layerStyle: this.layerStyle });
-      this._eventsInit();
     }
   }
 
@@ -341,52 +312,10 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
   }
 
   created() {
-    this.featureMap = {};
-    this.initViewModel({ layerName: this.layerName, layerStyle: this.layerStyle });
-    this._eventsInit();
+    this.viewModel = new AttributesViewModel({ paginationOptions: this.paginationOptions, ...this.$props });
+    this.bindEvents();
   }
 
-  initViewModel(options) {
-    this.viewModel = new AttributesViewModel(options);
-  }
-
-  getFeaturesFromDataset(initLoading = true) {
-    let { url, geoJSON } = this.dataset;
-    this.loading = true;
-    if (url || geoJSON) {
-      let dataset = clonedeep(this.dataset);
-      getFeatures(dataset).then(data => {
-        if (data && data.features) {
-          this.tableData = this.handleFeatures(data.features);
-          this.loading = false;
-        }
-      });
-    }
-  }
-
-  handleFeatures(data) {
-    let features = data;
-    let content = [];
-    let headers = features[0].properties;
-    this.handleColumns(headers);
-    features &&
-      features.forEach((feature, index) => {
-        let properties = feature.properties;
-        let coordinates = feature.geometry && feature.geometry.coordinates;
-
-        if (!properties) {
-          return;
-        }
-
-        if (coordinates && coordinates.length) {
-          this.featureMap[properties.index] = feature;
-        }
-        !properties.index && (properties.index = index);
-        properties.key = +properties.index;
-        JSON.stringify(properties) !== '{}' && content.push(properties);
-      });
-    return content;
-  }
   handleMapSelectedFeature(feature) {
     let index = +feature.properties.index;
     if (!this.selectedRowKeys.includes(index)) {
@@ -402,6 +331,7 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
       this.handleScrollSelectedFeature(featureIndex, tableWrap);
     }
   }
+
   handleScrollSelectedFeature(featureIndex, tableWrap) {
     const rowHeight = document.querySelector('.sm-component-attributes .sm-component-table-row').clientHeight;
     const selectFeatureScrollTop = (featureIndex + 1) * rowHeight;
@@ -409,162 +339,60 @@ class SmAttributes extends Mixins(MapGetter, Theme) {
       tableWrap.scrollTop = selectFeatureScrollTop;
     }
   }
-  handleColumns(headers) {
-    let columns = [];
-
-    Object.keys(headers).forEach((propertyName, index) => {
-      let columnConfig = {
-        title: propertyName,
-        dataIndex: propertyName,
-        visible: true
-      };
-      if (typeof +headers[propertyName] === 'number' && !isNaN(+headers[propertyName])) {
-        // @ts-ignore
-        columnConfig.sorter = (a, b) => a[propertyName] - b[propertyName];
-      }
-      // @ts-ignore
-      if (this.fieldConfigs && this.fieldConfigs.length) {
-        // @ts-ignore
-        const config = this.fieldConfigs.find(fieldConfig => {
-          return fieldConfig.value === propertyName;
-        });
-        if (config) {
-          let copyConfig = clonedeep(config);
-
-          copyConfig.dataIndex = copyConfig.value;
-          delete copyConfig.value;
-          columnConfig = mergewith(columnConfig, copyConfig, (obj, src) => {
-            if (typeof src === 'undefined') {
-              return obj;
-            }
-          });
-          // @ts-ignore
-          if (columnConfig.sorter && typeof columnConfig.sorter === 'boolean') {
-            // @ts-ignore
-            columnConfig.sorter = (a, b) => a[propertyName] - b[propertyName];
-          }
-          // @ts-ignore
-          if (columnConfig.search) {
-            // @ts-ignore
-            if (!columnConfig.onFilter) {
-              // @ts-ignore
-              columnConfig.onFilter = (value, record) => (record[propertyName] + '').indexOf(value) === 0;
-            }
-            // @ts-ignore
-            columnConfig.scopedSlots = {
-              filterDropdown: 'filterDropdown',
-              filterIcon: 'filterIcon',
-              customRender: 'customRender'
-            };
-          }
-          // @ts-ignore
-          if (!columnConfig.customCell) {
-            // @ts-ignore
-            columnConfig.customCell = (record) => {
-              return {
-                attrs: {
-                  title: record[copyConfig.dataIndex]
-                }
-              };
-            };
-          }
-        }
-      }
-      columns.push(columnConfig);
-    });
-    let columnOrder = [];
-    let columnsResult = [];
-    // @ts-ignore
-    this.fieldConfigs && this.fieldConfigs.forEach(element => {
-      columnOrder.push(element.value);
-    });
-    columnOrder.forEach(str => {
-      columns.forEach(element => {
-        if (element.dataIndex === str) {
-          columnsResult.push(element);
-        }
-      });
-    });
-    this.columns = columnsResult.length === 0 ? columns : columnsResult;
-  }
   handleColumnVisible(column) {
     const columnIndex = this.columns.indexOf(column);
     column.visible = !column.visible;
     this.$set(this.columns, columnIndex, column);
   }
-  onSelectChange(selectedRowKeys) {
+  changeSelectedRows(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys;
   }
-  handleCoords(selectedKeys) {
-    let highLightList = {};
-    selectedKeys.forEach(key => {
-      if (this.featureMap[key]) {
-        highLightList[key] = this.featureMap[key];
-      }
-    });
-    return highLightList;
-  }
-  setZoomToFeature() {
-    if (!this.associateMap) {
-      return;
-    }
-    let highLightList = this.handleCoords(this.selectedRowKeys);
-    this.viewModel && this.viewModel.zoomToFeatures(highLightList, { zoomToFeature: true });
-  }
-  clearSelectedRowKeys() {
+  clearSelectedRows() {
     this.selectedRowKeys = [];
   }
+
+  setZoomToFeature() {
+    this.associateMap && this.viewModel && this.viewModel.zoomToFeatures(this.selectedRowKeys, { zoomToFeature: true });
+  }
+
   handleChange(pagination, filters, sorter, { currentDataSource }) {
-    this.$set(this.paginationOptions, 'current', pagination.current);
+    this.paginationOptions = { ...this.paginationOptions, current: pagination.current };
+    this.sorter = sorter;
     this.$emit('change', pagination, filters, sorter, { currentDataSource });
   }
-  _eventsInit() {
-    this.viewModel.on('mapLoaded', map => {
-      this._initFeatures();
-      if (this.associateMap) {
-        this.viewModel.startSelectFeature();
-      } else {
-        this.viewModel.endSelectFeature();
+
+  bindEvents() {
+    this.viewModel.on('dataChanged', datas => {
+      const { content, totalCount, columns } = datas;
+      if (totalCount) {
+        // @ts-ignore
+        this.$set(this.paginationOptions, 'total', totalCount);
       }
+      this.columns = columns;
+      this.tableData = content;
     });
     this.viewModel.on('changeSelectLayer', feature => {
       this.handleMapSelectedFeature(feature);
     });
   }
 
-  _initFeatures() {
-    if (this.layerName) {
-      this.loading = true;
-      const features = this.viewModel._initFeatures(this.layerName);
-      this.tableData = this.handleFeatures(features);
-      setTimeout(() => {
-        this.loading = false;
-      }, 0);
-    }
-  }
-
   refreshData() {
     this.selectedRowKeys = [];
     this.tableData = [];
-    this.$set(this.paginationOptions, 'current', 1);
-    if (this.dataset) {
-      if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
-        this.getFeaturesFromDataset();
-      }
-    } else {
-      this._initFeatures();
-    }
+    this.viewModel.refresh();
   }
 
   handleSearch(selectedKeys, confirm, dataIndex) {
-    confirm();
-    this.searchText = selectedKeys[0];
     this.searchedColumn = dataIndex;
+    this.searchText = selectedKeys[0];
+    this.viewModel.setSearchText(this.searchText, this.searchedColumn);
+    confirm();
   }
 
-  handleReset(clearFilters) {
+  handleSearchReset(clearFilters) {
     clearFilters();
     this.searchText = '';
+    this.viewModel.setSearchText();
   }
 
   removed() {
