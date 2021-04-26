@@ -24,6 +24,13 @@ interface AssociateWithMapParams {
   centerToFeature?: boolean;
 }
 
+interface PaginationParams {
+  defaultCurrent?: number;
+  current?: number;
+  pageSize?: number;
+  total?: number;
+}
+
 const HIGHLIGHT_COLOR = '#01ffff';
 const defaultPaintTypes = {
   circle: ['circle-radius', 'circle-stroke-width'],
@@ -76,6 +83,20 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   strokeLayerID: string;
 
   associateWithMap: AssociateWithMapParams;
+
+  featureMap: Object;
+
+  dataset: any;
+
+  lazy: boolean;
+
+  sorter: Object;
+
+  paginationOptions: PaginationParams;
+
+  searchText: string;
+
+  searchedColumn: string;
 
   constructor(options) {
     super();
@@ -211,7 +232,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     selectedKeys = this.handleCoords(selectedKeys);
     this.addKeys = difference(Object.keys(selectedKeys), this.selectedKeys);
     this.selectedKeys = Object.keys(selectedKeys);
-    
+
     let filter: any = ['any'];
     this.selectedKeys.forEach(key => {
       const feature = selectedKeys[key];
@@ -366,20 +387,22 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   }
 
   async getDatas() {
-    let features;
-    let totalCount;
-    if (this.useDataset()) {
-      const datas = await this._getFeaturesFromDataset();
-      features = datas.features;
-      totalCount = datas.totalCount;
-    } else {
-      features = this._getFeaturesFromLayer(this.layerName);
-      totalCount = features.length;
-    }
-    const content = this.toTableContent(features);
-    const columns = this.toTableColumns(features[0].properties);
+    if (this.dataset || this.layerName) {
+      let features;
+      let totalCount;
+      if (this.useDataset()) {
+        const datas = await this._getFeaturesFromDataset();
+        features = datas.features;
+        totalCount = datas.totalCount;
+      } else {
+        features = this._getFeaturesFromLayer(this.layerName);
+        totalCount = features.length;
+      }
+      const content = this.toTableContent(features);
+      const columns = this.toTableColumns(features[0].properties);
 
-    this.fire('dataChanged', { content, totalCount, columns });
+      this.fire('dataChanged', { content, totalCount, columns });
+    }
   }
 
   async _getFeaturesFromDataset() {
