@@ -1,0 +1,54 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(nav) {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  background-size: 100% 100%;
+  @include e(line) {
+    border-radius: 0px;
+    border: none;
+  }
+  @include e(board) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex: 1;
+    position: relative;
+    margin: 5px;
+    button[ant-click-animating-without-extra-node]:after {
+      border: 0 none;
+      opacity: 0;
+      animation: none 0 ease 0 1 normal;
+    }
+    .sm-component-btn {
+      border-radius: 0px;
+      padding: 0 13px;
+      font-size: 16px;
+      &,
+      &:hover,
+      &:focus {
+        border: 1px solid transparent;
+        background: rgba(0, 0, 0, 0);
+      }
+      span {
+        white-space: pre-wrap;
+      }
+    }
+    .defaultTitleStyle {
+      letter-spacing: 5px;
+      font-size: 22px;
+    }
+  }
+  @media screen and (max-width: 414px) {
+    @include e(board) {
+      .sm-component-btn {
+        padding: 0px;
+      }
+    }
+  }
+}

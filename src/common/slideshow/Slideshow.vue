@@ -134,7 +134,6 @@ class Slideshow extends Mixins(Theme, BaseCard) {
         })
       );
     }
-    console.log(this.collapsed, 'this.collapsed');
     let collapseCardProps = {
       iconClass: this.iconClass,
       iconPosition: this.position,

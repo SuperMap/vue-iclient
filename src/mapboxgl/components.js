@@ -76,6 +76,7 @@ export { default as TreeSelectNode } from '../common/tree-select/TreeSelectNode'
 export { default as LayerSelect } from '../common/layer-select/LayerSelect';
 export { default as Slideshow } from '../common/slideshow/Slideshow';
 export { default as SlideshowItem } from '../common/slideshow/SlideshowItem';
+export { default as Nav } from '../common/nav/Nav';
 
 /** layer */
 export { default as ClusterLayer } from './web-map/layer/cluster/ClusterLayer';

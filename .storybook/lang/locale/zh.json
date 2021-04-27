@@ -302,6 +302,9 @@
       "navigationButtons": "前进后退按钮",
       "pagination": "分页器",
       "scrollbar": "滚动条"
+    },
+    "nav": {
+      "title": "Nav 导航栏"
     }
   },
   "chartComponent": {

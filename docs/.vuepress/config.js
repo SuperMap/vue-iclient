@@ -194,6 +194,7 @@ module.exports = {
                     'common/time-slider',
                     'common/attributes',
                     'common/slideshow',
+                    'common/nav',
                   ]
                 }
               ]
