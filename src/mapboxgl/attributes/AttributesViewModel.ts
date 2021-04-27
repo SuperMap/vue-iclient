@@ -31,6 +31,22 @@ interface PaginationParams {
   total?: number;
 }
 
+interface FieldConfigParams {
+  title?: string;
+  value: string;
+  visible?: boolean;
+  align?: string;
+  filterMultiple?: boolean;
+  onFilter?: Function;
+  onFilterDropdownVisibleChange?: Function;
+  sorter?: Function | boolean;
+  defaultSortOrder?: string;
+  width?: string | number;
+  search?: boolean;
+  customCell?: Function;
+  customHeaderCell?: Function;
+}
+
 const HIGHLIGHT_COLOR = '#01ffff';
 const defaultPaintTypes = {
   circle: ['circle-radius', 'circle-stroke-width'],
@@ -97,6 +113,8 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   searchText: string;
 
   searchedColumn: string;
+
+  fieldConfigs: FieldConfigParams;
 
   constructor(options) {
     super();
@@ -520,10 +538,9 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     let columnOrder = [];
     let columnsResult = [];
     // @ts-ignore
-    this.fieldConfigs &&
-      this.fieldConfigs.forEach(element => {
+    this.fieldConfigs && this.fieldConfigs.forEach(element => {
         columnOrder.push(element.value);
-      });
+    });
     columnOrder.forEach(str => {
       columns.forEach(element => {
         if (element.dataIndex === str) {
