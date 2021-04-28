@@ -3,7 +3,11 @@ function resolve(dir) {
   return path.join(__dirname, '..', dir);
 }
 module.exports = {
-  stories: ['../**/*.stories.mdx', '../**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.@(js|jsx|ts|tsx)'],
+  // 没有用到 @storybook/addon-postcss,隐藏关于postcss的警告
+  features: {
+    postcss: false,
+  },
   addons: [
     '@storybook/preset-scss',
     {
