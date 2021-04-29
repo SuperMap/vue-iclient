@@ -124,6 +124,9 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     Object.keys(options).forEach(option => {
       this[option] = options[option];
     });
+    if (this.useDataset()) {
+      this.getDatas();
+    }
     this.selectLayerFn = this._selectLayerFn.bind(this);
   }
 
@@ -132,7 +135,9 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.map = map;
     this.fire('mapLoaded', map);
     this.handleAssociateWithMap();
-    this.getDatas();
+    if (this.layerName) {
+      this.getDatas();
+    }
   }
 
   setLayerName(layerName) {
