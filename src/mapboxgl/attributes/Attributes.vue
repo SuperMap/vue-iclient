@@ -203,7 +203,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   @Prop() customHeaderRow: Function;
 
-  @Prop({ default: 'ddddddd' }) title: string;
+  @Prop() title: string;
 
   @Prop() dataset: any;
 

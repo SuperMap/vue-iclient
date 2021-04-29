@@ -258,11 +258,11 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
         attributesStyle = `position: absolute; ${position[0]}: 0;${position[1]}: 0;`;
       } else if (['top', 'bottom'].indexOf(position[0]) !== -1) {
         // @ts-ignore
-        let margin = (100 - parseInt(style.width)) / 2;
+        let margin = style ? (100 - parseInt(style.width)) / 2 : 0;
         attributesStyle = `position: absolute; ${position[0]}: 0; left: ${margin}%;`;
       } else if (['left', 'right'].indexOf(position[0]) !== -1) {
         // @ts-ignore
-        let margin = (100 - parseInt(style.height)) / 2;
+        let margin = style ? (100 - parseInt(style.height)) / 2 : 0;
         attributesStyle = `position: absolute; ${position[0]}: 0; top: ${margin}%;`;
       }
     }
