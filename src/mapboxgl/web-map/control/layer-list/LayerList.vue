@@ -89,7 +89,10 @@
               />
               <div class="sm-component-layer-list__layergroupname add-ellipsis" :title="name">{{ name }}</div>
             </div>
-            <div v-if="attributes.enabled && sourceList[name].type === 'geojson'" class="sm-component-layer-list__attributes">
+            <div
+              v-if="attributes.enabled && sourceList[name].type === 'geojson'"
+              class="sm-component-layer-list__attributes"
+            >
               <i
                 :class="attributesIconClass"
                 :style="sourceList[name].visibility !== 'visible' && { cursor: 'not-allowed' }"
@@ -136,7 +139,7 @@ import intersection from 'lodash.intersection';
 import isEqual from 'lodash.isequal';
 
 interface AttributesParams {
-  enabled: boolean,
+  enabled: boolean;
   getContainer: Function;
   title: string;
   style: Object;
@@ -222,7 +225,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
       if (!isEqual(newval.getContainer, oldval.getContainer)) {
         this.removeAttributes();
         let container: HTMLElement;
-        container = newval.getContainer ? newval.getContainer() : document.querySelector('.sm-component-web-map');
+        container = newval.getContainer && newval.getContainer() || document.getElementById(this.getTargetName());
         // @ts-ignore
         container.appendChild(this.$refs.attributes.$el);
         this.displayAttributes = !this.displayAttributes;
@@ -274,11 +277,8 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
 
   get attributesContainer() {
     let container: HTMLElement;
-    container =
-      this.attributes && this.attributes.getContainer
-        ? this.attributes.getContainer()
-        : document.querySelector('.sm-component-web-map');
-    return container;
+    container = this.attributes && this.attributes.getContainer && this.attributes.getContainer();
+    return container || document.getElementById(this.getTargetName());
   }
 
   get attributesIconClass() {
