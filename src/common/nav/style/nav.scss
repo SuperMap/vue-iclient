@@ -1,6 +1,6 @@
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
-@import '../../button/style/Button.scss';
+@import '../../button/style/button.scss';
 
 @include b(nav) {
   width: 100%;
