@@ -138,7 +138,6 @@ export default class MapGetter extends Vue {
 
   removeMapSucceed(target) {
     const targetName = this.getTargetName();
-    console.log('removeMapSucceed', targetName);
     if (target === targetName) {
       this.removeMap();
     }

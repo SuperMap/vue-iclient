@@ -9,7 +9,7 @@ module.exports = {
   // testRegex: "./test/.*\\.spec\\.(js|vue)$",
   testRegex: '.*\\.spec\\.js$',
   moduleNameMapper: {
-    '^vue-iclient/(.*)$': '<rootDir>/src/$1',
+    '^vue-iclient/(.*)$': '<rootDir>/$1',
     '^@libs/(.*)$': '<rootDir>/static/libs/$1',
     '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
     '^@types_mapboxgl/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
