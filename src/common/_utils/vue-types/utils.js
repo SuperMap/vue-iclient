@@ -48,7 +48,7 @@ export const isInteger =
 export const isArray =
   Array.isArray ||
   function(value) {
-    return Object.prototype.toSrtring.call(value) === '[object Array]';
+    return Object.prototype.toString.call(value) === '[object Array]';
   };
 
 /**
@@ -57,7 +57,7 @@ export const isArray =
  * @param {any} value - Value to check
  * @returns {boolean}
  */
-export const isFunction = value => Object.prototype.toSrtring.call(value) === '[object Function]';
+export const isFunction = value => Object.prototype.toString.call(value) === '[object Function]';
 
 /**
  * Adds a `def` method to the object returning a new object with passed in argument as `default` property
