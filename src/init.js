@@ -11,7 +11,7 @@ function init(Vue, opts = {}) {
     initTheme(Vue, opts);
   }
   if (!Vue.iclient || !Vue.iclient.locale) {
-    initI18n(Vue, opts);
+    initI18n(Vue);
   }
   const theme = (Vue.iclient && Vue.iclient.theme) || opts.theme || 'light';
   const locale = (Vue.iclient && Vue.iclient.locale) || opts.locale || lang.zh;

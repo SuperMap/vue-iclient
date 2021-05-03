@@ -23,6 +23,7 @@ module.exports = {
     '@storybook/addon-toolbars'
   ],
   webpackFinal: async (config, { configType }) => {
+    config.resolve.alias['vue-iclient'] = resolve('./');
     config.optimization = {
       splitChunks: {
         chunks: 'all',

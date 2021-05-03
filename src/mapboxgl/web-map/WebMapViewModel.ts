@@ -1422,7 +1422,7 @@ export default class WebMapViewModel extends WebMapBase {
     const expressionMap: any = {};
     // 自定义单值值对应的样式
     const customStyleMap = {};
-    styleGroup.map(style => {
+    styleGroup.forEach(style => {
       customStyleMap[style.value] = style;
     });
     // 遍历要素，判断该要素是不是在自定义单值中，若是在对应样式match expression中增加改要素的索引
