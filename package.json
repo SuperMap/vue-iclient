@@ -15,7 +15,7 @@
     "docs:dev": "vuepress dev docs",
     "docs:build": "vuepress build docs",
     "prepublishOnly": "node build/publish.js",
-    "publish:all": "npm run lib -leaflet && npm run build -leaflet && npm publish -leaflet && npm run lib -mapboxgl && npm run build -mapboxgl && npm publish -mapboxgl",
+    "publish:all": "npm run lib:leaflet && npm run build -leaflet && npm publish -leaflet && npm run lib:mapboxgl && npm run build -mapboxgl && npm publish -mapboxgl",
     "storybook:dev": "start-storybook -p 6006",
     "storybook:build": "build-storybook -o storybook",
     "lib": "rimraf lib && npm run lib:mapboxgl && npm run lib:leaflet",
