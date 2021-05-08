@@ -127,11 +127,17 @@
 // （1）sort 属性可选项： true | false | undefined
 // （2）defaultSortType 属性可选项：'ascend' | 'descend' | 'none'
 // （3）fixInfo 属性配置前后缀
+// （4）slots 可以通过该属性配置支持 slot 的属性，如 slots: { customRender: 'XXX'}
+//            目前支持slot: 
+//            customRender: 生成复杂单元格的slot
 [
   {
     "header": "服务",
     "field": "name",
     "sort": true,
+    "slots": {
+      "customRender": "name"
+    },
     "defaultSortType": "none",
     "fixInfo": {
       "prefix": "",

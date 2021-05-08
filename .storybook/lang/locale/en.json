@@ -302,6 +302,14 @@
       "navigationButtons": "Navigation Buttons",
       "pagination": "Pagination",
       "scrollbar": "Scrollbar"
+    },
+    "nav": {
+      "title": "Nav"
+    },
+    "textList": {
+      "title": "TextList",
+      "scrollOneByOne": "Scroll One By One",
+      "customCell": "Custom Cell"
     }
   },
   "chartComponent": {
