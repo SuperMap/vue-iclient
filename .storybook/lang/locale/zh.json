@@ -302,6 +302,11 @@
       "navigationButtons": "前进后退按钮",
       "pagination": "分页器",
       "scrollbar": "滚动条"
+    },
+    "textList": {
+      "title": "TextList 文本列表",
+      "scrollOneByOne": "逐条滚动",
+      "customCell": "自定义单元格"
     }
   },
   "chartComponent": {

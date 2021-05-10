@@ -86,9 +86,10 @@
               :title="items"
               :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
             >
-              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.prefix }}</span>
-              {{ items }}
-              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.suffix }}</span>
+              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">{{ getColumns[itemIndex].fixInfo.prefix }}</span>
+              <span v-if="!getColumns[itemIndex].slots"> {{ items }} </span>
+              <slot v-else :name="getColumns[itemIndex].slots.customRender" :text="items" :record="rowData" :rowIndex="index"> </slot>
+              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">{{ getColumns[itemIndex].fixInfo.suffix }}</span>
             </div>
           </div>
         </template>
@@ -140,13 +141,23 @@ interface CellStyleRangeGroupParams {
   data: StyleRangeParams[];
 }
 
+interface SlotParams {
+  customRender: '';
+}
+
+interface FixInfoParams {
+  prefix: '';
+  suffix: '';
+}
+
 interface ColumnParams {
   header: string;
   field: string;
   width: number;
   sort: true | false | undefined;
   defaultSortType: 'ascend' | 'descend' | 'none';
-  fixInfo: Object;
+  fixInfo: FixInfoParams;
+  slots: SlotParams;
 }
 
 @Component({
