@@ -27,7 +27,6 @@
     "lodash.orderby": "^4.6.0",
     "lodash.tonumber": "^4.0.3",
     "lodash.uniqueid": "^4.0.1",
-    "m3u8-parser": "4.5.0",
     "proj4": "^2.6.0",
     "resize-detector": "^0.2.0",
     "vue-count-to": "^1.0.13",
