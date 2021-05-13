@@ -9,7 +9,7 @@
         <template v-if="animateContent && animateContent.length > 0">
           <template
             v-for="(item, index) in (getColumns && getColumns.length > 0 && getColumns) ||
-              Object.keys(animateContent[0])"
+            Object.keys(animateContent[0])"
           >
             <div
               :key="index"
@@ -83,13 +83,28 @@
             <div
               v-for="(items, key, itemIndex) in filterProperty(rowData, 'idx')"
               :key="key"
-              :title="items"
-              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
+              :title="!getColumns[itemIndex].slots && items"
+              :style="[
+                listStyle.rowStyle,
+                { flex: getColumnWidth(itemIndex) },
+                getCellStyle(items, itemIndex)
+              ]"
             >
-              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">{{ getColumns[itemIndex].fixInfo.prefix }}</span>
+              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">
+                {{ getColumns[itemIndex].fixInfo.prefix }}
+              </span>
               <span v-if="!getColumns[itemIndex].slots"> {{ items }} </span>
-              <slot v-else :name="getColumns[itemIndex].slots.customRender" :text="items" :record="rowData" :rowIndex="index"> </slot>
-              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">{{ getColumns[itemIndex].fixInfo.suffix }}</span>
+              <slot
+                v-else
+                :name="getColumns[itemIndex].slots.customRender"
+                :text="items"
+                :record="rowData"
+                :rowIndex="index"
+              >
+              </slot>
+              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">{{
+                getColumns[itemIndex].fixInfo.suffix
+              }}</span>
             </div>
           </div>
         </template>
@@ -382,7 +397,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   get getRowStyle() {
-    return function(index, rawIndex) {
+    return function (index, rawIndex) {
       if (this.highlightCurrentRow) {
         if (this.activeClickRowIndex && this.activeClickRowIndex.includes(index)) {
           return {
@@ -408,7 +423,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   get getCellStyle() {
-    return function(value, columnIndex) {
+    return function (value, columnIndex) {
       if (isNaN(+value) || !this.thresholdsStyle || !this.thresholdsStyle[columnIndex]) {
         return {};
       }
@@ -439,7 +454,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   get getColumnWidth() {
-    return function(index) {
+    return function (index) {
       if (this.getColumns && this.getColumns.length > 0 && index < this.getColumns.length) {
         const width = this.getColumns[index].width;
         return width ? `0 0 ${(width / 100) * this.containerWidth}px` : 1;
@@ -579,8 +594,9 @@ class SmTextList extends Mixins(Theme, Timer) {
     let contentHeight = { height: `${contentHeightNum}px` };
     let rowHeight = this.rowStyleData.height;
     if (!rowHeight) {
-      if (this.listData.length < this.rows) {
-        rowHeight = contentHeightNum / (this.listData.length - 1);
+      if (this.listData.length <= this.rows) {
+        const listDataLength =  Math.max(this.autoRolling ? this.listData.length - 1 : this.listData.length, 1);
+        rowHeight = contentHeightNum / listDataLength;
       } else {
         rowHeight = contentHeightNum / this.rows;
       }
