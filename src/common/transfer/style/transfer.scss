@@ -19,7 +19,7 @@
     &-content {
       &-item:not(&-item-disabled):hover {
         background-color: $transfer-item-hover-color;
-        .#{$namespace}-checkbox-inner {
+        .#{$ant-prefix}-checkbox-inner {
           border-color: $hover-color;
         }
       }
