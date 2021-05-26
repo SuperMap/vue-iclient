@@ -96,6 +96,7 @@ import { default as Attributes } from 'vue-iclient/src/mapboxgl/attributes/index
 import { default as Chart } from 'vue-iclient/src/mapboxgl/chart/index.js';
 import { default as Compare } from 'vue-iclient/src/mapboxgl/compare/index.js';
 import { default as NcpMap } from 'vue-iclient/src/mapboxgl/ncp-map/index.js';
+import { default as DrillMap } from 'vue-iclient/src/mapboxgl/drill-map/index.js';
 import { default as OpenFile } from 'vue-iclient/src/mapboxgl/open-file/index.js';
 import { default as Query } from 'vue-iclient/src/mapboxgl/query/index.js';
 import { default as Search } from 'vue-iclient/src/mapboxgl/search/index.js';
@@ -155,6 +156,7 @@ const components = {
   Attributes,
   Chart,
   Compare,
+  DrillMap,
   NcpMap,
   OpenFile,
   Query,
@@ -237,6 +239,7 @@ export {
   CollapseCard,
   ColorPicker,
   DatePicker,
+  DrillMap,
   Dropdown,
   Empty,
   Icon,

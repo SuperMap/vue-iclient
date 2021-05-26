@@ -126,6 +126,9 @@ export default {
     sampleDataNotSupport: 'Sample datas is not supported yet!',
     mvtNotSupport: 'Vector tile layers is not supported yet!'
   },
+  drillMap: {
+    goBack: 'Go Back'
+  },
   legend: {
     themeField: 'Thematic Field',
     title: 'Legend',

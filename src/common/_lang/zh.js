@@ -127,6 +127,9 @@ export default {
     sampleDataNotSupport: '暂不支持加载示例数据！',
     mvtNotSupport: '暂不支持加载矢量瓦片图层！'
   },
+  drillMap: {
+    goBack: '返回'
+  },
   legend: {
     themeField: '专题字段',
     title: '图例',

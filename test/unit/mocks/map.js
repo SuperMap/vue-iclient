@@ -1,4 +1,11 @@
-require('flow-remove-types/register')({ includes: /.*?\/mapbox-gl\/src\/.*/, excludes: { test: function () { return false; } } });
+require('flow-remove-types/register')({
+  includes: /.*?\/mapbox-gl\/src\/.*/,
+  excludes: {
+    test: function () {
+      return false;
+    }
+  }
+});
 
 var union = require('@turf/union');
 var bboxPolygon = require('@turf/bbox-polygon');
@@ -15,7 +22,7 @@ var util = require('mapbox-gl/src/util/util');
 
 var defaultOptions = {
   doubleClickZoom: true
-}
+};
 
 function functor(x) {
   return function () {
@@ -40,9 +47,9 @@ function _fakeResourceTiming(name) {
     responseStart: 2893.1650000000004,
     responseEnd: 2893.78,
     duration: 7.005000000000109,
-    entryType: "resource",
-    initiatorType: "xmlhttprequest",
-    nextHopProtocol: "http/1.1",
+    entryType: 'resource',
+    initiatorType: 'xmlhttprequest',
+    nextHopProtocol: 'http/1.1',
     encodedBodySize: 155,
     decodedBodySize: 155,
     serverTiming: [],
@@ -61,27 +68,24 @@ var Map = function (options) {
   this._sources = {};
   this._collectResourceTiming = !!this.options.collectResourceTiming;
   this.zoom = this.options.zoom || 0;
-  this._container = this.options.container || 'map'
+  this._container = this.options.container || 'map';
   // this.style;
   this._layers = {};
   this.getContainer = function () {
     return this._container;
-  }
+  };
   //add by sunxy
   var sw = new LngLat(-73.9876, 40.7661);
   var ne = new LngLat(-73.9397, 40.8002);
   var llb = new LngLatBounds(sw, ne);
   this.bounds = this.options.bounds || llb;
 
-
   try {
     this.center = this.options.center ? new LngLat(this.options.center.lng, this.options.center.lat) : new LngLat(0, 0);
   } catch (e) {
     this.center = this.options.center ? new LngLat(this.options.center[0], this.options.center[1]) : new LngLat(0, 0);
   }
-  this.resize = function () {
-   
-  }
+  this.resize = function () {};
   // this.style = new Style();
   this.style = options.style;
   this.setStyle = function (style, options) {
@@ -90,24 +94,28 @@ var Map = function (options) {
       var layer = list[i];
       this._layers[layer.id] = layer;
     }
-
+  };
+  if (options.style) {
+    this.setStyle(options.style);
   }
-  if (options.style) { this.setStyle(options.style) }
   // this.transform = new Transform();
   this._controlCorners = {
     'top-left': {
-      appendChild: function () { }
+      appendChild: function () {}
     }
-  }
-  setTimeout(function () {
-
-    this.fire('load');
-  }.bind(this), 0);
-
+  };
+  setTimeout(
+    function () {
+      this.fire('load');
+    }.bind(this),
+    0
+  );
 
   var setters = [
     // Camera options
-    'jumpTo', 'panTo', 'panBy',
+    'jumpTo',
+    'panTo',
+    'panBy',
     'setBearing',
     'setPitch',
     'setZoom',
@@ -115,7 +123,9 @@ var Map = function (options) {
     'resetNorth',
     'snapToNorth',
     // Settings
-    'setMaxBounds', 'setMinZoom', 'setMaxZoom',
+    'setMaxBounds',
+    'setMinZoom',
+    'setMaxZoom',
     // Layer properties
     'setLayoutProperty',
     'setPaintProperty'
@@ -133,16 +143,14 @@ var Map = function (options) {
     // } else if (layerid == '二级道路L@北京') {
     //   twoVis === "visible" ? "none" : "visible";
     // }
-  }
+  };
 
   this.addControl = function (control) {
     control.onAdd(this);
-  }
+  };
 
-
-
-  // if (options.style) { 
-  //   this.setStyle(options.style, { localIdeographFontFamily: options.localIdeographFontFamily }); 
+  // if (options.style) {
+  //   this.setStyle(options.style, { localIdeographFontFamily: options.localIdeographFontFamily });
   // }
 
   this.getStyle = function () {
@@ -157,60 +165,49 @@ var Map = function (options) {
   this.getContainer = function () {
     var container = {
       parentNode: container,
-      appendChild: function () { },
-      removeChild: function () { },
+      appendChild: function () {},
+      removeChild: function () {},
       getElementsByClassName: function () {
-        return [container]
+        return [container];
       },
-      addEventListener: function (name, handle) { },
-      removeEventListener: function () { },
+      addEventListener: function (name, handle) {},
+      removeEventListener: function () {},
       classList: {
-        add: function () { },
-        remove: function () { }
+        add: function () {},
+        remove: function () {}
       }
     };
 
     return container;
-  }
+  };
 
   this.getSource = function (name) {
-
     if (name === 'UNIQUE-民航数-0') {
       let chartResult = {
-        // "features": {
-        //   "type": "FeatureCollection",
-          "features": [
-            {
-              "type": "Feature",
-              "properties": {
-                "机场": "北京/首都",
-                "X坐标": "116.588918",
-                "Y坐标": "40.071080",
-                "名次": "1",
-                "2017旅客吞吐量（人次）": "95,786,296",
-                "2016旅客 吞吐量（人次）": "94,393,454",
-                "同比增速%": "-1.5",
-                "2017货邮吞吐量（吨）": "2,029,583.6",
-                "2016货邮吞吐量（吨）": "1,943,159.7",
-                "2017起降架次（架 次）": "597,259",
-                "2016起降架次（架次）": "606,081",
-                "index": 0
-              },
-              "geometry": {
-                "type": "Point",
-                "coordinates": [
-                  116.588918,
-                  40.07108
-                ]
-              }
+        features: [
+          {
+            type: 'Feature',
+            properties: {
+              机场: '北京/首都',
+              X坐标: '116.588918',
+              Y坐标: '40.071080',
+              名次: '1',
+              '2017旅客吞吐量（人次）': '95,786,296',
+              '2016旅客 吞吐量（人次）': '94,393,454',
+              '同比增速%': '-1.5',
+              '2017货邮吞吐量（吨）': '2,029,583.6',
+              '2016货邮吞吐量（吨）': '1,943,159.7',
+              '2017起降架次（架 次）': '597,259',
+              '2016起降架次（架次）': '606,081',
+              index: 0
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: [116.588918, 40.07108]
             }
-          ]
-        // },
-        // "featureUriList": [],
-        // "totalCount": 1,
-        // "featureCount": 1,
-        // "succeed": true
-      }
+          }
+        ]
+      };
       return {
         _data: chartResult
       };
@@ -229,38 +226,38 @@ var Map = function (options) {
               source: this._sources[name]
             };
             // typeof data === 'string' corresponds to an AJAX load
-            if (this._collectResourceTiming && data && (typeof data === 'string'))
+            if (this._collectResourceTiming && data && typeof data === 'string')
               e.resourceTiming = [_fakeResourceTiming(data)];
             this.fire('data', e);
           }
         }.bind(this),
-        loadTile: function () { }
+        loadTile: function () {}
       };
-    } 
+    }
     if (name === 'ChinaDark') {
-        return {
-          setData: function (data) {
-            this._sources[name].data = data;
-            if (this._sources[name].type === 'geojson') {
-              const e = {
-                type: 'data',
-                sourceDataType: 'content',
-                sourceId: name,
-                isSourceLoaded: true,
-                dataType: 'source',
-                source: this._sources[name]
-              };
-              // typeof data === 'string' corresponds to an AJAX load
-              if (this._collectResourceTiming && data && (typeof data === 'string'))
-                e.resourceTiming = [_fakeResourceTiming(data)];
-              this.fire('data', e);
-            }
-          }.bind(this),
-          loadTile: function () { }
-        };
-      }else{
-        return {
-          setData: function (data) {
+      return {
+        setData: function (data) {
+          this._sources[name].data = data;
+          if (this._sources[name].type === 'geojson') {
+            const e = {
+              type: 'data',
+              sourceDataType: 'content',
+              sourceId: name,
+              isSourceLoaded: true,
+              dataType: 'source',
+              source: this._sources[name]
+            };
+            // typeof data === 'string' corresponds to an AJAX load
+            if (this._collectResourceTiming && data && typeof data === 'string')
+              e.resourceTiming = [_fakeResourceTiming(data)];
+            this.fire('data', e);
+          }
+        }.bind(this),
+        loadTile: function () {}
+      };
+    } else {
+      return {
+        setData: function (data) {
           //   this._sources[name].data = data;
           //   if (this._sources[name].type === 'geojson') {
           //     const e = {
@@ -277,14 +274,13 @@ var Map = function (options) {
           //     this.fire('data', e);
           //   }
           // }.bind(this),
-          },
-          loadTile: function () { }
-        };
-      }
+        },
+        loadTile: function () {}
+      };
+    }
   };
 
   this.loaded = function () {
-
     return true;
   };
 
@@ -305,7 +301,7 @@ var Map = function (options) {
         dataType: 'source',
         source: source
       };
-      if (this._collectResourceTiming && source.data && (typeof source.data === 'string'))
+      if (this._collectResourceTiming && source.data && typeof source.data === 'string')
         e.resourceTiming = [_fakeResourceTiming(source.data)];
       this.fire('data', e);
     }
@@ -314,7 +310,7 @@ var Map = function (options) {
   this.removeSource = function (name) {
     delete this._sources[name];
   };
-  this.off = function () { };
+  this.off = function () {};
   this.addLayer = function (layer, before) {
     this.overlayLayersManager[layer.id] = layer;
 
@@ -322,11 +318,12 @@ var Map = function (options) {
     return this;
   };
 
-  this.removeLayer = function (layerId) { };
-
+  this.removeLayer = function (layerId) {};
+  this.moveLayer = function (layerId) {};
+  this.getFilter = function (layerId) {};
+  this.setFilter = function (layerId, filter) {};
   // this._layers[id] = layer;
   this.getLayer = function (id) {
-
     if (this.overlayLayersManager[id]) {
       return this.overlayLayersManager[id];
     }
@@ -386,7 +383,7 @@ var Map = function (options) {
   //   }
   // } else if (layerId == '二级道路L@北京1') {
   //   console.log("***from map:" + layerId)
-  //   return 
+  //   return
   // {
   //     "id": "二级道路L@北京1",
   //     "type": "line",
@@ -401,7 +398,9 @@ var Map = function (options) {
   // }
   // };
   // add by sunxy
-  this.getBounds = function () { return this.bounds; };
+  this.getBounds = function () {
+    return this.bounds;
+  };
   // this.getStyle = function () {
   //   // if (this.options.style.layers[0].id == 'simple-tiles') {
   //   console.log("getStyle");
@@ -531,7 +530,7 @@ var Map = function (options) {
   //           "line-width": 4,
   //           "line-color": "hsl(230, 24%, 87%)"
   //         }
-  //       }, 
+  //       },
   //       {
   //         "id": "二级道路L@北京1",
   //         "type": "line",
@@ -546,35 +545,47 @@ var Map = function (options) {
   //   }
   // }
   // };
-  this.getZoom = function () { return this.zoom; };
+  this.getZoom = function () {
+    return this.zoom;
+  };
   this.getBearing = functor(0);
   this.getPitch = functor(0);
-  this.getCenter = function () { return this.center; };
-  this.setCenter = function (x) { this.center = new LngLat(x[0], x[1]) };
+  this.getCenter = function () {
+    return this.center;
+  };
+  this.setCenter = function (x) {
+    if (x instanceof Array) {
+      this.center = new LngLat(x[0], x[1]);
+    } else if (x instanceof Object) {
+      this.center = new LngLat(x.lng, x.lat);
+    }
+  };
 
-  this.getMinZoom = function () { return 0 };
-  this.getMaxZoom = function () { return 22 };
+  this.getMinZoom = function () {
+    return 0;
+  };
+  this.getMaxZoom = function () {
+    return 22;
+  };
   this.doubleClickZoom = {
-    disable: function () { },
-    enable: function () { }
-  }
+    disable: function () {},
+    enable: function () {}
+  };
 
   this.boxZoom = {
-    disable: function () { },
-    enable: function () { }
-  }
+    disable: function () {},
+    enable: function () {}
+  };
 
   this.dragPan = {
-    disable: function () { },
-    enable: function () { }
-  }
+    disable: function () {},
+    enable: function () {}
+  };
 
-  this.project = function () { }
+  this.project = function () {};
   this.unproject = function (point) {
-
     return new LngLat(-73.9876, 40.7661);
-
-  }
+  };
   /**
    * Returns an array of features that overlap with the pointOrBox
    * Currently it does not respect queryParams
@@ -590,7 +601,7 @@ var Map = function (options) {
         Math.min(pointOrBox[0].y, pointOrBox[1].y),
         Math.max(pointOrBox[0].x, pointOrBox[1].y),
         Math.max(pointOrBox[0].x, pointOrBox[1].y)
-      ]
+      ];
     } else {
       // convert box in bounding box
       searchBoundingBox = [
@@ -602,7 +613,10 @@ var Map = function (options) {
     }
 
     var searchPolygon = bboxPolygon(searchBoundingBox);
-    var features = Object.keys(this._sources).reduce((memo, name) => memo.concat(this._sources[name].data.features), []);
+    var features = Object.keys(this._sources).reduce(
+      (memo, name) => memo.concat(this._sources[name].data.features),
+      []
+    );
     features = features.filter(feature => {
       var subFeatures = [];
 
@@ -617,10 +631,9 @@ var Map = function (options) {
               type: type,
               coordinates: coords
             }
-          }
+          };
         });
-      }
-      else {
+      } else {
         subFeatures.push(feature);
       }
 
@@ -628,9 +641,8 @@ var Map = function (options) {
       // TODO: Look into having this buffer match the style
       subFeatures = subFeatures.map(subFeature => {
         if (subFeature.geometry.type === 'Point' || subFeature.geometry.type === 'LineString') {
-          return buffer(subFeature, .00000001, 'kilometers');
-        }
-        else {
+          return buffer(subFeature, 0.00000001, 'kilometers');
+        } else {
           return subFeature;
         }
       });
@@ -647,25 +659,24 @@ var Map = function (options) {
     });
 
     return features;
-  }
+  };
 
   this.remove = function () {
     this._events = [];
     this.sources = [];
-  }
+  };
 
-  this.zoomIn = function(e){
-      this.zoom++;
-      return this.zoom;
-  }
+  this.zoomIn = function (e) {
+    this.zoom++;
+    return this.zoom;
+  };
 
-  this.zoomOut = function(e){
-      this.zoom--;
-      this.fire('wheel');
-      this.fire('zoomend',this.zoom);
-      return this.zoom;
-  }
-}
-
+  this.zoomOut = function (e) {
+    this.zoom--;
+    this.fire('wheel');
+    this.fire('zoomend', this.zoom);
+    return this.zoom;
+  };
+};
 
 module.exports = Map;

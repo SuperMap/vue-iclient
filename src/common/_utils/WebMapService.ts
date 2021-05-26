@@ -107,8 +107,14 @@ export default class WebMapService extends Events {
     this.proxy = options.proxy;
   }
 
-  public setMapId(mapId: string | number): void {
-    this.mapId = mapId;
+  public setMapId(mapId: string | number | Object): void {
+    if (typeof mapId === 'string' || typeof mapId === 'number') {
+      this.mapId = mapId;
+      this.mapInfo = null;
+    } else if (mapId !== null && typeof mapId === 'object') {
+      this.mapInfo = mapId;
+      this.mapId = '';
+    }
   }
 
   public setServerUrl(serverUrl: string): void {
@@ -1104,17 +1110,20 @@ export default class WebMapService extends Events {
     let titles = properties.colTitles;
     let rows = properties.rows;
     let fieldIndex = titles.findIndex(title => title === divisionField);
-
     rows.forEach(row => {
-      let feature = geoData.features.find((item) => {
+      let feature = geoData.features.find(item => {
         return this._isMatchAdministrativeName(item.properties.Name, row[fieldIndex]);
       });
       // todo 需提示忽略无效数据
       if (feature) {
+        const province = feature.properties.Province;
         const combineFeature: GeoJSON.Feature = { properties: {}, geometry: feature.geometry, type: 'Feature' };
         row.forEach((item, idx) => {
           combineFeature.properties[titles[idx]] = item;
         });
+        if (province) {
+          combineFeature.properties.Province = province;
+        }
         geojson.features.push(combineFeature);
       }
     });

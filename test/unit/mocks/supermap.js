@@ -19,14 +19,31 @@ import {
   datas_beijing,
   prj_data,
   dataset_data,
-  datas_charts
+  datas_charts,
+  searchGeocoding,
+  drill_map_mapjson,
+  drill_map_mapjson1,
+  drill_map_mapjson2,
+  drill_map_mapjson3,
+  drill_map_719613442,
+  drill_map_1960447494,
+  drill_map_1687422166
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 var SuperMap = (window.SuperMap = window.SuperMap || {});
 
-SuperMap.SpatialQueryMode=
-{CONTAIN:"CONTAIN",CROSS:"CROSS",DISJOINT:"DISJOINT",IDENTITY:"IDENTITY",INTERSECT:"INTERSECT",NONE:"NONE",OVERLAP:"OVERLAP",TOUCH:"TOUCH",WITHIN:"WITHIN"};
+SuperMap.SpatialQueryMode = {
+  CONTAIN: 'CONTAIN',
+  CROSS: 'CROSS',
+  DISJOINT: 'DISJOINT',
+  IDENTITY: 'IDENTITY',
+  INTERSECT: 'INTERSECT',
+  NONE: 'NONE',
+  OVERLAP: 'OVERLAP',
+  TOUCH: 'TOUCH',
+  WITHIN: 'WITHIN'
+};
 SuperMap.Widgets = window.SuperMap.Widgets || {};
 SuperMap.Widgets.FileReaderUtil = {};
 SuperMap.ColorsPickerUtil = {};
@@ -251,6 +268,18 @@ SuperMap.ColorsPickerUtil.getGradientColors = function () {
     '#519fb0'
   ];
 };
+SuperMap.ArrayStatistic = {};
+SuperMap.ArrayStatistic.getArraySegments = function (array, type, segNum) {
+  return [
+    0.406820286455,
+    2.6944246004791665,
+    4.982028914503333,
+    7.2696332285275,
+    9.557237542551666,
+    11.844841856575833,
+    14.1324461706
+  ];
+};
 
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesBySQLParameters = jest.fn());
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesByBoundsParameters = jest.fn());
@@ -262,17 +291,17 @@ var QueryByBoundsParameters = (SuperMap.QueryByBoundsParameters = jest.fn());
 var isXField = (SuperMap.Widgets.FileReaderUtil.isXField = jest.fn());
 var isYField = (SuperMap.Widgets.FileReaderUtil.isYField = jest.fn());
 var Util = (SuperMap.Util = {
-  urlPathAppend: function(a,b){
+  urlPathAppend: function (a, b) {
     return `${a}/${b}`;
   },
-  urlAppend :function(a,b){
+  urlAppend: function (a, b) {
     return `${a}/${b}`;
   }
 });
 // var document = (window.document = jest.fn());
 // var documentElement = window.document.documentElement
-var document =  {}
-var documentElement  = (document.documentElement = {});
+var document = {};
+var documentElement = (document.documentElement = {});
 var FetchRequest = (SuperMap.FetchRequest = {
   get: function (url, params, options) {
     return new Promise((resolve, reject) => {
@@ -280,10 +309,23 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas))));
       } else if (url.indexOf('1649097980/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_mapjson))));
+      } else if (url.indexOf('244114284/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_mapjson))));
+      } else if (url.indexOf('1653065660') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_mapjson1))));
+      } else if (url.indexOf('891303728') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_mapjson2))));
+      } else if (url.indexOf('366831804') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_mapjson3))));
+      } else if (url.indexOf('1687422166') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_1687422166))));
+      } else if (url.indexOf('1960447494') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_1960447494))));
+      } else if (url.indexOf('719613442') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_719613442))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {
-        console.log('search_pagecontent');
         process.nextTick(() =>
           // resolve(new Response(JSON.stringify(search_pagecontent)))
           resolve(new Response(JSON.stringify(charts_content)))
@@ -293,17 +335,16 @@ var FetchRequest = (SuperMap.FetchRequest = {
       // /web/datas/1920557079.json echarts
       else if (url.indexOf('datas/123/content.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_charts))));
-      }
-      else if (url.indexOf('datas/676516522/content.json') > -1) {
+      } else if (url.indexOf('datas/676516522/content.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_charts))));
-      }
-      else if (url.indexOf('iportal/web/datas') > -1) {
+      } else if (url.indexOf('iportal/web/datas') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_chart))));
       }
       // http://192.168.12.230:8092/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
       else if (url.indexOf('content.json?pageSize=9999999&currentPage=1') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(iportal_content))));
       }
+
       // 2040117719
       else if (url.indexOf('2040117719') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_beijing))));
@@ -327,25 +368,19 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(localSearch))));
       } else if (url.indexOf('geocoding.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(searchGeocoding))));
-      }
-      else if(url.indexOf('web/config/portal.json') > -1){
-      // resolve(new Response(JSON.stringify(portal_data)));
-      process.nextTick(() => resolve(new Response(JSON.stringify(portal_data1))));
-      }
-      else if (url.indexOf('iportal/web/maps') > -1) {
+      } else if (url.indexOf('web/config/portal.json') > -1) {
+        // resolve(new Response(JSON.stringify(portal_data)));
+        process.nextTick(() => resolve(new Response(JSON.stringify(portal_data1))));
+      } else if (url.indexOf('iportal/web/maps') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(portal_data))));
-      }
-      else if (url.indexOf('/content.json') > -1) {
+      } else if (url.indexOf('/content.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(chart_data))));
-      }
-      else if (url.indexOf('/prjCoordSys') > -1) {
+      } else if (url.indexOf('/prjCoordSys') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(prj_data))));
-      }
-      else if (url.indexOf('/World/datasets/Countries') > -1) {
+      } else if (url.indexOf('/World/datasets/Countries') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(dataset_data))));
-      }
-      else {
-        process.nextTick(() =>  reject("未匹配到"))
+      } else {
+        process.nextTick(() => reject('未匹配到'));
       }
     });
   }

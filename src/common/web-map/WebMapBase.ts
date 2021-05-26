@@ -91,7 +91,7 @@ export default abstract class WebMapBase extends Events {
   }
 
   abstract _initWebMap(): void;
-  abstract _getMapInfo(data, _taskID);
+  abstract _getMapInfo(data, _taskID?);
   abstract _createMap();
   // TODO 重构子类 webmap layer 添加逻辑，只重写具体添加某个layer的方法，基类实现 initxxxx
   abstract _initBaseLayer(mapInfo);
@@ -108,7 +108,12 @@ export default abstract class WebMapBase extends Events {
   }
 
   public setMapId(mapId: string | number): void {
-    this.mapId = mapId;
+    if (typeof mapId === 'string' || typeof mapId === 'number') {
+      this.mapId = mapId;
+      this.webMapInfo = null;
+    } else if (mapId !== null && typeof mapId === 'object') {
+      this.webMapInfo = mapId;
+    }
     this.webMapService.setMapId(mapId);
     setTimeout(() => {
       this._initWebMap();
@@ -162,6 +167,7 @@ export default abstract class WebMapBase extends Events {
 
   protected initWebMap() {
     this.cleanWebMap();
+    this.serverUrl = this.serverUrl && this.webMapService.handleServerUrl(this.serverUrl);
     if (this.webMapInfo) {
       // 传入是webmap对象
       const mapInfo = this.webMapInfo;
@@ -170,7 +176,7 @@ export default abstract class WebMapBase extends Events {
         description: this.webMapInfo.description
       };
       this.mapParams = mapInfo.mapParams;
-      this._getMapInfo(mapInfo, null);
+      this._getMapInfo(mapInfo);
       return;
     } else if (!this.mapId || !this.serverUrl) {
       this._createMap();
@@ -181,7 +187,6 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected getMapInfo(_taskID) {
-    this.serverUrl = this.webMapService.handleServerUrl(this.serverUrl);
     this.webMapService
       .getMapInfo()
       .then(
@@ -253,7 +258,6 @@ export default abstract class WebMapBase extends Events {
 
   protected getLayerFeatures(layer, _taskID, type) {
     const getLayerFunc = this.webMapService.getLayerFeatures(type, layer, this.baseProjection);
-
     getLayerFunc &&
       getLayerFunc
         .then(
@@ -430,14 +434,14 @@ export default abstract class WebMapBase extends Events {
       }
       return feature;
     });
-    if (!mergeByField && features && features[0].geometry) {
+    if (!mergeByField && features && features[0] && features[0].geometry) {
       return features;
     }
     const source = this.map.getSource(layerId);
-    if ((!source || !source._data.features) && features && features[0].geometry) {
+    if ((!source || !source._data.features) && features && features[0] && features[0].geometry) {
       return features;
     }
-    const prevFeatures = source._data.features;
+    const prevFeatures = source && source._data && source._data.features;
     const nextFeatures = [];
     if (!mergeByField && prevFeatures) {
       return prevFeatures;
@@ -651,7 +655,8 @@ export default abstract class WebMapBase extends Events {
     const { colors, customSettings } = themeSetting;
     let themeField = themeSetting.themeField;
     // 找出所有的单值
-    Object.keys(features[0].properties).forEach(key => {
+    const featurePropertie = (features && features[0] && features[0].properties) || {};
+    Object.keys(featurePropertie).forEach(key => {
       key.toLocaleUpperCase() === themeField.toLocaleUpperCase() && (themeField = key);
     });
     const names = [];

@@ -1,10 +1,11 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api && api.cache(true);
   const presets = [
     [
       '@babel/preset-env',
       {
         // "modules": false,
+        loose: true,
         targets: {
           node: 'current',
           browsers: ['> 1%', 'last 2 versions', 'not ie <= 8']

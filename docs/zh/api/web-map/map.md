@@ -31,6 +31,7 @@ Web Map 地图组件。支持 MapboxGL Map，SuperMap iPortal/Online 地图。<b
 | isSuperMapOnline             | 是否是 SuperMap Online 地图                                                                                                                                                              | boolean                    | -      | -                          |
 | defaultLoading               | 是否默认显示加载中                                                                                                                                                                       | boolean                    | -      | true                       |
 | loading                      | 地图是否加载中                                                                                                                                                                           | boolean                    | -      | false                      |
+| keepBounds                   | 当地图重绘时，是否保持 mapOptions 中的 bounds                                                                                                                                            | boolean                    | -      | false                      |
 
 ## 加载 iServer 地图
 
