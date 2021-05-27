@@ -4,7 +4,7 @@
       <sm-web-map v-bind="mapProps" :target="target" @load="load">
         <slot></slot>
       </sm-web-map>
-      <sm-button v-if="!$slots.goBack" class="sm-component-drill-map__btn" type="primary" @click="goBack">{{
+      <sm-button v-if="!$scopedSlots.goBack" class="sm-component-drill-map__btn" type="primary" @click="goBack">{{
         $t('drillMap.goBack')
       }}</sm-button>
       <template v-else>
