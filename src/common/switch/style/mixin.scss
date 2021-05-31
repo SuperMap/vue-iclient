@@ -4,9 +4,9 @@
 
   #{$prefix}-loading-icon,
   &:after {
-    background-color: $switch-disabled-after-color;
+    background-color:$switch-after-bg;
   }
   #{$prefix}-inner {
-    color: $switch-disabled-after-color;
+    color: $switch-after-bg;
   }
 }

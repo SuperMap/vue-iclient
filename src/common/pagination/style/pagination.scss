@@ -24,10 +24,10 @@
   }
 
   &-item-active {
-    background: transparent;
+    background: $primary-5;
     border-color: $primary-5;
     a {
-      color: $primary-5;
+      color: $pagination-active-text-color;
     }
 
     &:focus,
@@ -37,7 +37,7 @@
 
     &:focus a,
     &:hover a {
-      color: $primary-5;
+      color: $pagination-active-text-color;;
     }
   }
 
@@ -48,6 +48,9 @@
         @include b(pagination) {
           &-item-link-icon {
             color: $primary-5;
+          }
+          &-item-ellipsis {
+            color: $pagination-ellipsis-color;
           }
         }
       }
