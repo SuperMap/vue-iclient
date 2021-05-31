@@ -270,6 +270,9 @@ export default class WebMapViewModel extends Events {
   }
 
   getMapInfo(mapId: string, serverUrl: string): Promise<any> {
+    if (!serverUrl || !mapId) {
+      return null;
+    }
     this.webMapService.handleServerUrl(serverUrl);
     return this.webMapService
       .getMapInfo()
@@ -293,12 +296,14 @@ export default class WebMapViewModel extends Events {
       const { serverUrl, mapId } = item;
       this.webMapService = new WebMapService(mapId, item);
       const promise = this.getMapInfo(mapId, serverUrl);
-      if (i === 0) {
-        promise.then(res => {
-          this.firstMapInfo = res.mapInfo;
-        });
+      if (promise) {
+        if (i === 0) {
+          promise.then(res => {
+            this.firstMapInfo = res.mapInfo;
+          });
+        }
+        promises.push(promise);
       }
-      promises.push(promise);
     }
     return Promise.all(promises).then(res => {
       const data = [];

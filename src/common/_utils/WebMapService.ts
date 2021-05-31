@@ -1135,14 +1135,14 @@ export default class WebMapService extends Events {
    */
   private _isMatchAdministrativeName(featureName: string, fieldName: string): boolean {
     if (featureName && typeof fieldName === 'string' && fieldName.constructor === String) {
-      let shortName = featureName.substr(0, 2);
+      let shortName = featureName.trim().substr(0, 2);
       // 张家口市和张家界市
       if (shortName === '张家') {
-        shortName = featureName.substr(0, 3);
+        shortName = featureName.trim().substr(0, 3);
       }
       // 阿拉善盟 阿拉尔市
       if (shortName === '阿拉') {
-        shortName = featureName.substr(0, 3);
+        shortName = featureName.trim().substr(0, 3);
       }
       return !!fieldName.startsWith(shortName);
     }
