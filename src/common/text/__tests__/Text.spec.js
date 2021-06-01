@@ -34,7 +34,7 @@ describe('Text.vue', () => {
       }
     })
     expect(wrapper.text()).toBe('北京北京');
-    expect(wrapper.find('div.sm-component-text').attributes()).toHaveProperty('style', "font-size: 18px; line-height: 18px; font-weight: 700; justify-content: center; background: rgb(255, 255, 255); color: rgba(0, 0, 0, 0.65);")
+    expect(wrapper.find('div.sm-component-text').attributes()).toHaveProperty('style', "font-size: 18px; line-height: 18px; font-weight: 700; justify-content: center; background: rgb(255, 255, 255);")
   })
 
   it('text href', () => {
