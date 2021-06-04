@@ -596,7 +596,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     let rowHeight = this.rowStyleData.height;
     if (!rowHeight) {
       if (this.listData.length <= this.rows) {
-        const listDataLength =  Math.max(this.autoRolling ? this.listData.length - 1 : this.listData.length, 1);
+        const listDataLength = Math.max(this.autoRolling ? this.listData.length - 1 : this.listData.length, 1);
         rowHeight = contentHeightNum / listDataLength;
       } else {
         rowHeight = contentHeightNum / this.rows;

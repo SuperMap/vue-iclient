@@ -52,6 +52,7 @@ import { default as Transfer } from 'vue-iclient/src/common/transfer/index.js';
 import { default as Tree } from 'vue-iclient/src/common/tree/index.js';
 import { default as TreeSelect } from 'vue-iclient/src/common/tree-select/index.js';
 import { default as VideoPlayer } from 'vue-iclient/src/common/video-player/index.js';
+import { default as ConfigProvider } from 'vue-iclient/src/common/config-provider/index.js';
 
 /** layer */
 import { default as AnimateMarkerLayer } from 'vue-iclient/src/mapboxgl/web-map/layer/animate-marker/index.js';
@@ -153,6 +154,7 @@ const components = {
   Tree,
   TreeSelect,
   VideoPlayer,
+  ConfigProvider,
   Attributes,
   Chart,
   Compare,
@@ -276,6 +278,7 @@ export {
   Tree,
   TreeSelect,
   VideoPlayer,
+  ConfigProvider,
   Attributes,
   Chart,
   Compare,

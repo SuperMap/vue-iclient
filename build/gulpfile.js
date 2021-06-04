@@ -173,21 +173,27 @@ function _cssjs(file, encoding) {
 }
 function compileCopy() {
   // 生成layer/style/index.js css.js
-  createStyle(`../src/${type}/web-map/layer/`);
+  createLayerStyle(`../src/${type}/web-map/layer/`);
+  // 全局配置组件没有style 生成config-provider/style/index.js css.js
+  createStyle(`../lib/${type}/config-provider/style`);
   // 拷贝theme.json和_assets和tdt
   let gulpFile = ['../src/common/_utils*/style/**/*.json', '../src/common/_assets*/iconfont*/*'];
   type === 'mapboxgl' && gulpFile.push('../src/mapboxgl/tdt/_assets*/sprite*');
   return gulp.src(gulpFile).pipe(gulp.dest(output_path));
 }
 function createStyle(filePath) {
+  fileSave(filePath + '/index.js').write('', 'utf8');
+  fileSave(filePath + '/css.js').write('', 'utf8');
+}
+
+function createLayerStyle(filePath) {
   const compFiles = fs.readdirSync(path.resolve(__dirname, filePath));
   compFiles.forEach(compName => {
-    const outpath = `../lib/${type}/${compName}-layer/style`;
+    const outPath = `../lib/${type}/${compName}-layer/style`;
     try {
       fs.statSync(path.resolve(__dirname, filePath) + `\\${compName}\\style`);
     } catch (err) {
-      fileSave(outpath + '/index.js').write('', 'utf8');
-      fileSave(outpath + '/css.js').write('', 'utf8');
+      createStyle(outPath);
     }
   });
 }

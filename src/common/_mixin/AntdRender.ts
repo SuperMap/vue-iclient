@@ -1,36 +1,37 @@
 import Vue, { VNode, CreateElement } from 'vue';
-import { Component, Prop, Provide } from 'vue-property-decorator';
-import defaultRenderEmpty from 'vue-iclient/src/common/empty/RenderEmpty';
-import { getOptionProps, getComponentFromProp } from 'ant-design-vue/es/_util/props-util';
+import { Component, Inject } from 'vue-property-decorator';
+import { getOptionProps } from 'ant-design-vue/es/_util/props-util';
+// @ts-ignore
+import { ConfigConsumerProps } from 'vue-iclient/src/common/config-provider/ConfigProvider.vue';
+import LocaleReceiver from 'ant-design-vue/es/locale-provider/LocaleReceiver.js';
 
+interface configProviderParams {
+  getPopupContainer: Function;
+  prefixCls: string;
+  renderEmpty: Function;
+  csp: Object;
+  autoInsertSpaceInButton: boolean;
+  locale: Object;
+  pageHeader: Object;
+  transformCellText: Function;
+}
 @Component
 export default class BaseRender extends Vue {
-  @Prop() getPopupContainer!: Function;
-  @Prop() prefixCls!: string;
-  @Prop() renderEmpty!: Function;
-  @Prop() csp!: Object;
-  @Prop() autoInsertSpaceInButton!: boolean;
-  @Prop() locale!: Object;
-  @Prop() pageHeader!: Object;
-  @Prop() transformCellText!: Function;
+  @Inject({
+    default: () => {
+      return ConfigConsumerProps;
+    }
+  })
+  configProvider!: configProviderParams;
 
-  @Provide('configProvider')
-  configProvider = {
-    getPopupContainer: this.getPopupContainer,
-    prefixCls: this.prefixCls,
-    csp: this.csp,
-    autoInsertSpaceInButton: this.autoInsertSpaceInButton,
-    locale: Object.assign({}, this.locale, this.$i18n && this.$i18n.getLocaleMessage(this.$i18n.locale)),
-    pageHeader: this.pageHeader,
-    pageHeatransformCellTextder: this.transformCellText,
-    getPrefixCls: this.getPrefixCls,
-    renderEmpty: this.renderEmptyComponent
-  }
-
-  @Provide('localeData')
-  localeData = {
-    antLocale: Object.assign({}, this.locale, this.$i18n && this.$i18n.getLocaleMessage(this.$i18n.locale), { exist: true })
-  };
+  @Inject({
+    default: () => {
+      return {
+        antLocale: Vue.prototype.$i18n && Vue.prototype.$i18n.getLocaleMessage(Vue.prototype.$i18n.locale)
+      };
+    }
+  })
+  localeData;
 
   get extralProps() {
     return {};
@@ -62,13 +63,17 @@ export default class BaseRender extends Vue {
     return suffixCls ? `${prefixCls}-${suffixCls}` : prefixCls;
   }
 
-  renderEmptyComponent(h: CreateElement, name: string) {
-    const renderEmpty = getComponentFromProp(this, 'renderEmpty', {}, false) || defaultRenderEmpty;
-    return renderEmpty(h, name);
-  }
-
   getComponentInstance() {
     const Component = this.$options.defaultComponent;
+    // @ts-ignore
+    if (Component.inject && Component.inject.configProvider) {
+      // @ts-ignore
+      Component.inject.configProvider.default = this.configProvider;
+      // @ts-ignore
+    }
+    LocaleReceiver.inject.localeData.default = this.configProvider.locale
+      ? { ...this.localeData, ...this.configProvider.locale }
+      : this.localeData;
     return Component;
   }
 
@@ -77,9 +82,13 @@ export default class BaseRender extends Vue {
     for (const key in this.$slots) {
       if (key !== 'default') {
         slotComponents.push(
-          createElement('template', {
-            slot: key
-          }, this.$slots[key])
+          createElement(
+            'template',
+            {
+              slot: key
+            },
+            this.$slots[key]
+          )
         );
       }
     }

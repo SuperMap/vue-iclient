@@ -48,6 +48,7 @@
   "tree": "vue-iclient/src/common/tree/index.js",
   "tree-select": "vue-iclient/src/common/tree-select/index.js",
   "video-player": "vue-iclient/src/common/video-player/index.js",
+  "config-provider": "vue-iclient/src/common/config-provider/index.js",
   "chart": "vue-iclient/src/leaflet/chart/index.js",
   "identify": "vue-iclient/src/leaflet/identify/index.js",
   "marker": "vue-iclient/src/leaflet/marker/index.js",

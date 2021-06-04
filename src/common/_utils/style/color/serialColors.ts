@@ -159,10 +159,15 @@ function setRootStyle(themeData: StyleReplacerParams): void {
       variables[varKey] = themeInfo[key];
     }
   });
-  const rootStyle = `:root ${JSON.stringify(variables, null, 2)
+  let rootStyleSelector;
+  let antdStyleId;
+  if (themeStyle.styleConfig) {
+    rootStyleSelector = themeStyle.styleConfig.className ? `.${themeStyle.styleConfig.className}` : ':root';
+    antdStyleId = themeStyle.styleConfig.id ? `${themeStyle.styleConfig.id}-style` : 'sm-component-style';
+  }
+  const rootStyle = `${rootStyleSelector} ${JSON.stringify(variables, null, 2)
     .replace(/(:.+),/g, '$1;')
     .replace(/"/g, '')}`;
-  const antdStyleId = 'sm-component-style';
   let antStyleTag = document.getElementById(antdStyleId);
   if (!antStyleTag) {
     antStyleTag = document.createElement('style');

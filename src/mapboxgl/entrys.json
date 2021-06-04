@@ -48,6 +48,7 @@
   "tree": "vue-iclient/src/common/tree/index.js",
   "tree-select": "vue-iclient/src/common/tree-select/index.js",
   "video-player": "vue-iclient/src/common/video-player/index.js",
+  "config-provider": "vue-iclient/src/common/config-provider/index.js",
   "attributes": "vue-iclient/src/mapboxgl/attributes/index.js",
   "chart": "vue-iclient/src/mapboxgl/chart/index.js",
   "compare": "vue-iclient/src/mapboxgl/compare/index.js",
