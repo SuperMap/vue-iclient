@@ -187,6 +187,7 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected getMapInfo(_taskID) {
+    this.serverUrl = this.serverUrl && this.webMapService.handleServerUrl(this.serverUrl);
     this.webMapService
       .getMapInfo()
       .then(
