@@ -159,12 +159,8 @@ function setRootStyle(themeData: StyleReplacerParams): void {
       variables[varKey] = themeInfo[key];
     }
   });
-  let rootStyleSelector;
-  let antdStyleId;
-  if (themeStyle.styleConfig) {
-    rootStyleSelector = themeStyle.styleConfig.className ? `.${themeStyle.styleConfig.className}` : ':root';
-    antdStyleId = themeStyle.styleConfig.id ? `${themeStyle.styleConfig.id}-style` : 'sm-component-style';
-  }
+  const rootStyleSelector = (themeStyle.styleConfig && themeStyle.styleConfig.className) ? `.${themeStyle.styleConfig.className}` : ':root';
+  const antdStyleId = (themeStyle.styleConfig && themeStyle.styleConfig.id) ? `${themeStyle.styleConfig.id}-style` : 'sm-component-style';
   const rootStyle = `${rootStyleSelector} ${JSON.stringify(variables, null, 2)
     .replace(/(:.+),/g, '$1;')
     .replace(/"/g, '')}`;
