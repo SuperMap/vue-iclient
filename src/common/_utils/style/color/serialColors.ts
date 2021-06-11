@@ -4,9 +4,13 @@ import { getColorWithOpacity, getDarkenColor } from 'vue-iclient/src/common/_uti
 import { isArray } from 'vue-iclient/src/common/_utils/vue-types/utils';
 import cssVars from 'css-vars-ponyfill';
 
-const lightTheme = themeFactory && themeFactory[1];
+export interface styleConfigParams {
+  id: string;
+  className: string;
+}
 
-export type ThemeStyleParams = typeof lightTheme;
+const lightTheme = themeFactory && themeFactory[1];
+export type ThemeStyleParams = typeof lightTheme & styleConfigParams;
 
 export interface FunctionColorParams {
   successColor?: string | string[];
@@ -159,8 +163,10 @@ function setRootStyle(themeData: StyleReplacerParams): void {
       variables[varKey] = themeInfo[key];
     }
   });
-  const rootStyleSelector = (themeStyle.styleConfig && themeStyle.styleConfig.className) ? `.${themeStyle.styleConfig.className}` : ':root';
-  const antdStyleId = (themeStyle.styleConfig && themeStyle.styleConfig.id) ? `${themeStyle.styleConfig.id}-style` : 'sm-component-style';
+  const rootStyleSelector =
+    themeStyle.styleConfig && themeStyle.styleConfig.className ? `.${themeStyle.styleConfig.className}` : ':root';
+  const antdStyleId =
+    themeStyle.styleConfig && themeStyle.styleConfig.id ? `${themeStyle.styleConfig.id}-style` : 'sm-component-style';
   const rootStyle = `${rootStyleSelector} ${JSON.stringify(variables, null, 2)
     .replace(/(:.+),/g, '$1;')
     .replace(/"/g, '')}`;
