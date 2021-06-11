@@ -5,8 +5,10 @@ import { isArray } from 'vue-iclient/src/common/_utils/vue-types/utils';
 import cssVars from 'css-vars-ponyfill';
 
 export interface styleConfigParams {
-  id: string;
-  className: string;
+  styleConfig: {
+    id: string;
+    className: string;
+  };
 }
 
 const lightTheme = themeFactory && themeFactory[1];
