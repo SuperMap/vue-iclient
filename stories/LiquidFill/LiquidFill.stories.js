@@ -46,3 +46,22 @@ export const ColorfulLiquidfill = () => ({
 ColorfulLiquidfill.story = {
   name: toI18n('chartComponent.liquidfill.color')
 };
+
+export const FormatterLiquidfill = () => ({
+  template: `
+  <sm-liquid-fill 
+  style="width:200px; height:200px" 
+  value="0.5556"
+  :formatter="formatter"
+  >
+  </sm-liquid-fill>
+  `,
+  methods: {
+    formatter(param) {
+      return Math.floor(param.value * 10000) / 100 + '%';
+    }
+  }
+});
+FormatterLiquidfill.story = {
+  name: toI18n('chartComponent.liquidfill.formatter')
+};

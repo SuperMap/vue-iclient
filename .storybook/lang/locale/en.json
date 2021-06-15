@@ -321,7 +321,8 @@
     "liquidfill": {
       "title": "liquidfill",
       "type": "Wave",
-      "color": "Color"
+      "color": "Color",
+      "formatter": "Formatter"
     },
     "progress": {
       "title": "progress",
@@ -364,7 +365,10 @@
   "mapComponent": {
     "title": "Map Components",
     "webMap": "Web Map",
-    "iportalMap": "iPortal Map"
+    "iportalMap": "iPortal Map",
+    "drillMap": "Drill Map",
+    "diffrentMap": "Diffrent Map",
+    "goBackMap": "Go Back Button slots"
   },
   "gisComponent": {
     "title": "Map SubComponents",

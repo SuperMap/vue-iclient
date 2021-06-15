@@ -321,7 +321,8 @@
     "liquidfill": {
       "title": "Liquidfill 水球",
       "type": "波浪",
-      "color": "颜色"
+      "color": "颜色",
+      "formatter": "格式"
     },
     "progress": {
       "title": "Progress 进度条",
@@ -364,7 +365,10 @@
   "mapComponent": {
     "title": "地图组件",
     "webMap": "WebMap 地图",
-    "iportalMap": "iPortal 地图"
+    "iportalMap": "iPortal 地图",
+    "drillMap": "钻取地图",
+    "diffrentMap": "多副地图",
+    "goBackMap": "返回按钮slots"
   },
   "gisComponent": {
     "title": "地图子组件",

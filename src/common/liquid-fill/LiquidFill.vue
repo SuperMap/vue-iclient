@@ -18,6 +18,9 @@ export default {
       type: [Number, String],
       default: 0
     },
+    formatter: {
+      type: [Function, String]
+    },
     // 波浪数
     waveCount: {
       type: Number,
@@ -97,6 +100,9 @@ export default {
       this.backgroundColorData = val;
       this.updateChart();
     },
+    formatter() {
+      this.updateChart();
+    },
     finalValue() {
       this.updateChart();
     },
@@ -147,7 +153,7 @@ export default {
       });
     },
     updateChart() {
-      this.chart && this.chart.setOption({
+      const options = {
         series: [
           {
             color: [this.waveColorData],
@@ -178,7 +184,11 @@ export default {
             }
           }
         ]
-      });
+      };
+      if (this.formatter) {
+        options.series[0].label.formatter = this.formatter;
+      }
+      this.chart && this.chart.setOption(options);
     },
     timing() {
       this.getData();

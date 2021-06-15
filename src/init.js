@@ -14,7 +14,7 @@ function init(Vue, opts = {}) {
     initI18n(Vue, opts);
   }
   const theme = (Vue.iclient && Vue.iclient.theme) || opts.theme || 'light';
-  const locale = (Vue.iclient && Vue.iclient.locale) || opts.locale || lang.zh;
+  const locale = (Vue.iclient && Vue.iclient.locale) || opts.locale || opts.i18n || lang.zh;
   return { theme, locale };
 }
 function initTheme(Vue, opts = {}) {
@@ -24,8 +24,9 @@ function initTheme(Vue, opts = {}) {
 }
 
 function initI18n(Vue, opts = {}) {
-  initi18n(Vue, { locale: opts.locale || lang.zh });
-  return lang.zh;
+  const locale = opts && opts.i18n ? { i18n: opts.i18n } : { locale: (opts && opts.locale) || lang.zh };
+  initi18n(Vue, locale);
+  return (opts && (opts.locale || opts.i18n)) || lang.zh;
 }
 
 export default (Vue, opts) => {
