@@ -59,7 +59,7 @@ export function initi18n(Vue, config) {
   config = config || {};
   if (config.i18n) {
     i18n = config.i18n;
-    if (!i18n.getDateTimeFormat() || Object.keys(i18n.getDateTimeFormat()).length) {
+    if (!i18n.getDateTimeFormat() || Object.keys(i18n.getDateTimeFormat()).length === 0) {
       i18n.setDateTimeFormat('en', enLocale.dateTimeFormat);
       i18n.setDateTimeFormat('zh', zhLocale.dateTimeFormat);
     }
