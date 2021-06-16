@@ -1198,10 +1198,12 @@ export default class WebMapViewModel extends WebMapBase {
     let target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
     const { layerID, minzoom, maxzoom, style } = layerInfo;
-    let unicode = style.unicode;
-    let text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
-    const textSize = textSizeExpresion || (style.fontSize && parseFloat(style.fontSize)) || 12;
-    const rotate = ((layerInfo.style['rotation'] || 0) * 180) / Math.PI;
+    const unicode = style.unicode;
+    const text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
+    const textSize =
+      textSizeExpresion ||
+      (Array.isArray(style.fontSize) ? style.fontSize : (style.fontSize && parseFloat(style.fontSize)) || 12);
+    const rotate = Array.isArray(style.rotation) ? style.rotation : ((style.rotation || 0) * 180) / Math.PI;
     if (!this.map.getSource(layerID)) {
       this.map.addSource(layerID, {
         type: 'geojson',
@@ -1439,10 +1441,12 @@ export default class WebMapViewModel extends WebMapBase {
       if (Object.prototype.hasOwnProperty.call(expressionMap, key)) {
         const expression = expressionMap[key];
         const defaultStyleItem = defultLayerStyle[key] || defaultValueFactory[key];
-        expression.push(defaultStyleItem === undefined ? null : defaultStyleItem);
+        const fn = symbolConvertFunctionFactory[key];
+        expression.push(
+          defaultStyleItem === undefined ? null : (fn && fn({ [key]: defaultStyleItem })) || defaultStyleItem
+        );
       }
     }
-
     // Todo 图例相关
     this._initLegendConfigInfo(layerInfo, styleGroup);
 
