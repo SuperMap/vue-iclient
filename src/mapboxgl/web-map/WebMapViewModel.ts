@@ -1214,8 +1214,8 @@ export default class WebMapViewModel extends WebMapBase {
     const text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
     const textSize =
       textSizeExpresion ||
-      (Array.isArray(style.fontSize) ? style.fontSize : style.fontSize && parseFloat(style.fontSize)) ||
-      12;
+      (Array.isArray(style.fontSize) ? style.fontSize : (style.fontSize && parseFloat(style.fontSize)) ||
+      12);
     const rotate = Array.isArray(style.rotation) ? style.rotation : ((style.rotation || 0) * 180) / Math.PI;
     if (!this.map.getSource(layerID)) {
       this.map.addSource(layerID, {
