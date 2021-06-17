@@ -310,9 +310,6 @@
       "title": "TextList 文本列表",
       "scrollOneByOne": "逐条滚动",
       "customCell": "自定义单元格"
-    },
-    "configProvider": {
-      "title": "ConfigProvider 全局化配置"
     }
   },
   "chartComponent": {

@@ -52,7 +52,6 @@ import { default as Transfer } from 'vue-iclient/src/common/transfer/index.js';
 import { default as Tree } from 'vue-iclient/src/common/tree/index.js';
 import { default as TreeSelect } from 'vue-iclient/src/common/tree-select/index.js';
 import { default as VideoPlayer } from 'vue-iclient/src/common/video-player/index.js';
-import { default as ConfigProvider } from 'vue-iclient/src/common/config-provider/index.js';
 
 /** layer */
 import { default as TileLayer } from 'vue-iclient/src/leaflet/web-map/layer/tile/index.js';
@@ -112,7 +111,6 @@ const components = {
   Tree,
   TreeSelect,
   VideoPlayer,
-  ConfigProvider,
   Chart,
   Identify,
   Marker,
@@ -196,7 +194,6 @@ export {
   Tree,
   TreeSelect,
   VideoPlayer,
-  ConfigProvider,
   Chart,
   Identify,
   Marker,

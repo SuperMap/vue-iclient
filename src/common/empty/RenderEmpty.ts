@@ -2,18 +2,12 @@ import { CreateElement, VNode } from 'vue';
 import Empty from 'ant-design-vue/es/empty';
 import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import defaultImage from './assets/image/empty.png';
-// @ts-ignore
-import { ConfigConsumerProps } from 'vue-iclient/src/common/config-provider/ConfigProvider.vue';
 
 const RenderEmpty = {
   functional: true,
   inject: {
     /* eslint-disable-next-line @typescript-eslint/no-empty-function */
-    configProvider: {
-      default: () => {
-        return ConfigConsumerProps;
-      }
-    }
+    configProvider: { default: () => {} }
   },
   inheritAttrs: false,
   props: {
