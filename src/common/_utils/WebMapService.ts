@@ -743,6 +743,9 @@ export default class WebMapService extends Events {
               } else {
                 features = this._excelData2Feature(data.content, (layerInfo && layerInfo.xyField) || {});
               }
+            } else if (data.type === 'SHP') {
+              data.content = JSON.parse(data.content.trim());
+              features = this._formatGeoJSON(data.content.layers[0]);
             }
             resolve({ type: 'feature', features });
           }
