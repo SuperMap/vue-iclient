@@ -1951,13 +1951,14 @@ export default class WebMapViewModel extends WebMapBase {
       ['heatmap-density']
     ];
 
-    let length = layerOption.gradient.length;
-
-    let step = parseFloat((1 / length).toFixed(2));
+    const step = [0.1, 0.3, 0.5, 0.7, 1];
     layerOption.gradient.forEach((item, index) => {
-      (<mapboxglTypes.Expression>color).push(index * step);
+      (<mapboxglTypes.Expression>color).push(step[index]);
       if (index === 0) {
         item = mapboxgl.supermap.Util.hexToRgba(item, 0);
+      }
+      if (index === 1) {
+        item = mapboxgl.supermap.Util.hexToRgba(item, 0.5);
       }
       (<mapboxglTypes.Expression>color).push(item);
     });
@@ -1966,14 +1967,8 @@ export default class WebMapViewModel extends WebMapBase {
 
     let paint: mapboxglTypes.HeatmapPaint = {
       'heatmap-color': color,
-      'heatmap-radius': style.radius + 15,
-      'heatmap-intensity': {
-        base: 1,
-        stops: [
-          [0, 0.8],
-          [22, 1]
-        ]
-      }
+      'heatmap-radius': style.radius * 3,
+      'heatmap-intensity': 1.3
     };
 
     if (features[0].weight && features.length >= 4) {
