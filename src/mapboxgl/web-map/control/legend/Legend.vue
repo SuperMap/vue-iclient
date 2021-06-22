@@ -327,7 +327,8 @@ export default {
     rankIconStyle() {
       return styleGroup => {
         if (styleGroup instanceof Array) {
-          const maxRadius = styleGroup[styleGroup.length - 1].radius;
+          const radiusArr = styleGroup.map(item => item.radius);
+          const maxRadius = Math.max(...radiusArr);
           return { width: `${maxRadius * 2}px` };
         }
         return {};
