@@ -4,7 +4,6 @@
     :tree-data="treeData"
     v-bind="$attrs"
     :multiple="false"
-    :dropdownStyle="collapseCardBackgroundStyle"
     :dropdownMatchSelectWidth="true"
     :getPopupContainer="getPopupContainer"
     @change="handleNodeChange"

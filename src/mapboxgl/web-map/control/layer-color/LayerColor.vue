@@ -19,7 +19,6 @@
             ref="layerSelectRef"
             v-model="selectLayer"
             :filter="filtercb"
-            :background="collapseCardBackgroundLightStyle.background"
             @change="handleLayerChange"
           />
         </div>

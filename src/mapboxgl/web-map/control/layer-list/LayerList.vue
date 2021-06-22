@@ -11,11 +11,7 @@
     :split-line="splitLine"
     class="sm-component-layer-list"
   >
-    <sm-card
-      class="sm-component-layer-list__a-card"
-      :bordered="false"
-      :style="headingTextColorStyle"
-    >
+    <sm-card class="sm-component-layer-list__a-card" :bordered="false" :style="headingTextColorStyle">
       <div class="sm-component-layer-list__content">
         <sm-collapse
           v-for="(name, index) in enableSource"
@@ -26,7 +22,7 @@
           <sm-collapse-panel
             v-if="
               typeof sourceList[name].sourceLayerList === 'object' &&
-                Object.keys(sourceList[name].sourceLayerList).length > 0
+              Object.keys(sourceList[name].sourceLayerList).length > 0
             "
             class="sm-component-layer-list__collapseitem"
             :showArrow="false"
@@ -71,10 +67,9 @@
                 "
                 @click.stop="toggleVisibility(sourcelayerKey, name, sourcelayerValue[0].visibility)"
               />
-              <div
-                class="sm-component-layer-list__layergroupname add-ellipsis"
-                :title="sourcelayerKey"
-              >{{ sourcelayerKey }}</div>
+              <div class="sm-component-layer-list__layergroupname add-ellipsis" :title="sourcelayerKey">
+                {{ sourcelayerKey }}
+              </div>
             </div>
           </sm-collapse-panel>
 
@@ -146,10 +141,10 @@ import isEqual from 'lodash.isequal';
 interface AttributesParams {
   enabled: boolean;
   getContainer: Function;
-  title: string;
   style: Object;
-  iconClass: string;
   position: string; // top-right top-left bottom-right bottom-left top bottom left right
+  title: string;
+  iconClass: string;
   associateWithMap: AssociateWithMapParams;
   statistics: StatisticsParams;
   toolbar: ToolbarParams;
@@ -161,13 +156,14 @@ interface AttributesParams {
 }
 
 const ATTRIBUTES_NEEDED_PROPS = [
+  'title',
+  'iconClass',
   'associateWithMap',
   'statistics',
   'toolbar',
   'table',
   'fieldConfig',
   'pagination',
-  'iconClass',
   'customHeaderRow',
   'customRow'
 ];
@@ -230,7 +226,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
       if (!isEqual(newval.getContainer, oldval.getContainer)) {
         this.removeAttributes();
         let container: HTMLElement;
-        container = newval.getContainer && newval.getContainer() || document.getElementById(this.getTargetName());
+        container = (newval.getContainer && newval.getContainer()) || document.getElementById(this.getTargetName());
         // @ts-ignore
         container.appendChild(this.$refs.attributes.$el);
         this.displayAttributes = !this.displayAttributes;
@@ -259,20 +255,24 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   get attributesStyle() {
     let attributesStyle;
     let position;
-    const style = this.attributes.style;
-    if (this.attributes.position) {
-      position = this.attributes.position.split('-');
-      if (position.length === 2) {
-        attributesStyle = `position: absolute; ${position[0]}: 0;${position[1]}: 0;`;
-      } else if (['top', 'bottom'].indexOf(position[0]) !== -1) {
-        // @ts-ignore
-        let margin = style ? (100 - parseInt(style.width)) / 2 : 0;
-        attributesStyle = `position: absolute; ${position[0]}: 0; left: ${margin}%;`;
-      } else if (['left', 'right'].indexOf(position[0]) !== -1) {
-        // @ts-ignore
-        let margin = style ? (100 - parseInt(style.height)) / 2 : 0;
-        attributesStyle = `position: absolute; ${position[0]}: 0; top: ${margin}%;`;
-      }
+    const style = Object.assign(
+      {},
+      {
+        height: '300px'
+      },
+      this.attributes.style
+    );
+    position = this.attributes.position ? this.attributes.position.split('-') : ['bottom'];
+    if (position.length === 2) {
+      attributesStyle = `position: absolute; ${position[0]}: 0;${position[1]}: 0;`;
+    } else if (['top', 'bottom'].indexOf(position[0]) !== -1) {
+      // @ts-ignore
+      let margin = style ? (100 - parseInt(style.width)) / 2 : 0;
+      attributesStyle = `position: absolute; ${position[0]}: 0; left: ${margin}%;`;
+    } else if (['left', 'right'].indexOf(position[0]) !== -1) {
+      // @ts-ignore
+      let margin = style ? (100 - parseInt(style.height)) / 2 : 0;
+      attributesStyle = `position: absolute; ${position[0]}: 0; top: ${margin}%;`;
     }
     for (const key in style) {
       attributesStyle += `${key}: ${style[key]};`;

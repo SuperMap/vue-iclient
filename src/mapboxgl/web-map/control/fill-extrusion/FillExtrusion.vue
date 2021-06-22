@@ -71,7 +71,6 @@
               size="middle"
               :options="currentFillExtrusionOption.fields"
               :style="getBackgroundStyle"
-              :dropdownStyle="collapseCardBackgroundStyle"
               :getPopupContainer="triggerNode => triggerNode.parentElement"
             />
             <sm-input

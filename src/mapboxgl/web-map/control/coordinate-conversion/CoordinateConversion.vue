@@ -18,7 +18,6 @@
             :placeholder="$t('measure.selectPlaceholder')"
             class="sm-component-coordinate-conversion__a-select"
             :get-popup-container="getPopupContainer"
-            :dropdownStyle="collapseCardBackgroundLightStyle"
             :dropdownMatchSelectWidth="true"
             size="small"
             @change="changeFormat"

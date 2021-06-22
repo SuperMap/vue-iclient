@@ -9,16 +9,11 @@ export const LayerList = () => ({
   mixins: [theme],
   data() {
     return {
-      attributesOptions: {
-        getContainer: () => {
-          return document.querySelector('.sm-component-web-map');
-        },
+      attributes: {
+        enabled: true,
         style: {
-          width: '100%',
-          height: '300px',
-          background: 'rgba(0, 0, 0, 0.6)'
+          background: 'rgba(0, 0, 0, 0.8)'
         },
-        position: 'bottom',
         props: {
           associateWithMap: {
             enabled: true,
@@ -49,7 +44,7 @@ export const LayerList = () => ({
   },
   template: `
   <sm-web-map style="height:700px" serverUrl="https://iportal.supermap.io/iportal" mapId="801571284">
-    <sm-layer-list :collapsed="false" :attributesOptions="attributesOptions"></sm-layer-list>
+    <sm-layer-list :collapsed="false" :attributes="attributes"></sm-layer-list>
   </sm-web-map>
     `
 });
