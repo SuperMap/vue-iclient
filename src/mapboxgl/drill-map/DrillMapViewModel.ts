@@ -24,7 +24,7 @@ export default class WebMapViewModel extends Events {
   webMapService: WebMapService;
   map: mapboxglTypes.Map;
   data: DrillMapParams[];
-  fitBoundsOptions: mapboxglTypes.FitBoundsOptions;
+  drillAnimation: mapboxglTypes.FitBoundsOptions;
   firstMapInfo: any;
   layersOnMap: string[] = [];
   layerFilterList: any[] = [];
@@ -40,10 +40,10 @@ export default class WebMapViewModel extends Events {
   clickTolerance = 5;
   private checkSameLayer = true;
 
-  constructor(data, fitBoundsOptions: mapboxglTypes.FitBoundsOptions) {
+  constructor(data, drillAnimation: mapboxglTypes.FitBoundsOptions) {
     super();
     this.data = clonedeep(data);
-    this.fitBoundsOptions = fitBoundsOptions;
+    this.drillAnimation = drillAnimation;
     this.eventTypes = ['drillmap'];
   }
 
@@ -179,11 +179,11 @@ export default class WebMapViewModel extends Events {
 
   fitToBounds(
     bboxs: any[] | { center: [number, number]; zoom: number },
-    fitBoundsOptions = this.fitBoundsOptions
+    drillAnimation = this.drillAnimation
   ): void {
     if (bboxs instanceof Array) {
       // @ts-ignore
-      this.map.fitBounds(bboxs, fitBoundsOptions);
+      this.map.fitBounds(bboxs, drillAnimation);
     } else if (bboxs instanceof Object) {
       const { center, zoom } = bboxs;
       this.map.setCenter(center);

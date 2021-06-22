@@ -119,7 +119,7 @@ class SmDrillMap extends Mixins(VmUpdater) {
   data: DrillMapParams[];
 
   // eslint-disable-next-line
-  @Prop() fitBoundsOptions: mapboxglTypes.FitBoundsOptions;
+  @Prop() drillAnimation: mapboxglTypes.FitBoundsOptions;
 
   @Prop({ default: 'map' }) target: string;
   @Prop() mapOptions: any;
@@ -239,7 +239,7 @@ class SmDrillMap extends Mixins(VmUpdater) {
   }
 
   get mapProps() {
-    const excludeProps = ['data', 'fitBoundsOptions'];
+    const excludeProps = ['data', 'drillAnimation'];
     let mapProps = {};
     for (let key in this.$props) {
       if (!excludeProps.includes(key)) {
@@ -291,7 +291,7 @@ class SmDrillMap extends Mixins(VmUpdater) {
   }
 
   created() {
-    this.viewModel = new DrillMapViewModel(this.data, this.fitBoundsOptions);
+    this.viewModel = new DrillMapViewModel(this.data, this.drillAnimation);
     this.viewModel.on({
       drillmap: e => {
         this.changeCurrentIndex(e.index);
