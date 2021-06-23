@@ -13,16 +13,16 @@ export default {
   mixins: [Theme, AntdRender],
   inheritAttrs: false,
   model: {
-    prop: 'value',
-    event: 'change'
+    prop: 'visible',
+    event: 'visibleChange'
   },
   props: dropdownTypes,
   computed: {
     extralListeners() {
       const vm = this;
       return {
-        change: function(value) {
-          vm.$emit('change', value);
+        visibleChange: function(value) {
+          vm.$emit('visibleChange', value);
         }
       };
     }
