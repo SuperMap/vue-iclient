@@ -184,6 +184,6 @@
     }
   }
   @include e(panel-body) {
-    background-color: $background-color-base;
+    background-color: $collapse-card-secondary-bg;
   }
 }

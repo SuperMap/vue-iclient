@@ -94,6 +94,9 @@ export function getDerivedColorsByTextColor(textColor, opacity) {
   if (!textColor) {
     return textColor;
   }
+  if (textColor.includes('var')) {
+    return `var(--alpha${opacity * 100})`;
+  }
   const baseTextColorOpacity = 0.65;
   const originTextColor = tinyColor(textColor);
   const originOpacity = originTextColor.getAlpha();

@@ -11,7 +11,7 @@
     :split-line="splitLine"
     class="sm-component-layer-manager"
   >
-    <sm-card :style="[collapseCardBackgroundStyle]" class="sm-component-layer-manager__sm-card">
+    <sm-card :style="headingTextColorStyle" class="sm-component-layer-manager__sm-card">
       <div class="sm-component-layer-manager__content">
         <sm-directory-tree
           checkable

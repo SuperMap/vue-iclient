@@ -220,7 +220,7 @@ $form-error-input-bg: $input-bg;
 
 // Select
 $select-border-color: $border-color-base;
-$select-item-selected-color: $text-color-without-opacity;
+$select-item-selected-color: var(--select-item-selected-color);
 $select-dropdown-bg: var(--select-dropdown-background);
 $select-item-selected-bg: $selected-color;
 $select-item-active-bg: $selected-color;
@@ -436,6 +436,8 @@ $timeline-dot-bg: $component-background;
 // collapse-card
 $collapse-card-bg: var(--collapse-card-background);
 $collapse-card-header-bg: var(--collapse-card-header-bg);
+$collapse-card-secondary-bg: var(--collapse-card-secondary-background);
+$collapse-card-secondary-heard-bg: var(--collapse-card-secondary-heard-background);
 
 // Search
 $search-arrow-icon-bg: var(--search-arrow-icon-bg);

@@ -148,9 +148,6 @@
 .mapboxgl-ctrl button:disabled .mapboxgl-ctrl-icon {
   opacity: 0.25;
 }
-.mapboxgl-ctrl button:not(:disabled):hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
 .mapboxgl-ctrl-group button:focus:focus-visible {
   box-shadow: 0 0 2px 2px #0096ff;
 }

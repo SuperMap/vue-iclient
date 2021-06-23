@@ -52,7 +52,7 @@
         .#{$collapse-prefix}-content {
           max-height: 400px;
           overflow-y: auto;
-          background-color: $background-color-base;
+          background-color: $collapse-card-secondary-bg;
           margin: 0 -16px;
           padding: 0 16px 0 8px;
         }

@@ -118,7 +118,7 @@
   @include e(content) {
     max-height: 200px;
     overflow: auto;
-    background: $background-color-base;
+    background: $collapse-card-secondary-bg;
     .route-result {
       width: 100%;
       margin: auto;

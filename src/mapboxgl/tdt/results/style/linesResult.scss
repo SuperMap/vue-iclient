@@ -23,7 +23,7 @@
       list-style: none;
       .line-item {
         margin-bottom: 10px;
-        background: $background-color-base;
+        background: $collapse-card-secondary-bg;
         .cover-info {
           display: flex;
           align-items: center;
@@ -41,11 +41,12 @@
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          background: rgba(0, 0, 0, 0.12);
+          background: $collapse-card-secondary-heard-bg;
         }
         .line-info {
           flex: 1;
           padding: 8px 0;
+          background-color: $collapse-card-secondary-bg;
           .description-holder {
             display: flex;
             align-items: center;

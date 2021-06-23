@@ -97,7 +97,7 @@
         &-selected {
           font-weight: normal;
           background-color: $select-item-selected-bg;
-          color: $text-color-without-opacity;
+          color: $select-item-selected-color;
         }
         .#{$ant-prefix}-empty {
           background-color: transparent;

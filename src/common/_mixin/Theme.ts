@@ -8,6 +8,8 @@ import { getPrimarySerialColors } from 'vue-iclient/src/common/_utils/style/colo
   name: 'Theme'
 })
 export default class Theme extends Vue {
+  themeStyleId = '';
+
   backgroundData = '';
 
   textColorsData = '';
@@ -91,7 +93,7 @@ export default class Theme extends Vue {
   }
 
   get getColorStyle() {
-    return function(index) {
+    return function (index) {
       return {
         color: this.colorGroupsData[index]
       };
@@ -99,7 +101,7 @@ export default class Theme extends Vue {
   }
 
   get getColor() {
-    return function(index) {
+    return function (index) {
       return this.colorGroupsData[index];
     };
   }
@@ -116,6 +118,11 @@ export default class Theme extends Vue {
 
   mounted() {
     globalEvent.$on('change-theme', themeStyle => {
+      const styleConfigId = themeStyle.styleConfig && themeStyle.styleConfig.id;
+      if (this.themeStyleId && styleConfigId !== this.themeStyleId) {
+        return;
+      }
+      this.themeStyleId = styleConfigId;
       const $props = this.getSelfProps();
       $props.forEach((prop: string) => {
         const dataName: string = this.getDataNameOfProp(prop);
@@ -159,7 +166,7 @@ export default class Theme extends Vue {
     const vm = this;
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
-      this.$watch(prop, function(next) {
+      this.$watch(prop, function (next) {
         const dataName: string = this.getDataNameOfProp(prop);
         vm[dataName] = next || theme[prop];
         if (prop === 'background') {
