@@ -206,6 +206,14 @@ export default class SmTimeSlider extends Mixins(Theme) {
     return {};
   }
 
+  get checkPointStyle() {
+    let style = '';
+    for (let key in this.checkpointStyle) {
+      style += `${key}: ${this.checkpointStyle[key]} !important;`;
+    }
+    return style;
+  }
+
   get dataDuration() {
     if (this.isDataDuration) {
       const data = this.data || [];
@@ -235,11 +243,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
 
   @Watch('checkpointStyle', { immediate: true })
   checkpointStyleWatcher() {
-    let style = '';
-    for (let key in this.checkpointStyle) {
-      style += `${key}: ${this.checkpointStyle[key]} !important;`;
-    }
-    this.modifySliderBarStyle(style);
+    this.modifySliderBarStyle(this.checkPointStyle);
   }
 
   @Watch('currentTime', { immediate: true })
@@ -277,7 +281,7 @@ export default class SmTimeSlider extends Mixins(Theme) {
     this.bindMouseMove('click', this.handleMouseClick);
     this.$on('theme-style-changed', () => {
       const left = this.sliderBarWidth === '100.00%' ? `calc(100% - ${this.sliderBarSize})` : this.sliderBarWidth;
-      this.modifySliderBarStyle(`left:${left} !important`);
+      this.modifySliderBarStyle(`${this.checkPointStyle}left:${left} !important`);
     });
     this.init();
   }
