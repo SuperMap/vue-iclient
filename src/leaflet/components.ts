@@ -28,7 +28,6 @@ import { default as LiquidFill } from 'vue-iclient/src/common/liquid-fill/index.
 import { default as Menu } from 'vue-iclient/src/common/menu/index.js';
 import { default as Message } from 'vue-iclient/src/common/message/index.js';
 import { default as Modal } from 'vue-iclient/src/common/modal/index.js';
-import { default as Nav } from 'vue-iclient/src/common/nav/index.js';
 import { default as Notification } from 'vue-iclient/src/common/notification/index.js';
 import { default as Pagination } from 'vue-iclient/src/common/pagination/index.js';
 import { default as Progress } from 'vue-iclient/src/common/progress/index.js';
@@ -88,7 +87,6 @@ const components = {
   Message,
   Modal,
   Notification,
-  Nav,
   Pagination,
   Progress,
   Radio,
@@ -171,7 +169,6 @@ export {
   LiquidFill,
   Menu,
   Modal,
-  Nav,
   Pagination,
   Progress,
   Radio,

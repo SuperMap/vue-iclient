@@ -24,7 +24,6 @@
   "menu": "vue-iclient/src/common/menu/index.js",
   "message": "vue-iclient/src/common/message/index.js",
   "modal": "vue-iclient/src/common/modal/index.js",
-  "nav": "vue-iclient/src/common/nav/index.js",
   "notification": "vue-iclient/src/common/notification/index.js",
   "pagination": "vue-iclient/src/common/pagination/index.js",
   "progress": "vue-iclient/src/common/progress/index.js",
