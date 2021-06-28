@@ -51,7 +51,6 @@
   "attributes": "vue-iclient/src/mapboxgl/attributes/index.js",
   "chart": "vue-iclient/src/mapboxgl/chart/index.js",
   "compare": "vue-iclient/src/mapboxgl/compare/index.js",
-  "drill-map": "vue-iclient/src/mapboxgl/drill-map/index.js",
   "ncp-map": "vue-iclient/src/mapboxgl/ncp-map/index.js",
   "open-file": "vue-iclient/src/mapboxgl/open-file/index.js",
   "query": "vue-iclient/src/mapboxgl/query/index.js",
