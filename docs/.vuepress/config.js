@@ -193,8 +193,7 @@ module.exports = {
                     'common/time-range',
                     'common/time-slider',
                     'common/attributes',
-                    'common/slideshow',
-                    'common/nav',
+                    'common/slideshow'
                   ]
                 }
               ]
