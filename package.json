@@ -98,7 +98,7 @@
     "@storybook/addon-actions": "^6.0.26",
     "@storybook/addon-docs": "^6.1.1",
     "@storybook/addon-essentials": "^6.0.26",
-    "@storybook/addon-knobs": "^6.0.26",
+    "@storybook/addon-knobs": "6.2.8",
     "@storybook/addon-links": "^6.0.26",
     "@storybook/addon-toolbars": "^6.1.1",
     "@storybook/addons": "^6.0.26",
