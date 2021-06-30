@@ -30,6 +30,7 @@ yarn-error.log*
 /src/leaflet/package.json
 
 .git
+.github
 .editorconfig
 .eslintignore
 .eslintrc.js
