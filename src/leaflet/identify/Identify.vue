@@ -11,6 +11,7 @@
 import MapGetter from 'vue-iclient/src/leaflet/_mixin/map-getter';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import IdentifyViewModel from './IdentifyViewModel';
+import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmIdentify',
@@ -45,9 +46,9 @@ export default {
     };
   },
   watch: {
-    layerNames(val, oldVal) {
-      if (val) {
-        this.$options.removed.call(this, oldVal);
+    layerNames(val, oldval) {
+      if (val && !isEqual(val, oldval)) {
+        this.$options.removed.call(this);
         this.setLayers();
       }
     },
@@ -58,18 +59,12 @@ export default {
   loaded() {
     this.setViewModel();
     this.setLayers();
-    if (this.layers && this.layers.length > 0) {
-      this.layers.forEach(layer => {
-        let layerType = this.viewModel.getLayerType(layer);
-        this.bindLayerClick(layer, layerType);
-      });
-    }
     // 客户端专题图图层无准确坐标，通过地图坐标来实现
     this.map.on('click', e => {
       this.mapClickPosition = this.map.layerPointToLatLng(e.layerPoint);
     });
   },
-  removed(layers = this.layers) {
+  removed() {
     // 清除点击事件和popup
     this.popupLayers &&
       this.popupLayers.forEach(layer => {
@@ -77,8 +72,8 @@ export default {
         layer.off('click');
         layer.off('popupclose');
       });
-    layers &&
-      layers.forEach(layer => {
+    this.layers &&
+      this.layers.forEach(layer => {
         layer.off('click');
       });
     // 清除高亮的图层
@@ -107,6 +102,12 @@ export default {
         let layer = this.getLayerByName(layerName);
         layer && this.layers.push(layer);
       });
+      if (this.layers && this.layers.length > 0) {
+        this.layers.forEach(layer => {
+          let layerType = this.viewModel.getLayerType(layer);
+          this.bindLayerClick(layer, layerType);
+        });
+      }
     },
     // 通过layerName获取layer
     getLayerByName(layerName) {
