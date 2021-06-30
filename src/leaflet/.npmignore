@@ -28,6 +28,7 @@ yarn-error.log*
 /src/leaflet/package.json
 
 .git
+.github
 .editorconfig
 .eslintignore
 .eslintrc.js
@@ -36,6 +37,8 @@ yarn-error.log*
 babel.config.js
 index.html
 jest.config.js
+.storybook
+/stories/
 
 # Editor directories and files
 .idea
