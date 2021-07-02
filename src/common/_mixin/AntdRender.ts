@@ -5,6 +5,8 @@ import { getOptionProps, getComponentFromProp } from 'ant-design-vue/es/_util/pr
 
 @Component
 export default class BaseRender extends Vue {
+  defaultPrefixCls = 'sm-component';
+
   @Prop() getPopupContainer!: Function;
   @Prop() prefixCls!: string;
   @Prop() renderEmpty!: Function;
@@ -25,11 +27,13 @@ export default class BaseRender extends Vue {
     pageHeatransformCellTextder: this.transformCellText,
     getPrefixCls: this.getPrefixCls,
     renderEmpty: this.renderEmptyComponent
-  }
+  };
 
   @Provide('localeData')
   localeData = {
-    antLocale: Object.assign({}, this.locale, this.$i18n && this.$i18n.getLocaleMessage(this.$i18n.locale), { exist: true })
+    antLocale: Object.assign({}, this.locale, this.$i18n && this.$i18n.getLocaleMessage(this.$i18n.locale), {
+      exist: true
+    })
   };
 
   get extralProps() {
@@ -57,8 +61,10 @@ export default class BaseRender extends Vue {
   }
 
   getPrefixCls(suffixCls: string, customizePrefixCls: string) {
-    const { prefixCls = 'sm-component' } = this.$props;
-    if (customizePrefixCls) return customizePrefixCls;
+    const { prefixCls = this.defaultPrefixCls } = this.$props;
+    if (customizePrefixCls) {
+      return customizePrefixCls;
+    }
     return suffixCls ? `${prefixCls}-${suffixCls}` : prefixCls;
   }
 
@@ -77,9 +83,13 @@ export default class BaseRender extends Vue {
     for (const key in this.$slots) {
       if (key !== 'default') {
         slotComponents.push(
-          createElement('template', {
-            slot: key
-          }, this.$slots[key])
+          createElement(
+            'template',
+            {
+              slot: key
+            },
+            this.$slots[key]
+          )
         );
       }
     }
