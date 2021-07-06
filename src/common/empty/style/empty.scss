@@ -6,8 +6,27 @@
   @include e(image, '-') {
     height: auto;
   }
-  img {
-    width: 52px;
-    height: 31px;
+  .sm-component-empty-image {
+    height: 26px;
+    & svg {
+      width: 52px;
+      height: 31px;
+    }
+  }
+  & ellipse {
+    fill: $empty-ellipse-color;
+  }
+  & g g {
+    stroke: $empty-stroke-color;
+  }
+  & path:first-child {
+    fill: $empty-path-top-color;
+  }
+  & path:nth-child(2) {
+    fill: $empty-path-bottom-color;
+  }
+  & .sm-component-empty-description {
+    font-size: 12px;
+    color: $empty-description-color;
   }
 }
