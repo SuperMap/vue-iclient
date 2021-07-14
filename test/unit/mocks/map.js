@@ -86,10 +86,8 @@ var Map = function (options) {
     this.center = this.options.center ? new LngLat(this.options.center[0], this.options.center[1]) : new LngLat(0, 0);
   }
   this.resize = function () {};
-  // this.style = new Style();
   this.style = options.style;
   this.setStyle = function (style, options) {
-    // this.style = new Style(this, options || {});
     for (var i = 0, list = style.layers; i < list.length; i += 1) {
       var layer = list[i];
       this._layers[layer.id] = layer;
@@ -135,31 +133,17 @@ var Map = function (options) {
     this[setters[i]] = genericSetter;
   }
 
-  // var threeVis = 'visible';
-  // var twoVis = 'visible';
   this.setLayoutProperty = function (layerid) {
-    // if (layerid == '三级道路L@北京') {
-    //   threeVis === "visible" ? "none" : "visible";
-    // } else if (layerid == '二级道路L@北京') {
-    //   twoVis === "visible" ? "none" : "visible";
-    // }
   };
 
   this.addControl = function (control) {
     control.onAdd(this);
   };
 
-  // if (options.style) {
-  //   this.setStyle(options.style, { localIdeographFontFamily: options.localIdeographFontFamily });
-  // }
-
   this.getStyle = function () {
     if (this.style) {
       return this.style;
     }
-    //   if (this.style) {
-    //     return this.style.serialize();
-    // }
   };
 
   this.getContainer = function () {
@@ -258,22 +242,6 @@ var Map = function (options) {
     } else {
       return {
         setData: function (data) {
-          //   this._sources[name].data = data;
-          //   if (this._sources[name].type === 'geojson') {
-          //     const e = {
-          //       type: 'data',
-          //       sourceDataType: 'content',
-          //       sourceId: name,
-          //       isSourceLoaded: true,
-          //       dataType: 'source',
-          //       source: this._sources[name]
-          //     };
-          //     // typeof data === 'string' corresponds to an AJAX load
-          //     if (this._collectResourceTiming && data && (typeof data === 'string'))
-          //       e.resourceTiming = [_fakeResourceTiming(data)];
-          //     this.fire('data', e);
-          //   }
-          // }.bind(this),
         },
         loadTile: function () {}
       };
@@ -306,7 +274,6 @@ var Map = function (options) {
       this.fire('data', e);
     }
   };
-
   this.removeSource = function (name) {
     delete this._sources[name];
   };
@@ -314,7 +281,6 @@ var Map = function (options) {
   this.addLayer = function (layer, before) {
     this.overlayLayersManager[layer.id] = layer;
 
-    // this._layers[id] = layer;
     return this;
   };
 
@@ -322,229 +288,18 @@ var Map = function (options) {
   this.moveLayer = function (layerId) {};
   this.getFilter = function (layerId) {};
   this.setFilter = function (layerId, filter) {};
-  // this._layers[id] = layer;
   this.getLayer = function (id) {
     if (this.overlayLayersManager[id]) {
       return this.overlayLayersManager[id];
     }
-    // return this.style.getLayer(id);
     if (this._layers[id]) {
       return this._layers[id];
     }
   };
-
-  // if (layerId == 'tile-layers-China') {
-  //   console.log("***from map:" + layerId)
-  //   return {
-  //     "id": "tile-layers-China",
-  //     "maxzoom": 22,
-  //     "minzoom": 0,
-  //     "source": "tile-layers-China",
-  //     "type": "raster",
-  //     "visibility": "visible"
-  //   }
-  // } else if (layerId == '三级道路L@北京') {
-  //   console.log("***from map:" + layerId)
-  //   return {
-  //     "id": "三级道路L@北京",
-  //     "type": "line",
-  //     "visibility": threeVis,
-  //     "source": "vector-tiles",
-  //     "sourceLayer": "三级道路L@北京",
-  //     "paint": {
-  //       "line-width": {
-  //         "base": 1.5,
-  //         "stops": [
-  //           [
-  //             11,
-  //             1
-  //           ],
-  //           [
-  //             18,
-  //             10
-  //           ]
-  //         ]
-  //       },
-  //       "line-color": "hsl(0, 0%, 100%)"
-  //     }
-  //   }
-  // } else if (layerId == '二级道路L@北京') {
-  //   console.log("***from map:" + layerId)
-  //   return {
-  //     "id": "二级道路L@北京",
-  //     "type": "line",
-  //     "visibility": twoVis,
-  //     "source": "vector-tiles",
-  //     "sourceLayer": "二级道路L@北京",
-  //     "paint": {
-  //       "line-width": 4,
-  //       "line- color": "hsl(230, 24%, 87%)"
-  //     }
-  //   }
-  // } else if (layerId == '二级道路L@北京1') {
-  //   console.log("***from map:" + layerId)
-  //   return
-  // {
-  //     "id": "二级道路L@北京1",
-  //     "type": "line",
-  //     "visibility": twoVis,
-  //     "source": "vector-tiles",
-  //     "sourceLayer": "二级道路L@北京",
-  //     "paint": {
-  //       "line-width": 4,
-  //       "line- color": "hsl(230, 24%, 87%)"
-  //     }
-  //   }
-  // }
-  // };
-  // add by sunxy
   this.getBounds = function () {
     return this.bounds;
   };
-  // this.getStyle = function () {
-  //   // if (this.options.style.layers[0].id == 'simple-tiles') {
-  //   console.log("getStyle");
-  //   return {
-  //     "version": 8,
-  //     "sources": {
-  //       "tile-layers-China": {
-  //         "type": "raster",
-  //         "tiles": [
-  //           "http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}"
-  //         ],
-  //         "tileSize": 256
-  //       },
-  //       "UNIQUE-民航数-0": {
-  //         "type": "geojson",
-  //         "data": {
-  //           "type": "FeatureCollection",
-  //           "features": [
-  //             {
-  //               "type": "Feature",
-  //               "properties": {
-  //                 "机场": "北京/首都",
-  //                 "X坐标": "116.588918",
-  //                 "Y坐标": "40.071080",
-  //                 "名次": "1",
-  //                 "2017旅客吞吐量（人次）": "95,786,296",
-  //                 "2016旅客吞吐量（人次）": "94,393,454",
-  //                 "同比增速%": "-1.5",
-  //                 "2017货邮吞吐量（吨）": "2,029,583.6",
-  //                 "2016货邮吞吐量（吨）": "1,943,159.7",
-  //                 "2017起降架次（架次）": "597,259",
-  //                 "2016起降架次（架次）": "606,081",
-  //                 "index": 0
-  //               },
-  //               "geometry": {
-  //                 "type": "Point",
-  //                 "coordinates": [
-  //                   116.588918,
-  //                   40.07108
-  //                 ]
-  //               }
-  //             },
 
-  //             {
-  //               "type": "Feature",
-  //               "properties": {
-  //                 "机场": "安康",
-  //                 "X坐标": "108.939810 ",
-  //                 "Y坐标": "32.707070 ",
-  //                 "名次": "79",
-  //                 "2017旅客吞吐量（人次）": "",
-  //                 "2016旅客吞吐量（人次）": "",
-  //                 "同比增速%": "82.1 ",
-  //                 "2017货邮吞吐量（吨）": "",
-  //                 "2016货邮吞吐量（吨）": "",
-  //                 "2017起降架次（架次）": "19,485 ",
-  //                 "2016起降架次（架次）": "10,700 ",
-  //                 "index": 221
-  //               },
-  //               "geometry": {
-  //                 "type": "Point",
-  //                 "coordinates": [
-  //                   108.93981,
-  //                   32.70707
-  //                 ]
-  //               }
-  //             }
-  //           ]
-  //         }
-  //       }
-  //     },
-  //     "layers": [
-  //       {
-  //         "id": "tile-layers-China",
-  //         "type": "raster",
-  //         "source": "tile-layers-China",
-  //         "minzoom": 0,
-  //         "maxzoom": 22
-  //       }
-  //     ]
-  //   }
-  // }
-  // else if (this.options.style.layers[0].id == '三级道路L@北京') {
-  //   console.log("***三级道路L" + this.options.style.layers[0].id);
-  //   return {
-  //     "version": 8,
-  //     "sprite": "http://iclient.supermap.io/web/styles/street/sprite",
-  //     "glyphs": "http://iclsvr.supermap.io/iserver/services/map-beijing/rest/maps/beijingMap/tileFeature/sdffonts/{fontstack}/{range}.pbf",
-  //     "sources": {
-  //       "vector-tiles": {
-  //         "type": "vector",
-  //         "attribution": "<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox </a> with <span>© <a href='http://iclient.supermap.io' target='_blank'>SuperMap iClient</a> | </span> Map Data <span>© <a href='http://support.supermap.com.cn/product/iServer.aspx' target='_blank'>SuperMap iServer</a></span> ",
-  //         "tiles": [
-  //           "http://iclsvr.supermap.io/iserver/services/map-beijing/rest/maps/beijingMap/tileFeature.mvt?returnAttributes=true&compressTolerance=-1&width=512&height=512&viewBounds={bbox-epsg-3857}&expands=0:0_2,132_128,138_64,141_32,143_16,145_8,147_4"
-  //         ]
-  //       }
-  //     },
-  //     "layers": [
-  //       {
-  //         "id": "三级道路L@北京",
-  //         "type": "line",
-  //         "source": "vector-tiles",
-  //         "source-layer": "三级道路L@北京",
-  //         "paint": {
-  //           "line-width": {
-  //             "base": 1.5,
-  //             "stops": [
-  //               [
-  //                 11,
-  //                 1
-  //               ],
-  //               [
-  //                 18,
-  //                 10
-  //               ]
-  //             ]
-  //           },
-  //           "line-color": "hsl(0, 0%, 100%)"
-  //         }
-  //       },
-  //       {
-  //         "id": "二级道路L@北京",
-  //         "type": "line",
-  //         "source": "vector-tiles",
-  //         "source-layer": "二级道路L@北京",
-  //         "paint": {
-  //           "line-width": 4,
-  //           "line-color": "hsl(230, 24%, 87%)"
-  //         }
-  //       },
-  //       {
-  //         "id": "二级道路L@北京1",
-  //         "type": "line",
-  //         "source": "vector-tiles",
-  //         "source-layer": "二级道路L@北京",
-  //         "paint": {
-  //           "line-width": 4,
-  //           "line-color": "hsl(230, 24%, 87%)"
-  //         }
-  //       }
-  //     ]
-  //   }
-  // }
-  // };
   this.getZoom = function () {
     return this.zoom;
   };
@@ -595,7 +350,6 @@ var Map = function (options) {
   this.queryRenderedFeatures = function (pointOrBox, queryParams) {
     var searchBoundingBox = [];
     if (pointOrBox[0].x !== undefined) {
-      // convert point into bounding box
       searchBoundingBox = [
         Math.min(pointOrBox[0].x, pointOrBox[1].x),
         Math.min(pointOrBox[0].y, pointOrBox[1].y),
@@ -603,7 +357,6 @@ var Map = function (options) {
         Math.max(pointOrBox[0].x, pointOrBox[1].y)
       ];
     } else {
-      // convert box in bounding box
       searchBoundingBox = [
         Math.min(pointOrBox[0][0], pointOrBox[1][0]),
         Math.min(pointOrBox[0][1], pointOrBox[1][1]),
@@ -621,7 +374,6 @@ var Map = function (options) {
       var subFeatures = [];
 
       if (feature.geometry.type.startsWith('Multi')) {
-        // Break multi features up into single features so we can look at each one
         var type = feature.geometry.type.replace('Multi', '');
         subFeatures = feature.geometry.coordinates.map(coords => {
           return {
