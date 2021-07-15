@@ -54,7 +54,7 @@ class LayerColorViewModel extends mapboxgl.Evented {
     if (!this.recordResetLayerColor[layerId]) {
       this.recordResetLayerColor[layerId] = {};
     }
-    if (this.recordResetLayerColor[layerId][property]) {
+    if (Object.prototype.hasOwnProperty.call(this.recordResetLayerColor[layerId], property)) {
       return;
     }
     this.recordResetLayerColor[layerId][property] = color;
