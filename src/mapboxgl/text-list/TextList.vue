@@ -9,7 +9,7 @@
         <template v-if="animateContent && animateContent.length > 0">
           <template
             v-for="(item, index) in (getColumns && getColumns.length > 0 && getColumns) ||
-            Object.keys(animateContent[0])"
+              Object.keys(animateContent[0])"
           >
             <div
               :key="index"
@@ -359,6 +359,7 @@ class SmTextList extends Mixins(Theme, Timer) {
       });
     }
   }
+
   // 切换自动滚动与排序时重置。。。
   @Watch('highlightOptions', { immediate: true, deep: true })
   highlightOptionsChanged(newVal, oldVal) {
@@ -595,7 +596,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     let rowHeight = this.rowStyleData.height;
     if (!rowHeight) {
       if (this.listData.length <= this.rows) {
-        const listDataLength =  Math.max(this.autoRolling ? this.listData.length - 1 : this.listData.length, 1);
+        const listDataLength = Math.max(this.autoRolling ? this.listData.length - 1 : this.listData.length, 1);
         rowHeight = contentHeightNum / listDataLength;
       } else {
         rowHeight = contentHeightNum / this.rows;
@@ -654,6 +655,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
     return content;
   }
+
   itemByItem() {
     clearInterval(this.startInter);
     this.startInter = setInterval(() => {

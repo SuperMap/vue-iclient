@@ -324,7 +324,7 @@ export default abstract class WebMapBase extends Events {
       let properties = feature.properties,
         value = properties[themeField];
       // 过滤掉空值和非数值
-      if (value == null || !isNumber(+value)) {
+      if (value == null || value === '' || !isNumber(+value)) {
         return;
       }
       values.push(Number(value));

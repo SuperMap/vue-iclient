@@ -87,7 +87,7 @@
           <div v-if="layerValue.layerType === 'RANK_SYMBOL'" class="sm-component-legend__wrap">
             <div class="sm-component-legend__rank">
               <div v-for="(item, j) in layerValue.styleGroup" :key="j" class="sm-component-legend__rank-item">
-                <div class="sm-component-legend__rank-icon">
+                <div class="sm-component-legend__rank-icon" :style="rankIconStyle(layerValue.styleGroup)">
                   <i :class="item.style.className" :style="rankSymbolStyle(item)" />
                 </div>
                 <span class="add-ellipsis">
@@ -158,7 +158,7 @@
         <div v-if="layerValue.layerType === 'RANK_SYMBOL'" class="sm-component-legend__wrap">
           <div class="sm-component-legend__rank">
             <div v-for="(item, l) in layerValue.styleGroup" :key="l" class="sm-component-legend__rank-item">
-              <div class="sm-component-legend__rank-icon">
+              <div class="sm-component-legend__rank-icon" :style="rankIconStyle(layerValue.styleGroup)">
                 <i :class="item.style.className" :style="rankSymbolStyle(item)" />
               </div>
               <span class="add-ellipsis">
@@ -211,7 +211,7 @@ export default {
   props: {
     headerName: {
       type: String,
-      default: function() {
+      default: function () {
         return this.$t('legend.title');
       }
     },
@@ -254,7 +254,7 @@ export default {
   },
   computed: {
     uniqueSymbolStyle() {
-      return function(styleItem) {
+      return function (styleItem) {
         const { style, radius, color } = styleItem;
         let generateStyle = {};
         switch (style.type) {
@@ -286,7 +286,7 @@ export default {
       };
     },
     rankSymbolStyle() {
-      return function(styleItem) {
+      return function (styleItem) {
         const { style, radius, color } = styleItem;
         let generateStyle = {};
         switch (style.type) {
@@ -323,10 +323,20 @@ export default {
         }
         return start !== undefined ? `≥${start}` : `≤${end}`;
       };
+    },
+    rankIconStyle() {
+      return styleGroup => {
+        if (styleGroup instanceof Array) {
+          const radiusArr = styleGroup.map(item => item.radius);
+          const maxRadius = Math.max(...radiusArr);
+          return { width: `${maxRadius * 2}px` };
+        }
+        return {};
+      };
     }
   },
   watch: {
-    layerNames: function() {
+    layerNames: function () {
       this.initLegendList();
     }
   },

@@ -12,6 +12,7 @@ yarn-error.log*
 /static/libs/Cesium/
 /static/index.js
 .git
+.github
 .editorconfig
 .eslintignore
 .eslintrc.js
