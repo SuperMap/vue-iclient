@@ -307,10 +307,6 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   }
 
   toggleLayerGroupVisibility(sourceName, visibility: string) {
-    if (visibility === 'visible') {
-      this.closeAttributesIconClass();
-      this.removeAttributes();
-    }
     this.viewModel && this.viewModel.changeLayerGroupVisibility(sourceName, visibility);
   }
 
@@ -343,6 +339,11 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.$nextTick(() => {
       this.sourceList = this.viewModel && this.viewModel.initLayerList();
       this.sourceNames = this.viewModel && this.viewModel.getSourceNames();
+      // @ts-ignore
+      if (this.attributesProps.layerName && this.sourceList[this.attributesProps.layerName].visibility === 'none') {
+        this.closeAttributesIconClass();
+        this.removeAttributes();
+      }
     });
   }
 
