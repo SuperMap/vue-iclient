@@ -4,6 +4,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
 import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2';
 import Point from '@mapbox/point-geometry';
 import rhumbBearing from '@turf/rhumb-bearing';
+import UniqueId from 'lodash.uniqueid';
 
 export interface layerStyleParams {
   line?: {
@@ -90,7 +91,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
 
   constructor(options: trackLayerOptions) {
     super();
-    this.layerId = options.layerId || `tracklayer_${+new Date()}`;
+    this.layerId = options.layerId || UniqueId(`tracklayer-`);
     this.lineLayerId = `${this.layerId}-line`;
     this.layerStyle = options.layerStyle || {};
     this.trackPoints = options.trackPoints;
@@ -178,7 +179,9 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     if (!trackPoints) {
       this.removeSourceAndLayer();
     }
-    this.lineData = [];
+    this.lineData = (this.trackPoints || [])
+      // @ts-ignore
+      .map(item => item.geometry.coordinates);
     this._init(true);
   }
 
@@ -384,27 +387,29 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
 
   private _initLayer(positionCoordinate: [number, number] = this.currentPosition) {
     const position = positionCoordinate || this.startPosition;
-    if (!position || !this.map || !this.options.url || !this.options.loaderType) {
+    if (!this.map) {
       return;
     }
-    if (this.options.followCamera) {
-      let options = {
-        center: position,
-        pitch: 60
-      };
-      if (this.startPosition && this.destPosition) {
-        // @ts-ignore
-        options.bearing = rhumbBearing(this.startPosition, this.destPosition);
+    if (position && this.options.url && this.options.loaderType) {
+      if (this.options.followCamera) {
+        let options = {
+          center: position,
+          pitch: 60
+        };
+        if (this.startPosition && this.destPosition) {
+          // @ts-ignore
+          options.bearing = rhumbBearing(this.startPosition, this.destPosition);
+        }
+        this.map.easeTo(options);
       }
-      this.map.easeTo(options);
-    }
-    switch (this.options.loaderType) {
-      case 'GLTF':
-      case 'OBJ2':
-        this._addCustomLayer(position);
-        break;
-      case 'IMAGE':
-        this._addImageLayer(position);
+      switch (this.options.loaderType) {
+        case 'GLTF':
+        case 'OBJ2':
+          this._addCustomLayer(position);
+          break;
+        case 'IMAGE':
+          this._addImageLayer(position);
+      }
     }
     this._addTrackLineLayer();
   }
@@ -534,7 +539,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       let coordinates = this.lineData;
       if (this.options.displayLine === 'All') {
         // @ts-ignore
-        coordinates = this.trackPoints.map(item => item.geometry.coordinates);
+        coordinates = (this.trackPoints || []).map(item => item.geometry.coordinates);
       }
       features = [
         {
