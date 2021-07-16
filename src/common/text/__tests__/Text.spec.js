@@ -26,7 +26,7 @@ describe('Text.vue', () => {
     expect(wrapper.find('.sm-component-text').exists()).toBe(true);
   })
 
-  it('text fontStyle', () => {
+  xit('text fontStyle', () => {
     wrapper = mount({
       template: `<div><sm-text title="北京北京" :fontStyle="{ fontSize: '18px', lineHeight: '18px', fontWeight: '700', textAlign: 'center' }"/></div>`,
       components: {
