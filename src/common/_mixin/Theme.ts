@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
 import { getDerivedColorsByTextColor } from 'vue-iclient/src/common/_utils/util';
-import { getPrimarySerialColors } from 'vue-iclient/src/common/_utils/style/color/serialColors';
+import { getPrimarySerialColors, toStyleVariable, getRootStyleSelector } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 
 @Component({
   name: 'Theme'
@@ -119,29 +119,28 @@ export default class Theme extends Vue {
       const $props = this.getSelfProps();
       $props.forEach((prop: string) => {
         const dataName: string = this.getDataNameOfProp(prop);
-        this[dataName] = themeStyle[prop];
+        this[dataName] = this.getRealColor(prop);
       });
-      this.collapseCardHeaderBgData = themeStyle.collapseCardHeaderBg;
-      this.collapseCardBackgroundData = themeStyle.collapseCardBackground;
-      this.tablePopupBgData = themeStyle.messageBackground;
+      this.collapseCardHeaderBgData = this.getRealColor('collapseCardHeaderBg');
+      this.collapseCardBackgroundData = this.getRealColor('collapseCardBackground');
+      this.tablePopupBgData = this.getRealColor('messageBackground');
       this.themeStyleChanged();
       this.initNeedTheme(themeStyle);
     });
   }
 
   initThemeData(): void {
-    const theme = globalEvent.$options.theme || {};
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
       const dataName: string = this.getDataNameOfProp(prop);
-      this[dataName] = this[prop] || theme[prop];
+      this[dataName] = this[prop] || this.getRealColor(prop);
     });
     // @ts-ignore
-    this.collapseCardHeaderBgData = this.background || theme.collapseCardHeaderBg;
+    this.collapseCardHeaderBgData = this.background || this.getRealColor('collapseCardHeaderBg');
     // @ts-ignore
-    this.collapseCardBackgroundData = this.background || theme.collapseCardBackground;
+    this.collapseCardBackgroundData = this.background || this.getRealColor('collapseCardBackground');
     // @ts-ignore
-    this.tablePopupBgData = this.background || theme.messageBackground;
+    this.tablePopupBgData = this.background || this.getRealColor('messageBackground');
   }
 
   initNeedTheme(themeStyle) {
@@ -149,26 +148,25 @@ export default class Theme extends Vue {
       if (name === 'primaryColor') {
         this[name] = themeStyle.colorGroup && themeStyle.colorGroup[0];
       } else {
-        this[name] = themeStyle[name];
+        this[name] = this.getRealColor(name);
       }
     });
   }
 
   registerPropListener(): void {
-    const theme = globalEvent.$options.theme || {};
     const vm = this;
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
       this.$watch(prop, function (next) {
         const dataName: string = this.getDataNameOfProp(prop);
-        vm[dataName] = next || theme[prop];
+        vm[dataName] = next || this.getRealColor(prop);
         if (prop === 'background') {
           // @ts-ignore
-          vm.collapseCardBackgroundData = next || theme.collapseCardBackground;
+          vm.collapseCardBackgroundData = next || this.getRealColor('collapseCardBackground');
           // @ts-ignore
-          vm.collapseCardHeaderBgData = next || theme.collapseCardHeaderBg;
+          vm.collapseCardHeaderBgData = next || this.getRealColor('collapseCardHeaderBg');
           // @ts-ignore
-          vm.tablePopupBgData = next || theme.messageBackground;
+          vm.tablePopupBgData = next || this.getRealColor('messageBackground');
         }
       });
     });
@@ -177,6 +175,18 @@ export default class Theme extends Vue {
   getSelfProps(): string[] {
     // @ts-ignore
     return Object.keys(Theme.extendOptions.props);
+  }
+
+  getRealColor(prop: string) {
+    const themeStyle = globalEvent.$options.theme || {};
+    if (prop === 'colorGroup') {
+      return themeStyle[prop];
+    }
+    const rootStyleSelector = getRootStyleSelector(themeStyle);
+    const computedStyle = window.getComputedStyle(document.querySelector(rootStyleSelector));
+    const themeColor = toStyleVariable(prop);
+    const colorValue = computedStyle.getPropertyValue(themeColor);
+    return colorValue.trim();
   }
 
   getDataNameOfProp(prop: string) {

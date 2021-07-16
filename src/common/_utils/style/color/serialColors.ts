@@ -140,6 +140,14 @@ export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerPa
   return nextThemeData;
 }
 
+export function toStyleVariable(variable) {
+  return `--${variable.replace(/[A-Z]/g, '-$&').toLowerCase()}`;
+}
+
+export function getRootStyleSelector(themeStyle) {
+  return themeStyle.styleConfig && themeStyle.styleConfig.className ? `.${themeStyle.styleConfig.className}` : ':root';
+}
+
 function setRootStyle(themeData: StyleReplacerParams): void {
   const { themeStyle, primarySerialColors, functionSerialColors, extraSerialColors } = themeData;
   const primaryColor = themeStyle.colorGroup[0];
@@ -161,12 +169,11 @@ function setRootStyle(themeData: StyleReplacerParams): void {
   }
   themeKeys.forEach((key: string) => {
     if (!isArray(themeInfo[key])) {
-      const varKey = `--${key.replace(/[A-Z]/g, '-$&').toLowerCase()}`;
+      const varKey = toStyleVariable(key);
       variables[varKey] = themeInfo[key];
     }
   });
-  const rootStyleSelector =
-    themeStyle.styleConfig && themeStyle.styleConfig.className ? `.${themeStyle.styleConfig.className}` : ':root';
+  const rootStyleSelector = getRootStyleSelector(themeStyle);
   const antdStyleId =
     themeStyle.styleConfig && themeStyle.styleConfig.id ? `${themeStyle.styleConfig.id}-style` : 'sm-component-style';
   const rootStyle = `${rootStyleSelector} ${JSON.stringify(variables, null, 2)

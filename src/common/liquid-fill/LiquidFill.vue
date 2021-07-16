@@ -146,7 +146,7 @@ export default {
         this.insideLabelColorData = this.getTextColor;
         this.borderColorData = this.getColor(0);
         this.backgroundColorData = this.getBackground;
-        this.updateChart(true);
+        this.updateChart();
       });
       this.resizeObsever = new ResizeSensor(this.$el, () => {
         this.resize();
