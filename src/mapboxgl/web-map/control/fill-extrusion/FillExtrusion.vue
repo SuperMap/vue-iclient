@@ -19,7 +19,6 @@
         <sm-layer-select
           v-model="editLayerSelected"
           size="middle"
-          :style="getBackgroundStyle"
           :dropdown-style="collapseCardBackgroundStyle"
           :get-popup-container="triggerNode => triggerNode.parentElement"
           :filter="filterSourceAndLayer"
@@ -70,14 +69,12 @@
               v-model="currentFillExtrusionOption.heightField"
               size="middle"
               :options="currentFillExtrusionOption.fields"
-              :style="getBackgroundStyle"
               :getPopupContainer="triggerNode => triggerNode.parentElement"
             />
             <sm-input
               v-if="currentFillExtrusionOption.heightFieldWay === 'customField'"
               v-model="currentFillExtrusionOption.customField"
               size="middle"
-              :style="getBackgroundStyle"
               :placeholder="$t('fillExtrusion.customFieldPlaceholder')"
             />
             <div v-if="currentFillExtrusionOption.heightFieldWay === 'customNum'" class="content-holder">
@@ -95,7 +92,6 @@
                 v-model="currentFillExtrusionOption.height"
                 size="middle"
                 :min="0"
-                :style="getBackgroundStyle"
               />
             </div>
           </div>
@@ -107,7 +103,6 @@
               v-model="currentFillExtrusionOption.multiple"
               size="middle"
               :min="0"
-              :style="getBackgroundStyle"
             />
           </div>
         </div>
@@ -129,7 +124,6 @@
               :min="0"
               :step="0.1"
               size="middle"
-              :style="getBackgroundStyle"
             />
           </div>
         </div>
