@@ -214,22 +214,22 @@ export default {
   },
   watch: {
     iportalData(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
+      if (this.searchKey && !isEqual(newVal, oldVal)) {
         this.search();
       }
     },
     restData(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
+      if (this.searchKey && !isEqual(newVal, oldVal)) {
         this.search();
       }
     },
     restMap(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
+      if (this.searchKey && !isEqual(newVal, oldVal)) {
         this.search();
       }
     },
     addressMatch(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
+      if (this.searchKey && !isEqual(newVal, oldVal)) {
         this.search();
       }
     }
