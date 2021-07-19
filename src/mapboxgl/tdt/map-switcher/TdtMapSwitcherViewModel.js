@@ -22,6 +22,10 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
     this.map = map;
   }
 
+  setTk(tk) {
+    this.tk = tk;
+  }
+
   changeBaseLayer(type) {
     if (this.map) {
       this.removeLayer();

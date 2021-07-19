@@ -72,6 +72,11 @@ export default {
       }
     }
   },
+  watch: {
+    'data.tk'(newVal) {
+      this.viewModel && this.viewModel.setTk(newVal);
+    }
+  },
   data() {
     return {
       labelChecked: true,
