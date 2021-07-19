@@ -50,8 +50,10 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: false }) keepBounds: boolean;
 
   mounted() {
-    this.initializeWebMap();
-    this.registerEvents();
+    this.$nextTick(() => {
+      this.initializeWebMap();
+      this.registerEvents();
+    });
   }
 
   beforeDestroy() {
