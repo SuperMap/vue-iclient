@@ -9,6 +9,7 @@ import canvg from 'canvg';
 import WebMapService from '../_utils/WebMapService';
 import { getColorWithOpacity } from '../_utils/util';
 import { getProjection, registerProjection } from '../../common/_utils/epsg-define';
+import { coordEach } from '@turf/meta';
 
 // 迁徙图最大支持要素数量
 const MAX_MIGRATION_ANIMATION_COUNT = 1000;
@@ -708,29 +709,16 @@ export default abstract class WebMapBase extends Events {
   protected transformFeatures(features) {
     features &&
       features.forEach((feature, index) => {
-        let geometryType = feature.geometry && feature.geometry.type;
         let coordinates = feature.geometry && feature.geometry.coordinates;
         if (!coordinates || coordinates.length === 0) {
           return;
         }
-        if (geometryType === 'LineString') {
-          coordinates.forEach((coordinate, index) => {
-            coordinate = this._unproject(coordinate);
-            coordinates[index] = coordinate;
-          }, this);
-        } else if (geometryType === 'Point') {
-          coordinates = this._unproject(coordinates);
-          feature.geometry.coordinates = coordinates;
-        } else if (geometryType === 'MultiPolygon' || geometryType === 'Polygon') {
-          coordinates.forEach((coordinate, index) => {
-            let coords = geometryType === 'MultiPolygon' ? coordinate[0] : coordinate;
-            coords.forEach((latlng, i) => {
-              latlng = this._unproject(latlng);
-              coords[i] = latlng;
-            });
-            coordinates[index] = coordinate;
-          });
-        }
+        coordEach(feature, (coordinates) => {
+          // @ts-ignore
+          let transCoordinates = this._unproject(coordinates);
+          coordinates[0] = transCoordinates[0];
+          coordinates[1] = transCoordinates[1];
+        })
         features[index] = feature;
       });
 

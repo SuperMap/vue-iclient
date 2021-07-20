@@ -13,6 +13,7 @@
     "@turf/length": "^6.0.2",
     "@turf/rhumb-bearing": "^6.0.1",
     "@turf/transform-scale": "^5.1.5",
+    "@turf/meta": "^6.5.0",
     "@types/geojson": "^7946.0.7",
     "@types/leaflet": "^1.5.5",
     "@types/node": "^12.0.3",
