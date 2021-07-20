@@ -75,7 +75,7 @@
         >
           {{ $t('attributes.search') }}
         </sm-button>
-        <sm-button size="small" style="width: 90px" @click="() => handleReset(clearFilters)">
+        <sm-button size="small" style="width: 90px;" @click="() => handleSearchReset(clearFilters)">
           {{ $t('attributes.reset') }}
         </sm-button>
       </div>
@@ -176,7 +176,7 @@ export interface ToolbarParams {
     SmIcon,
     SmCheckbox
   },
-  viewModelProps: ['layerName', 'dataset', 'lazy', 'associateWithMap', 'paginationOptions', 'sorter']
+  viewModelProps: ['layerName', 'dataset', 'lazy', 'associateWithMap', 'fieldConfigs', 'paginationOptions', 'sorter']
 })
 class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   tableData: Array<Object> = [];

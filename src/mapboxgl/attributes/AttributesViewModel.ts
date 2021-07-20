@@ -170,6 +170,11 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.getDatas();
   }
 
+  setFieldConfigs(fieldConfigs) {
+    this.fieldConfigs = fieldConfigs;
+    this.getDatas();
+  }
+
   refresh() {
     this.paginationOptions.current = 1;
     this.getDatas();
