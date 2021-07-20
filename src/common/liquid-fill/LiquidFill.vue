@@ -168,7 +168,7 @@ export default {
               insideColor: this.insideLabelColorData
             },
             backgroundStyle: {
-              color: this.backgroundColorData
+              color: this.backgroundColorData || 'rgba(0, 0, 0, 0)'
             },
             itemStyle: {
               shadowColor: '#fff'
