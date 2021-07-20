@@ -170,6 +170,11 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.getDatas();
   }
 
+  setFieldConfigs(fieldConfigs) {
+    this.fieldConfigs = fieldConfigs;
+    this.getDatas();
+  }
+
   refresh() {
     this.paginationOptions.current = 1;
     this.getDatas();
@@ -255,7 +260,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     selectedKeys = this.handleCoords(selectedKeys);
     this.addKeys = difference(Object.keys(selectedKeys), this.selectedKeys);
     this.selectedKeys = Object.keys(selectedKeys);
-    
+
     let filter: any = ['any'];
     this.selectedKeys.forEach(key => {
       const feature = selectedKeys[key];
@@ -411,20 +416,20 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   async getDatas() {
     if (this.dataset || this.layerName) {
-    let features;
-    let totalCount;
-    if (this.useDataset()) {
-      const datas = await this._getFeaturesFromDataset();
-      features = datas.features;
-      totalCount = datas.totalCount;
-    } else {
-      features = this._getFeaturesFromLayer(this.layerName);
-      totalCount = features.length;
-    }
-    const content = this.toTableContent(features);
-    const columns = this.toTableColumns(features[0].properties);
+      let features;
+      let totalCount;
+      if (this.useDataset()) {
+        const datas = await this._getFeaturesFromDataset();
+        features = datas.features;
+        totalCount = datas.totalCount;
+      } else {
+        features = this._getFeaturesFromLayer(this.layerName);
+        totalCount = features.length;
+      }
+      const content = this.toTableContent(features);
+      const columns = this.toTableColumns(features[0].properties);
 
-    this.fire('dataChanged', { content, totalCount, columns });
+      this.fire('dataChanged', { content, totalCount, columns });
     }
   }
 
