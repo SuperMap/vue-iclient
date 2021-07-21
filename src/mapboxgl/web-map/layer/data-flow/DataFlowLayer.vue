@@ -1,13 +1,13 @@
 <script>
 import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
-import DataflowLayerViewModel from './DataFlowLayerViewModel';
+import DataFlowLayerViewModel from './DataFlowLayerViewModel';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 
 /**
- * @module DataflowLayer
+ * @module DataFlowLayer
  * @category Components Layer
  * @desc 数据流图层组件。
  * @vue-prop {String} serviceUrl - 数据流服务地址。
@@ -21,7 +21,7 @@ import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
  */
 
 export default {
-  name: 'SmDataflowLayer',
+  name: 'SmDataFlowLayer',
   mixins: [MapGetter, Layer],
   viewModelProps: ['layerStyle'],
   props: {
@@ -53,7 +53,7 @@ export default {
   created() {
     let options = JSON.parse(JSON.stringify(this.$props));
     delete options.serviceUrl;
-    this.viewModel = new DataflowLayerViewModel(this.serviceUrl, { ...options });
+    this.viewModel = new DataFlowLayerViewModel(this.serviceUrl, { ...options });
     this.registerEvents();
   },
   beforeDestroy() {
