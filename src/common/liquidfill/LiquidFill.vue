@@ -5,9 +5,10 @@
 import echarts from 'echarts';
 import Theme from '../_mixin/Theme';
 import 'echarts-liquidfill';
-import { ResizeSensor } from 'css-element-queries';
 import Timer from '../_mixin/Timer';
 import ThirdService from '../_mixin/ThirdService';
+import { addListener, removeListener } from 'resize-detector';
+import debounce from 'lodash.debounce';
 
 export default {
   name: 'SmLiquidFill',
@@ -119,13 +120,14 @@ export default {
     this.insideLabelColorData = this.insideLabelColor || this.getTextColor;
     this.borderColorData = this.borderColor || this.waveColorData;
     this.backgroundColorData = this.backgroundColor || this.getBackground;
-    setTimeout(() => {
+    this._initAutoResize();
+    this.$nextTick(() => {
       this.initializeChart();
-      this.resize();
-    }, 0);
+    });
   },
   beforeDestroy() {
     this.restService && this.restService.remove('getdatasucceeded');
+    removeListener(this.$el, this.__resizeHandler);
   },
   methods: {
     resize() {
@@ -142,9 +144,17 @@ export default {
         this.backgroundColorData = this.getBackground;
         this.updateChart(true);
       });
-      this.resizeObsever = new ResizeSensor(this.$el, () => {
-        this.resize();
-      });
+    },
+    _initAutoResize() {
+      this.__resizeHandler = debounce(
+        () => {
+          this.resize();
+        },
+        100,
+        { leading: true }
+      );
+      // @ts-ignore
+      addListener(this.$el, this.__resizeHandler);
     },
     updateChart(propsUpdate = false) {
       this.chart && this.chart.setOption({
