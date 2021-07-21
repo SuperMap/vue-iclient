@@ -18,6 +18,7 @@
           <sm-layer-select
             ref="layerSelectRef"
             v-model="selectLayer"
+            :mapTarget="mapTarget"
             :filter="filtercb"
             @change="handleLayerChange"
           />
