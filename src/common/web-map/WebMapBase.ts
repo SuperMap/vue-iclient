@@ -725,7 +725,7 @@ export default abstract class WebMapBase extends Events {
           let transCoordinates = this._unproject(coordinates);
           coordinates[0] = transCoordinates[0];
           coordinates[1] = transCoordinates[1];
-        })
+        });
         features[index] = feature;
       });
 
