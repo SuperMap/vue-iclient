@@ -371,6 +371,16 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
         // @ts-ignore
         this.$set(this.paginationOptions, 'total', totalCount);
       }
+      // @ts-ignore
+      const hideColumns = this.columns.filter(item => !item.visible);
+      hideColumns.forEach(element => {
+        columns.forEach((element2, index) => {
+          // @ts-ignore
+          if (element.dataIndex === element2.dataIndex) {
+            columns[index].visible = false;
+          }
+        });
+      });
       this.columns = columns;
       this.tableData = content;
     });
