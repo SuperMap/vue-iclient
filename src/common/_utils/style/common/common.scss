@@ -31,3 +31,6 @@ body {
   border-radius: 10px;
   background-color: #bbb;
 }
+.mapboxgl-ctrl button:not(:disabled):hover {
+  background-color: var(--primary-5);
+}
