@@ -96,6 +96,7 @@
 
   &-header {
     background: $table-header-bg;
+    overflow: hidden !important;
   }
 
   &-tbody > tr {

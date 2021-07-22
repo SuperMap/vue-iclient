@@ -92,6 +92,7 @@
     "searchArrowIconBg": "var(--g22)",
     "sliderRailBackgroundColor": "var(--alpha25)",
     "scrollbarBackground": "var(--alpha15)",
+    "swiperPrevNextBackground": "rgba(0, 0, 0, 0.18)",
     "colorGroup": [
       "#3499e5",
       "#759aa0",
@@ -191,6 +192,7 @@
     "searchArrowIconBg": "var(--l80)",
     "sliderRailBackgroundColor": "var(--alpha25)",
     "scrollbarBackground": "var(--alpha15)",
+    "swiperPrevNextBackground": "rgba(0, 0, 0, 0.18)",
     "colorGroup": [
       "#0081e2",
       "#6be6c1",
