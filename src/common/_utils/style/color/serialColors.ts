@@ -109,7 +109,7 @@ export function getExtralColors(
     componentBackgroundWithoutOpacity: getColorWithOpacity(themeStyleData.componentBackground, 1, false),
     primaryShadowColor: getColorWithOpacity(primarySerialColors[4], 0.25),
     dangerShadowColor: getColorWithOpacity(functionColors.dangerColor[4], 0.25),
-    disabledDarkenBgColor10: getDarkenColor(themeStyleData.disabledBgColor, 10),
+    disabledDarkenBgColor10: getDarkenColor(themeStyleData.containerDisabled, 10),
     tableHeaderSortActiveBg,
     tableHeaderFilterActiveBg: getDarkenColor(tableHeaderSortActiveBg, 5)
   };

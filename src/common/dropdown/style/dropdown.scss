@@ -3,10 +3,20 @@
 
 @include b(dropdown) {
   $prefix: &;
-  &-menu-item:hover, &-menu-submenu-title:hover {
+  &-menu-item:hover,
+  &-menu-submenu-title:hover {
     background-color: $dropdown-menu-item-hover-bg;
   }
-  &-content, &-menu, &-menu-item-selected, &-menu-submenu-title-selected, &-menu-item-selected > a, &-menu-submenu-title-selected > a {
+  &-content,
+  &-menu,
+  &-menu-item-selected,
+  &-menu-submenu-title-selected,
+  &-menu-item-selected > a,
+  &-menu-submenu-title-selected > a {
     background-color: $dropdown-background;
+  }
+  &-menu-item &-menu-submenu-arrow-icon,
+  &-menu-submenu-title &-menu-submenu-arrow-icon {
+    color: $icon-color;
   }
 }

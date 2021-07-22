@@ -37,7 +37,7 @@
                 allowClear
                 :placeholder="$t('tdtRoute.pleaseEnterStartPoint')"
                 :title="$t('tdtRoute.pleaseEnterStartPoint')"
-                :style="[headingTextColorStyle, getBackgroundStyle]"
+                :style="[headingTextColorStyle]"
                 @keyup.13="searchClicked"
                 @change="e => !e.target.value && clearStart()"
               />
@@ -53,7 +53,7 @@
                 allowClear
                 :placeholder="$t('tdtRoute.pleaseEnterEndPoint')"
                 :title="$t('tdtRoute.pleaseEnterEndPoint')"
-                :style="[headingTextColorStyle, getBackgroundStyle]"
+                :style="[headingTextColorStyle]"
                 @keyup.13="searchClicked"
                 @change="e => !e.target.value && clearEnd()"
               />
