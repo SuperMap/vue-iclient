@@ -4,6 +4,9 @@
 @import '../../../../../common/slider/style/slider.scss';
 
 @include b(zoom) {
+  &.mapboxgl-ctrl button:not(:disabled):hover {
+      background: rgba(143, 70, 70, 0.05);
+    }
   @include e(buttons) {
     width: 32px;
     margin: 0 auto;
