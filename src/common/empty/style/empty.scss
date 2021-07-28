@@ -7,23 +7,23 @@
     height: auto;
   }
   .sm-component-empty-image {
-    height: 26px;
+    height: 31px;
     & svg {
       width: 52px;
       height: 31px;
     }
   }
   & ellipse {
-    fill: $empty-ellipse-color;
+    fill: $empty-shadow-color;
   }
   & g g {
     stroke: $empty-stroke-color;
   }
   & path:first-child {
-    fill: $empty-path-top-color;
+    fill: $empty-top-color;
   }
   & path:nth-child(2) {
-    fill: $empty-path-bottom-color;
+    fill: $empty-bottom-color;
   }
   & .sm-component-empty-description {
     font-size: 12px;
