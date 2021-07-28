@@ -159,4 +159,71 @@ describe('WebMap.vue', () => {
       }
     })
   })
+  it('initial_markerLayer', (done) => {
+    const spy = jest.spyOn(mapboxgl, "Map");
+    wrapper = mount(SmWebMap,
+      {
+        localVue,
+        propsData: {
+          serverUrl: 'https://fakeiportal.supermap.io/iportal',
+          mapId: '123456'
+        }
+      },
+    )
+    wrapper.vm.$on("load", (e) => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe("123456");
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        const layers = Object.values(e.map.overlayLayersManager);
+        expect(layers.length).toBe(2);
+        const markerLayer = layers[1];
+        expect(markerLayer.type).toBe('symbol');
+        expect(markerLayer.layout['icon-image']).toBe('http://fakeiportal/iportal/apps/dataviz/static/imgs/markers/ktv_red.png');
+        done();
+      }
+      catch (exception) {
+        console.log("WebMap" + exception.name + ":" + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done()
+      }
+    })
+  })
+  it('initial_heatLayer', (done) => {
+    const spy = jest.spyOn(mapboxgl, "Map");
+    wrapper = mount(SmWebMap,
+      {
+        localVue,
+        propsData: {
+          serverUrl: 'https://fakeiportal.supermap.io/iportal',
+          mapId: '12345678'
+        }
+      },
+    )
+    wrapper.vm.$on("load", (e) => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe("12345678");
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        const layers = Object.values(e.map.overlayLayersManager);
+        expect(layers.length).toBe(2);
+        const heatLayer = layers[1];
+        expect(heatLayer.type).toBe('heatmap');
+        expect(heatLayer.paint['heatmap-radius']).toBe(30);
+        done();
+      }
+      catch (exception) {
+        console.log("WebMap" + exception.name + ":" + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done()
+      }
+    })
+  })
+  
 })

@@ -17,8 +17,7 @@ module.exports = {
     '^@mixin/(.*)$': '<rootDir>/src/mapboxgl/_mixin/$1',
     '\\.(css|less)$': 'identity-obj-proxy',
     '@i18n/(.*)$': '<rootDir>/src/common/$1',
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/test/unit/assetsTransformer.js',
-    '\\.(css|less)$': '<rootDir>/test/unit/assetsTransformer.js'
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/test/unit/assetsTransformer.js'
   },
   transform: {
     '^.+\\.ts$': '<rootDir>/node_modules/ts-jest',
@@ -31,12 +30,14 @@ module.exports = {
   // mapCoverage: true,
   coverageDirectory: '<rootDir>/test/unit/coverage',
   collectCoverageFrom: [
-    'src/**/*.{js,ts,vue}',
+    'src/**/!(index).{js,ts,vue}',
     '!src/main.js',
+    '!src/mapboxgl/web-map/layer/fill-extrusion/**',
+    '!src/mapboxgl/web-map/control/fill-extrusion/**',
     '!**/node_modules/**',
     '!mapboxgl/*/__tests__/**/type.{js,jsx}'
   ],
-  transformIgnorePatterns: ['node_modules/(?!(mapbox-gl|element-ui|ant-design-vue)/)'],
+  transformIgnorePatterns: ['node_modules/(?!(mapbox-gl|element-ui|ant-design-vue|geographic-coordinate-converter)/)'],
   modulePaths: ['src', 'node_modules'],
   globals: {
     'ts-jest': {

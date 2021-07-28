@@ -429,6 +429,11 @@ var Map = function (options) {
     this.fire('zoomend', this.zoom);
     return this.zoom;
   };
+  this.loadImage=function(src,callback){
+    setTimeout(function(){callback(null,[1,2,3])},10)
+  }
+  this.addImage =function(){}
+  this.hasImage =function(){return true}
 };
 
 module.exports = Map;

@@ -27,7 +27,10 @@ import {
   drill_map_mapjson3,
   drill_map_719613442,
   drill_map_1960447494,
-  drill_map_1687422166
+  drill_map_1687422166,
+  marker_data,
+  webmap_markerLayer,
+  webmap_heatLayer
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -323,6 +326,10 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_1960447494))));
       } else if (url.indexOf('719613442') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_719613442))));
+      } else if (url.indexOf('123456/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_markerLayer))));
+      } else if (url.indexOf('12345678/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_heatLayer))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {
@@ -337,6 +344,8 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_charts))));
       } else if (url.indexOf('datas/676516522/content.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_charts))));
+      } else if (url.indexOf('datas/123456/content.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(marker_data))));
       } else if (url.indexOf('iportal/web/datas') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_chart))));
       }

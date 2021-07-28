@@ -11,7 +11,7 @@ supermap.FeatureService = () => {
       setTimeout(() => {
         callback(fakeDataServiceResult);
       }, 0),
-      getFeaturesByGeometry: (param, callback) =>
+    getFeaturesByGeometry: (param, callback) =>
       setTimeout(() => {
         callback(fakeDataServiceResult);
       }, 0)
@@ -28,10 +28,10 @@ supermap.QueryService = () => {
       setTimeout(() => {
         callback(fakeMapServiceResult);
       }, 0),
-      queryByGeometry: (param, callback) =>
+    queryByGeometry: (param, callback) =>
       setTimeout(() => {
         callback(fakeMapServiceResult);
-      }, 0),
+      }, 0)
   };
 };
 
@@ -43,6 +43,19 @@ supermap.AddressMatchService = () => {
       }, 0)
     // queryByBounds: (param, callback) => callback(fakeMapServiceResult)
   };
+};
+supermap.Util = {
+  hexToRgba: function (hex, opacity) {
+    var color = [],
+      rgba = [];
+    hex = hex.replace(/#/, '');
+    for (let i = 0; i < 6; i += 2) {
+      color[i] = '0x' + hex.substr(i, 2);
+      rgba.push(parseInt(Number(color[i])));
+    }
+    rgba.push(opacity);
+    return 'rgba(' + rgba.join(',') + ')';
+  }
 };
 
 module.exports = supermap;
