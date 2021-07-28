@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmTransfer from '../Transfer.vue';
+import Transfer from '../index';
 import SmSwitch from '../../switch/Switch.vue';
 
 describe('Transfer.vue', () => {
@@ -73,5 +74,10 @@ describe('Transfer.vue', () => {
       },
     },
   )
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Transfer)
+    expect(wrapper.find('.sm-component-transfer').exists()).toBe(true);
   })
 })

@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmCollapse from '../Collapse.vue';
+import Collapse from '../index';
 import SmCollapsePanel from '../Panel.vue';
 
 describe('Collapse.vue', () => {
@@ -59,5 +60,10 @@ describe('Collapse.vue', () => {
     expect(collapseItemActive.length).toBe(1);
     collapseHeader.at(1).trigger("click");
     expect(change).toBeCalled();
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Collapse)
+    expect(wrapper.find('.sm-component-collapse').exists()).toBe(true);
   })
 })

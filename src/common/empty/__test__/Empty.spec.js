@@ -2,6 +2,8 @@ import {
   mount
 } from '@vue/test-utils';
 import SmEmpty from '../Empty.vue';
+import Empty from '../index';
+
 
 
 describe('Empty.vue', () => {
@@ -14,6 +16,11 @@ describe('Empty.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Empty)
+    expect(wrapper.find('.sm-component-empty').exists()).toBe(true);
   })
 
   it('render default correctly', () => {

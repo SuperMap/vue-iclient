@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmAvatar from '../Avatar.vue';
+import Avatar from '../index';
 
 describe('SmAvatar.vue', () => {
   let wrapper;
@@ -26,6 +27,10 @@ describe('SmAvatar.vue', () => {
     expect(children.at(0).text()).toBe('testString');
   });
 
+  it('render index correctly', () => {
+    wrapper = mount(Avatar)
+    expect(wrapper.find('.sm-component-avatar').exists()).toBe(true);
+  })
 
   it('should render props defalut correctly', () => {
     const wrapper = mount(SmAvatar, {
@@ -36,11 +41,11 @@ describe('SmAvatar.vue', () => {
       },
       attachTo: 'body',
     });
-      const children = wrapper.findAll('.sm-component-avatar');
-      expect(children.length).toBe(1);
-      expect(wrapper.props().src).toBe('http://test.url');
-      expect(wrapper.props().size).toBe('small');
-      expect(wrapper.props().icon).toBe('user');
+    const children = wrapper.findAll('.sm-component-avatar');
+    expect(children.length).toBe(1);
+    expect(wrapper.props().src).toBe('http://test.url');
+    expect(wrapper.props().size).toBe('small');
+    expect(wrapper.props().icon).toBe('user');
   });
 
   it('should render props in components correctly', () => {
@@ -54,9 +59,9 @@ describe('SmAvatar.vue', () => {
       components: {
         SmAvatar,
       },
-    },
-    { attachTo: div }
-  )
+    }, {
+      attachTo: div
+    })
     expect(wrapper.find('.sm-component-avatar-square').exists()).toBe(true);
     expect(wrapper.find('.sm-component-avatar-lg').exists()).toBe(true);
     expect(wrapper.find('.sm-component-avatar-image').exists()).toBe(true);
@@ -76,9 +81,9 @@ describe('SmAvatar.vue', () => {
       components: {
         SmAvatar,
       },
-    },
-    { attachTo: div }
-  )
+    }, {
+      attachTo: div
+    })
     expect(wrapper.find('.sm-component-avatar-icon').exists()).toBe(true);
     expect(wrapper.find('i').exists()).toBe(true);
     expect(wrapper.find('i').find('.sm-components-icon-search').exists()).toBe(true);

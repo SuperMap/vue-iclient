@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmDraw from '../Draw.vue';
+import Draw from '../index';
 import SmWebMap from '../../../WebMap.vue';
 
 describe('Draw.vue', () => {
@@ -27,16 +28,16 @@ describe('Draw.vue', () => {
         SmWebMap
       },
       data() {
-        return {
-        }
+        return {}
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  );
+    });
   })
 
+  it('render index correctly', () => {
+    wrapper = mount(Draw);
+    expect(wrapper.find('div.sm-component-draw').exists()).toBe(true);
+  })
 
 })
-

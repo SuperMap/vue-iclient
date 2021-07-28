@@ -5,6 +5,7 @@ import SmLayoutContent from '../Content.vue';
 import SmLayoutFooter from '../Footer.vue';
 import SmLayoutHeader from '../Header.vue';
 import SmLayout from '../Layout.vue';
+import Layout from '../index';
 import SmLayoutSider from '../Sider.vue';
  
 describe('Layout.vue', () => {
@@ -40,6 +41,11 @@ describe('Layout.vue', () => {
     expect(wrapper.find('.sm-component-layout-header').exists()).toBe(true);
     expect(wrapper.find('.sm-component-layout-header').element.style.background).toBe('rgb(125, 188, 234)');
     expect(wrapper.find('.sm-component-layout-footer').element.style.lineHeight).toBe("1.5");
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Layout)
+    expect(wrapper.find('.sm-component-layout').exists()).toBe(true);
   })
 
   it('render layout correctly', () => {

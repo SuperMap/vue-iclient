@@ -4,6 +4,7 @@ import {
 } from '@vue/test-utils';
 import SmWebMap from '../../web-map/WebMap.vue';
 import SmCompare from '../Compare.vue'
+import Compare from '../index'
 import mapEvent from '@types_mapboxgl/map-event';
 import {
   Icon,
@@ -36,6 +37,11 @@ describe('Copmpare.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
+  })
+
+  it('render default correctly', () => {
+    wrapper = mount(Compare);
+    expect(wrapper.find('div.sm-component-compare').exists()).toBe(true);
   })
 
   it('copmpare slot', (done) => {

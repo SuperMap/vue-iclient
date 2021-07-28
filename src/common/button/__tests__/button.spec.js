@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmButton from '../Button.vue';
+import Button from '../index';
 import SmButtonGroup from '../Group.vue';
 
 describe('Button.vue', () => {
@@ -24,6 +25,11 @@ describe('Button.vue', () => {
       }
     })
     expect(wrapper.text()).toBe('按 钮');
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Button)
+    expect(wrapper.find('.sm-component-btn').exists()).toBe(true);
   })
 
   it('button type', () => {

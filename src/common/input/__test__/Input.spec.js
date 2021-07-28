@@ -3,6 +3,7 @@ import {
   createLocalVue
 } from '@vue/test-utils';
 import SmInput from '../Input.vue';
+import IndexInput from '../index';
 import SmInputPassword from '../Password.vue';
 import SmInputSearch from '../Search.vue';
 import SmTextarea from '../TextArea.vue';
@@ -29,14 +30,17 @@ describe('Input.vue', () => {
       components: {
         SmInput,
       }
-    },
-    {
+    }, {
       localVue,
       sync: false,
-    }
-  )
+    })
     expect(wrapper.find('.sm-component-input').exists()).toBe(true);
     expect(wrapper.find('.sm-component-input').element.placeholder).toBe('Basic input');
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(IndexInput)
+    expect(wrapper.find('.sm-component-input').exists()).toBe(true);
   })
 
   it('render search correctly', () => {
@@ -48,12 +52,10 @@ describe('Input.vue', () => {
       components: {
         SmInputSearch,
       }
-    },
-    {
+    }, {
       localVue,
       sync: false,
-    }
-  )
+    })
     expect(wrapper.find('.sm-component-input-search').exists()).toBe(true);
     expect(wrapper.find('.sm-component-input').element.placeholder).toBe('input search loading deault');
     expect(wrapper.find('.sm-component-input-search-icon').exists()).toBe(true);
@@ -66,12 +68,10 @@ describe('Input.vue', () => {
       components: {
         SmTextarea,
       }
-    },
-    {
+    }, {
       localVue,
       sync: false,
-    }
-  )
+    })
     const textArea = wrapper.find('textarea.sm-component-input');
     expect(textArea.exists()).toBe(true);
     expect(textArea.element.placeholder).toBe('Basic usage');
@@ -85,12 +85,10 @@ describe('Input.vue', () => {
       components: {
         SmInputPassword,
       }
-    },
-    {
+    }, {
       localVue,
       sync: false,
-    }
-  )
+    })
     const textArea = wrapper.find('.sm-component-input-password');
     expect(wrapper.find('.sm-component-input-password').exists()).toBe(true);
     expect(wrapper.find('.sm-component-input').element.placeholder).toBe('input password');

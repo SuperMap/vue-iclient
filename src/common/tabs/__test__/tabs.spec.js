@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmTabs from '../Tabs.vue';
+import Tabs from '../index';
 import SmTabPane from '../TabPane.vue';
 
 describe('Tabs.vue', () => {
@@ -22,5 +23,10 @@ describe('Tabs.vue', () => {
 
   it('render text correctly', () => {
     wrapper = mount(SmTabPane);
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Tabs)
+    expect(wrapper.find('.sm-component-tabs').exists()).toBe(true);
   })
 })

@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmIdentify from '../Identify.vue';
+import Identify from '../Identify.vue';
 import SmWebMap from '../../../WebMap.vue';
 
 describe('Identify.vue', () => {
@@ -27,10 +28,9 @@ describe('Identify.vue', () => {
         SmIdentify,
         SmWebMap
       }
-    },
-  );
-  identifyWrapper = wrapper.vm.$children[0].$children[0];
-  identifyWrapper.$on('loaded', () => {
+    });
+    identifyWrapper = wrapper.vm.$children[0].$children[0];
+    identifyWrapper.$on('loaded', () => {
       try {
         expect(wrapper.find('.sm-component-identify').exists()).toBe(true);
         identifyWrapper.getWidthStyle;
@@ -44,5 +44,8 @@ describe('Identify.vue', () => {
       }
     })
   })
-})
 
+  it('render index correctly', () => {
+    wrapper = mount(Identify);
+  })
+})

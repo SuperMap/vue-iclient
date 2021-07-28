@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmFlyTo from '../FlyTo.vue';
+import FlyTo from '../index';
 import SmWebMap from '../../../WebMap.vue';
 
 describe('FlyTo.vue', () => {
@@ -40,11 +41,26 @@ describe('FlyTo.vue', () => {
           }
         };
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  );
+    });
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(FlyTo, {
+      propsData: {
+        data: [
+          [103.93303602365336, 33.04646925591396],
+          [103.90771770744831, 33.163703206300525],
+          [103.93169934861643, 33.25624201104978]
+        ],
+        flyOptions: {
+          duration: 1500,
+          zoom: 15,
+          pitch: 60
+        }
+      }
+    });
   })
 
   it('render correctly', () => {
@@ -71,11 +87,9 @@ describe('FlyTo.vue', () => {
           }
         }
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  );
+    });
   })
 
   it('render correctly', () => {
@@ -102,11 +116,8 @@ describe('FlyTo.vue', () => {
           }
         }
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  );
+    });
   })
 })
-

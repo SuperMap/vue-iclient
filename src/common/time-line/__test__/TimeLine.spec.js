@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmTimeLine from '../TimeLine.vue';
+import TimeLine from '../index';
 
 describe('TimeLine.vue', () => {
   let wrapper;
@@ -37,6 +38,11 @@ describe('TimeLine.vue', () => {
       },
     },
   )
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(TimeLine)
+    expect(wrapper.find('.sm-component-time-line').exists()).toBe(true);
   })
 
   it('render timeLineProps correctly', () => {

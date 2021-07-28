@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmColorPicker from '../ColorPicker.vue';
+import ColorPicker from '../index';
 
 describe('ColorPicker.vue', () => {
   let wrapper;
@@ -19,6 +20,11 @@ describe('ColorPicker.vue', () => {
     wrapper = mount(SmColorPicker);
     expect(wrapper.find('.sm-component-colorpicker').exists()).toBe(true);
     expect(wrapper.find('.sm-component-colorpicker__current').exists()).toBe(true);
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(ColorPicker)
+    expect(wrapper.find('.sm-component-colorpicker').exists()).toBe(true);
   })
 
   it('has displayPicker work correctly', () => {

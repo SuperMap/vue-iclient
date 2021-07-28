@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmRadio from '../Radio.vue';
+import Radio from '../index';
  
 
 describe('Radio.vue', () => {
@@ -18,5 +19,10 @@ describe('Radio.vue', () => {
 
   it('render default correctly', () => {
     wrapper = mount(SmRadio);
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Radio)
+    expect(wrapper.find('.sm-component-radio').exists()).toBe(true);
   })
 })

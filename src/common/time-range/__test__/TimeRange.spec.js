@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmTimeRange from '../TimeRange.vue';
+import TimeRange from '../index';
 
 describe('TimeRange.vue', () => {
   let wrapper;
@@ -45,6 +46,11 @@ describe('TimeRange.vue', () => {
       },
     },
   )
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(TimeRange)
+    expect(wrapper.find('.sm-component-time-range').exists()).toBe(true);
   })
 
   it('render timeRangeProps correctly', () => {

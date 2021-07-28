@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmIndicator from '../Indicator.vue';
+import Indicator from '../index';
 
 describe('Indicator.vue', () => {
   let wrapper;
@@ -33,5 +34,10 @@ describe('Indicator.vue', () => {
     expect(numItem.at(2).text()).toBe('5');
     expect(numItem.at(3).text()).toBe('8');
     expect(numItem.at(4).text()).toBe('8');
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Indicator)
+    expect(wrapper.find('.sm-component-indicator').exists()).toBe(true);
   })
 })

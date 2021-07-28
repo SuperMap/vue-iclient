@@ -2,10 +2,10 @@ import {
   mount
 } from '@vue/test-utils';
 import SmTextList from '../TextList.vue';
+import TextList from '../index';
 
 describe('TextList.vue', () => {
-  const content = [
-    {
+  const content = [{
       站台: '漠河',
       省份: '黑龙江1',
       海拔: '296',
@@ -111,20 +111,30 @@ describe('TextList.vue', () => {
           fields: fields
         }
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  )
+    })
     expect(wrapper.find('.sm-component-text-list').exists()).toBe(true);
     expect(wrapper.vm.content[0].站台).toBe('漠河');
     expect(wrapper.vm.header.length).toBe(5);
     expect(wrapper.vm.fields.length).toBe(5);
   })
 
+
+  it('render index correctly', () => {
+    wrapper = mount(TextList, {
+      sync: false,
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields
+      }
+    })
+    expect(wrapper.find('.sm-component-text-list').exists()).toBe(true);
+  })
+
   it('render props correctly', () => {
-    const content = [
-      {
+    const content = [{
         站台: '漠河',
         省份: '黑龙江1',
         海拔: '296',
@@ -218,10 +228,8 @@ describe('TextList.vue', () => {
           fields: fields
         }
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  )
+    })
   })
 })

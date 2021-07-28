@@ -4,6 +4,7 @@ import {
 } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap';
 import SmPan from '../Pan.vue';
+import Pan from '../index';
 import mapEvent from '@types_mapboxgl/map-event';
 
 import {
@@ -65,6 +66,35 @@ describe('Pan.vue', () => {
     })
   });
 
+  it('default index', (done) => {
+    let mapWrapper = mount(SmWebMap, {
+        localVue,
+        propsData: {
+          serverUrl: 'https://fakeiportal.supermap.io/iportal',
+          mapId: '123'
+        }
+      });
+  
+      wrapper = mount(Pan, {
+        propsData: {
+          mapTarget: 'map'
+        }
+      });
+      wrapper.vm.$on('loaded', () => {
+        try {
+          expect(wrapper.vm.mapTarget).toBe('map');
+          testClick(wrapper, wrapper.vm.map);
+          mapWrapper.destroy();
+          done();
+        } catch (exception) {
+          console.log('Pan_default' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          mapWrapper.destroy();
+          done();
+        }
+      })
+    });
+  
   /**
    * 测试平移组件包裹在map里面
    */

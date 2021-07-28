@@ -5,6 +5,7 @@ import {
 } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap';
 import SmLayerList from '../LayerList.vue';
+import LayerList from '../index';
 import mapEvent from '@types_mapboxgl/map-event';
 
 import {
@@ -44,6 +45,12 @@ describe('LayerList.vue', () => {
       mapWrapper.destroy();
     }
   });
+
+  
+  it('render index correctly', () => {
+    wrapper = mount(LayerList);
+    expect(wrapper.find('div.sm-component-layer-list').exists()).toBe(true);
+  })
 
   it('layerGroupVisibility tile', done => {
     mapWrapper = mount(SmWebMap, {

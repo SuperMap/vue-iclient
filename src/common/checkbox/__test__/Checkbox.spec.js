@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmCheckbox from '../Checkbox.vue';
+import Checkbox from '../index';
 import SmCheckboxGroup from '../Group.vue';
 import SmButton from '../../button/Button.vue';
 import { onCheckAllChange, onChange, toggleDisable } from 'vue-iclient/test/unit/mocks/baseComponentMock.js';
@@ -40,6 +41,11 @@ describe('Checkbox.vue', () => {
     expect(checkboxInput.element.checked).toBeTruthy()
     global.document.body.removeChild(div);
   });
+
+  it('render index correctly', () => {
+    wrapper = mount(Checkbox)
+    expect(wrapper.find('.sm-component-checkbox').exists()).toBe(true);
+  })
 
   it('Checke All', async () => {
     const div = global.document.createElement('div');

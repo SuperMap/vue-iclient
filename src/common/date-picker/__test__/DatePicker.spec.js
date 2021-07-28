@@ -3,6 +3,7 @@ import {
   createLocalVue
 } from '@vue/test-utils';
 import SmDatePicker from '../DatePicker.vue';
+import DatePicker from '../index';
 import SmMonthPicker from '../MonthPicker.vue';
 import SmRangePicker from '../RangePicker.vue';
 import SmWeekPicker from '../WeekPicker.vue';
@@ -62,6 +63,12 @@ describe('DatePicker.vue', () => {
       wrapper.destroy();
     }
   })
+
+  it('render index correctly', () => {
+    wrapper = mount(DatePicker)
+    expect(wrapper.find('.sm-component-calendar-picker').exists()).toBe(true);
+  })
+
   it('prop locale should works', async () => {
     wrapper = mount({
       template: `

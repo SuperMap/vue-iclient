@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmBreadcrumb from '../Breadcrumb.vue';
+import Breadcrumb from '../index';
 import SmBreadcrumbItem from '../BreadcrumbItem.vue';
 import SmBreadcrumbSeparator from '../BreadcrumbSeparator.vue';
 
@@ -63,6 +64,11 @@ describe('Breadcrumb.vue', () => {
     expect(breadcrumbSeparator.length).toBe(2);
     expect(breadcrumbSeparator.at(0).text()).toBe('/');
     expect(breadcrumbSeparator.at(1).text()).toBe('/');
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Breadcrumb)
+    expect(wrapper.find('.sm-component-breadcrumb').exists()).toBe(true);
   })
 
   it('should render a menu', () => {

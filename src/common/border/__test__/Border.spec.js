@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmBorder from '../Border.vue';
+import Border from '../index';
 import SmChart from '../../../mapboxgl/chart/Chart.vue';
 
 describe('Border.vue', () => {
@@ -21,19 +22,19 @@ describe('Border.vue', () => {
     }
   };
   const datasetOptions = [{
-    seriesType: "bar",
-    isStastic: true,
-    isStack: true,
-    xField: "机场",
-    yField: "2016起降架次（架次）"
-  },
-  {
-    seriesType: "bar",
-    isStastic: true,
-    isStack: true,
-    xField: "机场",
-    yField: "2017起降架次（架次）",
-  }
+      seriesType: "bar",
+      isStastic: true,
+      isStack: true,
+      xField: "机场",
+      yField: "2016起降架次（架次）"
+    },
+    {
+      seriesType: "bar",
+      isStastic: true,
+      isStack: true,
+      xField: "机场",
+      yField: "2017起降架次（架次）",
+    }
   ];
   const iportalDataSet = {
     type: "iPortal", //iServer iPortal
@@ -63,12 +64,20 @@ describe('Border.vue', () => {
       propsData: {
         data: {}
       }
-    }
-  )
+    })
     const BorderDom = wrapper.find('.sm-component-border');
     expect(BorderDom.exists()).toBe(true);
     expect(BorderDom.element.style.width).toBe('600px');
     expect(BorderDom.element.style.height).toBe('400px');
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Border, {
+      propsData: {
+        type: 'border1'
+      }
+    })
+    expect(wrapper.find('.sm-component-border').exists()).toBe(true);
   })
 
   it('custom border', () => {
@@ -92,8 +101,7 @@ describe('Border.vue', () => {
           }
         };
       },
-    },
-  )
+    })
     const BorderDom = wrapper.find('.sm-component-border');
     expect(BorderDom.exists()).toBe(true);
     expect(BorderDom.element.style.width).toBe('600px');
@@ -120,11 +128,10 @@ describe('Border.vue', () => {
         return {
           echartOption: echartOptions,
           dataset: iportalDataSet,
-          datasetOptions: datasetOptions 
+          datasetOptions: datasetOptions
         }
       }
-    },
-  )
+    })
     expect(wrapper.find('.sm-component-border').exists()).toBe(true);
     const Chart = wrapper.findAll(SmChart);
     expect(Chart.exists()).toBe(true);

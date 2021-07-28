@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmIcon from '../Icon.vue';
+import Icon from '../index';
 
 describe('Icon.vue', () => {
   let wrapper;
@@ -17,6 +18,11 @@ describe('Icon.vue', () => {
 
   it('render default correctly', () => {
     wrapper = mount(SmIcon);
+    expect(wrapper.find('.sm-component-icon').exists()).toBe(true);
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Icon)
     expect(wrapper.find('.sm-component-icon').exists()).toBe(true);
   })
 

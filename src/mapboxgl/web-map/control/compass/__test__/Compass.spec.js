@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmCompass from '../Compass.vue';
+import Compass from '../index';
 import SmWebMap from '../../../WebMap.vue';
 
 describe('Compass.vue', () => {
@@ -27,17 +28,18 @@ describe('Compass.vue', () => {
         SmWebMap
       },
       data() {
-        return {
-        }
+        return {}
       }
-    },
-    { 
+    }, {
       propsData: {
         mapOptions: {}
       },
       sync: false,
-    }
-  );
+    });
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Compass);
   })
 
   it('render props correctly', () => {
@@ -64,12 +66,9 @@ describe('Compass.vue', () => {
           }
         }
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  );
+    });
   })
 
 })
-

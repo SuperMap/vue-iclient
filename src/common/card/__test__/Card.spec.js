@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmCard from '../Card.vue';
+import Card from '../index';
 import SmCardGrid from '../Grid.vue';
 import SmCardMeta from '../Meta.vue';
 
@@ -21,6 +22,11 @@ describe('Card.vue', () => {
     wrapper = mount(SmCard);
     expect(wrapper.find('.sm-component-card').exists()).toBe(true);
     expect(wrapper.find('.sm-component-card-bordered').exists()).toBe(true);
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Card)
+    expect(wrapper.find('.sm-component-card').exists()).toBe(true);
   })
 
   it('onTabChange should work', () => {

@@ -2,6 +2,7 @@ import {
   mount
 } from '@vue/test-utils';
 import SmImage from '../Image.vue';
+import Image from '../index';
 
 
 describe('Image.vue', () => {
@@ -32,5 +33,10 @@ describe('Image.vue', () => {
     }
   )
     expect( wrapper.find('.sm-component-image').element.style.width).toBe('200px');
+  })
+
+  it('render index correctly', () => {
+    wrapper = mount(Image)
+    expect(wrapper.find('.sm-component-image').exists()).toBe(true);
   })
 })
