@@ -33,7 +33,9 @@ import {
   webmap_heatLayer,
   webmap_vectorLayer_point,
   webmap_vectorLayer_line,
-  webmap_rangeLayer
+  webmap_rangeLayer,
+  webmap_ranksymbolLayer,
+  webmap_uniqueLayer_polygon
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -339,6 +341,10 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_line))));
       } else if (url.indexOf('167943279/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
+      } else if (url.indexOf('123456789/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_ranksymbolLayer))));
+      } else if (url.indexOf('2064629293/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_uniqueLayer_polygon))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {

@@ -376,7 +376,92 @@ const webmap_markerLayer = {
   title: 'unique_民航数据',
   version: '1.0'
 };
-
+const webmap_ranksymbolLayer = {
+  extent: {
+    leftBottom: { x: -20037508.342789248, y: -20037508.34278914 },
+    rightTop: { x: 20037508.342789244, y: 20037508.342789087 }
+  },
+  maxScale: '1:144447.927',
+  level: 5,
+  center: { x: 11615300.701720804, y: 4436879.386230171 },
+  baseLayer: {
+    layerType: 'TILE',
+    visible: true,
+    name: 'ChinaDark',
+    url: 'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/ChinaDark'
+  },
+  layers: [
+    {
+      layerType: 'RANK_SYMBOL',
+      visible: true,
+      themeSetting: {
+        "maxRadius": 12,
+        "themeField": "名次",
+        "customSettings": {},
+        "minRadius": 6,
+        "segmentMethod": "offset",
+        "segmentCount": 6
+      },
+      name: '民航数据',
+      featureType: 'POINT',
+      labelStyle:{
+        "offsetX": 0,
+        "textBaseline": "bottom",
+        "fontFamily": "黑体",
+        "offsetY": -10,
+        "outlineWidth": 0,
+        "textAlign": "center",
+        "outlineColor": "#000000",
+        "fontSize": "14px",
+        "fill": "#333",
+        "backgroundFill": [
+          255,
+          255,
+          255,
+          0.8
+        ],
+        "labelField": "机场"
+      },
+      xyField: { xField: 'longitude', yField: 'latitude' },
+      style: {
+        "strokeWidth": 1,
+        "fillColor": "#24B391",
+        "offsetX": 0,
+        "offsetY": 0,
+        "fillOpacity": 0.9,
+        "radius": 6,
+        "strokeColor": "#ffffff",
+        "type": "BASIC_POINT",
+        "strokeOpacity": 1
+      },
+      projection: 'EPSG:4326',
+      enableFields: [
+        'latitude',
+        'longitude',
+        'altitude',
+        'geometry',
+        '机场',
+        'X坐标',
+        'Y坐标',
+        '名次',
+        '2017旅客吞吐量（人次）',
+        '2016旅客吞吐量（人次）',
+        '同比增速%',
+        '2017货邮吞吐量（吨）',
+        '2016货邮吞吐量（吨）',
+        '2017起降架次（架次）',
+        '2016起降架次（架次）'
+      ],
+      dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '676516522' }
+    }
+  ],
+  description: '',
+  projection: 'EPSG:3857',
+  minScale: '1:591658710.909',
+  title: '民航数据-等级符号',
+  version: '2.2.1',
+  rootUrl: 'https://iportal.supermap.io/iportal/services/../'
+};
 const webmap_heatLayer = {
   extent: {
     leftBottom: {
@@ -426,7 +511,78 @@ const webmap_heatLayer = {
   title: 'unique_民航数据',
   version: '1.0'
 };
-
+const webmap_uniqueLayer_polygon = {
+  extent: {
+    leftBottom: {
+      x: -20037508.3427892,
+      y: -20037508.3427891
+    },
+    rightTop: {
+      x: 20037508.3427892,
+      y: 20037508.3427891
+    }
+  },
+  level: 5,
+  center: {
+    x: 11810617.9363554,
+    y: 4275239.3340175
+  },
+  baseLayer: {
+    layerType: 'TILE',
+    name: 'China',
+    url: 'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China'
+  },
+  layers: [
+    {
+      layerType: 'UNIQUE',
+      visible: true,
+      themeSetting: {
+        "themeField": "行政区划_c",
+        "customSettings": {
+          "四川省": {
+            "strokeWidth": 1,
+            "fillColor": "#e6f599",
+            "fillOpacity": 0.9,
+            "lineDash": "solid",
+            "strokeColor": "#ffffff",
+            "type": "POLYGON",
+            "strokeOpacity": 1
+          },
+        },
+        "colors": [
+          "#D53E4F",
+          "#FC8D59",
+          "#FEE08B",
+          "#FFFFBF",
+          "#E6F598",
+          "#99D594",
+          "#3288BD"
+        ]
+      },
+      name: '市级行政区划_1_2',
+      featureType: 'POLYGON',
+      style: {
+        "strokeWidth": 1,
+        "fillColor": "#3288bd",
+        "fillOpacity": 0.9,
+        "lineDash": "solid",
+        "strokeColor": "#ffffff",
+        "type": "POLYGON",
+        "strokeOpacity": 1
+      },
+      projection: 'EPSG:4326',
+      enableFields: ['Shape_Area', 'Shape_Leng', 'UserID', '分县连接成', '行政区划_1', '行政区划_2', '行政区划_c'],
+      dataSource: {
+        type: 'PORTAL_DATA',
+        serverId: '1960447494'
+      }
+    }
+  ],
+  description: '',
+  projection: 'EPSG:3857',
+  title: 'unique_民航数据',
+  version: '1.0'
+};
 const webmap_vectorLayer_point = {
   extent: {
     leftBottom: {
@@ -1944,4 +2100,6 @@ module.exports = {
   webmap_heatLayer,
   webmap_vectorLayer_point,
   webmap_vectorLayer_line,
+  webmap_ranksymbolLayer,
+  webmap_uniqueLayer_polygon
 };
