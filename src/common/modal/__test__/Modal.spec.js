@@ -2,7 +2,8 @@ import {
   mount
 } from '@vue/test-utils';
 import SmModal from '../Modal.vue';
- 
+import Modal from '../index';
+
 describe('Modal.vue', () => {
   let wrapper;
   beforeEach(() => {
@@ -17,5 +18,9 @@ describe('Modal.vue', () => {
 
   it('render default correctly', () => {
     wrapper = mount(SmModal);
+  })
+
+  it('render default correctly', () => {
+    wrapper = mount(Modal);
   })
 })

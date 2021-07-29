@@ -426,6 +426,102 @@ const webmap_heatLayer = {
   title: 'unique_民航数据',
   version: '1.0'
 };
+
+const webmap_vectorLayer_point = {
+  extent: {
+    leftBottom: {
+      x: -20037508.3427892,
+      y: -20037508.3427891
+    },
+    rightTop: {
+      x: 20037508.3427892,
+      y: 20037508.3427891
+    }
+  },
+  level: 5,
+  center: {
+    x: 11810617.9363554,
+    y: 4275239.3340175
+  },
+  baseLayer: {
+    layerType: 'TILE',
+    name: 'China',
+    url: 'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China'
+  },
+  layers: [{
+    layerType: "VECTOR",
+    name: "浙江省高等院校(3)",
+    visible: true,
+    featureType: "POINT",
+    style: {
+      radius: 6,
+      fillColor: "#ff0000",
+      fillOpacity: 0.9,
+      strokeColor: "#ffffff",
+      strokeWidth: 1,
+      strokeOpacity: 1,
+      lineDash: "solid",
+      symbolType: "svg",
+      type: "BASIC_POINT"
+    },
+    dataSource: {
+      type: "PORTAL_DATA",
+      serverId: '1920557079'
+    }
+  }],
+  description: '',
+  projection: 'EPSG:3857',
+  title: 'unique_民航数据',
+  version: '1.0'
+};
+
+const webmap_vectorLayer_line = {
+  extent: {
+    leftBottom: {
+      x: -20037508.3427892,
+      y: -20037508.3427891
+    },
+    rightTop: {
+      x: 20037508.3427892,
+      y: 20037508.3427891
+    }
+  },
+  level: 5,
+  center: {
+    x: 11810617.9363554,
+    y: 4275239.3340175
+  },
+  baseLayer: {
+    layerType: 'TILE',
+    name: 'China',
+    url: 'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China'
+  },
+    layers: [{
+    layerType: "VECTOR",
+    name: "浙江省高等院校(3)",
+    visible: true,
+    featureType: "LINE",
+    style: {
+      radius: 5,
+      fillColor: "#ee4d5a",
+      fillOpacity: 0.9,
+      strokeColor: "#8b572a",
+      strokeWidth: 7,
+      strokeOpacity: 1,
+      lineDash: "solid",
+      type: "BASIC_POINT"
+    },
+    dataSource: {
+      type: "PORTAL_DATA",
+      serverId: '1920557079'
+    }
+  }],
+  description: '',
+  projection: 'EPSG:3857',
+  title: 'unique_民航数据',
+  version: '1.0'
+};
+
 const datasources = {
   datasourceNames: ['supermap1_pg'],
   childUriList: [
@@ -1845,5 +1941,7 @@ module.exports = {
   drill_map_1687422166,
   marker_data,
   webmap_markerLayer,
-  webmap_heatLayer
+  webmap_heatLayer,
+  webmap_vectorLayer_point,
+  webmap_vectorLayer_line,
 };

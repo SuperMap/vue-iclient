@@ -20,31 +20,30 @@ describe('Scale.vue', () => {
     wrapper = mount({
       template: `
       <sm-web-map
-        target="map222"
         style="width: 100%; height:700px" 
-        mapId="1329428269" 
-        serverUrl="https://iportal.supermap.io/iportal"
-        :mapOptions="mapOptions"
+        mapId="123" 
+        serverUrl="https://fakeiportal.supermap.io/iportal"
         >
         <sm-scale />
       </sm-web-map> `,
       components: {
         SmScale,
         SmWebMap
-      },
-      data() {
-        return {
-          mapOptions: {
-            bearing: -30,
-            pitch: 15
-          }
-        }
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  );
+    });
+    wrapper.vm.$on("load", () => {
+      try {
+        expect(wrapper.find('.sm-component-scale')).toBe(true);
+        done()
+      } catch (exception) {
+        console.log('scale' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        mapWrapper.destroy();
+        done();
+      }
+    })
   })
 
   it('render correctly', () => {
@@ -53,30 +52,28 @@ describe('Scale.vue', () => {
       <sm-web-map
         target="map222"
         style="width: 100%; height:700px" 
-        mapId="1329428269" 
-        serverUrl="https://iportal.supermap.io/iportal"
-        :mapOptions="mapOptions"
+        mapId="123" 
+        serverUrl="https://fakeiportal.supermap.io/iportal"
         >
-        <sm-Scale :visualizePitch="true"/>
+        <sm-scale :visualizePitch="true"/>
       </sm-web-map> `,
       components: {
         SmScale,
         SmWebMap
-      },
-      data() {
-        return {
-          mapOptions: {
-            bearing: -30,
-            pitch: 15
-          }
-        }
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  );
+    });
+    wrapper.vm.$on("load", () => {
+      try {
+        expect(wrapper.find('.sm-component-scale')).toBe(true);
+        done()
+      } catch (exception) {
+        console.log('scale' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        mapWrapper.destroy();
+        done();
+      }
+    })
   })
-
 })
-

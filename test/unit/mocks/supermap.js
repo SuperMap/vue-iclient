@@ -30,7 +30,10 @@ import {
   drill_map_1687422166,
   marker_data,
   webmap_markerLayer,
-  webmap_heatLayer
+  webmap_heatLayer,
+  webmap_vectorLayer_point,
+  webmap_vectorLayer_line,
+  webmap_rangeLayer
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -330,6 +333,12 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_markerLayer))));
       } else if (url.indexOf('12345678/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_heatLayer))));
+      } else if (url.indexOf('147258369/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_point))));
+      } else if (url.indexOf('159357852/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_line))));
+      } else if (url.indexOf('167943279/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {

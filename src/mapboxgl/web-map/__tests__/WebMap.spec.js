@@ -30,16 +30,14 @@ describe('WebMap.vue', () => {
 
   it('initial_serverUrl', (done) => {
     const spy = jest.spyOn(mapboxgl, "Map");
-    wrapper = mount(SmWebMap,
-      {
-        localVue,
-        propsData: {
-          serverUrl: 'https://fakeiportal.supermap.io/iportal',
-          mapId: '123'
-        },
-        stubs: ['SmPan', 'SmScale', 'SmZoom']
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
       },
-    )
+      stubs: ['SmPan', 'SmScale', 'SmZoom']
+    }, )
     wrapper.vm.$on("load", () => {
       try {
         expect(spy).toBeCalled();
@@ -50,8 +48,7 @@ describe('WebMap.vue', () => {
         expect(wrapper.vm.scaleControl.show).toBe(false);
         expect(wrapper.vm.zoomControl.show).toBe(false);
         done()
-      }
-      catch (exception) {
+      } catch (exception) {
         console.log("WebMap" + exception.name + ":" + exception.message);
         expect(false).toBeTruthy();
         spy.mockReset();
@@ -63,28 +60,27 @@ describe('WebMap.vue', () => {
 
   it('initial_Control', (done) => {
     const spy = jest.spyOn(mapboxgl, "Map");
-    wrapper = mount(SmWebMap,
-      {
-        localVue,
-        stubs: ['SmPan', 'SmScale', 'SmZoom'],
-        propsData: {
-          serverUrl: 'https://fakeiportal.supermap.io/iportal',
-          mapId: '123',
-          panControl: {
-            show: true,
-            position: 'top-left'
-          },
-          scaleControl: {
-            show: true,
-            position: 'bottom-right'
-          },
-          zoomControl: {
-            show: true,
-            position: 'top-left',
-            showZoomSlider: false
-          }
+    wrapper = mount(SmWebMap, {
+      localVue,
+      stubs: ['SmPan', 'SmScale', 'SmZoom'],
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123',
+        panControl: {
+          show: true,
+          position: 'top-left'
+        },
+        scaleControl: {
+          show: true,
+          position: 'bottom-right'
+        },
+        zoomControl: {
+          show: true,
+          position: 'top-left',
+          showZoomSlider: false
         }
-      })
+      }
+    })
     wrapper.vm.$on("load", () => {
       try {
         expect(spy).toBeCalled();
@@ -99,8 +95,7 @@ describe('WebMap.vue', () => {
         expect(wrapper.element.outerHTML).toContain("zoom");
         expect(wrapper.element.outerHTML).toContain("scale");
         done()
-      }
-      catch (exception) {
+      } catch (exception) {
         console.log("WebMap" + exception.name + ":" + exception.message);
         expect(false).toBeTruthy();
         spy.mockReset();
@@ -111,46 +106,42 @@ describe('WebMap.vue', () => {
   })
   it('initial_mapObject', (done) => {
     const spy = jest.spyOn(mapboxgl, "Map");
-    wrapper = mount(SmWebMap,
-      {
-        propsData: {
-          mapOptions: {
-            container: 'map', // container id
-            style: {
-              version: 8,
-              sources: {
-                'raster-tiles': {
-                  attribution: 'attribution',
-                  type: 'raster',
-                  tiles: [
-                    'https://fakeiserver.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
-                  ],
-                  tileSize: 256
-                }
-              },
-              layers: [
-                {
-                  id: 'simple-tiles',
-                  type: 'raster',
-                  source: 'raster-tiles',
-                  minzoom: 0,
-                  maxzoom: 22
-                }
-              ]
+    wrapper = mount(SmWebMap, {
+      propsData: {
+        mapOptions: {
+          container: 'map', // container id
+          style: {
+            version: 8,
+            sources: {
+              'raster-tiles': {
+                attribution: 'attribution',
+                type: 'raster',
+                tiles: [
+                  'https://fakeiserver.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
+                ],
+                tileSize: 256
+              }
             },
-            center: [120.143, 30.236],
-            zoom: 3
-          }
+            layers: [{
+              id: 'simple-tiles',
+              type: 'raster',
+              source: 'raster-tiles',
+              minzoom: 0,
+              maxzoom: 22
+            }]
+          },
+          center: [120.143, 30.236],
+          zoom: 3
         }
-      })
+      }
+    })
     wrapper.vm.$on("load", () => {
       try {
         expect(spy).toBeCalled();
         expect(wrapper.element.id).toEqual('map');
         expect(wrapper.vm.mapOptions.style.layers[0].id).toBe("simple-tiles");
         done()
-      }
-      catch (exception) {
+      } catch (exception) {
         console.log("WebMap" + exception.name + ":" + exception.message);
         expect(false).toBeTruthy();
         spy.mockReset();
@@ -161,15 +152,13 @@ describe('WebMap.vue', () => {
   })
   it('initial_markerLayer', (done) => {
     const spy = jest.spyOn(mapboxgl, "Map");
-    wrapper = mount(SmWebMap,
-      {
-        localVue,
-        propsData: {
-          serverUrl: 'https://fakeiportal.supermap.io/iportal',
-          mapId: '123456'
-        }
-      },
-    )
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123456'
+      }
+    }, )
     wrapper.vm.$on("load", (e) => {
       try {
         expect(spy).toBeCalled();
@@ -182,8 +171,7 @@ describe('WebMap.vue', () => {
         expect(markerLayer.type).toBe('symbol');
         expect(markerLayer.layout['icon-image']).toBe('http://fakeiportal/iportal/apps/dataviz/static/imgs/markers/ktv_red.png');
         done();
-      }
-      catch (exception) {
+      } catch (exception) {
         console.log("WebMap" + exception.name + ":" + exception.message);
         expect(false).toBeTruthy();
         spy.mockReset();
@@ -194,15 +182,13 @@ describe('WebMap.vue', () => {
   })
   it('initial_heatLayer', (done) => {
     const spy = jest.spyOn(mapboxgl, "Map");
-    wrapper = mount(SmWebMap,
-      {
-        localVue,
-        propsData: {
-          serverUrl: 'https://fakeiportal.supermap.io/iportal',
-          mapId: '12345678'
-        }
-      },
-    )
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '12345678'
+      }
+    }, )
     wrapper.vm.$on("load", (e) => {
       try {
         expect(spy).toBeCalled();
@@ -215,8 +201,7 @@ describe('WebMap.vue', () => {
         expect(heatLayer.type).toBe('heatmap');
         expect(heatLayer.paint['heatmap-radius']).toBe(30);
         done();
-      }
-      catch (exception) {
+      } catch (exception) {
         console.log("WebMap" + exception.name + ":" + exception.message);
         expect(false).toBeTruthy();
         spy.mockReset();
@@ -225,5 +210,66 @@ describe('WebMap.vue', () => {
       }
     })
   })
-  
+
+  it('initial_vectorLayer_point', (done) => {
+    const spy = jest.spyOn(mapboxgl, "Map");
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '147258369'
+      }
+    }, )
+    wrapper.vm.$on("load", (e) => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe("147258369");
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        const layers = Object.values(e.map.overlayLayersManager);
+        expect(layers.length).toBe(2);
+        const vectorLayerPoint = layers[1];
+        expect(vectorLayerPoint.type).toBe('circle');
+        expect(vectorLayerPoint.paint['circle-radius']).toBe(6);
+        done();
+      } catch (exception) {
+        console.log("WebMap" + exception.name + ":" + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done()
+      }
+    })
+  })
+
+  it('initial_vectorLayer_line', (done) => {
+    const spy = jest.spyOn(mapboxgl, "Map");
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '159357852'
+      }
+    }, )
+    wrapper.vm.$on("load", (e) => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe("159357852");
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        const layers = Object.values(e.map.overlayLayersManager);
+        expect(layers.length).toBe(2);
+        const vectorLayerLine = layers[1];
+        expect(vectorLayerLine.type).toBe('line');
+        expect(vectorLayerLine.paint['line-width']).toBe(7);
+        done();
+      } catch (exception) {
+        console.log("WebMap" + exception.name + ":" + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done()
+      }
+    })
+  })
 })

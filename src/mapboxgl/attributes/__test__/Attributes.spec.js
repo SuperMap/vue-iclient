@@ -51,11 +51,30 @@ describe('Attributes.vue', () => {
           fieldConfigs: fieldConfigs
         }
       }
-    },
-    {
+    }, {
       sync: false,
-    }
-  );
+    });
+    wrapper.vm.$on('loaded', () => {
+      try {
+        expect(wrapper.find('.sm-component-attributes').exists()).toBe(true);
+        const liquidFillArr = wrapper.findAll('.sm-component-attributes');
+        liquidFillArr.setProps({
+          title: 'A属性表',
+          table: {
+            showBorder: false,
+            showHeader: true,
+            pagination: false
+          }
+        })
+        expect(wrapper.find('.layer-name').text()).toBe('A属性表');
+        const checkboxArr = wrapper.findAll('.sm-component-checkbox-input');
+        done();
+      } catch (exception) {
+        console.log('Attributes' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        mapWrapper.destroy();
+        done();
+      }
+    });
   })
 })
-

@@ -18,6 +18,7 @@ describe('LayerSelect.vue', () => {
 
   it('render default correctly', () => {
     wrapper = mount(SmLayerSelect);
+    expect(wrapper.find('.sm-component-select').exists()).toBe(true);
   })
 
   it('render index correctly', () => {
