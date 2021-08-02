@@ -51,6 +51,7 @@
       :customHeaderRow="customHeaderRow"
       :customRow="customRow"
       :loading="loading"
+      :getPopupContainer="(triggerNode) => triggerNode.parentNode"
       table-layout="fixed"
       @change="handleChange"
     >
