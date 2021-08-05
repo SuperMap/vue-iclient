@@ -162,8 +162,20 @@ export default class WebMapViewModel extends WebMapBase {
   public setCrs(crs): void {
     if (this.map) {
       this.mapOptions.crs = crs;
-      //@ts-ignore
-      crs && this.map.setCRS(mapboxgl.CRS.get(crs));
+      if (this.mapOptions.crs) {
+        if (crs.epsgCode) {
+          this.mapOptions.crs = new mapboxgl.CRS(
+            this.mapOptions.crs.epsgCode,
+            this.mapOptions.crs.extent,
+            this.mapOptions.crs.unit
+          );
+          //@ts-ignore
+          this.map.setCRS(this.mapOptions.crs);
+        } else {
+          //@ts-ignore
+          this.map.setCRS(mapboxgl.CRS.get(crs));
+        }
+      }
     }
   }
 
@@ -247,26 +259,44 @@ export default class WebMapViewModel extends WebMapBase {
     this.initWebMap();
   }
 
+  _loadLayers(mapInfo, _taskID): void{
+    if (this.map) {
+      // @ts-ignore
+      if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
+        this.triggerEvent('projectionIsNotMatch', {});
+        return;
+      }
+      this._handleLayerInfo(mapInfo, _taskID);
+    } else {
+      this._createMap(mapInfo);
+      this.map.on('load', () => {
+        this._handleLayerInfo(mapInfo, _taskID);
+      });
+    }
+  }
   _getMapInfo(mapInfo, _taskID): void {
     let { projection } = mapInfo;
-    this.baseProjection = this._defineProj4(projection);
-
-    if (mapboxgl.CRS.get(this.baseProjection)) {
-      if (this.map) {
-        // @ts-ignore
-        if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
-          this.triggerEvent('projectionIsNotMatch', {});
-          return;
-        }
-        this._handleLayerInfo(mapInfo, _taskID);
-      } else {
-        this._createMap(mapInfo);
-        this.map.on('load', () => {
-          this._handleLayerInfo(mapInfo, _taskID);
+    this.baseProjection = toEpsgCode(projection);
+    if (!mapboxgl.CRS.get(this.baseProjection)) {
+      // 如果不是mapboxgl支持的投影，尝试去底图的地图服务中取投影
+      if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'TILE') {
+        this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, { withoutFormatSuffix: true }).then(wkt => {
+          this._defineProj4(wkt, projection);
+          const extent = mapInfo.extent;
+          const crs = new mapboxgl.CRS(
+            this.baseProjection,
+            [extent.leftBottom.x, extent.leftBottom.y, extent.rightTop.x, extent.rightTop.y],
+            extent.rightTop.x > 180 ? 'meter' : 'degree'
+          );
+          mapboxgl.CRS.set(crs);
+          this._loadLayers(mapInfo, _taskID)
         });
+      } else {
+        throw Error(geti18n().t('webmap.crsNotSupport'));
       }
     } else {
-      throw Error(geti18n().t('webmap.crsNotSupport'));
+      this._defineProj4(projection);
+      this._loadLayers(mapInfo, _taskID)
     }
   }
 
@@ -289,6 +319,13 @@ export default class WebMapViewModel extends WebMapBase {
   _createMap(mapInfo?): void {
     if (!mapInfo) {
       this.mapOptions.container = this.target;
+      if (this.mapOptions.crs && this.mapOptions.crs.epsgCode) {
+        this.mapOptions.crs = new mapboxgl.CRS(
+          this.mapOptions.crs.epsgCode,
+          this.mapOptions.crs.extent,
+          this.mapOptions.crs.unit
+        );
+      }
       if (!this.mapOptions.transformRequest) {
         this.mapOptions.transformRequest = (url: string, resourceType: string) => {
           const urlParam = { url };
@@ -313,7 +350,7 @@ export default class WebMapViewModel extends WebMapBase {
         if (this.mapOptions.hasOwnProperty('fadeDuration')) {
           fadeDuration = this.mapOptions.fadeDuration;
         }
-        this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
+        this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration, renderWorldCopies: false });
         this.map.on('load', () => {
           this.triggerEvent('addlayerssucceeded', {
             map: this.map,
@@ -325,6 +362,7 @@ export default class WebMapViewModel extends WebMapBase {
 
       return;
     }
+
     // 获取字体样式
     let fontFamilys: string = this._getLabelFontFamily(mapInfo);
     let center = this._getMapCenter(mapInfo);
@@ -530,7 +568,13 @@ export default class WebMapViewModel extends WebMapBase {
       features = handleMultyPolygon(features);
     }
 
-    if (features && projection && (projection !== this.baseProjection || projection === 'EPSG:3857') && (layerInfo.dataSource && layerInfo.dataSource.type !== 'REST_DATA')) {
+    if (
+      features &&
+      projection &&
+      (projection !== this.baseProjection || projection === 'EPSG:3857' || projection === 'EPSG:-1000') &&
+      layerInfo.dataSource &&
+      layerInfo.dataSource.type !== 'REST_DATA'
+    ) {
       this._unprojectProjection = this._defineProj4(projection);
       features = this.transformFeatures(features);
     }
@@ -2269,7 +2313,7 @@ export default class WebMapViewModel extends WebMapBase {
       rasterSource: isIserver ? 'iserver' : '',
       // @ts-ignore
       prjCoordSys:
-        isIserver && !this.isOnlineBaseLayer(url[0], this.baseProjection)
+        isIserver && !this.isOnlineBaseLayer(url[0], this.baseProjection) && +this.baseProjection.split(':')[1] > 0
           ? { epsgCode: this.baseProjection.split(':')[1] }
           : '',
       proxy: this.baseLayerProxy
@@ -2474,11 +2518,11 @@ export default class WebMapViewModel extends WebMapBase {
     return tiandituUrls;
   }
 
-  private _defineProj4(projection: string) {
+  private _defineProj4(projection: string, defaultEpsgCode?) {
     let epsgCode = projection;
     let epsgValue: string;
     if (!projection.split(':')[1]) {
-      epsgCode = toEpsgCode(projection);
+      epsgCode = defaultEpsgCode || toEpsgCode(projection);
       epsgValue = projection;
     }
     const defaultValue = getProjection(epsgCode);
@@ -2491,6 +2535,21 @@ export default class WebMapViewModel extends WebMapBase {
       !defaultValue && registerProjection(epsgCode, defValue);
     }
     return epsgCode;
+  }
+  private getEpsgCodeWKT(projectionUrl, options) {
+    if (!projectionUrl) {
+      return;
+    }
+    return SuperMap.FetchRequest.get(projectionUrl, null, options)
+      .then(response => {
+        return response.text();
+      })
+      .then(results => {
+        return results;
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   private _addLayer(layerInfo) {
@@ -2580,11 +2639,11 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _transformScaleToZoom(scale, crs?) {
-    let scale_0 = 295829515.2024169;
     //@ts-ignore
-    if ((crs || this.map.getCRS()).epsgCode !== 'EPSG:3857') {
-      scale_0 = 295295895;
-    }
+    const extent = (crs || this.map.getCRS()).getExtent();
+    //@ts-ignore
+    const unit = (crs || this.map.getCRS()).unit;
+    const scale_0 = 1.0 / SuperMap.Util.getScaleFromResolutionDpi((extent[2] - extent[0]) / 512, 96, unit);
     const scaleDenominator = scale.split(':')[1];
     return Math.min(24, +Math.log2(scale_0 / +scaleDenominator).toFixed(2));
   }

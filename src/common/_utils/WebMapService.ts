@@ -1192,7 +1192,7 @@ export default class WebMapService extends Events {
       returnContent: true
     });
     if (baseProjection) {
-      if (baseProjection === 'EPSG:3857') {
+      if (baseProjection === 'EPSG:3857' || baseProjection === 'EPSG:-1000') {
         getFeatureBySQLParams.targetEpsgCode = 4326;
       } else {
         getFeatureBySQLParams.targetEpsgCode = +baseProjection.split(':')[1];
