@@ -2,7 +2,7 @@ import Vue from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
 import { getDerivedColorsByTextColor } from 'vue-iclient/src/common/_utils/util';
-import { getPrimarySerialColors, getRootStyleSelector } from 'vue-iclient/src/common/_utils/style/color/serialColors';
+import { getPrimarySerialColors, toStyleVariable, getRootStyleSelector } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 
 @Component({
   name: 'Theme'
@@ -179,13 +179,12 @@ export default class Theme extends Vue {
 
   getRealColor(prop: string) {
     const themeStyle = globalEvent.$options.theme || {};
-    if (prop === 'colorGroup' || !themeStyle[prop].includes('var')) {
+    if (prop === 'colorGroup') {
       return themeStyle[prop];
     }
     const rootStyleSelector = getRootStyleSelector(themeStyle);
     const computedStyle = window.getComputedStyle(document.querySelector(rootStyleSelector));
-    const reg = /(?<=var\()(.|\s)*?(?=\))/g;
-    const themeColor = themeStyle[prop].match(reg)[0];
+    const themeColor = toStyleVariable(prop);
     const colorValue = computedStyle.getPropertyValue(themeColor);
     return colorValue.trim();
   }
