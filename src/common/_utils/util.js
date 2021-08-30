@@ -52,6 +52,7 @@ export function isXField(data) {
     lowerdata === 'longitude' ||
     lowerdata === 'lot' ||
     lowerdata === 'lon' ||
+    lowerdata === 'long' ||
     lowerdata === 'lng' ||
     lowerdata === 'x坐标'
   );
