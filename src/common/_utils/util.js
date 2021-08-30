@@ -52,6 +52,7 @@ export function isXField(data) {
     lowerdata === 'longitude' ||
     lowerdata === 'lot' ||
     lowerdata === 'lon' ||
+    lowerdata === 'long' ||
     lowerdata === 'lng' ||
     lowerdata === 'x坐标'
   );
@@ -207,9 +208,7 @@ export function objectWithoutProperties(obj, omitKeys = []) {
 }
 
 export function getDarkenColor(color, amount) {
-  return tinyColor(color)
-    .darken(amount)
-    .toString();
+  return tinyColor(color).darken(amount).toString();
 }
 
 const ARROW_POSITION_MAP = {
