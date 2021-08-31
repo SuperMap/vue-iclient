@@ -6,6 +6,7 @@ import 'swiper/css/swiper.css';
 import { getSlotOptions } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import { CreateElement } from 'vue';
+import isequal from 'lodash.isequal';
 
 interface swiperOptionsType {
   initialSlide: Number;
@@ -30,6 +31,18 @@ interface swiperOptionsType {
 })
 class Slideshow extends Mixins(Theme, BaseCard) {
   swiper: any;
+  isRefresh: boolean = true;
+  manualUpdateProps: string[] = [
+    'speed',
+    'loop',
+    'grabCursor',
+    'scrollbar',
+    'effect',
+    'navigation',
+    'pagination',
+    'scrollbar',
+    'autoplay'
+  ];
 
   @Prop() activeIndex: number;
   @Prop({ default: 0 }) defaultActiveIndex: number;
@@ -76,9 +89,36 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     this.goTo(index, speed);
   }
 
+  @Watch('direction')
+  directionChanged(direction) {
+    this.swiper.changeDirection(direction);
+    this._reload();
+  }
+
+  @Watch('mousewheel')
+  mousewheelChanged(mousewheel) {
+    mousewheel ? this.swiper.mousewheel.enable() : this.swiper.mousewheel.disable();
+  }
+
+  @Watch('keyboard')
+  keyboardChanged(keyboard) {
+    keyboard ? this.swiper.keyboard.enable() : this.swiper.keyboard.disable();
+  }
+
   mounted() {
     // @ts-ignore
     this.swiper = this.$refs.mySwiper.$swiper;
+    this.manualUpdateProps.map(item => {
+      this.$watch(
+        item,
+        function (newVal, oldVal) {
+          if (!isequal(newVal, oldVal)) {
+            this._reload();
+          }
+        },
+        { deep: true }
+      );
+    });
   }
 
   _change() {
@@ -89,7 +129,18 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       previousIndex: this.swiper.previousIndex
     };
     this.$emit('change', changeParameter);
-    this.$emit('input', this.swiper.activeIndex);
+    // this.$emit('input', this.swiper.activeIndex);
+  }
+
+  _reload() {
+    this.isRefresh = false;
+    this.$nextTick(() => {
+      this.isRefresh = true;
+      this.$nextTick(() => {
+        // @ts-ignore
+        this.swiper = this.$refs.mySwiper.$swiper;
+      });
+    });
   }
 
   next(speed: number) {
@@ -164,15 +215,21 @@ class Slideshow extends Mixins(Theme, BaseCard) {
             on: { mouseover: this.autoplayStop, mouseout: this.autoplayStart }
           },
           [
-            h(
-              Swiper,
-              {
-                props: { options: this.swiperOptions },
-                on: { slideChange: this._change },
-                ref: 'mySwiper'
-              },
-              slots
-            )
+            (() => {
+              if (this.isRefresh) {
+                return h(
+                  Swiper,
+                  {
+                    props: { options: this.swiperOptions },
+                    on: { slideChange: this._change },
+                    ref: 'mySwiper'
+                  },
+                  slots
+                );
+              } else {
+                return null;
+              }
+            })()
           ]
         )
       ]
