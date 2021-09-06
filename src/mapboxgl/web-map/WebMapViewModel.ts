@@ -251,7 +251,6 @@ export default class WebMapViewModel extends WebMapBase {
   _getMapInfo(mapInfo, _taskID): void {
     const { projection } = mapInfo;
     this.baseProjection = this._defineProj4(projection);
-
     if (mapboxgl.CRS.get(this.baseProjection)) {
       if (this.map) {
         // @ts-ignore
@@ -368,6 +367,7 @@ export default class WebMapViewModel extends WebMapBase {
 
     // 初始化 map
     this.map = new mapboxgl.Map({
+      ...this.mapOptions,
       container: this.target,
       center: this.center || center,
       zoom: this.zoom || zoom,
@@ -386,7 +386,6 @@ export default class WebMapViewModel extends WebMapBase {
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
       renderWorldCopies: false,
-      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false,
       transformRequest: (url, resourceType) => {
         if (resourceType === 'Tile') {
           if (this.isSuperMapOnline && url.indexOf('http://') === 0) {
@@ -2410,7 +2409,6 @@ export default class WebMapViewModel extends WebMapBase {
       center = [0, 0];
     }
     center = this._unproject(center);
-
     center = new mapboxgl.LngLat(center[0], center[1]);
 
     return center;
