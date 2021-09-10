@@ -21,7 +21,7 @@ import IdentifyViewModel from './IdentifyViewModel';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
-import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import { setPopupArrowStyle, getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
 
 export default {
   name: 'SmIdentify',
@@ -221,7 +221,7 @@ export default {
     layersMapClickFn(e, fields, feature) {
       let map = e.target;
       // 添加popup
-      this.addPopup(feature, e.lngLat.toArray(), fields);
+      this.addPopup(feature, fields);
       // 高亮过滤(所有字段)
       let filter = ['all'];
       const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
@@ -238,7 +238,7 @@ export default {
       }
     },
     // 过滤数据， 添加popup
-    addPopup(feature, coordinates, fields) {
+    addPopup(feature, fields) {
       this.popupProps = {};
       if (feature.properties) {
         // 过滤字段
@@ -253,6 +253,7 @@ export default {
           this.popupProps = feature.properties;
         }
         // 添加popup
+        const coordinates = getFeatureCenter(feature);
         this.$nextTick(() => {
           this.isHide = false; // 显示内容
           this.viewModel.addPopup(coordinates, this.$refs.Popup);
