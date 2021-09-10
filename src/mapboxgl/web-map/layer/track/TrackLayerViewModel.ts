@@ -375,7 +375,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       gone = this.position.currentTimestamp - this.position.prevTimestamp;
       percent = gone / this.animateStep;
     }
-    if (remaining > 0) {
+    if (this.animateRemaining !== remaining && remaining > 0) {
       this.animateRemaining = remaining;
       const nextPosition = this._getWayPoint(percent);
       if (nextPosition) {
