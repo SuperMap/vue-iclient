@@ -5,7 +5,6 @@ import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
 import { geti18n } from '../../common/_lang';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { getFeatureCenter, getValueCaseInsensitive } from '../../common/_utils/util';
-import { checkAndRectifyFeatures } from '../../common/_utils/iServerRestService';
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
@@ -97,6 +96,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
           name: restMapParameter.layerName,
           attributeFilter: restMapParameter.attributeFilter
         },
+        prjCoordSys: {
+          epsgCode: 4326
+        },
         spatialQueryMode: SuperMap.SpatialQueryMode.INTERSECT,
         geometry: this.bounds,
         startRecord: 0,
@@ -110,6 +112,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
         queryParams: {
           name: restMapParameter.layerName,
           attributeFilter: restMapParameter.attributeFilter
+        },
+        prjCoordSys: {
+          epsgCode: 4326
         },
         startRecord: 0,
         expectCount: restMapParameter.maxFeatures || this.maxFeatures
@@ -132,6 +137,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
         datasetNames: restDataParameter.dataName,
         spatialQueryMode: 'INTERSECT',
         geometry: this.bounds,
+        targetPrj: {
+          epsgCode: 4326
+        },
         fromIndex: 0,
         toIndex
       });
@@ -146,6 +154,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
         queryParameter: {
           attributeFilter: restDataParameter.attributeFilter
         },
+        targetPrj: {
+          epsgCode: 4326
+        },
         datasetNames: restDataParameter.dataName,
         fromIndex: 0,
         toIndex
@@ -159,13 +170,6 @@ export default class QueryViewModel extends mapboxgl.Evented {
     let result = serviceResult.result;
     if (result && result.totalCount !== 0) {
       let resultFeatures = result.recordsets[0].features.features;
-      const projectionUrl = `${restMapParameter.url}/prjCoordSys`;
-      resultFeatures = await checkAndRectifyFeatures({ features: resultFeatures, epsgCode: restMapParameter.epsgCode, projectionUrl, options }).catch(
-        error => {
-          console.error(error);
-          return resultFeatures;
-        }
-      );
       resultFeatures.length > 0 && (this.queryResult = { name: restMapParameter.name, result: resultFeatures });
       this._addResultLayer(this.queryResult);
       /**
@@ -189,17 +193,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
   async _dataQuerySucceed(serviceResult, restDataParameter, options) {
     let result = serviceResult.result;
     if (result && result.totalCount !== 0) {
-      const { url, dataName, epsgCode } = restDataParameter;
-      const dataSourceName = dataName[0].split(':')[0];
-      const datasetName = dataName[0].split(':')[1];
-      const projectionUrl = `${url}/datasources/${dataSourceName}/datasets/${datasetName}`;
       let resultFeatures = result.features.features;
-      resultFeatures = await checkAndRectifyFeatures({ features: resultFeatures, epsgCode, projectionUrl, options }).catch(
-        error => {
-          console.error(error);
-          return resultFeatures;
-        }
-      );
       resultFeatures.length > 0 && (this.queryResult = { name: restDataParameter.name, result: resultFeatures });
       this._addResultLayer(this.queryResult);
       this.fire('querysucceeded', { result: this.queryResult });
