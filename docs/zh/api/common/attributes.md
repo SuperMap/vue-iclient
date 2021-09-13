@@ -26,11 +26,12 @@
 
 ### associatewithmap
 
-| 参数            | 说明               | 类型    | 可选值 | 默认值 |
-| :-------------- | :----------------- | :------ | :----- | :----- |
-| enable          | 是否关联地图       | boolean | -      | true   |
-| zoomToFeature   | 是否缩放到选中要素 | boolean | -      | false  |
-| centerToFeature | 是否居中选中要素   | boolean | -      | false  |
+| 参数            | 说明                                                                       | 类型    | 可选值 | 默认值 |
+| :-------------- | :------------------------------------------------------------------------ | :------ | :----- | :----- |
+| enable          | 是否关联地图                                                               | boolean | -      | true   |
+| zoomToFeature   | 是否缩放到选中要素                                                          | boolean | -      | false  |
+| centerToFeature | 是否居中选中要素                                                            | boolean | -      | false  |
+| flyOptions      | [飞行配置项](https://docs.mapbox.com/mapbox-gl-js/api/map/#map#flyto)   | object  | -      | -      |
 
 ### table
 
