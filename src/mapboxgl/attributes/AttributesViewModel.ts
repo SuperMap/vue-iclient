@@ -22,6 +22,7 @@ interface AssociateWithMapParams {
   enabled?: boolean;
   zoomToFeature?: boolean;
   centerToFeature?: boolean;
+  flyOptions?: mapboxglTypes.FlyToOptions;
 }
 
 interface PaginationParams {
@@ -219,7 +220,10 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           [bounds[0], bounds[1]],
           [bounds[2], bounds[3]]
         ],
-        { maxZoom: this.associateWithMap.zoomToFeature ? this.map.getMaxZoom() : this.map.getZoom() }
+        {
+          maxZoom: this.associateWithMap.zoomToFeature ? this.map.getMaxZoom() : this.map.getZoom(),
+          ...this.associateWithMap.flyOptions
+        }
       );
     }
   }
