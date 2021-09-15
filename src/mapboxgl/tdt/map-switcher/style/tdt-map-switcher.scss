@@ -60,9 +60,9 @@
             line-height: 16px;
             text-align: center;
             z-index: 10;
-            background: rgba(0, 0, 0, 0.25);
+            background: $tdt-map-switcher-layer-name-bg;
             box-sizing: content-box;
-            color: #fff;
+            color: $white;
           }
         }
       }

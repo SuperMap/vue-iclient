@@ -7,6 +7,7 @@
 @include b(layer-manager) {
   .sm-component-card {
     height: 100%;
+    background: inherit;
     .sm-component-card-body {
       padding: 0px;
     }
@@ -16,7 +17,7 @@
     height: 100%;
   }
   @include e(sm-card) {
-    border-radius: 0;
+    border-radius: 4px;
     border: none;
   }
 

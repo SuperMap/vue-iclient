@@ -6,6 +6,9 @@
   $table-prefix: #{$ant-prefix}-table;
   color: $text-color;
   border-radius: 4px;
+  .#{$table-prefix}-thead > tr > th {
+    border-bottom: 1px solid $collapse-card-split-line;
+  }
   &:not(.with-split-line) {
     .#{$table-prefix}-thead > tr > th {
       border-bottom: none;

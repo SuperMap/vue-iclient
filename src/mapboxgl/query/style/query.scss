@@ -11,7 +11,7 @@
   $query-prefix: &;
 
   @include e(body) {
-    min-width: 200px;
+    min-width: 240px;
     max-height: 400px;
     transform-origin: top left;
     transition: all 0.5s;
@@ -75,7 +75,7 @@
   @include e(job-info-body) {
     padding: 8px 16px 12px;
     margin: 0 -16px;
-    background-color: $collapse-card-secondary-bg;
+    background-color: $collapse-card-secondary-heard-bg;
   }
   @include e((attribute, spatial-filter)) {
     > div {
@@ -129,7 +129,7 @@
   @include e(no-result result-loading result-body) {
     flex: 1;
     margin: 0 -16px;
-    background-color: $collapse-card-secondary-bg;
+    background-color: $collapse-card-secondary-heard-bg;
   }
   @include e(no-result result-loading) {
     display: flex;

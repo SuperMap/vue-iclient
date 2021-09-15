@@ -1,6 +1,6 @@
 <template>
   <div class="sm-component-zoom">
-    <div class="sm-component-zoom__buttons" :style="[collapseCardHeaderBgStyle, getTextColorStyle]">
+    <div class="sm-component-zoom__buttons" :style="[collapseCardHeaderBgStyle, headingTextColorStyle]">
       <sm-button
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
         :disabled="!canZoomIn"

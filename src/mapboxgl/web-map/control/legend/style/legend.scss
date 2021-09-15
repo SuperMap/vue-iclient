@@ -106,7 +106,7 @@
         }
         &.#{$collapse-prefix}-item-active {
           .#{$collapse-prefix}-header {
-            border-bottom: 1px solid var(--border-color-split);
+            border-bottom: 1px solid $border-color-split;
           }
         }
       }

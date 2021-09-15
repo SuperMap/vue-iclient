@@ -43,7 +43,7 @@
                   "
                 />
               </p>
-              <p class="count" :style="disabledTextColorStyle">
+              <p class="count" :style="secondaryTextColorStyle">
                 {{ $t('tdtResults.total') }}
                 <span>{{ line.stationNum }}</span>
                 {{ $t('tdtResults.station') }}

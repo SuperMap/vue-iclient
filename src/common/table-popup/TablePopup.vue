@@ -38,7 +38,7 @@ export default {
     },
     splitLine: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   watch: {

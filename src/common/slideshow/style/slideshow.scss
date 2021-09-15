@@ -12,7 +12,6 @@
   }
   @include e(content) {
     text-align: center;
-    margin-top: 10px;
     height: 100%;
   }
   @include b(slideshowitem) {

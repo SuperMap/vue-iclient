@@ -5,7 +5,7 @@
 @include b(compass) {
   font-size: 18px;
   border-radius: 4px;
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.15);
+  box-shadow: 0px 3px 13px 0px $shadow-color;
   cursor: pointer;
   @include e(content) {
     width: 32px;

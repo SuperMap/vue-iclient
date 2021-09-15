@@ -16,6 +16,8 @@ export default class Theme extends Vue {
 
   collapseCardHeaderBgData = '';
 
+  subComponentSpanBgData = '';
+
   tablePopupBgData = '';
 
   colorGroupsData: Array<string> = [];
@@ -49,6 +51,12 @@ export default class Theme extends Vue {
   get collapseCardHeaderBgStyle() {
     return {
       background: this.collapseCardHeaderBgData
+    };
+  }
+
+  get subComponentSpanBgStyle() {
+    return {
+      background: this.subComponentSpanBgData
     };
   }
 
@@ -122,6 +130,7 @@ export default class Theme extends Vue {
         this[dataName] = this.getRealColor(prop);
       });
       this.collapseCardHeaderBgData = this.getRealColor('collapseCardHeaderBg');
+      this.subComponentSpanBgData = this.getRealColor('subComponentSpanBg');
       this.collapseCardBackgroundData = this.getRealColor('collapseCardBackground');
       this.tablePopupBgData = this.getRealColor('messageBackground');
       this.themeStyleChanged();
@@ -137,6 +146,8 @@ export default class Theme extends Vue {
     });
     // @ts-ignore
     this.collapseCardHeaderBgData = this.background || this.getRealColor('collapseCardHeaderBg');
+    // @ts-ignore
+    this.subComponentSpanBgData = this.background || this.getRealColor('subComponentSpanBg');
     // @ts-ignore
     this.collapseCardBackgroundData = this.background || this.getRealColor('collapseCardBackground');
     // @ts-ignore
@@ -165,6 +176,8 @@ export default class Theme extends Vue {
           vm.collapseCardBackgroundData = next || this.getRealColor('collapseCardBackground');
           // @ts-ignore
           vm.collapseCardHeaderBgData = next || this.getRealColor('collapseCardHeaderBg');
+          // @ts-ignore
+          vm.subComponentSpanBgData = next || this.getRealColor('subComponentSpanBg');
           // @ts-ignore
           vm.tablePopupBgData = next || this.getRealColor('messageBackground');
         }

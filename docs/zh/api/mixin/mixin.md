@@ -21,7 +21,7 @@
 | headerName | 标题名                                                                                        | string  | -                                                            | -          |
 | autoRotate | 收缩按钮是否自动旋转                                                                          | boolean | -                                                            | false      |
 | collapsed  | 是否默认折叠（iconClass 参数存在时生效）                                                      | boolean | -                                                            | true       |
-| splitLine  | 标题与内容的分割线                                                                            | boolean | -                                                            | false      |
+| splitLine  | 标题与内容的分割线                                                                            | boolean | -                                                            | true       |
 
 ## Control
 

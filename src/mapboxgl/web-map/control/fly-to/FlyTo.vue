@@ -171,7 +171,7 @@ export default class FlyTo extends Mixins(MapGetter, Control, VmUpdater, BaseCar
                 'sm-components-icon-solid-triangle-left': true,
                 'icon-disabled': !this.data || !this.loop && this.currentIndex === 0
               },
-              style: this.collapseCardHeaderBgStyle,
+              style: this.subComponentSpanBgStyle,
               on: {
                 click: this.prev
               }
@@ -182,7 +182,7 @@ export default class FlyTo extends Mixins(MapGetter, Control, VmUpdater, BaseCar
                 'sm-components-icon-zanting': this.playStatus,
                 'icon-disabled': !this.data
               },
-              style: this.collapseCardHeaderBgStyle,
+              style: this.subComponentSpanBgStyle,
               on: {
                 click: this.togglePlayStatus
               }
@@ -192,7 +192,7 @@ export default class FlyTo extends Mixins(MapGetter, Control, VmUpdater, BaseCar
                 'sm-components-icon-solid-triangle-right': true,
                 'icon-disabled': !this.data || !this.loop && this.currentIndex === this.data.length - 1
               },
-              style: this.collapseCardHeaderBgStyle,
+              style: this.subComponentSpanBgStyle,
               on: {
                 click: this.next
               }

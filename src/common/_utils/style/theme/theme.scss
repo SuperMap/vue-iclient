@@ -401,6 +401,7 @@ $tree-node-selected-bg: $primary-2;
 // Collapse
 $collapse-header-bg: $background-color-light;
 $collapse-content-bg: $component-background;
+$collapse-card-split-line: var(--collapse-card-split-line);
 
 // Skeleton
 $skeleton-color: #f2f2f2;
@@ -446,6 +447,7 @@ $collapse-card-secondary-heard-bg: var(--collapse-card-secondary-heard-backgroun
 // Search
 $search-arrow-icon-bg: var(--search-arrow-icon-bg);
 $search-result-item-hover-bg: $select-item-hover-bg;
+$search-input-close-background: var(--search-input-close-background);
 
 // pan
 $pan-item-hover-bg: $select-item-hover-bg;
@@ -456,3 +458,14 @@ $dropdown-background: var(--select-dropdown-background);
 
 // swiper
 $swiper-prev-next-background: var(--swiper-prev-next-background);
+
+//tdt
+$tdt-map-switcher-layer-name-bg: var(--tdt-map-switcher-layer-name-bg);
+$tdt-route-plan-hover-bg: var(--tdt-route-plan-hover-bg);
+
+//compare
+$compare-swiper-color: var(--compare-swiper-color);
+$compare-swiper-background: var(--compare-swiper-background);
+
+//TimeRange
+$time-range-background: var(--time-range-background);

@@ -18,7 +18,7 @@
           v-show="group.mode !== 'delete' || (!continueDraw && group.mode === 'delete')"
           :key="group.mode"
           :title="group.title"
-          :style="collapseCardHeaderBgStyle"
+          :style="subComponentSpanBgStyle"
           :class="{'sm-component-measure__modeIcon': true, 'is-active':activeMode === group.mode}"
           @click="changeMeasureMode(group.mode)"
         >

@@ -16,6 +16,7 @@
     font-size: 16px;
     text-align: center;
     display: inline-block;
+    box-shadow: 0 3px 13px 0px $shadow-color;
     &:hover {
       color: $primary-color;
     }
@@ -53,7 +54,7 @@
   @include e(content) {
     transform-origin: top left;
     overflow: hidden;
-    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 13px 0px $shadow-color;
     border-radius: 4px;
     &.sm-component-zoom-in-enter-active {
       animation: zoom-in .5s;
@@ -76,7 +77,7 @@
     overflow: hidden;
     &.with-split-line {
       + div {
-        border-top: 1px solid $border-color-split;
+        border-top: 1px solid $collapse-card-split-line
       }
     }
     &[aria-orientation="left"] {
@@ -137,6 +138,9 @@
         &:focus {
           box-shadow: none;
         }
+      }
+      .#{$input-prefix}-suffix {
+        color: $search-input-close-background;
       }
     }
   }

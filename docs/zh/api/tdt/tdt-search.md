@@ -16,6 +16,6 @@
 | mode         | 设置 POI 搜索的模式为 Control 或 工具栏 | string                  | 'control' \| 'toolBar' | 'control'                                                 |
 | resultRender | 查询结果后的回调方法                    | function(searchResults) | -                      | -                                                         |
 | collapsed    | 是否默认折叠                            | boolean                 | -                      | false                                                     |
-| splitLine    | 搜索框与查询结果的分割线                | boolean                 | -                      | false                                                     |
+| splitLine    | 搜索框与查询结果的分割线                | boolean                 | -                      | true                                                     |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)

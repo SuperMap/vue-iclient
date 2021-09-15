@@ -94,10 +94,11 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
   showLineHoverPopup(e) {
     const coordinates = e.features[0].geometry.coordinates.slice();
     const properties = e.features[0].properties;
-    const popDom = `<div style='padding: 5px;'>
-    <div style='background: #0099ff; line-height: 28px; padding: 0 10px; font-size: 12px; color: #fff'>${
-  properties.name
-}</div>
+    const popDom = `
+    <div class='hover-popup'>
+      <div class='properties-name'>
+      ${properties.name}
+      </div>
     </div>`;
     this.hoverPopup = new mapboxgl.Popup({
       closeButton: false,

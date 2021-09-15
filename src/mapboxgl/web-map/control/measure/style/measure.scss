@@ -38,6 +38,7 @@
     }
     &:nth-child(2) {
       border-radius: 0px 4px 4px 0px;
+      margin-right: 1px;
     }
     @include when(active) {
       background: $primary-color !important;

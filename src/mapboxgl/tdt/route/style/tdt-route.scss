@@ -61,8 +61,8 @@
         background-color: transparent;
       }
       .#{$ant-prefix}-input-affix-wrapper {
-        > * {
-          color: inherit;
+        .#{$ant-prefix}-input-suffix {
+          color: $search-input-close-background;
         }
       }
       .icon-wrapper,
@@ -118,7 +118,6 @@
   @include e(content) {
     max-height: 200px;
     overflow: auto;
-    background: $collapse-card-secondary-bg;
     .route-result {
       width: 100%;
       margin: auto;

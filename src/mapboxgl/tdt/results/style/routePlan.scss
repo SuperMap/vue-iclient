@@ -195,7 +195,11 @@
     & > li {
       padding: 8px 0;
       border-top: 1px solid $border-color-split;
-      cursor: pointer;
+      &:hover {
+        cursor: pointer;
+        background: $tdt-route-plan-hover-bg;
+        color: $primary-color;
+      }
       &.detail-item {
         > div {
           color: $primary-color;

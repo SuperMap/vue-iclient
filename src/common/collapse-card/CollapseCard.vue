@@ -6,7 +6,8 @@
         ['sm-component-collapse-card__icon']: true,
         ['is-' + position]: true,
         [`is-click-${isShow ? 'out' : 'in'}`]: true,
-        ['is-not-header']: !headerName
+        ['is-not-header']: !headerName,
+        ['icon-box-shadow']: !isShow
       }"
       :style="[collapseCardHeaderBgStyle, headingTextColorStyle]"
       @click="iconClicked"
@@ -65,7 +66,7 @@ export default {
     },
     splitLine: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {

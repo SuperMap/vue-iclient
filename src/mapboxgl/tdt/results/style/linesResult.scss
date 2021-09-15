@@ -23,12 +23,12 @@
       list-style: none;
       .line-item {
         margin-bottom: 10px;
-        background: $collapse-card-secondary-bg;
         .cover-info {
           display: flex;
           align-items: center;
           height: 88px;
-          border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+          border-bottom: 1px solid $border-color-split;
+          background-color: $collapse-card-secondary-bg;
         }
         .name, .line-info{
           height: 100%;
@@ -46,7 +46,6 @@
         .line-info {
           flex: 1;
           padding: 8px 0;
-          background-color: $collapse-card-secondary-bg;
           .description-holder {
             display: flex;
             align-items: center;
@@ -74,6 +73,7 @@
           }
         }
         .detail-info {
+          background-color: $collapse-card-secondary-bg;
           .detail-title {
             display: flex;
             align-items: center;

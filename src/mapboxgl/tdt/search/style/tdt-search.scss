@@ -45,29 +45,37 @@
     }
   }
 }
-
+.mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 4px;
+}
+.mapboxgl-popup-close-button {
+  color: $text-color;
+  font-size: 14px;
+}
 .tdt-search-popup {
   width: 370px;
-  color: #000;
   overflow: hidden;
-
+  border-radius: 4px;
   .popup-container {
-    width: 333px;
     font-size: 12px;
     .title {
-      font-weight: 700;
-      border-bottom: 1px solid #ccc;
-      padding: 5px 0;
-      height: 33px;
+      background: $collapse-card-header-bg;
+      color: $heading-color;
+      padding: 4px 0 4px 16px;
+      border-bottom: 1px solid $collapse-card-split-line;
+      height: 28px;
       overflow: hidden;
       white-space: nowrap;
       text-overflow: ellipsis;
-      font-size: 14px;
     }
 
     .phone,
     .address {
-      margin: 10px 0;
+      background: $collapse-card-bg;
+      color: $text-color;
+      padding: 6px 0 6px 16px;
+      border-radius: 0 0 4px 4px;
     }
     .operate-group {
       .start-item,
@@ -116,7 +124,21 @@
   }
 }
 .tdt-search-line-hover-popup {
+  .hover-popup {
+    padding: 5px;
+    background: $collapse-card-bg;
+    .properties-name {
+      background: $primary-color;
+      line-height: 28px;
+      padding: 0 10px;
+      font-size: 12px;
+      color: $white;
+    }
+  }
   .mapboxgl-popup-content {
     padding: 0;
   }
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: $collapse-card-bg;
 }

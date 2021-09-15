@@ -34,6 +34,6 @@ POI 搜索组件，搜索源支持 SuperMap online 本地搜索服务、SuperMap
 | showResult           | 是否显示下拉框搜索结果                  | boolean                                                                              | -                      | true                             |
 | resultRender         | 自定义渲染搜索结果                      | Function                                                                             | -                      | -                                |
 | collapsed            | 是否默认折叠                            | boolean                                                                              | -                      | false                            |
-| splitLine            | 搜索框与查询结果的分割线                | boolean                                                                              | -                      | false                            |
+| splitLine            | 搜索框与查询结果的分割线                | boolean                                                                              | -                      | true                            |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)

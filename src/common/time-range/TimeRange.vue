@@ -18,7 +18,7 @@ import ECharts from 'vue-echarts';
 import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';
 import UniqueId from 'lodash.uniqueid';
 
-const ThemeStyleName = ['headingColor', 'primaryColor', 'disabledBgColor', 'textColorSecondary', 'handleColor'];
+const ThemeStyleName = ['headingColor', 'primaryColor', 'timeRangeBackground', 'textColorSecondary', 'handleColor'];
 
 @Component({
   name: 'SmTimeRange',
@@ -30,7 +30,7 @@ class SmTimeRange extends Mixins(Theme) {
   chartId = UniqueId(`TimeRange-`);
   headingColor: string = 'rgba(255, 255, 255, 0.85)';
   primaryColor: string = '#e14d57';
-  disabledBgColor: string = 'rgba(255, 255, 255, 0.08)';
+  timeRangeBackground: string = 'rgba(255, 255, 255, 0.08)';
   textColorSecondary: string = 'rgba(255, 255, 255, 0.45)';
   handleColor: string = '#d9d9d9';
   themeStyleName: string[] = ThemeStyleName;
@@ -78,7 +78,7 @@ class SmTimeRange extends Mixins(Theme) {
           left: 0,
           top: 'middle',
           right: 1,
-          backgroundColor: this.backgroundColor || this.disabledBgColor || this.getBackground,
+          backgroundColor: this.backgroundColor || this.timeRangeBackground || this.getBackground,
           borderColor: this.borderColor || this.textColorSecondary,
           fillerColor: this.fillerColor || this.primaryColor || getColorWithOpacity(this.getTextColor, 0.3),
           textStyle: Object.assign(

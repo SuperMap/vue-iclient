@@ -25,7 +25,7 @@ const ThemeStyleName = [
   'tooltipColor',
   'tooltipBackground',
   'shadowColor',
-  'textColorSecondary'
+  'sliderRailBackgroundColor'
 ];
 @Component({
   name: 'SmTimeLine',
@@ -43,7 +43,7 @@ export default class SmTimeLine extends Mixins(Theme) {
   avatarBackground: string = '#fff';
   tooltipBackground: string = '#535353';
   shadowColor: string = 'rgba(0, 0, 0, 0.35)';
-  textColorSecondary: string = 'rgba(255, 255, 255, 0.45)';
+  sliderRailBackgroundColor: string = 'rgba(255, 255, 255, 0.25)';
   themeStyleName: string[] = ThemeStyleName;
 
   @Prop({ default: false }) autoPlay: boolean;
@@ -120,7 +120,7 @@ export default class SmTimeLine extends Mixins(Theme) {
             position: 15,
             ...this.label
           },
-          lineStyle: Object.assign({ color: this.textColorSecondary }, this.lineStyle),
+          lineStyle: Object.assign({ color: this.sliderRailBackgroundColor }, this.lineStyle),
           itemStyle: Object.assign(
             {
               itemSize: 13,
