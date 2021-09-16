@@ -14,7 +14,7 @@
             :startVal="startData"
             :endVal="numData"
             :duration="Number(duration) || 1000"
-            :separator="separator"
+            :separator="filterSeparator"
             :numBackground="numBackground"
             :numSpacing="numSpacing"
             :separatorBackground="separatorBackground"
@@ -173,6 +173,9 @@ export default {
     },
     direction() {
       return { vertical: 'column', horizontal: 'row' }[this.mode];
+    },
+    filterSeparator() {
+      return this.separator.replace(/\d+/, '');
     },
     calDecimals() {
       if (this.decimals > 0) {
