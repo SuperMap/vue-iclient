@@ -6,19 +6,19 @@ window.getComputedStyle = () => {
   return {
     getPropertyValue: (colorVariable) => {
       switch (colorVariable) {
-        case '--background':
+        case '--component-background':
           return 'rgb(255, 255, 255)';
           break;
-        case '--text-color':
+        case '--alpha65':
           return 'rgba(0, 0, 0, 0.65)';
           break;
-        case '--collapse-card-header-bg':
+        case '--alpha0':
           return '#F4F4F4';
           break;
-        case '--collapse-card-background':
+        case '--container-basic':
           return '#414141';
           break;
-        case '--message-background':
+        case '--container-shadow-modal':
           return '#535353';
           break;
         default:
