@@ -1,13 +1,13 @@
 import colorPalette from 'vue-iclient/src/common/_utils/style/color/colorPalette';
 import themeFactory from 'vue-iclient/src/common/_utils/style/theme/theme.json';
-import { getColorWithOpacity, getDarkenColor } from 'vue-iclient/src/common/_utils/util';
-import { isArray } from 'vue-iclient/src/common/_utils/vue-types/utils';
+import { getColorWithOpacity, getDarkenColor, getDataType } from 'vue-iclient/src/common/_utils/util';
 import cssVars from 'css-vars-ponyfill';
 
 export interface styleConfigParams {
   styleConfig: {
-    id: string;
-    className: string;
+    id?: string;
+    className?: string;
+    include?: string;
   };
 }
 
@@ -144,8 +144,8 @@ export function toStyleVariable(variable) {
   return `--${variable.replace(/[A-Z]/g, '-$&').toLowerCase()}`;
 }
 
-export function getRootStyleSelector(themeStyle) {
-  return themeStyle.styleConfig && themeStyle.styleConfig.className ? `.${themeStyle.styleConfig.className}` : ':root';
+export function getRootStyleSelector(themeStyle: ThemeStyleParams) {
+  return themeStyle.styleConfig?.className && isNativeSupport ? `.${themeStyle.styleConfig.className}` : ':root';
 }
 
 function setRootStyle(themeData: StyleReplacerParams): void {
@@ -168,14 +168,13 @@ function setRootStyle(themeData: StyleReplacerParams): void {
     });
   }
   themeKeys.forEach((key: string) => {
-    if (!isArray(themeInfo[key])) {
+    if (!['[object Object]', '[object Array]'].includes(getDataType(themeInfo[key]))) {
       const varKey = toStyleVariable(key);
-      variables[varKey] = themeInfo[key];
+      variables[varKey] = themeInfo[key] || 'rgba(0, 0, 0, 0)';
     }
   });
   const rootStyleSelector = getRootStyleSelector(themeStyle);
-  const antdStyleId =
-    themeStyle.styleConfig && themeStyle.styleConfig.id ? `${themeStyle.styleConfig.id}-style` : 'sm-component-style';
+  const antdStyleId = themeStyle.styleConfig?.id || 'sm-component-style';
   const rootStyle = `${rootStyleSelector} ${JSON.stringify(variables, null, 2)
     .replace(/(:.+),/g, '$1;')
     .replace(/"/g, '')}`;
@@ -185,19 +184,20 @@ function setRootStyle(themeData: StyleReplacerParams): void {
     antStyleTag.setAttribute('id', antdStyleId);
     antStyleTag.setAttribute('type', 'text/css');
     document.head.insertBefore(antStyleTag, document.head.firstChild);
-    const options = {
-      include: 'style#sm-component-style, link[href*=vue-iclient-mapboxgl], link[href*=styles]',
-      silent: true,
-      onlyLegacy: true,
-      variables: {},
-      watch: false
-    };
-    if (!isNativeSupport) {
-      options.onlyLegacy = false;
-      options.watch = true;
-      options.variables = variables;
-    }
-    cssVars(options);
   }
+  const defaultInclude = 'style#sm-component-style, link[href*=vue-iclient-mapboxgl]';
+  const options = {
+    include: themeStyle.styleConfig?.include || defaultInclude,
+    silent: true,
+    onlyLegacy: true,
+    variables: {},
+    watch: false
+  };
+  if (!isNativeSupport) {
+    options.onlyLegacy = false;
+    options.watch = true;
+    options.variables = variables;
+  }
+  cssVars(options);
   antStyleTag.innerHTML = rootStyle;
 }

@@ -197,8 +197,7 @@ export default class Theme extends Vue {
     }
     const rootStyleSelector = getRootStyleSelector(themeStyle);
     const computedStyle = window.getComputedStyle(document.querySelector(rootStyleSelector));
-    const reg = /(?<=var\()(.|\s)*?(?=\))/g;
-    const themeColor = themeStyle[prop].match(reg) && themeStyle[prop].match(reg)[0];
+    const themeColor = themeStyle[prop].replace(/var\((.+)\)/g, '$1');
     const colorValue = computedStyle.getPropertyValue(themeColor);
     return colorValue.trim();
   }
