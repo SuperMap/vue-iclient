@@ -2469,8 +2469,8 @@ export default class WebMapViewModel extends WebMapBase {
 
     const layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
     const isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
-
-    let url = `https://t0.tianditu.gov.cn/{layer}_{proj}/wmts?tk=${this.tiandituKey}`;
+    const token = this.tiandituKey || mapInfo.baseLayer.tk;
+    let url = `https://t0.tianditu.gov.cn/{layer}_{proj}/wmts?tk=${token}`;
     let labelUrl = url;
 
     const layerLabelMap = {
