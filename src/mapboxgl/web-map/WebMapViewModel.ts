@@ -2466,10 +2466,10 @@ export default class WebMapViewModel extends WebMapBase {
     type urlArr = Array<string>;
     let tiandituUrls: { tiandituUrl: urlArr; labelUrl: urlArr } = { tiandituUrl: [], labelUrl: [] };
 
-    let layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
-    let isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
-
-    let url = `https://t0.tianditu.gov.cn/{layer}_{proj}/wmts?tk=${this.tiandituKey}`;
+    const layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
+    const isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
+    const token = this.tiandituKey || mapInfo.baseLayer.tk;
+    let url = `https://t0.tianditu.gov.cn/{layer}_{proj}/wmts?tk=${token}`;
     let labelUrl = url;
 
     let layerLabelMap = {
