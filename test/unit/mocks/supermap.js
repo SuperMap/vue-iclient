@@ -304,6 +304,9 @@ var Util = (SuperMap.Util = {
   },
   urlAppend: function (a, b) {
     return `${a}/${b}`;
+  },
+  getScaleFromResolutionDpi:function(){
+    return 559082264.0287178;
   }
 });
 // var document = (window.document = jest.fn());
