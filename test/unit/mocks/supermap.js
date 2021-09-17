@@ -305,8 +305,17 @@ var Util = (SuperMap.Util = {
   urlAppend: function (a, b) {
     return `${a}/${b}`;
   },
-  getScaleFromResolutionDpi:function(){
-    return 559082264.0287178;
+  getScaleFromResolutionDpi: function (resolution, dpi, coordUnit='degree') {
+    var scale = -1,
+      ratio = 10000;
+    if (resolution > 0 && dpi > 0) {
+      if (coordUnit.toLowerCase() === 'degree') {
+        scale = 0.0254 / dpi / resolution / ((Math.PI * 2 * 6378137) / 360);
+      } else {
+        scale = 0.0254 / dpi / resolution;
+      }
+    }
+    return scale;
   }
 });
 // var document = (window.document = jest.fn());

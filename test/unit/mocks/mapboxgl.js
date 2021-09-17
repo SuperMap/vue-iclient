@@ -8,7 +8,7 @@ module.exports.mapboxgl = {
   LngLat: LngLat,
   CRS: {
     get: get => {
-      return {getExtent:function(){return [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892]}};
+      return {getExtent:function(){return [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892]},unit:'m'};
     }
   }
 };

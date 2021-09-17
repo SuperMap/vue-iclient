@@ -2152,9 +2152,9 @@ export default class WebMapViewModel extends WebMapBase {
       }
 
       const exsitLayers = this._layers.filter(layer => !!this.map.getLayer(layer.layerID));
-      for (let index = exsitLayers.length - 2; index > -1; index--) {
+      for (let index = exsitLayers.length - 1; index > -1; index--) {
         const targetlayerId = exsitLayers[index].layerID;
-        const beforLayerId = exsitLayers[index + 1].layerID;
+        const beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1].layerID : undefined;
         this.map.moveLayer(targetlayerId, beforLayerId);
         if (this.map.getLayer(`${targetlayerId}-strokeLine`)) {
           this.map.moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
