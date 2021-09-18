@@ -27,6 +27,7 @@
 | pagination           | 分页器导航配置。参照[swiper](https://www.swiper.com.cn/api/pagination/362.html)   | object            | -                                          | -            |
 | scrollbar            | 滚动条配置。参照[swiper](https://www.swiper.com.cn/api/scrollbar/369.html)        | object            | -                                          | -            |
 | effect               | 幻灯片播放效果                                                                    | string            | 'slide' \| 'cube' \| 'coverflow' \| 'flip' | 'slide'      |
+| autoresize           | 组件根元素尺寸变化时幻灯片是否自适应                                                   | boolean            | -                                         | true         |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)
 

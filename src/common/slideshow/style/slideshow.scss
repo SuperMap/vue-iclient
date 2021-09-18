@@ -28,9 +28,6 @@
   .swiper-button-next {
     color: $swiper-prev-next-background;
     font-size: 26px;
-    &::after {
-      content: '';
-    }
     &:hover {
       color: $primary-6 !important;
     }

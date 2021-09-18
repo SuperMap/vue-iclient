@@ -271,16 +271,12 @@ export const navigationSlideshow = () => ({
         center: attractions[0].coordinates
       },
       navigation: {
+        nextEl: '.swiper-button-next',
+        prevEl: '.swiper-button-prev',
         hideOnClick: true
       },
       content: attractions
     };
-  },
-  mounted() {
-    const prevBtn = document.querySelector('.swiper-button-prev');
-    const nextBtn = document.querySelector('.swiper-button-next');
-    prevBtn.style.top = '70%';
-    nextBtn.style.top = '70%';
   },
   beforeDestroy() {
     this.marker && this.marker.remove() && (this.marker = null);
@@ -318,6 +314,8 @@ export const navigationSlideshow = () => ({
         <p style="padding: 10px 16px 0;font-size: 16px;text-align: left;text-indent:2em;">{{ item.description }}</p>
         <img :src="item.image" style="width: 261px; height: 147px; margin-top: 7px" />
       </sm-slideshow-item>
+      <div class="sm-components-icon-solid-right" slot="button-prev" style="position: absolute; top: 70%; left: 10px; font-size: 24px; z-index: 999"></div>
+      <div class="sm-components-icon-solid-left" slot="button-next" style="position: absolute; top: 70%; right: 10px; font-size: 24px;  z-index: 999"></div>
     </sm-slideshow>
   </div>
 `
@@ -337,6 +335,7 @@ export const paginationSlideshow = () => ({
         center: attractions[0].coordinates
       },
       pagination: {
+        el: '.swiper-pagination',
         type: 'bullets',
         clickable: true
       },
@@ -398,6 +397,7 @@ export const scrollbarSlideshow = () => ({
         center: attractions[0].coordinates
       },
       scrollbar: {
+        el: '.swiper-scrollbar',
         draggable: true
       },
       content: attractions

@@ -3,10 +3,12 @@ import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import { Swiper } from 'vue-awesome-swiper';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import 'swiper/css/swiper.css';
-import { getSlotOptions } from 'ant-design-vue/es/_util/props-util';
+import { getSlotOptions, filterEmpty } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import { CreateElement } from 'vue';
 import isequal from 'lodash.isequal';
+import debounce from 'lodash.debounce';
+import { addListener, removeListener } from 'resize-detector';
 
 interface swiperOptionsType {
   initialSlide: Number;
@@ -30,6 +32,7 @@ interface swiperOptionsType {
   }
 })
 class Slideshow extends Mixins(Theme, BaseCard) {
+  __resizeHandler: Function;
   swiper: any;
   isRefresh: boolean = true;
   manualUpdateProps: string[] = [
@@ -40,7 +43,6 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'effect',
     'navigation',
     'pagination',
-    'scrollbar',
     'autoplay'
   ];
 
@@ -56,6 +58,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   @Prop() scrollbar: Object;
   @Prop({ default: true }) grabCursor: boolean;
   @Prop() autoplay: boolean | Object;
+  @Prop({ default: true }) autoresize: boolean;
   @Prop({ default: 'slide' }) effect: string; // slide cube coverflow flip
   @Prop({ default: 'sm-components-icon-swipe' }) iconClass: string;
   @Prop({
@@ -77,10 +80,9 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       autoplay: this.autoplay,
       effect: this.effect
     };
-    this.navigation &&
-      (options.navigation = { ...this.pagination, nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' });
-    this.pagination && (options.pagination = { ...this.pagination, el: '.swiper-pagination' });
-    this.scrollbar && (options.scrollbar = { ...this.scrollbar, el: '.swiper-scrollbar' });
+    this.navigation && (options.navigation = this.navigation);
+    this.pagination && (options.pagination = this.pagination);
+    this.scrollbar && (options.scrollbar = this.scrollbar);
     return options;
   }
 
@@ -92,7 +94,6 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   @Watch('direction')
   directionChanged(direction) {
     this.swiper.changeDirection(direction);
-    this._reload();
   }
 
   @Watch('mousewheel')
@@ -105,20 +106,21 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     keyboard ? this.swiper.keyboard.enable() : this.swiper.keyboard.disable();
   }
 
+  @Watch('autoresize')
+  autoResizeChanged() {
+    this.autoResizeHandler();
+  }
+
   mounted() {
     // @ts-ignore
     this.swiper = this.$refs.mySwiper.$swiper;
-    this.manualUpdateProps.map(item => {
-      this.$watch(
-        item,
-        function (newVal, oldVal) {
-          if (!isequal(newVal, oldVal)) {
-            this._reload();
-          }
-        },
-        { deep: true }
-      );
-    });
+    this.watchOptions();
+    this.autoResizeHandler();
+  }
+
+  beforeDestroy() {
+    // @ts-ignore
+    removeListener(this.$el, this.__resizeHandler);
   }
 
   _change() {
@@ -163,32 +165,63 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     this.autoplay && this.swiper.autoplay.start();
   }
 
+  resize() {
+    this.swiper && this.swiper.update(true);
+  }
+
+  watchOptions() {
+    this.manualUpdateProps.map(item => {
+      this.$watch(
+        item,
+        function (newVal, oldVal) {
+          if (!isequal(newVal, oldVal)) {
+            this._reload();
+          }
+        },
+        { deep: true }
+      );
+    });
+  }
+
+  autoResizeHandler() {
+    if (this.autoresize) {
+      this.__resizeHandler = debounce(
+        () => {
+          this.resize();
+        },
+        100,
+        { leading: true }
+      );
+      // @ts-ignore
+      addListener(this.$el, this.__resizeHandler);
+    }
+  }
+
+  handlerNamedSlot(alias: string, h: CreateElement) {
+    const existSlots = !!this.$slots[alias];
+    return h(
+      existSlots ? 'template' : 'div',
+      { class: `swiper-${alias}`, slot: alias },
+      existSlots ? this.$slots[alias] : ''
+    );
+  }
+
   render(h: CreateElement) {
     let slots = [];
-    let children = this.$slots.default;
+    let children = filterEmpty(this.$slots.default);
     if (children && children.length) {
       children.forEach(element => {
-        if (!getSlotOptions(element).__SM_SLIDESHOW_ITEM) {
+        if (getSlotOptions(element).__SM_SLIDESHOW_ITEM) {
+          slots.push(element);
+        } else {
           console.error("Only accepts Slideshow.Item as Slideshow's children");
         }
       });
-      slots.push(children);
     }
-    this.pagination && slots.push(h('div', { class: 'swiper-pagination', slot: 'pagination' }));
-    this.scrollbar && slots.push(h('div', { class: 'swiper-scrollbar', slot: 'scrollbar' }));
+    this.pagination && slots.push(this.handlerNamedSlot('pagination', h));
+    this.scrollbar && slots.push(this.handlerNamedSlot('scrollbar', h));
     if (this.navigation) {
-      slots.push(
-        h('div', {
-          class: 'swiper-button-prev sm-components-icon-solid-right',
-          slot: 'button-prev'
-        })
-      );
-      slots.push(
-        h('div', {
-          class: 'swiper-button-next sm-components-icon-solid-left',
-          slot: 'button-next'
-        })
-      );
+      slots.push(this.handlerNamedSlot('button-prev', h), this.handlerNamedSlot('button-next', h));
     }
     let collapseCardProps = {
       iconClass: this.iconClass,
