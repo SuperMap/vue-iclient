@@ -37,7 +37,7 @@
     "video.js": "^7.10.2",
     "videojs-flash": "^2.1.0",
     "videojs-flvjs-es6": "^1.0.1",
-    "xml-js": "1.6.8",
+    "xml-js": "0.17.1",
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
     "@turf/envelope": "^5.1.5",
