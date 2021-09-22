@@ -17,7 +17,7 @@ import App from './App.vue';
 Vue.use(VueiClient, { theme: 'light' });
 
 // 2 通过 setTheme 方法设置主题
-VueiClient.setTheme({ theme: 'light' });
+VueiClient.setTheme('light');
 ```
 
 或
@@ -29,7 +29,7 @@ import { Button } from '@supermap/vue-iclient-mapboxgl';
 import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
 
 // 通过 setTheme 方法设置主题。
-setTheme({ theme: 'light' });
+setTheme('light');
 
 Vue.use(Button);
 ```
@@ -62,7 +62,7 @@ let theme = {
 
 Vue.use(VueiClient, { theme });
 // 或
-VueiClient.setTheme({ theme });
+VueiClient.setTheme(theme);
 ```
 
 或
@@ -78,7 +78,7 @@ let theme = {
   colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad']
 };
 
-setTheme({ theme });
+setTheme(theme);
 
 Vue.use(Button);
 ```
