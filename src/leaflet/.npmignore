@@ -50,3 +50,4 @@ jest.config.js
 *.njsproj
 *.sln
 package-lock.json
+sonar-project.properties
