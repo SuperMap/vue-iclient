@@ -1,5 +1,6 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
+import debounce from 'lodash.debounce';
 
 /**
  * @class MiniMapViewModel
@@ -51,7 +52,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
   setContainer(container) {
     this._container = container;
     this._updateFn = this._update.bind(this);
-    this._setStyleFn = this._setStyle.bind(this);
+    this._setStyleFn = debounce(this._setStyle, 200, { trailing: true }).bind(this);
     this._mouseMoveFn = this._mouseMove.bind(this);
     this._mouseDownFn = this._mouseDown.bind(this);
     this._mouseUpFn = this._mouseUp.bind(this);
@@ -74,7 +75,6 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
       this.fire('minimaploaded', { miniMap: this._miniMap });
       this._miniMap.resize();
       this.loadMiniMap();
-      window.minimap = this._miniMap;
     });
   }
 
@@ -297,7 +297,6 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     this._miniMap.setStyle(this._parentMap.getStyle(), {
       localIdeographFontFamily: this._parentMap._localIdeographFontFamily
     });
-    this._miniMap.setCRS(this._parentMap.getCRS());
     this._addRectLayers();
     this._update();
   }
