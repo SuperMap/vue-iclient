@@ -84,6 +84,7 @@
               v-for="(items, key, itemIndex) in filterProperty(rowData, 'idx')"
               :key="key"
               :title="!getColumns[itemIndex].slots && items"
+              :class="getColumns[itemIndex].slots && 'sm-component-text-list__slot'"
               :style="[
                 listStyle.rowStyle,
                 { flex: getColumnWidth(itemIndex) },
