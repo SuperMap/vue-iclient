@@ -39,14 +39,38 @@
       }
       tr > th {
         color: inherit;
+        background: inherit;
         padding: 6px 6px;
         &.sm-component-table-column-sort {
-          background: $background-color-light;
+          background: $select-item-hover-bg;
+        }
+        &.sm-component-table-column-has-sorters {
+          &:hover {
+            background: $select-item-hover-bg;
+          }
         }
       }
       tr > th .anticon-filter,
       tr > th .sm-component-table-filter-icon {
         right: 15px;
+      }
+      > tr > th.sm-component-table-column-has-actions {
+        &.sm-component-table-column-has-filters {
+          .anticon-filter.sm-component-table-filter-open,
+          .sm-component-table-filter-icon.sm-component-table-filter-open {
+            background: $select-item-hover-bg;
+          }
+          &:hover {
+            .sm-component-table-filter-icon:hover {
+              background: $select-item-hover-bg;
+            }
+          }
+        }
+        &.sm-component-table-column-has-sorters:hover {
+          .sm-component-table-filter-icon {
+            background: transparent;
+          }
+        }
       }
     }
     .sm-component-table-tbody {
