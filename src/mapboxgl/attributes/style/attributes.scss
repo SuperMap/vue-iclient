@@ -74,14 +74,18 @@
       }
     }
     .sm-component-table-tbody {
-      >tr >td {
+      > tr > td {
         width: 128px;
         padding: 6px 6px;
         overflow: hidden;
-        white-space: nowrap;  
-        text-overflow: ellipsis; 
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
     }
+  }
+  .sm-component-table-custom-filter-dropdown {
+    font-size: 0;
+    padding: 8px;
   }
   @include e(header) {
     height: 30px;
