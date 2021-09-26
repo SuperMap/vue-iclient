@@ -36,7 +36,7 @@ export const DisabledRadio = () => ({
     <sm-radio default-checked :disabled="disabled">
       Disabled
     </sm-radio>
-    <div :style="{ marginTop: 20 }">
+    <div :style="{ marginTop: '20px' }">
       <sm-button type="primary" v-on:click="toggleDisabled">
         Toggle disabled
       </sm-button>

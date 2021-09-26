@@ -1,7 +1,6 @@
 import { CreateElement, VNode } from 'vue';
 import Empty from 'ant-design-vue/es/empty';
 import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
-import defaultImage from './assets/image/empty.png';
 
 const RenderEmpty = {
   functional: true,
@@ -22,7 +21,7 @@ const RenderEmpty = {
       const localeData = antLocale['Empty'] || {};
       const prefix = getPrefixCls('empty');
       const props = {
-        image: defaultImage,
+        image: Empty.PRESENTED_IMAGE_SIMPLE,
         description: localeData.description,
         prefixCls: prefix || 'sm-component-empty'
       };

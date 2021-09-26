@@ -56,10 +56,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    &:hover {
-      color: $hover-color !important;
-    }
-    & > #{$query-prefix}__job-info-name,
+    & > #{$query-prefix}__job-info-name,git
     & > #{$query-prefix}__header-name {
       display: inline-block;
       overflow: hidden;
@@ -67,9 +64,6 @@
       white-space: nowrap;
       max-width: 85%;
       line-height: 20px;
-    }
-    & > i {
-      font-size: 12px;
     }
   }
   @include e(job-info-body) {
@@ -120,10 +114,8 @@
     > span {
       cursor: default;
     }
-    &:hover {
-      > i {
-        color: $error-color !important;
-      }
+    > i {
+      color: $error-color !important;
     }
   }
   @include e(no-result result-loading result-body) {

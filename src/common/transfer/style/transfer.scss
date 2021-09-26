@@ -16,6 +16,10 @@
       border-bottom-color: $border-color-base;
     }
 
+    &-body {
+      background-color: $component-background;
+    }
+
     &-content {
       &-item:not(&-item-disabled):hover {
         background-color: $transfer-item-hover-color;

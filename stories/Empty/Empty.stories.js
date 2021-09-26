@@ -19,7 +19,7 @@ BasicEmpty.story = {
 export const CustomEmpty = () => ({
   template: `
   <sm-empty
-      image="https://gw.alipayobjects.com/mdn/miniapp_social/afts/img/A*pevERLJC9v0AAAAAAAAAAABjAQAAAQ/original"
+      image="https://iclient.supermap.io/dev/web/img/svg/logo.svg"
       :image-style="{
       height: '60px',
       }"
