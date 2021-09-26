@@ -111,7 +111,7 @@
       "confirmationModalDialog": "确认对话框",
       "informationModalDialog": "信息提示",
       "customizeFooterProps": "自定义页脚按钮属性",
-      "manualToUpdateDestroy": "手动跟新和移除",
+      "manualToUpdateDestroy": "手动更新和移除",
       "asynchronouslyClose": "异步关闭",
       "confirmationModalDialogPromise": "确认对话框(promise)",
       "customFooter": "自定义页脚",

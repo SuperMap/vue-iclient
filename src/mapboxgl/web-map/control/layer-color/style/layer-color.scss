@@ -46,7 +46,7 @@
     }
     &.selected {
       background-color: $primary-6;
-      color: $btn-disable-color;
+      color: $btn-primary-color;
     }
   }
   @include e(color-picker) {
