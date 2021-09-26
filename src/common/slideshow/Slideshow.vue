@@ -244,25 +244,18 @@ class Slideshow extends Mixins(Theme, BaseCard) {
           'div',
           {
             class: 'sm-component-slideshow__content',
-            style: [this.collapseCardBackgroundStyle, this.getTextColorStyle],
             on: { mouseover: this.autoplayStop, mouseout: this.autoplayStart }
           },
           [
-            (() => {
-              if (this.isRefresh) {
-                return h(
-                  Swiper,
-                  {
-                    props: { options: this.swiperOptions },
-                    on: { slideChange: this._change },
-                    ref: 'mySwiper'
-                  },
-                  slots
-                );
-              } else {
-                return null;
-              }
-            })()
+            this.isRefresh ? h(
+              Swiper,
+              {
+                props: { options: this.swiperOptions },
+                on: { slideChange: this._change },
+                ref: 'mySwiper'
+              },
+              slots
+            ) : null
           ]
         )
       ]
