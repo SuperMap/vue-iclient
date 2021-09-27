@@ -15,7 +15,7 @@
     @include input-md();
   }
   @include e(group-addon, '-') {
-    background-color: $background-color-light;
+    background-color: $input-addon-bg;
   }
   
   @include e(password, '-') {
