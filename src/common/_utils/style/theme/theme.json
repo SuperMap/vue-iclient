@@ -96,6 +96,7 @@
     "compareSwiperColor": "#d9d9d9",
     "compareSwiperBackground": "#d9d9d9",
     "timeRangeBackground": "var(--container-disabled)",
+    "swiperPaginationBullet": "rgba(0, 0, 0, 0.18)",
     "colorGroup": [
       "#3499e5",
       "#759aa0",
@@ -199,6 +200,7 @@
     "compareSwiperColor": "var(--alpha0)",
     "compareSwiperBackground": "var(--info-color)",
     "timeRangeBackground": "rgba(0, 0, 0, 0.08)",
+    "swiperPaginationBullet": "var(--alpha15)",
     "colorGroup": [
       "#0081e2",
       "#6be6c1",

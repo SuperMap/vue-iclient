@@ -38,4 +38,11 @@
   .swiper-scrollbar-drag {
     background: $scrollbar-background;
   }
+  .swiper-pagination-bullet {
+    opacity: 1;
+    background: $swiper-pagination-bullet;
+  }
+  .swiper-pagination-bullet-active {
+    background: $primary-6;
+  }
 }
