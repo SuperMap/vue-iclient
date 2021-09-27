@@ -15,6 +15,7 @@ interface swiperOptionsType {
   direction: String;
   speed: Number;
   loop: Boolean;
+  loopedSlides: Number;
   grabCursor: Boolean;
   mousewheel: Boolean;
   keyboard: Boolean;
@@ -47,6 +48,9 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'direction'
   ];
 
+  // 当 loop 为 true && effect 为 cube,幻灯片页数等于3会出现重叠, loopedSlides 需要大于可视个数。
+  loopedSlides: number = 2;
+
   @Prop() activeIndex: number;
   @Prop({ default: 0 }) defaultActiveIndex: number;
   @Prop({ default: 'horizontal' }) direction: string;
@@ -75,6 +79,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       direction: this.direction,
       speed: this.speed,
       loop: this.loop,
+      loopedSlides: this.loopedSlides,
       grabCursor: this.grabCursor,
       mousewheel: this.mousewheel,
       keyboard: this.keyboard,
