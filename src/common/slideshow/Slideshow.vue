@@ -43,7 +43,8 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'effect',
     'navigation',
     'pagination',
-    'autoplay'
+    'autoplay',
+    'direction'
   ];
 
   @Prop() activeIndex: number;
@@ -89,11 +90,6 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   @Watch('activeIndex')
   activeIndexChanged(index: number, speed: number) {
     this.goTo(index, speed);
-  }
-
-  @Watch('direction')
-  directionChanged(direction) {
-    this.swiper.changeDirection(direction);
   }
 
   @Watch('mousewheel')
