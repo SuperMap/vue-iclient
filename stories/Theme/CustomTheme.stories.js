@@ -111,7 +111,6 @@ export const CustomTheme = () => ({
     switchDisabledBgColor: { default: color('switchDisabledBgColor', 'rgba(255, 255, 255, 0.15)') },
     switchDisabledAfterColor: { default: color('switchDisabledAfterColor', 'rgba(255, 255, 255, 0.15)') },
     switchDisabledOpacity: { default: number('switchDisabledOpacity', 1) },
-    emptyBackground: { default: color('emptyBackground', '#333') },
     emptyShadowColor: { default: color('emptyShadowColor', 'rgba(0, 0, 0, 0.25)') },
     emptyStrokeColor: { default: color('emptyStrokeColor', 'rgba(0, 0, 0, 0)') },
     emptyTopColor: { default: color('emptyTopColor', '#414141') },
