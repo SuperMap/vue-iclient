@@ -1,5 +1,5 @@
 <template>
-  <div id="app" style="position:relative;background:#000">
+  <div id="app" style="position:relative;">
     <sm-radio-group v-model="componentType" button-style="solid" class="display-diff-components">
       <sm-radio-button value="map-sub-components">地图子组件</sm-radio-button>
       <!-- <sm-radio-button value="map-layers">
@@ -262,7 +262,6 @@ export default Vue.extend({
 body {
   margin: 0;
   // overflow: hidden;
-  background: #fff;
   width: 100%;
   height: 100%;
   position: absolute;

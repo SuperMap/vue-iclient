@@ -650,31 +650,26 @@ export default {
     },
     changeStyle() {
       smcomponents.setTheme('dark');
-      document.getElementsByTagName('body')[0].style.background = '#000';
     },
     changeStyle1() {
       smcomponents.setTheme('light');
-      document.getElementsByTagName('body')[0].style.background = '#fff';
     },
     changeStyle2() {
       let transparent = {
-        style: 'dark',
-        textColor: '#eee',
-        background: 'red',
-        componentBackground: 'yellow',
+        style: 'light',
+        textColor: '#000',
+        background: 'transparent',
+        componentBackground: 'pink',
         collapseCardHeaderBg: 'red',
         collapseCardBackground: 'green',
         hoverColor: 'blue',
         clickColor: 'grey',
         selectedColor: 'black'
-        // colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
       };
       smcomponents.setTheme(transparent);
-      document.getElementsByTagName('body')[0].style.background = 'transparanet';
     },
     changeStyle3() {
       smcomponents.setTheme('warmGray');
-      document.getElementsByTagName('body')[0].style.background = 'transparanet';
     },
     mapLoaded(e) {
       console.log(e);
