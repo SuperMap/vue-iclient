@@ -9,7 +9,7 @@ export default {
 export const Iframe = () => ({
   mixins: [theme],
   template: `
-  <sm-iframe style="width:100%; height:600px" src="https://www.baidu.com/"></sm-iframe>
+  <sm-iframe style="width:100%; height:600px" src="https://iclient.supermap.io/"></sm-iframe>
   `
 });
 Iframe.story = {

@@ -271,8 +271,8 @@ export const navigationSlideshow = () => ({
         center: attractions[0].coordinates
       },
       navigation: {
-        nextEl: '.swiper-button-next',
-        prevEl: '.swiper-button-prev',
+        nextEl: '.sm-components-icon-solid-right',
+        prevEl: '.sm-components-icon-solid-left',
         hideOnClick: true
       },
       content: attractions
