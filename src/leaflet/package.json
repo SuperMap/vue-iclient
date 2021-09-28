@@ -6,7 +6,7 @@
   "main": "dist/index",
   "dependencies": {
     "@types/leaflet": "^1.5.5",
-    "leaflet": "1.5.1",
+    "leaflet": "1.7.1",
     "mapv": "^2.0.34",
     "@turf/center": "^6.0.1",
     "@types/geojson": "^7946.0.7",
