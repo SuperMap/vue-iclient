@@ -73,6 +73,11 @@ export const AnimatedIndicator = () => ({
       unit: '米'
     };
   },
+  mounted() {
+    setInterval(() => {
+      this.num = Math.floor(Math.random() * 10000);
+    }, 2000);
+  },
   template: `
   <sm-indicator 
   :animated="true" 
