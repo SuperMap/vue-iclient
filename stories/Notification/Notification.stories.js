@@ -54,6 +54,14 @@ CustomStyle.story = {
 };
 
 export const Position = () => ({
+  data() {
+    return {
+      iconStyle: {
+        color: 'rgba(255, 255, 255, 0.65)',
+        marginRight: '8px'
+      }
+    };
+  },
   methods: {
     openNotification(placement) {
       this.$notification.open({
@@ -67,19 +75,19 @@ export const Position = () => ({
   template: `
   <div>
     <sm-button type="primary" v-on:click="openNotification('topLeft')">
-      <sm-icon type="radius-upleft" />
+      <sm-icon type="radius-upleft" :iconStyle="iconStyle" />
       topLeft
     </sm-button>
     <sm-button type="primary" v-on:click="openNotification('topRight')">
-      <sm-icon type="radius-upright" />
+      <sm-icon type="radius-upright" :iconStyle="iconStyle" />
       topRight
     </sm-button>
     <sm-button type="primary" v-on:click="openNotification('bottomLeft')">
-      <sm-icon type="radius-bottomleft" />
+      <sm-icon type="radius-bottomleft" :iconStyle="iconStyle" />
       bottomLeft
     </sm-button>
     <sm-button type="primary" v-on:click="openNotification('bottomRight')">
-      <sm-icon type="radius-bottomright" />
+      <sm-icon type="radius-bottomright" :iconStyle="iconStyle" />
       bottomRight
     </sm-button>
   </div>
