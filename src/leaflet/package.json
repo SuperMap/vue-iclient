@@ -39,7 +39,7 @@
     "videojs-flash": "^2.1.0",
     "flv.js": "^1.5.0",
     "videojs-flvjs-es6": "^1.0.1",
-    "xml-js": "1.6.8"
+    "xml-js": "1.6.11"
   },
   "peerDependencies": {
     "vue": ">=2.5.0"
