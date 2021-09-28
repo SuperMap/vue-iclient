@@ -61,7 +61,7 @@
     "proj4": "^2.6.0",
     "resize-detector": "^0.2.0",
     "shapefile": "^0.6.6",
-    "three": "^0.126.1",
+    "three": "^0.132.2",
     "tinycolor2": "^1.4.2",
     "video.js": "^7.10.2",
     "videojs-flash": "^2.1.0",
