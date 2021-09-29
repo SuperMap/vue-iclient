@@ -27,4 +27,4 @@
 | style            | 属性表样式                                                                 | object           | -                                                                                   | -                                                                |
 | position         | 属性表的位置。（父级容器需设置样式: positions: absolute ）                  | string                     | 'bottom-left' \| 'top-left' \| 'bottom-right' \| 'top-right' \| 'top' \| 'bottom' \| 'left' \| 'right' \|       | 'bottom'            |
 
-> 更多配置项，请查看 [Attributes](/zh/api/common/attributes)（其中不支持layerName、dataset和mapTarget参数）。
+> 更多配置项，请查看 [Attributes](/zh/api/common/attributes.md)（其中不支持layerName、dataset和mapTarget参数）。
