@@ -43,7 +43,7 @@ import Vue from 'vue';
 import { Button, message } from '@supermap/vue-iclient-mapboxgl';
 import App from './App.vue';
 
-/* v10.2.0+ 自动注册Button下组件，如Button.Group */
+/* v10.2.0+ 自动注册 Button下组件，如 Button.Group */
 Vue.use(Button);
 Vue.prototype.$message = message;
 
@@ -90,7 +90,7 @@ npm install babel-plugin-import -D
 ```js
 import { Button, message } from '@supermap/vue-iclient-mapboxgl';
 
-/* v10.2.0+ 自动注册Button下组件，如Button.Group */
+/* v10.2.0+ 自动注册 Button下组件，如 Button.Group */
 Vue.use(Button);
 Vue.prototype.$message = message;
 
