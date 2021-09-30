@@ -39,8 +39,6 @@ $primary-8: var(--primary-8);
 $primary-9: var(--primary-9);
 $primary-10: var(--primary-10);
 
-
-
 $success-1: var(--success-1);
 $success-2: var(--success-2);
 $success-3: var(--success-3);
@@ -131,12 +129,15 @@ $shadow-1-right: 2px 0 7px $shadow-color;
 $shadow-2: 0 4px 12px $shadow-color;
 $box-shadow-base: $shadow-1-down;
 
+// scroll
+$scrollbar-background: var(--scrollbar-background);
+
 // Buttons
 $btn-shadow: none;
 $btn-primary-shadow: none;
 $btn-text-shadow: none;
 
-$btn-primary-color: #fff;
+$btn-primary-color: var(--button-primary-color);
 $btn-primary-bg: $primary-color;
 
 $btn-default-color: $text-color;
@@ -157,6 +158,8 @@ $btn-disable-border: $disabled-border-color;
 
 $btn-group-border: $primary-5;
 
+$btn-height-md: 28px;
+
 // Checkbox
 $checkbox-color: $primary-6;
 $checkbox-check-color: #fff;
@@ -168,7 +171,11 @@ $descriptions-bg: #fafafa;
 $dropdown-selected-color: $primary-6;
 
 // Empty
-$empty-background: var(--empty-background);
+$empty-shadow-color: var(--empty-shadow-color);
+$empty-stroke-color: var(--empty-stroke-color);
+$empty-top-color: var(--empty-top-color);
+$empty-bottom-color: var(--empty-bottom-color);
+$empty-description-color: var(--empty-description-color);
 
 // Radio
 $radio-dot-color: $primary-6;
@@ -207,6 +214,7 @@ $input-number-handler-bg: $component-background;
 $input-number-handler-border-color: $border-color-base;
 $input-addon-bg: $background-color-light;
 $input-disabled-bg: $disabled-bg;
+$input-height-md: 28px;
 
 // Form
 $label-required-color: $highlight-color;
@@ -216,7 +224,7 @@ $form-error-input-bg: $input-bg;
 
 // Select
 $select-border-color: $border-color-base;
-$select-item-selected-color: $text-color-without-opacity;
+$select-item-selected-color: var(--select-item-selected-color);
 $select-dropdown-bg: var(--select-dropdown-background);
 $select-item-selected-bg: $selected-color;
 $select-item-active-bg: $selected-color;
@@ -228,7 +236,7 @@ $anchor-border-color: $border-color-split;
 
 // Tooltip
 // Tooltip text color
-$tooltip-color: #fff;
+$tooltip-color: var(--tooltip-color);
 // Tooltip background color
 $tooltip-bg: var(--tooltip-background);
 // Tooltip arrow color
@@ -260,7 +268,6 @@ $progress-default-color: $processing-color;
 $progress-remaining-color: $background-color-base;
 $progress-text-color: $text-color;
 
-
 // Menu
 $menu-bg: $component-background;
 $menu-popup-bg: $component-background;
@@ -286,7 +293,7 @@ $table-header-sort-bg: $background-color-base;
 $table-body-sort-bg: rgba(0, 0, 0, 0.01);
 $table-row-hover-bg: $select-item-hover-bg;
 $table-selected-row-color: inherit;
-$table-selected-row-bg: #fafafa;
+$table-selected-row-bg: $selected-color;
 $table-body-selected-sort-bg: $table-selected-row-bg;
 $table-selected-row-hover-bg: $table-selected-row-bg;
 $table-expanded-row-bg: #fbfbfb;
@@ -340,21 +347,23 @@ $back-top-hover-bg: $text-color;
 
 // Avatar
 $avatar-bg: var(--avatar-background);
-$avatar-color: var(--avatar-text-color);
+$avatar-color: var(--text-color);
 
 // Switch
 $switch-background: var(--switch-background);
 $switch-disabled-bg-color: var(--switch-disabled-bg-color);
 $switch-disabled-after-color: var(--switch-disabled-after-color);
-$switch-disabled-opacity: var(--switch-disabled-opacity);
 $switch-color: $primary-6;
 $switch-shadow-color: rgba(#00230b, 0.2);
-$switch-after-bg: #fff;
+$switch-after-bg: var(--switch-after-bg);
+$switch-loading-text-color: rgba(0, 0, 0, 0.65);
 
 // Pagination
 $pagination-border-default-color: var(--pagination-border-default-color);
 $pagination-disabled-active-bg-color: var(--disabled-darken-bg-color10);
 $pagination-item-bg-active: $primary-6;
+$pagination-ellipsis-color: var(--pagination-ellipsis-color);
+$pagination-active-text-color: var(--pagination-active-text-color);
 
 // PageHeader
 $page-header-back-color: #000;
@@ -387,12 +396,12 @@ $slider-disabled-background-color: $component-background;
 // Tree
 $tree-directory-selected-color: #fff;
 $tree-directory-selected-bg: $primary-6;
-$tree-node-hover-bg: $item-hover-bg;
 $tree-node-selected-bg: $primary-2;
 
 // Collapse
 $collapse-header-bg: $background-color-light;
 $collapse-content-bg: $component-background;
+$collapse-card-split-line: var(--collapse-card-split-line);
 
 // Skeleton
 $skeleton-color: #f2f2f2;
@@ -411,7 +420,7 @@ $alert-success-border-color: $success-3;
 $alert-success-bg-color: $success-1;
 $alert-success-icon-color: $success-color;
 $alert-info-border-color: $info-3;
-$alert-info-bg-color:$info-1;
+$alert-info-bg-color: $info-1;
 $alert-info-icon-color: $info-color;
 $alert-warning-border-color: $warning-3;
 $alert-warning-bg-color: $warning-1;
@@ -432,10 +441,32 @@ $timeline-dot-bg: $component-background;
 // collapse-card
 $collapse-card-bg: var(--collapse-card-background);
 $collapse-card-header-bg: var(--collapse-card-header-bg);
+$collapse-card-secondary-bg: var(--collapse-card-secondary-background);
+$collapse-card-secondary-heard-bg: var(--collapse-card-secondary-heard-background);
 
 // Search
 $search-arrow-icon-bg: var(--search-arrow-icon-bg);
 $search-result-item-hover-bg: $select-item-hover-bg;
+$search-input-close-background: var(--search-input-close-background);
 
 // pan
 $pan-item-hover-bg: $select-item-hover-bg;
+
+// dropdown
+$dropdown-menu-item-hover-bg: var(--select-item-hover-bg);
+$dropdown-background: var(--select-dropdown-background);
+
+// swiper
+$swiper-prev-next-background: var(--swiper-prev-next-background);
+$swiper-pagination-bullet: var(--swiper-pagination-bullet);
+
+//tdt
+$tdt-map-switcher-layer-name-bg: var(--tdt-map-switcher-layer-name-bg);
+$tdt-route-plan-hover-bg: var(--tdt-route-plan-hover-bg);
+
+//compare
+$compare-swiper-color: var(--compare-swiper-color);
+$compare-swiper-background: var(--compare-swiper-background);
+
+//TimeRange
+$time-range-background: var(--time-range-background);

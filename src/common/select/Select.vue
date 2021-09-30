@@ -1,14 +1,15 @@
 <script lang="ts">
 import Select, { SelectProps } from 'ant-design-vue/es/select';
-import VueTypes from '../_utils/vue-types';
-import Theme from '../_mixin/Theme';
-import AntdRender from '../_mixin/AntdRender';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
 export const selectTypes = {
   ...SelectProps,
   showSearch: VueTypes.bool.def(false),
   transitionName: VueTypes.string.def('slide-up'),
-  choiceTransitionName: VueTypes.string.def('zoom')
+  choiceTransitionName: VueTypes.string.def('zoom'),
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
 };
 
 export default {
@@ -28,6 +29,16 @@ export default {
         change: function(value) {
           vm.$emit('change', value);
         }
+      };
+    },
+    extralProps() {
+      return {
+        size: this.size === 'middle' ? undefined : this.size
+      };
+    },
+    componentClass() {
+      return {
+        'sm-component-select-md': this.size === 'middle'
       };
     }
   }

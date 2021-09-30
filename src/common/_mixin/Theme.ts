@@ -1,23 +1,28 @@
 import Vue from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
-import globalEvent from '../_utils/global-event';
-import { getDerivedColorsByTextColor } from '../_utils/util';
+import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import { getDerivedColorsByTextColor } from 'vue-iclient/src/common/_utils/util';
+import { getPrimarySerialColors, getRootStyleSelector } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 
 @Component({
   name: 'Theme'
 })
 export default class Theme extends Vue {
-  backgroundData: string = '';
+  backgroundData = '';
 
-  textColorsData: string = '';
+  textColorsData = '';
 
-  collapseCardBackgroundData: string = '';
+  collapseCardBackgroundData = '';
 
-  collapseCardHeaderBgData: string = '';
+  collapseCardHeaderBgData = '';
 
-  tablePopupBgData: string = '';
+  subComponentSpanBgData = '';
+
+  tablePopupBgData = '';
 
   colorGroupsData: Array<string> = [];
+
+  themeStyleName: Array<string> = [];
 
   @Prop() background: string;
 
@@ -37,9 +42,21 @@ export default class Theme extends Vue {
     };
   }
 
+  get collapseCardBackgroundLightStyle() {
+    return {
+      background: getPrimarySerialColors({ colorGroup: [this.collapseCardBackgroundData] })[2]
+    };
+  }
+
   get collapseCardHeaderBgStyle() {
     return {
       background: this.collapseCardHeaderBgData
+    };
+  }
+
+  get subComponentSpanBgStyle() {
+    return {
+      background: this.subComponentSpanBgData
     };
   }
 
@@ -82,7 +99,7 @@ export default class Theme extends Vue {
   }
 
   get getColorStyle() {
-    return function(index) {
+    return function (index) {
       return {
         color: this.colorGroupsData[index]
       };
@@ -90,7 +107,7 @@ export default class Theme extends Vue {
   }
 
   get getColor() {
-    return function(index) {
+    return function (index) {
       return this.colorGroupsData[index];
     };
   }
@@ -110,39 +127,59 @@ export default class Theme extends Vue {
       const $props = this.getSelfProps();
       $props.forEach((prop: string) => {
         const dataName: string = this.getDataNameOfProp(prop);
-        this[dataName] = themeStyle[prop];
+        this[dataName] = this.getRealColor(prop);
       });
-      this.collapseCardHeaderBgData = themeStyle['collapseCardHeaderBg'];
-      this.collapseCardBackgroundData = themeStyle['collapseCardBackground'];
-      this.tablePopupBgData = themeStyle['messageBackground'];
+      this.collapseCardHeaderBgData = this.getRealColor('collapseCardHeaderBg');
+      this.subComponentSpanBgData = this.getRealColor('subComponentSpanBg');
+      this.collapseCardBackgroundData = this.getRealColor('collapseCardBackground');
+      this.tablePopupBgData = this.getRealColor('messageBackground');
       this.themeStyleChanged();
+      this.initNeedTheme(themeStyle);
     });
   }
 
   initThemeData(): void {
-    const theme = globalEvent.$options.theme || {};
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
       const dataName: string = this.getDataNameOfProp(prop);
-      this[dataName] = this[prop] || theme[prop];
+      this[dataName] = this[prop] || this.getRealColor(prop);
     });
-    this.collapseCardHeaderBgData = this.background || theme['collapseCardHeaderBg'];
-    this.collapseCardBackgroundData = this.background || theme['collapseCardBackground'];
-    this.tablePopupBgData = this.background || theme['messageBackground'];
+    // @ts-ignore
+    this.collapseCardHeaderBgData = this.background || this.getRealColor('collapseCardHeaderBg');
+    // @ts-ignore
+    this.subComponentSpanBgData = this.background || this.getRealColor('subComponentSpanBg');
+    // @ts-ignore
+    this.collapseCardBackgroundData = this.background || this.getRealColor('collapseCardBackground');
+    // @ts-ignore
+    this.tablePopupBgData = this.background || this.getRealColor('messageBackground');
+  }
+
+  initNeedTheme(themeStyle) {
+    this.themeStyleName.forEach(name => {
+      if (name === 'primaryColor') {
+        this[name] = themeStyle.colorGroup && themeStyle.colorGroup[0];
+      } else {
+        this[name] = this.getRealColor(name);
+      }
+    });
   }
 
   registerPropListener(): void {
-    const theme = globalEvent.$options.theme || {};
     const vm = this;
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
-      this.$watch(prop, function(next) {
+      this.$watch(prop, function (next) {
         const dataName: string = this.getDataNameOfProp(prop);
-        vm[dataName] = next;
+        vm[dataName] = next || this.getRealColor(prop);
         if (prop === 'background') {
-          vm.collapseCardBackgroundData = next || theme['collapseCardBackground'];
-          vm.collapseCardHeaderBgData = next || theme['collapseCardHeaderBg'];
-          vm.tablePopupBgData = next || theme['messageBackground'];
+          // @ts-ignore
+          vm.collapseCardBackgroundData = next || this.getRealColor('collapseCardBackground');
+          // @ts-ignore
+          vm.collapseCardHeaderBgData = next || this.getRealColor('collapseCardHeaderBg');
+          // @ts-ignore
+          vm.subComponentSpanBgData = next || this.getRealColor('subComponentSpanBg');
+          // @ts-ignore
+          vm.tablePopupBgData = next || this.getRealColor('messageBackground');
         }
       });
     });
@@ -151,6 +188,18 @@ export default class Theme extends Vue {
   getSelfProps(): string[] {
     // @ts-ignore
     return Object.keys(Theme.extendOptions.props);
+  }
+
+  getRealColor(prop: string) {
+    const themeStyle = globalEvent.$options.theme || {};
+    if (prop === 'colorGroup' || !themeStyle[prop].includes('var')) {
+      return themeStyle[prop];
+    }
+    const rootStyleSelector = getRootStyleSelector(themeStyle);
+    const computedStyle = window.getComputedStyle(document.querySelector(rootStyleSelector));
+    const themeColor = themeStyle[prop].replace(/var\((.+)\)/g, '$1');
+    const colorValue = computedStyle.getPropertyValue(themeColor);
+    return colorValue.trim();
   }
 
   getDataNameOfProp(prop: string) {

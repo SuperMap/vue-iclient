@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import Tendrils from './assets/tendrils.png';
 import { FeatureCollection } from 'geojson';
 /**
@@ -45,11 +45,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
 
   private _lightIntensity: number;
 
-  constructor(
-    features: FeatureCollection,
-    modelScale: number = 5.41843220338983e-6,
-    layerId?: string
-  ) {
+  constructor(features: FeatureCollection, modelScale = 5.41843220338983e-6, layerId?: string) {
     super();
     this.layerId = layerId;
     this.features = features;
@@ -124,12 +120,12 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
         this.map = map;
       },
       render: (gl, matrix) => {
-        var rotationX = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), modelTransform.rotateX);
-        var rotationY = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), modelTransform.rotateY);
-        var rotationZ = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1), modelTransform.rotateZ);
+        let rotationX = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), modelTransform.rotateX);
+        let rotationY = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 1, 0), modelTransform.rotateY);
+        let rotationZ = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(0, 0, 1), modelTransform.rotateZ);
 
-        var m = new THREE.Matrix4().fromArray(matrix);
-        var l = new THREE.Matrix4()
+        let m = new THREE.Matrix4().fromArray(matrix);
+        let l = new THREE.Matrix4()
           .makeTranslation(modelTransform.translateX, modelTransform.translateY, modelTransform.translateZ)
           .scale(new THREE.Vector3(modelTransform.scale, -modelTransform.scale, modelTransform.scale))
           .multiply(rotationX)
@@ -165,7 +161,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
     return modelTransform;
   }
 
-  private _fire(density: number = 150, height: number = 8, r: number = 0.2): void {
+  private _fire(density = 150, height = 8, r = 0.2): void {
     this._object = new THREE.Group();
 
     this._fireballs = [];
@@ -173,13 +169,13 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
     this._height = height;
     this._radius = r;
 
-    var texture = new THREE.TextureLoader().load(
+    let texture = new THREE.TextureLoader().load(
       Tendrils,
-      function() {
+      function () {
         console.log('loaded');
       },
       undefined,
-      function(e) {
+      function (e) {
         console.log('error', e);
       }
     );
@@ -245,7 +241,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
     this._object.add(this._light);
     // this._fireMaterial = new THREE.MeshStandardMaterial(0x661100);
 
-    for (var i = 0; i < density; i++) {
+    for (let i = 0; i < density; i++) {
       let geometry = new THREE.SphereGeometry(1, 32, 32);
       let mat = this._fireMaterial.clone();
       mat.uniforms.blendPattern.value = texture;

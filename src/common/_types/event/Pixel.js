@@ -96,7 +96,7 @@ export class Pixel {
    * @returns {boolean} 如果传入的像素点和当前像素点相同返回 true，如果不同或传入参数为 NULL 则返回 false。
    */
   equals(px) {
-    var equals = false;
+    let equals = false;
     if (px != null) {
       equals = ((this.x === px.x && this.y === px.y) ||
         (isNaN(this.x) && isNaN(this.y) && isNaN(px.x) && isNaN(px.y)));
@@ -154,7 +154,7 @@ export class Pixel {
    * @returns {Pixel} 返回一个新的 pixel，该 pixel 是由当前的 pixel 对象的 x，y 值与传入的 Pixel 对象的 x，y 值相加得到。
    */
   offset(px) {
-    var newPx = this.clone();
+    let newPx = this.clone();
     if (px) {
       newPx = this.add(px.x, px.y);
     }

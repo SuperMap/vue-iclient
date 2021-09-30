@@ -1,6 +1,8 @@
-import iServerRestService, { vertifyEpsgCode, transformFeatures } from './iServerRestService';
-import { isXField, isYField, handleWithCredentials, handleDataParentRes } from './util';
-import { Events } from '../_types/event/Events';
+import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient/src/common/_utils/iServerRestService';
+import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient/src/common/_utils/util';
+import { Events } from 'vue-iclient/src/common/_types/event/Events';
 
 /**
  * @class iPortalDataService
@@ -117,6 +119,7 @@ export default class iPortalDataService extends Events {
         });
       });
   }
+
   _getDatafromRest(serviceType, address, queryInfo) {
     if (serviceType === 'RESTDATA') {
       let url = SuperMap.Util.urlPathAppend(address, 'data/datasources');
@@ -266,16 +269,18 @@ export default class iPortalDataService extends Events {
         });
       });
   }
+
   _formatGeoJSON(data, queryInfo) {
     let features = data.features;
     if (queryInfo && queryInfo.maxFeatures > 0) {
       features = features.slice(0, queryInfo.maxFeatures);
     }
     features.forEach((row, index) => {
-      row.properties['index'] = index;
+      row.properties.index = index;
     });
     return features;
   }
+
   _excelData2Feature(dataContent, queryInfo) {
     let fieldCaptions = dataContent.colTitles;
     // 位置属性处理
@@ -313,7 +318,7 @@ export default class iPortalDataService extends Events {
         properties: attributes
       };
       if (x && y) {
-        attributes['index'] = i + '';
+        attributes.index = i + '';
         feature.geometry = {
           type: 'Point',
           coordinates: [x, y]
@@ -329,8 +334,8 @@ export default class iPortalDataService extends Events {
     let content = typeof dataContent === 'string' ? JSON.parse(dataContent) : dataContent;
     let features = [];
     if (content instanceof Array) {
-      content.map(val => {
-        if (val.hasOwnProperty('geometry')) {
+      content.forEach(val => {
+        if (Object.prototype.hasOwnProperty.call(val, 'geometry')) {
           features.push({ properties: val.properties || val, geometry: val.geometry });
         } else {
           features.push({ properties: val });
@@ -341,6 +346,7 @@ export default class iPortalDataService extends Events {
     }
     return { features };
   }
+
   // 转坐标系
   _transformContentFeatures(features) {
     let transformedFeatures = features;

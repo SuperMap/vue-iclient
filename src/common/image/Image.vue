@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import Theme from '../_mixin/Theme';
-import { parseUrl } from '../_utils/util';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import { parseUrl } from 'vue-iclient/src/common/_utils/util';
 
 export default {
   name: 'SmImage',

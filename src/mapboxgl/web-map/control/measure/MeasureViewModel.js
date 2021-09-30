@@ -1,11 +1,11 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import length from '@turf/length';
 import area from '@turf/area';
 import center from '@turf/center';
 import { convertLength, convertArea } from '@turf/helpers';
-import { reservedDecimal } from '../../../../common/_utils/util';
-import { geti18n } from '../../../../common/_lang';
-import drawEvent from '../../../_types/draw-event';
+import { reservedDecimal } from 'vue-iclient/src/common/_utils/util';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
+import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 
 /**
  * @class MeasureViewModel
@@ -65,7 +65,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     }
   }
 
-  _changeMode(e) {
+  _changeMode() {
     if (this._isDrawing() && this.continueDraw && this.isEditing) {
       this.draw.changeMode(this.mode);
       this.continueDrawBind = this._continueDraw.bind(this);
@@ -143,7 +143,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     this.fire('measure-start', { result: this._getFormatResult(this.result) });
   }
 
-  _continueDraw(e) {
+  _continueDraw() {
     if (this._isDrawing()) {
       this._resetDraw(true);
       this.map.off('mousemove', this.popupFollowMouseBind);
@@ -216,8 +216,8 @@ class MeasureViewModel extends mapboxgl.Evented {
       popup.setText(`${this._getFormatResult(this.result)} ${uniti18n}`);
       popup.addTo(this.map);
       this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
-      this.cachePolygonUnit['value'] = this.result;
-      this.cachePolygonUnit['unit'] = this.activeUnit;
+      this.cachePolygonUnit.value = this.result;
+      this.cachePolygonUnit.unit = this.activeUnit;
       this.tipHoverDiv = popup;
     }
   }
@@ -299,7 +299,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     const result = this._getFormatResult(popupResult);
     if (this.continueDraw) {
       this.tipHoverDiv &&
-      this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
+        this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
     } else {
       this._removeHoverPopup();
       const popup = new mapboxgl.Popup({
@@ -307,10 +307,7 @@ class MeasureViewModel extends mapboxgl.Evented {
         closeOnClick: false,
         className: 'sm-component-measure__popup sm-mapboxgl-tabel-popup'
       });
-      popup
-        .setLngLat(centerResult.geometry.coordinates)
-        .setText(`${result} ${uniti18n}`)
-        .addTo(this.map);
+      popup.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`).addTo(this.map);
       this.areaTipNodesList[feature.id] = popup;
     }
     this.setPopupStyle && setTimeout(this.setPopupStyle, 0);

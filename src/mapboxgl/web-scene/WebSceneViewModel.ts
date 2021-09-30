@@ -1,10 +1,10 @@
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import isEqual from 'lodash.isequal';
 
 interface scanEffect {
   status?: boolean;
   type?: 'circle' | 'noScan' | 'line';
-  centerPostion?: { x: number; y: number; z: number } | {};
+  centerPostion?: { x: number; y: number; z: number } | Object;
   period?: number;
   speed?: number;
 }

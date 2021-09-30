@@ -7,6 +7,7 @@ Vue-iClient-MapboxGL 内置了 [13 套主题](https://github.com/SuperMap/vue-ic
 ### 使用 Vue-iClient-MapboxGL 内置主题
 
 ```js
+// 完整引入Vue-iClient-MapboxGL
 import Vue from 'vue';
 import VueiClient from '@supermap/vue-iclient-mapboxgl';
 import App from './App.vue';
@@ -16,7 +17,21 @@ import App from './App.vue';
 Vue.use(VueiClient, { theme: 'light' });
 
 // 2 通过 setTheme 方法设置主题
-VueiClient.setTheme({ theme: 'light' });
+VueiClient.setTheme('light');
+```
+
+或
+
+```js
+// 按需引入Vue-iClient-MapboxGL
+import Vue from 'vue';
+import { Button } from '@supermap/vue-iclient-mapboxgl';
+import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
+
+// 通过 setTheme 方法设置主题。
+setTheme('light');
+
+Vue.use(Button);
 ```
 
 ### 使用自定义主题
@@ -34,6 +49,11 @@ VueiClient.setTheme({ theme: 'light' });
 如下例所示：
 
 ```js
+// 完整引入Vue-iClient-MapboxGL
+import Vue from 'vue';
+import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import App from './App.vue';
+
 let theme = {
   textColor: '#eee',
   componentBackground: 'rgba(0,0,0,0)',
@@ -42,7 +62,25 @@ let theme = {
 
 Vue.use(VueiClient, { theme });
 // 或
-VueiClient.setTheme({ theme });
+VueiClient.setTheme(theme);
+```
+
+或
+
+```js
+// 按需引入Vue-iClient-MapboxGL
+import { Button } from '@supermap/vue-iclient-mapboxgl';
+import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
+
+let theme = {
+  textColor: '#eee',
+  componentBackground: 'rgba(0,0,0,0)',
+  colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad']
+};
+
+setTheme(theme);
+
+Vue.use(Button);
 ```
 
 <!-- 以上就完成了主题的设置，如果你想单独改变某个组件的主题样式，你可以为这个组件传递 `textColor` `background` `colorGroup` 这三个其中之一的参数，来改变这个组件的主题样式。 -->

@@ -7,8 +7,8 @@ function MapboxDraw() {
       console.log('delete');
     },
     // jest.fn(),
-    delete: function() {
-      console.log('delete');
+    delete: function() { 
+      jest.fn()
     },
     getAll: function() {
       return {
@@ -32,13 +32,8 @@ function MapboxDraw() {
   };
 }
 
-let modes = {
-  direct_select: {},
-  draw_line_string: {},
-  draw_point: {},
-  draw_polygon: {},
-  simple_select: {}
-};
 
-export { modes };
-export default MapboxDraw;
+var modes = (MapboxDraw.modes = MapboxDraw.modes || {});
+var simple_select  = (modes.simple_select = jest.fn());
+
+module.exports = { MapboxDraw,modes}

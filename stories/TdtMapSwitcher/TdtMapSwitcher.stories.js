@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/tdtMapSwitcher'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.tdtMapSwitcher.title')}`,
+  id: 'GISComponents/tdtMapSwitcher'
 };
 
 export const tdtMapSwitcher = () => ({
@@ -25,5 +26,5 @@ export const tdtMapSwitcher = () => ({
   `
 });
 tdtMapSwitcher.story = {
-  name: toI18n('gisComponent.tdtMapSwitcher')
+  name: toI18n('gisComponent.basic')
 };

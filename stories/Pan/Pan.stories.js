@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/pan'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.pan.title')}`,
+  id: 'GISComponents/pan'
 };
 
 export const pan = () => ({
@@ -14,5 +15,5 @@ export const pan = () => ({
   `
 });
 pan.story = {
-  name: toI18n('gisComponent.pan')
+  name: toI18n('gisComponent.basic')
 };

@@ -1,12 +1,13 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/collapse-card/style/collapse-card.scss';
 @import '../../../../../common/card/style/card.scss';
 @import '../../../../../common/collapse/style/collapse.scss';
 
 @include b(layer-list) {
   $layer-list-prefix: &;
   $collapse-prefix: #{$ant-prefix}-collapse;
-  
+
   z-index: 10;
   @include e(content) {
     width: 100%;
@@ -51,7 +52,7 @@
         .#{$collapse-prefix}-content {
           max-height: 400px;
           overflow-y: auto;
-          background-color: $background-color-base;
+          background-color: $collapse-card-secondary-bg;
           margin: 0 -16px;
           padding: 0 16px 0 8px;
         }
@@ -61,23 +62,28 @@
         }
       }
     }
-    .#{$collapse-prefix}-header, #{$layer-list-prefix}__elcarditem {
+    .#{$collapse-prefix}-header,
+    #{$layer-list-prefix}__elcarditem {
       padding: 6px 0 !important;
       border-bottom: 1px solid $border-color-split;
     }
     &:last-child {
-      .#{$collapse-prefix}-header, #{$layer-list-prefix}__elcarditem {
+      .#{$collapse-prefix}-header,
+      #{$layer-list-prefix}__elcarditem {
         border-bottom-color: transparent;
       }
     }
-    
-    .#{$iconfont-class-prefix}-partially-visible, .#{$iconfont-class-prefix}-visible {
+
+    .#{$iconfont-class-prefix}-partially-visible,
+    .#{$iconfont-class-prefix}-visible {
       color: $primary-color;
     }
     .#{$iconfont-class-prefix}-hidden {
       color: $disabled-color;
     }
-    #{$layer-list-prefix}__sourcelayeritem, #{$layer-list-prefix}__elcarditem, .header-wrap {
+    #{$layer-list-prefix}__sourcelayeritem,
+    #{$layer-list-prefix}__elcarditem,
+    .header-wrap {
       display: flex;
       align-items: center;
       font-size: 12px;
@@ -90,6 +96,14 @@
           font-size: 14px;
         }
       }
+    }
+    #{$layer-list-prefix}__elcarditem {
+      justify-content: space-between;
+    }
+    #{$layer-list-prefix}__layer {
+      display: flex;
+      width: 100%;
+      padding-right: 16px;
     }
     .header-wrap {
       justify-content: space-between;
@@ -115,5 +129,11 @@
   }
   @include e(layergroupname) {
     max-width: 200px;
+  }
+  .sm-components-icon-attribute {
+    color: $text-color;
+  }
+  .sm-components-icon-attribute-open {
+    color: $primary-5;
   }
 }

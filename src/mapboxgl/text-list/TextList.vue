@@ -9,7 +9,7 @@
         <template v-if="animateContent && animateContent.length > 0">
           <template
             v-for="(item, index) in (getColumns && getColumns.length > 0 && getColumns) ||
-              Object.keys(animateContent[0])"
+            Object.keys(animateContent[0])"
           >
             <div
               :key="index"
@@ -83,12 +83,29 @@
             <div
               v-for="(items, key, itemIndex) in filterProperty(rowData, 'idx')"
               :key="key"
-              :title="items"
-              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
+              :title="!getColumns[itemIndex].slots && items"
+              :class="getColumns[itemIndex].slots && 'sm-component-text-list__slot'"
+              :style="[
+                listStyle.rowStyle,
+                { flex: getColumnWidth(itemIndex) },
+                getCellStyle(items, itemIndex)
+              ]"
             >
-              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.prefix }}</span>
-              {{ items }}
-              <span v-if="getColumns[itemIndex]">{{ getColumns[itemIndex].fixInfo.suffix }}</span>
+              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">
+                {{ getColumns[itemIndex].fixInfo.prefix }}
+              </span>
+              <span v-if="!getColumns[itemIndex].slots"> {{ items }} </span>
+              <slot
+                v-else
+                :name="getColumns[itemIndex].slots.customRender"
+                :text="items"
+                :record="rowData"
+                :rowIndex="index"
+              >
+              </slot>
+              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">{{
+                getColumns[itemIndex].fixInfo.suffix
+              }}</span>
             </div>
           </div>
         </template>
@@ -101,20 +118,22 @@
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
-import debounce from 'lodash/debounce';
-import getFeatures from '../../common/_utils/get-features';
-import Theme from '../../common/_mixin/Theme';
-import Timer from '../../common/_mixin/Timer';
-import { getColorWithOpacity } from '../../common/_utils/util';
+import debounce from 'lodash.debounce';
+import getFeatures from 'vue-iclient/src/common/_utils/get-features';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Timer from 'vue-iclient/src/common/_mixin/Timer';
+import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import merge from 'lodash.merge';
 import clonedeep from 'lodash.clonedeep';
-import SmSpin from '../../common/spin/Spin.vue';
+import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 
 interface HeaderStyleParams {
   show?: boolean;
   height?: number;
   background?: string;
   color?: string;
+  sortBtnSelectColor?: string;
+  sortBtnColor?: string;
 }
 
 interface RowStyleParams {
@@ -138,13 +157,23 @@ interface CellStyleRangeGroupParams {
   data: StyleRangeParams[];
 }
 
+interface SlotParams {
+  customRender: '';
+}
+
+interface FixInfoParams {
+  prefix: '';
+  suffix: '';
+}
+
 interface ColumnParams {
   header: string;
   field: string;
   width: number;
   sort: true | false | undefined;
   defaultSortType: 'ascend' | 'descend' | 'none';
-  fixInfo: Object;
+  fixInfo: FixInfoParams;
+  slots: SlotParams;
 }
 
 @Component({
@@ -242,13 +271,13 @@ class SmTextList extends Mixins(Theme, Timer) {
   @Prop({ default: '#b9b9b9' }) highlightColor: String | Function;
 
   @Watch('content')
-  contentChanged(newVal, oldVal) {
+  contentChanged() {
     this.listData = this.handleContent(this.content);
     this.getListHeightStyle();
   }
 
   @Watch('dataset', { deep: true })
-  datasetChanged(newVal, oldVal) {
+  datasetChanged() {
     if (this.dataset && (this.dataset.url || this.dataset.geoJSON)) {
       this.getFeaturesFromDataset();
     } else {
@@ -260,7 +289,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   @Watch('columns')
-  columnsChanged(newVal, oldVal) {
+  columnsChanged() {
     if (this.content || this.featuresData) {
       this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
       this.getListHeightStyle();
@@ -290,13 +319,13 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   @Watch('rowStyle')
-  rowStyleChanged(next, before) {
+  rowStyleChanged(next) {
     this.rowStyleData = Object.assign({}, this.rowStyleData, next);
     this.getListHeightStyle();
   }
 
   @Watch('headerStyle')
-  headerHeightChanged(next, before) {
+  headerHeightChanged(next) {
     this.headerStyleData = Object.assign({}, this.headerStyleData, next);
     this.getListHeightStyle();
   }
@@ -310,30 +339,31 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   @Watch('sortType')
-  sortTypeChanged(newVal, oldVal) {
+  sortTypeChanged() {
     let rawContent = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
     this.listData = this.sortContent(rawContent);
     this.getListHeightStyle();
   }
 
   @Watch('sortField')
-  sortFieldChanged(newVal, oldVal) {
+  sortFieldChanged() {
     let rawContent = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
     this.listData = this.sortContent(rawContent);
     this.getListHeightStyle();
   }
 
   @Watch('highlightColor', { immediate: true })
-  highlightColorChanged(newVal, oldVal) {
+  highlightColorChanged(newVal) {
     if (newVal && typeof newVal === 'string') {
       Object.keys(this.eventTriggerColorList).forEach(colorType => {
         this.eventTriggerColorList[colorType] = newVal;
       });
     }
   }
+
   // 切换自动滚动与排序时重置。。。
   @Watch('highlightOptions', { immediate: true, deep: true })
-  highlightOptionsChanged(newVal, oldVal) {
+  highlightOptionsChanged(newVal) {
     let bounds = this.rowsIndexViewBounds();
     let autoBounds = this.getAutoRollingIndexBounds;
     if (!this.autoRolling && newVal && newVal.length && !this.clamp(newVal[0], bounds[0], bounds[1])) {
@@ -369,7 +399,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   get getRowStyle() {
-    return function(index, rawIndex) {
+    return function (index, rawIndex) {
       if (this.highlightCurrentRow) {
         if (this.activeClickRowIndex && this.activeClickRowIndex.includes(index)) {
           return {
@@ -395,7 +425,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   get getCellStyle() {
-    return function(value, columnIndex) {
+    return function (value, columnIndex) {
       if (isNaN(+value) || !this.thresholdsStyle || !this.thresholdsStyle[columnIndex]) {
         return {};
       }
@@ -426,7 +456,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   get getColumnWidth() {
-    return function(index) {
+    return function (index) {
       if (this.getColumns && this.getColumns.length > 0 && index < this.getColumns.length) {
         const width = this.getColumns[index].width;
         return width ? `0 0 ${(width / 100) * this.containerWidth}px` : 1;
@@ -566,8 +596,9 @@ class SmTextList extends Mixins(Theme, Timer) {
     let contentHeight = { height: `${contentHeightNum}px` };
     let rowHeight = this.rowStyleData.height;
     if (!rowHeight) {
-      if (this.listData.length < this.rows) {
-        rowHeight = contentHeightNum / (this.listData.length - 1);
+      if (this.listData.length <= this.rows) {
+        const listDataLength = Math.max(this.autoRolling ? this.listData.length - 1 : this.listData.length, 1);
+        rowHeight = contentHeightNum / listDataLength;
       } else {
         rowHeight = contentHeightNum / this.rows;
       }
@@ -593,7 +624,8 @@ class SmTextList extends Mixins(Theme, Timer) {
           this.getColumns.forEach((column, index) => {
             obj[`${column.field}-${index}`] = data[column.field] || '-';
           });
-        obj['idx'] = index;
+        // @ts-ignore
+        obj.idx = index;
         JSON.stringify(obj) !== '{}' && listData.push(obj);
       });
       return listData;
@@ -616,7 +648,8 @@ class SmTextList extends Mixins(Theme, Timer) {
           this.getColumns.forEach((column, index) => {
             contentObj[`${column.field}-${index}`] = properties[column.field] || '-';
           });
-          contentObj['idx'] = index;
+          // @ts-ignore
+          contentObj.idx = index;
         } else {
           contentObj = properties;
         }
@@ -625,21 +658,24 @@ class SmTextList extends Mixins(Theme, Timer) {
 
     return content;
   }
+
   itemByItem() {
     clearInterval(this.startInter);
     this.startInter = setInterval(() => {
       let wrapper = this.$refs.listContent;
-      wrapper && wrapper['style'] && (wrapper['style'].marginTop = `-${this.listStyle.rowStyle.height}`);
+      // @ts-ignore
+      wrapper && wrapper.style && (wrapper.style.marginTop = `-${this.listStyle.rowStyle.height}`);
       this.animate = !this.animate;
       setTimeout(() => {
-        let first =
-          this.$refs.listContent && this.$refs.listContent['children'] && this.$refs.listContent['children'][0];
+        // @ts-ignore
+        let first = this.$refs.listContent && this.$refs.listContent.children && this.$refs.listContent.children[0];
         if (first) {
           this.curRollingStartIndex = +first.dataset.index;
         }
         // @ts-ignore
         first && this.$refs.listContent.appendChild(first);
-        wrapper && wrapper['style'] && (wrapper['style'].marginTop = '0px'); // 保持滚动距离初始值一直为 0
+        // @ts-ignore
+        wrapper && wrapper.style && (wrapper.style.marginTop = '0px'); // 保持滚动距离初始值一直为 0
         this.animate = !this.animate;
       }, 500);
     }, 2000);

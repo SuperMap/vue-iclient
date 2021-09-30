@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class ZoomViewModel
@@ -26,6 +26,7 @@ export default class ZoomViewModel extends mapboxgl.Evented {
       this._wheelEventFires(e);
     });
   }
+
   /**
    * @function ZoomViewModel.prototype.zoomIn
    * @description 放大地图。
@@ -49,6 +50,7 @@ export default class ZoomViewModel extends mapboxgl.Evented {
   getMaxZoom() {
     return this.map.getMaxZoom();
   }
+
   /**
    * @function ZoomViewModel.prototype.getMinZoom
    * @description 获取地图的最小缩放级别。
@@ -56,6 +58,7 @@ export default class ZoomViewModel extends mapboxgl.Evented {
   getMinZoom() {
     return this.map.getMinZoom();
   }
+
   /**
    * @function ZoomViewModel.prototype.getZoom
    * @description 获取地图当前的缩放级别。
@@ -63,6 +66,7 @@ export default class ZoomViewModel extends mapboxgl.Evented {
   getZoom() {
     return this.map.getZoom();
   }
+
   /**
    * @function ZoomViewModel.prototype._getDatasetInfoSuccess
    * @description 设置地图的缩放级别。
@@ -71,6 +75,7 @@ export default class ZoomViewModel extends mapboxgl.Evented {
   setZoom(zoom) {
     this.map.setZoom(zoom);
   }
+
   /**
    * @function ZoomViewModel.prototype._getDatasetInfoSuccess
    * @description 滚轮事件监听后回调函数fn。
@@ -78,11 +83,12 @@ export default class ZoomViewModel extends mapboxgl.Evented {
    */
   wheelEventOn(fn) {
     //  监听vm的滚轮事件，回调函数
-    this.on('mouseWheel', e => {
+    this.on('mouseWheel', () => {
       // 滚轮事件的回调fn()
       fn();
     });
   }
+
   /**
    * @function ZoomViewModel.prototype._wheelEventFires
    * @description 触发vm的mouseWheel事件。
@@ -100,5 +106,6 @@ export default class ZoomViewModel extends mapboxgl.Evented {
       result: e
     });
   }
+
   removed() {}
 }

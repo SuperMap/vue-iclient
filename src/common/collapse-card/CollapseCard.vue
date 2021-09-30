@@ -6,7 +6,8 @@
         ['sm-component-collapse-card__icon']: true,
         ['is-' + position]: true,
         [`is-click-${isShow ? 'out' : 'in'}`]: true,
-        ['is-not-header']: !headerName
+        ['is-not-header']: !headerName,
+        ['icon-box-shadow']: !isShow
       }"
       :style="[collapseCardHeaderBgStyle, headingTextColorStyle]"
       @click="iconClicked"
@@ -39,10 +40,10 @@
   </div>
 </template>
 <script>
-import Theme from '../_mixin/Theme';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 
 export default {
-  name: 'SmCard',
+  name: 'SmCollapseCard',
   mixins: [Theme],
   props: {
     iconPosition: {
@@ -65,7 +66,7 @@ export default {
     },
     splitLine: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {

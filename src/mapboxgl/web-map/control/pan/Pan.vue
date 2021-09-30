@@ -1,7 +1,10 @@
 <template>
-  <div :class="['sm-component-pan', mapboxglClass]" :style="[collapseCardHeaderBgStyle, secondaryTextColorStyle]">
+  <div
+    :class="['sm-component-pan', mapboxglClass]"
+    :style="[collapseCardHeaderBgStyle, secondaryTextColorStyle]"
+  >
     <div class="sm-component-pan__item" @click="panToCenter">
-      <div class="sm-component-pan__center" />
+      <div class="sm-component-pan__center" :style="collapseCardHeaderBgStyle" />
       <i class="sm-components-icon-fullscreen" />
     </div>
     <div class="sm-component-pan__item" @click="panToLeft">
@@ -24,9 +27,9 @@
 </template>
 <script>
 import PanViewModel from './PanViewModel';
-import MapGetter from '../../../_mixin/map-getter';
-import Control from '../../../_mixin/control';
-import Theme from '../../../../common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 
 export default {
   name: 'SmPan',

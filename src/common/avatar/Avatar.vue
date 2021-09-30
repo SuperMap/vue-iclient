@@ -1,9 +1,9 @@
 <script lang="ts">
 import { VNode } from 'vue';
 import Avatar from 'ant-design-vue/es/avatar/Avatar';
-import VueTypes from '../_utils/vue-types';
-import Theme from '../_mixin/Theme';
-import AntdRender from '../_mixin/AntdRender';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
 export const avatarTypes = {
   icon: VueTypes.any,
@@ -26,7 +26,7 @@ export default {
     renderChildren(): VNode[] {
       const h = this.$createElement;
       const children = [];
-      if ((!this.icon || !this.$slots['icon']) && this.iconClass) {
+      if ((!this.icon || !this.$slots.icon) && this.iconClass) {
         children.push(
           h('i', {
             class: { [this.iconClass]: true },
@@ -34,7 +34,7 @@ export default {
           })
         );
       }
-      return [this.$slots['default'], children];
+      return [this.$slots.default, children];
     }
   }
 };

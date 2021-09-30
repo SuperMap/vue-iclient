@@ -41,12 +41,12 @@ class SmWebScene extends Vue {
   }
 
   @Watch('options.scanEffect')
-  scanEffectChaned(newVal, oldVal) {
+  scanEffectChaned() {
     this.WebSceneViewModel && this.WebSceneViewModel.setScanEffect(this.options.scanEffect);
   }
 
   @Watch('options.position')
-  positionChaned(newVal, oldVal) {
+  positionChaned() {
     this.WebSceneViewModel && this.WebSceneViewModel.setPosition(this.options.position);
   }
 

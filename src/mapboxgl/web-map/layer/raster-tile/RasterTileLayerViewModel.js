@@ -1,5 +1,5 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class RasterTileLayerViewModel extends mapboxgl.Evented {
   constructor(rasterLayerOptions) {
@@ -33,11 +33,13 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
     // enhance扩展，传iserver标识是iserver rest map
     this.rasterSource = '';
   }
+
   setMap(mapInfo) {
     const { map } = mapInfo;
     this.map = map;
     this._init();
   }
+
   setTiles(tiles) {
     if (this.map.getSource(this.layerId)) {
       this.map.getSource(this.layerId).tiles = tiles;
@@ -51,6 +53,7 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
       this._addLayer();
     }
   }
+
   _init() {
     if (this.mapUrl) {
       this._addRestMapLayer();
@@ -58,6 +61,7 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
       this._addLayer();
     }
   }
+
   _addRestMapLayer() {
     const service = new mapboxgl.supermap.MapService(this.mapUrl);
     service.getMapInfo(mapObj => {
@@ -76,6 +80,7 @@ export default class RasterTileLayerViewModel extends mapboxgl.Evented {
       this._addLayer(mapObj);
     });
   }
+
   _addLayer() {
     this.map.addLayer(
       {

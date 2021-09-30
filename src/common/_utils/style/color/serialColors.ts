@@ -1,12 +1,18 @@
-import colorPalette from './colorPalette';
-import themeFactory from '../theme/theme.json';
-import { getColorWithOpacity, getDarkenColor } from '../../util';
-import { isArray } from '../../vue-types/utils';
+import colorPalette from 'vue-iclient/src/common/_utils/style/color/colorPalette';
+import themeFactory from 'vue-iclient/src/common/_utils/style/theme/theme.json';
+import { getColorWithOpacity, getDarkenColor, getDataType } from 'vue-iclient/src/common/_utils/util';
 import cssVars from 'css-vars-ponyfill';
 
-const lightTheme = themeFactory && themeFactory[1];
+export interface styleConfigParams {
+  styleConfig: {
+    id?: string;
+    className?: string;
+    include?: string;
+  };
+}
 
-export type ThemeStyleParams = typeof lightTheme;
+const lightTheme = themeFactory && themeFactory[1];
+export type ThemeStyleParams = typeof lightTheme & styleConfigParams;
 
 export interface FunctionColorParams {
   successColor?: string | string[];
@@ -54,16 +60,16 @@ export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string
     let nextColor: string;
     switch (index) {
       case 2:
-        nextColor = prevPrimaryColor ? getColorWithOpacity(acceptColor, 0.15) : colorPalette(acceptColor, index);
+        nextColor = nextThemeStyle.selectedColor || getColorWithOpacity(acceptColor, 0.15);
         break;
       case 5:
-        nextColor = colorPalette(acceptColor, index);
+        nextColor = nextThemeStyle.hoverColor || colorPalette(acceptColor, index);
         break;
       case 6:
         nextColor = acceptColor;
         break;
       case 7:
-        nextColor = colorPalette(acceptColor, index);
+        nextColor = nextThemeStyle.clickColor || colorPalette(acceptColor, index);
         break;
       default:
         nextColor = colorPalette(acceptColor, index);
@@ -78,8 +84,8 @@ export function getFunctionSerialColors(functionColors?: ThemeStyleParams): Func
   const seriesIndex = [1, 2, 3, 4, 5, 6, 7];
   const acceptFunctionColors = functionColors || antdFunctionColors;
   const nextFunctionSerialColors: FunctionColorParams = {};
-  for (let key in acceptFunctionColors) {
-    if (antdFunctionColors.hasOwnProperty(key)) {
+  for (const key in acceptFunctionColors) {
+    if (Object.prototype.hasOwnProperty.call(antdFunctionColors, key)) {
       const color = acceptFunctionColors[key] || antdFunctionColors[key];
       nextFunctionSerialColors[key] = [];
       seriesIndex.forEach(item => {
@@ -103,7 +109,7 @@ export function getExtralColors(
     componentBackgroundWithoutOpacity: getColorWithOpacity(themeStyleData.componentBackground, 1, false),
     primaryShadowColor: getColorWithOpacity(primarySerialColors[4], 0.25),
     dangerShadowColor: getColorWithOpacity(functionColors.dangerColor[4], 0.25),
-    disabledDarkenBgColor10: getDarkenColor(themeStyleData.disabledBgColor, 10),
+    disabledDarkenBgColor10: getDarkenColor(themeStyleData.containerDisabled, 10),
     tableHeaderSortActiveBg,
     tableHeaderFilterActiveBg: getDarkenColor(tableHeaderSortActiveBg, 5)
   };
@@ -114,8 +120,10 @@ export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerPa
   const defaultThemeStyle = nextThemeStyle.style || 'light';
   const defaultTheme = themeFactory.find((item: ThemeStyleParams) => item.label === defaultThemeStyle);
   // 合并 lightTheme 是因为可能其他 theme 没有完整的参数，如 disableColor
+  const serialColorsReplacer = getPrimarySerialColors(
+    Object.assign({ colorGroup: defaultTheme && defaultTheme.colorGroup }, nextThemeStyle)
+  );
   const themeStyleData = Object.assign({}, lightTheme, defaultTheme, nextThemeStyle);
-  const serialColorsReplacer = getPrimarySerialColors(themeStyleData);
   const functionSerialColorsReplacer = getFunctionSerialColors(themeStyleData);
   const nextThemeStyleData = Object.assign({}, themeStyleData, {
     selectedColor: serialColorsReplacer[1],
@@ -132,6 +140,14 @@ export function dealWithTheme(nextThemeStyle: ThemeStyleParams): StyleReplacerPa
   return nextThemeData;
 }
 
+export function toStyleVariable(variable) {
+  return `--${variable.replace(/[A-Z]/g, '-$&').toLowerCase()}`;
+}
+
+export function getRootStyleSelector(themeStyle: ThemeStyleParams) {
+  return themeStyle.styleConfig?.className && isNativeSupport ? `.${themeStyle.styleConfig.className}` : ':root';
+}
+
 function setRootStyle(themeData: StyleReplacerParams): void {
   const { themeStyle, primarySerialColors, functionSerialColors, extraSerialColors } = themeData;
   const primaryColor = themeStyle.colorGroup[0];
@@ -145,41 +161,43 @@ function setRootStyle(themeData: StyleReplacerParams): void {
     const varKey = `--primary-${index + 1}`;
     variables[varKey] = color;
   });
-  for (let key in functionSerialColors) {
+  for (const key in functionSerialColors) {
     functionSerialColors[key].forEach((color: string, index: number) => {
       const varKey = `--${key.replace('Color', '')}-${index + 1}`;
       variables[varKey] = color;
     });
   }
   themeKeys.forEach((key: string) => {
-    if (!isArray(themeInfo[key])) {
-      const varKey = `--${key.replace(/[A-Z]/g, '-$&').toLowerCase()}`;
-      variables[varKey] = themeInfo[key];
+    if (!['[object Object]', '[object Array]'].includes(getDataType(themeInfo[key]))) {
+      const varKey = toStyleVariable(key);
+      variables[varKey] = themeInfo[key] || 'rgba(0, 0, 0, 0)';
     }
   });
-  const rootStyle = `:root ${JSON.stringify(variables, null, 2)
+  const rootStyleSelector = getRootStyleSelector(themeStyle);
+  const antdStyleId = themeStyle.styleConfig?.id || 'sm-component-style';
+  const rootStyle = `${rootStyleSelector} ${JSON.stringify(variables, null, 2)
     .replace(/(:.+),/g, '$1;')
     .replace(/"/g, '')}`;
-  const antdStyleId = 'sm-component-style';
   let antStyleTag = document.getElementById(antdStyleId);
   if (!antStyleTag) {
     antStyleTag = document.createElement('style');
     antStyleTag.setAttribute('id', antdStyleId);
     antStyleTag.setAttribute('type', 'text/css');
     document.head.insertBefore(antStyleTag, document.head.firstChild);
-    const options = {
-      include: 'style#sm-component-style, link[href*=vue-iclient-mapboxgl], link[href*=styles]',
-      silent: true,
-      onlyLegacy: true,
-      variables: {},
-      watch: false
-    };
-    if (!isNativeSupport) {
-      options.onlyLegacy = false;
-      options.watch = true;
-      options.variables = variables;
-    }
-    cssVars(options);
   }
+  const defaultInclude = 'style#sm-component-style, link[href*=vue-iclient-mapboxgl]';
+  const options = {
+    include: themeStyle.styleConfig?.include || defaultInclude,
+    silent: true,
+    onlyLegacy: true,
+    variables: {},
+    watch: false
+  };
+  if (!isNativeSupport) {
+    options.onlyLegacy = false;
+    options.watch = true;
+    options.variables = variables;
+  }
+  cssVars(options);
   antStyleTag.innerHTML = rootStyle;
 }

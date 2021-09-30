@@ -38,7 +38,7 @@ Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路�
 | 参数            | 说明                | 类型                                | 可选值 | 默认值 |
 | :-------------- | :------------------ | :---------------------------------- | :----- | :----- |
 | withCredentials | 请求是否携带 cookie | boolean                             | -      | false  |
-| position        | 场景中心店          | { x: number; y: number; z: number } | -      | -      |
+| position        | 场景中心点          | { x: number; y: number; z: number } | -      | -      |
 | scanEffect      | 场景扫描参数        | [scanEffect](#scaneffect)           | -      | -      |
 
 ### scanEffect

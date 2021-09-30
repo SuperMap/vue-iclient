@@ -11,3 +11,5 @@
 | :-------- | :------- | :----- | :-------------------------------------------- | :----- |
 | timeType  | 时间类型 | string | 'date' \| 'date+second' \| 'date+second+week' | 'date' |
 | fontStyle | 字体样式 | object | -                                             | -      |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)

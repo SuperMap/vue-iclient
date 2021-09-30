@@ -1,0 +1,167 @@
+@import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../common/button/style/button.scss';
+@import '../../../../common/input/style/input.scss';
+
+@include b(tdtRoute) {
+  width: 310px;
+  @include e(header) {
+    padding: 8px 16px 12px;
+    .route-navbar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid $border-color-base;
+      .route-tabs {
+        width: 90%;
+        overflow: hidden;
+      }
+      .car-icon,
+      .bus-icon {
+        width: 50%;
+        font-size: 16px;
+        cursor: pointer;
+        float: left;
+        text-align: center;
+        padding-bottom: 6px;
+        &.active {
+          border-bottom: 2px solid $primary-color;
+          color: $primary-color;
+        }
+      }
+      .clear-route {
+        flex: 1;
+        cursor: pointer;
+        text-align: right;
+        position: relative;
+        padding-bottom: 6px;
+        &::before {
+          content: '';
+          display: block;
+          position: absolute;
+          top: 40%;
+          left: 0;
+          height: 58%;
+          transform: translateY(-50%);
+          border-left: 1px solid $border-color-split;
+        }
+      }
+    }
+
+    .route-panel {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      margin-top: 10px;
+      text-align: center;
+      .#{$ant-prefix}-input {
+        height: 28px;
+        background-color: transparent;
+      }
+      .#{$ant-prefix}-input-affix-wrapper {
+        .#{$ant-prefix}-input-suffix {
+          color: $search-input-close-background;
+        }
+      }
+      .icon-wrapper,
+      .switch-route {
+        width: 20px;
+        height: 20px;
+      }
+      .start-route,
+      .end-route {
+        display: flex;
+        align-items: center;
+        .icon-wrapper {
+          display: flex;
+          align-items: center;
+        }
+        .icon {
+          width: 10px;
+          height: 10px;
+          border-radius: 5px;
+          border: 1px solid;
+        }
+        .content {
+          width: 100%;
+        }
+      }
+      .start-route {
+        .icon {
+          border-color: #2BA250;
+        }
+      }
+      .end-route {
+        margin-top: 8px;
+        .icon {
+          border-color:#E5666F;
+        }
+      }
+      .switch-route {
+        position: absolute;
+        top: 20%;
+        left: -3px;
+        text-align: left;
+      }
+    }
+
+    .search-btn {
+      margin-top: 12px;
+      margin-left: 20px;
+      > * {
+        width: 100%;
+      }
+    }
+  }
+  @include e(content) {
+    max-height: 200px;
+    overflow: auto;
+    .route-result {
+      width: 100%;
+      margin: auto;
+      padding-top: 4px;
+      .start-point,
+      .end-point {
+        & > .title {
+          display: flex;
+          align-items: center;
+          padding-left: 16px;
+          padding-bottom: 4px;
+          i,
+          span {
+            display: inline-block;
+            vertical-align: middle;
+          }
+          i {
+            color: $error-color;
+            font-size: 14px;
+          }
+          span {
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 5px;
+          }
+        }
+
+        .content {
+          .route-results-container {
+            .route-info {
+              span {
+                max-width: 185px;
+              }
+            }
+          }
+        }
+      }
+      .#{$ant-prefix}-tdtPointsResults {
+        padding-top: 0;
+      }
+    }
+  }
+}

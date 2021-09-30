@@ -1,7 +1,9 @@
-@import "./config";
+@import './config.scss';
+
+$--tdt-assets-path: './tdt/_assets' !default;
 
 @mixin b($block) {
-  $N: $namespace +'-'+ $block !global;
+  $N: $namespace + '-' + $block !global;
   .#{$N} {
     @content;
   }
@@ -10,10 +12,10 @@
 @mixin e($element, $separator: $element-separator) {
   $E: $element !global;
   $selector: &;
-  $currentSelector: "";
-    @each $unit in $element {
-        $currentSelector: #{$currentSelector + "." + $N + $separator+$unit+','};
-    }
+  $currentSelector: '';
+  @each $unit in $element {
+    $currentSelector: #{$currentSelector + '.' + $N + $separator + $unit + ','};
+  }
 
   @at-root {
     #{$currentSelector} {
@@ -22,23 +24,23 @@
   }
 }
 
-@mixin when($state){
-    @at-root{
-        &.#{$state-prefix+$state}{
-            @content
-        }
+@mixin when($state) {
+  @at-root {
+    &.#{$state-prefix + $state} {
+      @content;
     }
-};
+  }
+}
 
-@mixin m($modifier){
-    $selector: &;
-    $currentSelector :"";
-    @each $unit in $modifier {
-        $currentSelector: #{$currentSelector + & + $modifier-separator+$unit+','};
+@mixin m($modifier) {
+  $selector: &;
+  $currentSelector: '';
+  @each $unit in $modifier {
+    $currentSelector: #{$currentSelector + & + $modifier-separator + $unit + ','};
+  }
+  @at-root {
+    #{$currentSelector} {
+      @content;
     }
-    @at-root {
-        #{$currentSelector} {
-          @content;
-        }
-      }
+  }
 }

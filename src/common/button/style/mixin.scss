@@ -45,3 +45,12 @@
     }
   }
 }
+
+@mixin button-md-size() {
+  height: $btn-height-md;
+}
+
+@mixin square($size) {
+  width: $size;
+  height: $size;
+}

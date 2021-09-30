@@ -3,7 +3,7 @@
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
-    :header-name="headerName || $t('measure.mapMeasure')"
+    :header-name="headerName"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     :background="background"
@@ -18,7 +18,7 @@
           v-show="group.mode !== 'delete' || (!continueDraw && group.mode === 'delete')"
           :key="group.mode"
           :title="group.title"
-          :style="collapseCardHeaderBgStyle"
+          :style="subComponentSpanBgStyle"
           :class="{'sm-component-measure__modeIcon': true, 'is-active':activeMode === group.mode}"
           @click="changeMeasureMode(group.mode)"
         >
@@ -63,17 +63,17 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
-import Card from '../../../../common/_mixin/Card';
-import SmSelect from '../../../../common/select/Select';
-import SmSelectOption from '../../../../common/select/Option';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Card from 'vue-iclient/src/common/_mixin/Card';
+import SmSelect from 'vue-iclient/src/common/select/Select.vue';
+import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
 import MeasureViewModel from './MeasureViewModel';
-import drawEvent from '../../../_types/draw-event';
+import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 import uniqueId from 'lodash.uniqueid';
-import { setPopupArrowStyle } from '../../../../common/_utils/util';
-import '../../../../../static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 
 export default {
   name: 'SmMeasure',
@@ -83,21 +83,15 @@ export default {
   },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
-    collapsed: {
-      type: Boolean, // 是否折叠
-      default: true
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
-    },
     iconClass: {
       type: String,
       default: 'sm-components-icon-measure'
     },
     headerName: {
-      type: String
-      // default: geti18n().t('commontypes.iportalData') // '量算'
+      type: String,
+      default() {
+        return this.$t('measure.mapMeasure');
+      }
     },
     showUnitSelect: {
       // 配置单位选择框是否显示，若不显示，则显示对应的默认单位
@@ -239,7 +233,7 @@ export default {
       this.result = e.result;
       this.measureFinished = true;
     },
-    measureStartFn(e) {
+    measureStartFn() {
       this.result = '';
       this.measureFinished = false;
     },
@@ -284,6 +278,7 @@ export default {
     },
     updateUnit(unit) {
       this.viewModel && this.viewModel.updateUnit(unit);
+      this.setPopupStyle();
     },
     getPopupContainer() {
       return this.$el.querySelector('.sm-component-measure__panelContent');
@@ -295,7 +290,7 @@ export default {
         this.activeMode = this.activeModeCache;
       }
     },
-    resetData(mapTarget) {
+    resetData() {
       this.activeMode = null;
       this.result = '';
       this.continueDraw && drawEvent.$emit('draw-reset', { componentName: this.componentName });

@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/breadcrumb' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.breadcrumb.title')}`,
+  id: 'BasicComponents/breadcrumb'
+};
 
 export const BasicBreadcrumb = () => ({
   mixins: [theme],
@@ -35,7 +38,7 @@ export const IconBreadcrumb = () => ({
   `
 });
 IconBreadcrumb.story = {
-  name: toI18n('basicComponent.breadcrum.withIcon')
+  name: toI18n('basicComponent.breadcrumb.withIcon')
 };
 
 export const SeparatorBreadcrumb = () => ({
@@ -66,7 +69,7 @@ export const SeparatorBreadcrumb = () => ({
   `
 });
 SeparatorBreadcrumb.story = {
-  name: toI18n('basicComponent.breadcrum.attrSeparator')
+  name: toI18n('basicComponent.breadcrumb.attrSeparator')
 };
 
 export const CustomBreadcrumb = () => ({
@@ -87,5 +90,5 @@ export const CustomBreadcrumb = () => ({
   `
 });
 CustomBreadcrumb.story = {
-  name: toI18n('basicComponent.breadcrum.componentSeparator')
+  name: toI18n('basicComponent.breadcrumb.componentSeparator')
 };

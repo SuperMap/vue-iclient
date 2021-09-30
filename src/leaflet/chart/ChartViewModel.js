@@ -1,4 +1,4 @@
-import L from '../leaflet-wrapper';
+import L from 'vue-iclient/src/leaflet/leaflet-wrapper';
 
 export default class ChartViewModel extends L.Evented {
   constructor(map, options) {

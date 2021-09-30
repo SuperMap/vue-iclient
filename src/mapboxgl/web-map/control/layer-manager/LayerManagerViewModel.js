@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import WebMapViewModel from '../../WebMapViewModel';
 /**
  * @class LayerManageViewModel
@@ -53,7 +53,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
     // 设置 readyNext 为 false
     this.readyNext = false;
     this.webMapViewModel.on({
-      addlayerssucceeded: e => {
+      addlayerssucceeded: () => {
         // 设置 readyNext 为 true
         // 判断 是否缓存数组里有值，取出最新的，调用this.addLayer();
         this.handleNextMap();
@@ -62,6 +62,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
     // this.webMapViewModel.addWebMap(layerFilter);
     this.cacheMaps[nodeKey] = this.webMapViewModel;
   }
+
   handleNextMap() {
     this.readyNext = true;
     if (this.mapQuene.length) {
@@ -69,6 +70,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
     }
   }
+
   addIServerLayer(url, nodeKey) {
     if (this.cacheIServerMaps[nodeKey]) {
       return;
@@ -89,6 +91,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
     });
     this.cacheIServerMaps[nodeKey] = true;
   }
+
   removeLayer(nodeKey) {
     this.handleNextMap();
     if (this.mapQuene.length) {
@@ -102,6 +105,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       delete this.cacheMaps[nodeKey];
     }
   }
+
   removeIServerLayer(nodeKey) {
     if (this.cacheIServerMaps[nodeKey]) {
       delete this.cacheIServerMaps[nodeKey];
@@ -111,6 +115,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       this.map.removeSource(nodeKey);
     }
   }
+
   eachNode(datas, callback) {
     for (let i = 0; i < datas.length; i++) {
       callback(datas[i], datas);
@@ -120,6 +125,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
     }
     return datas;
   }
+
   removeLayerLoop(data) {
     if (data.mapInfo) {
       if (data.mapInfo.mapId) {
@@ -134,6 +140,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       });
     }
   }
+
   removed() {
     this.cacheMaps = {};
     this.cacheIServerMaps = {};

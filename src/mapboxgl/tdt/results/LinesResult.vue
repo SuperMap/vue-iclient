@@ -43,7 +43,7 @@
                   "
                 />
               </p>
-              <p class="count" :style="disabledTextColorStyle">
+              <p class="count" :style="secondaryTextColorStyle">
                 {{ $t('tdtResults.total') }}
                 <span>{{ line.stationNum }}</span>
                 {{ $t('tdtResults.station') }}
@@ -68,7 +68,7 @@
 </template>
 
 <script>
-import Theme from '../../../common/_mixin/Theme';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 
 export default {
   name: 'LinedataResult',

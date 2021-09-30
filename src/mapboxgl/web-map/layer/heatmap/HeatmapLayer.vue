@@ -1,8 +1,8 @@
 <script>
-import MapGetter from '../../../_mixin/map-getter';
-import Layer from '../../../_mixin/layer';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
 import HeatmapLayerViewModel from './HeatmapLayerViewModel';
-import HeatMapStyle from '../../../_types/HeatMapStyle';
+import HeatMapStyle from 'vue-iclient/src/mapboxgl/_types/HeatMapStyle';
 
 export default {
   name: 'SmHeatmapLayer',

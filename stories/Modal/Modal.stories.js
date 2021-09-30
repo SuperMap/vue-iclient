@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/modal' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.modal.title')}`,
+  id: 'BasicComponents/modal'
+};
 
 export const BasicModal = () => ({
   mixins: [theme],

@@ -1,4 +1,4 @@
-import { geti18n } from '../_lang';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 export default class RestParameter {
   constructor(options) {

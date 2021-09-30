@@ -1,0 +1,144 @@
+@import '../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../common/input/style/input.scss';
+@import '../../../../common/icon/style/icon.scss';
+
+@include b(tdtSearch) {
+  max-height: 300px;
+  @include e(suggestions) {
+    li {
+      .name {
+        font-size: 14px;
+      }
+      .address {
+        font-size: 12px;
+        margin-left: 5px;
+        color: $text-color-secondary;
+      }
+    }
+  }
+  @include e(content) {
+    width: 310px;
+    height: 100%;
+    overflow: auto;
+    max-height: 300px;
+  }
+  @include e(pointer) {
+    cursor: pointer;
+  }
+  .sm-component-search__result {
+    max-height: 200px;
+    max-width: 315px;
+    padding-top: 0;
+    .title {
+      height: 36px;
+      line-height: 36px;
+      padding-left: 20px;
+      .region,
+      .total-num {
+        color: #fe1d1d;
+        font-weight: 700;
+      }
+    }
+    ul {
+      font-size: 12px;
+    }
+  }
+}
+.mapboxgl-popup-content {
+  padding: 0;
+  border-radius: 4px;
+}
+.mapboxgl-popup-close-button {
+  color: $text-color;
+  font-size: 14px;
+}
+.tdt-search-popup {
+  width: 370px;
+  overflow: hidden;
+  border-radius: 4px;
+  .popup-container {
+    font-size: 12px;
+    .title {
+      background: $collapse-card-header-bg;
+      color: $heading-color;
+      padding: 4px 0 4px 16px;
+      border-bottom: 1px solid $collapse-card-split-line;
+      height: 28px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .phone,
+    .address {
+      background: $collapse-card-bg;
+      color: $text-color;
+      padding: 6px 0 6px 16px;
+      border-radius: 0 0 4px 4px;
+    }
+    .operate-group {
+      .start-item,
+      .end-item {
+        padding: 6px;
+        cursor: pointer;
+        display: inline-block;
+        vertical-align: middle;
+        border: 1px solid #ccc;
+
+        span {
+          display: block;
+          padding-left: 20px;
+          color: #0078a8;
+          position: relative;
+          &::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            background-image: url('#{$--tdt-assets-path}/sprite.png');
+            background-repeat: no-repeat;
+            width: 17px;
+            height: 17px;
+          }
+        }
+      }
+
+      .end-item {
+        border-left-color: transparent;
+        span {
+          &::before {
+            background-position: -165px -152px;
+          }
+        }
+      }
+
+      .start-item {
+        span {
+          &::before {
+            background-position: -120px -152px;
+          }
+        }
+      }
+    }
+  }
+}
+.tdt-search-line-hover-popup {
+  .hover-popup {
+    padding: 5px;
+    background: $collapse-card-bg;
+    .properties-name {
+      background: $primary-color;
+      line-height: 28px;
+      padding: 0 10px;
+      font-size: 12px;
+      color: $white;
+    }
+  }
+  .mapboxgl-popup-content {
+    padding: 0;
+  }
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: $collapse-card-bg;
+}

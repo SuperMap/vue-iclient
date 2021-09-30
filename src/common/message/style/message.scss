@@ -5,4 +5,12 @@
   &-notice-content {
     background: $message-background;
   }
+
+  &-error .#{$iconfont-css-prefix} {
+    color: $error-color;
+  }
+
+  &-warning .#{$iconfont-css-prefix} {
+    color: $warning-color;
+  }
 }

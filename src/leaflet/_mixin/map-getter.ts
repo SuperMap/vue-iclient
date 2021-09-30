@@ -1,6 +1,6 @@
 // 新创建一个vue实例实时监听获得map对象
-import mapEvent from '../_types/map-event';
-import globalEvent from '../../common/_utils/global-event';
+import mapEvent from 'vue-iclient/src/leaflet/_types/map-event';
+import globalEvent from 'vue-iclient/src/common/_utils/global-event';
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 
@@ -28,7 +28,7 @@ export default class MapGetter extends Vue {
   $message: any;
   $t: any;
 
-  @Prop() mapTarget: String;
+  @Prop() mapTarget: string;
 
   @Watch('mapTarget')
   mapTargetChanged(newVal, oldVal) {
@@ -64,6 +64,7 @@ export default class MapGetter extends Vue {
       this.loadMap(target);
     }
   }
+
   getTargetName() {
     /**
      * 便于区分存在多个map时，子组件对应的map的渲染；
@@ -79,11 +80,13 @@ export default class MapGetter extends Vue {
       selfParent.$options.name.toLowerCase() === 'smwebmap' &&
       // @ts-ignore
       selfParent.target;
+    // @ts-ignore
     return this.mapTarget || parentTarget || Object.keys(mapEvent.$options.getAllMaps())[0];
   }
 
   loadMap(targetName) {
     this.map = mapEvent.$options.getMap(targetName);
+    // @ts-ignore
     this.webmap = mapEvent.$options.getWebMap(targetName);
     callHook(this, 'loaded');
     // 控制与map组件同级的组件的显示加载
@@ -105,6 +108,7 @@ export default class MapGetter extends Vue {
       this.viewModel && (this.viewModel = null);
     }
   }
+
   mapNotLoadedTip() {
     if (!this.map) {
       this.$message.destroy();

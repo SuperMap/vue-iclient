@@ -1,8 +1,10 @@
-import { Events } from '../_types/event/Events';
-import { getProjection } from './epsg-define';
+import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { Events } from 'vue-iclient/src/common/_types/event/Events';
+import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';
-import { isMatchUrl } from './util';
-import { statisticsFeatures } from './statistics';
+import { isMatchUrl } from 'vue-iclient/src/common/_utils/util';
+import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
 import cloneDeep from 'lodash.clonedeep';
 
 export function _getValueOfEpsgCode(epsgCode) {
@@ -134,6 +136,7 @@ export default class iServerRestService extends Events {
     }
     this._getDatasetInfoSucceed(datasetInfo, queryInfo);
   }
+
   /**
    * @function iServerRestService.prototype.getData
    * @description 请求数据。
@@ -178,6 +181,7 @@ export default class iServerRestService extends Events {
       this._getMapFeatureBySql(dataUrl, queryInfo);
     }
   }
+
   /**
    * @function iServerRestService.prototype.getDataFeatures
    * @description 请求数据服务数据。
@@ -205,16 +209,20 @@ export default class iServerRestService extends Events {
       this._getDataFeaturesBySql(dataUrl, queryInfo);
     }
   }
+
   _getMapFeatureBySql(url, queryInfo) {
     let queryBySQLParams, queryBySQLService;
     queryBySQLParams = new SuperMap.QueryBySQLParameters({
       queryParams: [
         {
           name: queryInfo.name,
-          attributeFilter: queryInfo.attributeFilter
+          attributeFilter: queryInfo.attributeFilter,
+          orderBy: queryInfo.orderBy
         }
       ],
-      expectCount: queryInfo.maxFeatures
+      queryOption: this.options.hasGeometry ? 'ATTRIBUTEANDGEOMETRY' : 'ATTRIBUTE',
+      startRecord: this.options.fromIndex,
+      expectCount: this.options.toIndex ? (this.options.toIndex - this.options.fromIndex + 1) : queryInfo.maxFeatures
     });
     queryBySQLService = new SuperMap.QueryBySQLService(url, {
       proxy: this.options.proxy,
@@ -229,16 +237,19 @@ export default class iServerRestService extends Events {
     });
     queryBySQLService.processAsync(queryBySQLParams);
   }
+
   _getDataFeaturesBySql(url, queryInfo) {
     let getFeatureBySQLParams, getFeatureBySQLService;
     getFeatureBySQLParams = new SuperMap.GetFeaturesBySQLParameters({
       queryParameter: {
         name: queryInfo.name,
-        attributeFilter: queryInfo.attributeFilter
+        attributeFilter: queryInfo.attributeFilter,
+        orderBy: queryInfo.orderBy
       },
+      hasGeometry: this.options.hasGeometry,
       datasetNames: queryInfo.datasetNames,
-      fromIndex: 0,
-      toIndex: queryInfo.maxFeatures >= 1000 ? -1 : queryInfo.maxFeatures - 1,
+      fromIndex: this.options.fromIndex || 0,
+      toIndex: this.options.toIndex || (queryInfo.maxFeatures >= 1000 ? -1 : queryInfo.maxFeatures - 1),
       maxFeatures: -1
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
@@ -266,6 +277,7 @@ export default class iServerRestService extends Events {
       features = this.features.features;
       if (features && features.length > 0) {
         data = statisticsFeatures(features, recordsets.fields, recordsets.fieldCaptions, recordsets.fieldTypes);
+        data.totalCount = results.result.totalCount;
       } else {
         /**
          * @event iServerRestService#featureisempty
@@ -283,6 +295,7 @@ export default class iServerRestService extends Events {
       features = this.features.features;
       if (features && features.length > 0) {
         data = statisticsFeatures(features);
+        data.totalCount = results.result.totalCount;
       } else {
         this.triggerEvent('featureisempty', {
           results
@@ -331,6 +344,7 @@ export default class iServerRestService extends Events {
         this.fetchFailed(error);
       });
   }
+
   _getRestMapFields(url, layerName, callBack, withCredentials = false) {
     let param = new SuperMap.QueryBySQLParameters({
       queryParams: [
@@ -360,6 +374,7 @@ export default class iServerRestService extends Events {
     });
     queryBySQLSerice.processAsync(param);
   }
+
   _getAttributeFilterByKeywords(fields, keyWord) {
     let attributeFilter = '';
     fields &&
@@ -369,6 +384,7 @@ export default class iServerRestService extends Events {
       }, this);
     return attributeFilter;
   }
+
   /**
    * @function iServerRestService.prototype._checkUrl
    * @description 检查url是否符合要求

@@ -48,7 +48,7 @@ export default class RotatingTextBorderMarker extends Marker {
       let properties = this.features.features[i] && this.features.features[i].properties;
       if (properties && properties[textField]) {
         name[i].innerHTML = properties[textField];
-      }else{
+      } else {
         name[i].innerHTML = '';
       }
     }
@@ -77,6 +77,7 @@ export default class RotatingTextBorderMarker extends Marker {
       });
     }
   }
+
   _createMarker(): void {
     this.features.features.forEach(point => {
       let markerContainer = document.createElement('div');

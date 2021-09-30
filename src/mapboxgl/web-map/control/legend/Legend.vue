@@ -87,7 +87,7 @@
           <div v-if="layerValue.layerType === 'RANK_SYMBOL'" class="sm-component-legend__wrap">
             <div class="sm-component-legend__rank">
               <div v-for="(item, j) in layerValue.styleGroup" :key="j" class="sm-component-legend__rank-item">
-                <div class="sm-component-legend__rank-icon">
+                <div class="sm-component-legend__rank-icon" :style="rankIconStyle(layerValue.styleGroup)">
                   <i :class="item.style.className" :style="rankSymbolStyle(item)" />
                 </div>
                 <span class="add-ellipsis">
@@ -158,7 +158,7 @@
         <div v-if="layerValue.layerType === 'RANK_SYMBOL'" class="sm-component-legend__wrap">
           <div class="sm-component-legend__rank">
             <div v-for="(item, l) in layerValue.styleGroup" :key="l" class="sm-component-legend__rank-item">
-              <div class="sm-component-legend__rank-icon">
+              <div class="sm-component-legend__rank-icon" :style="rankIconStyle(layerValue.styleGroup)">
                 <i :class="item.style.className" :style="rankSymbolStyle(item)" />
               </div>
               <span class="add-ellipsis">
@@ -174,15 +174,15 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
-import BaseCard from '../../../../common/_mixin/Card';
-import SmCard from '../../../../common/card/Card';
-import SmCollapse from '../../../../common/collapse/Collapse';
-import SmCollapsePanel from '../../../../common/collapse/Panel';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import SmCard from 'vue-iclient/src/common/card/Card.vue';
+import SmCollapse from 'vue-iclient/src/common/collapse/Collapse.vue';
+import SmCollapsePanel from 'vue-iclient/src/common/collapse/Panel.vue';
 import LegendViewModel from './LegendViewModel';
-import { getColorWithOpacity } from '../../../../common/_utils/util';
+import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 
 export default {
   name: 'SmLegend',
@@ -209,17 +209,9 @@ export default {
   },
   mixins: [MapGetter, Control, Theme, BaseCard],
   props: {
-    collapsed: {
-      type: Boolean, // 是否折叠
-      default: true
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
-    },
     headerName: {
       type: String,
-      default: function() {
+      default: function () {
         return this.$t('legend.title');
       }
     },
@@ -262,7 +254,7 @@ export default {
   },
   computed: {
     uniqueSymbolStyle() {
-      return function(styleItem) {
+      return function (styleItem) {
         const { style, radius, color } = styleItem;
         let generateStyle = {};
         switch (style.type) {
@@ -294,7 +286,7 @@ export default {
       };
     },
     rankSymbolStyle() {
-      return function(styleItem) {
+      return function (styleItem) {
         const { style, radius, color } = styleItem;
         let generateStyle = {};
         switch (style.type) {
@@ -331,11 +323,20 @@ export default {
         }
         return start !== undefined ? `≥${start}` : `≤${end}`;
       };
+    },
+    rankIconStyle() {
+      return styleGroup => {
+        if (styleGroup instanceof Array) {
+          const radiusArr = styleGroup.map(item => item.radius);
+          const maxRadius = Math.max(...radiusArr);
+          return { width: `${maxRadius * 2}px` };
+        }
+        return {};
+      };
     }
   },
   watch: {
-    layerNames: function(newVal) {
-      this.layerNames = newVal;
+    layerNames: function () {
       this.initLegendList();
     }
   },

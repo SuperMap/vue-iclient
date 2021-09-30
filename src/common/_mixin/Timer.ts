@@ -26,7 +26,7 @@ export default class Timer extends Vue {
   }
 
   _start() {
-    let time: number = 1000 * <number>this.frequency || 3000;
+    let time: number = 1000 * <number> this.frequency || 3000;
     this.startTimer();
     this.timer = setInterval(() => {
       this.timing();

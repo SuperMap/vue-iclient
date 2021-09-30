@@ -5,7 +5,8 @@ import smcomponents from '../../src/mapboxgl';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/poi'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.poi.title')}`,
+  id: 'GISComponents/poi'
 };
 
 export const poi = () => ({
@@ -50,5 +51,5 @@ export const poi = () => ({
   `
 });
 poi.story = {
-  name: toI18n('gisComponent.poi')
+  name: toI18n('gisComponent.basic')
 };

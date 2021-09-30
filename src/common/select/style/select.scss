@@ -5,6 +5,28 @@
 @include b(select) {
   $prefix: &;
   
+  @include e(md, '-') {
+    #{$prefix}-selection--single {
+      height: $input-height-md;
+    }
+    #{$prefix}-selection--multiple {
+      min-height: $input-height-md;
+      #{$prefix}-selection__rendered {
+        li {
+          height: $input-height-md - 8px;
+          line-height: $input-height-md - 10px;
+        }
+      }
+      #{$prefix}-selection__clear,
+      #{$prefix}-arrow {
+        top: $input-height-md / 2;
+      }
+    }
+    #{$prefix}-selection__rendered {
+      line-height: $input-height-md - 2px;
+    }
+  }
+
   @include e(selection, '-') {
     $prefix-selection: &;
     #{$prefix}-focused &,
@@ -75,7 +97,11 @@
         &-selected {
           font-weight: normal;
           background-color: $select-item-selected-bg;
-          color: #fff;
+          color: $select-item-selected-color;
+        }
+        .#{$ant-prefix}-empty {
+          background-color: transparent;
+          color: inherit;
         }
       }
     }
@@ -96,5 +122,12 @@
 
   @include e(arrow, '-') {
     color: $text-color-secondary;
+  }
+
+  @include e(not-found, '-') {
+    .#{$ant-prefix}-empty {
+      background-color: transparent;
+      color: inherit;
+    }
   }
 }

@@ -1,6 +1,8 @@
-import { Events } from '../_types/event/Events';
-import { getDataType } from './util';
-import { statisticsFeatures } from './statistics';
+import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { Events } from 'vue-iclient/src/common/_types/event/Events';
+import { getDataType } from 'vue-iclient/src/common/_utils/util';
+import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
 
 export default class RestService extends Events {
   constructor(options) {
@@ -39,7 +41,7 @@ export default class RestService extends Events {
             data
           });
         } else {
-          const resData = data.hasOwnProperty('data') ? data.data : data;
+          const resData = Object.prototype.hasOwnProperty.call(data, 'data') ? data.data : data;
           this.transfromGeoJSON(resData, queryInfo);
         }
       })
@@ -72,6 +74,7 @@ export default class RestService extends Events {
     if (this.transformed) {
       generateData.transformed = this.transformed;
     }
+    generateData.totalCount = generateData.features.length;
     const triggerData = Object.assign({}, generateData, statisticsFeatures(generateData.features));
     this.triggerEvent('getdatasucceeded', triggerData);
   }
@@ -95,7 +98,7 @@ export default class RestService extends Events {
         features = subData.map(item => {
           if (
             getDataType(item) === '[object Object]' &&
-            item.hasOwnProperty('properties') &&
+            Object.prototype.hasOwnProperty.call(item, 'properties') &&
             getDataType(item.properties) === '[object Object]'
           ) {
             return item;
@@ -112,7 +115,7 @@ export default class RestService extends Events {
         if (limitLen && !isNaN(+limitLen) && limitLen < Object.keys(data).length) {
           subData = Object.fromEntries(Object.entries(data).slice(0, limitLen));
         }
-        if (!subData.hasOwnProperty('properties') || getDataType(subData.properties) !== '[object Object]') {
+        if (!Object.prototype.hasOwnProperty.call(subData, 'properties') || getDataType(subData.properties) !== '[object Object]') {
           if (generateTransformed) {
             this.transformed = true;
           }

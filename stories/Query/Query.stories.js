@@ -5,7 +5,8 @@ import smcomponents from '../../src/mapboxgl';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/query'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.query.title')}`,
+  id: 'GISComponents/query'
 };
 
 export const query = () => ({
@@ -30,5 +31,5 @@ export const query = () => ({
   `
 });
 query.story = {
-  name: toI18n('gisComponent.query')
+  name: toI18n('gisComponent.basic')
 };

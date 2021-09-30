@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Chart Components/progress' };
+export default {
+  title: `${toI18n('chartComponent.title')}/${toI18n('chartComponent.progress.title')}`,
+  id: 'ChartComponents/progress'
+};
 
 export const BasicProgress = () => ({
   mixins: [theme],
@@ -13,7 +16,7 @@ export const BasicProgress = () => ({
   `
 });
 BasicProgress.story = {
-  name: toI18n('basicComponent.basic')
+  name: toI18n('chartComponent.basic')
 };
 
 export const ColorProgress = () => ({

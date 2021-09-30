@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Basic Components/tree'
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.tree.title')}`,
+  id: 'BasicComponents/tree'
 };
 
 export const BasicTree = () => ({
@@ -34,7 +35,7 @@ export const BasicTree = () => ({
           key: '0-0-1',
           children: [{
             key: '0-0-1-0',
-            scopedSlots: {
+            slots: {
               title: 'title0010'
             }
           }]

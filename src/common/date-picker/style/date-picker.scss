@@ -36,7 +36,6 @@
   @include e(date, '-') {
     &:hover {
       background: $selected-color;
-      color: #fff;
     }
     &:active {
       background: $click-color;
@@ -176,7 +175,6 @@
         li {
           &:hover {
             background: $selected-color;
-            color: #fff;
           }
           &:focus {
             background: $click-color;

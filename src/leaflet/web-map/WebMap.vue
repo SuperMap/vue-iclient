@@ -7,13 +7,13 @@
 
 <script lang='ts'>
 import WebMapViewModel from './WebMapViewModel';
-import VmUpdater from '../../common/_mixin/VmUpdater';
-import mapEvent from '../_types/map-event';
+import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
+import mapEvent from 'vue-iclient/src/leaflet/_types/map-event';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
-import debounce from 'lodash/debounce';
-import MapEvents from './_mixin/map-events';
-import SmSpin from '../../common/spin/Spin.vue';
+import debounce from 'lodash.debounce';
+import MapEvents from 'vue-iclient/src/leaflet/web-map/_mixin/map-events';
+import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 
 @Component({
   name: 'SmWebMap',

@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import MapGetter from '../../../_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import AnimateMarkerLayerViewModel from './AnimateMarkerLayerViewModel';
 import BreathingApertureMarker from './marker/BreathingApertureMarker';
 import DiffusedApertureMarker from './marker/DiffusedApertureMarker';
@@ -52,7 +52,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
 
   @Prop() textField: string;
 
-  @Prop() fitBounds: Boolean;
+  @Prop() fitBounds: boolean;
 
   @Watch('features')
   featuresChanged(newVal, oldVal) {

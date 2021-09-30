@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Chart Components/radar'
+  title: `${toI18n('chartComponent.title')}/${toI18n('chartComponent.radar.title')}`,
+  id: 'ChartComponents/radar'
 };
 
 export const Radar = () => ({
@@ -92,5 +93,5 @@ export const Radar = () => ({
   />`
 });
 Radar.story = {
-  name: toI18n('chartComponent.radar.radar')
+  name: toI18n('chartComponent.basic')
 };

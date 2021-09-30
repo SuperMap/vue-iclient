@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import {
   config,
   request,
@@ -15,7 +15,7 @@ import {
 } from '../_utils/service';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
-import { geti18n } from '../../../common/_lang';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 export default class TdtSearchViewModel extends mapboxgl.Evented {
   constructor(options) {
@@ -94,10 +94,11 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
   showLineHoverPopup(e) {
     const coordinates = e.features[0].geometry.coordinates.slice();
     const properties = e.features[0].properties;
-    const popDom = `<div style='padding: 5px;'>
-    <div style='background: #0099ff; line-height: 28px; padding: 0 10px; font-size: 12px; color: #fff'>${
-  properties.name
-}</div>
+    const popDom = `
+    <div class='hover-popup'>
+      <div class='properties-name'>
+      ${properties.name}
+      </div>
     </div>`;
     this.hoverPopup = new mapboxgl.Popup({
       closeButton: false,
@@ -113,6 +114,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     this.data = Object.assign(this.data, data);
     this.style = 0;
   }
+
   _getPopupContent(from, data) {
     const container = document.createElement('div');
     container.className = 'popup-container';
