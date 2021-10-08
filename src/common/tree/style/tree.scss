@@ -1,5 +1,12 @@
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
 
-@include b(tree) {}
-
+@include b(tree) {
+  $tree-prefix: &;
+  @at-root {
+    &#{$tree-prefix}-directory > li span#{$tree-prefix}-node-content-wrapper:hover::before,
+    &#{$tree-prefix}-directory &-child-tree > li span#{$tree-prefix}-node-content-wrapper:hover::before {
+      background: $select-item-hover-bg;
+    }
+  }
+}
