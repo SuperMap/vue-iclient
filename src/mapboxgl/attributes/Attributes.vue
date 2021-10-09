@@ -4,10 +4,12 @@
       <div class="sm-component-attributes__count">
         <span v-if="title" class="layer-name">{{ title }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
-        <span v-if="statistics.showTotal" class="total-numbers" >{{ this.$t('attributes.feature') }}：{{ paginationOptions.total || 0 }}</span
+        <span v-if="statistics.showTotal" class="total-numbers"
+          >{{ this.$t('attributes.feature') }}：{{ paginationOptions.total || 0 }}</span
         >
         <span v-if="statistics.showTotal && statistics.showSelect">，</span>
-        <span v-if="statistics.showSelect" class="select-numbers" >{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span
+        <span v-if="statistics.showSelect" class="select-numbers"
+          >{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span
         >
         <span v-if="statistics.showTotal || statistics.showSelect">）</span>
       </div>
@@ -51,6 +53,7 @@
       :customHeaderRow="customHeaderRow"
       :customRow="customRow"
       :loading="loading"
+      :getPopupContainer="triggerNode => triggerNode.parentNode"
       table-layout="fixed"
       @change="handleChange"
     >
@@ -312,7 +315,14 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   created() {
-    this.viewModel = new AttributesViewModel({ paginationOptions: this.paginationOptions, ...this.$props });
+    // @ts-ignore
+    this.fieldInfo = clonedeep(this.fieldConfigs);
+    this.viewModel = new AttributesViewModel({
+      paginationOptions: this.paginationOptions,
+      ...this.$props,
+      // @ts-ignore
+      fieldConfigs: this.fieldInfo
+    });
     this.bindEvents();
   }
 
@@ -381,13 +391,16 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       this.columns = columns;
       this.tableData = content;
     });
+    this.viewModel.on('clearselectedrows', () => {
+      this.clearSelectedRows();
+    });
     this.viewModel.on('changeSelectLayer', feature => {
       this.handleMapSelectedFeature(feature);
     });
   }
 
   refreshData() {
-    this.selectedRowKeys = [];
+    this.clearSelectedRows();
     this.tableData = [];
     this.viewModel.refresh();
   }
