@@ -100,6 +100,18 @@
       border-top-left-radius: 0;
       border-top-right-radius: 0;
     }
+    @include when(top-right) {
+      padding-right: 30px;
+    }
+    @include when(bottom-right) {
+      padding-right: 30px;
+    }
+    @include when(top-left) {
+      padding-left: 30px;
+    }
+    @include when(bottom-left) {
+      padding-left: 30px;
+    }
   }
   @include e(content) {
     box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);

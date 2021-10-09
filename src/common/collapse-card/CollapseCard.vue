@@ -26,7 +26,7 @@
       >
         <div
           v-if="headerName"
-          :class="{'sm-component-collapse-card__header': true, 'with-split-line': splitLine}"
+          :class="{'sm-component-collapse-card__header': true, 'with-split-line': splitLine, ['is-' + position]: true}"
           :style="[collapseCardHeaderBgStyle, headingTextColorStyle]"
         >
           <span class="sm-component-collapse-card__header-name">{{ headerName }}</span>
