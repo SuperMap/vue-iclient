@@ -117,6 +117,8 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   fieldConfigs: FieldConfigParams;
 
+  currentTitle: string;
+
   constructor(options) {
     super();
     this.selectedKeys = [];
@@ -125,6 +127,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     Object.keys(options).forEach(option => {
       this[option] = options[option];
     });
+    this.clearSelectedRows();
     if (this.useDataset()) {
       this.getDatas();
     }
@@ -136,6 +139,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.map = map;
     this.fire('mapLoaded', map);
     this.handleAssociateWithMap();
+    this.clearSelectedRows();
     if (this.layerName) {
       this.getDatas();
     }
@@ -148,11 +152,13 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   setDataset(dataset) {
     this.dataset = dataset;
+    this.clearSelectedRows();
     this.getDatas();
   }
 
   setLazy(lazy) {
     this.lazy = lazy;
+    this.clearSelectedRows();
     this.getDatas();
   }
 
@@ -178,6 +184,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   refresh() {
     this.paginationOptions.current = 1;
+    this.clearSelectedRows();
     this.getDatas();
   }
 
@@ -284,6 +291,9 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     let type, id: string, paint;
     let features = [];
     if (!layer) {
+      if (attributesTitle && this.currentTitle && attributesTitle !== this.currentTitle) {
+        this.removed();
+      }
       for (const key in this.featureMap) {
         features.push(this.featureMap[key]);
       }
@@ -303,6 +313,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           break;
       }
       id = attributesTitle;
+      this.currentTitle = attributesTitle;
       this.sourceId = id + '-attributes-SM-highlighted-source';
       if (this.map.getSource(this.sourceId)) {
         // @ts-ignore
@@ -553,8 +564,8 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     let columnsResult = [];
     // @ts-ignore
     this.fieldConfigs && this.fieldConfigs.forEach(element => {
-      columnOrder.push(element.value);
-    });
+        columnOrder.push(element.value);
+      });
     columnOrder.forEach(str => {
       columns.forEach(element => {
         if (element.dataIndex === str) {
@@ -589,6 +600,10 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     } else {
       this.disableSelectFeature();
     }
+  }
+
+  clearSelectedRows() {
+    this.fire('clearselectedrows');
   }
 
   removed() {
