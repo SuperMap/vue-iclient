@@ -9,4 +9,8 @@
       background: $select-item-hover-bg;
     }
   }
+  &.sm-component-tree-show-line li span.sm-component-tree-switcher {
+    color: $text-color
+  }
 }
+
