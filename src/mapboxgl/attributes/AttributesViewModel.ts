@@ -287,6 +287,9 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     let type, id: string, paint;
     let features = [];
     if (!layer) {
+      if (!Object.keys(this.featureMap).length) {
+        return;
+      }
       if (attributesTitle && this.currentTitle && attributesTitle !== this.currentTitle) {
         this.removed();
       }
@@ -560,8 +563,8 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     let columnsResult = [];
     // @ts-ignore
     this.fieldConfigs && this.fieldConfigs.forEach(element => {
-        columnOrder.push(element.value);
-      });
+      columnOrder.push(element.value);
+    });
     columnOrder.forEach(str => {
       columns.forEach(element => {
         if (element.dataIndex === str) {
