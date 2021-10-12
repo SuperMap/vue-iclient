@@ -214,7 +214,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   zoomToFeatures(selectedKeys) {
     let highLightList = this.handleCoords(selectedKeys);
-    if (Object.keys(selectedKeys).length) {
+    if (Object.keys(selectedKeys).length && this.map) {
       let features = Object.values(highLightList);
       const geojson = {
         type: 'FeatureCollection',
@@ -613,6 +613,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.map.getLayer(this.layerId) && this.map.removeLayer(this.layerId);
     this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
     this.map.getSource(this.sourceId) && this.map.removeSource(this.sourceId);
+    this.map = null;
   }
 }
 export default FeatureTableViewModel;

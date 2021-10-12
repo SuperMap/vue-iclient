@@ -21,14 +21,14 @@
     }
     .sm-component-table-thead {
       .sm-component-table-column-has-actions {
+        .sm-component-table-column-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          display: block;
+        }
         .sm-component-table-column-sorters {
           display: block;
-          .sm-component-table-column-title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: block;
-          }
           .sm-component-table-column-sorter {
             position: absolute;
             right: 4px;

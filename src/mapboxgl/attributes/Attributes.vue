@@ -22,7 +22,7 @@
                 {{ this.$t('attributes.clearSelected') }}
               </div>
             </sm-menu-item>
-            <sm-menu-item v-if="toolbar.showZoomToFeature">
+            <sm-menu-item v-if="toolbar.showZoomToFeature && associateMap">
               <div @click="setZoomToFeature">{{ this.$t('attributes.zoomToFeatures') }}</div>
             </sm-menu-item>
             <sm-menu-item v-if="toolbar.showRefresh">
