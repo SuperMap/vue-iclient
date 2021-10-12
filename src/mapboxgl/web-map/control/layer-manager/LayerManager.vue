@@ -196,7 +196,7 @@ export default {
     this.mapIsLoad = true;
   },
   removed() {
-    this.cleanStatus();
+    this.checkedKeys = [];
   }
 };
 </script>

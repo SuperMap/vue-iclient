@@ -135,6 +135,12 @@ class LayerManageViewModel extends mapboxgl.Evented {
     }
   }
   removed() {
+    Object.keys(this.cacheMaps).forEach(nodeKey => {
+      this.removeLayer(nodeKey);
+    });
+    Object.keys(this.cacheIServerMaps).forEach(nodeKey => {
+      this.removeIServerLayer(nodeKey);
+    });
     this.cacheMaps = {};
     this.cacheIServerMaps = {};
   }
