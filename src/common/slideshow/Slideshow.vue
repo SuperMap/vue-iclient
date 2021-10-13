@@ -14,6 +14,7 @@ interface swiperOptionsType {
   initialSlide: Number;
   direction: String;
   speed: Number;
+  loopedSlides: Number;
   loop: Boolean;
   grabCursor: Boolean;
   mousewheel: Boolean;
@@ -47,6 +48,9 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'direction'
   ];
 
+  // 当 loop 为 true && effect 为 cube, 幻灯片页数等于3会出现重叠。
+  loopedSlides: number = 3;
+
   @Prop() activeIndex: number;
   @Prop({ default: 0 }) defaultActiveIndex: number;
   @Prop({ default: 'horizontal' }) direction: string;
@@ -75,6 +79,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       direction: this.direction,
       speed: this.speed,
       loop: this.loop,
+      loopedSlides: this.loopedSlides,
       grabCursor: this.grabCursor,
       mousewheel: this.mousewheel,
       keyboard: this.keyboard,
@@ -150,7 +155,10 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   goTo(index: number, speed: number) {
-    this.swiper.slideTo(index, speed);
+    let callbackFn = this.loop ? this.swiper.slideToLoop : this.swiper.slideTo;
+    setTimeout(() => {
+      callbackFn.call(this.swiper, index, speed);
+    });
   }
 
   autoplayStop() {
