@@ -2,12 +2,13 @@ import {
   mount,
 } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap.vue';
-import SmRasterTileLayer from '../RasterTileLayer.vue';
+import SmVectorTileLayer from '../VectorTileLayer.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
-describe('SmRasterTileLayer.vue', () => {
+describe('VectorTileLayer.vue', () => {
   let wrapper;
   let mapWrapper;
+
   beforeEach(() => {
     mapEvent.firstMapTarget = null;
     mapEvent.$options.mapCache = {};
@@ -31,21 +32,43 @@ describe('SmRasterTileLayer.vue', () => {
   });
 
   it('render', (done) => {
-    wrapper = mount(SmRasterTileLayer, {
+    wrapper = mount(SmVectorTileLayer, {
       propsData: {
         mapTarget: "map",
-        layerId: 'myRasterLayer',
-				opacity: 0.8,
-				visible: true,
-				mapUrl: 'www.fakeurl.com/PopulationDistribution'
+        styleOptions: 'https://fakeiportal.supermap.io/vectorstyles.json'
       }
     });
 
     mapWrapper.vm.$on('load', () => {
       wrapper.vm.$on('loaded', () => {
         try {
-          // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
           expect(wrapper.vm.mapTarget).toBe('map');
+          done()
+        } catch (exception) {
+          console.log("案例失败：" + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change styleOptions', (done) => {
+    wrapper = mount(SmVectorTileLayer, {
+      propsData: {
+        mapTarget: "map",
+        styleOptions: 'https://fakeiportal.supermap.io/vectorstyles.json'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
+          wrapper.setProps({
+            styleOptions: 'https://fakeiportal.supermap.io/newvectorstyles.json'
+          })
+          expect(setStyleOptionsSpy).toBeCalled();
           done()
         } catch (exception) {
           console.log("案例失败：" + exception.name + ':' + exception.message);

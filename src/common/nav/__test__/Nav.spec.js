@@ -55,12 +55,45 @@ describe('Nav.vue', () => {
     wrapper = mount(Nav);
   })
 
-  it('Base props', () => {
+  it('base props', () => {
     wrapper = mount(SmNav, {
       propsData: {
         title: title,
         items: items
       },
     });
+  })
+
+  it('goTo', () => {
+    wrapper = mount(SmNav, {
+      propsData: {
+        title: title,
+        items: items
+      },
+    });
+    wrapper.vm.goTo(2);
+    expect(wrapper.emitted().change).toBeTruthy();
+  })
+
+  it('prev', () => {
+    wrapper = mount(SmNav, {
+      propsData: {
+        title: title,
+        items: items
+      },
+    });
+    wrapper.vm.prev();
+    expect(wrapper.emitted().change).toBeTruthy();
+  })
+
+  it('next', () => {
+    wrapper = mount(SmNav, {
+      propsData: {
+        title: title,
+        items: items
+      },
+    });
+    wrapper.vm.next();
+    expect(wrapper.emitted().change).toBeTruthy();
   })
 })

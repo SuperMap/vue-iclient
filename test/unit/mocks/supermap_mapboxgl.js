@@ -44,6 +44,30 @@ supermap.AddressMatchService = () => {
     // queryByBounds: (param, callback) => callback(fakeMapServiceResult)
   };
 };
+
+supermap.RankSymbolThemeLayer = () => {
+  return {
+    addFeatures() {
+
+    }
+  }
+}
+
+supermap.MapService = () => {
+  return {
+    getMapInfo(callback) {
+      setTimeout(() => {
+        callback({});
+      }, 0)
+    }
+  }
+}
+
+supermap.DeckglLayer = () => {
+  return {
+  }
+}
+
 supermap.Util = {
   hexToRgba: function (hex, opacity) {
     var color = [],

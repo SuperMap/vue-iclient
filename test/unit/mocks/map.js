@@ -284,6 +284,10 @@ var Map = function (options) {
     return this;
   };
 
+  this.addStyle = function (style, before) {
+    return this;
+  };
+
   this.removeLayer = function (layerId) {};
   this.moveLayer = function (layerId) {};
   this.getFilter = function (layerId) {};

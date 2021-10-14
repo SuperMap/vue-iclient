@@ -2,12 +2,45 @@ import {
   mount,
 } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap.vue';
-import SmRasterTileLayer from '../RasterTileLayer.vue';
+import SmRanksymbolThemeLayer from '../RanksymbolThemeLayer.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
-describe('SmRasterTileLayer.vue', () => {
+describe('SmRanksymbolThemeLayer.vue', () => {
   let wrapper;
   let mapWrapper;
+  const data = [
+    {
+      geometry: {
+        type: 'Point',
+        coordinates: [122.36999999999999, 53.470000000000006]
+      },
+      properties: {
+        SmID: '1',
+        SmX: '1.3622166088372886E7',
+        SmY: '7070412.841759119',
+        SmLibTileID: '1',
+        SmUserID: '0',
+        SmGeometrySize: '16',
+        区站号: '50136',
+        站台: '漠河',
+        省份: '黑龙江',
+        海拔: '296'
+      },
+      type: 'Feature'
+    }
+  ];
+  const themeOptions = {
+    attributions: '',
+    themeField: 'CON2009',
+    symbolSetting: {
+      codomain: [0, 40000],
+      maxR: 100,
+      minR: 0,
+      circleStyle: { fillOpacity: 0.8 },
+      fillColor: '#FFA500',
+      circleHoverStyle: { fillOpacity: 1 }
+    }
+  }
   beforeEach(() => {
     mapEvent.firstMapTarget = null;
     mapEvent.$options.mapCache = {};
@@ -31,13 +64,12 @@ describe('SmRasterTileLayer.vue', () => {
   });
 
   it('render', (done) => {
-    wrapper = mount(SmRasterTileLayer, {
+    wrapper = mount(SmRanksymbolThemeLayer, {
       propsData: {
         mapTarget: "map",
-        layerId: 'myRasterLayer',
-				opacity: 0.8,
-				visible: true,
-				mapUrl: 'www.fakeurl.com/PopulationDistribution'
+        themeOptions,
+        data,
+        symbolType: "Circle"
       }
     });
 

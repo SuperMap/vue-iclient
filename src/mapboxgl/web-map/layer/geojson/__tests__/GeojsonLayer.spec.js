@@ -18,46 +18,46 @@ localVue.use(Input);
 localVue.use(Icon);
 
 localVue.prototype.$message = message;
-
-describe('Search.vue', () => {
+let data = {
+  "type": "FeatureCollection",
+  "features": [{
+    "geometry": {
+      "type": "Point",
+      "coordinates": [
+        122.36999999999999,
+        53.470000000000006
+      ]
+    },
+    "properties": {
+      "SmID": "1",
+      "SmX": "1.3622166088372886E7",
+      "SmY": "7070412.841759119",
+      "SmLibTileID": "1",
+      "SmUserID": "0",
+      "SmGeometrySize": "16",
+      "区站号": "50136",
+      "站台": "漠河",
+      "省份": "黑龙江",
+      "海拔": "296",
+      "平均最低气温": "-47",
+      "最热七天气温": "29",
+      "最高气温": "33",
+      "最低气温": "-53",
+      "年均降雨": "366.1",
+      "年均降雨_Num": "366.1",
+      "最低气温_Num": "-53.0",
+      "最高气温_Num": "33.0",
+      "最高七天气温_Num": "29.0",
+      "平均最低气温_Num": "-47.0",
+      "海波_Num": "296.0"
+    },
+    "type": "Feature"
+  }]
+}
+describe('GeojsonLayer.vue', () => {
   let wrapper;
   let mapWrapper;
-  let dat = {
-    "type": "FeatureCollection",
-    "features": [{
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          122.36999999999999,
-          53.470000000000006
-        ]
-      },
-      "properties": {
-        "SmID": "1",
-        "SmX": "1.3622166088372886E7",
-        "SmY": "7070412.841759119",
-        "SmLibTileID": "1",
-        "SmUserID": "0",
-        "SmGeometrySize": "16",
-        "区站号": "50136",
-        "站台": "漠河",
-        "省份": "黑龙江",
-        "海拔": "296",
-        "平均最低气温": "-47",
-        "最热七天气温": "29",
-        "最高气温": "33",
-        "最低气温": "-53",
-        "年均降雨": "366.1",
-        "年均降雨_Num": "366.1",
-        "最低气温_Num": "-53.0",
-        "最高气温_Num": "33.0",
-        "最高七天气温_Num": "29.0",
-        "平均最低气温_Num": "-47.0",
-        "海波_Num": "296.0"
-      },
-      "type": "Feature"
-    }]
-  }
+  
   let layerStyle = new CircleStyle();
 
   beforeEach(() => {
@@ -84,7 +84,7 @@ describe('Search.vue', () => {
   });
 
   it('render', (done) => {
-    let data = JSON.stringify(dat);
+    let data = JSON.stringify(data);
     wrapper = mount(SmGeojsonLayer, {
       localVue,
       propsData: {
@@ -109,7 +109,7 @@ describe('Search.vue', () => {
   });
 
   it('geojson layerStyle', (done) => {
-    let data = JSON.stringify(dat);
+    let data = JSON.stringify(data);
     wrapper = mount(SmGeojsonLayer, {
       localVue,
       propsData: {
@@ -128,6 +128,48 @@ describe('Search.vue', () => {
           wrapper.vm.viewModel.setLayerStyle(layerStyle);
           expect(getSourceSpy).toBeCalled();
           expect(setLayoutPropertySpy).toBeCalled();
+          done()
+        } catch (exception) {
+          console.log("案例失败：" + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('geojson setdata', (done) => {
+    let data = JSON.stringify(data);
+    wrapper = mount(SmGeojsonLayer, {
+      propsData: {
+        mapTarget: "map",
+        layerStyle: layerStyle,
+        data: data,
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          let newData = {
+            "type": "FeatureCollection",
+            "features": [{
+              "geometry": {
+                "type": "Point",
+                "coordinates": [
+                  122,
+                  53
+                ]
+              },
+              "properties": {
+                "SmID": "1"
+              },
+              "type": "Feature"
+            }]
+          }
+          wrapper.setProps({data: newData});
+          wrapper.vm.$nextTick();
+          expect(wrapper.vm.data).toBe(newData);
           done()
         } catch (exception) {
           console.log("案例失败：" + exception.name + ':' + exception.message);
