@@ -1,6 +1,4 @@
-import {
-  mount,
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap.vue';
 import SmRanksymbolThemeLayer from '../RanksymbolThemeLayer.vue';
 import mapEvent from '@types_mapboxgl/map-event';
@@ -33,14 +31,11 @@ describe('SmRanksymbolThemeLayer.vue', () => {
     attributions: '',
     themeField: 'CON2009',
     symbolSetting: {
-      codomain: [0, 40000],
-      maxR: 100,
-      minR: 0,
       circleStyle: { fillOpacity: 0.8 },
       fillColor: '#FFA500',
       circleHoverStyle: { fillOpacity: 1 }
     }
-  }
+  };
   beforeEach(() => {
     mapEvent.firstMapTarget = null;
     mapEvent.$options.mapCache = {};
@@ -50,7 +45,7 @@ describe('SmRanksymbolThemeLayer.vue', () => {
         serverUrl: 'https://fakeiportal.supermap.io/iportal',
         mapId: '123'
       }
-    })
+    });
   });
 
   afterEach(() => {
@@ -63,13 +58,13 @@ describe('SmRanksymbolThemeLayer.vue', () => {
     }
   });
 
-  it('render', (done) => {
+  it('render', done => {
     wrapper = mount(SmRanksymbolThemeLayer, {
       propsData: {
-        mapTarget: "map",
+        mapTarget: 'map',
         themeOptions,
         data,
-        symbolType: "Circle"
+        symbolType: 'Circle'
       }
     });
 
@@ -78,9 +73,66 @@ describe('SmRanksymbolThemeLayer.vue', () => {
         try {
           // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
           expect(wrapper.vm.mapTarget).toBe('map');
-          done()
+          done();
         } catch (exception) {
-          console.log("案例失败：" + exception.name + ':' + exception.message);
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change props', done => {
+    let newData = [
+      {
+        geometry: {
+          type: 'Point',
+          coordinates: [122.36999999999999, 53.470000000000006]
+        },
+        properties: {
+          SmID: '1',
+          SmX: '1.3622166088372886E7',
+          SmY: '7070412.841759119',
+          SmLibTileID: '1'
+        },
+        type: 'Feature'
+      }
+    ];
+    wrapper = mount(SmRanksymbolThemeLayer, {
+      propsData: {
+        mapTarget: 'map',
+        options: themeOptions,
+        data,
+        symbolType: 'Circle'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          const setDataSpy = jest.spyOn(wrapper.vm.viewModel, 'setData');
+          const setOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setOptions');
+          const setLayerNameSpy = jest.spyOn(wrapper.vm.viewModel, 'setLayerName');
+          wrapper.setProps({
+            layerName: 'newName',
+            data: newData,
+            options: {
+              themeField: 'CON2009',
+              symbolSetting: {
+                circleStyle: { fillOpacity: 1 },
+                fillColor: '#FFA500',
+                circleHoverStyle: { fillOpacity: 0.5 }
+              }
+            }
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          expect(setDataSpy).toBeCalled();
+          expect(setOptionsSpy).toBeCalled();
+          expect(setLayerNameSpy).toBeCalled();
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
           expect(false).toBeTruthy();
           done();
         }

@@ -395,44 +395,39 @@ const webmap_ranksymbolLayer = {
       layerType: 'RANK_SYMBOL',
       visible: true,
       themeSetting: {
-        "maxRadius": 12,
-        "themeField": "名次",
-        "customSettings": {},
-        "minRadius": 6,
-        "segmentMethod": "offset",
-        "segmentCount": 6
+        maxRadius: 12,
+        themeField: '名次',
+        customSettings: {},
+        minRadius: 6,
+        segmentMethod: 'offset',
+        segmentCount: 6
       },
       name: '民航数据',
       featureType: 'POINT',
-      labelStyle:{
-        "offsetX": 0,
-        "textBaseline": "bottom",
-        "fontFamily": "黑体",
-        "offsetY": -10,
-        "outlineWidth": 0,
-        "textAlign": "center",
-        "outlineColor": "#000000",
-        "fontSize": "14px",
-        "fill": "#333",
-        "backgroundFill": [
-          255,
-          255,
-          255,
-          0.8
-        ],
-        "labelField": "机场"
+      labelStyle: {
+        offsetX: 0,
+        textBaseline: 'bottom',
+        fontFamily: '黑体',
+        offsetY: -10,
+        outlineWidth: 0,
+        textAlign: 'center',
+        outlineColor: '#000000',
+        fontSize: '14px',
+        fill: '#333',
+        backgroundFill: [255, 255, 255, 0.8],
+        labelField: '机场'
       },
       xyField: { xField: 'longitude', yField: 'latitude' },
       style: {
-        "strokeWidth": 1,
-        "fillColor": "#24B391",
-        "offsetX": 0,
-        "offsetY": 0,
-        "fillOpacity": 0.9,
-        "radius": 6,
-        "strokeColor": "#ffffff",
-        "type": "BASIC_POINT",
-        "strokeOpacity": 1
+        strokeWidth: 1,
+        fillColor: '#24B391',
+        offsetX: 0,
+        offsetY: 0,
+        fillOpacity: 0.9,
+        radius: 6,
+        strokeColor: '#ffffff',
+        type: 'BASIC_POINT',
+        strokeOpacity: 1
       },
       projection: 'EPSG:4326',
       enableFields: [
@@ -490,15 +485,9 @@ const webmap_heatLayer = {
       name: '民航数',
       featureType: 'POINT',
       themeSetting: {
-        "customSettings": {},
-        "radius": 10,
-        "colors": [
-          "#0000ff",
-          "#00ffff",
-          "#00ff00",
-          "#ffff00",
-          "#ff0000"
-        ]
+        customSettings: {},
+        radius: 10,
+        colors: ['#0000ff', '#00ffff', '#00ff00', '#ffff00', '#ff0000']
       },
       dataSource: {
         type: 'PORTAL_DATA',
@@ -537,38 +526,30 @@ const webmap_uniqueLayer_polygon = {
       layerType: 'UNIQUE',
       visible: true,
       themeSetting: {
-        "themeField": "行政区划_c",
-        "customSettings": {
-          "四川省": {
-            "strokeWidth": 1,
-            "fillColor": "#e6f599",
-            "fillOpacity": 0.9,
-            "lineDash": "solid",
-            "strokeColor": "#ffffff",
-            "type": "POLYGON",
-            "strokeOpacity": 1
-          },
+        themeField: '行政区划_c',
+        customSettings: {
+          四川省: {
+            strokeWidth: 1,
+            fillColor: '#e6f599',
+            fillOpacity: 0.9,
+            lineDash: 'solid',
+            strokeColor: '#ffffff',
+            type: 'POLYGON',
+            strokeOpacity: 1
+          }
         },
-        "colors": [
-          "#D53E4F",
-          "#FC8D59",
-          "#FEE08B",
-          "#FFFFBF",
-          "#E6F598",
-          "#99D594",
-          "#3288BD"
-        ]
+        colors: ['#D53E4F', '#FC8D59', '#FEE08B', '#FFFFBF', '#E6F598', '#99D594', '#3288BD']
       },
       name: '市级行政区划_1_2',
       featureType: 'POLYGON',
       style: {
-        "strokeWidth": 1,
-        "fillColor": "#3288bd",
-        "fillOpacity": 0.9,
-        "lineDash": "solid",
-        "strokeColor": "#ffffff",
-        "type": "POLYGON",
-        "strokeOpacity": 1
+        strokeWidth: 1,
+        fillColor: '#3288bd',
+        fillOpacity: 0.9,
+        lineDash: 'solid',
+        strokeColor: '#ffffff',
+        type: 'POLYGON',
+        strokeOpacity: 1
       },
       projection: 'EPSG:4326',
       enableFields: ['Shape_Area', 'Shape_Leng', 'UserID', '分县连接成', '行政区划_1', '行政区划_2', '行政区划_c'],
@@ -604,27 +585,29 @@ const webmap_vectorLayer_point = {
     name: 'China',
     url: 'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China'
   },
-  layers: [{
-    layerType: "VECTOR",
-    name: "浙江省高等院校(3)",
-    visible: true,
-    featureType: "POINT",
-    style: {
-      radius: 6,
-      fillColor: "#ff0000",
-      fillOpacity: 0.9,
-      strokeColor: "#ffffff",
-      strokeWidth: 1,
-      strokeOpacity: 1,
-      lineDash: "solid",
-      symbolType: "svg",
-      type: "BASIC_POINT"
-    },
-    dataSource: {
-      type: "PORTAL_DATA",
-      serverId: '1920557079'
+  layers: [
+    {
+      layerType: 'VECTOR',
+      name: '浙江省高等院校(3)',
+      visible: true,
+      featureType: 'POINT',
+      style: {
+        radius: 6,
+        fillColor: '#ff0000',
+        fillOpacity: 0.9,
+        strokeColor: '#ffffff',
+        strokeWidth: 1,
+        strokeOpacity: 1,
+        lineDash: 'solid',
+        symbolType: 'svg',
+        type: 'BASIC_POINT'
+      },
+      dataSource: {
+        type: 'PORTAL_DATA',
+        serverId: '1920557079'
+      }
     }
-  }],
+  ],
   description: '',
   projection: 'EPSG:3857',
   title: 'unique_民航数据',
@@ -652,30 +635,302 @@ const webmap_vectorLayer_line = {
     name: 'China',
     url: 'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China'
   },
-    layers: [{
-    layerType: "VECTOR",
-    name: "浙江省高等院校(3)",
-    visible: true,
-    featureType: "LINE",
-    style: {
-      radius: 5,
-      fillColor: "#ee4d5a",
-      fillOpacity: 0.9,
-      strokeColor: "#8b572a",
-      strokeWidth: 7,
-      strokeOpacity: 1,
-      lineDash: "solid",
-      type: "BASIC_POINT"
-    },
-    dataSource: {
-      type: "PORTAL_DATA",
-      serverId: '1920557079'
+  layers: [
+    {
+      layerType: 'VECTOR',
+      name: '浙江省高等院校(3)',
+      visible: true,
+      featureType: 'LINE',
+      style: {
+        radius: 5,
+        fillColor: '#ee4d5a',
+        fillOpacity: 0.9,
+        strokeColor: '#8b572a',
+        strokeWidth: 7,
+        strokeOpacity: 1,
+        lineDash: 'solid',
+        type: 'BASIC_POINT'
+      },
+      dataSource: {
+        type: 'PORTAL_DATA',
+        serverId: '1920557079'
+      }
     }
-  }],
+  ],
   description: '',
   projection: 'EPSG:3857',
   title: 'unique_民航数据',
   version: '1.0'
+};
+
+const webmap_tiandituLayer = {
+  extent: {
+    leftBottom: {
+      x: -20037508.3427892,
+      y: -20037508.3427892
+    },
+    rightTop: {
+      x: 20037508.3427892,
+      y: 20037508.3427892
+    }
+  },
+  maxScale: '1:18055.99093350616',
+  level: 1,
+  center: {
+    x: 8586143.281685632,
+    y: 356074.8698694445
+  },
+  baseLayer: {
+    layerType: 'TIANDITU_TER_3857',
+    labelLayerVisible: true,
+    tk: '1d109683f4d84198e37a38c442d68311',
+    name: '天地图地形'
+  },
+  layers: [],
+  description: '',
+  projection: 'EPSG:3857',
+  minScale: '1:295829355.4545649',
+  title: '无标题tianditu',
+  version: '2.3.0',
+  rootUrl: 'http://support.supermap.com.cn:8090/iportal/services/../',
+  mapParams: {
+    title: '无标题tianditu',
+    description: ''
+  }
+};
+
+const webmap_wmsLayer = {
+  extent: {
+    leftBottom: {
+      x: -20037508.3427892,
+      y: -20037508.3427892
+    },
+    rightTop: {
+      x: 20037508.3427892,
+      y: 20037508.3427892
+    }
+  },
+  maxScale: '1:144447.92746805',
+  level: 1,
+  center: {
+    x: 7219425.62918168,
+    y: -3039139.7858056696
+  },
+  baseLayer: {
+    layerType: 'TILE',
+    name: '中国暗色地图',
+    url: 'https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark'
+  },
+  layers: [
+    {
+      layerType: 'WMS',
+      visible: true,
+      name: '世界地图_Day',
+      layers: ['0'],
+      layerID: '世界地图_Day'
+    }
+  ],
+  description: '',
+  projection: 'EPSG:3857',
+  minScale: '1:591658710.909131',
+  title: '无标题',
+  version: '2.3.0',
+  mapParams: {
+    title: '无标题',
+    description: ''
+  }
+};
+
+const webmap_wmtsLayer = {
+  extent: {
+    leftBottom: {
+      x: -20037508.3427892,
+      y: -20037508.3427892
+    },
+    rightTop: {
+      x: 20037508.3427892,
+      y: 20037508.3427892
+    }
+  },
+  maxScale: '1:144447.92746805',
+  level: 1,
+  center: {
+    x: 7044436.526761852,
+    y: -142311.41472421167
+  },
+  baseLayer: {
+    layerType: 'TILE',
+    visible: true,
+    name: '中国暗色地图',
+    url: 'https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark'
+  },
+  layers: [
+    {
+      layerType: 'WMTS',
+      tileMatrixSet: 'Custom_China',
+      requestEncoding: 'KVP',
+      visible: true,
+      name: 'China',
+      dpi: 90.7142857142857,
+      url: 'http://support.supermap.com.cn:8090/iserver/services/map-china400/wmts100',
+      layer: 'China',
+      layerID: 'China'
+    }
+  ],
+  description: '',
+  projection: 'EPSG:3857',
+  minScale: '1:591658710.909131',
+  title: '无标题',
+  version: '2.3.0',
+  mapParams: {
+    title: '无标题',
+    description: ''
+  }
+};
+
+const webmap_xyzLayer = {
+  extent: {
+    leftBottom: {
+      x: -20037508.34,
+      y: -20037508.34
+    },
+    rightTop: {
+      x: 20037508.34,
+      y: 20037508.34
+    }
+  },
+  maxScale: '1:564.2497165935246',
+  level: 0,
+  center: {
+    x: 3723945.6807942055,
+    y: -2268172.2613533167
+  },
+  baseLayer: {
+    layerType: 'OSM',
+    name: 'OpenStreetMap'
+  },
+  layers: [],
+  description: '',
+  projection: 'EPSG:3857',
+  minScale: '1:295829355.4133858',
+  title: '无标题',
+  version: '2.3.0',
+  rootUrl: 'http://192.168.11.94:8190/iportal/services/../',
+  mapParams: {
+    title: '无标题',
+    description: ''
+  }
+};
+
+const webmap_mapboxstyleLayer = {
+  extent: {
+    leftBottom: {
+      x: 8009146.115071949,
+      y: 382872.01868254057
+    },
+    rightTop: {
+      x: 15037846.241523674,
+      y: 7087311.00490398
+    }
+  },
+  maxScale: '1:70.53121458400844',
+  level: 3,
+  center: {
+    x: 11523496.17829781,
+    y: 3735091.51179326
+  },
+  baseLayer: {
+    layerType: 'MAPBOXSTYLE',
+    name: 'PopulationDistribution',
+    dataSource: {
+      type: 'EXTERNAL',
+      url:
+        'http://support.supermap.com.cn:8090/iserver/services/map-Population/restjsr/v1/vectortile/maps/PopulationDistribution'
+    }
+  },
+  layers: [],
+  description: '',
+  projection: 'EPSG:3857',
+  minScale: '1:295829355.4545649',
+  title: '无标题',
+  version: '2.3.0',
+  rootUrl: 'http://192.168.11.94:8190/iportal/services/../',
+  mapParams: {
+    title: '无标题',
+    description: ''
+  }
+};
+
+const webmap_migrationLayer = {
+  extent: {
+    leftBottom: {
+      x: -20037508.3427892,
+      y: -20037508.3427892
+    },
+    rightTop: {
+      x: 20037508.3427892,
+      y: 20037508.3427892
+    }
+  },
+  maxScale: '1:144447.92746805',
+  level: 10,
+  center: {
+    x: 12970681.08359509,
+    y: 4858329.28626181
+  },
+  baseLayer: {
+    layerType: 'TILE',
+    visible: true,
+    name: '中国暗色地图',
+    url: 'https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark'
+  },
+  layers: [
+    {
+      layerType: 'MIGRATION',
+      labelSetting: {
+        fontFamily: '黑体',
+        color: '#62AD16',
+        show: false
+      },
+      visible: true,
+      name: '北京市轨道交通站点(13)',
+      featureType: 'POINT',
+      from: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      projection: 'EPSG:4326',
+      to: {
+        type: 'XY_FIELD'
+      },
+      enableFields: ['SmID', 'SmX', 'SmY', 'SmLibTileID', 'SmUserID', 'SmGeometrySize', 'SmGeoPosition', '标准名称'],
+      lineSetting: {
+        curveness: 0.2,
+        color: '#62AD16',
+        width: 1,
+        type: 'solid',
+        opacity: 0.6
+      },
+      dataSource: {
+        accessType: 'DIRECT',
+        type: 'PORTAL_DATA',
+        serverId: '516597759'
+      },
+      animationSetting: {
+        symbol: 'pin',
+        symbolSize: 15,
+        show: false,
+        constantSpeed: 40
+      }
+    }
+  ],
+  description: '',
+  projection: 'EPSG:3857',
+  minScale: '1:591658710.909131',
+  title: '无标题point',
+  version: '2.3.0',
+  rootUrl: 'http://192.168.11.94:8190/iportal/services/../'
 };
 
 const datasources = {
@@ -2062,6 +2317,9 @@ const marker_data = {
     '{"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"src":"http://fakeiportal/iportal/apps/dataviz/static/imgs/markers/ktv_red.png","scale":1,"anchor":[0.5,0.5],"imgWidth":48,"imgHeight":43},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[-24.29687500000026,70.60610918076662]}}]}'
 };
 
+const wmsCapabilitiesText =
+  '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE WMT_MS_Capabilities SYSTEM "http://192.168.11.94:8090/iserver/services/map-world/wms111?request=getdtd&file=wms,1.1.1,capabilities_1_1_1.dtd"><WMT_MS_Capabilities version="1.1.1"><Service><Name>OGC:WMS</Name><Title>map-world_wms111</Title><Abstract>北京超图软件股份有限公司提供的 WMS 服务. 联系方式: support@supermap.com</Abstract><KeywordList><Keyword>iServer</Keyword></KeywordList><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /><ContactInformation><ContactPersonPrimary><ContactPerson>联系人姓名</ContactPerson><ContactOrganization>北京超图软件股份有限公司</ContactOrganization></ContactPersonPrimary><ContactPosition /><ContactAddress><AddressType>postal</AddressType><Address>北京市朝阳区酒仙桥北路甲10号院电子城IT产业园107号楼6层</Address><City>北京</City><StateOrProvince>北京</StateOrProvince><PostCode>100015</PostCode><Country>中国</Country></ContactAddress><ContactVoiceTelephone>+86-10-59896655</ContactVoiceTelephone><ContactFacsimileTelephone>+86-10-59896666</ContactFacsimileTelephone><ContactElectronicMailAddress>support@supermap.com</ContactElectronicMailAddress></ContactInformation><Fees>none</Fees><AccessConstraints>none</AccessConstraints></Service><Capability><Request><GetCapabilities><Format>application/vnd.ogc.wms_xml</Format><Format>text/xml</Format><Format>text/html</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /></Get><Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /></Post></HTTP></DCPType></GetCapabilities><GetMap><Format>image/png</Format><Format>image/bmp</Format><Format>image/jpeg</Format><Format>image/gif</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /></Get></HTTP></DCPType></GetMap><GetFeatureInfo><Format>application/vnd.ogc.wms_xml</Format><Format>text/xml</Format><Format>text/html</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /></Get></HTTP></DCPType></GetFeatureInfo></Request><Exception><Format>application/vnd.ogc.se_xml</Format><Format>XML</Format></Exception><UserDefinedSymbolization SupportSLD="1" UserLayer="0" UserStyle="1" RemoteWFS="0" /><Layer queryable="0"><Title /><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.003750834279726E7" maxy="2.0037508342789244E7" /><Layer queryable="1"><Name>0</Name><Title>世界地图_Day</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.003750834279726E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>1</Name><Title>World</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>2</Name><Title>世界地图_Gray</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>3</Name><Title>世界地图</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>4</Name><Title>World Map</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>5</Name><Title>世界地图_Night</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>6</Name><Title>World_Common</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:4326" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:3857" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:0" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /></Layer><Layer queryable="1"><Name>7</Name><Title>World_Robinson</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:4326" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:3857" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:0" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /></Layer><Layer queryable="1"><Name>8</Name><Title>World_VanderGrintenI</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:4326" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:0" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /></Layer><Layer queryable="1"><Name>9</Name><Title>World_AirLine_Part</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /><BoundingBox SRS="EPSG:0" minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /></Layer></Layer></Capability></WMT_MS_Capabilities>';
+
 module.exports = {
   fakeDataServiceResult,
   fakeMapServiceResult,
@@ -2101,5 +2359,12 @@ module.exports = {
   webmap_vectorLayer_point,
   webmap_vectorLayer_line,
   webmap_ranksymbolLayer,
-  webmap_uniqueLayer_polygon
+  webmap_uniqueLayer_polygon,
+  webmap_tiandituLayer,
+  webmap_wmsLayer,
+  webmap_wmtsLayer,
+  webmap_xyzLayer,
+  webmap_mapboxstyleLayer,
+  webmap_migrationLayer,
+  wmsCapabilitiesText
 };

@@ -285,7 +285,7 @@ var Map = function (options) {
   };
 
   this.addStyle = function (style, before) {
-    return this;
+    return style;
   };
 
   this.removeLayer = function (layerId) {};
@@ -438,6 +438,26 @@ var Map = function (options) {
   }
   this.addImage =function(){}
   this.hasImage =function(){return true}
+  this.getCanvasContainer = () => {
+    return {
+      appendChild() {}
+    }
+  }
+  this.getCanvas = () => {
+    return {
+      style: {
+        width: 100,
+        height: 100
+      }
+    }
+  }
+  this.getCRS = () => {
+    return {
+      
+    }
+  }
+  this.flyTo = (options) => {
+  }
 };
 
 module.exports = Map;

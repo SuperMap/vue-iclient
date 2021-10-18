@@ -4,37 +4,45 @@ import {
 import SmCompass from '../Compass.vue';
 import Compass from '../index';
 import SmWebMap from '../../../WebMap.vue';
-
+import mapEvent from '@types_mapboxgl/map-event';
 describe('Compass.vue', () => {
   let wrapper;
+  let mapWrapper;
   beforeEach(() => {
-    wrapper = null;
+    mapEvent.firstMapTarget = null;
+    mapEvent.$options.mapCache = {};
+    mapEvent.$options.webMapCache = {};
+    mapWrapper = mount(SmWebMap, {
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      }
+    })
   });
 
   afterEach(() => {
+    jest.resetAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+    if (mapWrapper) {
+      mapWrapper.destroy();
+    }
+  });
 
   it('render default correctly', () => {
-    wrapper = mount({
-      template: `
-      <sm-web-map style="height:700px" serverUrl="https://fakeiportal.supermap.io/iportal" mapId="123">
-        <sm-compass />
-      </sm-web-map> `,
-      components: {
-        SmCompass,
-        SmWebMap
-      },
-      data() {
-        return {}
-      }
-    }, {
-      propsData: {
-        mapOptions: {}
-      },
-      sync: false,
+    wrapper = mount(SmCompass);
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done()
+        } catch (exception) {
+          console.log("案例失败：" + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
     });
   })
 

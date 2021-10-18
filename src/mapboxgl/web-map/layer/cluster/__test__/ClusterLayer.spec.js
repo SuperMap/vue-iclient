@@ -1,6 +1,6 @@
 import { mount } from '@vue/test-utils';
-import SmClusterLayer from '../ClusterLayer.vue';
 import SmWebMap from '../../../WebMap.vue';
+import SmClusterLayer from '../ClusterLayer.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
 describe('ClusterLayer.vue', () => {
@@ -23,19 +23,6 @@ describe('ClusterLayer.vue', () => {
           SmGeometrySize: '16',
           区站号: '50136',
           站台: '漠河',
-          省份: '黑龙江',
-          海拔: '296',
-          平均最低气温: '-47',
-          最热七天气温: '29',
-          最高气温: '33',
-          最低气温: '-53',
-          年均降雨: '366.1',
-          年均降雨_Num: '366.1',
-          最低气温_Num: '-53.0',
-          最高气温_Num: '33.0',
-          最高七天气温_Num: '29.0',
-          平均最低气温_Num: '-47.0',
-          海波_Num: '296.0'
         },
         type: 'Feature'
       }
@@ -63,11 +50,11 @@ describe('ClusterLayer.vue', () => {
     }
   });
 
-  it('render default correctly', () => {
+  it('render default correctly', (done) => {
     wrapper = mount(SmClusterLayer, {
       propsData: {
         mapTarget: 'map',
-        data
+        data: data
       }
     });
 
@@ -86,7 +73,7 @@ describe('ClusterLayer.vue', () => {
     });
   });
 
-  it('setData', () => {
+  it('setData', (done) => {
     let newData = {
       type: 'FeatureCollection',
       features: [
@@ -104,14 +91,28 @@ describe('ClusterLayer.vue', () => {
     };
     wrapper = mount(SmClusterLayer, {
       propsData: {
-        data: {}
+        mapTarget: 'map',
+        data
       }
     });
-    wrapper.vm.$on('load', e => {
-      wrapper.setProps({
-        data: newData
+  
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          const setDataSpy = jest.spyOn(wrapper.vm.viewModel, 'setData');
+          wrapper.setProps({
+            data: newData
+          });
+          expect(wrapper.vm.viewModel.data).toBe(newData);
+          expect(wrapper.vm.mapTarget).toBe('map');
+          expect(setDataSpy).toBeCalled();
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
       });
-      expect(wrapper.vm.viewModel.data).toBe(newData);
     });
   });
 });

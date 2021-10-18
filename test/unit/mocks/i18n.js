@@ -2,8 +2,15 @@ function geti18n() {
   return {
     t: msg => {
       return msg;
-    }
+    },
+    d: msg => {
+      return msg;
+    },
   };
 }
 
-export { geti18n };
+function getLanguage() {
+  return 'zh';
+}
+
+export { geti18n, getLanguage };

@@ -29,13 +29,20 @@ import {
   drill_map_1960447494,
   drill_map_1687422166,
   marker_data,
+  wmsCapabilitiesText,
   webmap_markerLayer,
   webmap_heatLayer,
   webmap_vectorLayer_point,
   webmap_vectorLayer_line,
   webmap_rangeLayer,
   webmap_ranksymbolLayer,
-  webmap_uniqueLayer_polygon
+  webmap_uniqueLayer_polygon,
+  webmap_tiandituLayer,
+  webmap_wmsLayer,
+  webmap_wmtsLayer,
+  webmap_xyzLayer,
+  webmap_mapboxstyleLayer,
+  webmap_migrationLayer
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -357,6 +364,18 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_ranksymbolLayer))));
       } else if (url.indexOf('2064629293/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_uniqueLayer_polygon))));
+      } else if (url.indexOf('1224625555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_tiandituLayer))));
+      } else if (url.indexOf('4845656956/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_wmsLayer))));
+      } else if (url.indexOf('1016996969/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_wmtsLayer))));
+      } else if (url.indexOf('7894565555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_xyzLayer))));
+      } else if (url.indexOf('8888885555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_mapboxstyleLayer))));
+      } else if (url.indexOf('6177878786/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_migrationLayer))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {
@@ -379,6 +398,8 @@ var FetchRequest = (SuperMap.FetchRequest = {
       // http://192.168.12.230:8092/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
       else if (url.indexOf('content.json?pageSize=9999999&currentPage=1') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(iportal_content))));
+      } else if (url.indexOf('?REQUEST=GetCapabilities&SERVICE=WMS') > -1) {
+        process.nextTick(() => resolve(new Response(wmsCapabilitiesText)));
       }
 
       // 2040117719

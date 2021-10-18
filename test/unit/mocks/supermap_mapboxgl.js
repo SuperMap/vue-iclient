@@ -47,26 +47,47 @@ supermap.AddressMatchService = () => {
 
 supermap.RankSymbolThemeLayer = () => {
   return {
-    addFeatures() {
-
-    }
-  }
-}
+    addFeatures() {}
+  };
+};
 
 supermap.MapService = () => {
   return {
     getMapInfo(callback) {
       setTimeout(() => {
         callback({});
-      }, 0)
+      }, 0);
     }
-  }
-}
+  };
+};
 
-supermap.DeckglLayer = () => {
+supermap.GraphThemeLayer = () => {
   return {
-  }
-}
+    addFeatures() {}
+  };
+};
+
+supermap.LabelThemeLayer = () => {
+  return {
+    addFeatures() {}
+  };
+};
+
+supermap.RangeThemeLayer = () => {
+  return {
+    addFeatures() {}
+  };
+};
+
+supermap.UniqueThemeLayer = () => {
+  return {
+    addFeatures() {}
+  };
+};
+
+supermap.MapvLayer = () => {
+  return {};
+};
 
 supermap.Util = {
   hexToRgba: function (hex, opacity) {

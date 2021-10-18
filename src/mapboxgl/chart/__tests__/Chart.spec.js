@@ -279,4 +279,97 @@ describe('Chart', () => {
       done();
     })
   })
+
+  it('change props', (done) => {
+
+    wrapper = mount(SmChart, {
+      propsData: {
+        mapTarget: "map",
+        dataset: iportalDataSet,
+        echartOptions: {
+          legend: {
+            data: ['2016起降架次（架次）', '2017起降架次（架次）']
+          }, //与yField数据一致
+          tooltip: {
+            formatter: "{b0}: {c0}"
+          },
+          grid: {
+            top: 30,
+            bottom: 60,
+            left: 60,
+            right: 30
+          }
+        },
+        chartStyle: {
+          position: "absolute",
+          bottom: "10px",
+          right: "10px"
+        },
+        datasetOptions: [{
+            seriesType: "bar", //图表类型
+            isStastic: true, //是否统计, 默认不统计
+            isStack: true, //是否堆叠, 默认不堆叠
+            xField: "机场", //x坐标轴数据字段
+            yField: "2016起降架次（架次）" //统计的数据，legned默认名字
+          },
+          {
+            seriesType: "bar",
+            isStastic: true,
+            isStack: true,
+            xField: "机场",
+            yField: "2017起降架次（架次）",
+          }
+        ],
+      }
+    });
+    wrapper.vm.$on("loaded", () => {
+      wrapper.setProps({
+        mapTarget: "map",
+        dataset: {
+          type: "iPortal", //iServer iPortal
+          url: "https://fakeiportal.supermap.io/iportal/web/datas/1236666",
+          queryInfo: {
+            maxFeatures: 40
+          }
+        },
+        echartOptions: {
+          legend: {
+            data: ['2019起降架次（架次）', '2020起降架次（架次）']
+          }, //与yField数据一致
+          tooltip: {
+            formatter: "{b0}: {c0}"
+          },
+          grid: {
+            top: 50,
+            bottom: 70,
+            left: 60,
+            right: 30
+          }
+        },
+        chartStyle: {
+          position: "absolute",
+          bottom: "15px",
+          right: "15px"
+        },
+        datasetOptions: [{
+            seriesType: "bar", //图表类型
+            isStastic: true, //是否统计, 默认不统计
+            isStack: true, //是否堆叠, 默认不堆叠
+            xField: "机场", //x坐标轴数据字段
+            yField: "2019起降架次（架次）" //统计的数据，legned默认名字
+          },
+          {
+            seriesType: "bar",
+            isStastic: true,
+            isStack: true,
+            xField: "机场",
+            yField: "2020起降架次（架次）",
+          }
+        ],
+      })
+      expect(wrapper.vm.mapTarget).toBe("map");
+      expect(wrapper.vm.dataset.type).toBe("iPortal");
+      done();
+    })
+  });
 })

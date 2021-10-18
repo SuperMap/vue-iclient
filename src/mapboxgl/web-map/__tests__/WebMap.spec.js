@@ -2,7 +2,7 @@ import { mount, createLocalVue } from '@vue/test-utils';
 import SmWebMap from '../WebMap.vue';
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
 import mapEvent from '@types_mapboxgl/map-event';
-import { Icon, Card, Collapse, Button, Spin } from 'ant-design-vue';
+import { Icon, Card, Collapse, Button, Spin, message } from 'ant-design-vue';
 
 const localVue = createLocalVue();
 localVue.use(Card);
@@ -10,6 +10,7 @@ localVue.use(Collapse);
 localVue.use(Icon);
 localVue.use(Button);
 localVue.use(Spin);
+localVue.prototype.$message = message;
 
 describe('WebMap.vue', () => {
   let wrapper;
@@ -339,6 +340,186 @@ describe('WebMap.vue', () => {
         expect(strokeLayer.type).toBe('line');
         expect(strokeLayer.paint['line-color']).toBe('#ffffff');
         done();
+      } catch (exception) {
+        console.log('WebMap' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done();
+      }
+    });
+  });
+
+  it('initial_wmsLayer', done => {
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '4845656956'
+      }
+    });
+    wrapper.vm.$on('load', e => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe('4845656956');
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        setTimeout(function () {
+          done();
+        }, 2000);
+      } catch (exception) {
+        console.log('WebMap' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done();
+      }
+    });
+  });
+
+  it('initial_wmtsLayer', done => {
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '1016996969'
+      }
+    });
+    wrapper.vm.$on('load', e => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe('1016996969');
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        setTimeout(function () {
+          done();
+        }, 2000);
+      } catch (exception) {
+        console.log('WebMap' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done();
+      }
+    });
+  });
+
+  it('initial_TiandituLayer', done => {
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '1224625555'
+      }
+    });
+    wrapper.vm.$on('load', e => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe('1224625555');
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        setTimeout(function () {
+          const layers = Object.values(e.map.overlayLayersManager);
+          expect(layers.length).toBe(2);
+          const tiandituLayer = layers[0];
+          expect(tiandituLayer.id).toBe('天地图地形');
+          expect(tiandituLayer.type).toBe('raster');
+          const labelLayer = layers[1];
+          expect(labelLayer.id).toBe('天地图地形-label');
+          done();
+        }, 2000);
+      } catch (exception) {
+        console.log('WebMap' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done();
+      }
+    });
+  });
+
+  it('initial_xyzLayer', done => {
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '7894565555'
+      }
+    });
+    wrapper.vm.$on('load', e => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe('7894565555');
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        setTimeout(function () {
+          const layers = Object.values(e.map.overlayLayersManager);
+          expect(layers.length).toBe(1);
+          const xyzLayer = layers[0];
+          expect(xyzLayer.id).toBe('OpenStreetMap');
+          expect(xyzLayer.type).toBe('raster');
+          done();
+        }, 2000);
+      } catch (exception) {
+        console.log('WebMap' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done();
+      }
+    });
+  });
+
+  it('initial_mapboxstyleLayer', done => {
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '8888885555'
+      }
+    });
+    wrapper.vm.$on('load', e => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe('8888885555');
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        setTimeout(function () {
+          done();
+        }, 2000);
+      } catch (exception) {
+        console.log('WebMap' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done();
+      }
+    });
+  });
+
+  it('initial_migrationLayer', done => {
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '6177878786'
+      }
+    });
+    wrapper.vm.$on('load', e => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.element.id).toEqual('map');
+        expect(wrapper.vm.mapId).toBe('6177878786');
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        setTimeout(function () {
+          done();
+        }, 2000);
       } catch (exception) {
         console.log('WebMap' + exception.name + ':' + exception.message);
         expect(false).toBeTruthy();

@@ -1,62 +1,54 @@
 import {
   mount
 } from '@vue/test-utils';
-import SmLegend from '../Legend.vue';
 import SmWebMap from '../../../WebMap.vue';
-
+import SmLegend from '../Legend.vue';
+import mapEvent from '@types_mapboxgl/map-event';
+import '@libs/mapboxgl/mapbox-gl-enhance';
 describe('Legend.vue', () => {
   let wrapper;
+  let mapWrapper;
   beforeEach(() => {
-    wrapper = null;
+    mapEvent.firstMapTarget = null;
+    mapEvent.$options.mapCache = {};
+    mapEvent.$options.webMapCache = {};
+    mapWrapper = mount(SmWebMap, {
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      }
+    })
   });
 
   afterEach(() => {
+    jest.resetAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
-  })
-
-  it('render default correctly', () => {
-    wrapper = mount({
-      template: `
-      <sm-web-map target="map111" style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
-        <sm-legend :layerNames="['民航数据']" :collapsed="false" position="top-left" />
-      </sm-web-map> `,
-      components: {
-        SmLegend,
-        SmWebMap
-      },
-      data() {
-        return {
-        }
-      }
-    },
-    {
-      sync: false,
+    if (mapWrapper) {
+      mapWrapper.destroy();
     }
-  );
-  })
+  });
 
-  it('render correctly', () => {
-    wrapper = mount({
-      template: `
-      <sm-web-map style="height:700px" mapId="801571284" serverUrl="https://iportal.supermap.io/iportal">
-        <sm-legend style="width:160px" isShowTitle isShowField mode="panel" :layerNames="['民航数据']" position="top-left" :collapsed="false" />
-      </sm-web-map> `,
-      components: {
-        SmLegend,
-        SmWebMap
-      },
-      data() {
-        return {
-        }
+  it('render default correctly', (done) => {
+    wrapper = mount(SmLegend, {
+      propsData: {
+        layerNames: ['民航数据'],
+        mapTarget: 'map'
       }
-    },
-    {
-      sync: false,
-    }
-  );
+    });
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done()
+        } catch (exception) {
+          console.log("案例失败：" + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
   })
-
 })
 
