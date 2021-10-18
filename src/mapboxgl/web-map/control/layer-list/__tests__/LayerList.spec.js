@@ -163,4 +163,29 @@ describe('LayerList.vue', () => {
       }
     });
   });
+
+  it('attributes style', () => {
+    wrapper = mount(LayerList, {
+      propsData: {
+        attributes: {
+          position: 'top-right',
+          style: {
+            width: '500px'
+          }
+        }
+      }
+    });
+    wrapper.vm.displayAttributes = false;
+    wrapper.setProps({
+      attributes: {
+        position: 'left',
+        title: '地震数据',
+        style: {
+          width: '0px'
+        }
+      }
+    });
+    expect(wrapper.find('div.sm-component-layer-list').exists()).toBe(true);
+    expect(wrapper.vm.attributes.position).toBe('left');
+  })
 });
