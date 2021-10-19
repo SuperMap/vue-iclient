@@ -295,6 +295,9 @@ SuperMap.ArrayStatistic.getArraySegments = function (array, type, segNum) {
     14.1324461706
   ];
 };
+SuperMap.SecurityManager = {
+  registerToken: () => {}
+};
 
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesBySQLParameters = jest.fn());
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesByBoundsParameters = jest.fn());
@@ -358,8 +361,6 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_point))));
       } else if (url.indexOf('159357852/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_line))));
-      } else if (url.indexOf('167943279/map.json') > -1) {
-        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
       } else if (url.indexOf('123456789/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_ranksymbolLayer))));
       } else if (url.indexOf('2064629293/map.json') > -1) {
@@ -376,6 +377,8 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_mapboxstyleLayer))));
       } else if (url.indexOf('6177878786/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_migrationLayer))));
+      } else if (url.indexOf('5785858575/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {

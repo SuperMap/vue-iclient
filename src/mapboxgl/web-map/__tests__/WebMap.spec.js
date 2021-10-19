@@ -58,6 +58,60 @@ describe('WebMap.vue', () => {
     });
   });
 
+  it('setProps', done => {
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: 'test'
+      }
+    });
+
+    wrapper.vm.$on('load', () => {
+      try {
+        expect(spy).toBeCalled();
+        wrapper.setProps({
+          mapId: 'test1',
+          serverUrl: 'https://fakeiportal1.supermap.io/iportal',
+          withCredentials: false,
+          mapOptions: {
+            zoom: 5,
+            center: [0, 0],
+            crs: 'EPSG:4326',
+            maxBounds: [
+              [0, 0],
+              [180, 180]
+            ],
+            minZoom: 2,
+            maxZoom: 18,
+            renderWorldCopies: true,
+            bearing: 0,
+            pitch: 5,
+            style: { diff: true, layers: [] }
+          }
+        });
+        wrapper.vm.$nextTick();
+        expect(wrapper.vm.mapId).toBe('test1');
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal1.supermap.io/iportal');
+        expect(wrapper.vm.withCredentials).toBe(false);
+        expect(wrapper.vm.mapOptions.zoom).toBe(5);
+        expect(wrapper.vm.mapOptions.center[0]).toBe(0);
+        expect(wrapper.vm.mapOptions.center[1]).toBe(0);
+        expect(wrapper.vm.mapOptions.minZoom).toBe(2);
+        expect(wrapper.vm.mapOptions.maxZoom).toBe(18);
+        expect(wrapper.vm.mapOptions.renderWorldCopies).toBe(true);
+        expect(wrapper.vm.mapOptions.bearing).toBe(0);
+        done();
+      } catch (exception) {
+        console.log('WebMap' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done();
+      }
+    });
+  });
+
   it('initial_Control', done => {
     const spy = jest.spyOn(mapboxgl, 'Map');
     wrapper = mount(SmWebMap, {
@@ -517,6 +571,42 @@ describe('WebMap.vue', () => {
         expect(wrapper.element.id).toEqual('map');
         expect(wrapper.vm.mapId).toBe('6177878786');
         expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        setTimeout(function () {
+          done();
+        }, 2000);
+      } catch (exception) {
+        console.log('WebMap' + exception.name + ':' + exception.message);
+        expect(false).toBeTruthy();
+        spy.mockReset();
+        spy.mockRestore();
+        done();
+      }
+    });
+  });
+
+  xit('initial-rangeLayer-point', done => {
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '5785858575'
+      }
+    });
+    wrapper.vm.$on('load', e => {
+      try {
+        expect(spy).toBeCalled();
+        expect(wrapper.vm.mapId).toBe('5785858575');
+        expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+        const layers = Object.values(e.map.overlayLayersManager);
+        console.log('layers', layers);
+        expect(layers.length).toBe(2);
+        const rangeLayerPoint = layers[1];
+        const id = rangeLayerPoint.id;
+        expect(id).toBe('RANGE-北京市轨道交通站点(9)-0');
+        expect(rangeLayerPoint.type).toBe('circle');
+        expect(rangeLayerPoint.paint['circle-radius']).toBe(8);
+        expect(rangeLayerPoint.paint['circle-color'].length).toBeGreaterThan(0);
         setTimeout(function () {
           done();
         }, 2000);

@@ -71,8 +71,9 @@ describe('TdtMapSwitcher.vue', () => {
     wrapper = mount(SmTdtMapSwitcher, {
       propsData: {
         mapTarget: 'map',
+        collapsed: false,
         data: {
-          select: '',
+          select: 'img',
           label: false,
           tk: '1d109683f4d84198e37a38c442d68311'
         }
@@ -82,6 +83,9 @@ describe('TdtMapSwitcher.vue', () => {
     mapWrapper.vm.$on('load', () => {
       wrapper.vm.$on('loaded', () => {
         try {
+          const tdtItem = wrapper.find('.layer-item.map-item');
+          expect(tdtItem.exists()).toBe(true);
+          tdtItem.trigger('click');
           // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
           expect(wrapper.vm.mapTarget).toBe('map');
           done();

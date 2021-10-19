@@ -3,6 +3,7 @@ import SmWebMap from '../../../WebMap.vue';
 import SmClusterLayer from '../ClusterLayer.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
+import CircleStyle from '../../../../_types/CircleStyle';
 describe('ClusterLayer.vue', () => {
   let wrapper;
   let mapWrapper;
@@ -89,6 +90,16 @@ describe('ClusterLayer.vue', () => {
         }
       ]
     };
+    const clusteredPointStyle = new CircleStyle({
+      'circle-color': ['step', ['get', 'point_count'], '#51bbd6', 100, '#f1f075', 750, '#f28cb1'],
+      'circle-radius': ['step', ['get', 'point_count'], 10, 80, 20, 600, 50]
+    });
+    
+    const unclusteredPointStyle = new CircleStyle({
+      'circle-color': '#11b4da',
+      'circle-stroke-width': 1,
+      'circle-stroke-color': '#fff'
+    });
     wrapper = mount(SmClusterLayer, {
       propsData: {
         mapTarget: 'map',
@@ -101,7 +112,9 @@ describe('ClusterLayer.vue', () => {
         try {
           const setDataSpy = jest.spyOn(wrapper.vm.viewModel, 'setData');
           wrapper.setProps({
-            data: newData
+            data: newData,
+            clusteredPointStyle,
+            unclusteredPointStyle
           });
           expect(wrapper.vm.viewModel.data).toBe(newData);
           expect(wrapper.vm.mapTarget).toBe('map');

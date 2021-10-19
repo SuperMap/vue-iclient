@@ -6,6 +6,9 @@ function geti18n() {
     d: msg => {
       return msg;
     },
+    tc: msg => {
+      return msg
+    }
   };
 }
 

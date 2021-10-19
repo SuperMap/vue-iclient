@@ -1,6 +1,5 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import SmTdtRoute from '../TdtRoute.vue';
-import TdtRoute from '../index';
 import SmWebMap from '../../../web-map/WebMap.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
@@ -37,7 +36,8 @@ describe('TdtRoute.vue', () => {
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
-        mapTarget: 'map'
+        mapTarget: 'map',
+        collapsed: false
       }
     });
 
@@ -60,7 +60,8 @@ describe('TdtRoute.vue', () => {
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
-        mapTarget: 'map'
+        mapTarget: 'map',
+        collapsed: false
       }
     });
 
@@ -88,7 +89,8 @@ describe('TdtRoute.vue', () => {
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
-        mapTarget: 'map'
+        mapTarget: 'map',
+        collapsed: false
       }
     });
 
@@ -117,6 +119,7 @@ describe('TdtRoute.vue', () => {
       localVue,
       propsData: {
         mapTarget: 'map',
+        collapsed: false,
         data: {
           tk: '1d109683f4d84198e37a38c442d68311'
         }
@@ -159,6 +162,7 @@ describe('TdtRoute.vue', () => {
       localVue,
       propsData: {
         mapTarget: 'map',
+        collapsed: false,
         data: {
           tk: '1d109683f4d84198e37a38c442d68311',
           carUrl: 'https://api.tianditu.gov.cn/drive',
@@ -199,6 +203,7 @@ describe('TdtRoute.vue', () => {
       localVue,
       propsData: {
         mapTarget: 'map',
+        collapsed: false,
         data: {
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',

@@ -17,13 +17,6 @@ describe('GraphThemeLayer.vue', () => {
           coordinates: [122.36999999999999, 53.470000000000006]
         },
         properties: {
-          SmID: '1',
-          SmX: '1.3622166088372886E7',
-          SmY: '7070412.841759119',
-          SmLibTileID: '1',
-          SmUserID: '0',
-          SmGeometrySize: '16',
-          区站号: '50136',
           站台: '漠河',
           省份: '黑龙江',
           海拔: '296'
@@ -67,6 +60,54 @@ describe('GraphThemeLayer.vue', () => {
       wrapper.vm.$on('loaded', () => {
         try {
           expect(wrapper.vm.mapTarget).toBe('map');
+          done()
+        } catch (exception) {
+          console.log("案例失败：" + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change props', (done) => {
+    const newData = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            省份: '黑龙江',
+            海拔: '296'
+          },
+          type: 'Feature'
+        }
+      ]
+    };
+    wrapper = mount(SmGraphThemeLayer, {
+      propsData: {
+        mapTarget: "map",
+        chartsType: 'Pie',
+        data
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            data: newData,
+            chartsType: 'Bar',
+            options: {
+              id: 'newId'
+            },
+            layerName: 'newName'
+          })
+          expect(wrapper.vm.chartsType).toBe('Bar');
+          expect(wrapper.vm.data).toBe(newData);
           done()
         } catch (exception) {
           console.log("案例失败：" + exception.name + ':' + exception.message);

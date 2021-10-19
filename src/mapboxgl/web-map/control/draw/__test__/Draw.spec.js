@@ -55,4 +55,33 @@ describe('Draw.vue', () => {
       });
     });
   });
+
+  it('start draw', done => {
+    wrapper = mount(
+      SmDraw,
+      {
+        propsData: {
+          mapTarget: 'map',
+          collapsed: false
+        },
+        sync: false
+      },
+    );
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          const drawItem = wrapper.find('.sm-component-draw__draw-item');
+          expect(drawItem.exists()).toBe(true);
+          expect(wrapper.vm.mapTarget).toBe('map');
+          drawItem.trigger('click');
+          wrapper.vm.$nextTick();
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
 });

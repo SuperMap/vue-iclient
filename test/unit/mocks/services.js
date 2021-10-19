@@ -663,6 +663,73 @@ const webmap_vectorLayer_line = {
   version: '1.0'
 };
 
+const webmap_rangeLayer = {
+  extent: {
+    leftBottom: {
+      x: -20037508.342789248,
+      y: -20037508.34278914
+    },
+    rightTop: {
+      x: 20037508.342789244,
+      y: 20037508.342789087
+    }
+  },
+  maxScale: '1:144447.92746805',
+  level: 10,
+  center: {
+    x: 12960700.474044422,
+    y: 4861370.203808137
+  },
+  baseLayer: {
+    layerType: 'TILE',
+    name: 'ChinaDark',
+    url: 'http://192.168.11.94:8090/iserver/services/map-china400/rest/maps/ChinaDark'
+  },
+  layers: [
+    {
+      layerType: 'RANGE',
+      visible: true,
+      themeSetting: {
+        themeField: 'SmID',
+        customSettings: {},
+        segmentMethod: 'offset',
+        segmentCount: 6,
+        colors: ['#ffc6c4', '#f4a3a8', '#e38191', '#cc607d', '#ad466c', '#8b3058', '#672044']
+      },
+      name: '北京市轨道交通站点(9)',
+      featureType: 'POINT',
+      style: {
+        strokeWidth: 1,
+        fillColor: '#8b3058',
+        offsetX: 0,
+        offsetY: 0,
+        fillOpacity: 0.9,
+        radius: 8,
+        strokeColor: '#ffffff',
+        type: 'BASIC_POINT',
+        strokeOpacity: 1
+      },
+      projection: 'EPSG:4326',
+      enableFields: ['SmID', 'SmX', 'SmY', 'SmLibTileID', 'SmUserID', 'SmGeometrySize', 'SmGeoPosition', '标准名称'],
+      dataSource: {
+        accessType: 'DIRECT',
+        type: 'PORTAL_DATA',
+        serverId: '1473470625'
+      },
+      layerID: '北京市轨道交通站点(9)'
+    }
+  ],
+  description: '',
+  projection: 'EPSG:3857',
+  minScale: '1:591658710.909131',
+  title: '无标题',
+  version: '2.3.0',
+  mapParams: {
+    title: '无标题',
+    description: ''
+  }
+};
+
 const webmap_tiandituLayer = {
   extent: {
     leftBottom: {
@@ -2366,5 +2433,6 @@ module.exports = {
   webmap_xyzLayer,
   webmap_mapboxstyleLayer,
   webmap_migrationLayer,
+  webmap_rangeLayer,
   wmsCapabilitiesText
 };

@@ -133,8 +133,7 @@ var Map = function (options) {
     this[setters[i]] = genericSetter;
   }
 
-  this.setLayoutProperty = function (layerid) {
-  };
+  this.setLayoutProperty = function (layerid) {};
 
   this.addControl = function (control) {
     control.onAdd(this);
@@ -239,10 +238,30 @@ var Map = function (options) {
         }.bind(this),
         loadTile: function () {}
       };
+    } else if (name === 'dataflowlayer-1') {
+      return null;
+    } else if (name == 'dataflowlayer-source') {
+      return {
+        setData: function (data) {},
+        loadTile: function () {},
+        _data: {
+          features: [
+            { geometry: { type: 'Point', coordinates: [0, 0] }, properties: { id: 1 } },
+            { geometry: { type: 'Point', coordinates: [0, 0] }, properties: { id: 2 } }
+          ]
+        }
+      };
+    } else if (name == 'dataflowlayer-source-has-false') {
+      return {
+        setData: function (data) {},
+        loadTile: function () {},
+        _data: {
+          features: [{ geometry: { type: 'Point', coordinates: [0, 0] }, properties: { id: 2 } }]
+        }
+      };
     } else {
       return {
-        setData: function (data) {
-        },
+        setData: function (data) {},
         loadTile: function () {}
       };
     }
@@ -433,31 +452,34 @@ var Map = function (options) {
     this.fire('zoomend', this.zoom);
     return this.zoom;
   };
-  this.loadImage=function(src,callback){
-    setTimeout(function(){callback(null,[1,2,3])},10)
-  }
-  this.addImage =function(){}
-  this.hasImage =function(){return true}
+  this.loadImage = function (src, callback) {
+    setTimeout(function () {
+      callback(null, [1, 2, 3]);
+    }, 10);
+  };
+  this.addImage = function () {};
+  this.hasImage = function () {
+    return true;
+  };
   this.getCanvasContainer = () => {
     return {
       appendChild() {}
-    }
-  }
+    };
+  };
   this.getCanvas = () => {
     return {
       style: {
         width: 100,
         height: 100
       }
-    }
-  }
+    };
+  };
   this.getCRS = () => {
-    return {
-      
-    }
-  }
-  this.flyTo = (options) => {
-  }
+    return {};
+  };
+  this.setCRS = () => {};
+  this.flyTo = options => {};
+  this.setRenderWorldCopies = epsgCode => {};
 };
 
 module.exports = Map;

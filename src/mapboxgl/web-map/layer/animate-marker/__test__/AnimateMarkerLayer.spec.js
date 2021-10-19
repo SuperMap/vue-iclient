@@ -3,8 +3,7 @@ import SmAnimateMarkerLayer from '../AnimateMarkerLayer.vue';
 import SmWebMap from '../../../WebMap.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
-import { wrap } from 'module';
-
+const colors = ["rab(255,155,20)", "#3AD900", "#0080d9"];
 const features = {
   features: [
     {
@@ -84,7 +83,10 @@ describe('AnimateMarkerLayer.vue', () => {
         mapTarget: 'map',
         features,
         textField: 'name',
-        type: 'rotatingAperture'
+        type: 'rotatingAperture',
+        width:150,
+        height:150,
+        colors:colors
       }
     });
 
@@ -109,7 +111,10 @@ describe('AnimateMarkerLayer.vue', () => {
         mapTarget: 'map',
         features,
         textField: 'name',
-        type: 'haloRing'
+        type: 'haloRing',
+        width:150,
+        height:150,
+        colors:colors
       }
     });
 
@@ -134,7 +139,10 @@ describe('AnimateMarkerLayer.vue', () => {
         mapTarget: 'map',
         features,
         textField: 'name',
-        type: 'diffusedAperture'
+        type: 'diffusedAperture',
+        width:150,
+        height:150,
+        colors:colors
       }
     });
 
@@ -159,7 +167,10 @@ describe('AnimateMarkerLayer.vue', () => {
         mapTarget: 'map',
         features,
         textField: 'name',
-        type: 'rotatingTextBorder'
+        type: 'rotatingTextBorder',
+        width:150,
+        height:150,
+        colors:colors
       }
     });
 
@@ -184,7 +195,10 @@ describe('AnimateMarkerLayer.vue', () => {
         mapTarget: 'map',
         features,
         textField: 'name',
-        type: 'fluorescence'
+        type: 'fluorescence',
+        width:150,
+        height:150,
+        colors:colors
       }
     });
 

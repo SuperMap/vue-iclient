@@ -13,13 +13,6 @@ describe('LabelThemeLayer.vue', () => {
         coordinates: [122.36999999999999, 53.470000000000006]
       },
       properties: {
-        SmID: '1',
-        SmX: '1.3622166088372886E7',
-        SmY: '7070412.841759119',
-        SmLibTileID: '1',
-        SmUserID: '0',
-        SmGeometrySize: '16',
-        最高气温_Num: '33.0',
         最高七天气温_Num: '29.0',
         平均最低气温_Num: '-47.0',
         海波_Num: '296.0'
@@ -65,6 +58,52 @@ describe('LabelThemeLayer.vue', () => {
           done();
         } catch (exception) {
           console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change props', (done) => {
+    const newData = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            省份: '黑龙江',
+            海拔: '296'
+          },
+          type: 'Feature'
+        }
+      ]
+    };
+    wrapper = mount(SmLabelThemeLayer, {
+      propsData: {
+        mapTarget: "map",
+        data: features,
+        layerName: 'LabelThemeLayer'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            data: newData,
+            options: {
+              id: 'newId'
+            },
+            layerName: 'newName'
+          })
+          expect(wrapper.vm.data).toBe(newData);
+          done()
+        } catch (exception) {
+          console.log("案例失败：" + exception.name + ':' + exception.message);
           expect(false).toBeTruthy();
           done();
         }
