@@ -1,36 +1,54 @@
 import {
   mount
 } from '@vue/test-utils';
-import SmMiniMap from '../MiniMap.vue';
-import MiniMap from '../MiniMap.vue';
 import SmWebMap from '../../../WebMap.vue';
+import SmMiniMap from '../MiniMap.vue';
+import mapEvent from '@types_mapboxgl/map-event';
 
 describe('MiniMap.vue', () => {
   let wrapper;
+  let mapWrapper;
   beforeEach(() => {
-    wrapper = null;
+    mapEvent.firstMapTarget = null;
+    mapEvent.$options.mapCache = {};
+    mapEvent.$options.webMapCache = {};
+    mapWrapper = mount(SmWebMap, {
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      }
+    })
   });
 
   afterEach(() => {
+    jest.resetAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+    if (mapWrapper) {
+      mapWrapper.destroy();
+    }
+  });
 
-  it('render default correctly', () => {
-    wrapper = mount({
-      template: `
-      <sm-web-map style="height:700px" mapId="123" serverUrl="https://fakeiportal.supermap.io/iportal">
-        <sm-mini-map :collapsed="false"></sm-mini-map>
-      </sm-web-map> `,
-      components: {
-        SmMiniMap,
-        SmWebMap
+  it('render default correctly', (done) => {
+    wrapper = mount(SmMiniMap, {
+      propsData: {
+        mapTarget: 'map'
       }
     });
-  })
-
-  it('render index correctly', () => {
-    wrapper = mount(MiniMap);
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          expect(wrapper.vm.mapTarget).toBe('map');
+          setTimeout(() => {
+            done()
+          }, 1000);
+        } catch (exception) {
+          console.log("案例失败：" + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
   })
 })

@@ -4,27 +4,17 @@ import SmWebMap from '../../../WebMap.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
 
-const features = [
+const layers = [
   {
-    geometry: {
-      type: 'Point',
-      coordinates: [122.36999999999999, 53.470000000000006]
-    },
-    properties: {
-      SmID: '1',
-      SmX: '1.3622166088372886E7',
-      SmY: '7070412.841759119',
-      SmLibTileID: '1',
-      SmUserID: '0',
-      SmGeometrySize: '16',
-      区站号: '50136',
-      站台: '漠河',
-      省份: '黑龙江',
-      海拔: '296'
-    },
-    type: 'Feature'
+    mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal', mapId: '801571284' },
+    title: '民航数据-单值'
+  },
+  {
+    mapInfo: { serverUrl: 'https://fakeiserver.supermap.io/iserver' },
+    title: '机场数据'
   }
 ];
+
 describe('LayerManager.vue', () => {
   let wrapper;
   let mapWrapper;
@@ -83,6 +73,7 @@ describe('LayerManager.vue', () => {
     wrapper = mount(SmLayerManager, {
       propsData: {
         defaultExpandAll: true,
+        collapse: false,
         mapTarget: 'map',
         layers: [
           {
@@ -96,10 +87,48 @@ describe('LayerManager.vue', () => {
     mapWrapper.vm.$on('load', () => {
       wrapper.vm.$on('loaded', () => {
         try {
-          // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
-          const treeItem = wrapper.find('.sm-component-tree-treenode-switcher-open');
+          const treeItem = wrapper.find('.sm-component-tree-checkbox');
           expect(treeItem.exists()).toBe(true);
           treeItem.trigger('click');
+          wrapper.vm.$nextTick();
+          treeItem.trigger('click');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change layers', done => {
+    const newLayers = [
+      {
+        mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal222', mapId: '801571284' },
+        title: '民航数据-单值'
+      },
+      {
+        mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal1111', mapId: '6666666666' },
+        title: '民航数据'
+      }
+    ];
+    wrapper = mount(SmLayerManager, {
+      propsData: {
+        defaultExpandAll: true,
+        collapse: false,
+        mapTarget: 'map',
+        layers
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            layers: newLayers
+          });
+          expect(wrapper.vm.layers.length).toBe(2);
           done();
         } catch (exception) {
           console.log('案例失败：' + exception.name + ':' + exception.message);

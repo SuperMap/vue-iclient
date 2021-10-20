@@ -39,7 +39,7 @@ module.exports = {
     '!mapboxgl/*/__tests__/**/type.{js,jsx}'
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(mapbox-gl|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7)/)'
+    'node_modules/(?!(mapbox-gl|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'
   ],
   modulePaths: ['src', 'node_modules'],
   globals: {

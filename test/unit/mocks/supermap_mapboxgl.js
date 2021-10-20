@@ -55,7 +55,8 @@ supermap.MapService = () => {
   return {
     getMapInfo(callback) {
       setTimeout(() => {
-        callback({});
+        const mapObj = { element: null, object: {}, result: {}, type: 'processCompleted' };
+        callback(mapObj);
       }, 0);
     }
   };

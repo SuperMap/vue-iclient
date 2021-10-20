@@ -97,7 +97,8 @@ describe('HeatmapLayer.vue', () => {
       }
     });
     wrapper.setProps({
-      data: newData
+      data: newData,
+      layerStyle: {}
     });
     expect(wrapper.vm.viewModel.data).toBe(newData);
   });

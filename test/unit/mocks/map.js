@@ -96,18 +96,14 @@ var Map = function (options) {
   if (options.style) {
     this.setStyle(options.style);
   }
-  // this.transform = new Transform();
+  this.transform = {
+    angle: 0
+  };
   this._controlCorners = {
     'top-left': {
       appendChild: function () {}
     }
   };
-  setTimeout(
-    function () {
-      this.fire('load');
-    }.bind(this),
-    0
-  );
 
   var setters = [
     // Camera options
@@ -214,6 +210,7 @@ var Map = function (options) {
             this.fire('data', e);
           }
         }.bind(this),
+        _data: this._sources[name].data,
         loadTile: function () {}
       };
     }
@@ -299,7 +296,12 @@ var Map = function (options) {
   this.off = function () {};
   this.addLayer = function (layer, before) {
     this.overlayLayersManager[layer.id] = layer;
-
+    if (layer.onAdd) {
+      layer.onAdd(this);
+    }
+    if (layer.render) {
+      layer.render();
+    }
     return this;
   };
 
@@ -360,6 +362,26 @@ var Map = function (options) {
     enable: function () {}
   };
 
+  this.scrollZoom = {
+    disable: function () {},
+    enable: function () {}
+  };
+
+  this.dragRotate = {
+    disable: function () {},
+    enable: function () {}
+  };
+
+  this.keyboard = {
+    disable: function () {},
+    enable: function () {}
+  };
+
+  this.touchZoomRotate = {
+    disable: function () {},
+    enable: function () {}
+  };
+
   this.project = function () {};
   this.unproject = function (point) {
     return new LngLat(-73.9876, 40.7661);
@@ -372,23 +394,25 @@ var Map = function (options) {
    */
   this.queryRenderedFeatures = function (pointOrBox, queryParams) {
     var searchBoundingBox = [];
-    if (pointOrBox[0].x !== undefined) {
-      searchBoundingBox = [
-        Math.min(pointOrBox[0].x, pointOrBox[1].x),
-        Math.min(pointOrBox[0].y, pointOrBox[1].y),
-        Math.max(pointOrBox[0].x, pointOrBox[1].y),
-        Math.max(pointOrBox[0].x, pointOrBox[1].y)
-      ];
-    } else {
-      searchBoundingBox = [
-        Math.min(pointOrBox[0][0], pointOrBox[1][0]),
-        Math.min(pointOrBox[0][1], pointOrBox[1][1]),
-        Math.max(pointOrBox[0][0], pointOrBox[1][0]),
-        Math.max(pointOrBox[0][1], pointOrBox[1][1])
-      ];
+    if (pointOrBox) {
+      if (pointOrBox[0].x !== undefined) {
+        searchBoundingBox = [
+          Math.min(pointOrBox[0].x, pointOrBox[1].x),
+          Math.min(pointOrBox[0].y, pointOrBox[1].y),
+          Math.max(pointOrBox[0].x, pointOrBox[1].y),
+          Math.max(pointOrBox[0].x, pointOrBox[1].y)
+        ];
+      } else {
+        searchBoundingBox = [
+          Math.min(pointOrBox[0][0], pointOrBox[1][0]),
+          Math.min(pointOrBox[0][1], pointOrBox[1][1]),
+          Math.max(pointOrBox[0][0], pointOrBox[1][0]),
+          Math.max(pointOrBox[0][1], pointOrBox[1][1])
+        ];
+      }
     }
 
-    var searchPolygon = bboxPolygon(searchBoundingBox);
+    var searchPolygon = searchBoundingBox.length && bboxPolygon(searchBoundingBox);
     var features = Object.keys(this._sources).reduce(
       (memo, name) => memo.concat(this._sources[name].data.features),
       []
@@ -396,7 +420,7 @@ var Map = function (options) {
     features = features.filter(feature => {
       var subFeatures = [];
 
-      if (feature.geometry.type.startsWith('Multi')) {
+      if (feature && feature.geometry && feature.geometry.type.startsWith('Multi')) {
         var type = feature.geometry.type.replace('Multi', '');
         subFeatures = feature.geometry.coordinates.map(coords => {
           return {
@@ -415,7 +439,7 @@ var Map = function (options) {
       // union only works with polygons, so we convert points and lines into polygons
       // TODO: Look into having this buffer match the style
       subFeatures = subFeatures.map(subFeature => {
-        if (subFeature.geometry.type === 'Point' || subFeature.geometry.type === 'LineString') {
+        if (subFeature && subFeature.geometry && (subFeature.geometry.type === 'Point' || subFeature.geometry.type === 'LineString')) {
           return buffer(subFeature, 0.00000001, 'kilometers');
         } else {
           return subFeature;
@@ -428,8 +452,8 @@ var Map = function (options) {
         // union takes two polygons and merges them.
         // If they intersect it returns them merged Polygon geometry type
         // If they don't intersect it retuns them as a MultiPolygon geomentry type
-        var merged = union(subFeature, searchPolygon);
-        return merged.geometry.type === 'Polygon';
+        var merged = subFeature && union(subFeature, searchPolygon);
+        return merged && merged.geometry.type === 'Polygon';
       });
     });
 
@@ -461,9 +485,15 @@ var Map = function (options) {
   this.hasImage = function () {
     return true;
   };
+  this.getPaintProperty = function(){};
+  this.removeImage = function () {};
   this.getCanvasContainer = () => {
     return {
-      appendChild() {}
+      appendChild() {},
+      addEventListener(eventName, callback) {},
+      style: {
+        cursor: null
+      }
     };
   };
   this.getCanvas = () => {
@@ -480,6 +510,40 @@ var Map = function (options) {
   this.setCRS = () => {};
   this.flyTo = options => {};
   this.setRenderWorldCopies = epsgCode => {};
+  this.triggerRepaint = () => {};
+  setTimeout(() => {
+    this.fire('load');
+  }, 0);
+  setTimeout(() => {
+    this.fire('move');
+    this.fire('mousedown');
+    this.fire('mousemove');
+    this.fire('mouseup');
+    this.fire('draw.create', {
+      features: [ {
+        geometry: {
+          type: 'Point',
+          coordinates: [122, 53]
+        },
+        properties: {
+          SmID: '1'
+        },
+        type: 'Feature'
+      }]
+    });
+    this.fire('draw.selectionchange', {
+      features: [ {
+        geometry: {
+          type: 'Point',
+          coordinates: [122, 53]
+        },
+        properties: {
+          SmID: '1'
+        },
+        type: 'Feature'
+      }]
+    });
+  }, 500);
 };
 
 module.exports = Map;

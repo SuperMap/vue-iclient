@@ -205,7 +205,327 @@ describe('AnimateMarkerLayer.vue', () => {
     mapWrapper.vm.$on('load', () => {
       wrapper.vm.$on('loaded', () => {
         try {
-          // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change fluorescence width', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        type: 'fluorescence',
+        width:150,
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            width: 600
+          })
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change fluorescence colors', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        type: 'fluorescence'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            colors: ['#f00', '#f20']
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change rotatingTextBorder width', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 200,
+        type: 'rotatingTextBorder'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            width: 400
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change rotatingTextBorder colors', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        type: 'rotatingTextBorder'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            colors: ['#f00', '#f20']
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change rotatingAperture width', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 150,
+        type: 'rotatingAperture'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            width: 600
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change rotatingAperture colors', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 150,
+        type: 'rotatingAperture'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            colors: ['#f00', '#f20']
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change diffusedAperture width', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 150,
+        type: 'diffusedAperture'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            width: 600
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change diffusedAperture colors', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 150,
+        type: 'diffusedAperture'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            colors: ['#f00', '#f20']
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+  it('change breathingAperture width', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 150,
+        type: 'breathingAperture'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            width: 600
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change breathingAperture color', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 150,
+        type: 'breathingAperture'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            colors: ['#f00', '#f20']
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change haloRing width', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 150,
+        type: 'haloRing'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            width: 600
+          });
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('change haloRing colors', done => {
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        features,
+        width: 150,
+        type: 'haloRing'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            colors: ['#f00', '#f20']
+          });
           expect(wrapper.vm.mapTarget).toBe('map');
           done();
         } catch (exception) {

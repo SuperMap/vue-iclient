@@ -3,6 +3,7 @@ import 'isomorphic-fetch';
 
 Vue.config.productionTip = false;
 
+jest.mock('three', () => require('./mocks/three').THREE);
 jest.mock('@i18n/_lang', () => require('./mocks/i18n'));
 jest.mock('@libs/mapbox-gl-draw/mapbox-gl-draw.js', () => require('./mocks/mapboxgl_draw'));
 jest.mock('@libs/mapboxgl/mapbox-gl-enhance.js', () => require('./mocks/mapboxgl').mapboxgl);

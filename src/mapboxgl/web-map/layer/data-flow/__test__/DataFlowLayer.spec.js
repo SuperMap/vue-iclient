@@ -44,7 +44,6 @@ describe(`DataFlowLayer.vue`, () => {
       propsData: {
         mapTarget: 'map',
         serviceUrl,
-        layerStyle,
         layerId
       }
     });
@@ -53,7 +52,6 @@ describe(`DataFlowLayer.vue`, () => {
       wrapper.vm.$on('loaded', () => {
         try {
           expect(wrapper.vm.serviceUrl).toBe('/iserver/services/dataflowTest/dataflow');
-          expect(wrapper.vm.layerStyle).toBe(layerStyle);
           expect(wrapper.vm.mapTarget).toBe('map');
           done();
         } catch (exception) {
