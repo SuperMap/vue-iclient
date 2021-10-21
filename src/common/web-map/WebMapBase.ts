@@ -52,6 +52,10 @@ export default abstract class WebMapBase extends Events {
 
   echartslayer: any = [];
 
+  eventTypes: any;
+
+  triggerEvent: any;
+
   protected webMapService: WebMapService;
 
   protected _layers: any = [];
