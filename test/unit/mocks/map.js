@@ -439,7 +439,11 @@ var Map = function (options) {
       // union only works with polygons, so we convert points and lines into polygons
       // TODO: Look into having this buffer match the style
       subFeatures = subFeatures.map(subFeature => {
-        if (subFeature && subFeature.geometry && (subFeature.geometry.type === 'Point' || subFeature.geometry.type === 'LineString')) {
+        if (
+          subFeature &&
+          subFeature.geometry &&
+          (subFeature.geometry.type === 'Point' || subFeature.geometry.type === 'LineString')
+        ) {
           return buffer(subFeature, 0.00000001, 'kilometers');
         } else {
           return subFeature;
@@ -485,7 +489,7 @@ var Map = function (options) {
   this.hasImage = function () {
     return true;
   };
-  this.getPaintProperty = function(){};
+  this.getPaintProperty = function () {};
   this.removeImage = function () {};
   this.getCanvasContainer = () => {
     return {
@@ -511,6 +515,7 @@ var Map = function (options) {
   this.flyTo = options => {};
   this.setRenderWorldCopies = epsgCode => {};
   this.triggerRepaint = () => {};
+  this.getCanvas = function () {};
   setTimeout(() => {
     this.fire('load');
   }, 0);
@@ -520,28 +525,32 @@ var Map = function (options) {
     this.fire('mousemove');
     this.fire('mouseup');
     this.fire('draw.create', {
-      features: [ {
-        geometry: {
-          type: 'Point',
-          coordinates: [122, 53]
-        },
-        properties: {
-          SmID: '1'
-        },
-        type: 'Feature'
-      }]
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            SmID: '1'
+          },
+          type: 'Feature'
+        }
+      ]
     });
     this.fire('draw.selectionchange', {
-      features: [ {
-        geometry: {
-          type: 'Point',
-          coordinates: [122, 53]
-        },
-        properties: {
-          SmID: '1'
-        },
-        type: 'Feature'
-      }]
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            SmID: '1'
+          },
+          type: 'Feature'
+        }
+      ]
     });
   }, 500);
 };
