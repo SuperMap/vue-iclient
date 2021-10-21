@@ -167,7 +167,7 @@ export default abstract class WebMapBase extends Events {
   public setMaxZoom(maxZoom): void {
     if (this.map) {
       this.mapOptions.maxZoom = maxZoom;
-      (maxZoom || maxZoom === 0) && this.map.setMinZoom(maxZoom);
+      (maxZoom || maxZoom === 0) && this.map.setMaxZoom(maxZoom);
     }
   }
 
