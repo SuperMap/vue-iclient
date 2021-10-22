@@ -40,4 +40,18 @@ describe('Indicator.vue', () => {
     wrapper = mount(Indicator)
     expect(wrapper.find('.sm-component-indicator').exists()).toBe(true);
   })
+    it('render default correctly', async () => {
+    wrapper = mount(SmIndicator, {
+      propsData: {
+        title: "建筑高度",
+        unit: "米",
+        num: "1588"
+      }
+    });
+    expect(wrapper.find('.sm-component-indicator').exists()).toBe(true);
+    await wrapper.setProps({
+      mode: 'horizontal'
+    })
+    expect(wrapper.vm.mode).toBe('horizontal');
+  })
 })

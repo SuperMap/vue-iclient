@@ -15,7 +15,7 @@ describe('FillExtrusion.vue', () => {
     }
   })
 
-  xit('render default correctly', () => {
+  it('render default correctly', () => {
     wrapper = mount(SmFillExtrusion);
   })
 })
