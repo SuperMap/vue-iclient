@@ -515,7 +515,6 @@ var Map = function (options) {
   this.flyTo = options => {};
   this.setRenderWorldCopies = epsgCode => {};
   this.triggerRepaint = () => {};
-  this.getCanvas = function () {};
   setTimeout(() => {
     this.fire('load');
   }, 0);
