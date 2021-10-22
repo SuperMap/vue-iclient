@@ -326,10 +326,16 @@ var Util = (SuperMap.Util = {
       }
     }
     return scale;
+  },
+  isArray: function (a) {
+    return Array.isArray(a);
   }
 });
-// var document = (window.document = jest.fn());
-// var documentElement = window.document.documentElement
+SuperMap.String = {
+  trim: (a) => {
+    return String(a)
+  }
+}
 var document = {};
 var documentElement = (document.documentElement = {});
 var FetchRequest = (SuperMap.FetchRequest = {

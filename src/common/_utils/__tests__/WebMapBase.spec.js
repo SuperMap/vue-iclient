@@ -32,35 +32,39 @@ WebMapBaseObj.map = {
   getSource: () => {
     return {
       _data: {
-        features: [{
-          geometry: {}
-        }]
+        features: [
+          {
+            geometry: {}
+          }
+        ]
       }
-    }
+    };
   }
 };
 describe('WebMapBase.spec', () => {
   it('echartslayer', () => {
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    newWebMapBaseObj.echartslayer = [{
-      chart: {
-        resize: jest.fn()
+    newWebMapBaseObj.echartslayer = [
+      {
+        chart: {
+          resize: jest.fn()
+        }
       }
-    }]
+    ];
     newWebMapBaseObj.echartsLayerResize();
-  })
+  });
 
-  it('setMapId mapId is number', async (done) => {
+  it('setMapId mapId is number', async done => {
     const mapId = 123;
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     newWebMapBaseObj._initWebMap = jest.fn();
     await newWebMapBaseObj.setMapId(mapId);
     setTimeout(() => {
       done();
-    })
+    });
   });
 
-  it('setMapId mapId is obj', async (done) => {
+  it('setMapId mapId is obj', async done => {
     const mapId = {
       value: 123
     };
@@ -69,7 +73,7 @@ describe('WebMapBase.spec', () => {
     await newWebMapBaseObj.setMapId(mapId);
     setTimeout(() => {
       done();
-    })
+    });
   });
 
   it('setServerUrl', () => {
@@ -107,7 +111,6 @@ describe('WebMapBase.spec', () => {
     newWebMapBaseObj.setMaxBounds(maxBounds);
     expect(newWebMapBaseObj.mapOptions.maxBounds).toBe(maxBounds);
   });
-
 
   it('setMinZoom', () => {
     const minZoom = 1;
@@ -211,11 +214,13 @@ describe('WebMapBase.spec', () => {
 
   it('getMapurls is default', () => {
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    expect(newWebMapBaseObj.getMapurls().CLOUD).toBe('http://t2.dituhui.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}');
+    expect(newWebMapBaseObj.getMapurls().CLOUD).toBe(
+      'http://t2.dituhui.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}'
+    );
     expect(newWebMapBaseObj.getMapurls().CLOUD_BLACK).toBe('http://t3.dituhui.com/MapService/getGdp?x={x}&y={y}&z={z}');
   });
 
-  it('getLayerFeatures 没覆盖完', (done) => {
+  it('getLayerFeatures 没覆盖完', done => {
     const layer = {
       dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '366831804' },
       enableFields: ['SmID', '标准名称', '起点x', '起点y', '终点x', '终点y'],
@@ -234,7 +239,7 @@ describe('WebMapBase.spec', () => {
     newWebMapBaseObj.getLayerFeatures(layer, _taskID, type);
     setTimeout(() => {
       done();
-    })
+    });
   });
 
   it('setFeatureInfo feature comes from dataViz', () => {
@@ -245,7 +250,13 @@ describe('WebMapBase.spec', () => {
         subtitle: '树正沟景点-老虎海'
       },
       geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '老虎海海拔2298米', index: 1 },
+      properties: {
+        title: '老虎海',
+        subtitle: '树正沟景点-老虎海',
+        imgUrl: './laohuhai.png',
+        description: '老虎海海拔2298米',
+        index: 1
+      },
       type: 'Feature'
     };
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
@@ -255,7 +266,13 @@ describe('WebMapBase.spec', () => {
   it('setFeatureInfo', () => {
     const feature = {
       geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '老虎海海拔2298米', index: 1 },
+      properties: {
+        title: '老虎海',
+        subtitle: '树正沟景点-老虎海',
+        imgUrl: './laohuhai.png',
+        description: '老虎海海拔2298米',
+        index: 1
+      },
       type: 'Feature'
     };
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
@@ -274,14 +291,28 @@ describe('WebMapBase.spec', () => {
         maxRadius: 1,
         colors: ['#000', '#FFF']
       },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '', index: 1 },
+      properties: {
+        title: '老虎海',
+        subtitle: '树正沟景点-老虎海',
+        imgUrl: './laohuhai.png',
+        description: '',
+        index: 1
+      },
       type: 'Feature'
     };
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '', index: 1 },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: {
+          title: '老虎海',
+          subtitle: '树正沟景点-老虎海',
+          imgUrl: './laohuhai.png',
+          description: '',
+          index: 1
+        },
+        type: 'Feature'
+      }
+    ];
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     expect(newWebMapBaseObj.getRankStyleGroup(themeField, features, parameters).length).toBe(6);
     expect(newWebMapBaseObj.getRankStyleGroup(themeField, features, parameters)[0].color).toBe('#d53e4f');
@@ -312,14 +343,28 @@ describe('WebMapBase.spec', () => {
         maxRadius: 1,
         colors: ['#000', '#FFF']
       },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '老虎海海拔2298米', index: 1 },
+      properties: {
+        title: '老虎海',
+        subtitle: '树正沟景点-老虎海',
+        imgUrl: './laohuhai.png',
+        description: '老虎海海拔2298米',
+        index: 1
+      },
       type: 'Feature'
     };
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '老虎海海拔2298米', index: 1 },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: {
+          title: '老虎海',
+          subtitle: '树正沟景点-老虎海',
+          imgUrl: './laohuhai.png',
+          description: '老虎海海拔2298米',
+          index: 1
+        },
+        type: 'Feature'
+      }
+    ];
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     expect(newWebMapBaseObj.getRankStyleGroup(themeField, features, parameters)[0].color).toBe('#d53e4f');
   });
@@ -336,16 +381,32 @@ describe('WebMapBase.spec', () => {
         colors: ['#000', '#FFF']
       },
       themeField: 'title',
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '老虎海海拔2298米', index: 1 },
+      properties: {
+        title: '老虎海',
+        subtitle: '树正沟景点-老虎海',
+        imgUrl: './laohuhai.png',
+        description: '老虎海海拔2298米',
+        index: 1
+      },
       type: 'Feature'
     };
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '老虎海海拔2298米', index: 1 },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: {
+          title: '老虎海',
+          subtitle: '树正沟景点-老虎海',
+          imgUrl: './laohuhai.png',
+          description: '老虎海海拔2298米',
+          index: 1
+        },
+        type: 'Feature'
+      }
+    ];
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    expect(newWebMapBaseObj.createRankStyleSource(parameters, features).parameters.properties.description).toBe('老虎海海拔2298米');
+    expect(newWebMapBaseObj.createRankStyleSource(parameters, features).parameters.properties.description).toBe(
+      '老虎海海拔2298米'
+    );
   });
 
   it('isMatchAdministrativeName fieldName is string', () => {
@@ -368,7 +429,7 @@ describe('WebMapBase.spec', () => {
         left: 10,
         top: 10,
         bottom: 10,
-        right: 10,
+        right: 10
       },
       coordUnit: 'm',
       visibleScales: 18,
@@ -389,7 +450,7 @@ describe('WebMapBase.spec', () => {
 
   it('handleLayerFeatures', () => {
     const layerInfo = {
-      layerType:'TIANDITU_TER',
+      layerType: 'TIANDITU_TER',
       themeSetting: {
         segmentMethod: '',
         segmentCount: 2,
@@ -413,29 +474,51 @@ describe('WebMapBase.spec', () => {
       },
       filterCondition: 'true'
     };
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '老虎海海拔2298米', index: 1 },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: {
+          title: '老虎海',
+          subtitle: '树正沟景点-老虎海',
+          imgUrl: './laohuhai.png',
+          description: '老虎海海拔2298米',
+          index: 1
+        },
+        type: 'Feature'
+      }
+    ];
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    expect(newWebMapBaseObj.handleLayerFeatures(features, layerInfo)[0].geometry).toEqual({ 'coordinates': [0, 1], 'type': 'Point' });
+    expect(newWebMapBaseObj.handleLayerFeatures(features, layerInfo)[0].geometry).toEqual({
+      coordinates: [0, 1],
+      type: 'Point'
+    });
   });
 
   it('mergeFeatures', () => {
     const layerId = 1;
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: { title: '老虎海', subtitle: '树正沟景点-老虎海', imgUrl: './laohuhai.png', description: '老虎海海拔2298米', index: 1 },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: {
+          title: '老虎海',
+          subtitle: '树正沟景点-老虎海',
+          imgUrl: './laohuhai.png',
+          description: '老虎海海拔2298米',
+          index: 1
+        },
+        type: 'Feature'
+      }
+    ];
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    expect(newWebMapBaseObj.mergeFeatures(layerId, features)[0].geometry).toEqual({ 'coordinates': [0, 1], 'type': 'Point' });
+    expect(newWebMapBaseObj.mergeFeatures(layerId, features)[0].geometry).toEqual({
+      coordinates: [0, 1],
+      type: 'Point'
+    });
   });
 
   it('getEchartsLayerOptions', () => {
     const layerInfo = {
-      layerType:'TIANDITU_TER',
+      layerType: 'TIANDITU_TER',
       themeSetting: {
         segmentMethod: '',
         segmentCount: 2,
@@ -485,35 +568,41 @@ describe('WebMapBase.spec', () => {
         curveness: ''
       }
     };
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: {
-        title: '老虎海',
-        subtitle: '树正沟景点-老虎海',
-        imgUrl: './laohuhai.png',
-        description: '老虎海海拔2298米',
-        index: 1,
-        from: {
-          type: 'XY_FIELD',
-          xField: 'title',
-          yField: 'num'
-        },
-        to: {
-          type: 'XY_FIELD',
-          xField: 'title',
-          yField: 'num'
-        }
-      },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: [
+          {
+            title: '老虎海',
+            subtitle: '树正沟景点-老虎海',
+            imgUrl: './laohuhai.png',
+            description: '老虎海海拔2298米',
+            index: 1,
+            from: {
+              type: 'XY_FIELD',
+              xField: 'title',
+              yField: 'num'
+            },
+            to: {
+              type: 'XY_FIELD',
+              xField: 'title',
+              yField: 'num'
+            }
+          }
+        ],
+        type: 'Feature'
+      }
+    ];
     const coordinateSystem = {}; // 不知道
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    expect(newWebMapBaseObj.getEchartsLayerOptions(layerInfo, features, coordinateSystem).series[0].effect.constantSpeed).toBe(300);
+    expect(
+      newWebMapBaseObj.getEchartsLayerOptions(layerInfo, features, coordinateSystem).series[0].effect.constantSpeed
+    ).toBe(300);
   });
 
   it('getEchartsLayerOptions', () => {
     const layerInfo = {
-      layerType:'TIANDITU_TER',
+      layerType: 'TIANDITU_TER',
       themeSetting: {
         segmentMethod: '',
         segmentCount: 2,
@@ -539,12 +628,12 @@ describe('WebMapBase.spec', () => {
       from: {
         type: 'XY_FIELD',
         xField: 'title',
-        yField: 'num'
+        yField: 'subtitle'
       },
       to: {
         type: 'XY_FIELD',
         xField: 'title',
-        yField: 'num'
+        yField: 'subtitle'
       },
       labelSetting: {
         show: true
@@ -563,20 +652,26 @@ describe('WebMapBase.spec', () => {
         curveness: ''
       }
     };
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: {
-        title: '老虎海',
-        subtitle: '树正沟景点-老虎海',
-        imgUrl: './laohuhai.png',
-        description: '老虎海海拔2298米',
-        index: 1
-      },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: [
+          {
+            title: '老虎海',
+            subtitle: '树正沟景点-老虎海',
+            imgUrl: './laohuhai.png',
+            description: '老虎海海拔2298米',
+            index: 1
+          }
+        ],
+        type: 'Feature'
+      }
+    ];
     const coordinateSystem = {}; // 不知道
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    expect(newWebMapBaseObj.getEchartsLayerOptions(layerInfo, features, coordinateSystem).series[0].effect.constantSpeed).toBe(300);
+    expect(
+      newWebMapBaseObj.getEchartsLayerOptions(layerInfo, features, coordinateSystem).series[0].effect.constantSpeed
+    ).toBe(300);
   });
 
   it('getDashStyle str is solid', () => {
@@ -640,12 +735,12 @@ describe('WebMapBase.spec', () => {
     expect(newWebMapBaseObj.getDashStyle()).toEqual([]);
   });
 
-  xit('getDashStyle params str is Array', () => {
+  it('getDashStyle params str is Array', () => {
     const str = ['longdashdot'];
     const strokeWidth = 2;
     const type = 'array';
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    expect(newWebMapBaseObj.getDashStyle(str, strokeWidth, type)).toEqual([]);
+    expect(newWebMapBaseObj.getDashStyle(str, strokeWidth, type)).toEqual(['longdashdot']);
   });
 
   it('getCanvasFromSVG', () => {
@@ -653,14 +748,14 @@ describe('WebMapBase.spec', () => {
     const divDom = {
       appendChild: jest.fn()
     };
-    const callBack = function() {};
+    const callBack = function () {};
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     expect(newWebMapBaseObj.getCanvasFromSVG(svgUrl, divDom, callBack)).toBe(undefined);
   });
 
   it('getRangeStyleGroup', () => {
     const layerInfo = {
-      layerType:'TIANDITU_TER',
+      layerType: 'TIANDITU_TER',
       themeSetting: {
         segmentMethod: '',
         segmentCount: 2,
@@ -685,24 +780,26 @@ describe('WebMapBase.spec', () => {
       },
       style: { color: '#000' }
     };
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: {
-        title: '老虎海',
-        subtitle: '树正沟景点-老虎海',
-        imgUrl: './laohuhai.png',
-        description: '老虎海海拔2298米',
-        index: 1
-      },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: {
+          title: '老虎海',
+          subtitle: '树正沟景点-老虎海',
+          imgUrl: './laohuhai.png',
+          description: '老虎海海拔2298米',
+          index: 1
+        },
+        type: 'Feature'
+      }
+    ];
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     expect(newWebMapBaseObj.getRangeStyleGroup(layerInfo, features)[0].color).toBe('#d53e4f');
   });
 
   it('getUniqueStyleGroup', () => {
     const parameters = {
-      layerType:'TIANDITU_TER',
+      layerType: 'TIANDITU_TER',
       themeSetting: {
         segmentMethod: '',
         segmentCount: 2,
@@ -727,17 +824,19 @@ describe('WebMapBase.spec', () => {
       },
       style: { color: '#000' }
     };
-    const features = [{
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: {
-        title: '老虎海',
-        subtitle: '树正沟景点-老虎海',
-        imgUrl: './laohuhai.png',
-        description: '老虎海海拔2298米',
-        index: 1
-      },
-      type: 'Feature'
-    }];
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: {
+          title: '老虎海',
+          subtitle: '树正沟景点-老虎海',
+          imgUrl: './laohuhai.png',
+          description: '老虎海海拔2298米',
+          index: 1
+        },
+        type: 'Feature'
+      }
+    ];
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     expect(newWebMapBaseObj.getUniqueStyleGroup(parameters, features)[0].value).toBe('老虎海');
   });
@@ -754,10 +853,463 @@ describe('WebMapBase.spec', () => {
         return {
           fill: jest.fn(),
           stroke: jest.fn()
-        }
+        };
       }
     };
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     expect(newWebMapBaseObj.handleSvgColor(style, canvas)).toBe(undefined);
   });
-})
+
+  it('_createLinesData', () => {
+    const layerInfo = {
+      layerType: 'TIANDITU_TER',
+      themeSetting: {
+        segmentMethod: '',
+        segmentCount: 2,
+        customSettings: {
+          0: {
+            segment: {
+              start: 0,
+              end: 10
+            }
+          },
+          1: {
+            segment: {
+              start: 0,
+              end: 10
+            }
+          }
+        },
+        minRadius: 1,
+        maxRadius: 1,
+        colors: ['#000', '#FFF']
+      },
+      filterCondition: 'true',
+      from: {
+        type: 'PLACE_FIELD',
+        field: 'title'
+      },
+      to: {
+        type: 'PLACE_FIELD',
+        field: 'title'
+      },
+      labelSetting: {
+        show: true
+      },
+      animationSetting: {
+        show: true,
+        constantSpeed: 300,
+        symbol: 'marker',
+        symbolSize: 2
+      },
+      lineSetting: {
+        color: '#000',
+        type: 'solid',
+        width: 0.5,
+        opacity: 1,
+        curveness: ''
+      }
+    };
+    const properties = [
+      {
+        title: '老虎海',
+        subtitle: '树正沟景点-老虎海',
+        imgUrl: './laohuhai.png',
+        description: '老虎海海拔2298米',
+        index: 1,
+        from: {
+          type: 'XY_FIELD',
+          xField: 'title',
+          yField: 'num'
+        },
+        to: {
+          type: 'XY_FIELD',
+          xField: 'title',
+          yField: 'num'
+        }
+      }
+    ];
+    const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
+    expect(newWebMapBaseObj._createLinesData(layerInfo, properties)).toEqual([]);
+  });
+
+  it('_createPointsData', () => {
+    const lineData = [
+      {
+        coords: [
+          [1.295350519989875e7, 4851338.019912067],
+          [1.295350519989875e7, 4851338.019912067]
+        ]
+      }
+    ];
+    const layerInfo = {
+      animationSetting: {
+        symbol: 'pin',
+        symbolSize: 15,
+        show: true,
+        constantSpeed: 40
+      },
+      dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '1249258329' },
+      enableFields: ['SmID', 'SmX', 'SmY', 'SmLibTileID', 'SmUserID', 'SmGeometrySize', 'SmGeoPosition', '标准名称'],
+      featureType: 'POINT',
+      from: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      labelSetting: {
+        fontFamily: '黑体',
+        color: '#62AD16',
+        show: true
+      },
+      layerID: '北京市轨道交通站点',
+      layerType: 'MIGRATION',
+      lineSetting: {
+        curveness: 0.2,
+        color: '#792b1b',
+        width: 1,
+        type: 'solid',
+        opacity: 0.6
+      },
+      name: '北京市轨道交通站点',
+      projection: 'EPSG:4326',
+      to: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      visible: 'visible'
+    };
+    const properties = [
+      {
+        SmGeoPosition: '393216',
+        SmGeometrySize: '20',
+        SmID: '1',
+        SmLibTileID: '1',
+        SmUserID: '0',
+        SmX: '1.295350519989875E7',
+        SmY: '4851338.019912067',
+        index: 0,
+        标准名称: '长椿街站'
+      }
+    ];
+    const result = [
+      { name: undefined, value: [12953505.19989875, 4851338.019912067] },
+      { name: undefined, value: [12953505.19989875, 4851338.019912067] }
+    ];
+    const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
+    expect(newWebMapBaseObj._createPointsData(lineData, layerInfo, properties)).toEqual(result);
+  });
+
+  it('_createOptions open animation', () => {
+    const lineData = [
+      {
+        coords: [
+          [1.295350519989875e7, 4851338.019912067],
+          [1.295350519989875e7, 4851338.019912067]
+        ]
+      }
+    ];
+    const layerInfo = {
+      animationSetting: {
+        symbol: 'pin',
+        symbolSize: 15,
+        show: true,
+        constantSpeed: 40
+      },
+      dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '1249258329' },
+      enableFields: ['SmID', 'SmX', 'SmY', 'SmLibTileID', 'SmUserID', 'SmGeometrySize', 'SmGeoPosition', '标准名称'],
+      featureType: 'POINT',
+      from: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      labelSetting: {
+        fontFamily: '黑体',
+        color: '#62AD16',
+        show: true
+      },
+      layerID: '北京市轨道交通站点',
+      layerType: 'MIGRATION',
+      lineSetting: {
+        curveness: 0.2,
+        color: '#792b1b',
+        width: 1,
+        type: 'solid',
+        opacity: 0.6
+      },
+      name: '北京市轨道交通站点',
+      projection: 'EPSG:4326',
+      to: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      visible: 'visible'
+    };
+    const properties = [
+      {
+        SmGeoPosition: '393216',
+        SmGeometrySize: '20',
+        SmID: '1',
+        SmLibTileID: '1',
+        SmUserID: '0',
+        SmX: '1.295350519989875E7',
+        SmY: '4851338.019912067',
+        index: 0,
+        标准名称: '长椿街站'
+      }
+    ];
+    const pointData = [1.295350519989875e7, 4851338.019912067];
+    const coordinateSystem = 'GLMap';
+    const result = {
+      series: [
+        {
+          coordinateSystem: 'GLMap',
+          data: [
+            {
+              coords: [
+                [12953505.19989875, 4851338.019912067],
+                [12953505.19989875, 4851338.019912067]
+              ]
+            }
+          ],
+          effect: { constantSpeed: 40, show: true, symbol: 'pin', symbolSize: 15, trailLength: 0 },
+          lineStyle: { normal: { color: '#792b1b', curveness: 0.2, opacity: 0.6, type: 'solid', width: 1 } },
+          name: 'line-series',
+          type: 'lines',
+          zlevel: 1
+        },
+        {
+          coordinateSystem: 'GLMap',
+          data: [12953505.19989875, 4851338.019912067],
+          itemStyle: { normal: { color: '#792b1b' } },
+          label: {
+            normal: { color: '#62AD16', fontFamily: '黑体', formatter: '{b}', position: 'right', show: true }
+          },
+          name: 'point-series',
+          type: 'effectScatter',
+          rippleEffect: {
+            brushType: 'stroke'
+          },
+          zlevel: 2
+        }
+      ]
+    };
+    const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
+    expect(newWebMapBaseObj._createOptions(layerInfo, lineData, pointData, coordinateSystem)).toEqual(result);
+  });
+
+  it('_createOptions close animation', () => {
+    const lineData = [
+      {
+        coords: [
+          [1.295350519989875e7, 4851338.019912067],
+          [1.295350519989875e7, 4851338.019912067]
+        ]
+      }
+    ];
+    const layerInfo = {
+      animationSetting: {
+        symbol: 'pin',
+        symbolSize: 15,
+        show: false,
+        constantSpeed: 40
+      },
+      dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '1249258329' },
+      enableFields: ['SmID', 'SmX', 'SmY', 'SmLibTileID', 'SmUserID', 'SmGeometrySize', 'SmGeoPosition', '标准名称'],
+      featureType: 'POINT',
+      from: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      labelSetting: {
+        fontFamily: '黑体',
+        color: '#62AD16',
+        show: true
+      },
+      layerID: '北京市轨道交通站点',
+      layerType: 'MIGRATION',
+      lineSetting: {
+        curveness: 0.2,
+        color: '#792b1b',
+        width: 1,
+        type: 'solid',
+        opacity: 0.6
+      },
+      name: '北京市轨道交通站点',
+      projection: 'EPSG:4326',
+      to: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      visible: 'visible'
+    };
+    const pointData = [1.295350519989875e7, 4851338.019912067];
+    const coordinateSystem = 'GLMap';
+    const result = {
+      series: [
+        {
+          coordinateSystem: 'GLMap',
+          data: [
+            {
+              coords: [
+                [12953505.19989875, 4851338.019912067],
+                [12953505.19989875, 4851338.019912067]
+              ]
+            }
+          ],
+          effect: { constantSpeed: 40, show: false, symbol: 'pin', symbolSize: 15, trailLength: 0 },
+          lineStyle: { normal: { color: '#792b1b', curveness: 0.2, opacity: 0.6, type: 'solid', width: 1 } },
+          name: 'line-series',
+          type: 'lines',
+          zlevel: 1
+        },
+        {
+          coordinateSystem: 'GLMap',
+          data: [12953505.19989875, 4851338.019912067],
+          itemStyle: { normal: { color: '#792b1b' } },
+          label: {
+            normal: { color: '#62AD16', fontFamily: '黑体', formatter: '{b}', position: 'right', show: true }
+          },
+          name: 'point-series',
+          type: 'scatter',
+          zlevel: 2
+        }
+      ]
+    };
+    const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
+    expect(newWebMapBaseObj._createOptions(layerInfo, lineData, pointData, coordinateSystem)).toEqual(result);
+  });
+
+  it('_getLayerFeaturesSucceeded', () => {
+    const result = {
+      features: [
+        {
+          geometry: { type: 'Point', coordinates: [] },
+          properties: {
+            SmID: '1',
+            SmX: '1.295350519989875E7',
+            SmY: '4851338.019912067',
+            SmLibTileID: '1',
+            SmUserID: '0'
+          },
+          type: 'Feature'
+        }
+      ],
+      type: 'feature'
+    };
+    const result1 = {
+      features: [
+        {
+          geometry: { type: 'Point', coordinates: [] },
+          properties: {
+            SmID: '1',
+            SmX: '1.295350519989875E7',
+            SmY: '4851338.019912067',
+            SmLibTileID: '1',
+            SmUserID: '0'
+          },
+          type: 'Feature'
+        }
+      ],
+      type: 'restMap'
+    };
+    const result2 = {
+      features: [
+        {
+          geometry: { type: 'Point', coordinates: [] },
+          properties: {
+            SmID: '1',
+            SmX: '1.295350519989875E7',
+            SmY: '4851338.019912067',
+            SmLibTileID: '1',
+            SmUserID: '0'
+          },
+          type: 'Feature'
+        }
+      ],
+      type: 'mvt'
+    };
+    const result3 = {
+      features: [
+        {
+          geometry: { type: 'Point', coordinates: [] },
+          properties: {
+            SmID: '1',
+            SmX: '1.295350519989875E7',
+            SmY: '4851338.019912067',
+            SmLibTileID: '1',
+            SmUserID: '0'
+          },
+          type: 'feature'
+        }
+      ],
+      type: 'dataflow'
+    };
+    const result4 = {
+      features: [
+        {
+          geometry: { type: 'Point', coordinates: [] },
+          properties: {
+            SmID: '1',
+            SmX: '1.295350519989875E7',
+            SmY: '4851338.019912067',
+            SmLibTileID: '1',
+            SmUserID: '0'
+          },
+          type: 'feature'
+        }
+      ],
+      type: 'noServerId'
+    };
+    const layer = {
+      animationSetting: {
+        symbol: 'pin',
+        symbolSize: 15,
+        show: false,
+        constantSpeed: 40
+      },
+      dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '1249258329' },
+      enableFields: ['SmID', 'SmX', 'SmY', 'SmLibTileID', 'SmUserID', 'SmGeometrySize', 'SmGeoPosition', '标准名称'],
+      featureType: 'POINT',
+      from: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      labelSetting: {
+        fontFamily: '黑体',
+        color: '#62AD16',
+        show: true
+      },
+      layerID: '北京市轨道交通站点',
+      layerType: 'MIGRATION',
+      lineSetting: {
+        curveness: 0.2,
+        color: '#792b1b',
+        width: 1,
+        type: 'solid',
+        opacity: 0.6
+      },
+      name: '北京市轨道交通站点',
+      projection: 'EPSG:4326',
+      to: {
+        xField: 'SmX',
+        yField: 'SmY',
+        type: 'XY_FIELD'
+      },
+      visible: 'visible'
+    };
+    const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
+    newWebMapBaseObj._initOverlayLayer = jest.fn();
+    expect(newWebMapBaseObj._getLayerFeaturesSucceeded(result, layer)).toEqual(undefined);
+    expect(newWebMapBaseObj._getLayerFeaturesSucceeded(result1, layer)).toEqual(undefined);
+    expect(newWebMapBaseObj._getLayerFeaturesSucceeded(result2, layer)).toEqual(undefined);
+    expect(newWebMapBaseObj._getLayerFeaturesSucceeded(result3, layer)).toEqual(undefined);
+    expect(newWebMapBaseObj._getLayerFeaturesSucceeded(result4, layer)).toEqual(undefined);
+  });
+});
