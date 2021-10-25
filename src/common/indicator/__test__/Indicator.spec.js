@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmIndicator from '../Indicator.vue';
 import Indicator from '../index';
 
@@ -14,14 +12,14 @@ describe('Indicator.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(SmIndicator, {
       propsData: {
-        title: "建筑高度",
-        unit: "米",
-        num: "1588"
+        title: '建筑高度',
+        unit: '米',
+        num: '1588'
       }
     });
     expect(wrapper.find('.sm-component-indicator').exists()).toBe(true);
@@ -34,24 +32,45 @@ describe('Indicator.vue', () => {
     expect(numItem.at(2).text()).toBe('5');
     expect(numItem.at(3).text()).toBe('8');
     expect(numItem.at(4).text()).toBe('8');
-  })
+  });
 
   it('render index correctly', () => {
-    wrapper = mount(Indicator)
+    wrapper = mount(Indicator);
     expect(wrapper.find('.sm-component-indicator').exists()).toBe(true);
-  })
-    it('render default correctly', async () => {
+  });
+  it('render default correctly', async () => {
     wrapper = mount(SmIndicator, {
       propsData: {
-        title: "建筑高度",
-        unit: "米",
-        num: "1588"
+        title: '建筑高度',
+        unit: '米',
+        num: '1588'
       }
     });
     expect(wrapper.find('.sm-component-indicator').exists()).toBe(true);
     await wrapper.setProps({
       mode: 'horizontal'
-    })
+    });
     expect(wrapper.vm.mode).toBe('horizontal');
-  })
-})
+    expect(wrapper.vm.direction).toBe('row');
+  });
+
+  it('change props', async () => {
+    wrapper = mount(SmIndicator, {
+      propsData: {
+        title: '建筑高度',
+        unit: '米',
+        num: 1232,
+        thresholdsStyle: [{ min: 1232, max: 1232, color: 'red' }]
+      }
+    });
+    expect(wrapper.find('.sm-component-indicator').exists()).toBe(true);
+    expect(wrapper.find('.sm-component-indicator__num').element.style.color).toBe('red');
+    await wrapper.setProps({
+      title: '楼房建筑高度',
+      unit: '千米',
+      num: 15.88
+    });
+    expect(wrapper.vm.titleData).toBe('楼房建筑高度');
+    expect(wrapper.vm.unitData).toBe('千米');
+  });
+});

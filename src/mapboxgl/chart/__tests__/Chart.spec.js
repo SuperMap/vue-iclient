@@ -89,6 +89,745 @@ describe('Chart', () => {
     });
   });
 
+  it('default 2.5BarSquare', done => {
+    wrapper = mount(SmChart, {
+      propsData: {
+        frequency: 2,
+        startTiming: false,
+        seriesType: '2.5Bar',
+        dataset: {
+          maxFeatures: 20,
+          type: 'geoJSON',
+          geoJSON: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                properties: {
+                  date: '1月',
+                  sale: 2016,
+                  target: 6000
+                }
+              },
+              {
+                properties: {
+                  date: '2月',
+                  sale: 1230,
+                  target: 6000
+                }
+              },
+              {
+                properties: {
+                  date: '3月',
+                  sale: 3790,
+                  target: 6000
+                }
+              }
+            ]
+          }
+        },
+        datasetOptions: [
+          {
+            seriesType: '2.5Bar',
+            xField: 'date',
+            yField: 'target',
+            sort: 'unsort'
+          },
+          {
+            seriesType: '2.5Bar',
+            xField: 'date',
+            yField: 'sale',
+            sort: 'unsort'
+          }
+        ],
+        options: {
+          yAxis: {
+            name: '',
+            nameGap: 5,
+            nameLocation: 'end',
+            type: 'value',
+            nameTextStyle: {
+              padding: [0, 0, 5, 0]
+            }
+          },
+          xAxis: {
+            data: ['1月', '2月', '3月'],
+            show: true,
+            name: '',
+            nameGap: 2,
+            nameLocation: 'end',
+            type: 'category'
+          },
+          grid: {
+            left: 50,
+            right: 35,
+            top: 35,
+            bottom: 35
+          },
+          legend: {
+            type: 'scroll',
+            data: ['Y2', 'Y1', 'Y3'],
+            show: false,
+            top: 'auto',
+            bottom: 'auto'
+          },
+          series: [
+            {
+              data: [6000, 6000, 6000],
+              type: '2.5Bar',
+              shape: 'square',
+              itemStyle: {
+                color: '#294C7C'
+              }
+            },
+            {
+              data: [2016, 1230, 3790],
+              type: '2.5Bar',
+              shape: 'square'
+            }
+          ],
+          tooltip: {
+            axisPointer: {
+              shadowStyle: {},
+              type: 'shadow'
+            },
+            trigger: 'axis',
+            textStyle: {
+              align: 'left'
+            }
+          },
+          textStyle: {
+            fontFamily: 'Microsoft YaHei Light'
+          },
+          title: {
+            padding: [5, 0, 0, 20],
+            x: 'left'
+          }
+        }
+      }
+    });
+    wrapper.vm.$on('loaded', async () => {
+      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+      done();
+    });
+  });
+
+  it('default 2.5BarRectangle', done => {
+    wrapper = mount(SmChart, {
+      propsData: {
+        frequency: 2,
+        startTiming: false,
+        seriesType: '2.5Bar',
+        dataset: {
+          maxFeatures: 20,
+          type: 'geoJSON',
+          geoJSON: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                properties: {
+                  date: '1月',
+                  sale: 2016,
+                  target: 6000
+                }
+              },
+              {
+                properties: {
+                  date: '2月',
+                  sale: 1230,
+                  target: 6000
+                }
+              },
+              {
+                properties: {
+                  date: '3月',
+                  sale: 3790,
+                  target: 6000
+                }
+              }
+            ]
+          }
+        },
+        datasetOptions: [
+          {
+            seriesType: '2.5Bar',
+            xField: 'date',
+            yField: 'target',
+            sort: 'unsort'
+          },
+          {
+            seriesType: '2.5Bar',
+            xField: 'date',
+            yField: 'sale',
+            sort: 'unsort'
+          }
+        ],
+        options: {
+          yAxis: {
+            name: '',
+            show: true,
+            nameGap: 5,
+            nameLocation: 'end',
+            type: 'value',
+            nameTextStyle: {
+              padding: [0, 0, 5, 0]
+            }
+          },
+          xAxis: {
+            data: ['1月', '2月', '3月'],
+            show: true,
+            name: '',
+            nameGap: 2,
+            nameLocation: 'end',
+            type: 'category'
+          },
+          grid: {
+            left: 50,
+            right: 50,
+            top: 35,
+            bottom: 35
+          },
+          legend: {
+            type: 'scroll',
+            data: ['Y2', 'Y1', 'Y3'],
+            show: false,
+            top: 'auto',
+            bottom: 'auto'
+          },
+          series: [
+            {
+              data: [6000, 600, 6000],
+              type: '2.5Bar',
+              shape: 'rectangle',
+              itemStyle: {
+                color: '#092354'
+              }
+            },
+            {
+              data: [2016, 1230, 3790],
+              type: '2.5Bar',
+              shape: 'rectangle',
+              itemStyle: {
+                color: '#5A9BF4'
+              }
+            }
+          ],
+          tooltip: {
+            axisPointer: {
+              shadowStyle: {},
+              type: 'shadow'
+            },
+            trigger: 'axis',
+            textStyle: {
+              align: 'left'
+            }
+          },
+          textStyle: {
+            fontFamily: 'Microsoft YaHei Light'
+          },
+          title: {
+            padding: [5, 0, 0, 20],
+            x: 'left'
+          }
+        }
+      }
+    });
+    wrapper.vm.$on('loaded', async () => {
+      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+      done();
+    });
+  });
+
+  it('default 2.5BarCylinder', done => {
+    wrapper = mount(SmChart, {
+      propsData: {
+        frequency: 2,
+        startTiming: false,
+        isGradient: true,
+        seriesType: '2.5Bar',
+        dataset: {
+          maxFeatures: 20,
+          type: 'geoJSON',
+          geoJSON: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                properties: {
+                  date: '1月',
+                  sale: 2016,
+                  target: 6000
+                }
+              },
+              {
+                properties: {
+                  date: '2月',
+                  sale: 1230,
+                  target: 6000
+                }
+              },
+              {
+                properties: {
+                  date: '3月',
+                  sale: 3790,
+                  target: 6000
+                }
+              }
+            ]
+          }
+        },
+        datasetOptions: [
+          {
+            seriesType: '2.5Bar',
+            xField: 'date',
+            yField: 'target',
+            sort: 'unsort'
+          },
+          {
+            seriesType: '2.5Bar',
+            xField: 'date',
+            yField: 'sale',
+            sort: 'unsort'
+          }
+        ],
+        options: {
+          yAxis: {
+            name: '',
+            show: true,
+            nameGap: 5,
+            nameLocation: 'end',
+            type: 'value',
+            nameTextStyle: {
+              padding: [0, 0, 5, 0]
+            }
+          },
+          xAxis: {
+            data: ['1月', '2月', '3月'],
+            show: true,
+            name: '',
+            nameGap: 2,
+            nameLocation: 'end',
+            type: 'category'
+          },
+          grid: {
+            left: 50,
+            right: 50,
+            top: 35,
+            bottom: 35
+          },
+          legend: {
+            type: 'scroll',
+            data: ['Y2', 'Y1', 'Y3'],
+            show: false,
+            top: 'auto',
+            bottom: 'auto'
+          },
+          series: [
+            {
+              data: [6000, 600, 6000],
+              type: '2.5Bar',
+              shape: 'cylinder'
+            },
+            {
+              data: [2016, 1230, 3790],
+              type: '2.5Bar',
+              shape: 'cylinder'
+            }
+          ],
+          tooltip: {
+            axisPointer: {
+              shadowStyle: {},
+              type: 'shadow'
+            },
+            trigger: 'axis',
+            textStyle: {
+              align: 'left'
+            }
+          },
+          textStyle: {
+            fontFamily: 'Microsoft YaHei Light'
+          },
+          title: {
+            padding: [5, 0, 0, 20],
+            x: 'left'
+          }
+        }
+      }
+    });
+    wrapper.vm.$on('loaded', async () => {
+      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+      done();
+    });
+  });
+
+  it('default xbar', done => {
+    wrapper = mount(SmChart, {
+      propsData: {
+        dataset: { maxFeatures: 20, url: '', type: '' },
+        datasetOptions: [{ seriesType: 'bar' }],
+        options: {
+          series: [
+            {
+              data: [72, 86, 73, 94, 50, 96],
+              name: 'Y1',
+              type: 'line'
+            }
+          ],
+          yAxis: {
+            name: '单位：%',
+            show: true,
+            type: 'category'
+          },
+          xAxis: {
+            data: ['2015', '2016', '2017', '2018', '2019', '2020'],
+            show: true,
+            name: '',
+            nameGap: 2,
+            type: 'value'
+          },
+          grid: { top: 35, left: 30, bottom: 20, right: 15 },
+          legend: {
+            data: ['Y1', 'Y2'],
+            show: false,
+            textStyle: { color: '#fff', fontSize: 12 },
+            type: 'scroll',
+            top: 'top',
+            left: 'center'
+          }
+        },
+        chartStyle: {
+          position: 'absolute',
+          bottom: '10px',
+          right: '10px'
+        }
+      }
+    });
+    wrapper.vm.$on('loaded', async () => {
+      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+      done();
+    });
+  });
+
+  it('default RankXBar', done => {
+    wrapper = mount(SmChart, {
+      propsData: {
+        seriesType: 'xBar',
+        thresholdConfig: [
+          {
+            type: 'number',
+            show: true,
+            dataConfig: [],
+            rankConfig: [
+              {
+                min: 1,
+                max: 3,
+                color: '#f0515e'
+              }
+            ]
+          }
+        ],
+        dataset: {
+          maxFeatures: 20,
+          type: 'geoJSON',
+          geoJSON: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                properties: {
+                  date: '四川',
+                  sale: 22
+                }
+              },
+              {
+                properties: {
+                  date: '福建',
+                  sale: 65
+                }
+              },
+              {
+                properties: {
+                  date: '北京',
+                  sale: 86
+                }
+              },
+              {
+                properties: {
+                  date: '上海',
+                  sale: 48
+                }
+              },
+              {
+                properties: {
+                  date: '台湾',
+                  sale: 43
+                }
+              }
+            ]
+          }
+        },
+        datasetOptions: [
+          {
+            seriesType: 'bar',
+            xField: 'date',
+            yField: 'sale',
+            sort: 'descending',
+            rankLabel: true
+          }
+        ],
+        options: {
+          dataZoom: [
+            { type: 'slider', start: 0, end: 20, xAxisIndex: 0, height: 25 },
+            { type: 'inside', xAxisIndex: 0 }
+          ],
+          yAxis: {
+            show: true,
+            type: 'category',
+            name: '',
+            nameLocation: 'end',
+            nameGap: 2,
+            axisLabel: {
+              show: true,
+              rotate: 0,
+              fontFamily: 'MicrosoftYaHei',
+              align: 'left',
+              margin: 60
+            },
+            splitLine: {
+              lineStyle: {
+                width: 0.3,
+                type: 'solid'
+              },
+              show: false
+            },
+            data: ['四川', '福建', '北京', '上海', '台湾']
+          },
+          xAxis: {
+            type: 'value',
+            name: '',
+            nameLocation: 'end',
+            nameGap: 5,
+            scale: false,
+            axisLine: {
+              show: false,
+              lineStyle: {}
+            },
+            axisTick: {
+              show: false
+            },
+            axisLabel: {
+              show: false,
+              rotate: 0,
+              fontFamily: 'MicrosoftYaHei'
+            },
+            splitLine: {
+              lineStyle: {
+                type: 'solid'
+              },
+              show: false
+            },
+            splitArea: {
+              show: false
+            },
+            nameTextStyle: {
+              padding: [0, 0, 5, 0]
+            }
+          },
+          grid: {
+            left: 60,
+            right: 50,
+            top: 35,
+            bottom: 35
+          },
+          legend: {
+            type: 'scroll',
+            data: ['Y2', 'Y1', 'Y3'],
+            show: false,
+            top: 'auto',
+            bottom: 'auto'
+          },
+          series: [
+            {
+              name: 'sale',
+              emphasis: {
+                itemStyle: {}
+              },
+              itemStyle: {
+                barBorderRadius: [0, 15, 15, 0]
+              },
+              label: {
+                show: true,
+                normal: {
+                  position: 'top',
+                  show: true,
+                  textStyle: { fontSize: 12 },
+                  smart: true
+                }
+              },
+              stack: 0,
+              type: 'bar',
+              barWidth: 10,
+              data: [22, 65, 86, 48, 43, 53, 34, 33, 24]
+            }
+          ],
+          tooltip: {
+            axisPointer: {
+              shadowStyle: {},
+              type: 'shadow'
+            },
+            trigger: 'axis',
+            textStyle: {
+              align: 'left'
+            }
+          },
+          textStyle: {
+            fontFamily: 'Microsoft YaHei Light'
+          },
+          title: {
+            padding: [5, 0, 0, 20],
+            x: 'left',
+            text: '',
+            textStyle: {
+              fontFamily: 'Microsoft YaHei Light',
+              fontWeight: '100'
+            }
+          }
+        },
+        colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad']
+      }
+    });
+    wrapper.vm.$on('loaded', async () => {
+      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+      done();
+    });
+  });
+
+  it('default RingShine', done => {
+    wrapper = mount(SmChart, {
+      propsData: {
+        frequency: 2,
+        startTiming: false,
+        seriesType: 'pie',
+        showInnerCircle: true,
+        innerCircleColor: '#ffe000',
+        dataset: {
+          maxFeatures: 20,
+          type: 'geoJSON',
+          geoJSON: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                properties: {
+                  date: 'Mon',
+                  sale: 500
+                }
+              },
+              {
+                properties: {
+                  date: 'Tue',
+                  sale: 800
+                }
+              },
+              {
+                properties: {
+                  date: 'Wed',
+                  sale: 1842
+                }
+              },
+              {
+                properties: {
+                  date: 'Thu',
+                  sale: 3000
+                }
+              },
+              {
+                properties: {
+                  date: 'Fri',
+                  sale: 3400
+                }
+              },
+              {
+                properties: {
+                  date: 'Sat',
+                  sale: 3617
+                }
+              },
+              {
+                properties: {
+                  date: 'Sun',
+                  sale: 4200
+                }
+              }
+            ]
+          }
+        },
+        datasetOptions: [
+          {
+            xField: 'date',
+            yField: 'sale',
+            sort: 'descending',
+            seriesType: 'pie'
+          }
+        ],
+        options: {
+          tooltip: {
+            show: false
+          },
+          legend: {
+            type: 'scroll',
+            orient: 'vertical',
+            data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            show: true,
+            top: 'auto',
+            bottom: 'auto'
+          },
+          series: [
+            {
+              name: 'demo',
+              type: 'pie',
+              radius: ['75%', '80%'],
+              clockwise: false,
+              avoidLabelOverlap: true,
+              isShine: true,
+              outerGap: 0,
+              data: [
+                {
+                  value: 500,
+                  name: 'Mon'
+                },
+                {
+                  value: 800,
+                  name: 'Tue'
+                },
+                {
+                  value: 3000,
+                  name: 'Wed'
+                },
+                {
+                  value: 3617,
+                  name: 'Thu'
+                },
+                {
+                  value: 3400,
+                  name: 'Fri'
+                },
+                {
+                  value: 4200,
+                  name: 'Sat'
+                },
+                {
+                  value: 1842,
+                  name: 'Sun'
+                }
+              ]
+            }
+          ]
+        }
+      }
+    });
+    wrapper.vm.$on('loaded', async () => {
+      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+      done();
+    });
+  });
+
   it('scatter', done => {
     wrapper = mount(SmChart, {
       propsData: {
