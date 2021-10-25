@@ -42,7 +42,8 @@ import {
   webmap_wmtsLayer,
   webmap_xyzLayer,
   webmap_mapboxstyleLayer,
-  webmap_migrationLayer
+  webmap_migrationLayer,
+  administrative_data
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -445,6 +446,8 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(prj_data))));
       } else if (url.indexOf('/World/datasets/Countries') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(dataset_data))));
+      } else if (url.indexOf('/dataviz/libs/administrative_data') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(administrative_data))));
       } else {
         process.nextTick(() => reject('未匹配到'));
       }
