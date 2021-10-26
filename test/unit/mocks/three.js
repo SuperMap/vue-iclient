@@ -1,4 +1,24 @@
 let THREE = {
+  Camera() {
+    return {
+      projectionMatrix: null
+    }
+  },
+  MeshBasicMaterial({color, wireframe}) {
+
+  },
+  DirectionalLight() {
+    return {
+      position: {
+        set() {
+          return this;
+        },
+        normalize() {
+          return this;
+        }
+      }
+    }
+  },
   PerspectiveCamera() {
     return {
       projectionMatrix: {

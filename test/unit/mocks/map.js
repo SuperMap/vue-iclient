@@ -382,7 +382,12 @@ var Map = function (options) {
     enable: function () {}
   };
 
-  this.project = function () {};
+  this.project = function () {
+    return {
+      x: 500,
+      y: 300
+    }
+  };
   this.unproject = function (point) {
     return new LngLat(-73.9876, 40.7661);
   };

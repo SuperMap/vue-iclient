@@ -4,6 +4,7 @@ import SmWebMap from '../../../WebMap.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
 
+const url = 'fakeurl/data/track-layer/track.obj';
 describe('TrackLayer.vue', () => {
   let wrapper;
   let mapWrapper;
@@ -33,14 +34,22 @@ describe('TrackLayer.vue', () => {
     wrapper = mount(SmTrackLayer, {
       propsData: {
         layerId: 'TrackLayer111',
-        mapTarget: 'map'
+        mapTarget: 'map',
+        loaderType: 'OBJ2',
+        url,
+        position: {
+          prevTimestamp: 1564454554445,
+          currentTimestamp: 1599810900000,
+          nextTimestamp: 1599810920000,
+          step: 3000
+        }
       }
     });
 
     mapWrapper.vm.$on('load', () => {
       wrapper.vm.$on('loaded', () => {
         try {
-          expect(wrapper.vm.layerId).toBe('TrackLayer111');
+          expect(wrapper.vm.loaderType).toBe('OBJ2');
           expect(wrapper.vm.mapTarget).toBe('map');
           done();
         } catch (exception) {
@@ -78,6 +87,33 @@ describe('TrackLayer.vue', () => {
     });
   });
 
+  it('set empty loaderType', done => {
+    wrapper = mount(SmTrackLayer, {
+      propsData: {
+        layerId: 'TrackLayer111',
+        mapTarget: 'map',
+        loaderType: 'OBJ2'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            loaderType: ''
+          });
+          expect(wrapper.vm.loaderType).toBe('');
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
   it('set url', done => {
     const newUrl = 'fakeurl/data/track-layer/car.obj';
     wrapper = mount(SmTrackLayer, {
@@ -94,6 +130,34 @@ describe('TrackLayer.vue', () => {
             url: newUrl
           });
           expect(wrapper.vm.url).toBe(newUrl);
+          expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('set empty url', done => {
+    const newUrl = 'fakeurl/data/track-layer/car.obj';
+    wrapper = mount(SmTrackLayer, {
+      propsData: {
+        layerId: 'TrackLayer111',
+        mapTarget: 'map',
+        url: newUrl
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            url: ''
+          });
+          expect(wrapper.vm.url).toBe('');
           expect(wrapper.vm.mapTarget).toBe('map');
           done();
         } catch (exception) {
@@ -198,11 +262,203 @@ describe('TrackLayer.vue', () => {
     });
   });
 
-  it('set position', done => {
+  it('set matchCurrentPosition position', done => {
+    const newUrl = 'fakeurl/data/track-layer/car.obj';
     wrapper = mount(SmTrackLayer, {
       propsData: {
         layerId: 'TrackLayer111',
-        mapTarget: 'map'
+        mapTarget: 'map',
+        position: {
+          prevTimestamp: 1564454554445,
+          currentTimestamp: 1599810900000,
+          nextTimestamp: 1599810920000,
+          step: 3000
+        },
+        trackPoints: [
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '1',
+              timestamp: 1599810915000
+            },
+            type: 'Feature'
+          },
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '2',
+              timestamp: 1599810916000
+            },
+            type: 'Feature'
+          },
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '3',
+              timestamp: 1599810917000
+            },
+            type: 'Feature'
+          }
+        ]
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            loaderType: 'OBJ2',
+            url: newUrl,
+            direction: { front: 'x', bottom: '-z' },
+            position: {
+              prevTimestamp: 1574454554445,
+              currentTimestamp: 1599810915000,
+              nextTimestamp: 1599810920000,
+              step: 3000
+            }
+          });
+          expect(wrapper.vm.position.step).toBe(3000);
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('addImageLayer', done => {
+    const newUrl = 'fakeurl/data/track-layer/car.obj';
+    wrapper = mount(SmTrackLayer, {
+      propsData: {
+        layerId: 'TrackLayer111',
+        mapTarget: 'map',
+        position: {
+          prevTimestamp: 1564454554445,
+          currentTimestamp: 1599810900000,
+          nextTimestamp: 1599810920000,
+          step: 3000
+        },
+        trackPoints: [
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '1',
+              timestamp: 1599810915000
+            },
+            type: 'Feature'
+          },
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '2',
+              timestamp: 1599810916000
+            },
+            type: 'Feature'
+          },
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '3',
+              timestamp: 1599810917000
+            },
+            type: 'Feature'
+          }
+        ]
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            loaderType: 'IMAGE',
+            url: newUrl,
+            position: {
+              prevTimestamp: 1574454554445,
+              currentTimestamp: 1599810915000,
+              nextTimestamp: 1599810920000,
+              step: 3000
+            }
+          });
+          expect(wrapper.vm.position.step).toBe(3000);
+          setTimeout(() => {
+            done();
+          }, 1000);
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('set matchNextPosition position', done => {
+    wrapper = mount(SmTrackLayer, {
+      propsData: {
+        layerId: 'TrackLayer111',
+        mapTarget: 'map',
+        position: {
+          prevTimestamp: 1564454554445,
+          currentTimestamp: 1599810900000,
+          nextTimestamp: 1599810920000,
+          step: 3000
+        },
+        trackPoints: [
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '1',
+              timestamp: 1599810914000
+            },
+            type: 'Feature'
+          },
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '2',
+              timestamp: 1599810916000
+            },
+            type: 'Feature'
+          },
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [122, 53]
+            },
+            properties: {
+              SmID: '3',
+              timestamp: 1599810917000
+            },
+            type: 'Feature'
+          }
+        ]
       }
     });
 
@@ -211,14 +467,13 @@ describe('TrackLayer.vue', () => {
         try {
           wrapper.setProps({
             position: {
-              prevTimestamp: null,
+              prevTimestamp: 1574454554445,
               currentTimestamp: 1599810915000,
               nextTimestamp: 1599810920000,
               step: 3000
             }
           });
           expect(wrapper.vm.position.step).toBe(3000);
-          expect(wrapper.vm.mapTarget).toBe('map');
           done();
         } catch (exception) {
           console.log('案例失败：' + exception.name + ':' + exception.message);
@@ -327,6 +582,31 @@ describe('TrackLayer.vue', () => {
           });
           expect(wrapper.vm.scale).toBe(5);
           expect(wrapper.vm.mapTarget).toBe('map');
+          done();
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('set fitBounds', done => {
+    wrapper = mount(SmTrackLayer, {
+      propsData: {
+        layerId: 'TrackLayer111',
+        mapTarget: 'map'
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          wrapper.setProps({
+            fitBounds: true
+          });
+          expect(wrapper.vm.fitBounds).toBe(true);
           done();
         } catch (exception) {
           console.log('案例失败：' + exception.name + ':' + exception.message);

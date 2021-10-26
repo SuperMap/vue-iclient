@@ -586,7 +586,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     }
   }
 
-  private _getFontRotate(front: string): rotateInfoParams {
+  private _getFrontRotate(front: string): rotateInfoParams {
     // 不管 front 的朝向如何，最终的朝向是 x 轴的正方向
     let rotateInfo: rotateInfoParams = {
       rotateAxisIndex: void 0,
@@ -661,7 +661,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     const { front, bottom } = this.options.direction || { front: null, bottom: null };
     let bottomAxisIndex = 2;
     if (front) {
-      const rotateInfo = this._getFontRotate(front);
+      const rotateInfo = this._getFrontRotate(front);
       if (rotateInfo.rotateAxisIndex !== void 0) {
         modelRotate[rotateInfo.rotateAxisIndex] += (rotateInfo.rotate * Math.PI) / 180;
       }
