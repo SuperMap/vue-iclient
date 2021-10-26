@@ -305,16 +305,6 @@ export default {
         removeListener(this.$el, this.__resizeHandler);
       }
     },
-    // 以下为echart的配置参数
-    width() {
-      return this.smChart && this.smChart.width;
-    },
-    height() {
-      return this.smChart && this.smChart.height;
-    },
-    computedOptions() {
-      return this.smChart && this.smChart.computedOptions;
-    },
     autoPlay() {
       this._handlePieAutoPlay();
     },
