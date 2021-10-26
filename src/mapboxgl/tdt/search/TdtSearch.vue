@@ -67,8 +67,8 @@
           </div>
 
           <component
+            v-else-if="componentId"
             :is="componentId"
-            v-else
             v-bind="componentProps"
             :text-color="textColor"
             v-on="componentListeners"
@@ -158,7 +158,7 @@ export default {
       return this.searchResult.length > 0;
     },
     showAddress() {
-      return function(name, address) {
+      return function (name, address) {
         return name && address && name.length < 23 && name.length + address.length < 23;
       };
     }
