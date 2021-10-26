@@ -207,4 +207,6 @@ supermap.Util = {
   }
 };
 
+supermap.GraticuleLayer = () => {};
+
 module.exports = supermap;

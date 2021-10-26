@@ -7,11 +7,7 @@ module.exports.mapboxgl = {
   Popup: require('./popup'),
   Marker: require('./marker'),
   LngLat: LngLat,
-  CRS: {
-    get: get => {
-      return {getExtent:function(){return [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892]},unit:'m'};
-    }
-  },
+  CRS: require('./crs'),
   MercatorCoordinate: {
     fromLngLat(lngLatLike, altitude) {
       return {
