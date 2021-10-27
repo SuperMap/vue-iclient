@@ -1,4 +1,4 @@
-import { setTheme } from '../set-theme';
+import { setTheme } from '../set-theme.ts';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
 
 describe('set-theme test', () => {
