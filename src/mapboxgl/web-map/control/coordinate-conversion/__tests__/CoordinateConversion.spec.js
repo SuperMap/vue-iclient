@@ -57,4 +57,29 @@ describe('CoordinateConversion.vue', () => {
       done();
     });
   });
+
+  it('set props formats object', async () => {
+    wrapper = mount(SmCoordinateConversion);
+    await wrapper.setProps({
+      formats: [
+        'BASEMAP',
+        'XY',
+        {
+          title: 'custom',
+          display: `X Y`,
+          fromWGS84: () => {
+            return '1 1';
+          },
+          toWGS84: value => {
+            const coor = value.split(' ');
+            // @ts-ignore
+            const coor1 = { lng: coor[0] * 1, lat: coor[1] * 1 };
+            return this.getEpsgCoordinate(coor1, 'EPSG:4326', this.getEpsgCode());
+          }
+        }
+      ]
+    });
+    expect(wrapper.vm.formats.length).toBe(3);
+    expect(wrapper.find('div.sm-component-coordinate-conversion').exists()).toBe(true);
+  });
 });
