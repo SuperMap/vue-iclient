@@ -162,7 +162,7 @@ describe('TdtSearch.vue', () => {
     });
   });
 
-  it('search result detail', done => {
+  it('search lineString detail', done => {
     mockAxios.mockImplementation(e => {
       if (e.url === 'https://api.tianditu.gov.cn/search') {
         return Promise.resolve({
@@ -279,8 +279,111 @@ describe('TdtSearch.vue', () => {
             setTimeout(() => {
               expect(wrapper.vm.componentId).toBe('LinesResult');
               done();
-            }, 500);
-          }, 500);
+            }, 200);
+          }, 200);
+        } catch (exception) {
+          console.log('案例失败：' + exception.name + ':' + exception.message);
+          expect(false).toBeTruthy();
+          done();
+        }
+      });
+    });
+  });
+
+  it('search point detail', done => {
+    mockAxios.mockImplementation(e => {
+      if (e.url === 'https://api.tianditu.gov.cn/search') {
+        return Promise.resolve({
+          data: {
+            count: '61719',
+            keyWord: 'c',
+            mclayer: '',
+            resultType: '4',
+            suggests: [
+              {
+                address: '四川省成都市双流区',
+                gbCode: '156510116',
+                name: '华阳地铁站-B口'
+              },
+              {
+                address: '四川省成都市双流区',
+                gbCode: '156510116',
+                name: '华阳地铁站-C2口'
+              }
+            ]
+          }
+        });
+      } else if (e.url === 'https://api.tianditu.gov.cn/search/pointDetail') {
+        return Promise.resolve({
+          data: {
+            count: '1',
+            dataversion: '2021-9-28 17:58:41',
+            engineversion: '20180412',
+            keyWord: '华阳地铁站-B口',
+            landmarkcount: 0,
+            mclayer: '',
+            pois: [
+              {
+                address: '天府大道南段1632东南方向100米',
+                eaddress: '',
+                ename: 'HuayangStationExit/EntranceB',
+                hotPointID: '90F80006632F5615',
+                lonlat: '104.067352 30.50491',
+                name: '华阳地铁站-B口',
+                phone: ''
+              }
+            ],
+            prompt: [
+              {
+                admins: [
+                  {
+                    adminCode: 156510100,
+                    name: '成都市'
+                  }
+                ],
+                type: 4
+              }
+            ],
+            resultType: 1
+          }
+        });
+      }
+    });
+    wrapper = mount(SmTdtSearch, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        collapsed: true,
+        data: {
+          tk: '1d109683f4d84198e37a38c442d68311'
+        }
+      }
+    });
+
+    mapWrapper.vm.$on('load', () => {
+      wrapper.vm.$on('loaded', () => {
+        try {
+          expect(wrapper.vm.collapsed).toBeTruthy();
+          expect(wrapper.vm.mapTarget).toBe('map');
+          const inputSeatch = wrapper.find('.sm-component-input');
+          inputSeatch.setValue('华阳');
+          setTimeout(async () => {
+            const resultLi = wrapper.findAll('.sm-component-search__result li');
+            expect(resultLi.length).toBe(2);
+            await wrapper.setProps({
+              mapTarget: 'map',
+              collapsed: true,
+              data: {
+                searchUrl: 'https://api.tianditu.gov.cn/search/pointDetail',
+                tk: '1d109683f4d84198e37a38c442d68311'
+              }
+            });
+            await resultLi.at(0).trigger('click');
+            setTimeout(() => {
+              expect(wrapper.vm.componentId).toBe('PointsResult');
+              done();
+            }, 200);
+          }, 200);
         } catch (exception) {
           console.log('案例失败：' + exception.name + ':' + exception.message);
           expect(false).toBeTruthy();
