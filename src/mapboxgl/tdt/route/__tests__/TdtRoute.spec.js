@@ -4,6 +4,7 @@ import SmWebMap from '../../../web-map/WebMap.vue';
 import mapEvent from '@types_mapboxgl/map-event';
 import '@libs/mapboxgl/mapbox-gl-enhance';
 import { Input } from 'ant-design-vue';
+import mockAxios from 'axios';
 
 const localVue = createLocalVue();
 localVue.use(Input);
@@ -115,6 +116,62 @@ describe('TdtRoute.vue', () => {
   });
 
   it('search route', done => {
+    mockAxios.mockImplementation(e => {
+      if (e.url === 'https://api.tianditu.gov.cn/search') {
+        return Promise.resolve({
+          data: {
+            count: '57562',
+            dataversion: '2021-9-28 17:58:41',
+            engineversion: '20180412',
+            keyWord: '成都',
+            landmarkcount: 0,
+            mclayer: '',
+            pois: [
+              {
+                address: '站东路1号',
+                eaddress: '',
+                ename: '',
+                hotPointID: '81442006120E2708',
+                lonlat: '104.070792 30.69922',
+                name: '成都站',
+                phone: '028-83322858'
+              },
+              {
+                address: '邛崃山路333',
+                eaddress: '',
+                ename: '',
+                hotPointID: 'C146608747031589',
+                lonlat: '104.139088 30.63114',
+                name: '成都东站',
+                phone: '028-84116089'
+              },
+              {
+                address: '四川省成都市武侯区',
+                eaddress: '',
+                ename: '',
+                hotPointID: '81104484B023A886',
+                lonlat: '104.066048 30.6083',
+                name: '成都南站',
+                phone: '028-85136245'
+              }
+            ],
+            prompt: [
+              {
+                admins: [
+                  {
+                    adminCode: 156510100,
+                    name: '成都市'
+                  }
+                ],
+                type: 4
+              }
+            ],
+            resultType: 1
+          }
+        });
+      }
+    });
+
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
@@ -143,11 +200,8 @@ describe('TdtRoute.vue', () => {
           wrapper.vm.$nextTick();
           setTimeout(() => {
             expect(wrapper.find('.sm-component-tdtPointsResults').exists()).toBe(true);
+            done();
           }, 500);
-          // iconEle.trigger('click');
-          // wrapper.vm.$nextTick();
-          // expect(wrapper.vm.routeActive).toBe('bus');
-          done();
         } catch (exception) {
           console.log('案例失败：' + exception.name + ':' + exception.message);
           expect(false).toBeTruthy();
