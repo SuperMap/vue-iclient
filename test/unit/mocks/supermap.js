@@ -43,7 +43,8 @@ import {
   webmap_xyzLayer,
   webmap_mapboxstyleLayer,
   webmap_migrationLayer,
-  administrative_data
+  administrative_data,
+  mapInfo_data
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -448,6 +449,8 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(dataset_data))));
       } else if (url.indexOf('/dataviz/libs/administrative_data') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(administrative_data))));
+      } else if (url.indexOf('0123/web/maps/123/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(mapInfo_data))));
       } else {
         process.nextTick(() => reject('未匹配到'));
       }

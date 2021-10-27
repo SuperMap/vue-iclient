@@ -2398,6 +2398,64 @@ const administrative_data = window.ProvinceData = {
   }],
   type: 'FeatureCollection'
 };
+
+const mapInfo_data = {
+  baseLayer: { layerType: 'TILE', visible: true, name: 'China', url: 'https://test/map-china400/rest/maps/China' },
+  center: { x: 11240286, y: 4193987 },
+  description: '',
+  extent: {
+    leftBottom: {
+      x: -20037508,
+      y: -20037508
+    },
+    rightTop: {
+      x: 20037508,
+      y: 20037508
+    }
+  },
+  layers: [{
+    name: 'layer1'
+  }],
+  level: 5,
+  mapParams: { title: 'China', description: '' },
+  maxScale: '1:144447',
+  minScale: '1:591658710',
+  minzoom: 19,
+  maxzoom: 1,
+  projection: 'EPSG:3857',
+  grid: {
+    graticule: {
+      extent: [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
+      interval: [5],
+      latLabelStyle: {
+        fill: '#000000',
+        fontFamily: 'Calibri,sans-serif',
+        fontSize: '12px',
+        outlineColor: 'rgba(255,255,255,0.85)',
+        outlineWidth: 3,
+        textBaseline: 'bottom'
+      },
+      lineDash: [0.5, 4],
+      lonLabelStyle: {
+        fill: '#000000',
+        fontFamily: 'Calibri,sans-serif',
+        fontSize: '12px',
+        outlineColor: 'rgba(255,255,255,0.85)',
+        outlineWidth: 3,
+        textBaseline: 'bottom'
+      },
+      strokeColor: '#1464A1',
+      strokeWidth: 2
+    }
+  },
+  rootUrl: 'https://test/',
+  title: 'China',
+  version: '2.2.1',
+  succeed: true
+};
+
+const no_mapInfo_data = '';
+
 module.exports = {
   fakeDataServiceResult,
   fakeMapServiceResult,
@@ -2446,5 +2504,7 @@ module.exports = {
   webmap_migrationLayer,
   webmap_rangeLayer,
   wmsCapabilitiesText,
-  administrative_data
+  administrative_data,
+  mapInfo_data,
+  no_mapInfo_data
 };
