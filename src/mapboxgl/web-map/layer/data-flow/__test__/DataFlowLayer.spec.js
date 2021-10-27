@@ -12,7 +12,7 @@ localVue.prototype.$message = message;
 
 const layerStyle = { symbol: {}, circle: new CircleStyle(), line: new LineStyle(), fill: new FillStyle() };
 const serviceUrl = '/iserver/services/dataflowTest/dataflow';
-const layerId = 'dataflowlayer-source';
+const layerId = 'dataflowlayer-1';
 describe(`DataFlowLayer.vue`, () => {
   let wrapper;
   let mapWrapper;

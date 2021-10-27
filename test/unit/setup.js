@@ -1,7 +1,5 @@
 import Vue from 'vue';
 import 'isomorphic-fetch';
-import VueTestUtils from '@vue/test-utils';
-VueTestUtils.config.mocks.$t = key => key;
 
 Vue.config.productionTip = false;
 
