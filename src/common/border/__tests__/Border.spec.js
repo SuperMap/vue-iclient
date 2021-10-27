@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmBorder from '../Border.vue';
 import Border from '../index';
 import SmChart from '../../../mapboxgl/chart/Chart.vue';
@@ -12,7 +10,7 @@ describe('Border.vue', () => {
       data: ['2016起降架次（架次）', '2017起降架次（架次）']
     },
     tooltip: {
-      formatter: "{b0}: {c0}"
+      formatter: '{b0}: {c0}'
     },
     grid: {
       top: 30,
@@ -21,24 +19,25 @@ describe('Border.vue', () => {
       right: 30
     }
   };
-  const datasetOptions = [{
-      seriesType: "bar",
+  const datasetOptions = [
+    {
+      seriesType: 'bar',
       isStastic: true,
       isStack: true,
-      xField: "机场",
-      yField: "2016起降架次（架次）"
+      xField: '机场',
+      yField: '2016起降架次（架次）'
     },
     {
-      seriesType: "bar",
+      seriesType: 'bar',
       isStastic: true,
       isStack: true,
-      xField: "机场",
-      yField: "2017起降架次（架次）",
+      xField: '机场',
+      yField: '2017起降架次（架次）'
     }
   ];
   const iportalDataSet = {
-    type: "iPortal", //iServer iPortal
-    url: "https://fakeiportal.supermap.io/iportal/web/datas/123",
+    type: 'iPortal', //iServer iPortal
+    url: 'https://fakeiportal.supermap.io/iportal/web/datas/123',
     queryInfo: {
       maxFeatures: 20
     }
@@ -51,34 +50,37 @@ describe('Border.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
-    wrapper = mount({
-      template: `
+    wrapper = mount(
+      {
+        template: `
       <sm-border style="width:600px; height:400px" type="border1"></sm-border>`,
-      components: {
-        SmBorder
+        components: {
+          SmBorder
+        }
+      },
+      {
+        propsData: {
+          data: {}
+        }
       }
-    }, {
-      propsData: {
-        data: {}
-      }
-    })
+    );
     const BorderDom = wrapper.find('.sm-component-border');
     expect(BorderDom.exists()).toBe(true);
     expect(BorderDom.element.style.width).toBe('600px');
     expect(BorderDom.element.style.height).toBe('400px');
-  })
+  });
 
   it('render index correctly', () => {
     wrapper = mount(Border, {
       propsData: {
         type: 'border1'
       }
-    })
+    });
     expect(wrapper.find('.sm-component-border').exists()).toBe(true);
-  })
+  });
 
   it('custom border', () => {
     wrapper = mount({
@@ -100,14 +102,14 @@ describe('Border.vue', () => {
             }
           }
         };
-      },
-    })
+      }
+    });
     const BorderDom = wrapper.find('.sm-component-border');
     expect(BorderDom.exists()).toBe(true);
     expect(BorderDom.element.style.width).toBe('600px');
     expect(BorderDom.element.style.height).toBe('400px');
     expect(BorderDom.element.style.borderImage).toBe('url(https://test.png) 12 12 12 12 fill / 1 / 0 stretch');
-  })
+  });
 
   it('render chart in border correctly', () => {
     wrapper = mount({
@@ -129,12 +131,23 @@ describe('Border.vue', () => {
           echartOption: echartOptions,
           dataset: iportalDataSet,
           datasetOptions: datasetOptions
-        }
+        };
       }
-    })
+    });
     expect(wrapper.find('.sm-component-border').exists()).toBe(true);
     const Chart = wrapper.findAll(SmChart);
     expect(Chart.exists()).toBe(true);
     expect(Chart.length).toBe(1);
-  })
-})
+  });
+
+  it('render set props type', async () => {
+    wrapper = mount(Border, {
+      propsData: {
+        type: 'border1'
+      }
+    });
+    await wrapper.setProps({ type: 'border2' });
+    expect(wrapper.vm.type).toBe('border2');
+    expect(wrapper.find('.sm-component-border').exists()).toBe(true);
+  });
+});
