@@ -17,6 +17,7 @@ module.exports = {
     '^@mixin/(.*)$': '<rootDir>/src/mapboxgl/_mixin/$1',
     '\\.(css|less)$': 'identity-obj-proxy',
     '@i18n/(.*)$': '<rootDir>/src/common/$1',
+    '@leaflet/(.*)$': '<rootDir>/src/leaflet/$1',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
       '<rootDir>/test/unit/assetsTransformer.js'
   },
