@@ -193,6 +193,8 @@ supermap.DataFlowService = serviceUrl => {
   };
 };
 
+supermap.DeckglLayer = () => {};
+
 supermap.Util = {
   hexToRgba: function (hex, opacity) {
     var color = [],

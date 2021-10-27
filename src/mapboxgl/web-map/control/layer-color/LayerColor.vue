@@ -63,6 +63,7 @@ import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import SmCard from 'vue-iclient/src/common/card/Card.vue';
 import SmButton from 'vue-iclient/src/common/button/Button.vue';
+import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import LayerColorViewModel from './LayerColorViewModel';
 import SmColorPicker from 'vue-iclient/src/common/color-picker/ColorPicker.vue';
 import SmLayerSelect from 'vue-iclient/src/common/layer-select/LayerSelect.vue';
@@ -84,6 +85,7 @@ interface selectLayerParams {
   components: {
     SmCard,
     SmButton,
+    SmIcon,
     SmColorPicker,
     SmLayerSelect
   }
@@ -96,17 +98,22 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
 
   selectProperty: string = '';
   propertyList: Array<string> = [];
-  propertyMap: Object = {
-    'circle-color': this.$t('layerColor.circleColor'),
-    'circle-stroke-color': this.$t('layerColor.strokeColor'),
-    'line-color': this.$t('layerColor.lineColor'),
-    'fill-color': this.$t('layerColor.fillColor'),
-    'fill-outline-color': this.$t('layerColor.strokeColor'),
-    'icon-color': this.$t('layerColor.iconColor'),
-    'icon-halo-color': this.$t('layerColor.strokeColor'),
-    'text-color': this.$t('layerColor.textColor'),
-    'text-halo-color': this.$t('layerColor.strokeColor')
-  };
+
+  get propertyMap() {
+    return name => {
+      return {
+        'circle-color': this.$t('layerColor.circleColor'),
+        'circle-stroke-color': this.$t('layerColor.strokeColor'),
+        'line-color': this.$t('layerColor.lineColor'),
+        'fill-color': this.$t('layerColor.fillColor'),
+        'fill-outline-color': this.$t('layerColor.strokeColor'),
+        'icon-color': this.$t('layerColor.iconColor'),
+        'icon-halo-color': this.$t('layerColor.strokeColor'),
+        'text-color': this.$t('layerColor.textColor'),
+        'text-halo-color': this.$t('layerColor.strokeColor')
+      }[name];
+    };
+  }
 
   isSelect: boolean = false;
 
