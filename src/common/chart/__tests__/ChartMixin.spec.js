@@ -1,8 +1,13 @@
-import { shallowMount, mount } from '@vue/test-utils';
+import { shallowMount, mount, createLocalVue } from '@vue/test-utils';
+import flushPromises from 'flush-promises';
+import { message } from 'ant-design-vue';
 import ChartMixin from '../ChartMixin.vue';
 
 describe('Chart Mixin Component', () => {
   let wrapper;
+  const localVue = createLocalVue();
+  localVue.prototype.$message = message;
+
   beforeEach(() => {
     wrapper = null;
   });
@@ -24,7 +29,9 @@ describe('Chart Mixin Component', () => {
     });
 
     it('hide component', () => {
-      wrapper = factory({ isShow: false });
+      wrapper = factory({
+        isShow: false
+      });
       expect(wrapper.isVisible()).toBe(false);
     });
   });
@@ -61,6 +68,13 @@ describe('Chart Mixin Component', () => {
       padding: [0, 0, 5, 0]
     }
   };
+  const legend = {
+    // orient: 'vertical',
+    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    show: true,
+    top: 'auto',
+    bottom: 'auto'
+  };
   const commonOptionWithAxis = {
     xAxis,
     yAxis,
@@ -69,37 +83,151 @@ describe('Chart Mixin Component', () => {
       right: 50,
       top: 35,
       bottom: 35
+    },
+    dataZoom: [
+      {
+        type: 'slider',
+        start: 20,
+        end: 0,
+        xAxisIndex: 0,
+        height: 25
+      },
+      {
+        type: 'inside',
+        xAxisIndex: 0
+      }
+    ]
+  };
+
+  const datasetOptionsFactory = seriesTypeList =>
+    seriesTypeList.map(seriesType => ({
+      xField: 'date',
+      yField: 'sale',
+      sort: 'descending',
+      seriesType
+    }));
+
+  const geoJSONDataset = {
+    maxFeatures: 20,
+    url: '',
+    type: 'geoJSON',
+    geoJSON: {
+      type: 'FeatureCollection',
+      features: [
+        {
+          properties: {
+            date: 'Mon',
+            sale: 500,
+            target: 6000
+          }
+        },
+        {
+          properties: {
+            date: 'Tue',
+            sale: 800,
+            target: 6000
+          }
+        },
+        {
+          properties: {
+            date: 'Wed',
+            sale: 3000,
+            target: 6000
+          }
+        },
+        {
+          properties: {
+            date: 'Thu',
+            sale: 3617,
+            target: 6000
+          }
+        },
+        {
+          properties: {
+            date: 'Fri',
+            sale: 3400,
+            target: 6000
+          }
+        },
+        {
+          properties: {
+            date: 'Sat',
+            sale: 4200,
+            target: 6000
+          }
+        },
+        {
+          properties: {
+            date: 'Sun',
+            sale: 1842,
+            target: 6000
+          }
+        }
+      ]
     }
   };
 
+  const highlightOptions = (seriesIndex = [0, 1]) => [
+    {
+      seriesIndex,
+      dataIndex: 0,
+      properties: {
+        date: 'Mon',
+        sale: 500,
+        target: 6000
+      }
+    }
+  ];
+
+  const highlightColor = 'pink';
+
   const factory = (propsData = {}, componentOptions = {}) => {
     return mount(ChartMixin, {
-      propsData,
+      propsData: Object.assign(
+        {
+          colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad']
+        },
+        propsData
+      ),
       ...componentOptions
     });
   };
 
-  const axisOptions = series => Object.assign({}, commonOptionWithAxis, { series });
+  const optionFactory = series =>
+    Object.assign({}, commonOptionWithAxis, {
+      series
+    });
 
   it('has echarts instance', async () => {
     const name = 'SmChart';
-    wrapper = factory({}, { name });
+    wrapper = factory(
+      {},
+      {
+        name
+      }
+    );
     const refName = wrapper.vm.chartId;
-    const chartRef = wrapper.find({ ref: refName });
+    const chartRef = wrapper.find({
+      ref: refName
+    });
     expect(refName).toContain(name.toLowerCase());
     expect(chartRef.exists()).toBe(true);
     expect(wrapper.vm.width).not.toBeUndefined();
     expect(wrapper.vm.height).not.toBeUndefined();
     expect(wrapper.vm.computedOptions).not.toBeUndefined();
-    expect(wrapper.vm.theme).toBeUndefined(); 
-    expect(wrapper.vm.chartTheme).not.toBeNull(); 
-    await wrapper.setProps({ theme: 'dark' });
-    expect(wrapper.vm.chartTheme).toBeNull(); 
+    expect(wrapper.vm.theme).toBeUndefined();
+    expect(wrapper.vm.chartTheme).not.toBeNull();
+    await wrapper.setProps({
+      theme: 'dark'
+    });
+    expect(wrapper.vm.chartTheme).toBeNull();
   });
 
   it('render empty chart', () => {
-    const options = axisOptions();
-    wrapper = factory({ options });
+    const options = optionFactory();
+    wrapper = factory({
+      options
+    });
     expect(wrapper.vm.parseOptions).toStrictEqual(options);
   });
 
@@ -160,115 +288,110 @@ describe('Chart Mixin Component', () => {
         ]
       }
     ];
-    const options = { series };
-    const datasetOptions = [
-      {
-        xField: 'date',
-        yField: 'sale',
-        sort: 'unsort',
-        seriesType: 'pie'
-      }
-    ];
-    wrapper = factory({ options, datasetOptions });
+    const options = { legend, series };
+    wrapper = factory({
+      autoPlay: false,
+      options,
+      datasetOptions: datasetOptionsFactory(['pie'])
+    });
     expect(wrapper.vm.parseOptions).not.toStrictEqual(options);
     expect(wrapper.vm.parseOptions.series[0].label.normal.formatter).not.toBeUndefined();
-    const dataset = {
-      maxFeatures: 20,
-      url: '',
-      type: 'geoJSON',
-      geoJSON: {
-        type: 'FeatureCollection',
-        features: [
+    const spyFn = jest.spyOn(wrapper.vm, '_handlePieAutoPlay');
+    jest.useFakeTimers();
+    await wrapper.setProps({
+      autoPlay: true
+    });
+    expect(spyFn).toHaveBeenCalled();
+    expect(wrapper.vm.pieAutoPlay).not.toBeUndefined();
+    jest.advanceTimersByTime(2000);
+  });
+
+  it('render rankBar chart', async () => {
+    const serieItem = {
+      name: 'sale',
+      emphasis: {
+        itemStyle: {}
+      },
+      itemStyle: {
+        barBorderRadius: [0, 15, 15, 0]
+      },
+      stack: 0,
+      type: 'bar',
+      barWidth: 10,
+      data: [22, 65, 86, 48, 43, 53, 34, 33, 24]
+    };
+    const series = [serieItem];
+    const options = {
+      xAxis: yAxis,
+      yAxis: xAxis,
+      legend,
+      series
+    };
+    wrapper = factory({
+      options
+    });
+    expect(wrapper.vm.xBar).toBeTruthy();
+    await wrapper.setProps({
+      options: {
+        ...options,
+        series: [
           {
-            properties: {
-              date: 'Mon',
-              sale: 500
-            }
-          },
-          {
-            properties: {
-              date: 'Tue',
-              sale: 800
-            }
-          },
-          {
-            properties: {
-              date: 'Wed',
-              sale: 3000
-            }
-          },
-          {
-            properties: {
-              date: 'Thu',
-              sale: 3617
-            }
-          },
-          {
-            properties: {
-              date: 'Fri',
-              sale: 3400
-            }
-          },
-          {
-            properties: {
-              date: 'Sat',
-              sale: 4200
-            }
-          },
-          {
-            properties: {
-              date: 'Sun',
-              sale: 1842
+            ...serieItem,
+            label: {
+              normal: {
+                show: true,
+                position: 'center',
+                smart: true
+              }
             }
           }
         ]
       }
-    };
+    });
+    expect(wrapper.vm.echartOptions).toStrictEqual(wrapper.vm.parseOptions);
     expect(wrapper.vm.datasetChange).toBeFalsy();
     const spyFn = jest.spyOn(wrapper.vm, '_setEchartOptions');
-    await wrapper.setProps({ dataset });
+    await wrapper.setProps({
+      datasetOptions: [
+        {
+          ...datasetOptionsFactory(['bar'])[0],
+          rankLabel: true
+        }
+      ],
+      dataset: geoJSONDataset
+    });
     expect(wrapper.vm.datasetChange).toBeTruthy();
     expect(spyFn).toHaveBeenCalled();
-  });
-
-  it('render rankBar chart', async () => {
-    const series = [
-      {
-        name: 'sale',
-        emphasis: {
-          itemStyle: {}
-        },
-        itemStyle: {
-          barBorderRadius: [0, 15, 15, 0]
-        },
-        stack: 0,
-        type: 'bar',
-        barWidth: 10,
-        data: [22, 65, 86, 48, 43, 53, 34, 33, 24]
+    const spyOptionHandlerFn = jest.spyOn(wrapper.vm, '_optionsHandler');
+    await flushPromises();
+    await wrapper.setProps({
+      options: {
+        ...options,
+        visualMap: [
+          {
+            show: false,
+            seriesIndex: 0,
+            pieces: [
+              {
+                min: 0,
+                max: 3000,
+                color: 'green'
+              }
+            ],
+            outOfRange: {
+              color: 'red'
+            },
+            dimension: 0
+          }
+        ]
       }
-    ];
-    const options = {
-      xAxis: yAxis,
-      yAxis: xAxis,
-      series
-    };
-    const datasetOptions = [
-      {
-        seriesType: 'bar',
-        xField: 'date',
-        yField: 'sale',
-        sort: 'descending',
-        rankLabel: true
-      }
-    ];
-    wrapper = factory({ options, datasetOptions });
-    expect(wrapper.vm.xBar).toBeTruthy();
+    });
+    expect(spyOptionHandlerFn).toHaveBeenCalled();
   });
 
   describe('render special chart which type is 2.5Bar', () => {
     const series = [
       {
-        data: [6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000, 6000],
         type: '2.5Bar',
         shape: 'square',
         itemStyle: {
@@ -276,37 +399,83 @@ describe('Chart Mixin Component', () => {
         }
       },
       {
-        data: [2016, 1230, 3790, 2349, 1654, 1120, 1980, 980, 1333, 2001, 1820, 3200],
         type: '2.5Bar',
-        shape: 'square'
+        shape: 'square',
+        itemStyle: {
+          color: {
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            type: 'linear',
+            global: false,
+            colorStops: [
+              {
+                offset: 0,
+                color: '#3fb1e3'
+              },
+              {
+                offset: 1,
+                color: '#6be6c1'
+              }
+            ]
+          }
+        }
       }
     ];
-    const options = axisOptions(series);
+    const options = optionFactory(series);
     it('static data', () => {
-      wrapper = factory({ options });
+      wrapper = factory({
+        options
+      });
       const parseOptions = wrapper.vm.parseOptions;
       expect(parseOptions).not.toStrictEqual(options);
       expect(parseOptions.series.length).toBe(0);
     });
-    it('fetch data', () => {
+    it('fetch data', async () => {
       wrapper = factory({
         options,
-        datasetOptions: [
-          {
-            seriesType: '2.5Bar',
-            xField: 'date',
-            yField: 'target',
-            sort: 'unsort'
-          },
-          {
-            seriesType: '2.5Bar',
-            xField: 'date',
-            yField: 'sale',
-            sort: 'unsort'
-          }
-        ]
+        datasetOptions: datasetOptionsFactory(['2.5Bar', '2.5Bar']),
+        dataset: geoJSONDataset,
+        highlightOptions: highlightOptions([0]),
+        highlightColor
       });
-      expect(wrapper.vm.$options.graphic).not.toBeUndefined();
+      const graphic = wrapper.vm.$options.graphic;
+      expect(graphic).not.toBeUndefined();
+      expect(graphic.getShapeClass('CubesquareLeft')).not.toBeUndefined();
+      await flushPromises();
+      expect(wrapper.vm.echartOptions.series[0].renderItem).not.toBeUndefined();
+      expect(wrapper.vm.echartOptions.series[0].shape).toBeUndefined();
+    });
+    it('render cylinder chart', async () => {
+      wrapper = factory({
+        options: {
+          ...options,
+          series: [
+            {
+              type: '2.5Bar',
+              shape: 'cylinder'
+            },
+            {
+              type: '2.5Bar',
+              shape: 'cylinder'
+            }
+          ]
+        },
+        datasetOptions: datasetOptionsFactory(['2.5Bar', '2.5Bar']),
+        dataset: geoJSONDataset,
+        highlightOptions: highlightOptions([0]),
+        highlightColor
+      });
+      await flushPromises();
+      const echartSeriesLen = wrapper.vm.echartOptions.series.length;
+      expect(echartSeriesLen).toBeGreaterThan(options.series.length);
+      expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].type).toBe('pictorialBar');
+      await wrapper.setProps({
+        highlightOptions: highlightOptions([1])
+      });
+      // await flushPromises();
+      expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toStrictEqual(options.series[0].itemStyle.color);
     });
   });
 
@@ -396,9 +565,11 @@ describe('Chart Mixin Component', () => {
         ]
       }
     ];
-    const options = axisOptions(series);
+    const options = optionFactory(series);
     jest.useFakeTimers();
-    wrapper = factory({ options });
+    wrapper = factory({
+      options
+    });
     expect(wrapper.vm.startSpin).not.toBeNull();
     expect(wrapper.vm.parseOptions).toStrictEqual(options);
     jest.advanceTimersByTime(120);
@@ -406,5 +577,74 @@ describe('Chart Mixin Component', () => {
     expect(customSeriesLen).not.toBe(0);
     expect(wrapper.vm.parseOptions.series.length).toBe(options.series.length + customSeriesLen);
     jest.useRealTimers();
+  });
+
+  it('render special pie chart which ring is shine', async () => {
+    const series = [
+      {
+        name: 'demo',
+        type: 'pie',
+        radius: ['75%', '80%'],
+        clockwise: false,
+        avoidLabelOverlap: true,
+        isShine: true,
+        outerGap: 0
+      }
+    ];
+    const options = optionFactory(series);
+    wrapper = factory({
+      options,
+      datasetOptions: datasetOptionsFactory(['pie']),
+      dataset: geoJSONDataset,
+      highlightOptions: highlightOptions(),
+      highlightColor
+    });
+    await flushPromises();
+    expect(wrapper.vm.echartOptions.series[0].outerGap).toBeUndefined();
+    expect(wrapper.vm.echartOptions.series[0].isShine).toBeUndefined();
+  });
+
+  it('render special pie chart which is named Rose', async () => {
+    const series = [
+      {
+        name: 'area',
+        type: 'pie',
+        radius: ['10%', '80%'],
+        center: ['50%', '50%'],
+        roseType: 'area'
+      },
+      {
+        name: 'area',
+        type: 'pie',
+        radius: ['10%', '80%'],
+        center: ['50%', '50%']
+      }
+    ];
+    const options = optionFactory(series);
+    wrapper = factory({
+      options,
+      datasetOptions: datasetOptionsFactory(['pie', 'pie']),
+      dataset: geoJSONDataset,
+      highlightOptions: highlightOptions(),
+      highlightColor
+    });
+    await flushPromises();
+    expect(wrapper.vm.echartOptions.series[1].roseType).toBe(options.series[0].roseType);
+  });
+
+  it('trigger echarts events', () => {
+    wrapper = factory({
+      options: optionFactory(),
+      datasetOptions: datasetOptionsFactory(['bar']),
+      dataset: geoJSONDataset,
+      associatedMap: true
+    }, { localVue });
+    const chartInstance = wrapper.vm._getEchart();
+    expect(chartInstance).not.toBeUndefined();
+    const params = { dataIndex: 0 };
+    chartInstance.$emit('click', params);
+    expect(wrapper.emitted().click).toBeTruthy();
+    expect(wrapper.emitted().click.length).toBe(1);
+    expect(wrapper.emitted().click[0]).toEqual([params]);
   });
 });

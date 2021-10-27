@@ -315,7 +315,10 @@ export default {
     },
     highlightOptions: {
       handler() {
-        this.setItemStyleColor();
+        if (this.echartOptions) {
+          const series = this.setItemStyleColor();
+          this.$set(this.echartOptions, 'series', series);
+        }
       },
       deep: true
     }
@@ -442,8 +445,8 @@ export default {
         };
       }
     },
-    setItemStyleColor(isSet = true, series, highlightOptions = this.highlightOptions, color = this.highlightColor) {
-      series = series || cloneDeep(this.echartOptions && this.echartOptions.series) || [];
+    setItemStyleColor(acceptSeries, highlightOptions = this.highlightOptions, color = this.highlightColor) {
+      const series = cloneDeep(acceptSeries || this.echartOptions && this.echartOptions.series || []);
       series.forEach((serie, seriesIndex) => {
         const dataIndexs = highlightOptions.map(item => {
           if (item.seriesIndex && item.seriesIndex.includes(seriesIndex)) {
@@ -473,7 +476,7 @@ export default {
           }
         };
       });
-      isSet && this.$set(this.echartOptions, 'series', series);
+      return series;
     },
     _handlePieAutoPlay() {
       let seriesType = this._chartOptions.series && this._chartOptions.series[0] && this._chartOptions.series[0].type;
@@ -836,7 +839,7 @@ export default {
       let series = dataOptions.series;
       let isRingShine = options.series && options.series[0] && options.series[0].outerGap >= 0;
       if (series && series.length && series[0].type === 'pie') {
-        this.setItemStyleColor(false, series);
+        series = this.setItemStyleColor(series);
       }
       if (isRingShine) {
         dataOptions.series = this._createRingShineSeries(series, options.series);
@@ -845,7 +848,7 @@ export default {
         if (isRingShine) {
           dataOptions.series = this._createRingShineHighlight(series, this.highlightOptions);
         } else {
-          this.setItemStyleColor(true, series);
+          series = this.setItemStyleColor(series);
         }
       }
       const mergeOptions = merge(options, dataOptions);
