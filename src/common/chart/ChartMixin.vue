@@ -45,6 +45,7 @@ import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from 'vue-icl
 import EchartsDataService from 'vue-iclient/src/common/_utils/EchartsDataService';
 import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
+import Message from 'vue-iclient/src/common/message/index.js';
 import { addListener, removeListener } from 'resize-detector';
 
 // 枚举事件类型
@@ -1100,8 +1101,10 @@ export default {
       return this.smChart[name](...args);
     },
     unSupportedFeatureTip() {
-      this.$message.destroy();
-      this.$message.warning(this.$t('chart.unSupportedData'));
+      // @ts-ignore
+      Message.destroy();
+      // @ts-ignore
+      Message.warning(this.$t('chart.unSupportedData'));
     },
     handleChartClick(params) {
       if (this.associatedMap) {

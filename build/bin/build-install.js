@@ -145,11 +145,11 @@ function createInstallTemplate() {
       const newCompName = subComName === 'Number' ? 'InputNumber' : subComName;
       const newCompPath = subComName + '.vue';
       // 给用到$message的组件，注册message
-      if (!SPECIAL_INSTALL_COM.includes(newCompName)) {
-        const data = fs.readFileSync(path.resolve(__dirname, filePath) + '\\' + newCompPath, 'utf-8');
-        // 文件中包含map-getter.ts和this.$message都要注册
-        registerMessageFlag = data.includes('/map-getter') || data.includes('this.$message');
-      }
+      // if (!SPECIAL_INSTALL_COM.includes(newCompName)) {
+      //   const data = fs.readFileSync(path.resolve(__dirname, filePath) + '\\' + newCompPath, 'utf-8');
+      //   // 文件中包含map-getter.ts和this.$message都要注册
+      //   registerMessageFlag = data.includes('/map-getter') || data.includes('this.$message');
+      // }
       // Modal和Spin引入的是main.ts, 其他组件引入.vue
       if (newCompName === 'Modal' || newCompName === 'Spin') {
         importComList.push(`import { default as ${newCompName} } from './main.ts';`);
@@ -168,10 +168,10 @@ function createInstallTemplate() {
       });
     } else {
       let registerMessage = [];
-      if (registerMessageFlag) {
-        importComList.push(`import Message from 'vue-iclient/src/common/message/index.js';`);
-        registerMessage.push(`  Vue.prototype.$message = Message;`);
-      }
+      // if (registerMessageFlag) {
+      //   importComList.push(`import Message from 'vue-iclient/src/common/message/index.js';`);
+      //   registerMessage.push(`  Vue.prototype.$message = Message;`);
+      // }
       const renderTemplate = registerMessageFlag ? MESSAGE_INSTALL_TEMPLATE : INSTALL_TEMPLATE;
       template = render(andCompNames.includes(compName) ? ANTD_INSTALL_TEMPLATE : renderTemplate, {
         component: compName,

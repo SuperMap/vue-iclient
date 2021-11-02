@@ -26,6 +26,7 @@ import GeojsonLayer from 'vue-iclient/src/mapboxgl/web-map/layer/geojson/Geojson
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
+import Message from 'vue-iclient/src/common/message/Message.js';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import Vue from 'vue';
 
@@ -122,11 +123,13 @@ export default {
       mapNotLoaded && e.preventDefault();
     },
     openfilefailedFn(e) {
-      this.notify && this.$message.error(e.message);
+      // @ts-ignore
+      this.notify && Message.error(e.message);
       this.$emit('open-file-failed', e);
     },
     errorfileformatFn(e) {
-      this.notify && this.$message.error(e.message);
+      // @ts-ignore
+      this.notify && Message.error(e.message);
       this.$emit('error-file-format', e);
     },
     openfilesucceededFn(e) {
@@ -135,7 +138,7 @@ export default {
         return;
       }
       if (!e.result.features.length) {
-        this.$message({
+        Message({
           message: this.$t('openFile.openEmptyFile'),
           type: 'error'
         });
@@ -169,8 +172,8 @@ export default {
       if (this.fitBounds && this.addToMap) {
         this.viewModel.fitBoundsToData();
       }
-
-      this.notify && this.$message.success(this.$t('openFile.openFileSuccess'));
+      // @ts-ignore
+      this.notify && Message.success(this.$t('openFile.openFileSuccess'));
       this.$emit('open-file-succeeded', result);
     }
   },

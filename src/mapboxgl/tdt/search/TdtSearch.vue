@@ -90,6 +90,7 @@ import StatisticsResult from '../results/StatisticsResult.vue';
 import NothingResult from '../results/NothingResult.vue';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import SmInput from 'vue-iclient/src/common/input/Input.vue';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 export default {
   name: 'SmTdtSearch',
@@ -181,7 +182,8 @@ export default {
     this.clearResult(true);
   },
   beforeDestroy() {
-    this.$message.destroy();
+    // @ts-ignore
+    Message.destroy();
     this.marker && this.marker.remove() && (this.marker = null);
     this.$options.removed.call(this);
   },
@@ -205,7 +207,8 @@ export default {
             error && this.searchFailed(error);
           });
       } else {
-        this.$message.warning(this.$t('search.noKey'));
+        // @ts-ignore
+        Message.warning(this.$t('search.noKey'));
       }
     },
     searchInput() {
@@ -220,7 +223,8 @@ export default {
     },
     searchButtonClicked() {
       if (!this.searchKey) {
-        this.$message.warning(this.$t('search.noKey'));
+        // @ts-ignore
+        Message.warning(this.$t('search.noKey'));
         return;
       }
       this.getResultDetail(this.searchKey);
@@ -229,7 +233,8 @@ export default {
      * 清除搜索结果。
      */
     clearResult(isClear) {
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       isClear && (this.searchKey = null);
       this.searchResult = [];
       this.prefixType = 'search';
@@ -304,16 +309,19 @@ export default {
       });
     },
     searchSucceeded(result) {
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       this.searchResult = result;
       this.prefixType = 'search';
-      this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
+      // @ts-ignore
+      this.searchResult.length < 1 && Message.warning(this.$t('search.noResult'));
       this.$emit('search-succeeded', { searchResult: this.searchResult });
     },
     searchFailed(e) {
       this.clearResult();
       this.prefixType = 'search';
-      this.$message.warning(this.$t('search.noResult'));
+      // @ts-ignore
+      Message.warning(this.$t('search.noResult'));
       this.$emit('search-failed', e);
     },
     searchSelectedInfo({ data }) {

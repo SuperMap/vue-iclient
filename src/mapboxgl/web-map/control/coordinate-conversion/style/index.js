@@ -5,4 +5,5 @@ import 'vue-iclient/src/common/collapse/style/index.js';
 import 'vue-iclient/src/common/input/style/index.js';
 import 'vue-iclient/src/common/select/style/index.js';
 import 'vue-iclient/src/common/collapse-card/style/collapse-card.scss';
+import 'vue-iclient/src/common/message/style/index.js';
 import './coordinate-conversion.scss';

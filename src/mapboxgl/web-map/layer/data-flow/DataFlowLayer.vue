@@ -5,6 +5,7 @@ import DataFlowLayerViewModel from './DataFlowLayerViewModel';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 /**
  * @module DataFlowLayer
@@ -68,7 +69,8 @@ export default {
       this.viewModel.on('dataupdated', this.dataupdatedFn);
     },
     subscribefailedFn(e) {
-      this.$message.error(this.$t('dataFlow.dataSubscriptionFailed'));
+      // @ts-ignore
+      Message.error(this.$t('dataFlow.dataSubscriptionFailed'));
       /**
        * @event subscribeFailed
        * @desc 数据订阅失败后触发。
