@@ -74,6 +74,7 @@ import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 import uniqueId from 'lodash.uniqueid';
 import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 import 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 export default {
   name: 'SmMeasure',
@@ -254,8 +255,10 @@ export default {
           return;
         }
         if (!this.map.loaded()) {
-          this.$message.destroy();
-          this.$message.warning(this.$t('warning.mapNotLoaded'));
+          // @ts-ignore
+          Message.destroy();
+          // @ts-ignore
+          Message.warning(this.$t('warning.mapNotLoaded'));
         } else {
           let modeUnitKey = this.modeUnitMap[mode];
           let activeUnit = this[modeUnitKey];

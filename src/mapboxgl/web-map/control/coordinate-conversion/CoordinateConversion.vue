@@ -91,6 +91,7 @@ import proj4 from 'proj4';
 import UniqueId from 'lodash.uniqueid';
 import { CoordinateConverter } from 'geographic-coordinate-converter/coordinate-converter';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 const utm = require('utm');
 
@@ -120,7 +121,6 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
   viewModel: any;
-  $message: any;
   $t: any;
   clickCaptureTimes: number = 0;
   defaultFormats: Array<FormatOption> = [];
@@ -240,7 +240,8 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     this.formatOptions = [...this.defaultFormats];
     const clipboard = (this.clipboard = new ClipboardJS(`.sm-component-coordinate-conversion__copyed${this.uniqueId}`));
     clipboard.on('success', () => {
-      this.$message.success(this.$t('success.copySucccess'));
+      // @ts-ignore
+      Message.success(this.$t('success.copySucccess'));
     });
     this.viewModel = new CoordinateConversionViewModel();
     this.viewModel.on('getcoordinate', res => {

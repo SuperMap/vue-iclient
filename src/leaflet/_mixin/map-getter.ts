@@ -1,6 +1,7 @@
 // 新创建一个vue实例实时监听获得map对象
 import mapEvent from 'vue-iclient/src/leaflet/_types/map-event';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import Message from 'vue-iclient/src/common/message/index.js';
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 
@@ -25,7 +26,6 @@ export default class MapGetter extends Vue {
   map: L.Map;
   webmap: any;
   viewModel: any;
-  $message: any;
   $t: any;
 
   @Prop() mapTarget: string;
@@ -111,8 +111,10 @@ export default class MapGetter extends Vue {
 
   mapNotLoadedTip() {
     if (!this.map) {
-      this.$message.destroy();
-      this.$message.warning(this.$t('warning.unassociatedMap'));
+      // @ts-ignore
+      Message.destroy();
+      // @ts-ignore
+      Message.warning(this.$t('warning.unassociatedMap'));
       return true;
     }
     return false;

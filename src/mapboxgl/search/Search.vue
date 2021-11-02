@@ -110,6 +110,7 @@ import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import SearchViewModel from './SearchViewModel';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import SmInput from 'vue-iclient/src/common/input/Input.vue';
+import Message from 'vue-iclient/src/common/message/Message.js';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
@@ -243,11 +244,13 @@ export default {
     this.clearResult(true);
   },
   beforeDestroy() {
-    this.$message.destroy();
+    // @ts-ignore
+    Message.destroy();
   },
   methods: {
     clearResult(isClear) {
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       isClear && (this.searchKey = null);
       isClear && this.resetLastEvent();
       this.searchResult = [];
@@ -290,10 +293,12 @@ export default {
           this.regiterEvents();
           this.prefixType = 'loading';
         } else {
-          this.$message.warning(this.$t('search.noKey'));
+          // @ts-ignore
+          Message.warning(this.$t('search.noKey'));
         }
       } else {
-        this.$message.warning(this.$t('search.setSearchSource'));
+        // @ts-ignore
+        Message.warning(this.$t('search.setSearchSource'));
       }
     },
     inputValueCleared(emitEvent = true) {
@@ -343,11 +348,12 @@ export default {
        * @desc 搜索成功后触发。
        * @property {Object} e  - 事件对象。
        */
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       this.searchResult = result;
       this.$emit('search-succeeded', { searchResult: this.searchResult });
       this.prefixType = 'search';
-      // this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
+      // this.searchResult.length < 1 && Message.warning(this.$t('search.noResult'));
       if (this.isNumber(this.searchTaskId)) {
         this.searchTaskId += 1;
         this.regiterEvents();
@@ -361,7 +367,7 @@ export default {
        */
       this.clearResult();
       this.prefixType = 'search';
-      // this.$message.warning(this.$t('search.noResult'));
+      // Message.warning(this.$t('search.noResult'));
       this.$emit('search-failed', e);
       if (this.isNumber(this.searchTaskId)) {
         this.searchTaskId += 1;
@@ -386,8 +392,10 @@ export default {
       });
     },
     illegalFeatureTip({ error }) {
-      this.$message.destroy();
-      this.$message.error(error);
+      // @ts-ignore
+      Message.destroy();
+      // @ts-ignore
+      Message.error(error);
     },
     searchSelectedInfo({ data }) {
       this.prefixType = 'search';
