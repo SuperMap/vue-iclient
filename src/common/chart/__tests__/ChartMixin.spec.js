@@ -3,6 +3,8 @@ import flushPromises from 'flush-promises';
 import { message } from 'ant-design-vue';
 import ChartMixin from '../ChartMixin.vue';
 
+const sleep = (timeout = 0) => new Promise(resolve => setTimeout(resolve, timeout));
+
 describe('Chart Mixin Component', () => {
   let wrapper;
   const localVue = createLocalVue();
@@ -69,7 +71,6 @@ describe('Chart Mixin Component', () => {
     }
   };
   const legend = {
-    // orient: 'vertical',
     data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
     show: true,
     top: 'auto',
@@ -303,7 +304,7 @@ describe('Chart Mixin Component', () => {
     });
     expect(spyFn).toHaveBeenCalled();
     expect(wrapper.vm.pieAutoPlay).not.toBeUndefined();
-    jest.advanceTimersByTime(2000);
+    jest.useRealTimers();
   });
 
   it('render rankBar chart', async () => {
@@ -437,12 +438,15 @@ describe('Chart Mixin Component', () => {
         options,
         datasetOptions: datasetOptionsFactory(['2.5Bar', '2.5Bar']),
         dataset: geoJSONDataset,
-        highlightOptions: highlightOptions([0]),
         highlightColor
       });
       const graphic = wrapper.vm.$options.graphic;
       expect(graphic).not.toBeUndefined();
       expect(graphic.getShapeClass('CubesquareLeft')).not.toBeUndefined();
+      await sleep(300);
+      await wrapper.setProps({
+        highlightOptions: highlightOptions([0])
+      });
       await flushPromises();
       expect(wrapper.vm.echartOptions.series[0].renderItem).not.toBeUndefined();
       expect(wrapper.vm.echartOptions.series[0].shape).toBeUndefined();
@@ -464,17 +468,16 @@ describe('Chart Mixin Component', () => {
         },
         datasetOptions: datasetOptionsFactory(['2.5Bar', '2.5Bar']),
         dataset: geoJSONDataset,
-        highlightOptions: highlightOptions([0]),
         highlightColor
       });
       await flushPromises();
       const echartSeriesLen = wrapper.vm.echartOptions.series.length;
       expect(echartSeriesLen).toBeGreaterThan(options.series.length);
       expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].type).toBe('pictorialBar');
+      await sleep(300);
       await wrapper.setProps({
         highlightOptions: highlightOptions([1])
       });
-      // await flushPromises();
       expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toStrictEqual(options.series[0].itemStyle.color);
     });
   });
