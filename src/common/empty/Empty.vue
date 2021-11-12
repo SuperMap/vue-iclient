@@ -6,7 +6,7 @@ import AntdRender from '../_mixin/AntdRender';
 
 export const emptyProps = {
   ...EmptyProps(),
-  image: VueTypes.any.def(require('./assets/image/empty.png'))
+  image: VueTypes.any.def(Empty.PRESENTED_IMAGE_SIMPLE)
 };
 
 export default {

@@ -28,7 +28,7 @@
 | scrollbar            | 滚动条配置。参照[swiper](https://www.swiper.com.cn/api/scrollbar/369.html)        | object            | -                                          | -            |
 | effect               | 幻灯片播放效果                                                                    | string            | 'slide' \| 'cube' \| 'coverflow' \| 'flip' | 'slide'      |
 
-> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)
 
 ### Events
 

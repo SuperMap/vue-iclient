@@ -74,6 +74,9 @@
         justify-content: space-between;
         border-top: 1px solid $border-color-split;
       }
+      .sm-component-checkbox-wrapper {
+        color: inherit;
+      }
     }
   }
 }

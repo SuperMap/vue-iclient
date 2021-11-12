@@ -176,7 +176,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.getDatas();
   }
 
-  setFieldConfigs(fieldConfigs) {
+  setFieldInfo(fieldConfigs) {
     this.fieldConfigs = fieldConfigs;
     this.getDatas();
   }

@@ -13,6 +13,14 @@ export default {
   defaultComponent: CollapsePanel,
   mixins: [Theme, AntdRender],
   inheritAttrs: false,
-  props: collapsePanelTypes
+  props: collapsePanelTypes,
+  methods: {
+    getPrefixCls(suffixCls: string, customizePrefixCls: string) {
+      if (customizePrefixCls) {
+        return customizePrefixCls;
+      }
+      return `${this.defaultPrefixCls}-${suffixCls}`;
+    }
+  }
 };
 </script>

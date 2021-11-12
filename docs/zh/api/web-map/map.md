@@ -127,4 +127,4 @@ export default {
 | :--- | :----------------- | :------------------------------------------------------------------------------- |
 | load | 地图加载完成时触发 | function({ map: [Mapboxgl.map](https://docs.mapbox.com/mapbox-gl-js/api/#map) }) |
 
-> 其余 map 事件请参照 [Mapboxgl.Events](https://docs.mapbox.com/mapbox-gl-js/api/map/#map-events)，回调参数是 function({ map: [Mapboxgl.map](https://docs.mapbox.com/mapbox-gl-js/api/#map), component: [WebMap 组件实例](#地图组件), ...[Instance Members](https://docs.mapbox.com/mapbox-gl-js/api/events/#mapmouseevent) })，例如 click 事件的回调参数为 { map, component, lnglat, originalEvent, point, preventDefault(), target, type }。
+> 其余 map 事件请参照 [Mapboxgl.Events](https://docs.mapbox.com/mapbox-gl-js/api/map/#map-events)，回调参数是 function({ map: [Mapboxgl.map](https://docs.mapbox.com/mapbox-gl-js/api/#map), component: [WebMap 组件实例](#地图组件), mapboxEvent: {...[Instance Members](https://docs.mapbox.com/mapbox-gl-js/api/events/#mapmouseevent)}, ...eventData（事件对象的附加属性） })，例如 click 事件的回调参数为 { map, component, mapboxEvent: { lnglat, originalEvent, point, preventDefault(), target, type } }。

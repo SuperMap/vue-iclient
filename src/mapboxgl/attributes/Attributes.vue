@@ -179,7 +179,7 @@ interface ToolbarParams {
     SmIcon,
     SmCheckbox
   },
-  viewModelProps: ['layerName', 'dataset', 'lazy', 'associateWithMap', 'fieldConfigs', 'paginationOptions', 'sorter']
+  viewModelProps: ['layerName', 'dataset', 'lazy', 'associateWithMap', 'fieldInfo', 'paginationOptions', 'sorter']
 })
 class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   tableData: Array<Object> = [];
@@ -199,6 +199,8 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   searchText: string = '';
 
   searchedColumn: string = '';
+
+  fieldInfo: Array<Object> = [];
 
   @Prop() layerName: string; // 图层名
 
@@ -302,6 +304,14 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     return this.associateWithMap.enabled;
   }
 
+  @Watch('fieldConfigs', { immediate: true })
+  fieldConfigsChanged(val) {
+    if (!isequal(val, this.fieldInfo)) {
+      // @ts-ignore
+      this.fieldInfo = val;
+    }
+  }
+
   get compColumns() {
     const columnsCopy = clonedeep(this.columns)
       .filter(column => {
@@ -315,14 +325,8 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   created() {
-    // @ts-ignore
     this.fieldInfo = clonedeep(this.fieldConfigs);
-    this.viewModel = new AttributesViewModel({
-      paginationOptions: this.paginationOptions,
-      ...this.$props,
-      // @ts-ignore
-      fieldConfigs: this.fieldInfo
-    });
+    this.viewModel = new AttributesViewModel({ paginationOptions: this.paginationOptions, ...this.$props, fieldConfigs: this.fieldInfo });
     this.bindEvents();
   }
 
@@ -353,6 +357,13 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     const columnIndex = this.columns.indexOf(column);
     column.visible = !column.visible;
     this.$set(this.columns, columnIndex, column);
+    this.fieldInfo.forEach(item => {
+      // @ts-ignore
+      if (item.value === column.dataIndex) {
+        // @ts-ignore
+        item.visible = column.visible;
+      }
+    });
   }
   changeSelectedRows(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys;
@@ -378,16 +389,6 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
         // @ts-ignore
         this.$set(this.paginationOptions, 'total', totalCount);
       }
-      // @ts-ignore
-      const hideColumns = this.columns.filter(item => !item.visible);
-      hideColumns.forEach(element => {
-        columns.forEach((element2, index) => {
-          // @ts-ignore
-          if (element.dataIndex === element2.dataIndex) {
-            columns[index].visible = false;
-          }
-        });
-      });
       this.columns = columns;
       this.tableData = content;
     });
