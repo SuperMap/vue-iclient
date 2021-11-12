@@ -1,5 +1,7 @@
 # 图层颜色
 
+<sm-iframe src="https://iclient.supermap.io/examples/component/components_layer_color_vue.html"></sm-iframe>
+
 ```vue
 <sm-web-map style="height:700px" serverUrl="https://www.supermapol.com/" mapId="505367620">
     <sm-layer-color :collapsed="false"></sm-layer-color>

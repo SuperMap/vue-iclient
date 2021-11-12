@@ -20,6 +20,7 @@
 | customHeaderRow     | 设置头部行属性。<a href="#customRowCell">使用</a>                                                  | Function(column, index)                                                                                                                                                                                                                                             | -      | -      |
 | customRow          | 设置行属性。<a href="#customRowCell">使用</a>                                                       | Function(record, index)                                                                                                                                                                                                                                             | -      | -      |
 | layerStyle       | 图层样式                                                                                              | [LayerStyle](/zh/api/common-types/common-types.md#layerStyle)                                                                                                                                                                                       | -      | -      |
+| lazy             | 是否开启 SuperMap Rest 地图服务/数据服务分页请求  | boolean                                                                                                                                                                                                                                             | -      | true   |
 | mapTarget        | 关联地图容器 ID。如果该参数省略，则默认绑定其父组件为地图组件的 Map 实例或者第一个地图组件的 Map 实例 | string                                                                                                                                                                                                                                              | -      | -      |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)
@@ -69,7 +70,7 @@
 | :----------------- | :----------------------- | :------ | :----- | :----- |
 | enable             | 是否开启工具条           | boolean | -      | true   |
 | showRefresh        | 是否显示刷新数据选项     | boolean | -      | true   |
-| showZoomToFeatur   | 是否显示缩放到要素选项   | boolean | -      | true   |
+| showZoomToFeature   | 是否显示缩放到要素选项   | boolean | -      | true   |
 | showClearSelected  | 是否显示清除选中要素选项 | boolean | -      | true   |
 | showColumnsControl | 是否显示列显示隐藏选项   | boolean | -      | true   |
 

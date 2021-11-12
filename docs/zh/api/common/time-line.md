@@ -14,7 +14,6 @@
 | data            | 时间轴节点数组，具体属性参考[echarts 文档](https://echarts.apache.org/zh/option.html#timeline.data)              | array           | -      | -      |
 | autoPlay        | 是否自动播放                                                                                                     | boolean         | -      | false  |
 | nextEnable      | 是否播放下一个点                                                                                                 | boolean | -      | -      |
-| autoPlay        | 是否自动播放                                                                                                     | boolean         | -      | false  |
 | loop            | 是否循环播放                                                                                                     | boolean         | -      | true   |
 | playInterval    | 播放间隔，单位毫秒（ms）                                                                                         | string          | -      | 3000   |
 | currentIndex    | 当前选中项是哪项                                                                                                 | number          | -      | 0      |
