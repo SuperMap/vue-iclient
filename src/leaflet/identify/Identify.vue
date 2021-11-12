@@ -16,6 +16,7 @@ import MapGetter from '../_mixin/map-getter';
 import Theme from '../../common/_mixin/Theme';
 import IdentifyViewModel from './IdentifyViewModel';
 import isEqual from 'lodash.isequal';
+import { getFeatureCenter } from '../../common/_utils/util';
 
 export default {
   name: 'SmIdentify',
@@ -45,8 +46,7 @@ export default {
       popupProps: {},
       layers: [],
       layerType: false,
-      popupLayers: [],
-      mapClickPosition: null
+      popupLayers: []
     };
   },
   watch: {
@@ -63,10 +63,6 @@ export default {
   loaded() {
     this.setViewModel();
     this.setLayers();
-    // 客户端专题图图层无准确坐标，通过地图坐标来实现
-    this.map.on('click', e => {
-      this.mapClickPosition = this.map.layerPointToLatLng(e.layerPoint);
-    });
   },
   removed() {
     // 清除点击事件和popup
@@ -87,7 +83,6 @@ export default {
     this.layers = [];
   },
   beforeDestroy() {
-    this.map && this.map.off('click');
     this.$options.removed.call(this);
   },
   methods: {
@@ -138,7 +133,7 @@ export default {
     bindGeojsonLayer(geojsonLayer) {
       geojsonLayer.on('click', e => {
         // e.layer是被选中的某个要素
-        this.bindPopupLayer(e.layer.feature, e.layer, e.latlng);
+        this.bindPopupLayer(e.layer.feature, e.layer);
       });
     },
     // 给客户端专题图绑定click事件
@@ -149,7 +144,7 @@ export default {
           // 将矢量要素转换成geojson
           let feature = this.viewModel.formatGeoJSON(themeFeature);
           // 因为线坐标等要素不准确，所以用地图的点击的坐标点
-          this.bindPopupLayer(feature, themeLayer, '');
+          this.bindPopupLayer(feature, themeLayer);
         }
       });
     },
@@ -180,26 +175,26 @@ export default {
               };
               e.sourceTarget.feature = feature;
               popupLayer = e.sourceTarget;
-              this.bindPopupLayer(feature, popupLayer, e.latlng);
+              this.bindPopupLayer(feature, popupLayer);
             });
           }
         }
       }
     },
     // 绑定popup
-    bindPopupLayer(feature, popupLayer, latlng) {
+    bindPopupLayer(feature, popupLayer) {
       if (!feature) {
         return;
       }
       this.filterFeature(feature);
+      const latlng = (getFeatureCenter(feature) || []).reverse();
       this.$nextTick(() => {
         // 这个定时器是避免和专题图的点击事件（要清空popup）冲突
         setTimeout(() => {
           let popupDom = this.$refs.Popup;
           popupDom.style.display = 'block';
           popupLayer.bindPopup(popupDom);
-          // 定时为了获取最近的一次地图点击事件的坐标mapClickPosition
-          popupLayer.openPopup(latlng || this.mapClickPosition);
+          popupLayer.openPopup(latlng);
           // popupclose(点击地图的时候，清除最后一次的高亮)
           popupLayer.on('popupclose', () => this.viewModel.removed());
           if (!popupLayer.feature) {
