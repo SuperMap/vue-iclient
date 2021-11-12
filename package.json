@@ -57,6 +57,7 @@
     "lodash.isplainobject": "^4.0.6",
     "lodash.max": "^4.0.1",
     "lodash.merge": "^4.6.1",
+    "lodash.mergewith": "^4.6.2",
     "lodash.orderby": "^4.6.0",
     "lodash.tonumber": "^4.0.3",
     "lodash.uniqueid": "^4.0.1",
