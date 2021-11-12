@@ -84,7 +84,7 @@
     & > div {
       text-align: center;
       flex: 1;
-      display: flex;
+      display: block;
       justify-content: center;
       word-break: keep-all;
       white-space: nowrap;
@@ -93,6 +93,9 @@
       align-self: center;
       min-width: 5%;
       cursor: pointer;
+    }
+    .sm-component-text-list__slot {
+      display: flex;
     }
   }
 }
