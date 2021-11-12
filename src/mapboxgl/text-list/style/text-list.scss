@@ -84,7 +84,8 @@
     & > div {
       text-align: center;
       flex: 1;
-      display: block;
+      display: flex;
+      justify-content: center;
       word-break: keep-all;
       white-space: nowrap;
       text-overflow: ellipsis;
