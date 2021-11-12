@@ -5,6 +5,8 @@ import { getOptionProps, getComponentFromProp } from 'ant-design-vue/es/_util/pr
 
 @Component
 export default class BaseRender extends Vue {
+  defaultPrefixCls = 'sm-component';
+
   @Prop() getPopupContainer: Function;
   @Prop() prefixCls: string;
   @Prop() renderEmpty: Function;
@@ -57,8 +59,10 @@ export default class BaseRender extends Vue {
   }
 
   getPrefixCls(suffixCls: string, customizePrefixCls: string) {
-    const { prefixCls = 'sm-component' } = this.$props;
-    if (customizePrefixCls) return customizePrefixCls;
+    const { prefixCls = this.defaultPrefixCls } = this.$props;
+    if (customizePrefixCls) {
+      return customizePrefixCls;
+    }
     return suffixCls ? `${prefixCls}-${suffixCls}` : prefixCls;
   }
 
