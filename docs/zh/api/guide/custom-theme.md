@@ -16,7 +16,7 @@ import App from './App.vue';
 Vue.use(VueiClient, { theme: 'light' });
 
 // 2 通过 setTheme 方法设置主题
-VueiClient.setTheme({ theme: 'light' });
+VueiClient.setTheme('light');
 ```
 
 ### 使用自定义主题
