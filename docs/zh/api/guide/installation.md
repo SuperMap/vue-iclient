@@ -36,13 +36,6 @@ npm install @supermap/vue-iclient-mapboxgl
 <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
 ```
 
-- 引入 ant-design-vue JS 和 CSS 文件
-
-```html
-<link href="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.css" rel="stylesheet" />
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.js"></script>
-```
-
 - 引入 MapboxGL-enhange JS 和 CSS 文件
 
 ```html
@@ -74,12 +67,10 @@ npm install @supermap/vue-iclient-mapboxgl
   <head>
     <meta charset="UTF-8" />
     <title>vue-iclient-mapboxgl example</title>
-    <link href="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.css" rel="stylesheet" />
     <link href="https://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.css" rel="stylesheet" />
     <link href="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl.min.css" rel="stylesheet" />
     <link href="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.css" rel="stylesheet" />
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vue@2.5.17/dist/vue.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/ant-design-vue@1.3.10/dist/antd.min.js"></script>
     <script type="text/javascript" src="https://iclient.supermap.io/web/libs/mapbox-gl-js-enhance/1.2.0/mapbox-gl-enhance.js" ></script>
     <script type="text/javascript" src="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-es6.min.js" ></script>
     <script type="text/javascript" src="https://iclient.supermap.io/dist/mapboxgl/iclient-mapboxgl-vue.min.js" ></script>
