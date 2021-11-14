@@ -1,44 +1,74 @@
 import { mount, config } from '@vue/test-utils';
 import SmWebMap from '../../web-map/WebMap.vue';
 import SmChart from '../Chart.vue';
-import mapEvent from '@types_mapboxgl/map-event';
-config.stubs.transition = false;
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import chart_restData from 'vue-iclient/test/unit/mocks/data/chart_restData';
+import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
+import flushPromises from 'flush-promises';
 
 describe('Chart', () => {
   let wrapper;
   let mapWrapper;
   let iportalDataSet = {
-    type: 'iPortal', //iServer iPortal
+    type: 'iPortal',
     url: 'https://fakeiportal.supermap.io/iportal/web/datas/123',
     queryInfo: {
       maxFeatures: 20
     }
   };
+  const mapInfo = {
+    extent: {
+      leftBottom: { x: 0, y: 0 },
+      rightTop: { x: 0, y: 0 }
+    },
+    level: 5,
+    center: { x: 0, y: 0 },
+    baseLayer: {
+      layerType: 'TILE',
+      name: 'China',
+      url: 'http://test'
+    },
+    layers: [],
+    description: '',
+    projection: 'EPSG:3857',
+    title: 'testMap',
+    version: '1.0'
+  };
 
-  beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
-    wrapper = null;
-    mapWrapper = null;
+  beforeAll(() => {
+    config.mapLoad = false;
     mapWrapper = mount(SmWebMap, {
       propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
+        mapId: mapInfo
       }
     });
   });
 
+  beforeEach(() => {
+    wrapper = null;
+  });
+
   afterEach(() => {
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
+  });
+
+  afterAll(() => {
+    config.mapLoad = true;
     if (mapWrapper) {
       mapWrapper.destroy();
     }
   });
 
-  it('bar', done => {
+  it('bar', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount(SmChart, {
       propsData: {
         mapTarget: 'map',
@@ -46,7 +76,7 @@ describe('Chart', () => {
         echartOptions: {
           legend: {
             data: ['2016起降架次（架次）', '2017起降架次（架次）']
-          }, //与yField数据一致
+          },
           tooltip: {
             formatter: '{b0}: {c0}'
           },
@@ -64,11 +94,11 @@ describe('Chart', () => {
         },
         datasetOptions: [
           {
-            seriesType: 'bar', //图表类型
-            isStastic: true, //是否统计, 默认不统计
-            isStack: true, //是否堆叠, 默认不堆叠
-            xField: '机场', //x坐标轴数据字段
-            yField: '2016起降架次（架次）' //统计的数据，legned默认名字
+            seriesType: 'bar',
+            isStastic: true,
+            isStack: true,
+            xField: '机场',
+            yField: '2016起降架次（架次）'
           },
           {
             seriesType: 'bar',
@@ -80,16 +110,16 @@ describe('Chart', () => {
         ]
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      expect(wrapper.find('div#smchart-1').exists()).toBe(true);
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      expect(wrapper.vm.mapTarget).toBe('map');
-      expect(wrapper.vm.dataset.type).toBe('iPortal');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.find('div#smchart-1').exists()).toBe(true);
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.dataset.type).toBe('iPortal');
+    done();
   });
 
-  it('default 2.5BarSquare', done => {
+  it('default 2.5BarSquare', async done => {
     wrapper = mount(SmChart, {
       propsData: {
         frequency: 2,
@@ -205,13 +235,13 @@ describe('Chart', () => {
         }
       }
     });
-    wrapper.vm.$on('loaded', async () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    done();
   });
 
-  it('default 2.5BarRectangle', done => {
+  it('default 2.5BarRectangle', async done => {
     wrapper = mount(SmChart, {
       propsData: {
         frequency: 2,
@@ -331,13 +361,13 @@ describe('Chart', () => {
         }
       }
     });
-    wrapper.vm.$on('loaded', async () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    done();
   });
 
-  it('default 2.5BarCylinder', done => {
+  it('default 2.5BarCylinder', async done => {
     wrapper = mount(SmChart, {
       propsData: {
         frequency: 2,
@@ -452,13 +482,13 @@ describe('Chart', () => {
         }
       }
     });
-    wrapper.vm.$on('loaded', async () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    done();
   });
 
-  it('default xbar', done => {
+  it('default xbar', async done => {
     wrapper = mount(SmChart, {
       propsData: {
         dataset: { maxFeatures: 20, url: '', type: '' },
@@ -500,13 +530,13 @@ describe('Chart', () => {
         }
       }
     });
-    wrapper.vm.$on('loaded', async () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    done();
   });
 
-  it('default RankXBar', done => {
+  it('default RankXBar', async done => {
     wrapper = mount(SmChart, {
       propsData: {
         seriesType: 'xBar',
@@ -693,13 +723,13 @@ describe('Chart', () => {
         colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad']
       }
     });
-    wrapper.vm.$on('loaded', async () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    done();
   });
 
-  it('default RingShine', done => {
+  it('default RingShine', async done => {
     wrapper = mount(SmChart, {
       propsData: {
         frequency: 2,
@@ -822,13 +852,18 @@ describe('Chart', () => {
         }
       }
     });
-    wrapper.vm.$on('loaded', async () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    done();
   });
 
-  it('scatter', done => {
+  it('scatter', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount(SmChart, {
       propsData: {
         mapTarget: 'map',
@@ -836,7 +871,7 @@ describe('Chart', () => {
         options: {
           legend: {
             data: ['同比增速%']
-          }, //与yField数据一致
+          },
           tooltip: {
             formatter: '{b0}: {c0}'
           }
@@ -848,24 +883,29 @@ describe('Chart', () => {
         },
         datasetOptions: [
           {
-            seriesType: 'scatter', //图表类型
-            isStastic: true, //是否统计, 默认不统计
-            isStack: false, //是否堆叠, 默认不堆叠
-            xField: '机场', //x坐标轴数据字段
-            yField: '同比增速%' //统计的数据，legned默认名字
+            seriesType: 'scatter',
+            isStastic: true,
+            isStack: false,
+            xField: '机场',
+            yField: '同比增速%'
           }
         ]
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      expect(wrapper.vm.mapTarget).toBe('map');
-      expect(wrapper.vm.dataset.type).toBe('iPortal');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.dataset.type).toBe('iPortal');
+    done();
   });
 
-  it('default line', done => {
+  it('default line', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount(SmChart, {
       propsData: {
         dataset: { maxFeatures: 20, url: '', type: '' },
@@ -907,70 +947,75 @@ describe('Chart', () => {
         }
       }
     });
-    wrapper.vm.$on('loaded', async () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      await wrapper.setProps({
-        mapTarget: 'map',
-        dataset: iportalDataSet,
-        options: {
-          legend: {
-            data: ['2016旅客吞吐量（人次）', '2017旅客吞吐量（人次）']
-          }, //与yField数据一致
-          tooltip: {
-            formatter: '{b0}: {c0}'
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    await wrapper.setProps({
+      mapTarget: 'map',
+      dataset: iportalDataSet,
+      options: {
+        legend: {
+          data: ['2016旅客吞吐量（人次）', '2017旅客吞吐量（人次）']
+        },
+        tooltip: {
+          formatter: '{b0}: {c0}'
+        },
+        grid: {
+          top: 30,
+          bottom: 60,
+          left: 60,
+          right: 30
+        }
+      },
+      style: {
+        position: 'absolute',
+        bottom: '10px',
+        right: '10px'
+      },
+      datasetOptions: [
+        {
+          seriesType: 'line',
+          isStastic: true,
+          isStack: true,
+          xField: '机场',
+          yField: '2016旅客吞吐量（人次）',
+          xAxis: {
+            show: true,
+            type: 'value'
           },
-          grid: {
-            top: 30,
-            bottom: 60,
-            left: 60,
-            right: 30
+          yAxis: {
+            show: true,
+            type: 'category'
           }
         },
-        style: {
-          position: 'absolute',
-          bottom: '10px',
-          right: '10px'
-        },
-        datasetOptions: [
-          {
-            seriesType: 'line',
-            isStastic: true,
-            isStack: true,
-            xField: '机场',
-            yField: '2016旅客吞吐量（人次）',
-            xAxis: {
-              show: true,
-              type: 'value'
-            },
-            yAxis: {
-              show: true,
-              type: 'category'
-            }
+        {
+          seriesType: 'line',
+          isStastic: true,
+          isStack: true,
+          xField: '机场',
+          yField: '2017旅客吞吐量（人次）',
+          xAxis: {
+            show: true,
+            type: 'value'
           },
-          {
-            seriesType: 'line',
-            isStastic: true,
-            isStack: true,
-            xField: '机场',
-            yField: '2017旅客吞吐量（人次）',
-            xAxis: {
-              show: true,
-              type: 'value'
-            },
-            yAxis: {
-              show: true,
-              type: 'category'
-            }
+          yAxis: {
+            show: true,
+            type: 'category'
           }
-        ]
-      });
-      expect(wrapper.vm.mapTarget).toBe('map');
-      expect(wrapper.vm.dataset.type).toBe('iPortal');
-      done();
+        }
+      ]
     });
+    expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.dataset.type).toBe('iPortal');
+    done();
   });
 
-  it('line', done => {
+  it('line', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount(SmChart, {
       propsData: {
         mapTarget: 'map',
@@ -978,7 +1023,7 @@ describe('Chart', () => {
         options: {
           legend: {
             data: ['2016旅客吞吐量（人次）', '2017旅客吞吐量（人次）']
-          }, //与yField数据一致
+          },
           tooltip: {
             formatter: '{b0}: {c0}'
           },
@@ -996,11 +1041,11 @@ describe('Chart', () => {
         },
         datasetOptions: [
           {
-            seriesType: 'line', //图表类型
-            isStastic: true, //是否统计, 默认不统计
-            isStack: true, //是否堆叠, 默认不堆叠
-            xField: '机场', //x坐标轴数据字段
-            yField: '2016旅客吞吐量（人次）' //统计的数据，legned默认名字
+            seriesType: 'line',
+            isStastic: true,
+            isStack: true,
+            xField: '机场',
+            yField: '2016旅客吞吐量（人次）'
           },
           {
             seriesType: 'line',
@@ -1012,15 +1057,20 @@ describe('Chart', () => {
         ]
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      expect(wrapper.vm.mapTarget).toBe('map');
-      expect(wrapper.vm.dataset.type).toBe('iPortal');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.dataset.type).toBe('iPortal');
+    done();
   });
 
-  it('radar', done => {
+  it('radar', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount(SmChart, {
       propsData: {
         mapTarget: 'map',
@@ -1028,7 +1078,7 @@ describe('Chart', () => {
         options: {
           legend: {
             data: ['2016旅客吞吐量（人次）', '2017旅客吞吐量（人次）']
-          }, //与yField数据一致
+          },
           tooltip: {
             formatter: '{b0}: {c0}'
           },
@@ -1046,11 +1096,11 @@ describe('Chart', () => {
         },
         datasetOptions: [
           {
-            seriesType: 'radar', //图表类型
-            isStastic: true, //是否统计, 默认不统计
-            isStack: true, //是否堆叠, 默认不堆叠
-            xField: '机场', //x坐标轴数据字段
-            yField: '2016旅客吞吐量（人次）' //统计的数据，legned默认名字
+            seriesType: 'radar',
+            isStastic: true,
+            isStack: true,
+            xField: '机场',
+            yField: '2016旅客吞吐量（人次）'
           },
           {
             seriesType: 'radar',
@@ -1062,15 +1112,20 @@ describe('Chart', () => {
         ]
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      expect(wrapper.vm.mapTarget).toBe('map');
-      expect(wrapper.vm.dataset.type).toBe('iPortal');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.dataset.type).toBe('iPortal');
+    done();
   });
 
-  it('pie', done => {
+  it('pie', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount(SmChart, {
       propsData: {
         mapTarget: 'map',
@@ -1078,7 +1133,7 @@ describe('Chart', () => {
         options: {
           legend: {
             data: ['2016旅客吞吐量（人次）']
-          }, //与yField数据一致
+          },
           grid: {
             top: 30,
             bottom: 60,
@@ -1093,22 +1148,27 @@ describe('Chart', () => {
         },
         datasetOptions: [
           {
-            seriesType: 'pie', //图表类型
-            isStastic: true, //是否统计, 默认不统计
-            isStack: true, //是否堆叠, 默认不堆叠
-            xField: '机场', //x坐标轴数据字段
-            yField: '2016旅客吞吐量（人次）' //统计的数据，legned默认名字
+            seriesType: 'pie',
+            isStastic: true,
+            isStack: true,
+            xField: '机场',
+            yField: '2016旅客吞吐量（人次）'
           }
         ]
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    done();
   });
 
-  it('gauge', done => {
+  it('gauge', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount(SmChart, {
       propsData: {
         mapTarget: 'map',
@@ -1116,7 +1176,7 @@ describe('Chart', () => {
         options: {
           legend: {
             data: ['2016旅客吞吐量（人次）', '2017旅客吞吐量（人次）']
-          }, //与yField数据一致
+          },
           tooltip: {
             formatter: '{b0}: {c0}'
           },
@@ -1134,11 +1194,11 @@ describe('Chart', () => {
         },
         datasetOptions: [
           {
-            seriesType: 'gauge', //图表类型
-            isStastic: true, //是否统计, 默认不统计
-            isStack: true, //是否堆叠, 默认不堆叠
-            xField: '机场', //x坐标轴数据字段
-            yField: '2016旅客吞吐量（人次）' //统计的数据，legned默认名字
+            seriesType: 'gauge',
+            isStastic: true,
+            isStack: true,
+            xField: '机场',
+            yField: '2016旅客吞吐量（人次）'
           },
           {
             seriesType: 'gauge',
@@ -1150,15 +1210,20 @@ describe('Chart', () => {
         ]
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      expect(wrapper.vm.$el.outerHTML).toContain('canvas');
-      expect(wrapper.vm.mapTarget).toBe('map');
-      expect(wrapper.vm.dataset.type).toBe('iPortal');
-      done();
-    });
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.dataset.type).toBe('iPortal');
+    done();
   });
 
-  it('change props', done => {
+  it('change props', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount(SmChart, {
       propsData: {
         mapTarget: 'map',
@@ -1166,7 +1231,7 @@ describe('Chart', () => {
         echartOptions: {
           legend: {
             data: ['2016起降架次（架次）', '2017起降架次（架次）']
-          }, //与yField数据一致
+          },
           tooltip: {
             formatter: '{b0}: {c0}'
           },
@@ -1184,11 +1249,11 @@ describe('Chart', () => {
         },
         datasetOptions: [
           {
-            seriesType: 'bar', //图表类型
-            isStastic: true, //是否统计, 默认不统计
-            isStack: true, //是否堆叠, 默认不堆叠
-            xField: '机场', //x坐标轴数据字段
-            yField: '2016起降架次（架次）' //统计的数据，legned默认名字
+            seriesType: 'bar',
+            isStastic: true,
+            isStack: true,
+            xField: '机场',
+            yField: '2016起降架次（架次）'
           },
           {
             seriesType: 'bar',
@@ -1200,55 +1265,55 @@ describe('Chart', () => {
         ]
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      wrapper.setProps({
-        mapTarget: 'map',
-        dataset: {
-          type: 'iPortal', //iServer iPortal
-          url: 'https://fakeiportal.supermap.io/iportal/web/datas/1236666',
-          queryInfo: {
-            maxFeatures: 40
-          }
+    await mapSubComponentLoaded(wrapper);
+    await flushPromises();
+    wrapper.setProps({
+      mapTarget: 'map',
+      dataset: {
+        type: 'iPortal',
+        url: 'https://fakeiportal.supermap.io/iportal/web/datas/123',
+        queryInfo: {
+          maxFeatures: 40
+        }
+      },
+      echartOptions: {
+        legend: {
+          data: ['2019起降架次（架次）', '2020起降架次（架次）']
         },
-        echartOptions: {
-          legend: {
-            data: ['2019起降架次（架次）', '2020起降架次（架次）']
-          }, //与yField数据一致
-          tooltip: {
-            formatter: '{b0}: {c0}'
-          },
-          grid: {
-            top: 50,
-            bottom: 70,
-            left: 60,
-            right: 30
-          }
+        tooltip: {
+          formatter: '{b0}: {c0}'
         },
-        chartStyle: {
-          position: 'absolute',
-          bottom: '15px',
-          right: '15px'
+        grid: {
+          top: 50,
+          bottom: 70,
+          left: 60,
+          right: 30
+        }
+      },
+      chartStyle: {
+        position: 'absolute',
+        bottom: '15px',
+        right: '15px'
+      },
+      datasetOptions: [
+        {
+          seriesType: 'bar',
+          isStastic: true,
+          isStack: true,
+          xField: '机场',
+          yField: '2019起降架次（架次）'
         },
-        datasetOptions: [
-          {
-            seriesType: 'bar', //图表类型
-            isStastic: true, //是否统计, 默认不统计
-            isStack: true, //是否堆叠, 默认不堆叠
-            xField: '机场', //x坐标轴数据字段
-            yField: '2019起降架次（架次）' //统计的数据，legned默认名字
-          },
-          {
-            seriesType: 'bar',
-            isStastic: true,
-            isStack: true,
-            xField: '机场',
-            yField: '2020起降架次（架次）'
-          }
-        ]
-      });
-      expect(wrapper.vm.mapTarget).toBe('map');
-      expect(wrapper.vm.dataset.type).toBe('iPortal');
-      done();
+        {
+          seriesType: 'bar',
+          isStastic: true,
+          isStack: true,
+          xField: '机场',
+          yField: '2020起降架次（架次）'
+        }
+      ]
     });
+    expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.dataset.type).toBe('iPortal');
+    done();
   });
 });

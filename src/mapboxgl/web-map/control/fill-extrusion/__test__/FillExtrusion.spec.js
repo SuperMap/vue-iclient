@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmFillExtrusion from '../FillExtrusion.vue';
 
 describe('FillExtrusion.vue', () => {
@@ -13,9 +11,9 @@ describe('FillExtrusion.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(SmFillExtrusion);
-  })
-})
+  });
+});

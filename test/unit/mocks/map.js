@@ -1,3 +1,4 @@
+import { config } from '@vue/test-utils';
 require('flow-remove-types/register')({
   includes: /.*?\/mapbox-gl\/src\/.*/,
   excludes: {
@@ -188,7 +189,16 @@ var Map = function (options) {
         ]
       };
       return {
-        _data: chartResult
+        _data: chartResult,
+        getData: function () {
+          return {
+            features: [
+              {
+                properties: { id: 1 }
+              }
+            ]
+          };
+        }
       };
     }
     if (this._sources[name]) {
@@ -233,7 +243,16 @@ var Map = function (options) {
             this.fire('data', e);
           }
         }.bind(this),
-        loadTile: function () {}
+        loadTile: function () {},
+        getData: function () {
+          return {
+            features: [
+              {
+                properties: { id: 1 }
+              }
+            ]
+          };
+        }
       };
     } else if (name === 'dataflowlayer-1') {
       return null;
@@ -255,6 +274,11 @@ var Map = function (options) {
         _data: {
           features: [{ geometry: { type: 'Point', coordinates: [0, 0] }, properties: { id: 2 } }]
         }
+      };
+    } else if (name == 'China1') {
+      return {
+        type: function (data) {},
+        tiles: []
       };
     } else {
       return {
@@ -314,11 +338,14 @@ var Map = function (options) {
   this.getFilter = function (layerId) {};
   this.setFilter = function (layerId, filter) {};
   this.getLayer = function (id) {
-    if (this.overlayLayersManager[id]) {
+    if(this.overlayLayersManager[id]) {
       return this.overlayLayersManager[id];
     }
-    if (this._layers[id]) {
+    else if(this._layers[id]) {
       return this._layers[id];
+    }
+    else if(id === 'China-identify-SM-highlighted'){
+      return {}
     }
   };
   this.getBounds = function () {
@@ -386,7 +413,7 @@ var Map = function (options) {
     return {
       x: 500,
       y: 300
-    }
+    };
   };
   this.unproject = function (point) {
     return new LngLat(-73.9876, 40.7661);
@@ -398,6 +425,29 @@ var Map = function (options) {
    * pointOrBox: either [x, y] pixel coordinates of a point, or [ [x1, y1] , [x2, y2] ]
    */
   this.queryRenderedFeatures = function (pointOrBox, queryParams) {
+    if (pointOrBox[0][0] == 5 && pointOrBox[1][0] === 15) {
+      const feature = [
+        {
+          layer: {
+            id: 'China'
+          },
+          geometry: { type: 'Point', coordinates: [0, 1] },
+          type: 'Point',
+          coordinates: [0, 1],
+          properties: {
+            title: '老虎海',
+            subtitle: '树正沟景点-老虎海',
+            imgUrl: './laohuhai.png',
+            description: '老虎海海拔2298米',
+            index: 1
+          },
+          _vectorTileFeature: {
+            _keys: ['title']
+          }
+        }
+      ];
+      return feature;
+    }
     var searchBoundingBox = [];
     if (pointOrBox) {
       if (pointOrBox[0].x !== undefined) {
@@ -520,13 +570,15 @@ var Map = function (options) {
   this.flyTo = options => {};
   this.setRenderWorldCopies = epsgCode => {};
   this.triggerRepaint = () => {};
-  setTimeout(() => {
-    this.fire('load');
-  }, 0);
+  if (config.mapLoad) {
+    setTimeout(() => {
+      this.fire('load');
+    }, 0);
+  }
   setTimeout(() => {
     this.fire('move');
-    this.fire('mousedown');
-    this.fire('mousemove');
+    // this.fire('mousedown');
+    // this.fire('mousemove');
     this.fire('mouseup');
     this.fire('draw.create', {
       features: [

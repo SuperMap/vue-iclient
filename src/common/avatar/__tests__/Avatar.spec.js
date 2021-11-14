@@ -1,11 +1,10 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmAvatar from '../Avatar.vue';
 import Avatar from '../index';
 
 describe('SmAvatar.vue', () => {
   let wrapper;
+
   beforeEach(() => {
     wrapper = null;
   });
@@ -14,7 +13,7 @@ describe('SmAvatar.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('Render correctly', () => {
     const wrapper = mount(SmAvatar, {
@@ -28,9 +27,9 @@ describe('SmAvatar.vue', () => {
   });
 
   it('render index correctly', () => {
-    wrapper = mount(Avatar)
+    wrapper = mount(Avatar);
     expect(wrapper.find('.sm-component-avatar').exists()).toBe(true);
-  })
+  });
 
   it('should render props defalut correctly', () => {
     const wrapper = mount(SmAvatar, {
@@ -39,7 +38,7 @@ describe('SmAvatar.vue', () => {
         size: 'small',
         icon: 'user'
       },
-      attachTo: 'body',
+      attachTo: 'body'
     });
     const children = wrapper.findAll('.sm-component-avatar');
     expect(children.length).toBe(1);
@@ -51,17 +50,20 @@ describe('SmAvatar.vue', () => {
   it('should render props in components correctly', () => {
     const div = global.document.createElement('div');
     global.document.body.appendChild(div);
-    wrapper = mount({
-      template: `
+    wrapper = mount(
+      {
+        template: `
       <sm-avatar size="large" shape="square" src="http://test.url">
         SmAvatar
       </sm-avatar>`,
-      components: {
-        SmAvatar,
+        components: {
+          SmAvatar
+        }
       },
-    }, {
-      attachTo: div
-    })
+      {
+        attachTo: div
+      }
+    );
     expect(wrapper.find('.sm-component-avatar-square').exists()).toBe(true);
     expect(wrapper.find('.sm-component-avatar-lg').exists()).toBe(true);
     expect(wrapper.find('.sm-component-avatar-image').exists()).toBe(true);
@@ -73,20 +75,23 @@ describe('SmAvatar.vue', () => {
   it('this.$slot.icon', () => {
     const div = global.document.createElement('div');
     global.document.body.appendChild(div);
-    wrapper = mount({
-      template: `
+    wrapper = mount(
+      {
+        template: `
       <sm-avatar iconClass="sm-components-icon-search">
         SmAvatar
       </sm-avatar>`,
-      components: {
-        SmAvatar,
+        components: {
+          SmAvatar
+        }
       },
-    }, {
-      attachTo: div
-    })
+      {
+        attachTo: div
+      }
+    );
     expect(wrapper.find('.sm-component-avatar-icon').exists()).toBe(true);
     expect(wrapper.find('i').exists()).toBe(true);
     expect(wrapper.find('i').find('.sm-components-icon-search').exists()).toBe(true);
     global.document.body.removeChild(div);
   });
-})
+});

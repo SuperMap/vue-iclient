@@ -1,0 +1,97 @@
+{
+  "extent": {
+    "leftBottom": { "x": -20037508.3427892, "y": -20037508.3427892 },
+    "rightTop": { "x": 20037508.3427892, "y": 20037508.3427892 }
+  },
+  "maxScale": "1:144447.927",
+  "level": 6,
+  "center": { "x": 11516199.562509589, "y": 3240032.8828670587 },
+  "baseLayer": {
+    "layerType": "TILE",
+    "name": "中国暗色地图",
+    "url": "https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark"
+  },
+  "layers": [
+    {
+      "layerType": "RANGE",
+      "visible": true,
+      "themeSetting": {
+        "themeField": "Shape_Area",
+        "customSettings": {},
+        "segmentMethod": "offset",
+        "segmentCount": 6,
+        "colors": ["#ffc6c4", "#f4a3a8", "#e38191", "#cc607d", "#ad466c", "#8b3058", "#672044"]
+      },
+      "name": "云贵川",
+      "featureType": "POLYGON",
+      "style": {
+        "strokeWidth": 1,
+        "fillColor": "#8b3058",
+        "fillOpacity": 0.9,
+        "lineDash": "solid",
+        "strokeColor": "#ffffff",
+        "type": "POLYGON",
+        "strokeOpacity": 1
+      },
+      "projection": "EPSG:4326",
+      "enableFields": ["Shape_Area", "Shape_Leng", "UserID", "行政区划_c"],
+      "dataSource": { "accessType": "DIRECT", "type": "PORTAL_DATA", "serverId": "719613442" }
+    },
+    {
+      "layerType": "RANGE",
+      "visible": true,
+      "themeSetting": {
+        "themeField": "Shape_Area",
+        "customSettings": {},
+        "segmentMethod": "offset",
+        "segmentCount": 6,
+        "colors": ["#ffc6c4", "#f4a3a8", "#e38191", "#cc607d", "#ad466c", "#8b3058", "#672044"]
+      },
+      "name": "云贵川市",
+      "featureType": "POLYGON",
+      "style": {
+        "strokeWidth": 1,
+        "fillColor": "#8b3058",
+        "fillOpacity": 0.9,
+        "lineDash": "solid",
+        "strokeColor": "#ffffff",
+        "type": "POLYGON",
+        "strokeOpacity": 1
+      },
+      "projection": "EPSG:4326",
+      "enableFields": ["FIRST_行政", "Shape_Area", "Shape_Leng", "UserID", "行政区划_c"],
+      "dataSource": { "accessType": "DIRECT", "type": "PORTAL_DATA", "serverId": "1687422166" }
+    },
+    {
+      "layerType": "RANGE",
+      "visible": true,
+      "themeSetting": {
+        "themeField": "Shape_Area",
+        "customSettings": {},
+        "segmentMethod": "offset",
+        "segmentCount": 6,
+        "colors": ["#ffc6c4", "#f4a3a8", "#e38191", "#cc607d", "#ad466c", "#8b3058", "#672044"]
+      },
+      "name": "云贵川区县",
+      "featureType": "POLYGON",
+      "style": {
+        "strokeWidth": 1,
+        "fillColor": "#8b3058",
+        "fillOpacity": 0.9,
+        "lineDash": "solid",
+        "strokeColor": "#ffffff",
+        "type": "POLYGON",
+        "strokeOpacity": 1
+      },
+      "projection": "EPSG:4326",
+      "enableFields": ["Shape_Area", "Shape_Leng", "UserID", "分县连接成", "行政区划_1", "行政区划_2", "行政区划_c"],
+      "dataSource": { "accessType": "DIRECT", "type": "PORTAL_DATA", "serverId": "1960447494" }
+    }
+  ],
+  "description": "",
+  "projection": "EPSG:3857",
+  "minScale": "1:591658710.909",
+  "title": "无标题1",
+  "version": "2.3.0",
+  "rootUrl": "https://fakeiportal.supermap.io/iportal/services/../"
+}

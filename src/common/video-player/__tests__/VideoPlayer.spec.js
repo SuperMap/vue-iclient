@@ -3,6 +3,7 @@ import SmVideoPlayer from '../VideoPlayer.vue';
 const localVue = createLocalVue();
 import { message } from 'ant-design-vue';
 localVue.prototype.$message = message;
+
 describe('VideoPlayer.vue', () => {
   let wrapper;
   beforeEach(() => {

@@ -1,96 +1,70 @@
-import { mount } from '@vue/test-utils';
-import SmWebMap from '../../../WebMap';
-import SmLayerColor from '../index';
-import mapEvent from '@types_mapboxgl/map-event';
-import '@libs/mapboxgl/mapbox-gl-enhance';
+import { mount, config } from '@vue/test-utils';
+import SmLayerColor from '../LayerColor';
+import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 
 describe('LayerColor.vue', () => {
   let wrapper;
   let mapWrapper;
+
+  beforeAll(async () => {
+    config.mapLoad = false;
+    mapWrapper = await createEmptyMap();
+  })
+
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
-    mapWrapper = mount(SmWebMap, {
-      propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
-      }
-    });
+    wrapper = null;
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
+  });
+
+  afterAll(() => {
+    config.mapLoad = true;
     if (mapWrapper) {
       mapWrapper.destroy();
     }
-  });
+  })
 
-  it('render default correctly', done => {
+  it('render default correctly', async done => {
     wrapper = mount(SmLayerColor, {
       propsData: {
         mapTarget: 'map',
         collapsed: false
       }
     });
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          expect(wrapper.vm.mapTarget).toBe('map');
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    done();
   });
 
-  it('capture', done => {
+  it('capture', async done => {
     wrapper = mount(SmLayerColor, {
       propsData: {
         mapTarget: 'map',
         collapsed: false
       }
     });
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        wrapper.find('.sm-components-icon-layer-picker').trigger('click');
-        try {
-          expect(wrapper.vm.mapTarget).toBe('map');
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    wrapper.find('.sm-components-icon-layer-picker').trigger('click');
+    expect(wrapper.vm.mapTarget).toBe('map');
+    done();
   });
 
-  it('reset', done => {
+  it('reset', async done => {
     wrapper = mount(SmLayerColor, {
       propsData: {
         mapTarget: 'map',
         collapsed: false
       }
     });
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        wrapper.find('.sm-component-btn-primary').trigger('click');
-        try {
-          expect(wrapper.vm.mapTarget).toBe('map');
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    wrapper.find('.sm-component-btn-primary').trigger('click');
+    expect(wrapper.vm.mapTarget).toBe('map');
+    done();
   });
 });

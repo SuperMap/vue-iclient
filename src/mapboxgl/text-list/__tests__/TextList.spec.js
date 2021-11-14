@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import SmTextList from '../TextList.vue';
 import TextList from '../index';
+import { setTimeout } from 'timers';
 
 describe('TextList.vue', () => {
   const content = [
@@ -187,7 +188,7 @@ describe('TextList.vue', () => {
     }
   });
 
-  it('render default correctly', (done) => {
+  it('render default correctly', done => {
     wrapper = mount(SmTextList, {
       propsData: {
         content: content,
@@ -200,7 +201,7 @@ describe('TextList.vue', () => {
     done();
   });
 
-  it('render index correctly', (done) => {
+  it('render index correctly', done => {
     wrapper = mount(TextList, {
       propsData: {
         content: content,
@@ -376,5 +377,254 @@ describe('TextList.vue', () => {
       dataset: newDataset,
       autoRolling: true
     });
+  });
+
+  it('clear dataset when change dataset is empty', async done => {
+    const emptyDataset = {};
+    wrapper = mount(TextList, {
+      propsData: {
+        dataset: dataset,
+        columns: [
+          {
+            header: '站台',
+            field: '站台',
+            slots: {
+              customRender: 'customCell'
+            }
+          }
+        ],
+        content: [
+          {
+            站台: '漠河',
+            省份: '黑龙江1',
+            海拔: '296',
+            平均最低气温: '-47',
+            最热七天气温: '29'
+          }
+        ],
+        rows: 2,
+        autoRolling: false,
+        listData: [
+          {
+            header: '站台',
+            field: '站台'
+          },
+          {
+            header: '省份',
+            field: '省份'
+          },
+          {
+            header: '经度',
+            field: '经度'
+          }
+        ]
+      },
+      data() {
+        return {
+          containerHeight: 10,
+          headerStyleData: {
+            show: true,
+            background: '#000',
+            color: '#000',
+            sortBtnColor: '#000',
+            sortBtnSelectColor: '#000'
+          },
+          rowStyleData: {
+            height: 5
+          }
+        };
+      }
+    });
+    wrapper.vm.$nextTick();
+    await wrapper.setProps({
+      dataset: emptyDataset,
+      autoRolling: true,
+      rows: 1,
+      rowStyle: { width: 100 },
+      headerStyle: { width: 100 },
+      highlightOptions: [3]
+    });
+    await wrapper.setData({
+      headerStyleData: {
+        show: true,
+        background: '#FFF',
+        color: '#FFF',
+        sortBtnColor: '#FFF',
+        sortBtnSelectColor: '#FFF'
+      },
+      sortField: '站台',
+      containerHeight: 5
+    });
+    wrapper.vm.$emit('theme-style-changed');
+    expect(wrapper.vm.featuresData).toEqual([]);
+    expect(wrapper.vm.headerStyleData.sortBtnSelectColor).toBe('#FFF');
+    expect(wrapper.vm.rowStyleData.oddStyle.background).toEqual('rgba(255, 255, 255, 0.4)');
+    done();
+  });
+
+  it('content is empty', async done => {
+    wrapper = mount(TextList, {
+      propsData: {
+        dataset: dataset,
+        columns: [
+          {
+            header: '站台',
+            field: '站台',
+            slots: {
+              customRender: 'customCell'
+            }
+          }
+        ],
+        animateContent: [
+          {
+            站台: '漠河',
+            省份: '黑龙江1',
+            海拔: '296',
+            平均最低气温: '-47',
+            最热七天气温: '29'
+          }
+        ],
+        autoRolling: true
+      },
+      data() {
+        return {
+          containerHeight: 10,
+          rowStyleData: {
+            height: 5
+          },
+          headerStyleData: {
+            show: false
+          },
+          featuresData: []
+        };
+      }
+    });
+    wrapper.vm.$nextTick();
+    await wrapper.setProps({
+      columns: [
+        {
+          header: '省份',
+          field: '省份'
+        }
+      ],
+      autoRolling: false,
+      highlightOptions: [10]
+    });
+    await wrapper.setData({
+      sortField: '站台'
+    });
+    done();
+  });
+
+  it('Sort columns by field', async done => {
+    wrapper = mount(TextList, {
+      propsData: {
+        dataset: dataset,
+        columns: [
+          {
+            header: '站台',
+            field: 1,
+            sort: true
+          }
+        ],
+        autoRolling: true,
+        animateContent: [
+          {
+            idx: 1,
+            站台: '漠河',
+            省份: '黑龙江1',
+          }
+        ]
+      },
+      data() {
+        return {
+          rowStyleData: {
+            height: 5
+          },
+          headerStyleData: {
+            show: true
+          }
+        };
+      }
+    });
+    await wrapper.vm.$nextTick();
+    wrapper.find('.sm-component-text-list__header-title div').trigger('click');
+    done();
+  });
+
+  it('click animateContent', async done => {
+    wrapper = mount(TextList, {
+      propsData: {
+        dataset: dataset,
+        columns: [
+          {
+            header: '站台',
+            field: 1,
+            defaultSortType: 'descend',
+            sort: true
+          }
+        ],
+        autoRolling: true,
+        animateContent: [
+          {
+            idx: 1,
+            站台: '漠河',
+            省份: '黑龙江1',
+          }
+        ],
+        highlightColor: () => jest.fn()
+      },
+      data() {
+        return {
+          rowStyleData: {
+            height: 5
+          },
+          headerStyleData: {
+            show: true
+          }
+        };
+      }
+    });
+    await wrapper.vm.$nextTick();
+    const clickCb = jest.fn();
+    const mouseEnterCb = jest.fn();
+    const mouseLeaveCb = jest.fn();
+    wrapper.vm.$on('cell-click', clickCb);
+    wrapper.vm.$on('cell-mouse-enter', mouseEnterCb);
+    wrapper.vm.$on('cell-mouse-leave', mouseLeaveCb);
+    wrapper.find('.sm-component-text-list__list').trigger('click');
+    await wrapper.vm.$nextTick();
+    expect(clickCb.mock.called).toBeTruthy;
+    wrapper.find('.sm-component-text-list__list').trigger('mouseenter');
+    await wrapper.vm.$nextTick();
+    expect(mouseEnterCb.mock.called).toBeTruthy;
+    wrapper.find('.sm-component-text-list__list').trigger('mouseleave');
+    await wrapper.vm.$nextTick();
+    expect(mouseLeaveCb.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('vm destory', done => {
+    wrapper = mount(TextList, {
+      propsData: {
+        dataset: dataset,
+        columns: [
+          {
+            header: '站台',
+            field: '站台',
+          }
+        ],
+        autoResize: true
+      }
+    });
+    expect(wrapper.vm.autoResize).toBe(true);
+    wrapper.vm.destory();
+    // 需要 setTimeout 等待元素渲染好
+    setTimeout(() => {
+      expect(wrapper.vm.autoResize).toBe(true);
+      expect(wrapper.vm.containerHeight).toBe(0);
+      expect(wrapper.vm.containerWidth ).toBe(0);
+      done();
+    }, 100);
   });
 });

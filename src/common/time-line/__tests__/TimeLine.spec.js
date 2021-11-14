@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmTimeLine from '../TimeLine.vue';
 import TimeLine from '../index';
 
@@ -14,14 +12,14 @@ describe('TimeLine.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount({
       template: `
       <SmTimeLine :data="data" style="width:100%" @timelinechanged="changed" @timelineplaychanged="playChanged"></SmTimeLine>`,
       components: {
-        SmTimeLine,
+        SmTimeLine
       },
       data() {
         return {
@@ -35,22 +33,21 @@ describe('TimeLine.vue', () => {
         playChanged(e) {
           console.log('play state', e);
         }
-      },
-    },
-  )
-  })
+      }
+    });
+  });
 
   it('render index correctly', () => {
-    wrapper = mount(TimeLine)
+    wrapper = mount(TimeLine);
     expect(wrapper.find('.sm-component-time-line').exists()).toBe(true);
-  })
+  });
 
   it('render timeLineProps correctly', () => {
     wrapper = mount({
       template: `
       <SmTimeLine v-bind="timeLineProps" style="width:100%"></SmTimeLine> `,
       components: {
-        SmTimeLine,
+        SmTimeLine
       },
       data() {
         return {
@@ -107,8 +104,7 @@ describe('TimeLine.vue', () => {
             checkpointStyle: { color: '#CB7C3F', borderColor: '#fff' }
           }
         };
-      },
-    },
-    )
-  })
-})
+      }
+    });
+  });
+});

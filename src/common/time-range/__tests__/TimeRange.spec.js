@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmTimeRange from '../TimeRange.vue';
 import TimeRange from '../index';
 
@@ -14,14 +12,14 @@ describe('TimeRange.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount({
       template: `
       <SmTimeRange :data="data" style="width:100%" @datazoom="changed"></SmTimeRange>`,
       components: {
-        SmTimeRange,
+        SmTimeRange
       },
       data() {
         return {
@@ -43,22 +41,21 @@ describe('TimeRange.vue', () => {
         changed(e) {
           console.log(e);
         }
-      },
-    },
-  )
-  })
+      }
+    });
+  });
 
   it('render index correctly', () => {
-    wrapper = mount(TimeRange)
+    wrapper = mount(TimeRange);
     expect(wrapper.find('.sm-component-time-range').exists()).toBe(true);
-  })
+  });
 
   it('render timeRangeProps correctly', () => {
     wrapper = mount({
       template: `
       <SmTimeRange v-bind="timeRangeProps" style="width:100%"></SmTimeRange>`,
       components: {
-        SmTimeRange,
+        SmTimeRange
       },
       data() {
         return {
@@ -87,8 +84,7 @@ describe('TimeRange.vue', () => {
             fillerColor: '#5A9B9C'
           }
         };
-      },
-    },
-  )
-  })
-})
+      }
+    });
+  });
+});

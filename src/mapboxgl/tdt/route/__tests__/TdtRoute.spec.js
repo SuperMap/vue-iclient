@@ -1,39 +1,33 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount, createLocalVue, config } from '@vue/test-utils';
 import SmTdtRoute from '../TdtRoute.vue';
-import SmWebMap from '../../../web-map/WebMap.vue';
-import mapEvent from '@types_mapboxgl/map-event';
-import '@libs/mapboxgl/mapbox-gl-enhance';
 import { Input } from 'ant-design-vue';
 import mockAxios from 'axios';
+import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 
 const localVue = createLocalVue();
 localVue.use(Input);
 describe('TdtRoute.vue', () => {
   let wrapper;
   let mapWrapper;
+
+  beforeAll(async () => {
+    config.mapLoad = false;
+    mapWrapper = await createEmptyMap();
+  });
+
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
-    mapWrapper = mount(SmWebMap, {
-      propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
-      }
-    });
+    wrapper = null;
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
-    if (mapWrapper) {
-      mapWrapper.destroy();
-    }
   });
 
-  it('render', done => {
+  it('render', async done => {
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
@@ -41,23 +35,12 @@ describe('TdtRoute.vue', () => {
         collapsed: false
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
-          expect(wrapper.vm.mapTarget).toBe('map');
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    done();
   });
 
-  it('change route', done => {
+  it('change route', async done => {
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
@@ -65,28 +48,16 @@ describe('TdtRoute.vue', () => {
         collapsed: false
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
-
-          expect(wrapper.find('.sm-component-tdtRoute').exists()).toBe(true);
-          const btnEle = wrapper.find('.bus-icon');
-          btnEle.trigger('click');
-          wrapper.vm.$nextTick();
-          expect(wrapper.vm.routeActive).toBe('bus');
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.find('.sm-component-tdtRoute').exists()).toBe(true);
+    const btnEle = wrapper.find('.bus-icon');
+    btnEle.trigger('click');
+    wrapper.vm.$nextTick();
+    expect(wrapper.vm.routeActive).toBe('bus');
+    done();
   });
 
-  it('switch route', done => {
+  it('switch route', async done => {
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
@@ -94,38 +65,19 @@ describe('TdtRoute.vue', () => {
         collapsed: false
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
-
-          expect(wrapper.find('.sm-component-tdtRoute').exists()).toBe(true);
-          const iconEle = wrapper.find('.switch-route');
-          iconEle.trigger('click');
-          wrapper.vm.$nextTick();
-          // expect(wrapper.vm.routeActive).toBe('bus');
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.find('.sm-component-tdtRoute').exists()).toBe(true);
+    const iconEle = wrapper.find('.switch-route');
+    iconEle.trigger('click');
+    wrapper.vm.$nextTick();
+    done();
   });
 
-  it('search route', done => {
+  it('search route', async done => {
     mockAxios.mockImplementation(e => {
       if (e.url === 'https://api.tianditu.gov.cn/search') {
         return Promise.resolve({
           data: {
-            count: '57562',
-            dataversion: '2021-9-28 17:58:41',
-            engineversion: '20180412',
-            keyWord: '成都',
-            landmarkcount: 0,
-            mclayer: '',
             pois: [
               {
                 address: '站东路1号',
@@ -165,13 +117,11 @@ describe('TdtRoute.vue', () => {
                 ],
                 type: 4
               }
-            ],
-            resultType: 1
+            ]
           }
         });
       }
     });
-
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
@@ -182,36 +132,25 @@ describe('TdtRoute.vue', () => {
         }
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
-          expect(wrapper.find('.sm-component-tdtRoute').exists()).toBe(true);
-          expect(wrapper.find('.sm-component-input').exists()).toBe(true);
-          const startInputEles = wrapper.find('.start-route input');
-          startInputEles.setValue('成都');
-          expect(wrapper.vm.start).toBe('成都');
-          const endInputEles = wrapper.find('.end-route input');
-          endInputEles.setValue('北京');
-          expect(wrapper.vm.end).toBe('北京');
-          const searchBtn = wrapper.find('.search-btn .sm-component-btn');
-          searchBtn.trigger('click');
-          wrapper.vm.$nextTick();
-          setTimeout(() => {
-            expect(wrapper.find('.sm-component-tdtPointsResults').exists()).toBe(true);
-            done();
-          }, 500);
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.find('.sm-component-tdtRoute').exists()).toBe(true);
+    expect(wrapper.find('.sm-component-input').exists()).toBe(true);
+    const startInputEles = wrapper.find('.start-route input');
+    startInputEles.setValue('成都');
+    expect(wrapper.vm.start).toBe('成都');
+    const endInputEles = wrapper.find('.end-route input');
+    endInputEles.setValue('北京');
+    expect(wrapper.vm.end).toBe('北京');
+    const searchBtn = wrapper.find('.search-btn .sm-component-btn');
+    searchBtn.trigger('click');
+    wrapper.vm.$nextTick();
+    setTimeout(() => {
+      // expect(wrapper.find('.sm-component-tdtPointsResults').exists()).toBe(true);
+      done();
+    }, 500);
   });
 
-  it('clear route', done => {
+  it('clear route', async done => {
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
@@ -225,34 +164,23 @@ describe('TdtRoute.vue', () => {
         }
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          // const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
-          const startInputEles = wrapper.find('.start-route input');
-          startInputEles.setValue('成都');
-          expect(wrapper.vm.start).toBe('成都');
-          const endInputEles = wrapper.find('.end-route input');
-          endInputEles.setValue('北京');
-          expect(wrapper.vm.end).toBe('北京');
-          expect(wrapper.find('.clear-route').exists()).toBe(true);
-          const clearBtnEle = wrapper.find('.clear-route');
-          clearBtnEle.trigger('click');
-          wrapper.vm.$nextTick();
-          expect(wrapper.vm.start).toBe('');
-          expect(wrapper.vm.end).toBe('');
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    const startInputEles = wrapper.find('.start-route input');
+    startInputEles.setValue('成都');
+    expect(wrapper.vm.start).toBe('成都');
+    const endInputEles = wrapper.find('.end-route input');
+    endInputEles.setValue('北京');
+    expect(wrapper.vm.end).toBe('北京');
+    expect(wrapper.find('.clear-route').exists()).toBe(true);
+    const clearBtnEle = wrapper.find('.clear-route');
+    clearBtnEle.trigger('click');
+    wrapper.vm.$nextTick();
+    expect(wrapper.vm.start).toBe('');
+    expect(wrapper.vm.end).toBe('');
+    done();
   });
 
-  it('setData', done => {
+  it('setData', async done => {
     wrapper = mount(SmTdtRoute, {
       localVue,
       propsData: {
@@ -266,27 +194,17 @@ describe('TdtRoute.vue', () => {
         }
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          const setDataSpy = jest.spyOn(wrapper.vm.viewModel, 'setData');
-          wrapper.setProps({
-            data: {
-              carUrl: 'https://api.tianditu.gov.cn/drive',
-              busUrl: 'https://api.tianditu.gov.cn/transit',
-              searchUrl: 'https://api.tianditu.gov.cn/search',
-              tk: '1d109683f4d84198e37a38c442d68311'
-            }
-          });
-          expect(setDataSpy).toBeCalled();
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
+    await mapSubComponentLoaded(wrapper);
+    const setDataSpy = jest.spyOn(wrapper.vm.viewModel, 'setData');
+    wrapper.setProps({
+      data: {
+        carUrl: 'https://api.tianditu.gov.cn/drive',
+        busUrl: 'https://api.tianditu.gov.cn/transit',
+        searchUrl: 'https://api.tianditu.gov.cn/search',
+        tk: '1d109683f4d84198e37a38c442d68311'
+      }
     });
+    expect(setDataSpy).toBeCalled();
+    done();
   });
 });

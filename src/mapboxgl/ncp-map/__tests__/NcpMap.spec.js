@@ -1,16 +1,11 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount, config } from '@vue/test-utils';
 import SmNcpMap from '../NcpMap.vue';
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
-import mapEvent from '@types_mapboxgl/map-event';
-import { Icon, Card, Collapse, Button, Spin, message } from 'ant-design-vue';
-
-const localVue = createLocalVue();
-localVue.use(Card);
-localVue.use(Collapse);
-localVue.use(Icon);
-localVue.use(Button);
-localVue.use(Spin);
-localVue.prototype.$message = message;
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
+import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
+import themeInfo from 'vue-iclient/test/unit/mocks/data/NcpMap/themeInfo';
+import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
 
 const mapOptions = {
   container: 'map',
@@ -49,10 +44,12 @@ const mapOptions = {
 
 describe('NcpMap.vue', () => {
   let wrapper;
+
+  beforeAll(() => {
+    config.mapLoad = false;
+  });
+
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.NcpMapCache = {};
     wrapper = null;
   });
 
@@ -63,7 +60,16 @@ describe('NcpMap.vue', () => {
     }
   });
 
-  it('initial', done => {
+  afterAll(() => {
+    config.mapLoad = true;
+  });
+
+  it('initial', async done => {
+    const fetchResource = {
+      'fakeurl.com': layerData,
+      'fakethemeurl.com': uniqueLayer_point
+    };
+    mockFetch(fetchResource);
     const spy = jest.spyOn(mapboxgl, 'Map');
     wrapper = mount(SmNcpMap, {
       propsData: {
@@ -75,24 +81,19 @@ describe('NcpMap.vue', () => {
         }
       }
     });
-    wrapper.vm.$on('load', () => {
-      try {
-        expect(spy).toBeCalled();
-        expect(wrapper.element.id).toEqual('map');
-        done();
-      } catch (exception) {
-        console.log('NcpMap' + exception.name + ':' + exception.message);
-        expect(false).toBeTruthy();
-        spy.mockReset();
-        spy.mockRestore();
-        done();
-      }
-    });
+    await mapWrapperLoaded(wrapper);
+    expect(spy).toBeCalled();
+    expect(wrapper.element.id).toEqual('map');
+    done();
   });
 
-  it('change props', done => {
+  it('change props', async done => {
+    const fetchResource = {
+      'fakeurl.com': themeInfo,
+      'fakethemeurl.com': themeInfo
+    };
+    mockFetch(fetchResource);
     const newMapOptions = {
-      container: 'map',
       center: {
         lng: 10,
         lat: 30
@@ -100,15 +101,14 @@ describe('NcpMap.vue', () => {
       zoom: 5,
       maxBounds: [],
       bearing: 10,
-      pitch: 10,
-      interactive: true,
+      pitch: 10
     };
     const newDataOptions = {
       url: 'fakeurl.com',
       themeUrl: 'fakethemeurl.com',
       name: 'newName',
       proxyUrl: 'newproxyUrl'
-    }
+    };
     const spy = jest.spyOn(mapboxgl, 'Map');
     wrapper = mount(SmNcpMap, {
       propsData: {
@@ -120,22 +120,16 @@ describe('NcpMap.vue', () => {
         }
       }
     });
-    wrapper.vm.$on('load', () => {
-      try {
-        expect(spy).toBeCalled();
-        wrapper.setProps({
-          mapOptions: newMapOptions,
-          dataOptions: newDataOptions
-        })
-        expect(wrapper.vm.mapOptions.zoom).toBe(5);
-        done();
-      } catch (exception) {
-        console.log('NcpMap' + exception.name + ':' + exception.message);
-        expect(false).toBeTruthy();
-        spy.mockReset();
-        spy.mockRestore();
-        done();
-      }
-    });
+    await mapWrapperLoaded(wrapper);
+    expect(spy).toBeCalled();
+    done();
+    // wrapper.setProps({
+    //   mapOptions: newMapOptions,
+    //   dataOptions: newDataOptions
+    // })
+    // wrapper.vm.$nextTick(() => {
+    //   expect(wrapper.vm.mapOptions.zoom).toBe(5);
+    //   done();
+    // })
   });
 });

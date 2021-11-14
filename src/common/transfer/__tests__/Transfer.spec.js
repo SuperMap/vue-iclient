@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmTransfer from '../Transfer.vue';
 import Transfer from '../index';
 import SmSwitch from '../../switch/Switch.vue';
@@ -15,7 +13,7 @@ describe('Transfer.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount({
@@ -71,13 +69,12 @@ describe('Transfer.vue', () => {
         handleDisable(disabled) {
           this.disabled = disabled;
         }
-      },
-    },
-  )
-  })
+      }
+    });
+  });
 
   it('render index correctly', () => {
-    wrapper = mount(Transfer)
+    wrapper = mount(Transfer);
     expect(wrapper.find('.sm-component-transfer').exists()).toBe(true);
-  })
-})
+  });
+});

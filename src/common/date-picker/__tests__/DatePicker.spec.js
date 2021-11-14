@@ -1,7 +1,4 @@
-import {
-  mount,
-  createLocalVue
-} from '@vue/test-utils';
+import { mount, createLocalVue } from '@vue/test-utils';
 import SmDatePicker from '../DatePicker.vue';
 import DatePicker from '../index';
 import SmMonthPicker from '../MonthPicker.vue';
@@ -10,9 +7,7 @@ import SmWeekPicker from '../WeekPicker.vue';
 import SmIcon from '../../icon/Icon.vue';
 import moment from 'moment';
 import { handleOpenChange } from 'vue-iclient/test/unit/mocks/baseComponentMock.js';
-import {
-  Input
-} from 'ant-design-vue';
+import { Input } from 'ant-design-vue';
 const localVue = createLocalVue();
 localVue.use(Input);
 
@@ -46,11 +41,11 @@ describe('DatePicker.vue', () => {
       dateFormat: 'D M YYYY',
       dayFormat: 'D',
       dateTimeFormat: 'D M YYYY HH:mm:ss',
-      monthBeforeYear: true,
+      monthBeforeYear: true
     },
     timePickerLocale: {
-      placeholder: 'Избор на час',
-    },
+      placeholder: 'Избор на час'
+    }
   };
   const birthday = moment('2000-01-01', 'YYYY-MM-DD');
   beforeEach(() => {
@@ -62,59 +57,59 @@ describe('DatePicker.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render index correctly', () => {
-    wrapper = mount(DatePicker)
+    wrapper = mount(DatePicker);
     expect(wrapper.find('.sm-component-calendar-picker').exists()).toBe(true);
-  })
+  });
 
-  it('prop locale should works', async () => {
+  it('prop locale should works', () => {
     wrapper = mount({
       template: `
       <sm-date-picker open :locale='locale' :value='birthday' />`,
       components: {
-        SmDatePicker,
+        SmDatePicker
       },
       data() {
         return {
           locale: locale,
           birthday: birthday
-        }
+        };
       }
-    }
-  )
+    });
     expect(wrapper.find('.sm-component-calendar-picker').exists()).toBe(true);
     expect(wrapper.find('.sm-component-calendar-picker-input').attributes('placeholder')).toBe(locale.lang.placeholder);
   });
 
-  it('prop openChange should works', (done) => {
-    wrapper = mount({
-      template: `
+  it('prop openChange should works', done => {
+    wrapper = mount(
+      {
+        template: `
       <sm-date-picker
         :mode="mode"
         show-time
         @openChange="handleOpenChange"
       />`,
-      components: {
-        SmDatePicker,
-      },
-      data() {
-        return {
-          mode: 'time',
+        components: {
+          SmDatePicker
+        },
+        data() {
+          return {
+            mode: 'time'
+          };
+        },
+        methods: {
+          handleOpenChange: handleOpenChange
         }
       },
-      methods: {
-        handleOpenChange: handleOpenChange,
-      }
-    },
-    { sync: false, attachTo: 'body' },
-  )
+      { sync: false, attachTo: 'body' }
+    );
     setTimeout(() => {
       wrapper.find('.sm-component-input').trigger('click');
       expect(wrapper.vm.mode).toBe('time');
       done();
-    }, 0)
+    }, 0);
   });
 
   it('RangePicker should works', () => {
@@ -126,16 +121,15 @@ describe('DatePicker.vue', () => {
         :placeholder="['Start Time', 'End Time']"
       />`,
       components: {
-        SmRangePicker,
+        SmRangePicker
       },
       data() {
         return {
           locale: locale,
           birthday: birthday
-        }
+        };
       }
-    }
-  )
+    });
     const rangePicker = wrapper.findAll('.sm-component-calendar-range-picker-input');
     expect(rangePicker.length).toBe(2);
     expect(rangePicker.at(0).element.placeholder).toBe('Start Time');
@@ -143,7 +137,7 @@ describe('DatePicker.vue', () => {
     expect(wrapper.find('.sm-component-calendar-range-picker-separator').text()).toBe('~');
   });
 
-  it('WeekPicker should works', async () => {
+  it('WeekPicker should works', () => {
     wrapper = mount({
       template: `
       <sm-week-picker placeholder="Select week">
@@ -153,10 +147,9 @@ describe('DatePicker.vue', () => {
         SmWeekPicker,
         SmIcon
       }
-    }
-  )
-  expect(wrapper.find('.sm-component-calendar-picker').exists()).toBe(true);
-  expect(wrapper.find('.sm-component-calendar-picker-input').element.placeholder).toBe('Select week');
+    });
+    expect(wrapper.find('.sm-component-calendar-picker').exists()).toBe(true);
+    expect(wrapper.find('.sm-component-calendar-picker-input').element.placeholder).toBe('Select week');
   });
 
   it('render MonthPicker', () => {
@@ -169,9 +162,8 @@ describe('DatePicker.vue', () => {
         SmMonthPicker,
         SmIcon
       }
-    }
-  )
+    });
     expect(wrapper.find('.sm-component-calendar-picker').exists()).toBe(true);
     expect(wrapper.find('.sm-component-calendar-picker-input').element.placeholder).toBe('Select month');
   });
-})
+});

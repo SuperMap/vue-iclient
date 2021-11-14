@@ -1,166 +1,118 @@
-import {
-  mount,
-  createLocalVue
-} from '@vue/test-utils';
-import SmWebMap from '../../../WebMap.vue';
+import { mount, config } from '@vue/test-utils';
 import SmGeojsonLayer from '../GeojsonLayer.vue';
-import mapEvent from '@types_mapboxgl/map-event';
-import '@libs/mapboxgl/mapbox-gl-enhance';
-import CircleStyle from '../../../../_types/CircleStyle'
-import {
-  Icon,
-  Input,
-  message
-} from 'ant-design-vue';
+import CircleStyle from '../../../../_types/CircleStyle';
+import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 
-const localVue = createLocalVue();
-localVue.use(Input);
-localVue.use(Icon);
-
-localVue.prototype.$message = message;
 let data = {
-  "type": "FeatureCollection",
-  "features": [{
-    "geometry": {
-      "type": "Point",
-      "coordinates": [
-        122.36999999999999,
-        53.470000000000006
-      ]
-    },
-    "properties": {
-      "最低气温_Num": "-53.0",
-      "最高气温_Num": "33.0",
-      "最高七天气温_Num": "29.0",
-      "平均最低气温_Num": "-47.0",
-      "海波_Num": "296.0"
-    },
-    "type": "Feature"
-  }]
-}
+  type: 'FeatureCollection',
+  features: [
+    {
+      geometry: {
+        type: 'Point',
+        coordinates: [122.36999999999999, 53.470000000000006]
+      },
+      properties: {
+        最低气温_Num: '-53.0',
+        最高气温_Num: '33.0',
+        最高七天气温_Num: '29.0',
+        平均最低气温_Num: '-47.0',
+        海波_Num: '296.0'
+      },
+      type: 'Feature'
+    }
+  ]
+};
+
 describe('GeojsonLayer.vue', () => {
   let wrapper;
   let mapWrapper;
-  
   let layerStyle = new CircleStyle();
 
+  beforeAll(async () => {
+    config.mapLoad = false;
+    mapWrapper = await createEmptyMap();
+  });
+
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
-    mapWrapper = mount(SmWebMap, {
-      localVue,
-      propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
-      }
-    })
+    wrapper = null;
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
+  });
+
+  afterAll(() => {
+    config.mapLoad = true;
     if (mapWrapper) {
       mapWrapper.destroy();
     }
   });
 
-  it('render', (done) => {
+  it('render', async done => {
     let data = JSON.stringify(data);
     wrapper = mount(SmGeojsonLayer, {
-      localVue,
       propsData: {
-        mapTarget: "map",
+        mapTarget: 'map',
         layerStyle: layerStyle,
-        data: data,
+        data: data
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          expect(wrapper.vm.mapTarget).toBe('map');
-          done()
-        } catch (exception) {
-          console.log("案例失败：" + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    done();
   });
 
-  it('geojson layerStyle', (done) => {
+  it('geojson layerStyle', async done => {
     let data = JSON.stringify(data);
     wrapper = mount(SmGeojsonLayer, {
-      localVue,
       propsData: {
-        mapTarget: "map",
+        mapTarget: 'map',
         layerStyle: layerStyle,
-        data: data,
+        data: data
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          const getSourceSpy = jest.spyOn(wrapper.vm.map, 'getSource');
-          const setLayoutPropertySpy = jest.spyOn(wrapper.vm.map, 'setLayoutProperty');
-          wrapper.vm.viewModel.setData(data);
-          wrapper.vm.viewModel.setLayerStyle(layerStyle);
-          expect(getSourceSpy).toBeCalled();
-          expect(setLayoutPropertySpy).toBeCalled();
-          done()
-        } catch (exception) {
-          console.log("案例失败：" + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    const getSourceSpy = jest.spyOn(wrapper.vm.map, 'getSource');
+    const setLayoutPropertySpy = jest.spyOn(wrapper.vm.map, 'setLayoutProperty');
+    wrapper.vm.viewModel.setData(data);
+    wrapper.vm.viewModel.setLayerStyle(layerStyle);
+    expect(getSourceSpy).toBeCalled();
+    expect(setLayoutPropertySpy).toBeCalled();
+    done();
   });
 
-  it('geojson setdata', (done) => {
+  it('geojson setdata', async done => {
     let data = JSON.stringify(data);
     wrapper = mount(SmGeojsonLayer, {
       propsData: {
-        mapTarget: "map",
+        mapTarget: 'map',
         layerStyle: layerStyle,
-        data: data,
+        data: data
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          let newData = {
-            "type": "FeatureCollection",
-            "features": [{
-              "geometry": {
-                "type": "Point",
-                "coordinates": [
-                  122,
-                  53
-                ]
-              },
-              "properties": {
-                "SmID": "1"
-              },
-              "type": "Feature"
-            }]
-          }
-          wrapper.setProps({data: newData});
-          wrapper.vm.$nextTick();
-          expect(wrapper.vm.data).toBe(newData);
-          done()
-        } catch (exception) {
-          console.log("案例失败：" + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
+    await mapSubComponentLoaded(wrapper);
+    let newData = {
+      type: 'FeatureCollection',
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            SmID: '1'
+          },
+          type: 'Feature'
         }
-      });
-    });
+      ]
+    };
+    await wrapper.setProps({ data: newData });
+    wrapper.vm.$nextTick();
+    expect(wrapper.vm.data).toBe(newData);
+    done();
   });
 });

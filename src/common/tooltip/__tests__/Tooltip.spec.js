@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmTooltip from '../Tooltip.vue';
 
 describe('Tooltip.vue', () => {
@@ -13,9 +11,9 @@ describe('Tooltip.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
-    wrapper = mount(SmTooltip)
-  })
-})
+    wrapper = mount(SmTooltip);
+  });
+});

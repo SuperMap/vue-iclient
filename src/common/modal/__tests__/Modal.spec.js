@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmModal from '../Modal.vue';
 import Modal from '../index';
 
@@ -14,13 +12,13 @@ describe('Modal.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(SmModal);
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(Modal);
-  })
-})
+  });
+});

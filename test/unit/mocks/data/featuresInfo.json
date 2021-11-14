@@ -1,0 +1,22 @@
+[
+  {
+    "isRequired": true,
+    "defaultValue": "",
+    "name": "SmID",
+    "caption": "SmID",
+    "type": "INT32",
+    "maxLength": 4,
+    "isZeroLengthAllowed": true,
+    "isSystemField": true
+  },
+  {
+    "isRequired": true,
+    "defaultValue": "0",
+    "name": "SmSdriW",
+    "caption": "SmSdriW",
+    "type": "SINGLE",
+    "maxLength": 4,
+    "isZeroLengthAllowed": true,
+    "isSystemField": true
+  }
+]

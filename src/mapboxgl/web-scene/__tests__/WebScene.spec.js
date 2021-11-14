@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmWebScene from '../WebScene.vue';
 
 describe('WebScene.vue', () => {
@@ -13,9 +11,9 @@ describe('WebScene.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(SmWebScene);
-  })
-})
+  });
+});

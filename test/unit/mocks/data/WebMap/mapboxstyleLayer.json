@@ -1,0 +1,25 @@
+{
+  "extent": {
+    "leftBottom": { "x": 8009146.115071949, "y": 382872.01868254057 },
+    "rightTop": { "x": 15037846.241523674, "y": 7087311.00490398 }
+  },
+  "maxScale": "1:70.53121458400844",
+  "level": 3,
+  "center": { "x": 11523496.17829781, "y": 3735091.51179326 },
+  "baseLayer": {
+    "layerType": "MAPBOXSTYLE",
+    "name": "PopulationDistribution",
+    "dataSource": {
+      "type": "EXTERNAL",
+      "url": "http://support.supermap.com.cn:8090/iserver/services/map-Population/restjsr/v1/vectortile/maps/PopulationDistribution"
+    }
+  },
+  "layers": [],
+  "description": "",
+  "projection": "EPSG:3857",
+  "minScale": "1:295829355.4545649",
+  "title": "无标题",
+  "version": "2.3.0",
+  "rootUrl": "http://192.168.11.94:8190/iportal/services/../",
+  "mapParams": { "title": "无标题", "description": "" }
+}

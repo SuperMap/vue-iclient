@@ -1,33 +1,26 @@
-import {
-  mount,
-  createLocalVue
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap';
 import SmPan from '../Pan.vue';
 import Pan from '../index';
-import mapEvent from '@types_mapboxgl/map-event';
-
-import {
-  Icon,
-  Card,
-  Collapse,
-  Button
-} from 'ant-design-vue';
-
-const localVue = createLocalVue();
-localVue.use(Card);
-localVue.use(Collapse);
-localVue.use(Icon);
-localVue.use(Button);
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy.json';
+import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point.json';
+import layerData from 'vue-iclient/test/unit/mocks/data/layerData.json';
+import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
+import flushPromises from 'flush-promises';
+import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
 
 describe('Pan.vue', () => {
   let wrapper;
+  let mapWrapper;
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
     wrapper = null;
-
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+    };
+    mockFetch(fetchResource);
   });
 
   afterEach(() => {
@@ -35,72 +28,59 @@ describe('Pan.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
+    if (mapWrapper) {
+      mapWrapper.destroy();
+    }
   });
 
-  it('default', (done) => {
-  let mapWrapper = mount(SmWebMap, {
-      localVue,
+  it('default', async done => {
+    mapWrapper = mount(SmWebMap, {
       propsData: {
         serverUrl: 'https://fakeiportal.supermap.io/iportal',
         mapId: '123'
       }
     });
-
     wrapper = mount(SmPan, {
       propsData: {
         mapTarget: 'map'
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      try {
-        expect(wrapper.vm.mapTarget).toBe('map');
-        testClick(wrapper, wrapper.vm.map);
-        mapWrapper.destroy();
-        done();
-      } catch (exception) {
-        console.log('Pan_default' + exception.name + ':' + exception.message);
-        expect(false).toBeTruthy();
-        mapWrapper.destroy();
-        done();
-      }
-    })
+    const callback = jest.fn();
+    wrapper.vm.$on('loaded', callback);
+    await mapWrapperLoaded(mapWrapper);
+    await flushPromises();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    testClick(wrapper, wrapper.vm.map);
+    done();
   });
 
-  it('default index', (done) => {
-    let mapWrapper = mount(SmWebMap, {
-        localVue,
-        propsData: {
-          serverUrl: 'https://fakeiportal.supermap.io/iportal',
-          mapId: '123'
-        }
-      });
-  
-      wrapper = mount(Pan, {
-        propsData: {
-          mapTarget: 'map'
-        }
-      });
-      wrapper.vm.$on('loaded', () => {
-        try {
-          expect(wrapper.vm.mapTarget).toBe('map');
-          testClick(wrapper, wrapper.vm.map);
-          mapWrapper.destroy();
-          done();
-        } catch (exception) {
-          console.log('Pan_default' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          mapWrapper.destroy();
-          done();
-        }
-      })
+  it('default index', async done => {
+    mapWrapper = mount(SmWebMap, {
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      }
     });
-  
+    wrapper = mount(Pan, {
+      propsData: {
+        mapTarget: 'map'
+      }
+    });
+    const callback = jest.fn();
+    wrapper.vm.$on('loaded', callback);
+    await mapWrapperLoaded(mapWrapper);
+    await flushPromises();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    testClick(wrapper, wrapper.vm.map);
+    done();
+  });
+
   /**
    * 测试平移组件包裹在map里面
    */
 
   // isControl
-  it('isControl SmWebMap', done => {
+  it('isControl SmWebMap', async done => {
     wrapper = mount({
       template: `<div><sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"  :map-id="123"   
             ><sm-pan></sm-pan></sm-web-map></div>`,
@@ -109,17 +89,20 @@ describe('Pan.vue', () => {
         SmWebMap
       }
     });
-    wrapper.vm.$children[0].$children[0].$on('loaded', () => {
-      expect(wrapper.vm.$children[0].$children[0].getTargetName()).toBe('map');
-      testClick(wrapper, wrapper.vm.$children[0].$children[0].map);
-      done();
-    });
+    const callback = jest.fn();
+    wrapper.vm.$children[0].$children[0].$on('loaded', callback);
+    await mapLoaded(wrapper.vm.$children[0]);
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    expect(wrapper.vm.$children[0].$children[0].getTargetName()).toBe('map');
+    testClick(wrapper, wrapper.vm.$children[0].$children[0].map);
+    done();
   });
 
   /**
    * 测试平移组件与map同级
    */
-  it('parallel single SmWebMap', done => {
+  it('parallel single SmWebMap', async done => {
     wrapper = mount({
       template: `<div><sm-web-map  server-url="https://fakeiportal.supermap.io/iportal" :map-id="123" >
             </sm-web-map><sm-pan></sm-pan></div>`,
@@ -128,18 +111,20 @@ describe('Pan.vue', () => {
         SmWebMap
       }
     });
-    wrapper.vm.$children[1].$on('loaded', () => {
-      // expect\(wrapper\.element\)\.toMatchSnapshot\(\);
-      expect(wrapper.vm.$children[1].getTargetName()).toBe('map');
-      testClick(wrapper, wrapper.vm.$children[1].map);
-      done();
-    });
+    const callback = jest.fn();
+    wrapper.vm.$children[1].$on('loaded', callback);
+    await mapLoaded(wrapper.vm.$children[0]);
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    expect(wrapper.vm.$children[1].getTargetName()).toBe('map');
+    testClick(wrapper, wrapper.vm.$children[1].map);
+    done();
   });
 
   /**
    * 测试平移组件与多个map同级，默认pan的mapTarget是第一个map
    */
-  it('parallel multi SmWebMap', done => {
+  it('parallel multi SmWebMap', async done => {
     wrapper = mount({
       template: `<div><sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"    :map-id="123"  target="map1">
             </sm-web-map>
@@ -148,7 +133,6 @@ describe('Pan.vue', () => {
             <sm-pan></sm-pan>
             <sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"   :map-id="123"   target="map3">
             </sm-web-map>
-            
             <sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"   :map-id="123"   target="map4">
             </sm-web-map></div>`,
       components: {
@@ -156,11 +140,17 @@ describe('Pan.vue', () => {
         SmWebMap
       }
     });
-    wrapper.vm.$children[2].$on('loaded', () => {
-      expect(wrapper.vm.$children[2].getTargetName()).toBe('map1');
-      testClick(wrapper, wrapper.vm.$children[2].map);
-      done();
-    });
+    const callback = jest.fn();
+    wrapper.vm.$children[2].$on('loaded', callback);
+    await mapLoaded(wrapper.vm.$children[0]);
+    await mapLoaded(wrapper.vm.$children[1]);
+    await mapLoaded(wrapper.vm.$children[3]);
+    await mapLoaded(wrapper.vm.$children[4]);
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    expect(wrapper.vm.$children[2].getTargetName()).toBe('map1');
+    testClick(wrapper, wrapper.vm.$children[2].map);
+    done();
   });
 
   /**

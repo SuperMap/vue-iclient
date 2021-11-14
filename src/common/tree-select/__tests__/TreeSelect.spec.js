@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmTreeSelect from '../TreeSelect.vue';
 import TreeSelect from '../index';
 
@@ -14,7 +12,7 @@ describe('TreeSelect.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(SmTreeSelect, {
@@ -22,10 +20,11 @@ describe('TreeSelect.vue', () => {
         data: {}
       }
     });
-  })
+    expect(wrapper.find('.sm-component-select').exists()).toBe(true);
+  });
 
   it('render index correctly', () => {
-    wrapper = mount(TreeSelect)
+    wrapper = mount(TreeSelect);
     expect(wrapper.find('.sm-component-select').exists()).toBe(true);
-  })
-})
+  });
+});

@@ -1,10 +1,9 @@
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount, createLocalVue, config } from '@vue/test-utils';
 import SmTdtSearch from '../TdtSearch.vue';
-import SmWebMap from '../../../web-map/WebMap.vue';
-import mapEvent from '@types_mapboxgl/map-event';
-import '@libs/mapboxgl/mapbox-gl-enhance';
-import { Input, message } from 'ant-design-vue';
 import mockAxios from 'axios';
+import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
+import { Input, message } from 'ant-design-vue';
 
 const localVue = createLocalVue();
 localVue.use(Input);
@@ -17,29 +16,32 @@ localVue.prototype.$message = message;
 describe('TdtSearch.vue', () => {
   let wrapper;
   let mapWrapper;
+
+  beforeAll(async () => {
+    config.mapLoad = false;
+    mapWrapper = await createEmptyMap();
+  });
+
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
-    mapWrapper = mount(SmWebMap, {
-      propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
-      }
-    });
+    wrapper = null;
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     jest.resetAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
+  });
+
+  afterAll(() => {
+    config.mapLoad = true;
     if (mapWrapper) {
       mapWrapper.destroy();
     }
   });
 
-  it('render', done => {
+  it('render', async done => {
     wrapper = mount(SmTdtSearch, {
       localVue,
       propsData: {
@@ -47,22 +49,12 @@ describe('TdtSearch.vue', () => {
         collapsed: false
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          expect(wrapper.vm.mapTarget).toBe('map');
-          done();
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    done();
   });
 
-  it('search', done => {
+  it('search', async done => {
     mockAxios.mockImplementation(e => {
       if (e.url === 'https://api.tianditu.gov.cn/search') {
         return Promise.resolve({
@@ -124,45 +116,35 @@ describe('TdtSearch.vue', () => {
         }
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          expect(wrapper.vm.collapsed).toBeTruthy();
-          expect(wrapper.vm.mapTarget).toBe('map');
-          const searchSucceeded = jest.spyOn(wrapper.vm, 'searchSucceeded');
-          const inputSeatch = wrapper.find('.sm-component-input');
-          expect(inputSeatch.exists()).toBeTruthy();
-          inputSeatch.setValue('成都');
-          setTimeout(async () => {
-            expect(mockAxios).toHaveBeenCalledTimes(1);
-            expect(searchSucceeded).toHaveBeenCalledTimes(1);
-            const resultLi = wrapper.findAll('.sm-component-search__result li');
-            expect(resultLi.length).toBe(3);
-            wrapper.setProps({
-              mapTarget: 'map',
-              collapsed: true,
-              data: {
-                searchUrl: 'https://api.tianditu.gov.cn/search/detail',
-                tk: '1d109683f4d84198e37a38c442d68311'
-              }
-            });
-            await resultLi.at(0).trigger('click');
-            setTimeout(() => {
-              expect(wrapper.vm.componentId).toBe('AreaResult');
-              done();
-            }, 500);
-          }, 500);
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.collapsed).toBeTruthy();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const searchSucceeded = jest.spyOn(wrapper.vm, 'searchSucceeded');
+    const inputSeatch = wrapper.find('.sm-component-input');
+    expect(inputSeatch.exists()).toBeTruthy();
+    inputSeatch.setValue('成都');
+    setTimeout(async () => {
+      expect(mockAxios).toHaveBeenCalledTimes(1);
+      expect(searchSucceeded).toHaveBeenCalledTimes(1);
+      const resultLi = wrapper.findAll('.sm-component-search__result li');
+      expect(resultLi.length).toBe(3);
+      wrapper.setProps({
+        mapTarget: 'map',
+        collapsed: true,
+        data: {
+          searchUrl: 'https://api.tianditu.gov.cn/search/detail',
+          tk: '1d109683f4d84198e37a38c442d68311'
         }
       });
-    });
+      await resultLi.at(0).trigger('click');
+      setTimeout(() => {
+        expect(wrapper.vm.componentId).toBe('AreaResult');
+        done();
+      }, 500);
+    }, 500);
   });
 
-  it('search lineString detail', done => {
+  it('search lineString detail', async done => {
     mockAxios.mockImplementation(e => {
       if (e.url === 'https://api.tianditu.gov.cn/search') {
         return Promise.resolve({
@@ -256,41 +238,31 @@ describe('TdtSearch.vue', () => {
         }
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          expect(wrapper.vm.collapsed).toBeTruthy();
-          expect(wrapper.vm.mapTarget).toBe('map');
-          const inputSeatch = wrapper.find('.sm-component-input');
-          inputSeatch.setValue('22');
-          setTimeout(async () => {
-            const resultLi = wrapper.findAll('.sm-component-search__result li');
-            expect(resultLi.length).toBe(2);
-            await wrapper.setProps({
-              mapTarget: 'map',
-              collapsed: true,
-              data: {
-                searchUrl: 'https://api.tianditu.gov.cn/search/lineStringDetail',
-                tk: '1d109683f4d84198e37a38c442d68311'
-              }
-            });
-            await resultLi.at(0).trigger('click');
-            setTimeout(() => {
-              expect(wrapper.vm.componentId).toBe('LinesResult');
-              done();
-            }, 200);
-          }, 200);
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.collapsed).toBeTruthy();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const inputSeatch = wrapper.find('.sm-component-input');
+    inputSeatch.setValue('22');
+    setTimeout(async () => {
+      const resultLi = wrapper.findAll('.sm-component-search__result li');
+      expect(resultLi.length).toBe(2);
+      await wrapper.setProps({
+        mapTarget: 'map',
+        collapsed: true,
+        data: {
+          searchUrl: 'https://api.tianditu.gov.cn/search/lineStringDetail',
+          tk: '1d109683f4d84198e37a38c442d68311'
         }
       });
-    });
+      await resultLi.at(0).trigger('click');
+      setTimeout(() => {
+        expect(wrapper.vm.componentId).toBe('LinesResult');
+        done();
+      }, 200);
+    }, 200);
   });
 
-  it('search point detail', done => {
+  it('search point detail', async done => {
     mockAxios.mockImplementation(e => {
       if (e.url === 'https://api.tianditu.gov.cn/search') {
         return Promise.resolve({
@@ -359,41 +331,31 @@ describe('TdtSearch.vue', () => {
         }
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          expect(wrapper.vm.collapsed).toBeTruthy();
-          expect(wrapper.vm.mapTarget).toBe('map');
-          const inputSeatch = wrapper.find('.sm-component-input');
-          inputSeatch.setValue('华阳');
-          setTimeout(async () => {
-            const resultLi = wrapper.findAll('.sm-component-search__result li');
-            expect(resultLi.length).toBe(2);
-            await wrapper.setProps({
-              mapTarget: 'map',
-              collapsed: true,
-              data: {
-                searchUrl: 'https://api.tianditu.gov.cn/search/pointDetail',
-                tk: '1d109683f4d84198e37a38c442d68311'
-              }
-            });
-            await resultLi.at(0).trigger('click');
-            setTimeout(() => {
-              expect(wrapper.vm.componentId).toBe('PointsResult');
-              done();
-            }, 200);
-          }, 200);
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.collapsed).toBeTruthy();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const inputSeatch = wrapper.find('.sm-component-input');
+    inputSeatch.setValue('华阳');
+    setTimeout(async () => {
+      const resultLi = wrapper.findAll('.sm-component-search__result li');
+      expect(resultLi.length).toBe(2);
+      await wrapper.setProps({
+        mapTarget: 'map',
+        collapsed: true,
+        data: {
+          searchUrl: 'https://api.tianditu.gov.cn/search/pointDetail',
+          tk: '1d109683f4d84198e37a38c442d68311'
         }
       });
-    });
+      await resultLi.at(0).trigger('click');
+      setTimeout(() => {
+        expect(wrapper.vm.componentId).toBe('PointsResult');
+        done();
+      }, 200);
+    }, 200);
   });
 
-  it('keyboard event', done => {
+  it('keyboard event', async done => {
     mockAxios.mockImplementation(e => {
       if (e.url === 'https://api.tianditu.gov.cn/search') {
         return Promise.resolve({
@@ -433,36 +395,26 @@ describe('TdtSearch.vue', () => {
         }
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          const searchSucceeded = jest.spyOn(wrapper.vm, 'searchSucceeded');
-          const inputSeatch = wrapper.find('.sm-component-input');
-          expect(inputSeatch.exists()).toBeTruthy();
-          inputSeatch.setValue('成都');
-          setTimeout(async () => {
-            expect(mockAxios).toHaveBeenCalledTimes(1);
-            expect(searchSucceeded).toHaveBeenCalledTimes(1);
-            const resultLi = wrapper.findAll('.sm-component-search__result li');
-            expect(resultLi.length).toBe(3);
-            const downChoose = jest.spyOn(wrapper.vm, 'downChoose');
-            await inputSeatch.trigger('keyup.down');
-            await inputSeatch.trigger('keyup.down');
-            await inputSeatch.trigger('keyup.down');
-            expect(downChoose).toBeCalled();
-            expect(inputSeatch.element.value).toBe('成都3');
-            await inputSeatch.trigger('keyup.up');
-            await inputSeatch.trigger('keyup.up');
-            expect(inputSeatch.element.value).toBe('成都');
-            done();
-          }, 500);
-        } catch (exception) {
-          console.log('案例失败：' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    const searchSucceeded = jest.spyOn(wrapper.vm, 'searchSucceeded');
+    const inputSeatch = wrapper.find('.sm-component-input');
+    expect(inputSeatch.exists()).toBeTruthy();
+    inputSeatch.setValue('成都');
+    setTimeout(async () => {
+      expect(mockAxios).toHaveBeenCalledTimes(1);
+      expect(searchSucceeded).toHaveBeenCalledTimes(1);
+      const resultLi = wrapper.findAll('.sm-component-search__result li');
+      expect(resultLi.length).toBe(3);
+      const downChoose = jest.spyOn(wrapper.vm, 'downChoose');
+      await inputSeatch.trigger('keyup.down');
+      await inputSeatch.trigger('keyup.down');
+      await inputSeatch.trigger('keyup.down');
+      expect(downChoose).toBeCalled();
+      expect(inputSeatch.element.value).toBe('成都3');
+      await inputSeatch.trigger('keyup.up');
+      await inputSeatch.trigger('keyup.up');
+      expect(inputSeatch.element.value).toBe('成都');
+      done();
+    }, 500);
   });
 });

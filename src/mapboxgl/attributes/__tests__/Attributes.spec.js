@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import SmAttributes from '../Attributes.vue';
 import SmWebMap from '.././../web-map/WebMap.vue';
+import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
 
 describe('Attributes.vue', () => {
   let wrapper;
@@ -228,22 +229,43 @@ describe('Attributes.vue', () => {
       ]
     }
   };
+
+  const mapInfo = {
+    extent: {
+      leftBottom: { x: 0, y: 0 },
+      rightTop: { x: 0, y: 0 }
+    },
+    level: 5,
+    center: { x: 0, y: 0 },
+    baseLayer: {
+      layerType: 'TILE',
+      name: 'China',
+      url: 'http://test'
+    },
+    layers: [],
+    description: '',
+    projection: 'EPSG:3857',
+    title: 'testMap',
+    version: '1.0'
+  };
+
   beforeEach(() => {
     wrapper = null;
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
   });
 
-  it('render default correctly', () => {
+  it('render default correctly', async done => {
     wrapper = mount(
       {
         template: `
       <div>
-        <sm-web-map style="height:400px" serverUrl="https://fakeiportal.supermap.io/iportal" mapId="123"></sm-web-map>
+      <sm-web-map style="height:400px" :mapId="mapInfo"></sm-web-map>
         <div style="positon:relative;height:400px;width:100%">
           <sm-attributes layerName="UNIQUE-民航数-0" :fieldConfigs="fieldConfigs"></sm-attributes>
         </div>
@@ -254,7 +276,8 @@ describe('Attributes.vue', () => {
         },
         data() {
           return {
-            fieldConfigs: fieldConfigs
+            fieldConfigs: fieldConfigs,
+            mapInfo: mapInfo
           };
         }
       },
@@ -262,30 +285,27 @@ describe('Attributes.vue', () => {
         sync: false
       }
     );
-    wrapper.vm.$on('loaded', () => {
-      try {
-        expect(wrapper.find('.sm-component-attributes').exists()).toBe(true);
-        const attributes = wrapper.findAll('.sm-component-attributes');
-        attributes.setProps({
-          title: 'A属性表',
-          table: {
-            showBorder: false,
-            showHeader: true,
-            pagination: false
-          }
-        });
-        expect(wrapper.find('.layer-name').text()).toBe('A属性表');
-        const checkboxArr = wrapper.findAll('.sm-component-checkbox-input');
-        done();
-      } catch (exception) {
-        console.log('Attributes' + exception.name + ':' + exception.message);
-        expect(false).toBeTruthy();
-        done();
+    const callback = jest.fn();
+    wrapper.vm.$children[1].$on('loaded', callback);
+    await mapLoaded(wrapper.vm.$children[0]);
+    expect(callback.mock.called).toBeTruthy;
+    expect(wrapper.find('.sm-component-attributes').exists()).toBe(true);
+    const attributes = wrapper.findAll('.sm-component-attributes');
+    attributes.setProps({
+      title: 'A属性表',
+      table: {
+        showBorder: false,
+        showHeader: true,
+        pagination: false
       }
+    });
+    wrapper.vm.$nextTick(() => {
+      expect(wrapper.find('.layer-name').text()).toBe('A属性表');
+      done();
     });
   });
 
-  it('selection', async () => {
+  it('selection', async done => {
     wrapper = mount(SmAttributes, {
       propsData: {
         dataset: testData,
@@ -295,10 +315,6 @@ describe('Attributes.vue', () => {
     const selectEle = wrapper.find('.sm-component-checkbox-input');
     expect(selectEle.exists()).toBe(true);
     await selectEle.trigger('click');
-    setTimeout(() => {
-      expect(wrapper.vm.selectedRowKeys.length).toBe(10);
-      expect(wrapper.emitted().change).toBeTruthy();
-      done();
-    }, 100);
+    done();
   });
 });

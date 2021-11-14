@@ -1,81 +1,60 @@
-import {
-  mount,
-} from '@vue/test-utils';
-import SmWebMap from '../../../WebMap.vue';
+import { mount, config } from '@vue/test-utils';
 import SmVectorTileLayer from '../VectorTileLayer.vue';
-import mapEvent from '@types_mapboxgl/map-event';
-import '@libs/mapboxgl/mapbox-gl-enhance';
+import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
+
 describe('VectorTileLayer.vue', () => {
   let wrapper;
   let mapWrapper;
 
+  beforeAll(async () => {
+    config.mapLoad = false;
+    mapWrapper = await createEmptyMap();
+  });
+
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
-    mapWrapper = mount(SmWebMap, {
-      propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
-      }
-    })
+    wrapper = null;
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
+  });
+
+  afterAll(() => {
+    config.mapLoad = true;
     if (mapWrapper) {
       mapWrapper.destroy();
     }
   });
 
-  it('render', (done) => {
+  it('render', async done => {
     wrapper = mount(SmVectorTileLayer, {
       propsData: {
-        mapTarget: "map",
+        mapTarget: 'map',
         styleOptions: 'https://fakeiportal.supermap.io/vectorstyles.json'
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          expect(wrapper.vm.mapTarget).toBe('map');
-          done()
-        } catch (exception) {
-          console.log("案例失败：" + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
-    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    done();
   });
 
-  it('change styleOptions', (done) => {
+  it('change styleOptions', async done => {
     wrapper = mount(SmVectorTileLayer, {
       propsData: {
-        mapTarget: "map",
+        mapTarget: 'map',
         styleOptions: 'https://fakeiportal.supermap.io/vectorstyles.json'
       }
     });
-
-    mapWrapper.vm.$on('load', () => {
-      wrapper.vm.$on('loaded', () => {
-        try {
-          const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
-          wrapper.setProps({
-            styleOptions: 'https://fakeiportal.supermap.io/newvectorstyles.json'
-          })
-          expect(setStyleOptionsSpy).toBeCalled();
-          done()
-        } catch (exception) {
-          console.log("案例失败：" + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          done();
-        }
-      });
+    await mapSubComponentLoaded(wrapper);
+    const setStyleOptionsSpy = jest.spyOn(wrapper.vm.viewModel, 'setStyleOptions');
+    await wrapper.setProps({
+      styleOptions: 'https://fakeiportal.supermap.io/newvectorstyles.json'
     });
+    expect(setStyleOptionsSpy).toBeCalled();
+    done();
   });
 });

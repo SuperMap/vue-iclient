@@ -89,7 +89,11 @@ supermap.UniqueThemeLayer = () => {
 supermap.MapvLayer = () => {
   return {};
 };
-
+const dataflowFeature = {
+  'type': 'Point',
+  'coordinates': [116.588918, 40.07108]
+};
+const dataflowData = JSON.stringify(dataflowFeature);
 supermap.DataFlowService = serviceUrl => {
   return {
     initBroadcast: () => {
@@ -115,7 +119,7 @@ supermap.DataFlowService = serviceUrl => {
                     ]
                   },
                   properties: { id: 1 }
-                }
+                },
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('LineString')) {
               callback({
@@ -178,7 +182,16 @@ supermap.DataFlowService = serviceUrl => {
                 }
               });
             } else {
-              callback({ featureResult: { geometry: { type: 'Point', coordinates: [0, 0] }, properties: { id: 1 } } });
+              callback({
+                featureResult: {
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [0, 0]
+                  },
+                  properties: {id: 1 }
+                },
+                data: dataflowData
+              });
             }
           } else {
             callback();

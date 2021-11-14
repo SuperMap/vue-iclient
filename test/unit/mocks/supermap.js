@@ -297,6 +297,7 @@ SuperMap.ArrayStatistic.getArraySegments = function (array, type, segNum) {
     14.1324461706
   ];
 };
+SuperMap.ArrayStatistic.getArrayStatistic = function () {};
 SuperMap.SecurityManager = {
   registerToken: () => {}
 };
@@ -315,9 +316,9 @@ var Util = (SuperMap.Util = {
     return `${a}/${b}`;
   },
   urlAppend: function (a, b) {
-    return `${a}/${b}`;
+    return `${a}?${b}`;
   },
-  getScaleFromResolutionDpi: function (resolution, dpi, coordUnit='degree') {
+  getScaleFromResolutionDpi: function (resolution, dpi, coordUnit = 'degree') {
     var scale = -1,
       ratio = 10000;
     if (resolution > 0 && dpi > 0) {
@@ -334,10 +335,10 @@ var Util = (SuperMap.Util = {
   }
 });
 SuperMap.String = {
-  trim: (a) => {
-    return String(a)
+  trim: a => {
+    return String(a);
   }
-}
+};
 var document = {};
 var documentElement = (document.documentElement = {});
 var FetchRequest = (SuperMap.FetchRequest = {
@@ -412,7 +413,6 @@ var FetchRequest = (SuperMap.FetchRequest = {
       } else if (url.indexOf('?REQUEST=GetCapabilities&SERVICE=WMS') > -1) {
         process.nextTick(() => resolve(new Response(wmsCapabilitiesText)));
       }
-
       // 2040117719
       else if (url.indexOf('2040117719') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_beijing))));
@@ -557,9 +557,53 @@ var results = {
 };
 
 var GetFeaturesBySQLService = (SuperMap.GetFeaturesBySQLService = (url, options) => {
+  const result = {
+    result: {
+      features: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {
+              SMID: '1',
+              NAME: '四川省'
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: [101.84004968, 26.0859968692659]
+            }
+          }
+        ]
+      }
+    }
+  };
+  if (options.eventListeners) {
+    if (url.indexOf('processCompleted') > -1) {
+      options.eventListeners.processCompleted(result);
+    } else if (url.indexOf('processFailed') > -1) {
+      options.eventListeners.processFailed('get features faild');
+    }
+  }
   getFeatureEvent.on('processCompleted', options.eventListeners.processCompleted);
   return {
-    processAsync: processAsync
+    processAsync: () => {
+      let returnData;
+      if (
+        url === 'https://fakeiportal.supermap.io/iportal/processCompleted?parentResType=MAP&parentResId=123' ||
+        'https://fakeiportal.supermap.io/iportal/processFailed?parentResType=MAP&parentResId=123'
+      ) {
+        returnData = result;
+      } else if (
+        url === 'https://fakeiportal.supermap.io/iportal/processFailed.json?token=123&parentResType=MAP&parentResId=123'
+      ) {
+        returnData = result;
+      } else {
+        returnData = results;
+      }
+      setTimeout(() => {
+        getFeatureEvent.emit('processCompleted', returnData);
+      }, 0);
+    }
   };
 });
 var processAsync = (SuperMap.GetFeaturesBySQLService.processAsync = getFeatureBySQLParams => {
@@ -569,6 +613,40 @@ var processAsync = (SuperMap.GetFeaturesBySQLService.processAsync = getFeatureBy
 });
 
 var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
+  const result = {
+    result: {
+      recordsets: [
+        {
+          fields: {
+            0: 'SmID'
+          },
+          features: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                properties: {
+                  SMID: '1',
+                  NAME: '四川省'
+                },
+                geometry: {
+                  type: 'Point',
+                  coordinates: [101.84004968, 26.0859968692659]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  };
+  if (options.eventListeners) {
+    if (url.indexOf('processCompleted') > -1) {
+      options.eventListeners.processCompleted(result);
+    } else if (url.indexOf('processFailed') > -1) {
+      options.eventListeners.processFailed('get features faild');
+    }
+  }
   getFeatureEvent.on('processCompleted', options.eventListeners.processCompleted);
   return {
     // queryBySQL: queryBySQL,

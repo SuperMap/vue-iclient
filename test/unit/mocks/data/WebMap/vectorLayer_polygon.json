@@ -1,0 +1,41 @@
+{
+  "baseLayer": {
+    "layerType": "TILE",
+    "name": "中国暗色地图",
+    "url": "https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark"
+  },
+  "center": { "x": 12078479.784935694, "y": 4519284.128119455 },
+  "description": "",
+  "extent": {
+    "leftBottom": { "x": -20037508.342789244, "y": -20037508.342789136 },
+    "rightTop": { "x": 20037508.342789244, "y": 20037508.34278908 }
+  },
+  "layers": [
+    {
+      "dataSource": { "name": "ChinaEarthquakeIntensityZone", "type": "SAMPLE_DATA" },
+      "enableFields": ["烈度值"],
+      "featureType": "POLYGON",
+      "layerType": "VECTOR",
+      "name": "中国地震烈度区划面",
+      "projection": "EPSG:4326",
+      "style": {
+        "fillColor": "#826DBA",
+        "fillOpacity": 0.9,
+        "lineDash": "solid",
+        "strokeColor": "#ffffff",
+        "strokeOpacity": 1,
+        "strokeWidth": 1,
+        "type": "POLYGON"
+      },
+      "visible": true
+    }
+  ],
+  "level": 5.038917030908402,
+  "mapParams": { "title": "jingwei", "description": "" },
+  "maxScale": "1:144447.92746804963",
+  "minScale": "1:591658710.9091312",
+  "projection": "EPSG:3857",
+  "rootUrl": "http://192.168.11.94:8190/iportal/services/../",
+  "title": "jingwei",
+  "version": "2.3.0"
+}

@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmCollapseCard from '../CollapseCard.vue';
 import CollapseCard from '../index';
 
@@ -14,19 +12,19 @@ describe('CollapseCard.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(SmCollapseCard);
     expect(wrapper.find('.sm-component-collapse-card').exists()).toBe(true);
     expect(wrapper.find('.sm-component-collapse-card__content').element.style.background).toBe('transparent');
     expect(wrapper.find('.sm-component-collapse-card__body').element.style.background).toBe('transparent');
-  })
+  });
 
   it('render index correctly', () => {
-    wrapper = mount(CollapseCard)
+    wrapper = mount(CollapseCard);
     expect(wrapper.find('.sm-component-collapse-card').exists()).toBe(true);
-  })
+  });
 
   it('has icon in CollapseCard', async () => {
     wrapper = mount(SmCollapseCard, {
@@ -38,5 +36,5 @@ describe('CollapseCard.vue', () => {
     expect(wrapper.find('.sm-component-collapse-card__icon').exists()).toBe(true);
     await wrapper.find('.sm-component-collapse-card__icon').trigger('click');
     expect(wrapper.vm.isShow).toBe(false);
-  })
-})
+  });
+});

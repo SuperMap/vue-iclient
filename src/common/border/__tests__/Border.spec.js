@@ -2,6 +2,10 @@ import { mount } from '@vue/test-utils';
 import SmBorder from '../Border.vue';
 import Border from '../index';
 import SmChart from '../../../mapboxgl/chart/Chart.vue';
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import chart_restData from 'vue-iclient/test/unit/mocks/data/chart_restData';
+import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
+import flushPromises from 'flush-promises';
 
 describe('Border.vue', () => {
   let wrapper;
@@ -36,7 +40,7 @@ describe('Border.vue', () => {
     }
   ];
   const iportalDataSet = {
-    type: 'iPortal', //iServer iPortal
+    type: 'iPortal',
     url: 'https://fakeiportal.supermap.io/iportal/web/datas/123',
     queryInfo: {
       maxFeatures: 20
@@ -111,7 +115,23 @@ describe('Border.vue', () => {
     expect(BorderDom.element.style.borderImage).toBe('url(https://test.png) 12 12 12 12 fill / 1 / 0 stretch');
   });
 
-  it('render chart in border correctly', () => {
+  it('render set props type', async () => {
+    wrapper = mount(Border, {
+      propsData: {
+        type: 'border1'
+      }
+    });
+    await wrapper.setProps({ type: 'border2' });
+    expect(wrapper.vm.type).toBe('border2');
+    expect(wrapper.find('.sm-component-border').exists()).toBe(true);
+  });
+
+  it('render chart in border correctly', async () => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
     wrapper = mount({
       template: `
       <sm-border type="border1" style="width: 460px; height: 260px;">
@@ -134,20 +154,10 @@ describe('Border.vue', () => {
         };
       }
     });
+    await flushPromises();
     expect(wrapper.find('.sm-component-border').exists()).toBe(true);
     const Chart = wrapper.findAll(SmChart);
     expect(Chart.exists()).toBe(true);
     expect(Chart.length).toBe(1);
-  });
-
-  it('render set props type', async () => {
-    wrapper = mount(Border, {
-      propsData: {
-        type: 'border1'
-      }
-    });
-    await wrapper.setProps({ type: 'border2' });
-    expect(wrapper.vm.type).toBe('border2');
-    expect(wrapper.find('.sm-component-border').exists()).toBe(true);
   });
 });

@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmTimeText from '../TimeText.vue';
 
 describe('TimeText.vue', () => {
@@ -13,14 +11,12 @@ describe('TimeText.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render', () => {
     wrapper = mount(SmTimeText, {
-      propsData: {
-        
-      }
-    })
+      propsData: {}
+    });
     expect(wrapper.find('.sm-component-time-text').exists()).toBe(true);
-  })
-})
+  });
+});

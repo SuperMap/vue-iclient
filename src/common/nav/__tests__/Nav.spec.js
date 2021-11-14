@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmNav from '../Nav.vue';
 import Nav from '../index';
 
@@ -12,7 +10,8 @@ describe('Nav.vue', () => {
     href: '',
     target: '_blank'
   };
-  let items = [{
+  let items = [
+    {
       key: 1,
       title: '菜单1'
     },
@@ -36,7 +35,7 @@ describe('Nav.vue', () => {
       key: 6,
       title: '菜单6'
     }
-  ]
+  ];
   beforeEach(() => {
     wrapper = null;
   });
@@ -45,55 +44,55 @@ describe('Nav.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(SmNav);
-  })
+  });
 
   it('render default correctly', () => {
     wrapper = mount(Nav);
-  })
+  });
 
   it('base props', () => {
     wrapper = mount(SmNav, {
       propsData: {
         title: title,
         items: items
-      },
+      }
     });
-  })
+  });
 
   it('goTo', () => {
     wrapper = mount(SmNav, {
       propsData: {
         title: title,
         items: items
-      },
+      }
     });
     wrapper.vm.goTo(2);
     expect(wrapper.emitted().change).toBeTruthy();
-  })
+  });
 
   it('prev', () => {
     wrapper = mount(SmNav, {
       propsData: {
         title: title,
         items: items
-      },
+      }
     });
     wrapper.vm.prev();
     expect(wrapper.emitted().change).toBeTruthy();
-  })
+  });
 
   it('next', () => {
     wrapper = mount(SmNav, {
       propsData: {
         title: title,
         items: items
-      },
+      }
     });
     wrapper.vm.next();
     expect(wrapper.emitted().change).toBeTruthy();
-  })
-})
+  });
+});

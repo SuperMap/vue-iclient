@@ -1,4 +1,7 @@
 import WebMapViewModel from '../WebMapViewModel.ts';
+import layerData from '../../../../test/unit/mocks/data/layerData.json';
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+
 describe('WebMapViewModel.spec', () => {
   it('constructor options = undefined, id is Object', () => {
     const id = {
@@ -37,6 +40,10 @@ describe('WebMapViewModel.spec', () => {
   });
 
   it('uniqueLayer', () => {
+    const fetchResource = {
+      'https://www.supermapol.com/web/datas/658963918/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
     const datavizWebMap_Unique = {
       version: '6.0',
       title: 'Unique',
@@ -81,7 +88,12 @@ describe('WebMapViewModel.spec', () => {
       new WebMapViewModel(datavizWebMap_Unique);
     }).not.toThrow();
   });
+
   it('rangeLayer', () => {
+    const fetchResource = {
+      'https://www.supermapol.com/web/datas/1236941499/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
     var datavizWebMap_Range = {
       version: '6.0',
       title: 'RANGE_LABEL',
@@ -129,7 +141,12 @@ describe('WebMapViewModel.spec', () => {
       new WebMapViewModel(datavizWebMap_Range);
     }).not.toThrow();
   });
+
   it('heatLayer', () => {
+    const fetchResource = {
+      'https://www.supermapol.com/web/datas/675746998/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
     var datavizWebMap_Heat = {
       version: '6.0',
       title: 'Heat',

@@ -1,11 +1,7 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmLiquidFill from '../LiquidFill.vue';
 import LiquidFill from '../index';
-import {
-  setTheme
-} from '../../_utils/style/theme/set-theme'
+import { setTheme } from '../../_utils/style/theme/set-theme';
 
 describe('LiquidFill.vue', () => {
   let wrapper;
@@ -21,39 +17,45 @@ describe('LiquidFill.vue', () => {
   });
 
   it('render default correctly', () => {
-    wrapper = mount({
-      template: `
+    wrapper = mount(
+      {
+        template: `
       <div style="width:100px;height:100px">
          <sm-liquid-fill style="width:200px; height:200px" value="0.5"></sm-liquid-fill>
       </div>`,
-      components: {
-        SmLiquidFill
+        components: {
+          SmLiquidFill
+        }
+      },
+      {
+        sync: false
       }
-    }, {
-      sync: false
-    });
+    );
   });
 
   it('render index correctly', () => {
-    wrapper = mount(LiquidFill)
+    wrapper = mount(LiquidFill);
     expect(wrapper.find('.sm-component-liquidfill').exists()).toBe(true);
-  })
+  });
 
   it('render waveAnimation', () => {
-    wrapper = mount({
-      template: `
+    wrapper = mount(
+      {
+        template: `
         <sm-liquid-fill 
           style="width:200px; height:200px" 
           :waveCount="2"
           :waveAnimation="true"
           value="0.5">
         </sm-liquid-fill>`,
-      components: {
-        SmLiquidFill
+        components: {
+          SmLiquidFill
+        }
+      },
+      {
+        sync: false
       }
-    }, {
-      sync: false
-    });
+    );
   });
 
   it('render watch props correctly', async () => {
@@ -67,13 +69,13 @@ describe('LiquidFill.vue', () => {
       backgroundColor: '#626c91',
       insideLabelColor: '#fff',
       waveAnimation: true
-    })
-    await expect(liquidFillArr.at(0).vm.waveColor).toBe('blue')
+    });
+    await expect(liquidFillArr.at(0).vm.waveColor).toBe('blue');
   });
 
   it('set theme change liquidFill', () => {
-    wrapper = mount(LiquidFill)
+    wrapper = mount(LiquidFill);
     setTheme('dark');
     expect(wrapper.find('.sm-component-liquidfill').exists()).toBe(true);
-  })
+  });
 });
