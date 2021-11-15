@@ -60,7 +60,8 @@
       <div
         slot="filterDropdown"
         slot-scope="{ setSelectedKeys, selectedKeys, confirm, clearFilters, column }"
-        :style="{ ...background, padding: '8px' }"
+        class="sm-component-table-custom-filter-dropdown"
+        :style="{ ...background }"
       >
         <sm-input
           :placeholder="`Search ${column.dataIndex}`"

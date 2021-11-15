@@ -59,6 +59,10 @@
       }
     }
   }
+  .sm-component-table-custom-filter-dropdown {
+    font-size: 0;
+    padding: 8px;
+  }
   @include e(header) {
     height: 30px;
     margin: 8px;
