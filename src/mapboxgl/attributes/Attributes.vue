@@ -83,7 +83,7 @@
           {{ $t('attributes.reset') }}
         </sm-button>
       </div>
-      <sm-icon slot="filterIcon" icon-class="search" />
+      <i slot="filterIcon" class="sm-components-icon-search"></i>
       <template slot="customRender" slot-scope="text, record, index, column">
         <span v-if="searchText && searchedColumn === column.dataIndex">
           <template v-for="fragment in text.toString().split(new RegExp(`(?<=${searchText})|(?=${searchText})`, 'i'))">

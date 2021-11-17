@@ -47,6 +47,8 @@
       tr > th .anticon-filter,
       tr > th .sm-component-table-filter-icon {
         right: 15px;
+        display: flex;
+        align-items: center;
       }
     }
     .sm-component-table-tbody {
