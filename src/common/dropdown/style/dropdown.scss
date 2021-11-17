@@ -9,4 +9,8 @@
   &-content, &-menu, &-menu-item-selected, &-menu-submenu-title-selected, &-menu-item-selected > a, &-menu-submenu-title-selected > a {
     background-color: $dropdown-background;
   }
+  &-menu-item &-menu-submenu-arrow-icon,
+  &-menu-submenu-title &-menu-submenu-arrow-icon {
+    color: $icon-color;
+  }
 }
