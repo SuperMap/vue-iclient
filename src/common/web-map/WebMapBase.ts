@@ -431,11 +431,11 @@ export default abstract class WebMapBase extends Events {
       }
       return feature;
     });
-    if (!mergeByField && features && features[0].geometry) {
+    if (!features.length || !mergeByField && features[0].geometry) {
       return features;
     }
     const source = this.map.getSource(layerId);
-    if ((!source || !source._data.features) && features && features[0].geometry) {
+    if ((!source || !source._data.features) && features[0].geometry) {
       return features;
     }
     const prevFeatures = source._data.features;

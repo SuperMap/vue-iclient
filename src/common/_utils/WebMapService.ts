@@ -1126,7 +1126,7 @@ export default class WebMapService extends Events {
       if (shortName === '阿拉') {
         shortName = featureName.substr(0, 3);
       }
-      return !!fieldName.startsWith(shortName);
+      return !!fieldName.match(new RegExp(shortName));
     }
     return false;
   }
