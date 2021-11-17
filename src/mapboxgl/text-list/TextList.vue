@@ -291,9 +291,10 @@ class SmTextList extends Mixins(Theme, Timer) {
   @Watch('columns')
   columnsChanged(newVal, oldVal) {
     if (this.content || this.featuresData) {
-      this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
-      this.getListHeightStyle();
       this.setDefaultSortType();
+      const listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+      this.listData = this.sortContent(listData);
+      this.getListHeightStyle();
     }
   }
 
