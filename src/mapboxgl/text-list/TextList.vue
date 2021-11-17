@@ -27,28 +27,28 @@
                 "
               >
                 {{ getColumns[index].header }}
-                <div
-                  v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
-                  class="arrow-wrap"
-                  :style="{ borderColor: headerStyleData.sortBtnColor }"
-                >
-                  <i
-                    :class="['up-triangle']"
-                    :style="[
-                      { borderBottomColor: headerStyleData.sortBtnColor },
-                      sortType === 'ascend' &&
-                        sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }
-                    ]"
-                  ></i>
-                  <i
-                    :class="['down-triangle']"
-                    :style="[
-                      { borderTopColor: headerStyleData.sortBtnColor },
-                      sortType === 'descend' &&
-                        sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }
-                    ]"
-                  ></i>
-                </div>
+              </div>
+              <div
+                v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
+                class="arrow-wrap"
+                :style="{ borderColor: headerStyleData.sortBtnColor }"
+              >
+                <i
+                  :class="['up-triangle']"
+                  :style="[
+                    { borderBottomColor: headerStyleData.sortBtnColor },
+                    sortType === 'ascend' &&
+                      sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }
+                  ]"
+                ></i>
+                <i
+                  :class="['down-triangle']"
+                  :style="[
+                    { borderTopColor: headerStyleData.sortBtnColor },
+                    sortType === 'descend' &&
+                      sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }
+                  ]"
+                ></i>
               </div>
             </div>
           </template>

@@ -32,17 +32,20 @@
       align-items: center;
       flex: 1;
       cursor: pointer;
-      word-break: keep-all;
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
       align-self: center;
       min-width: 5%;
       user-select: none;
+      & > div {
+        word-break: keep-all;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        padding-right: 5px;
+      }
       .arrow-wrap {
         display: inline-block;
         height: 34px;
-        width: 0px;
+        width: 20px;
         vertical-align: middle;
         cursor: pointer;
         overflow: initial;
