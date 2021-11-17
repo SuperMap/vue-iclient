@@ -53,6 +53,8 @@
       tr > th .anticon-filter,
       tr > th .sm-component-table-filter-icon {
         right: 15px;
+        display: flex;
+        align-items: center;
       }
       > tr > th.sm-component-table-column-has-actions {
         &.sm-component-table-column-has-filters {
