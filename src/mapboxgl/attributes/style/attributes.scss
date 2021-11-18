@@ -50,6 +50,11 @@
         display: flex;
         align-items: center;
       }
+      > tr > th.sm-component-table-column-has-actions {
+        .sm-components-icon-search:before {
+          padding: 7px;
+        }
+      }
     }
     .sm-component-table-tbody {
       >tr >td {
