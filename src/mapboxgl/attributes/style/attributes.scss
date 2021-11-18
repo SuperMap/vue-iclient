@@ -84,8 +84,11 @@
     .sm-component-icon:hover {
       color: $primary-color !important;
     }
+    .sm-component-dropdown-menu-submenu-title > span > .anticon:first-child {
+      margin-right: 0;
+    }
   }
-  .ant-dropdown-link {
+  .sm-component-dropdown-link {
     cursor: pointer;
   }
 }
