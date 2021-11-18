@@ -276,8 +276,52 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
+  _createWebMapV3(mapInfo: any): void {
+    this.baseProjection = toEpsgCode(mapInfo.crs);
+    const webMapV3Instance = new mapboxgl.supermap.WebMapV3(this.mapId, {
+      server: this.serverUrl,
+      withCredentials: this.withCredentials,
+      target: this.target
+    });
+    this._registerWebMapV3Events(webMapV3Instance);
+    webMapV3Instance.createWebMap({
+      ...mapInfo,
+      layers: typeof this.layerFilter === 'function' ? mapInfo.layers.filter(this.layerFilter) : mapInfo.layers
+    }, this.map);
+  }
+
+  _registerWebMapV3Events(webMapV3Instance: typeof mapboxgl.supermap.WebMapV3): void {
+    if (!webMapV3Instance) {
+      return;
+    }
+    webMapV3Instance.on('mapinitialized', ({ map }) => {
+      this.map = map;
+      this.triggerEvent('mapinitialized', { map: this.map });
+    });
+    webMapV3Instance.on('addlayerssucceeded', ({ mapparams, layers }) => {
+      this.mapParams = mapparams;
+      this._layers = layers;
+      this._cacheLayerId.push(...layers.map(layer => layer.id));
+      this.triggerEvent('addlayerssucceeded', {
+        map: this.map,
+        mapparams: this.mapParams,
+        layers: this._layers
+      });
+    });
+    webMapV3Instance.on('getlayerresourcesfailed', () => {
+      console.error('map add images failed.');
+    });
+    webMapV3Instance.on('projectionisnotmatch', () => {
+      console.error('projection is not match');
+    });
+  }
+
   _getMapInfo(mapInfo, _taskID): void {
-    const { projection } = mapInfo;
+    if (mapInfo.version === '3.0.0') {
+      this._createWebMapV3(mapInfo);
+      return;
+    }
+    const projection = mapInfo.projection;
     this.baseProjection = toEpsgCode(projection);
     if (!mapboxgl.CRS.get(this.baseProjection)) {
       // 如果不是mapboxgl支持的投影，尝试去底图的地图服务中取投影
