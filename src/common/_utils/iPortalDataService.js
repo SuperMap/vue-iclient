@@ -251,6 +251,9 @@ export default class iPortalDataService extends Events {
             type = data.content.type;
           } else if (data.type === 'EXCEL' || data.type === 'CSV') {
             features = this._excelData2Feature(data.content, queryInfo);
+          } else if (data.type === 'SHP') {
+            data.content = JSON.parse(data.content.trim());
+            features = this._formatGeoJSON(data.content.layers[0]);
           }
           features = this._transformContentFeatures(features);
           result.features = {
