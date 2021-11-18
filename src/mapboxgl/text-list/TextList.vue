@@ -125,6 +125,7 @@ import Timer from 'vue-iclient/src/common/_mixin/Timer';
 import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import merge from 'lodash.merge';
 import clonedeep from 'lodash.clonedeep';
+import isequal from 'lodash.isequal';
 import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 
 interface HeaderStyleParams {
@@ -289,8 +290,8 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   @Watch('columns')
-  columnsChanged() {
-    if (this.content || this.featuresData) {
+  columnsChanged(oldVal, newVal) {
+    if ((this.content || this.featuresData) && !isequal(oldVal, newVal)) {
       this.setDefaultSortType();
       const listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
       this.listData = this.sortContent(listData);
@@ -369,9 +370,16 @@ class SmTextList extends Mixins(Theme, Timer) {
     let autoBounds = this.getAutoRollingIndexBounds;
     if (!this.autoRolling && newVal && newVal.length && !this.clamp(newVal[0], bounds[0], bounds[1])) {
       // @ts-ignore
-      this.$refs.animate &&
+      if (this.$refs.animate) {
+        let scrollHeight = 0;
+        if (this.sortType === 'descend') {
+          scrollHeight = (this.animateContent.length - newVal[0] - 1) * this.filterUnit(this.listStyle.rowStyle.height);
+        } else {
+          scrollHeight = newVal[0] * this.filterUnit(this.listStyle.rowStyle.height);
+        }
         // @ts-ignore
-        (this.$refs.animate.scrollTop = newVal[0] * this.filterUnit(this.listStyle.rowStyle.height));
+        this.$refs.animate.scrollTop = scrollHeight;
+      }
       // @ts-ignore
     } else if (this.autoRolling) {
       if (!this.clamp(newVal[0], autoBounds[0], autoBounds[1])) {
