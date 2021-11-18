@@ -126,7 +126,7 @@ import { getColorWithOpacity } from '../../common/_utils/util';
 import merge from 'lodash.merge';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
-import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
+import SmSpin from '../../common/spin/Spin.vue';
 
 interface HeaderStyleParams {
   show?: boolean;
