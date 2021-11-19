@@ -366,19 +366,20 @@ class SmTextList extends Mixins(Theme, Timer) {
   // 切换自动滚动与排序时重置。。。
   @Watch('highlightOptions', { immediate: true, deep: true })
   highlightOptionsChanged(newVal) {
-    let bounds = this.rowsIndexViewBounds();
     let autoBounds = this.getAutoRollingIndexBounds;
-    if (!this.autoRolling && newVal && newVal.length && !this.clamp(newVal[0], bounds[0], bounds[1])) {
+    if (!this.autoRolling && newVal && newVal.length) {
       // @ts-ignore
       if (this.$refs.animate) {
         let scrollHeight = 0;
-        if (this.sortType === 'descend') {
-          scrollHeight = (this.animateContent.length - newVal[0] - 1) * this.filterUnit(this.listStyle.rowStyle.height);
-        } else {
-          scrollHeight = newVal[0] * this.filterUnit(this.listStyle.rowStyle.height);
+        let dataIndex = this.animateContent.findIndex((item, index) => {
+          // @ts-ignore
+          return item.idx === newVal[0];
+        })
+        if (dataIndex || dataIndex === 0) {
+          scrollHeight = dataIndex * this.filterUnit(this.listStyle.rowStyle.height);
+          // @ts-ignore
+          this.$refs.animate.scrollTop = scrollHeight;
         }
-        // @ts-ignore
-        this.$refs.animate.scrollTop = scrollHeight;
       }
       // @ts-ignore
     } else if (this.autoRolling) {
