@@ -91,7 +91,10 @@ supermap.MapvLayer = () => {
 };
 const dataflowFeature = {
   'type': 'Point',
-  'coordinates': [116.588918, 40.07108]
+  'coordinates': [116.588918, 40.07108],
+  'properties': {
+    'id': 1
+  }
 };
 const dataflowData = JSON.stringify(dataflowFeature);
 supermap.DataFlowService = serviceUrl => {

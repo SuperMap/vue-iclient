@@ -42,9 +42,7 @@ import {
   webmap_wmtsLayer,
   webmap_xyzLayer,
   webmap_mapboxstyleLayer,
-  webmap_migrationLayer,
-  administrative_data,
-  mapInfo_data
+  webmap_migrationLayer
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -447,10 +445,6 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(prj_data))));
       } else if (url.indexOf('/World/datasets/Countries') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(dataset_data))));
-      } else if (url.indexOf('/dataviz/libs/administrative_data') > -1) {
-        process.nextTick(() => resolve(new Response(JSON.stringify(administrative_data))));
-      } else if (url.indexOf('0123/web/maps/123/map.json') > -1) {
-        process.nextTick(() => resolve(new Response(JSON.stringify(mapInfo_data))));
       } else {
         process.nextTick(() => reject('未匹配到'));
       }
@@ -600,16 +594,11 @@ var GetFeaturesBySQLService = (SuperMap.GetFeaturesBySQLService = (url, options)
       } else {
         returnData = results;
       }
-      setTimeout(() => {
+      // setTimeout(() => {
         getFeatureEvent.emit('processCompleted', returnData);
-      }, 0);
+      // }, 0);
     }
   };
-});
-var processAsync = (SuperMap.GetFeaturesBySQLService.processAsync = getFeatureBySQLParams => {
-  setTimeout(() => {
-    getFeatureEvent.emit('processCompleted', results);
-  }, 0);
 });
 
 var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
@@ -647,7 +636,9 @@ var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
       options.eventListeners.processFailed('get features faild');
     }
   }
-  getFeatureEvent.on('processCompleted', options.eventListeners.processCompleted);
+  const processAsync = (getFeatureBySQLParams => {
+      getFeatureEvent.emit('processCompleted', results);
+  });
   return {
     // queryBySQL: queryBySQL,
     processAsync: processAsync

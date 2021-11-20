@@ -2,6 +2,7 @@ import WebMapViewModel from '../WebMapViewModel.ts';
 import flushPromises from 'flush-promises';
 import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_serviceProxy.json';
 import layerData from '../../../../test/unit/mocks/data/layerData.json';
+import layerData_geojson from '../../../../test/unit/mocks/data/layerData_geojson.json';
 import uniqueLayer_polygon from '../../../../test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
 import vectorLayer_point from '../../../../test/unit/mocks/data/WebMap/vectorLayer_point.json';
 import vectorLayer_line from '../../../../test/unit/mocks/data/WebMap/vectorLayer_line.json';
@@ -366,10 +367,9 @@ describe('WebMapViewModel.spec', () => {
     done();
   });
 
-  // 报错Cannot read property 'text' of undefined
   it('add markerLayer', async done => {
     const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData_geojson
     };
     mockFetch(fetchResource);
     const id = markerLayer;
@@ -379,8 +379,36 @@ describe('WebMapViewModel.spec', () => {
     await flushPromises();
     viewModel.map.fire('load');
     await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
-    done();
+    setTimeout(() => {
+      expect(callback.mock.called).toBeTruthy;
+      done();
+    }, 100);
+  });
+
+  it('add markerLayer url is error', async done => {
+    window.canvg = (a, b, c) => {
+      c.renderCallback();
+    };
+    const newLayerData_geojson = {
+      ...layerData_geojson,
+      content:
+        '{"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"fillColor":"#FFF","fillOpacity":"0.6","strokeColor":"#fff","strokeOpacity":"0,6","strokeWidth":"400","src":"apps/dataviz/static/imgs/markers/mark_red.svg","scale":1,"anchor":[0.5,0.5],"imgWidth":48,"imgHeight":43},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[103.59008789062496,30.31598771855792]}}]}'
+    };
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': newLayerData_geojson
+    };
+    mockFetch(fetchResource);
+    const id = markerLayer;
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(id, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    viewModel.map.fire('load');
+    await flushPromises();
+    setTimeout(() => {
+      expect(callback.mock.called).toBeTruthy;
+      done();
+    }, 100);
   });
 
   it('add migrationLayer', async done => {
@@ -415,7 +443,6 @@ describe('WebMapViewModel.spec', () => {
     done();
   });
 
-  // 报错 Cannot read property 'id' of undefined
   it('add DATAFLOW_POINT_TRACKLayer', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
@@ -453,7 +480,8 @@ describe('WebMapViewModel.spec', () => {
               }
             ]
           },
-          getSource: () => jest.fn()
+          getSource: () => jest.fn(),
+          setData: () => jest.fn()
         };
       }
     };
@@ -509,8 +537,10 @@ describe('WebMapViewModel.spec', () => {
     done();
   });
 
-  // _createGraphicLayer 1018
   it('add DATAFLOW_POINT_TRACKLayer with style is SVG_POINT', async done => {
+    window.canvg = (a, b, c) => {
+      c.renderCallback();
+    };
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
     };
@@ -550,9 +580,11 @@ describe('WebMapViewModel.spec', () => {
   });
 
   // public Func
-  xit('resize', async () => {
+  it('resize map', async () => {
     const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
+      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(commonId, commonOption, commonMapOptions, commonMap);
@@ -576,7 +608,7 @@ describe('WebMapViewModel.spec', () => {
     expect(spy).toBeCalled();
   });
 
-  xit('setCrs', async () => {
+  it('setCrs', async () => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
@@ -629,7 +661,6 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(commonId, commonOption, commonMapOptions, commonMap);
     const spy = jest.spyOn(viewModel.map, 'setCRS');
     await flushPromises();
-    expect(viewModel.mapOptions.crs).toBeUndefined();
     viewModel.setCrs(crs);
     expect(viewModel.mapOptions.crs).not.toBeUndefined();
     expect(spy).toBeCalled();
@@ -796,72 +827,13 @@ describe('WebMapViewModel.spec', () => {
   });
 
   // 在 MD 调用
-  const layerInfo = {
-    layerID: 'style1',
-    layerType: 'restMap',
-    visible: false,
-    featureType: 'POINT',
-    style: {
-      radius: 6,
-      fillColor: '#ff0000',
-      fillOpacity: 0.9,
-      strokeColor: '#ffffff',
-      strokeWidth: 1,
-      strokeOpacity: 1,
-      lineDash: 'solid',
-      symbolType: 'svg',
-      type: 'POLYGON'
-    },
-    labelStyle: {},
-    projection: 'EPSG:3857'
-  };
-  const features = [
-    {
-      geometry: { type: 'Point', coordinates: [0, 1] },
-      properties: {
-        title: '老虎海',
-        subtitle: '树正沟景点-老虎海',
-        imgUrl: './laohuhai.png',
-        description: '老虎海海拔2298米',
-        index: 1
-      },
-      type: 'Feature',
-      bounds: {
-        left: 10,
-        top: 10,
-        bottom: 10,
-        right: 10
-      },
-      coordUnit: 'm',
-      visibleScales: 18,
-      url: 'http://test'
-    }
-  ];
-
-  // 有报错 堆栈溢出
   it('updateOverlayLayer mvt', async () => {
-    // const fetchResource = {
-    //   'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
-    //   'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
-    //   'https://fakeiportal.supermap.io/iportal/': layerData
-    // };
-    // mockFetch(fetchResource);
-    const FetchRequest = jest.spyOn(SuperMap.FetchRequest, 'get');
-    FetchRequest.mockImplementation(url => {
-      return new Promise((resolve, reject) => {
-        if (url == 'https://fakeiportal.supermap.io/iportal/web/config/portal.json') {
-          resolve(new Response(JSON.stringify(iportal_serviceProxy)));
-        }
-        if (
-          url ==
-          'http://test/tileFeature.mvt?&returnAttributes=true&width=512&height=512&x={x}&y={y}&scale={scale}&origin={x:undefined,y:undefined}'
-        ) {
-          resolve(new Response(JSON.stringify(layerData)));
-        } else {
-          reject('未匹配到');
-        }
-      });
-    });
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
+      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+    };
+    mockFetch(fetchResource);
     const map = {
       ...commonMap,
       getSource: () => {
@@ -876,11 +848,26 @@ describe('WebMapViewModel.spec', () => {
           }
         };
       },
-      getLayer: () => {
-        return {
-          a: 1
-        };
-      }
+      getLayer: () => ''
+    };
+    const layerInfo = {
+      layerID: 'style1',
+      layerType: 'restMap',
+      visible: false,
+      featureType: 'POINT',
+      style: {
+        radius: 6,
+        fillColor: '#ff0000',
+        fillOpacity: 0.9,
+        strokeColor: '#ffffff',
+        strokeWidth: 1,
+        strokeOpacity: 1,
+        lineDash: 'solid',
+        symbolType: 'svg',
+        type: 'POLYGON'
+      },
+      labelStyle: {},
+      projection: 'EPSG:3857'
     };
     const viewModel = new WebMapViewModel(commonId, commonOption, commonMapOptions, map);
     await flushPromises();

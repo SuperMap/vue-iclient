@@ -2387,75 +2387,6 @@ const marker_data = {
 const wmsCapabilitiesText =
   '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE WMT_MS_Capabilities SYSTEM "http://192.168.11.94:8090/iserver/services/map-world/wms111?request=getdtd&file=wms,1.1.1,capabilities_1_1_1.dtd"><WMT_MS_Capabilities version="1.1.1"><Service><Name>OGC:WMS</Name><Title>map-world_wms111</Title><Abstract>北京超图软件股份有限公司提供的 WMS 服务. 联系方式: support@supermap.com</Abstract><KeywordList><Keyword>iServer</Keyword></KeywordList><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /><ContactInformation><ContactPersonPrimary><ContactPerson>联系人姓名</ContactPerson><ContactOrganization>北京超图软件股份有限公司</ContactOrganization></ContactPersonPrimary><ContactPosition /><ContactAddress><AddressType>postal</AddressType><Address>北京市朝阳区酒仙桥北路甲10号院电子城IT产业园107号楼6层</Address><City>北京</City><StateOrProvince>北京</StateOrProvince><PostCode>100015</PostCode><Country>中国</Country></ContactAddress><ContactVoiceTelephone>+86-10-59896655</ContactVoiceTelephone><ContactFacsimileTelephone>+86-10-59896666</ContactFacsimileTelephone><ContactElectronicMailAddress>support@supermap.com</ContactElectronicMailAddress></ContactInformation><Fees>none</Fees><AccessConstraints>none</AccessConstraints></Service><Capability><Request><GetCapabilities><Format>application/vnd.ogc.wms_xml</Format><Format>text/xml</Format><Format>text/html</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /></Get><Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /></Post></HTTP></DCPType></GetCapabilities><GetMap><Format>image/png</Format><Format>image/bmp</Format><Format>image/jpeg</Format><Format>image/gif</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /></Get></HTTP></DCPType></GetMap><GetFeatureInfo><Format>application/vnd.ogc.wms_xml</Format><Format>text/xml</Format><Format>text/html</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://192.168.11.94:8090/iserver/services/map-world/wms111?" xlink:type="simple" /></Get></HTTP></DCPType></GetFeatureInfo></Request><Exception><Format>application/vnd.ogc.se_xml</Format><Format>XML</Format></Exception><UserDefinedSymbolization SupportSLD="1" UserLayer="0" UserStyle="1" RemoteWFS="0" /><Layer queryable="0"><Title /><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.003750834279726E7" maxy="2.0037508342789244E7" /><Layer queryable="1"><Name>0</Name><Title>世界地图_Day</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.003750834279726E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>1</Name><Title>World</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>2</Name><Title>世界地图_Gray</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>3</Name><Title>世界地图</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>4</Name><Title>World Map</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>5</Name><Title>世界地图_Night</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>6</Name><Title>World_Common</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:4326" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:3857" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:0" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /></Layer><Layer queryable="1"><Name>7</Name><Title>World_Robinson</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:4326" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:3857" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:0" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /></Layer><Layer queryable="1"><Name>8</Name><Title>World_VanderGrintenI</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:4326" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:0" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /></Layer><Layer queryable="1"><Name>9</Name><Title>World_AirLine_Part</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /><BoundingBox SRS="EPSG:0" minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /></Layer></Layer></Capability></WMT_MS_Capabilities>';
 
-const administrative_data = window.ProvinceData = {
-  features: [{
-  geometry: {
-    coordinates: [[[[113.5872766800001, 22.16493972869857], [113.5980630750001, 22.13509586869991]]],[[[113.5511133950001, 22.21679186869615], [113.5623058550001, 22.1994578386969]]]],
-    type: 'MultiPolygon'
-  },
-  properties: {Name: '澳门特别行政区', UserID: 0},
-  type: 'Feature'
-  }],
-  type: 'FeatureCollection'
-};
-
-const mapInfo_data = {
-  baseLayer: { layerType: 'TILE', visible: true, name: 'China', url: 'https://test/map-china400/rest/maps/China' },
-  center: { x: 11240286, y: 4193987 },
-  description: '',
-  extent: {
-    leftBottom: {
-      x: -20037508,
-      y: -20037508
-    },
-    rightTop: {
-      x: 20037508,
-      y: 20037508
-    }
-  },
-  layers: [{
-    name: 'layer1'
-  }],
-  level: 5,
-  mapParams: { title: 'China', description: '' },
-  maxScale: '1:144447',
-  minScale: '1:591658710',
-  minzoom: 19,
-  maxzoom: 1,
-  projection: 'EPSG:3857',
-  grid: {
-    graticule: {
-      extent: [-20037508.3427892, -20037508.3427892, 20037508.3427892, 20037508.3427892],
-      interval: [5],
-      latLabelStyle: {
-        fill: '#000000',
-        fontFamily: 'Calibri,sans-serif',
-        fontSize: '12px',
-        outlineColor: 'rgba(255,255,255,0.85)',
-        outlineWidth: 3,
-        textBaseline: 'bottom'
-      },
-      lineDash: [0.5, 4],
-      lonLabelStyle: {
-        fill: '#000000',
-        fontFamily: 'Calibri,sans-serif',
-        fontSize: '12px',
-        outlineColor: 'rgba(255,255,255,0.85)',
-        outlineWidth: 3,
-        textBaseline: 'bottom'
-      },
-      strokeColor: '#1464A1',
-      strokeWidth: 2
-    }
-  },
-  rootUrl: 'https://test/',
-  title: 'China',
-  version: '2.2.1',
-  succeed: true
-};
-
-const no_mapInfo_data = '';
-
 module.exports = {
   fakeDataServiceResult,
   fakeMapServiceResult,
@@ -2503,8 +2434,5 @@ module.exports = {
   webmap_mapboxstyleLayer,
   webmap_migrationLayer,
   webmap_rangeLayer,
-  wmsCapabilitiesText,
-  administrative_data,
-  mapInfo_data,
-  no_mapInfo_data
+  wmsCapabilitiesText
 };

@@ -339,6 +339,9 @@ var Map = function (options) {
   this.setFilter = function (layerId, filter) {};
   this.getLayer = function (id) {
     if(this.overlayLayersManager[id]) {
+      if(id === 'POINT-0'){
+        return ''
+      }
       return this.overlayLayersManager[id];
     }
     else if(this._layers[id]) {
@@ -536,9 +539,7 @@ var Map = function (options) {
     return this.zoom;
   };
   this.loadImage = function (src, callback) {
-    setTimeout(function () {
       callback(null, [1, 2, 3]);
-    }, 10);
   };
   this.addImage = function () {};
   this.hasImage = function () {

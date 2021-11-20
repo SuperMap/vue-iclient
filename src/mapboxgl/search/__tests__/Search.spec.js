@@ -124,7 +124,8 @@ describe('Search.vue', () => {
   it('restData', async done => {
     const fetchResource = {
       'https://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos.json?keywords=北京市&city=北京市&pageSize=10&pageNum=1&key=fvV2osxwuZWlY0wJb8FEb2i5': search_cityConfig,
-      'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson?returnAll=true': featuresInfo
+      'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson?returnAll=true': featuresInfo,
+      'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data/datasources/World/datasets/Countries': featuresInfo,
     };
     mockFetch(fetchResource);
     wrapper = mount(SmSearch, {
