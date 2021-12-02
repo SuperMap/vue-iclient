@@ -26,7 +26,9 @@ function MapboxDraw() {
         ]
       };
     },
-    getSelectedIds: function() {},
+    getSelectedIds: function() {
+      return [];
+    },
     onRemove: function() {},
     onAdd: function() {}
   };

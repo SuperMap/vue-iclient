@@ -475,7 +475,7 @@ var Map = function (options) {
       (memo, name) => memo.concat(this._sources[name].data.features),
       []
     );
-    features = features.filter(feature => {
+    var filterFeatures = features.filter(feature => {
       var subFeatures = [];
 
       if (feature && feature.geometry && feature.geometry.type.startsWith('Multi')) {
@@ -519,7 +519,11 @@ var Map = function (options) {
       });
     });
 
-    return features;
+    if(filterFeatures && filterFeatures.length) {
+      return filterFeatures;
+    } else {
+      return features
+    }
   };
 
   this.remove = function () {

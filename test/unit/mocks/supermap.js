@@ -45,7 +45,7 @@ import {
   webmap_migrationLayer
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-
+var Evented = require('mapbox-gl/src/util/evented');
 var SuperMap = (window.SuperMap = window.SuperMap || {});
 
 SuperMap.SpatialQueryMode = {
@@ -595,7 +595,7 @@ var GetFeaturesBySQLService = (SuperMap.GetFeaturesBySQLService = (url, options)
         returnData = results;
       }
       // setTimeout(() => {
-        getFeatureEvent.emit('processCompleted', returnData);
+      getFeatureEvent.emit('processCompleted', returnData);
       // }, 0);
     }
   };
@@ -636,13 +636,76 @@ var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
       options.eventListeners.processFailed('get features faild');
     }
   }
-  const processAsync = (getFeatureBySQLParams => {
-      getFeatureEvent.emit('processCompleted', results);
-  });
+  const processAsync = getFeatureBySQLParams => {
+    getFeatureEvent.emit('processCompleted', results);
+  };
   return {
     // queryBySQL: queryBySQL,
     processAsync: processAsync
   };
 });
+var VideoMap = (SuperMap.VideoMap = function ({ src, videoWidth, videoHeight, videoParameters }) {
+  var evented = new Evented();
+  this.on = evented.on;
+  this.fire = evented.fire;
+  this.listens = evented.listens;
+  setTimeout(() => {
+    this.fire('load');
+  }, 200);
+  let _self = this;
+  return {
+    addControl() {},
+    removeControl() {},
+    setVideoParameters() {},
+    play() {},
+    pause() {},
+    destroy() {},
+    on(event, callback) {
+      _self.on(event, callback);
+    }
+  };
+});
 
+var GeojsonLayer = (SuperMap.GeojsonLayer = function () {
+  return {
+    setData() {},
+    remove() {},
+    add() {}
+  };
+});
+
+var VideoMapDraw = (SuperMap.VideoMapDraw = function () {});
+
+var VideoMarker = (SuperMap.VideoMarker = function () {
+  var evented = new Evented();
+  this.on = evented.on;
+  this.fire = evented.fire;
+  this.listens = evented.listens;
+  let _self = this;
+  return {
+    setCoordinate() {},
+    addToMap() {},
+    setDraggable() {},
+    togglePopup() {},
+    on(event, callback) {
+      _self.on(event, callback);
+    }
+  };
+});
+
+var VideoPopup = (SuperMap.VideoPopup = function () {
+  var evented = new Evented();
+  this.on = evented.on;
+  this.fire = evented.fire;
+  this.listens = evented.listens;
+  let _self = this;
+  return {
+    setDOMContent() {},
+    setCoordinate() {},
+    addToMap() {},
+    on(event, callback) {
+      _self.on(event, callback);
+    }
+  };
+});
 module.exports = SuperMap;
