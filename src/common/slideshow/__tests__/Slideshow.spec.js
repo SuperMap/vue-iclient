@@ -16,10 +16,6 @@ describe('Slideshow.vue', () => {
     }
   });
 
-  it('render default correctly', () => {
-    wrapper = mount(SmSlideshow);
-  });
-
   it('change props', async () => {
     wrapper = mount(Slideshow);
     expect(wrapper.find('.sm-component-slideshow').exists()).toBe(true);
@@ -80,6 +76,7 @@ describe('Slideshow.vue', () => {
   });
 
   it('change activeIndex', async () => {
+    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     wrapper = mount({
       template: `
         <div style="width:100px;height:100px">
@@ -135,6 +132,11 @@ describe('Slideshow.vue', () => {
     expect(slideshowWrapper.vm.activeIndex).toBe(0);
     await wrapper.vm.changeActiveIndex(9);
     expect(slideshowWrapper.vm.activeIndex).toBe(9);
+    expect(errorSpy.mock.calls).toHaveLength(1);
+    expect(errorSpy.mock.calls[0][0]).toMatch(
+      "ActiveIndex is greater than the total number of slides"
+    );
+    errorSpy.mockReset();
   });
 
   it('change activeIndex when loop is false', async () => {
@@ -188,9 +190,9 @@ describe('Slideshow.vue', () => {
       template: `
         <div style="width:100px;height:100px">
           <sm-slideshow
+            :activeIndex="activeIndex"
             :collapsed="false"
             :pagination="pagination"
-            :scrollbar="scrollbar"
             :navigation="navigation"
             style="position: absolute; top: 40px; left: 30px; width: 400px; height: 390px; border-radius: 4px"
           >
@@ -206,11 +208,9 @@ describe('Slideshow.vue', () => {
       },
       data() {
         return {
+          activeIndex: 0,
           pagination: {
             el: '.swiper-pagination'
-          },
-          scrollbar: {
-            el: '.swiper-scrollbar'
           },
           navigation: {
             prevEl: '.swiper-button-prev',
@@ -227,7 +227,6 @@ describe('Slideshow.vue', () => {
     wrapper.vm.$nextTick(()=> {
       expect(wrapper.find('.sm-component-slideshow').exists()).toBe(true);
       expect(wrapper.find('.swiper-pagination').exists()).toBe(true);
-      expect(wrapper.find('.swiper-scrollbar').exists()).toBe(true);
       expect(wrapper.find('.swiper-button-prev').exists()).toBe(true);
       expect(wrapper.find('.swiper-button-next').exists()).toBe(true);
       done();

@@ -1,104 +1,91 @@
-import { getType, getNativeType, has, isInteger, isArray, withDefault, withRequired, validateType  } from '../utils';
+import { getType, getNativeType, has, isInteger, isArray, withDefault, withRequired, validateType, toType } from '../utils';
 
 describe('vue-types utils test', () => {
-  beforeAll(() => {});
-  it('getType null', done => {
+  it('getType null', () => {
     const res = getType(null);
     expect(res).toBeNull();
-    done();
   });
-  it('getNativeType null', done => {
+
+  it('getNativeType null', () => {
     const res = getNativeType(null);
     expect(res).toBeNull();
-    done();
   });
-  it('getNativeType undefined', done => {
+
+  it('getNativeType undefined', () => {
     const res = getNativeType();
     expect(res).toBeNull();
-    done();
   });
 
-  it('has', done => {
+  it('has', () => {
     const res = has({ a: 1 }, 'a');
     expect(res).toBe(true);
-    done();
-  });
-  it('has not', done => {
-    const res = has({ a: 1 }, 'b');
-    expect(res).toBe(false);
-    done();
   });
 
-  it('withDefault def function ', done => {
+  it('has not', () => {
+    const res = has({ a: 1 }, 'b');
+    expect(res).toBe(false);
+  });
+
+  it('withDefault def function ', () => {
     const obj = { def: () => {} };
     withDefault(obj);
     expect(typeof obj.def).toBe('function');
-    done();
   });
 
-  it('withDefault def num ', done => {
+  it('withDefault def num ', () => {
     const obj = { def: 5 };
     withDefault(obj);
     expect(typeof obj.def).toBe('function');
-    done();
   });
-  it('withRequired  get ', done => {
+
+  it('withRequired get ', () => {
     const obj = { a: 5 };
     withRequired(obj);
     expect(obj.isRequired.a).toBe(obj.a);
     expect(obj.isRequired.required).toBe(true);
-    done();
   });
 
-  xit('validateType function ', done => {
-    const res =validateType('function', function(){});
+  it('validateType Function ', () => {
+    const res = validateType(Function, function a() {});
     expect(res).toBe(true);
-    done();
   });
 
-  it('validateType object ', done => {
+  it('validateType object ', () => {
     const obj = { a: 5 };
-    const res =validateType({}, obj);
+    const res = validateType(Object, obj);
     expect(res).toBe(true);
-    done();
-  });
-  it('validateType false slient ', done => {
-    const obj = { a: 5 };
-    const res =validateType([], obj, true);
-    expect(res).toBe(false);
-    done();
   });
 
-  it('validateType false ', done => {
-    const obj = { a: 5 };
-    const res =validateType([], obj);
-    expect(res).toBe(false);
-    done();
+  it('validateType Array', () => {
+    const res = validateType([Array], []);
+    expect(res).toBe(true);
   });
-  it('isInteger not', done => {
+
+  it('validateType false', () => {
+    const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    const obj = { a: 5 };
+    const res = validateType([], obj);
+    expect(warnSpy.mock.calls).toHaveLength(1);
+    expect(res).toBe(false);
+  });
+
+  it('isInteger not', () => {
     Number.isInteger = null;
     const res = isInteger('b');
     expect(res).toBe(false);
-    done();
   });
-  it('isInteger int', done => {
+
+  it('isInteger int', () => {
     Number.isInteger = null;
     const res = isInteger(5);
     expect(res).toBe(true);
-    done();
   });
 
-  it('isArray ', done => {
-    Array.isArray = null;
-    const res = isArray([]);
-    expect(res).toBe(true);
-    done();
+  it('toType ', () => {
+    const name = 'test';
+    const obj = {
+      validator: () => fn()
+    };
+    expect(toType(name, obj)).not.toBeNull();
   });
-  it('isArray ', done => {
-    Array.isArray = null;
-    const res = isArray({});
-    expect(res).toBe(false);
-    done();
-  });
-  afterAll(() => {});
 });
