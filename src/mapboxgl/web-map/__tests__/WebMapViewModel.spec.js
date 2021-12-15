@@ -368,6 +368,9 @@ describe('WebMapViewModel.spec', () => {
   });
 
   it('add markerLayer', async done => {
+    window.canvg = (a, b, c) => {
+      c.renderCallback();
+    };
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData_geojson
     };
@@ -377,15 +380,13 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(id, commonOption);
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
-    viewModel.map.fire('load');
-    await flushPromises();
     setTimeout(() => {
       expect(callback.mock.called).toBeTruthy;
       done();
     }, 100);
   });
 
-  it('add markerLayer url is error', async done => {
+  it('markerLayer url is error', async done => {
     window.canvg = (a, b, c) => {
       c.renderCallback();
     };

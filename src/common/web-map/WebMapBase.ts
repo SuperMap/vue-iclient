@@ -566,20 +566,24 @@ export default abstract class WebMapBase extends Events {
     canvas.id = `dataviz-canvas-${new Date().getTime()}`;
     canvas.style.display = 'none';
     divDom.appendChild(canvas);
-    const canvgs = window.canvg ? window.canvg : canvg;
-    canvgs(canvas.id, svgUrl, {
-      ignoreMouse: true,
-      ignoreAnimation: true,
-      renderCallback: () => {
-        if (canvas.width > 300 || canvas.height > 300) {
-          return;
+    if (svgUrl) {
+      const canvgs = window.canvg ? window.canvg : canvg;
+      canvgs(canvas.id, svgUrl, {
+        ignoreMouse: true,
+        ignoreAnimation: true,
+        renderCallback: () => {
+          if (canvas.width > 300 || canvas.height > 300) {
+            return;
+          }
+          callBack(canvas);
+        },
+        forceRedraw: () => {
+          return false;
         }
-        callBack(canvas);
-      },
-      forceRedraw: () => {
-        return false;
-      }
-    });
+      });
+    } else {
+      callBack(canvas);
+    }
   }
 
   protected getRangeStyleGroup(layerInfo: any, features: any): Array<any> | void {
@@ -736,9 +740,127 @@ export default abstract class WebMapBase extends Events {
     return features;
   }
 
+  private _drawTextRectAndGetSize({ context, style, textArray, lineHeight, doublePadding, canvas }) {
+    let backgroundFill = style.backgroundFill;
+    const maxWidth = style.maxWidth - doublePadding;
+    let width = 0;
+    let height = 0;
+    let lineCount = 0;
+    let lineWidths = [];
+    // 100的宽度，去掉左右两边3padding
+    textArray.forEach((arrText: string) => {
+      let line = '';
+      let isOverMax = false;
+      lineCount++;
+      for (let n = 0; n < arrText.length; n++) {
+        let textLine = line + arrText[n];
+        let metrics = context.measureText(textLine);
+        let textWidth = metrics.width;
+        if ((textWidth > maxWidth && n > 0) || arrText[n] === '\n') {
+          line = arrText[n];
+          lineCount++;
+          // 有换行，记录当前换行的width
+          isOverMax = true;
+        } else {
+          line = textLine;
+          width = textWidth;
+        }
+      }
+      if(isOverMax) {
+        lineWidths.push(maxWidth);
+      } else {
+        lineWidths.push(width);
+      }
+    }, this);
+    for (let i = 0; i < lineWidths.length; i++) {
+      let lineW = lineWidths[i];
+      if(lineW >= maxWidth) {
+        // 有任何一行超过最大高度，就用最大高度
+        width = maxWidth;
+        break;
+      } else if(lineW > width) {
+        // 自己换行，就要比较每行的最大宽度
+        width = lineW;
+      }
+    }
+    width += doublePadding;
+    // -6 是为了去掉canvas下方多余空白，让文本垂直居中
+    height = lineCount * lineHeight + doublePadding - 6;
+    canvas.width = width;
+    canvas.height = height;
+    context.fillStyle = backgroundFill;
+    context.fillRect(0, 0, width, height);
+    context.lineWidth = style.borderWidth;
+    context.strokeStyle = style.borderColor;
+    context.strokeRect(0, 0, width, height);
+    return {
+      width: width,
+      height: height
+    };
+  }
+
+  private _drawTextWithCanvas({ context, canvas, style }) {
+    const padding = 8;
+    const doublePadding = padding * 2;
+    const lineHeight = Number(style.font.replace(/[^0-9]/ig, '')) + 3;
+    const textArray = style.text.split('\r\n');
+    context.font = style.font;
+    const size = this._drawTextRectAndGetSize({ context, style, textArray, lineHeight, doublePadding, canvas });
+    let positionY = padding;
+    textArray.forEach((text: string, i: number) => {
+      if(i !== 0) {
+        positionY = positionY + lineHeight;
+      }
+      context.font = style.font;
+      let textAlign = style.textAlign;
+      let x: number;
+      const width = size.width - doublePadding; // 减去padding
+      switch (textAlign) {
+        case 'center':
+          x = width / 2;
+          break;
+        case 'right':
+          x = width;
+          break;
+        default:
+          x = 8;
+          break;
+      }
+      // 字符分隔为数组
+      const arrText = text.split('');
+      let line = '';
+      const fillColor = style.fillColor;
+      // 每一行限制的高度
+      let maxWidth = style.maxWidth - doublePadding;
+      for (let n = 0; n < arrText.length; n++) {
+        let testLine = line + arrText[n];
+        let metrics = context.measureText(testLine);
+        let testWidth = metrics.width;
+        if ((testWidth > maxWidth && n > 0) || arrText[n] === '\n') {
+          context.fillStyle = fillColor;
+          context.textAlign = textAlign;
+          context.textBaseline = 'top';
+          context.fillText(line, x, positionY);
+          line = arrText[n];
+          positionY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      context.fillStyle = fillColor;
+      context.textAlign = textAlign;
+      context.textBaseline = 'top';
+      context.fillText(line, x, positionY);
+    }, this);
+  }
+
   protected handleSvgColor(style, canvas) {
     const { fillColor, fillOpacity, strokeColor, strokeOpacity, strokeWidth } = style;
     const context = canvas.getContext('2d');
+    if (style.text) {
+      this._drawTextWithCanvas({ context, canvas, style });
+      return;
+    }
     if (fillColor) {
       context.fillStyle = getColorWithOpacity(fillColor, fillOpacity);
       context.fill();
