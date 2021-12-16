@@ -47,11 +47,9 @@ describe('Progress.vue', () => {
     expect(wrapper.vm.calWidth).toBe(0);
     expect(wrapper.vm.type).toBe('circle');
     await wrapper.setProps({
-      propsData: {
         type: 'circle',
         size: 3,
         percent: '50'
-      }
     })
     expect(wrapper.vm.calWidth).toBe(3);
   })
