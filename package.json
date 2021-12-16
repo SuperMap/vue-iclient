@@ -180,7 +180,7 @@
     "mapbox-gl": "0.44.1",
     "mini-css-extract-plugin": "^0.5.0",
     "nightwatch": "^0.9.16",
-    "node-notifier": "^5.3.0",
+    "node-notifier": "^10.0.0",
     "node-sass": "^4.11.0",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "ora": "^3.0.0",
