@@ -78,6 +78,14 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   })
   headerName: string;
 
+  get autoplayParameter() {
+    if (typeof this.autoplay === 'object') {
+      return { ...this.autoplay, disableOnInteraction: false };
+    } else {
+      return this.autoplay;
+    }
+  }
+
   get swiperOptions() {
     let options: swiperOptionsType = {
       initialSlide: this.defaultActiveIndex,
@@ -88,7 +96,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       grabCursor: this.grabCursor,
       mousewheel: this.mousewheel,
       keyboard: this.keyboard,
-      autoplay: this.autoplay,
+      autoplay: this.autoplayParameter,
       effect: this.effect,
       observer: true,
       observeParents: true,
@@ -180,8 +188,8 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   _observerUpdate(swiper) {
-    if (swiper.type === 'childList' && swiper.target === document.body) {
-      this.goTo(this.swiper.realIndex, 0);
+    if (swiper.type === 'childList') {
+      this.goTo(this.swiper.realIndex, 300);
     }
   }
 

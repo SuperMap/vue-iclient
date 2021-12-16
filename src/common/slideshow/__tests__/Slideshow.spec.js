@@ -75,7 +75,7 @@ describe('Slideshow.vue', () => {
     expect(slideshowWrapper.exists()).toBe(true);
   });
 
-  it('change activeIndex', async () => {
+  it('change activeIndex', async (done) => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
     wrapper = mount({
       template: `
@@ -106,37 +106,40 @@ describe('Slideshow.vue', () => {
         }
       }
     });
-    const slideshowWrapper = wrapper.find('.sm-component-slideshow');
-    expect(slideshowWrapper.exists()).toBe(true);
-    await wrapper.vm.changeActiveIndex(1);
-    expect(slideshowWrapper.vm.activeIndex).toBe(1);
-    await wrapper.vm.changeActiveIndex(5);
-    expect(slideshowWrapper.vm.activeIndex).toBe(5);
-    await wrapper.vm.changeActiveIndex(2);
-    expect(slideshowWrapper.vm.activeIndex).toBe(2);
-    await wrapper.vm.changeActiveIndex(3);
-    expect(slideshowWrapper.vm.activeIndex).toBe(3);
-    await wrapper.vm.changeActiveIndex(4);
-    expect(slideshowWrapper.vm.activeIndex).toBe(4);
-    await wrapper.vm.changeActiveIndex(3);
-    expect(slideshowWrapper.vm.activeIndex).toBe(3);
-    await wrapper.vm.changeActiveIndex(2);
-    expect(slideshowWrapper.vm.activeIndex).toBe(2);
-    await wrapper.vm.changeActiveIndex(7);
-    expect(slideshowWrapper.vm.activeIndex).toBe(7);
-    await wrapper.vm.changeActiveIndex(0);
-    expect(slideshowWrapper.vm.activeIndex).toBe(0);
-    await wrapper.vm.changeActiveIndex(7);
-    expect(slideshowWrapper.vm.activeIndex).toBe(7);
-    await wrapper.vm.changeActiveIndex(0);
-    expect(slideshowWrapper.vm.activeIndex).toBe(0);
-    await wrapper.vm.changeActiveIndex(9);
-    expect(slideshowWrapper.vm.activeIndex).toBe(9);
-    expect(errorSpy.mock.calls).toHaveLength(1);
-    expect(errorSpy.mock.calls[0][0]).toMatch(
-      "ActiveIndex is greater than the total number of slides"
-    );
-    errorSpy.mockReset();
+    wrapper.vm.$nextTick(async () => {
+      const slideshowWrapper = wrapper.find('.sm-component-slideshow');
+      expect(slideshowWrapper.exists()).toBe(true);
+      await wrapper.vm.changeActiveIndex(1);
+      expect(slideshowWrapper.vm.activeIndex).toBe(1);
+      await wrapper.vm.changeActiveIndex(5);
+      expect(slideshowWrapper.vm.activeIndex).toBe(5);
+      await wrapper.vm.changeActiveIndex(2);
+      expect(slideshowWrapper.vm.activeIndex).toBe(2);
+      await wrapper.vm.changeActiveIndex(3);
+      expect(slideshowWrapper.vm.activeIndex).toBe(3);
+      await wrapper.vm.changeActiveIndex(4);
+      expect(slideshowWrapper.vm.activeIndex).toBe(4);
+      await wrapper.vm.changeActiveIndex(3);
+      expect(slideshowWrapper.vm.activeIndex).toBe(3);
+      await wrapper.vm.changeActiveIndex(2);
+      expect(slideshowWrapper.vm.activeIndex).toBe(2);
+      await wrapper.vm.changeActiveIndex(7);
+      expect(slideshowWrapper.vm.activeIndex).toBe(7);
+      await wrapper.vm.changeActiveIndex(0);
+      expect(slideshowWrapper.vm.activeIndex).toBe(0);
+      await wrapper.vm.changeActiveIndex(7);
+      expect(slideshowWrapper.vm.activeIndex).toBe(7);
+      await wrapper.vm.changeActiveIndex(0);
+      expect(slideshowWrapper.vm.activeIndex).toBe(0);
+      await wrapper.vm.changeActiveIndex(9);
+      expect(slideshowWrapper.vm.activeIndex).toBe(9);
+      expect(errorSpy.mock.calls).toHaveLength(1);
+      expect(errorSpy.mock.calls[0][0]).toMatch(
+        "ActiveIndex is greater than the total number of slides"
+      );
+      errorSpy.mockReset();
+      done();
+    })
   });
 
   it('change activeIndex when loop is false', async () => {
@@ -185,7 +188,7 @@ describe('Slideshow.vue', () => {
     expect(slideshowWrapper.vm.activeIndex).toBe(0);
   });
 
-  it('about slot', (done) => {
+  it('about slot', done => {
     wrapper = mount({
       template: `
         <div style="width:100px;height:100px">
@@ -215,7 +218,7 @@ describe('Slideshow.vue', () => {
           navigation: {
             prevEl: '.swiper-button-prev',
             nextEl: '.swiper-button-next'
-          },
+          }
         };
       },
       methods: {
@@ -224,12 +227,59 @@ describe('Slideshow.vue', () => {
         }
       }
     });
-    wrapper.vm.$nextTick(()=> {
+    wrapper.vm.$nextTick(() => {
       expect(wrapper.find('.sm-component-slideshow').exists()).toBe(true);
       expect(wrapper.find('.swiper-pagination').exists()).toBe(true);
       expect(wrapper.find('.swiper-button-prev').exists()).toBe(true);
       expect(wrapper.find('.swiper-button-next').exists()).toBe(true);
       done();
-    })
+    });
+  });
+
+  it('change autoplay props', async () => {
+    wrapper = mount(
+      {
+        template: `
+        <div style="width:100px;height:100px">
+          <sm-slideshow
+            :collapsed="false"
+            :autoplay="autoplay"
+            style="position: absolute; top: 40px; left: 30px; width: 400px; height: 390px; border-radius: 4px"
+          >
+            <sm-slideshow-item v-for="(item, index) of 10" :key="index">
+              <h3>{{ item }}</h3>
+            </sm-slideshow-item>
+          </sm-slideshow>
+          <sm-slideshow-item v-for="(item, index) of 10" :key="index">
+          <sm-button @click="changeAutoplay">changeAutoplay</sm-button>
+        </div>`,
+        components: {
+          SmSlideshow,
+          SmSlideshowItem,
+          SmButton
+        },
+        data() {
+          return {
+            autoplay: false
+          };
+        },
+        methods: {
+          changeAutoplay() {
+            this.autoplay = {
+              delay: 300
+            };
+          }
+        }
+      },
+      {
+        sync: false
+      }
+    );
+    const slideshowWrapper = wrapper.find('.sm-component-slideshow');
+    expect(slideshowWrapper.exists()).toBe(true);
+    expect(wrapper.vm.autoplay).toBeFalsy();
+    expect(wrapper.find('.sm-component-btn').exists()).toBe(true);
+    await wrapper.find('.sm-component-btn').trigger('click');
+    expect(wrapper.vm.autoplay.delay).toBe(300);
   });
 });
