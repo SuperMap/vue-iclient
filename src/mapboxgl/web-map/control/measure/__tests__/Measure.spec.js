@@ -86,8 +86,7 @@ describe('measure', () => {
         }
       };
       mapWrapper.vm.map.fire('mousemove', data1),
-        expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe('896.7302 unit.kilometers');
-
+      expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe('896.7302 unit.kilometers');
       let e1 = {
         features: [
           {
@@ -120,7 +119,7 @@ describe('measure', () => {
         mode: 'line',
         position: 'top-left',
         collapsed: false,
-        distanceDefaultUnit: 'meters'
+        distanceDefaultUnit: 'kilometers'
       },
       sync: false
     });
@@ -133,17 +132,9 @@ describe('measure', () => {
     jest.useFakeTimers();
     await mapSubComponentLoaded(measureWrapper);
     expect(measureWrapper.vm.mapTarget).toBe('map');
-    expect(measureWrapper.findAll('.sm-component-select-selection-selected-value').at(0).text()).toBe('meters');
+    expect(measureWrapper.findAll('.sm-component-select-selection-selected-value').at(0).text()).toBe('kilometers');
     const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
     measureWrapper.find('i.sm-components-icon-line').trigger('click');
-    await measureWrapper.setProps({
-      mapTarget: 'map',
-      mode: 'line',
-      position: 'top-left',
-      collapsed: false,
-      distanceDefaultUnit: 'kilometers'
-    })
-    expect(measureWrapper.vm.distanceDefaultUnit).toBe('kilometers');
     try {
       jest.runOnlyPendingTimers();
       expect(spychangeMode).toBeCalled();
@@ -162,7 +153,26 @@ describe('measure', () => {
         }
       };
       mapWrapper.vm.map.fire('mousemove', data1),
-        expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe('896.7302 unit.kilometers');
+      mapWrapper.vm.map.fire('mousedown', data1);
+      expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe('896.7302 unit.kilometers');
+      let data2 = {
+        lngLat: {
+          lng: 157.92559401751038,
+          lat: 49.972407560141534
+        }
+      };
+      mapWrapper.vm.map.fire('mousemove', data2);
+      expect(measureWrapper.vm.viewModel.measureNodes.length).toBe(2);
+      expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe('1986.8538 unit.kilometers');
+      await measureWrapper.setProps({
+        mapTarget: 'map',
+        mode: 'line',
+        position: 'top-left',
+        collapsed: false,
+        distanceDefaultUnit: 'meters'
+      })
+      expect(measureWrapper.vm.distanceDefaultUnit).toBe('meters');
+      expect(measureWrapper.vm.viewModel.tipHoverDiv.text).toBe('1986.8538 unit.kilometers');
       let e = {
         features: [
           {
@@ -180,7 +190,8 @@ describe('measure', () => {
         ]
       };
       mapWrapper.vm.map.fire('draw.create', e);
-
+      await measureWrapper.vm.clear();
+      expect(measureWrapper.vm.viewModel.measureNodes.length).toBe(0);
       done();
     } catch (exception) {
       console.log('measure' + exception.name + ':' + exception.message);

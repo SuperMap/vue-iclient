@@ -1,6 +1,112 @@
 import WebMapViewModel from '../WebMapViewModel.ts';
 import layerData from '../../../../test/unit/mocks/data/layerData.json';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_serviceProxy.json';
+import uniqueLayer_polygon from '../../../../test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
+import vectorLayer_point from '../../../../test/unit/mocks/data/WebMap/vectorLayer_point.json';
+import vectorLayer_line from '../../../../test/unit/mocks/data/WebMap/vectorLayer_line.json';
+import flushPromises from 'flush-promises';
+
+const commonId = 123;
+const commonOption = {
+  accessKey: undefined,
+  accessToken: undefined,
+  excludePortalProxyUrl: undefined,
+  iportalServiceProxyUrlPrefix: undefined,
+  isSuperMapOnline: undefined,
+  proxy: undefined,
+  serverUrl: 'https://fakeiportal.supermap.io/iportal',
+  target: 'map',
+  tiandituKey: undefined,
+  withCredentials: false
+};
+const commonMap = {
+  resize: () => jest.fn(),
+  getZoom: () => jest.fn(),
+  setZoom: () => jest.fn(),
+  setCRS: () => jest.fn(),
+  getCenter: () => {
+    return {
+      lng: 1,
+      lat: 2
+    };
+  },
+  setCenter: () => jest.fn(),
+  getBearing: () => 2,
+  setBearing: () => jest.fn(),
+  getPitch: () => 2,
+  setPitch: () => jest.fn(),
+  getStyle: () => {
+    return {
+      sources: {
+        style1: {
+          type: 'raster',
+          rasterSource: 'iserver'
+        }
+      }
+    };
+  },
+  getSource: () => jest.fn(),
+  removeSource: () => jest.fn(),
+  triggerRepaint: () => jest.fn(),
+  style: {
+    sourceCaches: {
+      style1: {
+        clearTiles: () => jest.fn(),
+        update: () => jest.fn()
+      }
+    }
+  },
+  getLayer: () => '',
+  removeLayer: () => jest.fn(),
+  getCRS: () => {
+    return {
+      epsgCode: 'EPSG:3857',
+      getExtent: () => jest.fn()
+    };
+  },
+  addLayer: () => jest.fn(),
+  overlayLayersManager: {},
+  on: () => {},
+  fire: () => {},
+  setLayoutProperty: () => jest.fn(),
+  addStyle: () => jest.fn(),
+  remove: () => jest.fn(),
+  addSource: () => jest.fn(),
+  setRenderWorldCopies: () => jest.fn(),
+  setStyle: () => jest.fn(),
+  loadImage: () => jest.fn()
+};
+const commonMapOptions = {
+  container: 'map',
+  style: {
+    version: 8,
+    sources: {
+      'raster-tiles': {
+        type: 'raster',
+        tiles: ['https://test'],
+        tileSize: 256
+      }
+    },
+    layers: [
+      {
+        id: 'simple-tiles',
+        type: 'raster',
+        source: 'raster-tiles',
+        minzoom: 5,
+        maxzoom: 20
+      }
+    ]
+  },
+  center: [120.143, 30.236],
+  zoom: 3,
+  bounds: {
+    getEast: () => 2,
+    getWest: () => -1,
+    getSouth: () => 2,
+    getNorth: () => -1
+  }
+};
 
 describe('WebMapViewModel.spec', () => {
   it('constructor options = undefined, id is Object', () => {
@@ -191,5 +297,47 @@ describe('WebMapViewModel.spec', () => {
     expect(() => {
       new WebMapViewModel(datavizWebMap_Heat);
     }).not.toThrow();
+  });
+
+  it('add vectorLayer_point with BASIC_POINT', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const id = vectorLayer_point;
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(id, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('add vectorLayer_line road', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const style = vectorLayer_line.layers[0].style;
+    const roadId = {
+      ...vectorLayer_line,
+      layers: [
+        {
+          ...vectorLayer_line.layers[0],
+          style: [style, style]
+        }
+      ]
+    };
+    const mapOptions = undefined;
+    const map = {
+      ...commonMap,
+      getSource: () => ''
+    };
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(roadId, commonOption, mapOptions, map);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
   });
 });
