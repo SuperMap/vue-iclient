@@ -124,14 +124,20 @@ export default class Theme extends Vue {
   }
 
   mounted() {
-    globalEvent.$on('change-theme', (themeStyle: ThemeStyleParams) => {
-      this.setDataRelatedProps(themeStyle, true);
-      if ('background' in themeStyle) {
-        this.setDataRelatedWithBackgound('', themeStyle);
-      }
-      this.themeStyleChanged();
-      this.initNeedTheme(themeStyle);
-    });
+    globalEvent.$on('change-theme', this.changeThemeCallback);
+  }
+
+  beforeDestroy() {
+    globalEvent.$off('change-theme', this.changeThemeCallback);
+  }
+
+  changeThemeCallback(themeStyle: ThemeStyleParams) {
+    this.setDataRelatedProps(themeStyle, true);
+    if ('background' in themeStyle) {
+      this.setDataRelatedWithBackgound('', themeStyle);
+    }
+    this.themeStyleChanged();
+    this.initNeedTheme(themeStyle);
   }
 
   initThemeData(): void {
