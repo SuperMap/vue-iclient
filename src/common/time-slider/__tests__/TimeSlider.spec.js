@@ -146,4 +146,19 @@ describe('TimeSlider.vue', () => {
     expect(wrapper.vm.draggable).toBe(true);
     done();
   });
+
+  it('change to play ', async done => {
+    jest.useFakeTimers();
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        duration: 5000
+      }
+    });
+    await wrapper.find('.sm-play-control').trigger('click');
+    jest.advanceTimersByTime(1000);
+    expect(wrapper.find('.sm-component-time-slider').exists()).toBe(true);
+    expect(wrapper.vm.playState).toBe(true);
+    jest.useRealTimers();
+    done();
+  });
 });
