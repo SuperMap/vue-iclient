@@ -147,7 +147,7 @@ describe('TimeSlider.vue', () => {
     done();
   });
 
-  it('change to play ', async done => {
+  it('duration change to play ', async done => {
     jest.useFakeTimers();
     wrapper = mount(SmTimeSlider, {
       propsData: {
@@ -159,6 +159,97 @@ describe('TimeSlider.vue', () => {
     expect(wrapper.find('.sm-component-time-slider').exists()).toBe(true);
     expect(wrapper.vm.playState).toBe(true);
     jest.useRealTimers();
+    done();
+  });
+  it('data change to play ', async done => {
+    jest.useFakeTimers();
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        data: [1599810915, 1599810920, 1599810925, 1599810930, 1599810935, 1599810940, 1599810945]
+      }
+    });
+    await wrapper.find('.sm-play-control').trigger('click');
+    jest.advanceTimersByTime(1000);
+    expect(wrapper.find('.sm-component-time-slider').exists()).toBe(true);
+    expect(wrapper.vm.playState).toBe(true);
+    jest.useRealTimers();
+    done();
+  });
+
+  it('theme-style-change', async done => {
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        duration: 5000
+      }
+    });
+    await wrapper.vm.$emit('theme-style-changed');
+    expect(wrapper.find('.sm-component-time-slider').exists()).toBe(true);
+    done();
+  });
+
+  it('handleMouseClick', async done => {
+    jest.useFakeTimers();
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        autoPlay: true,
+        duration: 5000
+      }
+    });
+    await wrapper.find('.sm-progress-control').trigger('click');
+    jest.advanceTimersByTime(1000);
+    expect(wrapper.find('.sm-component-time-slider').exists()).toBe(true);
+    jest.useRealTimers();
+    done();
+  });
+
+  it('handleMouseClick not play', async done => {
+    jest.useFakeTimers();
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        duration: 5000
+      }
+    });
+    await wrapper.find('.sm-progress-control').trigger('click');
+    jest.advanceTimersByTime(1000);
+    expect(wrapper.find('.sm-component-time-slider').exists()).toBe(true);
+    jest.useRealTimers();
+    done();
+  });
+
+  it('handleDragMove', async done => {
+    jest.useFakeTimers();
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        autoPlay: true,
+        duration: 5000
+      }
+    });
+    await wrapper.vm.handleDragMove({ dx: 10, offsetX: 10 });
+    jest.advanceTimersByTime(1000);
+    expect(wrapper.find('.sm-component-time-slider').exists()).toBe(true);
+    jest.useRealTimers();
+    done();
+  });
+
+  it('cancelAnimationFrame rafIds_null', async done => {
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        duration: 5000
+      }
+    });
+    const id = wrapper.vm.cancelAnimationFrame('name');
+    expect(id).toBe('name');
+    done();
+  });
+  it('cancelAnimationFrame rafIds_', async done => {
+    wrapper = mount(SmTimeSlider, {
+      propsData: {
+        duration: 5000
+      }
+    });
+    wrapper.rafIds_ = { id: 'name' };
+    const id = wrapper.vm.cancelAnimationFrame('name');
+    expect(id).toBe('name');
     done();
   });
 });
