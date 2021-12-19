@@ -584,7 +584,9 @@ var Map = function (options) {
     };
   };
   this.getCRS = () => {
-    return {};
+    return {
+      getExtent: () => jest.fn()
+    };
   };
   this.setCRS = () => {};
   this.flyTo = options => {};

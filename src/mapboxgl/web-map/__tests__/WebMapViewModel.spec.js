@@ -12,6 +12,11 @@ import heatLayer from '../../../../test/unit/mocks/data//WebMap/heatLayer.json';
 import markerLayer from '../../../../test/unit/mocks/data//WebMap/markerLayer.json';
 import migrationLayer from '../../../../test/unit/mocks/data//WebMap/migrationLayer.json';
 import ranksymbolLayer from '../../../../test/unit/mocks/data//WebMap/ranksymbolLayer.json';
+import baseLayers from 'vue-iclient/test/unit/mocks/data/WebMap/baseLayers.json';
+import wmsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmsLayer.json';
+import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
+import { wmsCapabilitiesText, wmtsCapabilitiesText, wmsCapabilitiesTextWith130 } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
+import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.json';
 import epsgCode_wkt from '../../../../test/unit/mocks/data/epsgCode_wkt.json';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 
@@ -318,20 +323,30 @@ describe('WebMapViewModel.spec', () => {
     done();
   });
 
+  // _initGraticuleLayer
   it('add rangeLayer', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/1171594968/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
     };
     mockFetch(fetchResource);
     const id = rangeLayer;
-    const callback = jest.fn();
+    const callback = async function(data) {
+      await flushPromises();
+      viewModel.setZoom(2);
+      viewModel.map.getZoom = function() {
+        return 2;
+      }
+      viewModel.map.fire('zoomend');
+      viewModel.setZoom(5);
+      viewModel.map.getZoom = function() {
+        return 5;
+      }
+      viewModel.map.fire('zoomend');
+      expect(data).not.toBeUndefined();
+      done();
+    };
     const viewModel = new WebMapViewModel(id, commonOption);
     viewModel.on({ addlayerssucceeded: callback });
-    await flushPromises();
-    viewModel.map.fire('load');
-    await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
-    done();
   });
 
   // _initGraticuleLayer
@@ -881,5 +896,110 @@ describe('WebMapViewModel.spec', () => {
     const spy = jest.spyOn(viewModel, '_addLayerSucceeded');
     viewModel.updateOverlayLayer(mvtLayerInfo, mvtFeatures);
     expect(spy).toBeCalled();
+  });
+
+  it('add baselayer which is baidu', async done => {
+    const callback = async function(data) {
+      await flushPromises();
+      expect(data).not.toBeUndefined();
+      done();
+    };
+    const viewModel = new WebMapViewModel(baseLayers['BAIDU']);
+    viewModel.on({ notsupportbaidumap: callback });
+  });
+
+  it('add baselayer which is bing', async done => {
+    const callback = async function(data) {
+      await flushPromises();
+      expect(data).not.toBeUndefined();
+      done();
+    };
+    const viewModel = new WebMapViewModel(baseLayers['BING']);
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('add wmsLayer with correct url and version is 1.0.0', async done => {
+    const fetchResource = {
+      'http://support.supermap.com.cn:8090/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS': wmsCapabilitiesText
+    };
+    mockFetch(fetchResource);
+    const callback = async function(data) {
+      await flushPromises();
+      expect(data).not.toBeUndefined();
+      done();
+    };
+    const viewModel = new WebMapViewModel({...wmsLayer, layers: [{ ...wmsLayer.layers[0], url: 'http://support.supermap.com.cn:8090/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'}]});
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('add wmsLayer with correct url and version is 1.3.0', async done => {
+    const fetchResource = {
+      'http://support.supermap.com.cn:8090/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS': wmsCapabilitiesTextWith130
+    };
+    mockFetch(fetchResource);
+    const callback = async function(data) {
+      await flushPromises();
+      expect(data).not.toBeUndefined();
+      done();
+    };
+    const viewModel = new WebMapViewModel({...wmsLayer, layers: [{ ...wmsLayer.layers[0], url: 'http://support.supermap.com.cn:8090/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'}]});
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('add wmtsLayer with correct url', async done => {
+    const fetchResource = {
+      'http://support.supermap.com.cn:8090/iserver/services/map-china400/wmts100?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0': wmtsCapabilitiesText
+    };
+    mockFetch(fetchResource);
+    const callback = async function(data) {
+      await flushPromises();
+      expect(data).not.toBeUndefined();
+      expect(viewModel.getSourceListModel).not.toBeNull();
+      done();
+    };
+    const viewModel = new WebMapViewModel(wmtsLayer, commonOption, { fadeDuration: 300 });
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('add wmtsLayer with error url', async done => {
+    const callback = async function(data) {
+      await flushPromises();
+      expect(data).not.toBeUndefined();
+      done();
+    };
+    const viewModel = new WebMapViewModel({...wmtsLayer, layers: [{...wmtsLayer.layers[0], url: '/iserver/services/map-china400/wmts100'}]});
+    viewModel.on({ getmapinfofailed: callback });
+  });
+
+  it('test layer autorefresh and visblescale', async done => {
+    const callback = async function(data) {
+      jest.advanceTimersByTime(3000);
+      await flushPromises();
+      expect(data).not.toBeUndefined();
+      done();
+    };
+    const viewModel = new WebMapViewModel(restmapLayer);
+    jest.useFakeTimers();
+    viewModel.on({ addlayerssucceeded: callback });
+    jest.useRealTimers();
+  });
+
+  it('different projection', async done => {
+    const callback = async function(data) {
+      await flushPromises();
+      expect(data).not.toBeUndefined();
+      done();
+    };
+    const map = {
+      ...commonMap,
+      getCRS: () => {
+        return {
+          epsgCode: 'EPSG:4326',
+          getExtent: () => jest.fn()
+        };
+      }
+    };
+    const viewModel = new WebMapViewModel(restmapLayer, commonOption, {}, map);
+    viewModel.on({ projectionIsNotMatch: callback });
   });
 });

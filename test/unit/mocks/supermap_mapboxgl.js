@@ -225,6 +225,10 @@ supermap.Util = {
   }
 };
 
-supermap.GraticuleLayer = () => {};
+supermap.GraticuleLayer = () => {
+  return {
+    setStrokeStyle: jest.fn()
+  }
+};
 
 module.exports = supermap;

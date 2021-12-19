@@ -1,0 +1,58 @@
+{
+  "BAIDU": {
+    "extent": {
+      "leftBottom": {
+        "x": -20037508.3427892,
+        "y": -20037508.3427892
+      },
+      "rightTop": {
+        "x": 20037508.3427892,
+        "y": 20037508.3427892
+      }
+    },
+    "maxScale": "1:564.2497166720675",
+    "level": 3,
+    "center": {
+      "x": 11615300.701720804,
+      "y": 4436879.386230171
+    },
+    "baseLayer": {
+      "layerType": "BAIDU",
+      "name": "百度地图"
+    },
+    "layers": [],
+    "description": "",
+    "projection": "EPSG:3857",
+    "minScale": "1:295829355.4545649",
+    "title": "无标题",
+    "version": "2.3.0"
+  },
+  "BING": {
+    "extent": {
+      "leftBottom": {
+        "x": -20037508.3427892,
+        "y": -20037508.3427892
+      },
+      "rightTop": {
+        "x": 20037508.3427892,
+        "y": 20037508.3427892
+      }
+    },
+    "maxScale": "1:564.2497166720675",
+    "level": 3,
+    "center": {
+      "x": 11615300.701720804,
+      "y": 4436879.386230171
+    },
+    "baseLayer": {
+      "layerType": "BING",
+      "name": "必应地图"
+    },
+    "layers": [],
+    "description": "",
+    "projection": "EPSG:3857",
+    "minScale": "1:295829355.4545649",
+    "title": "无标题",
+    "version": "2.3.0"
+  }
+}
