@@ -450,7 +450,26 @@ var Map = function (options) {
         }
       ];
       return feature;
-    }
+    } else if(pointOrBox[0] == 0 && pointOrBox[1] == 1) {
+      return [{
+        "id": undefined,
+        "layer": {
+          "id": "第七次人口普查全国各省人口数(未包含港澳台)",
+          "type": "fill",
+          "source": "第七次人口普查全国各省人口数(未包含港澳台)"
+        },
+        "properties": {
+          "地区": "北京",
+          "2020年人口数": "21893095",
+          "2010年人口数": "19612368",
+          "2020年比重": "1.55",
+          "2010年比重": "1.46"
+        },
+        "source": "第七次人口普查全国各省人口数(未包含港澳台)",
+        "state": {},
+        "type": "Feature"
+      }]     
+    };
     var searchBoundingBox = [];
     if (pointOrBox) {
       if (pointOrBox[0].x !== undefined) {
