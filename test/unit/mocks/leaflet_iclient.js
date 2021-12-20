@@ -20,6 +20,14 @@ var supermap = {
   tiledMapLayer: () => {
     return {};
   },
+  dataFlowLayer: () => {
+    return {
+      on: () => {}
+    };
+  },
+  tiandituTileLayer: () => {
+    return {};
+  },
   themeFeature: class {}
 };
 var L = require('@mocks/leaflet');

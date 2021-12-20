@@ -6,6 +6,15 @@ import uniqueLayer_polygon from '../../../../test/unit/mocks/data/WebMap/uniqueL
 import vectorLayer_point from '../../../../test/unit/mocks/data/WebMap/vectorLayer_point.json';
 import vectorLayer_line from '../../../../test/unit/mocks/data/WebMap/vectorLayer_line.json';
 import flushPromises from 'flush-promises';
+import ranksymbolLayer from '../../../../test/unit/mocks/data//WebMap/ranksymbolLayer.json';
+import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
+import wmsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmsLayer.json';
+import xyzLayer from 'vue-iclient/test/unit/mocks/data/WebMap/xyzLayer.json';
+import markerLayer from 'vue-iclient/test/unit/mocks/data/WebMap/markerLayer';
+import mapboxstyleLayer from 'vue-iclient/test/unit/mocks/data/WebMap/mapboxstyleLayer.json';
+import tiandituLayer from 'vue-iclient/test/unit/mocks/data/WebMap/tiandituLayer.json';
+import layerData_geojson from '../../../../test/unit/mocks/data/layerData_geojson.json';
+import { wmtsCapabilitiesText } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
 
 const commonId = 123;
 const commonOption = {
@@ -299,12 +308,44 @@ describe('WebMapViewModel.spec', () => {
     }).not.toThrow();
   });
 
-  it('add vectorLayer_point with BASIC_POINT', async done => {
+  it('add vectorLayer_point', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
     };
     mockFetch(fetchResource);
     const id = vectorLayer_point;
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(id, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('add vectorLayer_point with SYMBOL_POINT', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const id = {
+      ...vectorLayer_point,
+      layers: [
+        {
+          ...vectorLayer_point.layers[0],
+          style: {
+            ...vectorLayer_point.layers[0].style,
+            className: 'supermapol-icons-Shape-50',
+            fontSize: '16px',
+            name: 'Shape2-2',
+            offsetX: 0,
+            offsetY: 0,
+            rotation: 0,
+            type: 'SYMBOL_POINT',
+            unicode: '&#xe691'
+          }
+        }
+      ]
+    };
     const callback = jest.fn();
     const viewModel = new WebMapViewModel(id, commonOption);
     viewModel.on({ addlayerssucceeded: callback });
@@ -339,5 +380,273 @@ describe('WebMapViewModel.spec', () => {
     await flushPromises();
     expect(callback.mock.called).toBeTruthy;
     done();
+  });
+
+  it('add DATAFLOW_POINT_TRACKLayer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const id = {
+      ...ranksymbolLayer,
+      layers: [
+        {
+          ...ranksymbolLayer.layers[0],
+          layerType: 'DATAFLOW_POINT_TRACK',
+          wsUrl: '',
+          filterCondition: '>5',
+          projection: 'EPSG:3857',
+          pointStyle: {
+            type: 'SVG_POINT'
+          },
+          identifyField: 'id',
+          maxPointCount: 100,
+          directionField: 'description'
+        }
+      ]
+    };
+    const map = {
+      ...commonMap,
+      getSource: () => {
+        return {
+          _data: {
+            features: [
+              {
+                properties: { id: 1 }
+              }
+            ]
+          },
+          getSource: () => jest.fn(),
+          setData: () => jest.fn()
+        };
+      }
+    };
+    const mapOption = undefined;
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(id, commonOption, mapOption, map);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('initial_wmtsLayer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'http://support.supermap.com.cn:8090/iserver/services/map-china400/wmts100?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0': wmtsCapabilitiesText
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(wmtsLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('initial_wmsLayer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': wmsLayer
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(wmsLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('initial_TiandituLayer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': tiandituLayer
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(tiandituLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('initial_xyzLayer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/7894565555/map.json': xyzLayer
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(xyzLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('initial_rankSymbolLayer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': ranksymbolLayer,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(ranksymbolLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('initial_markerLayer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': markerLayer,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData_geojson
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(markerLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('initial_migrationLayer', async done => {
+    const fetchResource = {
+      'https://www.supermapol.com/web/datas/675746998/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const migrationLayer = {
+      extent: {
+        leftBottom: { x: -20037508.342789244, y: -20037508.342789136 },
+        rightTop: { x: 20037508.342789244, y: 20037508.34278908 }
+      },
+      maxScale: '1:144447.92746804963',
+      level: 4.206196893572176,
+      center: { x: 11716042.750842523, y: 3847971.9356220393 },
+      baseLayer: {
+        layerType: 'TILE',
+        name: '中国暗色地图',
+        url: 'https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark'
+      },
+      layers: [
+        {
+          layerType: 'MIGRATION',
+          labelSetting: { fontFamily: '黑体', color: '#62AD16', show: false },
+          visible: true,
+          name: '民航数据1(1)',
+          featureType: 'POINT',
+          from: { type: 'XY_FIELD' },
+          projection: 'EPSG:4326',
+          to: { type: 'XY_FIELD' },
+          enableFields: [
+            'latitude',
+            'longitude',
+            'altitude',
+            'geometry',
+            '机场',
+            'X坐标',
+            'Y坐标',
+            '名次',
+            '2017旅客吞吐量（人次）',
+            '2016旅客吞吐量（人次）',
+            '同比增速%',
+            '2017货邮吞吐量（吨）',
+            '2016货邮吞吐量（吨）',
+            '2017起降架次（架次）',
+            '2016起降架次（架次）'
+          ],
+          lineSetting: { curveness: 0.2, color: '#62AD16', width: 1, type: 'solid', opacity: 0.6 },
+          dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '1184572358' },
+          animationSetting: { symbol: 'pin', symbolSize: 15, show: false, constantSpeed: 40 }
+        },
+        {
+          layerType: 'MIGRATION',
+          labelSetting: { fontFamily: '黑体', color: '#62AD16', show: false },
+          visible: true,
+          name: '全国671个气象站观测数据(1)',
+          featureType: 'POINT',
+          from: { field: '站台', type: 'PLACE_FIELD' },
+          projection: 'EPSG:4326',
+          to: { field: '省份', type: 'PLACE_FIELD' },
+          enableFields: [
+            'SmID',
+            'SmX',
+            'SmY',
+            'SmLibTileID',
+            'SmUserID',
+            'SmGeometrySize',
+            '区站号',
+            '站台',
+            '省份',
+            '海拔',
+            '平均最低气温',
+            '最热七天气温',
+            '最高气温',
+            '最低气温',
+            '年均降雨',
+            '年均降雨_Num',
+            '最低气温_Num',
+            '最高气温_Num',
+            '最高七天气温_Num',
+            '平均最低气温_Num',
+            '海波_Num'
+          ],
+          lineSetting: { curveness: 0.2, color: '#62AD16', width: 1, type: 'solid', opacity: 0.6 },
+          dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '850822108' },
+          animationSetting: { symbol: 'pin', symbolSize: 15, show: false, constantSpeed: 40 }
+        }
+      ],
+      description: '',
+      projection: 'EPSG:3857',
+      minScale: '1:591658710.9091312',
+      title: '无标题',
+      version: '2.3.0',
+      rootUrl: 'http://192.168.11.94:8190/iportal/services/../'
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(markerLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('initial_mapboxstyleLayer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(mapboxstyleLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    setTimeout(() => {
+      expect(callback.mock.called).toBeTruthy;
+      done();
+    }, 100);
+  });
+
+  it('setCenter', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy
+    };
+    mockFetch(fetchResource);
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(mapboxstyleLayer, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    viewModel.setCenter({ x: 11615300.701720804, y: 4436879.386230171 });
+    setTimeout(() => {
+      expect(callback.mock.called).toBeTruthy;
+      expect(viewModel.mapOptions.center).toStrictEqual({ x: 11615300.701720804, y: 4436879.386230171 });
+      done();
+    }, 100);
   });
 });
