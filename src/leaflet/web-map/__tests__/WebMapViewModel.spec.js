@@ -430,6 +430,110 @@ describe('WebMapViewModel.spec', () => {
     done();
   });
 
+  it('add DATAFLOW_POINT_TRACKLayer with style is IMAGE_POINT', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const id = {
+      ...ranksymbolLayer,
+      layers: [
+        {
+          ...ranksymbolLayer.layers[0],
+          wsUrl: '',
+          filterCondition: '>5',
+          projection: 'EPSG:3857',
+          style: {
+            strokeWidth: 1,
+            fillColor: '#24B391',
+            offsetX: 0,
+            offsetY: 0,
+            fillOpacity: 0.9,
+            radius: 6,
+            strokeColor: '#ffffff',
+            type: 'IMAGE_POINT',
+            strokeOpacity: 1,
+            imageInfo: {
+              url: ''
+            }
+          }
+        }
+      ]
+    };
+    const map = {
+      ...commonMap,
+      getSource: () => {
+        return {
+          _data: {
+            features: [
+              {
+                properties: { id: 1 }
+              }
+            ]
+          },
+          getSource: () => jest.fn(),
+          setData: () => jest.fn()
+        };
+      }
+    };
+    const mapOption = undefined;
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(id, commonOption, mapOption, map);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('add DATAFLOW_POINT_TRACKLayer with style is SVG_POINT', async done => {
+    window.canvg = (a, b, c) => {
+      c.renderCallback();
+    };
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    window.jsonsql.query = () => {
+      return [{}];
+    };
+    const id = {
+      ...ranksymbolLayer,
+      layers: [
+        {
+          ...ranksymbolLayer.layers[0],
+          wsUrl: '',
+          filterCondition: '>5',
+          projection: 'EPSG:3857',
+          style: {
+            strokeWidth: 1,
+            fillColor: '#24B391',
+            offsetX: 0,
+            offsetY: 0,
+            fillOpacity: 0.9,
+            radius: 6,
+            strokeColor: '#ffffff',
+            type: 'SVG_POINT',
+            strokeOpacity: 1,
+            imageInfo: {
+              url: ''
+            }
+          }
+        }
+      ]
+    };
+    const map = {
+      ...commonMap,
+      getSource: () => ''
+    };
+    const mapOption = undefined;
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(id, commonOption, mapOption, map);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    done();
+  });
+
   it('initial_wmtsLayer', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
@@ -648,5 +752,195 @@ describe('WebMapViewModel.spec', () => {
       expect(viewModel.mapOptions.center).toStrictEqual({ x: 11615300.701720804, y: 4436879.386230171 });
       done();
     }, 100);
+  });
+
+  it('cleanWebMap', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const id = {
+      ...ranksymbolLayer,
+      layers: [
+        {
+          ...ranksymbolLayer.layers[0],
+          layerType: 'DATAFLOW_POINT_TRACK',
+          wsUrl: '',
+          filterCondition: '>5',
+          projection: 'EPSG:3857',
+          pointStyle: {
+            type: 'SVG_POINT'
+          },
+          identifyField: 'id',
+          maxPointCount: 100,
+          directionField: 'description'
+        }
+      ]
+    };
+    const mapOption = undefined;
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(id, commonOption);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    viewModel.cleanWebMap();
+    setTimeout(() => {
+      expect(callback.mock.called).toBeTruthy;
+      expect(viewModel.center).toBe(null);
+      done();
+    }, 100);
+  });
+
+  it('updateDataFlowFeature', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+    };
+    mockFetch(fetchResource);
+    const id = {
+      ...ranksymbolLayer,
+      layers: [
+        {
+          ...ranksymbolLayer.layers[0],
+          layerType: 'DATAFLOW_POINT_TRACK',
+          wsUrl: '',
+          filterCondition: '>5',
+          projection: 'EPSG:3857',
+          pointStyle: {
+            type: 'SVG_POINT'
+          },
+          identifyField: 'id',
+          maxPointCount: 100,
+          directionField: 'description'
+        }
+      ]
+    };
+    const map = {
+      ...commonMap,
+      getSource: () => {
+        return {
+          _data: {
+            features: [
+              {
+                properties: { id: 1 }
+              }
+            ]
+          },
+          getSource: () => jest.fn(),
+          setData: () => jest.fn()
+        };
+      }
+    };
+    const mapOption = undefined;
+    const callback = jest.fn();
+    const viewModel = new WebMapViewModel(id, commonOption, mapOption, map);
+    viewModel.on({ addlayerssucceeded: callback });
+    const layerInfo = {
+      layerType: 'DATAFLOW_POINT_TRACK',
+      visible: true,
+      themeSetting: {
+        maxRadius: 12,
+        themeField: '名次',
+        customSettings: {},
+        minRadius: 6,
+        segmentMethod: 'offset',
+        segmentCount: 6
+      },
+      name: '民航数据',
+      featureType: 'POINT',
+      labelStyle: {
+        offsetX: 0,
+        textBaseline: 'bottom',
+        fontFamily: '黑体',
+        offsetY: -10,
+        outlineWidth: 0,
+        textAlign: 'center',
+        outlineColor: '#000000',
+        fontSize: '14px',
+        fill: '#333',
+        backgroundFill: [255, 255, 255, 0.8],
+        labelField: '机场'
+      },
+      lineStyle: {
+        color: '#ffffff'
+      },
+      xyField: { xField: 'longitude', yField: 'latitude' },
+      style: {
+        strokeWidth: 1,
+        fillColor: '#24B391',
+        offsetX: 0,
+        offsetY: 0,
+        fillOpacity: 0.9,
+        radius: 6,
+        strokeColor: '#ffffff',
+        type: 'BASIC_POINT',
+        strokeOpacity: 1
+      },
+      projection: 'EPSG:3857',
+      enableFields: [
+        'latitude',
+        'longitude',
+        'altitude',
+        'geometry',
+        '机场',
+        'X坐标',
+        'Y坐标',
+        '名次',
+        '2017旅客吞吐量（人次）',
+        '2016旅客吞吐量（人次）',
+        '同比增速%',
+        '2017货邮吞吐量（吨）',
+        '2016货邮吞吐量（吨）',
+        '2017起降架次（架次）',
+        '2016起降架次（架次）'
+      ],
+      dataSource: { accessType: 'DIRECT', type: 'PORTAL_DATA', serverId: '676516522' },
+      wsUrl: '',
+      filterCondition: '>5',
+      pointStyle: { type: 'SVG_POINT' },
+      identifyField: 'id',
+      maxPointCount: 100,
+      directionField: 'description',
+      layerID: '民航数据-0',
+      index: 0
+    };
+    const feature = {
+      type: 'Feature',
+      properties: {
+        dataViz_title: '中间文本\r\n我换行了',
+        dataViz_description: '',
+        dataViz_imgUrl: '',
+        dataViz_url: '',
+        dataViz_videoUrl: '',
+        dataviz_featureID: 7,
+        index: 7
+      },
+      dv_v5_markerStyle: {
+        text: '中间文本\r\n我换行了',
+        font: 'bold 13px Microsoft YaHei',
+        placement: 'point',
+        textAlign: 'justify',
+        fillColor: '#ffffff',
+        backgroundFill: '#8a5252',
+        borderColor: 'rgba(255,255,255,0)',
+        borderWidth: 4,
+        padding: [8, 8, 8, 8],
+        maxWidth: '29'
+      },
+      dv_v5_markerInfo: {
+        dataViz_title: '中间文本\r\n我换行了',
+        dataViz_description: '',
+        dataViz_imgUrl: '',
+        dataViz_url: '',
+        dataViz_videoUrl: '',
+        dataviz_featureID: 7
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: [-45.07301602945205, 59.20101718365072]
+      }
+    };
+    await flushPromises();
+    viewModel._updateDataFlowFeature(layerInfo, { data: feature });
+    expect(callback.mock.called).toBeTruthy;
+    done();
   });
 });

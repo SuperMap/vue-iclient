@@ -22,13 +22,17 @@ var supermap = {
   },
   dataFlowLayer: () => {
     return {
-      on: () => {}
+      on: () => {},
+      off: () => {},
+      addLayer: () => {},
+      getLayerId: () => {}
     };
   },
   tiandituTileLayer: () => {
     return {};
   },
-  themeFeature: class {}
+  themeFeature: class {},
+  wmtsLayer: () => {}
 };
 var L = require('@mocks/leaflet');
 module.exports.SuperMap = require('./supermap');
