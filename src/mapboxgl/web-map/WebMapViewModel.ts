@@ -339,7 +339,7 @@ export default class WebMapViewModel extends WebMapBase {
             proxy = this.webMapService.handleProxy(proxyType);
           }
           return {
-            url: proxy ? +`${proxy}${encodeURIComponent(url)}` : url,
+            url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
             credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
               ? 'include'
               : 'omit'
@@ -623,9 +623,6 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createGraticuleOptions(graticuleInfo) {
-    if (!graticuleInfo) {
-      return null;
-    }
     let { extent, lonLabelStyle, latLabelStyle } = graticuleInfo;
     const { strokeColor, lineDash, strokeWidth, interval } = graticuleInfo;
     const strokeStyle = {

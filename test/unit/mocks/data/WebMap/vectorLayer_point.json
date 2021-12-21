@@ -28,6 +28,70 @@
           "type": "BASIC_POINT"
         },
         "dataSource": { "type": "PORTAL_DATA", "serverId": "1920557079" }
+      },
+      {
+        "layerType": "VECTOR",
+        "visible": true,
+        "name": "jiuzhaigou2",
+        "featureType": "POINT",
+        "filterCondition": "title = \"11111\"",
+        "style": {
+          "fillColor": "#EE4D5A",
+          "strokeWidth": 1,
+          "offsetX": 0.5,
+          "offsetY": 0.5,
+          "fillOpacity": 0.9,
+          "rotation": 0,
+          "radius": 8,
+          "strokeColor": "#ffffff",
+          "type": "SVG_POINT",
+          "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-1640090306663VECTOR.svg",
+          "strokeOpacity": 1
+        },
+        "projection": "EPSG:4326",
+        "enableFields": [
+          "title",
+          "subtitle",
+          "imgUrl",
+          "description"
+        ],
+        "dataSource": {
+          "accessType": "DIRECT",
+          "type": "PORTAL_DATA",
+          "serverId": "13136933"
+        }
+      },
+      {
+        "layerType": "VECTOR",
+        "visible": true,
+        "name": "jiuzhaigou2",
+        "featureType": "POINT",
+        "style": {
+          "offsetX": 0.5,
+          "offsetY": 0.5,
+          "rotation": 0,
+          "imageInfo": {
+            "size": {
+              "w": 24,
+              "h": 24
+            },
+            "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-1640090359026VECTOR.png"
+          },
+          "radius": 8,
+          "type": "IMAGE_POINT"
+        },
+        "projection": "EPSG:4326",
+        "enableFields": [
+          "title",
+          "subtitle",
+          "imgUrl",
+          "description"
+        ],
+        "dataSource": {
+          "accessType": "DIRECT",
+          "type": "PORTAL_DATA",
+          "serverId": "13136933"
+        }
       }
     ],
     "description": "",
@@ -35,4 +99,5 @@
     "title": "unique_民航数据",
     "version": "1.0"
   }
+  
   
