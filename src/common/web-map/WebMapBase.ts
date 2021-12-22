@@ -435,17 +435,20 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected mergeFeatures(layerId: string, features: any, mergeByField?: string): any {
+    if (!(features instanceof Array)) {
+      return features;
+    }
     features = features.map((feature: any, index: any) => {
       if (!Object.prototype.hasOwnProperty.call(feature.properties, 'index')) {
         feature.properties.index = index;
       }
       return feature;
     });
-    if (!mergeByField && features && features[0] && features[0].geometry) {
+    if (!features.length || !mergeByField && features[0].geometry) {
       return features;
     }
     const source = this.map.getSource(layerId);
-    if ((!source || !source._data.features) && features && features[0] && features[0].geometry) {
+    if ((!source || !source._data.features) && features[0].geometry) {
       return features;
     }
     const prevFeatures = source && source._data && source._data.features;

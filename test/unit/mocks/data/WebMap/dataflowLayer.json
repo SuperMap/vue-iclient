@@ -1,0 +1,123 @@
+{
+  "extent": {
+    "leftBottom": { "x": -20037508.3427892, "y": -20037508.3427892 },
+    "rightTop": { "x": 20037508.3427892, "y": 20037508.3427892 }
+  },
+  "maxScale": "1:144447.92746805",
+  "level": 8,
+  "center": { "x": 13081221.929131275, "y": 4831768.222446369 },
+  "baseLayer": {
+    "layerType": "TILE",
+    "name": "中国暗色地图",
+    "url": "https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark"
+  },
+  "layers": [
+    {
+      "layerType": "DATAFLOW_HEAT",
+      "visible": true,
+      "credential": {
+        "token": "FjOwvGbO9L1MOpV22Bx12_UNy5uVuEXoxoRQe_UyKJtvKQ0fyCZoeGMlq5IVDbLDvhxzu3w8_DawMHFC9kOeGA.."
+      },
+      "identifyField": "id",
+      "themeSetting": {
+        "weight": "X",
+        "customSettings": {},
+        "radius": 10,
+        "colors": ["#0000ff", "#00ffff", "#00ff00", "#ffff00", "#ff0000"]
+      },
+      "name": "dataflowTest",
+      "projection": "EPSG:4326",
+      "url": "https://fakeiserver.supermap.io/iserver/services/dataflowTest/dataflow"
+    },
+    {
+      "labelStyle": {
+        "textBaseline": "bottom",
+        "fontFamily": "黑体",
+        "offsetY": -20,
+        "outlineWidth": 0,
+        "textAlign": "center",
+        "outlineColor": "#613434",
+        "fontSize": "14px",
+        "fill": "#d31a1a",
+        "backgroundFill": [255, 255, 255, 0.8],
+        "labelField": "id"
+      },
+      "layerType": "DATAFLOW_POINT_TRACK",
+      "pointStyle": {
+        "fillColor": "#ee4d5a",
+        "strokeWidth": 1,
+        "fillOpacity": 0.9,
+        "radius": 8,
+        "strokeColor": "#ffffff",
+        "type": "BASIC_POINT",
+        "strokeOpacity": 1
+      },
+      "visible": true,
+      "credential": {
+        "token": "FjOwvGbO9L1MOpV22Bx12_UNy5uVuEXoxoRQe_UyKJtvKQ0fyCZoeGMlq5IVDbLDvhxzu3w8_DawMHFC9kOeGA.."
+      },
+      "identifyField": "id",
+      "name": "dataflowTest",
+      "projection": "EPSG:4326",
+      "url": "https://fakeiserver.supermap.io/iserver/services/dataflowTest/dataflow"
+    },
+    {
+      "layerType": "DATAFLOW_POINT_TRACK",
+      "pointStyle": {
+        "fillColor": "#331416",
+        "strokeWidth": 1,
+        "fillOpacity": 0.9,
+        "name": "Shape2-3",
+        "unicode": "&#xe692",
+        "className": "supermapol-icons-Shape-51",
+        "fontSize": "16px",
+        "strokeColor": "#ffffff",
+        "type": "SYMBOL_POINT",
+        "strokeOpacity": 1
+      },
+      "visible": true,
+      "lineStyle": {
+        "strokeWidth": 1,
+        "lineDash": "solid",
+        "strokeColor": "#56b781",
+        "type": "LINE",
+        "strokeOpacity": 1
+      },
+      "credential": {
+        "token": "FjOwvGbO9L1MOpV22Bx12_UNy5uVuEXoxoRQe_UyKJtvKQ0fyCZoeGMlq5IVDbLDvhxzu3w8_DawMHFC9kOeGA.."
+      },
+      "identifyField": "id",
+      "filterCondition": "id > 1",
+      "name": "dataflowTest",
+      "projection": "EPSG:4326",
+      "url": "https://fakeiserver.supermap.io/iserver/services/dataflowTest/dataflow",
+      "maxPointCount": 5
+    },
+    {
+      "layerType": "DATAFLOW_POINT_TRACK",
+      "pointStyle": {
+        "fillColor": "#e73944",
+        "strokeWidth": 1,
+        "fillOpacity": 0.9,
+        "strokeColor": "#ffffff",
+        "type": "SVG_POINT",
+        "radius": 8,
+        "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-1640140175799DATAFLOW_POINT_TRACK.svg",
+        "strokeOpacity": 1
+      },
+      "visible": true,
+      "credential": {
+        "token": "FjOwvGbO9L1MOpV22Bx12_UNy5uVuEXoxoRQe_UyKJtvKQ0fyCZoeGMlq5IVDbLDvhxzu3w8_DawMHFC9kOeGA.."
+      },
+      "identifyField": "id",
+      "name": "dataflowTest",
+      "projection": "EPSG:4326",
+      "url": "https://fakeiserver.supermap.io/iserver/services/dataflowTest/dataflow"
+    }
+  ],
+  "description": "",
+  "projection": "EPSG:3857",
+  "minScale": "1:591658710.909131",
+  "title": "无标题",
+  "version": "2.3.0"
+}

@@ -92,6 +92,39 @@
           "type": "PORTAL_DATA",
           "serverId": "13136933"
         }
+      },
+      {
+        "layerType": "VECTOR",
+        "visible": true,
+        "name": "jiuzhaigou2",
+        "featureType": "POINT",
+        "style": {
+          "strokeWidth": 1,
+          "fillOpacity": 0.9,
+          "rotation": 0,
+          "className": "supermapol-icons-Shape-24",
+          "type": "SYMBOL_POINT",
+          "fillColor": "#EE4D5A",
+          "offsetX": 0,
+          "offsetY": 0,
+          "name": "Shape9-5",
+          "unicode": "&#xe677",
+          "fontSize": "16px",
+          "strokeColor": "#ffffff",
+          "strokeOpacity": 1
+        },
+        "projection": "EPSG:4326",
+        "enableFields": [
+          "title",
+          "subtitle",
+          "imgUrl",
+          "description"
+        ],
+        "dataSource": {
+          "accessType": "DIRECT",
+          "type": "PORTAL_DATA",
+          "serverId": "13136933"
+        }
       }
     ],
     "description": "",

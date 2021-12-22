@@ -4,6 +4,7 @@ import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_servi
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData.json';
 import layerData_geojson from 'vue-iclient/test/unit/mocks/data/layerData_geojson.json';
 import uniqueLayer_polygon from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
+import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_multi_points.json';
 import vectorLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/vectorLayer_point.json';
 import vectorLayerData from 'vue-iclient/test/unit/mocks/data/vectorLayerData.json';
 import vectorLayer_line from 'vue-iclient/test/unit/mocks/data/WebMap/vectorLayer_line.json';
@@ -22,7 +23,8 @@ import {
   wmsCapabilitiesTextWith130
 } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
 import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.json';
-import epsgCode_wkt from 'vue-iclient/test/unit/mocks/data/epsgCode_wkt.json';
+import dataflowLayer from 'vue-iclient/test/unit/mocks/data/WebMap/dataflowLayer.json';
+import dataflowLayerData from 'vue-iclient/test/unit/mocks/data/dataflowLayerData.json';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 
 const CRS = require('vue-iclient/test/unit/mocks/crs');
@@ -65,6 +67,14 @@ const commonMap = {
   },
   addSource: (sourceId, sourceInfo) => {
     sourceIdMapList[sourceId] = sourceInfo;
+    if (sourceInfo.type === 'geojson') {
+      sourceIdMapList[sourceId]._data = sourceInfo.data;
+      sourceIdMapList[sourceId].setData = (function(sourceId) {
+        return function(data) {
+          sourceIdMapList[sourceId]._data = data;
+        };
+      })(sourceId);
+    }
   },
   getSource: sourceId => {
     return sourceIdMapList[sourceId];
@@ -112,13 +122,17 @@ const commonMap = {
   setRenderWorldCopies: () => jest.fn(),
   setStyle: () => jest.fn(),
   loadImage: function (src, callback) {
-    callback(null, '/image');
+    callback(null, {width: 15});
   },
   addImage: function () {},
   hasImage: function () {
     return false;
   }
 };
+window.canvg = (a, b, c) => {
+  c.renderCallback();
+};
+
 const commonMapOptions = {
   container: 'map',
   style: {
@@ -183,7 +197,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
@@ -195,45 +209,75 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  it('add uniqueLayer with id is obj', async done => {
+  it('add uniqueLayer point', async done => {
     const fetchResource = {
-      'http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China/prjCoordSys.wkt': epsgCode_wkt,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
-        vectorLayerData['144371940']
+      'https://fakeiportal.supermap.io/iportal/web/datas/13136933/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        vectorLayerData['13136933']
     };
     mockFetch(fetchResource);
     const id = {
-      ...uniqueLayer_polygon,
+      ...uniqueLayer_point,
       level: '',
       visibleExtent: [0, 1, 2, 3]
-    };
-    const mapOptions = {
-      ...commonMapOptions,
-      bounds: undefined,
-      interactive: true,
-      minZoom: 22,
-      maxZoom: 0
-    };
-    const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    const get = jest.spyOn(CRS, 'get');
-    get.mockImplementation(() => {
-      return '';
-    });
+    }
     const callback = function (data) {
+      expect(viewModel.map).not.toBeUndefined();
+      expect(viewModel.map.options.bounds).not.toBeUndefined();
       expect(data.layers.length).toBe(id.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption }, mapOptions);
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
-    await flushPromises();
-    expect(errorSpy.mock.calls).toHaveLength(1);
-    const getEpsgCodeWKTJson = JSON.stringify(epsgCode_wkt);
-    expect(errorSpy.mock.calls[0][0]).toMatch(`${getEpsgCodeWKTJson} not define`);
   });
 
-  it('add Graphic Layer', done => {
+  describe('test custom wkt', () => {
+    const commonFetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/13136933/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        vectorLayerData['13136933']
+    };
+    it('request wkt info with EPSFG Prefix and test visibleExtend', async done => {
+      const get = jest.spyOn(CRS, 'get');
+      get.mockImplementation(() => {
+        return '';
+      });
+      const epsgeCode = 'EPSG:1000';
+      const fetchResource = {
+        ...commonFetchResource,
+        'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/ChinaDark/prjCoordSys.wkt': epsgeCode
+      };
+      mockFetch(fetchResource);
+      const mapOptions = {
+        ...commonMapOptions,
+        bounds: undefined,
+        interactive: true,
+        minZoom: 22,
+        maxZoom: 0
+      };
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      new WebMapViewModel(uniqueLayer_point, { ...commonOption }, mapOptions, {...commonMap});
+      await flushPromises();
+      expect(errorSpy.mock.calls).toHaveLength(1);
+      expect(errorSpy.mock.calls[0][0]).toMatch(`${epsgeCode} not define`);
+      done();
+    });
+    it('request wkt info and visibleExtend without EPSFG Prefix ', done => {
+      const epsgeCode = "PROJCS[\"Google Maps Global Mercator\",GEOGCS[\"WGS 84\",DATUM[\"WGS_1984\",SPHEROID[\"WGS 84\",6378137,298.257223563,AUTHORITY[\"EPSG\",\"7030\"]],AUTHORITY[\"EPSG\",\"6326\"]],PRIMEM[\"Greenwich\",0,AUTHORITY[\"EPSG\",\"8901\"]],UNIT[\"degree\",0.01745329251994328,AUTHORITY[\"EPSG\",\"9122\"]],AUTHORITY[\"EPSG\",\"4326\"]],PROJECTION[\"Mercator_2SP\"],PARAMETER[\"standard_parallel_1\",0],PARAMETER[\"latitude_of_origin\",0],PARAMETER[\"central_meridian\",0],PARAMETER[\"false_easting\",0],PARAMETER[\"false_northing\",0],AXIS[\"Northing\", \"NORTH\"],AXIS[\"Easting\", \"EAST\"],UNIT[\"Meter\",1],EXTENSION[\"PROJ4\",\"+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs\"],AUTHORITY[\"EPSG\",\"900913\"]]";
+      mockFetch(commonFetchResource);
+      const id = {...uniqueLayer_point, projection: epsgeCode};
+      const callback = function (data) {
+        expect(data.layers.length).toBe(id.layers.length);
+        done();
+      };
+      const viewModel = new WebMapViewModel(id, { ...commonOption });
+      viewModel.on({ addlayerssucceeded: callback });
+    });
+  });
+
+  it('layerType is VECTOR and multi style points', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData,
@@ -301,21 +345,12 @@ describe('WebMapViewModel.spec', () => {
         }
       ]
     };
-    const mapOptions = undefined;
-    const map = {
-      ...commonMap,
-      getSource: () => {
-        return {
-          setData: jest.fn()
-        };
-      }
-    };
     const callback = async function (data) {
       await flushPromises();
       expect(data.layers.length).toBe(subwayId.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(subwayId, { ...commonOption }, mapOptions, map);
+    const viewModel = new WebMapViewModel(subwayId, { ...commonOption }, undefined, {...commonMap});
     viewModel.on({ addlayerssucceeded: callback });
   });
 
@@ -372,9 +407,6 @@ describe('WebMapViewModel.spec', () => {
   });
 
   it('add markerLayer', done => {
-    window.canvg = (a, b, c) => {
-      c.renderCallback();
-    };
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_geojson
@@ -390,9 +422,6 @@ describe('WebMapViewModel.spec', () => {
   });
 
   it('markerLayer url is error', done => {
-    window.canvg = (a, b, c) => {
-      c.renderCallback();
-    };
     const newLayerData_geojson = {
       ...layerData_geojson,
       content:
@@ -442,119 +471,29 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  describe('dataflow', () => {
-    beforeEach(() => {
-      const fetchResource = {
-        'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
-          layerData
-      };
-      mockFetch(fetchResource);
-      window.jsonsql.query = () => {
-        return [{}];
-      };
-    });
-    let map = {
-      ...commonMap,
-      getSource: () => ''
+
+  it('add dataflow and update', done => {
+    window.jsonsql.query = () => {
+      return [{}];
     };
-    const mapOption = undefined;
-    it('add DATAFLOW_POINT_TRACKLayer', done => {
-      const id = {
-        ...ranksymbolLayer,
-        layers: [
-          {
-            ...ranksymbolLayer.layers[0],
-            layerType: 'DATAFLOW_POINT_TRACK',
-            wsUrl: '',
-            filterCondition: '>5',
-            projection: 'EPSG:3857',
-            pointStyle: {
-              type: 'SVG_POINT'
-            },
-            identifyField: 'id',
-            maxPointCount: 100,
-            directionField: 'description'
-          }
-        ]
-      };
-      map = {
-        ...commonMap,
-        getSource: () => {
-          return {
-            _data: {
-              features: [
-                {
-                  properties: { id: 1 }
-                }
-              ]
-            },
-            getSource: () => jest.fn(),
-            setData: () => jest.fn()
-          };
-        }
-      };
-      const callback = function (data) {
-        expect(data.layers.length).toBe(id.layers.length);
-        done();
-      };
-      const viewModel = new WebMapViewModel(id, { ...commonOption }, mapOption, map);
-      viewModel.on({ addlayerssucceeded: callback });
-    });
-
-    it('add DATAFLOW_POINT_TRACKLayer with style is IMAGE_POINT', done => {
-      const id = {
-        ...ranksymbolLayer,
-        layers: [
-          {
-            ...ranksymbolLayer.layers[0],
-            layerType: 'DATAFLOW_POINT_TRACK',
-            wsUrl: '',
-            filterCondition: '>5',
-            projection: 'EPSG:3857',
-            pointStyle: {
-              type: 'IMAGE_POINT',
-              imageInfo: {
-                url: 'http://test'
-              }
-            }
-          }
-        ]
-      };
-      const callback = function (data) {
-        expect(data.layers.length).toBe(id.layers.length);
-        done();
-      };
-      const viewModel = new WebMapViewModel(id, { ...commonOption }, mapOption, map);
-      viewModel.on({ addlayerssucceeded: callback });
-    });
-
-    it('add DATAFLOW_POINT_TRACKLayer with style is SVG_POINT', done => {
-      window.canvg = (a, b, c) => {
-        c.renderCallback();
-      };
-      const id = {
-        ...ranksymbolLayer,
-        layers: [
-          {
-            ...ranksymbolLayer.layers[0],
-            layerType: 'DATAFLOW_POINT_TRACK',
-            wsUrl: '',
-            filterCondition: '>5',
-            projection: 'EPSG:3857',
-            pointStyle: {
-              type: 'SVG_POINT',
-              url: 'http://test'
-            }
-          }
-        ]
-      };
-      const callback = function (data) {
-        expect(data.layers.length).toBe(id.layers.length);
-        done();
-      };
-      const viewModel = new WebMapViewModel(id, { ...commonOption }, mapOption, map);
-      viewModel.on({ addlayerssucceeded: callback });
-    });
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData,
+      'https://fakeiserver.supermap.io/iserver/services/dataflowTest/dataflow.json?token=FjOwvGbO9L1MOpV22Bx12_UNy5uVuEXoxoRQe_UyKJtvKQ0fyCZoeGMlq5IVDbLDvhxzu3w8_DawMHFC9kOeGA..': dataflowLayerData.dataflow,
+      'https://fakeiserver.supermap.io/iserver/services/dataflowTest/dataflow/broadcast?token=FjOwvGbO9L1MOpV22Bx12_UNy5uVuEXoxoRQe_UyKJtvKQ0fyCZoeGMlq5IVDbLDvhxzu3w8_DawMHFC9kOeGA..': dataflowLayerData.broadcast,
+      'https://fakeiserver.supermap.io/iserver/services/dataflowTest/dataflow/subscribe?token=FjOwvGbO9L1MOpV22Bx12_UNy5uVuEXoxoRQe_UyKJtvKQ0fyCZoeGMlq5IVDbLDvhxzu3w8_DawMHFC9kOeGA..': dataflowLayerData.subscribe,
+    };
+    mockFetch(fetchResource);
+    const callback = function (data) {
+      expect(data.layers.length).toBe(dataflowLayer.layers.length);
+      viewModel.updateOverlayLayer(dataflowLayer.layers[0]);
+      expect(() => {
+        viewModel.updateOverlayLayer(dataflowLayer.layers[0]);
+      }).not.toThrow();
+      done();
+    };
+    const viewModel = new WebMapViewModel(dataflowLayer, { ...commonOption }, undefined, {...commonMap});
+    viewModel.on({ addlayerssucceeded: callback });
   });
 
   // public Func
@@ -580,7 +519,7 @@ describe('WebMapViewModel.spec', () => {
         'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
         'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
           layerData,
-        'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
           vectorLayerData['144371940']
       };
       mockFetch(fetchResource);
@@ -600,7 +539,7 @@ describe('WebMapViewModel.spec', () => {
         'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
         'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
           layerData,
-        'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
           vectorLayerData['144371940']
       };
       mockFetch(fetchResource);
@@ -653,7 +592,7 @@ describe('WebMapViewModel.spec', () => {
         'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
         'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
           layerData,
-        'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
           vectorLayerData['144371940']
       };
       mockFetch(fetchResource);
@@ -687,7 +626,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
@@ -707,7 +646,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
@@ -731,7 +670,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
@@ -754,7 +693,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
@@ -777,7 +716,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
@@ -797,7 +736,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
@@ -825,7 +764,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
@@ -853,34 +792,18 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData,
-      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         vectorLayerData['144371940']
     };
     mockFetch(fetchResource);
-    const map = {
-      ...commonMap,
-      getSource: () => {
-        return {
-          _data: {
-            features: {
-              info: {
-                url: 'http://test'
-              },
-              featureType: 'POLYGON'
-            }
-          }
-        };
-      },
-      getLayer: () => ''
-    };
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...map });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
       expect(data.layers.length).toBe(uniqueLayer_polygon.layers.length);
       const mvtLayerInfo = {
         layerID: 'style1',
         layerType: 'mvt',
         visible: false,
-        featureType: 'POINT',
+        featureType: 'POLYGON',
         style: {
           radius: 6,
           fillColor: '#ff0000',
@@ -896,7 +819,10 @@ describe('WebMapViewModel.spec', () => {
         projection: 'EPSG:3857',
         featureType: 'POLYGON'
       };
-      const mvtFeatures = [];
+      const mvtFeatures = {
+        info: { url: 'http://support.supermap.com.cn:8090/iserver/services/mvt-example' },
+        featureType: 'POLYGON'
+      };
       const spy = jest.spyOn(viewModel, '_initOverlayLayer');
       viewModel.updateOverlayLayer(mvtLayerInfo, mvtFeatures);
       expect(spy).toBeCalled();
@@ -1016,15 +942,27 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ getmapinfofailed: callback });
   });
 
-  it('test layer autorefresh and visblescale', async done => {
-    const viewModel = new WebMapViewModel(restmapLayer, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-    jest.useFakeTimers();
-    expect(viewModel._layerTimerList.length).toBe(0);
-    await flushPromises();
-    jest.advanceTimersByTime(1000);
-    expect(viewModel._layerTimerList.length).not.toBe(0);
-    jest.useRealTimers();
-    done();
+  describe('test layer autorefresh and visblescale', () => {
+    it('tile layer', async done => {
+      const viewModel = new WebMapViewModel(restmapLayer, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+      jest.useFakeTimers();
+      expect(viewModel._layerTimerList.length).toBe(0);
+      await flushPromises();
+      jest.advanceTimersByTime(1000);
+      expect(viewModel._layerTimerList.length).not.toBe(0);
+      jest.useRealTimers();
+      done();
+    });
+    it('other layer except tile layer', async done => {
+      const viewModel = new WebMapViewModel(heatLayer, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+      jest.useFakeTimers();
+      expect(viewModel._layerTimerList.length).toBe(0);
+      await flushPromises();
+      jest.advanceTimersByTime(1000);
+      expect(viewModel._layerTimerList.length).not.toBe(0);
+      jest.useRealTimers();
+      done();
+    });
   });
 
   it('different projection', done => {

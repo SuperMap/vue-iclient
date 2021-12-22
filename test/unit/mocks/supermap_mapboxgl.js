@@ -90,9 +90,11 @@ supermap.MapvLayer = () => {
   return {};
 };
 const dataflowFeature = {
-  'type': 'Point',
-  'coordinates': [116.588918, 40.07108],
-  'properties': {
+  geometry: {
+    type: 'Point',
+    coordinates: [116.588918, 40.07108]
+  },
+  properties: {
     'id': 1
   }
 };
