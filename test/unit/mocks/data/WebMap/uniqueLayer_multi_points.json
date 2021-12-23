@@ -239,7 +239,7 @@
                 "w": 24,
                 "h": 24
               },
-              "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-010d5.png"
+              "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-010d5.png"
             },
             "type": "IMAGE_POINT",
             "radius": 8
@@ -253,7 +253,7 @@
             "type": "SVG_POINT",
             "radius": 8,
             "strokeColor": "#ffffff",
-            "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-1640166546637UNIQUE.svg",
+            "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-1640166546637UNIQUE.svg",
             "strokeOpacity": 1
           }
         },
@@ -283,7 +283,7 @@
         "radius": 8,
         "strokeColor": "#ffffff",
         "type": "SVG_POINT",
-        "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-1640166546637UNIQUE.svg",
+        "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-1640166546637UNIQUE.svg",
         "strokeOpacity": 1
       },
       "projection": "EPSG:4326",

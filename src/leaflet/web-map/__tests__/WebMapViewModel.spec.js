@@ -2,7 +2,6 @@ import WebMapViewModel from '../WebMapViewModel.ts';
 import layerData from '../../../../test/unit/mocks/data/layerData.json';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_serviceProxy.json';
-import uniqueLayer_polygon from '../../../../test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
 import vectorLayer_point from '../../../../test/unit/mocks/data/WebMap/vectorLayer_point.json';
 import vectorLayer_line from '../../../../test/unit/mocks/data/WebMap/vectorLayer_line.json';
 import flushPromises from 'flush-promises';
@@ -310,7 +309,9 @@ describe('WebMapViewModel.spec', () => {
 
   it('add vectorLayer_point', async done => {
     const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
+      'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/13136933/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_geojson['POINT_GEOJSON']
     };
     mockFetch(fetchResource);
     const id = vectorLayer_point;
@@ -609,7 +610,7 @@ describe('WebMapViewModel.spec', () => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': markerLayer,
-      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData_geojson
+      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData_geojson['MARKER_GEOJSON']
     };
     mockFetch(fetchResource);
     const callback = jest.fn();
@@ -710,8 +711,7 @@ describe('WebMapViewModel.spec', () => {
       projection: 'EPSG:3857',
       minScale: '1:591658710.9091312',
       title: '无标题',
-      version: '2.3.0',
-      rootUrl: 'http://192.168.11.94:8190/iportal/services/../'
+      version: '2.3.0'
     };
     mockFetch(fetchResource);
     const callback = jest.fn();

@@ -405,7 +405,7 @@ var FetchRequest = (SuperMap.FetchRequest = {
       } else if (url.indexOf('iportal/web/datas') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_chart))));
       }
-      // http://192.168.12.230:8092/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
+      // http://fakeiportal.supermap.io/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
       else if (url.indexOf('content.json?pageSize=9999999&currentPage=1') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(iportal_content))));
       } else if (url.indexOf('?REQUEST=GetCapabilities&SERVICE=WMS') > -1) {

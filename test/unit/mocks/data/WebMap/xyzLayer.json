@@ -13,6 +13,5 @@
   "minScale": "1:295829355.4133858",
   "title": "无标题",
   "version": "2.3.0",
-  "rootUrl": "http://192.168.11.94:8190/iportal/services/../",
   "mapParams": { "title": "无标题", "description": "" }
 }

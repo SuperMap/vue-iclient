@@ -45,7 +45,7 @@
           "radius": 8,
           "strokeColor": "#ffffff",
           "type": "SVG_POINT",
-          "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-1640090306663VECTOR.svg",
+          "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-1640090306663VECTOR.svg",
           "strokeOpacity": 1
         },
         "projection": "EPSG:4326",
@@ -75,7 +75,7 @@
               "w": 24,
               "h": 24
             },
-            "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-1640090359026VECTOR.png"
+            "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-1640090359026VECTOR.png"
           },
           "radius": 8,
           "type": "IMAGE_POINT"

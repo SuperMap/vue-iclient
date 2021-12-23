@@ -102,7 +102,7 @@
         "strokeColor": "#ffffff",
         "type": "SVG_POINT",
         "radius": 8,
-        "url": "http://192.168.11.94:8190/iportal/./resources/portal/dataviz/markericon/symbol-input-1640140175799DATAFLOW_POINT_TRACK.svg",
+        "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-1640140175799DATAFLOW_POINT_TRACK.svg",
         "strokeOpacity": 1
       },
       "visible": true,

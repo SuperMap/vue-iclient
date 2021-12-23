@@ -598,10 +598,9 @@ describe('WebMapService.spec', () => {
     const mapCRS = {};
     const service = new WebMapService(mapId, options);
     expect.assertions(1);
-    return service.getWmtsInfo(layerInfo, mapCRS).then(data => {
-      expect(data.kvpResourceUrl).toBe('http://192.168.11.94:8090/iserver/services/map-china400/wmts-china?');
-      done();
-    });
+    const data = await service.getWmtsInfo(layerInfo, mapCRS);
+    expect(data.kvpResourceUrl).toBe('http://fakeiserver.supermap.io/iserver/services/map-china400/wmts-china?');
+    done();
   });
 
   it('get datasource on rest_data type', () => {

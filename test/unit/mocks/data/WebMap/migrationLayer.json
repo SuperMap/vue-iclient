@@ -32,7 +32,6 @@
     "projection": "EPSG:3857",
     "minScale": "1:591658710.909131",
     "title": "无标题point",
-    "version": "2.3.0",
-    "rootUrl": "http://192.168.11.94:8190/iportal/services/../"
+    "version": "2.3.0"
   }
   
