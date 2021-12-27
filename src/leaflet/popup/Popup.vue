@@ -8,7 +8,7 @@ import PopupViewModel from './PopupViewModel';
 
 export default {
   name: 'SmPopup',
-  mixins: [Popper, Options, VmUpdater, MapGetter, Theme],
+  mixins: [Options, VmUpdater, MapGetter, Theme, Popper],
   viewModelProps: ['latLng', 'content'],
   props: {
     latLng: {
