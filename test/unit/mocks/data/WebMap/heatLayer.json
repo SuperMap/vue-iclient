@@ -1,0 +1,38 @@
+{
+    "extent": {
+      "leftBottom": { "x": -20037508.3427892, "y": -20037508.3427891 },
+      "rightTop": { "x": 20037508.3427892, "y": 20037508.3427891 }
+    },
+    "level": 5,
+    "center": { "x": 11810617.9363554, "y": 4275239.3340175 },
+    "baseLayer": {
+      "layerType": "TILE",
+      "name": "China",
+      "url": "http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China"
+    },
+    "layers": [
+      {
+        "layerType": "HEAT",
+        "visible": true,
+        "name": "民航数",
+        "featureType": "POINT",
+        "visibleScale": {
+          "maxScale": "1:147914677.72728282",
+          "minScale": "1:295829355.45456564"
+        },
+        "autoUpdateTime": 1000,
+        "themeSetting": {
+          "customSettings": {},
+          "radius": 10,
+          "colors": ["#0000ff", "#00ffff", "#00ff00", "#ffff00", "#ff0000"],
+          "weight": 400
+        },
+        "dataSource": { "type": "PORTAL_DATA", "serverId": "1920557079" }
+      }
+    ],
+    "description": "",
+    "projection": "EPSG:3857",
+    "title": "unique_民航数据",
+    "version": "1.0"
+  }
+  

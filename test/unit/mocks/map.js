@@ -1,3 +1,4 @@
+import { config } from '@vue/test-utils';
 require('flow-remove-types/register')({
   includes: /.*?\/mapbox-gl\/src\/.*/,
   excludes: {
@@ -96,18 +97,14 @@ var Map = function (options) {
   if (options.style) {
     this.setStyle(options.style);
   }
-  // this.transform = new Transform();
+  this.transform = {
+    angle: 0
+  };
   this._controlCorners = {
     'top-left': {
       appendChild: function () {}
     }
   };
-  setTimeout(
-    function () {
-      this.fire('load');
-    }.bind(this),
-    0
-  );
 
   var setters = [
     // Camera options
@@ -133,8 +130,7 @@ var Map = function (options) {
     this[setters[i]] = genericSetter;
   }
 
-  this.setLayoutProperty = function (layerid) {
-  };
+  this.setLayoutProperty = function (layerid) {};
 
   this.addControl = function (control) {
     control.onAdd(this);
@@ -193,7 +189,16 @@ var Map = function (options) {
         ]
       };
       return {
-        _data: chartResult
+        _data: chartResult,
+        getData: function () {
+          return {
+            features: [
+              {
+                properties: { id: 1 }
+              }
+            ]
+          };
+        }
       };
     }
     if (this._sources[name]) {
@@ -215,6 +220,7 @@ var Map = function (options) {
             this.fire('data', e);
           }
         }.bind(this),
+        _data: this._sources[name].data,
         loadTile: function () {}
       };
     }
@@ -237,12 +243,46 @@ var Map = function (options) {
             this.fire('data', e);
           }
         }.bind(this),
-        loadTile: function () {}
+        loadTile: function () {},
+        getData: function () {
+          return {
+            features: [
+              {
+                properties: { id: 1 }
+              }
+            ]
+          };
+        }
+      };
+    } else if (name === 'dataflowlayer-1') {
+      return null;
+    } else if (name == 'dataflowlayer-source') {
+      return {
+        setData: function (data) {},
+        loadTile: function () {},
+        _data: {
+          features: [
+            { geometry: { type: 'Point', coordinates: [0, 0] }, properties: { id: 1 } },
+            { geometry: { type: 'Point', coordinates: [0, 0] }, properties: { id: 2 } }
+          ]
+        }
+      };
+    } else if (name == 'dataflowlayer-source-has-false') {
+      return {
+        setData: function (data) {},
+        loadTile: function () {},
+        _data: {
+          features: [{ geometry: { type: 'Point', coordinates: [0, 0] }, properties: { id: 2 } }]
+        }
+      };
+    } else if (name == 'China1') {
+      return {
+        type: function (data) {},
+        tiles: []
       };
     } else {
       return {
-        setData: function (data) {
-        },
+        setData: function (data) {},
         loadTile: function () {}
       };
     }
@@ -280,8 +320,17 @@ var Map = function (options) {
   this.off = function () {};
   this.addLayer = function (layer, before) {
     this.overlayLayersManager[layer.id] = layer;
-
+    if (layer.onAdd) {
+      layer.onAdd(this);
+    }
+    if (layer.render) {
+      layer.render();
+    }
     return this;
+  };
+
+  this.addStyle = function (style, before) {
+    return style;
   };
 
   this.removeLayer = function (layerId) {};
@@ -289,11 +338,17 @@ var Map = function (options) {
   this.getFilter = function (layerId) {};
   this.setFilter = function (layerId, filter) {};
   this.getLayer = function (id) {
-    if (this.overlayLayersManager[id]) {
+    if(this.overlayLayersManager[id]) {
+      if(id === 'POINT-0'){
+        return ''
+      }
       return this.overlayLayersManager[id];
     }
-    if (this._layers[id]) {
+    else if(this._layers[id]) {
       return this._layers[id];
+    }
+    else if(id === 'China-identify-SM-highlighted'){
+      return {}
     }
   };
   this.getBounds = function () {
@@ -337,7 +392,32 @@ var Map = function (options) {
     enable: function () {}
   };
 
-  this.project = function () {};
+  this.scrollZoom = {
+    disable: function () {},
+    enable: function () {}
+  };
+
+  this.dragRotate = {
+    disable: function () {},
+    enable: function () {}
+  };
+
+  this.keyboard = {
+    disable: function () {},
+    enable: function () {}
+  };
+
+  this.touchZoomRotate = {
+    disable: function () {},
+    enable: function () {}
+  };
+
+  this.project = function () {
+    return {
+      x: 500,
+      y: 300
+    };
+  };
   this.unproject = function (point) {
     return new LngLat(-73.9876, 40.7661);
   };
@@ -348,24 +428,68 @@ var Map = function (options) {
    * pointOrBox: either [x, y] pixel coordinates of a point, or [ [x1, y1] , [x2, y2] ]
    */
   this.queryRenderedFeatures = function (pointOrBox, queryParams) {
+    if (pointOrBox[0][0] == 5 && pointOrBox[1][0] === 15) {
+      const feature = [
+        {
+          layer: {
+            id: 'China'
+          },
+          geometry: { type: 'Point', coordinates: [0, 1] },
+          type: 'Point',
+          coordinates: [0, 1],
+          properties: {
+            title: '老虎海',
+            subtitle: '树正沟景点-老虎海',
+            imgUrl: './laohuhai.png',
+            description: '老虎海海拔2298米',
+            index: 1
+          },
+          _vectorTileFeature: {
+            _keys: ['title']
+          }
+        }
+      ];
+      return feature;
+    } else if(pointOrBox[0] == 0 && pointOrBox[1] == 1) {
+      return [{
+        "id": undefined,
+        "layer": {
+          "id": "第七次人口普查全国各省人口数(未包含港澳台)",
+          "type": "fill",
+          "source": "第七次人口普查全国各省人口数(未包含港澳台)"
+        },
+        "properties": {
+          "地区": "北京",
+          "2020年人口数": "21893095",
+          "2010年人口数": "19612368",
+          "2020年比重": "1.55",
+          "2010年比重": "1.46"
+        },
+        "source": "第七次人口普查全国各省人口数(未包含港澳台)",
+        "state": {},
+        "type": "Feature"
+      }]     
+    };
     var searchBoundingBox = [];
-    if (pointOrBox[0].x !== undefined) {
-      searchBoundingBox = [
-        Math.min(pointOrBox[0].x, pointOrBox[1].x),
-        Math.min(pointOrBox[0].y, pointOrBox[1].y),
-        Math.max(pointOrBox[0].x, pointOrBox[1].y),
-        Math.max(pointOrBox[0].x, pointOrBox[1].y)
-      ];
-    } else {
-      searchBoundingBox = [
-        Math.min(pointOrBox[0][0], pointOrBox[1][0]),
-        Math.min(pointOrBox[0][1], pointOrBox[1][1]),
-        Math.max(pointOrBox[0][0], pointOrBox[1][0]),
-        Math.max(pointOrBox[0][1], pointOrBox[1][1])
-      ];
+    if (pointOrBox) {
+      if (pointOrBox[0].x !== undefined) {
+        searchBoundingBox = [
+          Math.min(pointOrBox[0].x, pointOrBox[1].x),
+          Math.min(pointOrBox[0].y, pointOrBox[1].y),
+          Math.max(pointOrBox[0].x, pointOrBox[1].y),
+          Math.max(pointOrBox[0].x, pointOrBox[1].y)
+        ];
+      } else {
+        searchBoundingBox = [
+          Math.min(pointOrBox[0][0], pointOrBox[1][0]),
+          Math.min(pointOrBox[0][1], pointOrBox[1][1]),
+          Math.max(pointOrBox[0][0], pointOrBox[1][0]),
+          Math.max(pointOrBox[0][1], pointOrBox[1][1])
+        ];
+      }
     }
 
-    var searchPolygon = bboxPolygon(searchBoundingBox);
+    var searchPolygon = searchBoundingBox.length && bboxPolygon(searchBoundingBox);
     var features = Object.keys(this._sources).reduce(
       (memo, name) => memo.concat(this._sources[name].data.features),
       []
@@ -373,7 +497,7 @@ var Map = function (options) {
     features = features.filter(feature => {
       var subFeatures = [];
 
-      if (feature.geometry.type.startsWith('Multi')) {
+      if (feature && feature.geometry && feature.geometry.type.startsWith('Multi')) {
         var type = feature.geometry.type.replace('Multi', '');
         subFeatures = feature.geometry.coordinates.map(coords => {
           return {
@@ -392,7 +516,11 @@ var Map = function (options) {
       // union only works with polygons, so we convert points and lines into polygons
       // TODO: Look into having this buffer match the style
       subFeatures = subFeatures.map(subFeature => {
-        if (subFeature.geometry.type === 'Point' || subFeature.geometry.type === 'LineString') {
+        if (
+          subFeature &&
+          subFeature.geometry &&
+          (subFeature.geometry.type === 'Point' || subFeature.geometry.type === 'LineString')
+        ) {
           return buffer(subFeature, 0.00000001, 'kilometers');
         } else {
           return subFeature;
@@ -405,8 +533,8 @@ var Map = function (options) {
         // union takes two polygons and merges them.
         // If they intersect it returns them merged Polygon geometry type
         // If they don't intersect it retuns them as a MultiPolygon geomentry type
-        var merged = union(subFeature, searchPolygon);
-        return merged.geometry.type === 'Polygon';
+        var merged = subFeature && union(subFeature, searchPolygon);
+        return merged && merged.geometry.type === 'Polygon';
       });
     });
 
@@ -429,11 +557,80 @@ var Map = function (options) {
     this.fire('zoomend', this.zoom);
     return this.zoom;
   };
-  this.loadImage=function(src,callback){
-    setTimeout(function(){callback(null,[1,2,3])},10)
+  this.loadImage = function (src, callback) {
+      callback(null, [1, 2, 3]);
+  };
+  this.addImage = function () {};
+  this.hasImage = function () {
+    return true;
+  };
+  this.getPaintProperty = function () {};
+  this.removeImage = function () {};
+  this.getCanvasContainer = () => {
+    return {
+      appendChild() {},
+      addEventListener(eventName, callback) {},
+      style: {
+        cursor: null
+      }
+    };
+  };
+  this.getCanvas = () => {
+    return {
+      style: {
+        width: 100,
+        height: 100
+      }
+    };
+  };
+  this.getCRS = () => {
+    return {
+      getExtent: () => jest.fn()
+    };
+  };
+  this.setCRS = () => {};
+  this.flyTo = options => {};
+  this.setRenderWorldCopies = epsgCode => {};
+  this.triggerRepaint = () => {};
+  if (config.mapLoad) {
+    setTimeout(() => {
+      this.fire('load');
+    }, 0);
   }
-  this.addImage =function(){}
-  this.hasImage =function(){return true}
+  setTimeout(() => {
+    this.fire('move');
+    // this.fire('mousedown');
+    // this.fire('mousemove');
+    this.fire('mouseup');
+    this.fire('draw.create', {
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            SmID: '1'
+          },
+          type: 'Feature'
+        }
+      ]
+    });
+    this.fire('draw.selectionchange', {
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            SmID: '1'
+          },
+          type: 'Feature'
+        }
+      ]
+    });
+  }, 500);
 };
 
 module.exports = Map;

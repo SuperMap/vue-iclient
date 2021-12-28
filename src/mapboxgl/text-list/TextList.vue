@@ -27,28 +27,28 @@
                 "
               >
                 {{ getColumns[index].header }}
-                <div
-                  v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
-                  class="arrow-wrap"
-                  :style="{ borderColor: headerStyleData.sortBtnColor }"
-                >
-                  <i
-                    :class="['up-triangle']"
-                    :style="[
-                      { borderBottomColor: headerStyleData.sortBtnColor },
-                      sortType === 'ascend' &&
-                        sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }
-                    ]"
-                  ></i>
-                  <i
-                    :class="['down-triangle']"
-                    :style="[
-                      { borderTopColor: headerStyleData.sortBtnColor },
-                      sortType === 'descend' &&
-                        sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }
-                    ]"
-                  ></i>
-                </div>
+              </div>
+              <div
+                v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
+                class="arrow-wrap"
+                :style="{ borderColor: headerStyleData.sortBtnColor }"
+              >
+                <i
+                  :class="['up-triangle']"
+                  :style="[
+                    { borderBottomColor: headerStyleData.sortBtnColor },
+                    sortType === 'ascend' &&
+                      sortIndex === index && { borderBottomColor: headerStyleData.sortBtnSelectColor }
+                  ]"
+                ></i>
+                <i
+                  :class="['down-triangle']"
+                  :style="[
+                    { borderTopColor: headerStyleData.sortBtnColor },
+                    sortType === 'descend' &&
+                      sortIndex === index && { borderTopColor: headerStyleData.sortBtnSelectColor }
+                  ]"
+                ></i>
               </div>
             </div>
           </template>
@@ -125,6 +125,7 @@ import Timer from 'vue-iclient/src/common/_mixin/Timer';
 import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import merge from 'lodash.merge';
 import clonedeep from 'lodash.clonedeep';
+import isequal from 'lodash.isequal';
 import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 
 interface HeaderStyleParams {
@@ -289,11 +290,12 @@ class SmTextList extends Mixins(Theme, Timer) {
   }
 
   @Watch('columns')
-  columnsChanged() {
-    if (this.content || this.featuresData) {
-      this.listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
-      this.getListHeightStyle();
+  columnsChanged(oldVal, newVal) {
+    if ((this.content || this.featuresData) && !isequal(oldVal, newVal)) {
       this.setDefaultSortType();
+      const listData = this.content ? this.handleContent(this.content) : this.handleFeatures(this.featuresData);
+      this.listData = this.sortContent(listData);
+      this.getListHeightStyle();
     }
   }
 
@@ -364,13 +366,21 @@ class SmTextList extends Mixins(Theme, Timer) {
   // 切换自动滚动与排序时重置。。。
   @Watch('highlightOptions', { immediate: true, deep: true })
   highlightOptionsChanged(newVal) {
-    let bounds = this.rowsIndexViewBounds();
     let autoBounds = this.getAutoRollingIndexBounds;
-    if (!this.autoRolling && newVal && newVal.length && !this.clamp(newVal[0], bounds[0], bounds[1])) {
+    if (!this.autoRolling && newVal && newVal.length) {
       // @ts-ignore
-      this.$refs.animate &&
-        // @ts-ignore
-        (this.$refs.animate.scrollTop = newVal[0] * this.filterUnit(this.listStyle.rowStyle.height));
+      if (this.$refs.animate) {
+        let scrollHeight = 0;
+        let dataIndex = this.animateContent.findIndex((item, index) => {
+          // @ts-ignore
+          return item.idx === newVal[0];
+        })
+        if (dataIndex || dataIndex === 0) {
+          scrollHeight = dataIndex * this.filterUnit(this.listStyle.rowStyle.height);
+          // @ts-ignore
+          this.$refs.animate.scrollTop = scrollHeight;
+        }
+      }
       // @ts-ignore
     } else if (this.autoRolling) {
       if (!this.clamp(newVal[0], autoBounds[0], autoBounds[1])) {

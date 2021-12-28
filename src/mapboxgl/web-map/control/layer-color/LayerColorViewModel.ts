@@ -82,5 +82,9 @@ class LayerColorViewModel extends mapboxgl.Evented {
     this.map.off('click', this.selectLayerFn);
     this._changeCursor();
   }
+
+  removed() {
+    this.resetAllColor();
+  }
 }
 export default LayerColorViewModel;

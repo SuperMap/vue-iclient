@@ -48,6 +48,7 @@ import 'videojs-flash';
 import { videoPlayer } from 'vue-videojs7';
 import clonedeep from 'lodash.clonedeep';
 import SmModal from 'vue-iclient/src/common/modal/main';
+import Message from 'vue-iclient/src/common/message/index.js';
 
 interface playerOptions {
   height?: string;
@@ -82,8 +83,6 @@ class SmVideoPlayer extends Vue {
   playerOptions: playerOptions = {};
 
   modalPlayerOptions: playerOptions = {};
-
-  $message: any;
 
   $t: any;
 
@@ -221,7 +220,8 @@ class SmVideoPlayer extends Vue {
       return {};
     }
     if (!this.checkUrl(this.url)) {
-      this.$message.warning(this.$t('warning.unsupportedVideoAddress'), 1);
+      // @ts-ignore
+      Message.warning(this.$t('warning.unsupportedVideoAddress'), 1);
       if (this.playerOptions.sources) {
         this.playerOptions.sources[0].src = '';
         this.modalPlayerOptions.sources[0].src = '';
@@ -293,7 +293,8 @@ class SmVideoPlayer extends Vue {
       return;
     }
     if (this.isFirst && this.options.popupToPlay) {
-      this.$message.info(this.$t('info.pressEscToExit'), 3);
+      // @ts-ignore
+      Message.info(this.$t('info.pressEscToExit'), 3);
     }
     if (this.isFirst && !this.options.popupToPlay && !this.options.autoplay) {
       // 重置默认振

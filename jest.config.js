@@ -17,7 +17,9 @@ module.exports = {
     '^@mixin/(.*)$': '<rootDir>/src/mapboxgl/_mixin/$1',
     '\\.(css|less)$': 'identity-obj-proxy',
     '@i18n/(.*)$': '<rootDir>/src/common/$1',
-    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$': '<rootDir>/test/unit/assetsTransformer.js'
+    '@leaflet/(.*)$': '<rootDir>/src/leaflet/$1',
+    '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
+      '<rootDir>/test/unit/assetsTransformer.js'
   },
   transform: {
     '^.+\\.ts$': '<rootDir>/node_modules/ts-jest',
@@ -37,7 +39,9 @@ module.exports = {
     '!**/node_modules/**',
     '!mapboxgl/*/__tests__/**/type.{js,jsx}'
   ],
-  transformIgnorePatterns: ['node_modules/(?!(mapbox-gl|element-ui|ant-design-vue|geographic-coordinate-converter)/)'],
+  transformIgnorePatterns: [
+    'node_modules/(?!(mapbox-gl|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'
+  ],
   modulePaths: ['src', 'node_modules'],
   globals: {
     'ts-jest': {

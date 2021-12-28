@@ -40,7 +40,7 @@ export default class DataFlowLayerViewModel extends mapboxgl.Evented {
     this._initializeDataFlow();
   }
 
-  setLaterStyle(layerStyle) {
+  setLayerStyle(layerStyle) {
     this.layerStyle = layerStyle;
   }
 

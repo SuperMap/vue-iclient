@@ -1,169 +1,144 @@
-import {
-  mount,
-  createLocalVue
-} from '@vue/test-utils';
-import SmWebMap from '../../web-map/WebMap';
+import { mount, createLocalVue, config } from '@vue/test-utils';
 import SmOpenFile from '../OpenFile.vue';
-import mapEvent from '@types_mapboxgl/map-event';
-import LineStyle from '../../_types/LineStyle'
-import FillStyle from '../../_types/FillStyle'
-import CircleStyle from '../../_types/CircleStyle'
-import {
-  message
-} from 'ant-design-vue';
-
-const localVue = createLocalVue()
+import LineStyle from '../../_types/LineStyle';
+import FillStyle from '../../_types/FillStyle';
+import CircleStyle from '../../_types/CircleStyle';
+import { message } from 'ant-design-vue';
+import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
+const localVue = createLocalVue();
 localVue.prototype.$message = message;
 
 describe('OpenFile.vue', () => {
-
   let wrapper;
   let mapWrapper;
   const china = {
-    "type": "FeatureCollection",
-    "features": [{
-        "type": "Feature",
-        "properties": {
-          "id": "81",
-          "name": "香港",
-          "cp": [
-            114.2578,
-            22.3242
-          ],
-          "childNum": 1
+    type: 'FeatureCollection',
+    features: [
+      {
+        type: 'Feature',
+        properties: {
+          id: '81',
+          name: '香港',
+          cp: [114.2578, 22.3242],
+          childNum: 1
         },
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
             [
-              [
-                114.6094,
-                22.4121
-              ],
+              [114.6094, 22.4121],
 
-              [
-                114.6094,
-                22.4121
-              ]
+              [114.6094, 22.4121]
             ]
           ]
         }
       },
       {
-        "type": "Feature",
-        "properties": {
-          "id": "82",
-          "name": "澳门",
-          "cp": [
-            113.5547,
-            22.1484
-          ],
-          "childNum": 1
+        type: 'Feature',
+        properties: {
+          id: '82',
+          name: '澳门',
+          cp: [113.5547, 22.1484],
+          childNum: 1
         },
-        "geometry": {
-          "type": "Polygon",
-          "coordinates": [
+        geometry: {
+          type: 'Polygon',
+          coordinates: [
             [
-              [
-                113.5986,
-                22.1649
-              ],
+              [113.5986, 22.1649],
 
-              [
-                113.5986,
-                22.1649
-              ]
+              [113.5986, 22.1649]
             ]
           ]
         }
       }
     ]
   };
+  const chinaString = JSON.stringify(china);
+
+  beforeAll(async () => {
+    config.mapLoad = false;
+    mapWrapper = await createEmptyMap();
+  });
 
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
     wrapper = null;
-    jest.restoreAllMocks();
-    mapWrapper = mount(SmWebMap, {
-      localVue,
-      propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
-      }
-    });
-  })
+  });
 
   afterEach(() => {
     jest.restoreAllMocks();
-    if (wrapper && wrapper !== "undefined") {
+    config.mapLoad = true;
+    if (wrapper) {
       wrapper.destroy();
     }
-    if (mapWrapper && mapWrapper !== "undefined") {
+  });
+
+  afterAll(() => {
+    config.mapLoad = true;
+    if (mapWrapper) {
       mapWrapper.destroy();
     }
-  })
+  });
 
-  it('default', (done) => {
+  it('default', async done => {
+    jest.spyOn(global, 'FileReader').mockImplementation(function () {
+      this.onloadend = function (event) {};
+      const event = {
+        target: {
+          result: chinaString
+        }
+      };
+      this.readAsText = function () {
+        this.onloadend(event);
+      };
+    });
     const blob = new Blob([JSON.stringify(china)], {
       type: 'application/json'
     });
     const name = './base/resources/china.json';
     const type = 'application/json';
     const file = new File([blob], name, {
-      type: type,
+      type: type
     });
     const fileEventObject = {
       target: {
         files: {
           0: file
         },
-        value: "./base/resources/china.json"
+        value: './base/resources/china.json'
       }
     };
     wrapper = mount(SmOpenFile, {
       localVue,
+      props: {
+        clearLastLayer: true
+      }      
     });
-    wrapper.vm.$on("loaded", () => {
-      try {
-        wrapper.vm.viewModel.readFile(fileEventObject);
-        wrapper.vm.$on('openfilesucceeded', function (e) {
-          try {
-            expect(e.features.length).toBe(2);
-            done();
-          } catch (exception) {
-            console.log("'readfile'案例失败：" + exception.name + ":" + exception.message);
-            expect(false).toBeTruthy();
-            done();
-          }
-        })
-        expect(wrapper.vm.viewModel.readFile(fileEventObject)).toBeTruthy;
-        done();
-      } catch (exception) {
-        console.log("Openfile_default" + exception.name + ":" + exception.message);
-        expect(false).toBeTruthy();
-        done();
-      }
-    })
-  })
+    await mapSubComponentLoaded(wrapper);
+    const openFileSucceededFn = jest.fn();
+    wrapper.vm.$on({ 'open-file-succeeded': openFileSucceededFn });
+    expect(wrapper.find('.sm-component-open-file__input').exists()).toBe(true);
+    wrapper.vm.fileSelect(fileEventObject);
+    expect(openFileSucceededFn.mock.called).toBeTruthy;
+    done();
+  });
 
-
-  it('custom setting', (done) => {
-    let blob = new Blob([JSON.stringify(china)], {
-      type: 'application/json'
-    });
-    let name = './base/resources/china.json';
+  it('custom setting', async done => {
     let type = 'application/json';
+    let name = './base/resources/china.json';
+    let blob = new Blob([JSON.stringify(china)], {
+      type: type
+    });
     let file = new File([blob], name, {
-      type: type,
+      type: type
     });
     let fileEventObject = {
       target: {
         files: {
           0: file
         },
-        value: "./base/resources/china.json"
+        value: './base/resources/china.json'
       }
     };
     wrapper = mount(SmOpenFile, {
@@ -178,42 +153,29 @@ describe('OpenFile.vue', () => {
         clearLastLayer: true
       }
     });
-    wrapper.vm.$on("loaded", () => {
-      try {
-        wrapper.vm.viewModel.readFile(fileEventObject);
-        wrapper.vm.$on('openfilesucceeded', function (e) {
-          try {
-            expect(e.features.length).toBe(2);
-            done();
-          } catch (exception) {
-            console.log("'readfile'案例失败：" + exception.name + ":" + exception.message);
-            expect(false).toBeTruthy();
-            done();
-          }
-        })
-        expect(wrapper.vm.viewModel.readFile(fileEventObject)).toBeTruthy;
-        done();
-      } catch (exception) {
-        console.log("Openfile_default" + exception.name + ":" + exception.message);
-        expect(false).toBeTruthy();
-        done();
-      }
-    })
-  })
+    await mapSubComponentLoaded(wrapper);
+    const openFileSucceededFn = jest.fn();
+    expect(wrapper.find('#input_file').exists()).toBe(true);
+    wrapper.vm.$on({ 'open-file-succeeded': openFileSucceededFn });
+    wrapper.vm.fileSelect(fileEventObject);
+    expect(openFileSucceededFn.mock.called).toBeTruthy;
+    done();
+  });
 
-  it('fail', (done) => {
-    let name = 'test.txt';
-    let blob = new Blob(["This is my blob content"], {
-      type: "text/plain"
+  it('fileType is error', async done => {
+    let name = './base/resources/test';
+    let blob = new Blob(['This is my blob content'], {
+      type: 'text/plain'
     });
     let file = new File([blob], name, {
-      type: "text/plain",
+      type: 'text/plain'
     });
     let fileEventObject = {
       target: {
         files: {
           0: file
         },
+        value: './base/resources/test.txt'
       }
     };
     wrapper = mount(SmOpenFile, {
@@ -223,26 +185,49 @@ describe('OpenFile.vue', () => {
         clearLastLayer: true
       }
     });
-    wrapper.vm.$on("loaded", () => {
-      try {
-        wrapper.vm.viewModel.readFile(fileEventObject);
-        wrapper.vm.$on('openfilefailed', function (e) {
-          try {
-            expect(e.message).toBe('File format is not supported!');
-            done();
-          } catch (exception) {
-            console.log("'readfile'案例失败：" + exception.name + ":" + exception.message);
-            expect(false).toBeTruthy();
-            done();
-          }
-        })
-        done();
-      } catch (exception) {
-        console.log("Openfile_default" + exception.name + ":" + exception.message);
-        expect(false).toBeTruthy();
-        done();
-      }
-    })
-  })
+    await mapSubComponentLoaded(wrapper);
+    const errorFileFormatFn = jest.fn();
+    expect(wrapper.find('#input_file').exists()).toBe(true);
+    wrapper.vm.$on({ 'error-file-format': errorFileFormatFn });
+    wrapper.vm.fileSelect(fileEventObject);
+    expect(errorFileFormatFn.mock.called).toBeTruthy;
+    done();
+  });
 
-})
+  it('open csv data', async done => {
+    jest.spyOn(global, 'FileReader').mockImplementation(function () {
+      this.onloadend = function (event) {};
+      const event = {
+        target: {
+          result: new ArrayBuffer(10)
+        }
+      };
+      this.readAsArrayBuffer = function () {
+        this.onloadend(event);
+      };
+    });
+    const blob = new Blob([JSON.stringify(china)], {
+      type: 'application/vnd.ms-excel'
+    });
+    const name = './base/resources/china.csv';
+    const type = 'application/vnd.ms-excel';
+    const file = new File([blob], name, {
+      type: type
+    });
+    const fileEventObject = {
+      target: {
+        files: {
+          0: file
+        },
+        value: './base/resources/china.csv'
+      }
+    };
+    wrapper = mount(SmOpenFile, {
+      localVue
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.find('.sm-component-open-file__input').exists()).toBe(true);
+    wrapper.vm.fileSelect(fileEventObject);
+    done();
+  });
+});

@@ -4,23 +4,25 @@
       <div class="sm-component-attributes__count">
         <span v-if="title" class="layer-name">{{ title }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
-        <span v-if="statistics.showTotal" class="total-numbers" >{{ this.$t('attributes.feature') }}：{{ paginationOptions.total || 0 }}</span
+        <span v-if="statistics.showTotal" class="total-numbers"
+          >{{ this.$t('attributes.feature') }}：{{ paginationOptions.total || 0 }}</span
         >
         <span v-if="statistics.showTotal && statistics.showSelect">，</span>
-        <span v-if="statistics.showSelect" class="select-numbers" >{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span
+        <span v-if="statistics.showSelect" class="select-numbers"
+          >{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span
         >
         <span v-if="statistics.showTotal || statistics.showSelect">）</span>
       </div>
       <div class="sm-component-attributes__menu">
-        <sm-dropdown v-if="toolbar.enabled" placement="bottomRight">
-          <div class="ant-dropdown-link"><sm-icon :icon-style="{ color: '#ccc' }" type="menu" /></div>
+        <sm-dropdown :getPopupContainer="triggerNode => triggerNode.parentNode" v-if="toolbar.enabled" placement="bottomRight">
+          <div class="sm-component-dropdown-link"><sm-icon :icon-style="{ color: '#ccc' }" type="menu" /></div>
           <sm-menu slot="overlay">
             <sm-menu-item>
               <div v-if="toolbar.showClearSelected" @click="clearSelectedRows">
                 {{ this.$t('attributes.clearSelected') }}
               </div>
             </sm-menu-item>
-            <sm-menu-item v-if="toolbar.showZoomToFeature">
+            <sm-menu-item v-if="toolbar.showZoomToFeature && associateMap">
               <div @click="setZoomToFeature">{{ this.$t('attributes.zoomToFeatures') }}</div>
             </sm-menu-item>
             <sm-menu-item v-if="toolbar.showRefresh">
@@ -51,7 +53,7 @@
       :customHeaderRow="customHeaderRow"
       :customRow="customRow"
       :loading="loading"
-      :getPopupContainer="(triggerNode) => triggerNode.parentNode"
+      :getPopupContainer="triggerNode => triggerNode.parentNode"
       table-layout="fixed"
       @change="handleChange"
     >
@@ -77,11 +79,11 @@
         >
           {{ $t('attributes.search') }}
         </sm-button>
-        <sm-button size="small" style="width: 90px;" @click="() => handleSearchReset(clearFilters)">
+        <sm-button size="small" style="width: 90px" @click="() => handleSearchReset(clearFilters)">
           {{ $t('attributes.reset') }}
         </sm-button>
       </div>
-      <sm-icon slot="filterIcon" icon-class="search" />
+      <i slot="filterIcon" class="sm-components-icon-search"></i>
       <template slot="customRender" slot-scope="text, record, index, column">
         <span v-if="searchText && searchedColumn === column.dataIndex">
           <template v-for="fragment in text.toString().split(new RegExp(`(?<=${searchText})|(?=${searchText})`, 'i'))">
@@ -325,7 +327,11 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   created() {
     this.fieldInfo = clonedeep(this.fieldConfigs);
-    this.viewModel = new AttributesViewModel({ paginationOptions: this.paginationOptions, ...this.$props, fieldConfigs: this.fieldInfo });
+    this.viewModel = new AttributesViewModel({
+      paginationOptions: this.paginationOptions,
+      ...this.$props,
+      fieldConfigs: this.fieldInfo
+    });
     this.bindEvents();
   }
 
@@ -404,13 +410,16 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       this.columns = columns;
       this.tableData = content;
     });
+    this.viewModel.on('clearselectedrows', () => {
+      this.clearSelectedRows();
+    });
     this.viewModel.on('changeSelectLayer', feature => {
       this.handleMapSelectedFeature(feature);
     });
   }
 
   refreshData() {
-    this.selectedRowKeys = [];
+    this.clearSelectedRows();
     this.tableData = [];
     this.viewModel.refresh();
   }

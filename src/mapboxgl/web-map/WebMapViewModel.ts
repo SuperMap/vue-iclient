@@ -1,4 +1,4 @@
-/* Copyright© 2000 - 2021 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2022 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
@@ -339,7 +339,7 @@ export default class WebMapViewModel extends WebMapBase {
             proxy = this.webMapService.handleProxy(proxyType);
           }
           return {
-            url: proxy ? +`${proxy}${encodeURIComponent(url)}` : url,
+            url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
             credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
               ? 'include'
               : 'omit'
@@ -623,9 +623,6 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createGraticuleOptions(graticuleInfo) {
-    if (!graticuleInfo) {
-      return null;
-    }
     let { extent, lonLabelStyle, latLabelStyle } = graticuleInfo;
     const { strokeColor, lineDash, strokeWidth, interval } = graticuleInfo;
     const strokeStyle = {
@@ -1851,13 +1848,14 @@ export default class WebMapViewModel extends WebMapBase {
     const { minzoom, maxzoom } = layerInfo;
     const markerSrc = {};
     features = features || [];
-    features.forEach(feature => {
+    features.forEach((feature: any, index: number) => {
       const defaultStyle = feature.dv_v5_markerStyle;
       let geomType = feature.geometry.type.toUpperCase();
       if (geomType === 'POINT' && defaultStyle.text) {
         // 说明是文字的feature类型
         geomType = 'TEXT';
       }
+      const layerID = geomType + '-' + index;
       if (
         geomType === 'POINT' &&
         defaultStyle.src &&
@@ -1867,13 +1865,16 @@ export default class WebMapViewModel extends WebMapBase {
         // 说明地址不完整
         defaultStyle.src = this.serverUrl + defaultStyle.src;
       }
-      if (!markerSrc[defaultStyle.src]) {
-        markerSrc[defaultStyle.src] = defaultStyle;
+      if (!markerSrc[layerID]) {
+        markerSrc[layerID] = {
+          src: defaultStyle.src,
+          defaultStyle
+        };
       }
     });
-    const loadImagePromise = (src, defaultStyle) => {
+    const loadImagePromise = (layerID: string, { src, defaultStyle }) => {
       return new Promise(resolve => {
-        if (src.indexOf('svg') < 0) {
+        if (src && src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
           this.map.loadImage(src, (error, image) => {
             if (error) {
               console.log(error);
@@ -1881,7 +1882,7 @@ export default class WebMapViewModel extends WebMapBase {
               return;
             }
             !this.map.hasImage(src) && this.map.addImage(src, image);
-            resolve(src);
+            resolve({ [layerID]: src });
           });
         } else {
           if (!this._svgDiv) {
@@ -1890,22 +1891,24 @@ export default class WebMapViewModel extends WebMapBase {
           }
           this.getCanvasFromSVG(src, this._svgDiv, canvas => {
             this.handleSvgColor(defaultStyle, canvas);
-            this.map.loadImage(canvas.toDataURL('img/png'), (error, image) => {
+            const base64Url = canvas.toDataURL('img/png');
+            this.map.loadImage(base64Url, (error, image) => {
               if (error) {
                 console.log(error);
                 resolve(error);
                 return;
               }
-              !this.map.hasImage(src) && this.map.addImage(src, image);
-              resolve(src);
+              const srcUrl = src || base64Url;
+              !this.map.hasImage(srcUrl) && this.map.addImage(srcUrl, image);
+              resolve({ [layerID]: srcUrl });
             });
           });
         }
       });
     };
     const promiseList = [];
-    for (const src in markerSrc) {
-      promiseList.push(loadImagePromise(src, markerSrc[src]));
+    for (const layerID in markerSrc) {
+      promiseList.push(loadImagePromise(layerID, markerSrc[layerID]));
     }
     Promise.all(promiseList).then(images => {
       for (let i = 0; i < features.length; i++) {
@@ -1924,11 +1927,11 @@ export default class WebMapViewModel extends WebMapBase {
           type: 'geojson',
           data: feature
         };
-        const index = feature.properties.index;
-        const layerID = geomType + '-' + index;
+        const layerID = geomType + '-' + i;
+        const iconImageUrl = images[i][layerID];
         // image-marker  svg-marker
-        if (geomType === 'POINT' && defaultStyle.src) {
-          if (!images.includes(defaultStyle.src)) {
+        if (geomType === 'POINT' || geomType === 'TEXT') {
+          if (!iconImageUrl) {
             continue;
           }
           this._addLayer({
@@ -1936,17 +1939,15 @@ export default class WebMapViewModel extends WebMapBase {
             type: 'symbol',
             source: source,
             layout: {
-              'icon-image': defaultStyle.src,
-              'icon-size': defaultStyle.scale,
+              'icon-image': iconImageUrl,
+              'icon-size': defaultStyle.scale || 1,
               visibility: layerInfo.visible
             },
             minzoom: minzoom || 0,
             maxzoom: maxzoom || 22
           });
-        }
-
-        // point-line-polygon-marker
-        if (!defaultStyle.src) {
+        } else {
+          // line-polygon-marker
           const layeStyle: any = {
             layout: {}
           };

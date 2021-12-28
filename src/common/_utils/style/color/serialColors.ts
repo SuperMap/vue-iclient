@@ -24,6 +24,10 @@ export interface FunctionColorParams {
 export interface ExtraColorParams {
   [prop: string]: string;
 }
+export interface ColorGroupExtraColorParams {
+  colorGroup: string[];
+  [prop: string]: any;
+}
 
 export interface StyleReplacerParams {
   themeStyle: ThemeStyleParams;
@@ -48,7 +52,7 @@ const antdFunctionColors: FunctionColorParams = {
 const isBrowser = typeof window !== 'undefined';
 const isNativeSupport = isBrowser && window.CSS && window.CSS.supports && window.CSS.supports('(--a: 0)');
 
-export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams): string[] {
+export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams | ColorGroupExtraColorParams): string[] {
   const series = [];
   const nextThemeStyle = nextThemeInfo;
   let prevPrimaryColor: string;

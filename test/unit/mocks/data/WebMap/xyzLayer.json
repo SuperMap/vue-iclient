@@ -1,0 +1,17 @@
+{
+  "extent": {
+    "leftBottom": { "x": -20037508.34, "y": -20037508.34 },
+    "rightTop": { "x": 20037508.34, "y": 20037508.34 }
+  },
+  "maxScale": "1:564.2497165935246",
+  "level": 0,
+  "center": { "x": 3723945.6807942055, "y": -2268172.2613533167 },
+  "baseLayer": { "layerType": "OSM", "name": "OpenStreetMap" },
+  "layers": [],
+  "description": "",
+  "projection": "EPSG:3857",
+  "minScale": "1:295829355.4133858",
+  "title": "无标题",
+  "version": "2.3.0",
+  "mapParams": { "title": "无标题", "description": "" }
+}

@@ -1,6 +1,4 @@
-import {
-  mount
-} from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmButton from '../Button.vue';
 import Button from '../index';
 import SmButtonGroup from '../Group.vue';
@@ -15,7 +13,7 @@ describe('Button.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-  })
+  });
 
   it('render correctly', () => {
     wrapper = mount({
@@ -23,23 +21,22 @@ describe('Button.vue', () => {
       components: {
         SmButton
       }
-    })
+    });
     expect(wrapper.text()).toBe('按 钮');
-  })
+  });
 
   it('render index correctly', () => {
-    wrapper = mount(Button)
+    wrapper = mount(Button);
     expect(wrapper.find('.sm-component-btn').exists()).toBe(true);
-  })
+  });
 
   it('button type', () => {
-
     let wrapper1 = mount({
       template: `<div><sm-button type="primary">主按钮</sm-button></div>`,
       components: {
         SmButton
       }
-    })
+    });
     expect(wrapper1.find('.sm-component-btn-primary').exists()).toBe(true);
     expect(wrapper1.text()).toBe('主按钮');
 
@@ -48,7 +45,7 @@ describe('Button.vue', () => {
       components: {
         SmButton
       }
-    })
+    });
     expect(wrapper2.find('.sm-component-btn-default').exists()).toBe(true);
     expect(wrapper2.text()).toBe('次按钮');
 
@@ -57,21 +54,24 @@ describe('Button.vue', () => {
       components: {
         SmButton
       }
-    })
+    });
     expect(wrapper3.find('.sm-component-btn-danger').exists()).toBe(true);
     expect(wrapper3.text()).toBe('危险按钮');
 
-    let wrapper4 = mount({
-      template: `<div><sm-button disabled>禁用按钮</sm-button></div>`,
-      components: {
-        SmButton
+    let wrapper4 = mount(
+      {
+        template: `<div><sm-button disabled>禁用按钮</sm-button></div>`,
+        components: {
+          SmButton
+        }
+      },
+      {
+        propsData: {
+          disabled: true
+        }
       }
-    }, {
-      propsData: {
-        disabled: true
-      }
-    })
-    expect(wrapper4.attributes()).toHaveProperty('disabled')
+    );
+    expect(wrapper4.attributes()).toHaveProperty('disabled');
     expect(wrapper4.text()).toBe('禁用按钮');
     //另一种写法
     // const wrapper4 = mount(SmButton, {
@@ -87,7 +87,7 @@ describe('Button.vue', () => {
       components: {
         SmButton
       }
-    })
+    });
     expect(wrapper5.find('.sm-component-btn-dashed').exists()).toBe(true);
     expect(wrapper5.text()).toBe('Dash按钮');
 
@@ -96,7 +96,7 @@ describe('Button.vue', () => {
       components: {
         SmButton
       }
-    })
+    });
     expect(wrapper6.find('.sm-component-btn-link').exists()).toBe(true);
     expect(wrapper6.text()).toBe('文字按钮');
 
@@ -105,7 +105,7 @@ describe('Button.vue', () => {
       components: {
         SmButton
       }
-    })
+    });
     expect(wrapper7.find('.sm-component-btn-loading').exists()).toBe(true);
     expect(wrapper7.text()).toBe('loading按钮');
 
@@ -114,9 +114,9 @@ describe('Button.vue', () => {
       components: {
         SmButton
       }
-    })
+    });
     expect(wrapper8.find('.sm-component-btn-icon-only').exists()).toBe(true);
-  })
+  });
 
   it('render buttonGroup', () => {
     wrapper = mount({
@@ -130,8 +130,8 @@ describe('Button.vue', () => {
         SmButton,
         SmButtonGroup
       }
-    })
+    });
     expect(wrapper.find('.sm-component-btn-group').exists()).toBe(true);
     expect(wrapper.find('.sm-component-btn').exists()).toBe(true);
-  })
-})
+  });
+});

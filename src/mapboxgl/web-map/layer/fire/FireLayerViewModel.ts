@@ -298,9 +298,11 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
     const {
       map,
       layerId,
-      features: { features }
+      features
     } = this;
+    // @ts-ignore
     if (map && layerId && features.length) {
+      // @ts-ignore
       features.forEach((feature, index) => {
         let geometry = feature.geometry;
         if (geometry.type === 'Point') {

@@ -29,13 +29,20 @@ import {
   drill_map_1960447494,
   drill_map_1687422166,
   marker_data,
+  wmsCapabilitiesText,
   webmap_markerLayer,
   webmap_heatLayer,
   webmap_vectorLayer_point,
   webmap_vectorLayer_line,
   webmap_rangeLayer,
   webmap_ranksymbolLayer,
-  webmap_uniqueLayer_polygon
+  webmap_uniqueLayer_polygon,
+  webmap_tiandituLayer,
+  webmap_wmsLayer,
+  webmap_wmtsLayer,
+  webmap_xyzLayer,
+  webmap_mapboxstyleLayer,
+  webmap_migrationLayer
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -288,6 +295,10 @@ SuperMap.ArrayStatistic.getArraySegments = function (array, type, segNum) {
     14.1324461706
   ];
 };
+SuperMap.ArrayStatistic.getArrayStatistic = function () {};
+SuperMap.SecurityManager = {
+  registerToken: () => {}
+};
 
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesBySQLParameters = jest.fn());
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesByBoundsParameters = jest.fn());
@@ -303,9 +314,9 @@ var Util = (SuperMap.Util = {
     return `${a}/${b}`;
   },
   urlAppend: function (a, b) {
-    return `${a}/${b}`;
+    return `${a}?${b}`;
   },
-  getScaleFromResolutionDpi: function (resolution, dpi, coordUnit='degree') {
+  getScaleFromResolutionDpi: function (resolution, dpi, coordUnit = 'degree') {
     var scale = -1,
       ratio = 10000;
     if (resolution > 0 && dpi > 0) {
@@ -316,10 +327,16 @@ var Util = (SuperMap.Util = {
       }
     }
     return scale;
+  },
+  isArray: function (a) {
+    return Array.isArray(a);
   }
 });
-// var document = (window.document = jest.fn());
-// var documentElement = window.document.documentElement
+SuperMap.String = {
+  trim: a => {
+    return String(a);
+  }
+};
 var document = {};
 var documentElement = (document.documentElement = {});
 var FetchRequest = (SuperMap.FetchRequest = {
@@ -351,12 +368,24 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_point))));
       } else if (url.indexOf('159357852/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_line))));
-      } else if (url.indexOf('167943279/map.json') > -1) {
-        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
       } else if (url.indexOf('123456789/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_ranksymbolLayer))));
       } else if (url.indexOf('2064629293/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_uniqueLayer_polygon))));
+      } else if (url.indexOf('1224625555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_tiandituLayer))));
+      } else if (url.indexOf('4845656956/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_wmsLayer))));
+      } else if (url.indexOf('1016996969/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_wmtsLayer))));
+      } else if (url.indexOf('7894565555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_xyzLayer))));
+      } else if (url.indexOf('8888885555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_mapboxstyleLayer))));
+      } else if (url.indexOf('6177878786/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_migrationLayer))));
+      } else if (url.indexOf('5785858575/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {
@@ -376,11 +405,12 @@ var FetchRequest = (SuperMap.FetchRequest = {
       } else if (url.indexOf('iportal/web/datas') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_chart))));
       }
-      // http://192.168.12.230:8092/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
+      // http://fakeiportal.supermap.io/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
       else if (url.indexOf('content.json?pageSize=9999999&currentPage=1') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(iportal_content))));
+      } else if (url.indexOf('?REQUEST=GetCapabilities&SERVICE=WMS') > -1) {
+        process.nextTick(() => resolve(new Response(wmsCapabilitiesText)));
       }
-
       // 2040117719
       else if (url.indexOf('2040117719') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_beijing))));
@@ -521,19 +551,94 @@ var results = {
 };
 
 var GetFeaturesBySQLService = (SuperMap.GetFeaturesBySQLService = (url, options) => {
+  const result = {
+    result: {
+      features: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {
+              SMID: '1',
+              NAME: '四川省'
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: [101.84004968, 26.0859968692659]
+            }
+          }
+        ]
+      }
+    }
+  };
+  if (options.eventListeners) {
+    if (url.indexOf('processCompleted') > -1) {
+      options.eventListeners.processCompleted(result);
+    } else if (url.indexOf('processFailed') > -1) {
+      options.eventListeners.processFailed('get features faild');
+    }
+  }
   getFeatureEvent.on('processCompleted', options.eventListeners.processCompleted);
   return {
-    processAsync: processAsync
+    processAsync: () => {
+      let returnData;
+      if (
+        url === 'https://fakeiportal.supermap.io/iportal/processCompleted?parentResType=MAP&parentResId=123' ||
+        'https://fakeiportal.supermap.io/iportal/processFailed?parentResType=MAP&parentResId=123'
+      ) {
+        returnData = result;
+      } else if (
+        url === 'https://fakeiportal.supermap.io/iportal/processFailed.json?token=123&parentResType=MAP&parentResId=123'
+      ) {
+        returnData = result;
+      } else {
+        returnData = results;
+      }
+      // setTimeout(() => {
+        getFeatureEvent.emit('processCompleted', returnData);
+      // }, 0);
+    }
   };
-});
-var processAsync = (SuperMap.GetFeaturesBySQLService.processAsync = getFeatureBySQLParams => {
-  setTimeout(() => {
-    getFeatureEvent.emit('processCompleted', results);
-  }, 0);
 });
 
 var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
-  getFeatureEvent.on('processCompleted', options.eventListeners.processCompleted);
+  const result = {
+    result: {
+      recordsets: [
+        {
+          fields: {
+            0: 'SmID'
+          },
+          features: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                properties: {
+                  SMID: '1',
+                  NAME: '四川省'
+                },
+                geometry: {
+                  type: 'Point',
+                  coordinates: [101.84004968, 26.0859968692659]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  };
+  if (options.eventListeners) {
+    if (url.indexOf('processCompleted') > -1) {
+      options.eventListeners.processCompleted(result);
+    } else if (url.indexOf('processFailed') > -1) {
+      options.eventListeners.processFailed('get features faild');
+    }
+  }
+  const processAsync = (getFeatureBySQLParams => {
+      getFeatureEvent.emit('processCompleted', results);
+  });
   return {
     // queryBySQL: queryBySQL,
     processAsync: processAsync

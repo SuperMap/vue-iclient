@@ -21,14 +21,14 @@
     }
     .sm-component-table-thead {
       .sm-component-table-column-has-actions {
+        .sm-component-table-column-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          display: block;
+        }
         .sm-component-table-column-sorters {
           display: block;
-          .sm-component-table-column-title {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            display: block;
-          }
           .sm-component-table-column-sorter {
             position: absolute;
             right: 4px;
@@ -53,6 +53,8 @@
       tr > th .anticon-filter,
       tr > th .sm-component-table-filter-icon {
         right: 15px;
+        display: flex;
+        align-items: center;
       }
       > tr > th.sm-component-table-column-has-actions {
         &.sm-component-table-column-has-filters {
@@ -70,6 +72,9 @@
           .sm-component-table-filter-icon {
             background: transparent;
           }
+        }
+        .sm-components-icon-search:before {
+          padding: 7px;
         }
       }
     }
@@ -106,8 +111,11 @@
     .sm-component-icon:hover {
       color: $primary-color !important;
     }
+    .sm-component-dropdown-menu-submenu-title > span > .anticon:first-child {
+      margin-right: 0;
+    }
   }
-  .ant-dropdown-link {
+  .sm-component-dropdown-link {
     cursor: pointer;
   }
 }

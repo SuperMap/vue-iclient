@@ -1,4 +1,5 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import isEqual from 'lodash.isequal';
 
 interface scanEffect {
@@ -115,20 +116,21 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   }
 
   private _checkPrivate(result) {
-    let { authorizeSetting, url, content } = result;
+    let { url, content } = result;
     const contentObj = JSON.parse(content);
-    if (!url && contentObj.layers.length > 0) {
-      this.sceneUrl = contentObj.layers[0].url;
-    }
-    let isPublic = false; // 默认私有
-    authorizeSetting.map(item => {
-      if (item.entityType === 'USER' && item.entityName === 'GUEST') {
-        isPublic = true;
+    if (!url) {
+      const version1 = contentObj.layers instanceof Array;
+      if (version1) {
+        this.sceneUrl = contentObj.layers[0].url;
+      } else {
+        for (let layerType in contentObj.layers) {
+          const layerList = contentObj.layers[layerType];
+          if (layerList.length > 0) {
+            this.sceneUrl = layerList[0].url;
+            break;
+          }
+        }
       }
-    });
-    if (!isPublic) {
-      this.fire('sceneisprivate');
-      return;
     }
     this.sceneUrl && this._createScene();
   }
@@ -140,7 +142,6 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     sceneUrl = sceneUrl.slice(0, sceneUrl.indexOf('/rest/realspace') + 15);
     let promise = this.scene.open(sceneUrl);
     this.scene.fxaa = true;
-    this.scene.skyAtmosphere.show = true;
     this.Cesium.when.all(promise, () => {
       let sc = this.scene.camera;
       this.scene.camera.setView({

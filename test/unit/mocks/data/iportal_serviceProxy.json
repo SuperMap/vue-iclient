@@ -1,0 +1,14 @@
+{
+  "serviceProxy": {
+    "httpConnPoolInfo": null,
+    "enableAccessStatistics": true,
+    "scheme": null,
+    "enableBuiltinProxy": true,
+    "port": 8095,
+    "proxyServerRootUrl": "https://iportal.supermap.io",
+    "rootUrlPostfix": "portalproxy",
+    "enable": true,
+    "httpsSetting": null,
+    "cacheConfig": null
+  }
+}

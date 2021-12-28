@@ -1,0 +1,36 @@
+{
+  "extent": {
+    "leftBottom": { "x": -20037508.3427892, "y": -20037508.3427891 },
+    "rightTop": { "x": 20037508.3427892, "y": 20037508.3427891 }
+  },
+  "level": 5,
+  "center": { "x": 11810617.9363554, "y": 4275239.3340175 },
+  "baseLayer": {
+    "layerType": "TILE",
+    "name": "China",
+    "url": "http://support.supermap.com.cn:8090/iserver/services/map-china400/rest/maps/China"
+  },
+  "layers": [
+    {
+      "layerType": "VECTOR",
+      "name": "浙江省高等院校(3)",
+      "visible": true,
+      "featureType": "LINE",
+      "style": {
+        "radius": 5,
+        "fillColor": "#ee4d5a",
+        "fillOpacity": 0.9,
+        "strokeColor": "#8b572a",
+        "strokeWidth": 7,
+        "strokeOpacity": 1,
+        "lineDash": "solid",
+        "type": "POLYGON"
+      },
+      "dataSource": { "type": "PORTAL_DATA", "serverId": "1920557079" }
+    }
+  ],
+  "description": "",
+  "projection": "EPSG:3857",
+  "title": "unique_民航数据",
+  "version": "1.0"
+}

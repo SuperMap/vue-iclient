@@ -1,0 +1,34 @@
+{
+  "thumbnail": "http://localhost:8190/iportal/services/../resources/thumbnail/scene/scene678840754.png",
+  "authorizeSetting": [
+    {
+      "permissionType": "DELETE",
+      "aliasName": "admin_123",
+      "entityRoles": [],
+      "entityType": "USER",
+      "entityName": "admin_123",
+      "entityId": null
+    },
+    {
+      "permissionType": "READWRITE",
+      "aliasName": "GUEST",
+      "entityRoles": [],
+      "entityType": "USER",
+      "entityName": "GUEST",
+      "entityId": null
+    }
+  ],
+  "description": "",
+  "updateTime": 1637894573433,
+  "userName": "admin_123",
+  "title": null,
+  "url": null,
+  "content": "{\"layers\":[{\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Ground_2%40CBD/config\",\"name\":\"Ground_2@CBD\",\"type\":\"S3M\",\"realName\":\"\",\"sceneName\":\"CBD\",\"sceneUrl\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace\",\"id\":null,\"isVisible\":true,\"thumbnail\":null,\"title\":null},{\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Tree%40CBD/config\",\"name\":\"Tree@CBD\",\"type\":\"S3M\",\"realName\":\"\",\"sceneName\":\"CBD\",\"sceneUrl\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace\",\"id\":null,\"isVisible\":true,\"thumbnail\":null,\"title\":null},{\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Building%40CBD/config\",\"name\":\"Building@CBD\",\"type\":\"S3M\",\"realName\":\"\",\"sceneName\":\"CBD\",\"sceneUrl\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace\",\"id\":null,\"isVisible\":true,\"thumbnail\":null,\"title\":null},{\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Ground_1%40CBD/config\",\"name\":\"Ground_1@CBD\",\"type\":\"S3M\",\"realName\":\"\",\"sceneName\":\"CBD\",\"sceneUrl\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace\",\"id\":null,\"isVisible\":true,\"thumbnail\":null,\"title\":null},{\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Lake%40CBD/config\",\"name\":\"Lake@CBD\",\"type\":\"S3M\",\"realName\":\"\",\"sceneName\":\"CBD\",\"sceneUrl\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace\",\"id\":null,\"isVisible\":true,\"thumbnail\":null,\"title\":null}],\"camera\":{\"position\":{\"x\":-2180541.3221042263,\"y\":4381684.461467951,\"z\":4090634.309432095},\"heading\":0.026301177169061773,\"pitch\":-0.1292507324902754,\"roll\":6.283185307179586},\"environmentState\":{\"enableLighting\":true,\"skyAtmosphereShow\":true,\"enableFog\":true},\"isSTKTerrain\":false,\"analysisObjects\":{},\"terrainObjects\":{}}",
+  "tags": ["用户场景"],
+  "visitCount": 28,
+  "createTime": 1637894573433,
+  "name": "CBD-3D-test-v1",
+  "nickname": "admin_123",
+  "layers": [],
+  "id": 678840754
+}

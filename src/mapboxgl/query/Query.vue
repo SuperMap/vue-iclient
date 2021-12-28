@@ -141,6 +141,7 @@ import SmButton from 'vue-iclient/src/common/button/Button.vue';
 import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
 import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
+import Message from 'vue-iclient/src/common/message/Message.js';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 import { setPopupArrowStyle, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
@@ -298,9 +299,11 @@ export default {
       }
     },
     queryButtonClicked(jobInfo, value) {
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       if (this.jobInfo === jobInfo && this.selectValue === value && this.queryResult) {
-        this.$message.warning(this.$t('query.resultAlreadyExists'));
+        // @ts-ignore
+        Message.warning(this.$t('query.resultAlreadyExists'));
         return;
       }
       this.queryResult = null;
@@ -340,7 +343,8 @@ export default {
       this.viewModel.on('queryfailed', e => {
         this.isQuery = false;
         this.clearResult();
-        this.$message.warning(e.message.toString());
+        // @ts-ignore
+        Message.warning(e.message.toString());
         /**
          * @event queryFailed
          * @desc 查询失败后触发。

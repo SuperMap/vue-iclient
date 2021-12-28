@@ -13,6 +13,7 @@ import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import IdentifyViewModel from './IdentifyViewModel';
 import isEqual from 'lodash.isequal';
 import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
+import Message from 'vue-iclient/src/common/message/index.js';
 
 export default {
   name: 'SmIdentify',
@@ -108,7 +109,8 @@ export default {
     getLayerByName(layerName) {
       let layer = this.viewModel.getLayerByName(layerName);
       if (!layer) {
-        this.$message.error(this.$t('identify.layerNotExit', { layer: layerName }));
+        // @ts-ignore
+        Message.error(this.$t('identify.layerNotExit', { layer: layerName }));
       }
       return layer;
     },

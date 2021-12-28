@@ -1,6 +1,8 @@
 import VueTestUtils from '@vue/test-utils';
+import { config } from '@vue/test-utils'
 
 VueTestUtils.config.mocks['$t'] = msg => msg;
+config.mapLoad = true;
 
 window.getComputedStyle = () => {
   return {

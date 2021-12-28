@@ -71,7 +71,6 @@ export default class FlyTo extends Mixins(MapGetter, Control, VmUpdater, BaseCar
   }
 
   created() {
-    this.playStatus = this.autoplay;
     const options: flyToLocationOptions = {
       data: this.handleDataFormatted(),
       autoplay: this.autoplay,
@@ -82,6 +81,7 @@ export default class FlyTo extends Mixins(MapGetter, Control, VmUpdater, BaseCar
       activeIndex: this.activeIndex
     };
     this.viewModel = new FlyToViewModel(options);
+    this.playStatus = this.autoplay;
     this.viewModel.on('flychange', this.handleFlyChange);
   }
 
