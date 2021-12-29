@@ -14,9 +14,9 @@
         <span v-if="statistics.showTotal || statistics.showSelect">）</span>
       </div>
       <div class="sm-component-attributes__menu">
-        <sm-dropdown :getPopupContainer="triggerNode => triggerNode.parentNode" v-if="toolbar.enabled" placement="bottomRight">
+        <sm-dropdown v-if="toolbar.enabled" placement="bottomRight">
           <div class="sm-component-dropdown-link"><sm-icon :icon-style="{ color: '#ccc' }" type="menu" /></div>
-          <sm-menu slot="overlay">
+          <sm-menu slot="overlay" class="sm-component-attribute_dropdown-menu">
             <sm-menu-item>
               <div v-if="toolbar.showClearSelected" @click="clearSelectedRows">
                 {{ this.$t('attributes.clearSelected') }}
