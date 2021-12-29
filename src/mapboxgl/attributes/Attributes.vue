@@ -48,8 +48,8 @@
       :columns="compColumns"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows }"
       :pagination="paginationOptions"
-      :bordered="table.showBorder"
-      :showHeader="table.showHeader"
+      :bordered="tableOptions.showBorder"
+      :showHeader="tableOptions.showHeader"
       :customHeaderRow="customHeaderRow"
       :customRow="customRow"
       :loading="loading"
@@ -203,6 +203,12 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   fieldInfo: Array<Object> = [];
 
+  tableOptions: TableParams = {
+    showHeader: true,
+    showBorder: true,
+    pagination: {}
+  }
+
   @Prop() layerName: string; // 图层名
 
   @Prop() customRow: Function;
@@ -295,9 +301,10 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   @Watch('table', { immediate: true })
-  tableChanged(val) {
-    if (!isequal(this.paginationOptions, val.pagination)) {
-      this.paginationOptions = Object.assign({}, this.paginationOptions, val.pagination);
+  tableChanged(newVal, oldVal) {
+    if (!isequal(newVal, oldVal)) {
+      this.tableOptions = Object.assign({}, this.tableOptions, newVal);
+      this.paginationOptions = Object.assign({}, this.paginationOptions, newVal.pagination);
     }
   }
 
