@@ -4,8 +4,8 @@
   </swiper-slide>
 </template>
 <script>
-import { SwiperSlide } from 'vue-awesome-swiper';
-import 'swiper/css/swiper.css';
+import { SwiperSlide } from './Swiper';
+import 'swiper/swiper-bundle.min.css';
 
 export default {
   name: 'SmSlideshowItem',
