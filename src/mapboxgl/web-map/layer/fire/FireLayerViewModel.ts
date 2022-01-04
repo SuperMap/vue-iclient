@@ -186,7 +186,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
       uniforms: {
         time: { value: 1.0 },
         blend: { value: 1.0 },
-        blendPattern: { type: 't', value: texture }
+        blendPattern: { value: texture }
       },
       vertexShader: `precision mediump float;
             precision mediump int;
