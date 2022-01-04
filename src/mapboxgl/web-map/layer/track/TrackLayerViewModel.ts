@@ -1,7 +1,7 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader';
-import { OBJLoader2 } from 'three/examples/jsm/loaders/OBJLoader2';
+import { OBJLoader2 } from 'wwobjloader2';
 import Point from '@mapbox/point-geometry';
 import rhumbBearing from '@turf/rhumb-bearing';
 import UniqueId from 'lodash.uniqueid';
@@ -458,7 +458,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
             .multiply(rotationZ);
 
           this.camera.projectionMatrix = m.multiply(l);
-          this.renderer.state.reset();
+          this.renderer.resetState();
           this.renderer.render(this.scene, this.camera);
           // @ts-ignore
           this.map.triggerRepaint();
@@ -793,7 +793,6 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
             // called while loading is progressing
             console.log(`${(xhr.loaded / xhr.total) * 100}% loaded`);
           },
-          null,
           error => {
             // called when loading has errors
             console.error('An error happened', error);

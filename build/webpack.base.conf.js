@@ -79,7 +79,6 @@ module.exports = {
           resolve('node_modules/vue-echarts'),
           resolve('node_modules/resize-detector'),
           resolve('node_modules/colorcolor'),
-          resolve('node_modules/three/examples/jsm/loaders'),
           resolve('node_modules/vue-videojs7'),
           resolve('node_modules/flv.js/src'),
           resolve('node_modules/videojs-flvjs-es6/src'),

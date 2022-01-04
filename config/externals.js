@@ -126,7 +126,9 @@ const mapboxglExteranls = Object.assign(
       commonjs: 'vue-cesium',
       commonjs2: 'vue-cesium',
       amd: 'vue-cesium'
-    }
+    },
+    'three-wtm': 'three-wtm',
+    'wwobjloader2': 'wwobjloader2',
   },
   commonExternals
 );
@@ -158,14 +160,6 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       commonjs: 'three/examples/jsm/loaders/GLTFLoader',
       commonjs2: 'three/examples/jsm/loaders/GLTFLoader',
       amd: 'three/examples/jsm/loaders/GLTFLoader'
-    });
-  }
-  if (/three\/examples\/jsm\/loaders\/OBJLoader2/.test(request)) {
-    return callback(null, {
-      root: 'THREE',
-      commonjs: 'three/examples/jsm/loaders/OBJLoader2',
-      commonjs2: 'three/examples/jsm/loaders/OBJLoader2',
-      amd: 'three/examples/jsm/loaders/OBJLoader2'
     });
   }
   if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
