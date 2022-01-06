@@ -45,14 +45,11 @@
     "lodash.orderby": "^4.6.0",
     "lodash.tonumber": "^4.0.3",
     "lodash.uniqueid": "^4.0.1",
-    "mapv": "^2.0.34",
     "mux.js": "^5.6.7",
     "omit.js": "^2.0.2",
     "proj4": "^2.6.0",
     "resize-detector": "^0.2.0",
-    "shapefile": "^0.6.6",
     "swiper": "^6.8.4",
-    "three": "^0.106.1",
     "tinycolor2": "^1.4.2",
     "utm": "^1.1.1",
     "video.js": "^7.10.2",
@@ -68,7 +65,6 @@
     "vue-property-decorator": "^8.5.1",
     "vue-types": "^2.0.2",
     "vue-videojs7": "^0.1.5",
-    "xlsx": "0.17.2",
     "xml-js": "1.6.8"
   },
   "peerDependencies": {

@@ -68,21 +68,7 @@ var commonExternals = {
     commonjs2: 'vue-echarts',
     amd: 'vue-echarts'
   },
-  xlsx: {
-    root: 'XLSX',
-    commonjs: 'xlsx',
-    commonjs2: 'xlsx',
-    amd: 'xlsx'
-  },
-  shapefile: 'shapefile',
   'echarts-liquidfill': 'echarts-liquidfill',
-  mapv: 'mapv',
-  three: {
-    root: 'THREE',
-    commonjs: 'three',
-    commonjs2: 'three',
-    amd: 'three'
-  },
   'video.js': {
     root: 'videojs',
     commonjs: 'video.js',
@@ -121,14 +107,28 @@ const leafletExternals = Object.assign(
 );
 const mapboxglExteranls = Object.assign(
   {
+    mapv: 'mapv',
     'vue-cesium': {
       root: 'VueCesium',
       commonjs: 'vue-cesium',
       commonjs2: 'vue-cesium',
       amd: 'vue-cesium'
     },
+    shapefile: 'shapefile',
+    three: {
+      root: 'THREE',
+      commonjs: 'three',
+      commonjs2: 'three',
+      amd: 'three'
+    },
     'three-wtm': 'three-wtm',
     'wwobjloader2': 'wwobjloader2',
+    xlsx: {
+      root: 'XLSX',
+      commonjs: 'xlsx',
+      commonjs2: 'xlsx',
+      amd: 'xlsx'
+    }
   },
   commonExternals
 );
