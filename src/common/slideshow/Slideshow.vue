@@ -1,6 +1,6 @@
 <script lang="ts">
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import { Swiper } from 'vue-awesome-swiper';
+import Swiper from './Swiper';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import 'swiper/css/swiper.css';
 import { getSlotOptions, filterEmpty } from 'ant-design-vue/es/_util/props-util';
@@ -9,6 +9,7 @@ import { CreateElement } from 'vue';
 import isequal from 'lodash.isequal';
 import debounce from 'lodash.debounce';
 import { addListener, removeListener } from 'resize-detector';
+import 'swiper/swiper-bundle.min.css';
 
 interface swiperOptionsType {
   initialSlide: Number;
@@ -51,7 +52,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'autoplay',
     'direction'
   ];
-  activeIndexData = 0;
+  activeIndexData: number = 0;
 
   // 当 loop 为 true && effect 为 cube, 幻灯片页数等于3会出现重叠。
   loopedSlides: number = 3;
@@ -199,8 +200,8 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     return 'jump';
   }
 
-  _observerUpdate(swiper) {
-    if (swiper.type === 'childList') {
+  _observerUpdate(swiper, mutationRecord) {
+    if (mutationRecord.type === 'childList') {
       this.goTo(this.activeIndexData, 0);
       this.$emit('childrenlistchange');
     }
@@ -328,18 +329,18 @@ class Slideshow extends Mixins(Theme, BaseCard) {
           [
             this.isRefresh
               ? h(
-                Swiper,
-                {
-                  domProps: { realIndex: this.activeIndex },
-                  props: { options: this.swiperOptions },
-                  on: {
-                    slideChange: this.slideChange,
-                    observerUpdate: this._observerUpdate
+                  Swiper,
+                  {
+                    domProps: { realIndex: this.activeIndex },
+                    props: { options: this.swiperOptions },
+                    on: {
+                      slideChange: this.slideChange,
+                      observerUpdate: this._observerUpdate
+                    },
+                    ref: 'mySwiper'
                   },
-                  ref: 'mySwiper'
-                },
-                slots
-              )
+                  slots
+                )
               : null
           ]
         )
