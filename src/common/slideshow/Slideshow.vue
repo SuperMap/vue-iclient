@@ -2,7 +2,6 @@
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Swiper from './Swiper';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
-import 'swiper/css/swiper.css';
 import { getSlotOptions, filterEmpty } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import { CreateElement } from 'vue';
