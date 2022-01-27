@@ -121,7 +121,6 @@ const mapboxglExteranls = Object.assign(
       commonjs2: 'three',
       amd: 'three'
     },
-    'three-wtm': 'three-wtm',
     'wwobjloader2': 'wwobjloader2',
     xlsx: {
       root: 'XLSX',
