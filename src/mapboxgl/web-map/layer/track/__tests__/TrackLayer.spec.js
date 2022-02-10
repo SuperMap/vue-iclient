@@ -3,6 +3,9 @@ import SmTrackLayer from '../TrackLayer.vue';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 
+jest.mock('three/examples/jsm/loaders/GLTFLoader', () => require('@mocks/GLTFLoader'));
+jest.mock('wwobjloader2', () => require('@mocks/OBJLoader2'));
+
 describe('TrackLayer.vue', () => {
   let wrapper;
   let mapWrapper;
