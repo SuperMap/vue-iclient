@@ -1,7 +1,9 @@
 const path = require('path');
+const babelConfig = require('./babel.config')();
 
 process.env.VUE_CLI_BABEL_TARGET_NODE = true;
 process.env.VUE_CLI_BABEL_TRANSPILE_MODULES = true;
+babelConfig.inputSourceMap = false;
 
 module.exports = {
   rootDir: path.resolve(__dirname),
@@ -46,7 +48,7 @@ module.exports = {
   globals: {
     'ts-jest': {
       tsConfig: '<rootDir>/tsconfig.json',
-      babelConfig: true
+      babelConfig: babelConfig
     }
   },
 
