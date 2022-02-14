@@ -134,7 +134,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
 
         this.camera.projectionMatrix.elements = matrix;
         this.camera.projectionMatrix = m.multiply(l);
-        this.renderer.state.reset();
+        this.renderer.resetState();
         this._update();
         this.renderer.render(this.scene, this.camera);
         // @ts-ignore
@@ -186,7 +186,7 @@ export default class FireLayerViewModel extends mapboxgl.Evented {
       uniforms: {
         time: { value: 1.0 },
         blend: { value: 1.0 },
-        blendPattern: { type: 't', value: texture }
+        blendPattern: { value: texture }
       },
       vertexShader: `precision mediump float;
             precision mediump int;

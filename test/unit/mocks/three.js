@@ -53,10 +53,8 @@ let THREE = {
   },
   WebGLRenderer() {
     return {
-      state: {
-        reset() {}
-      },
-      render() {}
+      render() {},
+      resetState() {}
     };
   },
   Group() {

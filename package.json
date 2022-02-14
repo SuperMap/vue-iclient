@@ -1,6 +1,6 @@
 {
   "name": "@supermap/vue-iclient",
-  "version": "10.2.1",
+  "version": "11.0.0-dev",
   "description": "SuperMap iClient for Vue.js",
   "homepage": "https://iclient.supermap.io",
   "scripts": {
@@ -41,6 +41,7 @@
     "@types/leaflet": "^1.5.5",
     "@types/mapbox-gl": "^0.51.11",
     "@types/node": "^12.0.3",
+    "@types/three": "0.129.0",
     "ant-design-vue": "1.7.2",
     "axios": "^0.21.1",
     "canvg": "~1.5.3",
@@ -78,8 +79,9 @@
     "proj4": "^2.6.0",
     "resize-detector": "^0.2.0",
     "shapefile": "^0.6.6",
-    "swiper": "^5.4.5",
-    "three": "^0.106.1",
+    "swiper": "^6.8.4",
+    "three": "0.129.0",
+    "three-wtm": "1.0.0",
     "tinycolor2": "^1.4.2",
     "utm": "^1.1.1",
     "video.js": "^7.10.2",
@@ -95,6 +97,7 @@
     "vue-property-decorator": "^8.5.1",
     "vue-types": "^2.0.2",
     "vue-videojs7": "^0.1.5",
+    "wwobjloader2": "4.0.0",
     "xlsx": "0.12.13",
     "xml-js": "1.6.8"
   },
