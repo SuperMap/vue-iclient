@@ -282,7 +282,7 @@ export default class WebMapViewModel extends WebMapBase {
     if (!mapboxgl.CRS.get(this.baseProjection)) {
       // 如果不是mapboxgl支持的投影，尝试去底图的地图服务中取投影
       if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'TILE') {
-        this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, { withoutFormatSuffix: true }).then(wkt => {
+        this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, { withoutFormatSuffix: true, withCredentials: this.webMapService.handleWithCredentials('', mapInfo.baseLayer.url, false) }).then(wkt => {
           this._defineProj4(wkt, projection);
           const extent = mapInfo.extent;
           const crs = new mapboxgl.CRS(
@@ -2523,7 +2523,11 @@ export default class WebMapViewModel extends WebMapBase {
     let epsgCode = projection;
     let epsgValue: string;
     if (!projection.split(':')[1]) {
-      epsgCode = defaultEpsgCode || toEpsgCode(projection);
+      if (defaultEpsgCode && defaultEpsgCode.split(':')[1]) {
+        epsgCode = defaultEpsgCode;
+      } else {
+        epsgCode = toEpsgCode(projection);
+      }
       epsgValue = projection;
     }
     const defaultValue = getProjection(epsgCode);
