@@ -71,7 +71,7 @@
   @include e(round, '-') {
     &#{$prefix}-md {
       @include button-md-size();
-      padding: 0 $btn-height-md / 2;
+      padding: 0 calc($btn-height-md / 2);
     }
   }
 }

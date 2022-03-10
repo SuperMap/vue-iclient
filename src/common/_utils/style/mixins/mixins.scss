@@ -1,6 +1,8 @@
 @import './config.scss';
 
 $--tdt-assets-path: './tdt/_assets' !default;
+$N: null;
+$E: null;
 
 @mixin b($block) {
   $N: $namespace + '-' + $block !global;

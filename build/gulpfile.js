@@ -4,7 +4,7 @@ const getBabelCommonConfig = require('../babel.config.js');
 
 const gulp = require('gulp');
 const babel = require('gulp-babel');
-const sass = require('gulp-sass');
+const sass = require('gulp-sass')(require('sass'));
 const cssimport = require('gulp-cssimport');
 const cssnano = require('gulp-cssnano');
 const autoprefixer = require('gulp-autoprefixer');
