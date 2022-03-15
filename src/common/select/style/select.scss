@@ -19,7 +19,7 @@
       }
       #{$prefix}-selection__clear,
       #{$prefix}-arrow {
-        top: calc($input-height-md / 2);
+        top: calc(#{$input-height-md} / 2);
       }
     }
     #{$prefix}-selection__rendered {
