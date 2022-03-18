@@ -220,7 +220,7 @@ export default class iServerRestService extends Events {
           orderBy: queryInfo.orderBy
         }
       ],
-      queryOption: this.options.hasGeometry ? 'ATTRIBUTEANDGEOMETRY' : 'ATTRIBUTE',
+      queryOption: this.options.hasGeometry === false ? 'ATTRIBUTE' : 'ATTRIBUTEANDGEOMETRY',
       startRecord: this.options.fromIndex,
       expectCount: this.options.toIndex ? (this.options.toIndex - this.options.fromIndex + 1) : queryInfo.maxFeatures
     });
