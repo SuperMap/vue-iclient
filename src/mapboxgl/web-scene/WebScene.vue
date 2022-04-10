@@ -60,8 +60,14 @@ class SmWebScene extends Vue {
     return value;
   }
 
+  @Emit()
+  cesiumInstanceDidLoad(instance) {
+    return instance;
+  }
+
   ready(cesiumInstance) {
     const { Cesium, viewer } = cesiumInstance;
+    this.cesiumInstanceDidLoad(cesiumInstance);
     this.WebSceneViewModel = new WebSceneViewModel(Cesium, viewer, this.sceneUrl, this.options);
     this.registerEvents();
   }
