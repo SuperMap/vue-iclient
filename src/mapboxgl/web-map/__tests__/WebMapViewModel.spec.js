@@ -25,6 +25,7 @@ import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.j
 import dataflowLayer from 'vue-iclient/test/unit/mocks/data/WebMap/dataflowLayer.json';
 import dataflowLayerData from 'vue-iclient/test/unit/mocks/data/dataflowLayerData.json';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import { webmap_MAPBOXSTYLE_Tile } from 'vue-iclient/test/unit/mocks/services';
 
 const CRS = require('vue-iclient/test/unit/mocks/crs');
 
@@ -190,6 +191,39 @@ describe('WebMapViewModel.spec', () => {
     jest.restoreAllMocks();
   });
 
+  it('test baseLayer layers count maploaded', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile
+    };
+    mockFetch(fetchResource);
+    const callback = function (data) {
+      expect(data.layers.length).toBe(webmap_MAPBOXSTYLE_Tile.layers.length);
+      expect(viewModel.expectLayerLen).toBe(2);
+      expect(viewModel.layerAdded).toBe(2);
+      done();
+    };
+    const viewModel = new WebMapViewModel(
+      commonId,
+      { ...commonOption },
+      {
+        style: {
+          version: 8,
+          sources: {},
+          layers: []
+        },
+        center: [117.0514, 40.0387],
+        zoom: 7,
+        bearing: 0,
+        pitch: 0,
+        rasterTileSize: 256,
+        preserveDrawingBuffer: true,
+        container: 'map',
+        tileSize: 256
+      }
+    );
+    viewModel.on({ addlayerssucceeded: callback });
+  });
   it('add uniqueLayer with id is num', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,

@@ -42,7 +42,8 @@ import {
   webmap_wmtsLayer,
   webmap_xyzLayer,
   webmap_mapboxstyleLayer,
-  webmap_migrationLayer
+  webmap_migrationLayer,
+  webmap_MAPBOXSTYLE_Tile
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -386,6 +387,8 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_migrationLayer))));
       } else if (url.indexOf('5785858575/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
+      } else if (url.indexOf('1324277678/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_MAPBOXSTYLE_Tile))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {
