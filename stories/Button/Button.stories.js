@@ -193,7 +193,7 @@ export const ButtonSize = () => ({
     <div style="margin:15px 0">
     <sm-button type="primary" icon="download" :size="size" />
     <sm-button type="primary" shape="circle" icon="download" :size="size" />
-    <sm-button type="primary" shape="round" icon="download" :size="size" />Download</sm-button>
+    <sm-button type="primary" shape="round" icon="download" :size="size" >Download</sm-button>
     <sm-button type="primary" shape="round" icon="download" :size="size" />
     <sm-button type="primary" icon="download" :size="size">
       Download
