@@ -273,10 +273,10 @@ $menu-bg: $component-background;
 $menu-popup-bg: $component-background;
 $menu-item-color: $text-color;
 $menu-highlight-color: $primary-6;
-$menu-item-active-bg: $item-active-bg;
+$menu-item-active-bg: $selected-color;
 $menu-item-group-title-color: $text-color-secondary;
 
-// dark theme
+// Menu dark theme
 $menu-dark-color: $text-color-secondary-dark;
 $menu-dark-bg: $layout-header-background;
 $menu-dark-arrow-color: #fff;

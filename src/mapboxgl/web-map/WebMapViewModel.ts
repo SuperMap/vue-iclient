@@ -282,7 +282,10 @@ export default class WebMapViewModel extends WebMapBase {
     if (!mapboxgl.CRS.get(this.baseProjection)) {
       // 如果不是mapboxgl支持的投影，尝试去底图的地图服务中取投影
       if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'TILE') {
-        this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, { withoutFormatSuffix: true, withCredentials: this.webMapService.handleWithCredentials('', mapInfo.baseLayer.url, false) }).then(wkt => {
+        this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, {
+          withoutFormatSuffix: true,
+          withCredentials: this.webMapService.handleWithCredentials('', mapInfo.baseLayer.url, false)
+        }).then(wkt => {
           this._defineProj4(wkt, projection);
           const extent = mapInfo.extent;
           const crs = new mapboxgl.CRS(
@@ -305,16 +308,32 @@ export default class WebMapViewModel extends WebMapBase {
   _handleLayerInfo(mapInfo, _taskID): void {
     mapInfo = this._setLayerID(mapInfo);
     this._layers = [];
+    this.layerAdded = 0;
+    this.expectLayerLen = 0;
     const { layers, baseLayer, grid } = mapInfo;
-
+    this._setExpectLayerLen(mapInfo);
     typeof this.layerFilter === 'function' && this.layerFilter(baseLayer) && this._initBaseLayer(mapInfo);
     if (!layers || layers.length === 0) {
       this._sendMapToUser(0, 0);
     } else {
-      this._initOverlayLayers(layers, _taskID);
+      this._initOverlayLayers(this._layers, _taskID);
     }
     if (grid && grid.graticule) {
       this._initGraticuleLayer(grid.graticule);
+    }
+  }
+
+  _setExpectLayerLen(mapInfo) {
+    if (mapInfo.baseLayer) {
+      this.expectLayerLen++;
+    }
+    let overLayers = mapInfo.layers;
+    if (overLayers && overLayers.length > 0) {
+      if (typeof this.layerFilter === 'function') {
+        overLayers = overLayers.filter(this.layerFilter);
+      }
+      this.expectLayerLen += overLayers.length;
+      this._layers = overLayers;
     }
   }
 
@@ -495,16 +514,13 @@ export default class WebMapViewModel extends WebMapBase {
         this._createMVTBaseLayer(layerInfo); // 添加矢量瓦片服务作为底图
         break;
     }
+    if (mapInfo.baseLayer) {
+      this._addLayerSucceeded();
+    }
   }
 
   _initOverlayLayers(layers: any, _taskID: any): void {
     // 存储地图上所有的图层对象
-    if (typeof this.layerFilter === 'function') {
-      layers = layers.filter(this.layerFilter);
-    }
-    this._layers = layers;
-    this.layerAdded = 0;
-    this.expectLayerLen = layers.length;
     if (this.expectLayerLen > 0) {
       layers.forEach(layer => {
         const type = this.webMapService.getDatasourceType(layer);
