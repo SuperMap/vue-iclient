@@ -851,11 +851,13 @@ export default class WebMapViewModel extends WebMapBase {
       height: 256
     };
     if (version === '1.3.0') {
+      options.bbox = this.baseProjection === 'EPSG:4326' ? '{bbox-wms-1.3.0}' : '{bbox-epsg-3857}';
       options.crs = this.baseProjection;
     } else {
+      options.bbox = '{bbox-epsg-3857}';
       options.srs = this.baseProjection;
     }
-    url += `${this._getParamString(options, url)}&bbox={bbox-epsg-3857}`;
+    url += this._getParamString(options, url);
     return url;
   }
 
@@ -2705,3 +2707,4 @@ export default class WebMapViewModel extends WebMapBase {
     );
   }
 }
+

@@ -113,8 +113,8 @@ export default {
             if (mapInfo && mapInfo.serverUrl) {
               const nodeKey = node.key;
               if (mapInfo.mapId) {
-                const { serverUrl, mapId, withCredentials, layerFilter } = mapInfo;
-                this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
+                const { serverUrl, mapId, withCredentials, layerFilter, proxy } = mapInfo;
+                this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy });
               } else {
                 this.addIServerLayer(mapInfo.serverUrl, nodeKey);
               }
@@ -125,11 +125,11 @@ export default {
         this.viewModel.removeLayerLoop(data);
       }
     },
-    addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter }) {
+    addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy }) {
       if (!this.mapIsLoad) {
         return;
       }
-      this.viewModel.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
+      this.viewModel.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy });
     },
     removeLayer(nodeKey) {
       if (!this.mapIsLoad) {
