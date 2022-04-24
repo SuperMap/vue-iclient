@@ -627,4 +627,34 @@ describe('TextList.vue', () => {
       done();
     }, 100);
   });
+  it('handleClick highlightColor string', done => {
+    const highlightColor = '#fff'
+    wrapper = mount(TextList, {
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields,
+        highlightColor
+      }
+    });
+    wrapper.vm.$nextTick();
+    wrapper.vm.handleClick();
+    expect(wrapper.vm.eventTriggerColorList.clickColor).toBe(highlightColor);
+    done();
+  });
+  it('handleMouseEnter highlightColor string', done => {
+    const highlightColor = '#fff'
+    wrapper = mount(TextList, {
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields,
+        highlightColor
+      }
+    });
+    wrapper.vm.$nextTick();
+    wrapper.vm.handleMouseEnter();
+    expect(wrapper.vm.rowHoverColor).toBe(highlightColor);
+    done();
+  });
 });
