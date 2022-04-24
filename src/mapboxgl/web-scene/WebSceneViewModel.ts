@@ -31,6 +31,8 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
 
   on: any;
 
+  off: any;
+
   position: any;
 
   viewer: any;
