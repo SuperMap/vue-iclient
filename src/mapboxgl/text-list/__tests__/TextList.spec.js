@@ -657,7 +657,24 @@ describe('TextList.vue', () => {
     expect(wrapper.vm.rowHoverColor).toBe('rgba(128, 128,128, 0.8)');
     done();
   });
-  it('setCurrentRow activeClickRowIndex', done => {
+  it('setCurrentRow activeClickRowIndex number', done => {
+    const highlightColor = '#fff';
+    wrapper = mount(TextList, {
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields,
+        highlightColor
+      }
+    });
+    wrapper.vm.$nextTick();
+    const rowIndexList = [0];
+    wrapper.vm.setCurrentRow(rowIndexList);
+    expect(wrapper.vm.activeClickRowIndex[0]).toBe(0);
+    done();
+  });
+
+  it('setCurrentRow activeClickRowIndex object', done => {
     const highlightColor = '#fff';
     wrapper = mount(TextList, {
       propsData: {

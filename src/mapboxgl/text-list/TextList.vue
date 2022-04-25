@@ -776,7 +776,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   setCurrentRow(rowIndexList) {
     if (rowIndexList && rowIndexList.length) {
-      this.activeClickRowIndex = rowIndexList.map(item => item.dataIndex);
+      this.activeClickRowIndex = rowIndexList.map(item => typeof item !== 'object' ? item : item.dataIndex);
     } else {
       this.activeClickRowIndex = null;
     }
