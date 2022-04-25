@@ -61,8 +61,15 @@ const commonMap = {
   getPitch: () => 2,
   setPitch: () => jest.fn(),
   getStyle: () => {
+    let layers = [];
+    if (layerIdMapList) {
+      for (const key in layerIdMapList) {
+        layers.push(layerIdMapList[key]);
+      }
+    }
     return {
-      sources: sourceIdMapList
+      sources: sourceIdMapList,
+      layers
     };
   },
   addSource: (sourceId, sourceInfo) => {
@@ -452,6 +459,23 @@ describe('WebMapViewModel.spec', () => {
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('add markerLayer layerOrder correctly', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_geojson['MARKER_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const id = markerLayer;
+    const callback = function (data) {
+      expect(data.layers.length).toBe(id.layers.length);
+      const layers = data.map.getStyle().layers;
+      expect(layers[layers.length - 1].id).toBe('民航数-TEXT-7');
+      done();
+    };
+    const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
