@@ -9,6 +9,8 @@ const leafletMap = class {
   }
   setMinZoom() {}
   addLayer() {}
+  invalidateSize() {}
+  remove() {}
 };
 module.exports = {
   Map: leafletMap,
@@ -23,6 +25,11 @@ module.exports = {
   },
   CRS: {
     Baidu: {
+      unproject() {
+        return [];
+      }
+    },
+    TianDiTu_Mercator: {
       unproject() {
         return [];
       }
@@ -46,10 +53,19 @@ module.exports = {
     static extend() {
       return class {};
     }
-    static BingLayer;
+    static BingLayer
   },
   tileLayer: {},
   layerGroup: () => {
     return {};
-  }
+  },
+  geoJSON: () => {},
+  GeoJSON: {
+    coordsToLatLngs: () => {}
+  },
+  polyline: () => {},
+  marker: () => {},
+  circleMarker: () => {},
+  icon: () => {},
+  Popup: () => {} 
 };

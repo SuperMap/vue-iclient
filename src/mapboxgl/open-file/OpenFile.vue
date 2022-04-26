@@ -1,8 +1,5 @@
 <template>
-  <div
-    :class="['sm-component-open-file', mapboxglClass]"
-    :style="[fontStyle]"
-  >
+  <div :class="['sm-component-open-file', mapboxglClass]" :style="[fontStyle]">
     <label for="input_file" class="sm-component-open-file__title">
       <span>{{ text }}</span>
     </label>
@@ -55,7 +52,7 @@ export default {
     },
     layerStyle: {
       type: Object,
-      default: function() {
+      default: function () {
         return {
           line: new LineStyle(),
           circle: new CircleStyle(),
@@ -69,7 +66,7 @@ export default {
     },
     accept: {
       type: Array,
-      default: function() {
+      default: function () {
         return [
           '.json',
           '.geojson',
@@ -166,7 +163,10 @@ export default {
         let component = GeojsonLayerInstance.$mount();
         this.cacheGeojsonLayer.push(component);
         const mapTarget = this.getTargetName();
-        document.querySelector(`#${mapTarget}`).appendChild(component.$el);
+        let mapEle = document.querySelector(`#${mapTarget}`);
+        if (mapEle) {
+          mapEle.appendChild(component.$el);
+        }
       }
 
       if (this.fitBounds && this.addToMap) {

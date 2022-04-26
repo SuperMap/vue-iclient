@@ -107,4 +107,49 @@ describe('TimeLine.vue', () => {
       }
     });
   });
+
+  it('timelineChange nextEnable null', () => {
+    wrapper = mount(SmTimeLine, {
+      propsData: {
+        data: ['3月15号数据', '3月16号数据', '3月17号数据']
+      }
+    });
+    const res = wrapper.vm.timelineChange('3月16号数据');
+    expect(res).toBe('3月16号数据');
+  });
+  it('timelineChange nextEnable true', done => {
+    jest.useFakeTimers();
+    wrapper = mount(SmTimeLine, {
+      propsData: {
+        nextEnable: true,
+        data: ['3月15号数据', '3月16号数据', '3月17号数据']
+      }
+    });
+    const res = wrapper.vm.timelineChange('3月16号数据');
+    jest.advanceTimersByTime(1000);
+    expect(res).toBe('3月16号数据');
+    jest.useRealTimers();
+    done();
+  });
+
+  it('timelineplaychanged', () => {
+    wrapper = mount(SmTimeLine, {
+      propsData: {
+        nextEnable: true,
+        data: ['3月15号数据', '3月16号数据', '3月17号数据']
+      }
+    });
+    const res = wrapper.vm.timelineplaychanged(true);
+    expect(res).toBe(true);
+  });
+
+  it('setPlayState', async () => {
+    wrapper = mount(SmTimeLine, {
+      propsData: {
+        nextEnable: true,
+        data: ['3月15号数据', '3月16号数据', '3月17号数据']
+      }
+    });
+    wrapper.vm.setPlayState(true);
+  });
 });

@@ -6,14 +6,22 @@ localVue.prototype.$message = message;
 
 describe('VideoPlayer.vue', () => {
   let wrapper;
+  let pauseStub;
+  let loadStub;
   beforeEach(() => {
+    pauseStub = jest.spyOn(window.HTMLMediaElement.prototype, 'pause')
+    .mockImplementation(() => {});
+    loadStub = jest.spyOn(window.HTMLMediaElement.prototype, 'load')
+    .mockImplementation(() => {});
     wrapper = null;
   });
 
   afterEach(() => {
     if (wrapper) {
       wrapper.destroy();
-    }
+    };
+    pauseStub.mockRestore();
+    loadStub.mockRestore();
   });
 
   it('render', () => {
@@ -21,7 +29,8 @@ describe('VideoPlayer.vue', () => {
       localVue,
       propsData: {
         url: 'fakeurl.mp4'
-      }
+      },
+      attachToDocument: 'body'
     });
     expect(wrapper.find('.sm-component-video-player').exists()).toBe(true);
   });

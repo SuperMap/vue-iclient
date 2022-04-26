@@ -90,8 +90,13 @@ supermap.MapvLayer = () => {
   return {};
 };
 const dataflowFeature = {
-  'type': 'Point',
-  'coordinates': [116.588918, 40.07108]
+  geometry: {
+    type: 'Point',
+    coordinates: [116.588918, 40.07108]
+  },
+  properties: {
+    'id': 1
+  }
 };
 const dataflowData = JSON.stringify(dataflowFeature);
 supermap.DataFlowService = serviceUrl => {
@@ -222,6 +227,10 @@ supermap.Util = {
   }
 };
 
-supermap.GraticuleLayer = () => {};
+supermap.GraticuleLayer = () => {
+  return {
+    setStrokeStyle: jest.fn()
+  }
+};
 
 module.exports = supermap;

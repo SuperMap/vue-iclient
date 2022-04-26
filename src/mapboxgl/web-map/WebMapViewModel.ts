@@ -1,4 +1,4 @@
-/* Copyright© 2000 - 2021 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2022 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
@@ -282,7 +282,10 @@ export default class WebMapViewModel extends WebMapBase {
     if (!mapboxgl.CRS.get(this.baseProjection)) {
       // 如果不是mapboxgl支持的投影，尝试去底图的地图服务中取投影
       if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'TILE') {
-        this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, { withoutFormatSuffix: true }).then(wkt => {
+        this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, {
+          withoutFormatSuffix: true,
+          withCredentials: this.webMapService.handleWithCredentials('', mapInfo.baseLayer.url, false)
+        }).then(wkt => {
           this._defineProj4(wkt, projection);
           const extent = mapInfo.extent;
           const crs = new mapboxgl.CRS(
@@ -305,16 +308,32 @@ export default class WebMapViewModel extends WebMapBase {
   _handleLayerInfo(mapInfo, _taskID): void {
     mapInfo = this._setLayerID(mapInfo);
     this._layers = [];
+    this.layerAdded = 0;
+    this.expectLayerLen = 0;
     const { layers, baseLayer, grid } = mapInfo;
-
+    this._setExpectLayerLen(mapInfo);
     typeof this.layerFilter === 'function' && this.layerFilter(baseLayer) && this._initBaseLayer(mapInfo);
     if (!layers || layers.length === 0) {
       this._sendMapToUser(0, 0);
     } else {
-      this._initOverlayLayers(layers, _taskID);
+      this._initOverlayLayers(this._layers, _taskID);
     }
     if (grid && grid.graticule) {
       this._initGraticuleLayer(grid.graticule);
+    }
+  }
+
+  _setExpectLayerLen(mapInfo) {
+    if (mapInfo.baseLayer) {
+      this.expectLayerLen++;
+    }
+    let overLayers = mapInfo.layers;
+    if (overLayers && overLayers.length > 0) {
+      if (typeof this.layerFilter === 'function') {
+        overLayers = overLayers.filter(this.layerFilter);
+      }
+      this.expectLayerLen += overLayers.length;
+      this._layers = overLayers;
     }
   }
 
@@ -339,7 +358,7 @@ export default class WebMapViewModel extends WebMapBase {
             proxy = this.webMapService.handleProxy(proxyType);
           }
           return {
-            url: proxy ? +`${proxy}${encodeURIComponent(url)}` : url,
+            url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
             credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
               ? 'include'
               : 'omit'
@@ -495,16 +514,13 @@ export default class WebMapViewModel extends WebMapBase {
         this._createMVTBaseLayer(layerInfo); // 添加矢量瓦片服务作为底图
         break;
     }
+    if (mapInfo.baseLayer) {
+      this._addLayerSucceeded();
+    }
   }
 
   _initOverlayLayers(layers: any, _taskID: any): void {
     // 存储地图上所有的图层对象
-    if (typeof this.layerFilter === 'function') {
-      layers = layers.filter(this.layerFilter);
-    }
-    this._layers = layers;
-    this.layerAdded = 0;
-    this.expectLayerLen = layers.length;
     if (this.expectLayerLen > 0) {
       layers.forEach(layer => {
         const type = this.webMapService.getDatasourceType(layer);
@@ -623,9 +639,6 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createGraticuleOptions(graticuleInfo) {
-    if (!graticuleInfo) {
-      return null;
-    }
     let { extent, lonLabelStyle, latLabelStyle } = graticuleInfo;
     const { strokeColor, lineDash, strokeWidth, interval } = graticuleInfo;
     const strokeStyle = {
@@ -1849,15 +1862,17 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createMarkerLayer(layerInfo: any, features: any): void {
     const { minzoom, maxzoom } = layerInfo;
+    const markerLayerID = layerInfo.layerID;
     const markerSrc = {};
     features = features || [];
-    features.forEach(feature => {
+    features.forEach((feature: any, index: number) => {
       const defaultStyle = feature.dv_v5_markerStyle;
       let geomType = feature.geometry.type.toUpperCase();
       if (geomType === 'POINT' && defaultStyle.text) {
         // 说明是文字的feature类型
         geomType = 'TEXT';
       }
+      const layerID = index === 0 ? markerLayerID : markerLayerID + '-' + geomType + '-' + index;
       if (
         geomType === 'POINT' &&
         defaultStyle.src &&
@@ -1867,13 +1882,16 @@ export default class WebMapViewModel extends WebMapBase {
         // 说明地址不完整
         defaultStyle.src = this.serverUrl + defaultStyle.src;
       }
-      if (!markerSrc[defaultStyle.src]) {
-        markerSrc[defaultStyle.src] = defaultStyle;
+      if (!markerSrc[layerID]) {
+        markerSrc[layerID] = {
+          src: defaultStyle.src,
+          defaultStyle
+        };
       }
     });
-    const loadImagePromise = (src, defaultStyle) => {
+    const loadImagePromise = (layerID: string, { src, defaultStyle }) => {
       return new Promise(resolve => {
-        if (src.indexOf('svg') < 0) {
+        if (src && src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
           this.map.loadImage(src, (error, image) => {
             if (error) {
               console.log(error);
@@ -1881,7 +1899,7 @@ export default class WebMapViewModel extends WebMapBase {
               return;
             }
             !this.map.hasImage(src) && this.map.addImage(src, image);
-            resolve(src);
+            resolve({ [layerID]: src });
           });
         } else {
           if (!this._svgDiv) {
@@ -1890,22 +1908,24 @@ export default class WebMapViewModel extends WebMapBase {
           }
           this.getCanvasFromSVG(src, this._svgDiv, canvas => {
             this.handleSvgColor(defaultStyle, canvas);
-            this.map.loadImage(canvas.toDataURL('img/png'), (error, image) => {
+            const base64Url = canvas.toDataURL('img/png');
+            this.map.loadImage(base64Url, (error, image) => {
               if (error) {
                 console.log(error);
                 resolve(error);
                 return;
               }
-              !this.map.hasImage(src) && this.map.addImage(src, image);
-              resolve(src);
+              const srcUrl = src || base64Url;
+              !this.map.hasImage(srcUrl) && this.map.addImage(srcUrl, image);
+              resolve({ [layerID]: srcUrl });
             });
           });
         }
       });
     };
     const promiseList = [];
-    for (const src in markerSrc) {
-      promiseList.push(loadImagePromise(src, markerSrc[src]));
+    for (const layerID in markerSrc) {
+      promiseList.push(loadImagePromise(layerID, markerSrc[layerID]));
     }
     Promise.all(promiseList).then(images => {
       for (let i = 0; i < features.length; i++) {
@@ -1924,11 +1944,11 @@ export default class WebMapViewModel extends WebMapBase {
           type: 'geojson',
           data: feature
         };
-        const index = feature.properties.index;
-        const layerID = geomType + '-' + index;
+        const layerID = i === 0 ? markerLayerID : markerLayerID + '-' + geomType + '-' + i;
+        const iconImageUrl = images[i][layerID];
         // image-marker  svg-marker
-        if (geomType === 'POINT' && defaultStyle.src) {
-          if (!images.includes(defaultStyle.src)) {
+        if (geomType === 'POINT' || geomType === 'TEXT') {
+          if (!iconImageUrl) {
             continue;
           }
           this._addLayer({
@@ -1936,17 +1956,16 @@ export default class WebMapViewModel extends WebMapBase {
             type: 'symbol',
             source: source,
             layout: {
-              'icon-image': defaultStyle.src,
-              'icon-size': defaultStyle.scale,
+              'icon-image': iconImageUrl,
+              'icon-allow-overlap': true,
+              'icon-size': defaultStyle.scale || 1,
               visibility: layerInfo.visible
             },
             minzoom: minzoom || 0,
             maxzoom: maxzoom || 22
           });
-        }
-
-        // point-line-polygon-marker
-        if (!defaultStyle.src) {
+        } else {
+          // line-polygon-marker
           const layeStyle: any = {
             layout: {}
           };
@@ -2151,31 +2170,51 @@ export default class WebMapViewModel extends WebMapBase {
         this._sourceListModel.addSourceStyle(layerID, this._legendList[layerID]);
       }
 
-      const exsitLayers = this._layers.filter(layer => !!this.map.getLayer(layer.layerID));
-      for (let index = exsitLayers.length - 1; index > -1; index--) {
-        const targetlayerId = exsitLayers[index].layerID;
-        const beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1].layerID : undefined;
-        this.map.moveLayer(targetlayerId, beforLayerId);
-        if (this.map.getLayer(`${targetlayerId}-strokeLine`)) {
-          this.map.moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
-        }
-        for (let index = 1; index < this.expectLayerLen + 1; index++) {
-          if (this.map.getLayer(`${targetlayerId}-additional-${index}`)) {
-            this.map.moveLayer(`${targetlayerId}-additional-${index}`, beforLayerId);
-          } else {
-            break;
-          }
-        }
-        if (this.map.getLayer(`${targetlayerId}-label`)) {
-          this.map.moveLayer(`${targetlayerId}-label`);
-        }
-      }
-
+      this._rectifyLayersOrder();
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams,
         layers: this._layers
       });
+    }
+  }
+
+  private _moveLayer(layerID, beforLayerId = undefined) {
+    if (this.map.getLayer(layerID)) {
+      this.map.moveLayer(layerID, beforLayerId);
+      return true;
+    }
+    return false;
+  }
+
+  private _rectifyLayersOrder() {
+    const exsitLayers = this._layers.filter(layer => !!this.map.getLayer(layer.layerID));
+    const mapLayers = this.map.getStyle().layers;
+    for (let index = exsitLayers.length - 1; index > -1; index--) {
+      const targetlayerId = exsitLayers[index].layerID;
+      let beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1].layerID : undefined;
+      this._moveLayer(targetlayerId, beforLayerId);
+      this._moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
+      for (let index = 1; index < this.expectLayerLen + 1; index++) {
+        if (this._moveLayer(`${targetlayerId}-additional-${index}`, beforLayerId)) {
+          continue;
+        } else {
+          break;
+        }
+      }
+      if (mapLayers && mapLayers.length > 0) {
+        const expandLayers = mapLayers.map(item => item.id.includes(targetlayerId));
+        for (let index = 1; index < expandLayers.length; index++) {
+          if (this._moveLayer(`${targetlayerId}-POINT-${index}`, beforLayerId)) {
+            continue;
+          } else if (this._moveLayer(`${targetlayerId}-TEXT-${index}`, beforLayerId)) {
+            continue;
+          } else {
+            break;
+          }
+        }
+      }
+      this._moveLayer(`${targetlayerId}-label`);
     }
   }
 
@@ -2522,7 +2561,11 @@ export default class WebMapViewModel extends WebMapBase {
     let epsgCode = projection;
     let epsgValue: string;
     if (!projection.split(':')[1]) {
-      epsgCode = defaultEpsgCode || toEpsgCode(projection);
+      if (defaultEpsgCode && defaultEpsgCode.split(':')[1]) {
+        epsgCode = defaultEpsgCode;
+      } else {
+        epsgCode = toEpsgCode(projection);
+      }
       epsgValue = projection;
     }
     const defaultValue = getProjection(epsgCode);

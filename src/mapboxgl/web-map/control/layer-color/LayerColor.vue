@@ -35,7 +35,7 @@
           :key="index"
           :class="['sm-component-layer-color__color-picker', capture && 'select-margin']"
         >
-          <span>{{ propertyMap[propertyInfo.name] }}</span>
+          <span>{{ propertyMap(propertyInfo.name) }}</span>
           <sm-color-picker
             :value="propertyInfo.color"
             @change="

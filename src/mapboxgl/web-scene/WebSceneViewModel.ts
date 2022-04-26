@@ -1,4 +1,5 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import isEqual from 'lodash.isequal';
 
 interface scanEffect {
@@ -30,9 +31,13 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
 
   on: any;
 
+  off: any;
+
   position: any;
 
   viewer: any;
+
+  handler: any;
 
   constructor(Cesium, viewer, sceneUrl, options: cesiumOptions = {}) {
     super();
@@ -101,6 +106,16 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     }
   }
 
+  public removeInputAction() {
+    if (!this.handler) return;
+    this.handler.removeInputAction(this.Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    this.handler.removeInputAction(this.Cesium.ScreenSpaceEventType.LEFT_UP);
+    this.Cesium = null;
+    this.scene = null;
+    this.viewer = null;
+    this.handler = null;
+  }
+
   private _getSceneInfo(url) {
     SuperMap.FetchRequest.get(url + '.json', {}, { withCredentials: this.withCredentials })
       .then(response => {
@@ -115,20 +130,21 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
   }
 
   private _checkPrivate(result) {
-    let { authorizeSetting, url, content } = result;
+    let { url, content } = result;
     const contentObj = JSON.parse(content);
-    if (!url && contentObj.layers.length > 0) {
-      this.sceneUrl = contentObj.layers[0].url;
-    }
-    let isPublic = false; // 默认私有
-    authorizeSetting.map(item => {
-      if (item.entityType === 'USER' && item.entityName === 'GUEST') {
-        isPublic = true;
+    if (!url) {
+      const version1 = contentObj.layers instanceof Array;
+      if (version1) {
+        this.sceneUrl = contentObj.layers[0].url;
+      } else {
+        for (let layerType in contentObj.layers) {
+          const layerList = contentObj.layers[layerType];
+          if (layerList.length > 0) {
+            this.sceneUrl = layerList[0].url;
+            break;
+          }
+        }
       }
-    });
-    if (!isPublic) {
-      this.fire('sceneisprivate');
-      return;
     }
     this.sceneUrl && this._createScene();
   }
@@ -140,7 +156,6 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     sceneUrl = sceneUrl.slice(0, sceneUrl.indexOf('/rest/realspace') + 15);
     let promise = this.scene.open(sceneUrl);
     this.scene.fxaa = true;
-    this.scene.skyAtmosphere.show = true;
     this.Cesium.when.all(promise, () => {
       let sc = this.scene.camera;
       this.scene.camera.setView({
@@ -154,8 +169,8 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
         }
       });
       // 捕获三维场景上的鼠标事件，用于高亮场景组件
-      let handler = new this.Cesium.ScreenSpaceEventHandler(this.scene.canvas);
-      handler.setInputAction(e => {
+      this.handler = new this.Cesium.ScreenSpaceEventHandler(this.scene.canvas);
+      this.handler.setInputAction(e => {
         let sceneParam = this._getSceneParam();
         sceneParam.position = new this.Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z);
         this.fire('viewerpositionchanged', { position: sceneParam.position });
@@ -169,7 +184,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
           this.fire('scanpositionchanged', { position: sceneParam.position });
         }
       }, this.Cesium.ScreenSpaceEventType.LEFT_CLICK);
-      handler.setInputAction(() => {
+      this.handler.setInputAction(() => {
         sceneParam.position = new this.Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z);
         this.fire('viewerpositionchanged', { position: sceneParam.position });
       }, this.Cesium.ScreenSpaceEventType.LEFT_UP);

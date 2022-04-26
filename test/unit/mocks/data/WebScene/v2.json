@@ -1,0 +1,34 @@
+{
+  "thumbnail": "http://localhost:8190/iportal/services/../resources/thumbnail/scene/scene219091390.png",
+  "authorizeSetting": [
+    {
+      "permissionType": "DELETE",
+      "aliasName": "admin_123",
+      "entityRoles": [],
+      "entityType": "USER",
+      "entityName": "admin_123",
+      "entityId": null
+    },
+    {
+      "permissionType": "READWRITE",
+      "aliasName": "GUEST",
+      "entityRoles": [],
+      "entityType": "USER",
+      "entityName": "GUEST",
+      "entityId": null
+    }
+  ],
+  "description": "",
+  "updateTime": 1637893318989,
+  "userName": "admin_123",
+  "title": null,
+  "url": null,
+  "content": "{\"layers\":{\"s3mLayer\":[{\"type\":\"S3MTilesLayer\",\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Building%40CBD/config\",\"name\":\"Building@CBD\"},{\"type\":\"S3MTilesLayer\",\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Ground_1%40CBD/config\",\"name\":\"Ground_1@CBD\"},{\"type\":\"S3MTilesLayer\",\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Ground_2%40CBD/config\",\"name\":\"Ground_2@CBD\"},{\"type\":\"S3MTilesLayer\",\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Lake%40CBD/config\",\"name\":\"Lake@CBD\"},{\"type\":\"S3MTilesLayer\",\"url\":\"http://fakeiserver.supermap.io/iserver/services/3D-CBD/rest/realspace/datas/Tree%40CBD/config\",\"name\":\"Tree@CBD\"}],\"imageryLayer\":[],\"terrainLayer\":[]},\"camera\":{\"position\":{\"x\":-2180230.5118623893,\"y\":4381187.842553139,\"z\":4090999.607196073},\"heading\":0.0262937088071844,\"pitch\":-0.12908860434777703,\"roll\":6.2831853071795845},\"environmentState\":{\"enableLighting\":false,\"skyAtmosphereShow\":true,\"enableFog\":true},\"version\":\"2.0\"}",
+  "tags": ["用户场景"],
+  "visitCount": 38,
+  "createTime": 1637893318989,
+  "name": "CBD-3D-test",
+  "nickname": "admin_123",
+  "layers": [],
+  "id": 219091390
+}

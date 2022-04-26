@@ -68,21 +68,7 @@ var commonExternals = {
     commonjs2: 'vue-echarts',
     amd: 'vue-echarts'
   },
-  xlsx: {
-    root: 'XLSX',
-    commonjs: 'xlsx',
-    commonjs2: 'xlsx',
-    amd: 'xlsx'
-  },
-  shapefile: 'shapefile',
   'echarts-liquidfill': 'echarts-liquidfill',
-  mapv: 'mapv',
-  three: {
-    root: 'THREE',
-    commonjs: 'three',
-    commonjs2: 'three',
-    amd: 'three'
-  },
   'video.js': {
     root: 'videojs',
     commonjs: 'video.js',
@@ -121,11 +107,26 @@ const leafletExternals = Object.assign(
 );
 const mapboxglExteranls = Object.assign(
   {
+    mapv: 'mapv',
     'vue-cesium': {
       root: 'VueCesium',
       commonjs: 'vue-cesium',
       commonjs2: 'vue-cesium',
       amd: 'vue-cesium'
+    },
+    shapefile: 'shapefile',
+    three: {
+      root: 'THREE',
+      commonjs: 'three',
+      commonjs2: 'three',
+      amd: 'three'
+    },
+    'wwobjloader2': 'wwobjloader2',
+    xlsx: {
+      root: 'XLSX',
+      commonjs: 'xlsx',
+      commonjs2: 'xlsx',
+      amd: 'xlsx'
     }
   },
   commonExternals
@@ -158,14 +159,6 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       commonjs: 'three/examples/jsm/loaders/GLTFLoader',
       commonjs2: 'three/examples/jsm/loaders/GLTFLoader',
       amd: 'three/examples/jsm/loaders/GLTFLoader'
-    });
-  }
-  if (/three\/examples\/jsm\/loaders\/OBJLoader2/.test(request)) {
-    return callback(null, {
-      root: 'THREE',
-      commonjs: 'three/examples/jsm/loaders/OBJLoader2',
-      commonjs2: 'three/examples/jsm/loaders/OBJLoader2',
-      amd: 'three/examples/jsm/loaders/OBJLoader2'
     });
   }
   if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {

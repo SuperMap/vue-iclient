@@ -55,6 +55,7 @@ describe('OpenFile.vue', () => {
       }
     ]
   };
+  const chinaString = JSON.stringify(china);
 
   beforeAll(async () => {
     config.mapLoad = false;
@@ -81,6 +82,17 @@ describe('OpenFile.vue', () => {
   });
 
   it('default', async done => {
+    jest.spyOn(global, 'FileReader').mockImplementation(function () {
+      this.onloadend = function (event) {};
+      const event = {
+        target: {
+          result: chinaString
+        }
+      };
+      this.readAsText = function () {
+        this.onloadend(event);
+      };
+    });
     const blob = new Blob([JSON.stringify(china)], {
       type: 'application/json'
     });
@@ -98,7 +110,10 @@ describe('OpenFile.vue', () => {
       }
     };
     wrapper = mount(SmOpenFile, {
-      localVue
+      localVue,
+      props: {
+        clearLastLayer: true
+      }      
     });
     await mapSubComponentLoaded(wrapper);
     const openFileSucceededFn = jest.fn();
@@ -176,6 +191,43 @@ describe('OpenFile.vue', () => {
     wrapper.vm.$on({ 'error-file-format': errorFileFormatFn });
     wrapper.vm.fileSelect(fileEventObject);
     expect(errorFileFormatFn.mock.called).toBeTruthy;
+    done();
+  });
+
+  it('open csv data', async done => {
+    jest.spyOn(global, 'FileReader').mockImplementation(function () {
+      this.onloadend = function (event) {};
+      const event = {
+        target: {
+          result: new ArrayBuffer(10)
+        }
+      };
+      this.readAsArrayBuffer = function () {
+        this.onloadend(event);
+      };
+    });
+    const blob = new Blob([JSON.stringify(china)], {
+      type: 'application/vnd.ms-excel'
+    });
+    const name = './base/resources/china.csv';
+    const type = 'application/vnd.ms-excel';
+    const file = new File([blob], name, {
+      type: type
+    });
+    const fileEventObject = {
+      target: {
+        files: {
+          0: file
+        },
+        value: './base/resources/china.csv'
+      }
+    };
+    wrapper = mount(SmOpenFile, {
+      localVue
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.find('.sm-component-open-file__input').exists()).toBe(true);
+    wrapper.vm.fileSelect(fileEventObject);
     done();
   });
 });

@@ -374,7 +374,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         let dataIndex = this.animateContent.findIndex((item, index) => {
           // @ts-ignore
           return item.idx === newVal[0];
-        })
+        });
         if (dataIndex || dataIndex === 0) {
           scrollHeight = dataIndex * this.filterUnit(this.listStyle.rowStyle.height);
           // @ts-ignore
@@ -757,6 +757,9 @@ class SmTextList extends Mixins(Theme, Timer) {
     if (this.highlightColor && typeof this.highlightColor === 'function') {
       this.eventTriggerColorList.clickColor = this.highlightColor(item, rowIndex, event);
     }
+    if (this.highlightColor && typeof this.highlightColor === 'string') {
+      this.eventTriggerColorList.clickColor = this.highlightColor;
+    }
     this.$emit('row-click', item, rowIndex, event);
     this.$emit('cell-click', item, rowIndex, event);
   }
@@ -765,6 +768,9 @@ class SmTextList extends Mixins(Theme, Timer) {
     this.activeHoverRowIndex = rowIndex;
     if (this.highlightColor && typeof this.highlightColor === 'function') {
       this.rowHoverColor = this.highlightColor(item, rowIndex, event);
+    }
+    if (this.highlightColor && typeof this.highlightColor === 'string') {
+      this.rowHoverColor = this.highlightColor;
     }
     this.$emit('cell-mouse-enter', item, rowIndex, event);
   }

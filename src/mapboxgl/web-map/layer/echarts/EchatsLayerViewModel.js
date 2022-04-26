@@ -1,5 +1,4 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import echarts from 'echarts';
 import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
 /**
  * @class EchatsLayerViewModel
@@ -32,7 +31,6 @@ export default class EchatsLayerViewModel extends mapboxgl.Evented {
   }
 
   _initializeEchartsLayer() {
-    window.echarts = echarts;
     if (this.map) {
       let echartslayer = new EchartsLayer(this.map);
       echartslayer.chart.setOption(this.options);

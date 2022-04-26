@@ -53,10 +53,8 @@ let THREE = {
   },
   WebGLRenderer() {
     return {
-      state: {
-        reset() {}
-      },
-      render() {}
+      render() {},
+      resetState() {}
     };
   },
   Group() {
@@ -119,6 +117,21 @@ let THREE = {
       rotateZ() {},
       rotateY() {}
     };
+  },
+  Box3() {
+    return {
+      setFromObject: () => {
+        return {
+          getSize: () => {
+            return {
+              x: 1,
+              y: 2,
+              z: 3
+            }
+          }
+        }
+      }
+    }
   }
 };
 

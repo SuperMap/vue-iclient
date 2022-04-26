@@ -34,6 +34,9 @@ export const Gauge = () => ({
                 value: 68
               }
             ],
+            title: {
+              color: ''
+            },
             axisLine: {
               show: true,
               lineStyle: {
