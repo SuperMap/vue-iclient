@@ -9,6 +9,7 @@ import Timer from 'vue-iclient/src/common/_mixin/Timer';
 import ThirdService from 'vue-iclient/src/common/_mixin/ThirdService';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash.debounce';
+import { strip } from '../_utils/util';
 
 export default {
   name: 'SmLiquidFill',
@@ -73,9 +74,9 @@ export default {
     // 根据波浪数渲染数据
     calcData() {
       let data = [];
-      const formatValue = isNaN(+this.finalValue) ? 0 : parseFloat(+this.finalValue);
+      const formatValue = isNaN(+this.finalValue) ? 0 : +this.finalValue;
       for (let i = 0; i < this.waveCount; i++) {
-        data.push(formatValue - i * 0.05);
+        data.push(strip(formatValue - i * 0.05));
       }
       return data;
     }
