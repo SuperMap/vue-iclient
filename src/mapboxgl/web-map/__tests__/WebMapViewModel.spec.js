@@ -121,8 +121,8 @@ const commonMap = {
   },
   moveLayer: () => jest.fn(),
   overlayLayersManager: {},
-  on: () => {},
-  fire: () => {},
+  on: () => { },
+  fire: () => { },
   setLayoutProperty: () => jest.fn(),
   addStyle: () => jest.fn(),
   remove: () => jest.fn(),
@@ -131,7 +131,7 @@ const commonMap = {
   loadImage: function (src, callback) {
     callback(null, { width: 15 });
   },
-  addImage: function () {},
+  addImage: function () { },
   hasImage: function () {
     return false;
   }
@@ -297,7 +297,7 @@ describe('WebMapViewModel.spec', () => {
         minZoom: 22,
         maxZoom: 0
       };
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
       new WebMapViewModel(uniqueLayer_point, { ...commonOption }, mapOptions, { ...commonMap });
       await flushPromises();
       expect(errorSpy.mock.calls).toHaveLength(1);
@@ -880,7 +880,7 @@ describe('WebMapViewModel.spec', () => {
         featureType: 'POLYGON'
       };
       const mvtFeatures = {
-        info: { url: 'http://support.supermap.com.cn:8090/iserver/services/mvt-example' },
+        info: { url: 'http://fack/iserver/services/mvt-example' },
         featureType: 'POLYGON'
       };
       const spy = jest.spyOn(viewModel, '_initOverlayLayer');
@@ -933,7 +933,7 @@ describe('WebMapViewModel.spec', () => {
 
   it('add wmsLayer with correct url and version is less than 1.3', done => {
     const fetchResource = {
-      'http://support.supermap.com.cn:8090/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS':
+      'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS':
         wmsCapabilitiesTextWithoutVersion
     };
     mockFetch(fetchResource);
@@ -946,29 +946,33 @@ describe('WebMapViewModel.spec', () => {
       layers: [
         {
           ...wmsLayer.layers[0],
-          url: 'http://support.supermap.com.cn:8090/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'
+          url: 'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'
         }
       ]
     });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  it('add wmsLayer with correct url and version is 1.3.0', done => {
+  it('add wmsLayer with correct url and version is 1.3.0', async done => {
     const fetchResource = {
-      'http://support.supermap.com.cn:8090/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS':
+      'http://fack/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS':
         wmsCapabilitiesTextWith130
     };
     mockFetch(fetchResource);
-    const callback = function (data) {
+    const callback = async function (data) {
+      await flushPromises()
       expect(data).not.toBeUndefined();
+      expect(data.map.overlayLayersManager['世界地图_Day'].source.tiles[0].indexOf('{bbox-wms-1.3.0}')).toBeGreaterThan(-1)
       done();
     };
     const viewModel = new WebMapViewModel({
       ...wmsLayer,
+      projection: "EPSG:4326",
+      center: { x: 0, y: 0 },
       layers: [
         {
           ...wmsLayer.layers[0],
-          url: 'http://support.supermap.com.cn:8090/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'
+          url: 'http://fack/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'
         }
       ]
     });
@@ -977,7 +981,7 @@ describe('WebMapViewModel.spec', () => {
 
   it('add wmtsLayer with correct url', done => {
     const fetchResource = {
-      'http://support.supermap.com.cn:8090/iserver/services/map-china400/wmts100?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0':
+      'http://fack/iserver/services/map-china400/wmts100?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0':
         wmtsCapabilitiesText
     };
     mockFetch(fetchResource);
@@ -1131,5 +1135,15 @@ describe('WebMapViewModel.spec', () => {
         done();
       });
     });
+  });
+  it('layerFilter', done => {
+    const callback = function (data) {
+      expect(data.layers.length).toBe(1);
+      done();
+    };
+    const viewModel = new WebMapViewModel(vectorLayer_line, {}, undefined, null, function (layer) {
+      return layer.name === '浙江省高等院校(3)'
+    });
+    viewModel.on({ addlayerssucceeded: callback });
   });
 });
