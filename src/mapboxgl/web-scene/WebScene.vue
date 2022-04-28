@@ -18,7 +18,8 @@ import WebSceneViewModel from './WebSceneViewModel';
 })
 class SmWebScene extends Vue {
   WebSceneViewModel: WebSceneViewModel;
-
+  viewFn: any;
+  scanFn: any;
   @Prop() sceneUrl: string;
 
   @Prop() cesiumPath: string;
@@ -73,14 +74,23 @@ class SmWebScene extends Vue {
   }
 
   registerEvents() {
-    this.WebSceneViewModel.on('viewerpositionchanged', e => {
+    this.viewFn = e => {
       let position = e.position;
       this.viewerPositionChanged(position);
-    });
-    this.WebSceneViewModel.on('scanpositionchanged', e => {
+    };
+    this.scanFn = e => {
       let position = e.position;
       this.scanPositionChanged(position);
-    });
+    };
+    this.WebSceneViewModel.on('viewerpositionchanged', this.viewFn);
+    this.WebSceneViewModel.on('scanpositionchanged', this.scanFn);
+  }
+
+  beforeDestory() {
+    this.WebSceneViewModel.off('viewerpositionchanged', this.viewFn);
+    this.WebSceneViewModel.off('scanpositionchanged', this.scanFn);
+    this.WebSceneViewModel.removeInputAction();
+    this.WebSceneViewModel = null;
   }
 }
 export default SmWebScene;

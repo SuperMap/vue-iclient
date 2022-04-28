@@ -31,9 +31,13 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
 
   on: any;
 
+  off: any;
+
   position: any;
 
   viewer: any;
+
+  handler: any;
 
   constructor(Cesium, viewer, sceneUrl, options: cesiumOptions = {}) {
     super();
@@ -102,6 +106,16 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
     }
   }
 
+  public removeInputAction() {
+    if (!this.handler) return;
+    this.handler.removeInputAction(this.Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    this.handler.removeInputAction(this.Cesium.ScreenSpaceEventType.LEFT_UP);
+    this.Cesium = null;
+    this.scene = null;
+    this.viewer = null;
+    this.handler = null;
+  }
+
   private _getSceneInfo(url) {
     SuperMap.FetchRequest.get(url + '.json', {}, { withCredentials: this.withCredentials })
       .then(response => {
@@ -155,8 +169,8 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
         }
       });
       // 捕获三维场景上的鼠标事件，用于高亮场景组件
-      let handler = new this.Cesium.ScreenSpaceEventHandler(this.scene.canvas);
-      handler.setInputAction(e => {
+      this.handler = new this.Cesium.ScreenSpaceEventHandler(this.scene.canvas);
+      this.handler.setInputAction(e => {
         let sceneParam = this._getSceneParam();
         sceneParam.position = new this.Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z);
         this.fire('viewerpositionchanged', { position: sceneParam.position });
@@ -170,7 +184,7 @@ export default class WebSceneViewModel extends mapboxgl.Evented {
           this.fire('scanpositionchanged', { position: sceneParam.position });
         }
       }, this.Cesium.ScreenSpaceEventType.LEFT_CLICK);
-      handler.setInputAction(() => {
+      this.handler.setInputAction(() => {
         sceneParam.position = new this.Cesium.Cartesian3(sc.position.x, sc.position.y, sc.position.z);
         this.fire('viewerpositionchanged', { position: sceneParam.position });
       }, this.Cesium.ScreenSpaceEventType.LEFT_UP);

@@ -1862,6 +1862,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createMarkerLayer(layerInfo: any, features: any): void {
     const { minzoom, maxzoom } = layerInfo;
+    const markerLayerID = layerInfo.layerID;
     const markerSrc = {};
     features = features || [];
     features.forEach((feature: any, index: number) => {
@@ -1871,7 +1872,7 @@ export default class WebMapViewModel extends WebMapBase {
         // 说明是文字的feature类型
         geomType = 'TEXT';
       }
-      const layerID = geomType + '-' + index;
+      const layerID = index === 0 ? markerLayerID : markerLayerID + '-' + geomType + '-' + index;
       if (
         geomType === 'POINT' &&
         defaultStyle.src &&
@@ -1943,7 +1944,7 @@ export default class WebMapViewModel extends WebMapBase {
           type: 'geojson',
           data: feature
         };
-        const layerID = geomType + '-' + i;
+        const layerID = i === 0 ? markerLayerID : markerLayerID + '-' + geomType + '-' + i;
         const iconImageUrl = images[i][layerID];
         // image-marker  svg-marker
         if (geomType === 'POINT' || geomType === 'TEXT') {
@@ -1956,6 +1957,7 @@ export default class WebMapViewModel extends WebMapBase {
             source: source,
             layout: {
               'icon-image': iconImageUrl,
+              'icon-allow-overlap': true,
               'icon-size': defaultStyle.scale || 1,
               visibility: layerInfo.visible
             },
@@ -2168,31 +2170,51 @@ export default class WebMapViewModel extends WebMapBase {
         this._sourceListModel.addSourceStyle(layerID, this._legendList[layerID]);
       }
 
-      const exsitLayers = this._layers.filter(layer => !!this.map.getLayer(layer.layerID));
-      for (let index = exsitLayers.length - 1; index > -1; index--) {
-        const targetlayerId = exsitLayers[index].layerID;
-        const beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1].layerID : undefined;
-        this.map.moveLayer(targetlayerId, beforLayerId);
-        if (this.map.getLayer(`${targetlayerId}-strokeLine`)) {
-          this.map.moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
-        }
-        for (let index = 1; index < this.expectLayerLen + 1; index++) {
-          if (this.map.getLayer(`${targetlayerId}-additional-${index}`)) {
-            this.map.moveLayer(`${targetlayerId}-additional-${index}`, beforLayerId);
-          } else {
-            break;
-          }
-        }
-        if (this.map.getLayer(`${targetlayerId}-label`)) {
-          this.map.moveLayer(`${targetlayerId}-label`);
-        }
-      }
-
+      this._rectifyLayersOrder();
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams,
         layers: this._layers
       });
+    }
+  }
+
+  private _moveLayer(layerID, beforLayerId = undefined) {
+    if (this.map.getLayer(layerID)) {
+      this.map.moveLayer(layerID, beforLayerId);
+      return true;
+    }
+    return false;
+  }
+
+  private _rectifyLayersOrder() {
+    const exsitLayers = this._layers.filter(layer => !!this.map.getLayer(layer.layerID));
+    const mapLayers = this.map.getStyle().layers;
+    for (let index = exsitLayers.length - 1; index > -1; index--) {
+      const targetlayerId = exsitLayers[index].layerID;
+      let beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1].layerID : undefined;
+      this._moveLayer(targetlayerId, beforLayerId);
+      this._moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
+      for (let index = 1; index < this.expectLayerLen + 1; index++) {
+        if (this._moveLayer(`${targetlayerId}-additional-${index}`, beforLayerId)) {
+          continue;
+        } else {
+          break;
+        }
+      }
+      if (mapLayers && mapLayers.length > 0) {
+        const expandLayers = mapLayers.map(item => item.id.includes(targetlayerId));
+        for (let index = 1; index < expandLayers.length; index++) {
+          if (this._moveLayer(`${targetlayerId}-POINT-${index}`, beforLayerId)) {
+            continue;
+          } else if (this._moveLayer(`${targetlayerId}-TEXT-${index}`, beforLayerId)) {
+            continue;
+          } else {
+            break;
+          }
+        }
+      }
+      this._moveLayer(`${targetlayerId}-label`);
     }
   }
 

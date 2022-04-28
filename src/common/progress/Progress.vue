@@ -6,6 +6,7 @@ import ThirdService from 'vue-iclient/src/common/_mixin/ThirdService';
 import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import { ResizeSensor } from 'css-element-queries';
+import { strip } from '../_utils/util';
 
 export const progressTypes = {
   ...ProgressProps,
@@ -36,9 +37,14 @@ export default {
     },
     extralProps() {
       const dealWithProps = {
-        percent: +this.finalValue,
+        percent: strip(+this.finalValue),
         strokeColor: this.colorData
       };
+      if (+this.finalValue > 100) {
+        dealWithProps.format = () => {
+          return strip(+this.finalValue) + '%';
+        };
+      }
       if (this.type === 'circle') {
         dealWithProps.width = this.calWidth;
       }
