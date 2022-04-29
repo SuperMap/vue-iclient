@@ -312,12 +312,13 @@ export default class WebMapViewModel extends WebMapBase {
     this.expectLayerLen = 0;
     const { layers, grid } = mapInfo;
     this._setExpectLayerLen(mapInfo);
+    if (this.expectLayerLen === 0) {
+      this._sendMapToUser(0, 0);
+    }
     if (this._shouldLoadBaseLayer(mapInfo, this.layerFilter)) {
       this._initBaseLayer(mapInfo);
     }
-    if (!layers || layers.length === 0) {
-      this._sendMapToUser(0, 0);
-    } else {
+    if (layers && layers.length !== 0) {
       this._initOverlayLayers(this._layers, _taskID);
     }
     if (grid && grid.graticule) {
