@@ -249,7 +249,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   watchOptions() {
-    this.manualUpdateProps.map(item => {
+    this.manualUpdateProps.forEach(item => {
       this.$watch(
         item,
         function (newVal, oldVal) {
