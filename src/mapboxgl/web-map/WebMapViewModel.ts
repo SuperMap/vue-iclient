@@ -1531,7 +1531,12 @@ export default class WebMapViewModel extends WebMapBase {
       }
     };
     const sourceID = layerID;
-    this.map.addSource(sourceID, source);
+    if (!this.map.getSource(sourceID)) {
+      this.map.addSource(sourceID, source);
+    } else {
+      // @ts-ignore
+      this.map.getSource(sourceID).setData(source.data);
+    }
 
     const visible = layerInfo.visible;
     const layerCreateFcuntion = (type, sourceID, layerID, style, minzoom, maxzoom, filter?) => {
