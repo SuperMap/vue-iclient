@@ -310,12 +310,15 @@ export default class WebMapViewModel extends WebMapBase {
     this._layers = [];
     this.layerAdded = 0;
     this.expectLayerLen = 0;
-    const { layers, baseLayer, grid } = mapInfo;
+    const { layers, grid } = mapInfo;
     this._setExpectLayerLen(mapInfo);
-    typeof this.layerFilter === 'function' && this.layerFilter(baseLayer) && this._initBaseLayer(mapInfo);
-    if (!layers || layers.length === 0) {
+    if (this.expectLayerLen === 0) {
       this._sendMapToUser(0, 0);
-    } else {
+    }
+    if (this._shouldLoadBaseLayer(mapInfo, this.layerFilter)) {
+      this._initBaseLayer(mapInfo);
+    }
+    if (layers && layers.length !== 0) {
       this._initOverlayLayers(this._layers, _taskID);
     }
     if (grid && grid.graticule) {
@@ -324,7 +327,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _setExpectLayerLen(mapInfo) {
-    if (mapInfo.baseLayer) {
+    if (this._shouldLoadBaseLayer(mapInfo, this.layerFilter)) {
       this.expectLayerLen++;
     }
     let overLayers = mapInfo.layers;
@@ -335,6 +338,17 @@ export default class WebMapViewModel extends WebMapBase {
       this.expectLayerLen += overLayers.length;
       this._layers = overLayers;
     }
+  }
+
+  _shouldLoadBaseLayer(mapInfo, layerFilter) {
+    const baseLayer = mapInfo.baseLayer;
+    if (!baseLayer) {
+      return false;
+    }
+    if (typeof layerFilter === 'function') {
+      return layerFilter(baseLayer);
+    }
+    return true;
   }
 
   _createMap(mapInfo?): void {
@@ -867,11 +881,13 @@ export default class WebMapViewModel extends WebMapBase {
       height: 256
     };
     if (version === '1.3.0') {
+      options.bbox = this.baseProjection === 'EPSG:4326' ? '{bbox-wms-1.3.0}' : '{bbox-epsg-3857}';
       options.crs = this.baseProjection;
     } else {
+      options.bbox = '{bbox-epsg-3857}';
       options.srs = this.baseProjection;
     }
-    url += `${this._getParamString(options, url)}&bbox={bbox-epsg-3857}`;
+    url += this._getParamString(options, url);
     return url;
   }
 
@@ -1515,7 +1531,12 @@ export default class WebMapViewModel extends WebMapBase {
       }
     };
     const sourceID = layerID;
-    this.map.addSource(sourceID, source);
+    if (!this.map.getSource(sourceID)) {
+      this.map.addSource(sourceID, source);
+    } else {
+      // @ts-ignore
+      this.map.getSource(sourceID).setData(source.data);
+    }
 
     const visible = layerInfo.visible;
     const layerCreateFcuntion = (type, sourceID, layerID, style, minzoom, maxzoom, filter?) => {
@@ -2743,3 +2764,4 @@ export default class WebMapViewModel extends WebMapBase {
     );
   }
 }
+

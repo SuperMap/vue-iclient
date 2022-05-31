@@ -230,7 +230,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     clickColor: null
   };
 
-  rowHoverColor: string = 'rgba(128, 128,128, 0.8 )';
+  rowHoverColor: string = 'rgba(128, 128,128, 0.8)';
 
   curRollingStartIndex: number = 0;
 
@@ -766,12 +766,6 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   handleMouseEnter(item, rowIndex, event) {
     this.activeHoverRowIndex = rowIndex;
-    if (this.highlightColor && typeof this.highlightColor === 'function') {
-      this.rowHoverColor = this.highlightColor(item, rowIndex, event);
-    }
-    if (this.highlightColor && typeof this.highlightColor === 'string') {
-      this.rowHoverColor = this.highlightColor;
-    }
     this.$emit('cell-mouse-enter', item, rowIndex, event);
   }
 
@@ -782,7 +776,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   setCurrentRow(rowIndexList) {
     if (rowIndexList && rowIndexList.length) {
-      this.activeClickRowIndex = rowIndexList;
+      this.activeClickRowIndex = rowIndexList.map(item => typeof item !== 'object' ? item : item.dataIndex);
     } else {
       this.activeClickRowIndex = null;
     }
