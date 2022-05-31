@@ -22,7 +22,6 @@ import { default as Image } from 'vue-iclient/src/common/image/index.js';
 import { default as Indicator } from 'vue-iclient/src/common/indicator/index.js';
 import { default as Input } from 'vue-iclient/src/common/input/index.js';
 import { default as InputNumber } from 'vue-iclient/src/common/input-number/index.js';
-import { default as LayerSelect } from 'vue-iclient/src/common/layer-select/index.js';
 import { default as Layout } from 'vue-iclient/src/common/layout/index.js';
 import { default as LiquidFill } from 'vue-iclient/src/common/liquid-fill/index.js';
 import { default as Menu } from 'vue-iclient/src/common/menu/index.js';
@@ -99,6 +98,7 @@ import { default as OpenFile } from 'vue-iclient/src/mapboxgl/open-file/index.js
 import { default as Query } from 'vue-iclient/src/mapboxgl/query/index.js';
 import { default as Search } from 'vue-iclient/src/mapboxgl/search/index.js';
 import { default as TextList } from 'vue-iclient/src/mapboxgl/text-list/index.js';
+import { default as LayerSelect } from 'vue-iclient/src/mapboxgl/layer-select/index.js';
 import { default as WebMap } from 'vue-iclient/src/mapboxgl/web-map/index.js';
 import { default as WebScene } from 'vue-iclient/src/mapboxgl/web-scene/index.js';
 

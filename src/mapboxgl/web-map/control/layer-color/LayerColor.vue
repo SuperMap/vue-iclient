@@ -66,7 +66,7 @@ import SmButton from 'vue-iclient/src/common/button/Button.vue';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import LayerColorViewModel from './LayerColorViewModel';
 import SmColorPicker from 'vue-iclient/src/common/color-picker/ColorPicker.vue';
-import SmLayerSelect from 'vue-iclient/src/common/layer-select/LayerSelect.vue';
+import SmLayerSelect from 'vue-iclient/src/mapboxgl/layer-select/LayerSelect.vue';
 
 const TYPE_MAP = {
   circle: ['circle-color', 'circle-stroke-color'],

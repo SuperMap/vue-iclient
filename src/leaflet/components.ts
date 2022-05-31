@@ -22,7 +22,6 @@ import { default as Image } from 'vue-iclient/src/common/image/index.js';
 import { default as Indicator } from 'vue-iclient/src/common/indicator/index.js';
 import { default as Input } from 'vue-iclient/src/common/input/index.js';
 import { default as InputNumber } from 'vue-iclient/src/common/input-number/index.js';
-import { default as LayerSelect } from 'vue-iclient/src/common/layer-select/index.js';
 import { default as Layout } from 'vue-iclient/src/common/layout/index.js';
 import { default as LiquidFill } from 'vue-iclient/src/common/liquid-fill/index.js';
 import { default as Menu } from 'vue-iclient/src/common/menu/index.js';
@@ -80,7 +79,6 @@ const components = {
   Indicator,
   Input,
   InputNumber,
-  LayerSelect,
   Layout,
   LiquidFill,
   Menu,
@@ -164,7 +162,6 @@ export {
   Indicator,
   Input,
   InputNumber,
-  LayerSelect,
   Layout,
   LiquidFill,
   Menu,
