@@ -44,6 +44,7 @@
     </div>
     <sm-table
       ref="tableInstance"
+      class="sm-attributes-table"
       :data-source="tableData"
       :columns="compColumns"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows }"
@@ -53,7 +54,7 @@
       :customHeaderRow="customHeaderRow"
       :customRow="customRow"
       :loading="loading"
-      :getPopupContainer="triggerNode => triggerNode.parentNode"
+      :getPopupContainer="getPopupContainerFn"
       table-layout="fixed"
       @change="handleChange"
     >
@@ -207,7 +208,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     showHeader: true,
     showBorder: true,
     pagination: {}
-  }
+  };
 
   @Prop() layerName: string; // 图层名
 
@@ -442,6 +443,10 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     clearFilters();
     this.searchText = '';
     this.viewModel.setSearchText();
+  }
+
+  getPopupContainerFn() {
+    return document.querySelector('.sm-attributes-table .sm-component-table-content');
   }
 
   removed() {
