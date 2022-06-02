@@ -101,6 +101,11 @@ import { default as TextList } from 'vue-iclient/src/mapboxgl/text-list/index.js
 import { default as LayerSelect } from 'vue-iclient/src/mapboxgl/layer-select/index.js';
 import { default as WebMap } from 'vue-iclient/src/mapboxgl/web-map/index.js';
 import { default as WebScene } from 'vue-iclient/src/mapboxgl/web-scene/index.js';
+import { default as VideoPlus } from 'vue-iclient/src/mapboxgl/video-plus/index';
+import { default as VideoPlusLayer } from 'vue-iclient/src/mapboxgl/video-plus/layer/index';
+import { default as VideoPlusMarker } from 'vue-iclient/src/mapboxgl/video-plus/ui/marker/index';
+import { default as VideoPlusPopup } from 'vue-iclient/src/mapboxgl/video-plus/ui/popup/index';
+import { default as VideoPlusDraw } from 'vue-iclient/src/mapboxgl/video-plus/control/draw/index';
 
 const components = {
   Avatar,
@@ -193,7 +198,12 @@ const components = {
   Zoom,
   TdtMapSwitcher,
   TdtRoute,
-  TdtSearch
+  TdtSearch,
+  VideoPlus,
+  VideoPlusMarker,
+  VideoPlusPopup,
+  VideoPlusLayer,
+  VideoPlusDraw
 };
 
 const install = function (Vue, opts: any = {}) {
@@ -313,7 +323,12 @@ export {
   Zoom,
   TdtMapSwitcher,
   TdtRoute,
-  TdtSearch
+  TdtSearch,
+  VideoPlus,
+  VideoPlusMarker,
+  VideoPlusPopup,
+  VideoPlusLayer,
+  VideoPlusDraw
 };
 export default {
   setTheme,
