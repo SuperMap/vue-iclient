@@ -7,18 +7,15 @@ export default class MarkerViewModel extends mapboxgl.Evented {
   fire: any;
   constructor(options) {
     super();
-    this.options = options;
+    this.marker = new mapboxgl.Marker(options);
   }
 
   setVideoPlus({ videoPlus }) {
-    const { map } = videoPlus;
     this.videoPlus = videoPlus;
-    this.map = map;
     this.init();
   }
 
   init() {
-    this.marker = new mapboxgl.Marker(this.options);
     this._bindEvent();
     this.fire('load');
   }
@@ -32,14 +29,11 @@ export default class MarkerViewModel extends mapboxgl.Evented {
   }
 
   setCoordinate(coordinate) {
-    this.cacheCoord = coordinate;
-    this._setData();
-    return this;
+    return this.videoPlus.setCoordinate(this.marker, coordinate);
   }
 
   addToMap() {
-    this.marker.addTo(this.map);
-    return this;
+    return this.videoPlus.addToMap(this.marker);
   }
 
   setDraggable(next) {
@@ -53,13 +47,6 @@ export default class MarkerViewModel extends mapboxgl.Evented {
   removed() {
     if (this.marker) {
       this.marker.remove();
-    }
-  }
-
-  _setData() {
-    if (this.cacheCoord) {
-      const transCoords = this.videoPlus.transformPointToLatLng(this.cacheCoord);
-      this.marker.setLngLat(transCoords);
     }
   }
 }

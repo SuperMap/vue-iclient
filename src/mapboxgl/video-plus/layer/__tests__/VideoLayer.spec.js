@@ -1,37 +1,37 @@
 import { mount } from '@vue/test-utils';
 import '@libs/mapboxgl/mapbox-gl-enhance.js';
-import SmVideoPlus from '../../VideoPlus.vue';
 import SmVideoLayer from '../VideoLayer.vue';
-import CircleStyle from '../../../_types/CircleStyle'
+import CircleStyle from '../../../_types/CircleStyle';
+import createEmptyVideoPlus from 'vue-iclient/test/unit/createEmptyVideoPlus.js';
+import videoPlusSubComponentLoaded from 'vue-iclient/test/unit/videoPlusSubComponentLoaded.js';
 import mockVideo from 'video.js';
 
 let data = {
-  "type": "FeatureCollection",
-  "features": [{
-    "geometry": {
-      "type": "Point",
-      "coordinates": [
-        122,
-        53
-      ]
-    },
-    "properties": {
-      "最低气温_Num": "-53.0",
-      "最高气温_Num": "33.0"
-    },
-    "type": "Feature"
-  }]
-}
+  type: 'FeatureCollection',
+  features: [
+    {
+      geometry: {
+        type: 'Point',
+        coordinates: [122, 53]
+      },
+      properties: {
+        最低气温_Num: '-53.0',
+        最高气温_Num: '33.0'
+      },
+      type: 'Feature'
+    }
+  ]
+};
 
 describe('SmVideoLayer.vue', () => {
   let wrapper;
   let videoPlusWrapper;
-  let layerStyle = new CircleStyle();
-  let src = 'http://fakeurl:8081/test.mp4';
-  let videoWidth = '1920';
-  let videoHeight = '1080';
+
   beforeEach(() => {
     wrapper = null;
+  });
+
+  beforeAll(async () => {
     mockVideo.mockImplementation(e => {
       if (e) {
         return {
@@ -41,7 +41,9 @@ describe('SmVideoLayer.vue', () => {
             }
           },
           on(type, callback) {
-            callback();
+            setTimeout(() => {
+              callback();
+            }, 0);
           },
           one() {},
           play() {},
@@ -50,35 +52,34 @@ describe('SmVideoLayer.vue', () => {
           getTech() {},
           mergeOptions() {},
           registerTech() {}
-        }
+        };
       }
     });
-    videoPlusWrapper = mount(SmVideoPlus, {
-      propsData: {
-        videoHeight,
-        videoWidth,
-        src
-      }
-    });
+    videoPlusWrapper = await createEmptyVideoPlus();
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
+  });
+
+  afterAll(() => {
     if (videoPlusWrapper) {
       videoPlusWrapper.destroy();
     }
   });
 
-  it('render', done => {
+  it('render', async done => {
     wrapper = mount(SmVideoLayer, {
       propsData: {
-        target: "video",
-        layerStyle: layerStyle,
-        data: data,
+        target: 'video',
+        layerStyle: new CircleStyle(),
+        data: data
       }
     });
+    await videoPlusSubComponentLoaded(wrapper);
     setTimeout(() => {
       done();
     }, 2000);
@@ -87,9 +88,9 @@ describe('SmVideoLayer.vue', () => {
   xit('change data', async done => {
     wrapper = mount(SmVideoLayer, {
       propsData: {
-        target: "video",
+        target: 'video',
         layerStyle: layerStyle,
-        data: data,
+        data: data
       }
     });
     let newData = {

@@ -1,5 +1,5 @@
 <script lang="ts">
-import DrawViewModel, { MAP_DRAW_EVENTS } from './DrawViewModel';
+import DrawViewModel, { EVENTS } from './DrawViewModel';
 import videoPlusGetter from 'vue-iclient/src/mapboxgl/_mixin/video-plus-getters';
 import { Mixins, Component, Prop } from 'vue-property-decorator';
 
@@ -22,10 +22,8 @@ class SmVideoMapDraw extends Mixins(videoPlusGetter) {
   created() {
     // @ts-ignore
     this.viewModel = new DrawViewModel(this.$props);
-    Object.keys(this.$listeners).forEach(eventName => {
-      if (MAP_DRAW_EVENTS.includes(eventName)) {
-        this.viewModel.on(eventName, this._bindMapEvent);
-      }
+    EVENTS.forEach(eventName => {
+      this.viewModel.on(eventName, this._bindEvent);
     });
   }
 
@@ -33,13 +31,13 @@ class SmVideoMapDraw extends Mixins(videoPlusGetter) {
     this._clearEvents();
   }
 
-  _bindMapEvent(e) {
+  _bindEvent(e) {
     this.$emit(e.type, e);
   }
 
   _clearEvents() {
-    MAP_DRAW_EVENTS.forEach(eventName => {
-      this.viewModel.off(eventName, this._bindMapEvent);
+    EVENTS.forEach(eventName => {
+      this.viewModel.off(eventName, this._bindEvent);
     });
   }
 

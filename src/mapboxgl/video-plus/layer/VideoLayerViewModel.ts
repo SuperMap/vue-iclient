@@ -1,6 +1,4 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import { featureEach, coordEach } from '@turf/meta';
-import cloneDeep from 'lodash.clonedeep';
 
 export default class VideoLayerViewModel extends mapboxgl.Evented {
   videoPlus: any;
@@ -16,8 +14,6 @@ export default class VideoLayerViewModel extends mapboxgl.Evented {
   }
 
   setVideoPlus({ videoPlus }) {
-    const { map } = videoPlus;
-    this.map = map;
     this.videoPlus = videoPlus;
     this.data && this.add(this.data);
   }
@@ -25,8 +21,10 @@ export default class VideoLayerViewModel extends mapboxgl.Evented {
   add(data) {
     if (!(this.layerStyle instanceof Object)) throw new Error('layerStyle 不能为空');
     let { paint, layout } = this.layerStyle;
-    // @ts-ignore
-    let layer = {
+    if (!(this.layerId && this.videoPlus.getLayer(this.layerId))) {
+      return;
+    }
+    this.videoPlus.addLayer({
       id: this.layerId,
       type: this._getLayerType(paint),
       source: {
@@ -35,32 +33,16 @@ export default class VideoLayerViewModel extends mapboxgl.Evented {
       },
       layout: layout || {},
       paint: paint || {}
-    };
-
-    if (this.existed()) {
-      return;
-    }
-    const newData = this.eachData(cloneDeep(layer.source.data));
-    this.cacheData = layer.source.data;
-    layer.source.data = newData;
-    this.map.addLayer(layer);
-  }
-
-  existed() {
-    return !!(this.layerId && this.map.getLayer(this.layerId));
+    });
   }
 
   removed() {
     // @ts-ignore
-    this.layerId && this.map.removeLayer(this.layerId);
+    this.layerId && this.videoPlus.removeLayer(this.layerId);
   }
 
   setData(data) {
-    if (data.features) {
-      this.cacheData = data;
-    }
-    const newData = this.eachData(cloneDeep(this.cacheData));
-    this.map.getSource(this.layerId).setData(newData);
+    this.videoPlus.setData(this.layerId, data);
   }
 
   setLayerStyle(layerStyle) {
@@ -79,22 +61,6 @@ export default class VideoLayerViewModel extends mapboxgl.Evented {
         this.videoPlus.setLayoutProperty(this.layerId, prop, layout[prop]);
       }
     }
-  }
-
-  eachData(features) {
-    featureEach(features, (currentFeature) => {
-      // @ts-ignore
-      coordEach(currentFeature, (curCoords) => {
-        let transCoords = cloneDeep(curCoords);
-        curCoords.length = 0;
-        if (transCoords.length) {
-          curCoords.push(
-            ...this.videoPlus.transformPointToLatLng(transCoords)
-          );
-        }
-      });
-    });
-    return features;
   }
 
   _getLayerType(paint = {}) {

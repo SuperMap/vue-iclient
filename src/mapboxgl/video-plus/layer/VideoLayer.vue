@@ -1,5 +1,4 @@
 <script lang="ts">
-import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
 import VideoLayerViewModel from './VideoLayerViewModel';
 import VideoPlusGetters from 'vue-iclient/src/mapboxgl/_mixin/video-plus-getters';

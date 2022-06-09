@@ -20,6 +20,8 @@ if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
   type = origin[2].replace('-', '');
 }
 
+const NO_STYLE_COMPONENTS = ['config-provider'];
+
 const output_path = `../lib/${type}/`;
 function compileSass(done) {
   let gulpFile = [
@@ -29,7 +31,15 @@ function compileSass(done) {
     `../src/${type}/web-map/control/**/style/!(mixin)**.scss`,
     `../src/${type}/web-map/layer/**/style/!(mixin)**.scss`
   ];
-  type === 'mapboxgl' && gulpFile.push(`../src/${type}/tdt*/!(^_)**/style/!(mixin)**.scss`);
+  if (type === 'mapboxgl') {
+    gulpFile.concat([
+      `../src/${type}/tdt*/!(^_)**/style/!(mixin)**.scss`,
+      `../src/${type}/video-plus/control/**/style/!(mixin)**.scss`,
+      `../src/${type}/video-plus/layer/**/style/!(mixin)**.scss`,
+      `../src/${type}/video-plus/ui/marker/**/style/!(mixin)**.scss`,
+      `../src/${type}/video-plus/ui/popup/**/style/!(mixin)**.scss`
+    ]);
+  }
   return gulp
     .src(gulpFile)
     .pipe(cssimport({}))
@@ -65,7 +75,6 @@ function compileSass(done) {
         if (tdtType) {
           file.path = file.path.replace(`\\tdt\\${tdtType[1]}`, `\\tdt-${tdtType[1]}`);
         }
-
         return output_path;
       })
     );
@@ -108,7 +117,15 @@ function compileCssjs(done) {
     `../src/${type}/web-map/control/**/style/index*.js`,
     `../src/${type}/web-map/layer/**/style/index*.js`
   ];
-  type === 'mapboxgl' && gulpFile.push(`../src/${type}/tdt*/!(^_|results)**/style/index*.js`);
+  if (type === 'mapboxgl') {
+    gulpFile.concat([
+      `../src/${type}/tdt*/!(^_|results)**/style/index*.js`,
+      `../src/${type}/video-plus/control/**/style/index*.js`,
+      `../src/${type}/video-plus/layer/**/style/index*.js`,
+      `../src/${type}/video-plus/ui/marker/**/style/index*.js`,
+      `../src/${type}/video-plus/ui/popup/**/style/index*.js`
+    ]);
+  }
   gulp
     .src(gulpFile)
     .pipe(babel(babelConfig))
@@ -174,8 +191,12 @@ function _cssjs(file, encoding) {
 function compileCopy() {
   // 生成layer/style/index.js css.js
   createLayerStyle(`../src/${type}/web-map/layer/`);
+
+  NO_STYLE_COMPONENTS.forEach(componentName => {
+    createStyle(`../lib/${type}/${componentName}/style`);
+  });
   // 全局配置组件没有style 生成config-provider/style/index.js css.js
-  createStyle(`../lib/${type}/config-provider/style`);
+  // []
   // 拷贝theme.json和_assets和tdt
   let gulpFile = ['../src/common/_utils*/style/**/*.json', '../src/common/_assets*/iconfont*/*'];
   type === 'mapboxgl' && gulpFile.push('../src/mapboxgl/tdt/_assets*/sprite*');

@@ -1,5 +1,5 @@
 export default function videoPlusSubComponentLoaded(wrapper) {
-  const loadedFn = jest.fn();
-  wrapper.vm.$on({ loaded: loadedFn });
-  expect(loadedFn.mock.called).toBeTruthy;
+  const loadFn = jest.fn();
+  wrapper.vm.$on({ load: loadFn });
+  expect(loadFn.mock.called).toBeTruthy;
 }

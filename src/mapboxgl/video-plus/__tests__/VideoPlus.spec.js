@@ -6,7 +6,7 @@ import mockVideo from 'video.js';
 const localVue = createLocalVue();
 describe('VideoPlus.vue', () => {
   let wrapper;
-  let src = 'http://fakeurl:8081/test.mp4';
+  let url = 'http://fakeurl:8081/test.mp4';
   let videoWidth = '1920';
   let videoHeight = '1080';
   beforeEach(() => {
@@ -45,7 +45,7 @@ describe('VideoPlus.vue', () => {
       propsData: {
         videoHeight,
         videoWidth,
-        src
+        url
       },
       attachToDocument: 'body'
     });
@@ -56,19 +56,19 @@ describe('VideoPlus.vue', () => {
   });
 
   it('video type flv', done => {
-    let src = 'http://fakeurl:8081/test.flv';
+    let url = 'http://fakeurl:8081/test.flv';
     wrapper = mount(SmVideoPlus, {
       localVue,
       propsData: {
         videoHeight,
         videoWidth,
-        src
+        url
       },
       attachToDocument: 'body'
     });
     wrapper.vm.$nextTick();
     setTimeout(() => {
-      expect(wrapper.vm.src).toBe(src);
+      expect(wrapper.vm.url).toBe(url);
       done();
     }, 2000);
   });

@@ -15,7 +15,7 @@ function callHook(vm, hook, ...params) {
 }
 /**
  * Description
- * @mixin MapGetter
+ * @mixin VideoPlusGetter
  * @desc 监听 WebMap 和 Map 的 load 事件。
  * @category Mixin
  * @vue-computed {String} getMapTarget - 获取当前 Map 的 target。
@@ -25,7 +25,6 @@ function callHook(vm, hook, ...params) {
 export default class VideoPlusGetter extends Vue {
   videoPlus: any;
   viewModel: any;
-  $message: any;
   $t: any;
   firstDefaultTarget: string;
 
@@ -104,7 +103,7 @@ export default class VideoPlusGetter extends Vue {
        * @event loaded
        * @desc 组件加载渲染完成之后触发。
        */
-      this.$emit('loaded');
+      this.$emit('load');
     });
   }
 

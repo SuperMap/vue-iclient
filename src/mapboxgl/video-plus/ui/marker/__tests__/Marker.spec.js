@@ -1,17 +1,19 @@
 import { mount } from '@vue/test-utils';
 import '@libs/mapboxgl/mapbox-gl-enhance.js';
-import SmVideoPlus from '../../../VideoPlus.vue';
 import SmVideoPlusMarker from '../Marker.vue';
+import createEmptyVideoPlus from 'vue-iclient/test/unit/createEmptyVideoPlus.js';
+import videoPlusSubComponentLoaded from 'vue-iclient/test/unit/videoPlusSubComponentLoaded.js';
 import mockVideo from 'video.js';
 
 describe('SmVideoPlusMarker.vue', () => {
   let wrapper;
-  let videoMapWrapper;
-  let src = 'http://fakeurl:8081/test.mp4';
-  let videoWidth = '1920';
-  let videoHeight = '1080';
+  let videoPlusWrapper;
+
   beforeEach(() => {
     wrapper = null;
+  });
+
+  beforeAll(async () => {
     mockVideo.mockImplementation(e => {
       if (e) {
         return {
@@ -21,7 +23,9 @@ describe('SmVideoPlusMarker.vue', () => {
             }
           },
           on(type, callback) {
-            callback();
+            setTimeout(() => {
+              callback();
+            }, 0);
           },
           one() {},
           play() {},
@@ -30,33 +34,32 @@ describe('SmVideoPlusMarker.vue', () => {
           getTech() {},
           mergeOptions() {},
           registerTech() {}
-        }
+        };
       }
     });
-    videoMapWrapper = mount(SmVideoPlus, {
-      propsData: {
-        videoHeight,
-        videoWidth,
-        src
-      }
-    });
+    videoPlusWrapper = await createEmptyVideoPlus();
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
-    if (videoMapWrapper) {
-      videoMapWrapper.destroy();
+  });
+
+  afterAll(() => {
+    if (videoPlusWrapper) {
+      videoPlusWrapper.destroy();
     }
   });
 
-  it('render', done => {
+  it('render', async done => {
     wrapper = mount(SmVideoPlusMarker, {
       propsData: {
         target: "video"
       }
     });
+    await videoPlusSubComponentLoaded(wrapper);
     setTimeout(() => {
       done();
     }, 2000);

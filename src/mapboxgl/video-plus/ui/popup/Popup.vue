@@ -1,20 +1,21 @@
 <script lang="ts">
 import PopupViewModel from './PopupViewModel';
 import VideoPlusGetters from 'vue-iclient/src/mapboxgl/_mixin/video-plus-getters';
-import { Mixins, Component, Prop, InjectReactive, Watch } from 'vue-property-decorator';
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator';
 
 const EVENTS = ['open', 'close'];
+
 @Component({
   name: 'SmVideoPlusPopup'
 })
 class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
   viewModel: PopupViewModel = null;
   initial: boolean = false;
-  @InjectReactive() marker: Object;
+  videoPlus: any;
   @Prop() coordinate: Array<number>;
-  @Prop() content: string | Object;
-  @Prop() maxWidth: string;
-  @Prop() className: string
+  @Prop() content: string;
+  @Prop({ default: '240px' }) maxWidth: string;
+  @Prop() className: string;
   @Prop({ default: true }) show: boolean;
   @Prop({ default: true }) closeButton: boolean;
   @Prop({ default: true }) closeOnClick: boolean;
@@ -54,6 +55,7 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
   showChanged(next, prev) {
     if (next !== prev) {
       this.open = next;
+      // @ts-ignore
       if (this.marker) {
         // @ts-ignore
         this.marker.togglePopup();
@@ -61,7 +63,17 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
     }
   }
 
+  @Watch('content')
+  contentChanged() {
+    this.viewModel.setDOMContent(this.content);
+  }
+
   mounted() {
+    // @ts-ignore
+    if (this.$parent && this.$parent.viewModel && this.$parent.viewModel.marker) {
+      // @ts-ignore
+      this.marker = this.$parent.viewModel.marker;
+    }
     // @ts-ignore
     this.viewModel = new PopupViewModel(this.$props);
     this._bindEvents();
@@ -69,25 +81,33 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
   }
 
   _bindEvents() {
-    this.viewModel.on('load', (videoPlus) => {
+    this.viewModel.on('load', videoPlus => {
       this.videoPlus = videoPlus;
       if (this.coordinate !== undefined) {
         this.viewModel.setCoordinate(this.coordinate);
       }
+      // @ts-ignore
       if (this.$slots.default !== undefined) {
-        this.viewModel.setDOMContent(this.$slots.default[0].elm || this.content);
+        // @ts-ignore
+        this.viewModel.setDOMContent(this.$slots.default[0].elm);
+      } else {
+        this.viewModel.setDOMContent(this.content);
       }
+      // @ts-ignore
       if (this.marker) {
+        // @ts-ignore
         this.viewModel.setPopup(this.marker);
       }
       if (this.show) {
         this.open = true;
+        // @ts-ignore
         if (this.marker) {
           // @ts-ignore
           this.marker.togglePopup();
         }
       }
     });
+    // @ts-ignore
     Object.keys(this.$listeners).forEach(eventName => {
       if (EVENTS.includes(eventName)) {
         this.viewModel.on(eventName, this._emitEvent);
@@ -96,12 +116,12 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
   }
 
   _emitEvent(e) {
+    // @ts-ignore
     this.$emit(e.type, e);
   }
 
-  remove() {
+  destroyed() {
     // @ts-ignore
-    this.viewModel.removed();
     Object.keys(this.$listeners).forEach(eventName => {
       if (EVENTS.includes(eventName)) {
         this.viewModel.off(eventName, this._emitEvent);
@@ -110,6 +130,7 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
   }
 
   render(h) {
+    // @ts-ignore
     return h('template', [this.$slots.default]);
   }
 }

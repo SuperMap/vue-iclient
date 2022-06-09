@@ -1,14 +1,17 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance-dev';
-import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance.css';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import uniqueId from 'lodash.uniqueid';
+import cloneDeep from 'lodash.clonedeep';
 import videojs from 'video.js';
 import 'flv.js';
 import 'videojs-flvjs-es6';
+import { featureEach, coordEach } from '@turf/meta';
 
-const MAP_EVENTS = [
+export const MAP_DRAW_EVENTS = [
+  'draw.create',
+  'draw.delete'
+];
+export const EVENTS = [
   'resize',
-  'webglcontextlost',
-  'webglcontextrestored',
   'remove',
   'movestart',
   'load',
@@ -54,8 +57,10 @@ const MAP_EVENTS = [
  * @category ViewModel
  * @classdesc 对接视频+
  * @param {Object} options - 参数。
- * @param {string} [options.target='map'] - 地图容器 ID。
- * @param {string} [options.src] - 视频地址。
+ * @param {string} options.url - 视频地址。
+ * @param {string} [options.target='video'] - 视频+ ID。
+ * @param {string} [options.videoWidth] - 视频宽度。
+ * @param {string} [options.videoHeight] - 视频高度。
  * @param {String} [options.autoplay=false] - 是否自动播放。
  * @param {boolean} [options.loop=false] - 是否循环播放。
  * @fires videoPlusViewModel#videoPlusloaded
@@ -63,63 +68,60 @@ const MAP_EVENTS = [
 
 interface VideoPlusOptions {
   target: string;
-  src: string;
+  url: string;
+  videoWidth?: number;
+  videoHeight?: number;
   autoplay?: boolean;
   loop?: boolean;
 }
 
 export default class VideoPlusViewModel extends mapboxgl.Evented {
   fire: any;
-  target: any;
+  target: string;
   width: number;
   height: number;
   videoHeight: number;
   videoWidth: number;
-  _playFn: Function;
   _bindMapEventFn: Function;
   id: string;
   loop: boolean;
   autoplay: boolean;
   map: mapboxglTypes.Map;
-  timerId: string;
   originCoordsRightBottom: any;
   originCoordsLeftTop: any;
   video: Object;
-  timer: any;
-  src: string;
+  url: string;
   videoDomId: string;
   beforeLayerId: string;
   constructor(options: VideoPlusOptions) {
     super();
     this._bindMapEventFn = this._bindMapEvent.bind(this);
-    this._playFn = this._play.bind(this);
     this.init(options);
   }
 
   async init(options) {
-    const { target, src, autoplay, loop } = options;
+    const { target, url, autoplay, loop, videoWidth, videoHeight } = options;
     this.id = uniqueId('videoLayer_');
     this.autoplay = autoplay;
     this.loop = loop;
     this.target = target;
     // @ts-ignore
     this.map = await this._createMap();
-    this.src = src;
-    this.add();
+    this.url = url;
+    this.add(videoWidth, videoHeight);
     this._bindEvents();
   }
 
-  add() {
-    if (!this.src) {
+  add(videoWidth, videoHeight) {
+    if (!this.url) {
       return;
     }
     this.video = this._createVideo();
     // @ts-ignore
-    this.videoWidth = this.map.getCanvas().width;
+    this.videoWidth = videoWidth || this.map.getCanvas().width;
     // @ts-ignore
-    this.videoHeight = this.map.getCanvas().height;
+    this.videoHeight = videoHeight || this.map.getCanvas().height;
     this.videoDomId = this._getVideoDom();
-    console.log('this.video', this.video);
     // @ts-ignore
     this.video.one('firstplay', () => {
       if (this.autoplay) {
@@ -130,8 +132,119 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
     this.video.one('canplay', () => {
       setTimeout(() => {
         this._addVideoLayer(this.map);
-      }, 1000);
+        setTimeout(() => {
+          if (this.autoplay) {
+            this.play();
+          } else {
+            this.pause();
+          }
+        }, 100);
+      }, 0);
     });
+  }
+
+  addControl(control, position) {
+    this.map.addControl(control, position);
+    MAP_DRAW_EVENTS.forEach((eventName) => {
+      this.map.on(eventName, (e) => {
+        if (e) {
+          coordEach(e.features[0], (coord) => {
+            let pixelPoint = this.transformLatLngToPoint(coord);
+            coord[0] = pixelPoint[0];
+            coord[1] = pixelPoint[1];
+          });
+        }
+        this.fire(eventName, { e });
+      });
+    });
+  }
+
+  removeControl(control) {
+    this.map.removeControl(control);
+    MAP_DRAW_EVENTS.forEach(eventName => {
+      // @ts-ignore
+      this.map.off(eventName);
+    });
+  }
+
+  addToMap(control) {
+    control.addTo(this.map);
+  }
+
+  setCoordinate(control, coordinate) {
+    if (this.originCoordsRightBottom || this.originCoordsLeftTop) {
+      coordinate = this.transformPointToLatLng(coordinate);
+      return control.setLngLat(coordinate);
+    }
+  }
+
+  setPaintProperty(layerId, name, value) {
+    this.map.setPaintProperty(layerId, name, value);
+    return this;
+  }
+
+  setLayoutProperty(layerId, name, value) {
+    this.map.setLayoutProperty(layerId, name, value);
+    return this;
+  }
+
+  addLayer(layer) {
+    const { source } = layer;
+    const newData = this.eachData(cloneDeep(source.data));
+    layer.source.data = newData;
+    this.map.addLayer(layer);
+    return this;
+  }
+
+  eachData(features) {
+    if (!this.originCoordsRightBottom && !this.originCoordsLeftTop) {
+      return [];
+    }
+    featureEach(features, (currentFeature) => {
+      // @ts-ignore
+      coordEach(currentFeature, (curCoords) => {
+        let transCoords = cloneDeep(curCoords);
+        curCoords.length = 0;
+        if (transCoords.length) {
+          curCoords.push(
+            ...this.transformPointToLatLng(transCoords)
+          );
+        }
+      });
+    });
+    return features;
+  }
+
+  setData(id, data) {
+    const newData = this.eachData(cloneDeep(data));
+    // @ts-ignore
+    this.map.getSource(id).setData(newData);
+  }
+
+  removeLayer(layerId) {
+    this.map.removeLayer(layerId);
+    return this;
+  }
+
+  getLayer(layerId) {
+    this.map.getLayer(layerId);
+    return this;
+  }
+
+  transformPointToLatLng (pixelPoint) {
+    let perWidth = Math.abs(this.originCoordsRightBottom.lng - this.originCoordsLeftTop.lng) / this.videoWidth;
+    let perHeight = Math.abs(this.originCoordsRightBottom.lat - this.originCoordsLeftTop.lat) / this.videoHeight;
+    return [pixelPoint[0] * perWidth + this.originCoordsLeftTop.lng, this.originCoordsLeftTop.lat - pixelPoint[1] * perHeight];
+  }
+
+  transformLatLngToPoint (coord) {
+    let perWidth = Math.abs(this.originCoordsRightBottom.lng - this.originCoordsLeftTop.lng) / this.videoWidth;
+    let perHeight = Math.abs(this.originCoordsRightBottom.lat - this.originCoordsLeftTop.lat) / this.videoHeight;
+    return [(coord[0] - this.originCoordsLeftTop.lng) / perWidth, (this.originCoordsLeftTop.lat - coord[1]) / perHeight];
+  }
+
+  resize() {
+    this._mapExisted() && this.map.resize();
   }
 
   _createVideo() {
@@ -141,21 +254,23 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   _getVideoOptions() {
-    let options = {};
-    // @ts-ignore
-    options.autoplay = 'muted';
+    let options = {
+      autoplay: true,
+      muted: true
+    };
     // @ts-ignore
     options.loop = this.loop !== false;
-    if (this.src.includes('mp4')) {
+    if (this.url.includes('mp4')) {
       options['sources'] = [
         {
-          src: this.src,
+          src: this.url,
           type: 'video/mp4'
         }
       ];
-    } else if (this.src.includes('flv')) {
+    } else if (this.url.includes('flv')) {
       options = {
         autoplay: this.autoplay,
+        // @ts-ignore
         techOrder: ['html5', 'flvjs'],
         flvjs: {
           mediaDataSource: {
@@ -166,15 +281,15 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
         },
         sources: [
           {
-            src: this.src,
+            src: this.url,
             type: 'video/x-flv'
           }
         ]
       };
-    } else if (this.src.includes('m3u8')) {
+    } else if (this.url.includes('m3u8')) {
       options['sources'] = [
         {
-          src: this.src
+          src: this.url
         }
       ];
     }
@@ -183,7 +298,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
 
   _getVideoDom() {
     let videoDomId;
-    if (this.src.includes('flv')) {
+    if (this.url.includes('flv')) {
       let videoWrap = document.querySelector(`#${this.id}`);
       videoDomId = `${this.id}_flvjs_api`;
       // @ts-ignore
@@ -212,7 +327,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
     const videoBoundsFormat = videoBounds.map((obj) => {
       return [obj.lng, obj.lat];
     });
-    let url = this.videoDomId || this.src;
+    let url = this.videoDomId || this.url;
     map.addSource(this.id, {
       type: 'video',
       urls: [url],
@@ -230,7 +345,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
       },
       this.beforeLayerId
     );
-    this.map.fitBounds([videoBounds[1], videoBounds[3]]);
+    // this.map.fitBounds([videoBounds[1], videoBounds[3]]);
     this._afterAddVideoLayer();
   }
 
@@ -268,37 +383,13 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   play() {
-    this._pause();
     // @ts-ignore
     this.video.play();
-    this._play();
   }
 
   pause() {
     // @ts-ignore
     this.video.pause();
-    this._pause();
-  }
-
-  remove() {
-    if (this.id) {
-      this.map.removeLayer(this.id);
-      this.map.removeSource(this.id);
-      document.body.removeChild(document.getElementById(this.id));
-      this._pause();
-    }
-  }
-
-  _play() {
-    // @ts-ignore
-    this.timer = requestAnimationFrame(this._playFn);
-  }
-
-  _pause() {
-    if (this.timer) {
-      cancelAnimationFrame(this.timer);
-      this.timer = null;
-    }
   }
 
   _createMap() {
@@ -325,11 +416,15 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   removed() {
-    this.timerId = null;
-    if (this.map) {
+    if (this.id && this.map) {
+      this.map.getLayer(this.id) && this.map.removeLayer(this.id);
+      this.map.getSource(this.id) && this.map.removeSource(this.id);
+    }
+    if (this._mapExisted()) {
       this.map.remove();
       this.map = null;
     }
+    this.video = null;
   }
 
   _mapExisted() {
@@ -337,14 +432,14 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   _bindEvents() {
-    MAP_EVENTS.forEach((eventName) => {
+    EVENTS.forEach((eventName) => {
       // @ts-ignore
       this.map.on(eventName, this._bindMapEventFn);
     });
   }
 
   _clearEvents() {
-    MAP_EVENTS.forEach((eventName) => {
+    EVENTS.forEach((eventName) => {
       // @ts-ignore
       this.map.off(eventName, this._bindMapEventFn);
     });
@@ -354,22 +449,10 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
     if (e.lngLat) {
       if (this.originCoordsRightBottom && this.originCoordsLeftTop && this.videoWidth && this.videoHeight) {
         let coord = [e.lngLat.lng, e.lngLat.lat];
-        let spatialPoint = this.transformLatLngToPoint(coord);
-        e.spatialPoint = [spatialPoint[0], spatialPoint[1]];
+        let pixelPoint = this.transformLatLngToPoint(coord);
+        e.pixelPoint = [pixelPoint[0], pixelPoint[1]];
       }
     }
     this.fire(e.type, { mapEvent: e });
-  }
-
-  transformPointToLatLng (pixelPoint) {
-    let perWidth = Math.abs(this.originCoordsRightBottom.lng - this.originCoordsLeftTop.lng) / this.videoWidth;
-    let perHeight = Math.abs(this.originCoordsRightBottom.lat - this.originCoordsLeftTop.lat) / this.videoHeight;
-    return [pixelPoint[0] * perWidth + this.originCoordsLeftTop.lng, this.originCoordsLeftTop.lat - pixelPoint[1] * perHeight];
-  }
-
-  transformLatLngToPoint (coord) {
-    let perWidth = Math.abs(this.originCoordsRightBottom.lng - this.originCoordsLeftTop.lng) / this.videoWidth;
-    let perHeight = Math.abs(this.originCoordsRightBottom.lat - this.originCoordsLeftTop.lat) / this.videoHeight;
-    return [(coord[0] - this.originCoordsLeftTop.lng) / perWidth, (this.originCoordsLeftTop.lat - coord[1]) / perHeight];
   }
 }

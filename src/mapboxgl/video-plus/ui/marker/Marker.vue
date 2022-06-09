@@ -1,26 +1,16 @@
 <script lang="ts">
 import MarkerViewModel from './MarkerViewModel';
 import VideoPlusGetters from 'vue-iclient/src/mapboxgl/_mixin/video-plus-getters';
-import { Mixins, Component, Prop, ProvideReactive, Watch } from 'vue-property-decorator';
+import { Mixins, Component, Prop, Watch } from 'vue-property-decorator';
 
-const markerEvents = {
-  drag: 'drag',
-  dragstart: 'dragstart',
-  dragend: 'dragend'
-};
+const EVENTS = ['drag', 'dragstart', 'dragend'];
 
 @Component({
-  name: 'SmVideoMarker'
+  name: 'SmVideoPlusMarker'
 })
-class SmVideoMarker extends Mixins(VideoPlusGetters) {
+class SmVideoPlusMarker extends Mixins(VideoPlusGetters) {
   viewModel: MarkerViewModel = null;
   initial: boolean = false;
-  @ProvideReactive() get marker() {
-    if (this.viewModel) {
-      return this.viewModel.marker;
-    }
-    return null;
-  }
 
   @Prop({
     default: () => {
@@ -33,8 +23,10 @@ class SmVideoMarker extends Mixins(VideoPlusGetters) {
   @Prop() color: string;
   @Prop({ default: 'center' }) anchor: boolean;
   @Prop({ default: false }) draggable: boolean;
+  @Prop({ default: 1 }) scale: number;
+  @Prop({ default: 0 }) rotation: number;
 
-  mounted() {
+  created() {
     this.addMarker();
     this._bindEvents();
     this.initial = true;
@@ -65,11 +57,11 @@ class SmVideoMarker extends Mixins(VideoPlusGetters) {
 
   _bindEvents() {
     this.viewModel.on('load', () => {
-      this.viewModel.setCoordinate(this.coordinate).addToMap();
+      this.viewModel.setCoordinate(this.coordinate);
+      this.viewModel.addToMap();
     });
-    const eventNames = Object.keys(markerEvents);
     Object.keys(this.$listeners).forEach(eventName => {
-      if (eventNames.includes(eventName)) {
+      if (EVENTS.includes(eventName)) {
         this.viewModel.on(eventName, this._emitEvent);
       }
     });
@@ -87,7 +79,7 @@ class SmVideoMarker extends Mixins(VideoPlusGetters) {
   }
 
   destroyed() {
-    const eventNames = Object.keys(markerEvents);
+    const eventNames = Object.keys(EVENTS);
     this._unbindEvents(eventNames);
   }
 
@@ -99,5 +91,5 @@ class SmVideoMarker extends Mixins(VideoPlusGetters) {
     return h('template', [this.$slots.marker, this.initial ? this.$slots.default : null]);
   }
 }
-export default SmVideoMarker;
+export default SmVideoPlusMarker;
 </script>

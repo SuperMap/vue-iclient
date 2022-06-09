@@ -8,52 +8,8 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Emit } from 'vue-property-decorator';
 import videoPlusEvent from 'vue-iclient/src/mapboxgl/_types/video-plus-event';
-import VideoPlusViewModel from './VideoPlusViewModel';
+import VideoPlusViewModel, { EVENTS, MAP_DRAW_EVENTS } from './VideoPlusViewModel';
 import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
-
-const MAP_EVENTS = [
-  'resize',
-  'webglcontextlost',
-  'webglcontextrestored',
-  'remove',
-  'movestart',
-  'load',
-  'contextmenu',
-  'dblclick',
-  'click',
-  'touchcancel',
-  'touchmove',
-  'touchend',
-  'touchstart',
-  'dataloading',
-  'mousemove',
-  'mouseup',
-  'mousedown',
-  'sourcedataloading',
-  'error',
-  'data',
-  'styledata',
-  'sourcedata',
-  'mouseout',
-  'styledataloading',
-  'moveend',
-  'move',
-  'render',
-  'zoom',
-  'zoomstart',
-  'zoomend',
-  'boxzoomstart',
-  'boxzoomcancel',
-  'boxzoomend',
-  'rotate',
-  'rotatestart',
-  'rotateend',
-  'dragend',
-  'drag',
-  'dragstart',
-  'pitch',
-  'idle'
-];
 
 @Component({
   name: 'SmVideoPlus',
@@ -67,9 +23,11 @@ class SmVideoPlus extends Vue {
   spinning = true;
   innerAutoplay = false;
   @Prop({ default: 'video' }) target: string;
-  @Prop() src: string;
+  @Prop() url: string;
+  @Prop() videoWidth: number;
+  @Prop() videoHeight: number;
   @Prop({ default: false }) loop: boolean;
-  @Prop({ default: true }) play: boolean;
+  @Prop({ default: false }) play: boolean;
   @Prop({ default: false }) autoplay: boolean;
 
   @Watch('play')
@@ -82,7 +40,7 @@ class SmVideoPlus extends Vue {
     }
   }
 
-  @Watch('src')
+  @Watch('url')
   srcChanged() {
     if (this.viewModel) {
       this.viewModel.removed();
@@ -98,7 +56,7 @@ class SmVideoPlus extends Vue {
   }
 
   get loaded() {
-    return this.spinning && this.src;
+    return this.spinning && this.url;
   }
 
   created() {
@@ -110,20 +68,29 @@ class SmVideoPlus extends Vue {
   }
 
   createVideoPlus() {
-    const { target, src, loop } = this;
+    const { target, url, loop, videoWidth, videoHeight } = this;
     this.viewModel = new VideoPlusViewModel({
       target,
-      src,
-      // @ts-ignore
+      url,
+      videoWidth,
+      videoHeight,
       autoplay: this.innerAutoplay,
       loop
     });
     this._bindEvents();
   }
 
+  resize() {
+    // @ts-ignore
+    if (this.viewModel && this.viewModel.resize) {
+      // @ts-ignore
+      this.viewModel.resize();
+    }
+  }
+
   _bindEvents() {
     Object.keys(this.$listeners).forEach(eventName => {
-      if (MAP_EVENTS.includes(eventName)) {
+      if ([...EVENTS, ...MAP_DRAW_EVENTS].includes(eventName)) {
         this.viewModel.on(eventName, this._bindMapEvent);
       }
     });
@@ -137,7 +104,7 @@ class SmVideoPlus extends Vue {
        * @desc videoPlus 加载完成之后触发。
        * @property {mapboxgl.Map} map - MapBoxGL Map 对象。
        */
-      this.load({ map: e.map, videoPlus: e.videoPlus });
+      this.load({ videoPlus: e.videoPlus });
     });
   }
 
@@ -146,17 +113,17 @@ class SmVideoPlus extends Vue {
   }
 
   _clearEvents() {
-    MAP_EVENTS.forEach(eventName => {
+    [...EVENTS, ...MAP_DRAW_EVENTS].forEach(eventName => {
       this.viewModel.off(eventName, this._bindMapEvent);
     });
   }
 
   beforeDestroy() {
-    this.viewModel && this.viewModel.removed();
     this._clearEvents();
   }
 
   destroyed() {
+    this.viewModel.removed();
     // @ts-ignore
     videoPlusEvent.$options.deleteVideo(this.target);
   }

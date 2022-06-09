@@ -10,18 +10,11 @@ export default class PopupViewModel extends mapboxgl.Evented {
   fire: any;
   constructor(options) {
     super();
-    this.options = options;
-    this.init();
+    this.popup = new mapboxgl.Popup(options);
   }
 
   setVideoPlus({ videoPlus }) {
     this.videoPlus = videoPlus;
-    this.map = videoPlus.map;
-    this.init();
-  }
-
-  init() {
-    this.popup = new mapboxgl.Popup(this.options);
     this._bindEvent();
     this.fire('load');
   }
@@ -35,21 +28,11 @@ export default class PopupViewModel extends mapboxgl.Evented {
   }
 
   setCoordinate(coordinate) {
-    this.cacheCoords = coordinate;
-    this._setData();
-    return this;
+    return this.videoPlus.setCoordinate(this.popup, coordinate);
   }
 
   addToMap() {
-    this.popup.addTo(this.map);
-    return this;
-  }
-
-  _setData() {
-    if (this.cacheCoords) {
-      let latlng = this.videoPlus.transformPointToLatLng(this.cacheCoords);
-      this.popup.setLngLat(latlng).addTo(this.map);
-    }
+    return this.videoPlus.addToMap(this.popup);
   }
 
   setDOMContent(htmlNode) {

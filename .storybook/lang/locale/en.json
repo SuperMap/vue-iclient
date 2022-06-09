@@ -215,6 +215,21 @@
       "title": "Video Player",
       "controlBar": "Control Bar"
     },
+    "videoPlus": {
+      "title": "VideoPlus VideoPlus"
+    },
+    "videoPlusMarker": {
+      "title": "VideoPlus VideoMarker "
+    },
+    "videoPlusPopup": {
+      "title": "VideoPlus VideoPopup"
+    },
+    "videoLayer": {
+      "title": "VideoPlus VideoLayer"
+    },
+    "videoPlusDraw": {
+      "title": "VideoPlus videoPlusDraw"
+    },
     "slider": {
       "title": "Slider",
       "icon": "Slider with icon",
