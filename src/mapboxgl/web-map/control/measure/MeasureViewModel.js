@@ -215,7 +215,7 @@ class MeasureViewModel extends mapboxgl.Evented {
       }
       popup.setText(`${this._getFormatResult(this.result)} ${uniti18n}`);
       popup.addTo(this.map);
-      this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
+      this.setPopupStyle && this.setPopupStyle();
       this.cachePolygonUnit.value = this.result;
       this.cachePolygonUnit.unit = this.activeUnit;
       this.tipHoverDiv = popup;
