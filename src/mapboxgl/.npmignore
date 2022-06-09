@@ -49,3 +49,4 @@ jest.config.js
 *.sln
 package-lock.json
 sonar-project.properties
+src/**/package.json
