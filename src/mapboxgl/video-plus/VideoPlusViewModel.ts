@@ -250,7 +250,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   _createVideo() {
     this._createVideoElement();
     let options = this._getVideoOptions();
-    return videojs(this.id, options);
+    return videojs(this.id, options, () => {});
   }
 
   _getVideoOptions() {
