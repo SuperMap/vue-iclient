@@ -5,6 +5,7 @@ export default class MarkerViewModel extends mapboxgl.Evented {
   options: Object;
   marker: any;
   fire: any;
+  videoPlus: any;
   constructor(options) {
     super();
     this.marker = new mapboxgl.Marker(options);

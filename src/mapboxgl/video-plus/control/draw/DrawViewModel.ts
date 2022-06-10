@@ -36,16 +36,10 @@ export default class DrawViewModel extends mapboxgl.Evented {
   init() {
     this.draw = new MapboxDraw(this.options);
     this.videoPlus.addControl(this.draw, this.position);
-    // EVENTS.forEach(eventName => {
-    //   this.videoPlus.on(eventName, this._bindDrawEvent);
-    // });
-  }
-
-  _bindDrawEvent(e) {
-    this.fire(e.type, e);
   }
 
   removed() {
+    // @ts-ignore
     this.map && this.videoPlus.removeControl(this.draw);
   }
 }

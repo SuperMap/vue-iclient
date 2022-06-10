@@ -91,9 +91,11 @@ class SmVideoPlus extends Vue {
   _bindEvents() {
     Object.keys(this.$listeners).forEach(eventName => {
       if ([...EVENTS, ...MAP_DRAW_EVENTS].includes(eventName)) {
+        // @ts-ignore
         this.viewModel.on(eventName, this._bindMapEvent);
       }
     });
+    // @ts-ignore
     this.viewModel.on('load', e => {
       this.spinning = false;
       // @ts-ignore
@@ -114,6 +116,7 @@ class SmVideoPlus extends Vue {
 
   _clearEvents() {
     [...EVENTS, ...MAP_DRAW_EVENTS].forEach(eventName => {
+      // @ts-ignore
       this.viewModel.off(eventName, this._bindMapEvent);
     });
   }

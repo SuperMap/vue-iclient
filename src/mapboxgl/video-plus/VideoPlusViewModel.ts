@@ -146,6 +146,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   addControl(control, position) {
     this.map.addControl(control, position);
     MAP_DRAW_EVENTS.forEach((eventName) => {
+      // @ts-ignore
       this.map.on(eventName, (e) => {
         if (e) {
           coordEach(e.features[0], (coord) => {
@@ -409,6 +410,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
       let container = map.getContainer();
       this.width = container.clientWidth || 400;
       this.height = container.clientHeight || 300;
+      // @ts-ignore
       map.on('load', () => {
         resolve(map);
       });
