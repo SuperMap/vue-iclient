@@ -1,5 +1,4 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance.css';
 
 const EVENTS = ['open', 'close'];
 
@@ -11,20 +10,19 @@ export default class PopupViewModel extends mapboxgl.Evented {
   constructor(options) {
     super();
     this.popup = new mapboxgl.Popup(options);
+    this._bindEventFn = this._bindEvent.bind(this);
   }
 
   setVideoPlus({ videoPlus }) {
     this.videoPlus = videoPlus;
-    this._bindEvent();
     this.fire('load');
+    EVENTS.forEach(eventName => {
+      this.popup.on(eventName, this._bindEventFn);
+    });
   }
 
-  _bindEvent() {
-    EVENTS.forEach(eventName => {
-      this.popup.on(eventName, e => {
-        this.fire(eventName, e);
-      });
-    });
+  _bindEvent(e) {
+    this.fire(e.type, e);
   }
 
   setCoordinate(coordinate) {
@@ -39,6 +37,10 @@ export default class PopupViewModel extends mapboxgl.Evented {
     this.popup.setDOMContent(htmlNode);
   }
 
+  setText(text) {
+    this.popup.setText(text);
+  }
+
   setPopup(marker) {
     marker.setPopup(this.popup);
   }
@@ -51,5 +53,8 @@ export default class PopupViewModel extends mapboxgl.Evented {
     if (this.popup) {
       this.popup.remove();
     }
+    EVENTS.forEach(eventName => {
+      this.marker.off(eventName, this._bindEventFn);
+    });
   }
 }

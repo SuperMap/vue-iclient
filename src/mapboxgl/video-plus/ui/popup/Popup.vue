@@ -81,8 +81,7 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
   }
 
   _bindEvents() {
-    this.viewModel.on('load', videoPlus => {
-      this.videoPlus = videoPlus;
+    this.viewModel.on('load', () => {
       if (this.coordinate !== undefined) {
         this.viewModel.setCoordinate(this.coordinate);
       }
@@ -91,7 +90,7 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
         // @ts-ignore
         this.viewModel.setDOMContent(this.$slots.default[0].elm);
       } else {
-        this.viewModel.setDOMContent(this.content);
+        this.viewModel.setText(this.content);
       }
       // @ts-ignore
       if (this.marker) {

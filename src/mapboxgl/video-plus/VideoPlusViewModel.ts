@@ -10,11 +10,27 @@ export const MAP_DRAW_EVENTS = [
   'draw.create',
   'draw.delete'
 ];
+
+export const LAYER_EVENTS = [
+  'mousedown',
+  'mouseup',
+  'click',
+  'dblclick',
+  'mousemove',
+  'mouseenter',
+  'mouseleave',
+  'mouseover',
+  'mouseout',
+  'contextmenu',
+  'touchstart',
+  'touchend',
+  'touchcancel'
+];
+
 export const EVENTS = [
   'resize',
   'remove',
   'movestart',
-  'load',
   'contextmenu',
   'dblclick',
   'click',
@@ -96,11 +112,14 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   constructor(options: VideoPlusOptions) {
     super();
     this._bindMapEventFn = this._bindMapEvent.bind(this);
+    this._bindDrawEventFn = this._bindDrawEvent.bind(this);
+    this._bindLayerEventFn = this._bindLayerEvent.bind(this);
     this.init(options);
   }
 
   async init(options) {
     const { target, url, autoplay, loop, videoWidth, videoHeight } = options;
+    // 修改url后 会重新生成节点
     this.id = uniqueId('videoLayer_');
     this.autoplay = autoplay;
     this.loop = loop;
@@ -147,24 +166,26 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
     this.map.addControl(control, position);
     MAP_DRAW_EVENTS.forEach((eventName) => {
       // @ts-ignore
-      this.map.on(eventName, (e) => {
-        if (e) {
-          coordEach(e.features[0], (coord) => {
-            let pixelPoint = this.transformLatLngToPoint(coord);
-            coord[0] = pixelPoint[0];
-            coord[1] = pixelPoint[1];
-          });
-        }
-        this.fire(eventName, { e });
-      });
+      this.map.on(eventName, this._bindDrawEventFn);
     });
+  }
+
+  _bindDrawEvent(e) {
+    if (e) {
+      coordEach(e.features[0], (coord) => {
+        let pixelPoint = this.transformLatLngToPoint(coord);
+        coord[0] = pixelPoint[0];
+        coord[1] = pixelPoint[1];
+      });
+    }
+    this.fire(e.type, { e });
   }
 
   removeControl(control) {
     this.map.removeControl(control);
     MAP_DRAW_EVENTS.forEach(eventName => {
       // @ts-ignore
-      this.map.off(eventName);
+      this.map.off(eventName, this.__bindDrawEventFn);
     });
   }
 
@@ -190,11 +211,26 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   addLayer(layer) {
-    const { source } = layer;
+    const { source, id } = layer;
     const newData = this.eachData(cloneDeep(source.data));
     layer.source.data = newData;
     this.map.addLayer(layer);
+    LAYER_EVENTS.forEach(eventName => {
+      // @ts-ignore
+      this.map.on(eventName, id, this._bindLayerEventFn);
+    });
     return this;
+  }
+
+  _bindLayerEvent(e) {
+    if (e.lngLat) {
+      if (this.originCoordsRightBottom && this.originCoordsLeftTop && this.videoWidth && this.videoHeight) {
+        let coord = [e.lngLat.lng, e.lngLat.lat];
+        let pixelPoint = this.transformLatLngToPoint(coord);
+        e.pixelPoint = [pixelPoint[0], pixelPoint[1]];
+      }
+    }
+    this.fire(e.type, { event: e, isLayer: true });
   }
 
   eachData(features) {
@@ -224,6 +260,10 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
 
   removeLayer(layerId) {
     this.map.removeLayer(layerId);
+    LAYER_EVENTS.forEach(eventName => {
+      // @ts-ignore
+      this.map.off(eventName, layerId, this._bindLayerEventFn);
+    });
     return this;
   }
 

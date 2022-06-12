@@ -9,6 +9,7 @@ export default class MarkerViewModel extends mapboxgl.Evented {
   constructor(options) {
     super();
     this.marker = new mapboxgl.Marker(options);
+    this._bindEventFn = this._bindEvent.bind(this);
   }
 
   setVideoPlus({ videoPlus }) {
@@ -17,16 +18,14 @@ export default class MarkerViewModel extends mapboxgl.Evented {
   }
 
   init() {
-    this._bindEvent();
-    this.fire('load');
+    this.fire('load', this.videoPlus);
+    EVENTS.forEach(eventName => {
+      this.marker.on(eventName, this._bindEventFn);
+    });
   }
 
-  _bindEvent() {
-    EVENTS.forEach(eventName => {
-      this.marker.on(eventName, (e) => {
-        this.fire(eventName, e);
-      });
-    });
+  _bindEvent(e) {
+    this.fire(e.type, e);
   }
 
   setCoordinate(coordinate) {
@@ -49,5 +48,8 @@ export default class MarkerViewModel extends mapboxgl.Evented {
     if (this.marker) {
       this.marker.remove();
     }
+    EVENTS.forEach(eventName => {
+      this.marker.off(eventName, this._bindEventFn);
+    });
   }
 }

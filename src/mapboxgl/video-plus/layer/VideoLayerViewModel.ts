@@ -34,6 +34,7 @@ export default class VideoLayerViewModel extends mapboxgl.Evented {
       layout: layout || {},
       paint: paint || {}
     });
+    this.fire('load', this.videoPlus);
   }
 
   removed() {
@@ -53,19 +54,27 @@ export default class VideoLayerViewModel extends mapboxgl.Evented {
     this.layerStyle = layerStyle;
     if (paint) {
       for (let prop of Object.keys(paint)) {
-        this.videoPlus.setPaintProperty(this.layerId, prop, paint[prop]);
+        this.setPaintProperty(this.layerId, prop, paint[prop]);
       }
     }
     if (layout) {
       for (let prop of Object.keys(layout)) {
-        this.videoPlus.setLayoutProperty(this.layerId, prop, layout[prop]);
+        this.setLayoutProperty(this.layerId, prop, layout[prop]);
       }
     }
   }
 
+  setPaintProperty(id, name, value) {
+    this.videoPlus.setPaintProperty(id, name, value);
+  }
+
+  setLayoutProperty(id, name, value) {
+    this.videoPlus.setLayoutProperty(id, name, value);
+  }
+
   _getLayerType(paint = {}) {
     const keys = Object.keys(paint).join(' ');
-    const reg = /circle-|line-|fill-extrusion-|fill-+/i;
+    const reg = /circle-|line-|fill-+/i;
     const matchType = keys.match(reg);
     const type = matchType ? matchType[0] : '';
     return type.substr(0, type.length - 1);

@@ -8,7 +8,7 @@
 <script lang="ts">
 import { Vue, Component, Prop, Watch, Emit } from 'vue-property-decorator';
 import videoPlusEvent from 'vue-iclient/src/mapboxgl/_types/video-plus-event';
-import VideoPlusViewModel, { EVENTS, MAP_DRAW_EVENTS } from './VideoPlusViewModel';
+import VideoPlusViewModel, { EVENTS } from './VideoPlusViewModel';
 import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 
 @Component({
@@ -90,7 +90,7 @@ class SmVideoPlus extends Vue {
 
   _bindEvents() {
     Object.keys(this.$listeners).forEach(eventName => {
-      if ([...EVENTS, ...MAP_DRAW_EVENTS].includes(eventName)) {
+      if (EVENTS.includes(eventName)) {
         // @ts-ignore
         this.viewModel.on(eventName, this._bindMapEvent);
       }
@@ -111,11 +111,14 @@ class SmVideoPlus extends Vue {
   }
 
   _bindMapEvent(e) {
+    if (e.isLayer) {
+      return;
+    }
     this.$emit(e.type, e);
   }
 
   _clearEvents() {
-    [...EVENTS, ...MAP_DRAW_EVENTS].forEach(eventName => {
+    EVENTS.forEach(eventName => {
       // @ts-ignore
       this.viewModel.off(eventName, this._bindMapEvent);
     });

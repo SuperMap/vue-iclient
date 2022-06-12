@@ -1,11 +1,6 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import MapboxDraw from 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw';
 
-export const EVENTS = [
-  'draw.create',
-  'draw.delete'
-];
-
 export default class DrawViewModel extends mapboxgl.Evented {
   draw: Object;
   options: any;
@@ -31,6 +26,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
   setVideoPlus({ videoPlus }) {
     this.videoPlus = videoPlus;
     this.init();
+    this.fire('load', this.videoPlus);
   }
 
   init() {
