@@ -50,7 +50,7 @@ export default class PopupViewModel extends mapboxgl.Evented {
     return this.popup.isOpen();
   }
 
-  remvoed() {
+  removed() {
     if (this.popup) {
       this.popup.remove();
     }

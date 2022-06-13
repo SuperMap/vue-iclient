@@ -48,6 +48,20 @@ class SmVideoPlus extends Vue {
     this.createVideoPlus();
   }
 
+  @Watch('videoWidth')
+  videoWidthChanged(newVal, oldVal) {
+    if (newVal !== oldVal && this.viewModel) {
+      this.viewModel.changeVideoSize(newVal, this.videoHeight);
+    }
+  }
+
+  @Watch('videoHeight')
+  videoHeightChanged(newVal, oldVal) {
+    if (newVal !== oldVal && this.viewModel) {
+      this.viewModel.changeVideoSize(this.videoWidth, newVal);
+    }
+  }
+
   get style() {
     return {
       width: '100%',
@@ -114,7 +128,7 @@ class SmVideoPlus extends Vue {
     if (e.isLayer) {
       return;
     }
-    this.$emit(e.type, e);
+    this.$emit(e.type, e.event);
   }
 
   _clearEvents() {

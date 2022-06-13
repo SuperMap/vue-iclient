@@ -38,7 +38,7 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
     if (this.videoPlus && this.viewModel) {
       if (!value) {
         // @ts-ignore
-        this.viewModel.remove();
+        this.viewModel.removed();
       } else {
         this.viewModel.addToMap();
       }

@@ -203,6 +203,7 @@ var Map = function (options) {
     }
     if (this._sources[name]) {
       return {
+        setCoordinates: function() {},
         setData: function (data) {
           this._sources[name].data = data;
           if (this._sources[name].type === 'geojson') {
@@ -282,6 +283,7 @@ var Map = function (options) {
       };
     } else {
       return {
+        setCoordinates: function() {},
         setData: function (data) {},
         loadTile: function () {}
       };

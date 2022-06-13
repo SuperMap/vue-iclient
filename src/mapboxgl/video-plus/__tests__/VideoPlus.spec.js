@@ -72,4 +72,29 @@ describe('VideoPlus.vue', () => {
       done();
     }, 2000);
   });
+
+  it('change size', done => {
+    let url = 'http://fakeurl:8081/test.flv';
+    wrapper = mount(SmVideoPlus, {
+      localVue,
+      propsData: {
+        videoHeight,
+        videoWidth,
+        url
+      },
+      attachToDocument: 'body'
+    });
+    wrapper.vm.$nextTick();
+    setTimeout(() => {
+      wrapper.setProps({
+        videoHeight: 900,
+        url: 'http://fakeurl:8081/test.m3u8',
+        videoWidth: 1200,
+        play: true
+      });
+     setTimeout(() => {
+      done();
+     }, 500);
+    }, 2000);
+  });
 });

@@ -366,7 +366,8 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   _addVideoLayer(map) {
-    let videoBounds = this._calcCoords();
+    const { width, height, videoWidth, videoHeight } = this;
+    let videoBounds = this._calcCoords({ width, height, videoWidth, videoHeight });
     const videoBoundsFormat = videoBounds.map((obj) => {
       return [obj.lng, obj.lat];
     });
@@ -400,8 +401,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
     this.fire('load', { videoPlus: this, map: this.map });
   }
 
-  _calcCoords() {
-    const { width, height, videoHeight, videoWidth } = this;
+  _calcCoords({ width, height, videoWidth, videoHeight }) {
     let ratioX = videoWidth / width;
     let ratioY = videoHeight / height;
     let ratio = Math.min(ratioX, ratioY);
@@ -427,12 +427,27 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
 
   play() {
     // @ts-ignore
-    this.video.play();
+    this.video && this.video.play();
   }
 
   pause() {
     // @ts-ignore
-    this.video.pause();
+    this.video && this.video.pause();
+  }
+
+  changeVideoSize(videoWidth, videoHeight) {
+    const { width, height } = this;
+    if (!width || !height || !this.map) {
+      return;
+    }
+    let videoBounds = this._calcCoords({ width, height, videoWidth, videoHeight });
+    const videoBoundsFormat = videoBounds.map((obj) => {
+      return [obj.lng, obj.lat];
+    });
+    if(this.map.getSource(this.id)) {
+      // @ts-ignore
+      this.map.getSource(this.id).setCoordinates(videoBoundsFormat);
+    }
   }
 
   _createMap() {
@@ -464,6 +479,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
       this.map.getLayer(this.id) && this.map.removeLayer(this.id);
       this.map.getSource(this.id) && this.map.removeSource(this.id);
     }
+    this._clearEvents();
     if (this._mapExisted()) {
       this.map.remove();
       this.map = null;
@@ -497,6 +513,6 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
         e.pixelPoint = [pixelPoint[0], pixelPoint[1]];
       }
     }
-    this.fire(e.type, { mapEvent: e });
+    this.fire(e.type, { event: e });
   }
 }

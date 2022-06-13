@@ -16,7 +16,7 @@ export const BasicVideoMarker = () => ({
     videoHeight="1080"
     url="https://iclient.supermap.io/web/data/video/video2.mp4"
     >
-      <sm-video-plus-marker target="video2" :coordinate="[600, 500]">
+      <sm-video-plus-marker :coordinate="[600, 500]">
       </sm-video-plus-marker>
   </sm-video-plus>
   `

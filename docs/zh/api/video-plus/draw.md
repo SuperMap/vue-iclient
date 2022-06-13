@@ -13,3 +13,7 @@
 | controls | 绘制菜单配置                                                                                  | Object      |     -                                                   | 'point' \| 'line_string' \| 'polygon' \| 'trash'          | -   |
 | modes | 绘制模式 | string | - | 'direct_select' \| 'draw_line_string' \| 'draw_polygon' \| 'draw_point' |
 | position | 控件添加到视频+ 上的位置 | string | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left' |
+### Events
+
+| create | 绘制完成 | function(option) |
+| remove | 删掉绘制 | function(option) |
