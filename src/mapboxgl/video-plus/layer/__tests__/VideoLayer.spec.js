@@ -85,11 +85,17 @@ describe('SmVideoLayer.vue', () => {
     }, 2000);
   });
 
-  xit('change data', async done => {
+  it('change props', async done => {
     wrapper = mount(SmVideoLayer, {
       propsData: {
         target: 'video',
-        layerStyle: layerStyle,
+        layerStyle: new CircleStyle(),
+        paint: {
+          'circle-blur': 1
+        },
+        layout: {
+          visibility: true
+        },
         data: data
       }
     });
@@ -108,8 +114,26 @@ describe('SmVideoLayer.vue', () => {
         }
       ]
     };
-    await wrapper.setProps({ data: newData });
+    await wrapper.setProps({
+      data: newData,
+      paint: {
+        'circle-color': 'red'
+      },
+      layerStyle: {
+        paint: {
+          'circle-stroke-color': 'yellow'
+        },
+        layout: {
+          'circle-sort-key': 1
+        }
+      },
+      layout: {
+        visibility: false
+      }
+    });
     wrapper.vm.$nextTick();
-    done();
+    setTimeout(() => {
+      done();
+    }, 2000);
   });
 });

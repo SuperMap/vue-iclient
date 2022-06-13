@@ -44,7 +44,7 @@ export default class VideoLayerViewModel extends mapboxgl.Evented {
   }
 
   setData(data) {
-    this.videoPlus.setData(this.layerId, data);
+    this.videoPlus && this.videoPlus.setData(this.layerId, data);
   }
 
   setLayerStyle(layerStyle) {
@@ -66,11 +66,11 @@ export default class VideoLayerViewModel extends mapboxgl.Evented {
   }
 
   setPaintProperty(id, name, value) {
-    this.videoPlus.setPaintProperty(id, name, value);
+    this.videoPlus && this.videoPlus.setPaintProperty(id, name, value);
   }
 
   setLayoutProperty(id, name, value) {
-    this.videoPlus.setLayoutProperty(id, name, value);
+    this.videoPlus && this.videoPlus.setLayoutProperty(id, name, value);
   }
 
   _getLayerType(paint = {}) {
