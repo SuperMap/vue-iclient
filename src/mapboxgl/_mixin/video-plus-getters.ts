@@ -28,7 +28,7 @@ export default class VideoPlusGetter extends Vue {
   $t: any;
   firstDefaultTarget: string;
 
-  @Prop({ default: 'video' }) target: string;
+  @Prop() target: string;
 
   @Watch('target')
   targetChanged(newVal, oldVal) {

@@ -68,16 +68,23 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
     this.viewModel.setDOMContent(this.content);
   }
 
+  created() {
+    this.viewModel = new PopupViewModel(this.$props);
+    this._bindEvents();
+  }
+
   mounted() {
     // @ts-ignore
     if (this.$parent && this.$parent.viewModel && this.$parent.viewModel.marker) {
       // @ts-ignore
       this.marker = this.$parent.viewModel.marker;
     }
-    // @ts-ignore
-    this.viewModel = new PopupViewModel(this.$props);
-    this._bindEvents();
     this.initial = true;
+    // @ts-ignore
+    if (this.marker) {
+      // @ts-ignore
+      this.viewModel.setPopup(this.marker);
+    }
   }
 
   _bindEvents() {
@@ -93,10 +100,6 @@ class SmVideoPlusPopup extends Mixins(VideoPlusGetters) {
         this.viewModel.setText(this.content);
       }
       // @ts-ignore
-      if (this.marker) {
-        // @ts-ignore
-        this.viewModel.setPopup(this.marker);
-      }
       if (this.show) {
         this.open = true;
         // @ts-ignore
