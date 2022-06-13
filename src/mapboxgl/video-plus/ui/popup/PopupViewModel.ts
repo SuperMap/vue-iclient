@@ -7,6 +7,7 @@ export default class PopupViewModel extends mapboxgl.Evented {
   popup: any;
   options: any;
   fire: any;
+  _bindEventFn: Function;
   constructor(options) {
     super();
     this.popup = new mapboxgl.Popup(options);
@@ -54,7 +55,7 @@ export default class PopupViewModel extends mapboxgl.Evented {
       this.popup.remove();
     }
     EVENTS.forEach(eventName => {
-      this.marker.off(eventName, this._bindEventFn);
+      this.popup.off(eventName, this._bindEventFn);
     });
   }
 }

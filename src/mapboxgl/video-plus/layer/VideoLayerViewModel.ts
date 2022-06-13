@@ -1,6 +1,7 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 export default class VideoLayerViewModel extends mapboxgl.Evented {
+  fire: any;
   videoPlus: any;
   data: any;
   layerId: string;

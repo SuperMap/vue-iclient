@@ -99,6 +99,8 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   videoHeight: number;
   videoWidth: number;
   _bindMapEventFn: Function;
+  _bindDrawEventFn: Function;
+  _bindLayerEventFn: Function;
   id: string;
   loop: boolean;
   autoplay: boolean;
