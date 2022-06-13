@@ -2,7 +2,7 @@
 
 ```vue
 <sm-video-plus url="https://www.runoob.com/try/demo_source/mov_bbb.mp4" video-width="1920" video-height="1080">
-  <sm-video-marker coordinate="[500,500]"></sm-video-marker>
+  <sm-video-plus-marker coordinate="[500,500]"></sm-video-plus-marker>
 </sm-video-plus>
 ```
 

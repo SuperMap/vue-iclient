@@ -25,7 +25,5 @@
 | name       | 说明                   | 回调参数       |
 | :--------- | :--------------------- | :------------- |
 | load       | 视频+ 加载完成时触发 | function({ videoPlus }) |
-| draw-created | 绘制完成 | function(option) |
-| draw-removed | 删掉绘制 | function(option) |
 
-> 其余事件请参照 [Mapboxgl.Events](https://docs.mapbox.com/mapbox-gl-js/api/map/#map-events)
+> 其余事件请参照 [Mapboxgl.Events](https://docs.mapbox.com/mapbox-gl-js/api/map/#map-events)，返回的事件对象中如果有坐标信息都增加了pixelPoint字段，代表距离视频左上角的X,Y像素值。

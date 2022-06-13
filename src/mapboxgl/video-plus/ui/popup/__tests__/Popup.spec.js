@@ -64,4 +64,23 @@ describe('SmvideoPlusPupup.vue', () => {
       done();
     }, 2000);
   });
+
+  it('change props', async done => {
+
+    wrapper = mount(SmVideoPlusPopup, {
+      propsData: {
+        mapTarget: "map",
+      }
+    });
+    await videoPlusSubComponentLoaded(wrapper);
+    setTimeout(() => {
+      wrapper.setProps({
+        coordinate: [500, 500],
+        show: false
+      })
+      setTimeout(() => {
+        done();
+      }, 500);
+    }, 2000);
+  });
 });

@@ -17,7 +17,7 @@ export const BasicVideoPlusDraw = () => ({
     :autoplay="false"
     url="https://iclient.supermap.io/web/data/video/video2.mp4"
     >
-      <sm-video-plus-draw target="video1" @create="draw"></sm-video-plus-draw>
+      <sm-video-plus-draw @create="draw"></sm-video-plus-draw>
   </sm-video-plus>
   `,
   methods: {

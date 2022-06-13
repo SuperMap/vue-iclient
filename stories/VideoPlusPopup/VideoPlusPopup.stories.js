@@ -10,8 +10,8 @@ export const BasicVideoPopup = () => ({
   mixins: [theme],
   data() {
     return {
-      coordinate: [600, 500]
-    }
+      coordinate: [500, 400]
+    };
   },
   template: `
   <sm-video-plus
@@ -21,7 +21,7 @@ export const BasicVideoPopup = () => ({
     videoHeight="1080"
     url="https://iclient.supermap.io/web/data/video/video2.mp4"
     >
-      <sm-video-plus-popup target="video3" :coordinate="coordinate"><h3 style="color:red">hello,world!</h3></sm-video-plus-popup>
+      <sm-video-plus-popup :closeOnClick="false" :coordinate="coordinate"><h3 style="color:red">hello,world!</h3></sm-video-plus-popup>
   </sm-video-plus>
   `
 });

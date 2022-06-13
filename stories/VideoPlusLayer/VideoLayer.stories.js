@@ -17,7 +17,7 @@ export const BasicVideoLayer = () => ({
     url="https://iclient.supermap.io/web/data/video/video2.mp4"
     >
       <sm-video-plus-layer
-        target="video5"
+        layerId="custom1111"
         :data='{
         type: "FeatureCollection",
         features: [

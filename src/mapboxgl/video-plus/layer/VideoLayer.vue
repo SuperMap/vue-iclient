@@ -3,22 +3,20 @@ import VideoLayerViewModel from './VideoLayerViewModel';
 import VideoPlusGetters from 'vue-iclient/src/mapboxgl/_mixin/video-plus-getters';
 import { Mixins, Component, Prop, Watch } from 'vue-property-decorator';
 import UniqueId from 'lodash.uniqueid';
+import clonedeep from 'lodash.clonedeep';
 
 const EVENTS = [
-    'mousedown',
-    'mouseup',
-    'click',
-    'dblclick',
-    'mousemove',
-    'mouseenter',
-    'mouseleave',
-    'mouseover',
-    'mouseout',
-    'contextmenu',
-    'touchstart',
-    'touchend',
-    'touchcancel'
-  ];
+  'mousedown',
+  'mouseup',
+  'click',
+  'dblclick',
+  'mousemove',
+  'mouseenter',
+  'mouseleave',
+  'mouseover',
+  'mouseout',
+  'contextmenu'
+];
 
 @Component({
   name: 'SmVideoPlusLayer'
@@ -32,11 +30,11 @@ class SmVideoPlusLayer extends Mixins(VideoPlusGetters) {
     }
   })
   layerId: string;
+
   @Prop() data: Object;
   @Prop() layerStyle: Object;
-  @Prop() layout: mapboxglTypes.FillLayout | mapboxglTypes.LineLayout | mapboxglTypes.CircleLayout;
-
-  @Prop() paint: mapboxglTypes.FillPaint | mapboxglTypes.LinePaint | mapboxglTypes.CirclePaint;
+  @Prop() layout;
+  @Prop() paint;
 
   @Watch('layerStyle')
   layerStyleChanged() {
@@ -82,9 +80,8 @@ class SmVideoPlusLayer extends Mixins(VideoPlusGetters) {
   }
 
   _bindEvent(e): void {
-    if (e.isLayer) {
-      
-       this.$emit(e.type, e.event);
+    if (e.isLayer && e.event && e.event.features[0] && e.event.features[0].layer.id === this.layerId) {
+      this.$emit(e.type, clonedeep(e.event));
     }
   }
 

@@ -11,7 +11,7 @@ import { strip } from '../_utils/util';
 export const progressTypes = {
   ...ProgressProps,
   percent: VueTypes.oneOfType([VueTypes.string, VueTypes.number]),
-  strokeWidth: VueTypes.oneOfType([VueTypes.string, VueTypes.number]),
+  strokeWidth: VueTypes.oneOfType([VueTypes.number]),
   // fix 其父元素宽高都很大的时候，需要传一个合适的size, 这时候不会自适应, 如需自适应则不传size
   size: VueTypes.oneOfType([ProgressSize, VueTypes.number])
 };

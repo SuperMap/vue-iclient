@@ -6,7 +6,7 @@
   video-width="1920"
   video-height="1080"
 >
-  <sm-video-popup coordinate="[500,500]"></sm-video-popup>
+  <sm-video-plus-popup coordinate="[500,500]"></sm-video-plus-popup>
 </sm-video-plus>
 ```
 
