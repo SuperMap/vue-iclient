@@ -21,10 +21,7 @@ export const LAYER_EVENTS = [
   'mouseleave',
   'mouseover',
   'mouseout',
-  'contextmenu',
-  'touchstart',
-  'touchend',
-  'touchcancel'
+  'contextmenu'
 ];
 
 export const EVENTS = [
@@ -115,13 +112,12 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
     super();
     this._bindMapEventFn = this._bindMapEvent.bind(this);
     this._bindDrawEventFn = this._bindDrawEvent.bind(this);
-    this._bindLayerEventFn = this._bindLayerEvent.bind(this);
+    this._layerEventMap = {};
     this.init(options);
   }
 
   async init(options) {
     const { target, url, autoplay, loop, videoWidth, videoHeight } = options;
-    // 修改url后 会重新生成节点
     this.id = uniqueId('videoLayer_');
     this.autoplay = autoplay;
     this.loop = loop;
@@ -217,14 +213,15 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
     const newData = this.eachData(cloneDeep(source.data));
     layer.source.data = newData;
     this.map.addLayer(layer);
+    this._layerEventMap[id] = this._bindLayerEvent.bind(this, id);
     LAYER_EVENTS.forEach(eventName => {
       // @ts-ignore
-      this.map.on(eventName, id, this._bindLayerEventFn);
+      this.map.on(eventName, id, this._layerEventMap[id]);
     });
     return this;
   }
 
-  _bindLayerEvent(e) {
+  _bindLayerEvent(id, e) {
     if (e.lngLat) {
       if (this.originCoordsRightBottom && this.originCoordsLeftTop && this.videoWidth && this.videoHeight) {
         let coord = [e.lngLat.lng, e.lngLat.lat];
@@ -232,7 +229,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
         e.pixelPoint = [pixelPoint[0], pixelPoint[1]];
       }
     }
-    this.fire(e.type, { event: e, isLayer: true });
+    this.fire(e.type, { event: e, layerId: id });
   }
 
   eachData(features) {
@@ -260,12 +257,13 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
     this.map.getSource(id).setData(newData);
   }
 
-  removeLayer(layerId) {
-    this.map.removeLayer(layerId);
+  removeLayer(id) {
+    this.map.removeLayer(id);
     LAYER_EVENTS.forEach(eventName => {
       // @ts-ignore
-      this.map.off(eventName, layerId, this._bindLayerEventFn);
+      this.map.off(eventName, layerId, this._layerEventMap[id]);
     });
+    delete this._layerEventMap[id];
     return this;
   }
 
@@ -485,6 +483,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
       this.map = null;
     }
     this.video = null;
+    this._layerEventMap = null;
   }
 
   _mapExisted() {

@@ -125,7 +125,7 @@ class SmVideoPlus extends Vue {
   }
 
   _bindMapEvent(e) {
-    if (e.isLayer) {
+    if (e.layerId) {
       return;
     }
     this.$emit(e.type, e.event);
