@@ -216,19 +216,11 @@
       "controlBar": "Control Bar"
     },
     "videoPlus": {
-      "title": "VideoPlus VideoPlus"
-    },
-    "videoPlusMarker": {
-      "title": "VideoPlus VideoMarker "
-    },
-    "videoPlusPopup": {
-      "title": "VideoPlus VideoPopup"
-    },
-    "videoLayer": {
-      "title": "VideoPlus VideoLayer"
-    },
-    "videoPlusDraw": {
-      "title": "VideoPlus videoPlusDraw"
+      "title": "VideoPlus",
+      "marker": "Marker",
+      "popup": "Popup",
+      "layer": "Layer",
+      "draw": "Draw"
     },
     "slider": {
       "title": "Slider",

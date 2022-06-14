@@ -216,19 +216,11 @@
       "controlBar": "控制条"
     },
     "videoPlus": {
-      "title": "VideoPlus 视频+"
-    },
-    "videoPlusMarker": {
-      "title": "VideoMarker 视频+ 标志"
-    },
-    "videoPlusPopup": {
-      "title": "VideoPopup 视频+ 弹窗"
-    },
-    "videoLayer": {
-      "title": "VideoLayer 视频+ 图层"
-    },
-    "videoPlusDraw": {
-      "title": "videoPlusDraw 视频+ 标绘"
+      "title": "VideoPlus 视频+",
+      "marker": "标志",
+      "popup": "弹窗",
+      "layer": "图层",
+      "draw": "标绘"
     },
     "slider": {
       "title": "Slider 滑动输入条",
