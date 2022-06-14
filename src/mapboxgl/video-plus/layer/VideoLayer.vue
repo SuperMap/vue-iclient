@@ -80,7 +80,7 @@ class SmVideoPlusLayer extends Mixins(VideoPlusGetters) {
   }
 
   _bindEvent(e): void {
-    if (e.isLayer && e.event && e.event.features[0] && e.event.features[0].layer.id === this.layerId) {
+    if (e.isLayer && e.event && e.event.features && e.event.features[0] && e.event.features[0].layer.id === this.layerId) {
       this.$emit(e.type, clonedeep(e.event));
     }
   }
