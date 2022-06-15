@@ -258,11 +258,13 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   removeLayer(id) {
-    this.map.removeLayer(id);
-    LAYER_EVENTS.forEach(eventName => {
-      // @ts-ignore
-      this.map.off(eventName, layerId, this._layerEventMap[id]);
-    });
+    if (this.map) {
+      this.map.removeLayer(id);
+      LAYER_EVENTS.forEach(eventName => {
+        // @ts-ignore
+        this.map.off(eventName, id, this._layerEventMap[id]);
+      });
+    }
     delete this._layerEventMap[id];
     return this;
   }
