@@ -190,7 +190,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
   }
 
   removed() {
-    let source = this.map.getSource(this.sourceName.tdtDrawRoutes);
+    let source = this.map && this.map.getSource(this.sourceName.tdtDrawRoutes);
     source &&
       source.setData({
         type: 'FeatureCollection',
