@@ -446,7 +446,8 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   getPopupContainerFn() {
-    return document.querySelector('.sm-attributes-table .sm-component-table-content');
+    // @ts-ignore
+    return this.$refs.tableInstance.$el.querySelector('.sm-attributes-table .sm-component-table-content');
   }
 
   removed() {
