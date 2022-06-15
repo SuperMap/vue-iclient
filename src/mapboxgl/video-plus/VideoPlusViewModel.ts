@@ -108,6 +108,7 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   url: string;
   videoDomId: string;
   beforeLayerId: string;
+  _layerEventMap: Object;
   constructor(options: VideoPlusOptions) {
     super();
     this._bindMapEventFn = this._bindMapEvent.bind(this);
