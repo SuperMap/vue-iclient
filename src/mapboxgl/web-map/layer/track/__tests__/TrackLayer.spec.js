@@ -218,6 +218,9 @@ describe('TrackLayer.vue', () => {
     });
     expect(wrapper.vm.trackPoints.length).toBe(1);
     expect(wrapper.vm.mapTarget).toBe('map');
+    const setTrackPointsFn = jest.spyOn(wrapper.vm.viewModel, 'setTrackPoints');
+    await wrapper.setProps({ trackPoints: undefined });
+    expect(setTrackPointsFn).toHaveBeenCalled();
     done();
   });
 
