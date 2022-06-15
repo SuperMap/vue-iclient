@@ -178,6 +178,7 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     }
     if (!trackPoints) {
       this.removeSourceAndLayer();
+      return;
     }
     this.lineData = (this.trackPoints || [])
       // @ts-ignore
