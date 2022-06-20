@@ -2402,7 +2402,7 @@ const webmap_MAPBOXSTYLE_Tile = {
     name: 'China_4326',
     dataSource: {
       type: 'EXTERNAL',
-      url: 'http://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326'
+      url: 'https://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326'
     }
   },
   layers: [

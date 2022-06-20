@@ -126,13 +126,22 @@
       "visible": true,
       "name": "世界地图_Gray",
       "dpi": 90.7142857142857,
-      "url": "http://support.supermap.com.cn:8090/iserver/services/map-china400/wmts100",
+      "url": "http://fack/iserver/services/map-china400/wmts100",
       "layer": "世界地图_Gray"
     },
     "description": "",
     "projection": "EPSG:3857",
     "minScale": "1:295829355.4545649",
     "title": "无标题",
-    "version": "2.3.0"
+    "version": "2.3.0",
+    "layers": [
+      {
+        "layerType": "TILE",
+        "visible": true,
+        "name": "中国暗色地图",
+        "url": "https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark"
+      }
+    ]
   }
 }
+

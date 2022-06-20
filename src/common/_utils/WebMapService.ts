@@ -255,6 +255,21 @@ export default class WebMapService extends Events {
     });
   }
 
+  public getMapBoxStyle(styleURL) {
+    return new Promise((resolve, reject) => {
+      SuperMap.FetchRequest.get(styleURL)
+        .then(response => {
+          return response.json();
+        })
+        .then(styleJSON => {
+          resolve(styleJSON);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
   public getWmtsInfo(layerInfo, mapCRS) {
     return new Promise((resolve, reject) => {
       let isMatched = false;
@@ -1254,3 +1269,4 @@ export default class WebMapService extends Events {
     return wkt;
   }
 }
+

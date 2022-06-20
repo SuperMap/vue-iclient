@@ -91,7 +91,8 @@ export default abstract class WebMapBase extends Events {
       'notsupportmvt',
       'notsupportbaidumap',
       'projectionIsNotMatch',
-      'beforeremovemap'
+      'beforeremovemap',
+      'mapinitialized'
     ];
     this.mapId = id;
   }

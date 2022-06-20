@@ -316,7 +316,9 @@ export default class WebMapViewModel extends WebMapBase {
       this._sendMapToUser(0, 0);
     }
     if (this._shouldLoadBaseLayer(mapInfo, this.layerFilter)) {
-      this._initBaseLayer(mapInfo);
+      this._initBaseLayer(mapInfo, () => {
+        this._addLayerSucceeded();
+      });
     }
     if (layers && layers.length !== 0) {
       this._initOverlayLayers(this._layers, _taskID);
@@ -482,16 +484,36 @@ export default class WebMapViewModel extends WebMapBase {
     this.triggerEvent('mapinitialized', { map: this.map });
   }
 
-  private _createMVTBaseLayer(layerInfo) {
+  private _createMVTBaseLayer(layerInfo, addedCallback?: Function) {
     let url = layerInfo.dataSource.url;
     if (url.indexOf('/restjsr/') > -1 && !/\/style\.json$/.test(url)) {
       url += '/style.json';
     }
-    // @ts-ignore
-    this.map.addStyle(url);
+    this.webMapService
+      // @ts-ignore
+      .getMapBoxStyle(url)
+      .then(
+        (style: any) => {
+          // @ts-ignore
+          this.map.addStyle(style);
+          addedCallback && addedCallback();
+        },
+        (error) => {
+          addedCallback && addedCallback();
+          throw new Error(error);
+        }
+      )
+      .catch(error => {
+        /**
+         * @event WebMapViewModel#getmapinfofailed
+         * @description 获取地图信息失败。
+         * @property {Object} error - 失败原因。
+         */
+        this.triggerEvent('getmapinfofailed', { error });
+      });
   }
 
-  _initBaseLayer(mapInfo: any): void {
+  _initBaseLayer(mapInfo: any, addedCallback?: Function): void {
     const layerInfo = mapInfo.baseLayer || mapInfo;
     const layerType = this.getBaseLayerType(layerInfo);
     const mapUrls = this.getMapurls();
@@ -501,35 +523,33 @@ export default class WebMapViewModel extends WebMapBase {
     switch (layerType) {
       case 'TIANDITU':
         this.baseLayerProxy = null;
-        this._createTiandituLayer(mapInfo);
+        this._createTiandituLayer(mapInfo, addedCallback);
         break;
       case 'BING':
         this.baseLayerProxy = null;
-        this._createBingLayer(layerInfo.layerID || layerInfo.name, layerInfo);
+        this._createBingLayer(layerInfo.layerID || layerInfo.name, layerInfo, addedCallback);
         break;
       case 'WMS':
-        this._createWMSLayer(layerInfo);
+        this._createWMSLayer(layerInfo, addedCallback);
         break;
       case 'WMTS':
-        this._createWMTSLayer(layerInfo);
+        this._createWMTSLayer(layerInfo, addedCallback);
         break;
       case 'TILE':
-        this._createDynamicTiledLayer(layerInfo);
+        this._createDynamicTiledLayer(layerInfo, addedCallback);
         break;
       case 'CLOUD':
       case 'XYZ':
         url = mapUrls[layerInfo.layerType];
-        this._createXYZLayer(layerInfo, url);
+        this._createXYZLayer(layerInfo, url, addedCallback);
         break;
       case 'BAIDU':
         this.triggerEvent('notsupportbaidumap', {});
+        addedCallback && addedCallback();
         break;
       case 'MAPBOXSTYLE':
-        this._createMVTBaseLayer(layerInfo); // 添加矢量瓦片服务作为底图
+        this._createMVTBaseLayer(layerInfo, addedCallback); // 添加矢量瓦片服务作为底图
         break;
-    }
-    if (mapInfo.baseLayer) {
-      this._addLayerSucceeded();
     }
   }
 
@@ -556,8 +576,9 @@ export default class WebMapViewModel extends WebMapBase {
         }
 
         if (type === 'tile') {
-          this._initBaseLayer(layer);
-          this._addLayerSucceeded();
+          this._initBaseLayer(layer, () => {
+            this._addLayerSucceeded();
+          });
           if (layer.autoUpdateTime) {
             this._layerTimerList.push(
               setInterval(() => {
@@ -699,7 +720,7 @@ export default class WebMapViewModel extends WebMapBase {
     });
   }
 
-  private _createTiandituLayer(mapInfo: any): void {
+  private _createTiandituLayer(mapInfo: any, addedCallback?: Function): void {
     const tiandituUrls = this._getTiandituUrl(mapInfo);
     const { labelLayerVisible, name, visible } = mapInfo.baseLayer;
     const isLabel = Boolean(labelLayerVisible);
@@ -707,9 +728,10 @@ export default class WebMapViewModel extends WebMapBase {
     const tiandituUrl = tiandituUrls.tiandituUrl;
     this._addBaselayer(tiandituUrl, name, visible);
     isLabel && this._addBaselayer(labelUrl, `${name}-label`, visible);
+    addedCallback && addedCallback();
   }
 
-  private _createWMTSLayer(layerInfo): void {
+  private _createWMTSLayer(layerInfo, addedCallback?: Function): void {
     this.webMapService
       // @ts-ignore
       .getWmtsInfo(layerInfo, this.map.getCRS().epsgCode)
@@ -718,11 +740,12 @@ export default class WebMapViewModel extends WebMapBase {
           const layerId = layerInfo.layerID || layerInfo.name;
           if (result.isMatched) {
             const wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result));
-
             this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom, false, result.bounds);
+            addedCallback && addedCallback();
           }
         },
         error => {
+          addedCallback && addedCallback();
           throw new Error(error);
         }
       )
@@ -736,14 +759,15 @@ export default class WebMapViewModel extends WebMapBase {
       });
   }
 
-  private _createBingLayer(layerName: string, layerInfo: any): void {
+  private _createBingLayer(layerName: string, layerInfo: any, addedCallback?: Function): void {
     const bingUrl =
       'https://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
     // @ts-ignore
     this._addBaselayer([bingUrl], layerName, layerInfo.visible);
+    addedCallback && addedCallback();
   }
 
-  private _createXYZLayer(layerInfo: any, url: string): void {
+  private _createXYZLayer(layerInfo: any, url: string, addedCallback?: Function): void {
     let urlArr: string[] = [];
 
     if (layerInfo.layerType === 'OSM') {
@@ -779,16 +803,18 @@ export default class WebMapViewModel extends WebMapBase {
     }
     const layerId = layerInfo.layerID || layerInfo.name;
     this._addBaselayer(urlArr, layerId, layerInfo.visible);
+    addedCallback && addedCallback();
   }
 
-  private _createDynamicTiledLayer(layerInfo: any): void {
+  private _createDynamicTiledLayer(layerInfo: any, addedCallback?: Function): void {
     const url = layerInfo.url;
     const layerId = layerInfo.layerID || layerInfo.name;
     const { minzoom, maxzoom } = layerInfo;
     this._addBaselayer([url], layerId, layerInfo.visible, minzoom, maxzoom, true);
+    addedCallback && addedCallback();
   }
 
-  private _createWMSLayer(layerInfo: any): void {
+  private _createWMSLayer(layerInfo: any, addedCallback?: Function): void {
     this.webMapService
       // @ts-ignore
       .getWmsInfo(layerInfo)
@@ -797,11 +823,12 @@ export default class WebMapViewModel extends WebMapBase {
           const layerId = layerInfo.layerID || layerInfo.name;
           if (result) {
             const wmsUrl = this._getWMSUrl(layerInfo, result.version);
-
             this._addBaselayer([wmsUrl], layerId, layerInfo.visible);
+            addedCallback && addedCallback();
           }
         },
         error => {
+          addedCallback && addedCallback();
           throw new Error(error);
         }
       )
@@ -2190,7 +2217,6 @@ export default class WebMapViewModel extends WebMapBase {
       for (const layerID in this._legendList) {
         this._sourceListModel.addSourceStyle(layerID, this._legendList[layerID]);
       }
-
       this._rectifyLayersOrder();
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,

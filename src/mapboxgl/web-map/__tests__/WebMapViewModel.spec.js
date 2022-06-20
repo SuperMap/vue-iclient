@@ -191,6 +191,9 @@ document.getElementsByClassName = () => {
 };
 
 describe('WebMapViewModel.spec', () => {
+  beforeEach(() => {
+    jest.setTimeout(30000);
+  });
   afterEach(() => {
     sourceIdMapList = {};
     layerIdMapList = {};
@@ -201,15 +204,26 @@ describe('WebMapViewModel.spec', () => {
   it('test baseLayer layers count maploaded', done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
-      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile,
+      'https://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326/style.json': {
+        "version": 8,
+        "sources": {
+          "raster-tiles": {
+            "type": "raster",
+            "tiles": ['http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'],
+            "tileSize": 256
+          }
+        },
+        "layers": [{
+          "id": "simple-tiles",
+          "type": "raster",
+          "source": "raster-tiles",
+          "minzoom": 0,
+          "maxzoom": 22
+        }]
+      }
     };
     mockFetch(fetchResource);
-    const callback = function (data) {
-      expect(data.layers.length).toBe(webmap_MAPBOXSTYLE_Tile.layers.length);
-      expect(viewModel.expectLayerLen).toBe(2);
-      expect(viewModel.layerAdded).toBe(2);
-      done();
-    };
     const viewModel = new WebMapViewModel(
       commonId,
       { ...commonOption },
@@ -229,7 +243,19 @@ describe('WebMapViewModel.spec', () => {
         tileSize: 256
       }
     );
-    viewModel.on({ addlayerssucceeded: callback });
+    let addStyleSpy;
+    viewModel.on({
+      mapinitialized: (data) => {
+        addStyleSpy = jest.spyOn(data.map, 'addStyle');
+      },
+      addlayerssucceeded: (data) => {
+        expect(addStyleSpy).toHaveBeenCalledTimes(1);
+        expect(data.layers.length).toBe(webmap_MAPBOXSTYLE_Tile.layers.length);
+        expect(viewModel.expectLayerLen).toBe(2);
+        expect(viewModel.layerAdded).toBe(2);
+        done();
+      }
+    });
   });
   it('add uniqueLayer with id is num', async done => {
     const fetchResource = {
@@ -937,10 +963,6 @@ describe('WebMapViewModel.spec', () => {
         wmsCapabilitiesTextWithoutVersion
     };
     mockFetch(fetchResource);
-    const callback = function (data) {
-      expect(data).not.toBeUndefined();
-      done();
-    };
     const viewModel = new WebMapViewModel({
       ...wmsLayer,
       layers: [
@@ -950,6 +972,12 @@ describe('WebMapViewModel.spec', () => {
         }
       ]
     });
+    const addLayerSpy = jest.spyOn(viewModel.map, 'addLayer');
+    const callback = function (data) {
+      expect(addLayerSpy).toHaveBeenCalledTimes(2);
+      expect(data).not.toBeUndefined();
+      done();
+    };
     viewModel.on({ addlayerssucceeded: callback });
   });
 
@@ -985,12 +1013,14 @@ describe('WebMapViewModel.spec', () => {
         wmtsCapabilitiesText
     };
     mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(baseLayers['WMTS'], { ...commonOption });
+    const addLayerSpy = jest.spyOn(viewModel.map, 'addLayer');
     const callback = function (data) {
+      expect(addLayerSpy).toHaveBeenCalledTimes(2);
       expect(data).not.toBeUndefined();
       expect(viewModel.getSourceListModel).not.toBeNull();
       done();
     };
-    const viewModel = new WebMapViewModel(baseLayers['WMTS'], { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
