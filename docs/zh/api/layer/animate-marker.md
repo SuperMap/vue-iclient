@@ -10,19 +10,6 @@
 
 ### Attributes
 
-<<<<<<< HEAD
-| 参数         | 说明       | 类型              | 可选值                                                                          | 默认值            |
-| :----------- | :--------- | :---------------- | :------------------------------------------------------------------------------ | :---------------- |
-| features     | 图层数据   | FeatureCollection | -                                                                               | -                 |
-| type         | 图层类型   | string            | rotatingAperture/haloRing/breathingAperture/diffusedAperture/rotatingTextBorder | breathingAperture |
-| width        | 点宽度     | number            | -                                                                               | -                 |
-| height       | 点高度     | number            | -                                                                               | -                 |
-| colors       | 颜色       | [string, string]  | -                                                                               | -                 |
-| textFontSize | 字体大小   | number            | -                                                                               | 14                |
-| textColor    | 字体颜色   | string            | -                                                                               | #fff              |
-| textField    | 显示字段   | string            | -                                                                               | -                 |
-| fitBounds    | 是否自适应 | boolean           | -                                                                               | false             |
-=======
 | 参数         | 说明       | 类型              | 可选值                                                                                                | 默认值              |
 | :----------- | :--------- | :---------------- | :---------------------------------------------------------------------------------------------------- | :------------------ |
 | features     | 图层数据   | FeatureCollection。参考[OSCHINA](https://www.oschina.net/translate/geojson-spec?cmp) | -                                                                                                     | -                   |
@@ -34,4 +21,4 @@
 | textColor    | 字体颜色   | string            | -                                                                                                     | '#fff'                |
 | textField    | 显示字段   | string            | -                                                                                                     | -                   |
 | fitBounds    | 是否自适应 | boolean           | -                                                                                                     | false               |
->>>>>>> dev
+| mapTarget   | 关联地图容器 ID。如果该参数省略，则默认绑定其父组件为地图组件的 Map 实例或者第一个地图组件的 Map 实例 | string                                                                     | -      | -      |

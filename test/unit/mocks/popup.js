@@ -60,6 +60,9 @@ class Popup extends Evented {
         this.text = text;
         console.log("from popup: " + this.text)
     }
+    setDOMContent() {
+        return this;
+    }
 
 }
 

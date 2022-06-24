@@ -41,6 +41,7 @@ export default class BreathingApertureMarker extends Marker {
       }
     }
   }
+
   _createMarker(): void {
     this.features.features.forEach(point => {
       let markerContainer = document.createElement('div');

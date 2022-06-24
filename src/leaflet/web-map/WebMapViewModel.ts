@@ -1,10 +1,10 @@
 import L from '../leaflet-wrapper';
-import '../../../static/libs/iclient-leaflet/iclient-leaflet.min';
+import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
-import '../../../static/libs/geostats/geostats';
+import 'vue-iclient/static/libs/geostats/geostats';
 import getCenter from '@turf/center';
-import WebMapBase from '../../common/web-map/WebMapBase';
-import { toEpsgCode, getProjection } from '../../common/_utils/epsg-define';
+import WebMapBase from 'vue-iclient/src/common/web-map/WebMapBase';
+import { toEpsgCode, getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 
 interface webMapOptions {
   target?: string;
@@ -92,7 +92,7 @@ export default class WebMapViewModel extends WebMapBase {
   _createMap(mapInfo?): void {
     if (!mapInfo) {
       this.map = L.map(this.target, {
-        center: this.center && (<number[]>this.center).length ? L.latLng(this.center[0], this.center[1]) : [0, 0],
+        center: this.center && (<number[]> this.center).length ? L.latLng(this.center[0], this.center[1]) : [0, 0],
         zoom: this.zoom || 0,
         crs: this.mapOptions.crs || L.CRS.EPSG3857,
         maxZoom: this.mapOptions.maxZoom || 30,
@@ -112,7 +112,7 @@ export default class WebMapViewModel extends WebMapBase {
     let { level, maxZoom, minZoom } = mapInfo;
 
     // zoom & center
-    let zoom = level ? level : 0;
+    let zoom = level || 0;
     zoom = zoom === 0 ? 0 : zoom;
 
     let crs = this._handleMapCrs(mapInfo);
@@ -213,10 +213,9 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  _createMvtLayer(info, layer, featureType) {
+  _createMvtLayer() {
     // TODO MVT
     this._addLayerSucceeded();
-    return;
   }
 
   _createRestMapLayer(restMaps, layer) {
@@ -234,7 +233,7 @@ export default class WebMapViewModel extends WebMapBase {
         return;
       }
       if (layerType === 'mvt') {
-        this._createMvtLayer(features.info, layerInfo, features.featureType);
+        this._createMvtLayer();
         return;
       }
 
@@ -243,7 +242,7 @@ export default class WebMapViewModel extends WebMapBase {
         if (!epsgCode) {
           return;
         }
-        this._unprojectCrs = this.getTransformCoodinatesCRS(projection.split(":")[1]);
+        this._unprojectCrs = this.getTransformCoodinatesCRS(projection.split(':')[1]);
         features = this.transformFeatures(features);
       }
 
@@ -426,12 +425,12 @@ export default class WebMapViewModel extends WebMapBase {
     return this._createThemeLayer('range', layerInfo, features);
   }
 
-  private _createMarkerLayer(features: any): Promise<object> {
-    return new Promise((resolve, reject) => {
+  private _createMarkerLayer(features: any): Promise<Object> {
+    return new Promise(resolve => {
       const layerGroupPromises =
         features &&
         features.map(feature => {
-          return new Promise((resolve, reject) => {
+          return new Promise(resolve => {
             let geomType = feature.geometry.type.toUpperCase();
             let defaultStyle = feature.dv_v5_markerStyle;
             if (geomType === 'POINT' && defaultStyle.text) {
@@ -481,7 +480,7 @@ export default class WebMapViewModel extends WebMapBase {
                 resolve(this._createGeojsonLayer([feature], this._getVectorLayerStyle(defaultStyle)));
               } else if (geomType === 'TEXT') {
                 // @ts-ignore
-                var text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text');
+                let text = new L.supermap.labelThemeLayer(defaultStyle.text + '-text');
 
                 text.style = {
                   fontSize: defaultStyle.font.split(' ')[0],
@@ -566,7 +565,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _addLabelLayer(layerInfo: any, features: any) {
     let { labelStyle, layerID, featureType } = layerInfo;
     // @ts-ignore
-    var label = new L.supermap.labelThemeLayer(layerID + '-label');
+    let label = new L.supermap.labelThemeLayer(layerID + '-label');
     labelStyle.fontSize = 14;
     labelStyle.labelRect = true;
     labelStyle.fontColor = labelStyle.fill;
@@ -645,8 +644,8 @@ export default class WebMapViewModel extends WebMapBase {
     return pointToLayer && this._createGeojsonLayer(features, null, pointToLayer);
   }
 
-  private _createGraphicLayer(layerInfo: any, features: any, textSize?): Promise<object> {
-    return new Promise((resolve, reject) => {
+  private _createGraphicLayer(layerInfo: any, features: any, textSize?): Promise<Object> {
+    return new Promise(resolve => {
       let { style } = layerInfo;
       let { type, imageInfo, radius, url } = style;
       let pointToLayer;
@@ -678,7 +677,7 @@ export default class WebMapViewModel extends WebMapBase {
     });
   }
 
-  private _createVectorLayer(layerInfo: any, features: any): void {
+  private _createVectorLayer(layerInfo: any, features: any) {
     let { style } = layerInfo;
     return this._createGeojsonLayer(features, this._getVectorLayerStyle(style));
   }
@@ -694,7 +693,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createDataflowLayer(layerInfo) {
     this._dataflowFeatureCache = {};
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       this._getDataflowPointLayer(layerInfo).then(pointToLayer => {
         // @ts-ignore
         let dataFlowLayer = L.supermap.dataFlowLayer(layerInfo.wsUrl, {
@@ -823,13 +822,11 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _setLabelOffset(featureType, layerStyle, style) {
     if (featureType === 'POINT') {
-      var pointRadius = layerStyle.pointRadius || 0;
-      var strokeWidth = layerStyle.strokeWidth || 0;
-      var fontSize = parseInt(layerStyle.fontSize) || 0;
+      let pointRadius = layerStyle.pointRadius || 0;
+      let strokeWidth = layerStyle.strokeWidth || 0;
+      let fontSize = parseInt(layerStyle.fontSize) || 0;
       style.labelXOffset = 0;
       style.labelYOffset = layerStyle.unicode ? 20 + fontSize : 25 + (pointRadius + strokeWidth);
-    } else {
-      return;
     }
   }
 
@@ -988,17 +985,17 @@ export default class WebMapViewModel extends WebMapBase {
 
   _getDataflowPointLayer(layerInfo) {
     let { layerType, pointStyle, layerID, themeSetting } = layerInfo;
-    return new Promise((resolve, reject) => {
+    return new Promise(resolve => {
       if (layerType === 'DATAFLOW_HEAT') {
         let { colors, radius, customSettings, weight } = themeSetting;
         let heatLayerInfo = { layerID, themeSetting: { colors, radius, customSettings, weight } };
-        let pointToLayer = (geojson, latlng) => {
+        let pointToLayer = geojson => {
           return this._createHeatLayer(heatLayerInfo, [geojson]);
         };
         resolve(pointToLayer);
-      } else if ('SYMBOL_POINT' === pointStyle.type) {
+      } else if (pointStyle.type === 'SYMBOL_POINT') {
         resolve(this._getSymbolPointLayer(pointStyle, null));
-      } else if ('SVG_POINT' === pointStyle.type) {
+      } else if (pointStyle.type === 'SVG_POINT') {
         if (!this._svgDiv) {
           this._svgDiv = document.createElement('div');
           document.body.appendChild(this._svgDiv);
@@ -1084,7 +1081,7 @@ export default class WebMapViewModel extends WebMapBase {
     const defValue = getProjection(defName);
     // @ts-ignore
     return L.Proj.CRS(toEpsgCode(defValue), {
-      def: defValue,
+      def: defValue
     });
   }
 

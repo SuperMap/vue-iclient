@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import envelope from '@turf/envelope';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
@@ -13,9 +13,9 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
 
   markersElement: HTMLElement[];
 
-  fitBounds: Boolean;
+  fitBounds: boolean;
 
-  constructor(features: FeatureCollection, markersElement: HTMLElement[], fitBounds: Boolean = true) {
+  constructor(features: FeatureCollection, markersElement: HTMLElement[], fitBounds = true) {
     super();
     this.features = features;
     this.markers = [];
@@ -50,6 +50,7 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     this.removed();
     this._createMarker();
   }
+
   private _createMarker() {
     if (
       this.markersElement.length === 0 ||

@@ -2,6 +2,7 @@
 .history
 node_modules/
 /dist/
+/lib/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -15,3 +16,4 @@ yarn-error.log*
 *.njsproj
 *.sln
 package-lock.json
+storybook

@@ -1,10 +1,5 @@
 <template>
-  <div
-    v-show="false"
-    ref="Popup"
-    class="sm-component-identify"
-    :style="[tablePopupBgStyle, getTextColorStyle]"
-  >
+  <div v-show="false" ref="Popup" class="sm-component-identify" :style="[tablePopupBgStyle, getTextColorStyle]">
     <ul
       :class="[
         autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
@@ -20,13 +15,13 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/Theme';
-import MapGetter from '../../../_mixin/map-getter';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import IdentifyViewModel from './IdentifyViewModel';
-import CircleStyle from '../../../_types/CircleStyle';
-import FillStyle from '../../../_types/FillStyle';
-import LineStyle from '../../../_types/LineStyle';
-import { setPopupArrowStyle } from '../../../../common/_utils/util';
+import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
+import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
+import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
+import { setPopupArrowStyle, getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
 
 export default {
   name: 'SmIdentify',
@@ -160,7 +155,7 @@ export default {
     this.changeCursorGrab = () => this.changeCursor('grab', this.map);
     this.setViewModel();
   },
-  removed(layers = this.layersOnMap) {
+  removed() {
     if (this.map) {
       this.map.off('click', this.sourceMapClickFn);
       this.map.off('mousemove', this.changeCursorPointer);
@@ -226,11 +221,11 @@ export default {
     layersMapClickFn(e, fields, feature) {
       let map = e.target;
       // 添加popup
-      this.addPopup(feature, e.lngLat.toArray(), fields);
+      this.addPopup(feature, fields);
       // 高亮过滤(所有字段)
       let filter = ['all'];
       const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
-      feature._vectorTileFeature._keys.forEach((key, index) => {
+      feature._vectorTileFeature._keys.forEach(key => {
         if (filterKeys.indexOf(key.toLowerCase()) === -1 && feature.properties[key] !== undefined) {
           filter.push(['==', key, feature.properties[key]]);
         }
@@ -243,13 +238,13 @@ export default {
       }
     },
     // 过滤数据， 添加popup
-    addPopup(feature, coordinates, fields) {
+    addPopup(feature, fields) {
       this.popupProps = {};
       if (feature.properties) {
         // 过滤字段
         if (fields.length > 0) {
           fields.forEach(field => {
-            if (feature.properties.hasOwnProperty(field)) {
+            if (Object.prototype.hasOwnProperty.call(feature.properties, field)) {
               this.popupProps[field] = feature.properties[field];
             }
           });
@@ -258,6 +253,7 @@ export default {
           this.popupProps = feature.properties;
         }
         // 添加popup
+        const coordinates = getFeatureCenter(feature);
         this.$nextTick(() => {
           this.isHide = false; // 显示内容
           this.viewModel.addPopup(coordinates, this.$refs.Popup);

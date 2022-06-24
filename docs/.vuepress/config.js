@@ -101,7 +101,7 @@ module.exports = {
           {
             text: 'Storybook',
             link: '../../../../../storybook/vue/index.html',
-            target:'_blank'
+            target: '_blank'
           }
         ],
         sidebar: {
@@ -128,13 +128,17 @@ module.exports = {
                     'control/pan',
                     'control/zoom',
                     'control/scale',
+                    'control/compass',
                     'control/measure',
                     'control/draw',
                     'control/query',
                     'control/search',
                     'control/open-file',
                     'control/identify',
-                    'control/layer-manager'
+                    'control/layer-manager',
+                    'control/coordinate-conversion',
+                    'control/fly-to',
+                    'control/layer-color'
                   ]
                 },
                 {
@@ -182,10 +186,20 @@ module.exports = {
                     'common/iframe',
                     'common/text-list',
                     'common/border',
-                    'common/video-player'
+                    'common/video-player',
+                    'common/time-line',
+                    'common/time-range',
+                    'common/time-slider',
+                    'common/attributes',
+                    'common/slideshow'
                   ]
                 }
               ]
+            },
+            {
+              title: '基础类型',
+              collapsable: false,
+              children: ['common-types/common-types']
             }
           ]
         }

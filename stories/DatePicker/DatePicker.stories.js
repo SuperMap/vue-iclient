@@ -2,7 +2,10 @@ import { toI18n } from '../../.storybook/lang';
 import moment from 'moment';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/datePicker' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.datePicker.title')}`,
+  id: 'BasicComponents/datePicker'
+};
 
 export const BasicDatePicker = () => ({
   mixins: [theme],

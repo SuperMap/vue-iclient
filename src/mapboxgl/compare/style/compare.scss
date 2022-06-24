@@ -15,7 +15,7 @@
   & > .mapboxgl-compare {
     z-index: 999;
     user-select: none;
-    background-color: #d9d9d9;
+    background-color: $compare-swiper-background;
     .compare-swiper-vertical,
     .compare-swiper-horizontal {
       box-shadow: inset 0 0 0 2px;
@@ -23,7 +23,7 @@
       margin: 0;
       box-shadow: none;
       border: 2px solid;
-      color: #d9d9d9;
+      color: $compare-swiper-color;
       background-color: $primary-6;
       box-sizing: content-box;
       background-size: contain;

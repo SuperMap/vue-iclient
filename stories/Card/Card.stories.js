@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Basic Components/card'
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.card.title')}`,
+  id: 'BasicComponents/card'
 };
 
 export const card = () => ({
@@ -142,7 +143,7 @@ GridCard.story = {
 export const InnerCard = () => ({
   template: `
   <sm-card title="Card title">
-    <p style="fontSize: 14px;color: rgba(0, 0, 0, 0.85); marginBottom: 16px;fontWeight: 500">
+    <p style="fontSize: 14px; marginBottom: 16px;fontWeight: 500">
       Group title
     </p>
     <sm-card title="Inner card title">

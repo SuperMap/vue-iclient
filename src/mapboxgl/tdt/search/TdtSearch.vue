@@ -67,8 +67,8 @@
           </div>
 
           <component
+            v-else-if="componentId"
             :is="componentId"
-            v-else
             v-bind="componentProps"
             :text-color="textColor"
             v-on="componentListeners"
@@ -79,17 +79,18 @@
   </div>
 </template>
 <script>
-import Theme from '../../../common/_mixin/Theme';
-import MapGetter from '../../_mixin/map-getter';
-import Control from '../../_mixin/control';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import TdtSearchViewModel from './TdtSearchViewModel';
-import PointsResult from '../results/PointsResult';
-import LinesResult from '../results/LinesResult';
-import AreaResult from '../results/AreaResult';
-import StatisticsResult from '../results/StatisticsResult';
-import NothingResult from '../results/NothingResult';
-import SmIcon from '../../../common/icon/Icon';
-import SmInput from '../../../common/input/Input';
+import PointsResult from '../results/PointsResult.vue';
+import LinesResult from '../results/LinesResult.vue';
+import AreaResult from '../results/AreaResult.vue';
+import StatisticsResult from '../results/StatisticsResult.vue';
+import NothingResult from '../results/NothingResult.vue';
+import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 export default {
   name: 'SmTdtSearch',
@@ -130,7 +131,7 @@ export default {
     },
     splitLine: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
@@ -158,13 +159,13 @@ export default {
       return this.searchResult.length > 0;
     },
     showAddress() {
-      return function(name, address) {
+      return function (name, address) {
         return name && address && name.length < 23 && name.length + address.length < 23;
       };
     }
   },
   watch: {
-    data(newVal, oldVal) {
+    data() {
       this.viewModel && this.viewModel.setData(this.data);
     }
   },
@@ -181,7 +182,8 @@ export default {
     this.clearResult(true);
   },
   beforeDestroy() {
-    this.$message.destroy();
+    // @ts-ignore
+    Message.destroy();
     this.marker && this.marker.remove() && (this.marker = null);
     this.$options.removed.call(this);
   },
@@ -205,10 +207,11 @@ export default {
             error && this.searchFailed(error);
           });
       } else {
-        this.$message.warning(this.$t('search.noKey'));
+        // @ts-ignore
+        Message.warning(this.$t('search.noKey'));
       }
     },
-    searchInput(e) {
+    searchInput() {
       if (!this.isInputing) {
         if (this.searchKey) {
           this.isSuggestion = true;
@@ -220,7 +223,8 @@ export default {
     },
     searchButtonClicked() {
       if (!this.searchKey) {
-        this.$message.warning(this.$t('search.noKey'));
+        // @ts-ignore
+        Message.warning(this.$t('search.noKey'));
         return;
       }
       this.getResultDetail(this.searchKey);
@@ -229,7 +233,8 @@ export default {
      * 清除搜索结果。
      */
     clearResult(isClear) {
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       isClear && (this.searchKey = null);
       this.searchResult = [];
       this.prefixType = 'search';
@@ -304,16 +309,19 @@ export default {
       });
     },
     searchSucceeded(result) {
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       this.searchResult = result;
       this.prefixType = 'search';
-      this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
+      // @ts-ignore
+      this.searchResult.length < 1 && Message.warning(this.$t('search.noResult'));
       this.$emit('search-succeeded', { searchResult: this.searchResult });
     },
     searchFailed(e) {
       this.clearResult();
       this.prefixType = 'search';
-      this.$message.warning(this.$t('search.noResult'));
+      // @ts-ignore
+      Message.warning(this.$t('search.noResult'));
       this.$emit('search-failed', e);
     },
     searchSelectedInfo({ data }) {

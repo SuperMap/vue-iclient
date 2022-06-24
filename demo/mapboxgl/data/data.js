@@ -1,10 +1,12 @@
 import * as mapv from 'mapv';
-import smcomponents from '../../../src/mapboxgl';
+import smcomponents from 'vue-iclient/src/mapboxgl';
 import demoData from '../../data/demo.json';
 import earthquake from '../../data/earthquake.json';
 import themeLayerData from '../../data/themeLayerData.json';
 import deckglLayerData from '../../data/sf-bike-parking.json';
 import axios from 'axios';
+import proj4 from 'proj4';
+import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 
 export default {
   data() {
@@ -178,6 +180,122 @@ export default {
     }
     const tdtKey = '1d109683f4d84198e37a38c442d68311';
     return {
+      show: true,
+      timeRange: {
+        data: [
+          '2020-04-25 01:00:00',
+          '2020-04-25 02:00:00',
+          '2020-04-25 03:00:00',
+          '2020-04-25 04:00:00',
+          '2020-04-25 05:00:00',
+          '2020-04-25 06:00:00',
+          '2020-04-25 07:00:00',
+          '2020-04-25 08:00:00',
+          '2020-04-25 09:00:00',
+          '2020-04-25 10:00:00'
+        ]
+        // backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        // borderColor: '#91A4C4',
+        // fillerColor: '#5A9B9C'
+      },
+      timePlayer: {
+        type: 'TimePlayer',
+        formatter: 'MM-DD HH:mm:ss',
+        playInterval: 3000,
+        autoPlay: false,
+        loop: true,
+        timeType: 'time',
+        // duration: 6000,
+        data: [1599810915, 1599810920, 1599810925, 1599810930, 1599810935, 1599810940, 1599810945],
+        lineStyle: { height: '6px', type: 'solid' },
+        label: {
+          show: true,
+          interval: 'auto',
+          fontSize: 12,
+          fontWeight: 'normal',
+          fontFamily: '微软雅黑',
+          backgroundColor: 'transparent'
+        },
+        checkpointStyle: {},
+        themeStyle: {}
+      },
+      timeLine: {
+        formatter: 'MM-DD HH:mm:ss',
+        playInterval: 3000,
+        autoPlay: false,
+        timeType: 'customize',
+        data: [
+          {
+            label: '3月15日数据',
+            value: '820151935',
+            tooltip: {
+              formatter: function(params) {
+                return '3月15日数据';
+              }
+            }
+          },
+          {
+            label: '4月1日数据',
+            value: 'http://localhost:8080/static/templates/ncp-global/data/0401-world.json'
+          },
+          {
+            label: '4月15日数据',
+            value: 'http://localhost:8080/static/templates/ncp-global/data/0415-world.json'
+          }
+        ],
+        lineStyle: {
+          width: 2,
+          type: 'solid'
+        },
+        label: {
+          interval: 'auto',
+          fontSize: 14,
+          fontWeight: 'normal',
+          fontFamily: '微软雅黑',
+          backgroundColor: 'transparent',
+          formatter(val, index) {
+            const data = [
+              {
+                label: '3月15日数据',
+                value: '820151935'
+              },
+              {
+                label: '4月1日数据',
+                value: 'http://localhost:8080/static/templates/ncp-global/data/0401-world.json'
+              },
+              {
+                label: '4月15日数据',
+                value: 'http://localhost:8080/static/templates/ncp-global/data/0415-world.json'
+              }
+            ];
+            return data[index].label;
+          }
+        },
+        itemStyle: {},
+        controlStyle: {
+          show: true
+        },
+        checkpointStyle: {},
+        field: 'SMID'
+      },
+      formats: {
+        _4490_: {
+          format(coor) {
+            const sourceProjection = getProjection('EPSG:4326');
+            const toProjection = getProjection('EPSG:4490');
+            const [lng, lat] = proj4(sourceProjection, toProjection, [coor.lng, coor.lat]);
+            return `${lng}-${lat}`;
+          },
+          toWGS84(val) {
+            const arr = val.split('-');
+            let [lng, lat] = arr;
+            const sourceProjection = getProjection('EPSG:4490');
+            const toProjection = getProjection('EPSG:4326');
+            [lng, lat] = proj4(sourceProjection, toProjection, [Number(lng), Number(lat)]);
+            return { lng, lat };
+          }
+        }
+      },
       componentType: 'map-sub-components',
       mapID: '801571284',
       layerStyles: {
@@ -281,12 +399,46 @@ export default {
         // center: [-122.430844, 37.772276],
         // zoom: 12,
       },
+      mapOptions1: {
+        style: {
+          version: 8,
+          sources: {
+            'iserver-tiles': {
+              type: 'raster',
+              tiles: [
+                'http://192.168.11.94:8090/iserver/services/map-test4490/rest/maps/Countries?prjCoordSys=%7B%22epsgCode%22:4326%7D'
+              ],
+              tileSize: 256,
+              prjCoordSys: {
+                epsgCode: 4326
+              },
+              rasterSource: 'iserver',
+              proxy: null
+            }
+          },
+          layers: [
+            {
+              id: 'simple-tiles',
+              type: 'raster',
+              source: 'iserver-tiles',
+              minzoom: 0,
+              maxzoom: 22
+            }
+          ]
+        },
+        center: [104.2945, 33.0076],
+        zoom: 3,
+        bearing: 0,
+        pitch: 0,
+        rasterTileSize: 256,
+        crs: 'EPSG:4326'
+      },
       webMapOptions: {
         server: 'http://support.supermap.com.cn:8092/'
       },
       chartTitle: '',
       dataset: new smcomponents.commontypes.iPortalDataParameter({
-        url: "https://iportal.supermap.io/iportal/web/datas/676516522",
+        url: 'https://iportal.supermap.io/iportal/web/datas/676516522',
         maxFeatures: 20
       }),
       // echarts中涉及到超图数据series和坐标轴的字段的配置
@@ -409,63 +561,63 @@ export default {
       },
       tabPosition: 'top',
       treeDatas: [
-          {
-              title: '直辖市',
-              children: [
-                  {
-                      title: '上海',
-                      mapInfo: {
-                          serverUrl: 'https://www.supermapol.com/',
-                          mapId: 394538195,
-                          layerFilter: function(layer) {
-                              if (layer.name === '上海_县级行政区划图@公众数据') {
-                                  return true;
-                              }
-                              return false;
-                          }
-                      }
-                  },
-                  {
-                      title: '天津',
-                      mapInfo: {
-                          serverUrl: 'https://www.supermapol.com/',
-                          mapId: 849848633,
-                          layerFilter: function(layer) {
-                              if (layer.name === '天津_县级行政区划图@公众数据') {
-                                  return true;
-                              }
-                              return false;
-                          }
-                      }
-                  },
-                  {
-                      title: '北京',
-                      mapInfo: {
-                          serverUrl: 'https://www.supermapol.com/',
-                          mapId: 1837435007,
-                          layerFilter: function(layer) {
-                              if (layer.name === '北京_县级行政区划图@公众数据') {
-                                  return true;
-                              }
-                              return false;
-                          }
-                      }
-                  },
-                  {
-                      title: '重庆',
-                      mapInfo: {
-                          serverUrl: 'https://www.supermapol.com/',
-                          mapId: 1589273415,
-                          layerFilter: function(layer) {
-                              if (layer.name === '重庆_县级行政区划图@公众数据') {
-                                  return true;
-                              }
-                              return false;
-                          }
-                      }
+        {
+          title: '直辖市',
+          children: [
+            {
+              title: '上海',
+              mapInfo: {
+                serverUrl: 'https://www.supermapol.com/',
+                mapId: 394538195,
+                layerFilter: function(layer) {
+                  if (layer.name === '上海_县级行政区划图@公众数据') {
+                    return true;
                   }
-              ]
-          }
+                  return false;
+                }
+              }
+            },
+            {
+              title: '天津',
+              mapInfo: {
+                serverUrl: 'https://www.supermapol.com/',
+                mapId: 849848633,
+                layerFilter: function(layer) {
+                  if (layer.name === '天津_县级行政区划图@公众数据') {
+                    return true;
+                  }
+                  return false;
+                }
+              }
+            },
+            {
+              title: '北京',
+              mapInfo: {
+                serverUrl: 'https://www.supermapol.com/',
+                mapId: 1837435007,
+                layerFilter: function(layer) {
+                  if (layer.name === '北京_县级行政区划图@公众数据') {
+                    return true;
+                  }
+                  return false;
+                }
+              }
+            },
+            {
+              title: '重庆',
+              mapInfo: {
+                serverUrl: 'https://www.supermapol.com/',
+                mapId: 1589273415,
+                layerFilter: function(layer) {
+                  if (layer.name === '重庆_县级行政区划图@公众数据') {
+                    return true;
+                  }
+                  return false;
+                }
+              }
+            }
+          ]
+        }
       ],
       mapSwitcherData: {
         select: '',
@@ -484,33 +636,45 @@ export default {
       }
     };
   },
+  beforeMount() {
+    this.changeStyle3();
+  },
+  mounted() {
+    // setTimeout(() => {
+    //   this.show = false;
+    // }, 5000);
+  },
   methods: {
+    log(val) {
+      console.log(val);
+    },
     changeStyle() {
       smcomponents.setTheme('dark');
-      document.getElementsByTagName('body')[0].style.background = '#000';
     },
     changeStyle1() {
       smcomponents.setTheme('light');
-      document.getElementsByTagName('body')[0].style.background = '#fff';
     },
     changeStyle2() {
       let transparent = {
-        style: 'dark',
-        textColor: '#eee',
-        background: 'rgba(0,0,0,0)',
-        colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad', '#96dee8']
+        style: 'light',
+        textColor: '#000',
+        background: 'transparent',
+        componentBackground: 'pink',
+        collapseCardHeaderBg: 'red',
+        collapseCardBackground: 'green',
+        hoverColor: 'blue',
+        clickColor: 'grey',
+        selectedColor: 'black'
       };
       smcomponents.setTheme(transparent);
-      document.getElementsByTagName('body')[0].style.background = 'rgba(0, 0, 0, 0.9)';
     },
     changeStyle3() {
       smcomponents.setTheme('warmGray');
-      document.getElementsByTagName('body')[0].style.background = '#191515';
     },
     mapLoaded(e) {
       console.log(e);
       const _this = this;
-      axios.get('https://iclient.supermap.io/examples/data/fire.json').then((response) => {
+      axios.get('https://iclient.supermap.io/examples/data/fire.json').then(response => {
         _this.fireFeatures = response.data;
       });
     },

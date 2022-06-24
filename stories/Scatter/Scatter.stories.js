@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Chart Components/scatter'
+  title: `${toI18n('chartComponent.title')}/${toI18n('chartComponent.scatter.title')}`,
+  id: 'ChartComponents/scatter'
 };
 
 export const Scatter = () => ({
@@ -70,5 +71,5 @@ export const Scatter = () => ({
   />`
 });
 Scatter.story = {
-  name: toI18n('chartComponent.scatter.scatter')
+  name: toI18n('chartComponent.basic')
 };

@@ -1,0 +1,23 @@
+{
+  "extent": {
+    "leftBottom": { "x": -20037508.3427892, "y": -20037508.3427892 },
+    "rightTop": { "x": 20037508.3427892, "y": 20037508.3427892 }
+  },
+  "maxScale": "1:18055.99093350616",
+  "level": 1,
+  "center": { "x": 8586143.281685632, "y": 356074.8698694445 },
+  "baseLayer": {
+    "layerType": "TIANDITU_TER_3857",
+    "labelLayerVisible": true,
+    "tk": "1d109683f4d84198e37a38c442d68311",
+    "name": "天地图地形"
+  },
+  "layers": [],
+  "description": "",
+  "projection": "EPSG:3857",
+  "minScale": "1:295829355.4545649",
+  "title": "无标题tianditu",
+  "version": "2.3.0",
+  "rootUrl": "http://support.supermap.com.cn:8090/iportal/services/../",
+  "mapParams": { "title": "无标题tianditu", "description": "" }
+}

@@ -1,4 +1,4 @@
-# 多行文本
+# 文本列表
 
 ```vue
 <sm-text-list
@@ -25,30 +25,32 @@
 
 ### Attributes
 
-| 参数                | 说明                          | 类型                                                                                                                                                                                                                                          | 可选值 | 默认值    |
-| :------------------ | :---------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- | :-------- |
-| content             | 显示内容（与 dataset 二选一） | object[]                                                                                                                                                                                                                                      | -      | -         | - |
-| dataset             | 数据来源（与 content 二选一） | [iPortalDataParameter](/zh/api/common-types/common-types.md#iportaldataparameter) \| [RestDataParameter](/zh/api/common-types/common-types.md#restdataparameter) \| [GeoJSONParameter](/zh/api/common-types/common-types.md#geojsonparameter) | -      | -         |
-| header              | 表头                          | string[]                                                                                                                                                                                                                                      | -      | -         |
-| rows                | 显示行数                      | string                                                                                                                                                                                                                                        | -      | 6         |
-| autoRolling         | 逐条滚动                      | boolean                                                                                                                                                                                                                                       | -      | false     |
-| fontSize            | 字体大小                      | number \| string                                                                                                                                                                                                                              | -      | -         |
-| autoResize          | 自适应大小                    | string                                                                                                                                                                                                                                        | -      | true      |
-| fields              | 字段名                        | string[]                                                                                                                                                                                                                                      | -      | []        |
-| columnWidths        | 列表宽度                      | number[]                                                                                                                                                                                                                                      | -      | []        |
-| rowStyle            | 行样式                        | <a href="#rowstyle">rowStyle </a>                                                                                                                                                                                                             | -      | []        |
-| headerStyle         | 表头样式                      | <a href="#headerstyle">headerStyle </a>                                                                                                                                                                                                       | -      | []        |
-| thresholdsStyle     | 阈值样式                      | <a href="#thresholdsstyle">ThresholdsStyle </a>                                                                                                                                                                                               | -      | []        |
-| columns             | 排序和前后缀                  | <a href="#columns">columns </a>                                                                                                                                                                                                               | -      | []        |
-| highlightOptions    | 需要高亮的行的 index 的列表   | array                                                                                                                                                                                                                                         | -      | []        |
-| highlightCurrentRow | 是否开启高亮当前行            | boolean                                                                                                                                                                                                                                       | -      | true      |
-| highlightColor      | 高亮颜色配置                  | string \| function                                                                                                                                                                                                                            | -      | #808080cc |
+| 参数                | 说明                                                           | 类型                                                                                                                                                                                                                                                | 可选值 | 默认值  |
+| :------------------ | :------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- | :------ |
+| content             | 展示数据                                                       | object[ ]                                                                                                                                                                                                                                           | -      | -       | - |
+| dataset             | 数据来源。若 content 和 dataset 都存在时，content 的优先级较大 | [iPortalDataParameter](/zh/api/common-types/common-types.md#iportaldataparameter) \| [iServerDataParameter](/zh/api/common-types/common-types.md#iserverdataparameter) \| [GeoJSONParameter](/zh/api/common-types/common-types.md#geojsonparameter) | -      | -       |
+| header              | 表头                                                           | string[ ]                                                                                                                                                                                                                                           | -      | -       |
+| rows                | 显示行数                                                       | string                                                                                                                                                                                                                                              | -      | 6       |
+| autoRolling         | 逐条滚动                                                       | boolean                                                                                                                                                                                                                                             | -      | false   |
+| fontSize            | 字体大小                                                       | number \| string                                                                                                                                                                                                                                    | -      | -       |
+| autoResize          | 自适应大小                                                     | string                                                                                                                                                                                                                                              | -      | true    |
+| fields              | 字段名                                                         | string[ ]                                                                                                                                                                                                                                           | -      | -       |
+| columnWidths        | 列表宽度                                                       | number[ ]                                                                                                                                                                                                                                           | -      | -       |
+| rowStyle            | 行样式                                                         | <a href="#rowstyle">rowStyle </a>                                                                                                                                                                                                                   | -      | -       |
+| headerStyle         | 表头样式                                                       | <a href="#headerstyle">headerStyle </a>                                                                                                                                                                                                             | -      | -       |
+| thresholdsStyle     | 阈值样式                                                       | <a href="#thresholdsstyle">ThresholdsStyle </a>                                                                                                                                                                                                     | -      | -       |
+| columns             | 排序和前后缀                                                   | <a href="#columns">columns </a>                                                                                                                                                                                                                     | -      | -       |
+| highlightOptions    | 需要高亮的行索引列表                                    | array                                                                                                                                                                                                                                               | -      | -       |
+| highlightCurrentRow | 是否开启高亮当前行                                             | boolean                                                                                                                                                                                                                                             | -      | true    |
+| highlightColor      | 高亮颜色                                                   | string \| function                                                                                                                                                                                                                                  | -      | #b9b9b9 |
+
+> 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[定时刷新混入参数](/zh/api/mixin/mixin.md#timer)
 
 ### headerStyle
 
 | 参数               | 说明               | 类型    | 可选值 | 默认值 |
 | :----------------- | :----------------- | :------ | :----- | :----- |
-| show               | 是否显示 header    | boolean | -      | true   | - |
+| show               | 是否显示表头    | boolean | -      | true   | - |
 | color              | 字体颜色           | string  | -      | -      | - |
 | background         | 背景颜色           | string  | -      | -      | - |
 | sortBtnSelectColor | 排序图标选中的颜色 | string  | -      | -      | - |
@@ -61,7 +63,7 @@
 | :-------- | :------------------------------------------- | :----- | :----- | :----- |
 | oddStyle  | 奇数行样式（目前只支持配置 background 属性） | object | -      | -      | - |
 | evenStyle | 偶数行样式（目前只支持配置 background 属性） | object | -      | -      | - |
-| height    | 行的高度                                     | number | -      | -      | - |
+| height    | 行高度                                     | number | -      | -      | - |
 
 ### ThresholdsStyle
 
@@ -125,11 +127,17 @@
 // （1）sort 属性可选项： true | false | undefined
 // （2）defaultSortType 属性可选项：'ascend' | 'descend' | 'none'
 // （3）fixInfo 属性配置前后缀
+// （4）slots 可以通过该属性配置支持 slot 的属性，如 slots: { customRender: 'XXX'}
+//            目前支持slot: 
+//            customRender: 生成复杂单元格的slot
 [
   {
     "header": "服务",
     "field": "name",
     "sort": true,
+    "slots": {
+      "customRender": "name"
+    },
     "defaultSortType": "none",
     "fixInfo": {
       "prefix": "",

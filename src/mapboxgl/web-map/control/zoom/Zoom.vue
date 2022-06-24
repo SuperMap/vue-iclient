@@ -1,6 +1,6 @@
 <template>
   <div class="sm-component-zoom">
-    <div class="sm-component-zoom__buttons" :style="[collapseCardHeaderBgStyle, getTextColorStyle]">
+    <div class="sm-component-zoom__buttons" :style="[collapseCardHeaderBgStyle, headingTextColorStyle]">
       <sm-button
         class="sm-component-zoom__button sm-component-zoom__button--zoomin"
         :disabled="!canZoomIn"
@@ -37,12 +37,12 @@
   </div>
 </template>
 <script>
-import Theme from '../../../../common/_mixin/Theme';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
-import SmButton from '../../../../common/button/Button';
-import SmSlider from '../../../../common/slider/Slider';
+import SmButton from 'vue-iclient/src/common/button/Button.vue';
+import SmSlider from 'vue-iclient/src/common/slider/Slider.vue';
 
 export default {
   name: 'SmZoom',
@@ -83,7 +83,7 @@ export default {
       }
       this.setZoom(this.zoomPosition);
     },
-    zoomIn(e) {
+    zoomIn() {
       const mapNotLoaded = this.mapNotLoadedTip();
       if (mapNotLoaded) {
         return;
@@ -98,7 +98,7 @@ export default {
       }
       this.viewModel.zoomIn();
     },
-    zoomOut(e) {
+    zoomOut() {
       const mapNotLoaded = this.mapNotLoadedTip();
       if (mapNotLoaded) {
         return;

@@ -1,11 +1,15 @@
 {
   "customizeTheme": {
+    "title": "设计",
+    "theme": "主题",
+    "customTheme": "自定义主题",
     "default": "默认",
     "custom": "自定义",
     "dark": "深色主题",
     "light": "浅色色主题"
   },
   "basicComponent": {
+    "title": "基础组件",
     "basic": "基本用法",
     "custom": "自定义",
     "disabled": "不可用",
@@ -14,12 +18,17 @@
       "type": "类型",
       "autosetFontSize": "自动调整字符大小"
     },
-    "breadcrum": {
+    "breadcrumb": {
+      "title": "Breadcrumb 面包屑",
       "attrSeparator": "属性分隔符",
       "componentSeparator": "组件分隔符",
       "withIcon": "带有图标的"
     },
+    "border": {
+      "title": "Border 边框"
+    },
     "button": {
+      "title": "Button 按钮",
       "type": "类型",
       "group": "组合",
       "ghost": "幽灵",
@@ -29,6 +38,7 @@
       "cancel": "取消"
     },
     "checkbox": {
+      "title": "Checkbox 多选框",
       "checkAll": "全选",
       "group": "组合",
       "controlled": "受控的"
@@ -50,15 +60,21 @@
       "title": "Empty 空状态",
       "noDescription": "无描述"
     },
+    "iframe": {
+      "title": "Iframe"
+    },
     "icon": {
+      "title": "Icon 图标",
       "size": "大小",
       "color": "颜色"
     },
     "image": {
+      "title": "Image 图片",
       "repeat": "重复",
       "link": "链接"
     },
     "indicator": {
+      "title": "Indicator 指标",
       "size": "大小",
       "style": "样式",
       "separator": "分隔符",
@@ -80,6 +96,9 @@
       "textArea": "文本域",
       "passwordBox": "密码框"
     },
+    "layout": {
+      "title": "Layout 布局"
+    },
     "message": {
       "title": "Message 全局提示",
       "loading": "加载中",
@@ -92,7 +111,7 @@
       "confirmationModalDialog": "确认对话框",
       "informationModalDialog": "信息提示",
       "customizeFooterProps": "自定义页脚按钮属性",
-      "manualToUpdateDestroy": "手动跟新和移除",
+      "manualToUpdateDestroy": "手动更新和移除",
       "asynchronouslyClose": "异步关闭",
       "confirmationModalDialogPromise": "确认对话框(promise)",
       "customFooter": "自定义页脚",
@@ -101,6 +120,7 @@
       "destroyModalDialog": "销毁确认对话框"
     },
     "pagination": {
+      "title": "Pagination 分页",
       "more": "更多",
       "changer": "改变",
       "jumper": "跳转",
@@ -138,6 +158,7 @@
       "customSelectionRender": "定制回填内容"
     },
     "steps": {
+      "title": "Steps 步骤条",
       "mini": "迷你版",
       "withIcon": "带图标",
       "switchStep": "步骤切换",
@@ -158,6 +179,7 @@
       "loading": "加载中"
     },
     "tabs": {
+      "title": "Tabs 标签页",
       "icon": "图标",
       "slide": "滑动",
       "extraContent": "附加内容",
@@ -169,10 +191,12 @@
       "customizedTrigger": "自定义新增页签触发器"
     },
     "text": {
+      "title": "Text 文本",
       "size": "大小",
       "link": "链接"
     },
     "timeText": {
+      "title": "TimeText 时间文本",
       "size": "大小"
     },
     "transfer": {
@@ -188,9 +212,11 @@
       "adjustPlacementAutomatically": "自动调整位置"
     },
     "videoPlayer": {
+      "title": "VideoPlayer 视频播放器",
       "controlBar": "控制条"
     },
     "slider": {
+      "title": "Slider 滑动输入条",
       "icon": "图标",
       "vertical": "竖直",
       "reverse": "反向",
@@ -200,6 +226,7 @@
       "controlTip": "控制提示"
     },
     "table": {
+      "title": "Table 表格",
       "cellAutoEllipsis": "单元格自动省略",
       "border": "带边框",
       "columnRowMerge": "行/列合并",
@@ -207,12 +234,14 @@
       "filterAndSort": "筛选和排序"
     },
     "collapse": {
+      "title": "Collapse 折叠面板",
       "accordion": "手风琴",
       "nestedPanel": "面板嵌套",
       "customPanel": "自定义面板",
       "hideArrow": "隐藏箭头"
     },
     "notification": {
+      "title": "Notification 通知提醒框",
       "customStyle": "自定义样式",
       "position": "位置",
       "icon": "带有图标的通知提醒框",
@@ -221,6 +250,7 @@
       "updateInfoContent": "更新消息内容"
     },
     "spin": {
+      "title": "Spin 加载中",
       "insideContainer": "容器中",
       "customizedDescription": "自定义文案",
       "customIndicator": "自定义指示标",
@@ -229,6 +259,7 @@
       "delay": "延迟"
     },
     "card": {
+      "title": "Card 卡片",
       "customizedContent": "自定义内容",
       "loadingCard": "预加载",
       "simple": "简洁",
@@ -239,6 +270,7 @@
       "WithTabs": "带页签的"
     },
     "tree": {
+      "title": "Tree 树形控件",
       "controlled": "受控操作",
       "replaceFields": "自定义字段",
       "draggable": "拖拽",
@@ -248,14 +280,49 @@
       "loadDataAsynchronously": "异步加载数据",
       "searchable": "可搜索",
       "customizeCollapseExpandIcon": "自定义展开/折叠图标"
+    },
+    "timeSlider": {
+      "title": "TimeSlider 时间轴（条）",
+      "style": "不同样式",
+      "duration": "时长"
+    },
+    "timeLine": {
+      "title": "TimeLine 时间轴（点）",
+      "style": "不同样式",
+      "formatter": "格式"
+    },
+    "timeRange": {
+      "title": "TimeRange 时间轴（段）",
+      "style": "不同样式"
+    },
+    "slideshow": {
+      "title": "Slideshow 幻灯片",
+      "switchEffect": "切换效果",
+      "vertical": "竖直方向",
+      "navigationButtons": "前进后退按钮",
+      "pagination": "分页器",
+      "scrollbar": "滚动条"
+    },
+    "nav": {
+      "title": "Nav 导航栏"
+    },
+    "textList": {
+      "title": "TextList 文本列表",
+      "scrollOneByOne": "逐条滚动",
+      "customCell": "自定义单元格"
     }
   },
   "chartComponent": {
+    "title": "图表组件",
+    "basic": "基本用法",
     "liquidfill": {
+      "title": "Liquidfill 水球",
       "type": "波浪",
-      "color": "颜色"
+      "color": "颜色",
+      "formatter": "格式"
     },
     "progress": {
+      "title": "Progress 进度条",
       "color": "颜色",
       "number": "数值",
       "state": "状态",
@@ -263,7 +330,7 @@
       "width": "宽度"
     },
     "charBar": {
-      "bar": "柱状图",
+      "title": "Bar 柱状图",
       "barSquare": "正方体柱状图",
       "barRectangle": "长方体柱状图",
       "barCylinder": "圆柱体柱状图",
@@ -271,49 +338,113 @@
       "rankXbar": "排名条形图"
     },
     "scatter": {
-      "scatter": "散点图"
+      "title": "Scatter 散点图"
     },
     "line": {
-      "line": "折线图"
+      "title": "Line 折线图"
     },
     "radar": {
-      "radar": "雷达图"
+      "title": "Radar 雷达图"
     },
     "pie": {
-      "pie": "饼图",
+      "title": "Pie 饼图",
       "rose": "南丁格尔玫瑰图",
       "ring": "环形图",
       "shineRing": "发光环形图"
     },
     "gauge": {
-      "gauge": "仪表盘",
+      "title": "Gauge 仪表盘",
       "markGauge": "刻度仪表盘",
       "shineGauge": "发光仪表盘",
       "spinGauge": "旋转仪表盘"
     }
   },
   "mapComponent": {
-    "iportalMap": "iPortal 地图"
+    "title": "地图组件",
+    "webMap": "WebMap 地图",
+    "iportalMap": "iPortal 地图",
+    "drillMap": "钻取地图",
+    "diffrentMap": "多副地图",
+    "goBackMap": "返回按钮slots"
   },
   "gisComponent": {
-    "layerList": "图层列表",
-    "expandLayerList": "二级列表",
-    "layerManager": "图层管理",
-    "miniMap": "鹰眼图",
-    "measure": "量算",
-    "openFile": "打开文件",
-    "identify": "点选查询",
-    "zoom": "缩放",
-    "showZoom": "展示级别",
-    "slider": "打开滑动条",
-    "compare": "卷帘",
-    "pan": "平移",
-    "legend": "图例",
-    "panlLegend": "详细图例",
-    "query": "数据查询",
-    "poi": "POI 搜索",
-    "tdtPoi": "天地图-POI 搜索",
-    "tdtMapSwitcher": "天地图-地图切换",
-    "TdtRoute": "天地图-路线规划"
+    "title": "地图子组件",
+    "basic": "基本用法",
+    "layerList": {
+      "title": "LayerList 图层列表",
+      "expandLayerList": "二级列表"
+    },
+    "layerColor": {
+      "title": "LayerColor 图层颜色"
+    },
+    "attributes": {
+      "title": "Attributes 属性表"
+    },
+    "layerManager": {
+      "title": "LayerManager 图层管理"
+    },
+    "miniMap": {
+      "title": "MiniMap 鹰眼图"
+    },
+    "measure": {
+      "title": "Measure 量算"
+    },
+    "openFile": {
+      "title": "OpenFile 打开文件"
+    },
+    "identify": {
+      "title": "Identify 点选查询"
+    },
+    "zoom": {
+      "title": "Zoom 缩放",
+      "showZoom": "展示级别",
+      "slider": "打开滑动条"
+    },
+    "compare": {
+      "title": "Compare 卷帘"
+    },
+    "pan": {
+      "title": "Pan 平移"
+    },
+    "legend": {
+      "title": "Legend 图例",
+      "panlLegend": "详细图例"
+    },
+    "query": {
+      "title": "Query 数据查询"
+    },
+    "poi": {
+      "title": "POISearch POI搜索"
+    },
+    "tdtPoi": {
+      "title": "TianDiTu POISearch 天地图POI搜索"
+    },
+    "tdtMapSwitcher": {
+      "title": "TianDiTu MapSwitcher 天地图地图切换"
+    },
+    "tdtRoute": {
+      "title": "TianDiTu Route 天地图路线规划"
+    },
+    "coordinateCoversion": {
+      "title": "Coordinate Coversion 坐标转换"
+    },
+    "fillExtrusion": {
+      "title": "FillExtrusion 三维拉伸"
+    },
+    "fillExtrusionLayer": {
+      "title": "FillExtrusionLayer 三维拉伸图层"
+    },
+    "compass": {
+      "title": "Compass 指南针",
+      "changeComparePitch": "改变指南针俯仰角度"
+    },
+    "draw": {
+      "title": "Draw 绘制"
+    },
+    "flyTo": {
+      "title": "FlyTo 飞行定位",
+      "manualSwitch": "手动切换",
+      "hidenController": "隐藏控制器"
+    }
   }
 }

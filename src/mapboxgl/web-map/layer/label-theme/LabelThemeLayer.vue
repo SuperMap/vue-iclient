@@ -1,11 +1,12 @@
 <script>
-import MapGetter from '../../../_mixin/map-getter';
-import Layer from '../../../_mixin/layer';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
+import themeLayerEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/theme-layer';
 import LabelThemeLayerViewModel from './LabelThemeLayerViewModel.js';
 
 export default {
   name: 'SmLabelThemeLayer',
-  mixins: [MapGetter, Layer],
+  mixins: [MapGetter, Layer, themeLayerEvents],
   props: {
     layerName: {
       type: String,
@@ -41,9 +42,19 @@ export default {
   },
   created() {
     this.viewModel = new LabelThemeLayerViewModel(this.$props);
+    this.viewModel.on('layerchange', this.bindEvents);
+  },
+  methods: {
+    bindEvents() {
+      this.bindLayerEvents();
+      this.$emit('load', this.viewModel.themeLayer, this.map);
+    }
+  },
+  removed() {
+    this.viewModel.off('layerChange', this.bindEvents);
   },
   loaded() {
-    this.$emit('load', this.viewModel.themeLayer, this.map);
+    this.bindEvents();
   },
   render() {}
 };

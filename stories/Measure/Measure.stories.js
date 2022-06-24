@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/measure'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.measure.title')}`,
+  id: 'GISComponents/measure'
 };
 export const Measure = () => ({
   mixins: [theme],
@@ -13,5 +14,5 @@ export const Measure = () => ({
     `
 });
 Measure.story = {
-  name: toI18n('gisComponent.measure')
+  name: toI18n('gisComponent.basic')
 };

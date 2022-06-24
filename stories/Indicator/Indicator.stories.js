@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/indicator' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.indicator.title')}`,
+  id: 'BasicComponents/indicator'
+};
 
 export const BasicIndicator = () => ({
   mixins: [theme],
@@ -69,6 +72,11 @@ export const AnimatedIndicator = () => ({
       title: '建筑高度',
       unit: '米'
     };
+  },
+  mounted() {
+    setInterval(() => {
+      this.num = Math.floor(Math.random() * 10000);
+    }, 2000);
   },
   template: `
   <sm-indicator 

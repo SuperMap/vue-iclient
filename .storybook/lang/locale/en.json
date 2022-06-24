@@ -1,11 +1,15 @@
 {
   "customizeTheme": {
+    "title": "Design",
+    "theme": "Theme",
+    "customTheme": "Custom Theme",
     "default": "Default",
     "custom": "Custom",
     "dark": "Dark Theme",
     "light": "Light Theme"
   },
   "basicComponent": {
+    "title": "Basic Components",
     "basic": "Basic Usage",
     "custom": "Custom",
     "disabled": "Disabled",
@@ -14,12 +18,17 @@
       "type": "Type",
       "autosetFontSize": "Autoset Font Size"
     },
-    "breadcrum": {
+    "breadcrumb": {
+      "title": "Breadcrum",
       "attrSeparator": "Attribute Separator",
       "componentSeparator": "Component Separator",
       "withIcon": "With an Icon"
     },
+    "border": {
+      "title": "Border"
+    },
     "button": {
+      "title": "Button",
       "type": "Type",
       "group": "Group",
       "ghost": "Ghost",
@@ -29,6 +38,7 @@
       "cancel": "cancel"
     },
     "checkbox": {
+      "title": "Checkbox",
       "checkAll": "Check all",
       "group": "Group",
       "controlled": "Controlled"
@@ -50,15 +60,21 @@
       "title": "Empty",
       "noDescription": "No description"
     },
+    "iframe": {
+      "title": "Iframe"
+    },
     "icon": {
+      "title": "Icon",
       "size": "Size",
       "color": "Color"
     },
     "image": {
+      "title": "image",
       "repeat": "Repeat",
       "link": "Link"
     },
     "indicator": {
+      "title": "Indicator",
       "size": "Size",
       "style": "Style",
       "separator": "Separator",
@@ -79,6 +95,9 @@
       "size": "Size",
       "textArea": "TextArea",
       "passwordBox": "Password Box"
+    },
+    "layout": {
+      "title": "Layout"
     },
     "message": {
       "title": "Message",
@@ -101,6 +120,7 @@
       "destroyModalDialog": "Destroy confirmation modal dialog"
     },
     "pagination": {
+      "title": "Pagination",
       "more": "More",
       "changer": "Changer",
       "jumper": "Jumper",
@@ -138,6 +158,7 @@
       "customSelectionRender": "Custom selection render"
     },
     "steps": {
+      "title": "Steps",
       "mini": "Mini",
       "withIcon": "With an Icon",
       "switchStep": "Switch Step",
@@ -158,6 +179,7 @@
       "loading": "Loading"
     },
     "tabs": {
+      "title": "Tabs",
       "icon": "Icon",
       "slide": "Slide",
       "extraContent": "Extra Content",
@@ -169,10 +191,12 @@
       "customizedTrigger": "Customized trigger of new tab"
     },
     "text": {
+      "title": "Text",
       "size": "Size",
       "link": "Link"
     },
     "timeText": {
+      "title": "Time Text",
       "size": "Size"
     },
     "transfer": {
@@ -188,9 +212,11 @@
       "adjustPlacementAutomatically": "Adjust placement automatically"
     },
     "videoPlayer": {
+      "title": "Video Player",
       "controlBar": "Control Bar"
     },
     "slider": {
+      "title": "Slider",
       "icon": "Slider with icon",
       "vertical": "Vertical",
       "reverse": "Reverse",
@@ -200,6 +226,7 @@
       "controlTip": "Control visible of ToolTip"
     },
     "table": {
+      "title": "Table",
       "cellAutoEllipsis": "Cell Auto Ellipsis",
       "border": "Border",
       "columnRowMerge": "Column Row Merge",
@@ -207,12 +234,14 @@
       "filterAndSort": "Filter And Sort"
     },
     "collapse": {
+      "title": "Collapse",
       "accordion": "Accordion",
       "nestedPanel": "Nested Panel",
       "customPanel": "Custom Panel",
       "hideArrow": "Hide Arrow"
     },
     "notification": {
+      "title": "Notification",
       "customStyle": "Custom Style",
       "position": "Position",
       "icon": "Icon",
@@ -221,6 +250,7 @@
       "updateInfoContent": "Update Info Content"
     },
     "spin": {
+      "title": "Spin",
       "insideContainer": "Inside a Container",
       "customizedDescription": "Customized Description",
       "customIndicator": "Custom Indicator",
@@ -229,6 +259,7 @@
       "delay": "Delay"
     },
     "card": {
+      "title": "Card",
       "customizedContent": "Customized Content",
       "loadingCard": "Loading Card",
       "simple": "Simple",
@@ -239,6 +270,7 @@
       "WithTabs": "With Tabs"
     },
     "tree": {
+      "title": "Tree",
       "controlled": "Controlled Tree",
       "replaceFields": "ReplaceFields",
       "draggable": "Draggable",
@@ -248,14 +280,49 @@
       "loadDataAsynchronously": "load Data Asynchronously",
       "searchable": "Searchable",
       "customizeCollapseExpandIcon": "customize Collapse/Expand Icon"
+    },
+    "timeSlider": {
+      "title": "TimeSlider",
+      "style": "Diffreent Style",
+      "duration": "Duration"
+    },
+    "timeLine": {
+      "title": "TimeLine",
+      "style": "Diffreent Style",
+      "formatter": "Formatter"
+    },
+    "timeRange": {
+      "title": "TimeRange",
+      "style": "Diffreent Style"
+    },
+    "slideshow": {
+      "title": "Slideshow",
+      "switchEffect": "Switch Effect",
+      "vertical": "Vertical",
+      "navigationButtons": "Navigation Buttons",
+      "pagination": "Pagination",
+      "scrollbar": "Scrollbar"
+    },
+    "nav": {
+      "title": "Nav"
+    },
+    "textList": {
+      "title": "TextList",
+      "scrollOneByOne": "Scroll One By One",
+      "customCell": "Custom Cell"
     }
   },
   "chartComponent": {
+    "title": "Chart Components",
+    "basic": "Basic Usage",
     "liquidfill": {
+      "title": "liquidfill",
       "type": "Wave",
-      "color": "Color"
+      "color": "Color",
+      "formatter": "Formatter"
     },
     "progress": {
+      "title": "progress",
       "color": "Color",
       "number": "Number",
       "state": "State",
@@ -263,7 +330,7 @@
       "width": "Width"
     },
     "charBar": {
-      "bar": "Histogram",
+      "title": "Histogram",
       "barSquare": "Cube histogram",
       "barRectangle": "Cuboid histogram",
       "barCylinder": "Cylindrical histogram",
@@ -271,49 +338,113 @@
       "rankXbar": "Rank Bar"
     },
     "scatter": {
-      "scatter": "Scatter"
+      "title": "Scatter"
     },
     "line": {
-      "line": "Line"
-    },   
+      "title": "Line"
+    },
     "radar": {
-      "radar": "Radar"
+      "title": "Radar"
     },
     "pie": {
-      "pie": "Pie",
+      "title": "Pie",
       "rose": "Nightingale Rose",
       "ring": "Doughnut",
       "shineRing": "Luminous Doughnut"
     },
     "gauge": {
-      "gauge": "Gauge",
+      "title": "Gauge",
       "markGauge": "Mark Gauge",
       "shineGauge": "Luminous Gauge",
       "spinGauge": "Spinning Gauge"
     }
   },
   "mapComponent": {
-      "iportalMap": "iPortal Map"
+    "title": "Map Components",
+    "webMap": "Web Map",
+    "iportalMap": "iPortal Map",
+    "drillMap": "Drill Map",
+    "diffrentMap": "Diffrent Map",
+    "goBackMap": "Go Back Button slots"
   },
   "gisComponent": {
-    "layerList": "Layer List",
-    "layerManager": "Layer Manager",
-    "miniMap": "Mini Map",
-    "expandLayerList": "Expand Layer List",
-    "measure": "Measure",
-    "openFile": "Open File",
-    "identify": "Click on the query",
-    "zoom": "Zoom",
-    "showZoom": "Show Zoom",
-    "slider": "Open Slider",
-    "compare": "Compare",
-    "pan": "Pan",
-    "legend": "Legend",
-    "panlLegend": "Detailed Legend",
-    "query": "Data Query",
-    "poi": "POI Search",
-    "tdtPoi": "TDT-POI Search",
-    "tdtMapSwitcher": "TDT-Map Switcher",
-    "TdtRoute": "TDT-Route"
+    "title": "Map SubComponents",
+    "basic": "Basic Usage",
+    "layerList": {
+      "title": "Layer List",
+      "expandLayerList": "Expand Layer List"
+    },
+    "layerColor": {
+      "title": "Layer Color"
+    },
+    "attributes": {
+      "title": "Attributes"
+    },
+    "layerManager": {
+      "title": "Layer Manager"
+    },
+    "miniMap": {
+      "title": "Mini Map"
+    },
+    "measure": {
+      "title": "Measure"
+    },
+    "openFile": {
+      "title": "Open File"
+    },
+    "identify": {
+      "title": "Click on the query"
+    },
+    "zoom": {
+      "title": "Zoom",
+      "showZoom": "Show Zoom",
+      "slider": "Open Slider"
+    },
+    "compare": {
+      "title": "Compare"
+    },
+    "pan": {
+      "title": "Pan"
+    },
+    "legend": {
+      "title": "Legend",
+      "panlLegend": "Detailed Legend"
+    },
+    "query": {
+      "title": "Data Query"
+    },
+    "poi": {
+      "title": "POI Search"
+    },
+    "tdtPoi": {
+      "title": "TianDiTu-POI Search"
+    },
+    "tdtMapSwitcher": {
+      "title": "TianDiTu-Map Switcher"
+    },
+    "tdtRoute": {
+      "title": "TianDiTu-Route"
+    },
+    "coordinateCoversion": {
+      "title": "Coordinate Coversion"
+    },
+    "fillExtrusion": {
+      "title": "FillExtrusion"
+    },
+    "fillExtrusionLayer": {
+      "title": "FillExtrusion Layer"
+    },
+    "compass": {
+      "title": "Compass",
+      "changeComparePitch": "change Pitch"
+    },
+    "draw": {
+      "title": "Draw"
+    },
+    "flyTo": {
+      "title": "FlyTo",
+      "manualSwitch": "Manual Switch",
+      "hidenController": "Hide Controller"
+    }
   }
 }

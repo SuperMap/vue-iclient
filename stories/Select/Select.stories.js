@@ -1,8 +1,11 @@
-import debounce from 'lodash/debounce';
+import debounce from 'lodash.debounce';
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/select' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.select.title')}`,
+  id: 'BasicComponents/select'
+};
 
 export const BasicSelect = () => ({
   mixins: [theme],

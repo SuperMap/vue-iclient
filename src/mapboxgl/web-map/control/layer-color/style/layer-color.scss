@@ -1,0 +1,80 @@
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/card/style/card.scss';
+@import '../../../../../common/collapse/style/collapse.scss';
+@import '../../../../../common/button/style/button.scss';
+@import '../../../../../common/color-picker/style/color-picker.scss';
+@import '../../../../../common/layer-select/style/layer-select.scss';
+@import '../../../../../common/icon/style/icon.scss';
+
+@include b(layer-color) {
+  $layer-color-prefix: &;
+  z-index: 10;
+  width: 320px;
+  @include e(content) {
+    padding: 0 16px;
+    font-size: 12px;
+  }
+  @include e(layer) {
+    margin: 12px 0px 12px 0px;
+    display: flex;
+    align-items: center;
+    > span {
+      width: 62px;
+      display: inline-block;
+    }
+  }
+  .sm-component-select {
+    margin-bottom: 4px;
+    width: calc(100% - 62px);
+    height: 28px;
+  }
+  @include e(capture) {
+    font-size: 16px;
+    width: 28px;
+    height: 28px;
+    background-color: $disabled-bg;
+    border-radius: 4px;
+    position: absolute;
+    right: 16px;
+    top: 18px;
+    cursor: pointer;
+    .sm-component-icon {
+      color: inherit;
+      width: 100%;
+      height: 100%;
+    }
+    &.selected {
+      background-color: $primary-6;
+      color: $btn-primary-color;
+    }
+  }
+  @include e(color-picker) {
+    margin: 12px 0px 12px 0px;
+    display: flex;
+    align-items: center;
+    > span {
+      margin-right: 12px;
+      width: 50px;
+      display: inline-block;
+    }
+    .sm-component-colorpicker {
+      width: calc(100% - 62px);
+      height: 28px;
+    }
+  }
+  @include e(btn-group) {
+    margin: 0px 0px 16px 62px;
+  }
+  @include e(a-card) {
+    padding-top: 4px;
+    border-radius: 4px;
+    background: transparent;
+    > div {
+      padding: 0;
+    }
+  }
+  .select-margin {
+    margin-right: 36px;
+  }
+}

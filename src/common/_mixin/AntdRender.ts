@@ -1,18 +1,20 @@
 import Vue, { VNode, CreateElement } from 'vue';
 import { Component, Prop, Provide } from 'vue-property-decorator';
-import defaultRenderEmpty from '../empty/RenderEmpty';
+import defaultRenderEmpty from 'vue-iclient/src/common/empty/RenderEmpty';
 import { getOptionProps, getComponentFromProp } from 'ant-design-vue/es/_util/props-util';
 
 @Component
 export default class BaseRender extends Vue {
-  @Prop() getPopupContainer: Function;
-  @Prop() prefixCls: string;
-  @Prop() renderEmpty: Function;
-  @Prop() csp: Object;
-  @Prop() autoInsertSpaceInButton: boolean;
-  @Prop() locale: Object;
-  @Prop() pageHeader: Object;
-  @Prop() transformCellText: Function;
+  defaultPrefixCls = 'sm-component';
+
+  @Prop() getPopupContainer!: Function;
+  @Prop() prefixCls!: string;
+  @Prop() renderEmpty!: Function;
+  @Prop() csp!: Object;
+  @Prop() autoInsertSpaceInButton!: boolean;
+  @Prop() locale!: Object;
+  @Prop() pageHeader!: Object;
+  @Prop() transformCellText!: Function;
 
   @Provide('configProvider')
   configProvider = {
@@ -29,7 +31,9 @@ export default class BaseRender extends Vue {
 
   @Provide('localeData')
   localeData = {
-    antLocale: Object.assign({}, this.locale, this.$i18n && this.$i18n.getLocaleMessage(this.$i18n.locale), { exist: true })
+    antLocale: Object.assign({}, this.locale, this.$i18n && this.$i18n.getLocaleMessage(this.$i18n.locale), {
+      exist: true
+    })
   };
 
   get extralProps() {
@@ -52,9 +56,15 @@ export default class BaseRender extends Vue {
     return null;
   }
 
+  get componentClass() {
+    return null;
+  }
+
   getPrefixCls(suffixCls: string, customizePrefixCls: string) {
-    const { prefixCls = 'sm-component' } = this.$props;
-    if (customizePrefixCls) return customizePrefixCls;
+    const { prefixCls = this.defaultPrefixCls } = this.$props;
+    if (customizePrefixCls) {
+      return customizePrefixCls;
+    }
     return suffixCls ? `${prefixCls}-${suffixCls}` : prefixCls;
   }
 
@@ -69,13 +79,17 @@ export default class BaseRender extends Vue {
   }
 
   renderChildren(createElement) {
-    const slotComponents = [].concat(this.$slots['default'] || []);
-    for (let key in this.$slots) {
+    const slotComponents = [].concat(this.$slots.default || []);
+    for (const key in this.$slots) {
       if (key !== 'default') {
         slotComponents.push(
-          createElement('template', {
-            slot: key
-          }, this.$slots[key])
+          createElement(
+            'template',
+            {
+              slot: key
+            },
+            this.$slots[key]
+          )
         );
       }
     }
@@ -89,6 +103,7 @@ export default class BaseRender extends Vue {
       {
         props: this.componentProps,
         style: this.componentStyle,
+        class: this.componentClass,
         attrs: this.$attrs,
         on: this.componentListeners,
         scopedSlots: this.$scopedSlots

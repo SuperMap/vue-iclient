@@ -1,27 +1,26 @@
-import '../../../../../../test/jest.init';
-import { mount, createLocalVue } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap';
 import SmPan from '../Pan.vue';
-import mapEvent from '@types_mapboxgl/map-event';
-
-import { Icon, Card, Collapse, Button } from 'ant-design-vue';
-
-const localVue = createLocalVue();
-localVue.use(Card);
-localVue.use(Collapse);
-localVue.use(Icon);
-localVue.use(Button);
-
-jest.mock('@libs/mapboxgl/mapbox-gl-enhance', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min', () => require('@mocks/mapboxgl_iclient'));
+import Pan from '../index';
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy.json';
+import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point.json';
+import layerData from 'vue-iclient/test/unit/mocks/data/layerData.json';
+import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
+import flushPromises from 'flush-promises';
+import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
 
 describe('Pan.vue', () => {
   let wrapper;
+  let mapWrapper;
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
     wrapper = null;
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+    };
+    mockFetch(fetchResource);
   });
 
   afterEach(() => {
@@ -29,40 +28,51 @@ describe('Pan.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
+    if (mapWrapper) {
+      mapWrapper.destroy();
+    }
   });
 
-  it('default', done => {
-    let mapWrapper = mount(SmWebMap, {
-      localVue,
+  it('default', async done => {
+    mapWrapper = mount(SmWebMap, {
       propsData: {
-        serverUrl: 'http://support.supermap.com.cn:8092/',
-        mapId: '1649097980'
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
       }
     });
-
     wrapper = mount(SmPan, {
       propsData: {
         mapTarget: 'map'
       }
     });
-    wrapper.vm.$on('loaded', () => {
-      try {
-        expect(wrapper.vm.mapTarget).toBe('map');
-        testClick(wrapper, wrapper.vm.map);
-        testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
-        testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
-        testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
-        testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
-        wrapper.destroy();
-        done();
-      } catch (exception) {
-        console.log('Pan_default' + exception.name + ':' + exception.message);
-        expect(false).toBeTruthy();
-        wrapper.destroy();
-        mapWrapper.destroy();
-        done();
+    const callback = jest.fn();
+    wrapper.vm.$on('loaded', callback);
+    await mapWrapperLoaded(mapWrapper);
+    await flushPromises();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    testClick(wrapper, wrapper.vm.map);
+    done();
+  });
+
+  it('default index', async done => {
+    mapWrapper = mount(SmWebMap, {
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
       }
     });
+    wrapper = mount(Pan, {
+      propsData: {
+        mapTarget: 'map'
+      }
+    });
+    const callback = jest.fn();
+    wrapper.vm.$on('loaded', callback);
+    await mapWrapperLoaded(mapWrapper);
+    await flushPromises();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    testClick(wrapper, wrapper.vm.map);
+    done();
   });
 
   /**
@@ -70,122 +80,78 @@ describe('Pan.vue', () => {
    */
 
   // isControl
-  it('isControl SmWebMap', done => {
-    // const spy = jest.spyOn(SmPan, "panBy");
+  it('isControl SmWebMap', async done => {
     wrapper = mount({
-      template: `<div><sm-web-map  server-url="http://support.supermap.com.cn:8092/"  :map-id="1649097980"   
+      template: `<div><sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"  :map-id="123"   
             ><sm-pan></sm-pan></sm-web-map></div>`,
       components: {
         SmPan,
         SmWebMap
       }
     });
-    wrapper.vm.$children[0].$children[0].$on('loaded', () => {
-      console.log('isControl SmWebMap');
-      expect(wrapper.vm.$children[0].$children[0].getTargetName()).toBe('map');
-      testClick(wrapper, wrapper.vm.$children[0].$children[0].map);
-
-      testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
-      testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
-      testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
-      testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
-      done();
-    });
+    const callback = jest.fn();
+    wrapper.vm.$children[0].$children[0].$on('loaded', callback);
+    await mapLoaded(wrapper.vm.$children[0]);
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    expect(wrapper.vm.$children[0].$children[0].getTargetName()).toBe('map');
+    testClick(wrapper, wrapper.vm.$children[0].$children[0].map);
+    done();
   });
 
   /**
    * 测试平移组件与map同级
    */
-  it('parallel single SmWebMap', done => {
+  it('parallel single SmWebMap', async done => {
     wrapper = mount({
-      template: `<div><sm-web-map  server-url="http://support.supermap.com.cn:8092/"     :map-id="1649097980" >
+      template: `<div><sm-web-map  server-url="https://fakeiportal.supermap.io/iportal" :map-id="123" >
             </sm-web-map><sm-pan></sm-pan></div>`,
       components: {
         SmPan,
         SmWebMap
       }
     });
-    wrapper.vm.$children[1].$on('loaded', () => {
-      // expect\(wrapper\.element\)\.toMatchSnapshot\(\);
-
-      expect(wrapper.vm.$children[1].getTargetName()).toBe('map');
-      testClick(wrapper, wrapper.vm.$children[1].map);
-
-      testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
-      testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
-      testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
-      testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
-      done();
-    });
+    const callback = jest.fn();
+    wrapper.vm.$children[1].$on('loaded', callback);
+    await mapLoaded(wrapper.vm.$children[0]);
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    expect(wrapper.vm.$children[1].getTargetName()).toBe('map');
+    testClick(wrapper, wrapper.vm.$children[1].map);
+    done();
   });
 
   /**
    * 测试平移组件与多个map同级，默认pan的mapTarget是第一个map
    */
-  it('parallel multi SmWebMap', done => {
+  it('parallel multi SmWebMap', async done => {
     wrapper = mount({
-      template: `<div><sm-web-map  server-url="http://support.supermap.com.cn:8092/"    :map-id="1649097980"  target="map1">
+      template: `<div><sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"    :map-id="123"  target="map1">
             </sm-web-map>
-            <sm-web-map  server-url="http://support.supermap.com.cn:8092/"   :map-id="1649097980"  target="map2">
-            </sm-web-map>
-            <sm-web-map  server-url="http://support.supermap.com.cn:8092/"   :map-id="1649097980"   target="map3">
+            <sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"   :map-id="123"  target="map2">
             </sm-web-map>
             <sm-pan></sm-pan>
-            <sm-web-map  server-url="http://support.supermap.com.cn:8092/"   :map-id="1649097980"   target="map4">
+            <sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"   :map-id="123"   target="map3">
+            </sm-web-map>
+            <sm-web-map  server-url="https://fakeiportal.supermap.io/iportal"   :map-id="123"   target="map4">
             </sm-web-map></div>`,
       components: {
         SmPan,
         SmWebMap
       }
     });
-    wrapper.vm.$children[3].$on('loaded', () => {
-      expect(wrapper.vm.$children[3].getTargetName()).toBe('map1');
-      testClick(wrapper, wrapper.vm.$children[3].map);
-      testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
-      testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
-      testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
-      testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
-      done();
-    });
+    const callback = jest.fn();
+    wrapper.vm.$children[2].$on('loaded', callback);
+    await mapLoaded(wrapper.vm.$children[0]);
+    await mapLoaded(wrapper.vm.$children[1]);
+    await mapLoaded(wrapper.vm.$children[3]);
+    await mapLoaded(wrapper.vm.$children[4]);
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    expect(wrapper.vm.$children[2].getTargetName()).toBe('map1');
+    testClick(wrapper, wrapper.vm.$children[2].map);
+    done();
   });
-
-  /**
-   * 测试平移组件与多个map同级，设置pan的mapTarget
-   */
-  it('setMapTarget', done => {
-    wrapper = mount({
-      template: `<div><sm-web-map  server-url="http://support.supermap.com.cn:8092/"    :map-id="1649097980"  target="map1">
-            </sm-web-map><sm-web-map  server-url="http://support.supermap.com.cn:8092/"    :map-id="1649097980"  target="map2">
-            </sm-web-map><sm-web-map  server-url="http://support.supermap.com.cn:8092/"  :map-id="1649097980"  target="map3">
-            </sm-web-map><sm-pan map-target="map3"></sm-pan>
-            <sm-web-map  server-url="http://support.supermap.com.cn:8092/"   :map-id="1649097980"  target="map4"></sm-web-map></div>`,
-      components: {
-        SmPan,
-        SmWebMap
-      }
-    });
-
-    wrapper.vm.$children[3].$on('loaded', () => {
-      // expect\(wrapper\.element\)\.toMatchSnapshot\(\);
-      expect(wrapper.vm.$children[3].getTargetName()).toBe('map3');
-      testClick(wrapper, wrapper.vm.$children[3].map);
-
-      testMouseEvent(wrapper, '.is-left', 'sm-component-pan--west');
-      testMouseEvent(wrapper, '.is-right', 'sm-component-pan--east');
-      testMouseEvent(wrapper, '.is-top', 'sm-component-pan--north');
-      testMouseEvent(wrapper, '.is-bottom', 'sm-component-pan--south');
-      done();
-    });
-  });
-
-  function testMouseEvent(wrapper, cssSelector, expectResult) {
-    wrapper.find(cssSelector).trigger('mouseenter');
-    expect(wrapper.find('div.sm-component-pan').classes()).toContain(expectResult);
-
-    wrapper.find(cssSelector).trigger('mouseleave');
-    expect(wrapper.find('div.sm-component-pan').classes()).not.toContain(expectResult);
-    expect(wrapper.find('div.sm-component-pan').classes()).toContain('sm-component-pan--default');
-  }
 
   /**
    *
@@ -196,7 +162,6 @@ describe('Pan.vue', () => {
     var panLength = 200;
     let spyPanTo = jest.spyOn(map, 'panTo');
     let spyPanby = jest.spyOn(map, 'panBy');
-
     wrapper.find('.is-left').trigger('click');
     // 验证点击之后 pan绑定的map组件的map会发生相应变化，即会平移
     expect(spyPanby).toBeCalledWith([-panLength, 0]);
@@ -207,6 +172,9 @@ describe('Pan.vue', () => {
     wrapper.find('.is-bottom').trigger('click');
     expect(spyPanby).toBeCalledWith([0, panLength]);
     wrapper.find('.sm-component-pan__center').trigger('click');
-    expect(spyPanTo).toBeCalledWith({ lat: 35.81531985645325, lng: 106.09658607124217 });
+    expect(spyPanTo).toBeCalledWith({
+      lat: 36.98401835599687,
+      lng: 104.34202150000002
+    });
   }
 });

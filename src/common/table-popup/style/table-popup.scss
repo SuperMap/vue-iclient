@@ -1,0 +1,52 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import '../../table/style/table.scss';
+
+@include b(table-popup) {
+  $table-prefix: #{$ant-prefix}-table;
+  color: $text-color;
+  border-radius: 4px;
+  .#{$table-prefix}-thead > tr > th {
+    border-bottom: 1px solid $collapse-card-split-line;
+  }
+  &:not(.with-split-line) {
+    .#{$table-prefix}-thead > tr > th {
+      border-bottom: none;
+    }
+  }
+  @include e(table) {
+    &.#{$table-prefix}-wrapper {
+      .#{$table-prefix}-content {
+        max-height: 250px;
+        overflow: auto;
+        .#{$table-prefix}-placeholder {
+          background: transparent;
+          border-top: none;
+          color: inherit;
+          .#{$ant-prefix}-empty {
+            background-color: transparent;
+          }
+        }
+      }
+    }
+    &
+    .#{$table-prefix} {
+      color: inherit;
+      font-size: 12px;
+    }
+    .#{$table-prefix}-thead > tr, .#{$table-prefix}-tbody > tr {
+      & > th, & > td {
+        padding: 4px 16px;
+      }
+    }
+    .#{$table-prefix}-tbody > tr > td {
+      transition: all 0s, height 0s;
+      border-bottom-color: transparent;
+    }
+    .#{$table-prefix}-row {
+      &:hover {
+        color: $primary-color;
+      }
+    }
+  }
+}

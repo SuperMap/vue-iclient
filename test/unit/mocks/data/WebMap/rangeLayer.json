@@ -1,0 +1,75 @@
+{
+  "baseLayer": {
+    "layerType": "TILE",
+    "name": "中国暗色地图",
+    "url": "https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark",
+    "visible": true
+  },
+  "center": { "x": 11786915.067240212, "y": 3989489.3570380663 },
+  "description": "",
+  "extent": {
+    "leftBottom": { "x": -20037508.342789244, "y": -20037508.342789136 },
+    "rightTop": { "x": 20037508.342789244, "y": 20037508.34278908 }
+  },
+  "grid": {
+    "graticule": {
+      "extent": [-20037508.342789244, -20037508.342789136, 20037508.342789244, 20037508.34278908],
+      "interval": [5],
+      "latLabelStyle": {
+        "textBaseline": "bottom",
+        "fontFamily": "Calibri,sans-serif",
+        "outlineWidth": 3,
+        "outlineColor": "rgba(255,255,255,0.85)",
+        "fontSize": "12px"
+      },
+      "lineDash": [0.5, 4],
+      "lonLabelStyle": {
+        "textBaseline": "bottom",
+        "fontFamily": "Calibri,sans-serif",
+        "outlineWidth": 3,
+        "outlineColor": "rgba(255,255,255,0.85)",
+        "fontSize": "12px"
+      },
+      "strokeColor": "#1464A1",
+      "strokeWidth": 2
+    }
+  },
+  "layers": [
+    {
+      "dataSource": { "accessType": "DIRECT", "type": "PORTAL_DATA", "serverId": "1171594968" },
+      "enableFields": [
+        "区站号",
+        "站台",
+        "省份",
+        "X",
+        "Y",
+        "海拔",
+        "平均最低气温",
+        "最热七天气温",
+        "最高气温",
+        "最低气温",
+        "年均降雨"
+      ],
+      "featureType": "POINT",
+      "layerType": "RANGE",
+      "name": "671个气象站观测数据(4)",
+      "projection": "EPSG:4326",
+      "style": { "strokeWidth": 1, "fillColor": "#8b3058", "offsetX": 0, "offsetY": 0, "fillOpacity": 0.9 },
+      "themeSetting": {
+        "themeField": "区站号",
+        "customSettings": {},
+        "segmentMethod": "offset",
+        "segmentCount": 6,
+        "colors": []
+      },
+      "visible": true,
+      "xyField": { "xField": "X", "yField": "Y" }
+    }
+  ],
+  "level": 4,
+  "maxScale": "1:144447.92746804963",
+  "minScale": "1:591658710.9091312",
+  "projection": "EPSG:3857",
+  "title": "jingwei",
+  "version": "2.3.0"
+}

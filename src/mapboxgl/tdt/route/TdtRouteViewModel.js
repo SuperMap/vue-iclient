@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import {
   config,
   request,
@@ -18,7 +18,7 @@ import startPng from './assets/start.png';
 import destPng from './assets/dest.png';
 import busPng from './assets/bus.png';
 import metroPng from './assets/metro.png';
-import { geti18n } from '../../../common/_lang';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 export default class TdtRouteViewModel extends mapboxgl.Evented {
   constructor(options) {
@@ -35,6 +35,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     const { map } = mapInfo;
     this.map = map;
   }
+
   // 分页的params里面应该有mapBound
   searchPoints(keyWord, params, searchUrl = this.data.searchUrl || 'https://api.tianditu.gov.cn/search') {
     const map = this.map;
@@ -160,6 +161,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this.style = 0;
     // this.search(this.orig, this.dest);
   }
+
   setData(data) {
     this.token = data.tk;
     this.data = Object.assign(this.data, data);
@@ -186,6 +188,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
       this.removed();
     }
   }
+
   removed() {
     let source = this.map.getSource(this.sourceName.tdtDrawRoutes);
     source &&
@@ -196,6 +199,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     this._clearMarkers();
     this._clearSearchResultLayer();
   }
+
   _clearMarkers() {
     if (!this.remainPosMarker) {
       this.startMarker && this.startMarker.remove();
@@ -267,6 +271,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
         }
       });
   }
+
   _createCustomMarker(imgUrl, coordinate, style) {
     let el = document.createElement('div');
     el.style.background = `url(${imgUrl})`;

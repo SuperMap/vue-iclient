@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/openFile'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.openFile.title')}`,
+  id: 'GISComponents/openFile'
 };
 export const OpenFile = () => ({
   mixins: [theme],
@@ -13,5 +14,5 @@ export const OpenFile = () => ({
     `
 });
 OpenFile.story = {
-  name: toI18n('gisComponent.openFile')
+  name: toI18n('gisComponent.basic')
 };

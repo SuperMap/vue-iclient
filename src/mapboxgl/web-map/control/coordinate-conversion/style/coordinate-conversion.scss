@@ -1,0 +1,204 @@
+@import '../../../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/card/style/card.scss';
+@import '../../../../../common/collapse/style/collapse.scss';
+@import '../../../../../common/input/style/input.scss';
+@import '../../../../../common/select/style/select.scss';
+
+@mixin disabled($color: $btn-disable-color, $background: $btn-disable-bg, $border: $btn-disable-border) {
+  color: $color;
+  background-color: $background;
+  border-color: $border;
+}
+
+@include b(coordinate-conversion) {
+  $coordinate-conversion-prefix: &;
+  $collapse-prefix: #{$ant-prefix}-collapse;
+  z-index: 10;
+  width: 389px;
+  height: 32px;
+  border-radius: 4px;
+  box-sizing: border-box;
+  @include e(content) {
+    display: inline-flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    .#{$collapse-prefix} {
+      background: transparent;
+      border-radius: 0;
+      color: inherit;
+    }
+  }
+  @include e(a-card) {
+    padding-top: 4px;
+    border-radius: 4px;
+    background: transparent;
+    > div {
+      padding: 0;
+    }
+  }
+  .sm-component-collapse-card__content {
+    width: 100%;
+  }
+  .sm-component-card-body {
+    height: 32px;
+    padding: 0;
+  }
+  .sm-component-collapse-card__body {
+    width: 100%;
+  }
+
+  .is-bottom-right,
+  .is-top-right {
+    .sm-component-coordinate-conversion__auto-width {
+      margin-left: 9px;
+    }
+    .sm-component-collapse-card__body {
+      padding-right: 36px;
+    }
+  }
+  .is-bottom-left,
+  .is-top-left {
+    .sm-component-coordinate-conversion__icons {
+      padding-right: 9px;
+    }
+    .sm-component-collapse-card__body {
+      padding-left: 36px;
+    }
+  }
+  .sm-component-collapse-card__icon {
+    &,
+    i {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+    }
+  }
+  .sm-component-card-bordered {
+    height: 32px;
+  }
+  .sm-component-card-body::before,
+  .sm-component-card-body::after {
+    display: none;
+  }
+  @include e(auto-width) {
+    display: inline-flex;
+    width: calc(100% - 86px);
+  }
+  .not-show-location {
+    .sm-component-coordinate-conversion__auto-width {
+      display: inline-flex;
+      width: calc(100% - 53px);
+    }
+  }
+  @include e(a-select) {
+    width: 36.3%;
+    height: 24px;
+    color: inherit;
+  }
+  .sm-component-select-sm .sm-component-select-selection__rendered {
+    font-size: 12px;
+    margin-left: 7px;
+    line-height: 24px;
+  }
+  .sm-component-select-sm .sm-component-select-selection--single {
+    height: 24px;
+  }
+  .sm-component-select-dropdown-menu-item {
+    padding: 5px 12px;
+    line-height: 24px;
+  }
+  .sm-component-select,
+  .sm-component-select-dropdown-menu-item,
+  .sm-component-input,
+  .sm-component-input-affix-wrapper {
+    font-size: 12px;
+  }
+  .sm-component-input-sm {
+    height: 24px;
+    padding: 1px 7px;
+  }
+  .sm-component-input-affix-wrapper .sm-component-input:not(:last-child) {
+    padding-right: 30px;
+  }
+  .sm-component-input-affix-wrapper .sm-component-input-suffix {
+    right: 12px;
+  }
+  @include e(a-input) {
+    width: 78%;
+    height: 24px;
+    margin-left: 4px;
+    margin-right: 8px;
+    color: inherit;
+    background: $component-background;
+    .sm-component-input-suffix {
+      color: $search-input-close-background;
+    }
+  }
+  .sm-component-input-affix-wrapper .sm-component-input {
+    color: inherit;
+  }
+
+  @include e(not-enable) {
+    @include disabled();
+    cursor: not-allowed;
+  }
+
+  @include e(location) {
+    color: inherit;
+    &:hover {
+      color: $primary-color;
+    }
+  }
+  @include e(copyed) {
+    color: inherit;
+    &:hover {
+      color: $primary-color;
+    }
+  }
+  @include e(icons) {
+    display: inline-flex;
+    div {
+      position: relative;
+      width: 24px;
+      height: 24px;
+
+      font-size: 15px;
+      cursor: pointer;
+      background: $disabled-bg;
+    }
+    div:before {
+      display: block;
+      width: 100%;
+      height: 24px;
+      line-height: 24px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      text-align: center;
+    }
+    div:nth-child(1) {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      margin-left: 1px;
+    }
+    div:nth-child(2) {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      margin-left: 1px;
+    }
+    div:nth-child(3) {
+      margin-left: 4px;
+      border-radius: 4px;
+    }
+    .sm-component-coordinate-conversion__captured {
+      color: $btn-primary-color;
+      background: $primary-color;
+    }
+    .sm-component-coordinate-conversion__not-captured {
+      color: $text-color;
+      background: $disabled-bg;
+    }
+  }
+}

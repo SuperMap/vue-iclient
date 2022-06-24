@@ -1,6 +1,8 @@
 // 新创建一个vue实例实时监听获得map对象
-import mapEvent from '../_types/map-event';
-import globalEvent from '../../common/_utils/global-event';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import Message from 'vue-iclient/src/common/message/Message.js';
+
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
 
@@ -25,11 +27,10 @@ export default class MapGetter extends Vue {
   map: mapboxglTypes.Map;
   webmap: any;
   viewModel: any;
-  $message: any;
   $t: any;
   firstDefaultTarget: string;
 
-  @Prop() mapTarget: String;
+  @Prop() mapTarget: string;
 
   @Watch('mapTarget')
   mapTargetChanged(newVal, oldVal) {
@@ -68,6 +69,7 @@ export default class MapGetter extends Vue {
 
   getFirstTarget(): string {
     let targetName: string;
+    // @ts-ignore
     const mapList = mapEvent.$options.getAllMaps();
     for (let target in mapList) {
       if (target) {
@@ -90,7 +92,7 @@ export default class MapGetter extends Vue {
     const parentTarget =
       selfParent &&
       selfParent.$options.name &&
-      ['smwebmap', 'smncpmap'].includes(selfParent.$options.name.toLowerCase())  &&
+      ['smwebmap', 'smncpmap'].includes(selfParent.$options.name.toLowerCase()) &&
       // @ts-ignore
       selfParent.target;
     return this.mapTarget || parentTarget || this.getFirstTarget();
@@ -101,6 +103,7 @@ export default class MapGetter extends Vue {
       this.firstDefaultTarget = targetName;
     }
     this.map = mapEvent.$options.getMap(targetName);
+    // @ts-ignore
     this.webmap = mapEvent.$options.getWebMap(targetName);
     this.viewModel &&
       typeof this.viewModel.setMap === 'function' &&
@@ -142,8 +145,10 @@ export default class MapGetter extends Vue {
 
   mapNotLoadedTip() {
     if (!this.map) {
-      this.$message.destroy();
-      this.$message.warning(this.$t('warning.unassociatedMap'));
+      // @ts-ignore
+      Message.destroy();
+      // @ts-ignore
+      Message.warning(this.$t('warning.unassociatedMap'));
       return true;
     }
     return false;

@@ -5,7 +5,7 @@
 @include b(tdtRoutePlan) {
   $tabs-prefix: #{$ant-prefix}-tabs;
   
-  background: $background-color-base;
+  background: $collapse-card-secondary-bg;
   font-size: 12px;
   padding: 0 16px;
 
@@ -195,7 +195,11 @@
     & > li {
       padding: 8px 0;
       border-top: 1px solid $border-color-split;
-      cursor: pointer;
+      &:hover {
+        cursor: pointer;
+        background: $tdt-route-plan-hover-bg;
+        color: $primary-color;
+      }
       &.detail-item {
         > div {
           color: $primary-color;

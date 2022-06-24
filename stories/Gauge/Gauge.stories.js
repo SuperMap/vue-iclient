@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Chart Components/gauge'
+  title: `${toI18n('chartComponent.title')}/${toI18n('chartComponent.gauge.title')}`,
+  id: 'ChartComponents/gauge'
 };
 
 export const Gauge = () => ({
@@ -33,6 +34,9 @@ export const Gauge = () => ({
                 value: 68
               }
             ],
+            title: {
+              color: ''
+            },
             axisLine: {
               show: true,
               lineStyle: {
@@ -58,7 +62,7 @@ export const Gauge = () => ({
   />`
 });
 Gauge.story = {
-  name: toI18n('chartComponent.gauge.gauge')
+  name: toI18n('chartComponent.basic')
 };
 
 export const MarkGauge = () => ({

@@ -1,8 +1,8 @@
-/* Copyright© 2000 - 2021 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2022 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 
-export var StringExt = {
+export let StringExt = {
 
   startsWith: function (str, sub) {
     return (str.indexOf(sub) === 0);
@@ -17,10 +17,10 @@ export var StringExt = {
   },
 
   camelize: function (str) {
-    var oStringList = str.split('-');
-    var camelizedString = oStringList[0];
-    for (var i = 1, len = oStringList.length; i < len; i++) {
-      var s = oStringList[i];
+    let oStringList = str.split('-');
+    let camelizedString = oStringList[0];
+    for (let i = 1, len = oStringList.length; i < len; i++) {
+      let s = oStringList[i];
       camelizedString += s.charAt(0).toUpperCase() + s.substring(1);
     }
     return camelizedString;
@@ -34,15 +34,15 @@ export var StringExt = {
     // Example matching:
     // str   = ${foo.bar}
     // match = foo.bar
-    var replacer = function (str, match) {
-      var replacement;
+    let replacer = function (str, match) {
+      let replacement;
 
       // Loop through all subs. Example: ${a.b.c}
       // 0 -> replacement = context[a];
       // 1 -> replacement = context[a][b];
       // 2 -> replacement = context[a][b][c];
-      var subs = match.split(/\.+/);
-      for (var i = 0; i < subs.length; i++) {
+      let subs = match.split(/\.+/);
+      for (let i = 0; i < subs.length; i++) {
         if (i === 0) {
           replacement = context;
         }
@@ -115,14 +115,14 @@ export var StringExt = {
  * @category BaseTypes Util
  * @description 数值操作的一系列常用扩展函数。
  */
-export var NumberExt = {
+export let NumberExt = {
 
   decimalSeparator: '.',
 
   thousandsSeparator: ',',
 
   limitSigDigs: function (num, sig) {
-    var fig = 0;
+    let fig = 0;
     if (sig > 0) {
       fig = parseFloat(num.toPrecision(sig));
     }
@@ -138,25 +138,25 @@ export var NumberExt = {
       num = parseFloat(num.toFixed(dec));
     }
 
-    var parts = num.toString().split('.');
+    let parts = num.toString().split('.');
     if (parts.length === 1 && dec == null) {
       // integer where we do not want to touch the decimals
       dec = 0;
     }
 
-    var integer = parts[0];
+    let integer = parts[0];
     if (tsep) {
-      var thousands = /(-?[0-9]+)([0-9]{3})/;
+      let thousands = /(-?[0-9]+)([0-9]{3})/;
       while (thousands.test(integer)) {
         integer = integer.replace(thousands, '$1' + tsep + '$2');
       }
     }
 
-    var str;
+    let str;
     if (dec === 0) {
       str = integer;
     } else {
-      var rem = parts.length > 1 ? parts[1] : '0';
+      let rem = parts.length > 1 ? parts[1] : '0';
       if (dec != null) {
         rem = rem + new Array(dec - rem.length + 1).join('0');
       }
@@ -179,15 +179,15 @@ export var NumberExt = {
 //   };
 // }
 
-export var FunctionExt = {
+export let FunctionExt = {
 
   bind: function (func, object) {
     // create a reference to all arguments past the second one
-    var args = Array.prototype.slice.apply(arguments, [2]);
+    let args = Array.prototype.slice.apply(arguments, [2]);
     return function () {
       // Push on any additional arguments from the actual function call.
       // These will come after those sent to the bind call.
-      var newArgs = args.concat(
+      let newArgs = args.concat(
         Array.prototype.slice.apply(arguments, [0])
       );
       return func.apply(object, newArgs);
@@ -213,7 +213,7 @@ export var FunctionExt = {
 
 };
 
-export var ArrayExt = {
+export let ArrayExt = {
 
   /**
    * @function Array.filter
@@ -226,17 +226,17 @@ export var ArrayExt = {
    * @returns {Array} callback 函数返回 true 时的元素将作为返回数组中的元素。
    */
   filter: function (array, callback, caller) {
-    var selected = [];
+    let selected = [];
     if (Array.prototype.filter) {
       selected = array.filter(callback, caller);
     } else {
-      var len = array.length;
+      let len = array.length;
       if (typeof callback !== 'function') {
         throw new TypeError();
       }
-      for (var i = 0; i < len; i++) {
+      for (let i = 0; i < len; i++) {
         if (i in array) {
-          var val = array[i];
+          let val = array[i];
           if (callback.call(caller, val, i, array)) {
             selected.push(val);
           }

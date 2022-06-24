@@ -181,8 +181,8 @@ export {
   StatisticAnalystMode,
   TopologyValidatorRule,
   OutputType,
-  AggregationQueryBuilderType,
-  AggregationType,
+  MetricsAggType,
+  BucketAggType,
   GetFeatureMode,
   RasterFunctionType
 } from './REST';

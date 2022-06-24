@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/radio' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.radio.title')}`,
+  id: 'BasicComponents/radio'
+};
 
 export const BasicRadio = () => ({
   mixins: [theme],
@@ -33,7 +36,7 @@ export const DisabledRadio = () => ({
     <sm-radio default-checked :disabled="disabled">
       Disabled
     </sm-radio>
-    <div :style="{ marginTop: 20 }">
+    <div :style="{ marginTop: '20px' }">
       <sm-button type="primary" v-on:click="toggleDisabled">
         Toggle disabled
       </sm-button>

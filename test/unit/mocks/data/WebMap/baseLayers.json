@@ -1,0 +1,138 @@
+{
+  "BAIDU": {
+    "extent": {
+      "leftBottom": {
+        "x": -20037508.3427892,
+        "y": -20037508.3427892
+      },
+      "rightTop": {
+        "x": 20037508.3427892,
+        "y": 20037508.3427892
+      }
+    },
+    "maxScale": "1:564.2497166720675",
+    "level": 3,
+    "center": {
+      "x": 11615300.701720804,
+      "y": 4436879.386230171
+    },
+    "baseLayer": {
+      "layerType": "BAIDU",
+      "name": "百度地图"
+    },
+    "layers": [],
+    "description": "",
+    "projection": "EPSG:3857",
+    "minScale": "1:295829355.4545649",
+    "title": "无标题",
+    "version": "2.3.0"
+  },
+  "BING": {
+    "extent": {
+      "leftBottom": {
+        "x": -20037508.3427892,
+        "y": -20037508.3427892
+      },
+      "rightTop": {
+        "x": 20037508.3427892,
+        "y": 20037508.3427892
+      }
+    },
+    "maxScale": "1:564.2497166720675",
+    "level": 3,
+    "center": {
+      "x": 11615300.701720804,
+      "y": 4436879.386230171
+    },
+    "baseLayer": {
+      "layerType": "BING",
+      "name": "必应地图"
+    },
+    "layers": [],
+    "description": "",
+    "projection": "EPSG:3857",
+    "minScale": "1:295829355.4545649",
+    "title": "无标题",
+    "version": "2.3.0"
+  },
+  "TILE": {
+    "extent": {
+      "leftBottom": {
+        "x": -20037508.342789244,
+        "y": -20037508.342789136
+      },
+      "rightTop": {
+        "x": 20037508.342789244,
+        "y": 20037508.34278908
+      }
+    },
+    "maxScale": "1:147914677.72728282",
+    "level": 1,
+    "center": {
+      "x": 0,
+      "y": 0
+    },
+    "baseLayer": {
+      "layerType": "TILE",
+      "name": "中国暗色地图",
+      "url": "https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark"
+    },
+    "layers": [],
+    "description": "",
+    "projection": "EPSG:3857",
+    "minScale": "1:591658710.9091312",
+    "title": "无标题",
+    "version": "2.3.0"
+  },
+  "GOOGLE": {
+    "extent": {
+      "leftBottom": {
+        "x": -20037508.34,
+        "y": -20037508.34
+      },
+      "rightTop": {
+        "x": 20037508.34,
+        "y": 20037508.34
+      }
+    },
+    "level": 1,
+    "center": {
+      "x": 0,
+      "y": -7.081154551613622e-10
+    },
+    "baseLayer": {
+      "layerType": "GOOGLE_CN",
+      "visible": true,
+      "name": "谷歌地图"
+    },
+    "layers": [],
+    "description": "",
+    "projection": "EPSG:3857",
+    "title": "google_map",
+    "version": "1.0"
+  },
+  "WMTS": {
+    "extent": {
+      "leftBottom": { "x": -20037508.3427892, "y": -20037508.3427892 },
+      "rightTop": { "x": 20037508.3427892, "y": 20037508.3427892 }
+    },
+    "maxScale": "1:18055.99093350616",
+    "level": 1,
+    "center": { "x": 5439870.428999409, "y": 19567.879241008308 },
+    "baseLayer": {
+      "layerType": "WMTS",
+      "tileMatrixSet": "GoogleMapsCompatible_世界地图_Gray",
+      "requestEncoding": "KVP",
+      "visible": true,
+      "name": "世界地图_Gray",
+      "dpi": 90.7142857142857,
+      "url": "http://support.supermap.com.cn:8090/iserver/services/map-china400/wmts100",
+      "layer": "世界地图_Gray"
+    },
+    "description": "",
+    "projection": "EPSG:3857",
+    "minScale": "1:295829355.4545649",
+    "title": "无标题",
+    "version": "2.3.0"
+  }
+}

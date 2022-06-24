@@ -1,29 +1,44 @@
 <template>
-  <div id="app">
+  <div id="app" style="position:relative;">
     <sm-radio-group v-model="componentType" button-style="solid" class="display-diff-components">
-      <sm-radio-button value="map-sub-components">
-        地图子组件
-      </sm-radio-button>
+      <sm-radio-button value="map-sub-components">地图子组件</sm-radio-button>
       <!-- <sm-radio-button value="map-layers">
         地图图层
-      </sm-radio-button> -->
-      <sm-radio-button value="chart-components">
-        图表组件
-      </sm-radio-button>
-      <sm-radio-button value="basic-components">
-        基础组件
-      </sm-radio-button>
+      </sm-radio-button>-->
+      <sm-radio-button value="chart-components">图表组件</sm-radio-button>
+      <sm-radio-button value="basic-components">基础组件</sm-radio-button>
     </sm-radio-group>
     <template v-if="componentType === 'map-sub-components'">
-      <sm-web-map
-        server-url="https://iportal.supermap.io/iportal"
-        :map-id="mapID"
-        :style="{ height: '100%' }"
+      <sm-time-slider
+        v-bind="timePlayer"
+        style="position:absolute; top:100px;left:200px;z-index：100000"
+      ></sm-time-slider>
+      <sm-time-line
+        v-bind="timeLine"
+        style="position:absolute; top:300px;left:200px;z-index：100000"
+      ></sm-time-line>
+      <sm-time-range
+        v-bind="timeRange"
+        style="position:absolute; top:500px;left:200px;z-index：100000"
+      ></sm-time-range>
+      <!-- <sm-web-map
+        v-if="show"
+        server-url="http://192.168.11.94:8190/iportal"
+        map-id="446054158"
+        :style="{ height: '400px' }"
+        :pan-control="{ show: true, position: 'top-left' }"
         @load="mapLoaded"
-      >
-        <!-- server-url="http://192.168.11.94:8190/iportal"
-        :map-id="1750274395" -->
-        <sm-pan />
+      ></sm-web-map>
+      <sm-web-map
+        target="map2"
+        v-if="show"
+        server-url="http://192.168.11.94:8190/iportal"
+        map-id="446054158"
+        :style="{ height: '400px', position:'relative', top: '400px' }"
+        :pan-control="{ show: true, position: 'top-left' }"
+        @load="mapLoaded"
+      ></sm-web-map>-->
+      <!--   <sm-pan />
         <sm-zoom :show-zoom-slider="true" />
         <sm-layer-list position="top-right" />
         <sm-measure position="top-right" />
@@ -61,7 +76,7 @@
         <sm-tdt-route position="top-left" :data="routeData" />
         <sm-tdt-map-switcher position="top-left" :data="mapSwitcherData" />
         <sm-mini-map position="bottom-right" />
-      </sm-web-map>
+      </sm-web-map>-->
     </template>
 
     <template v-if="componentType === 'chart-components'">
@@ -71,11 +86,17 @@
           :options="echartOption"
           :dataset="dataset"
           :datasetOptions="datasetOptions"
-          iconClass=""
+          iconClass
         />
       </sm-border>
       <sm-progress strokeColor="red" type="circle" :percent="80" />
-      <sm-liquid-fill borderColor="blue" waveColor="red" :value="0.3" :waveCount="1" position="bottom-right" />
+      <sm-liquid-fill
+        bordercolor="blue"
+        waveColor="red"
+        :value="0.3"
+        :waveCount="1"
+        position="bottom-right"
+      />
     </template>
 
     <template v-if="componentType === 'basic-components'">
@@ -119,48 +140,40 @@
       </div>
 
       <div class="selects">
-        <sm-select allowClear default-value="lucy" style="width: 120px" :options="[]"> </sm-select>
+        <sm-select allowClear default-value="lucy" style="width: 120px" :options="[]"></sm-select>
         <sm-select default-value="lucy1" disabled style="width: 120px">
-          <sm-select-option value="jack1">
-            Jack
-          </sm-select-option>
-          <sm-select-option value="lucy1">
-            Lucy
-          </sm-select-option>
-          <sm-select-option value="disabled" disabled>
-            Disabled
-          </sm-select-option>
-          <sm-select-option value="Yiminghe1">
-            yiminghe
-          </sm-select-option>
+          <sm-select-option value="jack1">Jack</sm-select-option>
+          <sm-select-option value="lucy1">Lucy</sm-select-option>
+          <sm-select-option value="disabled" disabled>Disabled</sm-select-option>
+          <sm-select-option value="Yiminghe1">yiminghe</sm-select-option>
         </sm-select>
         <sm-select default-value="lucy" style="width: 200px">
           <sm-select-opt-group>
-            <span slot="label"><sm-icon type="user" />Manager</span>
-            <sm-select-option value="jack">
-              Jack
-            </sm-select-option>
-            <sm-select-option value="lucy">
-              Lucy
-            </sm-select-option>
+            <span slot="label">
+              <sm-icon type="user" />Manager
+            </span>
+            <sm-select-option value="jack">Jack</sm-select-option>
+            <sm-select-option value="lucy">Lucy</sm-select-option>
           </sm-select-opt-group>
           <sm-select-opt-group label="Engineer">
-            <sm-select-option value="Yiminghe">
-              yiminghe
-            </sm-select-option>
+            <sm-select-option value="Yiminghe">yiminghe</sm-select-option>
           </sm-select-opt-group>
         </sm-select>
-        <sm-select mode="multiple" placeholder="Please select" :default-value="['a1', 'b2']" style="width: 200px">
-          <sm-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">
-            {{ (i + 9).toString(36) + i }}
-          </sm-select-option>
+        <sm-select
+          mode="multiple"
+          placeholder="Please select"
+          :default-value="['a1', 'b2']"
+          style="width: 200px"
+        >
+          <sm-select-option
+            v-for="i in 25"
+            :key="(i + 9).toString(36) + i"
+          >{{ (i + 9).toString(36) + i }}</sm-select-option>
         </sm-select>
       </div>
 
       <div class="checkboxs">
-        <sm-checkbox v-model="switch1">
-          Checkbox
-        </sm-checkbox>
+        <sm-checkbox v-model="switch1">Checkbox</sm-checkbox>
         <sm-checkbox default-checked disabled />
         <sm-checkbox disabled />
         <sm-checkbox default-checked />
@@ -169,16 +182,12 @@
         <sm-checkbox-group :options="plainOptions" disabled :default-value="['Apple']">
           <span slot="label" slot-scope="{ value }" style="color: red">{{ value }}</span>
         </sm-checkbox-group>
-        <sm-checkbox indeterminate>
-          Check all
-        </sm-checkbox>
-        <sm-checkbox indeterminate disabled>
-          Check all
-        </sm-checkbox>
+        <sm-checkbox indeterminate>Check all</sm-checkbox>
+        <sm-checkbox indeterminate disabled>Check all</sm-checkbox>
       </div>
 
       <div class="avatars">
-        <sm-avatar size="large" iconClass="sm-components-icon-search"/>
+        <sm-avatar size="large" iconClass="sm-components-icon-search" />
         <sm-avatar icon="user" />
         <sm-avatar size="small" icon="user" />
         <sm-avatar>U</sm-avatar>
@@ -198,67 +207,33 @@
 
       <div class="radios">
         <sm-radio>Radio</sm-radio>
-        <sm-radio :default-checked="false" disabled>
-          Disabled
-        </sm-radio>
-        <sm-radio default-checked :disabled="true">
-          Disabled
-        </sm-radio>
+        <sm-radio :default-checked="false" disabled>Disabled</sm-radio>
+        <sm-radio default-checked :disabled="true">Disabled</sm-radio>
         <sm-radio-group v-model="input1">
-          <sm-radio-button value="a">
-            Hangzhou
-          </sm-radio-button>
-          <sm-radio-button value="b" disabled>
-            Shanghai
-          </sm-radio-button>
-          <sm-radio-button value="c">
-            Beijing
-          </sm-radio-button>
-          <sm-radio-button value="d">
-            Chengdu
-          </sm-radio-button>
+          <sm-radio-button value="a">Hangzhou</sm-radio-button>
+          <sm-radio-button value="b" disabled>Shanghai</sm-radio-button>
+          <sm-radio-button value="c">Beijing</sm-radio-button>
+          <sm-radio-button value="d">Chengdu</sm-radio-button>
         </sm-radio-group>
         <sm-radio-group disabled default-value="a" size="large">
-          <sm-radio-button value="a">
-            Hangzhou
-          </sm-radio-button>
-          <sm-radio-button value="b">
-            Shanghai
-          </sm-radio-button>
-          <sm-radio-button value="c">
-            Beijing
-          </sm-radio-button>
-          <sm-radio-button value="d">
-            Chengdu
-          </sm-radio-button>
+          <sm-radio-button value="a">Hangzhou</sm-radio-button>
+          <sm-radio-button value="b">Shanghai</sm-radio-button>
+          <sm-radio-button value="c">Beijing</sm-radio-button>
+          <sm-radio-button value="d">Chengdu</sm-radio-button>
         </sm-radio-group>
       </div>
 
       <div class="tabs">
         <sm-radio-group v-model="tabPosition" style="margin:8px">
-          <sm-radio-button value="top">
-            top
-          </sm-radio-button>
-          <sm-radio-button value="bottom">
-            bottom
-          </sm-radio-button>
-          <sm-radio-button value="left">
-            left
-          </sm-radio-button>
-          <sm-radio-button value="right">
-            right
-          </sm-radio-button>
+          <sm-radio-button value="top">top</sm-radio-button>
+          <sm-radio-button value="bottom">bottom</sm-radio-button>
+          <sm-radio-button value="left">left</sm-radio-button>
+          <sm-radio-button value="right">right</sm-radio-button>
         </sm-radio-group>
         <sm-tabs default-active-key="1" :tab-position="tabPosition">
-          <sm-tab-pane key="1" tab="Tab 1">
-            Content of Tab 1
-          </sm-tab-pane>
-          <sm-tab-pane key="2" tab="Tab 2">
-            Content of Tab 2
-          </sm-tab-pane>
-          <sm-tab-pane key="3" tab="Tab 3">
-            Content of Tab 3
-          </sm-tab-pane>
+          <sm-tab-pane key="1" tab="Tab 1">Content of Tab 1</sm-tab-pane>
+          <sm-tab-pane key="2" tab="Tab 2">Content of Tab 2</sm-tab-pane>
+          <sm-tab-pane key="3" tab="Tab 3">Content of Tab 3</sm-tab-pane>
         </sm-tabs>
       </div>
     </template>
@@ -274,7 +249,6 @@
 
 <script lang="ts">
 import Vue from 'vue';
-import smcomponents from '../../src/mapboxgl';
 import data from './data/data.js';
 
 var host = 'http://support.supermap.com.cn:8090';
@@ -288,7 +262,6 @@ export default Vue.extend({
 body {
   margin: 0;
   // overflow: hidden;
-  background: #fff;
   width: 100%;
   height: 100%;
   position: absolute;

@@ -1,0 +1,13 @@
+{
+  "totalHits": 1,
+  "poiInfos": [
+    {
+      "uid": "1f062db5bf2e12b5b04c49e6",
+      "score": 0,
+      "address": null,
+      "name": "北京市",
+      "telephone": null,
+      "location": { "x": 116.40699419088875, "y": 39.90459558586809 }
+    }
+  ]
+}

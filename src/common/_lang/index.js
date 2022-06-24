@@ -1,7 +1,7 @@
 // import Vue from 'vue';
 import Cookies from 'js-cookie';
-import enLocale from './en';
-import zhLocale from './zh';
+import enLocale from 'vue-iclient/src/common/_lang/en';
+import zhLocale from 'vue-iclient/src/common/_lang/zh';
 import antdZhCN from 'ant-design-vue/es/locale/zh_CN';
 import antdEnUS from 'ant-design-vue/es/locale/en_US';
 import clonedeep from 'lodash.clonedeep';
@@ -24,7 +24,7 @@ const messages = {
   }
 };
 export function getLanguage() {
-  var lang = Cookies.get('language');
+  let lang = Cookies.get('language');
   if (!lang) {
     if (navigator.appName === 'Netscape') {
       lang = navigator.language;
@@ -43,9 +43,14 @@ export function getLanguage() {
   }
   return 'zh';
 }
-export function geti18n(n) {
+export function geti18n() {
   return rooti18n || i18n;
 }
+export const locale = {
+  install(Vue, opts) {
+    initi18n(Vue, opts);
+  }
+};
 export function setLocale(locales) {
   i18n.mergeLocaleMessage && i18n.mergeLocaleMessage(i18n.locale, locales);
 }
@@ -54,13 +59,13 @@ export function initi18n(Vue, config) {
   config = config || {};
   if (config.i18n) {
     i18n = config.i18n;
-    if (!i18n.getDateTimeFormat().hasOwnProperty()) {
+    if (!i18n.getDateTimeFormat() || Object.keys(i18n.getDateTimeFormat()).length === 0) {
       i18n.setDateTimeFormat('en', enLocale.dateTimeFormat);
       i18n.setDateTimeFormat('zh', zhLocale.dateTimeFormat);
     }
     i18n.mergeLocaleMessage && i18n.mergeLocaleMessage('en', lang.en);
     i18n.mergeLocaleMessage && i18n.mergeLocaleMessage('zh', lang.zh);
-  } else if (!Vue.prototype.hasOwnProperty('$i18n')) {
+  } else if (!Object.prototype.hasOwnProperty.call(Vue.prototype, '$i18n')) {
     Object.defineProperty(Vue.prototype, '$i18n', {
       get: function get() {
         if (!rooti18n && this.$root && this.$root.$options.i18n) {
@@ -79,6 +84,13 @@ export function initi18n(Vue, config) {
   }
   if (config.locale) {
     setLocale(config.locale);
+  }
+
+  const locale = config.i18n || i18n || config.locale;
+  if (!Vue.iclient) {
+    Vue.iclient = { locale };
+  } else {
+    Vue.iclient.locale = locale;
   }
 }
 

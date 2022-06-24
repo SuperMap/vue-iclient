@@ -1,5 +1,13 @@
 import isPlainObject from 'lodash.isplainobject';
-import { toType, getType, isFunction, validateType, isInteger, isArray, warn } from './utils.js';
+import {
+  toType,
+  getType,
+  isFunction,
+  validateType,
+  isInteger,
+  isArray,
+  warn
+} from 'vue-iclient/src/common/_utils/vue-types/utils';
 
 const VuePropTypes = {
   get any() {

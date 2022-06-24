@@ -1,8 +1,8 @@
 <script lang="ts">
 import Tree from 'ant-design-vue/es/tree';
 import { TreeProps } from 'ant-design-vue/es/tree/Tree';
-import Theme from '../_mixin/Theme';
-import AntdRender from '../_mixin/AntdRender';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
 export const treeTypes = {
   ...TreeProps()
@@ -22,7 +22,7 @@ export default {
     extralListeners() {
       const vm = this;
       return {
-        'check': function () {
+        check: function () {
           vm.$emit('check', ...arguments);
         }
       };

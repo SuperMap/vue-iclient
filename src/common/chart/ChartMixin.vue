@@ -36,15 +36,16 @@ import ECharts from 'vue-echarts';
 import UniqueId from 'lodash.uniqueid';
 import merge from 'lodash.merge';
 import isEqual from 'lodash.isequal';
-import debounce from 'lodash/debounce';
+import debounce from 'lodash.debounce';
 import cloneDeep from 'lodash.clonedeep';
-import Card from '../_mixin/Card';
-import Theme from '../_mixin/Theme';
-import Timer from '../_mixin/Timer';
-import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from '../_utils/style/theme/chart';
-import EchartsDataService from '../_utils/EchartsDataService';
-import TablePopup from '../table-popup/TablePopup';
-import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from '../_utils/util';
+import Card from 'vue-iclient/src/common/_mixin/Card';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Timer from 'vue-iclient/src/common/_mixin/Timer';
+import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from 'vue-iclient/src/common/_utils/style/theme/chart';
+import EchartsDataService from 'vue-iclient/src/common/_utils/EchartsDataService';
+import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
+import Message from 'vue-iclient/src/common/message/index.js';
 import { addListener, removeListener } from 'resize-detector';
 
 // 枚举事件类型
@@ -97,14 +98,6 @@ export default {
     iconClass: {
       type: String,
       default: 'sm-components-icon-chart'
-    },
-    collapsed: {
-      type: Boolean,
-      default: true
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
     },
     dataset: {
       type: Object,
@@ -161,6 +154,10 @@ export default {
     highlightColor: {
       type: String,
       default: '#01ffff'
+    },
+    isShow: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -173,7 +170,7 @@ export default {
       tablePopupProps: {},
       startSpin: null,
       customSeries: [],
-      dataZoomHandler: function() {}
+      dataZoomHandler: function () {}
     };
   },
   computed: {
@@ -208,7 +205,7 @@ export default {
           series: [...this.options.series, ...this.customSeries]
         };
       }
-      let series = this.options.series.map((serie, index) => {
+      let series = this.options.series.map(serie => {
         if (serie.label) {
           let cloneSerie = cloneDeep(serie);
           cloneSerie.label.normal = this._controlLabel(cloneSerie.label.normal, cloneSerie.maxLabels);
@@ -268,14 +265,14 @@ export default {
       }
     },
     dataset: {
-      handler: function(newVal, oldVal) {
+      handler: function () {
         this._isRequestData && this._setEchartOptions(this.dataset, this.datasetOptions, this.options);
         this.datasetChange = true;
       },
       deep: true
     },
     datasetOptions: {
-      handler: function(newVal, oldVal) {
+      handler: function (newVal, oldVal) {
         if (!isEqual(newVal, oldVal)) {
           this._setChartTheme();
           this.registerShape();
@@ -290,7 +287,7 @@ export default {
       }
     },
     options: {
-      handler: function(newVal, oldVal) {
+      handler: function () {
         if (this.datasetChange && !this.dataSeriesCache) {
           return;
         }
@@ -309,16 +306,6 @@ export default {
         removeListener(this.$el, this.__resizeHandler);
       }
     },
-    // 以下为echart的配置参数
-    width() {
-      return this.smChart && this.smChart.width;
-    },
-    height() {
-      return this.smChart && this.smChart.height;
-    },
-    computedOptions() {
-      return this.smChart && this.smChart.computedOptions;
-    },
     autoPlay() {
       this._handlePieAutoPlay();
     },
@@ -328,7 +315,7 @@ export default {
       }
     },
     highlightOptions: {
-      handler(newVal, oldVal) {
+      handler() {
         this.setItemStyleColor();
       },
       deep: true
@@ -432,7 +419,7 @@ export default {
           borderRadius: 2
         };
         firstVisualMap &&
-          firstVisualMap.pieces.map(item => {
+          firstVisualMap.pieces.forEach(item => {
             axisLabel.rich[`${parseInt(item.min)}_${parseInt(item.max)}`] = {
               backgroundColor: item.color,
               width: 20,
@@ -442,7 +429,7 @@ export default {
             };
           });
         const serieData = series && series[sortSeriesIndex].data;
-        axisLabel.formatter = function(label, index) {
+        axisLabel.formatter = function (label, index) {
           const orderNum = parseInt(label.slice(0, 2)) + 1;
           const leftLabel = label.slice(2);
           const labelValue = serieData && +serieData[index];
@@ -644,7 +631,7 @@ export default {
                 data = serie.data.slice(startDataIndex, endDataIndex + 1);
               }
 
-              label.formatter = function({ dataIndex, value }) {
+              label.formatter = function ({ dataIndex, value }) {
                 let result = '';
                 if (
                   dataIndex === startDataIndex ||
@@ -767,7 +754,7 @@ export default {
                       }
                     });
                     if (matchDataList.length > 0) {
-                      cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(item => {
+                      cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(() => {
                         return ({ dataIndex }) => {
                           const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
                           return matchData ? matchData.color : cirCleColor;
@@ -906,7 +893,7 @@ export default {
         }
       };
       let result = [];
-      for (var i = 0; i < data.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         let dataItem = {
           value: data[i].value,
           name: data[i].name
@@ -965,7 +952,7 @@ export default {
         if (endNormalLabel.formatter && typeof endNormalLabel.formatter === 'string') {
           formatMode = endNormalLabel.formatter;
         }
-        endNormalLabel.formatter = function({ dataIndex, value, name, percent }) {
+        endNormalLabel.formatter = function ({ dataIndex, value, name, percent }) {
           const FORMATTER_MAP = {
             '{b}: {c}': `${name}: ${value}`,
             '{b}': `${name}`,
@@ -1104,8 +1091,10 @@ export default {
       return this.smChart[name](...args);
     },
     unSupportedFeatureTip() {
-      this.$message.destroy();
-      this.$message.warning(this.$t('chart.unSupportedData'));
+      // @ts-ignore
+      Message.destroy();
+      // @ts-ignore
+      Message.warning(this.$t('chart.unSupportedData'));
     },
     handleChartClick(params) {
       if (this.associatedMap) {
@@ -1127,7 +1116,9 @@ export default {
         const propsData = this.generateTableData(properties);
         this.tablePopupProps = { ...propsData };
         this.$nextTick(() => {
-          this.viewModel.setPopupContent(coordinates, this.$refs.chartTablePopup.$el, () => setPopupArrowStyle(this.tablePopupBgData));
+          this.viewModel.setPopupContent(coordinates, this.$refs.chartTablePopup.$el, () =>
+            setPopupArrowStyle(this.tablePopupBgData)
+          );
         });
       } else {
         const mapNotLoaded = this.mapNotLoadedTip();
@@ -1161,7 +1152,7 @@ export default {
     _dataZoomChanged() {
       let flag = false;
       this.options.series &&
-        this.options.series.forEach((serie, index) => {
+        this.options.series.forEach(serie => {
           const labelConfig = serie.label && serie.label.normal;
           flag = labelConfig.show && labelConfig.smart;
         });
@@ -1188,19 +1179,14 @@ export default {
                     x: 0,
                     y: 0
                   },
-                  buildPath: function(ctx, shape) {
+                  buildPath: function (ctx, shape) {
                     // 会canvas的应该都能看得懂，shape是从custom传入的
                     const xAxisPoint = shape.xAxisPoint;
                     const c0 = [shape.x, shape.y];
                     const c1 = [shape.x - 13, shape.y - 13];
                     const c2 = [xAxisPoint[0] - 13, xAxisPoint[1] - 13];
                     const c3 = [xAxisPoint[0], xAxisPoint[1]];
-                    ctx
-                      .moveTo(c0[0], c0[1])
-                      .lineTo(c1[0], c1[1])
-                      .lineTo(c2[0], c2[1])
-                      .lineTo(c3[0], c3[1])
-                      .closePath();
+                    ctx.moveTo(c0[0], c0[1]).lineTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).closePath();
                   }
                 });
                 // 绘制右侧面
@@ -1209,18 +1195,13 @@ export default {
                     x: 0,
                     y: 0
                   },
-                  buildPath: function(ctx, shape) {
+                  buildPath: function (ctx, shape) {
                     const xAxisPoint = shape.xAxisPoint;
                     const c1 = [shape.x, shape.y];
                     const c2 = [xAxisPoint[0], xAxisPoint[1]];
                     const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
                     const c4 = [shape.x + 18, shape.y - 9];
-                    ctx
-                      .moveTo(c1[0], c1[1])
-                      .lineTo(c2[0], c2[1])
-                      .lineTo(c3[0], c3[1])
-                      .lineTo(c4[0], c4[1])
-                      .closePath();
+                    ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
                   }
                 });
                 // 绘制顶面
@@ -1229,17 +1210,12 @@ export default {
                     x: 0,
                     y: 0
                   },
-                  buildPath: function(ctx, shape) {
+                  buildPath: function (ctx, shape) {
                     const c1 = [shape.x, shape.y];
                     const c2 = [shape.x + 18, shape.y - 9];
                     const c3 = [shape.x + 5, shape.y - 22];
                     const c4 = [shape.x - 13, shape.y - 13];
-                    ctx
-                      .moveTo(c1[0], c1[1])
-                      .lineTo(c2[0], c2[1])
-                      .lineTo(c3[0], c3[1])
-                      .lineTo(c4[0], c4[1])
-                      .closePath();
+                    ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
                   }
                 });
                 break;
@@ -1250,18 +1226,13 @@ export default {
                     x: 0,
                     y: 0
                   },
-                  buildPath: function(ctx, shape) {
+                  buildPath: function (ctx, shape) {
                     const xAxisPoint = shape.xAxisPoint;
                     const c0 = [shape.x, shape.y];
                     const c1 = [shape.x - 9, shape.y - 9];
                     const c2 = [xAxisPoint[0] - 9, xAxisPoint[1] - 9];
                     const c3 = [xAxisPoint[0], xAxisPoint[1]];
-                    ctx
-                      .moveTo(c0[0], c0[1])
-                      .lineTo(c1[0], c1[1])
-                      .lineTo(c2[0], c2[1])
-                      .lineTo(c3[0], c3[1])
-                      .closePath();
+                    ctx.moveTo(c0[0], c0[1]).lineTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).closePath();
                   }
                 });
                 CubeRight = graphicIntance.extendShape({
@@ -1269,18 +1240,13 @@ export default {
                     x: 0,
                     y: 0
                   },
-                  buildPath: function(ctx, shape) {
+                  buildPath: function (ctx, shape) {
                     const xAxisPoint = shape.xAxisPoint;
                     const c1 = [shape.x, shape.y];
                     const c2 = [xAxisPoint[0], xAxisPoint[1]];
                     const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
                     const c4 = [shape.x + 18, shape.y - 9];
-                    ctx
-                      .moveTo(c1[0], c1[1])
-                      .lineTo(c2[0], c2[1])
-                      .lineTo(c3[0], c3[1])
-                      .lineTo(c4[0], c4[1])
-                      .closePath();
+                    ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
                   }
                 });
                 CubeTop = graphicIntance.extendShape({
@@ -1288,17 +1254,12 @@ export default {
                     x: 0,
                     y: 0
                   },
-                  buildPath: function(ctx, shape) {
+                  buildPath: function (ctx, shape) {
                     const c1 = [shape.x, shape.y];
                     const c2 = [shape.x + 18, shape.y - 9];
                     const c3 = [shape.x + 9, shape.y - 18];
                     const c4 = [shape.x - 9, shape.y - 9];
-                    ctx
-                      .moveTo(c1[0], c1[1])
-                      .lineTo(c2[0], c2[1])
-                      .lineTo(c3[0], c3[1])
-                      .lineTo(c4[0], c4[1])
-                      .closePath();
+                    ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
                   }
                 });
                 break;

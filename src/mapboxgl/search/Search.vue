@@ -25,7 +25,11 @@
           :aria-orientation="position.includes('left') ? 'left' : 'right'"
           :style="collapseCardHeaderBgStyle"
         >
-          <div v-if="mode === 'control'" class="sm-component-search__arrow-icon" @click="showSearch = !showSearch">
+          <div
+            v-if="mode === 'control'"
+            class="sm-component-search__arrow-icon"
+            @click="showSearch = !showSearch"
+          >
             <i
               :class="position.includes('left') ? 'sm-components-icon-double-left' : 'sm-components-icon-double-right'"
             />
@@ -48,17 +52,30 @@
             @change="e => !e.target.value && inputValueCleared()"
           />
         </div>
-        <div v-show="resultSuggestions" class="sm-component-search__result" :style="collapseCardBackgroundStyle">
-          <div v-for="(result, index) in searchResult" :key="index" class="sm-component-search__panel">
-            <div v-if="result.source && showTitle && result.result.length" class="sm-component-search__panel-header-wrapper">
+        <div
+          v-show="resultSuggestions"
+          class="sm-component-search__result"
+          :style="collapseCardBackgroundStyle"
+        >
+          <div
+            v-for="(result, index) in searchResult"
+            :key="index"
+            class="sm-component-search__panel"
+          >
+            <div
+              v-if="result.source && showTitle && result.result.length"
+              class="sm-component-search__panel-header-wrapper"
+            >
               <div class="sm-component-search__panel-header">
                 <i class="sm-components-icon-list" />
-                <span class="add-ellipsis">
-                  {{ result.source }}
-                </span>
+                <span class="add-ellipsis">{{ result.source }}</span>
               </div>
             </div>
-            <div v-if="result.result" class="sm-component-search__panel-body" :style="getTextColorStyle">
+            <div
+              v-if="result.result"
+              class="sm-component-search__panel-body"
+              :style="getTextColorStyle"
+            >
               <ul :class="{ noMarginBottom: !showTitle }">
                 <li
                   v-for="(item, i) in result.result"
@@ -69,9 +86,7 @@
                     'add-ellipsis': true
                   }"
                   @click="searchResultListClicked(item, $event)"
-                >
-                  {{ item.filterVal || item.name || item.address }}
-                </li>
+                >{{ item.filterVal || item.name || item.address }}</li>
               </ul>
             </div>
           </div>
@@ -89,14 +104,16 @@
   </div>
 </template>
 <script>
-import Theme from '../../common/_mixin/Theme';
-import MapGetter from '../_mixin/map-getter';
-import Control from '../_mixin/control';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import SearchViewModel from './SearchViewModel';
-import SmIcon from '../../common/icon/Icon';
-import SmInput from '../../common/input/Input';
-import TablePopup from '../../common/table-popup/TablePopup';
-import { setPopupArrowStyle } from '../../common/_utils/util';
+import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
+import Message from 'vue-iclient/src/common/message/Message.js';
+import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
+import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmSearch',
@@ -168,7 +185,7 @@ export default {
     },
     splitLine: {
       type: Boolean,
-      default: false
+      default: true
     }
   },
   data() {
@@ -196,6 +213,28 @@ export default {
       return this.searchResult.length > 0;
     }
   },
+  watch: {
+    iportalData(newVal, oldVal) {
+      if (this.searchKey && !isEqual(newVal, oldVal)) {
+        this.search();
+      }
+    },
+    restData(newVal, oldVal) {
+      if (this.searchKey && !isEqual(newVal, oldVal)) {
+        this.search();
+      }
+    },
+    restMap(newVal, oldVal) {
+      if (this.searchKey && !isEqual(newVal, oldVal)) {
+        this.search();
+      }
+    },
+    addressMatch(newVal, oldVal) {
+      if (this.searchKey && !isEqual(newVal, oldVal)) {
+        this.search();
+      }
+    }
+  },
   created() {
     this.showSearch = !this.collapsed;
     this.showIcon = this.collapsed;
@@ -205,26 +244,24 @@ export default {
     this.clearResult(true);
   },
   beforeDestroy() {
-    this.$message.destroy();
-    this.marker && this.marker.remove() && (this.marker = null);
+    // @ts-ignore
+    Message.destroy();
   },
   methods: {
-    /**
-     * 清除搜索结果。
-     */
     clearResult(isClear) {
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       isClear && (this.searchKey = null);
       isClear && this.resetLastEvent();
       this.searchResult = [];
-      this.marker && this.marker.remove() && (this.marker = null);
       this.prefixType = 'search';
       this.keyupHoverInfo = {
         groupIndex: undefined,
         hoverIndex: undefined
       };
+      this.viewModel && this.viewModel.removed();
     },
-    searchInput(e) {
+    searchInput() {
       if (this.openSearchSuggestion && !this.isInputing) {
         if (this.searchKey) {
           this.isSuggestion = true;
@@ -256,10 +293,12 @@ export default {
           this.regiterEvents();
           this.prefixType = 'loading';
         } else {
-          this.$message.warning(this.$t('search.noKey'));
+          // @ts-ignore
+          Message.warning(this.$t('search.noKey'));
         }
       } else {
-        this.$message.warning(this.$t('search.setSearchSource'));
+        // @ts-ignore
+        Message.warning(this.$t('search.setSearchSource'));
       }
     },
     inputValueCleared(emitEvent = true) {
@@ -309,11 +348,12 @@ export default {
        * @desc 搜索成功后触发。
        * @property {Object} e  - 事件对象。
        */
-      this.$message.destroy();
+      // @ts-ignore
+      Message.destroy();
       this.searchResult = result;
       this.$emit('search-succeeded', { searchResult: this.searchResult });
       this.prefixType = 'search';
-      // this.searchResult.length < 1 && this.$message.warning(this.$t('search.noResult'));
+      // this.searchResult.length < 1 && Message.warning(this.$t('search.noResult'));
       if (this.isNumber(this.searchTaskId)) {
         this.searchTaskId += 1;
         this.regiterEvents();
@@ -327,7 +367,7 @@ export default {
        */
       this.clearResult();
       this.prefixType = 'search';
-      // this.$message.warning(this.$t('search.noResult'));
+      // Message.warning(this.$t('search.noResult'));
       this.$emit('search-failed', e);
       if (this.isNumber(this.searchTaskId)) {
         this.searchTaskId += 1;
@@ -346,16 +386,16 @@ export default {
         this.tablePopupProps = { ...state };
       }
       this.$nextTick(() => {
-        this.viewModel.setPopupContent(
-          popupData.coordinates,
-          this.$refs.searchTablePopup.$el,
-          () => setPopupArrowStyle(this.tablePopupBgData)
+        this.viewModel.setPopupContent(popupData.coordinates, this.$refs.searchTablePopup.$el, () =>
+          setPopupArrowStyle(this.tablePopupBgData)
         );
       });
     },
     illegalFeatureTip({ error }) {
-      this.$message.destroy();
-      this.$message.error(error);
+      // @ts-ignore
+      Message.destroy();
+      // @ts-ignore
+      Message.error(error);
     },
     searchSelectedInfo({ data }) {
       this.prefixType = 'search';

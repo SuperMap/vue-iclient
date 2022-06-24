@@ -1,0 +1,48 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(slideshow) {
+  width: 264px;
+  height: 332px;
+  .sm-component-collapse-card__content {
+    height: inherit;
+  }
+  .sm-component-collapse-card__body {
+    height: calc(100% - 32px);
+  }
+  @include e(content) {
+    text-align: center;
+    height: 100%;
+  }
+  @include b(slideshowitem) {
+    img {
+      width: 196px;
+      height: 110px;
+    }
+  }
+  .swiper-container {
+    width: 100%;
+    height: 100%;
+  }
+  .swiper-button-prev,
+  .swiper-button-next {
+    color: $swiper-prev-next-background;
+    font-size: 26px;
+    &:hover {
+      color: $primary-6 !important;
+    }
+  }
+  .swiper-button-active {
+    color: $primary-6;
+  }
+  .swiper-scrollbar-drag {
+    background: $scrollbar-background;
+  }
+  .swiper-pagination-bullet {
+    opacity: 1;
+    background: $swiper-pagination-bullet;
+  }
+  .swiper-pagination-bullet-active {
+    background: $primary-6;
+  }
+}

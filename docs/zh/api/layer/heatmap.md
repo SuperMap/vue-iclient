@@ -14,3 +14,5 @@
 | :--------- | :--------- | :------------------------------ | :----- | :----- |
 | data       | 热力图数据 | [GeoJSON](https://geojson.org/) | -      | -      |
 | layerStyle | 图层样式   | [HeatMapStyle](/zh/api/common-types/common-types.md#heatmapstyle)                    | -      | -      |
+
+> 支持 [Layer 混入参数](/zh/api/mixin/mixin.md#layer)
