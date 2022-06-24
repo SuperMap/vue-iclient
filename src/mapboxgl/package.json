@@ -16,7 +16,7 @@
     "@turf/transform-scale": "^5.1.5",
     "@turf/meta": "^6.5.0",
     "@types/geojson": "^7946.0.7",
-    "@types/mapbox-gl": "^0.51.11",
+    "@types/mapbox-gl": "^0.54.5",
     "@types/node": "^12.0.3",
     "@types/three": "0.129.0",
     "ant-design-vue": "1.7.2",
@@ -74,7 +74,7 @@
     "vue-videojs7": "^0.1.5",
     "wwobjloader2": "4.0.0",
     "xlsx": "0.12.13",
-    "xml-js": "1.6.8"
+    "xml-js": "1.6.11"
   },
   "peerDependencies": {
     "vue": ">=2.5.0"

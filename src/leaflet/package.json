@@ -65,7 +65,7 @@
     "vue-property-decorator": "^8.5.1",
     "vue-types": "^2.0.2",
     "vue-videojs7": "^0.1.5",
-    "xml-js": "1.6.8"
+    "xml-js": "1.6.11"
   },
   "peerDependencies": {
     "vue": ">=2.5.0"
