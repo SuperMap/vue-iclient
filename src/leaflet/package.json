@@ -31,7 +31,7 @@
     "geojson": "^0.5.0",
     "interactjs": "1.9.7",
     "js-cookie": "^2.2.0",
-    "leaflet": "1.5.1",
+    "leaflet": "1.7.1",
     "lodash.assignin": "^4.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.difference": "^4.5.0",
