@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/avatar' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.avatar.title')}`,
+  id: 'BasicComponents/avatar'
+};
 
 export const BasicAvatar = () => ({
   mixins: [theme],

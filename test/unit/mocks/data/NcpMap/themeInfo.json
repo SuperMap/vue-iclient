@@ -1,0 +1,41 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": {
+                "type": "MultiPolygon",
+                "coordinates": [
+                    [
+                        [
+                            [
+                                119.29720768,
+                                35.0911855732516
+                            ],
+                            [
+                                119.28325802,
+                                35.115715478251
+                            ],
+                            [
+                                119.239739165,
+                                35.1276262032508
+                            ]
+                        ]
+                    ]
+                ]
+            },
+            "properties": {
+                "nowConfirmed": 10,
+                "confirmedAdd": 0,
+                "confirmed": 760,
+                "daysNoConfirmedAdd": 4,
+                "daysMaxConfirmedAdd": 0,
+                "incidence": 0.76,
+                "population": 100470000,
+                "isOutOfDate": false,
+                "provinceNameEn": "Shandong",
+                "provinceName": "山东"
+            }
+        }
+    ]
+  }

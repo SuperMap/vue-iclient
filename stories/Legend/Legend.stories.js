@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/legend'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.legend.title')}`,
+  id: 'GISComponents/legend'
 };
 
 export const Legend = () => ({
@@ -16,7 +17,7 @@ export const Legend = () => ({
   `
 });
 Legend.story = {
-  name: toI18n('gisComponent.legend')
+  name: toI18n('gisComponent.basic')
 };
 
 export const PanlLegend = () => ({
@@ -27,5 +28,5 @@ export const PanlLegend = () => ({
     `
 });
 PanlLegend.story = {
-  name: toI18n('gisComponent.panlLegend')
+  name: toI18n('gisComponent.legend.panlLegend')
 };

@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/layerManager'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.layerManager.title')}`,
+  id: 'GISComponents/layerManager'
 };
 export const layerManager = () => ({
   mixins: [theme],
@@ -13,5 +14,5 @@ export const layerManager = () => ({
     `
 });
 layerManager.story = {
-  name: toI18n('gisComponent.layerManager')
+  name: toI18n('gisComponent.basic')
 };

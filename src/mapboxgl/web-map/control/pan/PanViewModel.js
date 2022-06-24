@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class PanViewModel
@@ -12,6 +12,7 @@ export default class PanViewModel extends mapboxgl.Evented {
     const { map } = mapInfo;
     this.map = map;
   }
+
   /**
    * @function PanViewModel.prototype.panTo
    * @description 地图平移至目标位置。
@@ -20,6 +21,7 @@ export default class PanViewModel extends mapboxgl.Evented {
   panTo(lnglat) {
     this.map.panTo(lnglat);
   }
+
   /**
    * @function PanViewModel.prototype.panBy
    * @description 地图平移至目标位置。

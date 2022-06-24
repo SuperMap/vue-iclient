@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/checkbox' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.checkbox.title')}`,
+  id: 'BasicComponents/checkbox'
+};
 
 export const BasicCheckbox = () => ({
   mixins: [theme],

@@ -1,9 +1,9 @@
 import XLSX from 'xlsx';
 import { FileTypes } from './FileTypes';
 import { open } from 'shapefile';
-import { handleMultyPolygon } from '../_utils/geometry-util';
-import { isXField, isYField } from '../../common/_utils/util';
-import { geti18n } from '../../common/_lang';
+import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
+import { isXField, isYField } from 'vue-iclient/src/common/_utils/util';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 const FileReaderUtil = {
   rABS: typeof FileReader !== 'undefined' && FileReader.prototype && FileReader.prototype.readAsBinaryString,
@@ -216,13 +216,13 @@ const FileReaderUtil = {
     let rows = string.split('\n');
     let result = {};
     if (!withoutTitle) {
-      result['colTitles'] = rows[0].split(',');
+      result.colTitles = rows[0].split(',');
     } else {
-      result['colTitles'] = [];
+      result.colTitles = [];
     }
-    result['rows'] = [];
+    result.rows = [];
     for (let i = withoutTitle ? 0 : 1; i < rows.length; i++) {
-      rows[i] && result['rows'].push(rows[i].split(','));
+      rows[i] && result.rows.push(rows[i].split(','));
     }
     return result;
   }

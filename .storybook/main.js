@@ -3,7 +3,11 @@ function resolve(dir) {
   return path.join(__dirname, '..', dir);
 }
 module.exports = {
-  stories: ['../**/*.stories.mdx', '../**/*.stories.@(js|jsx|ts|tsx)'],
+  stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.@(js|jsx|ts|tsx)'],
+  // 没有用到 @storybook/addon-postcss,隐藏关于postcss的警告
+  features: {
+    postcss: false,
+  },
   addons: [
     '@storybook/preset-scss',
     {
@@ -19,6 +23,7 @@ module.exports = {
     '@storybook/addon-toolbars'
   ],
   webpackFinal: async (config, { configType }) => {
+    config.resolve.alias['vue-iclient'] = resolve('./');
     config.optimization = {
       splitChunks: {
         chunks: 'all',
@@ -26,7 +31,7 @@ module.exports = {
         maxSize: 1024 * 1024 // 1MB
       }
     };
-    config.resolve.alias['core-js/modules'] = '@storybook/core/node_modules/core-js/modules';
+    // config.resolve.alias['core-js/modules'] = '@storybook/core/node_modules/core-js/modules';
     config.module.rules.push({
       test: /\.less$/,
       use: [

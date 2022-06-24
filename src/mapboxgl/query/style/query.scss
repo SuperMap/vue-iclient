@@ -5,13 +5,13 @@
 @import '../../../common/empty/style/empty.scss';
 @import '../../../common/spin/style/spin.scss';
 @import '../../../common/icon/style/icon.scss';
-@import '../../../common/table-popup/style/tablePopup.scss';
+@import '../../../common/table-popup/style/table-popup.scss';
 
 @include b(query) {
   $query-prefix: &;
 
   @include e(body) {
-    min-width: 200px;
+    min-width: 240px;
     max-height: 400px;
     transform-origin: top left;
     transition: all 0.5s;
@@ -56,10 +56,7 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    &:hover {
-      color: $hover-color !important;
-    }
-    & > #{$query-prefix}__job-info-name,
+    & > #{$query-prefix}__job-info-name,git
     & > #{$query-prefix}__header-name {
       display: inline-block;
       overflow: hidden;
@@ -68,14 +65,11 @@
       max-width: 85%;
       line-height: 20px;
     }
-    & > i {
-      font-size: 12px;
-    }
   }
   @include e(job-info-body) {
     padding: 8px 16px 12px;
     margin: 0 -16px;
-    background-color: $background-color-base;
+    background-color: $collapse-card-secondary-heard-bg;
   }
   @include e((attribute, spatial-filter)) {
     > div {
@@ -120,16 +114,14 @@
     > span {
       cursor: default;
     }
-    &:hover {
-      > i {
-        color: $error-color !important;
-      }
+    > i {
+      color: $error-color !important;
     }
   }
   @include e(no-result result-loading result-body) {
     flex: 1;
     margin: 0 -16px;
-    background-color: $background-color-base;
+    background-color: $collapse-card-secondary-heard-bg;
   }
   @include e(no-result result-loading) {
     display: flex;

@@ -1,8 +1,8 @@
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import FileModel from './FileModel';
 import { getFileType } from './FileTypes';
 import FileReaderUtil from './FileReaderUtil';
-import { geti18n } from '../../common/_lang';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 import bbox from '@turf/bbox';
 import UniqueId from 'lodash.uniqueid';
 

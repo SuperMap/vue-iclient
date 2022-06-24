@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Chart Components/line'
+  title: `${toI18n('chartComponent.title')}/${toI18n('chartComponent.line.title')}`,
+  id: 'ChartComponents/line'
 };
 
 export const Line = () => ({
@@ -70,5 +71,5 @@ export const Line = () => ({
   />`
 });
 Line.story = {
-  name: toI18n('chartComponent.line.line')
+  name: toI18n('chartComponent.basic')
 };

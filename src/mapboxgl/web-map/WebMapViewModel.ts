@@ -1,20 +1,21 @@
-/* Copyright© 2000 - 2021 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2022 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
-import mapboxgl from '../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from './SourceListModel';
-import { handleMultyPolygon } from '../_utils/geometry-util';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import '../../../static/libs/geostats/geostats';
-import '../../../static/libs/json-sql/jsonsql';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
+import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import 'vue-iclient/static/libs/geostats/geostats';
+import 'vue-iclient/static/libs/json-sql/jsonsql';
 import echarts from 'echarts';
-import EchartsLayer from '../../../static/libs/echarts-layer/EchartsLayer';
+import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
 import cloneDeep from 'lodash.clonedeep';
-import { geti18n } from '../../common/_lang';
-import WebMapBase from '../../common/web-map/WebMapBase';
-import { getColorWithOpacity } from '../../common/_utils/util';
-import { getProjection, registerProjection, toEpsgCode } from '../../common/_utils/epsg-define';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
+import WebMapBase from 'vue-iclient/src/common/web-map/WebMapBase';
+import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+import { getProjection, registerProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';
+
 const WORLD_WIDTH = 360;
 // 迁徙图最大支持要素数量
 /**
@@ -108,7 +109,7 @@ export default class WebMapViewModel extends WebMapBase {
   private checkSameLayer: boolean;
 
   constructor(
-    id: string | number | object,
+    id: string | number | Object,
     options: webMapOptions = {},
     // @ts-ignore fix-mapoptions
     mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
@@ -150,9 +151,9 @@ export default class WebMapViewModel extends WebMapBase {
   public resize(keepBounds = false): void {
     this.map && this.map.resize();
     this.echartsLayerResize();
-    let mapContainerStyle = window.getComputedStyle(document.getElementById(this.target));
+    const mapContainerStyle = window.getComputedStyle(document.getElementById(this.target));
     if (keepBounds && this.map && this.bounds && mapContainerStyle) {
-      let zoom = this._getResizedZoom(this.bounds, mapContainerStyle);
+      const zoom = this._getResizedZoom(this.bounds, mapContainerStyle);
       if (zoom !== this.map.getZoom()) {
         this.map && this.map.setZoom(zoom);
       }
@@ -162,15 +163,27 @@ export default class WebMapViewModel extends WebMapBase {
   public setCrs(crs): void {
     if (this.map) {
       this.mapOptions.crs = crs;
-      //@ts-ignore
-      crs && this.map.setCRS(mapboxgl.CRS.get(crs));
+      if (this.mapOptions.crs) {
+        if (crs.epsgCode) {
+          this.mapOptions.crs = new mapboxgl.CRS(
+            this.mapOptions.crs.epsgCode,
+            this.mapOptions.crs.extent,
+            this.mapOptions.crs.unit
+          );
+          // @ts-ignore
+          this.map.setCRS(this.mapOptions.crs);
+        } else {
+          // @ts-ignore
+          this.map.setCRS(mapboxgl.CRS.get(crs));
+        }
+      }
     }
   }
 
   public setCenter(center): void {
     if (this.map && this.centerValid(center)) {
       this.mapOptions.center = center;
-      let { lng, lat } = this.map.getCenter();
+      const { lng, lat } = this.map.getCenter();
       if (center[0] !== +lng.toFixed(4) || center[1] !== +lat.toFixed(4)) {
         this.map.setCenter(center, { from: 'setCenter' });
       }
@@ -214,7 +227,7 @@ export default class WebMapViewModel extends WebMapBase {
       if (tileSize <= 0) {
         return;
       }
-      let sources = this.map.getStyle().sources;
+      const sources = this.map.getStyle().sources;
       Object.keys(sources).forEach(sourceId => {
         // @ts-ignore
         if (sources[sourceId].type === 'raster' && sources[sourceId].rasterSource === 'iserver') {
@@ -247,26 +260,45 @@ export default class WebMapViewModel extends WebMapBase {
     this.initWebMap();
   }
 
-  _getMapInfo(mapInfo, _taskID): void {
-    let { projection } = mapInfo;
-    this.baseProjection = this._defineProj4(projection);
-
-    if (mapboxgl.CRS.get(this.baseProjection)) {
-      if (this.map) {
-        // @ts-ignore
-        if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
-          this.triggerEvent('projectionIsNotMatch', {});
-          return;
-        }
+  _loadLayers(mapInfo, _taskID): void {
+    if (this.map) {
+      // @ts-ignore
+      if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
+        this.triggerEvent('projectionIsNotMatch', {});
+        return;
+      }
+      this._handleLayerInfo(mapInfo, _taskID);
+    } else {
+      this._createMap(mapInfo);
+      this.map.on('load', () => {
         this._handleLayerInfo(mapInfo, _taskID);
-      } else {
-        this._createMap(mapInfo);
-        this.map.on('load', () => {
-          this._handleLayerInfo(mapInfo, _taskID);
+      });
+    }
+  }
+
+  _getMapInfo(mapInfo, _taskID): void {
+    const { projection } = mapInfo;
+    this.baseProjection = toEpsgCode(projection);
+    if (!mapboxgl.CRS.get(this.baseProjection)) {
+      // 如果不是mapboxgl支持的投影，尝试去底图的地图服务中取投影
+      if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'TILE') {
+        this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, { withoutFormatSuffix: true }).then(wkt => {
+          this._defineProj4(wkt, projection);
+          const extent = mapInfo.extent;
+          const crs = new mapboxgl.CRS(
+            this.baseProjection,
+            [extent.leftBottom.x, extent.leftBottom.y, extent.rightTop.x, extent.rightTop.y],
+            extent.rightTop.x > 180 ? 'meter' : 'degree'
+          );
+          mapboxgl.CRS.set(crs);
+          this._loadLayers(mapInfo, _taskID);
         });
+      } else {
+        throw Error(geti18n().t('webmap.crsNotSupport'));
       }
     } else {
-      throw Error(geti18n().t('webmap.crsNotSupport'));
+      this._defineProj4(projection);
+      this._loadLayers(mapInfo, _taskID);
     }
   }
 
@@ -289,9 +321,15 @@ export default class WebMapViewModel extends WebMapBase {
   _createMap(mapInfo?): void {
     if (!mapInfo) {
       this.mapOptions.container = this.target;
+      if (this.mapOptions.crs && this.mapOptions.crs.epsgCode) {
+        this.mapOptions.crs = new mapboxgl.CRS(
+          this.mapOptions.crs.epsgCode,
+          this.mapOptions.crs.extent,
+          this.mapOptions.crs.unit
+        );
+      }
       if (!this.mapOptions.transformRequest) {
         this.mapOptions.transformRequest = (url: string, resourceType: string) => {
-          const urlParam = { url };
           let proxy = '';
           if (typeof this.proxy === 'string') {
             let proxyType = 'data';
@@ -301,7 +339,7 @@ export default class WebMapViewModel extends WebMapBase {
             proxy = this.webMapService.handleProxy(proxyType);
           }
           return {
-            url: proxy ? +`${proxy}${encodeURIComponent(url)}` : url,
+            url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
             credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
               ? 'include'
               : 'omit'
@@ -310,10 +348,10 @@ export default class WebMapViewModel extends WebMapBase {
       }
       setTimeout(() => {
         let fadeDuration = 0;
-        if (this.mapOptions.hasOwnProperty('fadeDuration')) {
+        if (Object.prototype.hasOwnProperty.call(this.mapOptions, 'fadeDuration')) {
           fadeDuration = this.mapOptions.fadeDuration;
         }
-        this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
+        this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration, renderWorldCopies: false });
         this.map.on('load', () => {
           this.triggerEvent('addlayerssucceeded', {
             map: this.map,
@@ -326,12 +364,13 @@ export default class WebMapViewModel extends WebMapBase {
       return;
     }
     // 获取字体样式
-    let fontFamilys: string = this._getLabelFontFamily(mapInfo);
-    let center = this._getMapCenter(mapInfo);
+    const fontFamilys: string = this._getLabelFontFamily(mapInfo);
+    const center = this._getMapCenter(mapInfo);
     // zoom
     let zoom = mapInfo.level || 0;
     let zoomBase = 0;
-    let { interactive, bounds, minZoom, maxZoom } = this.mapOptions;
+    let { bounds, minZoom, maxZoom } = this.mapOptions;
+    const interactive = this.mapOptions.interactive;
     if (isNaN(minZoom)) {
       minZoom = mapInfo.minScale
         ? this._transformScaleToZoom(mapInfo.minScale, mapboxgl.CRS.get(this.baseProjection))
@@ -367,6 +406,7 @@ export default class WebMapViewModel extends WebMapBase {
 
     // 初始化 map
     this.map = new mapboxgl.Map({
+      ...this.mapOptions,
       container: this.target,
       center: this.center || center,
       zoom: this.zoom || zoom,
@@ -385,7 +425,6 @@ export default class WebMapViewModel extends WebMapBase {
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
       renderWorldCopies: false,
-      preserveDrawingBuffer: this.mapOptions.preserveDrawingBuffer || false,
       transformRequest: (url, resourceType) => {
         if (resourceType === 'Tile') {
           if (this.isSuperMapOnline && url.indexOf('http://') === 0) {
@@ -412,7 +451,7 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createMVTBaseLayer(layerInfo) {
     let url = layerInfo.dataSource.url;
-    if (url.indexOf('/restjsr/') > -1) {
+    if (url.indexOf('/restjsr/') > -1 && !/\/style\.json$/.test(url)) {
       url += '/style.json';
     }
     // @ts-ignore
@@ -420,9 +459,9 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _initBaseLayer(mapInfo: any): void {
-    let layerInfo = mapInfo.baseLayer || mapInfo;
-    let layerType = this.getBaseLayerType(layerInfo);
-    let mapUrls = this.getMapurls();
+    const layerInfo = mapInfo.baseLayer || mapInfo;
+    const layerType = this.getBaseLayerType(layerInfo);
+    const mapUrls = this.getMapurls();
     let url: string;
     this.baseLayerProxy = this.webMapService.handleProxy('image');
 
@@ -433,7 +472,7 @@ export default class WebMapViewModel extends WebMapBase {
         break;
       case 'BING':
         this.baseLayerProxy = null;
-        this._createBingLayer(layerInfo.layerID || layerInfo.name);
+        this._createBingLayer(layerInfo.layerID || layerInfo.name, layerInfo);
         break;
       case 'WMS':
         this._createWMSLayer(layerInfo);
@@ -454,12 +493,11 @@ export default class WebMapViewModel extends WebMapBase {
         break;
       case 'MAPBOXSTYLE':
         this._createMVTBaseLayer(layerInfo); // 添加矢量瓦片服务作为底图
-      default:
         break;
     }
   }
 
-  _initOverlayLayers(layers: any, _taskID): void {
+  _initOverlayLayers(layers: any, _taskID: any): void {
     // 存储地图上所有的图层对象
     if (typeof this.layerFilter === 'function') {
       layers = layers.filter(this.layerFilter);
@@ -468,8 +506,8 @@ export default class WebMapViewModel extends WebMapBase {
     this.layerAdded = 0;
     this.expectLayerLen = layers.length;
     if (this.expectLayerLen > 0) {
-      layers.forEach((layer, index) => {
-        let type = this.webMapService.getDatasourceType(layer);
+      layers.forEach(layer => {
+        const type = this.webMapService.getDatasourceType(layer);
         // TODO  ---  暂不支持 SAMPLE_DATA
         if (type === 'SAMPLE_DATA') {
           this._addLayerSucceeded();
@@ -482,7 +520,7 @@ export default class WebMapViewModel extends WebMapBase {
         }
 
         if (layer.visibleScale) {
-          let { minScale, maxScale } = layer.visibleScale;
+          const { minScale, maxScale } = layer.visibleScale;
           layer.minzoom = Math.max(this._transformScaleToZoom(minScale), 0);
           layer.maxzoom = Math.min(24, this._transformScaleToZoom(maxScale) + 0.0000001);
         }
@@ -490,7 +528,7 @@ export default class WebMapViewModel extends WebMapBase {
         if (type === 'tile') {
           this._initBaseLayer(layer);
           this._addLayerSucceeded();
-          if (!!layer.autoUpdateTime) {
+          if (layer.autoUpdateTime) {
             this._layerTimerList.push(
               setInterval(() => {
                 this._initBaseLayer(layer);
@@ -499,7 +537,7 @@ export default class WebMapViewModel extends WebMapBase {
           }
         } else {
           this.getLayerFeatures(layer, _taskID, type);
-          if (!!layer.autoUpdateTime) {
+          if (layer.autoUpdateTime) {
             this._layerTimerList.push(
               setInterval(() => {
                 this.getLayerFeatures(layer, _taskID, type);
@@ -512,7 +550,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _initOverlayLayer(layerInfo: any, features: any = [], mergeByField?: string) {
-    let { layerID, layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
+    const { layerID, layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
     layerInfo.visible = visible ? 'visible' : 'none';
     features = this.mergeFeatures(layerID, features, mergeByField);
     if (layerType === 'restMap') {
@@ -530,7 +568,13 @@ export default class WebMapViewModel extends WebMapBase {
       features = handleMultyPolygon(features);
     }
 
-    if (features && projection && (projection !== this.baseProjection || projection === 'EPSG:3857') && (layerInfo.dataSource && layerInfo.dataSource.type !== 'REST_DATA')) {
+    if (
+      features &&
+      projection &&
+      (projection !== this.baseProjection || projection === 'EPSG:3857' || projection === 'EPSG:-1000') &&
+      layerInfo.dataSource &&
+      layerInfo.dataSource.type !== 'REST_DATA'
+    ) {
       this._unprojectProjection = this._defineProj4(projection);
       features = this.transformFeatures(features);
     }
@@ -579,10 +623,8 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createGraticuleOptions(graticuleInfo) {
-    if (!graticuleInfo) {
-      return null;
-    }
-    let { strokeColor, lineDash, strokeWidth, extent, interval, lonLabelStyle, latLabelStyle } = graticuleInfo;
+    let { extent, lonLabelStyle, latLabelStyle } = graticuleInfo;
+    const { strokeColor, lineDash, strokeWidth, interval } = graticuleInfo;
     const strokeStyle = {
       lineColor: strokeColor,
       lindDasharray: lineDash,
@@ -628,11 +670,11 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createTiandituLayer(mapInfo: any): void {
-    let tiandituUrls = this._getTiandituUrl(mapInfo);
-    let { labelLayerVisible, name, visible } = mapInfo.baseLayer;
-    let isLabel = Boolean(labelLayerVisible);
-    let labelUrl = tiandituUrls['labelUrl'];
-    let tiandituUrl = tiandituUrls['tiandituUrl'];
+    const tiandituUrls = this._getTiandituUrl(mapInfo);
+    const { labelLayerVisible, name, visible } = mapInfo.baseLayer;
+    const isLabel = Boolean(labelLayerVisible);
+    const labelUrl = tiandituUrls.labelUrl;
+    const tiandituUrl = tiandituUrls.tiandituUrl;
     this._addBaselayer(tiandituUrl, name, visible);
     isLabel && this._addBaselayer(labelUrl, `${name}-label`, visible);
   }
@@ -645,7 +687,7 @@ export default class WebMapViewModel extends WebMapBase {
         (result: any) => {
           const layerId = layerInfo.layerID || layerInfo.name;
           if (result.isMatched) {
-            let wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result));
+            const wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result));
 
             this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom, false, result.bounds);
           }
@@ -664,8 +706,8 @@ export default class WebMapViewModel extends WebMapBase {
       });
   }
 
-  private _createBingLayer(layerName: string): void {
-    let bingUrl =
+  private _createBingLayer(layerName: string, layerInfo: any): void {
+    const bingUrl =
       'https://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
     // @ts-ignore
     this._addBaselayer([bingUrl], layerName, layerInfo.visible);
@@ -675,31 +717,31 @@ export default class WebMapViewModel extends WebMapBase {
     let urlArr: string[] = [];
 
     if (layerInfo.layerType === 'OSM') {
-      let res = url.match(/\w\-\w/g)[0];
-      let start = res[0];
-      let end = res[2];
+      const res = url.match(/\w\-\w/g)[0];
+      const start = res[0];
+      const end = res[2];
       let alphabet = '';
       for (let i = 97; i < 123; i++) {
         alphabet += String.fromCharCode(i);
       }
-      let alphabetArr = alphabet.split('');
+      const alphabetArr = alphabet.split('');
 
-      let startIndex = alphabetArr.indexOf(start);
-      let endIndex = alphabetArr.indexOf(end);
+      const startIndex = alphabetArr.indexOf(start);
+      const endIndex = alphabetArr.indexOf(end);
 
-      let res3 = alphabetArr.slice(startIndex, endIndex + 1);
+      const res3 = alphabetArr.slice(startIndex, endIndex + 1);
 
       for (let i = 0; i < res3.length; i++) {
-        let replaceRes = url.replace(/{\w\-\w}/g, res3[i]);
+        const replaceRes = url.replace(/{\w\-\w}/g, res3[i]);
         urlArr.push(replaceRes);
       }
     } else if (layerInfo.layerType === 'GOOGLE_CN') {
-      let res = url.match(/\d\-\d/g)[0];
-      let start = parseInt(res[0]);
-      let end = parseInt(res[2]);
+      const res = url.match(/\d\-\d/g)[0];
+      const start = parseInt(res[0]);
+      const end = parseInt(res[2]);
 
       for (let i = start; i <= end; i++) {
-        let replaceRes = url.replace(/{\d\-\d}/g, i.toString());
+        const replaceRes = url.replace(/{\d\-\d}/g, i.toString());
         urlArr.push(replaceRes);
       }
     } else {
@@ -710,7 +752,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createDynamicTiledLayer(layerInfo: any): void {
-    let url = layerInfo.url;
+    const url = layerInfo.url;
     const layerId = layerInfo.layerID || layerInfo.name;
     const { minzoom, maxzoom } = layerInfo;
     this._addBaselayer([url], layerId, layerInfo.visible, minzoom, maxzoom, true);
@@ -724,7 +766,7 @@ export default class WebMapViewModel extends WebMapBase {
         (result: any) => {
           const layerId = layerInfo.layerID || layerInfo.name;
           if (result) {
-            let wmsUrl = this._getWMSUrl(layerInfo, result.version);
+            const wmsUrl = this._getWMSUrl(layerInfo, result.version);
 
             this._addBaselayer([wmsUrl], layerId, layerInfo.visible);
           }
@@ -744,7 +786,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createVectorLayer(layerInfo: any, features: any): void {
-    let type = layerInfo.featureType;
+    const type = layerInfo.featureType;
     const { layerID, minzoom, maxzoom, style, visible } = layerInfo;
     const layerSource = this.map.getSource(layerID);
     const sourceData: GeoJSON.FeatureCollection = {
@@ -761,7 +803,7 @@ export default class WebMapViewModel extends WebMapBase {
       // @ts-ignore
       layerSource.setData(sourceData);
     }
-    let styleArr = Array.isArray(style) ? style : [style];
+    const styleArr = Array.isArray(style) ? style : [style];
     if (styleArr.length === 2) {
       // 道路
       if (styleArr[0].lineDash === 'solid' && styleArr[1].lineDash === 'solid') {
@@ -776,7 +818,7 @@ export default class WebMapViewModel extends WebMapBase {
       }
     }
     styleArr.forEach((element, index) => {
-      let layerStyle = {
+      const layerStyle = {
         style: this._transformStyleToMapBoxGl(element, type),
         layout: {
           visibility: visible
@@ -794,7 +836,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _getWMSUrl(mapInfo: any, version = '1.1.1'): string {
     let url = mapInfo.url;
     url = url.split('?')[0];
-    let options: any = {
+    const options: any = {
       service: 'WMS',
       request: 'GetMap',
       layers:
@@ -817,15 +859,15 @@ export default class WebMapViewModel extends WebMapBase {
     return url;
   }
 
-  private _setLayerID(mapInfo): Array<object> {
-    let sumInfo: object = {};
+  private _setLayerID(mapInfo): Array<Object> {
+    const sumInfo: Object = {};
     const { baseLayer, layers = [] } = mapInfo;
     if (!this.checkSameLayer) {
-      let baseInfo = this._generateUniqueLayerId(baseLayer.name, 0);
+      const baseInfo = this._generateUniqueLayerId(baseLayer.name, 0);
       baseLayer.name = baseInfo.newId;
     }
     const layerNames = layers.map(layer => layer.name);
-    const _layers: Array<object> = layers.map((layer, index) => {
+    const _layers: Array<Object> = layers.map((layer, index) => {
       if (!(layer.name in sumInfo)) {
         sumInfo[layer.name] = baseLayer.name === layer.name ? 1 : 0;
       }
@@ -834,9 +876,9 @@ export default class WebMapViewModel extends WebMapBase {
       if (index > matchFirstIndex && index <= matchLastIndex) {
         sumInfo[layer.name] = sumInfo[layer.name] + 1;
       }
-      let layerID = !!sumInfo[layer.name] ? `${layer.name}-${sumInfo[layer.name]}` : layer.name;
+      let layerID = sumInfo[layer.name] ? `${layer.name}-${sumInfo[layer.name]}` : layer.name;
       if (!this.checkSameLayer || layer.layerType !== 'raster') {
-        let { newId, newIndex } = this._generateUniqueLayerId(layerID, sumInfo[layer.name]);
+        const { newId, newIndex } = this._generateUniqueLayerId(layerID, sumInfo[layer.name]);
         sumInfo[layer.name] = newIndex;
         layerID = newId;
       }
@@ -863,11 +905,11 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _getResizedZoom(bounds, mapContainerStyle, tileSize = 512, worldWidth = WORLD_WIDTH) {
-    let { width, height } = mapContainerStyle;
-    let lngArcLength = Math.abs(bounds.getEast() - bounds.getWest());
-    let latArcLength = Math.abs(this._getBoundsRadian(bounds.getSouth()) - this._getBoundsRadian(bounds.getNorth()));
-    let lngResizeZoom = +Math.log2(worldWidth / ((lngArcLength / parseInt(width)) * tileSize)).toFixed(2);
-    let latResizeZoom = +Math.log2(worldWidth / ((latArcLength / parseInt(height)) * tileSize)).toFixed(2);
+    const { width, height } = mapContainerStyle;
+    const lngArcLength = Math.abs(bounds.getEast() - bounds.getWest());
+    const latArcLength = Math.abs(this._getBoundsRadian(bounds.getSouth()) - this._getBoundsRadian(bounds.getNorth()));
+    const lngResizeZoom = +Math.log2(worldWidth / ((lngArcLength / parseInt(width)) * tileSize)).toFixed(2);
+    const latResizeZoom = +Math.log2(worldWidth / ((latArcLength / parseInt(height)) * tileSize)).toFixed(2);
     if (lngResizeZoom <= latResizeZoom) {
       return lngResizeZoom;
     }
@@ -892,16 +934,18 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createDataflowLayer(layerInfo) {
-    let dataflowService = new mapboxgl.supermap.DataFlowService(layerInfo.wsUrl).initSubscribe();
+    const dataflowService = new mapboxgl.supermap.DataFlowService(layerInfo.wsUrl).initSubscribe();
     this._handleDataflowFeaturesCallback = this._handleDataflowFeatures.bind(this, layerInfo);
     this._initDataflowLayerCallback = this._initDataflowLayer.bind(this, layerInfo);
     dataflowService.on('subscribesucceeded', this._initDataflowLayerCallback);
     dataflowService.on('messageSucceeded', this._handleDataflowFeaturesCallback);
     this._dataflowService = dataflowService;
   }
-  private _initDataflowLayer(layerInfo) {
+
+  private _initDataflowLayer() {
     this._addLayerSucceeded();
   }
+
   private _handleDataflowFeatures(layerInfo, e) {
     let features = [JSON.parse(e.data)];
     // this.transformFeatures([features]); // TODO 坐标系
@@ -915,10 +959,10 @@ export default class WebMapViewModel extends WebMapBase {
       features = this.transformFeatures(features);
     }
     if (layerInfo.filterCondition) {
-      //过滤条件
-      let condition = this.replaceFilterCharacter(layerInfo.filterCondition);
-      let sql = 'select * from json where (' + condition + ')';
-      let filterResult = window['jsonsql'].query(sql, {
+      // 过滤条件
+      const condition = this.replaceFilterCharacter(layerInfo.filterCondition);
+      const sql = 'select * from json where (' + condition + ')';
+      const filterResult = window.jsonsql.query(sql, {
         attributes: features[0].properties
       });
       if (filterResult && filterResult.length > 0) {
@@ -930,7 +974,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _getDataFlowRotateStyle(features, directionField, identifyField) {
-    let iconRotateExpression = ['match', ['get', identifyField]];
+    const iconRotateExpression = ['match', ['get', identifyField]];
     features.forEach(feature => {
       let value;
       if (directionField !== undefined && directionField !== '未设置' && directionField !== 'None') {
@@ -950,7 +994,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _addDataflowLayer(layerInfo, feature) {
-    let layerID = layerInfo.layerID;
+    const layerID = layerInfo.layerID;
     if (layerInfo.layerType === 'DATAFLOW_HEAT') {
       if (!this.map.getSource(layerID)) {
         this._createHeatLayer(layerInfo, [feature], false);
@@ -958,10 +1002,10 @@ export default class WebMapViewModel extends WebMapBase {
         this._updateDataFlowFeature(layerID, feature, layerInfo);
       }
     } else {
-      let layerStyle = layerInfo.pointStyle;
+      const layerStyle = layerInfo.pointStyle;
       layerInfo.style = layerStyle;
       if (!this.map.getSource(layerID)) {
-        let iconRotateExpression = this._getDataFlowRotateStyle(
+        const iconRotateExpression = this._getDataFlowRotateStyle(
           [feature],
           layerInfo.directionField,
           layerInfo.identifyField
@@ -983,8 +1027,8 @@ export default class WebMapViewModel extends WebMapBase {
       }
       if (layerInfo.lineStyle && layerInfo.visible) {
         if (!this.map.getSource(layerID + '-line')) {
-          let geometry = feature.geometry.coordinates;
-          let lineFeature = {
+          const geometry = feature.geometry.coordinates;
+          const lineFeature = {
             type: 'Feature',
             properties: feature.properties,
             geometry: {
@@ -1004,15 +1048,15 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _updateDataFlowFeature(sourceID, newFeature, layerInfo, type?) {
-    let { identifyField, maxPointCount, directionField } = layerInfo;
+    const { identifyField, maxPointCount, directionField } = layerInfo;
     // @ts-ignore
-    let features = cloneDeep(this.map.getSource(sourceID)._data.features);
+    const features = cloneDeep(this.map.getSource(sourceID)._data.features);
     let has = false;
     features.map((item, index) => {
       if (item.properties[identifyField] === newFeature.properties[identifyField]) {
         has = true;
         if (type === 'line') {
-          let coordinates = item.geometry.coordinates;
+          const coordinates = item.geometry.coordinates;
           coordinates.push(newFeature.geometry.coordinates);
           if (maxPointCount && coordinates.length > maxPointCount) {
             coordinates.splice(0, coordinates.length - maxPointCount);
@@ -1040,8 +1084,8 @@ export default class WebMapViewModel extends WebMapBase {
     // @ts-ignore
     this.map.getSource(sourceID).setData({ type: 'FeatureCollection', features });
     if (type === 'point') {
-      let type = layerInfo.pointStyle.type;
-      let iconRotateExpression = this._getDataFlowRotateStyle(features, directionField, identifyField);
+      const type = layerInfo.pointStyle.type;
+      const iconRotateExpression = this._getDataFlowRotateStyle(features, directionField, identifyField);
       if (['SVG_POINT', 'IMAGE_POINT'].includes(type)) {
         this.map.setLayoutProperty(sourceID, 'icon-rotate', iconRotateExpression);
       } else if (type === 'SYMBOL_POINT') {
@@ -1051,10 +1095,12 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createMigrationLayer(layerInfo, features) {
-    window['echarts'] = echarts;
-    let options = this.getEchartsLayerOptions(layerInfo, features, 'GLMap');
-    options['GLMap'] = { roam: true };
-    let echartslayer = new EchartsLayer(this.map);
+    // @ts-ignore
+    window.echarts = echarts;
+    const options = this.getEchartsLayerOptions(layerInfo, features, 'GLMap');
+    // @ts-ignore
+    options.GLMap = { roam: true };
+    const echartslayer = new EchartsLayer(this.map);
     echartslayer.chart.setOption(options);
     this.echartslayer.push(echartslayer);
     this._addLayerSucceeded();
@@ -1062,30 +1108,30 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createRankSymbolLayer(layerInfo, features) {
     const { minzoom, maxzoom } = layerInfo;
-    let fieldName = layerInfo.themeSetting.themeField;
-    let colors = layerInfo.themeSetting.colors;
-    let style = layerInfo.style;
-    let featureType = layerInfo.featureType;
-    let styleSource: any = this.createRankStyleSource(layerInfo, features);
-    let styleGroups = styleSource.styleGroups;
+    const fieldName = layerInfo.themeSetting.themeField;
+    const colors = layerInfo.themeSetting.colors;
+    const style = layerInfo.style;
+    const featureType = layerInfo.featureType;
+    const styleSource: any = this.createRankStyleSource(layerInfo, features);
+    const styleGroups = styleSource.styleGroups;
     features = this.getFilterFeatures(layerInfo.filterCondition, features);
     // 获取 expression
-    let expression = ['match', ['get', 'index']];
-    let colorExpression = ['match', ['get', 'index']];
+    const expression = ['match', ['get', 'index']];
+    const colorExpression = ['match', ['get', 'index']];
     for (let index = 0; index < features.length; index++) {
       const row = features[index];
-      let tartget = parseFloat(row.properties[fieldName]);
+      const tartget = parseFloat(row.properties[fieldName]);
       if (styleGroups) {
         for (let i = 0; i < styleGroups.length; i++) {
           if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
-            let radius =
+            const radius =
               style.type === 'SYMBOL_POINT' || style.type === 'IMAGE_POINT'
                 ? style.type === 'SYMBOL_POINT'
                   ? styleGroups[i].radius * 2
                   : Number.parseFloat((styleGroups[i].radius / style.imageInfo.size.h).toFixed(2)) * 2
                 : styleGroups[i].radius;
-            expression.push(row.properties['index'], radius);
-            colorExpression.push(row.properties['index'], styleGroups[i].color);
+            expression.push(row.properties.index, radius);
+            colorExpression.push(row.properties.index, styleGroups[i].color);
             break;
           }
         }
@@ -1104,7 +1150,7 @@ export default class WebMapViewModel extends WebMapBase {
     } else if (style.type === 'IMAGE_POINT') {
       this._createGraphicLayer(layerInfo, features, expression);
     } else {
-      let source: mapboxglTypes.GeoJSONSourceRaw = {
+      const source: mapboxglTypes.GeoJSONSourceRaw = {
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
@@ -1112,21 +1158,22 @@ export default class WebMapViewModel extends WebMapBase {
         }
       };
       // 获取样式
-      let layerStyle: any = {
+      const layerStyle: any = {
         layout: {
           visibility: layerInfo.visible
         }
       };
       layerStyle.style = this._transformStyleToMapBoxGl(layerInfo.style, featureType, expression, 'circle-radius');
-      let layerID = layerInfo.layerID;
+      const layerID = layerInfo.layerID;
       this._addOverlayToMap(featureType, source, layerID, layerStyle, minzoom, maxzoom);
       this._addLayerSucceeded();
     }
   }
 
-  private _addLabelLayer(layerInfo: any, features: any, addSource: boolean = false): void {
-    let labelStyle = layerInfo.labelStyle;
-    let { backgroundFill, fontFamily } = labelStyle;
+  private _addLabelLayer(layerInfo: any, features: any, addSource = false): void {
+    const labelStyle = layerInfo.labelStyle;
+    let { backgroundFill } = labelStyle;
+    const fontFamily = labelStyle.fontFamily;
     const { minzoom, maxzoom } = layerInfo;
     const textSize = parseFloat(labelStyle.fontSize || 14);
     backgroundFill = `rgba(${backgroundFill.join(',')})`;
@@ -1146,7 +1193,7 @@ export default class WebMapViewModel extends WebMapBase {
       textAnchor = `${labelStyle.textBaseline}${textAnchor === 'center' ? '' : `-${textAnchor}`}`;
     }
 
-    let textOffset =
+    const textOffset =
       layerInfo.featureType === 'POINT'
         ? [labelStyle.offsetX / textSize || 0, labelStyle.offsetY / textSize || 0]
         : [0, 0];
@@ -1156,13 +1203,7 @@ export default class WebMapViewModel extends WebMapBase {
       source:
         this.map.getSource(layerInfo.layerID) && !addSource
           ? layerInfo.layerID
-          : {
-              type: 'geojson',
-              data: {
-                type: 'FeatureCollection',
-                features: features
-              }
-            },
+          : { type: 'geojson', data: { type: 'FeatureCollection', features: features } },
       paint: {
         'text-color': labelStyle.fill,
         'text-halo-color': textHaloColor,
@@ -1195,13 +1236,15 @@ export default class WebMapViewModel extends WebMapBase {
     filter?
   ): void {
     // 用来请求symbol_point字体文件
-    let target = document.getElementById(`${this.target}`);
+    const target = document.getElementById(`${this.target}`);
     target.classList.add('supermapol-icons-map');
     const { layerID, minzoom, maxzoom, style } = layerInfo;
-    let unicode = style.unicode;
-    let text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
-    const textSize = textSizeExpresion || (style.fontSize && parseFloat(style.fontSize)) || 12;
-    const rotate = ((layerInfo.style['rotation'] || 0) * 180) / Math.PI;
+    const unicode = style.unicode;
+    const text = String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
+    const textSize =
+      textSizeExpresion ||
+      (Array.isArray(style.fontSize) ? style.fontSize : (style.fontSize && parseFloat(style.fontSize)) || 12);
+    const rotate = Array.isArray(style.rotation) ? style.rotation : ((style.rotation || 0) * 180) / Math.PI;
     if (!this.map.getSource(layerID)) {
       this.map.addSource(layerID, {
         type: 'geojson',
@@ -1259,9 +1302,9 @@ export default class WebMapViewModel extends WebMapBase {
     addToMap = true,
     filter?
   ) {
-    let { layerID, minzoom, maxzoom, style } = layerInfo;
+    const { layerID, minzoom, maxzoom, style } = layerInfo;
 
-    let source: mapboxglTypes.GeoJSONSourceRaw = {
+    const source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1273,13 +1316,13 @@ export default class WebMapViewModel extends WebMapBase {
     }
     const iconID = `imageIcon-${layerID}`;
     if (style.type === 'IMAGE_POINT') {
-      let imageInfo = style.imageInfo;
+      const imageInfo = style.imageInfo;
       this.map.loadImage(imageInfo.url, (error, image) => {
         if (error) {
           console.error(error);
           return;
         }
-        let iconSize = Number.parseFloat((style.radius / image.width).toFixed(2)) * 2;
+        const iconSize = Number.parseFloat((style.radius / image.width).toFixed(2)) * 2;
         !this.map.hasImage(iconID) && this.map.addImage(iconID, image);
         const layerOptions: any = {
           id: layerID,
@@ -1292,7 +1335,7 @@ export default class WebMapViewModel extends WebMapBase {
             'icon-allow-overlap': true,
             visibility: layerInfo.visible,
             'icon-offset': [style.offsetX * image.width || 0, style.offsetY * image.height || 0],
-            'icon-rotate': iconRotateExpression || ((layerInfo.style['rotation'] || 0) * 180) / Math.PI
+            'icon-rotate': iconRotateExpression || ((layerInfo.style.rotation || 0) * 180) / Math.PI
           },
           minzoom: minzoom || 0,
           maxzoom: maxzoom || 22
@@ -1306,20 +1349,20 @@ export default class WebMapViewModel extends WebMapBase {
         }
       });
     } else if (style.type === 'SVG_POINT') {
-      let svgUrl = style.url;
+      const svgUrl = style.url;
       if (!this._svgDiv) {
         this._svgDiv = document.createElement('div');
         document.body.appendChild(this._svgDiv);
       }
       this.getCanvasFromSVG(svgUrl, this._svgDiv, canvas => {
         // this.handleSvgColor(style, canvas);
-        let imgUrl = canvas.toDataURL('img/png');
+        const imgUrl = canvas.toDataURL('img/png');
         imgUrl &&
           this.map.loadImage(imgUrl, (error, image) => {
             if (error) {
               console.log(error);
             }
-            let iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2)) * 2;
+            const iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2)) * 2;
             !this.map.hasImage(svgUrl) && this.map.addImage(svgUrl, image, { sdf: true });
             const layerOptions: any = {
               id: layerID,
@@ -1332,7 +1375,7 @@ export default class WebMapViewModel extends WebMapBase {
                 visibility: layerInfo.visible,
                 'icon-offset': [style.offsetX * canvas.width || 0, style.offsetY * canvas.height || 0],
                 'icon-allow-overlap': true,
-                'icon-rotate': iconRotateExpression || ((layerInfo.style['rotation'] || 0) * 180) / Math.PI
+                'icon-rotate': iconRotateExpression || ((layerInfo.style.rotation || 0) * 180) / Math.PI
               },
               paint: {
                 'icon-color': style.fillColor
@@ -1350,7 +1393,7 @@ export default class WebMapViewModel extends WebMapBase {
           });
       });
     } else {
-      let layerStyle = {
+      const layerStyle = {
         style: this._transformStyleToMapBoxGl(style, layerInfo.featureType),
         layout: {
           visibility: layerInfo.visible
@@ -1399,34 +1442,34 @@ export default class WebMapViewModel extends WebMapBase {
       strokeWidth: 0,
       offsetX: [0, 0]
     };
-    let styleGroup = this.getUniqueStyleGroup(layerInfo, features);
+    const styleGroup = this.getUniqueStyleGroup(layerInfo, features);
     features = this.getFilterFeatures(layerInfo.filterCondition, features);
     const { layerID, minzoom, maxzoom, style } = layerInfo;
-    let themeField = styleGroup[0].themeField;
-    let type = layerInfo.featureType;
+    const themeField = styleGroup[0].themeField;
+    const type = layerInfo.featureType;
 
     const defultLayerStyle = layerInfo.style;
-    //样式expression池 样式key值为webmap的样式key值
-    const expressionMap = {};
+    // 样式expression池 样式key值为webmap的样式key值
+    const expressionMap: any = {};
     // 自定义单值值对应的样式
     const customStyleMap = {};
-    styleGroup.map(style => {
+    styleGroup.forEach(style => {
       customStyleMap[style.value] = style;
     });
-    //遍历要素，判断该要素是不是在自定义单值中，若是在对应样式match expression中增加改要素的索引
+    // 遍历要素，判断该要素是不是在自定义单值中，若是在对应样式match expression中增加改要素的索引
     features.forEach(({ properties }) => {
       const customStyle = customStyleMap[properties[themeField]];
       if (customStyle) {
         const itemStyle = customStyle.style;
         for (const key in itemStyle) {
           if (Object.prototype.hasOwnProperty.call(itemStyle, key)) {
-            let itemStyleElement = itemStyle[key];
+            const itemStyleElement = itemStyle[key];
             if (itemStyleElement !== defultLayerStyle[key]) {
               if (!expressionMap[key]) {
                 expressionMap[key] = ['match', ['get', 'index']];
               }
               expressionMap[key].push(
-                properties['index'],
+                properties.index,
                 symbolConvertFunctionFactory[key] ? symbolConvertFunctionFactory[key](itemStyle) : itemStyleElement
               );
             }
@@ -1439,14 +1482,16 @@ export default class WebMapViewModel extends WebMapBase {
       if (Object.prototype.hasOwnProperty.call(expressionMap, key)) {
         const expression = expressionMap[key];
         const defaultStyleItem = defultLayerStyle[key] || defaultValueFactory[key];
-        expression.push(defaultStyleItem === undefined ? null : defaultStyleItem);
+        const fn = symbolConvertFunctionFactory[key];
+        expression.push(
+          defaultStyleItem === undefined ? null : (fn && fn({ [key]: defaultStyleItem })) || defaultStyleItem
+        );
       }
     }
-
     // Todo 图例相关
     this._initLegendConfigInfo(layerInfo, styleGroup);
 
-    let source: mapboxglTypes.GeoJSONSourceRaw = {
+    const source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -1456,7 +1501,7 @@ export default class WebMapViewModel extends WebMapBase {
     const sourceID = layerID;
     this.map.addSource(sourceID, source);
 
-    let visible = layerInfo.visible;
+    const visible = layerInfo.visible;
     const layerCreateFcuntion = (type, sourceID, layerID, style, minzoom, maxzoom, filter?) => {
       const layerStyle = {
         style: this._transformStyleToMapBoxGl({ ...style }, type),
@@ -1468,13 +1513,13 @@ export default class WebMapViewModel extends WebMapBase {
     };
     if (['POLYGON', 'LINE'].includes(type)) {
       // linedash不能用表达式处理，需用多个图层
-      const lineDashExpression = expressionMap['lineDash'];
-      //非自定义要素过滤表达式
+      const lineDashExpression = expressionMap.lineDash;
+      // 非自定义要素过滤表达式
       const defaultFilterExpression: any = ['all'];
       let handlerLine = false;
       let fristName = '';
       if (lineDashExpression && lineDashExpression.length > 1) {
-        delete expressionMap['lineDash'];
+        delete expressionMap.lineDash;
         const filterField = lineDashExpression[1];
         const tempLayerID = type === 'POLYGON' ? layerID + '-strokeLine' : layerID;
         for (let index = 2; index < lineDashExpression.length - 1; index += 2) {
@@ -1507,7 +1552,7 @@ export default class WebMapViewModel extends WebMapBase {
         }
         handlerLine = true;
       }
-      //没有自定义虚线的情况
+      // 没有自定义虚线的情况
       if (type === 'LINE' && !handlerLine) {
         layerCreateFcuntion(
           'LINE',
@@ -1543,12 +1588,12 @@ export default class WebMapViewModel extends WebMapBase {
       }
     } else {
       const defaultFilterExpression: any = ['all'];
-      const unicodeExpression = expressionMap['unicode'];
+      const unicodeExpression = expressionMap.unicode;
       // SYMBOL_POINT
       if (unicodeExpression) {
-        const classNameExpression = expressionMap['className'] || [];
-        delete expressionMap['unicode'];
-        delete expressionMap['classname'];
+        const classNameExpression = expressionMap.className || [];
+        delete expressionMap.unicode;
+        delete expressionMap.classname;
         const additionalLayerName = `${layerID}-additional-symbol`;
         const filterExpression: any = ['any'];
         // defaultExpression.push(['!=', filterField, lineDashExpression[index]]);
@@ -1558,7 +1603,7 @@ export default class WebMapViewModel extends WebMapBase {
         }
         // this._createSymbolLayer()
         // 用来请求symbol_point字体文件
-        let target = document.getElementById(`${this.target}`);
+        const target = document.getElementById(`${this.target}`);
         target.classList.add('supermapol-icons-map');
         const symbolStyle = { ...style, ...expressionMap };
         const layerOptions: any = {
@@ -1591,12 +1636,12 @@ export default class WebMapViewModel extends WebMapBase {
         }
         this._addLayer(layerOptions);
       }
-      //IMAGE_POINT 或者 SVG_POINT
-      const imageInfoExpression = expressionMap['imageInfo'] || [];
-      const urlExpression = expressionMap['url'] || [];
+      // IMAGE_POINT 或者 SVG_POINT
+      const imageInfoExpression = expressionMap.imageInfo || [];
+      const urlExpression = expressionMap.url || [];
       if (imageInfoExpression.length > 0 || urlExpression.length > 0) {
-        delete expressionMap['imageInfo'];
-        delete expressionMap['url'];
+        delete expressionMap.imageInfo;
+        delete expressionMap.url;
         const imageList = [];
         // image表达式 和 过滤表达式
         const imageExpresssion = imageInfoExpression.length > 0 ? [imageInfoExpression[0], imageInfoExpression[1]] : [];
@@ -1623,7 +1668,7 @@ export default class WebMapViewModel extends WebMapBase {
         svgExpresssion.push('');
 
         const loadImagePromise = src => {
-          return new Promise((resolve, reject) => {
+          return new Promise(resolve => {
             if (src.indexOf('svg') < 0) {
               this.map.loadImage(src, (error, image) => {
                 if (error) {
@@ -1663,7 +1708,7 @@ export default class WebMapViewModel extends WebMapBase {
         Promise.all(promiseList).then(images => {
           const imageSize = {};
           const radiusMap = {};
-          const radiusExpress = expressionMap['radius'] || [];
+          const radiusExpress = expressionMap.radius || [];
           for (let index = 2; index < radiusExpress.length - 1; index += 2) {
             radiusMap[radiusExpress[index]] = radiusExpress[index + 1];
           }
@@ -1784,7 +1829,7 @@ export default class WebMapViewModel extends WebMapBase {
         .replace('{TileCol}', '{x}')
         .replace('{TileMatrix}', '{z}');
     }
-    let obj = {
+    const obj = {
       service: 'WMTS',
       request: 'GetTile',
       version: '1.0.0',
@@ -1801,15 +1846,16 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createMarkerLayer(layerInfo: any, features: any): void {
     const { minzoom, maxzoom } = layerInfo;
-    const marker_src = {};
+    const markerSrc = {};
     features = features || [];
-    features.forEach(feature => {
+    features.forEach((feature: any, index: number) => {
       const defaultStyle = feature.dv_v5_markerStyle;
       let geomType = feature.geometry.type.toUpperCase();
       if (geomType === 'POINT' && defaultStyle.text) {
         // 说明是文字的feature类型
         geomType = 'TEXT';
       }
+      const layerID = geomType + '-' + index;
       if (
         geomType === 'POINT' &&
         defaultStyle.src &&
@@ -1819,13 +1865,16 @@ export default class WebMapViewModel extends WebMapBase {
         // 说明地址不完整
         defaultStyle.src = this.serverUrl + defaultStyle.src;
       }
-      if (!marker_src[defaultStyle.src]) {
-        marker_src[defaultStyle.src] = defaultStyle;
+      if (!markerSrc[layerID]) {
+        markerSrc[layerID] = {
+          src: defaultStyle.src,
+          defaultStyle
+        };
       }
     });
-    const loadImagePromise = (src, defaultStyle) => {
-      return new Promise((resolve, reject) => {
-        if (src.indexOf('svg') < 0) {
+    const loadImagePromise = (layerID: string, { src, defaultStyle }) => {
+      return new Promise(resolve => {
+        if (src && src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
           this.map.loadImage(src, (error, image) => {
             if (error) {
               console.log(error);
@@ -1833,7 +1882,7 @@ export default class WebMapViewModel extends WebMapBase {
               return;
             }
             !this.map.hasImage(src) && this.map.addImage(src, image);
-            resolve(src);
+            resolve({ [layerID]: src });
           });
         } else {
           if (!this._svgDiv) {
@@ -1842,45 +1891,47 @@ export default class WebMapViewModel extends WebMapBase {
           }
           this.getCanvasFromSVG(src, this._svgDiv, canvas => {
             this.handleSvgColor(defaultStyle, canvas);
-            this.map.loadImage(canvas.toDataURL('img/png'), (error, image) => {
+            const base64Url = canvas.toDataURL('img/png');
+            this.map.loadImage(base64Url, (error, image) => {
               if (error) {
                 console.log(error);
                 resolve(error);
                 return;
               }
-              !this.map.hasImage(src) && this.map.addImage(src, image);
-              resolve(src);
+              const srcUrl = src || base64Url;
+              !this.map.hasImage(srcUrl) && this.map.addImage(srcUrl, image);
+              resolve({ [layerID]: srcUrl });
             });
           });
         }
       });
     };
     const promiseList = [];
-    for (const src in marker_src) {
-      promiseList.push(loadImagePromise(src, marker_src[src]));
+    for (const layerID in markerSrc) {
+      promiseList.push(loadImagePromise(layerID, markerSrc[layerID]));
     }
     Promise.all(promiseList).then(images => {
       for (let i = 0; i < features.length; i++) {
         const feature = features[i];
-        let defaultStyle = feature.dv_v5_markerStyle;
+        const defaultStyle = feature.dv_v5_markerStyle;
         let geomType = feature.geometry.type.toUpperCase();
         if (geomType === 'POINT' && defaultStyle.text) {
           // 说明是文字的feature类型
           geomType = 'TEXT';
         }
-        let featureInfo = this.setFeatureInfo(feature);
-        feature.properties['useStyle'] = defaultStyle;
-        feature.properties['featureInfo'] = featureInfo;
+        const featureInfo = this.setFeatureInfo(feature);
+        feature.properties.useStyle = defaultStyle;
+        feature.properties.featureInfo = featureInfo;
 
-        let source: mapboxglTypes.GeoJSONSourceRaw = {
+        const source: mapboxglTypes.GeoJSONSourceRaw = {
           type: 'geojson',
           data: feature
         };
-        let index = feature.properties.index;
-        let layerID = geomType + '-' + index;
+        const layerID = geomType + '-' + i;
+        const iconImageUrl = images[i][layerID];
         // image-marker  svg-marker
-        if (geomType === 'POINT' && defaultStyle.src) {
-          if (!images.includes(defaultStyle.src)) {
+        if (geomType === 'POINT' || geomType === 'TEXT') {
+          if (!iconImageUrl) {
             continue;
           }
           this._addLayer({
@@ -1888,18 +1939,16 @@ export default class WebMapViewModel extends WebMapBase {
             type: 'symbol',
             source: source,
             layout: {
-              'icon-image': defaultStyle.src,
-              'icon-size': defaultStyle.scale,
+              'icon-image': iconImageUrl,
+              'icon-size': defaultStyle.scale || 1,
               visibility: layerInfo.visible
             },
             minzoom: minzoom || 0,
             maxzoom: maxzoom || 22
           });
-        }
-
-        // point-line-polygon-marker
-        if (!defaultStyle.src) {
-          let layeStyle: any = {
+        } else {
+          // line-polygon-marker
+          const layeStyle: any = {
             layout: {}
           };
           if (geomType === 'LINESTRING' && defaultStyle.lineCap) {
@@ -1908,7 +1957,7 @@ export default class WebMapViewModel extends WebMapBase {
               'line-cap': defaultStyle.lineCap
             };
           }
-          let visible = layerInfo.visible;
+          const visible = layerInfo.visible;
           layeStyle.layout.visibility = visible;
           // get style
           layeStyle.style = this._transformStyleToMapBoxGl(defaultStyle, geomType);
@@ -1925,15 +1974,15 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createHeatLayer(layerInfo: any, features: any, addToMap = true): void {
     const { minzoom, maxzoom } = layerInfo;
-    let style = layerInfo.themeSetting;
-    let layerOption = {
+    const style = layerInfo.themeSetting;
+    const layerOption = {
       gradient: style.colors.slice(),
       radius: parseInt(style.radius)
     };
 
     // 自定义颜色
-    let customSettings = style.customSettings;
-    for (let i in customSettings) {
+    const customSettings = style.customSettings;
+    for (const i in customSettings) {
       layerOption.gradient[i] = customSettings[i];
     }
     // 权重字段恢复
@@ -1941,44 +1990,39 @@ export default class WebMapViewModel extends WebMapBase {
       this._changeWeight(features, style.weight);
     }
 
-    let color: string | mapboxglTypes.StyleFunction | mapboxglTypes.Expression = [
+    const color: string | mapboxglTypes.StyleFunction | mapboxglTypes.Expression = [
       'interpolate',
       ['linear'],
       ['heatmap-density']
     ];
 
-    let length = layerOption.gradient.length;
-
-    let step = parseFloat((1 / length).toFixed(2));
+    const step = [0.1, 0.3, 0.5, 0.7, 1];
     layerOption.gradient.forEach((item, index) => {
-      (<mapboxglTypes.Expression>color).push(index * step);
+      (<mapboxglTypes.Expression>color).push(step[index]);
       if (index === 0) {
         item = mapboxgl.supermap.Util.hexToRgba(item, 0);
+      }
+      if (index === 1) {
+        item = mapboxgl.supermap.Util.hexToRgba(item, 0.5);
       }
       (<mapboxglTypes.Expression>color).push(item);
     });
     // 图例相关
     this._initLegendConfigInfo(layerInfo, layerOption.gradient);
 
-    let paint: mapboxglTypes.HeatmapPaint = {
+    const paint: mapboxglTypes.HeatmapPaint = {
       'heatmap-color': color,
-      'heatmap-radius': style.radius + 15,
-      'heatmap-intensity': {
-        base: 1,
-        stops: [
-          [0, 0.8],
-          [22, 1]
-        ]
-      }
+      'heatmap-radius': style.radius * 3,
+      'heatmap-intensity': 1.3
     };
 
     if (features[0].weight && features.length >= 4) {
-      let weight = [];
+      const weight = [];
       features.forEach(item => {
         weight.push(item.weight);
       });
-      let max = SuperMap.ArrayStatistic.getMax(weight);
-      let min = SuperMap.ArrayStatistic.getMin(weight);
+      const max = SuperMap.ArrayStatistic.getMax(weight);
+      const min = SuperMap.ArrayStatistic.getMin(weight);
       paint['heatmap-weight'] = ['interpolate', ['linear'], ['get', 'weight'], min, 0, max, 1];
     }
     this._addLayer({
@@ -2006,18 +2050,18 @@ export default class WebMapViewModel extends WebMapBase {
   private _changeWeight(features: any, weightFeild: string): void {
     this._fieldMaxValue = {};
     this._getMaxValue(features, weightFeild);
-    let maxValue = this._fieldMaxValue[weightFeild];
+    const maxValue = this._fieldMaxValue[weightFeild];
     features.forEach(feature => {
-      let attributes = feature.properties;
-      let value = attributes[weightFeild];
-      feature['weight'] = value / maxValue;
+      const attributes = feature.properties;
+      const value = attributes[weightFeild];
+      feature.weight = value / maxValue;
     });
   }
 
   private _getMaxValue(features: any, weightField: string): void {
-    let values = [];
+    const values = [];
     let attributes;
-    let field = weightField;
+    const field = weightField;
     if (this._fieldMaxValue[field]) {
       return;
     }
@@ -2030,17 +2074,17 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _createRangeLayer(layerInfo: any, features: any): void {
-    let fieldName = layerInfo.themeSetting.themeField;
-    let featureType = layerInfo.featureType;
+    const fieldName = layerInfo.themeSetting.themeField;
+    const featureType = layerInfo.featureType;
     const { minzoom, maxzoom, style } = layerInfo;
-    let styleGroups = this.getRangeStyleGroup(layerInfo, features);
+    const styleGroups = this.getRangeStyleGroup(layerInfo, features);
 
     features = this.getFilterFeatures(layerInfo.filterCondition, features);
 
     // 获取 expression
-    let expression = ['match', ['get', 'index']];
-    const datas = features.filter((row, index, arr) => {
-      let tartget = parseFloat(row.properties[fieldName]);
+    const expression = ['match', ['get', 'index']];
+    const datas = features.filter(row => {
+      const tartget = parseFloat(row.properties[fieldName]);
       if (!tartget && tartget !== 0) {
         // expression.push(row.properties['index'], 'rgba(0, 0, 0, 0)');
         return false;
@@ -2048,7 +2092,7 @@ export default class WebMapViewModel extends WebMapBase {
       if (styleGroups) {
         for (let i = 0; i < styleGroups.length; i++) {
           if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
-            expression.push(row.properties['index'], styleGroups[i].color);
+            expression.push(row.properties.index, styleGroups[i].color);
             break;
           }
         }
@@ -2057,7 +2101,7 @@ export default class WebMapViewModel extends WebMapBase {
     }, this);
     expression.push('rgba(0, 0, 0, 0)');
 
-    let source: mapboxglTypes.GeoJSONSourceRaw = {
+    const source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -2068,7 +2112,7 @@ export default class WebMapViewModel extends WebMapBase {
     this._initLegendConfigInfo(layerInfo, styleGroups);
 
     // 获取样式
-    let layerStyle: any = {
+    const layerStyle: any = {
       layout: {}
     };
     if (featureType === 'LINE' && style.lineCap) {
@@ -2076,11 +2120,11 @@ export default class WebMapViewModel extends WebMapBase {
         'line-cap': style.lineCap
       };
     }
-    let visible = layerInfo.visible;
+    const visible = layerInfo.visible;
     layerStyle.layout.visibility = visible;
     layerStyle.style = this._transformStyleToMapBoxGl(style, featureType, expression);
     // 添加图层
-    let layerID = layerInfo.layerID;
+    const layerID = layerInfo.layerID;
     this._addOverlayToMap(featureType, source, layerID, layerStyle, minzoom, maxzoom);
     // 如果面有边框
     featureType === 'POLYGON' &&
@@ -2104,14 +2148,14 @@ export default class WebMapViewModel extends WebMapBase {
       this._sourceListModel = new SourceListModel({
         map: this.map
       });
-      for (let layerID in this._legendList) {
+      for (const layerID in this._legendList) {
         this._sourceListModel.addSourceStyle(layerID, this._legendList[layerID]);
       }
 
       const exsitLayers = this._layers.filter(layer => !!this.map.getLayer(layer.layerID));
-      for (let index = exsitLayers.length - 2; index > -1; index--) {
+      for (let index = exsitLayers.length - 1; index > -1; index--) {
         const targetlayerId = exsitLayers[index].layerID;
-        const beforLayerId = exsitLayers[index + 1].layerID;
+        const beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1].layerID : undefined;
         this.map.moveLayer(targetlayerId, beforLayerId);
         if (this.map.getLayer(`${targetlayerId}-strokeLine`)) {
           this.map.moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
@@ -2137,8 +2181,8 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _getParamString(obj: any, existingUrl: string, uppercase = false): string {
-    var params = [];
-    for (var i in obj) {
+    const params = [];
+    for (const i in obj) {
       params.push((uppercase ? i.toUpperCase() : i) + '=' + obj[i]);
     }
     return (!existingUrl || existingUrl.indexOf('?') === -1 ? '?' : '&') + params.join('&');
@@ -2177,8 +2221,8 @@ export default class WebMapViewModel extends WebMapBase {
       };
     }
 
-    let newObj = {};
-    for (let item in style) {
+    const newObj = {};
+    for (const item in style) {
       if (transTable[item]) {
         newObj[transTable[item]] = style[item];
       }
@@ -2195,19 +2239,19 @@ export default class WebMapViewModel extends WebMapBase {
       }
     }
     if (style.lineDash && !newObj['line-dasharray']) {
-      if (Array.isArray(style['lineDash'])) {
-        newObj['line-dasharray'] = style['lineDash'];
+      if (Array.isArray(style.lineDash)) {
+        newObj['line-dasharray'] = style.lineDash;
       } else if (style.lineDash !== 'solid' && type === 'LINE') {
         newObj['line-dasharray'] = this.getDashStyle(style.lineDash);
       }
     }
     if (style.lineDash && !newObj['circle-translate']) {
-      if (Array.isArray(style['circleTranslate'])) {
-        newObj['circle-translate'] = style['circleTranslate'];
+      if (Array.isArray(style.circleTranslate)) {
+        newObj['circle-translate'] = style.circleTranslate;
       } else if (style.type === 'POINT' || style.type === 'BASIC_POINT' || type === 'POINT') {
         const offsetX = style.offsetX || 0;
         const offsetY = style.offsetY || 0;
-        newObj['circle-translate'] = [offsetX * style['radius'], offsetY * style['radius']];
+        newObj['circle-translate'] = [offsetX * style.radius, offsetY * style.radius];
       }
     }
 
@@ -2230,12 +2274,12 @@ export default class WebMapViewModel extends WebMapBase {
     maxzoom: number,
     filter?: string
   ): void {
-    let mbglTypeMap = {
+    const mbglTypeMap = {
       POINT: 'circle',
       LINE: 'line',
       POLYGON: 'fill'
     };
-    let mbglType = mbglTypeMap[type];
+    const mbglType = mbglTypeMap[type];
     if (mbglType === 'circle' || mbglType === 'line' || mbglType === 'fill') {
       const style: any = {
         id: layerID,
@@ -2262,7 +2306,7 @@ export default class WebMapViewModel extends WebMapBase {
     isIserver = false,
     bounds?
   ): void {
-    let source: mapboxglTypes.RasterSource = {
+    const source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,
       tileSize: isIserver ? this.rasterTileSize : 256,
@@ -2270,7 +2314,7 @@ export default class WebMapViewModel extends WebMapBase {
       rasterSource: isIserver ? 'iserver' : '',
       // @ts-ignore
       prjCoordSys:
-        isIserver && !this.isOnlineBaseLayer(url[0], this.baseProjection)
+        isIserver && !this.isOnlineBaseLayer(url[0], this.baseProjection) && +this.baseProjection.split(':')[1] > 0
           ? { epsgCode: this.baseProjection.split(':')[1] }
           : '',
       proxy: this.baseLayerProxy
@@ -2290,6 +2334,7 @@ export default class WebMapViewModel extends WebMapBase {
     });
     this.baseLayerProxy = null;
   }
+
   /**
    * @private
    * @function WebMapViewModel.prototype._addStrokeLineForPoly
@@ -2304,7 +2349,7 @@ export default class WebMapViewModel extends WebMapBase {
     minzoom: number,
     maxzoom: number
   ): void {
-    let lineStyle = {
+    const lineStyle = {
       style: this._transformStyleToMapBoxGl(style, 'LINE'),
       layout: {
         visibility: visible
@@ -2326,10 +2371,10 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _createMvtLayer(info, layerInfo, featureType) {
-    let style = this._getDataVectorTileStyle(featureType);
-    let paint = this._transformStyleToMapBoxGl(style, featureType);
+    const style = this._getDataVectorTileStyle(featureType);
+    const paint = this._transformStyleToMapBoxGl(style, featureType);
     let url = info.url + '/tileFeature.mvt';
-    let origin = mapboxgl.CRS.get(this.baseProjection).getOrigin();
+    const origin = mapboxgl.CRS.get(this.baseProjection).getOrigin();
     const { minzoom, maxzoom } = layerInfo;
     url += `?&returnAttributes=true&width=512&height=512&x={x}&y={y}&scale={scale}&origin={x:${origin[0]},y:${origin[1]}}`;
     this._addLayer({
@@ -2353,11 +2398,11 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _getDataVectorTileStyle(featureType) {
-    let styleParameters = {
-      radius: 8, //圆点半径
-      fillColor: '#EE4D5A', //填充色
+    const styleParameters = {
+      radius: 8, // 圆点半径
+      fillColor: '#EE4D5A', // 填充色
       fillOpacity: 0.9,
-      strokeColor: '#ffffff', //边框颜色
+      strokeColor: '#ffffff', // 边框颜色
       strokeWidth: 1,
       strokeOpacity: 1,
       lineDash: 'solid',
@@ -2398,15 +2443,14 @@ export default class WebMapViewModel extends WebMapBase {
       center = [0, 0];
     }
     center = this._unproject(center);
-
     center = new mapboxgl.LngLat(center[0], center[1]);
 
     return center;
   }
 
   private _getLabelFontFamily(mapInfo) {
-    let fonts: string[] = [];
-    let layers = mapInfo.layers;
+    const fonts: string[] = [];
+    const layers = mapInfo.layers;
     // 获取 label 图层字体类型
     if (layers && layers.length > 0) {
       layers.forEach(layer => {
@@ -2414,30 +2458,30 @@ export default class WebMapViewModel extends WebMapBase {
       }, this);
     }
     fonts.push("'supermapol-icons'");
-    let fontFamilys: string = fonts.join(',');
+    const fontFamilys: string = fonts.join(',');
 
     return fontFamilys;
   }
 
   private _getTiandituUrl(mapInfo: any): { tiandituUrl: Array<string>; labelUrl: Array<string> } {
-    let re: RegExp = /t0/gi;
+    const re = /t0/gi;
     type urlArr = Array<string>;
-    let tiandituUrls: { tiandituUrl: urlArr; labelUrl: urlArr } = { tiandituUrl: [], labelUrl: [] };
+    const tiandituUrls: { tiandituUrl: urlArr; labelUrl: urlArr } = { tiandituUrl: [], labelUrl: [] };
 
-    let layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
-    let isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
-
-    let url = `https://t0.tianditu.gov.cn/{layer}_{proj}/wmts?tk=${this.tiandituKey}`;
+    const layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
+    const isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
+    const token = this.tiandituKey || mapInfo.baseLayer.tk;
+    let url = `https://t0.tianditu.gov.cn/{layer}_{proj}/wmts?tk=${token}`;
     let labelUrl = url;
 
-    let layerLabelMap = {
+    const layerLabelMap = {
       vec: 'cva',
       ter: 'cta',
       img: 'cia'
     };
 
-    let tilematrixSet = this.baseProjection === 'EPSG:4326' ? 'c' : 'w';
-    let options = {
+    const tilematrixSet = this.baseProjection === 'EPSG:4326' ? 'c' : 'w';
+    const options = {
       service: 'WMTS',
       request: 'GetTile',
       style: 'default',
@@ -2451,35 +2495,35 @@ export default class WebMapViewModel extends WebMapBase {
 
     url += this._getParamString(options, url) + '&tilematrix={z}&tilerow={y}&tilecol={x}';
 
-    let tiandituUrl = url.replace('{layer}', layerType).replace('{proj}', tilematrixSet);
-    let tiandituUrlArr: string[] = [];
+    const tiandituUrl = url.replace('{layer}', layerType).replace('{proj}', tilematrixSet);
+    const tiandituUrlArr: string[] = [];
 
     for (let i = 0; i < 8; i++) {
       tiandituUrlArr.push(tiandituUrl.replace(re, `t${i}`));
     }
-    tiandituUrls['tiandituUrl'] = tiandituUrlArr;
+    tiandituUrls.tiandituUrl = tiandituUrlArr;
 
     // 如果有 label 图层
     if (isLabel) {
-      let labelLayer = layerLabelMap[layerType];
+      const labelLayer = layerLabelMap[layerType];
       options.layer = labelLayer;
       labelUrl += this._getParamString(options, labelUrl) + '&tilematrix={z}&tilerow={y}&tilecol={x}';
       labelUrl = labelUrl.replace('{layer}', labelLayer).replace('{proj}', tilematrixSet);
-      let labelUrlArr = [];
+      const labelUrlArr = [];
       for (let i = 0; i < 8; i++) {
         labelUrlArr.push(labelUrl.replace(re, `t${i}`));
       }
-      tiandituUrls['labelUrl'] = labelUrlArr;
+      tiandituUrls.labelUrl = labelUrlArr;
     }
 
     return tiandituUrls;
   }
 
-  private _defineProj4(projection: string) {
+  private _defineProj4(projection: string, defaultEpsgCode?) {
     let epsgCode = projection;
     let epsgValue: string;
     if (!projection.split(':')[1]) {
-      epsgCode = toEpsgCode(projection);
+      epsgCode = defaultEpsgCode || toEpsgCode(projection);
       epsgValue = projection;
     }
     const defaultValue = getProjection(epsgCode);
@@ -2492,6 +2536,22 @@ export default class WebMapViewModel extends WebMapBase {
       !defaultValue && registerProjection(epsgCode, defValue);
     }
     return epsgCode;
+  }
+
+  private getEpsgCodeWKT(projectionUrl, options) {
+    if (!projectionUrl) {
+      return;
+    }
+    return SuperMap.FetchRequest.get(projectionUrl, null, options)
+      .then(response => {
+        return response.text();
+      })
+      .then(results => {
+        return results;
+      })
+      .catch(error => {
+        console.log(error);
+      });
   }
 
   private _addLayer(layerInfo) {
@@ -2508,11 +2568,11 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _isSameRasterLayer(id, layerInfo) {
-    let {
+    const {
       source: { type, tiles }
     } = layerInfo;
     if (type === 'raster') {
-      let source = this.map.getSource(id);
+      const source = this.map.getSource(id);
       if (
         type === source.type &&
         tiles &&
@@ -2528,7 +2588,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   public setLayersVisible(isShow, ignoreIds) {
-    let show = isShow ? 'visible' : 'none';
+    const show = isShow ? 'visible' : 'none';
     if (this._cacheLayerId.length) {
       this._cacheLayerId.forEach(layerId => {
         if ((ignoreIds && !ignoreIds.includes(layerId)) || !ignoreIds) {
@@ -2581,13 +2641,13 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _transformScaleToZoom(scale, crs?) {
-    let scale_0 = 295829515.2024169;
-    //@ts-ignore
-    if ((crs || this.map.getCRS()).epsgCode !== 'EPSG:3857') {
-      scale_0 = 295295895;
-    }
+    // @ts-ignore
+    const extent = (crs || this.map.getCRS()).getExtent();
+    // @ts-ignore
+    const unit = (crs || this.map.getCRS()).unit;
+    const scaleBase = 1.0 / SuperMap.Util.getScaleFromResolutionDpi((extent[2] - extent[0]) / 512, 96, unit);
     const scaleDenominator = scale.split(':')[1];
-    return Math.min(24, +Math.log2(scale_0 / +scaleDenominator).toFixed(2));
+    return Math.min(24, +Math.log2(scaleBase / +scaleDenominator).toFixed(2));
   }
 
   private _updateLayer(layerInfo) {
@@ -2614,7 +2674,7 @@ export default class WebMapViewModel extends WebMapBase {
     if (!sourceId) {
       return;
     }
-    let source = this.map.getSource(sourceId);
+    const source = this.map.getSource(sourceId);
 
     Object.assign(source, options);
     // @ts-ignore
@@ -2633,6 +2693,7 @@ export default class WebMapViewModel extends WebMapBase {
       this.getLayerFeatures(layerInfo, this._taskID, type);
     }
   }
+
   isOnlineBaseLayer(url, projection) {
     return (
       url.startsWith('https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark') &&

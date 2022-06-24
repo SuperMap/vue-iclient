@@ -1,0 +1,121 @@
+@import '../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../common/_utils/style/theme/theme.scss';
+@import '../../../common/table/style/table.scss';
+@import '../../../common/checkbox/style/checkbox.scss';
+@import '../../../common/dropdown/style/dropdown.scss';
+@import '../../../common/pagination/style/pagination.scss';
+
+@include b(attributes) {
+  $attributes-prefix: &;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  .sm-component-table {
+    color: inherit;
+  }
+  .sm-component-table-wrapper {
+    overflow: auto;
+    height: calc(100% - 46px);
+    &::-webkit-scrollbar-thumb {
+      background: $scrollbar-background;
+    }
+    .sm-component-table-thead {
+      .sm-component-table-column-has-actions {
+        .sm-component-table-column-title {
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          display: block;
+        }
+        .sm-component-table-column-sorters {
+          display: block;
+          .sm-component-table-column-sorter {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            margin-top: -6px;
+          }
+        }
+      }
+      tr > th {
+        color: inherit;
+        background: inherit;
+        padding: 6px 6px;
+        &.sm-component-table-column-sort {
+          background: $select-item-hover-bg;
+        }
+        &.sm-component-table-column-has-sorters {
+          &:hover {
+            background: $select-item-hover-bg;
+          }
+        }
+      }
+      tr > th .anticon-filter,
+      tr > th .sm-component-table-filter-icon {
+        right: 15px;
+        display: flex;
+        align-items: center;
+      }
+      > tr > th.sm-component-table-column-has-actions {
+        &.sm-component-table-column-has-filters {
+          .anticon-filter.sm-component-table-filter-open,
+          .sm-component-table-filter-icon.sm-component-table-filter-open {
+            background: $select-item-hover-bg;
+          }
+          &:hover {
+            .sm-component-table-filter-icon:hover {
+              background: $select-item-hover-bg;
+            }
+          }
+        }
+        &.sm-component-table-column-has-sorters:hover {
+          .sm-component-table-filter-icon {
+            background: transparent;
+          }
+        }
+        .sm-components-icon-search:before {
+          padding: 7px;
+        }
+      }
+    }
+    .sm-component-table-tbody {
+      > tr > td {
+        width: 128px;
+        padding: 6px 6px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+  .sm-component-table-custom-filter-dropdown {
+    font-size: 0;
+    padding: 8px;
+  }
+  @include e(header) {
+    height: 30px;
+    margin: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  @include e(count) {
+    margin-left: 15px;
+    > span {
+      margin-right: 8px;
+      font-size: 16px;
+      font-weight: 500;
+    }
+  }
+  @include e(menu) {
+    .sm-component-icon:hover {
+      color: $primary-color !important;
+    }
+    .sm-component-dropdown-menu-submenu-title > span > .anticon:first-child {
+      margin-right: 0;
+    }
+  }
+  .sm-component-dropdown-link {
+    cursor: pointer;
+  }
+}

@@ -1,5 +1,5 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class MapvLayerViewModel extends mapboxgl.Evented {
   constructor(mapvLayerProps) {
@@ -35,7 +35,7 @@ export default class MapvLayerViewModel extends mapboxgl.Evented {
 
   _addMapvLayer() {
     const mapVLayer = new mapboxgl.supermap.MapvLayer('', this.data, Object.assign({}, this.options));
-    this.map.addLayer(mapVLayer);
+    this.map && this.map.addLayer(mapVLayer);
   }
 
   removed() {

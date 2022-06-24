@@ -1,5 +1,5 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class UniqueThemeLayerViewModel extends mapboxgl.Evented {
   constructor(themeProps) {
@@ -24,16 +24,20 @@ export default class UniqueThemeLayerViewModel extends mapboxgl.Evented {
     this.themeLayer.addFeatures(this.data);
   }
 
-  setOptions(options) {
-    this.options = options;
+  refresh() {
     this.removed();
     this._init();
+    this.fire('layerchange');
+  }
+
+  setOptions(options) {
+    this.options = options;
+    this.refresh();
   }
 
   setData(data) {
     this.data = data;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   removed() {

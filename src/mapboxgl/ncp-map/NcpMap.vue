@@ -7,13 +7,14 @@
 
 <script lang="ts">
 import NcpMapViewModel, { dataOptions, mapOptions } from './NcpMapViewModel';
-import mapEvent from '../_types/map-event';
-import MapEvents from '../web-map/_mixin/map-events';
-import VmUpdater from '../../common/_mixin/VmUpdater';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import MapEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/map-events';
+import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import { Component, Prop, Mixins, Emit, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
-import debounce from 'lodash/debounce';
-import SmSpin from '../../common/spin/Spin.vue';
+import debounce from 'lodash.debounce';
+import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 @Component({
   name: 'SmNcpMap',
@@ -40,7 +41,6 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
   viewModel: NcpMapViewModel;
-  $message: any;
   // data
   @Provide() __resizeHandler;
 
@@ -50,8 +50,10 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
   @Prop({ default: false }) keepBounds: boolean;
 
   mounted() {
-    this.initializeWebMap();
-    this.registerEvents();
+    this.$nextTick(() => {
+      this.initializeWebMap();
+      this.registerEvents();
+    });
   }
 
   beforeDestroy() {
@@ -127,7 +129,8 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
        * @property {Object} error - 失败原因。
        */
       this.getLayerFailed({ error: e.error });
-      this.$message.error(this.$t('webmap.getLayerInfoFailed'));
+      // @ts-ignore
+      Message.error(this.$t('webmap.getLayerInfoFailed'));
       this.spinning = false;
     });
     this.viewModel.on('getthmeminfofailed', e => {
@@ -137,7 +140,8 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
        * @property {Object} error - 失败原因。
        */
       this.getThemeFailed({ error: e.error });
-      this.$message.warning(this.$t('webmap.getLayerInfoFailed'));
+      // @ts-ignore
+      Message.warning(this.$t('webmap.getLayerInfoFailed'));
       this.spinning = false;
     });
   }

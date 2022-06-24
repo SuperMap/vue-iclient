@@ -1,4 +1,4 @@
-import Layer from './Layer';
+import Layer from 'vue-iclient/src/leaflet/_mixin/Layer';
 
 export default {
   mixins: [Layer],

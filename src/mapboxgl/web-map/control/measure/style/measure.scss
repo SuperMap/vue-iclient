@@ -2,7 +2,7 @@
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import "../../../../../common/collapse-card/style/collapse-card.scss";
 @import '../../../../../common/select/style/select.scss';
-@import '../../../../../common/table-popup/style/tablePopup.scss';
+@import '../../../../../common/table-popup/style/table-popup.scss';
 
 @include b(measure) {
 
@@ -28,15 +28,21 @@
     line-height: 25px;
     text-align: center;
     font-size: 22px;
+    &:hover {
+      color: $hover-color;
+      cursor: pointer;
+    }
     &:first-child {
       border-radius: 4px 0px 0px 4px;
       margin-right: 1px;
     }
     &:nth-child(2) {
       border-radius: 0px 4px 4px 0px;
+      margin-right: 1px;
     }
     @include when(active) {
       background: $primary-color !important;
+      color: $white !important;
     }
     i {
       cursor: pointer;

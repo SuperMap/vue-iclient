@@ -1,4 +1,4 @@
-import { getColorWithOpacity } from '../../util';
+import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import cloneDeep from 'lodash.clonedeep';
 
 export const handleMultiGradient = (colorGroupsData, dataLength) => {

@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 /**
  * @class HeatMapLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。
@@ -42,6 +42,9 @@ export default class HeatMapLayerViewModel extends mapboxgl.Evented {
   }
 
   _initializeHeatMapLayer() {
+    if (!this.map) {
+      return;
+    }
     this.map.addSource(this.layerId, {
       type: 'geojson',
       data: this.data

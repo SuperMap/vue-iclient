@@ -37,7 +37,7 @@
                 allowClear
                 :placeholder="$t('tdtRoute.pleaseEnterStartPoint')"
                 :title="$t('tdtRoute.pleaseEnterStartPoint')"
-                :style="[headingTextColorStyle, getBackgroundStyle]"
+                :style="[headingTextColorStyle]"
                 @keyup.13="searchClicked"
                 @change="e => !e.target.value && clearStart()"
               />
@@ -53,7 +53,7 @@
                 allowClear
                 :placeholder="$t('tdtRoute.pleaseEnterEndPoint')"
                 :title="$t('tdtRoute.pleaseEnterEndPoint')"
-                :style="[headingTextColorStyle, getBackgroundStyle]"
+                :style="[headingTextColorStyle]"
                 @keyup.13="searchClicked"
                 @change="e => !e.target.value && clearEnd()"
               />
@@ -114,17 +114,17 @@
 </template>
 
 <script>
-import Theme from '../../../common/_mixin/Theme';
-import Control from '../../_mixin/control';
-import MapGetter from '../../_mixin/map-getter';
-import Card from '../../../common/_mixin/Card';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Card from 'vue-iclient/src/common/_mixin/Card';
 import TdtRouteViewModel from './TdtRouteViewModel';
 import RoutePlan from '../results/RoutePlan';
 import PointsResult from '../results/PointsResult';
 import StatisticsResult from '../results/StatisticsResult';
 import NothingResult from '../results/NothingResult';
-import SmButton from '../../../common/button/Button';
-import SmInput from '../../../common/input/Input';
+import SmButton from 'vue-iclient/src/common/button/Button.vue';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
 
 export default {
   name: 'SmTdtRoute',
@@ -138,14 +138,6 @@ export default {
   },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
-    collapsed: {
-      type: Boolean, // 是否折叠
-      default: true
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
-    },
     iconClass: {
       type: String,
       default: 'sm-components-icon-road'
@@ -191,7 +183,7 @@ export default {
       this.viewModel && this.viewModel.setSearchType(this.routeActive);
       this.searchRoute();
     },
-    data(newVal, oldVal) {
+    data() {
       this.spinning = true;
       // this.clearRoute();
       this.viewModel && this.viewModel.setData(this.data);

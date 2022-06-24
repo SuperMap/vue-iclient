@@ -2,7 +2,7 @@ import L from 'leaflet';
 
 // @property lastId: Number
 // Last unique ID used by [`stamp()`](#util-stamp)
-var lastId = 0;
+let lastId = 0;
 
 // @function stamp(obj: Object): Number
 // Returns the unique ID of an object, assigning it one if it doesn't have it.
@@ -16,7 +16,7 @@ L.Map.prototype.addLayer = function(layer, name) {
   if (!layer._layerAdd) {
     throw new Error('The provided object is not a Layer.');
   }
-  var id = stamp(layer);
+  let id = stamp(layer);
   // 如果layer已存在，返回this
   if (this._layers[id] || this._layers[name]) {
     return this;
@@ -69,7 +69,7 @@ L.Map.prototype.removeLayer = function(layer, name) {
   // 重新构造layersOnMap
   this.layersOnMap = this.layersOnMap.filter(l => l.name !== (layer.name || name));
   // 如果是传入图层，就用图层id; 如果传入name,通过name去获取图层id
-  var id = stamp(layer) || this._layers[name].id;
+  let id = stamp(layer) || this._layers[name].id;
 
   if (!this._layers[id]) {
     return this;

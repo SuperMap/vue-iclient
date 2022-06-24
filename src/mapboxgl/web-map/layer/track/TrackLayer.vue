@@ -1,7 +1,7 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from 'vue-property-decorator';
-import MapGetter from '../../../_mixin/map-getter';
-import VmUpdater from '../../../../common/_mixin/VmUpdater';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import TrackLayerViewModel, { layerStyleParams, positionTimeStampParams, directionParams } from './TrackLayerViewModel';
 // eslint-disable-next-line
 import { Feature } from 'geojson';

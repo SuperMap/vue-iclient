@@ -7,11 +7,11 @@
   </div>
 </template>
 <script>
-import Theme from '../_mixin/Theme';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import borderConfigs from './assets/border.config.json';
 import UniqueId from 'lodash.uniqueid';
 import { addListener, removeListener } from 'resize-detector';
-import debounce from 'lodash/debounce';
+import debounce from 'lodash.debounce';
 
 export default {
   name: 'SmBorder',

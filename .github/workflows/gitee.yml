@@ -1,3 +1,4 @@
+  
 name: Auto Sync
 on: [push,create,delete]
 jobs:

@@ -1,8 +1,8 @@
 <script lang="ts">
 import RadioButton from 'ant-design-vue/es/radio/RadioButton';
 import { radioTypes } from './Radio.vue';
-import Theme from '../_mixin/Theme';
-import AntdRender from '../_mixin/AntdRender';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
 export const radioButtonTypes = {
   ...radioTypes

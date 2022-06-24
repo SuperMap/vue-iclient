@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import RestService from '../_utils/RestService';
+import RestService from 'vue-iclient/src/common/_utils/RestService';
 
 @Component
 export default class ThirdService extends Vue {
@@ -15,19 +15,20 @@ export default class ThirdService extends Vue {
 
   @Watch('url', { immediate: true })
   onUrlChange(newValue: string) {
-    if(newValue) {
+    if (newValue) {
       this.getData();
     }
   }
 
   @Watch('field')
-  onFieldChange(newValue: string) {
-    if(this.url) {
+  onFieldChange() {
+    if (this.url) {
       this.setValue(this.features);
     }
   }
+
   @Watch('proxy')
-  onProxyChange(newValue: string) {
+  onProxyChange() {
     this.restService && this.restService.setProxy(this.proxy);
     if (this.url) {
       this.getData();

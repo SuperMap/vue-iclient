@@ -19,12 +19,12 @@
 </template>
 
 <script>
-import Theme from '../../../../common/_mixin/Theme';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import MiniMapViewModel from './MiniMapViewModel';
-import Control from '../../../_mixin/control';
-import MapGetter from '../../../_mixin/map-getter';
-import Card from '../../../../common/_mixin/Card';
-import SmSpin from '../../../../common/spin/Spin';
+import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Card from 'vue-iclient/src/common/_mixin/Card';
+import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 
 export default {
   name: 'SmMiniMap',
@@ -33,14 +33,6 @@ export default {
   },
   mixins: [MapGetter, Control, Card, Theme],
   props: {
-    collapsed: {
-      type: Boolean, // 是否折叠
-      default: true
-    },
-    splitLine: {
-      type: Boolean,
-      default: false
-    },
     iconClass: {
       type: String,
       default: 'sm-components-icon-arrow-left'

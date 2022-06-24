@@ -3,14 +3,15 @@ const path = require('path');
 const utils = require('./utils');
 const webpack = require('webpack');
 const config = require('../config');
-const merge = require('webpack-merge');
+const externals = require('../config/externals');
 const baseWebpackConfig = require('./webpack.base.conf');
+const merge = require('webpack-merge');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const VueLoaderPlugin = require('vue-loader/lib/plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const outputFileName = 'iclient-mapboxgl-vue';
 const env = process.env.NODE_ENV === 'testing' ? require('../config/test.env') : require('../config/prod.env');
 
@@ -27,7 +28,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   // devtool: config.build.productionSourceMap ? config.build.devtool : false,
   entry: {
-    app: ['./src/mapboxgl/index.ts']
+    app: ['./src/mapboxgl/css.js', './src/mapboxgl/components.ts']
   },
   output: {
     path: path.resolve(__dirname, '../dist/mapboxgl'),
@@ -36,136 +37,11 @@ const webpackConfig = merge(baseWebpackConfig, {
     libraryExport: 'default',
     library: ['SuperMap', 'Components']
   },
-  externals: [
-    {
-      vue: {
-        root: 'Vue',
-        commonjs: 'vue',
-        commonjs2: 'vue',
-        amd: 'vue'
-      },
-      echarts: 'echarts',
-      'vue-echarts': {
-        root: 'VueECharts',
-        commonjs: 'vue-echarts',
-        commonjs2: 'vue-echarts',
-        amd: 'vue-echarts'
-      },
-      'vue-cesium': {
-        root: 'VueCesium',
-        commonjs: 'vue-cesium',
-        commonjs2: 'vue-cesium',
-        amd: 'vue-cesium'
-      },
-      xlsx: {
-        root: 'XLSX',
-        commonjs: 'xlsx',
-        commonjs2: 'xlsx',
-        amd: 'xlsx'
-      },
-      shapefile: 'shapefile',
-      'echarts-liquidfill': 'echarts-liquidfill',
-      mapv: 'mapv',
-      three: {
-        root: 'THREE',
-        commonjs: 'three',
-        commonjs2: 'three',
-        amd: 'three'
-      },
-      'video.js': {
-        root: 'videojs',
-        commonjs: 'video.js',
-        commonjs2: 'video.js',
-        amd: 'video.js'
-      },
-      'flv.js': {
-        root: 'flvjs',
-        commonjs: 'flv.js',
-        commonjs2: 'flv.js',
-        amd: 'flv.js'
-      },
-      'videojs-flash': {
-        root: 'videojsFlash',
-        commonjs: 'videojs-flash',
-        commonjs2: 'videojs-flash',
-        amd: 'videojs-flash'
-      },
-      'videojs-flvjs-es6': {
-        root: 'videojsFlvjs',
-        commonjs: 'videojs-flvjs-es6',
-        commonjs2: 'videojs-flvjs-es6',
-        amd: 'videojs-flvjs-es6'
-      }
-    },
-    function(context, request, callback) {
-      if (/three\/examples\/jsm\/loaders\/GLTFLoader/.test(request)) {
-        return callback(null, {
-          root: 'THREE.GLTFLoader',
-          commonjs: 'three/examples/jsm/loaders/GLTFLoader',
-          commonjs2: 'three/examples/jsm/loaders/GLTFLoader',
-          amd: 'three/examples/jsm/loaders/GLTFLoader'
-        });
-      }
-      if (/three\/examples\/jsm\/loaders\/OBJLoader2/.test(request)) {
-        return callback(null, {
-          root: 'THREE.OBJLoader2',
-          commonjs: 'three/examples/jsm/loaders/OBJLoader2',
-          commonjs2: 'three/examples/jsm/loaders/OBJLoader2',
-          amd: 'three/examples/jsm/loaders/OBJLoader2'
-        });
-      }
-      if (/\/static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
-        return callback(null, {
-          root: 'mapboxgl',
-          commonjs: '../static/libs/mapboxgl/mapbox-gl-enhance.js',
-          commonjs2: '../static/libs/mapboxgl/mapbox-gl-enhance.js',
-          amd: '../static/libs/mapboxgl/mapbox-gl-enhance.js'
-        });
-      }
-      if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
-        return callback(null, {
-          root: 'DeckGL',
-          commonjs: '../static/libs/deckgl/deck.gl.min.js',
-          commonjs2: '../static/libs/deckgl/deck.gl.min.js',
-          amd: '../static/libs/deckgl/deck.gl.min.js'
-        });
-      }
-      if (/\/static\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
-        return callback(null, {
-          root: 'EchartsLayer',
-          commonjs: '../static/libs/echarts-layer/EchartsLayer.js',
-          commonjs2: '../static/libs/echarts-layer/EchartsLayer.js',
-          amd: '../static/libs/echarts-layer/EchartsLayer.js'
-        });
-      }
-      if (/\/static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
-        return callback(null, {
-          root: 'SuperMap',
-          commonjs: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
-          commonjs2: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
-          amd: '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
-        });
-      }
-      if (/\/static\/libs\/mapbox-gl-draw\/mapbox-gl-draw/.test(request)) {
-        return callback(null, {
-          root: 'MapboxDraw',
-          commonjs: '../static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
-          commonjs2: '../static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
-          amd: '../static/libs/mapbox-gl-draw/mapbox-gl-draw.js'
-        });
-      }
-      callback();
-    }
-  ],
+  externals: externals.mapboxglExteranls,
   optimization: {
     minimizer: []
   },
   plugins: [
-    new webpack.HashedModuleIdsPlugin({
-      hashFunction: 'sha256',
-      hashDigest: 'hex'
-    }),
-    // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
     }),
@@ -177,7 +53,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.HashedModuleIdsPlugin(),
     new webpack.BannerPlugin(`
     ${pkg.name}.(${pkg.homepage})
-    Copyright© 2000 - 2021 SuperMap Software Co.Ltd
+    Copyright© 2000 - 2022 SuperMap Software Co.Ltd
     license: ${pkg.license}
     version: v${pkg.version}
    `),
@@ -187,6 +63,7 @@ const webpackConfig = merge(baseWebpackConfig, {
         to: path.resolve(__dirname, '../dist/mapboxgl/index.js')
       }
     ])
+    // new BundleAnalyzerPlugin()
   ]
 });
 

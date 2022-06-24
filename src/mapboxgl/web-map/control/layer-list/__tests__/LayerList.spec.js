@@ -1,38 +1,25 @@
-import { mount, createLocalVue, config } from '@vue/test-utils';
+import { mount } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap';
 import SmLayerList from '../LayerList.vue';
-import mapEvent from '@types_mapboxgl/map-event';
+import LayerList from '../index';
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
+import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
+import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
+import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
+import flushPromises from 'flush-promises';
 
-import { Icon, Card, Collapse, Checkbox, Spin } from 'ant-design-vue';
-import '../../../../../../test/jest.init';
-
-config.stubs.transition = false;
-const localVue = createLocalVue();
-localVue.use(Card);
-localVue.use(Collapse);
-localVue.use(Icon);
-localVue.use(Checkbox);
-localVue.use(Spin);
-
-jest.mock('@i18n/_lang', () => require('@mocks/i18n'));
-jest.mock('@mapbox/mapbox-gl-draw', () => require('@mocks/mapboxgl_draw'));
-jest.mock('@libs/mapboxgl/mapbox-gl-enhance.js', () => require('@mocks/mapboxgl').mapboxgl);
-jest.mock('@libs/iclient-mapboxgl/iclient-mapboxgl.min.js', () => require('@mocks/mapboxgl_iclient'));
 describe('LayerList.vue', () => {
   let wrapper;
   let mapWrapper;
-  let host = 'test';
-  // var host ="http://iclsvr.supermap.io";
 
   beforeEach(() => {
-    mapEvent.firstMapTarget = null;
-    mapEvent.$options.mapCache = {};
-    mapEvent.$options.webMapCache = {};
     wrapper = null;
     mapWrapper = null;
   });
 
   afterEach(() => {
+    jest.restoreAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
@@ -41,156 +28,141 @@ describe('LayerList.vue', () => {
     }
   });
 
-  it('layerGroupVisibility tile', done => {
-    mapWrapper = mount(SmWebMap, {
-      propsData: {
-        mapOptions: {
-          style: {
-            version: 8,
-            sources: {
-              'raster-tiles': {
-                type: 'raster',
-                tiles: [host + '/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'],
-                tileSize: 256
-              }
-            },
-            layers: [
-              {
-                id: 'simple-tiles',
-                type: 'raster',
-                source: 'raster-tiles'
-              }
-            ]
-          }
-        }
-      }
-    });
-
-    mapWrapper.vm.$on('load', () => {
-      let spyProperty = jest.spyOn(mapWrapper.vm.map, 'setLayoutProperty');
-      wrapper = mount(SmLayerList, {
-        localVue,
-        propsData: {
-          mapTarget: 'map'
-        }
-      });
-      wrapper.vm.$nextTick(() => {
-        try {
-          expect(wrapper.vm.mapTarget).toBe('map');
-          wrapper.vm.$nextTick(() => {
-            let a = wrapper.find('i.anticon-eye');
-            console.log(a);
-            wrapper.find('i.anticon-eye').trigger('click');
-            expect(spyProperty).toHaveBeenCalledTimes(1);
-            mapWrapper.destroy();
-            done();
-          });
-        } catch (exception) {
-          console.log('LayerList_default' + exception.name + ':' + exception.message);
-          expect(false).toBeTruthy();
-          mapWrapper.destroy();
-          done();
-        }
-      });
-    });
+  it('render index correctly', () => {
+    wrapper = mount(LayerList);
+    expect(wrapper.find('div.sm-component-layer-list').exists()).toBe(true);
   });
 
-  /**
-   * ignore 原因是mount出来的要素里面没有右侧箭头，没法展开，测试单独点击单个图层前的checkbox。测试的所有图层的显示（眼睛）部分可以跑过
-   */
-  xit('layerGroupVisibility vector-tile', done => {
+  it('layerGroupVisibility tile', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+    };
+    mockFetch(fetchResource);
     mapWrapper = mount(SmWebMap, {
       propsData: {
-        style: '{height:"700px"}',
-        mapOptions: {
-          container: 'map',
-          style: {
-            version: 8,
-            sources: {
-              'vector-tiles': {
-                type: 'vector',
-                tiles: [
-                  host +
-                    '/iserver/services/map-beijing/rest/maps/beijingMap/tileFeature.mvt?returnAttributes=true&compressTolerance=-1&width=512&height=512&viewBounds={bbox-epsg-3857}&expands=0:0_2,132_128,138_64,141_32,143_16,145_8,147_4'
-                ]
-              }
-            },
-            layers: [
-              {
-                id: '三级道路L@北京',
-                type: 'line',
-                source: 'vector-tiles',
-                'source-layer': '三级道路L@北京',
-                paint: {
-                  'line-width': {
-                    base: 1.5,
-                    stops: [[11, 1], [18, 10]]
-                  },
-                  'line-color': 'hsl(0, 0%, 100%)'
-                }
-              },
-              {
-                id: '二级道路L@北京',
-                type: 'line',
-                source: 'vector-tiles',
-                'source-layer': '二级道路L@北京',
-                paint: {
-                  'line-width': 4,
-                  'line-color': 'hsl(230, 24%, 87%)'
-                }
-              },
-              {
-                id: '二级道路L@北京1',
-                type: 'line',
-                source: 'vector-tiles',
-                'source-layer': '二级道路L@北京',
-                paint: {
-                  'line-width': 4,
-                  'line- color': 'hsl(230, 24%, 87%)'
-                }
-              }
-            ]
-          }
-        }
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
       }
     });
-
-    let spyProperty = jest.spyOn(mapWrapper.vm.map, 'setLayoutProperty');
     wrapper = mount(SmLayerList, {
-      localVue,
       propsData: {
         mapTarget: 'map'
       }
     });
+    const callback = jest.fn();
+    wrapper.vm.$on('loaded', callback);
+    await mapWrapperLoaded(mapWrapper);
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleLayerGroupVisibility');
+    wrapper.findAll('.sm-components-icon-hidden').at(0).trigger('click');
+    expect(spylayerVisibility).toHaveBeenCalledTimes(1);
+    wrapper.vm.$nextTick();
+    done();
+  });
 
-    wrapper.vm.$on('loaded', () => {
-      try {
-        expect(wrapper.vm.getMapTarget).toBe('map');
-        wrapper.vm.$nextTick(() => {
-          // wrapper.vm.layerListViewModel.on("layersUpdated", () => {
-          wrapper.find('i.anticon-eye').trigger('click');
-          expect(spyProperty).toHaveBeenNthCalledWith(1, '三级道路L@北京', 'visibility', expect.any(String));
-          expect(spyProperty).toHaveBeenNthCalledWith(2, '二级道路L@北京', 'visibility', expect.any(String));
-          expect(spyProperty).toHaveBeenNthCalledWith(3, '二级道路L@北京1', 'visibility', expect.any(String));
-          wrapper.vm.$nextTick(() => {
-            wrapper.find('i.header-arrow').trigger('click');
-            wrapper.vm.$nextTick(() => {
-              let checkInput = wrapper.findAll('input[type="checkbox"]').at(1);
-              checkInput.setChecked();
-              checkInput.trigger('change');
-              expect(spyProperty).toHaveBeenNthCalledWith(4, '二级道路L@北京', 'visibility', expect.any(String));
-              expect(spyProperty).toHaveBeenNthCalledWith(5, '二级道路L@北京1', 'visibility', expect.any(String));
-              mapWrapper.destroy();
-              done();
-            });
-          });
-        });
-      } catch (exception) {
-        console.log('LayerList_default' + exception.name + ':' + exception.message);
-        expect(false).toBeTruthy();
-        mapWrapper.destroy();
-        done();
+  it('layerGroupVisibility vector-tile', async done => {
+    const mapOptions = {
+      container: 'map',
+      style: {
+        version: 8,
+        sources: {
+          'vector-tiles': {
+            type: 'vector',
+            tiles: [
+              'https://fakeiserver.supermap.io//iserver/services/map-beijing/rest/maps/beijingMap/tileFeature.mvt?returnAttributes=true&compressTolerance=-1&width=512&height=512&viewBounds={bbox-epsg-3857}&expands=0:0_2,132_128,138_64,141_32,143_16,145_8,147_4'
+            ]
+          }
+        },
+        layers: [
+          {
+            id: '三级道路L@北京',
+            type: 'line',
+            source: 'vector-tiles',
+            'source-layer': '三级道路L@北京',
+            paint: {
+              'line-width': {
+                base: 1.5,
+                stops: [
+                  [11, 1],
+                  [18, 10]
+                ]
+              },
+              'line-color': 'hsl(0, 0%, 100%)'
+            }
+          },
+          {
+            id: '二级道路L@北京',
+            type: 'line',
+            source: 'vector-tiles',
+            'source-layer': '二级道路L@北京',
+            paint: {
+              'line-width': 4,
+              'line-color': 'hsl(230, 24%, 87%)'
+            }
+          },
+          {
+            id: '二级道路L@北京1',
+            type: 'line',
+            source: 'vector-tiles',
+            'source-layer': '二级道路L@北京',
+            paint: {
+              'line-width': 4,
+              'line- color': 'hsl(230, 24%, 87%)'
+            }
+          }
+        ]
+      }
+    };
+    mapWrapper = mount(SmWebMap, {
+      propsData: {
+        style: '{height:"700px"}',
+        mapOptions: mapOptions
       }
     });
+    wrapper = mount(SmLayerList, {
+      propsData: {
+        mapTarget: 'map'
+      }
+    });
+    let spyProperty = jest.spyOn(wrapper.vm.viewModel, 'changeLayerGroupVisibility');
+    const callback = jest.fn();
+    wrapper.vm.$on('loaded', callback);
+    await mapWrapperLoaded(mapWrapper);
+    await flushPromises();
+    expect(callback.mock.called).toBeTruthy;
+    expect(wrapper.vm.mapTarget).toBe('map');
+    wrapper.vm.$nextTick(() => {
+      wrapper.find('i.sm-components-icon-visible').trigger('click');
+      expect(spyProperty).toHaveBeenCalledWith('vector-tiles', 'visible');
+      done();
+    });
+  });
+
+  it('attributes style', () => {
+    wrapper = mount(LayerList, {
+      propsData: {
+        attributes: {
+          position: 'top-right',
+          style: {
+            width: '500px'
+          }
+        }
+      }
+    });
+    wrapper.vm.displayAttributes = false;
+    wrapper.setProps({
+      attributes: {
+        position: 'left',
+        title: '地震数据',
+        style: {
+          width: '0px'
+        }
+      }
+    });
+    expect(wrapper.find('div.sm-component-layer-list').exists()).toBe(true);
+    expect(wrapper.vm.attributes.position).toBe('left');
   });
 });

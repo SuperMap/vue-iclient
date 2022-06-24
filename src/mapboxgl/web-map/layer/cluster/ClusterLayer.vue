@@ -1,8 +1,8 @@
 <script>
-import MapGetter from '../../../_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import ClusterLayerViewModel from './ClusterLayerViewModel';
-import Layer from '../../../_mixin/layer';
-import CircleStyle from '../../../_types/CircleStyle';
+import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
+import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 
 export default {
   name: 'SmClusterLayer',
@@ -45,7 +45,7 @@ export default {
     }
   },
   watch: {
-    data(newVal, oldVal) {
+    data() {
       if (this.viewModel) {
         this.viewModel.setData(this.data);
       }

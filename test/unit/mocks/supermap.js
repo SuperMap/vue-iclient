@@ -11,16 +11,58 @@ import {
   datas_mapjson,
   charts_content,
   localSearch,
+  portal_data,
+  portal_data1,
+  chart_data,
   search_mapjson,
   fieldsJson,
-  datas_beijing
+  datas_beijing,
+  prj_data,
+  dataset_data,
+  datas_charts,
+  searchGeocoding,
+  drill_map_mapjson,
+  drill_map_mapjson1,
+  drill_map_mapjson2,
+  drill_map_mapjson3,
+  drill_map_719613442,
+  drill_map_1960447494,
+  drill_map_1687422166,
+  marker_data,
+  wmsCapabilitiesText,
+  webmap_markerLayer,
+  webmap_heatLayer,
+  webmap_vectorLayer_point,
+  webmap_vectorLayer_line,
+  webmap_rangeLayer,
+  webmap_ranksymbolLayer,
+  webmap_uniqueLayer_polygon,
+  webmap_tiandituLayer,
+  webmap_wmsLayer,
+  webmap_wmtsLayer,
+  webmap_xyzLayer,
+  webmap_mapboxstyleLayer,
+  webmap_migrationLayer
 } from './services';
+import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 var SuperMap = (window.SuperMap = window.SuperMap || {});
+
+SuperMap.SpatialQueryMode = {
+  CONTAIN: 'CONTAIN',
+  CROSS: 'CROSS',
+  DISJOINT: 'DISJOINT',
+  IDENTITY: 'IDENTITY',
+  INTERSECT: 'INTERSECT',
+  NONE: 'NONE',
+  OVERLAP: 'OVERLAP',
+  TOUCH: 'TOUCH',
+  WITHIN: 'WITHIN'
+};
 SuperMap.Widgets = window.SuperMap.Widgets || {};
 SuperMap.Widgets.FileReaderUtil = {};
 SuperMap.ColorsPickerUtil = {};
-SuperMap.ColorsPickerUtil.getGradientColors = function() {
+SuperMap.ColorsPickerUtil.getGradientColors = function () {
   return [
     '#d53e4f',
     '#d6404f',
@@ -241,28 +283,112 @@ SuperMap.ColorsPickerUtil.getGradientColors = function() {
     '#519fb0'
   ];
 };
+SuperMap.ArrayStatistic = {};
+SuperMap.ArrayStatistic.getArraySegments = function (array, type, segNum) {
+  return [
+    0.406820286455,
+    2.6944246004791665,
+    4.982028914503333,
+    7.2696332285275,
+    9.557237542551666,
+    11.844841856575833,
+    14.1324461706
+  ];
+};
+SuperMap.ArrayStatistic.getArrayStatistic = function () {};
+SuperMap.SecurityManager = {
+  registerToken: () => {}
+};
 
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesBySQLParameters = jest.fn());
 var GetFeaturesBySQLParameters = (SuperMap.GetFeaturesByBoundsParameters = jest.fn());
+var QueryByGeometryParameters = (SuperMap.QueryByGeometryParameters = jest.fn());
 var QueryBySQLParameters = (SuperMap.QueryBySQLParameters = jest.fn());
 var GeoCodingParameter = (SuperMap.GeoCodingParameter = jest.fn());
 var FilterParameter = (SuperMap.FilterParameter = jest.fn());
 var QueryByBoundsParameters = (SuperMap.QueryByBoundsParameters = jest.fn());
 var isXField = (SuperMap.Widgets.FileReaderUtil.isXField = jest.fn());
 var isYField = (SuperMap.Widgets.FileReaderUtil.isYField = jest.fn());
-
+var Util = (SuperMap.Util = {
+  urlPathAppend: function (a, b) {
+    return `${a}/${b}`;
+  },
+  urlAppend: function (a, b) {
+    return `${a}?${b}`;
+  },
+  getScaleFromResolutionDpi: function (resolution, dpi, coordUnit = 'degree') {
+    var scale = -1,
+      ratio = 10000;
+    if (resolution > 0 && dpi > 0) {
+      if (coordUnit.toLowerCase() === 'degree') {
+        scale = 0.0254 / dpi / resolution / ((Math.PI * 2 * 6378137) / 360);
+      } else {
+        scale = 0.0254 / dpi / resolution;
+      }
+    }
+    return scale;
+  },
+  isArray: function (a) {
+    return Array.isArray(a);
+  }
+});
+SuperMap.String = {
+  trim: a => {
+    return String(a);
+  }
+};
+var document = {};
+var documentElement = (document.documentElement = {});
 var FetchRequest = (SuperMap.FetchRequest = {
-  get: function(url, params, options) {
-    console.log(url);
+  get: function (url, params, options) {
     return new Promise((resolve, reject) => {
       if (url.indexOf('1962026684') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas))));
       } else if (url.indexOf('1649097980/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_mapjson))));
+      } else if (url.indexOf('244114284/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_mapjson))));
+      } else if (url.indexOf('1653065660') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_mapjson1))));
+      } else if (url.indexOf('891303728') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_mapjson2))));
+      } else if (url.indexOf('366831804') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_mapjson3))));
+      } else if (url.indexOf('1687422166') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_1687422166))));
+      } else if (url.indexOf('1960447494') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_1960447494))));
+      } else if (url.indexOf('719613442') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(drill_map_719613442))));
+      } else if (url.indexOf('123456/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_markerLayer))));
+      } else if (url.indexOf('12345678/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_heatLayer))));
+      } else if (url.indexOf('147258369/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_point))));
+      } else if (url.indexOf('159357852/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_vectorLayer_line))));
+      } else if (url.indexOf('123456789/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_ranksymbolLayer))));
+      } else if (url.indexOf('2064629293/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_uniqueLayer_polygon))));
+      } else if (url.indexOf('1224625555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_tiandituLayer))));
+      } else if (url.indexOf('4845656956/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_wmsLayer))));
+      } else if (url.indexOf('1016996969/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_wmtsLayer))));
+      } else if (url.indexOf('7894565555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_xyzLayer))));
+      } else if (url.indexOf('8888885555/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_mapboxstyleLayer))));
+      } else if (url.indexOf('6177878786/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_migrationLayer))));
+      } else if (url.indexOf('5785858575/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {
-        console.log('search_pagecontent');
         process.nextTick(() =>
           // resolve(new Response(JSON.stringify(search_pagecontent)))
           resolve(new Response(JSON.stringify(charts_content)))
@@ -270,12 +396,20 @@ var FetchRequest = (SuperMap.FetchRequest = {
       }
       // 1920557079/content.json?pageSize=9999999&currentPage=1
       // /web/datas/1920557079.json echarts
-      else if (url.indexOf('/web/datas/1920557079') > -1) {
+      else if (url.indexOf('datas/123/content.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(datas_charts))));
+      } else if (url.indexOf('datas/676516522/content.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(datas_charts))));
+      } else if (url.indexOf('datas/123456/content.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(marker_data))));
+      } else if (url.indexOf('iportal/web/datas') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_chart))));
       }
-      // http://192.168.12.230:8092/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
+      // http://fakeiportal.supermap.io/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
       else if (url.indexOf('content.json?pageSize=9999999&currentPage=1') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(iportal_content))));
+      } else if (url.indexOf('?REQUEST=GetCapabilities&SERVICE=WMS') > -1) {
+        process.nextTick(() => resolve(new Response(wmsCapabilitiesText)));
       }
       // 2040117719
       else if (url.indexOf('2040117719') > -1) {
@@ -288,8 +422,7 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(fakeLandUse))));
       }
       /// iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson.json
-      else if (url.indexOf('Countries/fields.rjson') > -1) {
-        console.log('rjson');
+      else if (url.indexOf('fields.rjson') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(fieldsJson))));
       } else if (url.indexOf('data_sichuan-2-/rest/data/datasources/supermap1_pg/datasets') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datasets))));
@@ -298,10 +431,22 @@ var FetchRequest = (SuperMap.FetchRequest = {
       }
       // http://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos.json?keywords=%E5%8C%97%E4%BA%AC&city=%E5%8C%97%E4%BA%AC%E5%B8%82&pageSize=10&pageNum=1&key=fvV2osxwuZWlY0wJb8FEb2i5
       else if (url.indexOf('China/poiinfos.json') > -1) {
-        console.log('poiinfos json');
         process.nextTick(() => resolve(new Response(JSON.stringify(localSearch))));
       } else if (url.indexOf('geocoding.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(searchGeocoding))));
+      } else if (url.indexOf('web/config/portal.json') > -1) {
+        // resolve(new Response(JSON.stringify(portal_data)));
+        process.nextTick(() => resolve(new Response(JSON.stringify(portal_data1))));
+      } else if (url.indexOf('iportal/web/maps') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(portal_data))));
+      } else if (url.indexOf('/content.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(chart_data))));
+      } else if (url.indexOf('/prjCoordSys') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(prj_data))));
+      } else if (url.indexOf('/World/datasets/Countries') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(dataset_data))));
+      } else {
+        process.nextTick(() => reject('未匹配到'));
       }
     });
   }
@@ -326,7 +471,13 @@ var results_getFeaturesBySQLService = {
             geometry: {
               type: 'MultiPolygon',
               coordinates: [
-                [[[101.84004968, 26.0859968692659], [101.95654423, 26.0888446242659], [101.84004968, 26.0859968692659]]]
+                [
+                  [
+                    [101.84004968, 26.0859968692659],
+                    [101.95654423, 26.0888446242659],
+                    [101.84004968, 26.0859968692659]
+                  ]
+                ]
               ]
             }
           }
@@ -400,19 +551,94 @@ var results = {
 };
 
 var GetFeaturesBySQLService = (SuperMap.GetFeaturesBySQLService = (url, options) => {
+  const result = {
+    result: {
+      features: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            type: 'Feature',
+            properties: {
+              SMID: '1',
+              NAME: '四川省'
+            },
+            geometry: {
+              type: 'Point',
+              coordinates: [101.84004968, 26.0859968692659]
+            }
+          }
+        ]
+      }
+    }
+  };
+  if (options.eventListeners) {
+    if (url.indexOf('processCompleted') > -1) {
+      options.eventListeners.processCompleted(result);
+    } else if (url.indexOf('processFailed') > -1) {
+      options.eventListeners.processFailed('get features faild');
+    }
+  }
   getFeatureEvent.on('processCompleted', options.eventListeners.processCompleted);
   return {
-    processAsync: processAsync
+    processAsync: () => {
+      let returnData;
+      if (
+        url === 'https://fakeiportal.supermap.io/iportal/processCompleted?parentResType=MAP&parentResId=123' ||
+        'https://fakeiportal.supermap.io/iportal/processFailed?parentResType=MAP&parentResId=123'
+      ) {
+        returnData = result;
+      } else if (
+        url === 'https://fakeiportal.supermap.io/iportal/processFailed.json?token=123&parentResType=MAP&parentResId=123'
+      ) {
+        returnData = result;
+      } else {
+        returnData = results;
+      }
+      // setTimeout(() => {
+        getFeatureEvent.emit('processCompleted', returnData);
+      // }, 0);
+    }
   };
-});
-var processAsync = (SuperMap.GetFeaturesBySQLService.processAsync = getFeatureBySQLParams => {
-  setTimeout(() => {
-    getFeatureEvent.emit('processCompleted', results);
-  }, 0);
 });
 
 var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
-  getFeatureEvent.on('processCompleted', options.eventListeners.processCompleted);
+  const result = {
+    result: {
+      recordsets: [
+        {
+          fields: {
+            0: 'SmID'
+          },
+          features: {
+            type: 'FeatureCollection',
+            features: [
+              {
+                type: 'Feature',
+                properties: {
+                  SMID: '1',
+                  NAME: '四川省'
+                },
+                geometry: {
+                  type: 'Point',
+                  coordinates: [101.84004968, 26.0859968692659]
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  };
+  if (options.eventListeners) {
+    if (url.indexOf('processCompleted') > -1) {
+      options.eventListeners.processCompleted(result);
+    } else if (url.indexOf('processFailed') > -1) {
+      options.eventListeners.processFailed('get features faild');
+    }
+  }
+  const processAsync = (getFeatureBySQLParams => {
+      getFeatureEvent.emit('processCompleted', results);
+  });
   return {
     // queryBySQL: queryBySQL,
     processAsync: processAsync

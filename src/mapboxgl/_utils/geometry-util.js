@@ -29,8 +29,8 @@ export const handleMultyPolygon = features => {
 };
 
 function signedArea(ring) {
-  var sum = 0;
-  for (var i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
+  let sum = 0;
+  for (let i = 0, len = ring.length, j = len - 1, p1, p2; i < len; j = i++) {
     p1 = ring[i];
     p2 = ring[j];
     sum += (p2[0] - p1[0]) * (p1[1] + p2[1]);

@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Basic Components/slider'
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.slider.title')}`,
+  id: 'BasicComponents/slider'
 };
 
 export const BasicSlider = () => ({

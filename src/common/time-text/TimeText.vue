@@ -5,8 +5,8 @@
 </template>
 
 <script>
-import { getDateTime } from '../_utils/util';
-import Theme from '../_mixin/Theme';
+import { getDateTime } from 'vue-iclient/src/common/_utils/util';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 
 export default {
   name: 'SmTimeText',

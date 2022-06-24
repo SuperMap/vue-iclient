@@ -1,10 +1,10 @@
 <script>
 import Progress, { ProgressProps, ProgressSize } from 'ant-design-vue/es/progress/progress';
-import Theme from '../_mixin/Theme';
-import Timer from '../_mixin/Timer';
-import ThirdService from '../_mixin/ThirdService';
-import AntdRender from '../_mixin/AntdRender';
-import VueTypes from '../_utils/vue-types';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Timer from 'vue-iclient/src/common/_mixin/Timer';
+import ThirdService from 'vue-iclient/src/common/_mixin/ThirdService';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import { ResizeSensor } from 'css-element-queries';
 
 export const progressTypes = {

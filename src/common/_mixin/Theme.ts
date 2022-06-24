@@ -1,23 +1,29 @@
-import Vue from 'vue';
+import Vue, { VNode, CreateElement } from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
-import globalEvent from '../_utils/global-event';
-import { getDerivedColorsByTextColor } from '../_utils/util';
+import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import { getDerivedColorsByTextColor } from 'vue-iclient/src/common/_utils/util';
+import { getPrimarySerialColors, getRootStyleSelector } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 
+type ThemeStyleParams = typeof globalEvent.$options.theme;
 @Component({
   name: 'Theme'
 })
 export default class Theme extends Vue {
-  backgroundData: string = '';
+  backgroundData = '';
 
-  textColorsData: string = '';
+  textColorsData = '';
 
-  collapseCardBackgroundData: string = '';
+  collapseCardBackgroundData = '';
 
-  collapseCardHeaderBgData: string = '';
+  collapseCardHeaderBgData = '';
 
-  tablePopupBgData: string = '';
+  subComponentSpanBgData = '';
+
+  tablePopupBgData = '';
 
   colorGroupsData: Array<string> = [];
+
+  themeStyleName: Array<string> = [];
 
   @Prop() background: string;
 
@@ -37,9 +43,21 @@ export default class Theme extends Vue {
     };
   }
 
+  get collapseCardBackgroundLightStyle() {
+    return {
+      background: getPrimarySerialColors({ colorGroup: [this.collapseCardBackgroundData] })[2]
+    };
+  }
+
   get collapseCardHeaderBgStyle() {
     return {
       background: this.collapseCardHeaderBgData
+    };
+  }
+
+  get subComponentSpanBgStyle() {
+    return {
+      background: this.subComponentSpanBgData
     };
   }
 
@@ -82,7 +100,7 @@ export default class Theme extends Vue {
   }
 
   get getColorStyle() {
-    return function(index) {
+    return function (index) {
       return {
         color: this.colorGroupsData[index]
       };
@@ -90,7 +108,7 @@ export default class Theme extends Vue {
   }
 
   get getColor() {
-    return function(index) {
+    return function (index) {
       return this.colorGroupsData[index];
     };
   }
@@ -106,51 +124,85 @@ export default class Theme extends Vue {
   }
 
   mounted() {
-    globalEvent.$on('change-theme', themeStyle => {
-      const $props = this.getSelfProps();
-      $props.forEach((prop: string) => {
-        const dataName: string = this.getDataNameOfProp(prop);
-        this[dataName] = themeStyle[prop];
-      });
-      this.collapseCardHeaderBgData = themeStyle['collapseCardHeaderBg'];
-      this.collapseCardBackgroundData = themeStyle['collapseCardBackground'];
-      this.tablePopupBgData = themeStyle['messageBackground'];
-      this.themeStyleChanged();
-    });
+    globalEvent.$on('change-theme', this.changeThemeCallback);
+  }
+
+  beforeDestroy() {
+    globalEvent.$off('change-theme', this.changeThemeCallback);
+  }
+
+  changeThemeCallback(themeStyle: ThemeStyleParams) {
+    this.setDataRelatedProps(themeStyle, true);
+    if ('background' in themeStyle) {
+      this.setDataRelatedWithBackgound('', themeStyle);
+    }
+    this.themeStyleChanged();
+    this.initNeedTheme(themeStyle);
   }
 
   initThemeData(): void {
-    const theme = globalEvent.$options.theme || {};
-    const $props = this.getSelfProps();
-    $props.forEach((prop: string) => {
-      const dataName: string = this.getDataNameOfProp(prop);
-      this[dataName] = this[prop] || theme[prop];
+    this.setDataRelatedProps();
+    this.setDataRelatedWithBackgound(this.background);
+  }
+
+  initNeedTheme(themeStyle) {
+    this.themeStyleName.forEach(name => {
+      if (name === 'primaryColor') {
+        this[name] = themeStyle.colorGroup && themeStyle.colorGroup[0];
+      } else {
+        this[name] = this.getRealColor(name, themeStyle);
+      }
     });
-    this.collapseCardHeaderBgData = this.background || theme['collapseCardHeaderBg'];
-    this.collapseCardBackgroundData = this.background || theme['collapseCardBackground'];
-    this.tablePopupBgData = this.background || theme['messageBackground'];
   }
 
   registerPropListener(): void {
-    const theme = globalEvent.$options.theme || {};
     const vm = this;
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
-      this.$watch(prop, function(next) {
+      this.$watch(prop, function (next) {
         const dataName: string = this.getDataNameOfProp(prop);
-        vm[dataName] = next;
+        vm[dataName] = next || this.getRealColor(prop);
         if (prop === 'background') {
-          vm.collapseCardBackgroundData = next || theme['collapseCardBackground'];
-          vm.collapseCardHeaderBgData = next || theme['collapseCardHeaderBg'];
-          vm.tablePopupBgData = next || theme['messageBackground'];
+          vm.setDataRelatedWithBackgound(next);
         }
       });
     });
   }
 
+  setDataRelatedProps(themeStyle?: ThemeStyleParams, themePriority?: boolean) {
+    const themeStyleData = themeStyle || globalEvent.$options.theme || {};
+    const $props = this.getSelfProps();
+    $props.forEach((prop: string) => {
+      if (prop in themeStyleData) {
+        const dataName: string = this.getDataNameOfProp(prop);
+        const propValue = themePriority ? '' : this[prop];
+        this[dataName] = propValue || this.getRealColor(prop, themeStyle);
+      }
+    });
+  }
+
+  setDataRelatedWithBackgound(background?: string, themeStyle?: ThemeStyleParams) {
+    this.collapseCardHeaderBgData = background || this.getRealColor('collapseCardHeaderBg', themeStyle);
+    this.subComponentSpanBgData = background || this.getRealColor('subComponentSpanBg', themeStyle);
+    this.collapseCardBackgroundData = background || this.getRealColor('collapseCardBackground', themeStyle);
+    this.tablePopupBgData = background || this.getRealColor('messageBackground', themeStyle);
+  }
+
   getSelfProps(): string[] {
     // @ts-ignore
     return Object.keys(Theme.extendOptions.props);
+  }
+
+  getRealColor(prop: string, acceptThemeStyle?: ThemeStyleParams) {
+    const themeStyle = acceptThemeStyle || globalEvent.$options.theme || {};
+    if (prop === 'colorGroup' || !themeStyle[prop] || !themeStyle[prop].includes('var')) {
+      return themeStyle[prop];
+    }
+    const rootStyleSelector = getRootStyleSelector(themeStyle);
+    const computedStyle = window.getComputedStyle(document.querySelector(rootStyleSelector));
+    const themeColor = themeStyle[prop].replace(/var\((.+)\)/g, '$1');
+    const colorValue = computedStyle.getPropertyValue(themeColor);
+    return colorValue.trim();
   }
 
   getDataNameOfProp(prop: string) {
@@ -162,5 +214,9 @@ export default class Theme extends Vue {
       default:
         return `${prop}Data`;
     }
+  }
+
+  render(h: CreateElement): VNode {
+    return h('template', null);
   }
 }

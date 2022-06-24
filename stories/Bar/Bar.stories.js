@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Chart Components/Bar'
+  title: `${toI18n('chartComponent.title')}/${toI18n('chartComponent.charBar.title')}`,
+  id: 'ChartComponents/Bar'
 };
 
 export const ChartBar = () => ({
@@ -74,7 +75,7 @@ export const ChartBar = () => ({
   `
 });
 ChartBar.story = {
-  name: toI18n('chartComponent.charBar.bar')
+  name: toI18n('chartComponent.basic')
 };
 
 export const ChartBarSquare = () => ({

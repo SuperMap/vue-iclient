@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Basic Components/table'
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.table.title')}`,
+  id: 'BasicComponents/table'
 };
 
 export const BasicTable = () => ({

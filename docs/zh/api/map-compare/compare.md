@@ -64,13 +64,13 @@ slot 方式：
 | target           | 容器 ID              | string                                          | -      | 'comparison-container' |
 | orientation      | 滑块方向             | string                                          | -      | 'vertical'             |
 | mousemove        | 滑块是否跟随鼠标移动 | boolean                                         | -      | false                  |
-| beforeMapOptions | 地图参数             | [mapOptions](/zh/api/web-map/map.md#attributes) | -      | -                      |
-| afterMapOptions  | 地图参数             | [mapOptions](/zh/api/web-map/map.md#attributes) | -      | -                      |
+| beforeMapOptions | 第一幅地图参数             | [mapOptions](/zh/api/web-map/map.md#attributes) | -      | -                      |
+| afterMapOptions  | 第二幅地图参数             | [mapOptions](/zh/api/web-map/map.md#attributes) | -      | -                      |
 | beforeMap        | 地图组件             | slot                                            | -      | -                      |
 | afterMap         | 地图组件             | slot                                            | -      | -                      |
 | lineSize         | 分割线宽度           | number                                          | -      | 2                      |
 | slideSize        | 滑块大小             | number                                          | -      | 60                     |
 | slideBackground  | 滑块背景颜色         | string                                          | -      | -                      |
-| autoresize       | 是否响应容器自适应   | boolean                                         | -      | true                   |
+| autoresize       | 组件根元素尺寸变化时地图是否自适应   | boolean                                         | -      | true                   |
 
 > 注意：Compare 组件中渲染的优先级为 [beforeMapOptions, afterMapOptions] > [beforeMap, afterMap]，即 props > slot 。 且以 slot 方式加载的地图组件应分发 [load](/zh/api/web-map/map.md#events) 事件，以便于获得 map 实例。
