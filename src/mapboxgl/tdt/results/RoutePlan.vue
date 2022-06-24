@@ -137,12 +137,12 @@
   </sm-tabs>
 </template>
 <script>
-import SmTabs from '../../../common/tabs/Tabs';
-import SmTabPane from '../../../common/tabs/TabPane';
-import SmSpin from '../../../common/spin/Spin';
-import SmCheckbox from '../../../common/checkbox/Checkbox';
-import SmEmpty from '../../../common/empty/Empty';
-import Theme from '../../../common/_mixin/Theme';
+import SmTabs from 'vue-iclient/src/common/tabs/Tabs.vue';
+import SmTabPane from 'vue-iclient/src/common/tabs/TabPane.vue';
+import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
+import SmCheckbox from 'vue-iclient/src/common/checkbox/Checkbox.vue';
+import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
 
 export default {
   name: 'RoutePlan',

@@ -3,6 +3,7 @@ const path = require('path');
 const utils = require('./utils');
 const webpack = require('webpack');
 const config = require('../config');
+const externals = require('../config/externals');
 const merge = require('webpack-merge');
 const baseWebpackConfig = require('./webpack.base.conf');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -27,7 +28,7 @@ const webpackConfig = merge(baseWebpackConfig, {
   },
   // devtool: config.build.productionSourceMap ? config.build.devtool : false,
   entry: {
-    app: ['./src/leaflet/index.ts']
+    app: ['./src/leaflet/css.js', './src/leaflet/components.ts']
   },
   output: {
     path: path.resolve(__dirname, '../dist/leaflet'),
@@ -36,96 +37,11 @@ const webpackConfig = merge(baseWebpackConfig, {
     libraryExport: 'default',
     library: ['SuperMap', 'Components']
   },
-  externals: [
-    {
-      vue: {
-        root: 'Vue',
-        commonjs: 'vue',
-        commonjs2: 'vue',
-        amd: 'vue'
-      },
-      echarts: 'echarts',
-      'vue-echarts': {
-        root: 'VueECharts',
-        commonjs: 'vue-echarts',
-        commonjs2: 'vue-echarts',
-        amd: 'vue-echarts'
-      },
-      xlsx: {
-        root: 'XLSX',
-        commonjs: 'xlsx',
-        commonjs2: 'xlsx',
-        amd: 'xlsx'
-      },
-      shapefile: 'shapefile',
-      'echarts-liquidfill': 'echarts-liquidfill',
-      mapv: 'mapv',
-      three: {
-        root: 'THREE',
-        commonjs: 'three',
-        commonjs2: 'three',
-        amd: 'three'
-      },
-      'video.js': {
-        root: 'videojs',
-        commonjs: 'video.js',
-        commonjs2: 'video.js',
-        amd: 'video.js'
-      },
-      'flv.js': {
-        root: 'flvjs',
-        commonjs: 'flv.js',
-        commonjs2: 'flv.js',
-        amd: 'flv.js'
-      },
-      'videojs-flash': {
-        root: 'videojsFlash',
-        commonjs: 'videojs-flash',
-        commonjs2: 'videojs-flash',
-        amd: 'videojs-flash'
-      },
-      'videojs-flvjs-es6': {
-        root: 'videojsFlvjs',
-        commonjs: 'videojs-flvjs-es6',
-        commonjs2: 'videojs-flvjs-es6',
-        amd: 'videojs-flvjs-es6'
-      },
-      leaflet: {
-        root: 'L',
-        commonjs: 'leaflet',
-        commonjs2: 'leaflet',
-        amd: 'leaflet'
-      }
-    },
-    function (context, request, callback) {
-      if (/\/static\/libs\/deckgl\/deck.gl/.test(request)) {
-        return callback(null, {
-          root: 'DeckGL',
-          commonjs: '../static/libs/deckgl/deck.gl.min.js',
-          commonjs2: '../static/libs/deckgl/deck.gl.min.js',
-          amd: '../static/libs/deckgl/deck.gl.min.js'
-        });
-      }
-      if (/\/static\/libs\/iclient-leaflet\/iclient-leaflet/.test(request)) {
-        return callback(null, {
-          root: 'SuperMap',
-          commonjs: '../static/libs/iclient-leaflet/iclient-leaflet.min.js',
-          commonjs2: '../static/libs/iclient-leaflet/iclient-leaflet.min.js',
-          amd: '../static/libs/iclient-leaflet/iclient-leaflet.min.js'
-        });
-      }
-      callback();
-    }
-  ],
+  externals: externals.leafletExternals,
   optimization: {
     minimizer: []
   },
   plugins: [
-    new webpack.HashedModuleIdsPlugin({
-      hashFunction: 'sha256',
-      hashDigest: 'hex'
-    }),
-    // http://vuejs.github.io/vue-loader/en/workflow/production.html
     new webpack.DefinePlugin({
       'process.env': env
     }),
@@ -137,7 +53,7 @@ const webpackConfig = merge(baseWebpackConfig, {
     new webpack.HashedModuleIdsPlugin(),
     new webpack.BannerPlugin(`
     ${pkg.name}.(${pkg.homepage})
-    Copyright© 2000 - 2021 SuperMap Software Co.Ltd
+    Copyright© 2000 - 2022 SuperMap Software Co.Ltd
     license: ${pkg.license}
     version: v${pkg.version}
    `),

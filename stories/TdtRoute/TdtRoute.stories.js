@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/tdtRoute'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.tdtRoute.title')}`,
+  id: 'GISComponents/tdtRoute'
 };
 
 export const TdtRoute = () => ({
@@ -26,5 +27,5 @@ export const TdtRoute = () => ({
   `
 });
 TdtRoute.story = {
-  name: toI18n('gisComponent.TdtRoute')
+  name: toI18n('gisComponent.basic')
 };

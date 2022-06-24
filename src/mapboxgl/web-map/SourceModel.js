@@ -3,7 +3,7 @@ class SourceModel {
     this.id = options.source;
     this.sourceLayerList = {};
     this.layers = [];
-    this.type = null;
+    this.type = options.type;
   }
 
   addLayer(layer, sourceLayer) {
@@ -16,7 +16,6 @@ class SourceModel {
       this.sourceLayerList = undefined;
     }
     this.layers.push(layer);
-    this.type = layer.type;
     if ([layer.visibility, this.visibility].includes('visible')) {
       this.visibility = 'visible';
     } else {

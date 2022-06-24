@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import MapboxDraw from '../../../static/libs/mapbox-gl-draw/mapbox-gl-draw';
-import mapEvent from './map-event';
+import MapboxDraw from 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 import assignIn from 'lodash.assignin';
 import isEqual from 'lodash.isequal';
 
@@ -150,6 +150,16 @@ export default new Vue({
           paint: {
             'circle-radius': 6,
             'circle-color': '#f75564'
+          }
+        },
+        // point-active
+        {
+          id: 'draw-point-static-active',
+          type: 'circle',
+          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature'], ['==', 'active', 'true']],
+          paint: {
+            'circle-radius': 4,
+            'circle-color': '#FFF'
           }
         }
       ]

@@ -1,5 +1,5 @@
 // 获取当前时间返回置顶格式
-import { getLanguage, geti18n } from '../../common/_lang';
+import { getLanguage, geti18n } from 'vue-iclient/src/common/_lang/index';
 import colorcolor from 'colorcolor';
 import getCenter from '@turf/center';
 import omit from 'omit.js';
@@ -42,7 +42,7 @@ export function clearNumberComma(num) {
  * @param data
  */
 export function isXField(data) {
-  var lowerdata = data.toLowerCase();
+  let lowerdata = data.toLowerCase();
   return (
     lowerdata === 'x' ||
     lowerdata === 'smx' ||
@@ -52,6 +52,7 @@ export function isXField(data) {
     lowerdata === 'longitude' ||
     lowerdata === 'lot' ||
     lowerdata === 'lon' ||
+    lowerdata === 'long' ||
     lowerdata === 'lng' ||
     lowerdata === 'x坐标'
   );
@@ -62,7 +63,7 @@ export function isXField(data) {
  * @param data
  */
 export function isYField(data) {
-  var lowerdata = data.toLowerCase();
+  let lowerdata = data.toLowerCase();
   return (
     lowerdata === 'y' ||
     lowerdata === 'smy' ||
@@ -94,10 +95,13 @@ export function getDerivedColorsByTextColor(textColor, opacity) {
   if (!textColor) {
     return textColor;
   }
+  if (textColor.includes('var')) {
+    return `var(--alpha${opacity * 100})`;
+  }
   const baseTextColorOpacity = 0.65;
   const originTextColor = tinyColor(textColor);
   const originOpacity = originTextColor.getAlpha();
-  originTextColor.setAlpha(originOpacity * opacity / baseTextColorOpacity);
+  originTextColor.setAlpha((originOpacity * opacity) / baseTextColorOpacity);
   const derivedColor = originTextColor.toRgbString();
   return derivedColor;
 }
@@ -113,7 +117,7 @@ export function getDataType(data) {
 
 // 判断输入的地址是否符合地址格式
 export function isMatchUrl(str) {
-  var reg = new RegExp('(https?|http|file|ftp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
+  let reg = new RegExp('(https?|http|file|ftp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
   return reg.test(str);
 }
 // 判断是否为日期
@@ -168,7 +172,7 @@ export function filterInvalidData(datasetOptions, features) {
   const xFields = datasetOptions.map(item => item.xField);
   const yFields = datasetOptions.map(item => item.yField);
   const nextFeatures = features.filter(feature => {
-    const matchXField = xFields.find(item => feature.properties.hasOwnProperty(item));
+    const matchXField = xFields.find(item => Object.prototype.hasOwnProperty.call(feature.properties, item));
     const matchYField = yFields.find(item => ![undefined, null, ''].includes(feature.properties[item]));
     return !!(matchXField && matchYField);
   });
@@ -188,12 +192,12 @@ export function handleDataParentRes(url, parentResId, parentResType = 'DATA') {
   return urlAppend(url, `parentResType=${parentResType}&parentResId=${parentResId}`);
 }
 export function urlAppend(url, paramStr) {
-  var newUrl = url;
+  let newUrl = url;
   if (paramStr) {
     if (paramStr.indexOf('?') === 0) {
       paramStr = paramStr.substring(1);
     }
-    var parts = (url + ' ').split(/[?&]/);
+    let parts = (url + ' ').split(/[?&]/);
     newUrl += parts.pop() === ' ' ? paramStr : parts.length ? '&' + paramStr : '?' + paramStr;
   }
   return newUrl;
@@ -204,9 +208,7 @@ export function objectWithoutProperties(obj, omitKeys = []) {
 }
 
 export function getDarkenColor(color, amount) {
-  return tinyColor(color)
-    .darken(amount)
-    .toString();
+  return tinyColor(color).darken(amount).toString();
 }
 
 const ARROW_POSITION_MAP = {

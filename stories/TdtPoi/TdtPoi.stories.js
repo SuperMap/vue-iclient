@@ -5,7 +5,8 @@ import smcomponents from '../../src/mapboxgl';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/tdtPoi'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.tdtPoi.title')}`,
+  id: 'GISComponents/tdtPoi'
 };
 
 export const tdtPoi = () => ({
@@ -55,5 +56,5 @@ export const tdtPoi = () => ({
     `
 });
 tdtPoi.story = {
-  name: toI18n('gisComponent.tdtPoi')
+  name: toI18n('gisComponent.basic')
 };

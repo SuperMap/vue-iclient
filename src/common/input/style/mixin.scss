@@ -30,3 +30,7 @@
     color: $text-color-secondary;
   }
 }
+
+@mixin input-md {
+  height: $input-height-md;
+}

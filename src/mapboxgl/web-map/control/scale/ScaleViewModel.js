@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class ScaleViewModel
@@ -43,7 +43,7 @@ export default class ScaleViewModel extends mapboxgl.Evented {
   }
 
   updateScale(map, options) {
-    const maxWidth = options && options.maxWidth || 100;
+    const maxWidth = (options && options.maxWidth) || 100;
 
     const y = map._container.clientHeight / 2;
     const maxMeters = this._getDistance(map.unproject([0, y]), map.unproject([maxWidth, y]));
@@ -63,9 +63,11 @@ export default class ScaleViewModel extends mapboxgl.Evented {
       this._setScale(maxWidth, maxMeters, 'm');
     }
   }
+
   removed() {
     this.map.off('move', this.onMoveEvt);
   }
+
   _setScale(maxWidth, maxDistance, unit) {
     let distance = this._getRoundNum(maxDistance);
     const ratio = distance / maxDistance;
@@ -77,11 +79,11 @@ export default class ScaleViewModel extends mapboxgl.Evented {
     let containerWidth = `${maxWidth * ratio}px`;
     let containerContent = distance + unit;
     /**
-         * @event ScaleViewModel#scaleupdated
-         * @description scale 更新成功。
-         * @property {string} containerWidth - scale width。
-         * @property {string} containerContent - scale content。
-         */
+     * @event ScaleViewModel#scaleupdated
+     * @description scale 更新成功。
+     * @property {string} containerWidth - scale width。
+     * @property {string} containerContent - scale content。
+     */
     this.fire('scaleupdated', {
       containerWidth,
       containerContent
@@ -93,8 +95,8 @@ export default class ScaleViewModel extends mapboxgl.Evented {
     const rad = Math.PI / 180;
     const lat1 = latlng1.lat * rad;
     const lat2 = latlng2.lat * rad;
-    const a = Math.sin(lat1) * Math.sin(lat2) +
-            Math.cos(lat1) * Math.cos(lat2) * Math.cos((latlng2.lng - latlng1.lng) * rad);
+    const a =
+      Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos((latlng2.lng - latlng1.lng) * rad);
     const maxMeters = R * Math.acos(Math.min(a, 1));
     return maxMeters;
   }
@@ -105,14 +107,10 @@ export default class ScaleViewModel extends mapboxgl.Evented {
   }
 
   _getRoundNum(num) {
-    const pow10 = Math.pow(10, (`${Math.floor(num)}`).length - 1);
+    const pow10 = Math.pow(10, `${Math.floor(num)}`.length - 1);
     let d = num / pow10;
 
-    d = d >= 10 ? 10
-      : d >= 5 ? 5
-        : d >= 3 ? 3
-          : d >= 2 ? 2
-            : d >= 1 ? 1 : this._getDecimalRoundNum(d);
+    d = d >= 10 ? 10 : d >= 5 ? 5 : d >= 3 ? 3 : d >= 2 ? 2 : d >= 1 ? 1 : this._getDecimalRoundNum(d);
 
     return pow10 * d;
   }

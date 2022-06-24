@@ -4,7 +4,8 @@ import {
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'GIS Components/zoom'
+  title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.zoom.title')}`,
+  id: 'GISComponents/zoom'
 };
 
 export const zoom = () => ({
@@ -16,7 +17,7 @@ export const zoom = () => ({
   `
 });
 zoom.story = {
-  name: toI18n('gisComponent.zoom')
+  name: toI18n('gisComponent.basic')
 };
 
 export const Showzoom = () => ({
@@ -27,7 +28,7 @@ export const Showzoom = () => ({
   `
 });
 Showzoom.story = {
-  name: toI18n('gisComponent.showZoom')
+  name: toI18n('gisComponent.zoom.showZoom')
 };
 
 export const slider = () => ({
@@ -38,5 +39,5 @@ export const slider = () => ({
     `
 });
 slider.story = {
-  name: toI18n('gisComponent.slider')
+  name: toI18n('gisComponent.zoom.slider')
 };

@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/video-player' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.videoPlayer.title')}`,
+  id: 'BasicComponents/video-player'
+};
 
 export const BasicVideoPlayer = () => ({
   mixins: [theme],

@@ -1,16 +1,21 @@
 <template>
   <div class="sm-component-text" :style="[customStyle, getBackgroundStyle, getTextColorStyle]">
     <span v-if="href">
-      <a :target="target" :href="href" class="sm-component-text__href" :style="[getTextColorStyle]">{{ finalValue }}</a>
+      <a
+        :target="target"
+        :href="href"
+        class="sm-component-text__href"
+        :style="[getTextColorStyle]"
+      >{{ finalValue }}</a>
     </span>
     <span v-else class="sm-component-text__span">{{ finalValue }}</span>
   </div>
 </template>
 
 <script>
-import Theme from '../_mixin/Theme';
-import Timer from '../_mixin/Timer';
-import ThirdService from '../_mixin/ThirdService';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import Timer from 'vue-iclient/src/common/_mixin/Timer';
+import ThirdService from 'vue-iclient/src/common/_mixin/ThirdService';
 
 export default {
   name: 'SmText',

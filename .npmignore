@@ -9,9 +9,17 @@ yarn-error.log*
 /config/
 /demo/
 /docs/
+
+/dist/leaflet/
+/dist/mapboxgl/
+
+/lib/leaflet/
+/lib/mapboxgl/
+
 /static/libs/Cesium/
 /static/index.js
 .git
+.github
 .editorconfig
 .eslintignore
 .eslintrc.js
@@ -31,3 +39,4 @@ jest.config.js
 *.njsproj
 *.sln
 package-lock.json
+sonar-project.properties

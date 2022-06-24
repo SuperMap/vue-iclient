@@ -1,10 +1,10 @@
-/* Copyright© 2000 - 2021 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2022 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
-import { Pixel } from './Pixel';
-import { Event } from './Event';
-import { FunctionExt } from './BaseTypes';
-import { Util } from './Util';
+import { Pixel } from 'vue-iclient/src/common/_types/event/Pixel';
+import { Event } from 'vue-iclient/src/common/_types/event/Event';
+import { FunctionExt } from 'vue-iclient/src/common/_types/event/BaseTypes';
+import { Util } from 'vue-iclient/src/common/_types/event/Util';
 
 /**
  * @class Events
@@ -62,7 +62,7 @@ export class Events {
     Util.extend(this, options);
 
     if (eventTypes != null) {
-      for (var i = 0, len = eventTypes.length; i < len; i++) {
+      for (let i = 0, len = eventTypes.length; i < len; i++) {
         this.addEventType(eventTypes[i]);
       }
     }
@@ -79,7 +79,7 @@ export class Events {
    * @description 移除当前要素 element 上的所有事件监听和处理。
    */
   destroy() {
-    for (var e in this.extensions) {
+    for (let e in this.extensions) {
       if (typeof this.extensions[e] !== 'boolean') {
         this.extensions[e].destroy();
       }
@@ -135,8 +135,8 @@ export class Events {
       );
     }
     this.element = element;
-    for (var i = 0, len = this.BROWSER_EVENTS.length; i < len; i++) {
-      var eventType = this.BROWSER_EVENTS[i];
+    for (let i = 0, len = this.BROWSER_EVENTS.length; i < len; i++) {
+      let eventType = this.BROWSER_EVENTS[i];
 
       // every browser event has a corresponding application event
       // (whether it's listened for or not).
@@ -150,8 +150,8 @@ export class Events {
   }
 
   on(object) {
-    for (var type in object) {
-      if (type !== 'scope' && object.hasOwnProperty(type)) {
+    for (let type in object) {
+      if (type !== 'scope' && Object.prototype.hasOwnProperty.call(object, type)) {
         this.register(type, object.scope, object[type]);
       }
     }
@@ -165,13 +165,13 @@ export class Events {
       if (obj == null) {
         obj = this.object;
       }
-      var listeners = this.listeners[type];
+      let listeners = this.listeners[type];
       if (!listeners) {
         listeners = [];
         this.listeners[type] = listeners;
         this.extensionCount[type] = 0;
       }
-      var listener = { obj: obj, func: func };
+      let listener = { obj: obj, func: func };
       if (priority) {
         listeners.splice(this.extensionCount[type], 0, listener);
         if (typeof priority === 'object' && priority.extension) {
@@ -188,8 +188,8 @@ export class Events {
   }
 
   un(object) {
-    for (var type in object) {
-      if (type !== 'scope' && object.hasOwnProperty(type)) {
+    for (let type in object) {
+      if (type !== 'scope' && Object.prototype.hasOwnProperty.call(object, type)) {
         this.unregister(type, object.scope, object[type]);
       }
     }
@@ -199,9 +199,9 @@ export class Events {
     if (obj == null) {
       obj = this.object;
     }
-    var listeners = this.listeners[type];
+    let listeners = this.listeners[type];
     if (listeners != null) {
-      for (var i = 0, len = listeners.length; i < len; i++) {
+      for (let i = 0, len = listeners.length; i < len; i++) {
         if (listeners[i].obj === obj && listeners[i].func === func) {
           listeners.splice(i, 1);
           break;
@@ -222,7 +222,7 @@ export class Events {
   }
 
   triggerEvent(type, evt) {
-    var listeners = this.listeners[type];
+    let listeners = this.listeners[type];
 
     // fast path
     if (!listeners || listeners.length === 0) {
@@ -243,9 +243,9 @@ export class Events {
     // get a clone of the listeners array to
     // allow for splicing during callbacks
     listeners = listeners.slice();
-    var continueChain;
-    for (var i = 0, len = listeners.length; i < len; i++) {
-      var callback = listeners[i];
+    let continueChain;
+    for (let i = 0, len = listeners.length; i < len; i++) {
+      let callback = listeners[i];
       // bind the context to callback.obj
       continueChain = callback.func.apply(callback.obj, [evt]);
 
@@ -262,20 +262,20 @@ export class Events {
   }
 
   handleBrowserEvent(evt) {
-    var type = evt.type;
-    var listeners = this.listeners[type];
+    let type = evt.type;
+    let listeners = this.listeners[type];
     if (!listeners || listeners.length === 0) {
       // noone's listening, bail out
       return;
     }
     // add clientX & clientY to all events - corresponds to average x, y
-    var touches = evt.touches;
+    let touches = evt.touches;
     if (touches && touches[0]) {
-      var x = 0;
-      var y = 0;
-      var num = touches.length;
-      var touch;
-      for (var i = 0; i < num; ++i) {
+      let x = 0;
+      let y = 0;
+      let num = touches.length;
+      let touch;
+      for (let i = 0; i < num; ++i) {
         touch = touches[i];
         x += touch.clientX;
         y += touch.clientY;
@@ -296,7 +296,7 @@ export class Events {
   clearMouseCache() {
     this.element.scrolls = null;
     this.element.lefttop = null;
-    var body = document.body;
+    let body = document.body;
     if (body && !((body.scrollTop !== 0 || body.scrollLeft !== 0) &&
       navigator.userAgent.match(/iPhone/i))) {
       this.element.offsets = null;
@@ -316,7 +316,7 @@ export class Events {
     }
 
     if (!this.element.scrolls) {
-      var viewportElement = Util.getViewportElement();
+      let viewportElement = Util.getViewportElement();
       this.element.scrolls = [
         viewportElement.scrollLeft,
         viewportElement.scrollTop

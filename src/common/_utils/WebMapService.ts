@@ -1,5 +1,5 @@
-import { Events } from '../_types/event/Events';
-import { isXField, isYField, urlAppend } from './util';
+import { Events } from 'vue-iclient/src/common/_types/event/Events';
+import { isXField, isYField, urlAppend } from 'vue-iclient/src/common/_utils/util';
 import * as convert from 'xml-js';
 
 const DEFAULT_WELLKNOWNSCALESET = [
@@ -85,12 +85,12 @@ export default class WebMapService extends Events {
 
   iportalServiceProxyUrl: string;
 
-  proxyOptions: object = {
+  proxyOptions: Object = {
     data: 'apps/viewer/getUrlResource.json?url=',
     image: 'apps/viewer/getUrlResource.png?url='
   };
 
-  constructor(mapId: string | number | object, options: webMapOptions = {}) {
+  constructor(mapId: string | number | Object, options: webMapOptions = {}) {
     super();
     if (typeof mapId === 'string' || typeof mapId === 'number') {
       this.mapId = mapId;
@@ -107,8 +107,14 @@ export default class WebMapService extends Events {
     this.proxy = options.proxy;
   }
 
-  public setMapId(mapId: string | number): void {
-    this.mapId = mapId;
+  public setMapId(mapId: string | number | Object): void {
+    if (typeof mapId === 'string' || typeof mapId === 'number') {
+      this.mapId = mapId;
+      this.mapInfo = null;
+    } else if (mapId !== null && typeof mapId === 'object') {
+      this.mapInfo = mapId;
+      this.mapId = '';
+    }
   }
 
   public setServerUrl(serverUrl: string): void {
@@ -169,6 +175,7 @@ export default class WebMapService extends Events {
       }
     });
   }
+
   public getiPortalServiceProxy() {
     return new Promise((resolve, reject) => {
       SuperMap.FetchRequest.get(`${this.serverUrl}web/config/portal.json`, { scope: ['serviceProxy'] })
@@ -198,11 +205,12 @@ export default class WebMapService extends Events {
         });
     });
   }
+
   public getLayerFeatures(type, layer, baseProjection?) {
     let pro;
     switch (type) {
       case 'hosted':
-        //数据存储到iportal上了
+        // 数据存储到iportal上了
         pro = this._getFeaturesFromHosted(layer, baseProjection);
         break;
       case 'rest_data':
@@ -220,8 +228,9 @@ export default class WebMapService extends Events {
     }
     return pro;
   }
-  public getWmsInfo(layerInfo, mapCRS) {
-    return new Promise((resolve, reject) => {
+
+  public getWmsInfo(layerInfo) {
+    return new Promise(resolve => {
       const proxy = this.handleProxy();
       const serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMS`;
       SuperMap.FetchRequest.get(serviceUrl, null, {
@@ -245,6 +254,7 @@ export default class WebMapService extends Events {
         });
     });
   }
+
   public getWmtsInfo(layerInfo, mapCRS) {
     return new Promise((resolve, reject) => {
       let isMatched = false;
@@ -379,7 +389,7 @@ export default class WebMapService extends Events {
     let serverId = dataSource ? dataSource.serverId : layer.serverId;
 
     if (!serverId) {
-      return new Promise((resolve, reject) => {
+      return new Promise(resolve => {
         resolve({ type: 'noServerId' });
       });
     }
@@ -394,7 +404,7 @@ export default class WebMapService extends Events {
   }
 
   private _getFeaturesFromRestData(layer, baseProjection?) {
-    //从restData获取数据
+    // 从restData获取数据
     let features;
     let dataSource = layer.dataSource;
     return new Promise((resolve, reject) => {
@@ -603,8 +613,8 @@ export default class WebMapService extends Events {
   }
 
   private _getDataflowInfo(layerInfo, success, faild?) {
-    let url = layerInfo.url,
-      token;
+    let url = layerInfo.url;
+    let token;
     let requestUrl = `${url}.json`;
     if (layerInfo.credential && layerInfo.credential.token) {
       token = layerInfo.credential.token;
@@ -710,7 +720,7 @@ export default class WebMapService extends Events {
 
   private _getDataFromIportal(serverId, layerInfo) {
     let features;
-    //原来二进制文件
+    // 原来二进制文件
     let url = `${this.serverUrl}web/datas/${serverId}/content.json?pageSize=9999999&currentPage=1`;
     if (this.accessToken) {
       url = `${url}&${this.accessKey}=${this.accessToken}`;
@@ -735,7 +745,7 @@ export default class WebMapService extends Events {
               features = this._formatGeoJSON(data.content);
             } else if (data.type === 'EXCEL' || data.type === 'CSV') {
               if (layerInfo.dataSource && layerInfo.dataSource.administrativeInfo) {
-                //行政规划信息
+                // 行政规划信息
                 data.content.rows.unshift(data.content.colTitles);
                 const { divisionType, divisionField } = layerInfo.dataSource.administrativeInfo;
                 const geojson = await this._excelData2FeatureByDivision(data.content, divisionType, divisionField);
@@ -743,6 +753,9 @@ export default class WebMapService extends Events {
               } else {
                 features = this._excelData2Feature(data.content, (layerInfo && layerInfo.xyField) || {});
               }
+            } else if (data.type === 'SHP') {
+              data.content = JSON.parse(data.content.trim());
+              features = this._formatGeoJSON(data.content.layers[0]);
             }
             resolve({ type: 'feature', features });
           }
@@ -754,14 +767,14 @@ export default class WebMapService extends Events {
   }
 
   private _getDataFromHosted({ layer, serverId, baseProjection }) {
-    //关系型文件
+    // 关系型文件
     let isMapService = layer.layerType === 'HOSTED_TILE';
     return new Promise((resolve, reject) => {
       this._checkUploadToRelationship(serverId)
         .then(result => {
           if (result && result.length > 0) {
-            let datasetName = result[0].name,
-              featureType = result[0].type.toUpperCase();
+            let datasetName = result[0].name;
+            let featureType = result[0].type.toUpperCase();
             this._getDataService(serverId, datasetName).then(data => {
               let dataItemServices = data.dataItemServices;
               if (dataItemServices.length === 0) {
@@ -777,7 +790,7 @@ export default class WebMapService extends Events {
                     this._getServiceInfoFromLayer(param, info);
                   })
                   .catch(() => {
-                    //判断失败就走之前逻辑，>数据量用tile
+                    // 判断失败就走之前逻辑，>数据量用tile
                     this._getServiceInfoFromLayer(param);
                   });
               } else {
@@ -796,7 +809,8 @@ export default class WebMapService extends Events {
 
   private _isMvt(serviceUrl, datasetName, baseProjection) {
     return this._getDatasetsInfo(serviceUrl, datasetName).then(info => {
-      //判断是否和底图坐标系一直
+      // 判断是否和底图坐标系一直
+      /* eslint-disable */
       if (info.epsgCode == baseProjection.split('EPSG:')[1]) {
         return SuperMap.FetchRequest.get(`${info.url}/tilefeature.mvt`)
           .then(function (response) {
@@ -818,28 +832,28 @@ export default class WebMapService extends Events {
     { layer, dataItemServices, datasetName, featureType, resolve, reject, baseProjection },
     info?: any
   ) {
-    let isMapService = info ? !info.isMvt : layer.layerType === 'HOSTED_TILE',
-      isAdded = false;
-    dataItemServices.forEach((service, index) => {
+    let isMapService = info ? !info.isMvt : layer.layerType === 'HOSTED_TILE';
+    let isAdded = false;
+    dataItemServices.forEach(service => {
       if (isAdded) {
         return;
       }
-      //有服务了，就不需要循环
+      // TODO 对接 MVT
+      // 有服务了，就不需要循环
       if (service && isMapService && service.serviceType === 'RESTMAP') {
         isAdded = true;
-        //地图服务,判断使用mvt还是tile
+        // 地图服务,判断使用mvt还是tile
         this._getTileLayerInfo(service.address, baseProjection).then(restMaps => {
           resolve({ type: 'restMap', restMaps });
         });
-      } // TODO 对接 MVT
-      else if (service && !isMapService && service.serviceType === 'RESTDATA') {
+      } else if (service && !isMapService && service.serviceType === 'RESTDATA') {
         if (info && info.isMvt) {
           // this._addVectorLayer(info, layer, featureType);
           resolve({ type: 'mvt', info, featureType });
         } else {
-          //数据服务
+          // 数据服务
           isAdded = true;
-          //关系型文件发布的数据服务
+          // 关系型文件发布的数据服务
           this._getDatasources(service.address).then(
             datasourceName => {
               layer.dataSource.dataSourceName = datasourceName + ':' + datasetName;
@@ -868,14 +882,14 @@ export default class WebMapService extends Events {
       }
     }, this);
     if (!isAdded) {
-      //循环完成了，也没有找到合适的服务。有可能服务被删除
+      // 循环完成了，也没有找到合适的服务。有可能服务被删除
       reject('noService');
     }
   }
 
   private _getDatasetsInfo(serviceUrl, datasetName) {
     return this._getDatasources(serviceUrl).then(datasourceName => {
-      //判断mvt服务是否可用
+      // 判断mvt服务是否可用
       let url = `${serviceUrl}/data/datasources/${datasourceName}/datasets/${datasetName}`;
       const proxy = this.handleProxy();
       url = this.handleParentRes(url);
@@ -892,7 +906,7 @@ export default class WebMapService extends Events {
             bounds: datasetsInfo.datasetInfo.bounds,
             datasourceName,
             datasetName,
-            url //返回的是原始url，没有代理。因为用于请求mvt
+            url // 返回的是原始url，没有代理。因为用于请求mvt
           };
         });
     });
@@ -980,6 +994,7 @@ export default class WebMapService extends Events {
     }
     return proxy;
   }
+
   public handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean {
     if (proxyUrl && proxyUrl.startsWith(this.serverUrl) && (!serviceUrl || serviceUrl.startsWith(proxyUrl))) {
       return true;
@@ -990,18 +1005,21 @@ export default class WebMapService extends Events {
 
     return defaultValue;
   }
+
   public isIportalResourceUrl(serviceUrl) {
     return (
       serviceUrl.startsWith(this.serverUrl) ||
       (this.iportalServiceProxyUrl && serviceUrl.indexOf(this.iportalServiceProxyUrl) >= 0)
     );
   }
+
   public handleParentRes(url, parentResId = this.mapId, parentResType = 'MAP'): string {
     if (!this.isIportalResourceUrl(url)) {
       return url;
     }
     return urlAppend(url, `parentResType=${parentResType}&parentResId=${parentResId}`);
   }
+
   private _formatGeoJSON(data): any {
     let features = data.features;
     features.forEach((row, index) => {
@@ -1055,7 +1073,8 @@ export default class WebMapService extends Events {
     }
     return features;
   }
-  private _excelData2FeatureByDivision(content: any, divisionType: string, divisionField: string): Promise<object> {
+
+  private _excelData2FeatureByDivision(content: any, divisionType: string, divisionField: string): Promise<Object> {
     const dataName = ['城市', 'City'].includes(divisionType) ? 'MunicipalData' : 'ProvinceData';
     if (window[dataName] && window[dataName].features) {
       return new Promise(resolve => {
@@ -1078,6 +1097,7 @@ export default class WebMapService extends Events {
         return this._combineFeature(content, window[dataName], divisionField);
       });
   }
+
   private _combineFeature(
     properties: any,
     geoData: GeoJSON.FeatureCollection,
@@ -1089,41 +1109,45 @@ export default class WebMapService extends Events {
     };
     if (properties.length < 2) {
       return geojson;
-    } //只有一行数据时为标题
-    let titles = properties.colTitles,
-      rows = properties.rows,
-      fieldIndex = titles.findIndex(title => title === divisionField);
-
+    } // 只有一行数据时为标题
+    let titles = properties.colTitles;
+    let rows = properties.rows;
+    let fieldIndex = titles.findIndex(title => title === divisionField);
     rows.forEach(row => {
-      let feature = geoData.features.find((item, index) => {
+      let feature = geoData.features.find(item => {
         return this._isMatchAdministrativeName(item.properties.Name, row[fieldIndex]);
       });
-      //todo 需提示忽略无效数据
+      // todo 需提示忽略无效数据
       if (feature) {
+        const province = feature.properties.Province;
         const combineFeature: GeoJSON.Feature = { properties: {}, geometry: feature.geometry, type: 'Feature' };
         row.forEach((item, idx) => {
           combineFeature.properties[titles[idx]] = item;
         });
+        if (province) {
+          combineFeature.properties.Province = province;
+        }
         geojson.features.push(combineFeature);
       }
     });
     return geojson;
   }
+
   /**
    * @description 行政区划原始数据和当前数据是否匹配
    */
   private _isMatchAdministrativeName(featureName: string, fieldName: string): boolean {
     if (featureName && typeof fieldName === 'string' && fieldName.constructor === String) {
-      let shortName = featureName.substr(0, 2);
+      let shortName = featureName.trim().substr(0, 2);
       // 张家口市和张家界市
       if (shortName === '张家') {
-        shortName = featureName.substr(0, 3);
+        shortName = featureName.trim().substr(0, 3);
       }
       // 阿拉善盟 阿拉尔市
       if (shortName === '阿拉') {
-        shortName = featureName.substr(0, 3);
+        shortName = featureName.trim().substr(0, 3);
       }
-      return !!fieldName.startsWith(shortName);
+      return !!fieldName.match(new RegExp(shortName));
     }
     return false;
   }
@@ -1189,7 +1213,7 @@ export default class WebMapService extends Events {
       returnContent: true
     });
     if (baseProjection) {
-      if (baseProjection === 'EPSG:3857') {
+      if (baseProjection === 'EPSG:3857' || baseProjection === 'EPSG:-1000') {
         getFeatureBySQLParams.targetEpsgCode = 4326;
       } else {
         getFeatureBySQLParams.targetEpsgCode = +baseProjection.split(':')[1];

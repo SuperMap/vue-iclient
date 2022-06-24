@@ -58,11 +58,13 @@
 
 ### Attributes
 
-| 参数                     | 说明                     | 类型                                                                                                                                                                                          | 可选值 | 默认值 |
-| :----------------------- | :----------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | :----- | :----- |
-| data                     | 图层 GeoJSON 数据        | [GeoJSON](https://geojson.org/)                                                                                                                                                               | -      | -      |
-| clusteredPointStyle      | 未聚合点的 Paint 对象    | [CircleStyle](/zh/api/common-types/common-types.md#circlestyle)                                                                                                                               | -      | -      |
-| unclusteredPointStyle    | 聚合点的 Paint 对象      | [CircleStyle](/zh/api/common-types/common-types.md#circlestyle)                                                                                                                               | -      | -      |
-| clusteredPointTextLayout | 聚合点的文本 layout 对象 | object。参照 [layout options](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property)                                                                                               | -      | -      |
-| maxZoom                  | 聚类点的最大缩放级别     | number                                                                                                                                                                                        | -      | 14     |
-| radius                   | 聚合点半径               | number                                                                                                                                                                                        | -      | 50     |
+| 参数                     | 说明                     | 类型                                                                                            | 可选值 | 默认值 |
+| :----------------------- | :----------------------- | :---------------------------------------------------------------------------------------------- | :----- | :----- |
+| data                     | 图层 GeoJSON 数据        | [GeoJSON](https://geojson.org/)                                                                 | -      | -      |
+| clusteredPointStyle      | 未聚合点的 Paint 对象    | [CircleStyle](/zh/api/common-types/common-types.md#circlestyle)                                 | -      | -      |
+| unclusteredPointStyle    | 聚合点的 Paint 对象      | [CircleStyle](/zh/api/common-types/common-types.md#circlestyle)                                 | -      | -      |
+| clusteredPointTextLayout | 聚合点的文本 layout 对象 | object。参照 [layout options](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
+| radius                   | 聚合点半径               | number                                                                                          | -      | 50     |
+| maxzoom                  | 聚类点的最大缩放级别     | number                                                                                          | -      | 14     |
+
+> 支持 [Layer 混入参数](/zh/api/mixin/mixin.md#layer)

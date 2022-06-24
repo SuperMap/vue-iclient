@@ -1,10 +1,10 @@
-/* Copyright© 2000 - 2021 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2022 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 
-import { Util } from './Util';
+import { Util } from 'vue-iclient/src/common/_types/event/Util';
 
-export var Event = {
+export let Event = {
   /**
    * @description  A hash table cache of the event observers. Keyed by element._eventCacheID
    * @type {boolean}
@@ -152,7 +152,7 @@ export var Event = {
    * @returns {HTMLElement} The first node with the given tagName, starting from the node the event was triggered on and traversing the DOM upwards
    */
   findElement: function(event, tagName) {
-    var element = Event.element(event);
+    let element = Event.element(event);
     while (element.parentNode && (!element.tagName || element.tagName.toUpperCase() !== tagName.toUpperCase())) {
       element = element.parentNode;
     }
@@ -167,7 +167,7 @@ export var Event = {
    * @param {boolean} [useCapture=false] - 是否捕获。
    */
   observe: function(elementParam, name, observer, useCapture) {
-    var element = Util.getElement(elementParam);
+    let element = Util.getElement(elementParam);
     useCapture = useCapture || false;
 
     if (name === 'keypress' && (navigator.appVersion.match(/Konqueror|Safari|KHTML/) || element.attachEvent)) {
@@ -179,14 +179,14 @@ export var Event = {
     }
 
     if (!element._eventCacheID) {
-      var idPrefix = 'eventCacheID_';
+      let idPrefix = 'eventCacheID_';
       if (element.id) {
         idPrefix = element.id + '_' + idPrefix;
       }
       element._eventCacheID = Util.createUniqueID(idPrefix);
     }
 
-    var cacheID = element._eventCacheID;
+    let cacheID = element._eventCacheID;
 
     if (!this.observers[cacheID]) {
       this.observers[cacheID] = [];
@@ -219,8 +219,8 @@ export var Event = {
    * @param {(HTMLElement|string)} elementParam -
    */
   stopObservingElement: function(elementParam) {
-    var element = Util.getElement(elementParam);
-    var cacheID = element._eventCacheID;
+    let element = Util.getElement(elementParam);
+    let cacheID = element._eventCacheID;
 
     this._removeElementObservers(Event.observers[cacheID]);
   },
@@ -232,9 +232,9 @@ export var Event = {
    */
   _removeElementObservers: function(elementObservers) {
     if (elementObservers) {
-      for (var i = elementObservers.length - 1; i >= 0; i--) {
-        var entry = elementObservers[i];
-        var args = [entry.element, entry.name, entry.observer, entry.useCapture];
+      for (let i = elementObservers.length - 1; i >= 0; i--) {
+        let entry = elementObservers[i];
+        let args = [entry.element, entry.name, entry.observer, entry.useCapture];
         Event.stopObserving.apply(this, args);
       }
     }
@@ -252,8 +252,8 @@ export var Event = {
   stopObserving: function(elementParam, name, observer, useCapture) {
     useCapture = useCapture || false;
 
-    var element = Util.getElement(elementParam);
-    var cacheID = element._eventCacheID;
+    let element = Util.getElement(elementParam);
+    let cacheID = element._eventCacheID;
 
     if (name === 'keypress') {
       if (navigator.appVersion.match(/Konqueror|Safari|KHTML/) || element.detachEvent) {
@@ -262,13 +262,13 @@ export var Event = {
     }
 
     // find element's entry in this.observers cache and remove it
-    var foundEntry = false;
-    var elementObservers = Event.observers[cacheID];
+    let foundEntry = false;
+    let elementObservers = Event.observers[cacheID];
     if (elementObservers) {
       // find the specific event type in the element's list
-      var i = 0;
+      let i = 0;
       while (!foundEntry && i < elementObservers.length) {
-        var cacheEntry = elementObservers[i];
+        let cacheEntry = elementObservers[i];
 
         if (cacheEntry.name === name && cacheEntry.observer === observer && cacheEntry.useCapture === useCapture) {
           elementObservers.splice(i, 1);
@@ -300,8 +300,8 @@ export var Event = {
   unloadCache: function() {
     // created
     if (Event && Event.observers) {
-      for (var cacheID in Event.observers) {
-        var elementObservers = Event.observers[cacheID];
+      for (let cacheID in Event.observers) {
+        let elementObservers = Event.observers[cacheID];
         Event._removeElementObservers.apply(this, [elementObservers]);
       }
       Event.observers = false;

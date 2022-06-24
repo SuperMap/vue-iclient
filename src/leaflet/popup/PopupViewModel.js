@@ -16,6 +16,7 @@ export default class PopupViewModel extends L.Evented {
     this.content = options.content;
     this.createPopup();
   }
+
   /**
    * @function PopupViewModel.prototype.createPopup
    * @desc 创建popup
@@ -25,6 +26,7 @@ export default class PopupViewModel extends L.Evented {
     this.setLatLng();
     this.setContent();
   }
+
   /**
    * @function PopupViewModel.prototype.setContent
    * @desc 设置popup内容
@@ -35,6 +37,7 @@ export default class PopupViewModel extends L.Evented {
       this.mapObject.setContent(content);
     }
   }
+
   /**
    * @function PopupViewModel.prototype.setLatLng
    * @desc 设置latlng
@@ -45,6 +48,7 @@ export default class PopupViewModel extends L.Evented {
       this.mapObject.setLatLng(latLng);
     }
   }
+
   /**
    * @function PopupViewModel.prototype.getPopup
    * @desc 获取popup
@@ -52,6 +56,7 @@ export default class PopupViewModel extends L.Evented {
   getPopup() {
     return this.mapObject;
   }
+
   /**
    * @function PopupViewModel.prototype.openOnMap
    * @desc openOn MAP
@@ -59,6 +64,7 @@ export default class PopupViewModel extends L.Evented {
   openOnMap() {
     this.mapObject.openOn(this.map);
   }
+
   /**
    * @function PopupViewModel.prototype.openOnMap
    * @desc openOn MAP

@@ -2,12 +2,30 @@
 @import '../../_utils/style/theme/theme.scss';
 
 @include b(empty) {
-  background-color: $empty-background;
   @include e(image, '-') {
     height: auto;
   }
-  img {
-    width: 52px;
+  .sm-component-empty-image {
     height: 31px;
+    & svg {
+      width: 52px;
+      height: 31px;
+    }
+  }
+  & ellipse {
+    fill: $empty-shadow-color;
+  }
+  & g g {
+    stroke: $empty-stroke-color;
+  }
+  & path:first-child {
+    fill: $empty-top-color;
+  }
+  & path:nth-child(2) {
+    fill: $empty-bottom-color;
+  }
+  & .sm-component-empty-description {
+    font-size: 12px;
+    color: $empty-description-color;
   }
 }

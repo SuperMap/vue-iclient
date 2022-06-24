@@ -1,0 +1,23 @@
+{
+  "extent": {
+    "leftBottom": { "x": -20037508.3427892, "y": -20037508.3427892 },
+    "rightTop": { "x": 20037508.3427892, "y": 20037508.3427892 }
+  },
+  "maxScale": "1:144447.92746805",
+  "level": 1,
+  "center": { "x": 7219425.62918168, "y": -3039139.7858056696 },
+  "baseLayer": {
+    "layerType": "TILE",
+    "name": "中国暗色地图",
+    "url": "https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark"
+  },
+  "layers": [
+    { "layerType": "WMS", "visible": true, "name": "世界地图_Day", "layers": ["0"], "layerID": "世界地图_Day" }
+  ],
+  "description": "",
+  "projection": "EPSG:3857",
+  "minScale": "1:591658710.909131",
+  "title": "无标题",
+  "version": "2.3.0",
+  "mapParams": { "title": "无标题", "description": "" }
+}

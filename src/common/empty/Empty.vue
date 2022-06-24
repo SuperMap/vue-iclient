@@ -1,12 +1,12 @@
 <script lang="ts">
 import Empty, { EmptyProps } from 'ant-design-vue/es/empty/index';
-import VueTypes from '../_utils/vue-types';
-import Theme from '../_mixin/Theme';
-import AntdRender from '../_mixin/AntdRender';
+import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
 export const emptyProps = {
   ...EmptyProps(),
-  image: VueTypes.any.def(require('./assets/image/empty.png'))
+  image: VueTypes.any.def(Empty.PRESENTED_IMAGE_SIMPLE)
 };
 
 export default {

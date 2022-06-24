@@ -1,7 +1,10 @@
 import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
-export default { title: 'Basic Components/button' };
+export default {
+  title: `${toI18n('basicComponent.title')}/${toI18n('basicComponent.button.title')}`,
+  id: 'BasicComponents/button'
+};
 
 export const ButtonType = () => ({
   mixins: [theme],

@@ -1,5 +1,5 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
-import '../../../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export default class GraphThemeLayerViewModel extends mapboxgl.Evented {
   constructor(themeProps) {
@@ -21,32 +21,34 @@ export default class GraphThemeLayerViewModel extends mapboxgl.Evented {
 
   setLayerName(layerName) {
     this.layerName = layerName;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   setChartsType(chartsType) {
     this.chartsType = chartsType;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   setData(data) {
     this.data = data;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   setOptions(options) {
     this.options = options;
-    this.removed();
-    this._init();
+    this.refresh();
   }
 
   _init() {
     this.themeLayer = new mapboxgl.supermap.GraphThemeLayer(this.layerName, this.chartsType, this.options);
     this.map.addLayer(this.themeLayer);
     this.themeLayer.addFeatures(this.data);
+  }
+
+  refresh() {
+    this.removed();
+    this._init();
+    this.fire('layerchange');
   }
 
   removed() {

@@ -29,10 +29,13 @@ export default {
     unavailableVideo: '此视频暂无法播放，请稍后再试',
     mapNotLoaded: '关联的地图尚未加载完整，请稍后',
     unassociatedMap: '您需要配置关联地图！',
-    videojs: '请引入video.js插件: https://github.com/videojs/video.js； 当播放rtmp时，安装flash相关插件：https://github.com/videojs/videojs-flash',
+    videojs:
+      '请引入video.js插件: https://github.com/videojs/video.js； 当播放rtmp时，安装flash相关插件：https://github.com/videojs/videojs-flash',
     flvPlayer: '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
-  success: {},
+  success: {
+    copySucccess: '复制成功'
+  },
   info: {
     loading: '加载中',
     pressEscToExit: '按下 ESC 键或点击关闭按钮退出'
@@ -47,7 +50,14 @@ export default {
     squaremiles: '平方英里',
     squaremeters: '平方米',
     squareyards: '平方码',
-    squarefeet: '平方英尺'
+    squarefeet: '平方英尺',
+    XY: '经纬度',
+    BASEMAP: '底图',
+    UTM: 'UTM',
+    DD: '度',
+    DOM: '度分',
+    DMS: '度分秒',
+    Mercator: 'Web墨卡托'
   },
   error: {},
   commontypes: {
@@ -73,6 +83,36 @@ export default {
   layerList: {
     title: '图层'
   },
+  slideshow: {
+    title: '幻灯片'
+  },
+  layerColor: {
+    title: '图层颜色',
+    layer: '图层',
+    property: '属性',
+    color: '颜色',
+    reset: '重置',
+    select: '选取',
+    deselect: '取消',
+    circleColor: '点颜色',
+    strokeColor: '轮廓颜色',
+    lineColor: '线颜色',
+    fillColor: '面颜色',
+    iconColor: '图标颜色',
+    textColor: '文本颜色',
+    capture: '捕获'
+  },
+  attributes: {
+    title: '属性表',
+    feature: '要素',
+    selected: '已选择',
+    clearSelected: '清除选中',
+    zoomToFeatures: '缩放至已选要素',
+    columnsControl: '显示/隐藏列',
+    refreshData: '刷新数据',
+    search: '搜索',
+    reset: '重置'
+  },
   miniMap: {},
   pan: {},
   scale: {},
@@ -86,6 +126,9 @@ export default {
     baiduMapNotSupport: '暂不支持加载百度地图！',
     sampleDataNotSupport: '暂不支持加载示例数据！',
     mvtNotSupport: '暂不支持加载矢量瓦片图层！'
+  },
+  drillMap: {
+    goBack: '返回'
   },
   legend: {
     themeField: '专题字段',
@@ -154,6 +197,23 @@ export default {
   },
   layerManager: {
     title: '图层管理'
+  },
+  fillExtrusion: {
+    title: '三维拉伸',
+    polygonLayer: '面图层',
+    height: '高度（米）',
+    heightValue: '高度值',
+    fieldName: '字段名',
+    customFieldPlaceholder: '填写字段名称',
+    customNum: '自定义',
+    multiple: '倍数',
+    fillColor: '填充颜色',
+    layerOpacity: '透明度',
+    hideOriginalLayer: '隐藏原图层',
+    reset: '重置'
+  },
+  flyTo: {
+    title: '飞行定位'
   },
   tdtResults: {
     on: '在',
@@ -242,6 +302,13 @@ export default {
     TiandituCva: '天地图矢量注记',
     TiandituCta: '天地图地形注记',
     TiandituCia: '天地图影像注记'
+  },
+  coordinateConversion: {
+    inputPlaceHolder: '请输入坐标',
+    copy: '复制',
+    location: '定位至',
+    capture: '捕捉',
+    realTime: '实时'
   },
   // layer
   dataFlow: {

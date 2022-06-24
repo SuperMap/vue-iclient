@@ -1,0 +1,38 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+@import '../../select/style/select.scss';
+
+@include b(select-tree) {
+  $prefix: &;
+  overflow: hidden;
+  & li ul {
+    overflow: hidden;
+    padding: 0px;
+    padding: 0 0 0 8px;
+  }
+
+  & li span#{$prefix}-switcher,
+  & li span#{$prefix}-iconEle {
+    width: 14px;
+    vertical-align: top;
+    line-height: 26px;
+  }
+  & li {
+    margin: 2px;
+    #{$prefix}-node-content-wrapper {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      &:hover {
+        background-color: $select-item-hover-bg;
+      }
+    }
+
+    @include e(not-found, '-') {
+      .#{$ant-prefix}-empty {
+        background-color: transparent;
+        color: inherit;
+      }
+    }
+  }
+}

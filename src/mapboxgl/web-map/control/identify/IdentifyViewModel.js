@@ -1,4 +1,4 @@
-import mapboxgl from '../../../../../static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class IdentifyViewModel
@@ -25,6 +25,7 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
     this.layerStyle = options.layerStyle || {};
     this.popup = null;
   }
+
   /**
    * @function IdentifyViewModel.prototype.addPopup
    * @desc 添加弹窗。
@@ -45,6 +46,7 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
     }
     return this.popup;
   }
+
   /**
    * @function IdentifyViewModel.prototype.addOverlayToMap
    * @desc 添加高亮图层。
@@ -118,6 +120,7 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
     //   this.map.addLayer(highlightLayer);
     // }
   }
+
   /**
    * @function IdentifyViewModel.prototype.removed
    * @desc 清除popup和高亮图层。
@@ -127,11 +130,13 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
     this.removePopup();
     this.removeOverlayer(layers);
   }
+
   removePopup() {
     if (this.popup) {
       this.popup.remove() && (this.popup = null);
     }
   }
+
   removeOverlayer(layers = this.layers) {
     layers &&
       layers.forEach(layerId => {

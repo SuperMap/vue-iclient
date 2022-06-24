@@ -1,5 +1,6 @@
 import { FeatureCollection, Feature } from 'geojson';
-import { getColorWithOpacity } from '../../../../../common/_utils/util';
+import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+
 interface markerOptions {
   width?: number;
   colors?: [string, string];
@@ -34,10 +35,10 @@ export default abstract class Marker {
       return;
     }
     this.options.textField = textField;
-    let name = document.getElementsByClassName('sm-component-animate-marker__name');
+    const name = document.getElementsByClassName('sm-component-animate-marker__name');
 
     for (let i = 0; i < name.length; i++) {
-      let properties = this.features.features[i] && this.features.features[i].properties;
+      const properties = this.features.features[i] && this.features.features[i].properties;
       if (properties && properties[textField]) {
         name[i].innerHTML = properties[textField];
       } else {
@@ -48,7 +49,7 @@ export default abstract class Marker {
 
   public setMarkersTextFontSize(textFontSize: number): void {
     this.options.textFontSize = textFontSize;
-    let pulse = document.getElementsByClassName('sm-component-animate-marker__name-container');
+    const pulse = document.getElementsByClassName('sm-component-animate-marker__name-container');
     for (let i = 0; i < pulse.length; i++) {
       // @ts-ignore
       pulse[i].style.fontSize = textFontSize + 'px';
@@ -57,7 +58,7 @@ export default abstract class Marker {
 
   public setMarkersTextColor(textColor: string): void {
     this.options.textColor = textColor;
-    let pulse = document.getElementsByClassName('sm-component-animate-marker__name-container');
+    const pulse = document.getElementsByClassName('sm-component-animate-marker__name-container');
     for (let i = 0; i < pulse.length; i++) {
       // @ts-ignore
       pulse[i].style.color = textColor;
@@ -75,11 +76,11 @@ export default abstract class Marker {
     if (point.properties && Object.keys(point.properties).length !== 0 && this.options.textField) {
       name = point.properties[this.options.textField];
     }
-    let nameContainer = document.createElement('div');
+    const nameContainer = document.createElement('div');
     nameContainer.className = `sm-component-animate-marker__name-container sm-component-animate-marker__name-container--${className}`;
     this.options.textColor && (nameContainer.style.color = this.options.textColor);
     this.options.textFontSize && (nameContainer.style.fontSize = this.options.textFontSize + 'px');
-    let nameSpan = document.createElement('span');
+    const nameSpan = document.createElement('span');
     nameSpan.className = `sm-component-animate-marker__${className} sm-component-animate-marker__name`;
     nameSpan.innerHTML = name || '';
     nameContainer.appendChild(nameSpan);

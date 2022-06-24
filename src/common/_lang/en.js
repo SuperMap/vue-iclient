@@ -29,10 +29,12 @@ export default {
     unavailableVideo: 'This video is temporarily unavailable, please try again later',
     mapNotLoaded: 'The associated map has not been loaded yet, please wait for a second',
     unassociatedMap: 'You need to configure the associated map!',
-    videojs: 'Please import video.js plugin: https://github.com/videojs/video.js, When playing rtmp, install flash related plugin: https://github.com/videojs/videojs-flash',
-    flvPlayer: 'Please import flv related plugin: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
+    videojs:
+      'Please import video.js plugin: https://github.com/videojs/video.js, When playing rtmp, install flash related plugin: https://github.com/videojs/videojs-flash',
+    flvPlayer:
+      'Please import flv related plugin: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
-  success: {},
+  success: { copySucccess: 'copy success' },
   info: {
     loading: 'Loading...',
     pressEscToExit: 'Press the ESC key or click the close button to exit'
@@ -47,7 +49,14 @@ export default {
     squaremiles: 'sq mi',
     squaremeters: 'sq m',
     squareyards: 'sq yd',
-    squarefeet: 'sq ft'
+    squarefeet: 'sq ft',
+    XY: 'XY',
+    BASEMAP: 'BASEMAP',
+    UTM: 'UTM',
+    DD: 'DD',
+    DOM: 'DOM',
+    DMS: 'DMS',
+    Mercator: 'Web Mercator'
   },
   error: {},
   commontypes: {
@@ -73,6 +82,36 @@ export default {
   layerList: {
     title: 'Layer'
   },
+  slideshow: {
+    title: 'Slideshow'
+  },
+  layerColor: {
+    title: 'LayerColor',
+    layer: 'Layer',
+    property: 'Property',
+    color: 'Color',
+    reset: 'Reset',
+    select: 'Select',
+    deselect: 'Deselect',
+    circleColor: 'circleColor',
+    strokeColor: 'circleStrokeColor',
+    lineColor: 'lineColor',
+    fillColor: 'fillColor',
+    iconColor: 'iconColor',
+    textColor: 'textColor',
+    capture: 'Capture'
+  },
+  attributes: {
+    title: 'Attributes',
+    feature: 'Feature',
+    selected: 'Selected',
+    clearSelected: 'Clear Selected',
+    zoomToFeatures: 'ZoomTo Features',
+    columnsControl: 'Show/Hide Columns',
+    refreshData: 'RefreshData',
+    search: 'Search',
+    reset: 'Reset'
+  },
   miniMap: {},
   pan: {},
   scale: {},
@@ -86,6 +125,9 @@ export default {
     baiduMapNotSupport: 'Baidu maps is not supported yet!',
     sampleDataNotSupport: 'Sample datas is not supported yet!',
     mvtNotSupport: 'Vector tile layers is not supported yet!'
+  },
+  drillMap: {
+    goBack: 'Go Back'
   },
   legend: {
     themeField: 'Thematic Field',
@@ -154,6 +196,23 @@ export default {
   },
   layerManager: {
     title: 'Layer Manager'
+  },
+  fillExtrusion: {
+    title: 'Fill Extrusion',
+    polygonLayer: 'Polygon Layer',
+    height: 'Height(meter)',
+    heightValue: 'Height Value',
+    fieldName: 'Field Name',
+    customFieldPlaceholder: 'Fill in the field name',
+    customNum: 'Custom',
+    multiple: 'Multiple',
+    fillColor: 'Fill color',
+    layerOpacity: 'Opacity',
+    hideOriginalLayer: 'Hide original layer',
+    reset: 'Reset'
+  },
+  flyTo: {
+    title: 'Fly To'
   },
   tdtResults: {
     on: 'on ',
@@ -242,6 +301,13 @@ export default {
     TiandituCva: 'TiandituCvaLabel',
     TiandituCta: 'TiandituCtaLabel',
     TiandituCia: 'TiandituCiaLabel'
+  },
+  coordinateConversion: {
+    inputPlaceHolder: 'Input coordinate',
+    copy: 'copy',
+    location: 'location',
+    capture: 'capture',
+    realTime: 'real-time'
   },
   // layer
   dataFlow: {

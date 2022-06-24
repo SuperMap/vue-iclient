@@ -1,8 +1,8 @@
 <script lang="ts">
 import Layout from 'ant-design-vue/es/layout';
 import { SiderProps } from 'ant-design-vue/es/layout/Sider';
-import Theme from '../_mixin/Theme';
-import AntdRender from '../_mixin/AntdRender';
+import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
 export const layoutSiderTypes = {
   ...SiderProps
@@ -23,7 +23,7 @@ export default {
     extralListeners() {
       const vm = this;
       return {
-        'collapse': function() {
+        collapse: function() {
           vm.$emit('collapse', ...arguments);
         }
       };

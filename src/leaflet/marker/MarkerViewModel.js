@@ -1,5 +1,5 @@
 import L from '../leaflet-wrapper';
-import '../../../static/libs/iclient-leaflet/iclient-leaflet.min.js';
+import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
 /**
  * @class MarkerViewModel
  * @description 点选 viewModel.
@@ -16,9 +16,11 @@ export default class MarkerViewModel extends L.Evented {
     this.marker = null;
     this.createMarker();
   }
+
   createMarker(latLng = this.latLng) {
     this.marker = L.circleMarker(latLng).addTo(this.map);
   }
+
   /**
    * @function MarkerViewModel.prototype.getMarker
    * @desc 获取marker

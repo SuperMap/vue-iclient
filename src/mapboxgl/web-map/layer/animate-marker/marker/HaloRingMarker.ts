@@ -42,6 +42,7 @@ export default class HaloRingMarker extends Marker {
       }
     }
   }
+
   _createMarker(): void {
     this.features.features.forEach(point => {
       let markerContainer = document.createElement('div');

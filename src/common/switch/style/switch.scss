@@ -1,6 +1,5 @@
 @import '../../_utils/style/mixins/mixins.scss';
 @import '../../_utils/style/theme/theme.scss';
-@import 'mixin.scss';
 
 @include b(switch) {
   $prefix: &;
@@ -10,13 +9,12 @@
   &:after {
     background-color: $switch-after-bg;
   }
-  &[disabled] {
-    @include disabled($prefix);
-  }
-  @include e(disabled, '-') {
-    @include disabled($prefix);
-  }
+
   @include e(checked, '-') {
     background-color: $switch-color;
+  }
+
+  &-loading &-loading-icon {
+    color: $switch-loading-text-color;
   }
 }

@@ -1,5 +1,6 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
+@import '../../../../../common/collapse-card/style/collapse-card.scss';
 @import '../../../../../common/card/style/card.scss';
 @import '../../../../../common/collapse/style/collapse.scss';
 
@@ -33,7 +34,7 @@
   }
 
   @include e(noBorder) {
-    max-width: 240px;
+    max-width: none;
     height: 100%;
     padding-right: 15px;
     border-bottom: 1px solid $border-color-split;
@@ -44,23 +45,32 @@
       margin-bottom: 0;
       padding-bottom: 0;
     }
-    #{$legend-prefix}__themefield {
-      margin-top: 10px;
+    #{$legend-prefix}__title {
+      padding-bottom: 10px;
     }
   }
+
+  @include e(themefield) {
+    padding-bottom: 10px;
+  }
+
   .is-not-header {
-    &.is-top-left, &.is-bottom-left {
+    &.is-top-left,
+    &.is-bottom-left {
       .#{$collapse-prefix} {
         .#{$collapse-prefix}-item {
           padding-left: 30px;
         }
         .#{$collapse-prefix}-content {
           margin-left: -30px;
-          padding-left: 30px;
+        }
+        .#{$collapse-prefix}-content-box {
+          padding-left: 16px;
         }
       }
     }
-    &.is-top-right, &.is-bottom-right {
+    &.is-top-right,
+    &.is-bottom-right {
       .#{$collapse-prefix} {
         .#{$collapse-prefix}-item {
           padding-right: 30px;
@@ -68,9 +78,11 @@
         .#{$collapse-prefix}-content {
           margin-right: -30px;
         }
+        .#{$collapse-prefix}-content-box {
+          padding-right: 16px;
+        }
       }
     }
-
   }
 
   @include e(panel) {
@@ -94,7 +106,7 @@
         }
         &.#{$collapse-prefix}-item-active {
           .#{$collapse-prefix}-header {
-            border-bottom: 1px solid var(--border-color-split);
+            border-bottom: 1px solid $border-color-split;
           }
         }
       }
@@ -113,33 +125,26 @@
     }
   }
   .#{$collapse-prefix}-content {
-    background: $background-color-base;
+    background: $collapse-card-secondary-bg;
     margin: 0 -16px;
-    padding: 4px 16px;
+    padding: 7px 16px;
     border-top: none;
     color: inherit;
     .#{$collapse-prefix}-content-box {
-      overflow-y: auto;
       padding: 0;
-      padding-left: 2px;
       @include e(wrap) {
         display: flex;
         align-items: center;
         height: 100%;
         min-width: 80px;
-        & > div,
-        & > ul {
-          flex: 1;
-          max-width: 100%;
-          max-height: 300px;
-          overflow-y: auto;
-        }
       }
       @include e(range) {
+        overflow: hidden;
         @include e(range-item) {
           & > div {
             > i {
               display: inline-block;
+              vertical-align: text-bottom;
               width: 14px;
               height: 14px;
             }
@@ -185,6 +190,9 @@
       @include e(point) {
         padding: 0;
         margin: 0;
+        &::-webkit-scrollbar-thumb {
+          background: $scrollbar-background;
+        }
       }
 
       @include e(heatbox item range-item rank-item) {
@@ -194,11 +202,10 @@
         align-items: center;
         > * {
           &:first-child {
-            flex: 1;
-            text-align: right;
+            text-align: center;
           }
           &:last-child {
-            width: 80%;
+            width: auto;
             padding-left: 10px;
           }
         }
@@ -217,10 +224,6 @@
       @include e(field-value) {
         margin-left: 12px;
         max-width: 86%;
-      }
-
-      @include e(themefield) {
-        margin-bottom: 4px;
       }
 
       @include e(title) {

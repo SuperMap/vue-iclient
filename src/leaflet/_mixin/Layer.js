@@ -1,4 +1,4 @@
-import { propsBinder } from '../_utils/props-binder';
+import { propsBinder } from 'vue-iclient/src/leaflet/_utils/props-binder';
 
 export default {
   props: {

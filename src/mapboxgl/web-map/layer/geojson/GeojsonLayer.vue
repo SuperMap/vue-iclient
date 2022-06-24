@@ -1,6 +1,6 @@
 <script>
-import MapGetter from '../../../_mixin/map-getter';
-import Layer from '../../../_mixin/layer';
+import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
 import GeojsonLayerViewModel from './GeojsonLayerViewModel';
 
 export default {

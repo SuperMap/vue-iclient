@@ -1,0 +1,6 @@
+@import "../../_utils/style/mixins/mixins.scss";
+
+@include b(liquidfill) {
+  margin: 0 auto;
+  height: 100px;
+}

@@ -48,7 +48,7 @@ exports.cssLoaders = function (options) {
   return {
     css: generateLoaders(),
     less: generateLoaders('less', { lessOptions: { javascriptEnabled: true }}),
-    sass: generateLoaders('sass', { indentedSyntax: true }),
+    sass: generateLoaders('sass', { implementation: require('sass') }),
     scss: generateLoaders('sass'),
     stylus: generateLoaders('stylus'),
     styl: generateLoaders('stylus')

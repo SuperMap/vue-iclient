@@ -1,6 +1,6 @@
-import iServerRestService from './iServerRestService';
-import iPortalDataService from './iPortalDataService';
-import RestService from './RestService';
+import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
+import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
+import RestService from 'vue-iclient/src/common/_utils/RestService';
 
 export default function getFeatures(dataset) {
   let superMapService;
@@ -16,16 +16,25 @@ export default function getFeatures(dataset) {
       layerName,
       withCredentials,
       preferContent,
-      epsgCode
+      epsgCode,
+      fromIndex,
+      toIndex,
+      hasGeometry,
+      orderBy
     } = dataset;
     if (dataset && (url || geoJSON) && type) {
       let queryInfo = {
         maxFeatures: maxFeatures,
-        attributeFilter: attributeFilter
+        attributeFilter: attributeFilter,
+        orderBy
       };
       if (type === 'iServer') {
         let datasetInfo;
-        const options = {};
+        const options = {
+          fromIndex,
+          toIndex,
+          hasGeometry
+        };
         if (dataset.proxy) {
           options.proxy = dataset.proxy;
         }

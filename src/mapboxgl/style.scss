@@ -1,4 +1,3 @@
-$--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/_utils/style/common/common.scss';
 /** common */
 @import '../common/indicator/style/indicator.scss';
@@ -6,9 +5,9 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/time-text/style/time-text.scss';
 @import '../common/icon/style/icon.scss';
 @import '../common/collapse-card/style/collapse-card.scss';
-@import '../common/liquidfill/style/liquidFill.scss';
+@import '../common/liquid-fill/style/liquid-fill.scss';
 @import '../common/progress/style/progress.scss';
-@import '../common/table-popup/style/tablePopup.scss';
+@import '../common/table-popup/style/table-popup.scss';
 @import '../common/border/style/border.scss';
 @import '../common/image/style/image.scss';
 @import '../common/video-player/style/video-player.scss';
@@ -16,6 +15,7 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/chart/style/chart.scss';
 @import '../common/button/style/button.scss';
 @import '../common/input/style/input.scss';
+@import '../common/input-number/style/input-number.scss';
 @import '../common/switch/style/switch.scss';
 @import '../common/select/style/select.scss';
 @import '../common/checkbox/style/checkbox.scss';
@@ -39,6 +39,14 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import '../common/table/style/table.scss';
 @import '../common/slider/style/slider.scss';
 @import '../common/tree/style/tree.scss';
+@import '../common/color-picker/style/color-picker.scss';
+@import '../common/time-slider/style/time-slider.scss';
+@import '../common/time-line/style/time-line.scss';
+@import '../common/time-range/style/time-range.scss';
+@import '../common/tree-select/style/tree-select.scss';
+@import '../common/layer-select/style/layer-select.scss';
+@import '../common/dropdown/style/dropdown.scss';
+@import '../common/slideshow/style/slideshow.scss';
 
 /** control */
 @import './web-map/control/scale/style/scale.scss';
@@ -46,21 +54,26 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './web-map/control/pan/style/pan.scss';
 @import './web-map/control/measure/style/measure.scss';
 @import './web-map/control/layer-list/style/layer-list.scss';
+@import './web-map/control/layer-color/style/layer-color.scss';
 @import './web-map/control/legend/style/legend.scss';
 @import './web-map/control/draw/style/draw.scss';
 @import './web-map/control/identify/style/identify.scss';
 @import './web-map/control/layer-manager/style/layer-manager.scss';
 @import './web-map/control/mini-map/style/mini-map.scss';
+@import './web-map/control/coordinate-conversion/style/coordinate-conversion.scss';
+@import './web-map/control/compass/style/compass.scss';
+@import './web-map/control/fly-to/style/fly-to.scss';
+
 @import './tdt/results/style/areaResult.scss';
-@import './tdt/results/style/lineResult.scss';
+@import './tdt/results/style/linesResult.scss';
 @import './tdt/results/style/nothingResult.scss';
 @import './tdt/results/style/pagination.scss';
 @import './tdt/results/style/pointsResult.scss';
 @import './tdt/results/style/routePlan.scss';
 @import './tdt/results/style/statisticsResult.scss';
-@import './tdt/search/style/tdtSearch.scss';
-@import './tdt/route/style/tdtRoute.scss';
-@import './tdt/mapSwitcher/style/tdtMapSwitcher.scss';
+@import './tdt/search/style/tdt-search.scss';
+@import './tdt/route/style/tdt-route.scss';
+@import './tdt/map-switcher/style/tdt-map-switcher.scss';
 
 @import './web-map/style/web-map.scss';
 @import './web-scene/style/web-scene.scss';
@@ -68,13 +81,9 @@ $--tdt-assets-path: './tdt/_assets' !default;
 @import './query/style/query.scss';
 @import './open-file/style/open-file.scss';
 @import './text-list/style/text-list.scss';
-
-
+@import './attributes/style/attributes.scss';
 /* layer */
 @import './web-map/layer/animate-marker/style/animate-marker-layer.scss';
-/* tdt */
-@import './tdt/route/style/tdtRoute.scss';
-@import './tdt/search/style/tdtSearch.scss';
 
 @import './ncp-map/style/ncp-map.scss';
 @import './compare/style/compare.scss';

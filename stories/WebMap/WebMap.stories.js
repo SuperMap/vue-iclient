@@ -2,7 +2,8 @@ import { toI18n } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
 
 export default {
-  title: 'Map Components/web-map'
+  title: `${toI18n('mapComponent.title')}/${toI18n('mapComponent.webMap')}`,
+  id: 'MapComponents/web-map'
 };
 
 export const WebMap = () => ({
