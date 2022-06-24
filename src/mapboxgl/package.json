@@ -74,7 +74,7 @@
     "vue-videojs7": "^0.1.5",
     "wwobjloader2": "4.0.0",
     "xlsx": "0.17.2",
-    "xml-js": "1.6.8"
+    "xml-js": "1.6.11"
   },
   "peerDependencies": {
     "vue": ">=2.5.0"
