@@ -21,8 +21,8 @@
     "storybook:dev": "start-storybook -p 6006",
     "storybook:build": "build-storybook -o storybook",
     "lib": "rimraf lib && npm run lib:mapboxgl && npm run lib:leaflet",
-    "lib:mapboxgl": "rimraf lib/mapboxgl && npm run gulp && npm run comp -mapboxgl && npm run comp -mapboxgl -index ",
-    "lib:leaflet": "rimraf lib/leaflet && npm run gulp -leaflet && npm run comp -leaflet &&npm run comp -leaflet -index ",
+    "lib:mapboxgl": "rimraf lib && npm run gulp && npm run comp -mapboxgl && npm run comp -mapboxgl -index ",
+    "lib:leaflet": "rimraf lib && npm run gulp -leaflet && npm run comp -leaflet &&npm run comp -leaflet -index ",
     "comp": "webpack --config build/webpack.component.js",
     "gulp": "gulp build --gulpfile build/gulpfile.js"
   },
