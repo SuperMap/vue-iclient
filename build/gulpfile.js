@@ -20,7 +20,10 @@ if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
   type = origin[2].replace('-', '');
 }
 
-const NO_STYLE_COMPONENTS = ['video-plus-draw', 'video-plus-layer', 'video-plus-marker', 'video-plus-popup'];
+const NO_STYLE_COMPONENTS = {
+  mapboxgl: ['video-plus-draw', 'video-plus-layer', 'video-plus-marker', 'video-plus-popup'],
+  leaflet: ['marker', 'popup']
+};
 
 const output_path = `../lib/${type}/`;
 function compileSass(done) {
@@ -192,7 +195,7 @@ function compileCopy() {
   // 生成layer/style/index.js css.js
   createLayerStyle(`../src/${type}/web-map/layer/`);
 
-  NO_STYLE_COMPONENTS.forEach(componentName => {
+  NO_STYLE_COMPONENTS[type].forEach(componentName => {
     createStyle(`../lib/${type}/${componentName}/style`);
   });
   // 全局配置组件没有style 生成config-provider/style/index.js css.js
