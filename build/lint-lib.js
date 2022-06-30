@@ -5,10 +5,13 @@ let argv = JSON.parse(process.env['npm_config_argv']);
 let origin = argv.original;
 const type = origin[2].substring(1);
 
-
-const filePath = `../lib/${type}`;
+let filePath = `../lib/${type}`;
+try {
+  fs.statSync(path.resolve(__dirname, filePath));
+} catch (err) {
+  filePath = `../lib`;
+}
 const compFiles = fs.readdirSync(path.resolve(__dirname, filePath));
-
 compFiles.forEach(compName => {
   if (['index.js', 'init.js', 'style.js'].includes(compName) || compName.startsWith('_')) return;
   try {
