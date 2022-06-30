@@ -20,7 +20,7 @@ if (origin[2] && ['-mapboxgl', '-leaflet'].includes(origin[2])) {
   type = origin[2].replace('-', '');
 }
 
-const NO_STYLE_COMPONENTS = ['config-provider'];
+const NO_STYLE_COMPONENTS = ['video-plus-draw', 'video-plus-layer', 'video-plus-marker', 'video-plus-popup'];
 
 const output_path = `../lib/${type}/`;
 function compileSass(done) {
@@ -32,13 +32,13 @@ function compileSass(done) {
     `../src/${type}/web-map/layer/**/style/!(mixin)**.scss`
   ];
   if (type === 'mapboxgl') {
-    gulpFile.concat([
+    gulpFile.push(
       `../src/${type}/tdt*/!(^_)**/style/!(mixin)**.scss`,
       `../src/${type}/video-plus/control/**/style/!(mixin)**.scss`,
       `../src/${type}/video-plus/layer/**/style/!(mixin)**.scss`,
       `../src/${type}/video-plus/ui/marker/**/style/!(mixin)**.scss`,
       `../src/${type}/video-plus/ui/popup/**/style/!(mixin)**.scss`
-    ]);
+    );
   }
   return gulp
     .src(gulpFile)
@@ -118,13 +118,13 @@ function compileCssjs(done) {
     `../src/${type}/web-map/layer/**/style/index*.js`
   ];
   if (type === 'mapboxgl') {
-    gulpFile.concat([
+    gulpFile.push(
       `../src/${type}/tdt*/!(^_|results)**/style/index*.js`,
       `../src/${type}/video-plus/control/**/style/index*.js`,
       `../src/${type}/video-plus/layer/**/style/index*.js`,
       `../src/${type}/video-plus/ui/marker/**/style/index*.js`,
       `../src/${type}/video-plus/ui/popup/**/style/index*.js`
-    ]);
+    );
   }
   gulp
     .src(gulpFile)
@@ -210,6 +210,7 @@ function createStyle(filePath) {
 function createLayerStyle(filePath) {
   const compFiles = fs.readdirSync(path.resolve(__dirname, filePath));
   compFiles.forEach(compName => {
+    if (compName === 'fill-extrusion') return;
     const outPath = `../lib/${type}/${compName}-layer/style`;
     try {
       fs.statSync(path.resolve(__dirname, filePath) + `\\${compName}\\style`);
