@@ -15,10 +15,10 @@ compFiles.forEach(compName => {
     fs.statSync(path.resolve(__dirname, filePath) + `\\${compName}\\style`);
     fs.readFile(path.resolve(__dirname, filePath) + `\\${compName}\\style\\css.js`, 'utf8', function (err) {
       if (err) {
-        throw new Error(err);
+        throw new Error(`按需引入的lib包：没有${type}/lib/${compName}/style/css.js文件`);
       }
     });
   } catch (err) {
-    throw new Error(err);
+    throw new Error(`按需引入的lib包：${type}/lib/${compName}下没有style文件夹`);
   }
 });
