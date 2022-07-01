@@ -164,14 +164,14 @@ function compileCssjs(done) {
       gulp.dest(file => {
         const layerType = file.path.match(/\\layer\\([a-zA-Z_\-0-9]+)\\/);
         const tdtType = file.path.match(/\\tdt\\([a-zA-Z_\-0-9]+)\\/);
-        console.log('compileCssjs layerType: ', layerType, ',l ayerType: ', tdtType, ',path: ', file.path);
+        console.log('compileCssjs layerType: ', layerType,',layerType: ', tdtType, ',path: ', file.path);
         if (layerType && !layerType[1].includes('-layer\\')) {
           file.path = file.path.replace(`${layerType[1]}`, `${layerType[1]}-layer`);
         }
         if (tdtType) {
           file.path = file.path.replace(`\\tdt\\${tdtType[1]}`, `\\tdt-${tdtType[1]}`);
         }
-        console.log('compileCssjs ', ',path: ', file.path, !layerType[1].includes('-layer\\'));
+        console.log('compileCssjs ', ',path: ', file.path, layerType && !layerType[1].includes('-layer\\'));
         return output_path;
       })
     );
