@@ -53,6 +53,7 @@ function compileSass(done) {
       through2.obj(function z(file, encoding, next) {
         const isTdt = file.path.match(/tdt/);
         const tdtResult = file.path.match(/tdt\\results/);
+        console.log('1111111111111111path: ', file.path, ", isTdt: ", isTdt, ', tdtResult: ', tdtResult);
         if (isTdt) {
           const content = file.contents.toString(encoding);
           if (tdtResult) {
@@ -61,6 +62,7 @@ function compileSass(done) {
           } else {
             file.contents = Buffer.from(content.replace(/tdt\/_assets/g, `../../_assets`));
           }
+          console.log('2222222222222222222222222istdtResult: true', tdtResult, ', tdtResult path: ', file.path);
         }
         this.push(file);
         next();
@@ -71,13 +73,14 @@ function compileSass(done) {
       gulp.dest(file => {
         const layerType = file.path.match(/\\layer\\([a-zA-Z_\-0-9]+)\\/);
         const tdtType = file.path.match(/\\tdt\\([a-zA-Z_\-0-9]+)\\/);
-
+        console.log('333333333333layerType: ', layerType, ',l ayerType: ', tdtType, ',path: ', file.path);
         if (layerType) {
           file.path = file.path.replace(`${layerType[1]}`, `${layerType[1]}-layer`);
         }
         if (tdtType) {
           file.path = file.path.replace(`\\tdt\\${tdtType[1]}`, `\\tdt-${tdtType[1]}`);
         }
+        console.log('4444444444444 ', ',path: ', file.path);
         return output_path;
       })
     );
@@ -161,13 +164,14 @@ function compileCssjs(done) {
       gulp.dest(file => {
         const layerType = file.path.match(/\\layer\\([a-zA-Z_\-0-9]+)\\/);
         const tdtType = file.path.match(/\\tdt\\([a-zA-Z_\-0-9]+)\\/);
-
+        console.log('compileCssjs layerType: ', layerType, ',l ayerType: ', tdtType, ',path: ', file.path);
         if (layerType && !layerType[1].includes('-layer\\')) {
           file.path = file.path.replace(`${layerType[1]}`, `${layerType[1]}-layer`);
         }
         if (tdtType) {
           file.path = file.path.replace(`\\tdt\\${tdtType[1]}`, `\\tdt-${tdtType[1]}`);
         }
+        console.log('compileCssjs ', ',path: ', file.path, !layerType[1].includes('-layer\\'));
         return output_path;
       })
     );
