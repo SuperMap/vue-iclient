@@ -220,7 +220,7 @@ function createLayerStyle(filePath) {
     if (compName === 'fill-extrusion') return;
     const outPath = `../lib/${type}/${compName}-layer/style`;
     try {
-      fs.statSync(path.resolve(__dirname, filePath) + `\\${compName}\\style`);
+      fs.statSync(path.resolve(__dirname, filePath, `${compName}/style`));
     } catch (err) {
       createStyle(outPath);
     }
