@@ -53,16 +53,15 @@ function compileSass(done) {
       through2.obj(function z(file, encoding, next) {
         const isTdt = file.path.match(/tdt/);
         const tdtResult = file.path.match(/tdt[\/\\]results/);
-        console.log('1111111111111111path: ', file.path, ', isTdt: ', isTdt, ', tdtResult: ', tdtResult);
         if (isTdt) {
           const content = file.contents.toString(encoding);
           if (tdtResult) {
-            file.path = file.path.replace(/tdt[\/\\]results[\/\\]style/, '_utils[/\\]style[/\\]tdt-results[/\\]');
+            const sep = file.path.match(/[\/\\]/)[0];
+            file.path = file.path.replace(/tdt[\/\\]results[\/\\]style/, `_utils${sep}style${sep}tdt-results${sep}/`);
             file.contents = Buffer.from(content.replace(/tdt\/_assets/g, `../../../_assets`));
           } else {
             file.contents = Buffer.from(content.replace(/tdt\/_assets/g, `../../_assets`));
           }
-          console.log('2222222222222222222222222istdtResult: true', tdtResult, ', tdtResult path: ', file.path);
         }
         this.push(file);
         next();
@@ -73,7 +72,6 @@ function compileSass(done) {
       gulp.dest(file => {
         const layerType = file.path.match(/[\/\\]layer[\/\\]([a-zA-Z_\-0-9]+)[\/\\]/);
         const tdtType = file.path.match(/[\/\\]tdt([\/\\])[a-zA-Z_\-0-9]+[\/\\]/);
-        console.log('333333333333layerType: ', layerType, ',l ayerType: ', tdtType, ',path: ', file.path);
         if (layerType) {
           file.path = file.path.replace(`${layerType[1]}`, `${layerType[1]}-layer`);
         }
@@ -82,7 +80,6 @@ function compileSass(done) {
           const index = tdtType['index'] + len + 3;
           file.path = file.path.slice(0, index) + '-' + file.path.slice(index + len);
         }
-        console.log('4444444444444 ', ',path: ', file.path);
         return output_path;
       })
     );
@@ -166,7 +163,6 @@ function compileCssjs(done) {
       gulp.dest(file => {
         const layerType = file.path.match(/[\/\\]layer[\/\\]([a-zA-Z_\-0-9]+)[\/\\]/);
         const tdtType = file.path.match(/[\/\\]tdt([\/\\])[a-zA-Z_\-0-9]+[\/\\]/);
-        console.log('compileCssjs before layerType: ', layerType, ',tdtType: ', tdtType, ',path: ', file.path);
         if (layerType && !layerType[1].match(/-layer[\/\\]/)) {
           file.path = file.path.replace(`${layerType[1]}`, `${layerType[1]}-layer`);
         }
@@ -175,7 +171,6 @@ function compileCssjs(done) {
           const index = tdtType['index'] + len + 3;
           file.path = file.path.slice(0, index) + '-' + file.path.slice(index + len);
         }
-        console.log('compileCssjs after', ',path: ', file.path, layerType && !layerType[1].match(/-layer[\/\\]/));
         return output_path;
       })
     );
