@@ -108,7 +108,7 @@
   "_mixin/map-getter": "vue-iclient/src/mapboxgl/_mixin/map-getter.ts",
   "_mixin/map-events": "vue-iclient/src/mapboxgl/web-map/_mixin/map-events.ts",
   "_mixin/theme-layer": "vue-iclient/src/mapboxgl/web-map/_mixin/theme-layer.ts",
-  "_mixin/video-plus-getters": "vue-iclient/src/mapboxgl/_mixin/video-plus-getters",
+  "_mixin/video-plus-getters": "vue-iclient/src/mapboxgl/_mixin/video-plus-getters.ts",
   "_lang/en": "vue-iclient/src/common/_lang/en.js",
   "_lang/index": "vue-iclient/src/common/_lang/index.js",
   "_lang/zh": "vue-iclient/src/common/_lang/zh.js",
@@ -150,7 +150,7 @@
   "_types/LineStyle": "vue-iclient/src/mapboxgl/_types/LineStyle.js",
   "_types/map-event": "vue-iclient/src/mapboxgl/_types/map-event.js",
   "_types/SymbolStyle": "vue-iclient/src/mapboxgl/_types/SymbolStyle.js",
-  "_types/video-plus-event": "vue-iclient/src/mapboxgl/_types/video-plus-event",
+  "_types/video-plus-event": "vue-iclient/src/mapboxgl/_types/video-plus-event.js",
   "_utils/geometry-util": "vue-iclient/src/mapboxgl/_utils/geometry-util.js",
   "_utils/index": "vue-iclient/src/mapboxgl/_utils/index.js"
 }
