@@ -6,7 +6,7 @@ module.exports = {
   stories: ['../stories/**/*.stories.mdx', '../stories/**/*.stories.@(js|jsx|ts|tsx)'],
   // 没有用到 @storybook/addon-postcss,隐藏关于postcss的警告
   features: {
-    postcss: false,
+    postcss: false
   },
   addons: [
     '@storybook/preset-scss',
@@ -24,6 +24,9 @@ module.exports = {
   ],
   webpackFinal: async (config, { configType }) => {
     config.resolve.alias['vue-iclient'] = resolve('./');
+    config.resolve.alias['@supermap/vue-iclient-mapboxgl/static'] = resolve('./static');
+    config.resolve.alias['@supermap/vue-iclient-mapboxgl/lib'] = resolve('./lib/mapboxgl');
+    config.resolve.alias['@supermap/vue-iclient-mapboxgl'] = resolve('./lib/mapboxgl');
     config.optimization = {
       splitChunks: {
         chunks: 'all',
@@ -31,21 +34,36 @@ module.exports = {
         maxSize: 1024 * 1024 // 1MB
       }
     };
-    // config.resolve.alias['core-js/modules'] = '@storybook/core/node_modules/core-js/modules';
-    config.module.rules.push({
-      test: /\.less$/,
-      use: [
-        'style-loader',
-        'css-loader',
-        {
-          loader: 'less-loader',
-          options: {
-            lessOptions: {
-              javascriptEnabled: true
-            }
-          }
+    config.externals = [
+      function (context, request, callback) {
+        if (request === '@supermap/vue-iclient-mapboxgl') {
+          return callback(null, {});
         }
-      ]
+        callback();
+      }
+    ];
+    config.module.rules.push({
+      test: /useLib\.js$/,
+      loader: 'babel-loader',
+      options: {
+        presets: ['@babel/preset-env'],
+        plugins: [
+          ['@babel/plugin-proposal-private-methods', { loose: true }],
+          ['@babel/plugin-proposal-private-property-in-object', { loose: true }],
+          [
+            'import',
+            {
+              libraryName: '@supermap/vue-iclient-mapboxgl',
+              style: name => {
+                return `${name}/style/css`;
+              },
+              customName: name => {
+                return `../lib/mapboxgl/${name}`;
+              }
+            }
+          ]
+        ]
+      }
     });
     return config;
   }

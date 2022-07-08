@@ -1,7 +1,7 @@
 import {
   toI18n
 } from '../../.storybook/lang';
-import smcomponents from '../../src/mapboxgl';
+import RestMapParameter from '@supermap/vue-iclient-mapboxgl/lib/_types/RestMapParameter.js'; // 需要引用具体的路径
 import theme from '../setThemeMixin/setTheme';
 
 export default {
@@ -14,7 +14,7 @@ export const query = () => ({
   data() {
     return {
       restMapQuery: [
-        new smcomponents.commontypes.RestMapParameter({
+        new RestMapParameter({
           url: 'https://iserver.supermap.io/iserver/services/map-world/rest/maps/World',
           attributeFilter: 'SmID>0',
           layerName: 'Capitals@World.1'
