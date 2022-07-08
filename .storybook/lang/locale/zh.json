@@ -215,6 +215,13 @@
       "title": "VideoPlayer 视频播放器",
       "controlBar": "控制条"
     },
+    "videoPlus": {
+      "title": "VideoPlus 视频+",
+      "marker": "标志",
+      "popup": "弹窗",
+      "layer": "图层",
+      "draw": "标绘"
+    },
     "slider": {
       "title": "Slider 滑动输入条",
       "icon": "图标",

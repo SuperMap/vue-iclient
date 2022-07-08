@@ -9,7 +9,7 @@ interface triggerParams {
   ignoreElements: string[];
 }
 
-export const setTheme = (themeStyle: any = {}, triggerInfo: triggerParams) => {
+export const setTheme = (themeStyle: any = {}, triggerInfo?: triggerParams) => {
   let acceptedThemeStyle = themeStyle;
   if (typeof themeStyle === 'string') {
     acceptedThemeStyle = themeFactory.find((item: ThemeStyleParams) => item.label === themeStyle) || themeFactory[1];
@@ -29,8 +29,8 @@ export const setTheme = (themeStyle: any = {}, triggerInfo: triggerParams) => {
     nextTheme.background = nextTheme.componentBackground;
   }
   globalEvent.$options.theme = nextTheme;
-  if (triggerInfo && triggerInfo.triggerEvent) {
-    globalEvent.$emit('change-theme', objectWithoutProperties(nextTheme, triggerInfo.ignoreElements || []));
+  if (!triggerInfo || triggerInfo.triggerEvent === true) {
+    globalEvent.$emit('change-theme', objectWithoutProperties(nextTheme, (triggerInfo || {}).ignoreElements || []));
   }
   // @ts-ignore
   if (!Vue.iclient) {

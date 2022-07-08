@@ -18,7 +18,6 @@
   "indicator": "vue-iclient/src/common/indicator/index.js",
   "input": "vue-iclient/src/common/input/index.js",
   "input-number": "vue-iclient/src/common/input-number/index.js",
-  "layer-select": "vue-iclient/src/common/layer-select/index.js",
   "layout": "vue-iclient/src/common/layout/index.js",
   "liquid-fill": "vue-iclient/src/common/liquid-fill/index.js",
   "menu": "vue-iclient/src/common/menu/index.js",

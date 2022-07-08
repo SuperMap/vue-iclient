@@ -90,9 +90,16 @@ npm install babel-plugin-import -D
 ```js
 import { Button, message } from '@supermap/vue-iclient-mapboxgl';
 
-/* v10.2.0+ 自动注册 Button下组件，如 Button.Group */
+/* 通过Vue.use注册组件 */
 Vue.use(Button);
 Vue.prototype.$message = message;
+
+/* 或者通过Vue.component注册组件。注意：使用该方法需要手动注册国际化和主题。*/
+import { lang, locale } from '@supermap/vue-iclient-mapboxgl/lib/_lang';
+import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme';
+Vue.use(locale, { locale: lang.zh }); // 注册国际化
+setTheme('light'); // 注册主题
+Vue.component(Button.name, Button);
 
 new Vue({
   el: '#app',

@@ -1,11 +1,5 @@
-import Vue from 'vue';
-import 'ant-design-vue/dist/antd.css';
-import '../static/libs/mapboxgl/mapbox-gl-enhance.css';
-import '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.css';
-import SmComponents from '../src/mapboxgl';
 import i18n, { getLanguage, setLanguage, getStoryGlobalI18n } from './lang';
-
-Vue.use(SmComponents, { theme: 'dark', i18n });
+import './useLib';
 
 const TEMPLATESOURCE = function(templateSource, beforTemplateSource = '', afterTemplateSource = '') {
   const beforSource = beforTemplateSource.trim();

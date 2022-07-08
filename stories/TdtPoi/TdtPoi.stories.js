@@ -1,8 +1,10 @@
 import {
   toI18n
 } from '../../.storybook/lang';
-import smcomponents from '../../src/mapboxgl';
 import theme from '../setThemeMixin/setTheme';
+import AddressMatchParameter from '@supermap/vue-iclient-mapboxgl/lib/_types/AddressMatchParameter.js'; // 需要引用具体的路径
+import RestMapParameter from '@supermap/vue-iclient-mapboxgl/lib/_types/RestMapParameter.js'; // 需要引用具体的路径
+import RestDataParameter from '@supermap/vue-iclient-mapboxgl/lib/_types/RestDataParameter.js'; // 需要引用具体的路径
 
 export default {
   title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.tdtPoi.title')}`,
@@ -14,18 +16,18 @@ export const tdtPoi = () => ({
   data() {
     return {
       addressMatch: [
-        new smcomponents.commontypes.AddressMatchParameter({
+        new AddressMatchParameter({
           url: 'https://iserver.supermap.io/iserver/services/addressmatch-Address/restjsr/v1/address'
         })
       ],
       restMapSearch: [
-        new smcomponents.commontypes.RestMapParameter({
+        new RestMapParameter({
           url: 'https://iserver.supermap.io/iserver/services/map-world/rest/maps/World',
           layerName: 'Capitals@World.1'
         })
       ],
       restDataSearch: [
-        new smcomponents.commontypes.RestDataParameter({
+        new RestDataParameter({
           url: 'https://iserver.supermap.io/iserver/services/data-world/rest/data',
           dataName: ['World:Countries']
         })

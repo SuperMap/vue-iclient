@@ -532,7 +532,7 @@ describe('TextList.vue', () => {
           {
             idx: 1,
             站台: '漠河',
-            省份: '黑龙江1',
+            省份: '黑龙江1'
           }
         ]
       },
@@ -569,7 +569,7 @@ describe('TextList.vue', () => {
           {
             idx: 1,
             站台: '漠河',
-            省份: '黑龙江1',
+            省份: '黑龙江1'
           }
         ],
         highlightColor: () => jest.fn()
@@ -611,7 +611,7 @@ describe('TextList.vue', () => {
         columns: [
           {
             header: '站台',
-            field: '站台',
+            field: '站台'
           }
         ],
         autoResize: true
@@ -623,8 +623,71 @@ describe('TextList.vue', () => {
     setTimeout(() => {
       expect(wrapper.vm.autoResize).toBe(true);
       expect(wrapper.vm.containerHeight).toBe(0);
-      expect(wrapper.vm.containerWidth ).toBe(0);
+      expect(wrapper.vm.containerWidth).toBe(0);
       done();
     }, 100);
+  });
+  it('handleClick highlightColor string', done => {
+    const highlightColor = '#fff';
+    wrapper = mount(TextList, {
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields,
+        highlightColor
+      }
+    });
+    wrapper.vm.$nextTick();
+    wrapper.vm.handleClick();
+    expect(wrapper.vm.eventTriggerColorList.clickColor).toBe(highlightColor);
+    done();
+  });
+  it('handleMouseEnter rowHoverColor string', done => {
+    const highlightColor = '#fff';
+    wrapper = mount(TextList, {
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields,
+        highlightColor
+      }
+    });
+    wrapper.vm.$nextTick();
+    wrapper.vm.handleMouseEnter();
+    expect(wrapper.vm.rowHoverColor).toBe('rgba(128, 128,128, 0.8)');
+    done();
+  });
+  it('setCurrentRow activeClickRowIndex number', done => {
+    const highlightColor = '#fff';
+    wrapper = mount(TextList, {
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields,
+        highlightColor
+      }
+    });
+    wrapper.vm.$nextTick();
+    const rowIndexList = [0];
+    wrapper.vm.setCurrentRow(rowIndexList);
+    expect(wrapper.vm.activeClickRowIndex[0]).toBe(0);
+    done();
+  });
+
+  it('setCurrentRow activeClickRowIndex object', done => {
+    const highlightColor = '#fff';
+    wrapper = mount(TextList, {
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields,
+        highlightColor
+      }
+    });
+    wrapper.vm.$nextTick();
+    const rowIndexList = [{ dataIndex: 0, properties: {} }];
+    wrapper.vm.setCurrentRow(rowIndexList);
+    expect(wrapper.vm.activeClickRowIndex[0]).toBe(0);
+    done();
   });
 });

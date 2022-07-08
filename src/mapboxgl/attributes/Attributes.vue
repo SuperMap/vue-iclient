@@ -14,9 +14,9 @@
         <span v-if="statistics.showTotal || statistics.showSelect">）</span>
       </div>
       <div class="sm-component-attributes__menu">
-        <sm-dropdown :getPopupContainer="triggerNode => triggerNode.parentNode" v-if="toolbar.enabled" placement="bottomRight">
+        <sm-dropdown v-if="toolbar.enabled" placement="bottomRight">
           <div class="sm-component-dropdown-link"><sm-icon :icon-style="{ color: '#ccc' }" type="menu" /></div>
-          <sm-menu slot="overlay">
+          <sm-menu slot="overlay" class="sm-component-attribute_dropdown-menu">
             <sm-menu-item>
               <div v-if="toolbar.showClearSelected" @click="clearSelectedRows">
                 {{ this.$t('attributes.clearSelected') }}
@@ -44,16 +44,17 @@
     </div>
     <sm-table
       ref="tableInstance"
+      class="sm-attributes-table"
       :data-source="tableData"
       :columns="compColumns"
       :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows }"
       :pagination="paginationOptions"
-      :bordered="table.showBorder"
-      :showHeader="table.showHeader"
+      :bordered="tableOptions.showBorder"
+      :showHeader="tableOptions.showHeader"
       :customHeaderRow="customHeaderRow"
       :customRow="customRow"
       :loading="loading"
-      :getPopupContainer="triggerNode => triggerNode.parentNode"
+      :getPopupContainer="getPopupContainerFn"
       table-layout="fixed"
       @change="handleChange"
     >
@@ -203,6 +204,12 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   fieldInfo: Array<Object> = [];
 
+  tableOptions: TableParams = {
+    showHeader: true,
+    showBorder: true,
+    pagination: {}
+  };
+
   @Prop() layerName: string; // 图层名
 
   @Prop() customRow: Function;
@@ -295,9 +302,10 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   @Watch('table', { immediate: true })
-  tableChanged(val) {
-    if (!isequal(this.paginationOptions, val.pagination)) {
-      this.paginationOptions = Object.assign({}, this.paginationOptions, val.pagination);
+  tableChanged(newVal, oldVal) {
+    if (!isequal(newVal, oldVal)) {
+      this.tableOptions = Object.assign({}, this.tableOptions, newVal);
+      this.paginationOptions = Object.assign({}, this.paginationOptions, newVal.pagination);
     }
   }
 
@@ -435,6 +443,11 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     clearFilters();
     this.searchText = '';
     this.viewModel.setSearchText();
+  }
+
+  getPopupContainerFn() {
+    // @ts-ignore
+    return this.$refs.tableInstance.$el.querySelector('.sm-attributes-table .sm-component-table-content');
   }
 
   removed() {

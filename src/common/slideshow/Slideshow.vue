@@ -51,7 +51,6 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'autoplay',
     'direction'
   ];
-
   activeIndexData: number = 0;
 
   // 当 loop 为 true && effect 为 cube, 幻灯片页数等于3会出现重叠。
@@ -250,7 +249,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   watchOptions() {
-    this.manualUpdateProps.map(item => {
+    this.manualUpdateProps.forEach(item => {
       this.$watch(
         item,
         function (newVal, oldVal) {
@@ -329,18 +328,18 @@ class Slideshow extends Mixins(Theme, BaseCard) {
           [
             this.isRefresh
               ? h(
-                Swiper,
-                {
-                  domProps: { realIndex: this.activeIndex },
-                  props: { options: this.swiperOptions },
-                  on: {
-                    slideChange: this.slideChange,
-                    observerUpdate: this._observerUpdate
+                  Swiper,
+                  {
+                    domProps: { realIndex: this.activeIndex },
+                    props: { options: this.swiperOptions },
+                    on: {
+                      slideChange: this.slideChange,
+                      observerUpdate: this._observerUpdate
+                    },
+                    ref: 'mySwiper'
                   },
-                  ref: 'mySwiper'
-                },
-                slots
-              )
+                  slots
+                )
               : null
           ]
         )

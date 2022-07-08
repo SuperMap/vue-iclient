@@ -193,6 +193,17 @@ module.exports = {
                     'common/attributes',
                     'common/slideshow'
                   ]
+                },
+                {
+                  title: '视频+组件',
+                  collapsable: false,
+                  children: [
+                    'video-plus/video',
+                    'video-plus/video-layer',
+                    'video-plus/popup',
+                    'video-plus/marker',
+                    'video-plus/draw'
+                  ]
                 }
               ]
             },

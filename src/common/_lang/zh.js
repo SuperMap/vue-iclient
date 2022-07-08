@@ -127,6 +127,9 @@ export default {
     sampleDataNotSupport: '暂不支持加载示例数据！',
     mvtNotSupport: '暂不支持加载矢量瓦片图层！'
   },
+  videoPlus: {
+    loadingTip: '视频加载中...'
+  },
   drillMap: {
     goBack: '返回'
   },

@@ -321,6 +321,7 @@ describe('Attributes.vue', () => {
         fieldConfigs: testDataConfigs
       }
     });
+    wrapper.vm.getPopupContainerFn();
     const selectEle = wrapper.find('.sm-component-checkbox-input');
     expect(selectEle.exists()).toBe(true);
     await selectEle.trigger('click');

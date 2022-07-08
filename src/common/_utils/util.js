@@ -232,3 +232,9 @@ export function setPopupArrowStyle(color) {
     });
   }
 }
+
+export function strip(num, precision = 12) {
+  if (typeof num === 'number') {
+    return +parseFloat(num.toPrecision(precision));
+  }
+}

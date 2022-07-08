@@ -20,6 +20,7 @@ import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
 import { wmtsCapabilitiesText } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
 import tiandituLayer from 'vue-iclient/test/unit/mocks/data/WebMap/tiandituLayer.json';
 import xyzLayer from 'vue-iclient/test/unit/mocks/data/WebMap/xyzLayer.json';
+import baseLayers from 'vue-iclient/test/unit/mocks/data/WebMap/baseLayers.json';
 import mapboxstyleLayer from 'vue-iclient/test/unit/mocks/data/WebMap/mapboxstyleLayer.json';
 import migrationLayer from 'vue-iclient/test/unit/mocks/data/WebMap/migrationLayer.json';
 import flushPromises from 'flush-promises';
@@ -619,6 +620,27 @@ describe('WebMap.vue', () => {
     expect(wrapper.vm.mapOptions.maxZoom).toBe(18);
     expect(wrapper.vm.mapOptions.renderWorldCopies).toBe(true);
     expect(wrapper.vm.mapOptions.bearing).toBe(0);
+    done();
+  });
+
+  it('fix trigger map loading success event repeatedly when only base map is available', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': baseLayers['TILE'],
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      },
+    });
+    const callback = jest.fn();
+    wrapper.vm.viewModel.on({ addlayerssucceeded: callback });
+    await mapWrapperLoaded(wrapper);
+    await flushPromises();
+    expect(callback).toHaveBeenCalledTimes(1);
     done();
   });
 });

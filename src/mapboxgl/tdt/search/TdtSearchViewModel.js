@@ -101,6 +101,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
       </div>
     </div>`;
     this.hoverPopup = new mapboxgl.Popup({
+      anchor: 'bottom',
       closeButton: false,
       offset: [0, -10],
       className: 'tdt-search-line-hover-popup'

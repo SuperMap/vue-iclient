@@ -3,6 +3,9 @@ import SmTrackLayer from '../TrackLayer.vue';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 
+jest.mock('three/examples/jsm/loaders/GLTFLoader', () => require('@mocks/GLTFLoader'));
+jest.mock('wwobjloader2', () => require('@mocks/OBJLoader2'));
+
 describe('TrackLayer.vue', () => {
   let wrapper;
   let mapWrapper;
@@ -215,6 +218,9 @@ describe('TrackLayer.vue', () => {
     });
     expect(wrapper.vm.trackPoints.length).toBe(1);
     expect(wrapper.vm.mapTarget).toBe('map');
+    const setTrackPointsFn = jest.spyOn(wrapper.vm.viewModel, 'setTrackPoints');
+    await wrapper.setProps({ trackPoints: undefined });
+    expect(setTrackPointsFn).toHaveBeenCalled();
     done();
   });
 

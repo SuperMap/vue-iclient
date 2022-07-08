@@ -22,7 +22,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
     this.mapTarget = mapTarget;
   }
 
-  addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, layerFilter } = {}) {
+  addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, layerFilter, proxy } = {}) {
     // 通过唯一key来判断是否已经new了实例，用来过滤选中后父节点再选中导致的重复new实例
     if (this.cacheMaps[nodeKey]) {
       return;
@@ -34,7 +34,8 @@ class LayerManageViewModel extends mapboxgl.Evented {
         mapId,
         serverUrl,
         withCredentials,
-        layerFilter
+        layerFilter,
+        proxy
       });
       return;
     }
@@ -43,6 +44,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       {
         serverUrl,
         withCredentials,
+        proxy,
         target: this.mapTarget
       },
       {},

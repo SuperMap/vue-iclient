@@ -46,8 +46,8 @@ for (let key in allFiels) {
       newFilePath += '-layer';
     }
     newFilePath = newFilePath.replace('web-map/layer/', '').replace('web-map/control/', '').replace('tdt/', 'tdt-');
+    newFilePath = newFilePath.replace('video-plus/layer', 'video-plus-layer').replace(/video-plus\/.*\//, 'video-plus-');
     externals[`${oldFilePath}`] = `${newFilePath}`;
-
     if (origin.includes('-index')) {
       installExternals[`${filePath}`] = `${newFilePath}`;
     }

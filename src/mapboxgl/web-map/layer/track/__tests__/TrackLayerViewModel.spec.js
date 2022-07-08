@@ -1,7 +1,7 @@
 import TrackLayerViewModel from '../TrackLayerViewModel.ts';
 
 jest.mock('three/examples/jsm/loaders/GLTFLoader', () => require('@mocks/GLTFLoader'));
-jest.mock('three/examples/jsm/loaders/OBJLoader2', () => require('@mocks/OBJLoader2'));
+jest.mock('wwobjloader2', () => require('@mocks/OBJLoader2'));
 
 describe('TrackLayerViewModel.ts', () => {
   const option = {

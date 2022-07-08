@@ -1,7 +1,7 @@
 class OBJLoader2 {
   constructor(manager) {}
 
-  load(url, onLoad, onFileLoadProgress, onError, onMeshAlter) {
+  load(url, onLoad, onFileLoadProgress, onError) {
     const object3d = {
       detail: {
         loaderRootNode: {
@@ -18,7 +18,7 @@ class OBJLoader2 {
     const error = 'load error';
     onLoad(object3d);
     onFileLoadProgress(xhr);
-    onMeshAlter(error);
+    onError(error);
   }
 }
 
