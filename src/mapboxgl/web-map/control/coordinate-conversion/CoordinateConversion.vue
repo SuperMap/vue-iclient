@@ -89,7 +89,7 @@ import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 import ClipboardJS from 'clipboard';
 import proj4 from 'proj4';
 import UniqueId from 'lodash.uniqueid';
-import { CoordinateConverter } from 'geographic-coordinate-converter/coordinate-converter';
+import { dd2dms, dd2ddm, format, parse, dms2dd, ddm2dd } from 'latlng-conv';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import Message from 'vue-iclient/src/common/message/Message.js';
 
@@ -133,6 +133,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   clipboard: any;
   enableLocation: boolean = true;
   uniqueId: string = UniqueId(`${this.$options.name.toLowerCase()}-`);
+  decimals: number = 7;
 
   @Prop({ default: 'sm-components-icon-coordinate-coversion' }) iconClass: string;
   @Prop({ default: false }) collapsed: boolean;
@@ -388,10 +389,10 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
 
   getXY(coordinate: Coordinate, format?: string) {
     let { lng, lat } = coordinate;
-    const newLat: any = lat.toFixed(7);
+    const newLat: any = lat.toFixed(this.decimals);
     lat = newLat * 1;
     // @ts-ignore
-    lng = this.getWrapNum(lng).toFixed(7) * 1;
+    lng = this.getWrapNum(lng).toFixed(this.decimals) * 1;
     let XY = format.replace('X', lng + '');
     XY = XY.replace('Y', lat + '');
     return XY;
@@ -400,10 +401,10 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   getDD(coordinate: Coordinate, format?: string) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
-    const newLat: any = lat.toFixed(7);
+    const newLat: any = lat.toFixed(this.decimals);
     lat = newLat * 1;
     // @ts-ignore
-    lng = this.getWrapNum(lng).toFixed(7) * 1;
+    lng = this.getWrapNum(lng).toFixed(this.decimals) * 1;
     let XY = format.replace('X', lng + '');
     XY = XY.replace('Y', lat + '');
     XY = XY.replace('E', this.getWE(lng));
@@ -414,15 +415,19 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   getDOM(coordinate: Coordinate) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
-    const value = CoordinateConverter.fromDecimal([lat, lng]).toDegreeMinutes();
-    return this.replaceUnit(value);
+    const formatDM = dm => {
+      const { degrees, minutes, direction } = dm;
+      return `${degrees}° ${minutes}' ${direction}`;
+    };
+    const value = `${formatDM(dd2ddm(lat, 'lat'))} ${formatDM(dd2ddm(lng, 'lng'))}`;
+    return value;
   }
 
   getDMS(coordinate: Coordinate) {
     let { lng, lat } = coordinate;
     lng = this.getWrapNum(lng);
-    const value = CoordinateConverter.fromDecimal([lat, lng]).toDegreeMinutesSeconds();
-    return this.replaceUnit(value);
+    const value = `${format(dd2dms(lat, 'lat'))} ${format(dd2dms(lng, 'lng'))}`;
+    return value;
   }
 
   getCoorByXY(value?: string) {
@@ -443,13 +448,27 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   }
 
   getCoorByDOM(value?: string) {
-    value = this.reverseUnit(value);
-    return CoordinateConverter.fromDegreeMinutes(value);
+    const { latStr, lngStr } = this.getDMLatLng(value);
+    if (!latStr || !lngStr) {
+      return { lng: NaN, lat: NaN };
+    }
+    const ddmLng = this.parseDM(lngStr);
+    const ddmLat = this.parseDM(latStr);
+    const lng = ddm2dd(ddmLng);
+    const lat = ddm2dd(ddmLat);
+    return { lng, lat };
   }
 
   getCoorByDMS(value?: string) {
-    value = this.reverseUnit(value);
-    return CoordinateConverter.fromDegreeMinutesSeconds(value);
+    const { latStr, lngStr } = this.getDMLatLng(value);
+    if (!latStr || !lngStr) {
+      return { lng: NaN, lat: NaN };
+    }
+    const ddmLng = parse(lngStr);
+    const ddmLat = parse(latStr);
+    const lng = dms2dd(ddmLng);
+    const lat = dms2dd(ddmLat);
+    return { lng, lat };
   }
 
   getCoorByUtm(value?: string) {
@@ -466,11 +485,32 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
     return value;
   }
 
-  reverseUnit(value?: string) {
-    value = value.replace(/°/g, 'º');
-    value = value.replace(/\"/g, "''");
-    value = value.replace(/‎|,/g, '');
-    return value;
+  getDMLatLng(value: string) {
+    const unit = ['N', 'S'];
+    let index = value.indexOf(unit[0]);
+    if (index < 0) {
+      index = value.indexOf(unit[1]);
+    }
+    if (index < -1) {
+      return { latStr: '', lngStr: '' };
+    }
+    const latStr = value.slice(0, index + 1).trim();
+    const lngStr = value.slice(index + 1).trim();
+    return { latStr, lngStr };
+  }
+
+  parseDM(value: string) {
+    const pattern = /^([0-1]?[0-9]?[0-9])°\s([0-5]?[0-9](?:.\d+)?)'\s?(N|S|E|W)?$/;
+    const results = pattern.exec(value);
+    if (!results) {
+      throw new Error(this.$t('coordinateConversion.errorCoordinate'));
+    }
+    const [degrees, minutes, direction] = results.slice(1, 4);
+    const dm = {
+      degrees: parseInt(degrees, 10),
+      minutes: parseFloat(minutes)
+    };
+    return direction ? Object.assign(dm, { direction }) : dm;
   }
 }
 export default SmCoordinateConversion;

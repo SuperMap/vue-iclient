@@ -335,4 +335,77 @@ describe('CoordinateConversion.vue', () => {
     inputEle.vm.$emit('blur', e);
     expect(wrapper.vm.coordinate).toEqual({ lat: NaN, lng: NaN });
   });
+
+  it('change lib DOM DMS parseInt', () => {
+    wrapper = mount(SmCoordinateConversion, {
+      data() {
+        return {
+          activeFormat: 'DOM',
+          coordinate: {
+            lng: 10,
+            lat: 10
+          }
+        };
+      }
+    });
+    let res = wrapper.vm.getDOM({ lng: 10, lat: 10 });
+    expect(res).toBe(`10° 0' N 10° 0' E`);
+    res = wrapper.vm.getDMS({ lng: 10, lat: 10 });
+    expect(res).toBe(`10° 0' 0" N 10° 0' 0" E`);
+  });
+  it('change lib DOM DMS float', () => {
+    wrapper = mount(SmCoordinateConversion, {
+      data() {
+        return {
+          activeFormat: 'DOM',
+          coordinate: {
+            lng: 10,
+            lat: 10
+          }
+        };
+      }
+    });
+    let res = wrapper.vm.getDOM({ lng: 116.4683933, lat: 40.0512234 });
+    expect(res).toBe(`40° 3.073404' N 116° 28.103598' E`);
+    res = wrapper.vm.getDMS({ lng: 116.4683933, lat: 40.0512234 });
+    expect(res).toBe(`40° 3' 4.4042" N 116° 28' 6.2159" E`);
+  });
+  it('change lib Lnglat DOM DMS float', () => {
+    wrapper = mount(SmCoordinateConversion, {
+      data() {
+        return {
+          activeFormat: 'DOM',
+          coordinate: {
+            lng: 10,
+            lat: 10
+          }
+        };
+      }
+    });
+    let res = wrapper.vm.getCoorByDOM(`40° 3.073404' N 116° 28.103598' E`);
+    expect(res.lng).toBe(116.4683933);
+    expect(res.lat).toBe(40.0512234);
+    res = wrapper.vm.getCoorByDMS(`40° 3' 4.4042" N 116° 28' 6.2159" E`);
+    expect(res.lng).toBe(116.4683933);
+    expect(res.lat).toBe(40.0512234);
+  });
+  it('change lib Lnglat DOM DMS', () => {
+    wrapper = mount(SmCoordinateConversion, {
+      data() {
+        return {
+          activeFormat: 'DOM',
+          coordinate: {
+            lng: 10,
+            lat: 10
+          }
+        };
+      }
+    });
+    let res = wrapper.vm.getCoorByDOM(`40° 0' N 116° 0' E`);
+    expect(res.lng).toBe(116);
+    expect(res.lat).toBe(40);
+    res = wrapper.vm.getCoorByDMS(`40° 0' 0" N 116° 0' 0" E`);
+    expect(res.lng).toBe(116);
+    expect(res.lat).toBe(40);
+  });
 });
