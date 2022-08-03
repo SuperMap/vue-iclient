@@ -59,7 +59,8 @@ export default {
     DMS: '度分秒',
     Mercator: 'Web墨卡托'
   },
-  error: {},
+  error: {
+  },
   commontypes: {
     restData: 'SuperMap Rest 数据服务',
     restMap: 'SuperMap Rest 地图服务',
@@ -311,7 +312,8 @@ export default {
     copy: '复制',
     location: '定位至',
     capture: '捕捉',
-    realTime: '实时'
+    realTime: '实时',
+    errorCoordinate: '坐标格式不正确'
   },
   // layer
   dataFlow: {

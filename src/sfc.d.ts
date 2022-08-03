@@ -15,7 +15,8 @@ declare module '*.vue' {
 }
 
 declare module 'vue-echarts';
-declare module 'geographic-coordinate-converter';
+declare module 'latlng-conv';
+
 /**
  * 告诉 TypeScript window是个全局对象，直接可用，这样就不会在window.xx = 123时报错
  */
