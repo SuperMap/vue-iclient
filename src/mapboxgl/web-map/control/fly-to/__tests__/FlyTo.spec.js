@@ -85,4 +85,146 @@ describe('FlyTo.vue', () => {
     expect(wrapper.vm.data).toBe(newData);
     done();
   });
+
+  it('click pre-next-pause goto', async done => {
+    wrapper = mount(SmFlyTo, {
+      propsData: {
+        data: [
+          [103.93303602365336, 33.04646925591396],
+          [104.90771770744831, 34.163703206300525],
+          [105.90771770744831, 35.163703206300525],
+          [106.90771770744831, 36.163703206300525]
+        ],
+        mapTarget: 'map',
+        autoplay:true,
+        defaultActiveIndex:1,
+        immediate:true,
+        loop:false
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.playStatus).toBe(true);
+    await wrapper.find('.sm-components-icon-zanting').trigger('click')
+    expect(wrapper.vm.playStatus).toBe(false);
+
+    expect(wrapper.vm.currentIndex).toBe(1);
+    await wrapper.find('.sm-components-icon-solid-triangle-left').trigger('click')
+    expect(wrapper.vm.currentIndex).toBe(0);
+    await wrapper.find('.sm-components-icon-solid-triangle-right').trigger('click')
+    expect(wrapper.vm.currentIndex).toBe(1);
+    await wrapper.vm.viewModel.goto(3)
+    expect(wrapper.vm.currentIndex).toBe(3);
+
+    await wrapper.find('.sm-components-icon-bofang3').trigger('click')
+    expect(wrapper.vm.currentIndex).toBe(1);
+    done();
+  });
+
+  it('watch props change', async done => {
+    wrapper = mount(SmFlyTo, {
+      propsData: {
+        data: [
+          [103.93303602365336, 33.04646925591396],
+          [104.90771770744831, 34.163703206300525],
+          [105.90771770744831, 35.163703206300525],
+          [106.90771770744831, 36.163703206300525]
+        ],
+        mapTarget: 'map',
+        autoplay:true,
+        defaultActiveIndex:1,
+        immediate:true,
+        loop:false,
+        interval:5000,
+        activeIndex:0
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    await wrapper.setProps({
+      immediate: false,
+      loop:true,
+      interval:4000,
+      defaultActiveIndex:2,
+      activeIndex:2,
+    });
+    expect(wrapper.vm.immediate).toBe(false);
+
+    await wrapper.setProps({ activeIndex:"str"});
+    await wrapper.setProps({ activeIndex:-1});
+    expect(wrapper.vm.currentIndex).toBe(3);
+    await wrapper.setProps({ activeIndex:100});
+    expect(wrapper.vm.currentIndex).toBe(0);
+    done();
+  });
+
+  it('_playSlides & _changeActiveIndex', async done => {
+    wrapper = mount(SmFlyTo, {
+      propsData: {
+        data: [
+          [103.93303602365336, 33.04646925591396],
+          [104.90771770744831, 34.163703206300525],
+          [105.90771770744831, 35.163703206300525],
+          [106.90771770744831, 36.163703206300525]
+        ],
+        mapTarget: 'map',
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.currentIndex).toBe(null);
+    await wrapper.vm.viewModel._playSlidesFn()
+    expect(wrapper.vm.currentIndex).toBe(0);
+
+    await wrapper.setProps({activeIndex:2 });
+    await wrapper.vm.viewModel._playSlidesFn()
+    expect(wrapper.vm.currentIndex).toBe(3);
+    
+    done();
+  });
+
+  it('_setActiveItem', async done => {
+    wrapper = mount(SmFlyTo, {
+      propsData: {
+        data: [
+          [103.93303602365336, 33.04646925591396],
+          [104.90771770744831, 34.163703206300525],
+          [105.90771770744831, 35.163703206300525],
+          [106.90771770744831, 36.163703206300525]
+        ],
+        mapTarget: 'map',
+        loop:false,
+        defaultActiveIndex:2
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+
+    await wrapper.vm.viewModel._playSlidesFn()
+    expect(wrapper.vm.currentIndex).toBe(2);
+    await wrapper.setProps({ activeIndex:100});
+    expect(wrapper.vm.currentIndex).toBe(3);
+    await wrapper.setProps({ activeIndex:-1});
+    expect(wrapper.vm.currentIndex).toBe(0);
+    done();
+  });
+
+  it('_flyTo -flyOptions is invalid', async done => {
+    const data = [
+        [103.93303602365336, 33.04646925591396],
+        [104.90771770744831, 34.163703206300525],
+        [105.90771770744831, 35.163703206300525],
+        [106.90771770744831, 36.163703206300525]
+      ],
+    wrapper = mount(SmFlyTo, {
+      propsData: {
+        mapTarget: 'map',
+        activeIndex:10
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    await wrapper.vm.viewModel._flyTo()
+    function throwErr() { 
+      wrapper.setProps({ data:data});
+      wrapper.vm.viewModel._flyTo()
+    }
+    expect(throwErr).toThrow()
+    done();
+  });
 });
