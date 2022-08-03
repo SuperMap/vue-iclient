@@ -307,7 +307,8 @@ export default {
     copy: 'copy',
     location: 'location',
     capture: 'capture',
-    realTime: 'real-time'
+    realTime: 'real-time',
+    errorCoordinate: 'invalid coordinate'
   },
   // layer
   dataFlow: {
