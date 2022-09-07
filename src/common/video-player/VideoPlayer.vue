@@ -194,6 +194,7 @@ class SmVideoPlayer extends Vue {
           player.volume(0);
         }
       }
+      this.$emit('instance-loaded', player);
     });
   }
 
