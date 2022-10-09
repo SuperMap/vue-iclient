@@ -405,6 +405,39 @@ describe('Attributes.vue', () => {
     expect(wrapper.vm.searchText).toBe('');
     done();
   });
+  it('handleChange', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        fieldConfigs: fieldConfigs,
+        dataset: testData
+      }
+    });
+    await wrapper.vm.$nextTick();
+    await wrapper.find('.sm-component-table-thead').find('.sm-component-checkbox-input').setChecked();
+    expect(wrapper.vm.allCount).toBe(10)
+    expect(wrapper.vm.selectedRowLength).toBe(10)
+    const pagination = {
+      "pageSize": 10,
+      "defaultCurrent": 1,
+      "current": 1
+    }
+    const filters = {"站台": ["漠河"]}
+    const currentDataSource = [
+      {
+          "index": 1,
+          "站台": "漠河",
+          "省份": "黑龙江1",
+          "海拔": "296",
+          "平均最低气温": "-47",
+          "最热七天气温": "29",
+          "key": 1
+      }
+    ]
+    wrapper.vm.handleChange(pagination,filters,{},{currentDataSource});
+    expect(wrapper.vm.allCount).toBe(1)
+    expect(wrapper.vm.selectedRowLength).toBe(1)
+    done();
+  });
 
   it('Switch from page 1 to page 2 and refresh data', async done => {
     wrapper = mount(SmAttributes, {
