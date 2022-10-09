@@ -5,11 +5,11 @@
         <span v-if="title" class="layer-name">{{ title }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
         <span v-if="statistics.showTotal" class="total-numbers"
-          >{{ this.$t('attributes.feature') }}：{{ paginationOptions.total || 0 }}</span
+          >{{ this.$t('attributes.feature') }}：{{ allCount}}</span
         >
         <span v-if="statistics.showTotal && statistics.showSelect">，</span>
         <span v-if="statistics.showSelect" class="select-numbers"
-          >{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span
+          >{{ this.$t('attributes.selected') }}：{{ selectedRowLength || 0 }}</span
         >
         <span v-if="statistics.showTotal || statistics.showSelect">）</span>
       </div>
@@ -188,6 +188,9 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   tableData: Array<Object> = [];
   selectedRowKeys: Array<number> = [];
   columns: Array<Object> = [];
+  currentDataSource:Array<Object> = [];
+  totalCount: number = 0;
+  selectedRowLength:number = 0;
   paginationOptions: PaginationParams = {
     pageSize: 15,
     defaultCurrent: 1
@@ -331,6 +334,13 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     return this.associateWithMap.enabled;
   }
 
+  get allCount() {
+    if('total' in this.paginationOptions) {
+      return this.paginationOptions.total;
+    }
+    return this.totalCount;
+  }
+
   get compColumns() {
     const columnsCopy = clonedeep(this.columns)
       .filter(column => {
@@ -390,12 +400,28 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     });
   }
 
+  getCurrentSelectedRowLength() {
+    let currentSelectedRowKeys = [];
+    this.currentDataSource.forEach(data => {
+      if(this.selectedRowKeys.indexOf(data['index']) !== -1) {
+        currentSelectedRowKeys.push(data['index']);
+      }
+    });
+    this.selectedRowLength = currentSelectedRowKeys.length;
+  }
+
   changeSelectedRows(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys;
+    if(this.currentDataSource.length > 0) {
+      this.getCurrentSelectedRowLength();
+    }else {
+      this.selectedRowLength = selectedRowKeys.length;
+    }
   }
 
   clearSelectedRows() {
     this.selectedRowKeys = [];
+    this.selectedRowLength = 0;
   }
 
   setZoomToFeature() {
@@ -403,6 +429,9 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   handleChange(pagination, filters, sorter, { currentDataSource }) {
+    this.currentDataSource = currentDataSource;
+    this.$set(this.paginationOptions, 'total', currentDataSource.length);
+    this.getCurrentSelectedRowLength();
     this.paginationOptions = { ...this.paginationOptions, current: pagination.current };
     this.sorter = sorter;
     this.$emit('change', pagination, filters, sorter, { currentDataSource });
@@ -413,7 +442,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       const { content, totalCount, columns } = datas;
       if (totalCount) {
         // @ts-ignore
-        this.$set(this.paginationOptions, 'total', totalCount);
+        this.totalCount = totalCount;
       }
       // @ts-ignore
       const hideColumns = this.columns.filter(item => !item.visible);
