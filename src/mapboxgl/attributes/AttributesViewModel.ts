@@ -507,7 +507,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         dataIndex: propertyName,
         visible: true
       };
-      if (typeof +headers[propertyName] === 'number' && !isNaN(+headers[propertyName])) {
+      if (!isNaN(parseFloat(headers[propertyName])) && !isNaN(+headers[propertyName])) {
         // @ts-ignore
         columnConfig.sorter = (a, b) => a[propertyName] - b[propertyName];
       }
