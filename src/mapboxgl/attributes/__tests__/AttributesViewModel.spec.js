@@ -135,7 +135,7 @@ describe('AttributesViewModel.ts', () => {
           {
             type: 'Feature',
             geometry: {
-              coordinates: [1,1],
+              coordinates: [1, 1],
               type: 'Point'
             },
             properties: {
@@ -371,7 +371,7 @@ describe('AttributesViewModel.ts', () => {
         getBounds: () => {
           return {
             contains: () => true
-          }
+          };
         }
       },
       featureMap: {
@@ -407,7 +407,7 @@ describe('AttributesViewModel.ts', () => {
         getBounds: () => {
           return {
             contains: () => true
-          }
+          };
         }
       },
       featureMap: {
@@ -430,5 +430,27 @@ describe('AttributesViewModel.ts', () => {
     const attributesTitle = '全国671个气象站观测数据';
     viewModel.addOverlaysToMap(selectedKeys, layerStyleOptions, attributesTitle);
     expect(spy).toBeCalled();
+  });
+  it('add Polygon Overlays to map', () => {
+    const headers = {
+      Layer: '中学1',
+      LayerOn: '1',
+      LineWidth: '0',
+      Ctype: null,
+      Ctype1: [],
+      Ctype2: undefined,
+      Ctype3: '',
+      Ctype4: {},
+      key: 0
+    };
+    const viewModel = new AttributesViewModel(options);
+    const columns = viewModel.toTableColumns(headers);
+    columns.forEach((element, index) => {
+      if([1, 2, 8].includes(index)){
+        expect(typeof element.sorter).toBe('function');
+      }else {
+        expect(element.sorter).toBe(undefined);
+      }
+    });
   });
 });
