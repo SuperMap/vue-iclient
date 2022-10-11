@@ -54,6 +54,7 @@
       :customHeaderRow="customHeaderRow"
       :customRow="customRow"
       :loading="loading"
+      :scroll="{ x: xScrollWidth }"
       :getPopupContainer="getPopupContainerFn"
       table-layout="fixed"
       @change="handleChange"
@@ -204,6 +205,8 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   fieldInfo: Array<Object> = [];
 
+  xScrollWidth: number = 0;
+
   tableOptions: TableParams = {
     showHeader: true,
     showBorder: true,
@@ -312,6 +315,13 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   @Watch('fieldConfigs', { immediate: true })
   fieldConfigsChanged(val) {
     if (!isequal(val, this.fieldInfo)) {
+      let total = 0;
+      val.forEach((item) => {
+        let width = item.width ? item.width : 128;
+        total += width;
+      });
+      // @ts-ignore
+      this.xScrollWidth = total;
       // @ts-ignore
       this.fieldInfo = val;
     }
