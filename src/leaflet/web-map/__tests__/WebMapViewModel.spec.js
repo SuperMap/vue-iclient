@@ -28,6 +28,11 @@ const commonOption = {
   tiandituKey: undefined,
   withCredentials: false
 };
+window.canvg = {
+  default: {
+    from: (ctx, url, callback) => Promise.resolve({ stop: jest.fn(), start: jest.fn() })
+  }
+};
 const commonMap = {
   resize: () => jest.fn(),
   getZoom: () => jest.fn(),
@@ -487,9 +492,6 @@ describe('WebMapViewModel.spec', () => {
   });
 
   it('add DATAFLOW_POINT_TRACKLayer with style is SVG_POINT', async done => {
-    window.canvg = (a, b, c) => {
-      c.renderCallback();
-    };
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
     };

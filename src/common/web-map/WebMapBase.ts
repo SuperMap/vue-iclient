@@ -4,8 +4,7 @@ import provincialCenterData from './config/ProvinceCenter.json';
 import 'vue-iclient/static/libs/geostats/geostats';
 import 'vue-iclient/static/libs/json-sql/jsonsql';
 import isNumber from 'lodash.isnumber';
-import canvg from 'canvg';
-
+import Canvg from 'canvg';
 import WebMapService from '../_utils/WebMapService';
 import { getColorWithOpacity } from '../_utils/util';
 import { getProjection, registerProjection } from '../../common/_utils/epsg-define';
@@ -67,6 +66,8 @@ export default abstract class WebMapBase extends Events {
   protected layerAdded: number;
 
   protected expectLayerLen: number;
+
+  protected canvgsV: any = [];
 
   constructor(id, options?, mapOptions?) {
     super();
@@ -571,23 +572,28 @@ export default abstract class WebMapBase extends Events {
     canvas.style.display = 'none';
     divDom.appendChild(canvas);
     if (svgUrl) {
-      const canvgs = window.canvg ? window.canvg : canvg;
-      canvgs(canvas.id, svgUrl, {
+      const canvgs = window.canvg?.default ? window.canvg.default : Canvg;
+      const ctx = canvas.getContext('2d');
+      canvgs.from(ctx, svgUrl, {
         ignoreMouse: true,
         ignoreAnimation: true,
-        renderCallback: () => {
-          if (canvas.width > 300 || canvas.height > 300) {
-            return;
-          }
-          callBack(canvas);
-        },
-        forceRedraw: () => {
-          return false;
+        forceRedraw: () => false
+      }).then(v => {
+        v.start();
+        this.canvgsV.push(v);
+        if (canvas.width > 300 || canvas.height > 300) {
+          return;
         }
+        callBack(canvas);
       });
     } else {
       callBack(canvas);
     }
+  }
+
+  protected stopCanvg() {
+    this.canvgsV.forEach(v => v.stop());
+    this.canvgsV = [];
   }
 
   protected getRangeStyleGroup(layerInfo: any, features: any): Array<any> | void {

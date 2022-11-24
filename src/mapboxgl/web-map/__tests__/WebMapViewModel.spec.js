@@ -121,8 +121,8 @@ const commonMap = {
   },
   moveLayer: () => jest.fn(),
   overlayLayersManager: {},
-  on: () => { },
-  fire: () => { },
+  on: () => {},
+  fire: () => {},
   setLayoutProperty: () => jest.fn(),
   addStyle: () => jest.fn(),
   remove: () => jest.fn(),
@@ -131,13 +131,16 @@ const commonMap = {
   loadImage: function (src, callback) {
     callback(null, { width: 15 });
   },
-  addImage: function () { },
+  addImage: function () {},
   hasImage: function () {
     return false;
   }
 };
-window.canvg = (a, b, c) => {
-  c.renderCallback();
+
+window.canvg = {
+  default: {
+    from: (ctx, url, callback) => Promise.resolve({ stop: jest.fn(), start: jest.fn() })
+  }
 };
 
 const commonMapOptions = {
@@ -205,23 +208,28 @@ describe('WebMapViewModel.spec', () => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile,
-      'https://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326/style.json': {
-        "version": 8,
-        "sources": {
-          "raster-tiles": {
-            "type": "raster",
-            "tiles": ['http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'],
-            "tileSize": 256
-          }
-        },
-        "layers": [{
-          "id": "simple-tiles",
-          "type": "raster",
-          "source": "raster-tiles",
-          "minzoom": 0,
-          "maxzoom": 22
-        }]
-      }
+      'https://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326/style.json':
+        {
+          version: 8,
+          sources: {
+            'raster-tiles': {
+              type: 'raster',
+              tiles: [
+                'http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
+              ],
+              tileSize: 256
+            }
+          },
+          layers: [
+            {
+              id: 'simple-tiles',
+              type: 'raster',
+              source: 'raster-tiles',
+              minzoom: 0,
+              maxzoom: 22
+            }
+          ]
+        }
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(
@@ -245,10 +253,10 @@ describe('WebMapViewModel.spec', () => {
     );
     let addStyleSpy;
     viewModel.on({
-      mapinitialized: (data) => {
+      mapinitialized: data => {
         addStyleSpy = jest.spyOn(data.map, 'addStyle');
       },
-      addlayerssucceeded: (data) => {
+      addlayerssucceeded: data => {
         expect(addStyleSpy).toHaveBeenCalledTimes(1);
         expect(data.layers.length).toBe(webmap_MAPBOXSTYLE_Tile.layers.length);
         expect(viewModel.expectLayerLen).toBe(2);
@@ -323,7 +331,7 @@ describe('WebMapViewModel.spec', () => {
         minZoom: 22,
         maxZoom: 0
       };
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       new WebMapViewModel(uniqueLayer_point, { ...commonOption }, mapOptions, { ...commonMap });
       await flushPromises();
       expect(errorSpy.mock.calls).toHaveLength(1);
@@ -988,14 +996,16 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const callback = async function (data) {
-      await flushPromises()
+      await flushPromises();
       expect(data).not.toBeUndefined();
-      expect(data.map.overlayLayersManager['世界地图_Day'].source.tiles[0].indexOf('{bbox-wms-1.3.0}')).toBeGreaterThan(-1)
+      expect(data.map.overlayLayersManager['世界地图_Day'].source.tiles[0].indexOf('{bbox-wms-1.3.0}')).toBeGreaterThan(
+        -1
+      );
       done();
     };
     const viewModel = new WebMapViewModel({
       ...wmsLayer,
-      projection: "EPSG:4326",
+      projection: 'EPSG:4326',
       center: { x: 0, y: 0 },
       layers: [
         {
@@ -1172,8 +1182,18 @@ describe('WebMapViewModel.spec', () => {
       done();
     };
     const viewModel = new WebMapViewModel(vectorLayer_line, {}, undefined, null, function (layer) {
-      return layer.name === '浙江省高等院校(3)'
+      return layer.name === '浙江省高等院校(3)';
     });
     viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('stopCanvg', done => {
+    const viewModel = new WebMapViewModel(vectorLayer_line, {}, undefined, null, function (layer) {
+      return layer.name === '浙江省高等院校(3)';
+    });
+    viewModel.canvgsV = [{ stop: jest.fn() }];
+    viewModel.stopCanvg();
+    expect(viewModel.canvgsV.length).toBe(0);
+    done();
   });
 });

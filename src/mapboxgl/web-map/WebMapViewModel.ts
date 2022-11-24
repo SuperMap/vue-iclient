@@ -2690,6 +2690,7 @@ export default class WebMapViewModel extends WebMapBase {
   cleanWebMap() {
     if (this.map) {
       this.triggerEvent('beforeremovemap', {});
+      this.stopCanvg();
       this.map.remove();
       this.map = null;
       this._legendList = {};
@@ -2790,4 +2791,3 @@ export default class WebMapViewModel extends WebMapBase {
     );
   }
 }
-
