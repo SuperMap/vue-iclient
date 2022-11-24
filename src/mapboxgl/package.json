@@ -21,7 +21,7 @@
     "@types/three": "0.129.0",
     "ant-design-vue": "1.7.2",
     "axios": "^0.21.1",
-    "canvg": "~1.5.3",
+    "canvg": "~3.0.10",
     "clipboard": "^2.0.6",
     "colorcolor": "^1.1.1",
     "css-element-queries": "^1.2.0",
