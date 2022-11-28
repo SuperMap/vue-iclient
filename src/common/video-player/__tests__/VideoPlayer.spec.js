@@ -73,10 +73,12 @@ describe('VideoPlayer.vue', () => {
       localVue,
       propsData: {
         url: 'fakeurl.mp4',
+        isFullscreen: false,
+        fill: 'ratio',
         options: {
           muted: true,
           loop: false,
-          popupToPlay: false,
+          popupToPlay: true,
           autoplay: false,
           controlBar: true
         }
@@ -86,14 +88,17 @@ describe('VideoPlayer.vue', () => {
     expect(wrapper.find('.sm-component-video-player').exists()).toBe(true);
     await wrapper.setProps({
       url: 'rtmp://1.fakeurlAA.flv',
+      isFullscreen: true,
+      fill: 'full',
       options: {
         muted: true,
         loop: true,
-        popupToPlay: true,
+        popupToPlay: false,
         autoplay: true,
         controlBar: true
       }
     });
+    expect(wrapper.vm.fill).toBe('full');
     expect(wrapper.vm.isRtmp).toBeTruthy();
     expect(wrapper.vm.isFlv).toBeFalsy();
     expect(wrapper.vm.autoplay).toBeTruthy();

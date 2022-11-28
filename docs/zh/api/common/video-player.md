@@ -11,6 +11,8 @@
 | url     | 视频地址                              | string | -      | -      |
 | swf     | 视频插件                             | string | -      | 'https://vjs.zencdn.net/swf/5.4.2/video-js.swf'     |
 | replayTime     | 黑屏重放rtmp的时间间隔                              | number | -      | 3000     |
+| isFullscreen    | 是否全屏播放视频                            | boolean | -      | false     |
+| fill    | 填充方式：按比例填充(ratio)和铺满填充(full)          | string | 'ratio' \| 'full'     | 'ratio'     |
 | options | 视频配置。<a href="#options">配置项</a> | object | -      | -      |
 
 ### options

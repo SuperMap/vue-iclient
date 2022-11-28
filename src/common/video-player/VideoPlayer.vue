@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-video-player">
+  <div :class="['sm-component-video-player', {'sm-component-video-full-fill': isFullFill}]">
     <video-player
       ref="videoPlayer"
       class="sm-component-video-player__player sm-component-video-player__player--main"
@@ -8,13 +8,16 @@
       :data-autoplay="autoplay"
       :data-isLive="isRtmp"
       :data-popupplay="`${options.popupToPlay}`"
+      :events = "['fullscreenchange']"
       @play="onPlayerPlay($event)"
       @ended="onPlayerEnded($event)"
       @loadeddata="onPlayerLoadeddata($event)"
       @ready="getPlayer"
+      @fullscreenchange="onFullscreenchange"
     ></video-player>
     <sm-modal
       v-if="url"
+      :class="{'sm-component-video-full-fill': isFullFill}"
       v-model="modalVisible"
       wrapClassName="sm-component-video-player-modal"
       :footer="null"
@@ -96,6 +99,10 @@ class SmVideoPlayer extends Vue {
 
   @Prop({ default: 3000 }) replayTime: number; // 黑屏重新播放rtmp
 
+  @Prop({ default: false }) isFullscreen: Boolean;
+
+  @Prop({ default: 'ratio' }) fill: String;
+
   @Prop({
     default: () => {
       return { muted: true, loop: false, popupToPlay: false, autoplay: false, controlBar: true };
@@ -128,6 +135,10 @@ class SmVideoPlayer extends Vue {
 
   get player() {
     return this.modalVisible ? this.modalVideoPlayer : this.smPlayer;
+  }
+
+  get isFullFill() {
+    return this.fill === 'full';
   }
 
   @Watch('modalVisible')
@@ -310,6 +321,15 @@ class SmVideoPlayer extends Vue {
     } else {
       this.handleControlBar(player);
     }
+    if (!this.options.popupToPlay && this.isFullscreen) {
+      player.requestFullscreen();
+    }
+  }
+
+  onFullscreenchange(e) {
+    if(!e.isFullscreen()) {
+      e.pause();
+    }
   }
 
   onModalPlayerPlay(player) {
@@ -367,9 +387,19 @@ class SmVideoPlayer extends Vue {
   }
 
   isMatchUrl(str) {
+    if (str?.startsWith('../') || str?.startsWith('./')) {
+      return true;
+    }
     const reg = new RegExp('(https?|http|file|ftp|rtmp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
     return reg.test(str);
   }
 }
 export default SmVideoPlayer;
 </script>
+<style lang="scss">
+.sm-component-video-full-fill{
+  video{
+    object-fit: fill;
+  }
+}
+</style>
