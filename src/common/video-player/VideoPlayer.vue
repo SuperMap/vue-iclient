@@ -398,10 +398,3 @@ class SmVideoPlayer extends Vue {
 }
 export default SmVideoPlayer;
 </script>
-<style lang="scss">
-.sm-component-video-full-fill{
-  video{
-    object-fit: fill;
-  }
-}
-</style>

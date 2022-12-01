@@ -259,3 +259,8 @@
   }
   background: rgba(0, 0, 0, 0.7);
 }
+.sm-component-video-full-fill{
+  video{
+    object-fit: fill;
+  }
+}
