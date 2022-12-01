@@ -104,5 +104,15 @@ describe('VideoPlayer.vue', () => {
     expect(wrapper.vm.autoplay).toBeTruthy();
     expect(wrapper.vm.options.loop).toBeTruthy();
     expect(wrapper.vm.modalVisible).toBeFalsy();
+    const res = wrapper.vm.isMatchUrl('../stest');
+    expect(res).toBeTruthy();
+    const res1 = wrapper.vm.isMatchUrl('./stest');
+    expect(res1).toBeTruthy();
+    const res2 = wrapper.vm.isMatchUrl('stest');
+    expect(res2).toBeFalsy();
+    const res3 = wrapper.vm.isMatchUrl('');
+    expect(res3).toBeFalsy();
+    const res4 = wrapper.vm.isMatchUrl('http://127.0.0.0:8080/a.png');
+    expect(res4).toBeTruthy();
   });
 });

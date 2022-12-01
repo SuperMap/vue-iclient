@@ -387,7 +387,9 @@ class SmVideoPlayer extends Vue {
   }
 
   isMatchUrl(str) {
-    if (str?.startsWith('../') || str?.startsWith('./')) {
+    if (!str) return false;
+    const patt = /^((\.\.\/)|(\.\/))/g;
+    if (str.match(patt)) {
       return true;
     }
     const reg = new RegExp('(https?|http|file|ftp|rtmp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
