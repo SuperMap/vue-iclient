@@ -1,5 +1,7 @@
 import WebMapBase from '../../../common/web-map/WebMapBase.ts';
 import cloneDeep from 'lodash.clonedeep';
+import flushPromises from 'flush-promises';
+
 const SuperMap = require('../../../../test/unit/mocks/supermap');
 window.canvg = jest.fn();
 const id = 123;
@@ -743,14 +745,21 @@ describe('WebMapBase.spec', () => {
     expect(newWebMapBaseObj.getDashStyle(str, strokeWidth, type)).toEqual(['longdashdot']);
   });
 
-  it('getCanvasFromSVG', () => {
-    const svgUrl = 'http://test';
+  it('getCanvasFromSVG', async (done) => {
+    window.canvg = {
+      default: {
+        from: (ctx, url, callback) => Promise.resolve({ stop: jest.fn(), start: jest.fn() })
+      }
+    };
+    const svgUrl = 'http://testsvg';
     const divDom = {
       appendChild: jest.fn()
     };
     const callBack = function () {};
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     expect(newWebMapBaseObj.getCanvasFromSVG(svgUrl, divDom, callBack)).toBe(undefined);
+    await flushPromises();
+    done();
   });
 
   it('getRangeStyleGroup', () => {
