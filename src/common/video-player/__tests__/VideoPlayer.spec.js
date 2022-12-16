@@ -55,7 +55,8 @@ describe('VideoPlayer.vue', () => {
           loop: false,
           popupToPlay: false,
           autoplay: false,
-          controlBar: true
+          controlBar: true,
+          poster: ''
         }
       },
       attachToDocument: 'body'
@@ -80,7 +81,8 @@ describe('VideoPlayer.vue', () => {
           loop: false,
           popupToPlay: true,
           autoplay: false,
-          controlBar: true
+          controlBar: true,
+          poster: ''
         }
       },
       attachToDocument: 'body'
@@ -95,7 +97,8 @@ describe('VideoPlayer.vue', () => {
         loop: true,
         popupToPlay: false,
         autoplay: true,
-        controlBar: true
+        controlBar: true,
+        poster:'fake url'
       }
     });
     expect(wrapper.vm.fill).toBe('full');
@@ -103,16 +106,28 @@ describe('VideoPlayer.vue', () => {
     expect(wrapper.vm.isFlv).toBeFalsy();
     expect(wrapper.vm.autoplay).toBeTruthy();
     expect(wrapper.vm.options.loop).toBeTruthy();
+    expect(wrapper.vm.options.poster).toBe('fake url');
     expect(wrapper.vm.modalVisible).toBeFalsy();
-    const res = wrapper.vm.isMatchUrl('../stest');
+    const res = wrapper.vm.isMatchVideoUrl('../stest');
     expect(res).toBeTruthy();
-    const res1 = wrapper.vm.isMatchUrl('./stest');
+    const res1 = wrapper.vm.isMatchVideoUrl('./stest');
     expect(res1).toBeTruthy();
-    const res2 = wrapper.vm.isMatchUrl('stest');
+    const res2 = wrapper.vm.isMatchVideoUrl('stest');
     expect(res2).toBeFalsy();
-    const res3 = wrapper.vm.isMatchUrl('');
+    const res3 = wrapper.vm.isMatchVideoUrl('');
     expect(res3).toBeFalsy();
-    const res4 = wrapper.vm.isMatchUrl('http://127.0.0.0:8080/a.png');
+    const res4 = wrapper.vm.isMatchVideoUrl('http://127.0.0.0:8080/a.png');
     expect(res4).toBeTruthy();
+
+    const res5 = wrapper.vm.isMatchPosterUrl('../stest');
+    expect(res5).toBeTruthy();
+    const res6 = wrapper.vm.isMatchPosterUrl('./stest');
+    expect(res6).toBeTruthy();
+    const res7 = wrapper.vm.isMatchPosterUrl('stest');
+    expect(res7).toBeFalsy();
+    const res8 = wrapper.vm.isMatchPosterUrl('');
+    expect(res8).toBeTruthy();
+    const res9 = wrapper.vm.isMatchPosterUrl('http://127.0.0.0:8080/a.png');
+    expect(res9).toBeTruthy();
   });
 });

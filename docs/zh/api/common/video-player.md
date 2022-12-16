@@ -24,3 +24,4 @@
 | popupToPlay | 是否打开弹窗播放 | boolean | - | false |
 | autoplay | 是否自动播放 | boolean | - | false |
 | controlBar | 是否显示控制条 | boolean | - | true |
+| poster | 视频封面地址 | string | - |  -  |

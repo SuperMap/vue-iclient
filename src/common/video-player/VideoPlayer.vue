@@ -105,7 +105,7 @@ class SmVideoPlayer extends Vue {
 
   @Prop({
     default: () => {
-      return { muted: true, loop: false, popupToPlay: false, autoplay: false, controlBar: true };
+      return { muted: true, loop: false, popupToPlay: false, autoplay: false, controlBar: true, poster: '' };
     }
   })
   options: {
@@ -114,6 +114,7 @@ class SmVideoPlayer extends Vue {
     popupToPlay?: Boolean; // 是否打开弹窗播放
     autoplay?: Boolean; // 是否自动播放
     controlBar?: Boolean; // 是否显示控制条
+    poster?:string; // 封面
   };
 
   get isRtmp() {
@@ -240,6 +241,10 @@ class SmVideoPlayer extends Vue {
       }
       return {};
     }
+    if (!this.isMatchPosterUrl(options.poster)) {
+      // @ts-ignore
+      Message.warning(this.$t('warning.unsupportedPosterAddress'), 1);
+    }
     let commonOptions: playerOptions = {
       height: '100%',
       autoplay: options.autoplay !== null ? options.autoplay : false,
@@ -268,7 +273,7 @@ class SmVideoPlayer extends Vue {
         }
       },
       preload: 'auto',
-      poster: '',
+      poster: options.poster || '',
       controlBar: {
         timeDivider: false,
         durationDisplay: false,
@@ -371,7 +376,7 @@ class SmVideoPlayer extends Vue {
     let match;
     if (
       url === '' ||
-      !this.isMatchUrl(url) ||
+      !this.isMatchVideoUrl(url) ||
       (url.indexOf('ogg') < 0 &&
         url.indexOf('mp4') < 0 &&
         url.indexOf('webm') < 0 &&
@@ -386,14 +391,25 @@ class SmVideoPlayer extends Vue {
     return match;
   }
 
-  isMatchUrl(str) {
+  isMatchVideoUrl(str) {
     if (!str) return false;
-    const patt = /^((\.\.\/)|(\.\/))/g;
-    if (str.match(patt)) {
-      return true;
-    }
+    const isFilePath = this.isMatchFileUrl(str);
+    if(isFilePath) return true;
     const reg = new RegExp('(https?|http|file|ftp|rtmp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
     return reg.test(str);
+  }
+
+  isMatchPosterUrl(str) {
+    if (!str) return true;
+    const isFilePath = this.isMatchFileUrl(str);
+    if(isFilePath) return true;
+    const reg = new RegExp('(https?|http|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
+    return reg.test(str);
+  }
+
+  isMatchFileUrl(str) {
+    const patt = /^((\.\.\/)|(\.\/))/g;
+    return patt.test(str);
   }
 }
 export default SmVideoPlayer;
