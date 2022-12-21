@@ -1,0 +1,29 @@
+{
+  "extent": {
+    "leftBottom": {
+      "x": -180,
+      "y": 6.745832004414445
+    },
+    "rightTop": {
+      "x": 180,
+      "y": 81.85192871120175
+    }
+  },
+  "maxScale": "1:70.45225847627215",
+  "level": 5,
+  "center": {
+    "x": 129,
+    "y": 44
+  },
+  "baseLayer": {
+    "layerType": "TILE",
+    "name": "jubu4490",
+    "url": "http://172.16.15.131:8090/iserver/services/map-test4490-2/rest/maps/jubu4490"
+  },
+  "layers": [],
+  "description": "",
+  "projection": "GEOGCS[\"China Geodetic Coordinate System 2000\", \r\n  DATUM[\"China 2000\", \r\n    SPHEROID[\"CGCS2000\", 6378137.0, 298.257222101, AUTHORITY[\"EPSG\",\"1024\"]], \r\n    AUTHORITY[\"EPSG\",\"1043\"]], \r\n  PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n  UNIT[\"degree\", 0.017453292519943295], \r\n  AXIS[\"lat\", NORTH], \r\n  AXIS[\"lon\", EAST], \r\n  AUTHORITY[\"EPSG\",\"4490\"]]",
+  "minScale": "1:295498189.5360622",
+  "title": "4490",
+  "version": "2.3.0"
+}

@@ -2505,7 +2505,7 @@ export default class WebMapViewModel extends WebMapBase {
     return styleParameters;
   }
 
-  _unproject(point: [number, number]): [number, number] {
+  _unproject(point: [number, number], isReverse = true): [number, number] {
     const sourceProjection = this._unprojectProjection || this.baseProjection;
     if (sourceProjection === 'EPSG:4326') {
       return point;
@@ -2513,7 +2513,7 @@ export default class WebMapViewModel extends WebMapBase {
     // @ts-ignore
     const coor = proj4(sourceProjection, 'EPSG:4326', point);
     const proj = proj4.defs(sourceProjection);
-    if (proj.axis && proj.axis.indexOf('ne') === 0) {
+    if (isReverse && proj.axis && proj.axis.indexOf('ne') === 0) {
       coor.reverse();
     }
     return coor;
@@ -2527,7 +2527,7 @@ export default class WebMapViewModel extends WebMapBase {
     if (!center) {
       center = [0, 0];
     }
-    center = this._unproject(center);
+    center = this._unproject(center, false);
     center = new mapboxgl.LngLat(center[0], center[1]);
 
     return center;
