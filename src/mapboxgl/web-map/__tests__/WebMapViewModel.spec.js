@@ -16,6 +16,7 @@ import ranksymbolLayer from 'vue-iclient/test/unit/mocks/data//WebMap/ranksymbol
 import baseLayers from 'vue-iclient/test/unit/mocks/data/WebMap/baseLayers.json';
 import wmsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmsLayer.json';
 import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
+import raster4490 from 'vue-iclient/test/unit/mocks/data/WebMap/raster4490.json';
 import {
   wmtsCapabilitiesText,
   wmsCapabilitiesTextWithoutVersion,
@@ -932,6 +933,37 @@ describe('WebMapViewModel.spec', () => {
     };
     const viewModel = new WebMapViewModel(baseLayers['BAIDU']);
     viewModel.on({ notsupportbaidumap: callback });
+  });
+
+  it('_getMapCenter 4490', done => {
+    const fetchResource = {
+      'http://fake/fakeiportal/web/config/portal.json': iportal_serviceProxy,
+      'http://fake/fakeiportal/web/maps/1791328696/map.json': raster4490
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(
+      '1791328696',
+      {
+        target: 'map',
+        serverUrl: 'http://fake/fakeiportal',
+        withCredentials: false
+      },
+      {
+        style: {
+          version: 8,
+          sources: {},
+          layers: []
+        }
+      }
+    );
+    viewModel.on({
+      mapinitialized: () => {
+        const center = viewModel.map.getCenter();
+        expect(center.lat).toEqual(44);
+        expect(center.lng).toEqual(129);
+        done();
+      }
+    });
   });
 
   it('crs not support', done => {
