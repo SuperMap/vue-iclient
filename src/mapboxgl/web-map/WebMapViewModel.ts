@@ -1019,11 +1019,12 @@ export default class WebMapViewModel extends WebMapBase {
     }
     if (layerInfo.filterCondition) {
       // 过滤条件
-      const condition = this.replaceFilterCharacter(layerInfo.filterCondition);
+      let condition = this.replaceFilterCharacter(layerInfo.filterCondition);
+      const properties = features[0].properties || {};
+      condition = this.parseCondition(condition, Object.keys(properties));
+      const filterFeature = this.parseConditionFeature(properties);
       const sql = 'select * from json where (' + condition + ')';
-      const filterResult = window.jsonsql.query(sql, {
-        attributes: features[0].properties
-      });
+      const filterResult = window.jsonsql.query(sql, { attributes: filterFeature });
       if (filterResult && filterResult.length > 0) {
         this._addDataflowLayer(layerInfo, features[0]);
       }

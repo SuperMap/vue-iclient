@@ -143,7 +143,9 @@ window.canvg = {
     from: (ctx, url, callback) => Promise.resolve({ stop: jest.fn(), start: jest.fn() })
   }
 };
-
+window.jsonsql.query = () => {
+  return [{}];
+};
 const commonMapOptions = {
   container: 'map',
   style: {
@@ -565,9 +567,6 @@ describe('WebMapViewModel.spec', () => {
   });
 
   it('add dataflow and update', done => {
-    window.jsonsql.query = () => {
-      return [{}];
-    };
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_CSV,
@@ -961,6 +960,42 @@ describe('WebMapViewModel.spec', () => {
         const center = viewModel.map.getCenter();
         expect(center.lat).toEqual(44);
         expect(center.lng).toEqual(129);
+        done();
+      }
+    });
+  });
+
+  it('getFilterFeatures 2020年人口总数', done => {
+    const fetchResource = {
+      'http://fake/fakeiportal/web/config/portal.json': iportal_serviceProxy,
+      'http://fake/fakeiportal/web/maps/test/map.json': raster4490
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(
+      'test',
+      {
+        target: 'map',
+        serverUrl: 'http://fake/fakeiportal',
+        withCredentials: false
+      },
+      {
+        style: {
+          version: 8,
+          sources: {},
+          layers: []
+        }
+      }
+    );
+
+    viewModel.on({
+      mapinitialized: () => {
+        viewModel._updateDataFlowFeature = jest.fn();
+        viewModel._handleDataflowFeatures(
+          { filterCondition: '2020年人口总数>10' },
+          { data: JSON.stringify({ properties: { '2020年人口总数': 15 } }) }
+        );
+        const res = viewModel.getFilterFeatures('2020年人口总数>10', [{ properties: { '2020年人口总数': 15 } }]);
+        expect(res.length).toBe(1);
         done();
       }
     });
