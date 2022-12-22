@@ -485,16 +485,17 @@ export default abstract class WebMapBase extends Events {
     if (!filterCondition) {
       return allFeatures;
     }
-    const condition = this.replaceFilterCharacter(filterCondition);
-    const sql = 'select * from json where (' + condition + ')';
+    let condition = this.replaceFilterCharacter(filterCondition);
     const filterFeatures = [];
     for (let i = 0; i < allFeatures.length; i++) {
       const feature = allFeatures[i];
       let filterResult: any;
+      const properties = feature.properties;
       try {
-        filterResult = window.jsonsql.query(sql, {
-          properties: feature.properties
-        });
+        condition = this.parseCondition(condition, Object.keys(properties));
+        const filterFeature = this.parseConditionFeature(properties);
+        const sql = 'select * from json where (' + condition + ')';
+        filterResult = window.jsonsql.query(sql, { attributes: filterFeature });
       } catch (err) {
         // 必须把要过滤得内容封装成一个对象,主要是处理jsonsql(line : 62)中由于with语句遍历对象造成的问题
         continue;
@@ -515,6 +516,36 @@ export default abstract class WebMapBase extends Events {
       .replace(/<==/g, '<=')
       .replace(/>==/g, '>=');
     return filterString;
+  }
+
+  protected parseCondition(filterCondition, keys) {
+    const str = filterCondition.replace(/&|\||>|<|=|!/g, ' ');
+    const arr = str.split(' ').filter(item => item);
+    let result = filterCondition;
+    arr.forEach(item => {
+      const key = this.startsWithNumber(item) && keys.find(val => val === item);
+      if (key) {
+        result = result.replace(key, '$' + key);
+      }
+    });
+    return result;
+  }
+
+  // 处理jsonsqlfeature, 加前缀
+  protected parseConditionFeature(feature) {
+    let copyValue = {};
+    for (let key in feature) {
+      let copyKey = key;
+      if(this.startsWithNumber(key)) {
+        copyKey = '$' + key;
+      }
+      copyValue[copyKey] = feature[key];
+    }
+    return copyValue;
+  }
+
+  protected startsWithNumber(str) {
+    return /^\d/.test(str);
   }
 
   protected getEchartsLayerOptions(layerInfo, features, coordinateSystem) {
