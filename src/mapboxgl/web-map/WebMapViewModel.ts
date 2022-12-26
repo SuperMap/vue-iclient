@@ -29,6 +29,8 @@ const WORLD_WIDTH = 360;
  * @param {string} [options.accessToken] - 用于访问 SuperMap iPortal 、SuperMap Online 中受保护的服务。当设置 `id` 时有效。
  * @param {string} [options.accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `id` 时有效。
  * @param {String} [options.tiandituKey] - 用于访问天地图的服务。当设置 `id` 时有效。
+ * @param {String} [options.googleMapsAPIKey] - 用于访问谷歌地图。当设置 `id` 时有效。
+ * @param {String} [options.googleMapsLanguage] - 用于定义在谷歌地图图块上显示标签的语言。当设置 `id` 且底图为谷歌地图时有效。
  * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。当设置 `id` 时有效。
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
  * @param {boolean} [options.ignoreBaseProjection = 'false'] - 是否忽略底图坐标系和叠加图层坐标系不一致。
@@ -44,6 +46,8 @@ interface webMapOptions {
   accessToken?: string;
   accessKey?: string;
   tiandituKey?: string;
+  googleMapsAPIKey?: string;
+  googleMapsLanguage?: string;
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
   isSuperMapOnline?: boolean;
@@ -540,7 +544,7 @@ export default class WebMapViewModel extends WebMapBase {
         break;
       case 'CLOUD':
       case 'XYZ':
-        url = mapUrls[layerInfo.layerType];
+        url = mapUrls[layerInfo.layerType].replace('{googleMapsLanguage}', this.googleMapsLanguage).replace('{googleMapsAPIKey}', this.googleMapsAPIKey);
         this._createXYZLayer(layerInfo, url, addedCallback);
         break;
       case 'BAIDU':

@@ -13,6 +13,8 @@ interface DrillMapParams {
   accessToken?: string;
   accessKey?: string;
   tiandituKey?: string;
+  googleMapsAPIKey?: string;
+  googleMapsLanguage?: string;
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
   isSuperMapOnline?: boolean;
