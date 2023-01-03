@@ -2747,12 +2747,12 @@ export default class WebMapViewModel extends WebMapBase {
     } = layerInfo;
     const source = this.map.getSource(id);
     if (source) {
-      if (type === 'geojson') {
+      if (type === 'geojson' || source.type === 'geojson') {
         Object.keys(paint).forEach(name => {
           this.map.setPaintProperty(id, name, paint[name]);
         });
         // @ts-ignore
-        source.setData(data);
+        data && source.setData(data);
       } else if (type === 'raster') {
         this._updateRasterSource(id, { proxy, tiles });
       }
