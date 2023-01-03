@@ -29,6 +29,8 @@ const WORLD_WIDTH = 360;
  * @param {string} [options.accessToken] - 用于访问 SuperMap iPortal 、SuperMap Online 中受保护的服务。当设置 `id` 时有效。
  * @param {string} [options.accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `id` 时有效。
  * @param {String} [options.tiandituKey] - 用于访问天地图的服务。当设置 `id` 时有效。
+ * @param {String} [options.googleMapsAPIKey] - 用于访问谷歌地图。当设置 `id` 时有效。
+ * @param {String} [options.googleMapsLanguage] - 用于定义在谷歌地图图块上显示标签的语言。当设置 `id` 且底图为谷歌地图时有效。
  * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。当设置 `id` 时有效。
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
  * @param {boolean} [options.ignoreBaseProjection = 'false'] - 是否忽略底图坐标系和叠加图层坐标系不一致。
@@ -44,6 +46,8 @@ interface webMapOptions {
   accessToken?: string;
   accessKey?: string;
   tiandituKey?: string;
+  googleMapsAPIKey?: string;
+  googleMapsLanguage?: string;
   withCredentials?: boolean;
   excludePortalProxyUrl?: boolean;
   isSuperMapOnline?: boolean;
@@ -540,7 +544,7 @@ export default class WebMapViewModel extends WebMapBase {
         break;
       case 'CLOUD':
       case 'XYZ':
-        url = mapUrls[layerInfo.layerType];
+        url = mapUrls[layerInfo.layerType].replace('{googleMapsLanguage}', this.googleMapsLanguage).replace('{googleMapsAPIKey}', this.googleMapsAPIKey);
         this._createXYZLayer(layerInfo, url, addedCallback);
         break;
       case 'BAIDU':
@@ -1019,11 +1023,12 @@ export default class WebMapViewModel extends WebMapBase {
     }
     if (layerInfo.filterCondition) {
       // 过滤条件
-      const condition = this.replaceFilterCharacter(layerInfo.filterCondition);
+      let condition = this.replaceFilterCharacter(layerInfo.filterCondition);
+      const properties = features[0].properties || {};
+      condition = this.parseCondition(condition, Object.keys(properties));
+      const filterFeature = this.parseConditionFeature(properties);
       const sql = 'select * from json where (' + condition + ')';
-      const filterResult = window.jsonsql.query(sql, {
-        attributes: features[0].properties
-      });
+      const filterResult = window.jsonsql.query(sql, { attributes: filterFeature });
       if (filterResult && filterResult.length > 0) {
         this._addDataflowLayer(layerInfo, features[0]);
       }
@@ -2505,7 +2510,7 @@ export default class WebMapViewModel extends WebMapBase {
     return styleParameters;
   }
 
-  _unproject(point: [number, number]): [number, number] {
+  _unproject(point: [number, number], isReverse = true): [number, number] {
     const sourceProjection = this._unprojectProjection || this.baseProjection;
     if (sourceProjection === 'EPSG:4326') {
       return point;
@@ -2513,7 +2518,7 @@ export default class WebMapViewModel extends WebMapBase {
     // @ts-ignore
     const coor = proj4(sourceProjection, 'EPSG:4326', point);
     const proj = proj4.defs(sourceProjection);
-    if (proj.axis && proj.axis.indexOf('ne') === 0) {
+    if (isReverse && proj.axis && proj.axis.indexOf('ne') === 0) {
       coor.reverse();
     }
     return coor;
@@ -2527,7 +2532,7 @@ export default class WebMapViewModel extends WebMapBase {
     if (!center) {
       center = [0, 0];
     }
-    center = this._unproject(center);
+    center = this._unproject(center, false);
     center = new mapboxgl.LngLat(center[0], center[1]);
 
     return center;
@@ -2690,6 +2695,7 @@ export default class WebMapViewModel extends WebMapBase {
   cleanWebMap() {
     if (this.map) {
       this.triggerEvent('beforeremovemap', {});
+      this.stopCanvg();
       this.map.remove();
       this.map = null;
       this._legendList = {};
@@ -2790,4 +2796,3 @@ export default class WebMapViewModel extends WebMapBase {
     );
   }
 }
-
