@@ -524,14 +524,41 @@ export default abstract class WebMapBase extends Events {
     return filterString;
   }
 
+  protected getParseSpecialCharacter() {
+    // 特殊字符字典
+    const directory = ['(', ')', '（', '）', ',', '，'];
+    const res = {};
+    directory.forEach((item, index) => {
+      res[item] = `$${index}`;
+    });
+    return res;
+  }
+
+  protected parseSpecialCharacter(str) {
+    const directory = this.getParseSpecialCharacter();
+    for (let key in directory) {
+      const replaceValue = directory[key];
+      const pattern = new RegExp(`\\${key}`, 'g');
+      // eslint-disable-next-line
+      while (pattern.test(str)) {
+        str = str.replace(pattern, replaceValue);
+      }
+    }
+    return str;
+  }
+
   protected parseCondition(filterCondition, keys) {
     const str = filterCondition.replace(/&|\||>|<|=|!/g, ' ');
-    const arr = str.split(' ').filter(item => item);
+    const arr = str.split(' ').filter((item) => item);
     let result = filterCondition;
-    arr.forEach(item => {
-      const key = this.startsWithNumber(item) && keys.find(val => val === item);
-      if (key) {
+    arr.forEach((item) => {
+      const key = keys.find((val) => val === item);
+      if (this.startsWithNumber(item) && key) {
         result = result.replace(key, '$' + key);
+      }
+      if (key) {
+        const res = this.parseSpecialCharacter(key);
+        result = result.replace(key, res);
       }
     });
     return result;
@@ -542,9 +569,10 @@ export default abstract class WebMapBase extends Events {
     let copyValue = {};
     for (let key in feature) {
       let copyKey = key;
-      if(this.startsWithNumber(key)) {
+      if (this.startsWithNumber(key)) {
         copyKey = '$' + key;
       }
+      copyKey = this.parseSpecialCharacter(copyKey);
       copyValue[copyKey] = feature[key];
     }
     return copyValue;

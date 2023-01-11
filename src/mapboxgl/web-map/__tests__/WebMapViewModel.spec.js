@@ -996,6 +996,8 @@ describe('WebMapViewModel.spec', () => {
         );
         const res = viewModel.getFilterFeatures('2020年人口总数>10', [{ properties: { '2020年人口总数': 15 } }]);
         expect(res.length).toBe(1);
+        const res1 = viewModel.getFilterFeatures('气压传感器海拔高度（米）>2000', [{ properties: { '气压传感器海拔高度（米）': 15 } }]);
+        expect(res1.length).toBe(1);
         done();
       }
     });
