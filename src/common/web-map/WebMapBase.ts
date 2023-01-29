@@ -10,6 +10,7 @@ import WebMapService from '../_utils/WebMapService';
 import { getColorWithOpacity } from '../_utils/util';
 import { getProjection, registerProjection } from '../../common/_utils/epsg-define';
 import { coordEach } from '@turf/meta';
+import difference from 'lodash.difference';
 
 // 迁徙图最大支持要素数量
 const MAX_MIGRATION_ANIMATION_COUNT = 1000;
@@ -670,6 +671,19 @@ export default abstract class WebMapBase extends Events {
     }
   }
 
+  protected getCustomSettingColors(customSettings, featureType) {
+    const keys = Object.keys(customSettings);
+    const colors = [];
+    keys.forEach(key => {
+      if (featureType === 'LINE') {
+        colors.push(customSettings[key].strokeColor);
+      } else {
+        colors.push(customSettings[key].fillColor);
+      }
+    });
+    return colors;
+  }
+
   protected getUniqueStyleGroup(parameters: any, features: any) {
     const { featureType, style, themeSetting } = parameters;
     const { colors, customSettings } = themeSetting;
@@ -698,24 +712,27 @@ export default abstract class WebMapBase extends Events {
     // 获取一定量的颜色
     let curentColors = colors;
     curentColors = SuperMap.ColorsPickerUtil.getGradientColors(curentColors, names.length);
-
+    const usedColors = this.getCustomSettingColors(customSettings, featureType).map(item => item && item.toLowerCase());
+    const allColors = SuperMap.ColorsPickerUtil.getGradientColors(colors, names.length + Object.keys(customSettings).length).map(item => item.toLowerCase());
+    const newColors = difference(allColors, usedColors);
     const styleGroup = [];
     names.forEach((name, index) => {
       let color = curentColors[index];
       let itemStyle = { ...style };
-      if (name in customSettings) {
-        const customStyle = customSettings[name];
-        if (typeof customStyle === 'object') {
-          itemStyle = Object.assign(itemStyle, customStyle);
+      const customStyle = customSettings[name];
+      if (typeof customStyle === 'object') {
+        itemStyle = Object.assign(itemStyle, customStyle);
+      } else {
+        if (typeof customStyle === 'string') {
+          color = customSettings[name];
+        }
+        if (!customStyle) {
+          color = newColors.shift();
+        }
+        if (featureType === 'LINE') {
+          itemStyle.strokeColor = color;
         } else {
-          if (typeof customStyle === 'string') {
-            color = customSettings[name];
-          }
-          if (featureType === 'LINE') {
-            itemStyle.strokeColor = color;
-          } else {
-            itemStyle.fillColor = color;
-          }
+          itemStyle.fillColor = color;
         }
       }
 
