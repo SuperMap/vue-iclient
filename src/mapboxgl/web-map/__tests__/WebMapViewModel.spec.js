@@ -966,14 +966,9 @@ describe('WebMapViewModel.spec', () => {
       projection: 'EPSG:4326',
       enableFields: ['UserID']
     };
-    viewModel.on({
-      mapinitialized: () => {
-        viewModel._updateDataFlowFeature = jest.fn();
-        const res = viewModel.getUniqueStyleGroup(parameters, [{ properties: { UserID: 30 } }, { properties: { UserID: 0 } }]);
-        expect(res.length).toBe(2);
-        done();
-      }
-    });
+    const res = viewModel.getUniqueStyleGroup(parameters, [{ properties: { UserID: 30 } }, { properties: { UserID: 0 } }]);
+    expect(res.length).toBe(2);
+    done();
   });
   it('crs not support', done => {
     const get = jest.spyOn(CRS, 'get');
