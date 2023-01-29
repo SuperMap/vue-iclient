@@ -996,13 +996,149 @@ describe('WebMapViewModel.spec', () => {
         );
         const res = viewModel.getFilterFeatures('2020年人口总数>10', [{ properties: { '2020年人口总数': 15 } }]);
         expect(res.length).toBe(1);
-        const res1 = viewModel.getFilterFeatures('气压传感器海拔高度（米）>2000', [{ properties: { '气压传感器海拔高度（米）': 15 } }]);
+        const res1 = viewModel.getFilterFeatures('气压传感器海拔高度（米）>2000', [
+          { properties: { '气压传感器海拔高度（米）': 15 } }
+        ]);
         expect(res1.length).toBe(1);
         done();
       }
     });
   });
 
+  it('isvj-5215', done => {
+    const fetchResource = {
+      'http://fake/fakeiportal/web/config/portal.json': iportal_serviceProxy,
+      'http://fake/fakeiportal/web/maps/test/map.json': raster4490
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(
+      'test',
+      {
+        target: 'map',
+        serverUrl: 'http://fake/fakeiportal',
+        withCredentials: false
+      },
+      {
+        style: {
+          version: 8,
+          sources: {},
+          layers: []
+        }
+      }
+    );
+    const parameters = {
+      layerType: 'UNIQUE',
+      visible: true,
+      themeSetting: {
+        themeField: 'UserID',
+        customSettings: {
+          0: {
+            fillColor: '#D53E4F',
+            strokeWidth: 1,
+            offsetX: 0,
+            offsetY: 0,
+            fillOpacity: 0.9,
+            type: 'BASIC_POINT',
+            radius: 15,
+            strokeColor: '#ffffff',
+            strokeOpacity: 1
+          },
+          1: {
+            fillColor: '#3288BD',
+            strokeWidth: 1,
+            offsetX: 0,
+            offsetY: 0,
+            fillOpacity: 0.9,
+            type: 'BASIC_POINT',
+            radius: 15,
+            strokeColor: '#ffffff',
+            strokeOpacity: 1
+          },
+          2: {
+            fillColor: '#FC8D59',
+            strokeWidth: 1,
+            offsetX: 0,
+            offsetY: 0,
+            fillOpacity: 0.9,
+            type: 'BASIC_POINT',
+            radius: 15,
+            strokeColor: '#ffffff',
+            strokeOpacity: 1
+          },
+          3: {
+            fillColor: '#99D594',
+            strokeWidth: 1,
+            offsetX: 0,
+            offsetY: 0,
+            fillOpacity: 0.9,
+            type: 'BASIC_POINT',
+            radius: 15,
+            strokeColor: '#ffffff',
+            strokeOpacity: 1
+          },
+          5: {
+            fillColor: '#FEE08B',
+            strokeWidth: 1,
+            offsetX: 0,
+            offsetY: 0,
+            fillOpacity: 0.9,
+            type: 'BASIC_POINT',
+            radius: 15,
+            strokeColor: '#ffffff',
+            strokeOpacity: 1
+          },
+          8: {
+            fillColor: '#E6F598',
+            strokeWidth: 1,
+            offsetX: 0,
+            offsetY: 0,
+            fillOpacity: 0.9,
+            type: 'BASIC_POINT',
+            radius: 15,
+            strokeColor: '#ffffff',
+            strokeOpacity: 1
+          }
+        },
+        colors: ['#D53E4F', '#FC8D59', '#FEE08B', '#FFFFBF', '#E6F598', '#99D594', '#3288BD']
+      },
+      name: 'isvj-5215',
+      featureType: 'POINT',
+      labelStyle: {
+        offsetX: 0,
+        textBaseline: 'bottom',
+        fontFamily: '黑体',
+        offsetY: -19,
+        outlineWidth: 0,
+        textAlign: 'center',
+        outlineColor: '#000000',
+        fontSize: '14px',
+        fill: '#333',
+        backgroundFill: [255, 255, 255, 0.8],
+        labelField: 'UserID'
+      },
+      style: {
+        strokeWidth: 1,
+        offsetX: 0,
+        fillColor: '#E6F598',
+        offsetY: 0,
+        fillOpacity: 0.9,
+        radius: 15,
+        strokeColor: '#ffffff',
+        type: 'BASIC_POINT',
+        strokeOpacity: 1
+      },
+      projection: 'EPSG:4326',
+      enableFields: ['UserID']
+    };
+    viewModel.on({
+      mapinitialized: () => {
+        viewModel._updateDataFlowFeature = jest.fn();
+        const res = viewModel.getUniqueStyleGroup(parameters, [{ properties: { UserID: 30 } }, { properties: { UserID: 0 } }]);
+        expect(res.length).toBe(2);
+        done();
+      }
+    });
+  });
   it('crs not support', done => {
     const get = jest.spyOn(CRS, 'get');
     get.mockImplementation(() => {
