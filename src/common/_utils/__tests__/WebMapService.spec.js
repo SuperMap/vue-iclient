@@ -4,7 +4,7 @@ import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_servi
 import layerData from '../../../../test/unit/mocks/data/layerData.json';
 import uniqueLayer_polygon from '../../../../test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
 import epsgCode_wkt from '../../../../test/unit/mocks/data/epsgCode_wkt.json';
-import { wmsCapabilitiesText, wmtsCapabilitiesText } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
+import { wmsCapabilitiesText, wmtsCapabilitiesText, wmtsCapabilitiesTextWithSingleProperty } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 
 const SuperMap = require('../../../../test/unit/mocks/supermap');
@@ -584,6 +584,28 @@ describe('WebMapService.spec', () => {
   it('getWmtsInfo', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0&parentResType=MAP&parentResId=123': wmtsCapabilitiesText
+    };
+    mockFetch(fetchResource);
+    const layerInfo = {
+      layer: 'ChinaDark',
+      layerID: 'China',
+      layerType: 'WMS',
+      layers: ['0'],
+      name: 'China',
+      url: 'https://fakeiportal.supermap.io/iportal?',
+      visible: true
+    };
+    const mapCRS = {};
+    const service = new WebMapService(mapId, options);
+    expect.assertions(1);
+    const data = await service.getWmtsInfo(layerInfo, mapCRS);
+    expect(data.kvpResourceUrl).toBe('http://fakeiserver.supermap.io/iserver/services/map-china400/wmts-china?');
+    done();
+  });
+
+  it('getWmtsInfo_single_property', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0&parentResType=MAP&parentResId=123': wmtsCapabilitiesTextWithSingleProperty
     };
     mockFetch(fetchResource);
     const layerInfo = {
