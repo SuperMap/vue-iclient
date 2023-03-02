@@ -48,7 +48,8 @@ const MB_SCALEDENOMINATOR_4326 = [
   '17061.836670798268',
   '8530.918335399134'
 ];
-
+// 用于决定哪些字段必须返回数组格式
+const WMTS_ALWAYS_ARRAY_FIELDS = ['Layer', 'TileMatrixSet', 'ows:Operation', 'ows:Get', 'ResourceURL', 'Style'];
 interface webMapOptions {
   serverUrl?: string;
   accessToken?: string;
@@ -276,14 +277,13 @@ export default class WebMapService extends Events {
         })
         .then(capabilitiesText => {
           let converts = convert || window.convert;
-          const capabilities = JSON.parse(
-            converts.xml2json(capabilitiesText, {
-              compact: true,
-              spaces: 4,
-              // 用于决定哪些字段必须返回数组格式
-              alwaysArray: ['Layer', 'TileMatrixSet', 'ows:Operation', 'ows:Get', 'ResourceURL', 'Style']
-            })
-          ).Capabilities;
+          const convertConfig = {
+            alwaysArray: WMTS_ALWAYS_ARRAY_FIELDS,
+            compact: true,
+            spaces: 4
+          };
+          const result = converts.xml2json(capabilitiesText, convertConfig);
+          const capabilities = JSON.parse(result).Capabilities;
           const content = capabilities.Contents;
           const metaData = capabilities['ows:OperationsMetadata'];
           if (metaData) {
