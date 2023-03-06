@@ -40,6 +40,9 @@
         opacity: 0;
       }
     }
+    &__rendered {
+      color: $text-color-active;
+    }
 
     &__clear {
       &:hover {
