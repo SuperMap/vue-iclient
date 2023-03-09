@@ -45,6 +45,7 @@ module.exports = {
     'node_modules/(?!(mapbox-gl|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'
   ],
   modulePaths: ['src', 'node_modules'],
+  reporters: ["default", "jest-teamcity"],
   globals: {
     'ts-jest': {
       tsConfig: '<rootDir>/tsconfig.json',
