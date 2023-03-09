@@ -251,7 +251,8 @@
   "jestSonar": {
     "reportPath": "test/unit/report",
     "reportFile": "test-reporter.xml",
-    "indent": 4
+    "indent": 4,
+    "reportedFilePath": "relative"
   },
   "license": "Apache-2.0"
 }
