@@ -488,7 +488,8 @@ export default class WebMapService extends Events {
       let serviceUrl = this.handleParentRes(dataSource.url);
       SuperMap.FetchRequest.get(serviceUrl, null, {
         withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
-        proxy
+        proxy,
+        withoutFormatSuffix: true
       })
         .then(response => {
           return response.json();
