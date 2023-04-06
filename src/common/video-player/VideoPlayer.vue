@@ -101,7 +101,7 @@ class SmVideoPlayer extends Vue {
 
   @Prop({ default: false }) isFullscreen: Boolean;
 
-  @Prop({ default: 'ratio' }) fill: String;
+  @Prop({ default: 'origin' }) ratio: String;
 
   @Prop({
     default: () => {
@@ -139,7 +139,7 @@ class SmVideoPlayer extends Vue {
   }
 
   get isFullFill() {
-    return this.fill === 'full';
+    return this.ratio === 'full';
   }
 
   @Watch('modalVisible')
