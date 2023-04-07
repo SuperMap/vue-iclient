@@ -75,7 +75,7 @@ describe('VideoPlayer.vue', () => {
       propsData: {
         url: 'fakeurl.mp4',
         isFullscreen: false,
-        fill: 'ratio',
+        ratio: 'origin',
         options: {
           muted: true,
           loop: false,
@@ -91,7 +91,7 @@ describe('VideoPlayer.vue', () => {
     await wrapper.setProps({
       url: 'rtmp://1.fakeurlAA.flv',
       isFullscreen: true,
-      fill: 'full',
+      ratio: 'full',
       options: {
         muted: true,
         loop: true,
@@ -101,7 +101,7 @@ describe('VideoPlayer.vue', () => {
         poster:'fake url'
       }
     });
-    expect(wrapper.vm.fill).toBe('full');
+    expect(wrapper.vm.ratio).toBe('full');
     expect(wrapper.vm.isRtmp).toBeTruthy();
     expect(wrapper.vm.isFlv).toBeFalsy();
     expect(wrapper.vm.autoplay).toBeTruthy();
