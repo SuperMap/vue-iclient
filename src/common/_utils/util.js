@@ -1,12 +1,12 @@
 // 获取当前时间返回置顶格式
-import { getLanguage, geti18n } from 'vue-iclient/src/common/_lang/index';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 import colorcolor from 'colorcolor';
 import getCenter from '@turf/center';
 import omit from 'omit.js';
 import tinyColor from 'tinycolor2';
 
 export function getDateTime(timeType) {
-  return geti18n().d(new Date(), timeType.replace(/\+/g, '_'), getLanguage());
+  return geti18n().d(new Date(), timeType.replace(/\+/g, '_'));
 }
 // hex -> rgba
 export function hexToRgba(hex, opacity) {
