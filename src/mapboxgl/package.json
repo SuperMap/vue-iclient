@@ -1,7 +1,7 @@
 {
   "name": "@supermap/vue-iclient-mapboxgl",
   "description": "SuperMap iClient for Vue.js",
-  "version": "11.0.0",
+  "version": "11.1.0-beta",
   "homepage": "http://iclient.supermap.io",
   "main": "lib/index",
   "dependencies": {
@@ -73,7 +73,7 @@
     "vue-types": "^2.0.2",
     "vue-videojs7": "^0.1.5",
     "wwobjloader2": "4.0.0",
-    "xlsx": "0.17.2",
+    "xlsx": "0.18.5",
     "xml-js": "1.6.11"
   },
   "peerDependencies": {

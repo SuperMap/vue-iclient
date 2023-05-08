@@ -26,6 +26,7 @@ export default {
   // messageTemplate
   warning: {
     unsupportedVideoAddress: 'The video address is illegal',
+    unsupportedPosterAddress: 'The poster address is illegal',
     unavailableVideo: 'This video is temporarily unavailable, please try again later',
     mapNotLoaded: 'The associated map has not been loaded yet, please wait for a second',
     unassociatedMap: 'You need to configure the associated map!',

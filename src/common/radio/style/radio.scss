@@ -9,6 +9,9 @@
   &-input:focus + &-inner {
     border-color: $radio-dot-color;
   }
+  &-wrapper {
+    color: $text-color-active;
+  }
   @include e(input, '-') {
     &:focus {
       + #{$prefix}-inner {

@@ -26,6 +26,7 @@ export default {
   // messageTemplate
   warning: {
     unsupportedVideoAddress: '视频地址不合法',
+    unsupportedPosterAddress: '封面地址不合法',
     unavailableVideo: '此视频暂无法播放，请稍后再试',
     mapNotLoaded: '关联的地图尚未加载完整，请稍后',
     unassociatedMap: '您需要配置关联地图！',

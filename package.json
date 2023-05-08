@@ -1,6 +1,6 @@
 {
   "name": "@supermap/vue-iclient",
-  "version": "11.0.0",
+  "version": "11.1.0-beta",
   "description": "SuperMap iClient for Vue.js",
   "homepage": "https://iclient.supermap.io",
   "scripts": {
@@ -100,7 +100,7 @@
     "vue-types": "^2.0.2",
     "vue-videojs7": "^0.1.5",
     "wwobjloader2": "4.0.0",
-    "xlsx": "0.17.2",
+    "xlsx": "0.18.5",
     "xml-js": "1.6.11"
   },
   "devDependencies": {
@@ -177,6 +177,7 @@
     "jest-canvas-mock": "^2.1.0",
     "jest-serializer-vue": "^2.0.2",
     "jest-sonar-reporter": "^2.0.0",
+    "jest-teamcity": "^1.11.0",
     "jest-transform-stub": "^2.0.0",
     "json-templater": "^1.2.0",
     "less": "^3.13.1",
@@ -250,7 +251,8 @@
   "jestSonar": {
     "reportPath": "test/unit/report",
     "reportFile": "test-reporter.xml",
-    "indent": 4
+    "indent": 4,
+    "reportedFilePath": "relative"
   },
   "license": "Apache-2.0"
 }

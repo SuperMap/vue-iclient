@@ -136,7 +136,7 @@ export default class Theme extends Vue {
     if ('background' in themeStyle) {
       this.setDataRelatedWithBackgound('', themeStyle);
     }
-    this.themeStyleChanged();
+    // this.themeStyleChanged();
     this.initNeedTheme(themeStyle);
   }
 

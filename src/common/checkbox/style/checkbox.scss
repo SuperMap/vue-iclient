@@ -7,6 +7,9 @@
   &-wrapper:hover &-inner, &:hover &-inner, &-input:focus + &-inner {
     border-color: $hover-color;
   }
+  &-wrapper-checked {
+    color: $text-color-active;
+  }
   @include e(inner, '-') {
     background-color: $component-background;
   }

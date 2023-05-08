@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-video-player">
+  <div :class="['sm-component-video-player', {'sm-component-video-full-fill': isFullFill}]">
     <video-player
       ref="videoPlayer"
       class="sm-component-video-player__player sm-component-video-player__player--main"
@@ -8,13 +8,16 @@
       :data-autoplay="autoplay"
       :data-isLive="isRtmp"
       :data-popupplay="`${options.popupToPlay}`"
+      :events = "['fullscreenchange']"
       @play="onPlayerPlay($event)"
       @ended="onPlayerEnded($event)"
       @loadeddata="onPlayerLoadeddata($event)"
       @ready="getPlayer"
+      @fullscreenchange="onFullscreenchange"
     ></video-player>
     <sm-modal
       v-if="url"
+      :class="{'sm-component-video-full-fill': isFullFill}"
       v-model="modalVisible"
       wrapClassName="sm-component-video-player-modal"
       :footer="null"
@@ -96,9 +99,13 @@ class SmVideoPlayer extends Vue {
 
   @Prop({ default: 3000 }) replayTime: number; // 黑屏重新播放rtmp
 
+  @Prop({ default: false }) isFullscreen: Boolean;
+
+  @Prop({ default: 'origin' }) ratio: String;
+
   @Prop({
     default: () => {
-      return { muted: true, loop: false, popupToPlay: false, autoplay: false, controlBar: true };
+      return { muted: true, loop: false, popupToPlay: false, autoplay: false, controlBar: true, poster: '' };
     }
   })
   options: {
@@ -107,6 +114,7 @@ class SmVideoPlayer extends Vue {
     popupToPlay?: Boolean; // 是否打开弹窗播放
     autoplay?: Boolean; // 是否自动播放
     controlBar?: Boolean; // 是否显示控制条
+    poster?:string; // 封面
   };
 
   get isRtmp() {
@@ -128,6 +136,10 @@ class SmVideoPlayer extends Vue {
 
   get player() {
     return this.modalVisible ? this.modalVideoPlayer : this.smPlayer;
+  }
+
+  get isFullFill() {
+    return this.ratio === 'full';
   }
 
   @Watch('modalVisible')
@@ -229,6 +241,10 @@ class SmVideoPlayer extends Vue {
       }
       return {};
     }
+    if (!this.isMatchPosterUrl(options.poster)) {
+      // @ts-ignore
+      Message.warning(this.$t('warning.unsupportedPosterAddress'), 1);
+    }
     let commonOptions: playerOptions = {
       height: '100%',
       autoplay: options.autoplay !== null ? options.autoplay : false,
@@ -257,7 +273,7 @@ class SmVideoPlayer extends Vue {
         }
       },
       preload: 'auto',
-      poster: '',
+      poster: options.poster || '',
       controlBar: {
         timeDivider: false,
         durationDisplay: false,
@@ -310,6 +326,15 @@ class SmVideoPlayer extends Vue {
     } else {
       this.handleControlBar(player);
     }
+    if (!this.options.popupToPlay && this.isFullscreen) {
+      player.requestFullscreen();
+    }
+  }
+
+  onFullscreenchange(e) {
+    if(!e.isFullscreen()) {
+      e.pause();
+    }
   }
 
   onModalPlayerPlay(player) {
@@ -351,7 +376,7 @@ class SmVideoPlayer extends Vue {
     let match;
     if (
       url === '' ||
-      !this.isMatchUrl(url) ||
+      !this.isMatchVideoUrl(url) ||
       (url.indexOf('ogg') < 0 &&
         url.indexOf('mp4') < 0 &&
         url.indexOf('webm') < 0 &&
@@ -366,9 +391,25 @@ class SmVideoPlayer extends Vue {
     return match;
   }
 
-  isMatchUrl(str) {
+  isMatchVideoUrl(str) {
+    if (!str) return false;
+    const isFilePath = this.isMatchFileUrl(str);
+    if(isFilePath) return true;
     const reg = new RegExp('(https?|http|file|ftp|rtmp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
     return reg.test(str);
+  }
+
+  isMatchPosterUrl(str) {
+    if (!str) return true;
+    const isFilePath = this.isMatchFileUrl(str);
+    if(isFilePath) return true;
+    const reg = new RegExp('(https?|http|file)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
+    return reg.test(str);
+  }
+
+  isMatchFileUrl(str) {
+    const patt = /^((\.\.\/)|(\.\/))/g;
+    return patt.test(str);
   }
 }
 export default SmVideoPlayer;

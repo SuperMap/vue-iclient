@@ -294,7 +294,9 @@ export default class WebMapService extends Events {
           const capabilities = JSON.parse(
             converts.xml2json(capabilitiesText, {
               compact: true,
-              spaces: 4
+              spaces: 4,
+              // 用于决定哪些字段必须返回数组格式
+              alwaysArray: ['Layer', 'TileMatrixSet', 'ows:Operation', 'ows:Get', 'ResourceURL', 'Style']
             })
           ).Capabilities;
           const content = capabilities.Contents;
@@ -486,7 +488,8 @@ export default class WebMapService extends Events {
       let serviceUrl = this.handleParentRes(dataSource.url);
       SuperMap.FetchRequest.get(serviceUrl, null, {
         withCredentials: this.handleWithCredentials(proxy, serviceUrl, this.withCredentials),
-        proxy
+        proxy,
+        withoutFormatSuffix: true
       })
         .then(response => {
           return response.json();

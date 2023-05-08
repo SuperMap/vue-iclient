@@ -80,6 +80,7 @@ $component-background: var(--component-background);
 $component-background-without-opacity: var(--component-background-without-opacity);
 $text-color: var(--text-color);
 $text-color-secondary: var(--text-color-secondary);
+$text-color-active: var(--text-color-active);
 $text-color-inverse: $white;
 $text-color-without-opacity: var(--text-color-without-opacity);
 $icon-color: inherit;
@@ -203,7 +204,7 @@ $layout-trigger-color-light: $text-color;
 
 // Input
 $input-placeholder-color: var(--placeholder-color);
-$input-color: $text-color;
+$input-color: $text-color-active;
 $input-border-color: $border-color-base;
 $input-bg: $component-background;
 $input-hover-border-color: $primary-5;
