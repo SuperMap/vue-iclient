@@ -1860,7 +1860,7 @@ export default class WebMapViewModel extends WebMapBase {
           features,
           '',
           '',
-          true,
+          false,
           defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
         );
       } else if (style.type === 'IMAGE_POINT' || style.type === 'SVG_POINT') {
@@ -1871,7 +1871,7 @@ export default class WebMapViewModel extends WebMapBase {
           features,
           '',
           '',
-          true,
+          false,
           defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
         );
       } else {
@@ -1944,7 +1944,11 @@ export default class WebMapViewModel extends WebMapBase {
     });
     const loadImagePromise = (layerID: string, { src, defaultStyle }) => {
       return new Promise(resolve => {
-        if (src && src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
+        if (!src) {
+          resolve({ [layerID]: undefined });
+          return;
+        }
+        if (src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
           this.map.loadImage(src, (error, image) => {
             if (error) {
               console.log(error);
@@ -2002,6 +2006,15 @@ export default class WebMapViewModel extends WebMapBase {
         // image-marker  svg-marker
         if (geomType === 'POINT' || geomType === 'TEXT') {
           if (!iconImageUrl) {
+            this._addLayer({
+              id: layerID,
+              type: 'circle',
+              source: source,
+              paint: this._transformStyleToMapBoxGl(defaultStyle, geomType),
+              layout: {},
+              minzoom: minzoom || 0,
+              maxzoom: maxzoom || 22
+            });
             continue;
           }
           this._addLayer({

@@ -509,7 +509,10 @@ describe('WebMapViewModel.spec', () => {
     const callback = function (data) {
       expect(data.layers.length).toBe(id.layers.length);
       const layers = data.map.getStyle().layers;
-      expect(layers[layers.length - 1].id).toBe('民航数-TEXT-7');
+      expect(layers[layers.length - 2].id).toBe('民航数-TEXT-7');
+      console.log(layers[layers.length - 1])
+      expect(layers[layers.length - 1].type).toBe('circle');
+      expect(layers[layers.length - 1].paint['circle-color']).toBe('#de2b41');
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
