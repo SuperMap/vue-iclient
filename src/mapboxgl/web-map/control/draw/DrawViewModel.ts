@@ -23,14 +23,16 @@ export default class DrawViewModel extends mapboxgl.Evented {
   defaultStyle: any;
   fire: any;
   draw: any;
+  drawInitStyles: Object;
 
-  constructor(componentName: string) {
+  constructor(componentName: string, drawInitStyles: Object) {
     super();
     this.componentName = componentName;
     this.featureIds = []; // 收集当前draw所画的点线面的id
     this.activeFeature = {};
     this.dashedLayerIds = []; // 收集虚线图层的id 信息
     this.layerStyleList = {}; // 收集虚线图层的修改的样式信息
+    this.drawInitStyles = drawInitStyles;
   }
 
   setMap(mapInfo: mapInfoType) {
@@ -42,7 +44,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
 
   _addDrawControl() {
     // @ts-ignore
-    this.draw = drawEvent.$options.getDraw(this.mapTarget);
+    this.draw = drawEvent.$options.getDraw({ mapTarget: this.mapTarget, styles: this.drawInitStyles });
     // @ts-ignore
     drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
     this.map.on('draw.create', this._drawCreate.bind(this));

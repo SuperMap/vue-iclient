@@ -35,7 +35,7 @@ import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import DrawViewModel from './DrawViewModel';
 import uniqueId from 'lodash.uniqueid';
-import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
+import { Component, Prop, Mixins } from 'vue-property-decorator';
 import 'vue-iclient/static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 
 @Component({
@@ -65,16 +65,11 @@ class Draw extends Mixins(MapGetter, Control, Theme, Card) {
   })
   headerName: string;
 
-  @Prop() layerStyle: Object;
-
-  @Watch('layerStyle', { deep: true })
-  layerStyleWatcher() {
-    this.viewModel && this.viewModel.setLayerStyle(this.layerStyle);
-  }
+  @Prop() defaultLayerStyle: Object;
 
   created() {
     this.componentName = uniqueId(this.$options.name);
-    this.viewModel = new DrawViewModel(this.componentName);
+    this.viewModel = new DrawViewModel(this.componentName, this.defaultLayerStyle);
     this.initEvent();
   }
 

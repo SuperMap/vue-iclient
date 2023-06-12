@@ -32,7 +32,7 @@ class MeasureViewModel extends mapboxgl.Evented {
   }
 
   _addDrawControl() {
-    this.draw = drawEvent.$options.getDraw(this.mapTarget);
+    this.draw = drawEvent.$options.getDraw({ mapTarget: this.mapTarget });
     drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
     this._finishDrawBind = this._finishDraw.bind(this);
     this._changeModeBind = this._changeMode.bind(this);
