@@ -106,6 +106,7 @@ import { default as VideoPlusLayer } from 'vue-iclient/src/mapboxgl/video-plus/l
 import { default as VideoPlusMarker } from 'vue-iclient/src/mapboxgl/video-plus/ui/marker/index';
 import { default as VideoPlusPopup } from 'vue-iclient/src/mapboxgl/video-plus/ui/popup/index';
 import { default as VideoPlusDraw } from 'vue-iclient/src/mapboxgl/video-plus/control/draw/index';
+import { default as GraphMap } from 'vue-iclient/src/mapboxgl/graph-map';
 
 const components = {
   Avatar,
@@ -203,7 +204,8 @@ const components = {
   VideoPlusMarker,
   VideoPlusPopup,
   VideoPlusLayer,
-  VideoPlusDraw
+  VideoPlusDraw,
+  GraphMap
 };
 
 const install = function (Vue, opts: any = {}) {
@@ -328,7 +330,8 @@ export {
   VideoPlusMarker,
   VideoPlusPopup,
   VideoPlusLayer,
-  VideoPlusDraw
+  VideoPlusDraw,
+  GraphMap
 };
 export default {
   setTheme,

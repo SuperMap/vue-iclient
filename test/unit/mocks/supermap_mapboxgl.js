@@ -1,4 +1,8 @@
-import { fakeDataServiceResult, fakeMapServiceResult, fakeAddressMatch } from './services';
+import {
+  fakeDataServiceResult,
+  fakeMapServiceResult,
+  fakeAddressMatch
+} from './services';
 const supermap = {};
 
 supermap.FeatureService = () => {
@@ -55,7 +59,12 @@ supermap.MapService = () => {
   return {
     getMapInfo(callback) {
       setTimeout(() => {
-        const mapObj = { element: null, object: {}, result: {}, type: 'processCompleted' };
+        const mapObj = {
+          element: null,
+          object: {},
+          result: {},
+          type: 'processCompleted'
+        };
         callback(mapObj);
       }, 0);
     }
@@ -123,7 +132,9 @@ supermap.DataFlowService = serviceUrl => {
                       ]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 },
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('LineString')) {
@@ -136,7 +147,9 @@ supermap.DataFlowService = serviceUrl => {
                       [10, 10]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 }
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('Line')) {
@@ -149,7 +162,9 @@ supermap.DataFlowService = serviceUrl => {
                       [10, 10]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 }
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('MultiPolygon')) {
@@ -166,7 +181,9 @@ supermap.DataFlowService = serviceUrl => {
                       ]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 }
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('Polygon')) {
@@ -183,7 +200,9 @@ supermap.DataFlowService = serviceUrl => {
                       ]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 }
               });
             } else {
@@ -193,7 +212,9 @@ supermap.DataFlowService = serviceUrl => {
                     type: 'Point',
                     coordinates: [0, 0]
                   },
-                  properties: {id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 },
                 data: dataflowData
               });
@@ -232,5 +253,13 @@ supermap.GraticuleLayer = () => {
     setStrokeStyle: jest.fn()
   }
 };
+
+supermap.GraphMap = () => {
+  return {
+    on: (event, callback) => {
+      callback();
+    }
+  }
+}
 
 module.exports = supermap;

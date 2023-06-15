@@ -28,6 +28,7 @@
     "gulp": "gulp build --gulpfile build/gulpfile.js"
   },
   "dependencies": {
+    "@antv/g6": "^4.8.16",
     "@mapbox/point-geometry": "^0.1.0",
     "@turf/area": "^6.0.1",
     "@turf/bbox": "^6.0.1",
@@ -125,6 +126,7 @@
     "@turf/bbox-polygon": "^5.0.4",
     "@turf/buffer": "^5.0.4",
     "@turf/union": "^5.0.4",
+    "@types/jest": "^29.5.2",
     "@types/webpack-env": "^1.13.9",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",
