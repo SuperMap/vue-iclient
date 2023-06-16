@@ -207,6 +207,14 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       amd: '@supermap/vue-iclient-mapboxgl/static/libs/mapbox-gl-draw/mapbox-gl-draw.js'
     });
   }
+  if (/\/static\/libs\/g6\/g6/.test(request)) {
+    return callback(null, {
+      root: 'G6',
+      commonjs: '@supermap/vue-iclient-mapboxgl/static/libs/g6/g6.min.js',
+      commonjs2: '@supermap/vue-iclient-mapboxgl/static/libs/g6/g6.min.js',
+      amd: '@supermap/vue-iclient-mapboxgl/static/libs/g6/g6.min.js'
+    });
+  }
   callback();
 };
 
