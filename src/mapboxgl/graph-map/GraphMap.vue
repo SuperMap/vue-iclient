@@ -6,6 +6,7 @@
 import { Component, Prop, Emit, Mixins, Watch } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash.debounce';
+import cloneDeep from 'lodash.clonedeep';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import GraphMapViewModel, { GraphConfig, EmitParams } from './GraphMapViewModel';
@@ -44,7 +45,10 @@ export default class SmGraphMap extends Mixins(VmUpdater, Theme) {
   }
 
   created() {
-    const nextOptions = Object.assign({ container: this.container }, this.options);
+    const nextOptions =  cloneDeep(this.options);
+    if (!this.options?.container) {
+      this.options.container = this.container;
+    }
     this.viewModel = new GraphMapViewModel(this.serviceUrl, nextOptions);
     this.__resizeHandler = debounce(this.handleResizeEvent.bind(this), 500);
   }

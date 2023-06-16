@@ -110,7 +110,6 @@ export default class GraphMapViewModel extends mapboxgl.Evented {
     if (!this.serviceUrl) {
       return;
     }
-    console.log(window.G6);
     const graphMap = new mapboxgl.supermap.GraphMap(this.serviceUrl, { config: this.graphConfig });
     this.graphMap = graphMap;
     graphMap.on('loaded', this._handleGraphMapLoadedFn);
