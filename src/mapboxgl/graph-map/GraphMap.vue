@@ -45,10 +45,7 @@ export default class SmGraphMap extends Mixins(VmUpdater, Theme) {
   }
 
   created() {
-    const nextOptions =  cloneDeep(this.options);
-    if (!this.options?.container) {
-      this.options.container = this.container;
-    }
+    const nextOptions = cloneDeep(Object.assign({ container: this.container }, this.options));
     this.viewModel = new GraphMapViewModel(this.serviceUrl, nextOptions);
     this.__resizeHandler = debounce(this.handleResizeEvent.bind(this), 500);
   }
