@@ -1,4 +1,3 @@
-import 'vue-iclient/static/libs/g6/g6.min';
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
