@@ -510,7 +510,7 @@ describe('WebMapViewModel.spec', () => {
       expect(data.layers.length).toBe(id.layers.length);
       const layers = data.map.getStyle().layers;
       expect(layers[layers.length - 2].id).toBe('民航数-TEXT-7');
-      console.log(layers[layers.length - 1])
+      console.log(layers[layers.length - 1]);
       expect(layers[layers.length - 1].type).toBe('circle');
       expect(layers[layers.length - 1].paint['circle-color']).toBe('#de2b41');
       done();
@@ -801,10 +801,15 @@ describe('WebMapViewModel.spec', () => {
     const spy = jest.spyOn(viewModel.map, 'setStyle');
     await flushPromises();
     expect(spy).not.toBeCalled();
+    viewModel.on({
+      addlayerssucceeded: e => {
+        expect(e.map).not.toBeNull();
+        done();
+      }
+    });
     viewModel.setStyle(style);
     expect(viewModel.mapOptions.style).toEqual(style);
     expect(spy).toBeCalled();
-    done();
   });
 
   it('setRasterTileSize', async done => {
@@ -1136,7 +1141,10 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({
       mapinitialized: () => {
         viewModel._updateDataFlowFeature = jest.fn();
-        const res = viewModel.getUniqueStyleGroup(parameters, [{ properties: { UserID: 30 } }, { properties: { UserID: 0 } }]);
+        const res = viewModel.getUniqueStyleGroup(parameters, [
+          { properties: { UserID: 30 } },
+          { properties: { UserID: 0 } }
+        ]);
         expect(res.length).toBe(2);
         done();
       }

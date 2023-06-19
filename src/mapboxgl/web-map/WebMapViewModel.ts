@@ -221,6 +221,13 @@ export default class WebMapViewModel extends WebMapBase {
 
   public setStyle(style): void {
     if (this.map) {
+      setTimeout(() => {
+        this.triggerEvent('addlayerssucceeded', {
+          map: this.map,
+          mapparams: {},
+          layers: []
+        });
+      }, 0);
       this.mapOptions.style = style;
       style && this.map.setStyle(style);
     }
@@ -502,7 +509,7 @@ export default class WebMapViewModel extends WebMapBase {
           this.map.addStyle(style);
           addedCallback && addedCallback();
         },
-        (error) => {
+        error => {
           addedCallback && addedCallback();
           throw new Error(error);
         }
@@ -544,7 +551,9 @@ export default class WebMapViewModel extends WebMapBase {
         break;
       case 'CLOUD':
       case 'XYZ':
-        url = mapUrls[layerInfo.layerType].replace('{googleMapsLanguage}', this.googleMapsLanguage).replace('{googleMapsAPIKey}', this.googleMapsAPIKey);
+        url = mapUrls[layerInfo.layerType]
+          .replace('{googleMapsLanguage}', this.googleMapsLanguage)
+          .replace('{googleMapsAPIKey}', this.googleMapsAPIKey);
         this._createXYZLayer(layerInfo, url, addedCallback);
         break;
       case 'BAIDU':
