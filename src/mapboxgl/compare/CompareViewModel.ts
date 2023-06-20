@@ -16,9 +16,11 @@ export interface compareOptions {
 
 export default class CompareViewModel {
   compare: any;
+  _onScrollFn: () => void;
 
   constructor(options?: compareOptions) {
     this.init(options);
+    this._onScrollFn = this._onScroll.bind(this);
   }
 
   init(nextOptions: compareOptions) {
@@ -31,13 +33,27 @@ export default class CompareViewModel {
       const $window: any = window;
       const mapboxgl: any = $window.mapboxgl;
       this.compare = new mapboxgl.Compare(beforeMap, afterMap, `#${target}`, options);
+      this._regiterEvent();
     }
   }
 
   removed() {
     if (this.compare) {
+      this._unregiterEvent();
       this.compare.remove();
       this.compare = null;
     }
+  }
+
+  _regiterEvent() {
+    document.addEventListener('scroll', this._onScrollFn);
+  }
+
+  _unregiterEvent() {
+    document.removeEventListener('scroll', this._onScrollFn);
+  }
+
+  _onScroll() {
+    this.compare._bounds = this.compare._mapB.getContainer().getBoundingClientRect();
   }
 }
