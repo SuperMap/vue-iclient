@@ -107,6 +107,28 @@ describe('LayerManager.vue', () => {
         title: '民航数据'
       }
     ];
+    const mapStyleLayers = [
+      {
+        mapInfo: {
+          mapOptions: {
+            style: {
+              version: 8,
+              sources: {
+                'iserver-tiles': {
+                  type: 'raster',
+                  tiles: ['https://iserver.supermap.io/iserver/services/map-china400/rest/maps/China'],
+                  tileSize: 256,
+                  prjCoordSys: { epsgCode: 3857 },
+                  rasterSource: 'iserver',
+                  proxy: null
+                }
+              },
+              layers: [{ id: 'simple-tiles', type: 'raster', source: 'iserver-tiles', minzoom: 0, maxzoom: 22 }]
+            }
+          }
+        }
+      }
+    ];
     wrapper = mount(SmLayerManager, {
       propsData: {
         defaultExpandAll: true,
@@ -120,10 +142,14 @@ describe('LayerManager.vue', () => {
     await mapWrapperLoaded(mapWrapper);
     await flushPromises();
     expect(callback.mock.called).toBeTruthy;
-    wrapper.setProps({
-      layers: newLayers
+    await wrapper.setProps({
+      layers: newLayers.concat(mapStyleLayers)
     });
-    expect(wrapper.vm.layers.length).toBe(2);
+    expect(wrapper.vm.layers.length).toBe(3);
+    await wrapper.setProps({
+      layers: mapStyleLayers
+    });
+    expect(wrapper.vm.layers.length).toBe(1);
     done();
   });
 });

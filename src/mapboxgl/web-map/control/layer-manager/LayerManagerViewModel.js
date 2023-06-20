@@ -94,6 +94,24 @@ class LayerManageViewModel extends mapboxgl.Evented {
     this.cacheIServerMaps[nodeKey] = true;
   }
 
+  addMapStyle(style, nodeKey) {
+    if (this.cacheIServerMaps[nodeKey]) {
+      return;
+    }
+    const layerInfos = [];
+    const { layers, sources } = style || {};
+    layers.forEach(layer => {
+      const sourceId = layer.source;
+      const sourceData = sources[layer.source];
+      if (sourceId && sourceData) {
+        this.map.addSource(sourceId, sourceData);
+        this.map.addLayer(layer);
+        layerInfos.push({ sourceId, layerId: layer.id });
+      }
+    });
+    this.cacheIServerMaps[nodeKey] = layerInfos;
+  }
+
   removeLayer(nodeKey) {
     this.handleNextMap();
     if (this.mapQuene.length) {
@@ -118,6 +136,19 @@ class LayerManageViewModel extends mapboxgl.Evented {
     }
   }
 
+  removeMapStyle(nodeKey) {
+    const dataInfos = this.cacheIServerMaps[nodeKey];
+    if (dataInfos && this.map) {
+      delete this.cacheIServerMaps[nodeKey];
+      dataInfos.forEach(({ sourceId, layerId }) => {
+        if (this.map.getLayer(layerId)) {
+          this.map.removeLayer(layerId);
+          this.map.removeSource(sourceId);
+        }
+      });
+    }
+  }
+
   eachNode(datas, callback) {
     for (let i = 0; i < datas.length; i++) {
       callback(datas[i], datas);
@@ -132,7 +163,9 @@ class LayerManageViewModel extends mapboxgl.Evented {
     if (data.mapInfo) {
       if (data.mapInfo.mapId) {
         this.removeLayer(data.key);
-      } else {
+      } else if (data.mapInfo.mapOptions) {
+        this.removeMapStyle(data.key);
+      } else if (data.mapInfo.serviceUrl) {
         this.removeIServerLayer(data.key);
       }
     }
@@ -149,6 +182,9 @@ class LayerManageViewModel extends mapboxgl.Evented {
     });
     Object.keys(this.cacheIServerMaps).forEach(nodeKey => {
       this.removeIServerLayer(nodeKey);
+    });
+    Object.keys(this.cacheIServerMaps).forEach(nodeKey => {
+      this.removeMapStyle(nodeKey);
     });
     this.cacheMaps = {};
     this.cacheIServerMaps = {};
