@@ -29,7 +29,7 @@ export const Scatter = () => ({
           type: 'value'
         },
         xAxis: {
-          data: ['Fri', 'Thu', 'Sat', 'Sun', 'Wed', 'Tue', 'Mon'],
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           axisLabel: {
             rotate: 0
           },
