@@ -795,6 +795,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const style = {
+      layers: ['test'],
       color: '#fff'
     };
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
