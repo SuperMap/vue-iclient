@@ -99,7 +99,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       return;
     }
     const layerInfos = [];
-    const { layers, sources } = style || {};
+    const { layers = [], sources = {} } = style || {};
     layers.forEach(layer => {
       const sourceId = layer.source;
       const sourceData = sources[layer.source];
@@ -182,8 +182,6 @@ class LayerManageViewModel extends mapboxgl.Evented {
     });
     Object.keys(this.cacheIServerMaps).forEach(nodeKey => {
       this.removeIServerLayer(nodeKey);
-    });
-    Object.keys(this.cacheIServerMaps).forEach(nodeKey => {
       this.removeMapStyle(nodeKey);
     });
     this.cacheMaps = {};
