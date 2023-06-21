@@ -114,12 +114,6 @@ const mapboxglExteranls = Object.assign(
       commonjs2: 'vue-cesium',
       amd: 'vue-cesium'
     },
-    '@antv/g6': {
-      root: 'G6',
-      commonjs: '@antv/g6',
-      commonjs2: '@antv/g6',
-      amd: '@antv/g6'
-    },
     shapefile: 'shapefile',
     three: {
       root: 'THREE',
