@@ -9,7 +9,7 @@ describe('CompareViewModel', () => {
     jest.restoreAllMocks();
   })
 
-  it('scroll', () => {
+  it('refreshRect', () => {
     const viewModel = new CompareViewModel({
       beforeMap: 'beforeMap',
       afterMap: 'afterMap',
@@ -17,7 +17,7 @@ describe('CompareViewModel', () => {
     });
     expect(viewModel.compare).not.toBeUndefined();
     const originBounds = viewModel.compare._bounds;
-    viewModel._onScroll();
+    viewModel.refreshRect();
     expect(originBounds).not.toEqual(viewModel.compare._bounds);
     expect(originBounds.x).toBe(100);
     expect(viewModel.compare._bounds.x).toBe(300);

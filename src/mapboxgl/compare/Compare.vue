@@ -190,6 +190,10 @@ class Compare extends Mixins(Theme) {
     this.handleOptionsChange();
   }
 
+  refreshRect() {
+    this.viewModel?.refreshRect();
+  }
+
   render(h): VNode {
     let children;
     if (this.beforeMapOptions && this.afterMapOptions) {
