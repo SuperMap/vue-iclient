@@ -328,7 +328,7 @@ export default class EchartsDataService {
     } else {
       // 如果不是统计图表
       xData = this._getFieldDatas(data, xFieldIndex);
-      yData = [...fieldValues];
+      yData = [...fieldValues].map(item => tonumber(item));
     }
     result = { xData, yData };
     return result;
