@@ -95,9 +95,6 @@ export default class WebMapViewModel extends WebMapBase {
   private _sourceListModel: SourceListModel;
 
   private _legendList: any;
-
-  private _fieldMaxValue: any;
-
   private _handleDataflowFeaturesCallback: Function;
 
   private _initDataflowLayerCallback: Function;
@@ -1222,7 +1219,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
     if (style.type === 'SYMBOL_POINT') {
       this._createSymbolLayer(layerInfo, features, expression);
-    } else if (style.type === 'IMAGE_POINT') {
+    } else if (['SVG_POINT', 'IMAGE_POINT'].includes(style.type)) {
       this._createGraphicLayer(layerInfo, features, expression);
     } else {
       const source: mapboxglTypes.GeoJSONSourceRaw = {
@@ -1438,6 +1435,14 @@ export default class WebMapViewModel extends WebMapBase {
               console.log(error);
             }
             const iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2)) * 2;
+            if (iconSizeExpression && Array.isArray(iconSizeExpression)) {
+              iconSizeExpression = iconSizeExpression.map((item, index) => {
+                if (typeof item === 'number' && index % 2 === 1) {
+                  return (item / canvas.width) * 2;
+                }
+                return item;
+              });
+            }
             !this.map.hasImage(svgUrl) && this.map.addImage(svgUrl, image, { sdf: true });
             const layerOptions: any = {
               id: layerID,
@@ -2080,10 +2085,6 @@ export default class WebMapViewModel extends WebMapBase {
     for (const i in customSettings) {
       layerOption.gradient[i] = customSettings[i];
     }
-    // 权重字段恢复
-    if (style.weight) {
-      this._changeWeight(features, style.weight);
-    }
 
     const color: string | mapboxglTypes.StyleFunction | mapboxglTypes.Expression = [
       'interpolate',
@@ -2108,17 +2109,18 @@ export default class WebMapViewModel extends WebMapBase {
     const paint: mapboxglTypes.HeatmapPaint = {
       'heatmap-color': color,
       'heatmap-radius': style.radius * 3,
-      'heatmap-intensity': 1.3
+      'heatmap-intensity': 2.8
     };
 
-    if (features[0].weight && features.length >= 4) {
+    if (style.weight && features.length >= 4) {
       const weight = [];
       features.forEach(item => {
-        weight.push(item.weight);
+        item.properties[style.weight] = +item.properties[style.weight];
+        weight.push(item.properties[style.weight]);
       });
       const max = SuperMap.ArrayStatistic.getMax(weight);
       const min = SuperMap.ArrayStatistic.getMin(weight);
-      paint['heatmap-weight'] = ['interpolate', ['linear'], ['get', 'weight'], min, 0, max, 1];
+      paint['heatmap-weight'] = ['interpolate', ['linear'], ['get', style.weight], min, 0, max, 1];
     }
     this._addLayer({
       id: layerInfo.layerID,
@@ -2140,32 +2142,6 @@ export default class WebMapViewModel extends WebMapBase {
     if (addToMap) {
       this._addLayerSucceeded();
     }
-  }
-
-  private _changeWeight(features: any, weightFeild: string): void {
-    this._fieldMaxValue = {};
-    this._getMaxValue(features, weightFeild);
-    const maxValue = this._fieldMaxValue[weightFeild];
-    features.forEach(feature => {
-      const attributes = feature.properties;
-      const value = attributes[weightFeild];
-      feature.weight = value / maxValue;
-    });
-  }
-
-  private _getMaxValue(features: any, weightField: string): void {
-    const values = [];
-    let attributes;
-    const field = weightField;
-    if (this._fieldMaxValue[field]) {
-      return;
-    }
-    features.forEach(feature => {
-      // 收集当前权重字段对应的所有值
-      attributes = feature.properties;
-      attributes && parseFloat(attributes[field]) && values.push(parseFloat(attributes[field]));
-    });
-    this._fieldMaxValue[field] = SuperMap.ArrayStatistic.getArrayStatistic(values, 'Maximum');
   }
 
   private _createRangeLayer(layerInfo: any, features: any): void {
