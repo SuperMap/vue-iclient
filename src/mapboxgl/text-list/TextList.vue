@@ -177,6 +177,11 @@ interface ColumnParams {
   slots: SlotParams;
 }
 
+interface HighlightOption {
+  dataIndex: number;
+  properties: Object;
+}
+
 @Component({
   name: 'SmTextList',
   components: {
@@ -265,7 +270,7 @@ class SmTextList extends Mixins(Theme, Timer) {
       return [];
     }
   })
-  highlightOptions: Array<number>;
+  highlightOptions: Array<HighlightOption>;
 
   @Prop({ default: true }) highlightCurrentRow: Boolean;
 
@@ -373,7 +378,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         let scrollHeight = 0;
         let dataIndex = this.animateContent.findIndex((item, index) => {
           // @ts-ignore
-          return item.idx === newVal[0];
+          return item.idx === newVal[0].dataIndex;
         });
         if (dataIndex || dataIndex === 0) {
           scrollHeight = dataIndex * this.filterUnit(this.listStyle.rowStyle.height);
@@ -383,12 +388,13 @@ class SmTextList extends Mixins(Theme, Timer) {
       }
       // @ts-ignore
     } else if (this.autoRolling) {
-      if (!this.clamp(newVal[0], autoBounds[0], autoBounds[1])) {
+      const newDataIndex = newVal && newVal.length && newVal[0].dataIndex;
+      if (!this.clamp(newDataIndex, autoBounds[0], autoBounds[1])) {
         let splitIndex;
-        if (newVal[0] <= this.rows) {
+        if (newDataIndex <= this.rows) {
           this.reset();
         } else {
-          splitIndex = newVal[0] - this.rows;
+          splitIndex = newDataIndex - this.rows;
           this.$nextTick(() => {
             this.animateContent = [];
             this.$nextTick(() => {

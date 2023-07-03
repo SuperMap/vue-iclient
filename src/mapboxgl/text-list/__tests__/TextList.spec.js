@@ -442,7 +442,7 @@ describe('TextList.vue', () => {
       rows: 1,
       rowStyle: { width: 100 },
       headerStyle: { width: 100 },
-      highlightOptions: [3]
+      highlightOptions: [{ dataIndex: 3 }]
     });
     await wrapper.setData({
       headerStyleData: {
@@ -508,7 +508,7 @@ describe('TextList.vue', () => {
         }
       ],
       autoRolling: false,
-      highlightOptions: [10]
+      highlightOptions: [{ dataIndex: 10 }]
     });
     await wrapper.setData({
       sortField: '站台'
