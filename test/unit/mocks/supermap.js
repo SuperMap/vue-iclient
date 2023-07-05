@@ -314,8 +314,11 @@ var Util = (SuperMap.Util = {
   urlPathAppend: function (a, b) {
     return `${a}/${b}`;
   },
-  urlAppend: function (a, b) {
-    return `${a}?${b}`;
+  urlAppend: function (url, paramStr) {
+    var newUrl = url;
+    var parts = (url + ' ').split(/[?&]/);
+    newUrl += parts.pop() === ' ' ? paramStr : parts.length ? '&' + paramStr : '?' + paramStr;
+    return newUrl;;
   },
   getScaleFromResolutionDpi: function (resolution, dpi, coordUnit = 'degree') {
     var scale = -1,
