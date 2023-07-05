@@ -12,7 +12,7 @@
     "url": "https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark"
   },
   "layers": [
-    { "layerType": "WMS", "visible": true, "name": "世界地图_Day", "layers": ["0"], "layerID": "世界地图_Day" }
+    { "url":"https://fakeiportal.supermap.io/iportal", "layerType": "WMS", "visible": true, "name": "世界地图_Day", "layers": ["0"], "layerID": "世界地图_Day" }
   ],
   "description": "",
   "projection": "EPSG:3857",
