@@ -232,7 +232,7 @@ export default class WebMapService extends Events {
   public getWmsInfo(layerInfo) {
     return new Promise(resolve => {
       const proxy = this.handleProxy();
-      const serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMS`;
+      const serviceUrl = SuperMap.Util.urlAppend(layerInfo.url, 'REQUEST=GetCapabilities&SERVICE=WMS');
       SuperMap.FetchRequest.get(serviceUrl, null, {
         withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
         withoutFormatSuffix: true,
@@ -279,7 +279,7 @@ export default class WebMapService extends Events {
       let restResourceURL = '';
       let kvpResourceUrl = '';
       const proxy = this.handleProxy();
-      let serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0`;
+      let serviceUrl = SuperMap.Util.urlAppend(layerInfo.url, 'REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0');
       serviceUrl = this.handleParentRes(serviceUrl);
       SuperMap.FetchRequest.get(serviceUrl, null, {
         withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),

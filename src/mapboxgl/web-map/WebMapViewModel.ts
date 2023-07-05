@@ -1,4 +1,4 @@
-/* Copyright© 2000 - 2022 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2023 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
@@ -896,7 +896,6 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _getWMSUrl(mapInfo: any, version = '1.1.1'): string {
     let url = mapInfo.url;
-    url = url.split('?')[0];
     const options: any = {
       service: 'WMS',
       request: 'GetMap',
@@ -918,8 +917,7 @@ export default class WebMapViewModel extends WebMapBase {
       options.bbox = '{bbox-epsg-3857}';
       options.srs = this.baseProjection;
     }
-    url += this._getParamString(options, url);
-    return url;
+    return SuperMap.Util.urlAppend(url, this._getParamString(options, url));
   }
 
   private _setLayerID(mapInfo): Array<Object> {
@@ -1910,7 +1908,7 @@ export default class WebMapViewModel extends WebMapBase {
       tilerow: '{y}',
       tilecol: '{x}'
     };
-    return `${options.kvpResourceUrl}${this._getParamString(obj, options.kvpResourceUrl)}`;
+    return SuperMap.Util.urlAppend(options.kvpResourceUrl, this._getParamString(obj, options.kvpResourceUrl));
   }
 
   private _createMarkerLayer(layerInfo: any, features: any): void {
