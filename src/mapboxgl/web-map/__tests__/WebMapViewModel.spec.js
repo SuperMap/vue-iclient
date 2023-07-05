@@ -1184,7 +1184,7 @@ describe('WebMapViewModel.spec', () => {
 
   it('add wmsLayer with correct url and version is less than 1.3', done => {
     const fetchResource = {
-      'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS':
+      'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&REQUEST=GetCapabilities&SERVICE=WMS':
         wmsCapabilitiesTextWithoutVersion
     };
     mockFetch(fetchResource);
@@ -1193,7 +1193,7 @@ describe('WebMapViewModel.spec', () => {
       layers: [
         {
           ...wmsLayer.layers[0],
-          url: 'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'
+          url: 'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day'
         }
       ]
     });
@@ -1227,7 +1227,7 @@ describe('WebMapViewModel.spec', () => {
       layers: [
         {
           ...wmsLayer.layers[0],
-          url: 'http://fack/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'
+          url: 'http://fack/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?'
         }
       ]
     });

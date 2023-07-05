@@ -17,7 +17,7 @@ import ranksymbolLayer from 'vue-iclient/test/unit/mocks/data/WebMap/ranksymbolL
 import uniqueLayer_polygon from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
 import wmsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmsLayer.json';
 import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
-import { wmtsCapabilitiesText } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
+import { wmsCapabilitiesText,wmtsCapabilitiesText } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
 import tiandituLayer from 'vue-iclient/test/unit/mocks/data/WebMap/tiandituLayer.json';
 import xyzLayer from 'vue-iclient/test/unit/mocks/data/WebMap/xyzLayer.json';
 import baseLayers from 'vue-iclient/test/unit/mocks/data/WebMap/baseLayers.json';
@@ -381,7 +381,8 @@ describe('WebMap.vue', () => {
   it('initial_wmsLayer', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
-      'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': wmsLayer
+      'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': wmsLayer,
+      'https://fakeiportal.supermap.io/iportal?REQUEST=GetCapabilities&SERVICE=WMS': wmsCapabilitiesText
     };
     mockFetch(fetchResource);
     const spy = jest.spyOn(mapboxgl, 'Map');
