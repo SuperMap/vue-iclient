@@ -51,3 +51,4 @@ package-lock.json
 sonar-project.properties
 src/**/package.json
 .m2repo
+.scannerwork
