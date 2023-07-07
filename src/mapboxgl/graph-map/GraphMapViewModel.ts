@@ -64,7 +64,7 @@ export interface G6Graph {
 export interface KnowledgeGraph {
   graph: G6Graph;
   resize: (width: number, height: number) => void;
-  destory: () => void;
+  destroy: () => void;
   fitCenter: (center: number[]) => void;
   getZoom: () => number;
   zoomTo: (zoom: number) => void;
@@ -101,7 +101,7 @@ export default class GraphMapViewModel extends mapboxgl.Evented {
 
   setServiceUrl(serviceUrl: string) {
     this.serviceUrl = serviceUrl;
-    this._knowledgeGraph?.destory();
+    this._knowledgeGraph?.destroy();
     this.initGraphMap();
   }
 

@@ -53,5 +53,19 @@ describe('SmGraphMap', () => {
     wrapper = factory(commonProps);
     wrapper.vm.viewModel.fire('loaded');
     expect(wrapper.emitted().loaded).toBeTruthy();
+    const resizeSpy = jest.spyOn(wrapper.vm.viewModel, 'resize');
+    wrapper.vm.resize();
+    expect(resizeSpy).toBeCalled();
+  });
+
+  it('watch serviceUrl', () => {
+    wrapper = factory(commonProps);
+    wrapper.vm.viewModel.fire('loaded');
+    expect(wrapper.emitted().loaded).toBeTruthy();
+    const serviceUrl = 'http://fakeiserver.com/iserver/services/knowledgeGraph-test/restjsr/graph/graphmaps/test1';
+    const initGraphMapSpy = jest.spyOn(wrapper.vm.viewModel, 'initGraphMap');
+    wrapper.vm.viewModel.setServiceUrl(serviceUrl);
+    expect(wrapper.vm.viewModel.serviceUrl).toBe(serviceUrl);
+    expect(initGraphMapSpy).toBeCalled();
   });
 });
