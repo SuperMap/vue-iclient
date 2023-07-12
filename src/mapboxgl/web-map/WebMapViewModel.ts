@@ -744,7 +744,7 @@ export default class WebMapViewModel extends WebMapBase {
           const layerId = layerInfo.layerID || layerInfo.name;
           if (result.isMatched) {
             const wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result));
-            this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom, false, result.bounds);
+            this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, result.matchMinZoom, result.matchMaxZoom, false, result.bounds);
             addedCallback && addedCallback();
           }
         },
@@ -2400,6 +2400,8 @@ export default class WebMapViewModel extends WebMapBase {
       tileSize: isIserver ? this.rasterTileSize : 256,
       // @ts-ignore
       rasterSource: isIserver ? 'iserver' : '',
+      minzoom: minzoom || 0,
+      maxzoom: maxzoom || 22,
       // @ts-ignore
       prjCoordSys:
         isIserver && !this.isOnlineBaseLayer(url[0], this.baseProjection) && +this.baseProjection.split(':')[1] > 0
