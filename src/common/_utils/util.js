@@ -238,3 +238,7 @@ export function strip(num, precision = 12) {
     return +parseFloat(num.toPrecision(precision));
   }
 }
+
+export function numberEqual(num1, num2, precision = 10E-6) {
+  return Math.abs(+num1 - +num2) <= precision;
+}

@@ -4,7 +4,7 @@ import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_servi
 import layerData from '../../../../test/unit/mocks/data/layerData.json';
 import uniqueLayer_polygon from '../../../../test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
 import epsgCode_wkt from '../../../../test/unit/mocks/data/epsgCode_wkt.json';
-import { wmsCapabilitiesText, wmtsCapabilitiesText, wmtsCapabilitiesTextWithSingleProperty } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
+import { wmsCapabilitiesText, wmtsCapabilitiesText, wmtsCapabilitiesTextWithSingleProperty, wmtsCapabilitiesOthertileMatrixSet } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 
 const SuperMap = require('../../../../test/unit/mocks/supermap');
@@ -201,7 +201,7 @@ describe('WebMapService.spec', () => {
       done();
     });
   });
-  
+
   it('get Layer Features from CSV', async done => {
     const newOptions = {
       ...options,
@@ -222,12 +222,12 @@ describe('WebMapService.spec', () => {
     window.MunicipalData = {
       features: [{
         geometry: {
-          coordinates: [[[[113.5872766800001, 22.16493972869857], [113.5980630750001, 22.13509586869991]]],[[[113.5511133950001, 22.21679186869615], [113.5623058550001, 22.1994578386969]]]],
+          coordinates: [[[[113.5872766800001, 22.16493972869857], [113.5980630750001, 22.13509586869991]]], [[[113.5511133950001, 22.21679186869615], [113.5623058550001, 22.1994578386969]]]],
           type: 'MultiPolygon'
         },
-        properties: {Name: '张家界', UserID: 0},
+        properties: { Name: '张家界', UserID: 0 },
         type: 'Feature'
-        }]
+      }]
     };
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData,
@@ -273,7 +273,7 @@ describe('WebMapService.spec', () => {
                 coordinates: [-77.038659, 38.931567]
               }
             }
-          ]          
+          ]
         }]
       }),
       fileName: '北京市.shp',
@@ -329,7 +329,7 @@ describe('WebMapService.spec', () => {
         prjCoordSys: {
           epsgCode: '3857'
         },
-        bounds: [0,1,0,1]
+        bounds: [0, 1, 0, 1]
       }
     };
     const result2 = {
@@ -580,7 +580,6 @@ describe('WebMapService.spec', () => {
       done();
     });
   });
-
   it('getWmtsInfo', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0&parentResType=MAP&parentResId=123': wmtsCapabilitiesText
@@ -601,6 +600,74 @@ describe('WebMapService.spec', () => {
     const data = await service.getWmtsInfo(layerInfo, mapCRS);
     expect(data.kvpResourceUrl).toBe('http://fakeiserver.supermap.io/iserver/services/map-china400/wmts-china?');
     done();
+  });
+  it('getWmtsInfo someTileMatrixOK', async done => {
+    const fetchResource = {
+      'http://fake:8090/wmts?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0': wmtsCapabilitiesOthertileMatrixSet
+    };
+    mockFetch(fetchResource);
+    const layerInfo = {
+      dpi: 90.7142857142857,
+      layer: 'images_2022_0.5',
+      layerType: 'WMTS',
+      name: 'images_2022_0.5',
+      requestEncoding: 'KVP',
+      tileMatrixSet: 'tianditu',
+      url: 'http://fake:8090/wmts',
+      visible: true
+    };
+    const mapCRS = {};
+    const service = new WebMapService(mapId, options);
+    const data = await service.getWmtsInfo(layerInfo, mapCRS);
+    expect(data.matchMaxZoom).toBe(22);
+    expect(data.matchMinZoom).toBe(1);
+    done();
+  });
+  it('getWmtsInfo someTileMatrixOK2', async done => {
+    const fetchResource = {
+      'http://fake:8090/wmts?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0': wmtsCapabilitiesOthertileMatrixSet
+    };
+    mockFetch(fetchResource);
+    const layerInfo = {
+      dpi: 90.7142857142857,
+      layer: 'images_2022_0.5',
+      layerType: 'WMTS',
+      name: 'images_2022_0.5',
+      requestEncoding: 'KVP',
+      tileMatrixSet: 'tianditu1',
+      url: 'http://fake:8090/wmts',
+      visible: true
+    };
+    const mapCRS = {};
+    const service = new WebMapService(mapId, options);
+    const data = await service.getWmtsInfo(layerInfo, mapCRS);
+    expect(data.matchMaxZoom).toBe(7);
+    expect(data.matchMinZoom).toBe(1);
+    done();
+  });
+  it('getWmtsInfo noTileMatrixOK', async done => {
+    const fetchResource = {
+      'http://fake:8090/wmts?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0': wmtsCapabilitiesOthertileMatrixSet
+    };
+    mockFetch(fetchResource);
+    const layerInfo = {
+      dpi: 90.7142857142857,
+      layer: 'images_2022_0.5',
+      layerType: 'WMTS',
+      name: 'images_2022_0.5',
+      requestEncoding: 'KVP',
+      tileMatrixSet: 'default028mm',
+      url: 'http://fake:8090/wmts',
+      visible: true
+    };
+    const mapCRS = {};
+    const service = new WebMapService(mapId, options);
+    try {
+      await service.getWmtsInfo(layerInfo, mapCRS);
+    } catch (error) {
+      expect(error.message).toBe('TileMatrixSetNotSuppport');
+      done();
+    }
   });
 
   it('getWmtsInfo_single_property', async done => {

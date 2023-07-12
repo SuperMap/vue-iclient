@@ -752,7 +752,7 @@ export default class WebMapViewModel extends WebMapBase {
           const layerId = layerInfo.layerID || layerInfo.name;
           if (result.isMatched) {
             const wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result));
-            this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom, false, result.bounds);
+            this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, result.matchMinZoom, result.matchMaxZoom, false, result.bounds);
             addedCallback && addedCallback();
           }
         },
