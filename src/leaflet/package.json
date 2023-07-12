@@ -40,6 +40,7 @@
     "lodash.isnumber": "^3.0.3",
     "lodash.isplainobject": "^4.0.6",
     "lodash.max": "^4.0.1",
+    "lodash.min": "^4.0.1",
     "lodash.merge": "^4.6.1",
     "lodash.orderby": "^4.6.0",
     "lodash.tonumber": "^4.0.3",
