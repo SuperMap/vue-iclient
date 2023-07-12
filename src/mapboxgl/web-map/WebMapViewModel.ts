@@ -2397,6 +2397,8 @@ export default class WebMapViewModel extends WebMapBase {
     const source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,
+      minzoom: minzoom || 0,
+      maxzoom: maxzoom || 22,
       tileSize: isIserver ? this.rasterTileSize : 256,
       // @ts-ignore
       rasterSource: isIserver ? 'iserver' : '',
