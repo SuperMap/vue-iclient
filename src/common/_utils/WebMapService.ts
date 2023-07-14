@@ -271,7 +271,7 @@ export default class WebMapService extends Events {
               compact: true,
               spaces: 4,
               // 用于决定哪些字段必须返回数组格式
-              alwaysArray: ['Layer', 'TileMatrixSet', 'ows:Operation', 'ows:Get', 'ResourceURL', 'Style']
+              alwaysArray: ['Layer', 'TileMatrixSet', 'ows:Operation', 'ows:Get', 'ows:Value', 'ResourceURL', 'Style']
             })
           ).Capabilities;
           const content = capabilities.Contents;
@@ -290,7 +290,10 @@ export default class WebMapService extends Events {
                 getConstraints = [getConstraints];
               }
               const getConstraint = getConstraints.find(item => {
-                return item['ows:Constraint']['ows:AllowedValues']['ows:Value']['_text'] === 'KVP';
+                const values = item['ows:Constraint']['ows:AllowedValues']['ows:Value'].map(value => {
+                  return value['_text'];
+                });
+                return values.includes('KVP');
               });
               if (getConstraint) {
                 kvpResourceUrl = getConstraint['_attributes']['xlink:href'];

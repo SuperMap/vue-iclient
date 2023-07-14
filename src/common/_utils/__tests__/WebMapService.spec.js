@@ -620,6 +620,7 @@ describe('WebMapService.spec', () => {
     const service = new WebMapService(mapId, options);
     const data = await service.getWmtsInfo(layerInfo, mapCRS);
     expect(data.matchMaxZoom).toBe(22);
+    expect(data.kvpResourceUrl).toBe('http://fake:9090/ogc_wmts/?');
     expect(data.matchMinZoom).toBe(1);
     done();
   });
