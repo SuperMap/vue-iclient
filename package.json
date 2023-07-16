@@ -59,7 +59,7 @@
     "interactjs": "1.9.7",
     "js-cookie": "^2.2.0",
     "latlng-conv": "^1.0.4",
-    "leaflet": "1.7.1",
+    "leaflet": "1.9.4",
     "lodash.assignin": "^4.2.0",
     "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
