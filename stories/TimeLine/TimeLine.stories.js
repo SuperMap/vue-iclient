@@ -10,7 +10,7 @@ export const BasicTimeLine = () => ({
   mixins: [theme],
   data() {
     return {
-      data: ['3月15号数据', '3月16号数据', '3月17号数据']
+      data: ['3月15号\n数据', '3月16号\n数据', '3月17号\n数据']
     };
   },
   methods: {
@@ -53,7 +53,7 @@ export const StyleTimeLine = () => ({
         },
         label: {
           interval: 'auto',
-          fontSize: 14,
+          fontSize: 10,
           color: '#91A4C4',
           fontWeight: 'normal',
           fontFamily: '微软雅黑',

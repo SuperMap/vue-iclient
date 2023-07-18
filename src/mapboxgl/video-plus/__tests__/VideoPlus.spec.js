@@ -55,6 +55,21 @@ describe('VideoPlus.vue', () => {
     }, 2000);
   });
 
+  it('render no url', done => {
+    wrapper = mount(SmVideoPlus, {
+      localVue,
+      propsData: {
+        videoHeight,
+        videoWidth
+      },
+      attachToDocument: 'body'
+    });
+    wrapper.vm.$nextTick();
+    setTimeout(() => {
+      done();
+    }, 2000);
+  });
+
   it('video type flv', done => {
     let url = 'http://fakeurl:8081/test.flv';
     wrapper = mount(SmVideoPlus, {

@@ -204,6 +204,13 @@ module.exports = {
                     'video-plus/marker',
                     'video-plus/draw'
                   ]
+                },
+                {
+                  title: '知识图谱',
+                  collapsable: false,
+                  children: [
+                    'graph-map/graph-map'
+                  ]
                 }
               ]
             },

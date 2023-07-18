@@ -1,6 +1,8 @@
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
-import { isXField, isYField, urlAppend } from 'vue-iclient/src/common/_utils/util';
+import { isXField, isYField, urlAppend, numberEqual } from 'vue-iclient/src/common/_utils/util';
 import * as convert from 'xml-js';
+import max from 'lodash.max';
+import min from 'lodash.min';
 
 const DEFAULT_WELLKNOWNSCALESET = [
   'GoogleCRS84Quad',
@@ -9,44 +11,16 @@ const DEFAULT_WELLKNOWNSCALESET = [
   'urn:ogc:def:wkss:OGC:1.0:GoogleCRS84Quad'
 ];
 const MB_SCALEDENOMINATOR_3857 = [
-  '559082264.0287178',
-  '279541132.0143589',
-  '139770566.0071794',
-  '69885283.00358972',
-  '34942641.50179486',
-  '17471320.75089743',
-  '8735660.375448715',
-  '4367830.1877224357',
-  '2183915.093862179',
-  '1091957.546931089',
-  '545978.7734655447',
-  '272989.3867327723',
-  '136494.6933663862',
-  '68247.34668319309',
-  '34123.67334159654',
-  '17061.83667079827',
-  '8530.918335399136',
-  '4265.459167699568',
-  '2132.729583849784'
+  559082264.0287178, 279541132.0143589, 139770566.00717944, 69885283.00358972, 34942641.50179486, 17471320.75089743,
+  8735660.375448715, 4367830.1877243575, 2183915.0938621787, 1091957.5469310894, 545978.7734655447, 272989.38673277234,
+  136494.69336638617, 68247.34668319309, 34123.67334159654, 17061.83667079827, 8530.918335399136, 4265.459167699568,
+  2132.729583849784, 1066.364791924892, 533.182395962446, 266.591197981223, 133.2955989906115
 ];
 const MB_SCALEDENOMINATOR_4326 = [
-  '5.590822640287176E8',
-  '2.795411320143588E8',
-  '1.397705660071794E8',
-  '6.98852830035897E7',
-  '3.494264150179485E7',
-  '1.7471320750897426E7',
-  '8735660.375448713',
-  '4367830.187724357',
-  '2183915.0938621783',
-  '1091957.5469310891',
-  '545978.7734655446',
-  '272989.3867327723',
-  '136494.69336638614',
-  '68247.34668319307',
-  '34123.673341596535',
-  '17061.836670798268',
-  '8530.918335399134'
+  559082264.0287176, 279541132.0143588, 139770566.0071794, 69885283.0035897, 34942641.50179485, 17471320.750897426,
+  8735660.375448713, 4367830.187724357, 2183915.0938621783, 1091957.5469310891, 545978.7734655446, 272989.3867327723,
+  136494.69336638614, 68247.34668319307, 34123.673341596535, 17061.836670798268, 8530.918335399134, 4265.459167699567,
+  2132.7295838497835, 1066.3647919248917, 533.1823959624459, 266.59119798122293, 133.29559899061147
 ];
 
 interface webMapOptions {
@@ -232,7 +206,7 @@ export default class WebMapService extends Events {
   public getWmsInfo(layerInfo) {
     return new Promise(resolve => {
       const proxy = this.handleProxy();
-      const serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMS`;
+      const serviceUrl = SuperMap.Util.urlAppend(layerInfo.url, 'REQUEST=GetCapabilities&SERVICE=WMS');
       SuperMap.FetchRequest.get(serviceUrl, null, {
         withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
         withoutFormatSuffix: true,
@@ -274,12 +248,13 @@ export default class WebMapService extends Events {
     return new Promise((resolve, reject) => {
       let isMatched = false;
       let matchMaxZoom = 22;
+      let matchMinZoom = 0;
       let style = '';
       let bounds;
       let restResourceURL = '';
       let kvpResourceUrl = '';
       const proxy = this.handleProxy();
-      let serviceUrl = `${layerInfo.url.split('?')[0]}?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0`;
+      let serviceUrl = SuperMap.Util.urlAppend(layerInfo.url, 'REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0');
       serviceUrl = this.handleParentRes(serviceUrl);
       SuperMap.FetchRequest.get(serviceUrl, null, {
         withCredentials: this.handleWithCredentials(proxy, layerInfo.url, false),
@@ -334,26 +309,47 @@ export default class WebMapService extends Events {
               ) {
                 isMatched = true;
               } else {
-                let matchedScaleDenominator = [];
+                let matchedScaleDenominator = {};
                 // 坐标系判断
                 let defaultCRSScaleDenominators =
                   // @ts-ignore -------- crs 为 enhance 新加属性
                   mapCRS === 'EPSG:3857' ? MB_SCALEDENOMINATOR_3857 : MB_SCALEDENOMINATOR_4326;
-
-                for (let j = 0, len = defaultCRSScaleDenominators.length; j < len; j++) {
-                  if (!tileMatrixSet[i].TileMatrix[j]) {
-                    break;
-                  }
+                let defaultCRSTopLeftCorner =
+                  // @ts-ignore -------- crs 为 enhance 新加属性
+                  mapCRS === 'EPSG:3857' ? [-2.0037508342789248e7, 2.0037508342789087e7] : [-180, 90];
+                for (let j = 0; j < tileMatrixSet[i].TileMatrix.length; j++) {
+                  const tileMatrix = tileMatrixSet[i].TileMatrix[j];
+                  const identifier = tileMatrix['ows:Identifier']['_text'];
+                  const topLeftCorner = [...tileMatrix['TopLeftCorner']['_text'].split(' ')];
                   if (
-                    parseFloat(defaultCRSScaleDenominators[j]) !==
-                    parseFloat(tileMatrixSet[i].TileMatrix[j]['ScaleDenominator']['_text'])
+                    (!numberEqual(topLeftCorner[0], defaultCRSTopLeftCorner[0]) ||
+                      !numberEqual(topLeftCorner[1], defaultCRSTopLeftCorner[1])) &&
+                    (!numberEqual(topLeftCorner[0], defaultCRSTopLeftCorner[1]) ||
+                      !numberEqual(topLeftCorner[1], defaultCRSTopLeftCorner[0]))
                   ) {
                     break;
                   }
-                  matchedScaleDenominator.push(defaultCRSScaleDenominators[j]);
+                  const defaultScaleDenominator = defaultCRSScaleDenominators[+identifier];
+                  if (!defaultScaleDenominator) {
+                    break;
+                  }
+                  const scaleDenominator = parseFloat(tileMatrixSet[i].TileMatrix[j]['ScaleDenominator']['_text']);
+                  if (numberEqual(defaultScaleDenominator, scaleDenominator)) {
+                    matchedScaleDenominator[+identifier] = scaleDenominator;
+                  } else {
+                    if (Object.keys(matchedScaleDenominator).length > 0) {
+                      break;
+                    } else {
+                      continue;
+                    }
+                  }
                 }
-                matchMaxZoom = matchedScaleDenominator.length - 1;
-                if (matchedScaleDenominator.length !== 0) {
+                const zooms = Object.keys(matchedScaleDenominator).map(element => {
+                  return +element;
+                });
+                matchMaxZoom = max(zooms);
+                matchMinZoom = min(zooms);
+                if (zooms.length !== 0) {
                   isMatched = true;
                 } else {
                   throw Error('TileMatrixSetNotSuppport');
@@ -393,7 +389,7 @@ export default class WebMapService extends Events {
               restResourceURL = resourceUrl._attributes.template;
             }
           }
-          resolve({ isMatched, matchMaxZoom, style, bounds, restResourceURL, kvpResourceUrl });
+          resolve({ isMatched, matchMaxZoom, matchMinZoom, style, bounds, restResourceURL, kvpResourceUrl });
         })
         .catch(error => {
           reject(error);
@@ -1272,4 +1268,3 @@ export default class WebMapService extends Events {
     return wkt;
   }
 }
-

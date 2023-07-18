@@ -28,9 +28,11 @@ interface Window {
   isLocal: boolean;
   server: string;
   CSS: any;
+  G6: any;
 }
 
 declare var window: Window;
+
 declare var SuperMap: any;
 // declare var require: any;
 
@@ -39,6 +41,7 @@ declare module '*.json' {
   const value: any;
   export default value;
 }
+
 
 interface mapInfoType {
   map: mapboxglTypes.Map;

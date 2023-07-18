@@ -20,7 +20,8 @@ import raster4490 from 'vue-iclient/test/unit/mocks/data/WebMap/raster4490.json'
 import {
   wmtsCapabilitiesText,
   wmsCapabilitiesTextWithoutVersion,
-  wmsCapabilitiesTextWith130
+  wmsCapabilitiesTextWith130,
+  wmsCapabilitiesText
 } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
 import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.json';
 import dataflowLayer from 'vue-iclient/test/unit/mocks/data/WebMap/dataflowLayer.json';
@@ -509,7 +510,10 @@ describe('WebMapViewModel.spec', () => {
     const callback = function (data) {
       expect(data.layers.length).toBe(id.layers.length);
       const layers = data.map.getStyle().layers;
-      expect(layers[layers.length - 1].id).toBe('民航数-TEXT-7');
+      expect(layers[layers.length - 2].id).toBe('民航数-TEXT-7');
+      console.log(layers[layers.length - 1]);
+      expect(layers[layers.length - 1].type).toBe('circle');
+      expect(layers[layers.length - 1].paint['circle-color']).toBe('#de2b41');
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
@@ -792,16 +796,22 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const style = {
+      layers: ['test'],
       color: '#fff'
     };
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const spy = jest.spyOn(viewModel.map, 'setStyle');
     await flushPromises();
     expect(spy).not.toBeCalled();
+    viewModel.on({
+      addlayerssucceeded: e => {
+        expect(e.map).not.toBeNull();
+        done();
+      }
+    });
     viewModel.setStyle(style);
     expect(viewModel.mapOptions.style).toEqual(style);
     expect(spy).toBeCalled();
-    done();
   });
 
   it('setRasterTileSize', async done => {
@@ -1133,7 +1143,10 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({
       mapinitialized: () => {
         viewModel._updateDataFlowFeature = jest.fn();
-        const res = viewModel.getUniqueStyleGroup(parameters, [{ properties: { UserID: 30 } }, { properties: { UserID: 0 } }]);
+        const res = viewModel.getUniqueStyleGroup(parameters, [
+          { properties: { UserID: 30 } },
+          { properties: { UserID: 0 } }
+        ]);
         expect(res.length).toBe(2);
         done();
       }
@@ -1173,7 +1186,7 @@ describe('WebMapViewModel.spec', () => {
   it('add wmsLayer with correct url and version is less than 1.3', done => {
     const fetchResource = {
       'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS':
-        wmsCapabilitiesTextWithoutVersion
+      wmsCapabilitiesText
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel({
@@ -1181,7 +1194,7 @@ describe('WebMapViewModel.spec', () => {
       layers: [
         {
           ...wmsLayer.layers[0],
-          url: 'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'
+          url: 'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day'
         }
       ]
     });
@@ -1215,7 +1228,7 @@ describe('WebMapViewModel.spec', () => {
       layers: [
         {
           ...wmsLayer.layers[0],
-          url: 'http://fack/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?MAP=%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day&'
+          url: 'http://fack/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?'
         }
       ]
     });

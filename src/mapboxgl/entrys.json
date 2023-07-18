@@ -96,6 +96,7 @@
   "video-plus-draw": "vue-iclient/src/mapboxgl/video-plus/control/draw/index.js",
   "video-plus-marker": "vue-iclient/src/mapboxgl/video-plus/ui/marker/index.js",
   "video-plus-popup": "vue-iclient/src/mapboxgl/video-plus/ui/popup/index.js",
+  "graph-map": "vue-iclient/src/mapboxgl/graph-map/index.js",
   "_mixin/AntdRender": "vue-iclient/src/common/_mixin/AntdRender.ts",
   "_mixin/Card": "vue-iclient/src/common/_mixin/Card.ts",
   "_mixin/Theme": "vue-iclient/src/common/_mixin/Theme.ts",

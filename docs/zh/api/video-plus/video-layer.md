@@ -16,6 +16,8 @@
 
 ### Events
 
+| name  | 说明               | 回调参数        |
+| :---- | :----------------- | :-------------- |
 | click | 在图层上单击左键 | function(event) |
 | mousedown | 在图层上按下鼠标 | function(evnet) |
 | mouseup | 在图层上释放鼠标 | function(evnet) |

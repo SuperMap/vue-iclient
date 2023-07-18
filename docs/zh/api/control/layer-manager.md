@@ -64,5 +64,6 @@ new Vue({
 | :-------------- | :--------------------------------- | :------- | :----- | :------------------------- |
 | serverUrl       | SuperMap iPortal/Online 服务器地址 | string   | -      | https://www.supermapol.com |
 | mapId           | iPortal Online 地图 ID             | number   | -      | -                          |
+| mapOptions       | [MapboxGL map options 对象](https://docs.mapbox.com/mapbox-gl-js/api/#map) | object   | -      | - |
 | withCredentials | 是否携带 cookie                | boolean  | -      | false                      |
 | layerFilter     | 判断图层是否加载       | function | -      | function() { return true}  |

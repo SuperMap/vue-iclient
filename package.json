@@ -1,6 +1,6 @@
 {
   "name": "@supermap/vue-iclient",
-  "version": "11.1.0-beta",
+  "version": "11.1.0",
   "description": "SuperMap iClient for Vue.js",
   "homepage": "https://iclient.supermap.io",
   "scripts": {
@@ -69,6 +69,7 @@
     "lodash.isnumber": "^3.0.3",
     "lodash.isplainobject": "^4.0.6",
     "lodash.max": "^4.0.1",
+    "lodash.min": "^4.0.1",
     "lodash.merge": "^4.6.1",
     "lodash.mergewith": "^4.6.2",
     "lodash.orderby": "^4.6.0",
@@ -110,6 +111,7 @@
     "@babel/plugin-proposal-decorators": "^7.13.0",
     "@babel/plugin-transform-modules-commonjs": "^7.5.0",
     "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@babel/preset-env": "^7.3.1",
     "@babel/runtime": "^7.3.1",
     "@storybook/addon-actions": "^6.2.8",
@@ -125,6 +127,7 @@
     "@turf/bbox-polygon": "^5.0.4",
     "@turf/buffer": "^5.0.4",
     "@turf/union": "^5.0.4",
+    "@types/jest": "^29.5.2",
     "@types/webpack-env": "^1.13.9",
     "@typescript-eslint/eslint-plugin": "^4.4.0",
     "@typescript-eslint/parser": "^4.4.0",

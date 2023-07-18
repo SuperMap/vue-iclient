@@ -13,11 +13,60 @@ import isEqual from 'lodash.isequal';
  * }
  */
 
+const mainColor = '#f75564';
+const haloColor = '#fff';
+export const defaultStyles = {
+  'line-static': {
+    'line-color': mainColor,
+    'line-width': 3
+  },
+  'line-hover': {
+    'line-color': mainColor,
+    'line-width': 33,
+    'line-opacity': 0.2
+  },
+  'line-drawing': {
+    'line-color': mainColor,
+    'line-dasharray': [0.4, 2],
+    'line-width': 3
+  },
+  'fill-static': {
+    'fill-color': mainColor,
+    'fill-outline-color': mainColor,
+    'fill-opacity': 0.4
+  },
+  'fill-drawing': {
+    'fill-color': mainColor,
+    'fill-outline-color': mainColor,
+    'fill-opacity': 0.6
+  },
+  'vertex-static': {
+    'circle-radius': 4,
+    'circle-color': mainColor
+  },
+  'vertex-halo-static': {
+    'circle-radius': 6,
+    'circle-color': haloColor
+  },
+  'circle-static': {
+    'circle-radius': 6,
+    'circle-color': mainColor
+  },
+  'circle-drawing': {
+    'circle-radius': 4,
+    'circle-color': haloColor
+  },
+  'circle-halo-drawing': {
+    'circle-radius': 6,
+    'circle-color': mainColor
+  }
+};
+
 export default new Vue({
   mapList: {},
   drawList: {},
   drawStates: {},
-  _createDraw: function(mapTarget) {
+  _createDraw: function (mapTarget, styles = defaultStyles) {
     const drawOptions = {
       displayControlsDefault: false,
       touchEnabled: false,
@@ -58,43 +107,47 @@ export default new Vue({
           filter: [
             'any',
             ['==', 'active', 'false'],
-            ['all', ['==', 'active', 'true'], ['==', 'mode', 'simple_select']]
+            ['all', ['==', 'active', 'true'],
+              ['==', 'mode', 'simple_select']
+            ]
           ],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
           },
           paint: {
-            'line-color': '#f75564',
-            'line-width': 3
+            ...defaultStyles['line-static'],
+            ...styles['line-static']
           }
         },
         {
           id: 'draw-line-hover',
           type: 'line',
-          filter: ['all', ['==', '$type', 'LineString'], ['==', 'id', '']],
+          filter: ['all', ['==', '$type', 'LineString'],
+            ['==', 'id', '']
+          ],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
           },
           paint: {
-            'line-color': '#f75564',
-            'line-width': 33,
-            'line-opacity': 0.2
+            ...defaultStyles['line-hover'],
+            ...styles['line-hover']
           }
         },
         {
           id: 'draw-line-drawing',
           type: 'line',
-          filter: ['all', ['==', 'active', 'true'], ['!=', 'mode', 'simple_select']],
+          filter: ['all', ['==', 'active', 'true'],
+            ['!=', 'mode', 'simple_select']
+          ],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
           },
           paint: {
-            'line-color': '#f75564',
-            'line-dasharray': [0.4, 2],
-            'line-width': 3
+            ...defaultStyles['line-drawing'],
+            ...styles['line-drawing']
           }
         },
         {
@@ -106,60 +159,100 @@ export default new Vue({
             'line-join': 'round'
           },
           paint: {
-            'line-color': '#f75564',
-            'line-dasharray': [0.4, 2],
-            'line-width': 3
+            ...defaultStyles['line-drawing'],
+            ...styles['line-drawing']
           }
         },
         // polygon fill
         {
+          id: 'draw-polygon-active',
+          type: 'fill',
+          filter: ['all', ['==', '$type', 'Polygon'],
+            ['==', 'active', 'true'],
+            ['!=', 'mode', 'simple_select']
+          ],
+          paint: {
+            ...defaultStyles['fill-drawing'],
+            ...styles['fill-drawing']
+          }
+        },
+        {
           id: 'draw-polygon-static',
           type: 'fill',
-          filter: ['all', ['==', '$type', 'Polygon']],
+          filter: ['all', ['==', '$type', 'Polygon'],
+            [
+              'any',
+              ['==', 'active', 'false'],
+              ['all', ['==', 'active', 'true'],
+                ['==', 'mode', 'simple_select']
+              ]
+            ]
+          ],
           paint: {
-            'fill-color': '#f75564',
-            'fill-outline-color': '#f75564',
-            'fill-opacity': 0.4
+            ...defaultStyles['fill-static'],
+            ...styles['fill-static']
           }
         },
         // vertex point halos
         {
           id: 'draw-vertex-halo-active',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex']],
+          filter: ['all', ['==', '$type', 'Point'],
+            ['==', 'meta', 'vertex']
+          ],
           paint: {
-            'circle-radius': 6,
-            'circle-color': '#FFF'
+            ...defaultStyles['vertex-halo-static'],
+            ...styles['vertex-halo-static']
           }
         },
         // vertex points
         {
           id: 'draw-vertex-active',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex']],
+          filter: ['all', ['==', '$type', 'Point'],
+            ['==', 'meta', 'vertex']
+          ],
           paint: {
-            'circle-radius': 4,
-            'circle-color': '#f75564'
+            ...defaultStyles['vertex-static'],
+            ...styles['vertex-static']
           }
         },
         // point
         {
           id: 'draw-point-static',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature']],
+          filter: ['all', ['==', '$type', 'Point'],
+            ['==', 'meta', 'feature'],
+            ['==', 'active', 'false']
+          ],
           paint: {
-            'circle-radius': 6,
-            'circle-color': '#f75564'
+            ...defaultStyles['circle-static'],
+            ...styles['circle-static']
           }
         },
         // point-active
         {
+          id: 'draw-point-halo-static-active',
+          type: 'circle',
+          filter: ['all', ['==', '$type', 'Point'],
+            ['==', 'meta', 'feature'],
+            ['==', 'active', 'true']
+          ],
+          paint: {
+            ...defaultStyles['circle-halo-drawing'],
+            ...styles['circle-halo-drawing']
+          }
+        },
+        {
           id: 'draw-point-static-active',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'feature'], ['==', 'active', 'true']],
+          filter: ['all', ['==', '$type', 'Point'],
+            ['==', 'meta', 'feature'],
+            ['==', 'active', 'true']
+          ],
           paint: {
-            'circle-radius': 4,
-            'circle-color': '#FFF'
+            ...defaultStyles['circle-drawing'],
+            ...styles['circle-drawing']
           }
         }
       ]
@@ -168,22 +261,26 @@ export default new Vue({
     this.drawList[mapTarget] = draw;
     return draw;
   },
-  getDraw: function(mapTarget, create = true) {
+  getDraw: function ({
+    mapTarget,
+    create = true,
+    styles = defaultStyles
+  }) {
     let draw = this.drawList[mapTarget];
     const map = mapEvent.$options.getMap(mapTarget);
     const prevMap = this.mapList[mapTarget];
     const isSame = isEqual(map, prevMap);
     if (map && !isSame && create) {
-      draw = this._createDraw(mapTarget);
+      draw = this._createDraw(mapTarget, styles);
       draw.onAdd(map);
       this.mapList[mapTarget] = map;
     }
     return draw;
   },
-  getDrawingState: function(mapTarget, componentName) {
+  getDrawingState: function (mapTarget, componentName) {
     return this.drawStates[mapTarget] && this.drawStates[mapTarget][componentName];
   },
-  setDrawingState: function(mapTarget, componentName, drawing) {
+  setDrawingState: function (mapTarget, componentName, drawing) {
     this.drawStates[mapTarget] = this.drawStates[mapTarget] || {};
     if (drawing) {
       for (let key in this.drawStates[mapTarget]) {
@@ -192,7 +289,7 @@ export default new Vue({
     }
     this.drawStates[mapTarget][componentName] = drawing;
   },
-  deleteDrawingState: function(mapTarget, componentName) {
+  deleteDrawingState: function (mapTarget, componentName) {
     const mapDrawStates = this.drawStates[mapTarget];
     if (mapDrawStates) {
       if (componentName in mapDrawStates) {
@@ -205,8 +302,11 @@ export default new Vue({
       }
     }
   },
-  deleteDrawOfMap: function(mapTarget) {
-    const draw = this.getDraw(mapTarget, false);
+  deleteDrawOfMap: function (mapTarget) {
+    const draw = this.getDraw({
+      mapTarget,
+      create: false
+    });
     const map = this.mapList[mapTarget];
     if (draw && map) {
       draw.onRemove(map);

@@ -131,9 +131,6 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   add(videoWidth, videoHeight) {
-    if (!this.url) {
-      return;
-    }
     this.video = this._createVideo();
     // @ts-ignore
     this.videoWidth = videoWidth || this.map.getCanvas().width;
@@ -147,17 +144,18 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
       }
     });
     // @ts-ignore
+    this.video.one('ready', () => {
+      this._addVideoLayer(this.map);
+    });
+    // @ts-ignore
     this.video.one('canplay', () => {
       setTimeout(() => {
-        this._addVideoLayer(this.map);
-        setTimeout(() => {
-          if (this.autoplay) {
-            this.play();
-          } else {
-            this.pause();
-          }
-        }, 100);
-      }, 0);
+        if (this.autoplay) {
+          this.play();
+        } else {
+          this.pause();
+        }
+      }, 100);
     });
   }
 
@@ -298,6 +296,10 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   _getVideoOptions() {
+    if (!this.url) {
+      // @ts-ignore
+      return;
+    }
     let options = {
       autoplay: true,
       muted: true
@@ -341,6 +343,9 @@ export default class VideoPlusViewModel extends mapboxgl.Evented {
   }
 
   _getVideoDom() {
+    if (!this.url) {
+      return;
+    }
     let videoDomId;
     if (this.url.includes('flv')) {
       let videoWrap = document.querySelector(`#${this.id}`);

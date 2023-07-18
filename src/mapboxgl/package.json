@@ -1,7 +1,7 @@
 {
   "name": "@supermap/vue-iclient-mapboxgl",
   "description": "SuperMap iClient for Vue.js",
-  "version": "11.1.0-beta",
+  "version": "11.1.0",
   "homepage": "http://iclient.supermap.io",
   "main": "lib/index",
   "dependencies": {
@@ -42,6 +42,7 @@
     "lodash.isnumber": "^3.0.3",
     "lodash.isplainobject": "^4.0.6",
     "lodash.max": "^4.0.1",
+    "lodash.min": "^4.0.1",
     "lodash.merge": "^4.6.1",
     "lodash.mergewith": "^4.6.2",
     "lodash.orderby": "^4.6.0",

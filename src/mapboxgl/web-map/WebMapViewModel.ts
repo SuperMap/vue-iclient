@@ -1,4 +1,4 @@
-/* Copyright© 2000 - 2022 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2023 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
@@ -95,9 +95,6 @@ export default class WebMapViewModel extends WebMapBase {
   private _sourceListModel: SourceListModel;
 
   private _legendList: any;
-
-  private _fieldMaxValue: any;
-
   private _handleDataflowFeaturesCallback: Function;
 
   private _initDataflowLayerCallback: Function;
@@ -221,6 +218,15 @@ export default class WebMapViewModel extends WebMapBase {
 
   public setStyle(style): void {
     if (this.map) {
+      if (style && style.layers && style.layers.length > 0) {
+        setTimeout(() => {
+          this.triggerEvent('addlayerssucceeded', {
+            map: this.map,
+            mapparams: {},
+            layers: []
+          });
+        }, 0);
+      }
       this.mapOptions.style = style;
       style && this.map.setStyle(style);
     }
@@ -502,7 +508,7 @@ export default class WebMapViewModel extends WebMapBase {
           this.map.addStyle(style);
           addedCallback && addedCallback();
         },
-        (error) => {
+        error => {
           addedCallback && addedCallback();
           throw new Error(error);
         }
@@ -544,7 +550,9 @@ export default class WebMapViewModel extends WebMapBase {
         break;
       case 'CLOUD':
       case 'XYZ':
-        url = mapUrls[layerInfo.layerType].replace('{googleMapsLanguage}', this.googleMapsLanguage).replace('{googleMapsAPIKey}', this.googleMapsAPIKey);
+        url = mapUrls[layerInfo.layerType]
+          .replace('{googleMapsLanguage}', this.googleMapsLanguage)
+          .replace('{googleMapsAPIKey}', this.googleMapsAPIKey);
         this._createXYZLayer(layerInfo, url, addedCallback);
         break;
       case 'BAIDU':
@@ -744,7 +752,7 @@ export default class WebMapViewModel extends WebMapBase {
           const layerId = layerInfo.layerID || layerInfo.name;
           if (result.isMatched) {
             const wmtsUrl = this._getWMTSUrl(Object.assign({}, layerInfo, result));
-            this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, 0, result.matchMaxZoom, false, result.bounds);
+            this._addBaselayer([wmtsUrl], layerId, layerInfo.visible, result.matchMinZoom, result.matchMaxZoom, false, result.bounds);
             addedCallback && addedCallback();
           }
         },
@@ -896,7 +904,6 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _getWMSUrl(mapInfo: any, version = '1.1.1'): string {
     let url = mapInfo.url;
-    url = url.split('?')[0];
     const options: any = {
       service: 'WMS',
       request: 'GetMap',
@@ -918,8 +925,7 @@ export default class WebMapViewModel extends WebMapBase {
       options.bbox = '{bbox-epsg-3857}';
       options.srs = this.baseProjection;
     }
-    url += this._getParamString(options, url);
-    return url;
+    return SuperMap.Util.urlAppend(url, this._getParamString(options, url));
   }
 
   private _setLayerID(mapInfo): Array<Object> {
@@ -1211,7 +1217,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
     if (style.type === 'SYMBOL_POINT') {
       this._createSymbolLayer(layerInfo, features, expression);
-    } else if (style.type === 'IMAGE_POINT') {
+    } else if (['SVG_POINT', 'IMAGE_POINT'].includes(style.type)) {
       this._createGraphicLayer(layerInfo, features, expression);
     } else {
       const source: mapboxglTypes.GeoJSONSourceRaw = {
@@ -1427,6 +1433,14 @@ export default class WebMapViewModel extends WebMapBase {
               console.log(error);
             }
             const iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2)) * 2;
+            if (iconSizeExpression && Array.isArray(iconSizeExpression)) {
+              iconSizeExpression = iconSizeExpression.map((item, index) => {
+                if (typeof item === 'number' && index % 2 === 1) {
+                  return (item / canvas.width) * 2;
+                }
+                return item;
+              });
+            }
             !this.map.hasImage(svgUrl) && this.map.addImage(svgUrl, image, { sdf: true });
             const layerOptions: any = {
               id: layerID,
@@ -1860,7 +1874,7 @@ export default class WebMapViewModel extends WebMapBase {
           features,
           '',
           '',
-          true,
+          false,
           defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
         );
       } else if (style.type === 'IMAGE_POINT' || style.type === 'SVG_POINT') {
@@ -1871,7 +1885,7 @@ export default class WebMapViewModel extends WebMapBase {
           features,
           '',
           '',
-          true,
+          false,
           defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
         );
       } else {
@@ -1910,7 +1924,7 @@ export default class WebMapViewModel extends WebMapBase {
       tilerow: '{y}',
       tilecol: '{x}'
     };
-    return `${options.kvpResourceUrl}${this._getParamString(obj, options.kvpResourceUrl)}`;
+    return SuperMap.Util.urlAppend(options.kvpResourceUrl, this._getParamString(obj, options.kvpResourceUrl));
   }
 
   private _createMarkerLayer(layerInfo: any, features: any): void {
@@ -1944,7 +1958,11 @@ export default class WebMapViewModel extends WebMapBase {
     });
     const loadImagePromise = (layerID: string, { src, defaultStyle }) => {
       return new Promise(resolve => {
-        if (src && src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
+        if (!src) {
+          resolve({ [layerID]: undefined });
+          return;
+        }
+        if (src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
           this.map.loadImage(src, (error, image) => {
             if (error) {
               console.log(error);
@@ -2002,6 +2020,15 @@ export default class WebMapViewModel extends WebMapBase {
         // image-marker  svg-marker
         if (geomType === 'POINT' || geomType === 'TEXT') {
           if (!iconImageUrl) {
+            this._addLayer({
+              id: layerID,
+              type: 'circle',
+              source: source,
+              paint: this._transformStyleToMapBoxGl(defaultStyle, geomType),
+              layout: {},
+              minzoom: minzoom || 0,
+              maxzoom: maxzoom || 22
+            });
             continue;
           }
           this._addLayer({
@@ -2056,10 +2083,6 @@ export default class WebMapViewModel extends WebMapBase {
     for (const i in customSettings) {
       layerOption.gradient[i] = customSettings[i];
     }
-    // 权重字段恢复
-    if (style.weight) {
-      this._changeWeight(features, style.weight);
-    }
 
     const color: string | mapboxglTypes.StyleFunction | mapboxglTypes.Expression = [
       'interpolate',
@@ -2084,17 +2107,18 @@ export default class WebMapViewModel extends WebMapBase {
     const paint: mapboxglTypes.HeatmapPaint = {
       'heatmap-color': color,
       'heatmap-radius': style.radius * 3,
-      'heatmap-intensity': 1.3
+      'heatmap-intensity': 2.8
     };
 
-    if (features[0].weight && features.length >= 4) {
+    if (style.weight && features.length >= 4) {
       const weight = [];
       features.forEach(item => {
-        weight.push(item.weight);
+        item.properties[style.weight] = +item.properties[style.weight];
+        weight.push(item.properties[style.weight]);
       });
       const max = SuperMap.ArrayStatistic.getMax(weight);
       const min = SuperMap.ArrayStatistic.getMin(weight);
-      paint['heatmap-weight'] = ['interpolate', ['linear'], ['get', 'weight'], min, 0, max, 1];
+      paint['heatmap-weight'] = ['interpolate', ['linear'], ['get', style.weight], min, 0, max, 1];
     }
     this._addLayer({
       id: layerInfo.layerID,
@@ -2116,32 +2140,6 @@ export default class WebMapViewModel extends WebMapBase {
     if (addToMap) {
       this._addLayerSucceeded();
     }
-  }
-
-  private _changeWeight(features: any, weightFeild: string): void {
-    this._fieldMaxValue = {};
-    this._getMaxValue(features, weightFeild);
-    const maxValue = this._fieldMaxValue[weightFeild];
-    features.forEach(feature => {
-      const attributes = feature.properties;
-      const value = attributes[weightFeild];
-      feature.weight = value / maxValue;
-    });
-  }
-
-  private _getMaxValue(features: any, weightField: string): void {
-    const values = [];
-    let attributes;
-    const field = weightField;
-    if (this._fieldMaxValue[field]) {
-      return;
-    }
-    features.forEach(feature => {
-      // 收集当前权重字段对应的所有值
-      attributes = feature.properties;
-      attributes && parseFloat(attributes[field]) && values.push(parseFloat(attributes[field]));
-    });
-    this._fieldMaxValue[field] = SuperMap.ArrayStatistic.getArrayStatistic(values, 'Maximum');
   }
 
   private _createRangeLayer(layerInfo: any, features: any): void {
@@ -2399,6 +2397,8 @@ export default class WebMapViewModel extends WebMapBase {
     const source: mapboxglTypes.RasterSource = {
       type: 'raster',
       tiles: url,
+      minzoom: minzoom || 0,
+      maxzoom: maxzoom || 22,
       tileSize: isIserver ? this.rasterTileSize : 256,
       // @ts-ignore
       rasterSource: isIserver ? 'iserver' : '',
