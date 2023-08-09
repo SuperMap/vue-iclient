@@ -70,4 +70,5 @@ new Vue({
 | next()      | 激活播放播放到下一数据项 |
 | prev()      | 激活播放播放到上一数据项 |
 
-> 仅支持 [\$ref](https://cn.vuejs.org/v2/api/#ref) 引用组件实例的方式调用
+> 仅支持 [\$ref](https://v2.cn.vuejs.org/v2/api/#ref) 引用组件实例的方式调用
+

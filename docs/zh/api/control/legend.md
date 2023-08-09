@@ -16,7 +16,7 @@
 | mode        | 图例样式                                                                                      | string   | 'simple' \| 'panel'                                          | 'simple'                  |
 | isShowTitle | 是否显示图层名                                                                                | boolean  | -                                                            | false                     |
 | isShowField | 是否显示图层专题字段                                                                          | boolean  | -                                                            | false                     |
-| position    | 控件添加到地图上的位置。添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string   | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'bottom-left'             |
+| position    | 控件添加到地图上的位置。添加为地图的子组件（[slot](https://v2.cn.vuejs.org/v2/api/#slot)）时生效 | string   | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'bottom-left'             |
 | iconClass   | 收缩按钮的 Font class 类                                                                      | string   | -                                                            | 'sm-components-icon-list' |
 | headerName  | 标题名                                                                                        | string   | -                                                            | '图例'                    |
 
