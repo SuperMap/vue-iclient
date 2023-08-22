@@ -1797,7 +1797,7 @@ export default class WebMapViewModel extends WebMapBase {
           features,
           '',
           '',
-          true,
+          false,
           defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
         );
       } else if (style.type === 'IMAGE_POINT' || style.type === 'SVG_POINT') {
@@ -1808,7 +1808,7 @@ export default class WebMapViewModel extends WebMapBase {
           features,
           '',
           '',
-          true,
+          false,
           defaultFilterExpression.length > 1 ? defaultFilterExpression : undefined
         );
       } else {
@@ -2711,4 +2711,3 @@ export default class WebMapViewModel extends WebMapBase {
     );
   }
 }
-
