@@ -381,9 +381,14 @@ class SmTextList extends Mixins(Theme, Timer) {
           return item.idx === newVal[0].dataIndex;
         });
         if (dataIndex || dataIndex === 0) {
-          scrollHeight = dataIndex * this.filterUnit(this.listStyle.rowStyle.height);
+          let rowHeight = this.filterUnit(this.listStyle.rowStyle.height);
+          scrollHeight = dataIndex * rowHeight;
           // @ts-ignore
-          this.$refs.animate.scrollTop = scrollHeight;
+          let currentScrollTop = this.$refs.animate.scrollTop;
+          if (scrollHeight < currentScrollTop || scrollHeight > currentScrollTop + rowHeight * this.rows) {
+            // @ts-ignore
+            this.$refs.animate.scrollTop = scrollHeight;
+          }
         }
       }
       // @ts-ignore
