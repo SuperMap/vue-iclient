@@ -414,6 +414,7 @@ export default class WebMapViewModel extends WebMapBase {
       if (this.mapOptions.crs && this.mapOptions.crs.epsgCode) {
         this.mapOptions.crs = new mapboxgl.CRS(
           this.mapOptions.crs.epsgCode,
+          this.mapOptions.crs.WKT,
           this.mapOptions.crs.extent,
           this.mapOptions.crs.unit
         );
