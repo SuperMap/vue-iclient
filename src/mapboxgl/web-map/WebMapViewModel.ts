@@ -219,17 +219,15 @@ export default class WebMapViewModel extends WebMapBase {
 
   public setStyle(style): void {
     if (this.map) {
-      if (style && style.layers && style.layers.length > 0) {
-        setTimeout(() => {
-          this.triggerEvent('addlayerssucceeded', {
-            map: this.map,
-            mapparams: {},
-            layers: []
-          });
-        }, 0);
-      }
       this.mapOptions.style = style;
       style && this.map.setStyle(style);
+      if (style && style.layers && style.layers.length > 0) {
+        this.triggerEvent('addlayerssucceeded', {
+          map: this.map,
+          mapparams: {},
+          layers: []
+        });
+      }
     }
   }
 
