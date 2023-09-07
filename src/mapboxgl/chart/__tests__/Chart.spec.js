@@ -1262,7 +1262,21 @@ describe('Chart', () => {
             xField: '机场',
             yField: '2017起降架次（架次）'
           }
-        ]
+        ],
+        options: {
+          xAxis:{
+            axisLabel:{},
+            show: true,
+            type: "category",
+            name: ""
+          },
+          yAxis:{
+            axisLabel:{},
+            show: true,
+            type: "category",
+            name: ""
+          }
+        }
       }
     });
     await mapSubComponentLoaded(wrapper);
@@ -1314,6 +1328,69 @@ describe('Chart', () => {
     });
     expect(wrapper.vm.mapTarget).toBe('map');
     expect(wrapper.vm.dataset.type).toBe('iPortal');
+    done();
+  });
+
+  it('init rankbar AxisLabel', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': chart_restData,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123/content.json?pageSize=9999999&currentPage=1': layerData
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmChart, {
+      propsData: {
+        mapTarget: 'map',
+        dataset: iportalDataSet,
+        echartOptions: {
+          legend: {
+            data: ['2016起降架次（架次）', '2017起降架次（架次）']
+          },
+          tooltip: {
+            formatter: '{b0}: {c0}'
+          },
+          grid: {
+            top: 30,
+            bottom: 60,
+            left: 60,
+            right: 30
+          }
+        },
+        chartStyle: {
+          position: 'absolute',
+          bottom: '10px',
+          right: '10px'
+        },
+        datasetOptions: [
+          {
+            "seriesType": "bar",
+            "xField": "date",
+            "yField": "sale",
+            "sort": "descending",
+            "rankLabel": true
+          }
+        ],
+        colorGroup: ['#f00'],
+        options: {
+          xAxis:{
+            axisLabel:{},
+            show: true,
+            type: "category",
+            name: ""
+          },
+          yAxis:{
+            axisLabel:{},
+            show: true,
+            type: "category",
+            name: ""
+          }
+        }
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    let data=["四川","江苏","云南","江西","海南","台湾","上海","广东","福建","北京"]
+    wrapper.vm._initAxisLabel({}, data)
+    await flushPromises();
+    expect(data[0]).toBe('09四川')
     done();
   });
 });
