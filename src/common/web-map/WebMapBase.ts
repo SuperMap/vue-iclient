@@ -774,7 +774,7 @@ export default abstract class WebMapBase extends Events {
         }
       }
       if (!isSaved) {
-        names.push(name || '0');
+        names.push(name);
       }
     }
 
