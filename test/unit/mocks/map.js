@@ -17,6 +17,7 @@ var LngLatBounds = require('mapbox-gl/src/geo/lng_lat_bounds');
 var Evented = require('mapbox-gl/src/util/evented');
 // var Transform = require('mapbox-gl/src/geo/transform');
 var util = require('mapbox-gl/src/util/util');
+var CRS = require('./crs');
 // var Style = require('mapbox-gl/src/style/style');
 
 // var Style = require('./style');
@@ -80,7 +81,7 @@ var Map = function (options) {
   var ne = new LngLat(-73.9397, 40.8002);
   var llb = new LngLatBounds(sw, ne);
   this.bounds = this.options.bounds || llb;
-
+  this.crs = new CRS();
   try {
     this.center = this.options.center ? new LngLat(this.options.center.lng, this.options.center.lat) : new LngLat(0, 0);
   } catch (e) {
@@ -586,11 +587,11 @@ var Map = function (options) {
     };
   };
   this.getCRS = () => {
-    return {
-      getExtent: () => jest.fn()
-    };
+    return this.crs;
   };
-  this.setCRS = () => {};
+  this.setCRS = () => {
+    this.crs = new CRS();
+  };
   this.flyTo = options => {};
   this.setRenderWorldCopies = epsgCode => {};
   this.triggerRepaint = () => {};
