@@ -37,21 +37,21 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     this._initalizeMarkerLayer();
   }
 
-  public setFeatures(features, markersElement) {
+  public setFeatures(features, markersElement, fitBounds?) {
     this.markersElement = markersElement;
     this.features = features;
-    this._initalizeMarkerLayer();
+    this._initalizeMarkerLayer(fitBounds);
   }
 
-  private _initalizeMarkerLayer() {
+  private _initalizeMarkerLayer(fitBounds?) {
     if (!this.features || JSON.stringify(this.features) === '{}') {
       return;
     }
     this.removed();
-    this._createMarker();
+    this._createMarker(fitBounds);
   }
 
-  private _createMarker() {
+  private _createMarker(fitBounds = true) {
     if (
       this.markersElement.length === 0 ||
       !this.map ||
@@ -71,7 +71,7 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
         this.markers.push(marker);
       }
     }, this);
-    if (this.fitBounds) {
+    if (this.fitBounds && fitBounds) {
       // @ts-ignore
       const bounds = bbox(transformScale(envelope(this.features), 1.7));
       this.fitBounds &&

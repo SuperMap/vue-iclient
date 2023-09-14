@@ -20,5 +20,5 @@
 | textFontSize | 字体大小   | number            | -                                                                                                     | 14                  |
 | textColor    | 字体颜色   | string            | -                                                                                                     | '#fff'                |
 | textField    | 显示字段   | string            | -                                                                                                     | -                   |
-| fitBounds    | 是否自适应 | boolean           | -                                                                                                     | false               |
+| fitBounds    | 是否自适应 | boolean           | -                                                                                                     | true               |
 | mapTarget   | 关联地图容器 ID。如果该参数省略，则默认绑定其父组件为地图组件的 Map 实例或者第一个地图组件的 Map 实例 | string                                                                     | -      | -      |

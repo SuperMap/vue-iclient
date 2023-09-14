@@ -394,4 +394,41 @@ describe('AnimateMarkerLayer.vue', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     done();
   });
+
+  it('change features fitBounds', async done => {
+    const newFeatures= {
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            SmID: '10'
+          },
+          type: 'Feature'
+        }
+      ],
+      type: 'FeatureCollection'
+    };
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        mapTarget: 'map',
+        textField: 'name'
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const mockFn = jest.fn();
+    wrapper.vm.viewModel._createMarker = mockFn;
+    await wrapper.setProps({
+      features
+    });
+    expect(mockFn.mock.calls).toEqual([[true]]);
+    await mapSubComponentLoaded(wrapper);
+    await wrapper.setProps({
+      features: newFeatures
+    });
+    expect(mockFn.mock.calls).toEqual([[ true ], [ false ]]);
+    done();
+  });
 });
