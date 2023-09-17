@@ -42,7 +42,7 @@
     "@types/leaflet": "^1.5.5",
     "@types/mapbox-gl": "^0.54.5",
     "@types/node": "^12.0.3",
-    "@types/three": "0.129.0",
+    "@types/three": "0.155.1",
     "ant-design-vue": "1.7.2",
     "axios": "^0.21.1",
     "babel-plugin-import": "^1.13.5",
