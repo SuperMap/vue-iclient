@@ -287,7 +287,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     if (!this.map) {
       return;
     }
-    let layer = this.map.getLayer(this.layerName);
+    let layer = this.map.getLayer(this.layerName) as mapboxglTypes.Layer;
     let type, id: string, paint;
     let features = [];
     if (!layer) {

@@ -8,16 +8,12 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
  * @extends mapboxgl.Evented
  */
 
-interface mapEnhance extends mapboxglTypes.Map {
-  resetNorthPitch?: (options?: mapboxglTypes.AnimationOptions, eventData?: mapboxglTypes.EventData) => this;
-}
-
 interface optionsTypes {
   visualizePitch: boolean;
 }
 
 export default class CompassViewModel extends mapboxgl.Evented {
-  map: mapEnhance;
+  map: mapboxglTypes.Map;
   rotatePitchCallBack: any;
   visualizePitch: boolean;
   rotateEventFn: (data: mapboxglTypes.MapboxEvent<MouseEvent | TouchEvent | undefined>) => void;
