@@ -52,14 +52,14 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
 
   @Prop() textField: string;
 
-  @Prop() fitBounds: boolean;
+  @Prop() fitBounds: boolean = true;
 
   @Watch('features')
   featuresChanged(newVal, oldVal) {
     if (this.viewModel && !isEqual(newVal, oldVal)) {
       this._pointFeatures = this._getPointFeatures(this.features);
       this._getMarkerElement(this._pointFeatures);
-      this._markersElement.length > 0 && this.viewModel.setFeatures(this._pointFeatures, this._markersElement);
+      this._markersElement.length > 0 && this.viewModel.setFeatures(this._pointFeatures, this._markersElement, !oldVal);
     }
   }
 

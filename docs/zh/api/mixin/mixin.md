@@ -16,7 +16,7 @@
 
 | 参数       | 说明                                                                                          | 类型    | 可选值                                                       | 默认值     |
 | :--------- | :-------------------------------------------------------------------------------------------- | :------ | :----------------------------------------------------------- | :--------- |
-| position   | 控件添加到地图上的位置。添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效 | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left' |
+| position   | 控件添加到地图上的位置。添加为地图的子组件（[slot](https://v2.cn.vuejs.org/v2/api/#slot)）时生效 | string  | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left' |
 | iconClass  | 收缩按钮的 Font class 类名                                                                    | string  | -                                                            | -          |
 | headerName | 标题名                                                                                        | string  | -                                                            | -          |
 | autoRotate | 收缩按钮是否自动旋转                                                                          | boolean | -                                                            | false      |
@@ -29,7 +29,7 @@ Control 参数
 
 | 参数      | 说明                                                                                                  | 类型   | 可选值                                                       | 默认值     |
 | :-------- | :---------------------------------------------------------------------------------------------------- | :----- | :----------------------------------------------------------- | :--------- |
-| position  | 控件添加到地图上的位置。添加为地图的子组件（[slot](https://cn.vuejs.org/v2/api/#slot)）时生效         | string | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left' |
+| position  | 控件添加到地图上的位置。添加为地图的子组件（[slot](https://v2.cn.vuejs.org/v2/api/#slot)）时生效         | string | 'top-left' \| 'top-right' \| 'bottom-left' \| 'bottom-right' | 'top-left' |
 | mapTarget | 关联地图容器 ID。如果该参数省略，则默认绑定其父组件为地图组件的 Map 实例或者第一个地图组件的 Map 实例 | string | -                                                            | -          |
 
 ## Layer

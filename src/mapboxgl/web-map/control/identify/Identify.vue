@@ -120,17 +120,6 @@ export default {
         }
       }
       return style;
-    },
-    layersOnMap() {
-      let layersOnMap = [];
-      if (this.map) {
-        for (let i = 0; i < this.layers.length; i++) {
-          if (this.map.getLayer(this.layers[i])) {
-            layersOnMap.push(this.layers[i]);
-          }
-        }
-      }
-      return layersOnMap;
     }
   },
   watch: {
@@ -176,7 +165,7 @@ export default {
           layerStyle: this.layerStyle
         });
         this.map && this.bindMapClick(this.map);
-        this.changeClickedLayersCursor(this.layersOnMap);
+        this.changeClickedLayersCursor(this.layers);
       }
     },
     // 给图层绑定popup和高亮
@@ -206,14 +195,15 @@ export default {
       }
     },
     // 给layer绑定queryRenderedFeatures
-    bindQueryRenderedFeatures(e, layers = this.layersOnMap) {
+    bindQueryRenderedFeatures(e, layers = this.layers) {
       let map = e.target;
+      const layersOnMap = layers.filter(item => !!map.getLayer(item));
       let bbox = [
         [e.point.x - this.clickTolerance, e.point.y - this.clickTolerance],
         [e.point.x + this.clickTolerance, e.point.y + this.clickTolerance]
       ];
       let features = map.queryRenderedFeatures(bbox, {
-        layers
+        layers: layersOnMap
       });
       return features;
     },
@@ -281,12 +271,13 @@ export default {
     changeCursorPointer() {
       this.changeCursor('pointer', this.map);
     },
-    removeCursorEvent(layers = this.layersOnMap) {
+    removeCursorEvent(layers = this.layers) {
       if (!this.map) {
         return;
       }
+      const layersOnMap = layers.filter(item => !!this.map.getLayer(item));
       this.map.off('click', this.sourceMapClickFn);
-      layers.forEach(layer => {
+      layersOnMap.forEach(layer => {
         this.map.off('mousemove', layer, this.changeCursorPointer);
         this.map.off('mouseleave', layer, this.changeCursorGrab);
         this.changeCursor('grab', this.map);

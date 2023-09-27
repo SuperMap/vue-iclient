@@ -130,6 +130,9 @@ export default abstract class WebMapBase extends Events {
       this.webMapInfo = mapId;
     }
     this.webMapService.setMapId(mapId);
+    if (!mapId) {
+      return;
+    }
     setTimeout(() => {
       this._initWebMap();
     }, 0);
@@ -771,7 +774,7 @@ export default abstract class WebMapBase extends Events {
         }
       }
       if (!isSaved) {
-        names.push(name || '0');
+        names.push(name);
       }
     }
 

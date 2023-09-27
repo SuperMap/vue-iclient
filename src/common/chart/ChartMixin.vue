@@ -406,8 +406,10 @@ export default {
       }
       const sortSeriesIndex = this.datasetOptions.findIndex(item => item.sort !== 'unsort' && item.rankLabel);
       if (sortSeriesIndex > -1 && axisLabel && data) {
+        const orderNumLength = data.length.toString().length;
         for (let index = 0, len = data.length, rankIndex = len - 1; index < len; index++, rankIndex--) {
-          data[index] = rankIndex < 10 ? `0${rankIndex}${data[index]}` : `${rankIndex}${data[index]}`;
+          const paddedNumber = rankIndex.toString().padStart(orderNumLength, '0');
+          data[index] = `${paddedNumber}${data[index]}`;
         }
         const firstVisualMap = visualMap && visualMap.find(item => item.seriesIndex === sortSeriesIndex);
         axisLabel.rich = axisLabel.rich || {};
@@ -430,8 +432,8 @@ export default {
           });
         const serieData = series && series[sortSeriesIndex].data;
         axisLabel.formatter = function (label, index) {
-          const orderNum = parseInt(label.slice(0, 2)) + 1;
-          const leftLabel = label.slice(2);
+          const orderNum = parseInt(label.slice(0, orderNumLength)) + 1;
+          const leftLabel = label.slice(orderNumLength);
           const labelValue = serieData && +serieData[index];
           if (firstVisualMap) {
             const matchItem = firstVisualMap.pieces.find(item => labelValue >= item.min && labelValue <= item.max);

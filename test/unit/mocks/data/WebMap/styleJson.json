@@ -1,0 +1,99 @@
+{
+    "metadata": {
+        "mapcenter": [
+            -757640.0606130529,
+            3387809.2036870198
+        ],
+        "mapscale": 3.908743924597E-8,
+        "epsgcode": 4548,
+        "topscale": 4.4733009479210137E-8,
+        "mapbounds": [
+            -3351272.4427074997,
+            819239.9879898131,
+            1835992.3214813928,
+            5956378.419384226
+        ]
+    },
+    "sources": {
+        "ChinaqxAlberts_4548@fl-new": {
+            "tiles": [
+                "http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/tiles/{z}/{x}/{y}.mvt"
+            ],
+            "bounds": [
+                -180,
+                -90,
+                180,
+                90
+            ],
+            "type": "vector"
+        }
+    },
+    "name": "ChinaqxAlberts_4548@fl-new",
+    "sprite": "http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/sprites/sprite",
+    "layers": [
+        {
+            "paint": {
+                "background-color": "rgba(255,255,255,1.00)"
+            },
+            "id": "background",
+            "type": "background"
+        },
+        {
+            "layout": {
+                "visibility": "visible"
+            },
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Polygon"
+                ]
+            ],
+            "metadata": {
+                "layer:caption": "ChinaqxAlberts_4548@fl-new",
+                "layer:name": "ChinaqxAlberts_4548@fl-new"
+            },
+            "maxzoom": 24,
+            "paint": {
+                "fill-color": "rgba(224,207,226,1.00)",
+                "fill-antialias": true
+            },
+            "id": "ChinaqxAlberts_4548@fl-new(0_24)",
+            "source": "ChinaqxAlberts_4548@fl-new",
+            "source-layer": "ChinaqxAlberts_4548@fl-new",
+            "type": "fill",
+            "minzoom": 0
+        },
+        {
+            "layout": {
+                "visibility": "visible"
+            },
+            "filter": [
+                "all",
+                [
+                    "==",
+                    "$type",
+                    "Polygon"
+                ]
+            ],
+            "metadata": {
+                "layer:caption": "ChinaqxAlberts_4548@fl-new",
+                "layer:name": "ChinaqxAlberts_4548@fl-new"
+            },
+            "maxzoom": 24,
+            "paint": {
+                "line-width": 0.38,
+                "line-color": "rgba(102,102,102,1.00)"
+            },
+            "id": "ChinaqxAlberts_4548@fl-new_outline(0_24)",
+            "source": "ChinaqxAlberts_4548@fl-new",
+            "source-layer": "ChinaqxAlberts_4548@fl-new",
+            "type": "line",
+            "minzoom": 0
+        }
+    ],
+    "zoom": 0,
+    "glyphs": "http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/fonts/{fontstack}/{range}",
+    "version": 8
+}

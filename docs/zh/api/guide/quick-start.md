@@ -6,8 +6,8 @@
 
 高效的开发，离不开基础工程的搭建。在开始使用 Vue-iClient-MapboxGL 之前，有必要先了解以下基础知识，我们也假设您已经写过 Vue，并掌握了下面的内容。
 
-- [Vue 组件](https://cn.vuejs.org/v2/guide/components.html)
-- [单文件组件](https://cn.vuejs.org/v2/guide/single-file-components.html)
+- [Vue 组件](https://v2.cn.vuejs.org/v2/guide/components.html)
+- [单文件组件](https://v2.cn.vuejs.org/v2/guide/single-file-components.html)
 
 以下概念贯穿 Vue-iClient-MapboxGL 前后，建议开发者花点时间来了解。
 

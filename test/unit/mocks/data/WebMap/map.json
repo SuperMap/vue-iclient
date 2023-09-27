@@ -1,0 +1,188 @@
+{
+    "viewBounds": {
+        "top": 4254242.7004825,
+        "left": -1624073.5574085328,
+        "bottom": 2521375.7068915395,
+        "leftBottom": {
+            "x": -1624073.5574085328,
+            "y": 2521375.7068915395
+        },
+        "right": 108793.43618242699,
+        "rightTop": {
+            "x": 108793.43618242699,
+            "y": 4254242.7004825
+        }
+    },
+    "viewer": {
+        "leftTop": {
+            "x": 0,
+            "y": 0
+        },
+        "top": 0,
+        "left": 0,
+        "bottom": 256,
+        "rightBottom": {
+            "x": 256,
+            "y": 256
+        },
+        "width": 256,
+        "right": 256,
+        "height": 256
+    },
+    "distanceUnit": "METER",
+    "minVisibleTextSize": 0.1,
+    "coordUnit": "METER",
+    "scale": 3.908743924597E-8,
+    "description": "",
+    "paintBackground": true,
+    "maxVisibleTextSize": 1000,
+    "maxVisibleVertex": 36000000,
+    "clipRegionEnabled": false,
+    "antialias": true,
+    "textOrientationFixed": false,
+    "angle": 0,
+    "prjCoordSys": {
+        "distanceUnit": "METER",
+        "projectionParam": {
+            "centralParallel": 0,
+            "firstPointLongitude": 0,
+            "rectifiedAngle": 0,
+            "scaleFactor": 1,
+            "falseNorthing": 0,
+            "centralMeridian": 117,
+            "secondStandardParallel": 0,
+            "secondPointLongitude": 0,
+            "azimuth": 0,
+            "falseEasting": 500000,
+            "firstStandardParallel": 0
+        },
+        "epsgCode": 4548,
+        "coordUnit": "METER",
+        "name": "China_2000_3_DEGREE_GK_Zone_39N",
+        "projection": {
+            "name": "Gauss_Kruger",
+            "type": "PRJ_GAUSS_KRUGER"
+        },
+        "type": "PCS_CHINA_2000_3_DEGREE_GK_39N",
+        "coordSystem": {
+            "datum": {
+                "name": "D_China_2000",
+                "type": "DATUM_CHINA_2000",
+                "spheroid": {
+                    "flatten": 0.003352810681182319,
+                    "name": "CGCS2000",
+                    "axis": 6378137,
+                    "type": "SPHEROID_CHINA_2000"
+                }
+            },
+            "unit": "DEGREE",
+            "spatialRefType": "SPATIALREF_EARTH_LONGITUDE_LATITUDE",
+            "name": "GCS_China_2000",
+            "type": "GCS_CHINA_2000",
+            "primeMeridian": {
+                "longitudeValue": 0,
+                "name": "Greenwich",
+                "type": "PRIMEMERIDIAN_GREENWICH"
+            }
+        }
+    },
+    "minScale": 0,
+    "markerAngleFixed": false,
+    "overlapDisplayedOptions": {
+        "allowPointWithTextDisplay": true,
+        "horizontalOverlappedSpaceSize": 0,
+        "allowPointOverlap": true,
+        "allowThemeGraduatedSymbolOverlap": false,
+        "verticalOverlappedSpaceSize": 0,
+        "allowTextOverlap": false,
+        "allowThemeGraphOverlap": false,
+        "allowTextAndPointOverlap": true
+    },
+    "visibleScales": [],
+    "dpi": 96,
+    "visibleScalesEnabled": false,
+    "customEntireBoundsEnabled": false,
+    "clipRegion": {
+        "center": null,
+        "parts": null,
+        "style": null,
+        "prjCoordSys": null,
+        "id": 0,
+        "type": "REGION",
+        "partTopo": null,
+        "points": null
+    },
+    "maxScale": 1.0E12,
+    "customParams": "",
+    "center": {
+        "x": -757640.0606130529,
+        "y": 3387809.2036870196
+    },
+    "dynamicPrjCoordSyses": [{
+        "distanceUnit": null,
+        "projectionParam": null,
+        "epsgCode": 0,
+        "coordUnit": null,
+        "name": null,
+        "projection": null,
+        "type": "PCS_ALL",
+        "coordSystem": null
+    }],
+    "colorMode": "DEFAULT",
+    "textAngleFixed": false,
+    "overlapDisplayed": false,
+    "userToken": {"userID": ""},
+    "cacheEnabled": true,
+    "dynamicProjection": false,
+    "autoAvoidEffectEnabled": true,
+    "customEntireBounds": null,
+    "name": "ChinaqxAlberts_4548@fl",
+    "bounds": {
+        "top": 5956378.419384226,
+        "left": -3351272.4427074995,
+        "bottom": 819239.9879898131,
+        "leftBottom": {
+            "x": -3351272.4427074995,
+            "y": 819239.9879898131
+        },
+        "right": 1835992.3214813927,
+        "rightTop": {
+            "x": 1835992.3214813927,
+            "y": 5956378.419384226
+        }
+    },
+    "backgroundStyle": {
+        "fillGradientOffsetRatioX": 0,
+        "markerSize": 2.4,
+        "fillForeColor": {
+            "red": 255,
+            "green": 255,
+            "blue": 255,
+            "alpha": 255
+        },
+        "fillGradientOffsetRatioY": 0,
+        "markerWidth": 0,
+        "markerAngle": 0,
+        "fillSymbolID": 0,
+        "lineColor": {
+            "red": 0,
+            "green": 0,
+            "blue": 0,
+            "alpha": 255
+        },
+        "markerSymbolID": 0,
+        "lineWidth": 0.1,
+        "markerHeight": 0,
+        "fillOpaqueRate": 100,
+        "fillBackOpaque": true,
+        "fillBackColor": {
+            "red": 255,
+            "green": 255,
+            "blue": 255,
+            "alpha": 255
+        },
+        "fillGradientMode": "NONE",
+        "lineSymbolID": 0,
+        "fillGradientAngle": 0
+    }
+}

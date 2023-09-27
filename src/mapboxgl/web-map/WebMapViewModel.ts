@@ -168,6 +168,7 @@ export default class WebMapViewModel extends WebMapBase {
         if (crs.epsgCode) {
           this.mapOptions.crs = new mapboxgl.CRS(
             this.mapOptions.crs.epsgCode,
+            this.mapOptions.crs.WKT,
             this.mapOptions.crs.extent,
             this.mapOptions.crs.unit
           );
@@ -218,17 +219,15 @@ export default class WebMapViewModel extends WebMapBase {
 
   public setStyle(style): void {
     if (this.map) {
-      if (style && style.layers && style.layers.length > 0) {
-        setTimeout(() => {
-          this.triggerEvent('addlayerssucceeded', {
-            map: this.map,
-            mapparams: {},
-            layers: []
-          });
-        }, 0);
-      }
       this.mapOptions.style = style;
       style && this.map.setStyle(style);
+      if (style && style.layers && style.layers.length > 0) {
+        this.triggerEvent('addlayerssucceeded', {
+          map: this.map,
+          mapparams: {},
+          layers: []
+        });
+      }
     }
   }
 
@@ -286,31 +285,75 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
+  _setCRS(baseProjection, wkt, bounds): void {
+    const crs = new mapboxgl.CRS(
+      baseProjection,
+      wkt,
+      bounds,
+      bounds[2] > 180 ? 'meter' : 'degree'
+    )
+    mapboxgl.CRS.set(crs);
+  }
   _getMapInfo(mapInfo, _taskID): void {
     const { projection } = mapInfo;
+    
+    let bounds, wkt;
     this.baseProjection = toEpsgCode(projection);
+    let defaultWktValue = getProjection(this.baseProjection)
+
+    if (defaultWktValue) {
+      wkt = defaultWktValue
+    }
     if (!mapboxgl.CRS.get(this.baseProjection)) {
-      // 如果不是mapboxgl支持的投影，尝试去底图的地图服务中取投影
-      if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'TILE') {
+      if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'MAPBOXSTYLE') {
+        let url = mapInfo.baseLayer.dataSource.url;
+        if (url.indexOf('/restjsr/') > -1 && !/\/style\.json$/.test(url)) {
+          url += '/style.json';
+        }
+        this.webMapService.getMapBoxStyle(url).then((res: any) => {
+          if (res && res.metadata && res.metadata.indexbounds) {
+            bounds = res.metadata.indexbounds
+          } else {
+            bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y]
+          }
+          this._defineProj4(projection);
+          this._setCRS(this.baseProjection, wkt, bounds)
+          
+          this._loadLayers(mapInfo, _taskID);
+        })
+      } else if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'TILE') {
+        //获取地图的wkt
         this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, {
           withoutFormatSuffix: true,
           withCredentials: this.webMapService.handleWithCredentials('', mapInfo.baseLayer.url, false)
-        }).then(wkt => {
-          this._defineProj4(wkt, projection);
-          const extent = mapInfo.extent;
-          const crs = new mapboxgl.CRS(
-            this.baseProjection,
-            [extent.leftBottom.x, extent.leftBottom.y, extent.rightTop.x, extent.rightTop.y],
-            extent.rightTop.x > 180 ? 'meter' : 'degree'
-          );
-          mapboxgl.CRS.set(crs);
-          this._loadLayers(mapInfo, _taskID);
-        });
+        }).then(res => {
+          if (!wkt) {
+            wkt = res
+          }
+          this.getBounds(`${mapInfo.baseLayer.url}.json`, {
+            withoutFormatSuffix: true,
+            withCredentials: this.webMapService.handleWithCredentials('', mapInfo.baseLayer.url, false)
+          }).then(res => {
+            if (res && res.bounds) {
+              bounds = [res.bounds.leftBottom.x, res.bounds.leftBottom.y, res.bounds.rightTop.x, res.bounds.rightTop.y]
+            } else {
+              bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y]
+            }
+            
+            this._defineProj4(wkt, projection);
+            this._setCRS(this.baseProjection, wkt, bounds)
+            this._loadLayers(mapInfo, _taskID);
+          })
+        })
       } else {
+        // this._defineProj4(projection);
+        // this._loadLayers(mapInfo, _taskID);
         throw Error(geti18n().t('webmap.crsNotSupport'));
       }
     } else {
       this._defineProj4(projection);
+      bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y]
+      this._setCRS(this.baseProjection, wkt, bounds)
       this._loadLayers(mapInfo, _taskID);
     }
   }
@@ -369,6 +412,7 @@ export default class WebMapViewModel extends WebMapBase {
       if (this.mapOptions.crs && this.mapOptions.crs.epsgCode) {
         this.mapOptions.crs = new mapboxgl.CRS(
           this.mapOptions.crs.epsgCode,
+          this.mapOptions.crs.WKT,
           this.mapOptions.crs.extent,
           this.mapOptions.crs.unit
         );
@@ -2632,20 +2676,31 @@ export default class WebMapViewModel extends WebMapBase {
     return epsgCode;
   }
 
-  private getEpsgCodeWKT(projectionUrl, options) {
-    if (!projectionUrl) {
-      return;
-    }
-    return SuperMap.FetchRequest.get(projectionUrl, null, options)
-      .then(response => {
-        return response.text();
-      })
+  private FetchRequet(url: any, type: string, options: object) {
+    return SuperMap.FetchRequest.get(url, null, options).then(response => {
+      return response[type]();
+    })
       .then(results => {
         return results;
       })
       .catch(error => {
         console.log(error);
       });
+  }
+
+  private getEpsgCodeWKT(projectionUrl, options) {
+    if (!projectionUrl) {
+      return;
+    }
+    return this.FetchRequet(projectionUrl, 'text', options)
+  }
+
+
+  private getBounds(baseUrl, options) {
+    if (!baseUrl) {
+      return;
+    }
+    return this.FetchRequet(baseUrl, 'json', options)
   }
 
   private _addLayer(layerInfo) {

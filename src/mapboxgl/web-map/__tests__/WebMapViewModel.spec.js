@@ -7,6 +7,9 @@ import uniqueLayer_polygon from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueL
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_multi_points.json';
 import vectorLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/vectorLayer_point.json';
 import vectorLayer_line from 'vue-iclient/test/unit/mocks/data/WebMap/vectorLayer_line.json';
+import tileLayer from 'vue-iclient/test/unit/mocks/data/WebMap/tileLayer.json';
+import mapJson from 'vue-iclient/test/unit/mocks/data/WebMap/map.json';
+import styleJson from 'vue-iclient/test/unit/mocks/data/WebMap/styleJson.json';
 import vectorLayer_polygon from 'vue-iclient/test/unit/mocks/data//WebMap/vectorLayer_polygon.json';
 import rangeLayer from 'vue-iclient/test/unit/mocks/data//WebMap/rangeLayer.json';
 import heatLayer from 'vue-iclient/test/unit/mocks/data//WebMap/heatLayer.json';
@@ -123,8 +126,8 @@ const commonMap = {
   },
   moveLayer: () => jest.fn(),
   overlayLayersManager: {},
-  on: () => {},
-  fire: () => {},
+  on: () => { },
+  fire: () => { },
   setLayoutProperty: () => jest.fn(),
   addStyle: () => jest.fn(),
   remove: () => jest.fn(),
@@ -133,7 +136,7 @@ const commonMap = {
   loadImage: function (src, callback) {
     callback(null, { width: 15 });
   },
-  addImage: function () {},
+  addImage: function () { },
   hasImage: function () {
     return false;
   }
@@ -213,27 +216,27 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile,
       'https://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326/style.json':
-        {
-          version: 8,
-          sources: {
-            'raster-tiles': {
-              type: 'raster',
-              tiles: [
-                'http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
-              ],
-              tileSize: 256
-            }
-          },
-          layers: [
-            {
-              id: 'simple-tiles',
-              type: 'raster',
-              source: 'raster-tiles',
-              minzoom: 0,
-              maxzoom: 22
-            }
-          ]
-        }
+      {
+        version: 8,
+        sources: {
+          'raster-tiles': {
+            type: 'raster',
+            tiles: [
+              'http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
+            ],
+            tileSize: 256
+          }
+        },
+        layers: [
+          {
+            id: 'simple-tiles',
+            type: 'raster',
+            source: 'raster-tiles',
+            minzoom: 0,
+            maxzoom: 22
+          }
+        ]
+      }
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(
@@ -319,13 +322,14 @@ describe('WebMapViewModel.spec', () => {
     };
     it('request wkt info with EPSFG Prefix and test visibleExtend', async done => {
       const get = jest.spyOn(CRS, 'get');
-      get.mockImplementation(() => {
+      get.mockImplementationOnce(() => {
         return '';
       });
       const epsgeCode = 'EPSG:1000';
       const fetchResource = {
         ...commonFetchResource,
-        'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/ChinaDark/prjCoordSys.wkt': epsgeCode
+        'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/ChinaDark/prjCoordSys.wkt': epsgeCode,
+        'https://iserver.supermap.io/iserver/services/map-china400/rest/maps/ChinaDark.json': mapJson
       };
       mockFetch(fetchResource);
       const mapOptions = {
@@ -335,11 +339,10 @@ describe('WebMapViewModel.spec', () => {
         minZoom: 22,
         maxZoom: 0
       };
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
       new WebMapViewModel(uniqueLayer_point, { ...commonOption }, mapOptions, { ...commonMap });
       await flushPromises();
-      expect(errorSpy.mock.calls).toHaveLength(1);
-      expect(errorSpy.mock.calls[0][0]).toMatch(`${epsgeCode} not define`);
+      expect(errorSpy.mock.calls).toEqual([]);
       done();
     });
     it('request wkt info and visibleExtend without EPSFG Prefix ', done => {
@@ -355,6 +358,97 @@ describe('WebMapViewModel.spec', () => {
       viewModel.on({ addlayerssucceeded: callback });
     });
   });
+
+  describe("multi-coordinate", () => {
+    const projection = 'PROJCS[\"CGCS2000 / 3-degree Gauss-Kruger CM 117E\", \r\n  GEOGCS[\"China Geodetic Coordinate System 2000\", \r\n    DATUM[\"China 2000\", \r\n      SPHEROID[\"CGCS2000\", 6378137.0, 298.257222101, AUTHORITY[\"EPSG\",\"1024\"]], \r\n      AUTHORITY[\"EPSG\",\"1043\"]], \r\n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n    UNIT[\"degree\", 0.017453292519943295], \r\n    AXIS[\"lat\", NORTH], \r\n    AXIS[\"lon\", EAST], \r\n    AUTHORITY[\"EPSG\",\"4490\"]], \r\n  PROJECTION[\"Transverse_Mercator\", AUTHORITY[\"EPSG\",\"9807\"]], \r\n  PARAMETER[\"central_meridian\", 117.0], \r\n  PARAMETER[\"latitude_of_origin\", 0.0], \r\n  PARAMETER[\"scale_factor\", 1.0], \r\n  PARAMETER[\"false_easting\", 500000.0], \r\n  PARAMETER[\"false_northing\", 0.0], \r\n  UNIT[\"m\", 1.0], \r\n  AXIS[\"Northing\", NORTH], \r\n  AXIS[\"Easting\", EAST], \r\n  AUTHORITY[\"EPSG\",\"4548\"]]'
+    const wkt = 'PROJCS["China_2000_3_DEGREE_GK_Zone_39N",GEOGCS["GCS_China_2000",DATUM["D_China_2000",SPHEROID["CGCS2000",6378137.0,298.257222101,AUTHORITY["EPSG","7044"]]],PRIMEM["Greenwich",0.0,AUTHORITY["EPSG","8901"]],UNIT["DEGREE",0.017453292519943295],AUTHORITY["EPSG","4490"]],PROJECTION["Transverse_Mercator",AUTHORITY["EPSG","9807"]],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",117.0],PARAMETER["Latitude_Of_Origin",0.0],PARAMETER["Scale_Factor",1.0],UNIT["METER",1.0],AUTHORITY["EPSG","4548"]]';
+    const commonResource = {
+      'http://fake/iserver/services/map-4548/rest/maps/ChinaqxAlberts_4548%40fl/prjCoordSys.wkt': wkt,
+      'http://fake/iserver/services/map-4548/rest/maps/ChinaqxAlberts_4548%40fl.json': mapJson
+    };
+    const baseLayer = {
+      "baseLayer": {
+        "dataSource": {
+          "type": "EXTERNAL",
+          "url": "http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new"
+        },
+        "visible": true,
+        "name": "ChinaqxAlberts_4548@fl",
+        "layerType": "MAPBOXSTYLE"
+      }
+    };
+    it('layerType is MAPBOXSTYLE and webInfo projection is not wkt and indexbounds is exist', async done => {
+      const fetchResource = {
+        ...commonResource,
+        'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': {
+          ...styleJson,
+          "metadata": {
+            "indexbounds": [
+              345754.3017317925,
+              2500241.087997996,
+              3374092.172217019,
+              5528578.958483222
+            ]
+          }
+
+        }
+      };
+      mockFetch(fetchResource);
+      const get = jest.spyOn(CRS, 'get');
+      get.mockImplementationOnce(() => {
+        return '';
+      });
+      const id = { ...tileLayer, ...baseLayer, projection: projection };
+      const viewModel = new WebMapViewModel(id, { ...commonOption });
+      await flushPromises()
+      const callback = function (data) {
+        console.log(data);
+        expect(data.layers.length).toBe(id.layers.length);
+        expect(viewModel.layerAdded).toBe(1);
+        done();
+      };
+      viewModel.on({ addlayerssucceeded: callback });
+    });
+
+    it('layerType is MAPBOXSTYLE and webInfo projection is wkt and indexbounds is not exist', async done => {
+      const fetchResource = {
+        ...commonResource,
+        'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': styleJson
+      };
+      mockFetch(fetchResource);
+      const get = jest.spyOn(CRS, 'get');
+      get.mockImplementationOnce(() => {
+        return '';
+      });
+      const id = { ...tileLayer, ...baseLayer, projection: projection };
+      const viewModel = new WebMapViewModel(id, { ...commonOption });
+      await flushPromises()
+      const callback = function (data) {
+        expect(data.layers.length).toBe(id.layers.length);
+        expect(viewModel.layerAdded).toBe(1);
+        done();
+      };
+      viewModel.on({ addlayerssucceeded: callback });
+    });
+
+    it('layerType is Tile and webInfo projection is wkt', async done => {
+      mockFetch(commonResource);
+      const id = { ...tileLayer, projection: wkt };
+      const get = jest.spyOn(CRS, 'get');
+      get.mockImplementationOnce(() => {
+        return '';
+      });
+      const viewModel = new WebMapViewModel(id, { ...commonOption });
+      await flushPromises()
+      done();
+      const callback = function (data) {
+        expect(data.layers.length).toBe(id.layers.length);
+        done();
+      };
+      viewModel.on({ addlayerssucceeded: callback });
+    });
+
+  })
 
   it('layerType is VECTOR and multi style points', async done => {
     const fetchResource = {
@@ -1186,7 +1280,7 @@ describe('WebMapViewModel.spec', () => {
   it('add wmsLayer with correct url and version is less than 1.3', done => {
     const fetchResource = {
       'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS':
-      wmsCapabilitiesText
+        wmsCapabilitiesText
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel({

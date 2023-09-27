@@ -381,9 +381,14 @@ class SmTextList extends Mixins(Theme, Timer) {
           return item.idx === newVal[0].dataIndex;
         });
         if (dataIndex || dataIndex === 0) {
-          scrollHeight = dataIndex * this.filterUnit(this.listStyle.rowStyle.height);
+          let rowHeight = this.filterUnit(this.listStyle.rowStyle.height);
+          scrollHeight = dataIndex * rowHeight;
           // @ts-ignore
-          this.$refs.animate.scrollTop = scrollHeight;
+          let currentScrollTop = this.$refs.animate.scrollTop;
+          if (scrollHeight < currentScrollTop || scrollHeight > currentScrollTop + rowHeight * this.rows) {
+            // @ts-ignore
+            this.$refs.animate.scrollTop = scrollHeight;
+          }
         }
       }
       // @ts-ignore
@@ -638,7 +643,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         let obj = {};
         this.getColumns &&
           this.getColumns.forEach((column, index) => {
-            obj[`${column.field}-${index}`] = data[column.field] || '-';
+            obj[`${column.field}-${index}`] = (data[column.field] === null || data[column.field] === undefined) ? '-' : data[column.field];
           });
         // @ts-ignore
         obj.idx = index;
@@ -662,7 +667,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         let contentObj = {};
         if (this.getColumns) {
           this.getColumns.forEach((column, index) => {
-            contentObj[`${column.field}-${index}`] = properties[column.field] || '-';
+            contentObj[`${column.field}-${index}`] = (properties[column.field] === null || properties[column.field] === undefined) ? '-' : properties[column.field];
           });
           // @ts-ignore
           contentObj.idx = index;
