@@ -1,7 +1,7 @@
 {
   "name": "@supermap/vue-iclient-leaflet",
   "description": "SuperMap iClient for Vue.js",
-  "version": "11.1.1",
+  "version": "11.2.0-dev",
   "homepage": "http://iclient.supermap.io",
   "main": "lib/index",
   "dependencies": {
