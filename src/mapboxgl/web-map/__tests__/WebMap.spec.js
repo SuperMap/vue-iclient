@@ -621,4 +621,85 @@ describe('WebMap.vue', () => {
     expect(wrapper.vm.mapOptions.bearing).toBe(0);
     done();
   });
+  it('Verify the execution order of the set method', async done => {
+    jest.useFakeTimers();
+    wrapper = mount(SmWebMap, {
+      propsData: {
+        mapOptions: {
+          style: {
+            version: 8,
+            sources: {},
+            layers: []
+          },
+          center: [
+            0,
+            0
+          ],
+          zoom: 1,
+          bearing: 0,
+          pitch: 0,
+          rasterTileSize: 256,
+          preserveDrawingBuffer: true,
+          container: 'map',
+          crs: 'EPSG:3857'
+        }
+      }
+    });
+    jest.advanceTimersByTime(0);
+    jest.useRealTimers();
+    await mapWrapperLoaded(wrapper);
+    const modifiedProps = {
+      mapOptions: {
+        ...wrapper.props().mapOptions,
+        center: [116.84538255155, 39.7881922283],
+        crs: 'EPSG:4326',
+        zoom: 7,
+        style: {
+          version: 8,
+          sources: {
+            'iserver-tiles': {
+              type: 'raster',
+              tiles: [
+                'http://172.16.14.44:8090/iserver/services/map-world/rest/maps/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day'
+              ],
+              tileSize: 256,
+              prjCoordSys: {
+                epsgCode: 4326
+              },
+              rasterSource: 'iserver',
+              proxy: null
+            }
+          },
+          layers: [
+            {
+              id: 'simple-tiles',
+              type: 'raster',
+              source: 'iserver-tiles',
+              minzoom: 0,
+              maxzoom: 22
+            }
+          ]
+        }
+      }
+    };
+    const executionOrder = [];
+    const setCenter = jest.spyOn(wrapper.vm.viewModel, 'setCenter');
+    setCenter.mockImplementation((center) => {
+      wrapper.vm.viewModel.map.setCenter(center);
+      executionOrder.push('setCenter');
+    });
+    const setZoom = jest.spyOn(wrapper.vm.viewModel, 'setZoom');
+    setZoom.mockImplementation((zoom) => {
+      wrapper.vm.viewModel.map.setZoom(zoom);
+      executionOrder.push('setZoom');
+    });
+    wrapper.setProps(modifiedProps);
+
+    expect(setCenter).toHaveBeenCalled();
+    expect(setZoom).toHaveBeenCalled();
+    expect(executionOrder[0]).toEqual('setZoom');
+    expect(wrapper.vm.map.getCenter().toArray()).toEqual([116.84538255155, 39.7881922283]);
+    expect(wrapper.vm.map.getZoom()).toEqual(7);
+    done();
+  });
 });

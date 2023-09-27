@@ -358,6 +358,9 @@ var Map = function (options) {
   this.getZoom = function () {
     return this.zoom;
   };
+  this.setZoom = function(zoom) {
+    this.zoom = zoom;
+  };
   this.getBearing = functor(0);
   this.getPitch = functor(0);
   this.getCenter = function () {

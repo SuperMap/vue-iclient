@@ -101,8 +101,8 @@ interface controlProps {
   viewModelProps: [
     'mapId',
     'serverUrl',
-    'mapOptions.center',
     'mapOptions.zoom',
+    'mapOptions.center',
     'mapOptions.style',
     'mapOptions.crs',
     'mapOptions.minZoom',
