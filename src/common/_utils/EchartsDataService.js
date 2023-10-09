@@ -81,7 +81,8 @@ export default class EchartsDataService {
     let promise = new Promise((resolve, reject) => {
       // 请求数据，请求成功后，解析数据
       const matchItem = this.datasetOptions.find(item => item.sort !== 'unsort');
-      const maxFeatures = matchItem ? '' : dataset.maxFeatures;
+      const isStastic = this.datasetOptions.find(item => item.isStastic === true);
+      const maxFeatures = matchItem || isStastic ? '' : dataset.maxFeatures;
       getFeatures({ ...dataset, maxFeatures })
         .then(data => {
           // 兼容三方服务接口返回的一个普通的对象
@@ -120,10 +121,10 @@ export default class EchartsDataService {
     this._clearChartCache();
     // 设置datasetOptions
     this.setDatasetOptions(datasetOptions);
-    // 设置this.data
-    data = this._setData(data, xBar);
     // 统计后的数据
     let features = this._createStatisticData(data, datasetOptions, xBar);
+    // 设置this.data
+    data = this._setData(data, xBar);
     // 生成seriedata
     datasetOptions.forEach(item => {
       // 生成YData, XData
@@ -179,6 +180,10 @@ export default class EchartsDataService {
         sortMatchItem.sort === 'ascending' ? 'asc' : 'desc'
       );
       xBar && features.reverse();
+    }
+    const maxLen = +this.dataset.maxFeatures;
+    if (maxLen && features.length > maxLen) {
+      features.length = maxLen;
     }
     return features;
   }
