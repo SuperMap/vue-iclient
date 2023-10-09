@@ -455,7 +455,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   public setRenderWorldCopies(renderWorldCopies): void {
     if (this.map) {
       this.mapOptions.renderWorldCopies = renderWorldCopies;
-      renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
+      this.map.setRenderWorldCopies(renderWorldCopies);
     }
   }
 
