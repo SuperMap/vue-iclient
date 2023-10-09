@@ -122,10 +122,12 @@ export default class EchartsDataService {
     this.setDatasetOptions(datasetOptions);
     // 设置this.data
     data = this._setData(data, xBar);
+    // 统计后的数据
+    let features = this._createStatisticData(data, datasetOptions, xBar);
     // 生成seriedata
     datasetOptions.forEach(item => {
       // 生成YData, XData
-      let fieldData = this._fieldsData(data, item, xBar);
+      let fieldData = this._fieldsData(data, item, features, xBar);
       // 解析YData, XData，生成EchartsOption的data
       let serieData = this._createDataOption(fieldData, item);
       // 设置坐标
@@ -145,6 +147,76 @@ export default class EchartsDataService {
     };
   }
 
+  /**
+   * @function EchartsDataService.prototype._createStatisticData
+   * @description 对相同字段数据进行统计，生成统计后的对象数组
+   * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
+   * @param {Object} datasetOptions - 数据解析的配置参数
+   * @returns {Array}  统计后的对象数组
+   */
+  _createStatisticData(data, datasetOptions, xBar) {
+    const sortMatchItem = datasetOptions.find(item => item.sort && item.sort !== 'unsort');
+    const xField = datasetOptions[0].xField;
+    const yFields = datasetOptions.map(item => item.yField);
+    const fieldCaptions = data.fieldCaptions; // 所有字段
+    const xFieldIndex = fieldCaptions.indexOf(xField); // x字段的下标
+    const fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex);
+    const xData = this._stasticXData(fieldValueIndex);
+    const yDatas = [];
+    yFields.forEach(yField => {
+      const yFieldIndex = fieldCaptions.indexOf(yField); // y字段的下标
+      const fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
+      const yData = this._stasticYData(fieldValues, fieldValueIndex);
+      yDatas.push(yData);
+    });
+    const statisticFieldCaptions = [xField].concat(yFields);
+    const statisticFieldValues = [xData].concat(yDatas);
+    let features = this._transformToObj(statisticFieldCaptions, statisticFieldValues);
+    if(sortMatchItem) {
+      features = orderBy(
+        features,
+        sortMatchItem.yField,
+        sortMatchItem.sort === 'ascending' ? 'asc' : 'desc'
+      );
+      xBar && features.reverse();
+    }
+    return features;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._transformToObj
+   * @description 将两个数组，转换成一个对象数组，
+   * 例如keys=['国家', '区域', '船只数量'], values=[['中国','俄罗斯','美国'], [1,2,3], [4,5,6]],最终转换为：
+      [{
+          "国家": "中国",
+          "区域": 1,
+          "船只数量": 4
+      },
+      {
+          "国家": "俄罗斯",
+          "区域": 2,
+          "船只数量": 5
+      },
+      {
+          "国家": "美国",
+          "区域": 3,
+          "船只数量": 6
+      }]
+   * @param {Array} keys - 作为对象键的数组
+   * @param {Array} values - 作为对象值的数组
+   * @returns {Array}  对象数组
+   */
+  _transformToObj(keys, values) {
+    var result = [];
+    for (var i = 0; i < values[0].length; i++) {
+      var obj = {};
+      for (var j = 0; j < keys.length; j++) {
+        obj[keys[j]] = values[j][i];
+      }
+      result.push(obj);
+    }
+    return result;
+  }
   /**
    * @function EchartsDataService.prototype.setDatasetOptions
    * @private
@@ -310,21 +382,21 @@ export default class EchartsDataService {
    * @description 将请求回来的数据，转换成适用于chart配置的数据。
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
    * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @param {Array} features - 统计后的数据
    * @returns {Object}  解析好的Ydata，xdata
    */
-  _fieldsData(data, datasetOption) {
-    let fieldCaptions, fieldValues, xFieldIndex, yFieldIndex, fieldValueIndex, xData, yData, result;
-    let { sort, yField, xField, isStastic } = datasetOption;
+  _fieldsData(data, datasetOption, features) {
+    let fieldCaptions, fieldValues, xFieldIndex, yFieldIndex, xData, yData, result;
+    let { yField, xField, isStastic } = datasetOption;
     fieldCaptions = data.fieldCaptions; // 所有x字段
     xFieldIndex = fieldCaptions.indexOf(xField); // x字段的下标
     yFieldIndex = fieldCaptions.indexOf(yField); // y字段的下标
     fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
     // 该数据是否需要统计,统计的是数组下标
     if (isStastic) {
-      fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex, sort);
-      // 生成统计后的数据
-      xData = this._stasticXData(fieldValueIndex, sort);
-      yData = this._stasticYData(fieldValues, fieldValueIndex, sort);
+      const { xField, yField } = datasetOption;
+      xData = features.map(obj => obj[xField]);
+      yData = features.map(obj => obj[yField]);
     } else {
       // 如果不是统计图表
       xData = this._getFieldDatas(data, xFieldIndex);
