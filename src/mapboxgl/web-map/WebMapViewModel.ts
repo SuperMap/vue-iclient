@@ -82,6 +82,8 @@ export default class WebMapViewModel extends WebMapBase {
 
   bounds: mapboxglTypes.LngLatBoundsLike;
 
+  renderWorldCopies: boolean;
+
   bearing: number;
 
   pitch: number;
@@ -136,6 +138,7 @@ export default class WebMapViewModel extends WebMapBase {
     this.bounds = mapOptions.bounds;
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
+    this.renderWorldCopies = mapOptions.renderWorldCopies;
     this.rasterTileSize = mapOptions.rasterTileSize || 256;
     this.layerFilter = layerFilter;
     this.checkSameLayer = options.checkSameLayer;
@@ -195,7 +198,7 @@ export default class WebMapViewModel extends WebMapBase {
   public setRenderWorldCopies(renderWorldCopies): void {
     if (this.map) {
       this.mapOptions.renderWorldCopies = renderWorldCopies;
-      renderWorldCopies && this.map.setRenderWorldCopies(renderWorldCopies);
+      this.map.setRenderWorldCopies(renderWorldCopies);
     }
   }
 
@@ -440,7 +443,7 @@ export default class WebMapViewModel extends WebMapBase {
         if (Object.prototype.hasOwnProperty.call(this.mapOptions, 'fadeDuration')) {
           fadeDuration = this.mapOptions.fadeDuration;
         }
-        this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration, renderWorldCopies: false });
+        this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
         this.map.on('load', () => {
           this.triggerEvent('addlayerssucceeded', {
             map: this.map,
@@ -513,7 +516,7 @@ export default class WebMapViewModel extends WebMapBase {
       // @ts-ignore fix-crs
       crs: this.baseProjection,
       localIdeographFontFamily: fontFamilys || '',
-      renderWorldCopies: false,
+      renderWorldCopies: this.renderWorldCopies || false,
       transformRequest: (url, resourceType) => {
         if (resourceType === 'Tile') {
           if (this.isSuperMapOnline && url.indexOf('http://') === 0) {
