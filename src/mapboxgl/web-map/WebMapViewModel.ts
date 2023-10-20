@@ -294,19 +294,18 @@ export default class WebMapViewModel extends WebMapBase {
       wkt,
       bounds,
       bounds[2] > 180 ? 'meter' : 'degree'
-    )
+    );
     mapboxgl.CRS.set(crs);
   }
-  
+
   _getMapInfo(mapInfo, _taskID): void {
     const { projection } = mapInfo;
-    
     let bounds, wkt;
     this.baseProjection = toEpsgCode(projection);
-    let defaultWktValue = getProjection(this.baseProjection)
+    let defaultWktValue = getProjection(this.baseProjection);
 
     if (defaultWktValue) {
-      wkt = defaultWktValue
+      wkt = defaultWktValue;
     }
     if (!mapboxgl.CRS.get(this.baseProjection)) {
       if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'MAPBOXSTYLE') {
@@ -316,39 +315,37 @@ export default class WebMapViewModel extends WebMapBase {
         }
         this.webMapService.getMapBoxStyle(url).then((res: any) => {
           if (res && res.metadata && res.metadata.indexbounds) {
-            bounds = res.metadata.indexbounds
+            bounds = res.metadata.indexbounds;
           } else {
-            bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y]
+            bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y];
           }
           this._defineProj4(projection);
-          this._setCRS(this.baseProjection, wkt, bounds)
-          
+          this._setCRS(this.baseProjection, wkt, bounds);
           this._loadLayers(mapInfo, _taskID);
-        })
+        });
       } else if (mapInfo.baseLayer && mapInfo.baseLayer.layerType === 'TILE') {
-        //获取地图的wkt
+        // 获取地图的wkt
         this.getEpsgCodeWKT(`${mapInfo.baseLayer.url}/prjCoordSys.wkt`, {
           withoutFormatSuffix: true,
           withCredentials: this.webMapService.handleWithCredentials('', mapInfo.baseLayer.url, false)
         }).then(res => {
           if (!wkt) {
-            wkt = res
+            wkt = res;
           }
           this.getBounds(`${mapInfo.baseLayer.url}.json`, {
             withoutFormatSuffix: true,
             withCredentials: this.webMapService.handleWithCredentials('', mapInfo.baseLayer.url, false)
           }).then(res => {
             if (res && res.bounds) {
-              bounds = [res.bounds.leftBottom.x, res.bounds.leftBottom.y, res.bounds.rightTop.x, res.bounds.rightTop.y]
+              bounds = [res.bounds.leftBottom.x, res.bounds.leftBottom.y, res.bounds.rightTop.x, res.bounds.rightTop.y];
             } else {
-              bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y]
+              bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y];
             }
-            
             this._defineProj4(wkt, projection);
-            this._setCRS(this.baseProjection, wkt, bounds)
+            this._setCRS(this.baseProjection, wkt, bounds);
             this._loadLayers(mapInfo, _taskID);
-          })
-        })
+          });
+        });
       } else {
         // this._defineProj4(projection);
         // this._loadLayers(mapInfo, _taskID);
@@ -356,8 +353,8 @@ export default class WebMapViewModel extends WebMapBase {
       }
     } else {
       this._defineProj4(projection);
-      bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y]
-      this._setCRS(this.baseProjection, wkt, bounds)
+      bounds = [mapInfo.extent.leftBottom.x, mapInfo.extent.leftBottom.y, mapInfo.extent.rightTop.x, mapInfo.extent.rightTop.y];
+      this._setCRS(this.baseProjection, wkt, bounds);
       this._loadLayers(mapInfo, _taskID);
     }
   }
@@ -2721,7 +2718,7 @@ export default class WebMapViewModel extends WebMapBase {
     return epsgCode;
   }
 
-  private FetchRequet(url: any, type: string, options: object) {
+  private _fetchRequest(url: any, type: string, options: Object) {
     return SuperMap.FetchRequest.get(url, null, options).then(response => {
       return response[type]();
     })
@@ -2737,15 +2734,14 @@ export default class WebMapViewModel extends WebMapBase {
     if (!projectionUrl) {
       return;
     }
-    return this.FetchRequet(projectionUrl, 'text', options)
+    return this._fetchRequest(projectionUrl, 'text', options);
   }
-
 
   private getBounds(baseUrl, options) {
     if (!baseUrl) {
       return;
     }
-    return this.FetchRequet(baseUrl, 'json', options)
+    return this._fetchRequest(baseUrl, 'json', options);
   }
 
   private _addLayer(layerInfo) {
