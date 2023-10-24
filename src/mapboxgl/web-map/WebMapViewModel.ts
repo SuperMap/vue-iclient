@@ -1287,24 +1287,56 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
+  private _addTextBackgroundImage(rgba: Array<number>): string {
+    if (!rgba[3]) {
+      return '';
+    }
+    const width = 20; // The image will be 64 pixels square.
+    const bytesPerPixel = 4; // Each pixel is represented by 4 bytes: red, green, blue, and alpha.
+    const data = new Uint8Array(width * width * bytesPerPixel);
+
+    for (let x = 0; x < width; x++) {
+      for (let y = 0; y < width; y++) {
+        const offset = (y * width + x) * bytesPerPixel;
+        data[offset + 0] = rgba[0]; // red
+        data[offset + 1] = rgba[1]; // green
+        data[offset + 2] = rgba[2]; // blue
+        data[offset + 3] = rgba[3] * 255; // alpha
+      }
+    }
+    const imageId = `text-background-${rgba.join('-')}`;
+    if (!this.map.hasImage(imageId)) {
+      this.map.addImage(
+        imageId,
+        { width: width, height: width, data: data },
+        {
+          // @ts-ignore
+          stretchX: [[0, 20]],
+          stretchY: [[0, 20]],
+          content: [0, 0, 20, 20]
+        }
+      );
+    }
+    return imageId;
+  }
+
   private _addLabelLayer(layerInfo: any, features: any, addSource = false): void {
     const labelStyle = layerInfo.labelStyle;
     let { backgroundFill } = labelStyle;
     const fontFamily = labelStyle.fontFamily;
     const { minzoom, maxzoom } = layerInfo;
     const textSize = parseFloat(labelStyle.fontSize || 14);
+    let textBackgroundImageId = '';
+    if (labelStyle.placement !== 'line') {
+      textBackgroundImageId = this._addTextBackgroundImage(backgroundFill);
+    }
     backgroundFill = `rgba(${backgroundFill.join(',')})`;
     let textHaloColor = 'rgba(255,255,255,0)';
     if (labelStyle.outlineColor && labelStyle.outlineWidth > 0) {
       textHaloColor = labelStyle.outlineColor;
-    } else if (labelStyle.placement !== 'line') {
-      textHaloColor = backgroundFill || 'rgba(255,255,255,1)';
     }
 
     let textHaloWidth = (labelStyle.outlineWidth || 0) / 2;
-    if (textHaloWidth === 0 && labelStyle.placement !== 'line' && backgroundFill) {
-      textHaloWidth = 4;
-    }
     let textAnchor = labelStyle.textAlign || 'center';
     if (labelStyle.textBaseline && labelStyle.textBaseline !== 'middle') {
       textAnchor = `${labelStyle.textBaseline}${textAnchor === 'center' ? '' : `-${textAnchor}`}`;
@@ -1314,6 +1346,27 @@ export default class WebMapViewModel extends WebMapBase {
       layerInfo.featureType === 'POINT'
         ? [labelStyle.offsetX / textSize || 0, labelStyle.offsetY / textSize || 0]
         : [0, 0];
+    const layout = {
+      'text-field': `{${labelStyle.labelField}}`,
+      'text-size': textSize,
+      'text-offset': textOffset,
+      'text-font': fontFamily ? [fontFamily] : ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
+      'symbol-placement':
+        labelStyle.placement === 'line' ? (layerInfo.featureType === 'POLYGON' ? 'line' : 'line-center') : 'point',
+      'text-max-angle': layerInfo.featureType === 'POLYGON' ? 40 : 30,
+      'symbol-spacing': layerInfo.featureType === 'POLYGON' ? 200 : 50,
+      'text-anchor': textAnchor,
+      'text-line-height': 1.2,
+      visibility: layerInfo.visible
+    };
+    if (textBackgroundImageId) {
+      Object.assign(layout, {
+        'icon-image': textBackgroundImageId,
+        'icon-allow-overlap': true,
+        'icon-text-fit': 'both',
+        'icon-text-fit-padding': [2, 4, 2, 4]
+      });
+    }
     this._addLayer({
       id: `${layerInfo.layerID}-label`,
       type: 'symbol',
@@ -1326,19 +1379,7 @@ export default class WebMapViewModel extends WebMapBase {
         'text-halo-color': textHaloColor,
         'text-halo-width': textHaloWidth
       },
-      layout: {
-        'text-field': `{${labelStyle.labelField}}`,
-        'text-size': textSize,
-        'text-offset': textOffset,
-        'text-font': fontFamily ? [fontFamily] : ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
-        'symbol-placement':
-          labelStyle.placement === 'line' ? (layerInfo.featureType === 'POLYGON' ? 'line' : 'line-center') : 'point',
-        'text-max-angle': layerInfo.featureType === 'POLYGON' ? 40 : 30,
-        'symbol-spacing': layerInfo.featureType === 'POLYGON' ? 200 : 50,
-        'text-anchor': textAnchor,
-        'text-line-height': 1.2,
-        visibility: layerInfo.visible
-      },
+      layout,
       minzoom: minzoom || 0,
       maxzoom: maxzoom || 22
     });
@@ -1388,7 +1429,7 @@ export default class WebMapViewModel extends WebMapBase {
       layout: {
         'text-field': text,
         'text-size': textSize,
-        'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
+        'text-font': ['supermapol-icons'],
         'text-rotate': textRotateExpresion || rotate || 0,
         'text-offset': Array.isArray(style.offsetX) ? style.offsetX : [style.offsetX / 2 || 0, style.offsetY / 2 || 0],
         'text-allow-overlap': true,
@@ -1750,7 +1791,7 @@ export default class WebMapViewModel extends WebMapBase {
             'text-field': unicodeExpression,
             'text-size':
               typeof symbolStyle.fontSize === 'string' ? parseInt(symbolStyle.fontSize) : symbolStyle.fontSize || 12,
-            'text-font': ['DIN Offc Pro Italic', 'Arial Unicode MS Regular'],
+            'text-font': ['supermapol-icons'],
             'text-rotate': symbolStyle.rotation || 0,
             'text-offset': Array.isArray(symbolStyle.offsetX)
               ? symbolStyle.offsetX
@@ -2594,7 +2635,7 @@ export default class WebMapViewModel extends WebMapBase {
         layer.labelStyle && fonts.push(layer.labelStyle.fontFamily);
       }, this);
     }
-    fonts.push("'supermapol-icons'");
+    fonts.push('supermapol-icons');
     const fontFamilys: string = fonts.join(',');
 
     return fontFamilys;
