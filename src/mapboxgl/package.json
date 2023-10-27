@@ -20,7 +20,7 @@
     "@types/node": "^12.0.3",
     "@types/three": "0.129.0",
     "ant-design-vue": "1.7.2",
-    "axios": "^0.21.1",
+    "axios": "^1.6.0",
     "canvg": "~3.0.10",
     "clipboard": "^2.0.6",
     "colorcolor": "^1.1.1",
