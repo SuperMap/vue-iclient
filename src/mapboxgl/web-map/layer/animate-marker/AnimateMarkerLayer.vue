@@ -1,6 +1,7 @@
 <script lang="ts">
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
 import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
 import AnimateMarkerLayerViewModel from './AnimateMarkerLayerViewModel';
 import BreathingApertureMarker from './marker/BreathingApertureMarker';
 import DiffusedApertureMarker from './marker/DiffusedApertureMarker';
@@ -19,7 +20,7 @@ import { FeatureCollection } from 'geojson';
 @Component({
   name: 'SmAnimateMarkerLayer'
 })
-class AnimateMarkerLayer extends Mixins(MapGetter) {
+class AnimateMarkerLayer extends Mixins(MapGetter, Layer) {
   viewModel: AnimateMarkerLayerViewModel;
   // eslint-disable-next-line
   map: mapboxglTypes.Map;
@@ -35,6 +36,8 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   _markersElement: HTMLElement[];
 
   _pointFeatures: any;
+
+  layerId: string;
 
   @Prop() features: FeatureCollection;
 
@@ -117,7 +120,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter) {
   created() {
     this._pointFeatures = this._getPointFeatures(this.features);
     this._getMarkerElement(this._pointFeatures);
-    this.viewModel = new AnimateMarkerLayerViewModel(this._pointFeatures, this._markersElement, this.fitBounds);
+    this.viewModel = new AnimateMarkerLayerViewModel(this.layerId, this._pointFeatures, this._markersElement, this.fitBounds);
   }
 
   mounted() {
