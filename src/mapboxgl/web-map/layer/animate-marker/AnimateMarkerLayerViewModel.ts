@@ -121,11 +121,13 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
   }
 
   public removed() {
-    if(this.map && this.map.getLayer(this.layerId)) {
-      this.map.removeLayer(this.layerId);
-      this.map.removeSource(this.layerId);
+    if (this.map) {
+      if(this.map.getLayer(this.layerId)) {
+        this.map.removeLayer(this.layerId);
+        this.map.removeSource(this.layerId);
+      }
+      this.map.off('styledata', this.updateLayerFn);
     }
-    this.map.off('styledata', this.updateLayerFn);
     this.markers.length > 0 &&
       this.markers.forEach(marker => {
         marker && marker.remove();
