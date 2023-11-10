@@ -465,4 +465,38 @@ describe('AnimateMarkerLayer.vue', () => {
     expect(wrapper.vm.viewModel.layerId).toBe('test-id');
     done();
   });
+
+  it('change layerId', async done => {
+    const newFeatures= {
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            SmID: '10'
+          },
+          type: 'Feature'
+        }
+      ],
+      type: 'FeatureCollection'
+    };
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        features: newFeatures,
+        mapTarget: 'map',
+        textField: 'name',
+        layerId: 'test-id1'
+      }
+    });
+    const spy = jest.spyOn(wrapper.vm.viewModel, 'setLayerId');
+    await mapSubComponentLoaded(wrapper);
+    await wrapper.setProps({
+      layerId: 'test-id2'
+    });
+    expect(spy).toHaveBeenCalled();
+    expect(wrapper.vm.viewModel.layerId).toBe('test-id2');
+    done();
+  });
 });
