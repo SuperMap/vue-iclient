@@ -49,6 +49,15 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     this._initalizeMarkerLayer(fitBounds);
   }
 
+  public setLayerId(layerId) {
+    if (!this.features || JSON.stringify(this.features) === '{}') {
+      return;
+    }
+    this.removed();
+    this.layerId = layerId;
+    this._createMarker();
+  }
+
   private _initalizeMarkerLayer(fitBounds?) {
     if (!this.features || JSON.stringify(this.features) === '{}') {
       return;
