@@ -159,13 +159,13 @@ export default class EchartsDataService {
     const sortMatchItem = datasetOptions.find(item => item.sort && item.sort !== 'unsort');
     const xField = datasetOptions[0].xField;
     const yFields = datasetOptions.map(item => item.yField);
-    const fieldCaptions = data.fieldCaptions; // 所有字段
-    const xFieldIndex = fieldCaptions.indexOf(xField); // x字段的下标
+    const fields = data.fields; // 所有字段
+    const xFieldIndex = fields.indexOf(xField); // x字段的下标
     const fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex);
     const xData = this._stasticXData(fieldValueIndex);
     const yDatas = [];
     yFields.forEach(yField => {
-      const yFieldIndex = fieldCaptions.indexOf(yField); // y字段的下标
+      const yFieldIndex = fields.indexOf(yField); // y字段的下标
       const fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
       const yData = this._stasticYData(fieldValues, fieldValueIndex);
       yDatas.push(yData);
@@ -391,11 +391,11 @@ export default class EchartsDataService {
    * @returns {Object}  解析好的Ydata，xdata
    */
   _fieldsData(data, datasetOption, features) {
-    let fieldCaptions, fieldValues, xFieldIndex, yFieldIndex, xData, yData, result;
+    let fields, fieldValues, xFieldIndex, yFieldIndex, xData, yData, result;
     let { yField, xField, isStastic } = datasetOption;
-    fieldCaptions = data.fieldCaptions; // 所有x字段
-    xFieldIndex = fieldCaptions.indexOf(xField); // x字段的下标
-    yFieldIndex = fieldCaptions.indexOf(yField); // y字段的下标
+    fields = data.fields; // 所有x字段
+    xFieldIndex = fields.indexOf(xField); // x字段的下标
+    yFieldIndex = fields.indexOf(yField); // y字段的下标
     fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
     // 该数据是否需要统计,统计的是数组下标
     if (isStastic) {

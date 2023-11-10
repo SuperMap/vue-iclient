@@ -26,4 +26,14 @@ describe('iServerRestService', () => {
     expect(params[0][0].queryOption).toBe('ATTRIBUTEANDGEOMETRY');
     done();
   });
+  it('_getDataFeaturesBySql', done => {
+    const service = new iServerRestService('url', { hasGeometry: true });
+    service._getDataFeaturesBySql('mock', {});
+    service.on({
+      getdatasucceeded: data => {
+        expect(data.fields).toEqual(['SMID', '名称'])
+        done();
+      },
+    })
+  });
 });
