@@ -650,4 +650,64 @@ describe('Chart Mixin Component', () => {
     expect(wrapper.emitted().click.length).toBe(1);
     expect(wrapper.emitted().click[0]).toEqual([params]);
   });
+
+  it('setSeriesColor', async done => {
+    const serieItem = {
+      name: 'sale',
+      emphasis: {
+        itemStyle: {}
+      },
+      itemStyle: {
+        barBorderRadius: [0, 15, 15, 0]
+      },
+      stack: 0,
+      type: 'bar',
+      barWidth: 10,
+      data: [22, 65, 86, 48, 43, 53, 34, 33, 24]
+    };
+    const series = [serieItem];
+    const options = {
+      xAxis: yAxis,
+      yAxis: xAxis,
+      legend,
+      series
+    };
+    wrapper = factory({
+      options
+    });
+    expect(wrapper.vm.xBar).toBeTruthy();
+    await wrapper.setProps({
+      options: {
+        ...options,
+        series: [
+          {
+            ...serieItem,
+            label: {
+              normal: {
+                show: true,
+                position: 'center',
+                smart: true
+              }
+            }
+          }
+        ]
+      }
+    });
+    expect(wrapper.vm.echartOptions).toStrictEqual(wrapper.vm.parseOptions);
+    wrapper.vm.setSeriesColor();
+    expect(wrapper.vm.echartOptions.series[0].itemStyle.color).toEqual('#d53e4f');
+    done();
+  });
+
+  it('trigger echarts events', () => {
+    wrapper = factory({
+      options: optionFactory(),
+      datasetOptions: datasetOptionsFactory(['bar']),
+      dataset: geoJSONDataset,
+      associatedMap: true
+    }, { localVue });
+    const chartInstance = wrapper.vm._getEchart();
+    expect(chartInstance).not.toBeUndefined();
+    console.log('chartInstance', chartInstance);
+  });
 });
