@@ -160,7 +160,7 @@ export default {
       default: true
     },
     filterCategoryValue: {
-      type: String,
+      type: [Number, String],
       default: undefined
     }
   },
@@ -559,7 +559,15 @@ export default {
         this.datasetChange = false;
         // 设置echartOptions
         this.echartOptions = this._optionsHandler(echartOptions, options);
-        this.setSeriesColor();
+        const setColorType = ['2.5Bar', 'bar'];
+        let serieType;
+        if (this.options && this.options.series && this.options.series[0]) {
+          serieType = this.options.series[0].type;
+        }
+        if (setColorType.includes(serieType)) {
+          this.setSeriesColor();
+        }
+        this.setSeriesName();
       });
     },
     setSeriesColor() {
@@ -575,7 +583,19 @@ export default {
         }
         serie.itemStyle = serie.itemStyle || {};
         serie.itemStyle.color = colorGroup[colorIndex];
+        this.$set(serie, 'itemStyle', { color: colorGroup[colorIndex] });
         if (!this.filterCategoryValue) {
+          serie.name = serieName;
+        }
+      });
+    },
+    setSeriesName() {
+      if (!this.echartOptions.series && !this.echartOptions.series.length) {
+        return;
+      }
+      this.echartOptions.series.forEach(serie => {
+        const serieName = serie.name.includes('-') ? serie.name.split('-')[1] : serie.name;
+        if (!this.filterCategoryValue && this.multipleYField) {
           serie.name = serieName;
         }
       });
@@ -619,7 +639,31 @@ export default {
             return Object.assign({}, element, dataOptions.series[index] || {});
           });
           const dataZoom = options.dataZoom && options.dataZoom[0];
+
+          const sameYFieldSeriesCount = this.getSameYFieldSeriesCount(options.series);
+          const leftRightCount = sameYFieldSeriesCount / 2;
+          const baseSpace = 32;
+          let seriesSpace = 0;
+          let seriesSpaceCount = -Math.floor(leftRightCount);
+          let seriesNameTag;
+          let colorIndex = 0;
+          const parallelShow = this.multipleYField(options.series);
           options.series = options.series.map((serie, index) => {
+            const serieName = serie.name.includes('-') ? serie.name.split('-')[1] : serie.name;
+            if (!seriesNameTag) {
+              seriesNameTag = serieName;
+              seriesSpace = this.getSericeSpace(sameYFieldSeriesCount, baseSpace, seriesSpaceCount);
+            } else {
+              if (seriesNameTag === serieName) {
+                seriesSpace = this.getSericeSpace(sameYFieldSeriesCount, baseSpace, seriesSpaceCount);
+              } else {
+                seriesSpaceCount = -Math.floor(leftRightCount);
+                seriesNameTag = serieName;
+                seriesSpace = this.getSericeSpace(sameYFieldSeriesCount, baseSpace, seriesSpaceCount);
+                colorIndex += 1;
+              }
+            }
+            seriesSpaceCount += 1;
             let label = serie.label && serie.label.normal;
             if (label && !label.smart) {
               serie.label.normal = this._controlLabel(label, serie.maxLabels);
@@ -677,84 +721,7 @@ export default {
                   serie.type = 'custom';
                   dataOptions.series[index] && (dataOptions.series[index].type = 'custom');
                   const _this = this;
-                  serie.renderItem = (params, api) => {
-                    const location = api.coord([api.value(0), api.value(1)]);
-                    let fillColor = defaultColor || colorGroup[params.seriesIndex];
-                    if (_this.highlightOptions && _this.highlightOptions.length > 0) {
-                      const matchData = _this.highlightOptions.find(
-                        item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
-                      );
-                      if (matchData && (matchData.color || _this.highlightColor)) {
-                        fillColor = matchData.color || _this.highlightColor;
-                      }
-                    }
-                    let leftColor, rightColor, topColor;
-                    if (typeof fillColor === 'object') {
-                      const copyLeftColor = cloneDeep(fillColor);
-                      const copyRightColor = cloneDeep(fillColor);
-                      const copyTopColor = cloneDeep(fillColor);
-                      copyLeftColor.colorStops[0].color = getColorWithOpacity(copyLeftColor.colorStops[0].color, 0.4);
-                      copyLeftColor.colorStops[1].color = getColorWithOpacity(copyLeftColor.colorStops[1].color, 0.4);
-                      copyRightColor.colorStops[0].color = getColorWithOpacity(copyRightColor.colorStops[0].color, 0.7);
-                      copyRightColor.colorStops[1].color = getColorWithOpacity(copyRightColor.colorStops[1].color, 0.7);
-                      copyTopColor.colorStops[0].color = getColorWithOpacity(copyTopColor.colorStops[0].color, 0.85);
-                      copyTopColor.colorStops[1].color = getColorWithOpacity(copyTopColor.colorStops[1].color, 0.85);
-                      leftColor = copyLeftColor;
-                      rightColor = copyRightColor;
-                      topColor = copyTopColor;
-                    } else {
-                      leftColor = getColorWithOpacity(fillColor, 0.4);
-                      rightColor = getColorWithOpacity(fillColor, 0.7);
-                      topColor = getColorWithOpacity(fillColor, 0.85);
-                    }
-                    return {
-                      type: 'group',
-                      children: [
-                        {
-                          type: `Cube${cubeType}Left`,
-                          shape: {
-                            api,
-                            xValue: api.value(0),
-                            yValue: api.value(1),
-                            x: location[0],
-                            y: location[1],
-                            xAxisPoint: api.coord([api.value(0), 0])
-                          },
-                          style: {
-                            fill: leftColor
-                          }
-                        },
-                        {
-                          type: `Cube${cubeType}Right`,
-                          shape: {
-                            api,
-                            xValue: api.value(0),
-                            yValue: api.value(1),
-                            x: location[0],
-                            y: location[1],
-                            xAxisPoint: api.coord([api.value(0), 0])
-                          },
-                          style: {
-                            fill: rightColor
-                          }
-                        },
-                        {
-                          type: `Cube${cubeType}Top`,
-                          shape: {
-                            api,
-                            xValue: api.value(0),
-                            yValue: api.value(1),
-                            x: location[0],
-                            y: location[1],
-                            xAxisPoint: api.coord([api.value(0), 0])
-                          },
-                          style: {
-                            fill: topColor
-                          }
-                        }
-                      ]
-                    };
-                  };
+                  serie.renderItem = this._squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex, parallelShow);
                 } else if (shape === 'cylinder') {
                   const baseWidth = '100%';
                   const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
@@ -879,6 +846,114 @@ export default {
         mergeOptions.series.push(...extraSeries);
       }
       return mergeOptions;
+    },
+    multipleYField(optionSeries) {
+      const series = cloneDeep(optionSeries);
+      const nameList = series.map(serie => {
+        return serie.name.includes('-') ? serie.name[1] : serie.name;
+      });
+      return series.length !== new Set(nameList).size;
+    },
+    _squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex, parallelShow) {
+      return (params, api) => {
+        seriesSpace = !parallelShow ? 0 : seriesSpace;
+        const location = api.coord([api.value(0), api.value(1)]);
+        let fillColor = !colorIndex ? defaultColor : colorGroup[colorIndex];
+        if (_this.highlightOptions && _this.highlightOptions.length > 0) {
+          const matchData = _this.highlightOptions.find(
+            item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
+          );
+          if (matchData && (matchData.color || _this.highlightColor)) {
+            fillColor = matchData.color || _this.highlightColor;
+          }
+        }
+        let leftColor, rightColor, topColor;
+        if (typeof fillColor === 'object') {
+          const copyLeftColor = cloneDeep(fillColor);
+          const copyRightColor = cloneDeep(fillColor);
+          const copyTopColor = cloneDeep(fillColor);
+          copyLeftColor.colorStops[0].color = getColorWithOpacity(copyLeftColor.colorStops[0].color, 0.4);
+          copyLeftColor.colorStops[1].color = getColorWithOpacity(copyLeftColor.colorStops[1].color, 0.4);
+          copyRightColor.colorStops[0].color = getColorWithOpacity(copyRightColor.colorStops[0].color, 0.7);
+          copyRightColor.colorStops[1].color = getColorWithOpacity(copyRightColor.colorStops[1].color, 0.7);
+          copyTopColor.colorStops[0].color = getColorWithOpacity(copyTopColor.colorStops[0].color, 0.85);
+          copyTopColor.colorStops[1].color = getColorWithOpacity(copyTopColor.colorStops[1].color, 0.85);
+          leftColor = copyLeftColor;
+          rightColor = copyRightColor;
+          topColor = copyTopColor;
+        } else {
+          leftColor = getColorWithOpacity(fillColor, 0.4);
+          rightColor = getColorWithOpacity(fillColor, 0.7);
+          topColor = getColorWithOpacity(fillColor, 0.85);
+        }
+        return {
+          type: 'group',
+          children: [
+            {
+              type: `Cube${cubeType}Left`,
+              shape: {
+                api,
+                xValue: api.value(0),
+                yValue: api.value(1),
+                x: location[0] + seriesSpace,
+                y: location[1],
+                bottomYAxis: api.coord([api.value(0), 0])[1]
+              },
+              style: {
+                fill: leftColor
+              }
+            },
+            {
+              type: `Cube${cubeType}Right`,
+              shape: {
+                api,
+                xValue: api.value(0),
+                yValue: api.value(1),
+                x: location[0] + seriesSpace,
+                y: location[1],
+                bottomYAxis: api.coord([api.value(0), 0])[1]
+              },
+              style: {
+                fill: rightColor
+              }
+            },
+            {
+              type: `Cube${cubeType}Top`,
+              shape: {
+                api,
+                xValue: api.value(0),
+                yValue: api.value(1),
+                x: location[0] + seriesSpace,
+                y: location[1],
+                bottomYAxis: api.coord([api.value(0), 0])[1]
+              },
+              style: {
+                fill: topColor
+              }
+            }
+          ]
+        };
+      };
+    },
+    getSericeSpace(sameYFieldSeriesCount, baseSpace, seriesSpaceCount) {
+      if (sameYFieldSeriesCount % 2 === 0) {
+        return seriesSpaceCount * baseSpace + baseSpace / 2;
+      } else {
+        return seriesSpaceCount * baseSpace;
+      }
+    },
+    getSameYFieldSeriesCount(series) {
+      const firstSeriesName = series[0].name.split('-')[1];
+      let seriesCount = 0;
+      for (let serie of series) {
+        const serieNname = serie.name.split('-')[1];
+        if (firstSeriesName === serieNname) {
+          seriesCount += 1;
+        } else {
+          return seriesCount;
+        }
+      }
+      return seriesCount;
     },
     _createRingShineSeries(series, optionsSeries) {
       if (optionsSeries) {
@@ -1206,11 +1281,11 @@ export default {
                   },
                   buildPath: function (ctx, shape) {
                     // 会canvas的应该都能看得懂，shape是从custom传入的
-                    const xAxisPoint = shape.xAxisPoint;
+                    const bottomYAxis = shape.bottomYAxis;
                     const c0 = [shape.x, shape.y];
                     const c1 = [shape.x - 13, shape.y - 13];
-                    const c2 = [xAxisPoint[0] - 13, xAxisPoint[1] - 13];
-                    const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                    const c2 = [shape.x - 13, bottomYAxis - 13];
+                    const c3 = [shape.x, bottomYAxis];
                     ctx.moveTo(c0[0], c0[1]).lineTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).closePath();
                   }
                 });
@@ -1221,10 +1296,10 @@ export default {
                     y: 0
                   },
                   buildPath: function (ctx, shape) {
-                    const xAxisPoint = shape.xAxisPoint;
+                    const bottomYAxis = shape.bottomYAxis;
                     const c1 = [shape.x, shape.y];
-                    const c2 = [xAxisPoint[0], xAxisPoint[1]];
-                    const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                    const c2 = [shape.x, bottomYAxis];
+                    const c3 = [shape.x + 18, bottomYAxis - 9];
                     const c4 = [shape.x + 18, shape.y - 9];
                     ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
                   }
@@ -1252,11 +1327,11 @@ export default {
                     y: 0
                   },
                   buildPath: function (ctx, shape) {
-                    const xAxisPoint = shape.xAxisPoint;
+                    const bottomYAxis = shape.bottomYAxis;
                     const c0 = [shape.x, shape.y];
                     const c1 = [shape.x - 9, shape.y - 9];
-                    const c2 = [xAxisPoint[0] - 9, xAxisPoint[1] - 9];
-                    const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                    const c2 = [shape.x - 9, bottomYAxis - 9];
+                    const c3 = [shape.x, bottomYAxis];
                     ctx.moveTo(c0[0], c0[1]).lineTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).closePath();
                   }
                 });
@@ -1266,10 +1341,10 @@ export default {
                     y: 0
                   },
                   buildPath: function (ctx, shape) {
-                    const xAxisPoint = shape.xAxisPoint;
+                    const bottomYAxis = shape.bottomYAxis;
                     const c1 = [shape.x, shape.y];
-                    const c2 = [xAxisPoint[0], xAxisPoint[1]];
-                    const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                    const c2 = [shape.x, bottomYAxis];
+                    const c3 = [shape.x + 18, bottomYAxis - 9];
                     const c4 = [shape.x + 18, shape.y - 9];
                     ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
                   }

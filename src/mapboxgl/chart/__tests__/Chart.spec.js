@@ -364,6 +364,9 @@ describe('Chart', () => {
     await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
+    expect(wrapper.vm.echartOptions.series[0].itemStyle.color).toBe('#d53e4f')
+    expect(wrapper.vm.echartOptions.series[1].itemStyle.color).toBe('#d6404f')
+    expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     done();
   });
 
