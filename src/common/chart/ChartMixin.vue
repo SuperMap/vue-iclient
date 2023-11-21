@@ -158,6 +158,10 @@ export default {
     isShow: {
       type: Boolean,
       default: true
+    },
+    filterCategoryValue: {
+      type: String,
+      default: undefined
     }
   },
   data() {
@@ -555,6 +559,25 @@ export default {
         this.datasetChange = false;
         // 设置echartOptions
         this.echartOptions = this._optionsHandler(echartOptions, options);
+        this.setSeriesColor();
+      });
+    },
+    setSeriesColor() {
+      const colorGroup = getMultiColorGroup(this.colorGroupsData, this.colorNumber);
+      const firstSeriesName = this.echartOptions.series[0].name;
+      let SeserieNameTag = firstSeriesName.includes('-') ? firstSeriesName.split('-')[1] : firstSeriesName;
+      let colorIndex = 0;
+      this.echartOptions.series.forEach(serie => {
+        const serieName = serie.name.includes('-') ? serie.name.split('-')[1] : serie.name;
+        if (SeserieNameTag !== serieName) {
+          SeserieNameTag = serieName;
+          colorIndex += 1;
+        }
+        serie.itemStyle = serie.itemStyle || {};
+        serie.itemStyle.color = colorGroup[colorIndex];
+        if (!this.filterCategoryValue) {
+          serie.name = serieName;
+        }
       });
     },
     _optionsHandler(options, dataOptions, dataZoomChanged) {
