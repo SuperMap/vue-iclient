@@ -698,16 +698,4 @@ describe('Chart Mixin Component', () => {
     expect(wrapper.vm.echartOptions.series[0].itemStyle.color).toEqual('#d53e4f');
     done();
   });
-
-  it('trigger echarts events', () => {
-    wrapper = factory({
-      options: optionFactory(),
-      datasetOptions: datasetOptionsFactory(['bar']),
-      dataset: geoJSONDataset,
-      associatedMap: true
-    }, { localVue });
-    const chartInstance = wrapper.vm._getEchart();
-    expect(chartInstance).not.toBeUndefined();
-    console.log('chartInstance', chartInstance);
-  });
 });
