@@ -1,5 +1,6 @@
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { isXField, isYField, urlAppend, numberEqual } from 'vue-iclient/src/common/_utils/util';
+import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
 import * as convert from 'xml-js';
 import max from 'lodash.max';
 import min from 'lodash.min';
@@ -1239,6 +1240,20 @@ export default class WebMapService extends Events {
       withCredentials: this.handleWithCredentials(proxy, url, false),
       eventListeners: {
         processCompleted: getFeaturesEventArgs => {
+          let result = getFeaturesEventArgs.result;
+          if(result && result.datasetInfos) {
+            let fields = []; let fieldCaptions = []; let fieldTypes = [];
+            const fieldInfos = result.datasetInfos[0].fieldInfos;
+            fieldInfos.forEach(fieldInfo => {
+              if(fieldInfo.name) {
+                fields.push(fieldInfo.name.toUpperCase());
+                fieldCaptions.push(fieldInfo.caption.toUpperCase());
+                fieldTypes.push(fieldInfo.type);
+              }
+            });
+            let data = statisticsFeatures(result.features.features, fields, fieldCaptions, fieldTypes);
+            getFeaturesEventArgs.result.features.features = data.features;
+          }
           processCompleted && processCompleted(getFeaturesEventArgs);
         },
         processFailed: e => {

@@ -5,6 +5,7 @@ import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient/src/commo
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
+import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
 
 /**
  * @class QueryViewModel
@@ -170,6 +171,12 @@ export default class QueryViewModel extends mapboxgl.Evented {
     let result = serviceResult.result;
     if (result && result.totalCount !== 0) {
       let resultFeatures = result.recordsets[0].features.features;
+      if(result.recordsets[0].fieldCaptions) {
+        let fields = result.recordsets[0].fields;
+        let fieldCaptions = result.recordsets[0].fieldCaptions;
+        let features = result.recordsets[0].features.features;
+        resultFeatures = statisticsFeatures(features, fields, fieldCaptions).features;
+      }
       resultFeatures.length > 0 && (this.queryResult = { name: restMapParameter.name, result: resultFeatures });
       this._addResultLayer(this.queryResult);
       /**
@@ -194,6 +201,18 @@ export default class QueryViewModel extends mapboxgl.Evented {
     let result = serviceResult.result;
     if (result && result.totalCount !== 0) {
       let resultFeatures = result.features.features;
+      if(result.datasetInfos) {
+        let fields = [];
+        let fieldCaptions = [];
+        const fieldInfos = result.datasetInfos[0].fieldInfos;
+        fieldInfos.forEach(fieldInfo => {
+          if(fieldInfo.name) {
+            fields.push(fieldInfo.name.toUpperCase());
+            fieldCaptions.push(fieldInfo.caption.toUpperCase());
+          }
+        });
+        resultFeatures = statisticsFeatures(resultFeatures, fields, fieldCaptions).features;
+      }
       resultFeatures.length > 0 && (this.queryResult = { name: restDataParameter.name, result: resultFeatures });
       this._addResultLayer(this.queryResult);
       this.fire('querysucceeded', { result: this.queryResult });
