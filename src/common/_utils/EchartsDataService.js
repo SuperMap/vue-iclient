@@ -122,7 +122,7 @@ export default class EchartsDataService {
     // 设置datasetOptions
     this.setDatasetOptions(datasetOptions);
     // 统计后的数据
-    let features = this._createStatisticData(data, datasetOptions, xBar);
+    let features = datasetOptions.length && this._createStatisticData(data, datasetOptions, xBar);
     // 设置this.data
     data = this._setData(data, xBar);
     // 生成seriedata
