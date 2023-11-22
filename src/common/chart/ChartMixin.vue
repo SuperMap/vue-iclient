@@ -158,10 +158,6 @@ export default {
     isShow: {
       type: Boolean,
       default: true
-    },
-    filterCategoryValue: {
-      type: [Number, String],
-      default: undefined
     }
   },
   data() {
@@ -559,42 +555,6 @@ export default {
         this.datasetChange = false;
         // 设置echartOptions
         this.echartOptions = this._optionsHandler(echartOptions, options);
-        const setColorType = ['2.5Bar', 'bar'];
-        let serieType;
-        if (this.options && this.options.series && this.options.series[0]) {
-          serieType = this.options.series[0].type;
-        }
-        if (setColorType.includes(serieType)) {
-          this.setSeriesColor();
-        }
-        this.setSeriesName();
-      });
-    },
-    setSeriesColor() {
-      const colorGroup = getMultiColorGroup(this.colorGroupsData, this.colorNumber);
-      const firstSeriesName = this.echartOptions.series[0].name;
-      let SeserieNameTag = firstSeriesName.includes('-') ? firstSeriesName.split('-')[1] : firstSeriesName;
-      let colorIndex = 0;
-      this.echartOptions.series.forEach(serie => {
-        const serieName = serie.name.includes('-') ? serie.name.split('-')[1] : serie.name;
-        if (SeserieNameTag !== serieName) {
-          SeserieNameTag = serieName;
-          colorIndex += 1;
-        }
-        serie.itemStyle = serie.itemStyle || {};
-        serie.itemStyle.color = colorGroup[colorIndex];
-        this.$set(serie, 'itemStyle', { color: colorGroup[colorIndex] });
-      });
-    },
-    setSeriesName() {
-      if (!this.echartOptions.series && !this.echartOptions.series.length) {
-        return;
-      }
-      this.echartOptions.series.forEach(serie => {
-        const serieName = serie.name.includes('-') ? serie.name.split('-')[1] : serie.name;
-        if (!this.filterCategoryValue && this.multipleYField) {
-          serie.name = serieName;
-        }
       });
     },
     _optionsHandler(options, dataOptions, dataZoomChanged) {
@@ -855,7 +815,7 @@ export default {
       return (params, api) => {
         seriesSpace = !parallelShow ? 0 : seriesSpace;
         const location = api.coord([api.value(0), api.value(1)]);
-        let fillColor = !colorIndex ? defaultColor : colorGroup[colorIndex];
+        let fillColor = (!colorIndex && defaultColor) ? defaultColor : colorGroup[colorIndex];
         if (_this.highlightOptions && _this.highlightOptions.length > 0) {
           const matchData = _this.highlightOptions.find(
             item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
