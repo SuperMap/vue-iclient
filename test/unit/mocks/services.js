@@ -1,6 +1,9 @@
 import airport from './data/airport.json';
 const fakeDataServiceResult = {
   result: {
+    datasetInfos: [{
+      fieldInfos:[{name: "SmID", caption: "SmID", type: "INT32"}, {name: "NAME", caption: "名称", type: "WTEXT"}]
+    }],
     currentCount: 1,
     totalCount: 1,
     features: {
@@ -78,22 +81,8 @@ const fakeMapServiceResult = {
           ]
         },
         fieldCaptions: [
-          'SmID',
-          'SmX',
-          'SmY',
-          'SmLibTileID',
-          'SmUserID',
-          'SmGeometrySize',
-          'USERID',
-          'POP',
-          'CAPITAL_LO',
-          'CAPITAL_CH',
-          'COUNTRY_CH',
-          'CAPITAL_EN',
-          'COUNTRY_EN',
-          'COUNTRY',
-          'CAP_POP',
-          'CAPITAL'
+          'SMID',
+          '名称'
         ],
         fieldTypes: [
           'INT32',
@@ -114,22 +103,8 @@ const fakeMapServiceResult = {
           'WTEXT'
         ],
         fields: [
-          'SmID',
-          'SmX',
-          'SmY',
-          'SmLibTileID',
-          'SmUserID',
-          'SmGeometrySize',
-          'USERID',
-          'POP',
-          'CAPITAL_LO',
-          'CAPITAL_CH',
-          'COUNTRY_CH',
-          'CAPITAL_EN',
-          'COUNTRY_EN',
-          'COUNTRY',
-          'CAP_POP',
-          'CAPITAL'
+          'SMID',
+          'NAME'
         ]
       }
     ],
