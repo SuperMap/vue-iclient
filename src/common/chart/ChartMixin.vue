@@ -584,9 +584,6 @@ export default {
         serie.itemStyle = serie.itemStyle || {};
         serie.itemStyle.color = colorGroup[colorIndex];
         this.$set(serie, 'itemStyle', { color: colorGroup[colorIndex] });
-        if (!this.filterCategoryValue) {
-          serie.name = serieName;
-        }
       });
     },
     setSeriesName() {
