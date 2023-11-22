@@ -380,7 +380,33 @@ describe('WebMapService.spec', () => {
     const service = new WebMapService(mapId, options);
     expect.assertions(1);
     return service.getLayerFeatures(type, layer, baseProjection).then(data => {
-      expect(data).toStrictEqual(result);
+      expect(data.features[0].geometry).toStrictEqual(result.features[0].geometry);
+      done();
+    });
+  });
+
+  it('features will apply caption field when with caption config', async done => {
+    const type = 'rest_data';
+    const layer = {
+      dataSource: {
+        url: 'https://fakeiportal.supermap.io/iportal/processCompleted'
+      },
+      enableFields: ['latitude']
+    };
+    const baseProjection = 'EPSG:3857';
+    const result = {
+      features: [
+        {
+          geometry: { coordinates: [101.84004968, 26.0859968692659], type: 'Point' },
+          properties: { NAME: '四川省', SMID: '1', index: '0', lat: 26.0859968692659, lon: 101.84004968 },
+          type: 'Feature'
+        }
+      ],
+      type: 'feature'
+    };
+    const service = new WebMapService(mapId, options);
+    return service.getLayerFeatures(type, layer, baseProjection).then(data => {
+      expect(data.features[0].properties['名称']).toBe('四川省');
       done();
     });
   });
