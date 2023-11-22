@@ -618,6 +618,9 @@ var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
           fields: {
             0: 'SmID'
           },
+          fieldCaptions: {
+            0: 'SmID'
+          },
           features: {
             type: 'FeatureCollection',
             features: [
