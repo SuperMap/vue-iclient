@@ -815,7 +815,7 @@ export default {
       return (params, api) => {
         seriesSpace = !parallelShow ? 0 : seriesSpace;
         const location = api.coord([api.value(0), api.value(1)]);
-        let fillColor = (!colorIndex && defaultColor) ? defaultColor : colorGroup[colorIndex];
+        let fillColor = defaultColor || colorGroup[colorIndex];
         if (_this.highlightOptions && _this.highlightOptions.length > 0) {
           const matchData = _this.highlightOptions.find(
             item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
