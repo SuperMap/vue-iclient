@@ -64,6 +64,7 @@ export default class EchartsDataService {
     this.datasetOptions = datasetOptions;
     this.dataCache = null; // 缓存的是请求后的数据
     this.sortDataCache = null;
+    this.statisticDataCache = null;
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
     this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
@@ -122,7 +123,12 @@ export default class EchartsDataService {
     // 设置datasetOptions
     this.setDatasetOptions(datasetOptions);
     // 统计后的数据
-    let features = datasetOptions.length && this._createStatisticData(data, datasetOptions, xBar);
+    let features;
+    const isStastic = datasetOptions.length && datasetOptions[0].isStastic;
+    if(isStastic) {
+      features = this._createStatisticData(data, datasetOptions, xBar);
+      this.statisticDataCache = features;
+    }
     // 设置this.data
     data = this._setData(data, xBar);
     // 生成seriedata
