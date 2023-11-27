@@ -134,7 +134,7 @@ export default class EchartsDataService {
     // 生成seriedata
     datasetOptions.forEach(item => {
       // 生成YData, XData
-      let fieldData = this._fieldsData(data, item, features, xBar);
+      let fieldData = isStastic ? this._fieldsDataStatistic(features, item) : this._fieldsDataDefault(data, item);
       // 解析YData, XData，生成EchartsOption的data
       let serieData = this._createDataOption(fieldData, item);
       // 设置坐标
@@ -388,31 +388,40 @@ export default class EchartsDataService {
   }
 
   /**
-   * @function EchartsDataService.prototype._fieldsData
+   * @function EchartsDataService.prototype._fieldsDataDefault
    * @private
-   * @description 将请求回来的数据，转换成适用于chart配置的数据。
+   * @description 将请求回来的数据，转换成适用于chart配置的数据-不统计图表的情况。
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
    * @param {Chart-datasetOption} datasetOption - 数据解析的配置
-   * @param {Array} features - 统计后的数据
    * @returns {Object}  解析好的Ydata，xdata
    */
-  _fieldsData(data, datasetOption, features) {
+  _fieldsDataDefault(data, datasetOption) {
     let fields, fieldValues, xFieldIndex, yFieldIndex, xData, yData, result;
-    let { yField, xField, isStastic } = datasetOption;
+    let { yField, xField } = datasetOption;
     fields = data.fields; // 所有x字段
     xFieldIndex = fields.indexOf(xField); // x字段的下标
     yFieldIndex = fields.indexOf(yField); // y字段的下标
     fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
-    // 该数据是否需要统计,统计的是数组下标
-    if (isStastic) {
-      const { xField, yField } = datasetOption;
-      xData = features.map(obj => obj[xField]);
-      yData = features.map(obj => obj[yField]);
-    } else {
-      // 如果不是统计图表
-      xData = this._getFieldDatas(data, xFieldIndex);
-      yData = [...fieldValues].map(item => tonumber(item));
-    }
+    // 如果不是统计图表
+    xData = this._getFieldDatas(data, xFieldIndex);
+    yData = [...fieldValues].map(item => tonumber(item));
+    result = { xData, yData };
+    return result;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._fieldsDataStatistic
+   * @private
+   * @description 将请求回来的数据，转换成适用于chart配置的数据-统计图表的情况。
+   * @param {Array} features - 统计后的数据
+   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @returns {Object}  解析好的Ydata，xdata
+   */
+  _fieldsDataStatistic(features, datasetOption) {
+    let xData, yData, result;
+    const { xField, yField } = datasetOption;
+    xData = features.map(obj => obj[xField]);
+    yData = features.map(obj => obj[yField]);
     result = { xData, yData };
     return result;
   }
