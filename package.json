@@ -82,6 +82,7 @@
     "proj4": "^2.6.0",
     "resize-detector": "^0.2.0",
     "shapefile": "^0.6.6",
+    "simple-statistics": "^7.8.3",
     "swiper": "^6.8.4",
     "three": "0.129.0",
     "three-wtm": "1.0.0",

@@ -47,6 +47,7 @@ pageClass: chart
 | :--------- | :-------------------------------------- | :------ | :--------------------------------------------------------------------------------------------------------------- | :----- |
 | seriesType | 图表类型                                | string  | 'line' \| 'bar' \| 'scatter' \| 'pie' \| 'radar' \| 'gauge' \| '2.5Bar' <a href="#series">2.5Bar 新增字段</a> \| | -      |
 | isStastic  | 是否统计数据                            | boolean | -                                                                                                                | false  |
+| statisticFunction  | 统计数据的方式，包括最小值、最大值、求和、平均值、计数、众数、中位数、方差、标准差；也可以是一个自定义函数，接受两个参数，第一个参数为y轴待统计的字段值数组，第二个参数为待统计的要素数组     | string \| function |  'min' \| 'max' \| 'sum' \| 'mean' \| 'count' \| 'mode' \| 'median' \| 'variance' \| 'standardDeviation'\|function(fieldValues, features)                                                                                                                | 'sum'  |
 | isStack    | 是否堆叠图表。仅 ( line, bar, scatter ) | boolean | -                                                                                                                | false  |
 | xField     | x 轴数据字段                            | string  | -                                                                                                                | -      |
 | yField     | y 轴数据字段                            | string  | -                                                                                                                | -      |

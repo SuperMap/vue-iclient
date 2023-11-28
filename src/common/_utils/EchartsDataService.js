@@ -4,6 +4,7 @@ import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
 import { clearNumberComma, filterInvalidData } from 'vue-iclient/src/common/_utils/util';
 import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
+import { min, max as statisticsMax, mean, sum, mode, median, variance, standardDeviation } from 'simple-statistics';
 
 // 三方服务请求的结果为单对象的时候，是否要转成多个features
 export function tranformSingleToMulti(data) {
@@ -51,6 +52,7 @@ export function sortData(features, datasetOptions, maxFeatures, xBar) {
  * @typedef {Object} Chart-datasetOption  - 解析数据的配置
  * @property {string} seriesType - 图表类型line, bar, scatter, pie, radar, gauge。
  * @property {boolean} [isStastic = false] - 是否统计数据。
+ * @property {string|function} [statisticFunction = 'sum'] - 统计方式。
  * @property {boolean} [isStack = false] - 图表（line, bar, scatter）是否堆叠
  * @property {string} xField - 数据的字段，坐标值
  * @property {string} yField - 数据的字段，数据值
@@ -163,9 +165,11 @@ export default class EchartsDataService {
    */
   _createStatisticData(data, datasetOptions, xBar) {
     const sortMatchItem = datasetOptions.find(item => item.sort && item.sort !== 'unsort');
+    const statisticFunction = datasetOptions[0].statisticFunction;
     const xField = datasetOptions[0].xField;
     const yFields = datasetOptions.map(item => item.yField);
     const fields = data.fields; // 所有字段
+    const allFeatures = data.features;
     const xFieldIndex = fields.indexOf(xField); // x字段的下标
     const fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex);
     const xData = this._stasticXData(fieldValueIndex);
@@ -173,7 +177,7 @@ export default class EchartsDataService {
     yFields.forEach(yField => {
       const yFieldIndex = fields.indexOf(yField); // y字段的下标
       const fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
-      const yData = this._stasticYData(fieldValues, fieldValueIndex);
+      const yData = this._stasticYData(fieldValues, fieldValueIndex, statisticFunction, allFeatures);
       yDatas.push(yData);
     });
     const statisticFieldCaptions = [xField].concat(yFields);
@@ -444,21 +448,46 @@ export default class EchartsDataService {
    * @description 统计数据，生成yData。
    * @param {Object} fieldValues - y字段的所有feature值
    * @param {Object} fieldValueIndex - x字段的统计索引
+   * @param {string|function} statisticFunction - 统计方式
+   * @param {Array} features - 所有features要素
    * @returns {Array}  统计后的Ydata、
    */
-  _stasticYData(fieldValues, fieldValueIndex) {
+  _stasticYData(fieldValues, fieldValueIndex, statisticFunction, features) {
     let yData = [];
     // 统计Y字段
     for (const key in fieldValueIndex) {
-      let total = 0;
+      let valueArr = [];
+      let featuresArr = [];
       fieldValueIndex[key].forEach(index => {
         // 清除字符串型的数字的逗号
         let num = fieldValues[index] && clearNumberComma(fieldValues[index]);
-        total += tonumber(num);
+        valueArr.push(tonumber(num));
+        featuresArr.push(features[index]);
       });
-      yData.push(total);
+      let result = this._processValue(valueArr, statisticFunction, featuresArr);
+      yData.push(result);
     }
     return yData;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._processValue
+   * @private
+   * @description 根据统计方式，对y字段值进行统计。
+   * @param {Array} fieldValues - 待统计的y轴字段值
+   * @param {string|function} statisticFunction - 统计方式
+   * @param {Array} features - 待统计的要素
+   * @returns {Array}  统计后的Ydata
+   */
+  _processValue(fieldValues, statisticFunction, features) {
+    let result;
+    if(typeof (statisticFunction) === 'function') {
+      result = statisticFunction(fieldValues, features);
+    } else {
+      const statisticFunctions = { min, max: statisticsMax, mean, sum, mode, median, variance, standardDeviation, count: fieldValues => fieldValues.length };
+      result = statisticFunctions[statisticFunction] ? statisticFunctions[statisticFunction](fieldValues) : sum(fieldValues);
+    }
+    return result;
   }
 
   /**
