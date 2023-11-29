@@ -596,31 +596,34 @@ export default {
             return Object.assign({}, element, dataOptions.series[index] || {});
           });
           const dataZoom = options.dataZoom && options.dataZoom[0];
-
-          const sameYFieldSeriesCount = this.getSameYFieldSeriesCount(options.series);
-          const leftRightCount = sameYFieldSeriesCount / 2;
+          const parallelShowNumber = this.getParallelShowNumber(options.series);
+          if (options.series[0].shape === 'cylinder') {
+            this.setCylinderXAxis(parallelShowNumber, options);
+          }
+          const leftRightCount = parallelShowNumber / 2;
           const baseSpace = 32;
           let seriesSpace = 0;
           let seriesSpaceCount = -Math.floor(leftRightCount);
           let seriesNameTag;
           let colorIndex = 0;
-          const parallelShow = this.multipleYField(options.series);
           options.series = options.series.map((serie, index) => {
-            const serieName = serie.name.includes('-') ? serie.name.split('-')[1] : serie.name;
-            if (!seriesNameTag) {
-              seriesNameTag = serieName;
-              seriesSpace = this.getSericeSpace(sameYFieldSeriesCount, baseSpace, seriesSpaceCount);
-            } else {
-              if (seriesNameTag === serieName) {
-                seriesSpace = this.getSericeSpace(sameYFieldSeriesCount, baseSpace, seriesSpaceCount);
-              } else {
-                seriesSpaceCount = -Math.floor(leftRightCount);
+            if (parallelShowNumber !== 0) {
+              const serieName = serie.name.substring(serie.name.indexOf('-') + 1);
+              if (!seriesNameTag) {
                 seriesNameTag = serieName;
-                seriesSpace = this.getSericeSpace(sameYFieldSeriesCount, baseSpace, seriesSpaceCount);
-                colorIndex += 1;
+                seriesSpace = this.getSericeSpace(parallelShowNumber, baseSpace, seriesSpaceCount);
+              } else {
+                if (seriesNameTag === serieName) {
+                  seriesSpace = this.getSericeSpace(parallelShowNumber, baseSpace, seriesSpaceCount);
+                } else {
+                  seriesSpaceCount = -Math.floor(leftRightCount);
+                  seriesNameTag = serieName;
+                  seriesSpace = this.getSericeSpace(parallelShowNumber, baseSpace, seriesSpaceCount);
+                  colorIndex += 1;
+                }
               }
+              seriesSpaceCount += 1;
             }
-            seriesSpaceCount += 1;
             let label = serie.label && serie.label.normal;
             if (label && !label.smart) {
               serie.label.normal = this._controlLabel(label, serie.maxLabels);
@@ -678,77 +681,9 @@ export default {
                   serie.type = 'custom';
                   dataOptions.series[index] && (dataOptions.series[index].type = 'custom');
                   const _this = this;
-                  serie.renderItem = this._squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex, parallelShow);
+                  serie.renderItem = this._squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex);
                 } else if (shape === 'cylinder') {
-                  const baseWidth = '100%';
-                  const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
-                  serie.type = 'bar';
-                  serie.barGap = '-100%';
-                  options.tooltip && options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
-                  dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
-                  let cirCleColor = defaultColor || colorGroup[index];
-                  let cirCleColorFnList = [];
-                  if (typeof cirCleColor === 'string') {
-                    cirCleColor = this.setGradientColor(cirCleColor, '#fff');
-                  }
-                  if (this.highlightOptions && this.highlightOptions.length > 0) {
-                    const matchDataList = [];
-                    this.highlightOptions.forEach(item => {
-                      if (item.seriesIndex.includes(index)) {
-                        let color = item.color || this.highlightColor;
-                        if (typeof color === 'string') {
-                          color = this.setGradientColor(color, '#fff');
-                        }
-                        matchDataList.push({ dataIndex: item.dataIndex, color });
-                      }
-                    });
-                    if (matchDataList.length > 0) {
-                      cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(() => {
-                        return ({ dataIndex }) => {
-                          const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
-                          return matchData ? matchData.color : cirCleColor;
-                        };
-                      });
-                    }
-                  }
-                  extraSeries.push(
-                    // 头部的圆片
-                    {
-                      name: '',
-                      type: 'pictorialBar',
-                      symbolOffset: [0, -8],
-                      symbolPosition: 'end',
-                      z: 12,
-                      itemStyle: {
-                        normal: {
-                          color: cirCleColorFnList[0] || cirCleColor
-                        }
-                      },
-                      data: dataOptions.series[index].data.map((item, dataIndex) => {
-                        return {
-                          value: item,
-                          symbolSize:
-                            !nextSerieDatas || (nextSerieDatas[dataIndex] && +item >= +nextSerieDatas[dataIndex])
-                              ? [baseWidth, 15]
-                              : [0, 15]
-                        };
-                      })
-                    },
-                    {
-                      // 底部的圆片
-                      name: '',
-                      type: 'pictorialBar',
-                      symbolSize: [baseWidth, 10],
-                      symbolOffset: [0, 5],
-                      z: 12,
-                      itemStyle: {
-                        normal: {
-                          color: cirCleColorFnList[1] || cirCleColor
-                        }
-                      },
-                      data: dataOptions.series[index].data
-                    }
-                  );
+                  this.handleCylinder(parallelShowNumber, dataOptions, index, serie, options, defaultColor, colorGroup, extraSeries);
                 }
                 delete serie.shape;
               }
@@ -804,16 +739,156 @@ export default {
       }
       return mergeOptions;
     },
+    handleCylinder(parallelShowNumber, dataOptions, index, serie, options, defaultColor, colorGroup, extraSeries) {
+      const baseColumnWidth = parallelShowNumber !== 0 ? `${100 / parallelShowNumber}%` : '100%';
+      const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
+      serie.type = 'bar';
+      serie.barGap = parallelShowNumber === 0 ? '-100%' : '0';
+      if (parallelShowNumber !== 0) {
+        const serieColor = defaultColor || colorGroup[Math.ceil((index + 1) / parallelShowNumber) - 1];
+        if (serie.itemStyle) {
+          serie.itemStyle.color = this.setGradientColor(serieColor, '#fff');
+        } else {
+          serie.itemStyle = {};
+          serie.itemStyle.color = this.setGradientColor(serieColor, '#fff');
+        }
+      }
+      options.tooltip && options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
+      dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
+      const colorIndex = parallelShowNumber !== 0 ? Math.ceil((index + 1) / parallelShowNumber) - 1 : index;
+      let cirCleColor = defaultColor || colorGroup[colorIndex];
+      let cirCleColorFnList = [];
+      if (typeof cirCleColor === 'string') {
+        cirCleColor = this.setGradientColor(cirCleColor, '#fff');
+      }
+      if (this.highlightOptions && this.highlightOptions.length > 0) {
+        const matchDataList = [];
+        this.highlightOptions.forEach(item => {
+          if (item.seriesIndex.includes(index)) {
+            let color = item.color || this.highlightColor;
+            if (typeof color === 'string') {
+              color = this.setGradientColor(color, '#fff');
+            }
+            matchDataList.push({ dataIndex: item.dataIndex, color });
+          }
+        });
+        if (matchDataList.length > 0) {
+          cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(() => {
+            return ({ dataIndex }) => {
+              const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
+              return matchData ? matchData.color : cirCleColor;
+            };
+          });
+        }
+      }
+      const offsetDistance = this.getOffsetDistance(parallelShowNumber, index);
+      const xAxisIndex = parallelShowNumber !== 0 ? Math.ceil((index + 1) / parallelShowNumber) - 1 : 0;
+      serie.xAxisIndex = xAxisIndex;
+      extraSeries.push(
+        // 头部的圆片
+        {
+          name: parallelShowNumber !== 0 ? serie.name : '',
+          type: 'pictorialBar',
+          symbolOffset: parallelShowNumber !== 0 ? [offsetDistance, '-50%'] : [0, -8],
+          xAxisIndex: parallelShowNumber !== 0 ? xAxisIndex : 0,
+          symbolPosition: 'end',
+          z: 12,
+          itemStyle: {
+            normal: {
+              color: cirCleColorFnList[0] || cirCleColor
+            }
+          },
+          data: dataOptions.series[index].data.map((item, dataIndex) => {
+            if (parallelShowNumber !== 0) {
+              return {
+                value: item,
+                symbolSize: [baseColumnWidth, 15]
+              };
+            } else {
+              return {
+                value: item,
+                symbolSize: !nextSerieDatas || (nextSerieDatas[dataIndex] && +item >= +nextSerieDatas[dataIndex])
+                  ? [baseColumnWidth, 15]
+                  : [0, 15]
+              };
+            }
+          })
+        },
+        {
+          // 底部的圆片
+          name: parallelShowNumber !== 0 ? serie.name : '',
+          type: 'pictorialBar',
+          xAxisIndex: parallelShowNumber !== 0 ? xAxisIndex : 0,
+          symbolSize: parallelShowNumber !== 0 ? [baseColumnWidth, 10] : [offsetDistance, 10],
+          symbolOffset: parallelShowNumber !== 0 ? [offsetDistance, '50%'] : [0, 5],
+          z: 12,
+          itemStyle: {
+            normal: {
+              color: cirCleColorFnList[1] || cirCleColor
+            }
+          },
+          data: dataOptions.series[index].data
+        }
+      );
+    },
+    getParallelShowNumber(series) {
+      if (series.length === 0 || !this.multipleYField(series)) {
+        // 0表示不进行并列显示
+        return 0;
+      }
+      let parallelShowNumber = 0;
+      const symbolPosition = series[0].name.indexOf('-');
+      let firstSeriesName = series[0].name.substring(symbolPosition + 1);
+      series.forEach(option => {
+        const optionName = option.name.substring(symbolPosition + 1);
+        if (firstSeriesName === optionName) {
+          parallelShowNumber++;
+        }
+      });
+      return parallelShowNumber;
+    },
+    setCylinderXAxis(parallelShowNumber, options) {
+      if (parallelShowNumber === 0) {
+        return;
+      }
+      const xAixsType = options.xAxis[0] && options.xAxis[0].type;
+      for (let i = 1; i <= parallelShowNumber; i++) {
+        options.xAxis.push({
+          type: xAixsType,
+          show: false
+        });
+      }
+    },
+    getOffsetDistance(parallelShowNumber, index) {
+      if (parallelShowNumber === 0) {
+        return '100%';
+      }
+      let distance;
+      if (parallelShowNumber % 2) {
+        distance = -100 * (Math.floor(parallelShowNumber / 2)) + index % parallelShowNumber * 100;
+        return `${distance}%`;
+      } else {
+        distance = -100 * (Math.floor(parallelShowNumber / 2) - 0.5) + index % parallelShowNumber * 100;
+      }
+      return `${distance}%`;
+    },
     multipleYField(optionSeries) {
       const series = cloneDeep(optionSeries);
       const nameList = series.map(serie => {
-        return serie.name.includes('-') ? serie.name[1] : serie.name;
+        if (!serie.name.includes('-')) {
+          return serie.name;
+        }
+        const position = serie.name.indexOf('-');
+        const prefix = serie.name.substring(0, position);
+        if(isNaN(+prefix)) {
+          return serie.name;
+        }
+        return serie.name.substring(position + 1);
       });
       return series.length !== new Set(nameList).size;
     },
-    _squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex, parallelShow) {
+    _squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex) {
       return (params, api) => {
-        seriesSpace = !parallelShow ? 0 : seriesSpace;
         const location = api.coord([api.value(0), api.value(1)]);
         let fillColor = defaultColor || colorGroup[colorIndex];
         if (_this.highlightOptions && _this.highlightOptions.length > 0) {
