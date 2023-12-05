@@ -1,0 +1,55 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(time-picker) {
+  $prefix: &;
+  &:hover {
+    #{$prefix}-icon:not(:last-child) {
+      opacity: 0;
+    }
+  }
+
+  .anticon,
+  &-icon,
+  &-clear {
+    color: $text-color-secondary;
+  }
+  &-clear:hover {
+    color: $text-color;
+  }
+
+  &-input[disabled] + &-icon {
+    &, .anticon {
+      color: $disabled-color;
+    }
+  }
+
+  &-small {
+    #{$prefix}-input {
+      font-size: 12px;
+    }
+  }
+
+  @include e(md, '-') {
+    #{$prefix}-input {
+      height: 28px;
+      font-size: 12px;
+    }
+  }
+
+  @include e(panel, '-') {
+    &-inner {
+      background-color: $select-dropdown-bg;
+    }
+    &-input {
+      background-color: $select-dropdown-bg;
+    }
+    &-select-option-selected,
+    &-select li:hover {
+      background-color: $selected-color;
+    }
+    &-input-wrap {
+      display: none;
+    }
+  }
+}

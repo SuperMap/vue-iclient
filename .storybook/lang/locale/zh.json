@@ -302,6 +302,17 @@
       "title": "TimeRange 时间轴（段）",
       "style": "不同样式"
     },
+    "timePicker": {
+      "title": "TimePicker 时间选择框",
+      "use12hours": "12小时制",
+      "selectMinsAndHours": "选择时分",
+      "size": "大小",
+      "suffix": "后缀图标",
+      "extraFooter": "附加内容",
+      "disabled": "禁用",
+      "steps": "步长",
+      "controlled": "受控组件"
+    },
     "slideshow": {
       "title": "Slideshow 幻灯片",
       "switchEffect": "切换效果",

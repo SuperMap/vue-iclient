@@ -42,6 +42,7 @@ import {
   TimeRange,
   TimeSlider,
   TimeText,
+  TimePicker,
   Tooltip,
   Transfer,
   Tree,
@@ -144,6 +145,7 @@ Vue.use(TimeLine);
 Vue.use(TimeRange);
 Vue.use(TimeSlider);
 Vue.use(TimeText);
+Vue.use(TimePicker);
 Vue.use(Tooltip);
 Vue.use(Transfer);
 Vue.use(Tree);

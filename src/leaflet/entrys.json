@@ -41,6 +41,7 @@
   "time-range": "vue-iclient/src/common/time-range/index.js",
   "time-slider": "vue-iclient/src/common/time-slider/index.js",
   "time-text": "vue-iclient/src/common/time-text/index.js",
+  "time-picker": "vue-iclient/src/common/time-picker/index.js",
   "tooltip": "vue-iclient/src/common/tooltip/index.js",
   "transfer": "vue-iclient/src/common/transfer/index.js",
   "tree": "vue-iclient/src/common/tree/index.js",

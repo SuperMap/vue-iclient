@@ -199,6 +199,17 @@
       "title": "Time Text",
       "size": "Size"
     },
+    "timePicker": {
+      "title": "TimePicker",
+      "use12hours": "12-hour system",
+      "selectMinsAndHours": "Select Mins And Hours",
+      "size": "Size",
+      "suffix": "Suffix icon",
+      "extraFooter": "Extra Footer",
+      "disabled": "Disabled",
+      "steps": "Steps",
+      "controlled": "Controlled"
+    },
     "transfer": {
       "title": "Transfer",
       "search": "Search",
