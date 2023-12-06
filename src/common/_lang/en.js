@@ -265,7 +265,7 @@ export default {
     piecesBusRoute: 'bus route',
     showDetail: 'Expand details',
     busEndTime: 'First and last bus time',
-    relateAdress: 'Click here to see the location of "{keyWord}"',
+    relateAdress: "Click here to see the location of '{keyWord}'",
     // areaResult
     switchTo: 'Switched to'
   },
@@ -317,5 +317,26 @@ export default {
   },
   animateMarkerlayer: {
     unsupportedData: 'The data is not supported, please reset the data!'
+  },
+  DatePicker: {
+    lang: {
+      months: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May_June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ],
+      weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      weekdaysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+    }
   }
 };

@@ -270,7 +270,7 @@ export default {
     piecesBusRoute: '条公交线路',
     showDetail: '展开详情',
     busEndTime: '首末车时间',
-    relateAdress: '点击此处查看 "{keyWord}" 的相关地点',
+    relateAdress: "点击此处查看 '{keyWord}' 的相关地点",
     // areaResult
     switchTo: '已切换到'
   },
@@ -322,5 +322,10 @@ export default {
   },
   animateMarkerlayer: {
     unsupportedData: '当前图层不支持该数据，请重新传入数据！'
-  }
+  },
+  months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+  weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+  monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+  weekdaysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+  weekdaysMin: ['日', '一', '二', '三', '四', '五', '六']
 };
