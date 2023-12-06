@@ -6,6 +6,12 @@ import antdZhCN from 'ant-design-vue/es/locale/zh_CN';
 import antdEnUS from 'ant-design-vue/es/locale/en_US';
 import clonedeep from 'lodash.clonedeep';
 import VueI18n from 'vue-i18n';
+import merge from 'lodash.merge';
+import moment from 'moment';
+
+const EXTRA_LOCALE_FIELDS = [
+  'months', 'monthsShort', 'weekdays', 'weekdaysShort', 'weekdaysMin'
+];
 
 const dateTimeFormats = {
   en: enLocale.dateTimeFormat,
@@ -13,15 +19,11 @@ const dateTimeFormats = {
 };
 let i18n = {};
 let rooti18n;
+const en = merge(antdEnUS, enLocale);
+const zh = merge(antdZhCN, zhLocale);
 const messages = {
-  en: {
-    ...antdEnUS,
-    ...enLocale
-  },
-  zh: {
-    ...antdZhCN,
-    ...zhLocale
-  }
+  en,
+  zh
 };
 export function getLanguage() {
   let lang = Cookies.get('language');
@@ -40,6 +42,7 @@ export function getLanguage() {
     if (lang.indexOf('en') === 0) {
       return 'en';
     }
+    return lang;
   }
   return 'zh';
 }
@@ -82,15 +85,36 @@ export function initi18n(Vue, config) {
       messages
     });
   }
+
   if (config.locale) {
     setLocale(config.locale);
   }
 
   const locale = config.i18n || i18n || config.locale;
+  setDatePickerMonthLocale(locale);
   if (!Vue.iclient) {
     Vue.iclient = { locale };
   } else {
     Vue.iclient.locale = locale;
+  }
+}
+
+export function setDatePickerMonthLocale(locale) {
+  let datePickerConfig = {};
+  let language = locale.locale;
+  let targetMessage = locale.getLocaleMessage(language);
+  if (targetMessage) {
+    EXTRA_LOCALE_FIELDS.forEach((fieldName) => {
+      if (targetMessage && targetMessage.DatePicker && targetMessage.DatePicker.lang[fieldName]) {
+        datePickerConfig[fieldName] = targetMessage.DatePicker.lang[fieldName];
+      }
+    });
+    if (Object.keys(datePickerConfig).length) {
+      if (language === 'zh') {
+        language = language + '-cn';
+      }
+      moment.defineLocale(language, datePickerConfig);
+    }
   }
 }
 
