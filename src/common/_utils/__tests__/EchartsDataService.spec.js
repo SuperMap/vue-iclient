@@ -184,4 +184,75 @@ describe('EchartsDataService', () => {
     const data = echartsDataService.serieDatas.find(item => item.name === '船只数量');
     expect(data.data).toEqual([1,6,7]);
   });
+  it('without datasetOptions', async () => {
+    const dataset = {
+      "maxFeatures": 20,
+      "url": "",
+      "type": "geoJSON",
+      "geoJSON": {
+          "type": "FeatureCollection",
+          "features": [
+              {
+                  "type": "Feature",
+                  "properties": {
+                      "国家": "中国",
+                      "船只数量": "1",
+                      "区域": "1",
+                      "区域text": "北京"
+                  }
+              },
+              {
+                  "type": "Feature",
+                  "properties": {
+                      "国家": "中国",
+                      "船只数量": "2",
+                      "区域": "2",
+                      "区域text": "上海"
+                  }
+              },
+              {
+                  "type": "Feature",
+                  "properties": {
+                      "国家": "中国",
+                      "船只数量": "3",
+                      "区域": "3",
+                      "区域text": "成都"
+                  }
+              },
+              {
+                  "type": "Feature",
+                  "properties": {
+                      "国家": "俄罗斯",
+                      "船只数量": "1",
+                      "区域": "1",
+                      "区域text": "莫斯科"
+                  }
+              },
+              {
+                  "type": "Feature",
+                  "properties": {
+                      "国家": "俄罗斯",
+                      "船只数量": "6",
+                      "区域": "2",
+                      "区域text": "圣彼得堡"
+                  }
+              },
+              {
+                  "type": "Feature",
+                  "properties": {
+                      "国家": "美国",
+                      "船只数量": "1",
+                      "区域": "1",
+                      "区域text": "纽约"
+                  }
+              }
+          ]
+      },
+      "withCredentials": false
+    }
+    const datasetOptions = []
+    echartsDataService = new EchartsDataService(dataset, datasetOptions);
+    await echartsDataService.getDataOption(dataset);
+    expect(echartsDataService.serieDatas).toEqual([])
+  });
 });

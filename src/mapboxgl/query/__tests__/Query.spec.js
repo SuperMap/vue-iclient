@@ -86,9 +86,12 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    wrapper.vm.viewModel.on('querysucceeded', (res) => {
+      expect(res.result.result[0].properties['名称']).toBe('四川省');
+      done();
+    });
     wrapper.vm.$nextTick(() => {
       expect(spyquery).toBeCalled();
-      done();
     });
   });
 
@@ -111,7 +114,8 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', () => {
+    wrapper.vm.viewModel.on('querysucceeded', (res) => {
+      expect(res.result.result[0].properties['名称']).toBe('四川省');
       expect(spyAddlayer).toBeCalled();
       done();
     });

@@ -293,8 +293,19 @@ export default class iServerRestService extends Events {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features;
+      let fields = []; let fieldCaptions = []; let fieldTypes = [];
+      if(results.result.datasetInfos) {
+        const fieldInfos = results.result.datasetInfos[0].fieldInfos;
+        fieldInfos.forEach(fieldInfo => {
+          if(fieldInfo.name) {
+            fields.push(fieldInfo.name.toUpperCase());
+            fieldCaptions.push(fieldInfo.caption.toUpperCase());
+            fieldTypes.push(fieldInfo.type);
+          }
+        });
+      }
       if (features && features.length > 0) {
-        data = statisticsFeatures(features);
+        data = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
         data.totalCount = results.result.totalCount;
       } else {
         this.triggerEvent('featureisempty', {
