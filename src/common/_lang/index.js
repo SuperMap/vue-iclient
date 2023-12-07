@@ -99,10 +99,13 @@ export function initi18n(Vue, config) {
   }
 }
 
-export function setDatePickerMonthLocale(locale) {
+export function setDatePickerMonthLocale(i18n) {
+  if (!i18n || !i18n.locale) {
+    return;
+  }
   let datePickerConfig = {};
-  let language = locale.locale;
-  let targetMessage = locale.getLocaleMessage(language);
+  let language = i18n.locale;
+  let targetMessage = i18n.getLocaleMessage(language);
   if (targetMessage) {
     EXTRA_LOCALE_FIELDS.forEach((fieldName) => {
       if (targetMessage && targetMessage.DatePicker && targetMessage.DatePicker.lang[fieldName]) {
