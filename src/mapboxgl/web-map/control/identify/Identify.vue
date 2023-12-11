@@ -8,7 +8,10 @@
     >
       <li v-for="(value, key, index) in popupProps" :key="index" class="content">
         <div class="left ellipsis" :title="key" :style="getWidthStyle.keyWidth">{{ key }}</div>
-        <div class="right ellipsis" :title="value" :style="getWidthStyle.valueWidth">{{ value }}</div>
+        <div class="right ellipsis" :title="value.value || value" :style="getWidthStyle.valueWidth">
+          <slot v-if="value.slotName" :name="value.slotName" :value="value.value"></slot>
+          <span v-else>{{ value.value || value }}</span>
+        </div>
       </li>
     </ul>
   </div>
@@ -234,8 +237,10 @@ export default {
         // 过滤字段
         if (fields.length > 0) {
           fields.forEach(field => {
-            if (Object.prototype.hasOwnProperty.call(feature.properties, field)) {
-              this.popupProps[field] = feature.properties[field];
+            const isObjArr = field instanceof Object;
+            const fieldName = isObjArr ? field.field : field;
+            if (Object.prototype.hasOwnProperty.call(feature.properties, fieldName)) {
+              this.popupProps[fieldName] = { value: feature.properties[fieldName], slotName: field.slotName };
             }
           });
         } else {

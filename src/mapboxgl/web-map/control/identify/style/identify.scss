@@ -21,6 +21,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      height: 28px;
     }
   }
   @include e(custom) {
