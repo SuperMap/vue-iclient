@@ -6,8 +6,69 @@ import { featureCollection } from '@turf/helpers';
 import spriteJson from '../_assets/sprite.json';
 import spritePng from '../_assets/sprite.png';
 
+function encode(val) {
+  return encodeURIComponent(val)
+    .replace(/%3A/gi, ':')
+    .replace(/%24/g, '$')
+    .replace(/%2C/gi, ',')
+    .replace(/%20/g, '+')
+    .replace(/%5B/gi, '[')
+    .replace(/%5D/gi, ']');
+}
+
+function each(obj, fn) {
+  if (obj === null || typeof obj === 'undefined') {
+    return;
+  }
+
+  if (typeof obj !== 'object') {
+    obj = [obj];
+  }
+
+  if (Array.isArray(obj)) {
+    for (var i = 0, l = obj.length; i < l; i++) {
+      // eslint-disable-next-line
+      fn.call(null, obj[i], i, obj);
+    }
+  } else {
+    for (var key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        // eslint-disable-next-line
+        fn.call(null, obj[key], key, obj);
+      }
+    }
+  }
+}
+
 const CancelToken = axios.CancelToken;
-const axiosService = axios.create();
+const axiosService = axios.create({
+  paramsSerializer(params) {
+    var parts = [];
+
+    Object.keys(params).forEach((key) => {
+      let val = params[key];
+      if (val === null || typeof val === 'undefined') {
+        return;
+      }
+
+      if (Array.isArray(val)) {
+        key = key + '[]';
+      } else {
+        val = [val];
+      }
+
+      each(val, function(v) {
+        if (Object.prototype.toString.call(v) === '[object Date]') {
+          v = v.toISOString();
+        } else if (v !== null && typeof v === 'object') {
+          v = JSON.stringify(v);
+        }
+        parts.push(encode(key) + '=' + encode(v));
+      });
+    });
+    return parts.join('&');
+  }
+});
 
 let cancelSourceList = {};
 
