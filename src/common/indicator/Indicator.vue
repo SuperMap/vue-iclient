@@ -178,7 +178,7 @@ export default {
       return this.separator.replace(/\d+/, '');
     },
     calDecimals() {
-      if (this.decimals > 0) {
+      if (this.decimals >= 0) {
         return this.decimals;
       }
       if (this.numData.toString().split('.')[1]) {
@@ -262,7 +262,7 @@ export default {
       });
     },
     isNumber(str) {
-      return /^\d+$/.test(str);
+      return /^\d+(\.\d*)?$/.test(str);
     },
     timing() {
       this.getData();
