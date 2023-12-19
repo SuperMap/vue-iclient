@@ -85,11 +85,13 @@ SuffixTimePicker.story = {
 export const ExtraFooterTimePicker = () => ({
   data() {
     return {
+      currentTime: '',
       open: false,
       open2: false
     };
   },
   methods: {
+    moment,
     handleOpenChange(open) {
       console.log('open', open);
       this.open = open;
@@ -97,20 +99,25 @@ export const ExtraFooterTimePicker = () => ({
     handleClose() {
       this.open = false;
       this.open2 = false;
+    },
+    getCurrentTime() {
+      this.currentTime = moment(Date.now());
     }
   },
   template: `
   <div>
     <sm-time-picker :open="open" @openChange="handleOpenChange">
-      <sm-button slot="addon" slot-scope="panel" size="small" type="primary" @click="handleClose">
-        Ok {{ panel.prefixCls }}
-      </sm-button>
+      <div slot="addon" slot-scope="panel">
+        <span> {{ panel.prefixCls }} </span>
+        <sm-button  size="small" type="primary" @click="handleClose">确定</sm-button>
+      </div>
     </sm-time-picker>
-    <sm-time-picker :open.sync="open2">
-      <sm-button slot="addon" size="small" type="primary" @click="handleClose">
-        Ok
-      </sm-button>
-    </sm-time-picker>
+    <sm-time-picker v-model="currentTime" :open.sync="open2">
+    <div slot="addon" style="display: flex;justify-content: space-between">
+      <a style="padding: 2px 8px" @click="getCurrentTime">此刻</a>
+      <sm-button  size="small" type="primary" @click="handleClose">确定</sm-button>
+    </div>
+  </sm-time-picker>
   </div>
   `
 });
