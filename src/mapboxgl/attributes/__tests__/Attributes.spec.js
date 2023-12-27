@@ -480,4 +480,19 @@ describe('Attributes.vue', () => {
     expect(wrapper.findAll('.sm-component-table-row-selected').length).toBe(10);
     done();
   });
+
+  it('no selection', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        dataset: testData,
+        fieldConfigs: testDataConfigs,
+        table: {
+          showRowSelection: false,
+        }
+      }
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findAll('.sm-component-table-selection-column').length).toBe(0);
+    done();
+  });
 });

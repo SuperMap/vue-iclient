@@ -47,7 +47,7 @@
       class="sm-attributes-table"
       :data-source="tableData"
       :columns="compColumns"
-      :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows }"
+      :row-selection="tableOptions.showRowSelection ? { selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows } : null"
       :pagination="paginationOptions"
       :bordered="tableOptions.showBorder"
       :showHeader="tableOptions.showHeader"
@@ -158,6 +158,7 @@ export interface StatisticsParams {
 export interface TableParams {
   showBorder?: boolean;
   showHeader?: boolean;
+  showRowSelection?: boolean;
   pagination?: PaginationParams;
 }
 
@@ -213,6 +214,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   tableOptions: TableParams = {
     showHeader: true,
     showBorder: true,
+    showRowSelection: true,
     pagination: {}
   };
 
@@ -242,6 +244,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       return {
         showHeader: true,
         showBorder: true,
+        showRowSelection: true,
         pagination: {}
       };
     }
