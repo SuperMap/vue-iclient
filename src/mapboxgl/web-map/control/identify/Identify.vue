@@ -232,6 +232,7 @@ export default {
     },
     // 过滤数据， 添加popup
     addPopup(feature, fields) {
+      this.viewModel.popup?.off('close', this.clearPopup);
       this.popupProps = {};
       if (feature.properties) {
         // 过滤字段
@@ -252,9 +253,14 @@ export default {
         this.$nextTick(() => {
           this.isHide = false; // 显示内容
           this.viewModel.addPopup(coordinates, this.$refs.Popup);
+          this.viewModel.popup.on('close', this.clearPopup);
           setPopupArrowStyle(this.tablePopupBgData);
         });
       }
+    },
+    clearPopup() {
+      // 如果不清除弹窗内容，当弹窗内容有视频，且开启自动播放+弹窗/全屏时，会导致更改配置时，即使没打开点选弹窗，视频也会自动弹窗播放
+      this.popupProps = {};
     },
     // 添加高亮图层
     addOverlayToMap(layer, filter) {
