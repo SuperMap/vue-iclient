@@ -4,6 +4,7 @@ import Identify from '../index';
 import SmWebMap from '../../../WebMap.vue';
 import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
 import { LineStyle, CircleStyle, FillStyle } from '../../../../_types/index';
+import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
 
 describe('Identify.vue', () => {
   let wrapper;
@@ -84,6 +85,18 @@ describe('Identify.vue', () => {
           mapInfo: mapInfo
         };
       }
+    });
+    const spyPopup = jest.spyOn(mapboxgl, 'Popup');
+    spyPopup.mockReturnValue({
+      setLngLat: jest.fn().mockReturnValue({
+        setDOMContent: jest.fn().mockReturnValue({
+          addTo: jest.fn().mockReturnValue({
+            remove: jest.fn(),
+            off: jest.fn(),
+            on: jest.fn()
+          })
+        })
+      })
     });
     const callback = jest.fn();
     identifyWrapper = wrapper.vm.$children[0].$children[0];
