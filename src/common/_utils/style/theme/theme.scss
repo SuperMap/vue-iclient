@@ -142,12 +142,17 @@ $btn-primary-color: var(--button-primary-color);
 $btn-primary-bg: $primary-color;
 
 $btn-default-color: $text-color;
+$btn-opacity85-color: $text-color-active;
+$btn-default-border-color: var(--default-button-border);
 $btn-default-bg: transparent;
 $btn-default-border: var(--button-border-default-color);
 
 $btn-danger-color: $red-6;
 $btn-danger-bg: transparent;
 $btn-danger-border: $red-6;
+
+$btn-delete-hover-color: var(--btn-hover-color);
+$btn-delete-active-color: var(--btn-active-color);
 
 $btn-ghost-color: $text-color;
 $btn-ghost-bg: transparent;
@@ -334,7 +339,7 @@ $comment-action-color: $text-color-secondary;
 $comment-action-hover-color: #595959;
 
 // Tabs
-$tabs-card-head-background: $background-color-light;
+$tabs-card-head-background: $component-background;
 $tabs-card-active-color: $primary-6;
 $tabs-ink-bar-color: $primary-6;
 $tabs-highlight-color: $primary-6;
@@ -362,6 +367,7 @@ $switch-loading-text-color: rgba(0, 0, 0, 0.65);
 
 // Pagination
 $pagination-border-default-color: var(--pagination-border-default-color);
+$pagination-border-hover-color: var(--hover-bg);
 $pagination-disabled-active-bg-color: var(--disabled-darken-bg-color10);
 $pagination-item-bg-active: $primary-6;
 $pagination-ellipsis-color: var(--pagination-ellipsis-color);
@@ -378,7 +384,7 @@ $breadcrumb-link-color-hover: $primary-5;
 $breadcrumb-separator-color: $text-color-secondary;
 
 // Step
-
+$step-wait-background-color: var(--step-wait-background-color);
 // Slider
 $slider-rail-background-color: var(--slider-rail-background-color);
 $slider-rail-background-color-hover: $slider-rail-background-color;

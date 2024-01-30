@@ -96,6 +96,13 @@
       "textArea": "文本域",
       "passwordBox": "密码框"
     },
+    "inputNumber": {
+      "title": "InputNumber 数字输入框",
+      "size": "大小",
+      "disabled":"不可用",
+      "formatter": "格式化",
+      "decimal": "小数"
+    },
     "layout": {
       "title": "Layout 布局"
     },
@@ -168,9 +175,6 @@
       "dotStyle": "点状步骤条",
       "clickable": "可点击",
       "navigationSteps": "导航步骤条"
-    },
-    "inputNumber": {
-      "title": "InputNumber 数字输入框"
     },
     "switch": {
       "title": "Switch 开关",

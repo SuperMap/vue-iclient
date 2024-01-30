@@ -26,6 +26,10 @@
     "g78": "#C6C6C6",
     "g88": "#E0E0E0",
     "g96": "#F4F4F4",
+    "l100": "#FFFFFF",
+    "btnHoverColor": "#EA7568",
+    "btnActiveColor": "#CC211C",
+
     "successColor": "#2BA250",
     "infoColor": "#3499E5",
     "warningColor": "#F0BD3E",
@@ -44,9 +48,9 @@
     "backgroundLight": "rgba(255, 255, 255, 0.08)",
     "backgroundBase": "rgba(0, 0, 0, 0.08)",
     "selectedColor": "rgba(52, 153, 229, 0.15)",
-    "hoverColor": "#5eb7f2",
-    "hoverBg": "var(--alpha04)",
-    "clickColor": "#2276bf",
+    "hoverColor": "#65C0FC",
+    "hoverBg": "#65C0FC",
+    "clickColor": "#0371C3",
     "iconColorHover": "rgba(255, 255, 255, 0.75)",
     "headingColor": "var(--alpha85)",
     "handleColor": "#d9d9d9",
@@ -59,10 +63,11 @@
     "placeholderColor": "var(--alpha45)",
     "buttonPrimaryColor": "var(--alpha100)",
     "buttonBorderDefaultColor": "var(--container-border)",
-    "paginationBorderDefaultColor": "var(--container-border)",
+    "paginationBorderDefaultColor": "var(--alpha25)",
     "paginationEllipsisColor": "var(--alpha65)",
     "paginationActiveTextColor": "var(--alpha100)",
     "componentBackground": "var(--container-basic)",
+    "stepWaitBackgroundColor": "var(--alpha04)",
     "switchBackground": "var(--alpha25)",
     "switchDisabledBgColor": "var(--alpha15)",
     "switchDisabledAfterColor": "var(--alpha15)",
@@ -105,7 +110,8 @@
       "#e69d87",
       "#8dc1a9",
       "#ea7e53"
-    ]
+    ],
+    "defaultButtonBorder": "var(--alpha25)"
   },
   {
     "title": "经典浅色",
@@ -129,6 +135,8 @@
     "l96": "#F5F5F5",
     "l98": "#FAFAFA",
     "l100": "#FFFFFF",
+    "btnHoverColor": "#F6241D",
+    "btnActiveColor": "#D7000E",
     "successColor": "#51BEFC",
     "infoColor": "#0081E2",
     "warningColor": "#FAAD14",
@@ -150,9 +158,9 @@
     "backgroundLight": "#FAFAFA",
     "backgroundBase": "#F5F5F5",
     "selectedColor": "rgba(0, 129, 226, 0.15)",
-    "hoverColor": "#269ff0",
-    "hoverBg": "var(--alpha04)",
-    "clickColor": "#0065bd",
+    "hoverColor": "#008EF0",
+    "hoverBg": "#008EF0",
+    "clickColor": "#006ECF",
     "iconColorHover": "rgba(0, 0, 0, 0.75)",
     "headingColor": "var(--alpha85)",
     "handleColor": "var(--alpha0)",
@@ -169,6 +177,7 @@
     "paginationEllipsisColor": "var(--alpha45)",
     "paginationActiveTextColor": "var(--alpha0)",
     "componentBackground": "var(--container-basic)",
+    "stepWaitBackgroundColor": "var(--l100)",
     "switchBackground": "var(--alpha25)",
     "switchDisabledBgColor": "var(--alpha15)",
     "switchDisabledAfterColor": "var(--alpha15)",
@@ -211,7 +220,8 @@
       "#626c91",
       "#a0a7e6",
       "#c4ebad"
-    ]
+    ],
+    "defaultButtonBorder": "var(--alpha15)"
   },
   {
     "title": "经典暖灰",

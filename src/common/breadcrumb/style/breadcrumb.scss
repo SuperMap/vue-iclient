@@ -2,11 +2,20 @@
 @import '../../_utils/style/theme/theme.scss';
 
 @include b(breadcrumb) {
+  $prefix: &;
   color: $breadcrumb-base-color;
   a {
     color: $breadcrumb-link-color;
   }
+  a:hover {
+    color: $breadcrumb-link-color-hover;
+  }
   @include e(separator, '-') {
     color: $breadcrumb-separator-color;
+  }
+  >span:last-child {
+    #{$prefix}-link {
+      color: $text-color-active;
+    }
   }
 }

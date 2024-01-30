@@ -96,6 +96,13 @@
       "textArea": "TextArea",
       "passwordBox": "Password Box"
     },
+    "inputNumber": {
+      "title": "InputNumber",
+      "size": "Size",
+      "disabled":"Disabled",
+      "formatter": "Formatter",
+      "decimal": "Decimal"
+    },
     "layout": {
       "title": "Layout"
     },
@@ -168,9 +175,6 @@
       "dotStyle": "Dot Style",
       "clickable": "Clickable",
       "navigationSteps": "Navigation Steps"
-    },
-    "inputNumber": {
-      "title": "InputNumber"
     },
     "switch": {
       "title": "Switch",
