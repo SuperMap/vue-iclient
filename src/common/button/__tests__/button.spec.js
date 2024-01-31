@@ -22,7 +22,7 @@ describe('Button.vue', () => {
         SmButton
       }
     });
-    expect(wrapper.text()).toBe('按 钮');
+    expect(wrapper.text()).toBe('按钮');
   });
 
   it('render index correctly', () => {

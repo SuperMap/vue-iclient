@@ -22,7 +22,7 @@ describe('Theme.ts', () => {
         SmButton
       }
     });
-    expect(wrapper.text()).toBe('按 钮');
+    expect(wrapper.text()).toBe('按钮');
     expect(wrapper.vm.$children[0].getBackgroundStyle.background).toBe('#fff');
     expect(wrapper.vm.$children[0].getTextColorStyle.color).toBe('rgba(0, 0, 0, 0.65)');
     expect(wrapper.vm.$children[0].collapseCardHeaderBgStyle.background).toBe('#F4F4F4');
