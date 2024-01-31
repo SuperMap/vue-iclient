@@ -438,7 +438,7 @@ export default class EchartsDataService {
    * @returns {Array}  统计后的Xdata、
    */
   _stasticXData(fieldValueIndex) {
-    let xData = Object.keys(fieldValueIndex);
+    const xData = Array.from(fieldValueIndex.keys());
     return xData;
   }
 
@@ -455,10 +455,10 @@ export default class EchartsDataService {
   _stasticYData(fieldValues, fieldValueIndex, statisticFunction, features) {
     let yData = [];
     // 统计Y字段
-    for (const key in fieldValueIndex) {
+    for (const key of fieldValueIndex.keys()) {
       let valueArr = [];
       let featuresArr = [];
-      fieldValueIndex[key].forEach(index => {
+      fieldValueIndex.get(key).forEach(index => {
         // 清除字符串型的数字的逗号
         let num = fieldValues[index] && clearNumberComma(fieldValues[index]);
         valueArr.push(tonumber(num));
@@ -500,13 +500,14 @@ export default class EchartsDataService {
    */
   _getUniqFieldDatas(data, fieldIndex) {
     const fieldValues = this._getFieldDatas(data, fieldIndex);
-    const uniqFieldValues = {};
+    // 使用map而不是obj，是因为当X轴字段值为数字型时，生成对象的key会被转成string，对MD中统计的图表设置交互有影响：交互中的关联字段值不一样
+    const uniqFieldValues = new Map();
     if (fieldValues) {
       fieldValues.forEach((value, index) => {
-        if (!uniqFieldValues[value]) {
-          uniqFieldValues[value] = [index];
+        if (!uniqFieldValues.get(value)) {
+          uniqFieldValues.set(value, [index]);
         } else {
-          uniqFieldValues[value].push(index);
+          uniqFieldValues.get(value).push(index);
         }
       });
     }
