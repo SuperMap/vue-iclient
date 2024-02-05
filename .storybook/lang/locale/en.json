@@ -94,14 +94,19 @@
       "searchBox": "Search box",
       "size": "Size",
       "textArea": "TextArea",
-      "passwordBox": "Password Box"
+      "passwordBox": "Password Box",
+      "error": "Error",
+      "disabled": "Disabled",
+      "readOnly": "readOnly",
+      "unit": "Input with units"
     },
     "inputNumber": {
       "title": "InputNumber",
       "size": "Size",
       "disabled":"Disabled",
       "formatter": "Formatter",
-      "decimal": "Decimal"
+      "decimal": "Decimal",
+      "error": "Error"
     },
     "layout": {
       "title": "Layout"

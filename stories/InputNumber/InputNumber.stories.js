@@ -37,16 +37,16 @@ SizeInputNumber.story = {
   name: toI18n('basicComponent.inputNumber.size')
 };
 
-export const disableInputNumber = () => ({
+export const DisableInputNumber = () => ({
   template: `
         <sm-input-number :disabled="true" :min="1" :max="100000" :default-value="3" />
       `
 });
-disableInputNumber.story = {
+DisableInputNumber.story = {
   name: toI18n('basicComponent.inputNumber.disabled')
 };
 
-export const formatterInputNumber = () => ({
+export const FormatterInputNumber = () => ({
   computed: {
     formatterDollar() {
       return value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -68,13 +68,20 @@ export const formatterInputNumber = () => ({
   </div>
         `
 });
-formatterInputNumber.story = {
+FormatterInputNumber.story = {
   name: toI18n('basicComponent.inputNumber.formatter')
 };
 
-export const decimalInputNumber = () => ({
+export const DecimalInputNumber = () => ({
   template: `<sm-input-number :min="0" :max="10" :step="0.1" :default-value="3"/>`
 });
-decimalInputNumber.story = {
+DecimalInputNumber.story = {
   name: toI18n('basicComponent.inputNumber.decimal')
+};
+
+export const ErrorInputNumber = () => ({
+  template: `<sm-input-number :error="true" :min="0" :max="10" :step="0.1" :default-value="3"/>`
+});
+ErrorInputNumber.story = {
+  name: toI18n('basicComponent.inputNumber.error')
 };

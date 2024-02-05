@@ -94,14 +94,19 @@
       "searchBox": "搜索框",
       "size": "大小",
       "textArea": "文本域",
-      "passwordBox": "密码框"
+      "passwordBox": "密码框",
+      "error": "错误",
+      "disabled": "不可用",
+      "readOnly": "只读",
+      "unit": "带单位的输入框"
     },
     "inputNumber": {
       "title": "InputNumber 数字输入框",
       "size": "大小",
       "disabled":"不可用",
       "formatter": "格式化",
-      "decimal": "小数"
+      "decimal": "小数",
+      "error": "错误"
     },
     "layout": {
       "title": "Layout 布局"

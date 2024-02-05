@@ -5,7 +5,8 @@ import Base from 'vue-iclient/src/common/input/BaseMixin.vue';
 
 export const inputNumberTypes = {
   ...InputNumberProps,
-  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle']),
+  error: VueTypes.bool.def(false)
 };
 
 export default {
@@ -34,7 +35,8 @@ export default {
     },
     componentClass() {
       return {
-        'sm-component-input-number-md': this.size === 'middle'
+        'sm-component-input-number-md': this.size === 'middle',
+        'sm-component-input-number-error': this.error === true
       };
     }
   }

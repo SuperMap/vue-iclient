@@ -220,7 +220,14 @@ $input-number-handler-bg: $component-background;
 $input-number-handler-border-color: $border-color-base;
 $input-addon-bg: $background-color-light;
 $input-disabled-bg: $disabled-bg;
+$input-disabled-color: $disabled-bg;
 $input-height-md: 28px;
+$input-error-color: var(--error-color);
+$input-read-only-border-color: var(--read-only-border-color);
+$input-read-only-color: var(--read-only-color);
+$input-read-only-bg: var(--read-only-bg);
+$input-with-unit-color: var(--with-unit-color);
+$input-with-unit-disabled-color: var(--with-unit-disabled-color);
 
 // Form
 $label-required-color: $highlight-color;
@@ -367,7 +374,7 @@ $switch-loading-text-color: rgba(0, 0, 0, 0.65);
 
 // Pagination
 $pagination-border-default-color: var(--pagination-border-default-color);
-$pagination-border-hover-color: var(--hover-bg);
+$pagination-border-hover-color: var(--hover-color);
 $pagination-disabled-active-bg-color: var(--disabled-darken-bg-color10);
 $pagination-item-bg-active: $primary-6;
 $pagination-ellipsis-color: var(--pagination-ellipsis-color);

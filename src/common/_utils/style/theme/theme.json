@@ -49,7 +49,7 @@
     "backgroundBase": "rgba(0, 0, 0, 0.08)",
     "selectedColor": "rgba(52, 153, 229, 0.15)",
     "hoverColor": "#65C0FC",
-    "hoverBg": "#65C0FC",
+    "hoverBg": "var(--alpha04)",
     "clickColor": "#0371C3",
     "iconColorHover": "rgba(255, 255, 255, 0.75)",
     "headingColor": "var(--alpha85)",
@@ -111,7 +111,13 @@
       "#8dc1a9",
       "#ea7e53"
     ],
-    "defaultButtonBorder": "var(--alpha25)"
+    "defaultButtonBorder": "var(--alpha25)",
+    "errorColor": "#E04C40",
+    "readOnlyBorderColor": "var(--alpha08)",
+    "readOnlyColor": "var(--alpha65)",
+    "readOnlyBg": "var(--alpha08)",
+    "withUnitColor": "var(--alpha65)",
+    "withUnitDisabledColor": "var(--alpha25)"
   },
   {
     "title": "经典浅色",
@@ -159,7 +165,7 @@
     "backgroundBase": "#F5F5F5",
     "selectedColor": "rgba(0, 129, 226, 0.15)",
     "hoverColor": "#008EF0",
-    "hoverBg": "#008EF0",
+    "hoverBg": "var(--alpha04)",
     "clickColor": "#006ECF",
     "iconColorHover": "rgba(0, 0, 0, 0.75)",
     "headingColor": "var(--alpha85)",
@@ -221,7 +227,13 @@
       "#a0a7e6",
       "#c4ebad"
     ],
-    "defaultButtonBorder": "var(--alpha15)"
+    "defaultButtonBorder": "var(--alpha15)",
+    "errorColor": "#E41318",
+    "readOnlyBorderColor": "var(--alpha15)",
+    "readOnlyColor": "var(--alpha65)",
+    "readOnlyBg": "var(--alpha04)",
+    "withUnitColor": "var(--alpha25)",
+    "withUnitDisabledColor": "var(--alpha25)"
   },
   {
     "title": "经典暖灰",
