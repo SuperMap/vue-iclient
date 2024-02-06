@@ -4,6 +4,9 @@
 
 @include b(select) {
   $prefix: &;
+  &:not(&-disabled) {
+    color: $text-color-active;
+  }
   
   @include e(md, '-') {
     #{$prefix}-selection--single {
@@ -39,9 +42,6 @@
       #{$prefix-selection}__clear + #{$prefix}-arrow {
         opacity: 0;
       }
-    }
-    &__rendered {
-      color: $text-color-active;
     }
 
     &__clear {
@@ -83,8 +83,11 @@
     }
 
     #{$prefix}-arrow {
-      color: $disabled-color;
+      color: $disabled-icon-color;
     }
+  }
+  @include e(readonly, '-') {
+    color: $text-color;
   }
 
   @include e(dropdown, '-') {
@@ -94,6 +97,7 @@
         color: $text-color-secondary;
       }
       &-item {
+        color: $text-color-active;
         &:hover:not(&-disabled) {
           background-color: $select-item-hover-bg;
         }

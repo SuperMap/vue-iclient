@@ -114,6 +114,7 @@ $background-color-base: var(--background-base);
 
 // Disabled states
 $disabled-color: var(--disabled-text-color);
+$disabled-icon-color: var(--disabled-icon-color);
 $disabled-bg: var(--disabled-bg-color);
 $disabled-color-dark: rgba($white, 0.35);
 $disabled-border-color: var(--disabled-border-color);
@@ -168,6 +169,7 @@ $btn-height-md: 28px;
 
 // Checkbox
 $checkbox-color: $primary-6;
+$checkbox-selected-hover-color: $primary-7;
 $checkbox-check-color: #fff;
 
 // Descriptions
@@ -185,6 +187,7 @@ $empty-description-color: var(--empty-description-color);
 
 // Radio
 $radio-dot-color: $primary-6;
+$radio-dot-checked-hover-color: $primary-7;
 $radio-inner-disabled-bg: var(--radio-inner-disabled-bg);
 
 // Radio buttons
@@ -228,6 +231,7 @@ $input-read-only-color: var(--read-only-color);
 $input-read-only-bg: var(--read-only-bg);
 $input-with-unit-color: var(--with-unit-color);
 $input-with-unit-disabled-color: var(--with-unit-disabled-color);
+$input-icon-color: var(--alpha45);
 
 // Form
 $label-required-color: $highlight-color;
@@ -323,6 +327,9 @@ $tag-default-color: $text-color;
 // TimePicker
 $time-picker-selected-bg: $selected-color;
 $time-picker-item-hover-bg: var(--hover-bg);
+
+// DatePicker
+$date-item-hover-bg: var(--hover-bg);
 
 // Badge
 $badge-text-color: $component-background;

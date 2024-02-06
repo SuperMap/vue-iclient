@@ -4,13 +4,19 @@
 @include b(radio) {
   $prefix: &;
 
-  &-wrap:hover &-inner,
+  &-wrapper:hover &-inner,
   &:hover &-inner,
   &-input:focus + &-inner {
     border-color: $radio-dot-color;
   }
   &-wrapper {
     color: $text-color-active;
+    &:hover #{$prefix}-checked #{$prefix}-inner{
+      border-color: $radio-dot-checked-hover-color;
+      &::after {
+        background-color: $radio-dot-checked-hover-color;
+      }
+    }
   }
   @include e(input, '-') {
     &:focus {
@@ -28,6 +34,7 @@
     }
   }
   @include e(inner, '-') {
+    background-color: transparent;
     &::after {
       background-color: $radio-dot-color;
     }
@@ -42,8 +49,10 @@
   }
   @include e(button-wrapper, '-') {
     $prefix-button-wrapper: &;
+    background-color: transparent;
     &:hover {
-      color: $radio-dot-color;
+      color: $radio-button-hover-color;
+      border-color: $radio-button-hover-color;
     }
     &:focus-within {
       outline: none;
