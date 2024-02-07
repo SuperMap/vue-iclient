@@ -5,6 +5,8 @@ import clonedeep from 'lodash.clonedeep';
 import mergewith from 'lodash.mergewith';
 import difference from 'lodash.difference';
 import getFeatures from '../../common/_utils/get-features';
+import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
+import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
 
 /**
  * @class AttributesViewModel
@@ -118,6 +120,10 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   fieldConfigs: FieldConfigParams;
 
   currentTitle: string;
+
+  prevDatasetUrl: string;
+
+  totalCount: number;
 
   constructor(options) {
     super();
@@ -435,19 +441,44 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   async getDatas() {
     if (this.dataset || this.layerName) {
       let features;
-      let totalCount;
       if (this.useDataset()) {
-        const datas = await this._getFeaturesFromDataset();
+        let datas = await this._getFeaturesFromDataset();
         features = datas.features;
-        totalCount = datas.totalCount;
+        !this.totalCount && (this.totalCount = datas.totalCount);
+        if (this.canLazyLoad()) {
+          if (this.dataset.url !== this.prevDatasetUrl) {
+            let arr = this.dataset.dataName[0].split(':');
+            let config = {
+              datasetName: arr[1],
+              dataSourceName: arr[0],
+              dataUrl: this.dataset.url
+            }
+            // @ts-ignore
+            this.totalCount = await new iServerRestService(this.dataset.url).getDataFeaturesCount(config);
+            // @ts-ignore
+            let fieldInfos = await new iServerRestService(this.dataset.url).getFeaturesDatasetInfo(config);
+            let fields = []; let fieldCaptions = []; let fieldTypes = [];
+            if(fieldInfos) {
+              fieldInfos.forEach(fieldInfo => {
+                if(fieldInfo.name) {
+                  fields.push(fieldInfo.name.toUpperCase());
+                  fieldCaptions.push(fieldInfo.caption.toUpperCase());
+                  fieldTypes.push(fieldInfo.type);
+                }
+              });
+            }
+            datas = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
+            this.prevDatasetUrl = this.dataset.url;
+          }
+        }
       } else {
         features = this._getFeaturesFromLayer(this.layerName);
-        totalCount = features.length;
+        this.totalCount = features.length;
       }
       const content = this.toTableContent(features);
       const columns = this.toTableColumns(features[0].properties);
 
-      this.fire('dataChanged', { content, totalCount, columns });
+      this.fire('dataChanged', { content, totalCount: this.totalCount, columns });
     }
   }
 
@@ -473,6 +504,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         }
         dataset.fromIndex = this.paginationOptions.pageSize * (this.paginationOptions.current - 1 || 0);
         dataset.toIndex = dataset.fromIndex + this.paginationOptions.pageSize - 1;
+        dataset.returnFeaturesOnly = true;
       }
 
       return await getFeatures(dataset);

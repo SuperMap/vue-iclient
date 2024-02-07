@@ -1,5 +1,6 @@
 import iServerRestService from '../../../common/_utils/iServerRestService';
 const SuperMap = require('../../../../test/unit/mocks/supermap');
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 
 describe('iServerRestService', () => {
   afterEach(() => {
@@ -35,5 +36,30 @@ describe('iServerRestService', () => {
         done();
       },
     })
+  });
+  it('getDataFeaturesCount', async (done) => {
+    const fetchResource = {
+      'http://localhost:8090/iserver/services/xxx/rest/data/featureResults.json?fromIndex=0&toIndex=19&&returnCountOnly=true&returnContent=true': {
+        totalCount: 200
+      }
+    };
+    mockFetch(fetchResource);
+    const service = new iServerRestService();
+    const result = await service.getDataFeaturesCount({ dataUrl: 'http://localhost:8090/iserver/services/xxx/rest/data', datasetName: 'test', dataSourceName: 'test' });
+    expect(result).toBe(500);
+    done();
+  });
+  it('getFeaturesDatasetInfo', async (done) => {
+    const fetchResource = {
+      'http://localhost:8090/iserver/services/xxx/rest/data/featureResults.json?fromIndex=0&toIndex=19&&returnDatasetInfoOnly=true&returnContent=true': {
+        fieldInfos: []
+      }
+    };
+    mockFetch(fetchResource);
+    const service = new iServerRestService();
+    const result = await service.getFeaturesDatasetInfo({ dataUrl: 'http://localhost:8090/iserver/services/xxx/rest/data', datasetName: 'test', dataSourceName: 'test'});
+    expect(result[0].name).toBe('capital');
+    expect(result[0].caption).toBe('Capital');
+    done();
   });
 });

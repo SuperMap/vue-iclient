@@ -433,7 +433,9 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   handleChange(pagination, filters, sorter, { currentDataSource }) {
     this.currentDataSource = currentDataSource;
-    this.$set(this.paginationOptions, 'total', currentDataSource.length);
+    if (filters && Object.keys(filters).length) {
+      this.$set(this.paginationOptions, 'total', currentDataSource.length);
+    }
     this.getCurrentSelectedRowLength();
     this.paginationOptions = { ...this.paginationOptions, current: pagination.current };
     this.sorter = sorter;
@@ -446,6 +448,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       if (totalCount) {
         // @ts-ignore
         this.totalCount = totalCount;
+        this.$set(this.paginationOptions, 'total', totalCount);
       }
       // @ts-ignore
       const hideColumns = this.columns.filter(item => !item.visible);
@@ -498,8 +501,8 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     this.viewModel = null;
   }
 
-  beforeDestory() {
-    this.$options.removed.call(this);
+  beforeDestroy() {
+    this.removed();
   }
 }
 

@@ -20,7 +20,8 @@ export default function getFeatures(dataset) {
       fromIndex,
       toIndex,
       hasGeometry,
-      orderBy
+      orderBy,
+      returnFeaturesOnly
     } = dataset;
     if (dataset && (url || geoJSON) && type) {
       let queryInfo = {
@@ -33,7 +34,8 @@ export default function getFeatures(dataset) {
         const options = {
           fromIndex,
           toIndex,
-          hasGeometry
+          hasGeometry,
+          returnFeaturesOnly
         };
         if (dataset.proxy) {
           options.proxy = dataset.proxy;

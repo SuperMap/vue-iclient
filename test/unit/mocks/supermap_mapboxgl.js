@@ -18,7 +18,46 @@ supermap.FeatureService = () => {
     getFeaturesByGeometry: (param, callback) =>
       setTimeout(() => {
         callback(fakeDataServiceResult);
-      }, 0)
+      }, 0),
+    getFeaturesDatasetInfo: (param, callback) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          callback && callback({
+            result: [{
+              fieldInfos: [{
+                name: 'capital',
+                caption: 'Capital'
+              }]
+            }]
+          });
+          resolve({
+            result: [{
+              fieldInfos: [{
+                name: 'capital',
+                caption: 'Capital'
+              }]
+            }]
+          })
+        }, 0)
+      });
+    },
+    getFeaturesCount: (param, callback) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          callback && callback({
+            result: {
+              totalCount: 500
+            }
+          });
+          resolve({
+            result: {
+              totalCount: 500
+            }
+          });
+        }, 0)
+      })
+    }
+      
   };
 };
 
@@ -233,6 +272,10 @@ supermap.DataFlowService = serviceUrl => {
 };
 
 supermap.DeckglLayer = () => {};
+
+supermap.GetFeaturesBySQLParameters = () => {
+  return {}
+}
 
 supermap.Util = {
   hexToRgba: function (hex, opacity) {
