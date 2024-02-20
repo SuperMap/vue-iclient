@@ -314,7 +314,7 @@ class SmCoordinateConversion extends Mixins(MapGetter, Control, Theme, BaseCard)
   }
 
   reverseCoordinateFormat(value: string = this.inputValue, formatOption: FormatOption, format?: string) {
-    value = value.replace(/^\s+|\s+$ /, '');
+    value = value.replace(/^(?:\s+|\s+)$ /, '');
     if (!value || !formatOption) {
       this.viewModel._clearMarker();
       return null;
