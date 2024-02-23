@@ -496,7 +496,8 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   removed() {
-    this.viewModel.off('mapLoaded');
+    this.viewModel.off('dataChanged');
+    this.viewModel.off('clearselectedrows');
     this.viewModel.off('changeSelectLayer');
     this.viewModel = null;
   }
