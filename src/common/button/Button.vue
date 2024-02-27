@@ -7,7 +7,8 @@ import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 
 export const buttonTypes = {
   ...buttonProps(),
-  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle']),
+  autoInsertSpaceInButton: VueTypes.bool.def(false)
 };
 
 export default {

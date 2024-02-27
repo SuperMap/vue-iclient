@@ -34,7 +34,7 @@ export default class MapvLayerViewModel extends mapboxgl.Evented {
   }
 
   _addMapvLayer() {
-    const mapVLayer = new mapboxgl.supermap.MapvLayer('', this.data, Object.assign({}, this.options));
+    const mapVLayer = new mapboxgl.supermap.MapvLayer(this.data, Object.assign({}, this.options));
     this.map && this.map.addLayer(mapVLayer);
   }
 

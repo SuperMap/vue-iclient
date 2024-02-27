@@ -26,6 +26,10 @@ class Marker extends Evented {
         // this._update();
         return this;
     }
+
+    setPopup(popup) {
+        return this;
+    }
 }
 
 

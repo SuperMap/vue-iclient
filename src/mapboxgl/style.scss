@@ -43,8 +43,8 @@
 @import '../common/time-slider/style/time-slider.scss';
 @import '../common/time-line/style/time-line.scss';
 @import '../common/time-range/style/time-range.scss';
+@import '../common/time-picker/style/time-picker.scss';
 @import '../common/tree-select/style/tree-select.scss';
-@import '../common/layer-select/style/layer-select.scss';
 @import '../common/dropdown/style/dropdown.scss';
 @import '../common/slideshow/style/slideshow.scss';
 
@@ -75,6 +75,7 @@
 @import './tdt/route/style/tdt-route.scss';
 @import './tdt/map-switcher/style/tdt-map-switcher.scss';
 
+@import './layer-select/style/layer-select.scss';
 @import './web-map/style/web-map.scss';
 @import './web-scene/style/web-scene.scss';
 @import './search/style/search.scss';
@@ -87,3 +88,5 @@
 
 @import './ncp-map/style/ncp-map.scss';
 @import './compare/style/compare.scss';
+@import './video-plus/style/video-plus.scss';
+@import './graph-map/style/graph-map.scss';

@@ -305,14 +305,16 @@ export default {
       this.viewModel && this.viewModel.clearAllFeatures();
     },
     setPopupStyle(styleData = this.popupStyle) {
-      const popupContentList = document.querySelectorAll('.sm-component-measure__popup .mapboxgl-popup-content');
-      if (popupContentList) {
-        popupContentList.forEach(item => {
-          item.style.color = styleData.color;
-          item.style.background = styleData.background;
-        });
-      }
-      setPopupArrowStyle(styleData.background);
+      this.$nextTick(() => {
+        const popupContentList = document.querySelectorAll('.sm-component-measure__popup .mapboxgl-popup-content');
+        if (popupContentList) {
+          popupContentList.forEach(item => {
+            item.style.color = styleData.color;
+            item.style.background = styleData.background;
+          });
+        }
+        setPopupArrowStyle(styleData.background);
+      })
     }
   }
 };

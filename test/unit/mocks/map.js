@@ -17,6 +17,7 @@ var LngLatBounds = require('mapbox-gl/src/geo/lng_lat_bounds');
 var Evented = require('mapbox-gl/src/util/evented');
 // var Transform = require('mapbox-gl/src/geo/transform');
 var util = require('mapbox-gl/src/util/util');
+var CRS = require('./crs');
 // var Style = require('mapbox-gl/src/style/style');
 
 // var Style = require('./style');
@@ -80,7 +81,7 @@ var Map = function (options) {
   var ne = new LngLat(-73.9397, 40.8002);
   var llb = new LngLatBounds(sw, ne);
   this.bounds = this.options.bounds || llb;
-
+  this.crs = new CRS();
   try {
     this.center = this.options.center ? new LngLat(this.options.center.lng, this.options.center.lat) : new LngLat(0, 0);
   } catch (e) {
@@ -203,6 +204,7 @@ var Map = function (options) {
     }
     if (this._sources[name]) {
       return {
+        setCoordinates: function() {},
         setData: function (data) {
           this._sources[name].data = data;
           if (this._sources[name].type === 'geojson') {
@@ -282,6 +284,7 @@ var Map = function (options) {
       };
     } else {
       return {
+        setCoordinates: function() {},
         setData: function (data) {},
         loadTile: function () {}
       };
@@ -339,6 +342,9 @@ var Map = function (options) {
   this.setFilter = function (layerId, filter) {};
   this.getLayer = function (id) {
     if(this.overlayLayersManager[id]) {
+      if(id === 'POINT-0'){
+        return ''
+      }
       return this.overlayLayersManager[id];
     }
     else if(this._layers[id]) {
@@ -447,7 +453,26 @@ var Map = function (options) {
         }
       ];
       return feature;
-    }
+    } else if(pointOrBox[0] == 0 && pointOrBox[1] == 1) {
+      return [{
+        "id": undefined,
+        "layer": {
+          "id": "第七次人口普查全国各省人口数(未包含港澳台)",
+          "type": "fill",
+          "source": "第七次人口普查全国各省人口数(未包含港澳台)"
+        },
+        "properties": {
+          "地区": "北京",
+          "2020年人口数": "21893095",
+          "2010年人口数": "19612368",
+          "2020年比重": "1.55",
+          "2010年比重": "1.46"
+        },
+        "source": "第七次人口普查全国各省人口数(未包含港澳台)",
+        "state": {},
+        "type": "Feature"
+      }]     
+    };
     var searchBoundingBox = [];
     if (pointOrBox) {
       if (pointOrBox[0].x !== undefined) {
@@ -536,9 +561,7 @@ var Map = function (options) {
     return this.zoom;
   };
   this.loadImage = function (src, callback) {
-    setTimeout(function () {
       callback(null, [1, 2, 3]);
-    }, 10);
   };
   this.addImage = function () {};
   this.hasImage = function () {
@@ -564,9 +587,11 @@ var Map = function (options) {
     };
   };
   this.getCRS = () => {
-    return {};
+    return this.crs;
   };
-  this.setCRS = () => {};
+  this.setCRS = () => {
+    this.crs = new CRS();
+  };
   this.flyTo = options => {};
   this.setRenderWorldCopies = epsgCode => {};
   this.triggerRepaint = () => {};

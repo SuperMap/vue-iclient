@@ -37,4 +37,18 @@ describe('CollapseCard.vue', () => {
     await wrapper.find('.sm-component-collapse-card__icon').trigger('click');
     expect(wrapper.vm.isShow).toBe(false);
   });
+
+  it('change props', async () => {
+    wrapper = mount(SmCollapseCard, {
+      propsData: {
+        iconClass: '',
+        iconPosition: ''
+      }
+    });
+    expect(wrapper.find('.sm-component-collapse-card__icon').exists()).toBe(false);
+    await wrapper.setProps({ iconClass: 'sm-component-test' });
+    expect(wrapper.vm.isShow).toBe(true);
+    await wrapper.setProps({ iconClass: '', iconPosition: 'top-right' });
+    expect(wrapper.vm.isShow).toBe(true);
+  });
 });

@@ -23,9 +23,9 @@
 | mousewheel           | 是否开启鼠标滚轮控制播放                                                          | boolean                                                                                                                                           | -                                          | false        |
 | keyboard             | 是否开启键盘控制播放                                                              | boolean                                                                                                                                           | -                                          | false        |
 | grabCursor           | 是否开启鼠标手掌形状。在 hover 状态或拖动时触发                                   | boolean                                                                                                                                           | -                                          | true         |
-| navigation           | 前进后退按钮配置。参照[swiper](https://www.swiper.com.cn/api/navigation/355.html) | object \| [slot](https://github.com/surmon-china/surmon-china.github.io/blob/source/projects/vue-awesome-swiper/examples/30-thumbs-gallery.vue)   | -                                          | -            |
-| pagination           | 分页器导航配置。参照[swiper](https://www.swiper.com.cn/api/pagination/362.html)   | object \| [slot](https://github.com/surmon-china/surmon-china.github.io/blob/source/projects/vue-awesome-swiper/examples/14-centered-auto.vue)    | -                                          | -            |
-| scrollbar            | 滚动条配置。参照[swiper](https://www.swiper.com.cn/api/scrollbar/369.html)        | object \| [slot](https://github.com/surmon-china/surmon-china.github.io/blob/source/projects/vue-awesome-swiper/examples/16-scroll-container.vue) | -                                          | -            |
+| navigation           | 前进后退按钮配置。参照[swiper](https://www.swiper.com.cn/api/navigation/355.html) | object \| [slot](https://github.com/surmon-china/surmon-china.github.io/blob/source/examples/vue-awesome-swiper/33-thumbs-gallery.vue)   | -                                          | -            |
+| pagination           | 分页器导航配置。参照[swiper](https://www.swiper.com.cn/api/pagination/362.html)   | object \| [slot](https://github.com/surmon-china/surmon-china.github.io/blob/source/examples/vue-awesome-swiper/15-centered-auto.vue)    | -                                          | -            |
+| scrollbar            | 滚动条配置。参照[swiper](https://www.swiper.com.cn/api/scrollbar/369.html)        | object \| [slot](https://github.com/surmon-china/surmon-china.github.io/blob/source/examples/vue-awesome-swiper/17-scroll-container.vue) | -                                          | -            |
 | effect               | 幻灯片播放效果                                                                    | string                                                                                                                                            | 'slide' \| 'cube' \| 'coverflow' \| 'flip' | 'slide'      |
 | autoresize           | 组件根元素尺寸变化时幻灯片是否自适应                                              | boolean                                                                                                                                           | -                                          | true         |
 
@@ -33,7 +33,7 @@
 
 ### Events
 
-| 参数   | 说明                           | 回调参数          |
+| name   | 说明                           | 回调参数          |
 | :----- | :----------------------------- | :---------------- |
 | change | 更改当前活动幻灯片时将触发事件 | function(options) |
 

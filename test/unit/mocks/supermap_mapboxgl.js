@@ -1,4 +1,8 @@
-import { fakeDataServiceResult, fakeMapServiceResult, fakeAddressMatch } from './services';
+import {
+  fakeDataServiceResult,
+  fakeMapServiceResult,
+  fakeAddressMatch
+} from './services';
 const supermap = {};
 
 supermap.FeatureService = () => {
@@ -14,7 +18,46 @@ supermap.FeatureService = () => {
     getFeaturesByGeometry: (param, callback) =>
       setTimeout(() => {
         callback(fakeDataServiceResult);
-      }, 0)
+      }, 0),
+    getFeaturesDatasetInfo: (param, callback) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          callback && callback({
+            result: [{
+              fieldInfos: [{
+                name: 'capital',
+                caption: 'Capital'
+              }]
+            }]
+          });
+          resolve({
+            result: [{
+              fieldInfos: [{
+                name: 'capital',
+                caption: 'Capital'
+              }]
+            }]
+          })
+        }, 0)
+      });
+    },
+    getFeaturesCount: (param, callback) => {
+      return new Promise((resolve) => {
+        setTimeout(() => {
+          callback && callback({
+            result: {
+              totalCount: 500
+            }
+          });
+          resolve({
+            result: {
+              totalCount: 500
+            }
+          });
+        }, 0)
+      })
+    }
+      
   };
 };
 
@@ -55,7 +98,12 @@ supermap.MapService = () => {
   return {
     getMapInfo(callback) {
       setTimeout(() => {
-        const mapObj = { element: null, object: {}, result: {}, type: 'processCompleted' };
+        const mapObj = {
+          element: null,
+          object: {},
+          result: {},
+          type: 'processCompleted'
+        };
         callback(mapObj);
       }, 0);
     }
@@ -90,8 +138,13 @@ supermap.MapvLayer = () => {
   return {};
 };
 const dataflowFeature = {
-  'type': 'Point',
-  'coordinates': [116.588918, 40.07108]
+  geometry: {
+    type: 'Point',
+    coordinates: [116.588918, 40.07108]
+  },
+  properties: {
+    'id': 1
+  }
 };
 const dataflowData = JSON.stringify(dataflowFeature);
 supermap.DataFlowService = serviceUrl => {
@@ -118,7 +171,9 @@ supermap.DataFlowService = serviceUrl => {
                       ]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 },
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('LineString')) {
@@ -131,7 +186,9 @@ supermap.DataFlowService = serviceUrl => {
                       [10, 10]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 }
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('Line')) {
@@ -144,7 +201,9 @@ supermap.DataFlowService = serviceUrl => {
                       [10, 10]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 }
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('MultiPolygon')) {
@@ -161,7 +220,9 @@ supermap.DataFlowService = serviceUrl => {
                       ]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 }
               });
             } else if (event === 'messageSucceeded' && serviceUrl.includes('Polygon')) {
@@ -178,7 +239,9 @@ supermap.DataFlowService = serviceUrl => {
                       ]
                     ]
                   },
-                  properties: { id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 }
               });
             } else {
@@ -188,7 +251,9 @@ supermap.DataFlowService = serviceUrl => {
                     type: 'Point',
                     coordinates: [0, 0]
                   },
-                  properties: {id: 1 }
+                  properties: {
+                    id: 1
+                  }
                 },
                 data: dataflowData
               });
@@ -208,6 +273,10 @@ supermap.DataFlowService = serviceUrl => {
 
 supermap.DeckglLayer = () => {};
 
+supermap.GetFeaturesBySQLParameters = () => {
+  return {}
+}
+
 supermap.Util = {
   hexToRgba: function (hex, opacity) {
     var color = [],
@@ -222,6 +291,18 @@ supermap.Util = {
   }
 };
 
-supermap.GraticuleLayer = () => {};
+supermap.GraticuleLayer = () => {
+  return {
+    setStrokeStyle: jest.fn()
+  }
+};
+
+supermap.GraphMap = () => {
+  return {
+    on: (event, callback) => {
+      callback();
+    }
+  }
+}
 
 module.exports = supermap;

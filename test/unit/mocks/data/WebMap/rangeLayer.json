@@ -70,7 +70,6 @@
   "maxScale": "1:144447.92746804963",
   "minScale": "1:591658710.9091312",
   "projection": "EPSG:3857",
-  "rootUrl": "http://192.168.11.94:8190/iportal/services/../",
   "title": "jingwei",
   "version": "2.3.0"
 }

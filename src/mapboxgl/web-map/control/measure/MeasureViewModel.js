@@ -32,7 +32,7 @@ class MeasureViewModel extends mapboxgl.Evented {
   }
 
   _addDrawControl() {
-    this.draw = drawEvent.$options.getDraw(this.mapTarget);
+    this.draw = drawEvent.$options.getDraw({ mapTarget: this.mapTarget });
     drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
     this._finishDrawBind = this._finishDraw.bind(this);
     this._changeModeBind = this._changeMode.bind(this);
@@ -215,7 +215,7 @@ class MeasureViewModel extends mapboxgl.Evented {
       }
       popup.setText(`${this._getFormatResult(this.result)} ${uniti18n}`);
       popup.addTo(this.map);
-      this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
+      this.setPopupStyle && this.setPopupStyle();
       this.cachePolygonUnit.value = this.result;
       this.cachePolygonUnit.unit = this.activeUnit;
       this.tipHoverDiv = popup;

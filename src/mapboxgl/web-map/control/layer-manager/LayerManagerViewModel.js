@@ -22,7 +22,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
     this.mapTarget = mapTarget;
   }
 
-  addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, layerFilter } = {}) {
+  addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, layerFilter, proxy } = {}) {
     // 通过唯一key来判断是否已经new了实例，用来过滤选中后父节点再选中导致的重复new实例
     if (this.cacheMaps[nodeKey]) {
       return;
@@ -34,7 +34,8 @@ class LayerManageViewModel extends mapboxgl.Evented {
         mapId,
         serverUrl,
         withCredentials,
-        layerFilter
+        layerFilter,
+        proxy
       });
       return;
     }
@@ -43,6 +44,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       {
         serverUrl,
         withCredentials,
+        proxy,
         target: this.mapTarget
       },
       {},
@@ -92,6 +94,24 @@ class LayerManageViewModel extends mapboxgl.Evented {
     this.cacheIServerMaps[nodeKey] = true;
   }
 
+  addMapStyle(style, nodeKey) {
+    if (this.cacheIServerMaps[nodeKey]) {
+      return;
+    }
+    const layerInfos = [];
+    const { layers = [], sources = {} } = style || {};
+    layers.forEach(layer => {
+      const sourceId = layer.source;
+      const sourceData = sources[layer.source];
+      if (sourceId && sourceData) {
+        this.map.addSource(sourceId, sourceData);
+        this.map.addLayer(layer);
+        layerInfos.push({ sourceId, layerId: layer.id });
+      }
+    });
+    this.cacheIServerMaps[nodeKey] = layerInfos;
+  }
+
   removeLayer(nodeKey) {
     this.handleNextMap();
     if (this.mapQuene.length) {
@@ -116,6 +136,19 @@ class LayerManageViewModel extends mapboxgl.Evented {
     }
   }
 
+  removeMapStyle(nodeKey) {
+    const dataInfos = this.cacheIServerMaps[nodeKey];
+    if (dataInfos && this.map) {
+      delete this.cacheIServerMaps[nodeKey];
+      dataInfos.forEach(({ sourceId, layerId }) => {
+        if (this.map.getLayer(layerId)) {
+          this.map.removeLayer(layerId);
+          this.map.removeSource(sourceId);
+        }
+      });
+    }
+  }
+
   eachNode(datas, callback) {
     for (let i = 0; i < datas.length; i++) {
       callback(datas[i], datas);
@@ -130,7 +163,9 @@ class LayerManageViewModel extends mapboxgl.Evented {
     if (data.mapInfo) {
       if (data.mapInfo.mapId) {
         this.removeLayer(data.key);
-      } else {
+      } else if (data.mapInfo.mapOptions) {
+        this.removeMapStyle(data.key);
+      } else if (data.mapInfo.serviceUrl) {
         this.removeIServerLayer(data.key);
       }
     }
@@ -147,6 +182,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
     });
     Object.keys(this.cacheIServerMaps).forEach(nodeKey => {
       this.removeIServerLayer(nodeKey);
+      this.removeMapStyle(nodeKey);
     });
     this.cacheMaps = {};
     this.cacheIServerMaps = {};

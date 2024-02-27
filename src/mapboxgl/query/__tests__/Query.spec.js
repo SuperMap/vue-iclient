@@ -86,9 +86,12 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    wrapper.vm.viewModel.on('querysucceeded', (res) => {
+      expect(res.result.result[0].properties['名称']).toBe('四川省');
+      done();
+    });
     wrapper.vm.$nextTick(() => {
       expect(spyquery).toBeCalled();
-      done();
     });
   });
 
@@ -111,13 +114,193 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', () => {
+    wrapper.vm.viewModel.on('querysucceeded', (res) => {
+      expect(res.result.result[0].properties['名称']).toBe('四川省');
       expect(spyAddlayer).toBeCalled();
       done();
     });
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
     wrapper.vm.$nextTick(() => {
       expect(spyquery).toBeCalled();
+    });
+  });
+
+  it('change iPortal Data', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123': layerData
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        iportalData: [
+          new iPortalDataParameter({
+            url: 'https://fakeiportal.supermap.io/iportal/web/datas/123',
+            attributeFilter: 'SmID>0'
+          })
+        ]
+      }
+    });
+    wrapper.setProps({
+      iportalData: [
+        new iPortalDataParameter({
+          url: 'https://fakeiportal.supermap.io/iportal/web/datas/123456',
+          attributeFilter: 'SmID>0'
+        })
+      ]
+    });
+    await mapSubComponentLoaded(wrapper);
+    wrapper.vm.$nextTick(() => {
+      done();
+    });
+  });
+
+  it('change restData Service', async done => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            dataName: ['World:Countries']
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    wrapper.setProps({
+      restData: [
+        new RestDataParameter({
+          url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data1',
+          attributeFilter: 'SmID>0',
+          maxFeatures: 40,
+          dataName: ['World:Countries']
+        })
+      ]
+    });
+    wrapper.vm.$nextTick(() => {
+      done();
+    });
+  });
+
+  it('change restMap Service', async done => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restMap: [
+          new RestMapParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            layerName: 'Rivers@World'
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const formatJobInfos = jest.spyOn(wrapper.vm, 'formatJobInfos');
+    wrapper.setProps({
+      restMap: [
+        new RestMapParameter({
+          url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World1',
+          attributeFilter: 'SmID>0',
+          maxFeatures: 40,
+          layerName: 'Rivers@World'
+        })
+      ]
+    });
+    wrapper.vm.$nextTick(() => {
+      expect(formatJobInfos).toBeCalled();
+      done();
+    });
+  });
+
+  it('select query item', async done => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            dataName: ['World:Countries']
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    wrapper.vm.$nextTick(() => {
+      expect(spyquery).toBeCalled();
+      setTimeout(() => {
+        wrapper.find('.sm-component-query__result-body ul li').trigger('click');
+        done();
+      }, 1000);
+    });
+  });
+
+  it('restMap Service with bounds', async done => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restMap: [
+          new RestMapParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            layerName: 'Rivers@World'
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.vm.viewModel.on('querysucceeded', () => {
+      expect(spyAddlayer).toBeCalled();
+      done();
+    });
+    wrapper.vm.jobInfos[0].spaceFilter = 'mapBounds';
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    wrapper.vm.$nextTick(() => {
+      expect(spyquery).toBeCalled();
+    });
+  });
+
+  it('restData Service with bounds', async done => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            dataName: ['World:Countries']
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.vm.jobInfos[0].spaceFilter = 'mapBounds';
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    wrapper.vm.$nextTick(() => {
+      expect(spyquery).toBeCalled();
+      done();
     });
   });
 });

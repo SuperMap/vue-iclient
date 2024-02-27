@@ -3,8 +3,11 @@
 @import '../../input/style/mixin.scss';
 
 @include b(input-number) {
-  @include focus($primary-5, $primary-shadow-color);
-  &-focused {
+  @include focus-active($primary-5, $primary-shadow-color);
+  &-disabled {
+    @include disabled();
+  }
+  &-focused{
     @include focus-color($primary-5, $primary-shadow-color);
   }
   &-handler {
@@ -15,6 +18,20 @@
     &-up-inner,
     &-down-inner {
       color: $text-color-secondary;
+    }
+  }
+  @include e(error, '-') {
+    border-color: $input-error-color;
+    &:hover,
+    &:active,
+    &:focus {
+      border-color: $input-error-color;
+    }
+    @include focus-active-no-shadow();
+  }
+  @at-root {
+    #{&}-focused#{&}-error{
+      box-shadow: none;
     }
   }
   &-md {

@@ -106,30 +106,38 @@ export default {
     checkNode(key, e) {
       this.checkedKeys = key;
       if (e.checked) {
-        e.checkedNodes &&
-          e.checkedNodes.length &&
-          e.checkedNodes.forEach(node => {
-            const mapInfo = node.data.props.mapInfo;
-            if (mapInfo && mapInfo.serverUrl) {
-              const nodeKey = node.key;
-              if (mapInfo.mapId) {
-                const { serverUrl, mapId, withCredentials, layerFilter } = mapInfo;
-                this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
-              } else {
-                this.addIServerLayer(mapInfo.serverUrl, nodeKey);
-              }
-            }
-          });
+        if (!e.checkedNodes || !e.checkedNodes.length) {
+          return;
+        }
+        e.checkedNodes.forEach(node => {
+          const mapInfo = node.data.props.mapInfo;
+          if (!mapInfo) {
+            return;
+          }
+          const nodeKey = node.key;
+          if (mapInfo.mapId && mapInfo.serverUrl) {
+            const { serverUrl, mapId, withCredentials, layerFilter, proxy } = mapInfo;
+            this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy });
+            return;
+          }
+          if (mapInfo.mapOptions) {
+            this.addMapStyle(mapInfo.mapOptions.style, nodeKey);
+            return;
+          }
+          if (mapInfo.serverUrl) {
+            this.addIServerLayer(mapInfo.serverUrl, nodeKey);
+          }
+        });
       } else {
         const data = e.node.dataRef;
         this.viewModel.removeLayerLoop(data);
       }
     },
-    addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter }) {
+    addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy }) {
       if (!this.mapIsLoad) {
         return;
       }
-      this.viewModel.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter });
+      this.viewModel.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy });
     },
     removeLayer(nodeKey) {
       if (!this.mapIsLoad) {
@@ -143,11 +151,23 @@ export default {
       }
       this.viewModel.addIServerLayer(serverUrl, nodeKey);
     },
+    addMapStyle(style, nodeKey) {
+      if (!this.mapIsLoad) {
+        return;
+      }
+      this.viewModel.addMapStyle(style, nodeKey);
+    },
     removeIServerLayer(nodeKey) {
       if (!this.mapIsLoad) {
         return;
       }
       this.viewModel.removeIServerLayer(nodeKey);
+    },
+    removeMapStyle(nodeKey) {
+      if (!this.mapIsLoad) {
+        return;
+      }
+      this.viewModel.removeMapStyle(nodeKey);
     },
     insertProperty(layers) {
       this.eachNode(layers, function (node) {
@@ -187,6 +207,7 @@ export default {
         this.checkedKeys.forEach(key => {
           this.removeLayer(key);
           this.removeIServerLayer(key);
+          this.removeMapStyle(key);
         });
       }
       this.checkedKeys = [];

@@ -30,6 +30,11 @@ export const BasicSelect = () => ({
         Lucy
       </sm-select-option>
     </sm-select>
+    <sm-select default-value="lucy" style="width: 120px" readOnly>
+      <sm-select-option value="lucy">
+        Lucy
+      </sm-select-option>
+    </sm-select>
     <sm-select default-value="lucy" style="width: 120px" loading>
       <sm-select-option value="lucy">
         Lucy

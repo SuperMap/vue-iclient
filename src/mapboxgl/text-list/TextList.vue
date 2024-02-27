@@ -177,6 +177,11 @@ interface ColumnParams {
   slots: SlotParams;
 }
 
+interface HighlightOption {
+  dataIndex: number;
+  properties: Object;
+}
+
 @Component({
   name: 'SmTextList',
   components: {
@@ -230,7 +235,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     clickColor: null
   };
 
-  rowHoverColor: string = 'rgba(128, 128,128, 0.8 )';
+  rowHoverColor: string = 'rgba(128, 128,128, 0.8)';
 
   curRollingStartIndex: number = 0;
 
@@ -265,7 +270,7 @@ class SmTextList extends Mixins(Theme, Timer) {
       return [];
     }
   })
-  highlightOptions: Array<number>;
+  highlightOptions: Array<HighlightOption>;
 
   @Prop({ default: true }) highlightCurrentRow: Boolean;
 
@@ -366,28 +371,35 @@ class SmTextList extends Mixins(Theme, Timer) {
   // 切换自动滚动与排序时重置。。。
   @Watch('highlightOptions', { immediate: true, deep: true })
   highlightOptionsChanged(newVal) {
-    let bounds = this.rowsIndexViewBounds();
     let autoBounds = this.getAutoRollingIndexBounds;
-    if (!this.autoRolling && newVal && newVal.length && !this.clamp(newVal[0], bounds[0], bounds[1])) {
+    if (!this.autoRolling && newVal && newVal.length) {
       // @ts-ignore
       if (this.$refs.animate) {
         let scrollHeight = 0;
-        if (this.sortType === 'descend') {
-          scrollHeight = (this.animateContent.length - newVal[0] - 1) * this.filterUnit(this.listStyle.rowStyle.height);
-        } else {
-          scrollHeight = newVal[0] * this.filterUnit(this.listStyle.rowStyle.height);
+        let dataIndex = this.animateContent.findIndex((item, index) => {
+          // @ts-ignore
+          return item.idx === newVal[0].dataIndex;
+        });
+        if (dataIndex || dataIndex === 0) {
+          let rowHeight = this.filterUnit(this.listStyle.rowStyle.height);
+          scrollHeight = dataIndex * rowHeight;
+          // @ts-ignore
+          let currentScrollTop = this.$refs.animate.scrollTop;
+          if (scrollHeight < currentScrollTop || scrollHeight > currentScrollTop + rowHeight * this.rows) {
+            // @ts-ignore
+            this.$refs.animate.scrollTop = scrollHeight;
+          }
         }
-        // @ts-ignore
-        this.$refs.animate.scrollTop = scrollHeight;
       }
       // @ts-ignore
     } else if (this.autoRolling) {
-      if (!this.clamp(newVal[0], autoBounds[0], autoBounds[1])) {
+      const newDataIndex = newVal && newVal.length && newVal[0].dataIndex;
+      if (!this.clamp(newDataIndex, autoBounds[0], autoBounds[1])) {
         let splitIndex;
-        if (newVal[0] <= this.rows) {
+        if (newDataIndex <= this.rows) {
           this.reset();
         } else {
-          splitIndex = newVal[0] - this.rows;
+          splitIndex = newDataIndex - this.rows;
           this.$nextTick(() => {
             this.animateContent = [];
             this.$nextTick(() => {
@@ -631,7 +643,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         let obj = {};
         this.getColumns &&
           this.getColumns.forEach((column, index) => {
-            obj[`${column.field}-${index}`] = data[column.field] || '-';
+            obj[`${column.field}-${index}`] = (data[column.field] === null || data[column.field] === undefined) ? '-' : data[column.field];
           });
         // @ts-ignore
         obj.idx = index;
@@ -655,7 +667,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         let contentObj = {};
         if (this.getColumns) {
           this.getColumns.forEach((column, index) => {
-            contentObj[`${column.field}-${index}`] = properties[column.field] || '-';
+            contentObj[`${column.field}-${index}`] = (properties[column.field] === null || properties[column.field] === undefined) ? '-' : properties[column.field];
           });
           // @ts-ignore
           contentObj.idx = index;
@@ -756,15 +768,15 @@ class SmTextList extends Mixins(Theme, Timer) {
     if (this.highlightColor && typeof this.highlightColor === 'function') {
       this.eventTriggerColorList.clickColor = this.highlightColor(item, rowIndex, event);
     }
+    if (this.highlightColor && typeof this.highlightColor === 'string') {
+      this.eventTriggerColorList.clickColor = this.highlightColor;
+    }
     this.$emit('row-click', item, rowIndex, event);
     this.$emit('cell-click', item, rowIndex, event);
   }
 
   handleMouseEnter(item, rowIndex, event) {
     this.activeHoverRowIndex = rowIndex;
-    if (this.highlightColor && typeof this.highlightColor === 'function') {
-      this.rowHoverColor = this.highlightColor(item, rowIndex, event);
-    }
     this.$emit('cell-mouse-enter', item, rowIndex, event);
   }
 
@@ -775,7 +787,7 @@ class SmTextList extends Mixins(Theme, Timer) {
 
   setCurrentRow(rowIndexList) {
     if (rowIndexList && rowIndexList.length) {
-      this.activeClickRowIndex = rowIndexList;
+      this.activeClickRowIndex = rowIndexList.map(item => typeof item !== 'object' ? item : item.dataIndex);
     } else {
       this.activeClickRowIndex = null;
     }

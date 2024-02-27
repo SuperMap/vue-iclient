@@ -45,14 +45,6 @@
     }
   }
 }
-.mapboxgl-popup-content {
-  padding: 0;
-  border-radius: 4px;
-}
-.mapboxgl-popup-close-button {
-  color: $text-color;
-  font-size: 14px;
-}
 .tdt-search-popup {
   width: 370px;
   overflow: hidden;
@@ -122,6 +114,20 @@
       }
     }
   }
+  
+  .mapboxgl-popup-content {
+    padding: 0;
+    border-radius: 4px;
+  }
+  .mapboxgl-popup-close-button {
+    color: $text-color;
+    font-size: 14px;
+  }
+  &.mapboxgl-popup-anchor-bottom {
+    .mapboxgl-popup-tip {
+      border-top-color: $collapse-card-bg;
+    }
+  }
 }
 .tdt-search-line-hover-popup {
   .hover-popup {
@@ -137,8 +143,15 @@
   }
   .mapboxgl-popup-content {
     padding: 0;
+    border-radius: 4px;
   }
-}
-.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
-  border-top-color: $collapse-card-bg;
+  .mapboxgl-popup-close-button {
+    color: $text-color;
+    font-size: 14px;
+  }
+  &.mapboxgl-popup-anchor-bottom {
+    .mapboxgl-popup-tip {
+      border-top-color: $collapse-card-bg;
+    }
+  }
 }

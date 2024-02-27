@@ -49,7 +49,10 @@
           "radius": 6,
           "strokeColor": "#ffffff",
           "type": "BASIC_POINT",
-          "strokeOpacity": 1
+          "strokeOpacity": 1,
+          "imageInfo": {
+            "url": ""
+          }
         },
         "projection": "EPSG:4326",
         "enableFields": [

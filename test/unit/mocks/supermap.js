@@ -43,8 +43,7 @@ import {
   webmap_xyzLayer,
   webmap_mapboxstyleLayer,
   webmap_migrationLayer,
-  administrative_data,
-  mapInfo_data
+  webmap_MAPBOXSTYLE_Tile
 } from './services';
 import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
@@ -315,8 +314,11 @@ var Util = (SuperMap.Util = {
   urlPathAppend: function (a, b) {
     return `${a}/${b}`;
   },
-  urlAppend: function (a, b) {
-    return `${a}?${b}`;
+  urlAppend: function (url, paramStr) {
+    var newUrl = url;
+    var parts = (url + ' ').split(/[?&]/);
+    newUrl += parts.pop() === ' ' ? paramStr : parts.length ? '&' + paramStr : '?' + paramStr;
+    return newUrl;;
   },
   getScaleFromResolutionDpi: function (resolution, dpi, coordUnit = 'degree') {
     var scale = -1,
@@ -388,6 +390,8 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_migrationLayer))));
       } else if (url.indexOf('5785858575/map.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(webmap_rangeLayer))));
+      } else if (url.indexOf('1324277678/map.json') > -1) {
+        process.nextTick(() => resolve(new Response(JSON.stringify(webmap_MAPBOXSTYLE_Tile))));
       }
       // echarts
       else if (url.indexOf('datas/1920557079/content.json') > -1) {
@@ -407,7 +411,7 @@ var FetchRequest = (SuperMap.FetchRequest = {
       } else if (url.indexOf('iportal/web/datas') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datas_chart))));
       }
-      // http://192.168.12.230:8092/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
+      // http://fakeiportal.supermap.io/web/datas/2040117719/content.json?pageSize=9999999&currentPage=1"
       else if (url.indexOf('content.json?pageSize=9999999&currentPage=1') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(iportal_content))));
       } else if (url.indexOf('?REQUEST=GetCapabilities&SERVICE=WMS') > -1) {
@@ -447,10 +451,6 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(prj_data))));
       } else if (url.indexOf('/World/datasets/Countries') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(dataset_data))));
-      } else if (url.indexOf('/dataviz/libs/administrative_data') > -1) {
-        process.nextTick(() => resolve(new Response(JSON.stringify(administrative_data))));
-      } else if (url.indexOf('0123/web/maps/123/map.json') > -1) {
-        process.nextTick(() => resolve(new Response(JSON.stringify(mapInfo_data))));
       } else {
         process.nextTick(() => reject('未匹配到'));
       }
@@ -559,6 +559,9 @@ var results = {
 var GetFeaturesBySQLService = (SuperMap.GetFeaturesBySQLService = (url, options) => {
   const result = {
     result: {
+      datasetInfos: [{
+        fieldInfos:[{name: "SmID", caption: "SmID", type: "INT32"}, {name: "NAME", caption: "名称", type: "WTEXT"}]
+      }],
       features: {
         type: 'FeatureCollection',
         features: [
@@ -600,16 +603,11 @@ var GetFeaturesBySQLService = (SuperMap.GetFeaturesBySQLService = (url, options)
       } else {
         returnData = results;
       }
-      setTimeout(() => {
+      // setTimeout(() => {
         getFeatureEvent.emit('processCompleted', returnData);
-      }, 0);
+      // }, 0);
     }
   };
-});
-var processAsync = (SuperMap.GetFeaturesBySQLService.processAsync = getFeatureBySQLParams => {
-  setTimeout(() => {
-    getFeatureEvent.emit('processCompleted', results);
-  }, 0);
 });
 
 var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
@@ -618,6 +616,9 @@ var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
       recordsets: [
         {
           fields: {
+            0: 'SmID'
+          },
+          fieldCaptions: {
             0: 'SmID'
           },
           features: {
@@ -647,7 +648,9 @@ var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
       options.eventListeners.processFailed('get features faild');
     }
   }
-  getFeatureEvent.on('processCompleted', options.eventListeners.processCompleted);
+  const processAsync = (getFeatureBySQLParams => {
+      getFeatureEvent.emit('processCompleted', results);
+  });
   return {
     // queryBySQL: queryBySQL,
     processAsync: processAsync

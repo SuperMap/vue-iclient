@@ -4,12 +4,12 @@ import provincialCenterData from './config/ProvinceCenter.json';
 import 'vue-iclient/static/libs/geostats/geostats';
 import 'vue-iclient/static/libs/json-sql/jsonsql';
 import isNumber from 'lodash.isnumber';
-import canvg from 'canvg';
-
+import Canvg from 'canvg';
 import WebMapService from '../_utils/WebMapService';
 import { getColorWithOpacity } from '../_utils/util';
 import { getProjection, registerProjection } from '../../common/_utils/epsg-define';
 import { coordEach } from '@turf/meta';
+import difference from 'lodash.difference';
 
 // 迁徙图最大支持要素数量
 const MAX_MIGRATION_ANIMATION_COUNT = 1000;
@@ -29,6 +29,10 @@ export default abstract class WebMapBase extends Events {
   accessKey: string;
 
   tiandituKey: string;
+
+  googleMapsAPIKey: string;
+
+  googleMapsLanguage: string;
 
   withCredentials: boolean;
 
@@ -68,12 +72,16 @@ export default abstract class WebMapBase extends Events {
 
   protected expectLayerLen: number;
 
+  protected canvgsV: any = [];
+
   constructor(id, options?, mapOptions?) {
     super();
     this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
     this.accessToken = options.accessToken;
     this.accessKey = options.accessKey;
     this.tiandituKey = options.tiandituKey || '';
+    this.googleMapsAPIKey = options.googleMapsAPIKey || '';
+    this.googleMapsLanguage = options.googleMapsLanguage || 'zh-CN';
     this.withCredentials = options.withCredentials || false;
     this.proxy = options.proxy;
     this.target = options.target || 'map';
@@ -91,7 +99,8 @@ export default abstract class WebMapBase extends Events {
       'notsupportmvt',
       'notsupportbaidumap',
       'projectionIsNotMatch',
-      'beforeremovemap'
+      'beforeremovemap',
+      'mapinitialized'
     ];
     this.mapId = id;
   }
@@ -121,6 +130,9 @@ export default abstract class WebMapBase extends Events {
       this.webMapInfo = mapId;
     }
     this.webMapService.setMapId(mapId);
+    if (!mapId) {
+      return;
+    }
     setTimeout(() => {
       this._initWebMap();
     }, 0);
@@ -252,8 +264,8 @@ export default abstract class WebMapBase extends Events {
       CLOUD_BLACK: mapurl.CLOUD_BLACK || 'http://t3.dituhui.com/MapService/getGdp?x={x}&y={y}&z={z}',
       OSM: mapurl.OSM || 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
       GOOGLE:
-        'https://www.google.cn/maps/vt/pb=!1m4!1m3!1i{z}!2i{x}!3i{y}!2m3!1e0!2sm!3i380072576!3m8!2szh-CN!3scn!5e1105!12m4!1e68!2m2!1sset!2sRoadmap!4e0!5m1!1e0',
-      GOOGLE_CN: 'https://mt{0-3}.google.cn/vt/lyrs=m&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
+      'https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i{z}!2i{x}!3i{y}!4i256!2m3!1e0!2sm!3i540264686!3m12!2s{googleMapsLanguage}!3sUS!5e18!12m4!1e68!2m2!1sset!2sRoadmap!12m3!1e37!2m1!1ssmartmaps!4e0&key={googleMapsAPIKey}',
+      GOOGLE_CN: 'https://mt{0-3}.google.com/vt/lyrs=m&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
       JAPAN_STD: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
       JAPAN_PALE: 'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
       JAPAN_RELIEF: 'https://cyberjapandata.gsi.go.jp/xyz/relief/{z}/{x}/{y}.png',
@@ -435,17 +447,20 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected mergeFeatures(layerId: string, features: any, mergeByField?: string): any {
+    if (!(features instanceof Array)) {
+      return features;
+    }
     features = features.map((feature: any, index: any) => {
       if (!Object.prototype.hasOwnProperty.call(feature.properties, 'index')) {
         feature.properties.index = index;
       }
       return feature;
     });
-    if (!mergeByField && features && features[0] && features[0].geometry) {
+    if (!features.length || !mergeByField && features[0].geometry) {
       return features;
     }
     const source = this.map.getSource(layerId);
-    if ((!source || !source._data.features) && features && features[0] && features[0].geometry) {
+    if ((!source || !source._data.features) && features[0].geometry) {
       return features;
     }
     const prevFeatures = source && source._data && source._data.features;
@@ -480,16 +495,17 @@ export default abstract class WebMapBase extends Events {
     if (!filterCondition) {
       return allFeatures;
     }
-    const condition = this.replaceFilterCharacter(filterCondition);
-    const sql = 'select * from json where (' + condition + ')';
+    let condition = this.replaceFilterCharacter(filterCondition);
     const filterFeatures = [];
     for (let i = 0; i < allFeatures.length; i++) {
       const feature = allFeatures[i];
       let filterResult: any;
+      const properties = feature.properties;
       try {
-        filterResult = window.jsonsql.query(sql, {
-          properties: feature.properties
-        });
+        condition = this.parseCondition(condition, Object.keys(properties));
+        const filterFeature = this.parseConditionFeature(properties);
+        const sql = 'select * from json where (' + condition + ')';
+        filterResult = window.jsonsql.query(sql, { attributes: filterFeature });
       } catch (err) {
         // 必须把要过滤得内容封装成一个对象,主要是处理jsonsql(line : 62)中由于with语句遍历对象造成的问题
         continue;
@@ -510,6 +526,64 @@ export default abstract class WebMapBase extends Events {
       .replace(/<==/g, '<=')
       .replace(/>==/g, '>=');
     return filterString;
+  }
+
+  protected getParseSpecialCharacter() {
+    // 特殊字符字典
+    const directory = ['(', ')', '（', '）', ',', '，'];
+    const res = {};
+    directory.forEach((item, index) => {
+      res[item] = `$${index}`;
+    });
+    return res;
+  }
+
+  protected parseSpecialCharacter(str) {
+    const directory = this.getParseSpecialCharacter();
+    for (let key in directory) {
+      const replaceValue = directory[key];
+      const pattern = new RegExp(`\\${key}`, 'g');
+      // eslint-disable-next-line
+      while (pattern.test(str)) {
+        str = str.replace(pattern, replaceValue);
+      }
+    }
+    return str;
+  }
+
+  protected parseCondition(filterCondition, keys) {
+    const str = filterCondition.replace(/&|\||>|<|=|!/g, ' ');
+    const arr = str.split(' ').filter((item) => item);
+    let result = filterCondition;
+    arr.forEach((item) => {
+      const key = keys.find((val) => val === item);
+      if (this.startsWithNumber(item) && key) {
+        result = result.replace(key, '$' + key);
+      }
+      if (key) {
+        const res = this.parseSpecialCharacter(key);
+        result = result.replace(key, res);
+      }
+    });
+    return result;
+  }
+
+  // 处理jsonsqlfeature, 加前缀
+  protected parseConditionFeature(feature) {
+    let copyValue = {};
+    for (let key in feature) {
+      let copyKey = key;
+      if (this.startsWithNumber(key)) {
+        copyKey = '$' + key;
+      }
+      copyKey = this.parseSpecialCharacter(copyKey);
+      copyValue[copyKey] = feature[key];
+    }
+    return copyValue;
+  }
+
+  protected startsWithNumber(str) {
+    return /^\d/.test(str);
   }
 
   protected getEchartsLayerOptions(layerInfo, features, coordinateSystem) {
@@ -566,20 +640,29 @@ export default abstract class WebMapBase extends Events {
     canvas.id = `dataviz-canvas-${new Date().getTime()}`;
     canvas.style.display = 'none';
     divDom.appendChild(canvas);
-    const canvgs = window.canvg ? window.canvg : canvg;
-    canvgs(canvas.id, svgUrl, {
-      ignoreMouse: true,
-      ignoreAnimation: true,
-      renderCallback: () => {
+    if (svgUrl) {
+      const canvgs = window.canvg?.default ? window.canvg.default : Canvg;
+      const ctx = canvas.getContext('2d');
+      canvgs.from(ctx, svgUrl, {
+        ignoreMouse: true,
+        ignoreAnimation: true,
+        forceRedraw: () => false
+      }).then(v => {
+        v.start();
+        this.canvgsV.push(v);
         if (canvas.width > 300 || canvas.height > 300) {
           return;
         }
         callBack(canvas);
-      },
-      forceRedraw: () => {
-        return false;
-      }
-    });
+      });
+    } else {
+      callBack(canvas);
+    }
+  }
+
+  protected stopCanvg() {
+    this.canvgsV.forEach(v => v.stop());
+    this.canvgsV = [];
   }
 
   protected getRangeStyleGroup(layerInfo: any, features: any): Array<any> | void {
@@ -657,6 +740,19 @@ export default abstract class WebMapBase extends Events {
     }
   }
 
+  protected getCustomSettingColors(customSettings, featureType) {
+    const keys = Object.keys(customSettings);
+    const colors = [];
+    keys.forEach(key => {
+      if (featureType === 'LINE') {
+        colors.push(customSettings[key].strokeColor);
+      } else {
+        colors.push(customSettings[key].fillColor);
+      }
+    });
+    return colors;
+  }
+
   protected getUniqueStyleGroup(parameters: any, features: any) {
     const { featureType, style, themeSetting } = parameters;
     const { colors, customSettings } = themeSetting;
@@ -678,31 +774,34 @@ export default abstract class WebMapBase extends Events {
         }
       }
       if (!isSaved) {
-        names.push(name || '0');
+        names.push(name);
       }
     }
 
     // 获取一定量的颜色
     let curentColors = colors;
     curentColors = SuperMap.ColorsPickerUtil.getGradientColors(curentColors, names.length);
-
+    const usedColors = this.getCustomSettingColors(customSettings, featureType).map(item => item && item.toLowerCase());
+    const allColors = SuperMap.ColorsPickerUtil.getGradientColors(colors, names.length + Object.keys(customSettings).length).map(item => item.toLowerCase());
+    const newColors = difference(allColors, usedColors);
     const styleGroup = [];
     names.forEach((name, index) => {
       let color = curentColors[index];
       let itemStyle = { ...style };
-      if (name in customSettings) {
-        const customStyle = customSettings[name];
-        if (typeof customStyle === 'object') {
-          itemStyle = Object.assign(itemStyle, customStyle);
+      const customStyle = customSettings[name];
+      if (typeof customStyle === 'object') {
+        itemStyle = Object.assign(itemStyle, customStyle);
+      } else {
+        if (typeof customStyle === 'string') {
+          color = customSettings[name];
+        }
+        if (!customStyle) {
+          color = newColors.shift();
+        }
+        if (featureType === 'LINE') {
+          itemStyle.strokeColor = color;
         } else {
-          if (typeof customStyle === 'string') {
-            color = customSettings[name];
-          }
-          if (featureType === 'LINE') {
-            itemStyle.strokeColor = color;
-          } else {
-            itemStyle.fillColor = color;
-          }
+          itemStyle.fillColor = color;
         }
       }
 
@@ -736,9 +835,127 @@ export default abstract class WebMapBase extends Events {
     return features;
   }
 
+  private _drawTextRectAndGetSize({ context, style, textArray, lineHeight, doublePadding, canvas }) {
+    let backgroundFill = style.backgroundFill;
+    const maxWidth = style.maxWidth - doublePadding;
+    let width = 0;
+    let height = 0;
+    let lineCount = 0;
+    let lineWidths = [];
+    // 100的宽度，去掉左右两边3padding
+    textArray.forEach((arrText: string) => {
+      let line = '';
+      let isOverMax = false;
+      lineCount++;
+      for (let n = 0; n < arrText.length; n++) {
+        let textLine = line + arrText[n];
+        let metrics = context.measureText(textLine);
+        let textWidth = metrics.width;
+        if ((textWidth > maxWidth && n > 0) || arrText[n] === '\n') {
+          line = arrText[n];
+          lineCount++;
+          // 有换行，记录当前换行的width
+          isOverMax = true;
+        } else {
+          line = textLine;
+          width = textWidth;
+        }
+      }
+      if(isOverMax) {
+        lineWidths.push(maxWidth);
+      } else {
+        lineWidths.push(width);
+      }
+    }, this);
+    for (let i = 0; i < lineWidths.length; i++) {
+      let lineW = lineWidths[i];
+      if(lineW >= maxWidth) {
+        // 有任何一行超过最大高度，就用最大高度
+        width = maxWidth;
+        break;
+      } else if(lineW > width) {
+        // 自己换行，就要比较每行的最大宽度
+        width = lineW;
+      }
+    }
+    width += doublePadding;
+    // -6 是为了去掉canvas下方多余空白，让文本垂直居中
+    height = lineCount * lineHeight + doublePadding - 6;
+    canvas.width = width;
+    canvas.height = height;
+    context.fillStyle = backgroundFill;
+    context.fillRect(0, 0, width, height);
+    context.lineWidth = style.borderWidth;
+    context.strokeStyle = style.borderColor;
+    context.strokeRect(0, 0, width, height);
+    return {
+      width: width,
+      height: height
+    };
+  }
+
+  private _drawTextWithCanvas({ context, canvas, style }) {
+    const padding = 8;
+    const doublePadding = padding * 2;
+    const lineHeight = Number(style.font.replace(/[^0-9]/ig, '')) + 3;
+    const textArray = style.text.split('\r\n');
+    context.font = style.font;
+    const size = this._drawTextRectAndGetSize({ context, style, textArray, lineHeight, doublePadding, canvas });
+    let positionY = padding;
+    textArray.forEach((text: string, i: number) => {
+      if(i !== 0) {
+        positionY = positionY + lineHeight;
+      }
+      context.font = style.font;
+      let textAlign = style.textAlign;
+      let x: number;
+      const width = size.width - doublePadding; // 减去padding
+      switch (textAlign) {
+        case 'center':
+          x = width / 2;
+          break;
+        case 'right':
+          x = width;
+          break;
+        default:
+          x = 8;
+          break;
+      }
+      // 字符分隔为数组
+      const arrText = text.split('');
+      let line = '';
+      const fillColor = style.fillColor;
+      // 每一行限制的高度
+      let maxWidth = style.maxWidth - doublePadding;
+      for (let n = 0; n < arrText.length; n++) {
+        let testLine = line + arrText[n];
+        let metrics = context.measureText(testLine);
+        let testWidth = metrics.width;
+        if ((testWidth > maxWidth && n > 0) || arrText[n] === '\n') {
+          context.fillStyle = fillColor;
+          context.textAlign = textAlign;
+          context.textBaseline = 'top';
+          context.fillText(line, x, positionY);
+          line = arrText[n];
+          positionY += lineHeight;
+        } else {
+          line = testLine;
+        }
+      }
+      context.fillStyle = fillColor;
+      context.textAlign = textAlign;
+      context.textBaseline = 'top';
+      context.fillText(line, x, positionY);
+    }, this);
+  }
+
   protected handleSvgColor(style, canvas) {
     const { fillColor, fillOpacity, strokeColor, strokeOpacity, strokeWidth } = style;
     const context = canvas.getContext('2d');
+    if (style.text) {
+      this._drawTextWithCanvas({ context, canvas, style });
+      return;
+    }
     if (fillColor) {
       context.fillStyle = getColorWithOpacity(fillColor, fillOpacity);
       context.fill();

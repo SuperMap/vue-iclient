@@ -15,6 +15,7 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
     super();
     this.tk = tk;
     this.proj = 'w';
+    this.originMapData = null;
   }
 
   setMap(mapInfo) {
@@ -28,19 +29,11 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
 
   changeBaseLayer(type) {
     if (this.map) {
-      this.removeLayer();
       const mapCrs = this.map.getCRS();
       this.proj = mapCrs.epsgCode === 'EPSG:3857' ? 'w' : 'c';
       const sources = this.getSources(type);
-      Object.keys(sources).forEach(sourceId => {
-        this.map.addSource(sourceId, sources[sourceId]);
-      });
       const layers = this.getLayers(type);
-      const styles = this.map.getStyle();
-      const firstLayerId = styles.layers.length ? this.map.getStyle().layers[0].id : '';
-      layers.forEach(layer => {
-        this.map.addLayer(layer, firstLayerId);
-      });
+      this.addLayer(sources, layers);
     }
   }
 
@@ -51,19 +44,49 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
       this.map.setLayoutProperty(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`), 'visibility', visible);
   }
 
+  addLayer(sources, layers, fromTdt = true) {
+    this.removeLayer();
+    Object.keys(sources).forEach(sourceId => {
+      this.map.addSource(sourceId, sources[sourceId]);
+    });
+    let beforeLayerId;
+    if (fromTdt) {
+      const styles = this.map.getStyle();
+      beforeLayerId = styles.layers[0] && styles.layers[0].id;
+    }
+    layers.forEach(layer => {
+      let layerToAdd = Object.assign({}, layer);
+      if (!fromTdt) {
+        beforeLayerId = layer.beforeLayerId;
+        delete layerToAdd.beforeLayerId;
+      }
+      this.map.addLayer(layerToAdd, beforeLayerId);
+    });
+  }
+
   removeLayer() {
     const sourceList = this.map.getStyle().sources;
     const layerList = this.map.getStyle().layers;
-    layerList.forEach(layer => {
+    const originLayers = [];
+    const originSources = {};
+    layerList.forEach((layer, index) => {
       if (layer.type === 'raster') {
+        originLayers.push({
+          ...layer,
+          beforeLayerId: (layerList[index + 1] || {}).id
+        });
         this.map.removeLayer(layer.id);
       }
     });
     Object.keys(sourceList).forEach(sourceId => {
       if (sourceList[sourceId].type === 'raster') {
+        originSources[sourceId] = sourceList[sourceId];
         this.map.removeSource(sourceId);
       }
     });
+    if (!this.originMapData) {
+      this.originMapData = Object.assign({}, { layers: originLayers, sources: originSources });
+    }
   }
 
   getLayers(type) {
@@ -118,5 +141,18 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
       }
     }
     return urls;
+  }
+
+  resetMapData() {
+    if (this.originMapData) {
+      const { layers, sources } = this.originMapData;
+      this.addLayer(sources, layers, false);
+      this.originMapData = null;
+    }
+  }
+
+  removed() {
+    this.resetMapData();
+    this.map = null;
   }
 }

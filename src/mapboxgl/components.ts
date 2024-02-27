@@ -22,7 +22,6 @@ import { default as Image } from 'vue-iclient/src/common/image/index.js';
 import { default as Indicator } from 'vue-iclient/src/common/indicator/index.js';
 import { default as Input } from 'vue-iclient/src/common/input/index.js';
 import { default as InputNumber } from 'vue-iclient/src/common/input-number/index.js';
-import { default as LayerSelect } from 'vue-iclient/src/common/layer-select/index.js';
 import { default as Layout } from 'vue-iclient/src/common/layout/index.js';
 import { default as LiquidFill } from 'vue-iclient/src/common/liquid-fill/index.js';
 import { default as Menu } from 'vue-iclient/src/common/menu/index.js';
@@ -46,6 +45,7 @@ import { default as TimeLine } from 'vue-iclient/src/common/time-line/index.js';
 import { default as TimeRange } from 'vue-iclient/src/common/time-range/index.js';
 import { default as TimeSlider } from 'vue-iclient/src/common/time-slider/index.js';
 import { default as TimeText } from 'vue-iclient/src/common/time-text/index.js';
+import { default as TimePicker } from 'vue-iclient/src/common/time-picker/index.js';
 import { default as Tooltip } from 'vue-iclient/src/common/tooltip/index.js';
 import { default as Transfer } from 'vue-iclient/src/common/transfer/index.js';
 import { default as Tree } from 'vue-iclient/src/common/tree/index.js';
@@ -99,8 +99,15 @@ import { default as OpenFile } from 'vue-iclient/src/mapboxgl/open-file/index.js
 import { default as Query } from 'vue-iclient/src/mapboxgl/query/index.js';
 import { default as Search } from 'vue-iclient/src/mapboxgl/search/index.js';
 import { default as TextList } from 'vue-iclient/src/mapboxgl/text-list/index.js';
+import { default as LayerSelect } from 'vue-iclient/src/mapboxgl/layer-select/index.js';
 import { default as WebMap } from 'vue-iclient/src/mapboxgl/web-map/index.js';
 import { default as WebScene } from 'vue-iclient/src/mapboxgl/web-scene/index.js';
+import { default as VideoPlus } from 'vue-iclient/src/mapboxgl/video-plus/index';
+import { default as VideoPlusLayer } from 'vue-iclient/src/mapboxgl/video-plus/layer/index';
+import { default as VideoPlusMarker } from 'vue-iclient/src/mapboxgl/video-plus/ui/marker/index';
+import { default as VideoPlusPopup } from 'vue-iclient/src/mapboxgl/video-plus/ui/popup/index';
+import { default as VideoPlusDraw } from 'vue-iclient/src/mapboxgl/video-plus/control/draw/index';
+import { default as GraphMap } from 'vue-iclient/src/mapboxgl/graph-map';
 
 const components = {
   Avatar,
@@ -145,6 +152,7 @@ const components = {
   TimeRange,
   TimeSlider,
   TimeText,
+  TimePicker,
   Tooltip,
   Transfer,
   Tree,
@@ -193,7 +201,13 @@ const components = {
   Zoom,
   TdtMapSwitcher,
   TdtRoute,
-  TdtSearch
+  TdtSearch,
+  VideoPlus,
+  VideoPlusMarker,
+  VideoPlusPopup,
+  VideoPlusLayer,
+  VideoPlusDraw,
+  GraphMap
 };
 
 const install = function (Vue, opts: any = {}) {
@@ -313,7 +327,13 @@ export {
   Zoom,
   TdtMapSwitcher,
   TdtRoute,
-  TdtSearch
+  TdtSearch,
+  VideoPlus,
+  VideoPlusMarker,
+  VideoPlusPopup,
+  VideoPlusLayer,
+  VideoPlusDraw,
+  GraphMap
 };
 export default {
   setTheme,

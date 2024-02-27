@@ -406,8 +406,10 @@ export default {
       }
       const sortSeriesIndex = this.datasetOptions.findIndex(item => item.sort !== 'unsort' && item.rankLabel);
       if (sortSeriesIndex > -1 && axisLabel && data) {
+        const orderNumLength = data.length.toString().length;
         for (let index = 0, len = data.length, rankIndex = len - 1; index < len; index++, rankIndex--) {
-          data[index] = rankIndex < 10 ? `0${rankIndex}${data[index]}` : `${rankIndex}${data[index]}`;
+          const paddedNumber = rankIndex.toString().padStart(orderNumLength, '0');
+          data[index] = `${paddedNumber}${data[index]}`;
         }
         const firstVisualMap = visualMap && visualMap.find(item => item.seriesIndex === sortSeriesIndex);
         axisLabel.rich = axisLabel.rich || {};
@@ -430,8 +432,8 @@ export default {
           });
         const serieData = series && series[sortSeriesIndex].data;
         axisLabel.formatter = function (label, index) {
-          const orderNum = parseInt(label.slice(0, 2)) + 1;
-          const leftLabel = label.slice(2);
+          const orderNum = parseInt(label.slice(0, orderNumLength)) + 1;
+          const leftLabel = label.slice(orderNumLength);
           const labelValue = serieData && +serieData[index];
           if (firstVisualMap) {
             const matchItem = firstVisualMap.pieces.find(item => labelValue >= item.min && labelValue <= item.max);
@@ -594,7 +596,34 @@ export default {
             return Object.assign({}, element, dataOptions.series[index] || {});
           });
           const dataZoom = options.dataZoom && options.dataZoom[0];
+          const parallelShowNumber = this.getParallelShowNumber(options.series);
+          if (options.series[0].shape === 'cylinder') {
+            this.setCylinderXAxis(parallelShowNumber, options);
+          }
+          const leftRightCount = parallelShowNumber / 2;
+          const baseSpace = 32;
+          let seriesSpace = 0;
+          let seriesSpaceCount = -Math.floor(leftRightCount);
+          let seriesNameTag;
+          let colorIndex = 0;
           options.series = options.series.map((serie, index) => {
+            if (parallelShowNumber !== 0) {
+              const serieName = serie.name.substring(serie.name.indexOf('-') + 1);
+              if (!seriesNameTag) {
+                seriesNameTag = serieName;
+                seriesSpace = this.getSericeSpace(parallelShowNumber, baseSpace, seriesSpaceCount);
+              } else {
+                if (seriesNameTag === serieName) {
+                  seriesSpace = this.getSericeSpace(parallelShowNumber, baseSpace, seriesSpaceCount);
+                } else {
+                  seriesSpaceCount = -Math.floor(leftRightCount);
+                  seriesNameTag = serieName;
+                  seriesSpace = this.getSericeSpace(parallelShowNumber, baseSpace, seriesSpaceCount);
+                  colorIndex += 1;
+                }
+              }
+              seriesSpaceCount += 1;
+            }
             let label = serie.label && serie.label.normal;
             if (label && !label.smart) {
               serie.label.normal = this._controlLabel(label, serie.maxLabels);
@@ -652,154 +681,9 @@ export default {
                   serie.type = 'custom';
                   dataOptions.series[index] && (dataOptions.series[index].type = 'custom');
                   const _this = this;
-                  serie.renderItem = (params, api) => {
-                    const location = api.coord([api.value(0), api.value(1)]);
-                    let fillColor = defaultColor || colorGroup[params.seriesIndex];
-                    if (_this.highlightOptions && _this.highlightOptions.length > 0) {
-                      const matchData = _this.highlightOptions.find(
-                        item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
-                      );
-                      if (matchData && (matchData.color || _this.highlightColor)) {
-                        fillColor = matchData.color || _this.highlightColor;
-                      }
-                    }
-                    let leftColor, rightColor, topColor;
-                    if (typeof fillColor === 'object') {
-                      const copyLeftColor = cloneDeep(fillColor);
-                      const copyRightColor = cloneDeep(fillColor);
-                      const copyTopColor = cloneDeep(fillColor);
-                      copyLeftColor.colorStops[0].color = getColorWithOpacity(copyLeftColor.colorStops[0].color, 0.4);
-                      copyLeftColor.colorStops[1].color = getColorWithOpacity(copyLeftColor.colorStops[1].color, 0.4);
-                      copyRightColor.colorStops[0].color = getColorWithOpacity(copyRightColor.colorStops[0].color, 0.7);
-                      copyRightColor.colorStops[1].color = getColorWithOpacity(copyRightColor.colorStops[1].color, 0.7);
-                      copyTopColor.colorStops[0].color = getColorWithOpacity(copyTopColor.colorStops[0].color, 0.85);
-                      copyTopColor.colorStops[1].color = getColorWithOpacity(copyTopColor.colorStops[1].color, 0.85);
-                      leftColor = copyLeftColor;
-                      rightColor = copyRightColor;
-                      topColor = copyTopColor;
-                    } else {
-                      leftColor = getColorWithOpacity(fillColor, 0.4);
-                      rightColor = getColorWithOpacity(fillColor, 0.7);
-                      topColor = getColorWithOpacity(fillColor, 0.85);
-                    }
-                    return {
-                      type: 'group',
-                      children: [
-                        {
-                          type: `Cube${cubeType}Left`,
-                          shape: {
-                            api,
-                            xValue: api.value(0),
-                            yValue: api.value(1),
-                            x: location[0],
-                            y: location[1],
-                            xAxisPoint: api.coord([api.value(0), 0])
-                          },
-                          style: {
-                            fill: leftColor
-                          }
-                        },
-                        {
-                          type: `Cube${cubeType}Right`,
-                          shape: {
-                            api,
-                            xValue: api.value(0),
-                            yValue: api.value(1),
-                            x: location[0],
-                            y: location[1],
-                            xAxisPoint: api.coord([api.value(0), 0])
-                          },
-                          style: {
-                            fill: rightColor
-                          }
-                        },
-                        {
-                          type: `Cube${cubeType}Top`,
-                          shape: {
-                            api,
-                            xValue: api.value(0),
-                            yValue: api.value(1),
-                            x: location[0],
-                            y: location[1],
-                            xAxisPoint: api.coord([api.value(0), 0])
-                          },
-                          style: {
-                            fill: topColor
-                          }
-                        }
-                      ]
-                    };
-                  };
+                  serie.renderItem = this._squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex);
                 } else if (shape === 'cylinder') {
-                  const baseWidth = '100%';
-                  const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
-                  serie.type = 'bar';
-                  serie.barGap = '-100%';
-                  options.tooltip && options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
-                  dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
-                  let cirCleColor = defaultColor || colorGroup[index];
-                  let cirCleColorFnList = [];
-                  if (typeof cirCleColor === 'string') {
-                    cirCleColor = this.setGradientColor(cirCleColor, '#fff');
-                  }
-                  if (this.highlightOptions && this.highlightOptions.length > 0) {
-                    const matchDataList = [];
-                    this.highlightOptions.forEach(item => {
-                      if (item.seriesIndex.includes(index)) {
-                        let color = item.color || this.highlightColor;
-                        if (typeof color === 'string') {
-                          color = this.setGradientColor(color, '#fff');
-                        }
-                        matchDataList.push({ dataIndex: item.dataIndex, color });
-                      }
-                    });
-                    if (matchDataList.length > 0) {
-                      cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(() => {
-                        return ({ dataIndex }) => {
-                          const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
-                          return matchData ? matchData.color : cirCleColor;
-                        };
-                      });
-                    }
-                  }
-                  extraSeries.push(
-                    // 头部的圆片
-                    {
-                      name: '',
-                      type: 'pictorialBar',
-                      symbolOffset: [0, -8],
-                      symbolPosition: 'end',
-                      z: 12,
-                      itemStyle: {
-                        normal: {
-                          color: cirCleColorFnList[0] || cirCleColor
-                        }
-                      },
-                      data: dataOptions.series[index].data.map((item, dataIndex) => {
-                        return {
-                          value: item,
-                          symbolSize:
-                            !nextSerieDatas || (nextSerieDatas[dataIndex] && +item >= +nextSerieDatas[dataIndex])
-                              ? [baseWidth, 15]
-                              : [0, 15]
-                        };
-                      })
-                    },
-                    {
-                      // 底部的圆片
-                      name: '',
-                      type: 'pictorialBar',
-                      symbolSize: [baseWidth, 10],
-                      symbolOffset: [0, 5],
-                      z: 12,
-                      itemStyle: {
-                        normal: {
-                          color: cirCleColorFnList[1] || cirCleColor
-                        }
-                      },
-                      data: dataOptions.series[index].data
-                    }
-                  );
+                  this.handleCylinder(parallelShowNumber, dataOptions, index, serie, options, defaultColor, colorGroup, extraSeries);
                 }
                 delete serie.shape;
               }
@@ -854,6 +738,254 @@ export default {
         mergeOptions.series.push(...extraSeries);
       }
       return mergeOptions;
+    },
+    handleCylinder(parallelShowNumber, dataOptions, index, serie, options, defaultColor, colorGroup, extraSeries) {
+      const baseColumnWidth = parallelShowNumber !== 0 ? `${100 / parallelShowNumber}%` : '100%';
+      const nextSerieDatas = dataOptions.series[index + 1] && dataOptions.series[index + 1].data;
+      serie.type = 'bar';
+      serie.barGap = parallelShowNumber === 0 ? '-100%' : '0';
+      if (parallelShowNumber !== 0) {
+        const serieColor = defaultColor || colorGroup[Math.ceil((index + 1) / parallelShowNumber) - 1];
+        if (serie.itemStyle) {
+          serie.itemStyle.color = this.setGradientColor(serieColor, '#fff');
+        } else {
+          serie.itemStyle = {};
+          serie.itemStyle.color = this.setGradientColor(serieColor, '#fff');
+        }
+      }
+      options.tooltip && options.tooltip.trigger === 'axis' && (options.tooltip.trigger = 'item');
+      dataOptions.series[index] && (dataOptions.series[index].type = 'bar');
+      const colorIndex = parallelShowNumber !== 0 ? Math.ceil((index + 1) / parallelShowNumber) - 1 : index;
+      let cirCleColor = defaultColor || colorGroup[colorIndex];
+      let cirCleColorFnList = [];
+      if (typeof cirCleColor === 'string') {
+        cirCleColor = this.setGradientColor(cirCleColor, '#fff');
+      }
+      if (this.highlightOptions && this.highlightOptions.length > 0) {
+        const matchDataList = [];
+        this.highlightOptions.forEach(item => {
+          if (item.seriesIndex.includes(index)) {
+            let color = item.color || this.highlightColor;
+            if (typeof color === 'string') {
+              color = this.setGradientColor(color, '#fff');
+            }
+            matchDataList.push({ dataIndex: item.dataIndex, color });
+          }
+        });
+        if (matchDataList.length > 0) {
+          cirCleColorFnList = ['topCirCleColorFn', 'bottomCirCleColorFn'].map(() => {
+            return ({ dataIndex }) => {
+              const matchData = matchDataList.find(item => item.dataIndex === dataIndex);
+              return matchData ? matchData.color : cirCleColor;
+            };
+          });
+        }
+      }
+      const offsetDistance = this.getOffsetDistance(parallelShowNumber, index);
+      const xAxisIndex = parallelShowNumber !== 0 ? Math.ceil((index + 1) / parallelShowNumber) - 1 : 0;
+      serie.xAxisIndex = xAxisIndex;
+      extraSeries.push(
+        // 头部的圆片
+        {
+          name: parallelShowNumber !== 0 ? serie.name : '',
+          type: 'pictorialBar',
+          symbolOffset: parallelShowNumber !== 0 ? [offsetDistance, '-50%'] : [0, -8],
+          xAxisIndex: parallelShowNumber !== 0 ? xAxisIndex : 0,
+          symbolPosition: 'end',
+          z: 12,
+          itemStyle: {
+            normal: {
+              color: cirCleColorFnList[0] || cirCleColor
+            }
+          },
+          data: dataOptions.series[index].data.map((item, dataIndex) => {
+            if (parallelShowNumber !== 0) {
+              return {
+                value: item,
+                symbolSize: [baseColumnWidth, 15]
+              };
+            } else {
+              return {
+                value: item,
+                symbolSize: !nextSerieDatas || (nextSerieDatas[dataIndex] && +item >= +nextSerieDatas[dataIndex])
+                  ? [baseColumnWidth, 15]
+                  : [0, 15]
+              };
+            }
+          })
+        },
+        {
+          // 底部的圆片
+          name: parallelShowNumber !== 0 ? serie.name : '',
+          type: 'pictorialBar',
+          xAxisIndex: parallelShowNumber !== 0 ? xAxisIndex : 0,
+          symbolSize: parallelShowNumber !== 0 ? [baseColumnWidth, 10] : [offsetDistance, 10],
+          symbolOffset: parallelShowNumber !== 0 ? [offsetDistance, '50%'] : [0, 5],
+          z: 12,
+          itemStyle: {
+            normal: {
+              color: cirCleColorFnList[1] || cirCleColor
+            }
+          },
+          data: dataOptions.series[index].data
+        }
+      );
+    },
+    getParallelShowNumber(series) {
+      if (series.length === 0 || !this.multipleYField(series)) {
+        // 0表示不进行并列显示
+        return 0;
+      }
+      let parallelShowNumber = 0;
+      const symbolPosition = series[0].name.indexOf('-');
+      let firstSeriesName = series[0].name.substring(symbolPosition + 1);
+      series.forEach(option => {
+        const optionName = option.name.substring(symbolPosition + 1);
+        if (firstSeriesName === optionName) {
+          parallelShowNumber++;
+        }
+      });
+      return parallelShowNumber;
+    },
+    setCylinderXAxis(parallelShowNumber, options) {
+      if (parallelShowNumber === 0) {
+        return;
+      }
+      const xAixsType = options.xAxis[0] && options.xAxis[0].type;
+      for (let i = 1; i <= parallelShowNumber; i++) {
+        options.xAxis.push({
+          type: xAixsType,
+          show: false
+        });
+      }
+    },
+    getOffsetDistance(parallelShowNumber, index) {
+      if (parallelShowNumber === 0) {
+        return '100%';
+      }
+      let distance;
+      if (parallelShowNumber % 2) {
+        distance = -100 * (Math.floor(parallelShowNumber / 2)) + index % parallelShowNumber * 100;
+        return `${distance}%`;
+      } else {
+        distance = -100 * (Math.floor(parallelShowNumber / 2) - 0.5) + index % parallelShowNumber * 100;
+      }
+      return `${distance}%`;
+    },
+    multipleYField(optionSeries) {
+      const series = cloneDeep(optionSeries);
+      const nameList = series.map(serie => {
+        if (!serie.name.includes('-')) {
+          return serie.name;
+        }
+        const position = serie.name.indexOf('-');
+        const prefix = serie.name.substring(0, position);
+        if(isNaN(+prefix)) {
+          return serie.name;
+        }
+        return serie.name.substring(position + 1);
+      });
+      return series.length !== new Set(nameList).size;
+    },
+    _squareRectangleRenderItem(seriesSpace, defaultColor, colorGroup, _this, cubeType, colorIndex) {
+      return (params, api) => {
+        const location = api.coord([api.value(0), api.value(1)]);
+        let fillColor = defaultColor || colorGroup[colorIndex];
+        if (_this.highlightOptions && _this.highlightOptions.length > 0) {
+          const matchData = _this.highlightOptions.find(
+            item => item.seriesIndex.includes(params.seriesIndex) && item.dataIndex === params.dataIndex
+          );
+          if (matchData && (matchData.color || _this.highlightColor)) {
+            fillColor = matchData.color || _this.highlightColor;
+          }
+        }
+        let leftColor, rightColor, topColor;
+        if (typeof fillColor === 'object') {
+          const copyLeftColor = cloneDeep(fillColor);
+          const copyRightColor = cloneDeep(fillColor);
+          const copyTopColor = cloneDeep(fillColor);
+          copyLeftColor.colorStops[0].color = getColorWithOpacity(copyLeftColor.colorStops[0].color, 0.4);
+          copyLeftColor.colorStops[1].color = getColorWithOpacity(copyLeftColor.colorStops[1].color, 0.4);
+          copyRightColor.colorStops[0].color = getColorWithOpacity(copyRightColor.colorStops[0].color, 0.7);
+          copyRightColor.colorStops[1].color = getColorWithOpacity(copyRightColor.colorStops[1].color, 0.7);
+          copyTopColor.colorStops[0].color = getColorWithOpacity(copyTopColor.colorStops[0].color, 0.85);
+          copyTopColor.colorStops[1].color = getColorWithOpacity(copyTopColor.colorStops[1].color, 0.85);
+          leftColor = copyLeftColor;
+          rightColor = copyRightColor;
+          topColor = copyTopColor;
+        } else {
+          leftColor = getColorWithOpacity(fillColor, 0.4);
+          rightColor = getColorWithOpacity(fillColor, 0.7);
+          topColor = getColorWithOpacity(fillColor, 0.85);
+        }
+        return {
+          type: 'group',
+          children: [
+            {
+              type: `Cube${cubeType}Left`,
+              shape: {
+                api,
+                xValue: api.value(0),
+                yValue: api.value(1),
+                x: location[0] + seriesSpace,
+                y: location[1],
+                bottomYAxis: api.coord([api.value(0), 0])[1]
+              },
+              style: {
+                fill: leftColor
+              }
+            },
+            {
+              type: `Cube${cubeType}Right`,
+              shape: {
+                api,
+                xValue: api.value(0),
+                yValue: api.value(1),
+                x: location[0] + seriesSpace,
+                y: location[1],
+                bottomYAxis: api.coord([api.value(0), 0])[1]
+              },
+              style: {
+                fill: rightColor
+              }
+            },
+            {
+              type: `Cube${cubeType}Top`,
+              shape: {
+                api,
+                xValue: api.value(0),
+                yValue: api.value(1),
+                x: location[0] + seriesSpace,
+                y: location[1],
+                bottomYAxis: api.coord([api.value(0), 0])[1]
+              },
+              style: {
+                fill: topColor
+              }
+            }
+          ]
+        };
+      };
+    },
+    getSericeSpace(sameYFieldSeriesCount, baseSpace, seriesSpaceCount) {
+      if (sameYFieldSeriesCount % 2 === 0) {
+        return seriesSpaceCount * baseSpace + baseSpace / 2;
+      } else {
+        return seriesSpaceCount * baseSpace;
+      }
+    },
+    getSameYFieldSeriesCount(series) {
+      const firstSeriesName = series[0].name.split('-')[1];
+      let seriesCount = 0;
+      for (let serie of series) {
+        const serieNname = serie.name.split('-')[1];
+        if (firstSeriesName === serieNname) {
+          seriesCount += 1;
+        } else {
+          return seriesCount;
+        }
+      }
+      return seriesCount;
     },
     _createRingShineSeries(series, optionsSeries) {
       if (optionsSeries) {
@@ -1181,11 +1313,11 @@ export default {
                   },
                   buildPath: function (ctx, shape) {
                     // 会canvas的应该都能看得懂，shape是从custom传入的
-                    const xAxisPoint = shape.xAxisPoint;
+                    const bottomYAxis = shape.bottomYAxis;
                     const c0 = [shape.x, shape.y];
                     const c1 = [shape.x - 13, shape.y - 13];
-                    const c2 = [xAxisPoint[0] - 13, xAxisPoint[1] - 13];
-                    const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                    const c2 = [shape.x - 13, bottomYAxis - 13];
+                    const c3 = [shape.x, bottomYAxis];
                     ctx.moveTo(c0[0], c0[1]).lineTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).closePath();
                   }
                 });
@@ -1196,10 +1328,10 @@ export default {
                     y: 0
                   },
                   buildPath: function (ctx, shape) {
-                    const xAxisPoint = shape.xAxisPoint;
+                    const bottomYAxis = shape.bottomYAxis;
                     const c1 = [shape.x, shape.y];
-                    const c2 = [xAxisPoint[0], xAxisPoint[1]];
-                    const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                    const c2 = [shape.x, bottomYAxis];
+                    const c3 = [shape.x + 18, bottomYAxis - 9];
                     const c4 = [shape.x + 18, shape.y - 9];
                     ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
                   }
@@ -1227,11 +1359,11 @@ export default {
                     y: 0
                   },
                   buildPath: function (ctx, shape) {
-                    const xAxisPoint = shape.xAxisPoint;
+                    const bottomYAxis = shape.bottomYAxis;
                     const c0 = [shape.x, shape.y];
                     const c1 = [shape.x - 9, shape.y - 9];
-                    const c2 = [xAxisPoint[0] - 9, xAxisPoint[1] - 9];
-                    const c3 = [xAxisPoint[0], xAxisPoint[1]];
+                    const c2 = [shape.x - 9, bottomYAxis - 9];
+                    const c3 = [shape.x, bottomYAxis];
                     ctx.moveTo(c0[0], c0[1]).lineTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).closePath();
                   }
                 });
@@ -1241,10 +1373,10 @@ export default {
                     y: 0
                   },
                   buildPath: function (ctx, shape) {
-                    const xAxisPoint = shape.xAxisPoint;
+                    const bottomYAxis = shape.bottomYAxis;
                     const c1 = [shape.x, shape.y];
-                    const c2 = [xAxisPoint[0], xAxisPoint[1]];
-                    const c3 = [xAxisPoint[0] + 18, xAxisPoint[1] - 9];
+                    const c2 = [shape.x, bottomYAxis];
+                    const c3 = [shape.x + 18, bottomYAxis - 9];
                     const c4 = [shape.x + 18, shape.y - 9];
                     ctx.moveTo(c1[0], c1[1]).lineTo(c2[0], c2[1]).lineTo(c3[0], c3[1]).lineTo(c4[0], c4[1]).closePath();
                   }

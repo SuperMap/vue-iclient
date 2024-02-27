@@ -6,8 +6,8 @@
 
 高效的开发，离不开基础工程的搭建。在开始使用 Vue-iClient-MapboxGL 之前，有必要先了解以下基础知识，我们也假设您已经写过 Vue，并掌握了下面的内容。
 
-- [Vue 组件](https://cn.vuejs.org/v2/guide/components.html)
-- [单文件组件](https://cn.vuejs.org/v2/guide/single-file-components.html)
+- [Vue 组件](https://v2.cn.vuejs.org/v2/guide/components.html)
+- [单文件组件](https://v2.cn.vuejs.org/v2/guide/single-file-components.html)
 
 以下概念贯穿 Vue-iClient-MapboxGL 前后，建议开发者花点时间来了解。
 
@@ -90,9 +90,16 @@ npm install babel-plugin-import -D
 ```js
 import { Button, message } from '@supermap/vue-iclient-mapboxgl';
 
-/* v10.2.0+ 自动注册 Button下组件，如 Button.Group */
+/* 通过Vue.use注册组件 */
 Vue.use(Button);
 Vue.prototype.$message = message;
+
+/* 或者通过Vue.component注册组件。注意：使用该方法需要手动注册国际化和主题。*/
+import { lang, locale } from '@supermap/vue-iclient-mapboxgl/lib/_lang';
+import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme';
+Vue.use(locale, { locale: lang.zh }); // 注册国际化
+setTheme('light'); // 注册主题
+Vue.component(Button.name, Button);
 
 new Vue({
   el: '#app',
@@ -147,6 +154,7 @@ import {
   TimeRange,
   TimeSlider,
   TimeText,
+  TimePicker,
   Tooltip,
   Transfer,
   Tree,
@@ -238,6 +246,7 @@ Vue.use(TimeLine);
 Vue.use(TimeRange);
 Vue.use(TimeSlider);
 Vue.use(TimeText);
+Vue.use(TimePicker);
 Vue.use(Tooltip);
 Vue.use(Transfer);
 Vue.use(Tree);

@@ -121,4 +121,27 @@ describe('Copmpare.vue', () => {
     expect(spyhandleOptions).toBeCalled();
     done();
   });
+
+  it('methods refreshRect', () => {
+    wrapper = mount(Compare, {
+      components: {
+        SmCompare,
+        SmWebMap
+      },
+      propsData: {
+        beforeMapOptions: {
+          mapId: 123,
+          serviceUrl: 'http://fakeiportal'
+        },
+        afterMapOptions: {
+          mapId: 234,
+          serviceUrl: 'http://fakeiportal'
+        }
+      }
+    });
+    expect(wrapper.vm).not.toBeUndefined();
+    expect(() => {
+      wrapper.vm.refreshRect();
+    }).not.toThrow();
+  })
 });

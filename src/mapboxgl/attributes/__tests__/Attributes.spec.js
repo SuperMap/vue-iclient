@@ -1,4 +1,4 @@
-import { mount } from '@vue/test-utils';
+import { mount, config } from '@vue/test-utils';
 import SmAttributes from '../Attributes.vue';
 import SmWebMap from '.././../web-map/WebMap.vue';
 import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
@@ -249,15 +249,25 @@ describe('Attributes.vue', () => {
     version: '1.0'
   };
 
+  beforeAll(() => {
+    wrapper = null;
+    config.mapLoad = false;
+  });
+
   beforeEach(() => {
     wrapper = null;
   });
 
   afterEach(() => {
     jest.restoreAllMocks();
+    config.mapLoad = false;
     if (wrapper) {
       wrapper.destroy();
     }
+  });
+
+  afterAll(() => {
+    config.mapLoad = true;
   });
 
   it('render default correctly', async done => {
@@ -299,10 +309,9 @@ describe('Attributes.vue', () => {
         pagination: false
       }
     });
-    wrapper.vm.$nextTick(() => {
-      expect(wrapper.find('.layer-name').text()).toBe('A属性表');
-      done();
-    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('.layer-name').text()).toBe('A属性表');
+    done();
   });
 
   it('selection', async done => {
@@ -312,9 +321,178 @@ describe('Attributes.vue', () => {
         fieldConfigs: testDataConfigs
       }
     });
+    wrapper.vm.getPopupContainerFn();
     const selectEle = wrapper.find('.sm-component-checkbox-input');
     expect(selectEle.exists()).toBe(true);
     await selectEle.trigger('click');
+    done();
+  });
+
+  it('associate map', async done => {
+    wrapper = mount({
+      template: `
+      <div>
+      <sm-web-map style="height:400px" :mapId="mapInfo"></sm-web-map>
+        <div style="positon:relative;height:400px;width:100%">
+          <sm-attributes layerName="UNIQUE-民航数-0" :fieldConfigs="fieldConfigs"></sm-attributes>
+        </div>
+      </div>`,
+      components: {
+        SmAttributes,
+        SmWebMap
+      },
+      data() {
+        return {
+          fieldConfigs: fieldConfigs,
+          mapInfo: mapInfo
+        };
+      }
+    });
+    const callback = jest.fn();
+    wrapper.vm.$children[1].$on('loaded', callback);
+    await mapLoaded(wrapper.vm.$children[0]);
+    expect(callback.mock.called).toBeTruthy;
+    let e = {
+      point: {
+        x: 0,
+        y: 1
+      }
+    };
+    wrapper.vm.$children[1].viewModel.map.fire('click', e);
+    const spy = jest.spyOn(wrapper.vm.$children[1].viewModel, 'zoomToFeatures');
+    // TODO 具名插槽 overlay 的节点找不到？
+    wrapper.vm.$children[1].setZoomToFeature();
+    await wrapper.vm.$nextTick();
+    expect(spy).toHaveBeenCalled();
+    done();
+  });
+
+  // TODO 具名插槽 overlay 的节点找不到？
+  it('hidden columns', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        fieldConfigs: fieldConfigs,
+        dataset: testData
+      }
+    });
+    const column = {
+      dataIndex: 'lon',
+      title: '经度',
+      visible: true
+    };
+    // TODO 具名插槽 overlay 的节点找不到？
+    wrapper.vm.handleColumnVisible(column);
+    expect(wrapper.vm.fieldInfo[13].title).toBe('经度');
+    expect(wrapper.vm.fieldInfo[13].visible).toBe(false);
+    done();
+  });
+
+  // TODO 具名插槽 overlay 的节点找不到？
+  it('search Data', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        fieldConfigs: fieldConfigs,
+        dataset: testData
+      }
+    });
+    await wrapper.vm.$nextTick();
+    const confirm = () => jest.fn();
+    const clearFilters = () => jest.fn();
+    wrapper.vm.handleSearch(['漠河'], confirm, '站台');
+    expect(wrapper.vm.searchedColumn).toBe('站台');
+    expect(wrapper.vm.searchText).toBe('漠河');
+    wrapper.vm.handleSearchReset(clearFilters);
+    expect(wrapper.vm.searchText).toBe('');
+    done();
+  });
+  it('handleChange', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        fieldConfigs: fieldConfigs,
+        dataset: testData
+      }
+    });
+    await wrapper.vm.$nextTick();
+    await wrapper.find('.sm-component-table-thead').find('.sm-component-checkbox-input').setChecked();
+    expect(wrapper.vm.allCount).toBe(10)
+    expect(wrapper.vm.selectedRowLength).toBe(10)
+    const pagination = {
+      "pageSize": 10,
+      "defaultCurrent": 1,
+      "current": 1
+    }
+    const filters = {"站台": ["漠河"]}
+    const currentDataSource = [
+      {
+          "index": 1,
+          "站台": "漠河",
+          "省份": "黑龙江1",
+          "海拔": "296",
+          "平均最低气温": "-47",
+          "最热七天气温": "29",
+          "key": 1
+      }
+    ]
+    wrapper.vm.handleChange(pagination,filters,{},{currentDataSource});
+    expect(wrapper.vm.allCount).toBe(1)
+    expect(wrapper.vm.selectedRowLength).toBe(1)
+    done();
+  });
+
+  it('Switch from page 1 to page 2 and refresh data', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        dataset: testData,
+        fieldConfigs: testDataConfigs,
+        table: {
+          showHeader: true,
+          showBorder: true,
+          pagination: {
+            pageSize: 5,
+            defaultCurrent: 1
+          }
+        }
+      }
+    });
+    await wrapper.vm.$nextTick();
+    const changeCb = jest.fn();
+    wrapper.vm.$on('change', changeCb);
+    expect(wrapper.findAll('.sm-component-pagination-item').length).toBe(2);
+    wrapper.find('.sm-component-pagination-next').trigger('click');
+    expect(changeCb.mock.called).toBeTruthy;
+    expect(wrapper.vm.paginationOptions.current).toBe(2);
+    // TODO 具名插槽 overlay 的节点找不到？
+    wrapper.vm.refreshData();
+    expect(wrapper.vm.paginationOptions.current).toBe(1);
+    done();
+  });
+
+  it('select all dataset', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        dataset: testData,
+        fieldConfigs: testDataConfigs
+      }
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findAll('.sm-component-table-row-selected').length).toBe(0);
+    await wrapper.find('.sm-component-table-thead').find('.sm-component-checkbox-input').setChecked();
+    expect(wrapper.findAll('.sm-component-table-row-selected').length).toBe(10);
+    done();
+  });
+
+  it('no selection', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        dataset: testData,
+        fieldConfigs: testDataConfigs,
+        table: {
+          showRowSelection: false,
+        }
+      }
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.findAll('.sm-component-table-selection-column').length).toBe(0);
     done();
   });
 });

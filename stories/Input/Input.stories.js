@@ -183,3 +183,59 @@ export const PasswordInput = () => ({
 PasswordInput.story = {
   name: toI18n('basicComponent.input.passwordBox')
 };
+
+export const ErrorInput = () => ({
+  template: `
+  <div>
+    <sm-input style="width:160px;" :error="true" placeholder="Error"/>
+    <br /><br />
+    <sm-textarea :error="true" placeholder="textarea with clear icon"/>
+  </div>
+  `
+});
+ErrorInput.story = {
+  name: toI18n('basicComponent.input.error')
+};
+
+export const Disabled = () => ({
+  template: `
+  <div>
+    <sm-input style="width:160px;" disabled placeholder="Basic input" value="123"></sm-input>
+    <br /><br />
+    <sm-textarea disabled placeholder="textarea"/>
+    <br /><br />
+    <sm-input style="width:160px;" unit="RMB" disabled placeholder="Basic input"/>
+  </div>
+  `
+});
+Disabled.story = {
+  name: toI18n('basicComponent.input.disabled')
+};
+
+export const ReadOnly = () => ({
+  template: `
+  <div>
+    <sm-input style="width:160px;" readOnly placeholder="readOnly" value="123"/>
+    <br />
+    <br />
+    <sm-textarea readOnly placeholder="readOnly" value="123"/>
+    <br />
+    <br />
+    <sm-input style="width:160px;" unit="RMB" readOnly placeholder="Basic input" value="123"/>
+  </div>
+  `
+});
+ReadOnly.story = {
+  name: toI18n('basicComponent.input.readOnly')
+};
+
+export const Unit = () => ({
+  template: `
+  <div>
+    <sm-input style="width:160px;" unit="RMB" placeholder="Basic input"/>
+  </div>
+  `
+});
+Unit.story = {
+  name: toI18n('basicComponent.input.unit')
+};

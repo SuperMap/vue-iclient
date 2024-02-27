@@ -5,18 +5,18 @@
         <span v-if="title" class="layer-name">{{ title }}</span>
         <span v-if="statistics.showTotal || statistics.showSelect">（</span>
         <span v-if="statistics.showTotal" class="total-numbers"
-          >{{ this.$t('attributes.feature') }}：{{ paginationOptions.total || 0 }}</span
+          >{{ this.$t('attributes.feature') }}：{{ allCount}}</span
         >
         <span v-if="statistics.showTotal && statistics.showSelect">，</span>
         <span v-if="statistics.showSelect" class="select-numbers"
-          >{{ this.$t('attributes.selected') }}：{{ selectedRowKeys.length || 0 }}</span
+          >{{ this.$t('attributes.selected') }}：{{ selectedRowLength || 0 }}</span
         >
         <span v-if="statistics.showTotal || statistics.showSelect">）</span>
       </div>
       <div class="sm-component-attributes__menu">
         <sm-dropdown v-if="toolbar.enabled" placement="bottomRight">
-          <div class="ant-dropdown-link"><sm-icon :icon-style="{ color: '#ccc' }" type="menu" /></div>
-          <sm-menu slot="overlay">
+          <div class="sm-component-dropdown-link"><sm-icon :icon-style="{ color: '#ccc' }" type="menu" /></div>
+          <sm-menu slot="overlay" class="sm-component-attribute_dropdown-menu">
             <sm-menu-item>
               <div v-if="toolbar.showClearSelected" @click="clearSelectedRows">
                 {{ this.$t('attributes.clearSelected') }}
@@ -44,16 +44,18 @@
     </div>
     <sm-table
       ref="tableInstance"
+      class="sm-attributes-table"
       :data-source="tableData"
       :columns="compColumns"
-      :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows }"
+      :row-selection="tableOptions.showRowSelection ? { selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows } : null"
       :pagination="paginationOptions"
-      :bordered="table.showBorder"
-      :showHeader="table.showHeader"
+      :bordered="tableOptions.showBorder"
+      :showHeader="tableOptions.showHeader"
       :customHeaderRow="customHeaderRow"
       :customRow="customRow"
       :loading="loading"
-      :getPopupContainer="triggerNode => triggerNode.parentNode"
+      :scroll="{ x: xScrollWidth }"
+      :getPopupContainer="getPopupContainerFn"
       table-layout="fixed"
       @change="handleChange"
     >
@@ -156,6 +158,7 @@ export interface StatisticsParams {
 export interface TableParams {
   showBorder?: boolean;
   showHeader?: boolean;
+  showRowSelection?: boolean;
   pagination?: PaginationParams;
 }
 
@@ -186,6 +189,9 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   tableData: Array<Object> = [];
   selectedRowKeys: Array<number> = [];
   columns: Array<Object> = [];
+  currentDataSource:Array<Object> = [];
+  totalCount: number = 0;
+  selectedRowLength:number = 0;
   paginationOptions: PaginationParams = {
     pageSize: 15,
     defaultCurrent: 1
@@ -202,6 +208,15 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   searchedColumn: string = '';
 
   fieldInfo: Array<Object> = [];
+
+  xScrollWidth: number = 0;
+
+  tableOptions: TableParams = {
+    showHeader: true,
+    showBorder: true,
+    showRowSelection: true,
+    pagination: {}
+  };
 
   @Prop() layerName: string; // 图层名
 
@@ -229,6 +244,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       return {
         showHeader: true,
         showBorder: true,
+        showRowSelection: true,
         pagination: {}
       };
     }
@@ -295,15 +311,23 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   @Watch('table', { immediate: true })
-  tableChanged(val) {
-    if (!isequal(this.paginationOptions, val.pagination)) {
-      this.paginationOptions = Object.assign({}, this.paginationOptions, val.pagination);
+  tableChanged(newVal, oldVal) {
+    if (!isequal(newVal, oldVal)) {
+      this.tableOptions = Object.assign({}, this.tableOptions, newVal);
+      this.paginationOptions = Object.assign({}, this.paginationOptions, newVal.pagination);
     }
   }
 
   @Watch('fieldConfigs', { immediate: true })
   fieldConfigsChanged(val) {
     if (!isequal(val, this.fieldInfo)) {
+      let total = 0;
+      val.forEach((item) => {
+        let width = item.width ? item.width : 128;
+        total += width;
+      });
+      // @ts-ignore
+      this.xScrollWidth = total;
       // @ts-ignore
       this.fieldInfo = val;
     }
@@ -311,6 +335,13 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   get associateMap() {
     return this.associateWithMap.enabled;
+  }
+
+  get allCount() {
+    if('total' in this.paginationOptions) {
+      return this.paginationOptions.total;
+    }
+    return this.totalCount;
   }
 
   get compColumns() {
@@ -372,12 +403,28 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     });
   }
 
+  getCurrentSelectedRowLength() {
+    let currentSelectedRowKeys = [];
+    this.currentDataSource.forEach(data => {
+      if(this.selectedRowKeys.indexOf(data['index']) !== -1) {
+        currentSelectedRowKeys.push(data['index']);
+      }
+    });
+    this.selectedRowLength = currentSelectedRowKeys.length;
+  }
+
   changeSelectedRows(selectedRowKeys) {
     this.selectedRowKeys = selectedRowKeys;
+    if(this.currentDataSource.length > 0) {
+      this.getCurrentSelectedRowLength();
+    }else {
+      this.selectedRowLength = selectedRowKeys.length;
+    }
   }
 
   clearSelectedRows() {
     this.selectedRowKeys = [];
+    this.selectedRowLength = 0;
   }
 
   setZoomToFeature() {
@@ -385,6 +432,11 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   handleChange(pagination, filters, sorter, { currentDataSource }) {
+    this.currentDataSource = currentDataSource;
+    if (filters && Object.keys(filters).length) {
+      this.$set(this.paginationOptions, 'total', currentDataSource.length);
+    }
+    this.getCurrentSelectedRowLength();
     this.paginationOptions = { ...this.paginationOptions, current: pagination.current };
     this.sorter = sorter;
     this.$emit('change', pagination, filters, sorter, { currentDataSource });
@@ -395,6 +447,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       const { content, totalCount, columns } = datas;
       if (totalCount) {
         // @ts-ignore
+        this.totalCount = totalCount;
         this.$set(this.paginationOptions, 'total', totalCount);
       }
       // @ts-ignore
@@ -437,14 +490,19 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     this.viewModel.setSearchText();
   }
 
+  getPopupContainerFn() {
+    // @ts-ignore
+    return this.$refs.tableInstance.$el.querySelector('.sm-attributes-table .sm-component-table-content');
+  }
+
   removed() {
     this.viewModel.off('mapLoaded');
     this.viewModel.off('changeSelectLayer');
     this.viewModel = null;
   }
 
-  beforeDestory() {
-    this.$options.removed.call(this);
+  beforeDestroy() {
+    this.removed();
   }
 }
 

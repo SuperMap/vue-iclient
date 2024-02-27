@@ -59,5 +59,5 @@ export default function colorPalette(color: string, index: number): string {
     h: getHue(hsv, i, isLight),
     s: getSaturation(hsv, i, isLight),
     v: getValue(hsv, i, isLight)
-  }).toHexString();
+  }).toHexString(false);
 }

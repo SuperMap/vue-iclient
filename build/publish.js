@@ -19,7 +19,16 @@ fileNames.forEach(fileName => {
       if (fileName === 'sfc.d.ts' && key === 'leaflet') {
         result = files.replace(`import mapboxglTypes = mapboxgl;`, ``);
       } else {
-        result = files.replace( `"types": ["node", "mapbox-gl", "geojson", "leaflet"],`, `"types": ["node", ${key === 'mapboxgl' ? '"mapbox-gl"' : '"leaflet"'}, "geojson"],` );
+        const typeOptions = files.match(/(?<="types":(\s|))\[[^\]]+\]/img)[0];
+        if (typeOptions) {
+          const typeOptionsArray = JSON.parse(typeOptions);
+          const filterItem = key === 'mapboxgl' ? "leaflet" : "mapbox-gl"
+          const filterOptions = typeOptionsArray.filter((item) => {
+            return item !== filterItem;
+          });
+          const filterOptionsStr = JSON.stringify(filterOptions);
+          result = files.replace(/(?<="types":(\s|))\[[^\]]+\]/img, filterOptionsStr);
+        }
       }
       fs.writeFile(path.resolve(__dirname, filePath), result, 'utf8', err => {
         if (err) {

@@ -6,11 +6,12 @@ import ThirdService from 'vue-iclient/src/common/_mixin/ThirdService';
 import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import { ResizeSensor } from 'css-element-queries';
+import { strip } from '../_utils/util';
 
 export const progressTypes = {
   ...ProgressProps,
   percent: VueTypes.oneOfType([VueTypes.string, VueTypes.number]),
-  strokeWidth: VueTypes.oneOfType([VueTypes.string, VueTypes.number]),
+  strokeWidth: VueTypes.oneOfType([VueTypes.number]),
   // fix 其父元素宽高都很大的时候，需要传一个合适的size, 这时候不会自适应, 如需自适应则不传size
   size: VueTypes.oneOfType([ProgressSize, VueTypes.number])
 };
@@ -36,9 +37,14 @@ export default {
     },
     extralProps() {
       const dealWithProps = {
-        percent: +this.finalValue,
+        percent: strip(+this.finalValue),
         strokeColor: this.colorData
       };
+      if (+this.finalValue > 100) {
+        dealWithProps.format = () => {
+          return strip(+this.finalValue) + '%';
+        };
+      }
       if (this.type === 'circle') {
         dealWithProps.width = this.calWidth;
       }

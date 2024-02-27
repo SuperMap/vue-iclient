@@ -73,4 +73,24 @@ describe('Indicator.vue', () => {
     expect(wrapper.vm.titleData).toBe('楼房建筑高度');
     expect(wrapper.vm.unitData).toBe('千米');
   });
+
+  it('Decimals', () => {
+    wrapper = mount(SmIndicator, {
+      propsData: {
+        title: '建筑高度',
+        unit: '米',
+        num: '1588.66',
+        decimals: 1
+      }
+    });
+    const numItem = wrapper.findAll('.sm-component-count-to__numItem');
+    expect(numItem.length).toBe(7);
+    expect(numItem.at(0).text()).toBe('1');
+    expect(numItem.at(1).text()).toBe(',');
+    expect(numItem.at(2).text()).toBe('5');
+    expect(numItem.at(3).text()).toBe('8');
+    expect(numItem.at(4).text()).toBe('8');
+    expect(numItem.at(5).text()).toBe('.');
+    expect(numItem.at(6).text()).toBe('7');
+  });
 });

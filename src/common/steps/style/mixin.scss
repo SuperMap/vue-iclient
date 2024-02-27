@@ -35,7 +35,7 @@ $colors: (
   $steps-item-prefix-cls: &;
   &-#{$status} {
     #{$steps-item-prefix-cls}-icon {
-      background-color: $icon-bg-color;
+      background-color: if($status == wait, $step-wait-background-color, $icon-bg-color);
       border-color: $icon-color;
       > #{$steps-prefix-cls}-icon {
         color: $icon-text-color;

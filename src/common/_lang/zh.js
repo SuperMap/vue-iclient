@@ -26,6 +26,7 @@ export default {
   // messageTemplate
   warning: {
     unsupportedVideoAddress: '视频地址不合法',
+    unsupportedPosterAddress: '封面地址不合法',
     unavailableVideo: '此视频暂无法播放，请稍后再试',
     mapNotLoaded: '关联的地图尚未加载完整，请稍后',
     unassociatedMap: '您需要配置关联地图！',
@@ -59,7 +60,8 @@ export default {
     DMS: '度分秒',
     Mercator: 'Web墨卡托'
   },
-  error: {},
+  error: {
+  },
   commontypes: {
     restData: 'SuperMap Rest 数据服务',
     restMap: 'SuperMap Rest 地图服务',
@@ -126,6 +128,9 @@ export default {
     baiduMapNotSupport: '暂不支持加载百度地图！',
     sampleDataNotSupport: '暂不支持加载示例数据！',
     mvtNotSupport: '暂不支持加载矢量瓦片图层！'
+  },
+  videoPlus: {
+    loadingTip: '视频加载中...'
   },
   drillMap: {
     goBack: '返回'
@@ -265,7 +270,7 @@ export default {
     piecesBusRoute: '条公交线路',
     showDetail: '展开详情',
     busEndTime: '首末车时间',
-    relateAdress: '点击此处查看 "{keyWord}" 的相关地点',
+    relateAdress: "点击此处查看 '{keyWord}' 的相关地点",
     // areaResult
     switchTo: '已切换到'
   },
@@ -308,7 +313,8 @@ export default {
     copy: '复制',
     location: '定位至',
     capture: '捕捉',
-    realTime: '实时'
+    realTime: '实时',
+    errorCoordinate: '坐标格式不正确'
   },
   // layer
   dataFlow: {
@@ -316,5 +322,10 @@ export default {
   },
   animateMarkerlayer: {
     unsupportedData: '当前图层不支持该数据，请重新传入数据！'
-  }
+  },
+  months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+  weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+  monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+  weekdaysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+  weekdaysMin: ['日', '一', '二', '三', '四', '五', '六']
 };

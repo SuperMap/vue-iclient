@@ -40,4 +40,10 @@ export default class CompareViewModel {
       this.compare = null;
     }
   }
+
+  refreshRect() {
+    if(this.compare) {
+      this.compare._bounds = this.compare._mapB.getContainer().getBoundingClientRect();
+    }
+  }
 }

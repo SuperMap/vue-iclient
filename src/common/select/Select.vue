@@ -9,7 +9,8 @@ export const selectTypes = {
   showSearch: VueTypes.bool.def(false),
   transitionName: VueTypes.string.def('slide-up'),
   choiceTransitionName: VueTypes.string.def('zoom'),
-  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle']),
+  readOnly: VueTypes.bool.def(false)
 };
 
 export default {
@@ -33,12 +34,14 @@ export default {
     },
     extralProps() {
       return {
-        size: this.size === 'middle' ? undefined : this.size
+        size: this.size === 'middle' ? undefined : this.size,
+        disabled: this.readOnly || this.disabled
       };
     },
     componentClass() {
       return {
-        'sm-component-select-md': this.size === 'middle'
+        'sm-component-select-md': this.size === 'middle',
+        'sm-component-select-readonly': this.readOnly
       };
     }
   }

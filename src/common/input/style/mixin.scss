@@ -2,9 +2,15 @@
   border-color: $border;
   box-shadow: 0 0 0 2px $shadow;
 }
-
-@mixin focus($border, $shadow) {
-  &:focus {
+@mixin focus-active-no-shadow {
+  &:focus,
+  &:active {
+    box-shadow: none;
+  }
+}
+@mixin focus-active($border, $shadow) {
+  &:focus,
+  &:active {
     @include focus-color($border, $shadow);
   }
 }

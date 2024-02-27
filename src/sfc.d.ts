@@ -15,7 +15,8 @@ declare module '*.vue' {
 }
 
 declare module 'vue-echarts';
-declare module 'geographic-coordinate-converter';
+declare module 'latlng-conv';
+
 /**
  * 告诉 TypeScript window是个全局对象，直接可用，这样就不会在window.xx = 123时报错
  */
@@ -27,9 +28,11 @@ interface Window {
   isLocal: boolean;
   server: string;
   CSS: any;
+  G6: any;
 }
 
 declare var window: Window;
+
 declare var SuperMap: any;
 // declare var require: any;
 
@@ -38,6 +41,7 @@ declare module '*.json' {
   const value: any;
   export default value;
 }
+
 
 interface mapInfoType {
   map: mapboxglTypes.Map;

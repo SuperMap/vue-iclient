@@ -1088,6 +1088,7 @@ export default class WebMapViewModel extends WebMapBase {
   public cleanWebMap() {
     if (this.map) {
       this.map.remove();
+      this.stopCanvg();
       this.center = null;
       this.zoom = null;
       this._dataFlowLayer.off('dataupdated', this._updateDataFlowFeaturesCallback);

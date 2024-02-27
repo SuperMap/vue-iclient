@@ -84,6 +84,7 @@ export const CustomTheme = () => ({
     background: { default: color('background', '#191515') },
     textColor: { default: color('textColor', '#fff') },
     textColorSecondary: { default: color('textColorSecondary', 'rgba(255, 255, 255, 0.45)') },
+    textColorActive: { default: color('textColorActive', 'rgba(255, 255, 255, 0.85)') },
     selectedColor: { default: color('selectedColor', '#e14d5726') },
     hoverColor: { default: color('hoverColor', '#e5666f') },
     clickColor: { default: color('clickColor', '#dc333f') },

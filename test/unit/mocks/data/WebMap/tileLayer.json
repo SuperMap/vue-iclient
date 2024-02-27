@@ -1,0 +1,34 @@
+{
+    "extent": {
+        "leftBottom": {
+            "x": -3351272.4427074995,
+            "y": 819239.9879898131
+        },
+        "rightTop": {
+            "x": 1835992.3214813927,
+            "y": 5956378.419384226
+        }
+    },
+    "maxScale": "1:9.129481",
+    "level": 5,
+    "center": {
+        "x": 11615300.701720804,
+        "y": 4436879.386230171
+    },
+    "baseLayer": {
+        "layerType": "TILE",
+        "visible": true,
+        "name": "ChinaqxAlberts_4548@fl",
+        "url": "http://fake/iserver/services/map-4548/rest/maps/ChinaqxAlberts_4548%40fl"
+    },
+    "layers": [],
+    "description": "",
+    "projection": "EPSG:4548",
+    "minScale": "1:19145908.332390",
+    "title": "ChinaqxAlberts_4548@fl",
+    "version": "2.2.1",
+    "rootUrl": "http://fake/iportal/services/..",
+    "mapParams": {
+        "title": "ChinaqxAlberts_4548@fl"
+    }
+}

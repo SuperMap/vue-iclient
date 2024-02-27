@@ -190,8 +190,27 @@ module.exports = {
                     'common/time-line',
                     'common/time-range',
                     'common/time-slider',
+                    'common/time-picker',
                     'common/attributes',
                     'common/slideshow'
+                  ]
+                },
+                {
+                  title: '视频+组件',
+                  collapsable: false,
+                  children: [
+                    'video-plus/video',
+                    'video-plus/video-layer',
+                    'video-plus/popup',
+                    'video-plus/marker',
+                    'video-plus/draw'
+                  ]
+                },
+                {
+                  title: '知识图谱',
+                  collapsable: false,
+                  children: [
+                    'graph-map/graph-map'
                   ]
                 }
               ]

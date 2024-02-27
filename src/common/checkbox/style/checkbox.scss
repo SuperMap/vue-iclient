@@ -4,11 +4,33 @@
 
 @include b(checkbox) {
   $prefix: &;
-  &-wrapper:hover &-inner, &:hover &-inner, &-input:focus + &-inner {
+  &-wrapper:hover &-inner, &:hover &-inner {
     border-color: $hover-color;
   }
+  &-wrapper {
+    color: $text-color-active;
+  }
+  &-checked::after {
+    border: none;
+  }
+  &-wrapper:not(&-wrapper-disabled):hover {
+    #{$prefix}-indeterminate {
+      #{$prefix}-inner::after {
+        background-color: $hover-color;
+      }
+    }
+  }
+  &-wrapper-checked:not(&-wrapper-disabled),
+  &-checked:not(&-disabled) {
+    &:hover {
+      #{$prefix}-inner{
+        background-color:  $checkbox-selected-hover-color;
+        border-color:  $checkbox-selected-hover-color;
+      }
+    }
+  }
   @include e(inner, '-') {
-    background-color: $component-background;
+    background-color: transparent;
   }
   @include e(disabled, '-') {
     #{$prefix}-inner {

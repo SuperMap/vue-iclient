@@ -452,6 +452,20 @@ describe('Chart Mixin Component', () => {
       expect(wrapper.vm.echartOptions.series[0].shape).toBeUndefined();
     });
     it('render cylinder chart', async () => {
+      const datasetOptions = [
+        {
+          xField: 'date',
+          yField: 'target',
+          sort: 'descending',
+          seriesType: '2.5Bar'
+        },
+        {
+          xField: 'date',
+          yField: 'sale',
+          sort: 'descending',
+          seriesType: '2.5Bar'
+        }
+      ]
       wrapper = factory({
         options: {
           ...options,
@@ -466,7 +480,7 @@ describe('Chart Mixin Component', () => {
             }
           ]
         },
-        datasetOptions: datasetOptionsFactory(['2.5Bar', '2.5Bar']),
+        datasetOptions: datasetOptions,
         dataset: geoJSONDataset,
         highlightColor
       });
@@ -479,6 +493,74 @@ describe('Chart Mixin Component', () => {
         highlightOptions: highlightOptions([1])
       });
       expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toStrictEqual(options.series[0].itemStyle.color);
+    });
+
+    it('render cylinder chart with Multiple feature', async () => {
+      const datasetOptions = [
+        {
+          xField: 'date',
+          yField: '0-num',
+          sort: 'descending',
+          seriesType: '2.5Bar'
+        },
+        {
+          xField: 'date',
+          yField: '1-num',
+          sort: 'descending',
+          seriesType: '2.5Bar'
+        }
+      ]
+      const geoJSONDataset = {
+        maxFeatures: 20,
+        url: '',
+        type: 'geoJSON',
+        geoJSON: {
+          type: 'FeatureCollection',
+          features: [
+            {
+              properties: {
+                '0-num': 100,
+                '1-num': 160,
+                timestamp:"2020-10-01 12:45:02"
+              }
+            },
+            {
+              properties: {
+                '0-num': 120,
+                '1-num': 170,
+                timestamp:"2020-10-02 12:45:02"
+              }
+            }
+          ]
+        }
+      };
+      wrapper = factory({
+        options: {
+          ...options,
+          series: [
+            {
+              type: '2.5Bar',
+              shape: 'cylinder'
+            },
+            {
+              type: '2.5Bar',
+              shape: 'cylinder'
+            }
+          ]
+        },
+        datasetOptions: datasetOptions,
+        dataset: geoJSONDataset,
+        highlightColor
+      });
+      await flushPromises();
+      const echartSeriesLen = wrapper.vm.echartOptions.series.length;
+      expect(echartSeriesLen).toBeGreaterThan(options.series.length);
+      expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].type).toBe('pictorialBar');
+      expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].symbolSize).toStrictEqual(["50%", 10]);
+      expect(wrapper.vm.echartOptions.series[0].barGap).toBe("0");
+      expect(wrapper.vm.echartOptions.series[1].barGap).toBe("0");
+      expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toBeUndefined;
+      expect(wrapper.vm.echartOptions.series[1].itemStyle.color).not.toBeUndefined;
     });
   });
 

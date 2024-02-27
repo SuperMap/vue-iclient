@@ -120,9 +120,9 @@ describe('TdtSearch.vue', () => {
     expect(wrapper.vm.collapsed).toBeTruthy();
     expect(wrapper.vm.mapTarget).toBe('map');
     const searchSucceeded = jest.spyOn(wrapper.vm, 'searchSucceeded');
-    const inputSeatch = wrapper.find('.sm-component-input');
-    expect(inputSeatch.exists()).toBeTruthy();
-    inputSeatch.setValue('成都');
+    const inputSearch = wrapper.find('.sm-component-input');
+    expect(inputSearch.exists()).toBeTruthy();
+    inputSearch.setValue('成都');
     setTimeout(async () => {
       expect(mockAxios).toHaveBeenCalledTimes(1);
       expect(searchSucceeded).toHaveBeenCalledTimes(1);
@@ -241,8 +241,8 @@ describe('TdtSearch.vue', () => {
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.collapsed).toBeTruthy();
     expect(wrapper.vm.mapTarget).toBe('map');
-    const inputSeatch = wrapper.find('.sm-component-input');
-    inputSeatch.setValue('22');
+    const inputSearch = wrapper.find('.sm-component-input');
+    inputSearch.setValue('22');
     setTimeout(async () => {
       const resultLi = wrapper.findAll('.sm-component-search__result li');
       expect(resultLi.length).toBe(2);
@@ -334,8 +334,8 @@ describe('TdtSearch.vue', () => {
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.collapsed).toBeTruthy();
     expect(wrapper.vm.mapTarget).toBe('map');
-    const inputSeatch = wrapper.find('.sm-component-input');
-    inputSeatch.setValue('华阳');
+    const inputSearch = wrapper.find('.sm-component-input');
+    inputSearch.setValue('华阳');
     setTimeout(async () => {
       const resultLi = wrapper.findAll('.sm-component-search__result li');
       expect(resultLi.length).toBe(2);
@@ -397,24 +397,119 @@ describe('TdtSearch.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     const searchSucceeded = jest.spyOn(wrapper.vm, 'searchSucceeded');
-    const inputSeatch = wrapper.find('.sm-component-input');
-    expect(inputSeatch.exists()).toBeTruthy();
-    inputSeatch.setValue('成都');
+    const inputSearch = wrapper.find('.sm-component-input');
+    expect(inputSearch.exists()).toBeTruthy();
+    inputSearch.setValue('成都');
     setTimeout(async () => {
       expect(mockAxios).toHaveBeenCalledTimes(1);
       expect(searchSucceeded).toHaveBeenCalledTimes(1);
       const resultLi = wrapper.findAll('.sm-component-search__result li');
       expect(resultLi.length).toBe(3);
       const downChoose = jest.spyOn(wrapper.vm, 'downChoose');
-      await inputSeatch.trigger('keyup.down');
-      await inputSeatch.trigger('keyup.down');
-      await inputSeatch.trigger('keyup.down');
+      await inputSearch.trigger('keyup.down');
+      await inputSearch.trigger('keyup.down');
+      await inputSearch.trigger('keyup.down');
       expect(downChoose).toBeCalled();
-      expect(inputSeatch.element.value).toBe('成都3');
-      await inputSeatch.trigger('keyup.up');
-      await inputSeatch.trigger('keyup.up');
-      expect(inputSeatch.element.value).toBe('成都');
+      expect(inputSearch.element.value).toBe('成都3');
+      await inputSearch.trigger('keyup.up');
+      await inputSearch.trigger('keyup.up');
+      expect(inputSearch.element.value).toBe('成都');
       done();
     }, 500);
+  });
+
+  it('select search item', async done => {
+    mockAxios.mockImplementation(e => {
+      if (e.url === 'https://api.tianditu.gov.cn/search') {
+        return Promise.resolve({
+          data: {
+            count: '61719',
+            keyWord: 'c',
+            mclayer: '',
+            resultType: '4',
+            suggests: [
+              {
+                address: '四川省成都市双流区',
+                gbCode: '156510116',
+                name: '华阳地铁站-B口'
+              },
+              {
+                address: '四川省成都市双流区',
+                gbCode: '156510116',
+                name: '华阳地铁站-C2口'
+              }
+            ]
+          }
+        });
+      } else if (e.url === 'https://api.tianditu.gov.cn/search/pointDetail') {
+        return Promise.resolve({
+          data: {
+            count: '1',
+            dataversion: '2021-9-28 17:58:41',
+            engineversion: '20180412',
+            keyWord: '华阳地铁站-B口',
+            landmarkcount: 0,
+            mclayer: '',
+            pois: [
+              {
+                address: '天府大道南段1632东南方向100米',
+                eaddress: '',
+                ename: 'HuayangStationExit/EntranceB',
+                hotPointID: '90F80006632F5615',
+                lonlat: '104.067352 30.50491',
+                name: '华阳地铁站-B口',
+                phone: ''
+              }
+            ],
+            suggests: [
+              {
+                address: '四川省成都市',
+                gbCode: '156510100',
+                name: '222路'
+              },
+              {
+                address: '四川省成都市',
+                gbCode: '156430522',
+                name: '202路'
+              }
+            ],
+            prompt: [
+              {
+                admins: [
+                  {
+                    adminCode: 156510100,
+                    name: '成都市'
+                  }
+                ],
+                type: 4
+              }
+            ],
+            resultType: 1
+          }
+        });
+      }
+    });
+    wrapper = mount(SmTdtSearch, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        collapsed: true,
+        data: {
+          tk: '1d109683f4d84198e37a38c442d68311',
+          searchUrl: 'https://api.tianditu.gov.cn/search/pointDetail'
+        }
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const inputSearch = wrapper.find('.sm-component-input');
+    inputSearch.setValue('华阳');
+    inputSearch.trigger('input');
+    setTimeout(async () => {
+      const resultLi = wrapper.find('.sm-component-search__result ul li');
+      await resultLi.trigger('click');
+      setTimeout(() => {
+        done();
+      }, 200);
+    }, 1000);
   });
 });

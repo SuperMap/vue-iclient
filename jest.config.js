@@ -1,7 +1,9 @@
 const path = require('path');
+const babelConfig = require('./babel.config')();
 
 process.env.VUE_CLI_BABEL_TARGET_NODE = true;
 process.env.VUE_CLI_BABEL_TRANSPILE_MODULES = true;
+babelConfig.inputSourceMap = false;
 
 module.exports = {
   rootDir: path.resolve(__dirname),
@@ -19,7 +21,8 @@ module.exports = {
     '@i18n/(.*)$': '<rootDir>/src/common/$1',
     '@leaflet/(.*)$': '<rootDir>/src/leaflet/$1',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-      '<rootDir>/test/unit/assetsTransformer.js'
+    '<rootDir>/test/unit/assetsTransformer.js',
+    '^axios$': require.resolve('axios')
   },
   transform: {
     '^.+\\.ts$': '<rootDir>/node_modules/ts-jest',
@@ -40,13 +43,14 @@ module.exports = {
     '!mapboxgl/*/__tests__/**/type.{js,jsx}'
   ],
   transformIgnorePatterns: [
-    'node_modules/(?!(mapbox-gl|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'
+    'node_modules/(?!(mapbox-gl|axios|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'
   ],
   modulePaths: ['src', 'node_modules'],
+  reporters: ["default", "jest-teamcity"],
   globals: {
     'ts-jest': {
       tsConfig: '<rootDir>/tsconfig.json',
-      babelConfig: true
+      babelConfig: babelConfig
     }
   },
 

@@ -1,0 +1,304 @@
+{
+  "extent": {
+    "leftBottom": { "x": -20037508.342789248, "y": -20037508.34278914 },
+    "rightTop": { "x": 20037508.342789244, "y": 20037508.342789087 }
+  },
+  "maxScale": "1:144447.927",
+  "level": 5,
+  "center": { "x": 11615300.701720804, "y": 4436879.386230171 },
+  "baseLayer": {
+    "layerType": "TILE",
+    "visible": true,
+    "name": "ChinaDark",
+    "url": "https://iserver.supermap.io/iserver/services/map-china400/rest/maps/ChinaDark"
+  },
+  "layers": [
+    {
+      "layerType": "UNIQUE",
+      "visible": true,
+      "themeSetting": {
+        "themeField": "名次",
+        "customSettings": {
+          "1": "#d53e4f",
+          "2": "#d6404f",
+          "3": "#d8444f",
+          "4": "#db4a50",
+          "5": "#da4850",
+          "6": "#d94650",
+          "7": "#dd4f51",
+          "8": "#de5151",
+          "9": "#df5351",
+          "10": "#dc4c50",
+          "11": "#e05551",
+          "12": "#e25952",
+          "13": "#e15752",
+          "14": "#feeda1",
+          "15": "#e56053",
+          "16": "#e45e53",
+          "17": "#e35b52",
+          "18": "#e96654",
+          "19": "#fca769"
+        },
+        "colors": ["#D53E4F", "#FC8D59", "#FEE08B", "#FFFFBF", "#E6F598", "#99D594", "#3288BD"]
+      },
+      "name": "民航数据",
+      "featureType": "POINT",
+      "xyField": { "xField": "longitude", "yField": "latitude" },
+      "style": {
+        "strokeWidth": 1,
+        "offsetX": 0,
+        "fillColor": "#3288bd",
+        "offsetY": 0,
+        "fillOpacity": 0.9,
+        "radius": 8,
+        "strokeColor": "#ffffff",
+        "type": "BASIC_POINT",
+        "strokeOpacity": 1
+      },
+      "projection": "EPSG:4326",
+      "enableFields": [
+        "latitude",
+        "longitude",
+        "altitude",
+        "geometry",
+        "机场",
+        "X坐标",
+        "Y坐标",
+        "名次",
+        "2017旅客吞吐量（人次）",
+        "2016旅客吞吐量（人次）",
+        "同比增速%",
+        "2017货邮吞吐量（吨）",
+        "2016货邮吞吐量（吨）",
+        "2017起降架次（架次）",
+        "2016起降架次（架次）"
+      ],
+      "dataSource": { "accessType": "DIRECT", "type": "PORTAL_DATA", "serverId": "676516522" }
+    },
+    {
+      "layerType": "UNIQUE",
+      "visible": true,
+      "themeSetting": {
+        "themeField": "title",
+        "customSettings": {
+          "11111": {
+            "fillColor": "#D53E4F",
+            "strokeWidth": 1,
+            "offsetX": 0,
+            "offsetY": 0,
+            "fillOpacity": 0.9,
+            "name": "Shape3-4",
+            "unicode": "&#xe698",
+            "className": "supermapol-icons-Shape-57",
+            "fontSize": "16px",
+            "type": "SYMBOL_POINT",
+            "strokeColor": "#ffffff",
+            "strokeOpacity": 1
+          },
+          "22222": {
+            "fillColor": "#3288BD",
+            "strokeWidth": 1,
+            "offsetX": 0,
+            "offsetY": 0,
+            "fillOpacity": 0.9,
+            "name": "Shape3-2",
+            "unicode": "&#xe696",
+            "className": "supermapol-icons-Shape-55",
+            "fontSize": "16px",
+            "type": "SYMBOL_POINT",
+            "strokeColor": "#ffffff",
+            "strokeOpacity": 1
+          }
+        },
+        "colors": ["#D53E4F", "#FC8D59", "#FEE08B", "#FFFFBF", "#E6F598", "#99D594", "#3288BD"]
+      },
+      "filterCondition": "title = '11111'",
+      "name": "jiuzhaigou2",
+      "featureType": "POINT",
+      "labelStyle": {
+        "offsetX": 0,
+        "textBaseline": "bottom",
+        "fontFamily": "微软雅黑",
+        "offsetY": -12,
+        "outlineWidth": 0,
+        "textAlign": "center",
+        "outlineColor": "#000000",
+        "fontSize": "19px",
+        "fill": "#333",
+        "backgroundFill": [255, 255, 255, 0.8],
+        "labelField": "未设置"
+      },
+      "style": {
+        "strokeWidth": 1,
+        "offsetX": 0,
+        "fillColor": "#3288BD",
+        "offsetY": 0,
+        "fillOpacity": 0.9,
+        "name": "Shape3-2",
+        "unicode": "&#xe696",
+        "className": "supermapol-icons-Shape-55",
+        "fontSize": "16px",
+        "strokeColor": "#ffffff",
+        "type": "SYMBOL_POINT",
+        "strokeOpacity": 1
+      },
+      "projection": "EPSG:4326",
+      "enableFields": ["title", "subtitle", "imgUrl", "description"],
+      "dataSource": {
+        "accessType": "DIRECT",
+        "type": "PORTAL_DATA",
+        "serverId": "13136933"
+      }
+    },
+    {
+      "layerType": "UNIQUE",
+      "visible": true,
+      "themeSetting": {
+        "themeField": "title",
+        "customSettings": {
+          "11111": {
+            "fillColor": "#D53E4F",
+            "strokeWidth": 1,
+            "offsetX": 0,
+            "offsetY": 0,
+            "fillOpacity": 0.9,
+            "name": "Shape3-4",
+            "unicode": "&#xe698",
+            "className": "supermapol-icons-Shape-57",
+            "fontSize": "16px",
+            "type": "SYMBOL_POINT",
+            "strokeColor": "#ffffff",
+            "strokeOpacity": 1
+          },
+          "22222": {
+            "fillColor": "#3288BD",
+            "strokeWidth": 1,
+            "offsetX": 0,
+            "offsetY": 0,
+            "fillOpacity": 0.9,
+            "name": "Shape3-2",
+            "unicode": "&#xe696",
+            "className": "supermapol-icons-Shape-55",
+            "fontSize": "16px",
+            "type": "SYMBOL_POINT",
+            "strokeColor": "#ffffff",
+            "strokeOpacity": 1
+          }
+        },
+        "colors": ["#D53E4F", "#FC8D59", "#FEE08B", "#FFFFBF", "#E6F598", "#99D594", "#3288BD"]
+      },
+      "filterCondition": "title = '11111'",
+      "name": "jiuzhaigou2",
+      "featureType": "POINT",
+      "labelStyle": {
+        "offsetX": 0,
+        "textBaseline": "bottom",
+        "fontFamily": "微软雅黑",
+        "offsetY": -12,
+        "outlineWidth": 0,
+        "textAlign": "center",
+        "outlineColor": "#000000",
+        "fontSize": "19px",
+        "fill": "#333",
+        "backgroundFill": [255, 255, 255, 0.8],
+        "labelField": "未设置"
+      },
+      "style": {
+        "strokeWidth": 1,
+        "offsetX": 0,
+        "fillColor": "#3288BD",
+        "offsetY": 0,
+        "fillOpacity": 0.9,
+        "name": "Shape3-2",
+        "unicode": "&#xe696",
+        "className": "supermapol-icons-Shape-55",
+        "fontSize": "16px",
+        "strokeColor": "#ffffff",
+        "type": "SYMBOL_POINT",
+        "strokeOpacity": 1
+      },
+      "projection": "EPSG:4326",
+      "enableFields": ["title", "subtitle", "imgUrl", "description"],
+      "dataSource": {
+        "accessType": "DIRECT",
+        "type": "PORTAL_DATA",
+        "serverId": "13136933"
+      }
+    },
+    {
+      "layerType": "UNIQUE",
+      "visible": true,
+      "themeSetting": {
+        "themeField": "title",
+        "customSettings": {
+          "11111": {
+            "offsetX": 0.5,
+            "offsetY": 0.5,
+            "imageInfo": {
+              "size": {
+                "w": 24,
+                "h": 24
+              },
+              "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-010d5.png"
+            },
+            "type": "IMAGE_POINT",
+            "radius": 8
+          },
+          "22222": {
+            "fillColor": "#3288BD",
+            "strokeWidth": 1,
+            "offsetX": 0.5,
+            "offsetY": 0.5,
+            "fillOpacity": 0.9,
+            "type": "SVG_POINT",
+            "radius": 8,
+            "strokeColor": "#ffffff",
+            "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-1640166546637UNIQUE.svg",
+            "strokeOpacity": 1
+          }
+        },
+        "colors": ["#D53E4F", "#FC8D59", "#FEE08B", "#FFFFBF", "#E6F598", "#99D594", "#3288BD"]
+      },
+      "name": "jiuzhaigou2",
+      "featureType": "POINT",
+      "labelStyle": {
+        "offsetX": 4,
+        "textBaseline": "bottom",
+        "fontFamily": "黑体",
+        "offsetY": -8,
+        "outlineWidth": 0,
+        "textAlign": "center",
+        "outlineColor": "#000000",
+        "fontSize": "14px",
+        "fill": "#333",
+        "backgroundFill": [255, 255, 255, 0.8],
+        "labelField": "title"
+      },
+      "style": {
+        "strokeWidth": 1,
+        "offsetX": 0.5,
+        "fillColor": "#3288BD",
+        "offsetY": 0.5,
+        "fillOpacity": 0.9,
+        "radius": 8,
+        "strokeColor": "#ffffff",
+        "type": "SVG_POINT",
+        "url": "http://fakeiportal.supermap.io/iportal/./resources/portal/dataviz/markericon/symbol-input-1640166546637UNIQUE.svg",
+        "strokeOpacity": 1
+      },
+      "projection": "EPSG:4326",
+      "enableFields": ["title", "subtitle", "imgUrl", "description"],
+      "dataSource": {
+        "accessType": "DIRECT",
+        "type": "PORTAL_DATA",
+        "serverId": "13136933"
+      }
+    }
+  ],
+  "description": "",
+  "projection": "EPSG:3857",
+  "minScale": "1:591658710.909",
+  "title": "民航数据-单值",
+  "version": "2.2.1",
+  "rootUrl": "https://iportal.supermap.io/iportal/services/../"
+}

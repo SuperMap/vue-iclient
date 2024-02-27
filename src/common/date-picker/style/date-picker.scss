@@ -5,6 +5,9 @@
 
 @include b(calendar-picker) {
   $calendar-picker-prefix: &;
+  &-icon {
+    color: $input-icon-color;
+  }
   &:hover {
     #{$calendar-picker-prefix}-clear + #{$calendar-picker-prefix}-icon {
       opacity: 0;
@@ -25,6 +28,12 @@
   background-color: $select-dropdown-bg;
   border: none;
 
+  @include e(panel, '-') {
+    #{$prefix}-input-wrap {
+      display: none;
+    }
+  }
+
   @include e(input, '-') {
     background: $select-dropdown-bg;
   }
@@ -35,7 +44,7 @@
 
   @include e(date, '-') {
     &:hover {
-      background: $selected-color;
+      background: $date-item-hover-bg;
     }
     &:active {
       background: $click-color;
@@ -77,7 +86,6 @@
 
   @include e(footer, '-') {
     &-btn {
-      text-align: right;
       padding-right: 10px;
       a {
         color: $primary-color;
@@ -122,7 +130,8 @@
       color: $text-color-secondary;
     }
     &-middle {
-      color: $text-color-secondary;
+      // color: $text-color-secondary;
+      display: none;
     }
     // #{$prefix}-today
     //   :not(#{$prefix}-disabled-cell)
@@ -155,6 +164,12 @@
     }
 
     &#{$prefix}-time {
+      #{$prefix}-time-picker {
+        top: 40px;
+        #{$prefix}-time-picker-panel {
+          margin-top: -40px;
+        }
+      }
       #{$prefix}-time-picker-combobox {
         background: $select-dropdown-bg;
       }
@@ -174,14 +189,14 @@
 
         li {
           &:hover {
-            background: $selected-color;
+            background: $time-picker-item-hover-bg;
           }
           &:focus {
             background: $click-color;
             color: #fff;
           }
           &#{$prefix-time-picker-select}-option-selected {
-            background: $primary-color;
+            background: $selected-color;
             color: #fff;
           }
           &#{$prefix-time-picker-select}-option-disabled {

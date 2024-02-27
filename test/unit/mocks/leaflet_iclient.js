@@ -20,7 +20,19 @@ var supermap = {
   tiledMapLayer: () => {
     return {};
   },
-  themeFeature: class {}
+  dataFlowLayer: () => {
+    return {
+      on: () => {},
+      off: () => {},
+      addLayer: () => {},
+      getLayerId: () => {}
+    };
+  },
+  tiandituTileLayer: () => {
+    return {};
+  },
+  themeFeature: class {},
+  wmtsLayer: () => {}
 };
 var L = require('@mocks/leaflet');
 module.exports.SuperMap = require('./supermap');

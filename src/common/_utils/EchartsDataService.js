@@ -4,6 +4,7 @@ import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
 import { clearNumberComma, filterInvalidData } from 'vue-iclient/src/common/_utils/util';
 import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
+import { min, max as statisticsMax, mean, sum, mode, median, variance, standardDeviation } from 'simple-statistics';
 
 // 三方服务请求的结果为单对象的时候，是否要转成多个features
 export function tranformSingleToMulti(data) {
@@ -51,6 +52,7 @@ export function sortData(features, datasetOptions, maxFeatures, xBar) {
  * @typedef {Object} Chart-datasetOption  - 解析数据的配置
  * @property {string} seriesType - 图表类型line, bar, scatter, pie, radar, gauge。
  * @property {boolean} [isStastic = false] - 是否统计数据。
+ * @property {string|function} [statisticFunction = 'sum'] - 统计方式。
  * @property {boolean} [isStack = false] - 图表（line, bar, scatter）是否堆叠
  * @property {string} xField - 数据的字段，坐标值
  * @property {string} yField - 数据的字段，数据值
@@ -64,6 +66,7 @@ export default class EchartsDataService {
     this.datasetOptions = datasetOptions;
     this.dataCache = null; // 缓存的是请求后的数据
     this.sortDataCache = null;
+    this.statisticDataCache = null;
     this.axisDatas = []; // 坐标data
     this.serieDatas = []; // series data
     this.gridAxis = { xAxis: [], yAxis: {} }; // 直角坐标系
@@ -81,7 +84,8 @@ export default class EchartsDataService {
     let promise = new Promise((resolve, reject) => {
       // 请求数据，请求成功后，解析数据
       const matchItem = this.datasetOptions.find(item => item.sort !== 'unsort');
-      const maxFeatures = matchItem ? '' : dataset.maxFeatures;
+      const isStastic = this.datasetOptions.find(item => item.isStastic === true);
+      const maxFeatures = matchItem || isStastic ? '' : dataset.maxFeatures;
       getFeatures({ ...dataset, maxFeatures })
         .then(data => {
           // 兼容三方服务接口返回的一个普通的对象
@@ -120,12 +124,19 @@ export default class EchartsDataService {
     this._clearChartCache();
     // 设置datasetOptions
     this.setDatasetOptions(datasetOptions);
+    // 统计后的数据
+    let features;
+    const isStastic = datasetOptions.length && datasetOptions[0].isStastic;
+    if(isStastic) {
+      features = this._createStatisticData(data, datasetOptions, xBar);
+      this.statisticDataCache = features;
+    }
     // 设置this.data
     data = this._setData(data, xBar);
     // 生成seriedata
     datasetOptions.forEach(item => {
       // 生成YData, XData
-      let fieldData = this._fieldsData(data, item, xBar);
+      let fieldData = isStastic ? this._fieldsDataStatistic(features, item) : this._fieldsDataDefault(data, item);
       // 解析YData, XData，生成EchartsOption的data
       let serieData = this._createDataOption(fieldData, item);
       // 设置坐标
@@ -145,6 +156,82 @@ export default class EchartsDataService {
     };
   }
 
+  /**
+   * @function EchartsDataService.prototype._createStatisticData
+   * @description 对相同字段数据进行统计，生成统计后的对象数组
+   * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
+   * @param {Object} datasetOptions - 数据解析的配置参数
+   * @returns {Array}  统计后的对象数组
+   */
+  _createStatisticData(data, datasetOptions, xBar) {
+    const sortMatchItem = datasetOptions.find(item => item.sort && item.sort !== 'unsort');
+    const statisticFunction = datasetOptions[0].statisticFunction;
+    const xField = datasetOptions[0].xField;
+    const yFields = datasetOptions.map(item => item.yField);
+    const fields = data.fields; // 所有字段
+    const allFeatures = data.features;
+    const xFieldIndex = fields.indexOf(xField); // x字段的下标
+    const fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex);
+    const xData = this._stasticXData(fieldValueIndex);
+    const yDatas = [];
+    yFields.forEach(yField => {
+      const yFieldIndex = fields.indexOf(yField); // y字段的下标
+      const fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
+      const yData = this._stasticYData(fieldValues, fieldValueIndex, statisticFunction, allFeatures);
+      yDatas.push(yData);
+    });
+    const statisticFieldCaptions = [xField].concat(yFields);
+    const statisticFieldValues = [xData].concat(yDatas);
+    let features = this._transformToObj(statisticFieldCaptions, statisticFieldValues);
+    if(sortMatchItem) {
+      features = orderBy(
+        features,
+        sortMatchItem.yField,
+        sortMatchItem.sort === 'ascending' ? 'asc' : 'desc'
+      );
+      xBar && features.reverse();
+    }
+    const maxLen = +this.dataset.maxFeatures;
+    if (maxLen && features.length > maxLen) {
+      features.length = maxLen;
+    }
+    return features;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._transformToObj
+   * @description 将两个数组，转换成一个对象数组，
+   * 例如keys=['国家', '区域', '船只数量'], values=[['中国','俄罗斯','美国'], [1,2,3], [4,5,6]],最终转换为：
+      [{
+          "国家": "中国",
+          "区域": 1,
+          "船只数量": 4
+      },
+      {
+          "国家": "俄罗斯",
+          "区域": 2,
+          "船只数量": 5
+      },
+      {
+          "国家": "美国",
+          "区域": 3,
+          "船只数量": 6
+      }]
+   * @param {Array} keys - 作为对象键的数组
+   * @param {Array} values - 作为对象值的数组
+   * @returns {Array}  对象数组
+   */
+  _transformToObj(keys, values) {
+    var result = [];
+    for (var i = 0; i < values[0].length; i++) {
+      var obj = {};
+      for (var j = 0; j < keys.length; j++) {
+        obj[keys[j]] = values[j][i];
+      }
+      result.push(obj);
+    }
+    return result;
+  }
   /**
    * @function EchartsDataService.prototype.setDatasetOptions
    * @private
@@ -305,31 +392,40 @@ export default class EchartsDataService {
   }
 
   /**
-   * @function EchartsDataService.prototype._fieldsData
+   * @function EchartsDataService.prototype._fieldsDataDefault
    * @private
-   * @description 将请求回来的数据，转换成适用于chart配置的数据。
+   * @description 将请求回来的数据，转换成适用于chart配置的数据-不统计图表的情况。
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
    * @param {Chart-datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  解析好的Ydata，xdata
    */
-  _fieldsData(data, datasetOption) {
-    let fieldCaptions, fieldValues, xFieldIndex, yFieldIndex, fieldValueIndex, xData, yData, result;
-    let { sort, yField, xField, isStastic } = datasetOption;
-    fieldCaptions = data.fieldCaptions; // 所有x字段
-    xFieldIndex = fieldCaptions.indexOf(xField); // x字段的下标
-    yFieldIndex = fieldCaptions.indexOf(yField); // y字段的下标
+  _fieldsDataDefault(data, datasetOption) {
+    let fields, fieldValues, xFieldIndex, yFieldIndex, xData, yData, result;
+    let { yField, xField } = datasetOption;
+    fields = data.fields; // 所有x字段
+    xFieldIndex = fields.indexOf(xField); // x字段的下标
+    yFieldIndex = fields.indexOf(yField); // y字段的下标
     fieldValues = yFieldIndex < 0 ? [] : data.fieldValues[yFieldIndex]; // y字段的所有feature值
-    // 该数据是否需要统计,统计的是数组下标
-    if (isStastic) {
-      fieldValueIndex = this._getUniqFieldDatas(data, xFieldIndex, sort);
-      // 生成统计后的数据
-      xData = this._stasticXData(fieldValueIndex, sort);
-      yData = this._stasticYData(fieldValues, fieldValueIndex, sort);
-    } else {
-      // 如果不是统计图表
-      xData = this._getFieldDatas(data, xFieldIndex);
-      yData = [...fieldValues];
-    }
+    // 如果不是统计图表
+    xData = this._getFieldDatas(data, xFieldIndex);
+    yData = [...fieldValues].map(item => tonumber(item));
+    result = { xData, yData };
+    return result;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._fieldsDataStatistic
+   * @private
+   * @description 将请求回来的数据，转换成适用于chart配置的数据-统计图表的情况。
+   * @param {Array} features - 统计后的数据
+   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @returns {Object}  解析好的Ydata，xdata
+   */
+  _fieldsDataStatistic(features, datasetOption) {
+    let xData, yData, result;
+    const { xField, yField } = datasetOption;
+    xData = features.map(obj => obj[xField]);
+    yData = features.map(obj => obj[yField]);
     result = { xData, yData };
     return result;
   }
@@ -342,7 +438,7 @@ export default class EchartsDataService {
    * @returns {Array}  统计后的Xdata、
    */
   _stasticXData(fieldValueIndex) {
-    let xData = Object.keys(fieldValueIndex);
+    const xData = Array.from(fieldValueIndex.keys());
     return xData;
   }
 
@@ -352,21 +448,46 @@ export default class EchartsDataService {
    * @description 统计数据，生成yData。
    * @param {Object} fieldValues - y字段的所有feature值
    * @param {Object} fieldValueIndex - x字段的统计索引
+   * @param {string|function} statisticFunction - 统计方式
+   * @param {Array} features - 所有features要素
    * @returns {Array}  统计后的Ydata、
    */
-  _stasticYData(fieldValues, fieldValueIndex) {
+  _stasticYData(fieldValues, fieldValueIndex, statisticFunction, features) {
     let yData = [];
     // 统计Y字段
-    for (const key in fieldValueIndex) {
-      let total = 0;
-      fieldValueIndex[key].forEach(index => {
+    for (const key of fieldValueIndex.keys()) {
+      let valueArr = [];
+      let featuresArr = [];
+      fieldValueIndex.get(key).forEach(index => {
         // 清除字符串型的数字的逗号
         let num = fieldValues[index] && clearNumberComma(fieldValues[index]);
-        total += tonumber(num);
+        valueArr.push(tonumber(num));
+        featuresArr.push(features[index]);
       });
-      yData.push(total);
+      let result = this._processValue(valueArr, statisticFunction, featuresArr);
+      yData.push(result);
     }
     return yData;
+  }
+
+  /**
+   * @function EchartsDataService.prototype._processValue
+   * @private
+   * @description 根据统计方式，对y字段值进行统计。
+   * @param {Array} fieldValues - 待统计的y轴字段值
+   * @param {string|function} statisticFunction - 统计方式
+   * @param {Array} features - 待统计的要素
+   * @returns {Array}  统计后的Ydata
+   */
+  _processValue(fieldValues, statisticFunction, features) {
+    let result;
+    if(typeof (statisticFunction) === 'function') {
+      result = statisticFunction(fieldValues, features);
+    } else {
+      const statisticFunctions = { min, max: statisticsMax, mean, sum, mode, median, variance, standardDeviation, count: fieldValues => fieldValues.length };
+      result = statisticFunctions[statisticFunction] ? statisticFunctions[statisticFunction](fieldValues) : sum(fieldValues);
+    }
+    return result;
   }
 
   /**
@@ -379,13 +500,14 @@ export default class EchartsDataService {
    */
   _getUniqFieldDatas(data, fieldIndex) {
     const fieldValues = this._getFieldDatas(data, fieldIndex);
-    const uniqFieldValues = {};
+    // 使用map而不是obj，是因为当X轴字段值为数字型时，生成对象的key会被转成string，对MD中统计的图表设置交互有影响：交互中的关联字段值不一样
+    const uniqFieldValues = new Map();
     if (fieldValues) {
       fieldValues.forEach((value, index) => {
-        if (!uniqFieldValues[value]) {
-          uniqFieldValues[value] = [index];
+        if (!uniqFieldValues.get(value)) {
+          uniqFieldValues.set(value, [index]);
         } else {
-          uniqFieldValues[value].push(index);
+          uniqFieldValues.get(value).push(index);
         }
       });
     }

@@ -26,6 +26,7 @@ export default {
   // messageTemplate
   warning: {
     unsupportedVideoAddress: 'The video address is illegal',
+    unsupportedPosterAddress: 'The poster address is illegal',
     unavailableVideo: 'This video is temporarily unavailable, please try again later',
     mapNotLoaded: 'The associated map has not been loaded yet, please wait for a second',
     unassociatedMap: 'You need to configure the associated map!',
@@ -264,7 +265,7 @@ export default {
     piecesBusRoute: 'bus route',
     showDetail: 'Expand details',
     busEndTime: 'First and last bus time',
-    relateAdress: 'Click here to see the location of "{keyWord}"',
+    relateAdress: "Click here to see the location of '{keyWord}'",
     // areaResult
     switchTo: 'Switched to'
   },
@@ -307,7 +308,8 @@ export default {
     copy: 'copy',
     location: 'location',
     capture: 'capture',
-    realTime: 'real-time'
+    realTime: 'real-time',
+    errorCoordinate: 'invalid coordinate'
   },
   // layer
   dataFlow: {
@@ -315,5 +317,27 @@ export default {
   },
   animateMarkerlayer: {
     unsupportedData: 'The data is not supported, please reset the data!'
+  },
+  DatePicker: {
+    lang: {
+      months: [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+        'July',
+        'August',
+        'September',
+        'October',
+        'November',
+        'December'
+      ],
+      weekdays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+      monthsShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      weekdaysShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+      weekdaysMin: ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']
+    }
   }
 };

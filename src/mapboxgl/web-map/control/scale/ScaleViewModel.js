@@ -46,7 +46,13 @@ export default class ScaleViewModel extends mapboxgl.Evented {
     const maxWidth = (options && options.maxWidth) || 100;
 
     const y = map._container.clientHeight / 2;
-    const maxMeters = this._getDistance(map.unproject([0, y]), map.unproject([maxWidth, y]));
+    const x = map._container.clientWidth / 2;
+    const left = map.unproject([x, y]);
+    let right = map.unproject([x + maxWidth, y]);
+    if (right.lng === left.lng) {
+      right = map.unproject([x - maxWidth, y]);
+    }
+    const maxMeters = this._getDistance(left, right);
 
     if (options && options.unit === 'imperial') {
       const maxFeet = 3.2808 * maxMeters;

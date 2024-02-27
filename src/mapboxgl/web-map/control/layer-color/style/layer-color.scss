@@ -4,8 +4,8 @@
 @import '../../../../../common/collapse/style/collapse.scss';
 @import '../../../../../common/button/style/button.scss';
 @import '../../../../../common/color-picker/style/color-picker.scss';
-@import '../../../../../common/layer-select/style/layer-select.scss';
 @import '../../../../../common/icon/style/icon.scss';
+@import '../../../../layer-select/style/layer-select.scss';
 
 @include b(layer-color) {
   $layer-color-prefix: &;

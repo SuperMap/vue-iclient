@@ -1,14 +1,14 @@
 <script lang="ts">
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import { Swiper } from 'vue-awesome-swiper';
+import Swiper from './Swiper';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
-import 'swiper/css/swiper.css';
 import { getSlotOptions, filterEmpty } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import { CreateElement } from 'vue';
 import isequal from 'lodash.isequal';
 import debounce from 'lodash.debounce';
 import { addListener, removeListener } from 'resize-detector';
+import 'swiper/swiper-bundle.min.css';
 
 interface swiperOptionsType {
   initialSlide: Number;
@@ -40,7 +40,6 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   __resizeHandler: Function;
   swiper: any;
   isRefresh: boolean = true;
-  childrenLength: number = 0;
   manualUpdateProps: string[] = [
     'speed',
     'loop',
@@ -52,6 +51,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'autoplay',
     'direction'
   ];
+  activeIndexData: number = 0;
 
   // 当 loop 为 true && effect 为 cube, 幻灯片页数等于3会出现重叠。
   loopedSlides: number = 3;
@@ -78,6 +78,14 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   })
   headerName: string;
 
+  get autoplayParameter() {
+    if (typeof this.autoplay === 'object') {
+      return { ...this.autoplay, disableOnInteraction: false };
+    } else {
+      return this.autoplay;
+    }
+  }
+
   get swiperOptions() {
     let options: swiperOptionsType = {
       initialSlide: this.defaultActiveIndex,
@@ -88,7 +96,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       grabCursor: this.grabCursor,
       mousewheel: this.mousewheel,
       keyboard: this.keyboard,
-      autoplay: this.autoplay,
+      autoplay: this.autoplayParameter,
       effect: this.effect,
       observer: true,
       observeParents: true,
@@ -101,12 +109,13 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   @Watch('activeIndex')
-  activeIndexChanged(newIndex: number, oldIndex: number) {
-    if (newIndex > this.childrenLength - 1 || oldIndex > this.childrenLength - 1) {
+  activeIndexChanged(newIndex: number) {
+    const childrenLength = this._getChildrenLength();
+    if (newIndex > childrenLength - 1) {
       console.error('ActiveIndex is greater than the total number of slides');
       return;
     }
-    this._activeIndexChangedHandler(newIndex, oldIndex);
+    this._activeIndexChangedHandler(newIndex || 0);
   }
 
   @Watch('mousewheel')
@@ -122,6 +131,10 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   @Watch('autoresize')
   autoResizeChanged() {
     this.autoResizeHandler();
+  }
+
+  created() {
+    this.activeIndexData = this.defaultActiveIndex || this.activeIndex;
   }
 
   mounted() {
@@ -145,11 +158,17 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     };
     this.$emit('change', changeParameter);
     this.$emit('indexChange', this.swiper.realIndex);
+    this.activeIndexData = this.swiper.realIndex;
   }
 
-  _activeIndexChangedHandler(newIndex: number, oldIndex: number) {
+  _activeIndexChangedHandler(newIndex: number) {
+    const prevActiveIndexData = this.activeIndexData;
+    if (prevActiveIndexData === newIndex) {
+      return;
+    }
+    this.activeIndexData = newIndex;
     if (this.loop) {
-      const changeType = this._getChangeType(newIndex, oldIndex, this.childrenLength);
+      const changeType = this._getChangeType(newIndex, prevActiveIndexData);
       if (['next', 'loopToFirst'].includes(changeType)) {
         this.next();
         return;
@@ -159,10 +178,11 @@ class Slideshow extends Mixins(Theme, BaseCard) {
         return;
       }
     }
-    this.goTo(newIndex, 300);
+    this.goTo(newIndex, this.speed);
   }
 
-  _getChangeType(newIndex, oldIndex, size) {
+  _getChangeType(newIndex, oldIndex) {
+    const childrenLength = this._getChildrenLength();
     const offset = newIndex - oldIndex;
     if (offset === 1) {
       return 'next';
@@ -170,18 +190,19 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     if (offset === -1) {
       return 'prev';
     }
-    if (oldIndex === size - 1 && newIndex === 0) {
+    if (oldIndex === childrenLength - 1 && newIndex === 0) {
       return 'loopToFirst';
     }
-    if (oldIndex === 0 && newIndex === size - 1) {
+    if (oldIndex === 0 && newIndex === childrenLength - 1) {
       return 'loopToLast';
     }
     return 'jump';
   }
 
-  _observerUpdate(swiper) {
-    if (swiper.type === 'childList' && swiper.target === document.body) {
-      this.goTo(this.swiper.realIndex, 0);
+  _observerUpdate(swiper, mutationRecord) {
+    if (mutationRecord.type === 'childList') {
+      this.goTo(this.activeIndexData, 0);
+      this.$emit('childrenlistchange');
     }
   }
 
@@ -194,6 +215,11 @@ class Slideshow extends Mixins(Theme, BaseCard) {
         this.swiper = this.$refs.mySwiper.$swiper;
       });
     });
+  }
+
+  _getChildrenLength() {
+    const children = filterEmpty(this.$slots.default);
+    return children.length;
   }
 
   next(speed?: number) {
@@ -223,7 +249,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   }
 
   watchOptions() {
-    this.manualUpdateProps.map(item => {
+    this.manualUpdateProps.forEach(item => {
       this.$watch(
         item,
         function (newVal, oldVal) {
@@ -261,9 +287,8 @@ class Slideshow extends Mixins(Theme, BaseCard) {
 
   render(h: CreateElement) {
     let slots = [];
-    let children = filterEmpty(this.$slots.default);
-    this.childrenLength = children.length;
-    if (children && this.childrenLength) {
+    const children = filterEmpty(this.$slots.default);
+    if (children && children.length) {
       children.forEach(element => {
         if (getSlotOptions(element).__SM_SLIDESHOW_ITEM) {
           slots.push(element);
@@ -303,18 +328,18 @@ class Slideshow extends Mixins(Theme, BaseCard) {
           [
             this.isRefresh
               ? h(
-                Swiper,
-                {
-                  domProps: { realIndex: this.activeIndex },
-                  props: { options: this.swiperOptions },
-                  on: {
-                    slideChange: this.slideChange,
-                    observerUpdate: this._observerUpdate
+                  Swiper,
+                  {
+                    domProps: { realIndex: this.activeIndex },
+                    props: { options: this.swiperOptions },
+                    on: {
+                      slideChange: this.slideChange,
+                      observerUpdate: this._observerUpdate
+                    },
+                    ref: 'mySwiper'
                   },
-                  ref: 'mySwiper'
-                },
-                slots
-              )
+                  slots
+                )
               : null
           ]
         )

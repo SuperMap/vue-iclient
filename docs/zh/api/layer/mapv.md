@@ -13,7 +13,7 @@
 
 | 参数    | 说明                                                                                                                       | 类型                            | 可选值 | 默认值 |
 | :------ | :------------------------------------------------------------------------------------------------------------------------- | :------------------------------ | :----- | :----- |
-| options | 图层可选参数，参照 [SuperMap iClient API](https://iclient.supermap.io/docs/mapboxgl/mapboxgl.supermap.MapvLayer.html) | object                          | -      | -      |
+| options | 图层可选参数，参照 [SuperMap iClient API](https://iclient.supermap.io/docs/mapboxgl/MapvLayer.html) | object                          | -      | -      |
 | data    | MapV 图层数据集                                                                                                            | [GeoJSON](https://geojson.org/) | -      | -      |
 
 > 支持 [Layer 混入参数](/zh/api/mixin/mixin.md#layer)

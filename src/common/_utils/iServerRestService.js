@@ -1,4 +1,4 @@
-import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
@@ -210,6 +210,50 @@ export default class iServerRestService extends Events {
     }
   }
 
+/**
+   * @function iServerRestService.prototype.getDataFeaturesCount
+   * @description 获取要素总数。
+   * @param {Object} datasetInfo - 数据集参数。
+   * @param {Object} datasetInfo.datasetName - 数据集名。
+   * @param {Object} datasetInfo.dataSourceName - 数据源名。
+   * @param {Object} datasetInfo.dataUrl - 数据服务地址。
+   */
+  getDataFeaturesCount(datasetInfo) {
+    let { datasetName, dataSourceName, dataUrl } = datasetInfo;
+    var sqlParam = new mapboxgl.supermap.GetFeaturesBySQLParameters({
+      queryParameter: {
+        name: datasetName + '@' + dataSourceName
+      },
+      datasetNames: [dataSourceName + ':' + datasetName]
+    });
+
+    return new mapboxgl.supermap.FeatureService(dataUrl).getFeaturesCount(sqlParam).then(function (serviceResult) {
+      return serviceResult.result.totalCount;
+    });
+  }
+
+  /**
+   * @function iServerRestService.prototype.getFeaturesDatasetInfo
+   * @description 获取要素的数据集信息。
+   * @param {Object} datasetInfo - 数据集参数。
+   * @param {Object} datasetInfo.datasetName - 数据集名。
+   * @param {Object} datasetInfo.dataSourceName - 数据源名。
+   * @param {Object} datasetInfo.dataUrl - 数据服务地址。
+   */
+  getFeaturesDatasetInfo(datasetInfo) {
+    let { datasetName, dataSourceName, dataUrl } = datasetInfo;
+    var sqlParam = new mapboxgl.supermap.GetFeaturesBySQLParameters({
+      queryParameter: {
+        name: datasetName + '@' + dataSourceName
+      },
+      datasetNames: [dataSourceName + ':' + datasetName]
+    });
+
+    return new mapboxgl.supermap.FeatureService(dataUrl).getFeaturesDatasetInfo(sqlParam).then(function (serviceResult) {
+      return serviceResult.result[0].fieldInfos;
+    });
+  }
+
   _getMapFeatureBySql(url, queryInfo) {
     let queryBySQLParams, queryBySQLService;
     queryBySQLParams = new SuperMap.QueryBySQLParameters({
@@ -220,7 +264,7 @@ export default class iServerRestService extends Events {
           orderBy: queryInfo.orderBy
         }
       ],
-      queryOption: this.options.hasGeometry ? 'ATTRIBUTEANDGEOMETRY' : 'ATTRIBUTE',
+      queryOption: this.options.hasGeometry === false ? 'ATTRIBUTE' : 'ATTRIBUTEANDGEOMETRY',
       startRecord: this.options.fromIndex,
       expectCount: this.options.toIndex ? (this.options.toIndex - this.options.fromIndex + 1) : queryInfo.maxFeatures
     });
@@ -250,7 +294,8 @@ export default class iServerRestService extends Events {
       datasetNames: queryInfo.datasetNames,
       fromIndex: this.options.fromIndex || 0,
       toIndex: this.options.toIndex || (queryInfo.maxFeatures >= 1000 ? -1 : queryInfo.maxFeatures - 1),
-      maxFeatures: -1
+      maxFeatures: -1,
+      returnFeaturesOnly: this.options.returnFeaturesOnly
     });
     getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
       proxy: this.options.proxy,
@@ -269,7 +314,6 @@ export default class iServerRestService extends Events {
   async _getFeaturesSucceed(results) {
     let features;
     let data;
-
     if (results.result && results.result.recordsets) {
       // 数据来自restmap
       const recordsets = results.result.recordsets[0] || {};
@@ -292,10 +336,21 @@ export default class iServerRestService extends Events {
     } else if (results.result && results.result.features) {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
-      features = this.features.features;
+      features = this.features.features || this.features;
+      let fields = []; let fieldCaptions = []; let fieldTypes = [];
+      if(results.result.datasetInfos) {
+        const fieldInfos = results.result.datasetInfos[0].fieldInfos;
+        fieldInfos.forEach(fieldInfo => {
+          if(fieldInfo.name) {
+            fields.push(fieldInfo.name.toUpperCase());
+            fieldCaptions.push(fieldInfo.caption.toUpperCase());
+            fieldTypes.push(fieldInfo.type);
+          }
+        });
+      }
       if (features && features.length > 0) {
-        data = statisticsFeatures(features);
-        data.totalCount = results.result.totalCount;
+        data = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
+        results.result.totalCount && (data.totalCount = results.result.totalCount);
       } else {
         this.triggerEvent('featureisempty', {
           results
