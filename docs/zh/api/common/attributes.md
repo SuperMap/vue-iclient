@@ -41,6 +41,7 @@
 | showBorder | 是否显示边框 | boolean           | -      | true   |
 | showHeader | 是否显示表头 | boolean           | -      | false  |
 | pagination | 分页配置     | boolean \| object | -      | -      |
+| showRowSelection | 是否显示行选择框  | boolean  | -     | true   |
 
 ### statistics
 
