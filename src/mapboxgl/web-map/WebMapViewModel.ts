@@ -2248,7 +2248,10 @@ export default class WebMapViewModel extends WebMapBase {
       }
       if (styleGroups) {
         for (let i = 0; i < styleGroups.length; i++) {
-          if (styleGroups[i].start <= tartget && tartget < styleGroups[i].end) {
+          const startFlag = styleGroups[i].start <= tartget;
+          const endFlag = tartget < styleGroups[i].end;
+          const lastEndFlag = i === styleGroups.length - 1 && tartget === styleGroups[i].end;
+          if (startFlag && (endFlag || lastEndFlag)) {
             expression.push(row.properties.index, styleGroups[i].color);
             break;
           }
@@ -2257,7 +2260,6 @@ export default class WebMapViewModel extends WebMapBase {
       return true;
     }, this);
     expression.push('rgba(0, 0, 0, 0)');
-
     const source: mapboxglTypes.GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
