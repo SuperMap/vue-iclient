@@ -259,10 +259,10 @@ export default {
         let generateStyle = {};
         switch (style.type) {
           case 'BASIC_POINT':
-            generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+            generateStyle.color = getColorWithOpacity(color, style.fillOpacity);
             break;
           case 'SYMBOL_POINT':
-            generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+            generateStyle.color = getColorWithOpacity(color, style.fillOpacity);
             generateStyle.fontSize = `${radius * 2}px`;
             break;
           case 'IMAGE_POINT':
@@ -273,13 +273,13 @@ export default {
             break;
           case 'SVG_POINT':
             generateStyle['-webkit-mask'] = `url(${style.url})`;
-            generateStyle.backgroundColor = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+            generateStyle.backgroundColor = getColorWithOpacity(color, style.fillOpacity);
             generateStyle['-webkit-mask-size'] = 'contain';
             generateStyle.width = `${(style.radius || radius) * 2}px`;
             generateStyle.height = `${(style.radius || radius) * 2}px`;
             break;
           default:
-            generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+            generateStyle.color = getColorWithOpacity(color, style.fillOpacity);
             break;
         }
         return generateStyle;
