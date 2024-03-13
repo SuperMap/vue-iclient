@@ -791,6 +791,7 @@ export default abstract class WebMapBase extends Events {
       const customStyle = customSettings[name];
       if (typeof customStyle === 'object') {
         itemStyle = Object.assign(itemStyle, customStyle);
+        color = itemStyle.fillColor || itemStyle.strokeColor;
       } else {
         if (typeof customStyle === 'string') {
           color = customSettings[name];
