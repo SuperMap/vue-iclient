@@ -126,8 +126,8 @@ const commonMap = {
   },
   moveLayer: () => jest.fn(),
   overlayLayersManager: {},
-  on: () => { },
-  fire: () => { },
+  on: () => {},
+  fire: () => {},
   setLayoutProperty: () => jest.fn(),
   addStyle: () => jest.fn(),
   remove: () => jest.fn(),
@@ -136,7 +136,7 @@ const commonMap = {
   loadImage: function (src, callback) {
     callback(null, { width: 15 });
   },
-  addImage: function () { },
+  addImage: function () {},
   hasImage: function () {
     return false;
   }
@@ -216,27 +216,27 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile,
       'https://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326/style.json':
-      {
-        version: 8,
-        sources: {
-          'raster-tiles': {
-            type: 'raster',
-            tiles: [
-              'http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
-            ],
-            tileSize: 256
-          }
-        },
-        layers: [
-          {
-            id: 'simple-tiles',
-            type: 'raster',
-            source: 'raster-tiles',
-            minzoom: 0,
-            maxzoom: 22
-          }
-        ]
-      }
+        {
+          version: 8,
+          sources: {
+            'raster-tiles': {
+              type: 'raster',
+              tiles: [
+                'http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
+              ],
+              tileSize: 256
+            }
+          },
+          layers: [
+            {
+              id: 'simple-tiles',
+              type: 'raster',
+              source: 'raster-tiles',
+              minzoom: 0,
+              maxzoom: 22
+            }
+          ]
+        }
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(
@@ -339,7 +339,7 @@ describe('WebMapViewModel.spec', () => {
         minZoom: 22,
         maxZoom: 0
       };
-      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
+      const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
       new WebMapViewModel(uniqueLayer_point, { ...commonOption }, mapOptions, { ...commonMap });
       await flushPromises();
       expect(errorSpy.mock.calls).toEqual([]);
@@ -359,22 +359,24 @@ describe('WebMapViewModel.spec', () => {
     });
   });
 
-  describe("multi-coordinate", () => {
-    const projection = 'PROJCS[\"CGCS2000 / 3-degree Gauss-Kruger CM 117E\", \r\n  GEOGCS[\"China Geodetic Coordinate System 2000\", \r\n    DATUM[\"China 2000\", \r\n      SPHEROID[\"CGCS2000\", 6378137.0, 298.257222101, AUTHORITY[\"EPSG\",\"1024\"]], \r\n      AUTHORITY[\"EPSG\",\"1043\"]], \r\n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n    UNIT[\"degree\", 0.017453292519943295], \r\n    AXIS[\"lat\", NORTH], \r\n    AXIS[\"lon\", EAST], \r\n    AUTHORITY[\"EPSG\",\"4490\"]], \r\n  PROJECTION[\"Transverse_Mercator\", AUTHORITY[\"EPSG\",\"9807\"]], \r\n  PARAMETER[\"central_meridian\", 117.0], \r\n  PARAMETER[\"latitude_of_origin\", 0.0], \r\n  PARAMETER[\"scale_factor\", 1.0], \r\n  PARAMETER[\"false_easting\", 500000.0], \r\n  PARAMETER[\"false_northing\", 0.0], \r\n  UNIT[\"m\", 1.0], \r\n  AXIS[\"Northing\", NORTH], \r\n  AXIS[\"Easting\", EAST], \r\n  AUTHORITY[\"EPSG\",\"4548\"]]'
-    const wkt = 'PROJCS["China_2000_3_DEGREE_GK_Zone_39N",GEOGCS["GCS_China_2000",DATUM["D_China_2000",SPHEROID["CGCS2000",6378137.0,298.257222101,AUTHORITY["EPSG","7044"]]],PRIMEM["Greenwich",0.0,AUTHORITY["EPSG","8901"]],UNIT["DEGREE",0.017453292519943295],AUTHORITY["EPSG","4490"]],PROJECTION["Transverse_Mercator",AUTHORITY["EPSG","9807"]],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",117.0],PARAMETER["Latitude_Of_Origin",0.0],PARAMETER["Scale_Factor",1.0],UNIT["METER",1.0],AUTHORITY["EPSG","4548"]]';
+  describe('multi-coordinate', () => {
+    const projection =
+      'PROJCS["CGCS2000 / 3-degree Gauss-Kruger CM 117E", \r\n  GEOGCS["China Geodetic Coordinate System 2000", \r\n    DATUM["China 2000", \r\n      SPHEROID["CGCS2000", 6378137.0, 298.257222101, AUTHORITY["EPSG","1024"]], \r\n      AUTHORITY["EPSG","1043"]], \r\n    PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], \r\n    UNIT["degree", 0.017453292519943295], \r\n    AXIS["lat", NORTH], \r\n    AXIS["lon", EAST], \r\n    AUTHORITY["EPSG","4490"]], \r\n  PROJECTION["Transverse_Mercator", AUTHORITY["EPSG","9807"]], \r\n  PARAMETER["central_meridian", 117.0], \r\n  PARAMETER["latitude_of_origin", 0.0], \r\n  PARAMETER["scale_factor", 1.0], \r\n  PARAMETER["false_easting", 500000.0], \r\n  PARAMETER["false_northing", 0.0], \r\n  UNIT["m", 1.0], \r\n  AXIS["Northing", NORTH], \r\n  AXIS["Easting", EAST], \r\n  AUTHORITY["EPSG","4548"]]';
+    const wkt =
+      'PROJCS["China_2000_3_DEGREE_GK_Zone_39N",GEOGCS["GCS_China_2000",DATUM["D_China_2000",SPHEROID["CGCS2000",6378137.0,298.257222101,AUTHORITY["EPSG","7044"]]],PRIMEM["Greenwich",0.0,AUTHORITY["EPSG","8901"]],UNIT["DEGREE",0.017453292519943295],AUTHORITY["EPSG","4490"]],PROJECTION["Transverse_Mercator",AUTHORITY["EPSG","9807"]],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",117.0],PARAMETER["Latitude_Of_Origin",0.0],PARAMETER["Scale_Factor",1.0],UNIT["METER",1.0],AUTHORITY["EPSG","4548"]]';
     const commonResource = {
       'http://fake/iserver/services/map-4548/rest/maps/ChinaqxAlberts_4548%40fl/prjCoordSys.wkt': wkt,
       'http://fake/iserver/services/map-4548/rest/maps/ChinaqxAlberts_4548%40fl.json': mapJson
     };
     const baseLayer = {
-      "baseLayer": {
-        "dataSource": {
-          "type": "EXTERNAL",
-          "url": "http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new"
+      baseLayer: {
+        dataSource: {
+          type: 'EXTERNAL',
+          url: 'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new'
         },
-        "visible": true,
-        "name": "ChinaqxAlberts_4548@fl",
-        "layerType": "MAPBOXSTYLE"
+        visible: true,
+        name: 'ChinaqxAlberts_4548@fl',
+        layerType: 'MAPBOXSTYLE'
       }
     };
     it('layerType is MAPBOXSTYLE and webInfo projection is not wkt and indexbounds is exist', async done => {
@@ -382,15 +384,9 @@ describe('WebMapViewModel.spec', () => {
         ...commonResource,
         'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': {
           ...styleJson,
-          "metadata": {
-            "indexbounds": [
-              345754.3017317925,
-              2500241.087997996,
-              3374092.172217019,
-              5528578.958483222
-            ]
+          metadata: {
+            indexbounds: [345754.3017317925, 2500241.087997996, 3374092.172217019, 5528578.958483222]
           }
-
         }
       };
       mockFetch(fetchResource);
@@ -400,7 +396,7 @@ describe('WebMapViewModel.spec', () => {
       });
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
-      await flushPromises()
+      await flushPromises();
       const callback = function (data) {
         console.log(data);
         expect(data.layers.length).toBe(id.layers.length);
@@ -413,7 +409,8 @@ describe('WebMapViewModel.spec', () => {
     it('layerType is MAPBOXSTYLE and webInfo projection is wkt and indexbounds is not exist', async done => {
       const fetchResource = {
         ...commonResource,
-        'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': styleJson
+        'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json':
+          styleJson
       };
       mockFetch(fetchResource);
       const get = jest.spyOn(CRS, 'get');
@@ -422,7 +419,7 @@ describe('WebMapViewModel.spec', () => {
       });
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
-      await flushPromises()
+      await flushPromises();
       const callback = function (data) {
         expect(data.layers.length).toBe(id.layers.length);
         expect(viewModel.layerAdded).toBe(1);
@@ -439,7 +436,7 @@ describe('WebMapViewModel.spec', () => {
         return '';
       });
       const viewModel = new WebMapViewModel(id, { ...commonOption });
-      await flushPromises()
+      await flushPromises();
       done();
       const callback = function (data) {
         expect(data.layers.length).toBe(id.layers.length);
@@ -447,8 +444,7 @@ describe('WebMapViewModel.spec', () => {
       };
       viewModel.on({ addlayerssucceeded: callback });
     });
-
-  })
+  });
 
   it('layerType is VECTOR and multi style points', async done => {
     const fetchResource = {
@@ -562,6 +558,316 @@ describe('WebMapViewModel.spec', () => {
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('add rangeLayer last end === fieldValue', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/1171594968/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_CSV
+    };
+    mockFetch(fetchResource);
+    const id = rangeLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
+    const mockFun = jest.spyOn(viewModel, '_addOverlayToMap');
+    viewModel.getRangeStyleGroup = () => {
+      return [
+        {
+          style: {
+            strokeWidth: 1,
+            fillColor: '#ffc6c4',
+            fillOpacity: 0.9,
+            lineDash: 'solid',
+            strokeColor: '#ffffff',
+            type: 'POLYGON',
+            strokeOpacity: 1
+          },
+          color: '#ffc6c4',
+          start: 20000000000.98,
+          end: 333333350000000000
+        },
+        {
+          style: {
+            strokeWidth: 1,
+            fillColor: '#f4a3a8',
+            fillOpacity: 0.9,
+            lineDash: 'solid',
+            strokeColor: '#ffffff',
+            type: 'POLYGON',
+            strokeOpacity: 1
+          },
+          color: '#f4a3a8',
+          start: 333333350000000000,
+          end: 666666680000000000
+        },
+        {
+          style: {
+            strokeWidth: 1,
+            fillColor: '#e38191',
+            fillOpacity: 0.9,
+            lineDash: 'solid',
+            strokeColor: '#ffffff',
+            type: 'POLYGON',
+            strokeOpacity: 1
+          },
+          color: '#e38191',
+          start: 666666680000000000,
+          end: 1000000010000000000
+        },
+        {
+          style: {
+            strokeWidth: 1,
+            fillColor: '#cc607d',
+            fillOpacity: 0.9,
+            lineDash: 'solid',
+            strokeColor: '#ffffff',
+            type: 'POLYGON',
+            strokeOpacity: 1
+          },
+          color: '#cc607d',
+          start: 1000000010000000000,
+          end: 1333333340000000000
+        },
+        {
+          style: {
+            strokeWidth: 1,
+            fillColor: '#ad466c',
+            fillOpacity: 0.9,
+            lineDash: 'solid',
+            strokeColor: '#ffffff',
+            type: 'POLYGON',
+            strokeOpacity: 1
+          },
+          color: '#ad466c',
+          start: 1333333340000000000,
+          end: 1666666670000000000
+        },
+        {
+          style: {
+            strokeWidth: 1,
+            fillColor: '#8b3058',
+            fillOpacity: 0.9,
+            lineDash: 'solid',
+            strokeColor: '#ffffff',
+            type: 'POLYGON',
+            strokeOpacity: 1
+          },
+          color: '#8b3058',
+          start: 1666666670000000000,
+          end: 2000000000000000000
+        }
+      ];
+    };
+    const layerInfo = {
+      layerType: 'RANGE',
+      visible: 'visible',
+      themeSetting: {
+        themeField: 'TAX',
+        customSettings: {},
+        segmentMethod: 'offset',
+        segmentCount: 6,
+        colors: ['#ffc6c4', '#f4a3a8', '#e38191', '#cc607d', '#ad466c', '#8b3058', '#672044']
+      },
+      name: 'DataSource:DEMARCACION_TERRITORIAL_Tax',
+      featureType: 'POLYGON',
+      style: {
+        strokeWidth: 1,
+        fillColor: '#8b3058',
+        fillOpacity: 0.9,
+        lineDash: 'solid',
+        strokeColor: '#ffffff',
+        type: 'POLYGON',
+        strokeOpacity: 1
+      },
+      projection: 'EPSG:4326',
+      enableFields: ['TAX'],
+      dataSource: {
+        type: 'REST_DATA',
+        url: 'http://test:8090/iserver/services/data-JSON_test/rest/data',
+        dataSourceName: 'DataSource:DEMARCACION_TERRITORIAL_Tax'
+      },
+      layerID: 'DataSource:DEMARCACION_TERRITORIAL_Tax'
+    };
+    const features = [
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.0E18',
+          index: '0'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 1
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.00000000000098E12',
+          index: '1'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 2
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '2'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 3
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '3'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 4
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '4'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 5
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '5'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 6
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '6'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 7
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '7'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 8
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '8'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 9
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '9'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 10
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '10'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 11
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '11'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 12
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '12'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 13
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '13'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 14
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '14'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 15
+      },
+      {
+        type: 'Feature',
+        properties: {
+          TAX: '2.000000000098E10',
+          index: '15'
+        },
+        geometry: {
+          type: 'MultiPolygon'
+        },
+        id: 16
+      }
+    ];
+    viewModel._createRangeLayer(layerInfo, features);
+    expect(mockFun.mock.calls[0][3].style['fill-color'].length).toEqual(35);
+    done();
   });
 
   it('add heatLayer', done => {
