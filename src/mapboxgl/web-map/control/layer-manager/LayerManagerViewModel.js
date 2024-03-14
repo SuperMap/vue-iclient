@@ -101,15 +101,39 @@ class LayerManageViewModel extends mapboxgl.Evented {
     const layerInfos = [];
     const { layers = [], sources = {} } = style || {};
     layers.forEach(layer => {
-      const sourceId = layer.source;
       const sourceData = sources[layer.source];
-      if (sourceId && sourceData) {
-        this.map.addSource(sourceId, sourceData);
-        this.map.addLayer(layer);
-        layerInfos.push({ sourceId, layerId: layer.id });
+      const sourceId = layer.source;
+      const newSourceId = this.generateUniqueId('source', sourceId, 0);
+      if (newSourceId && sourceData) {
+        this.map.addSource(newSourceId, sourceData);
       }
+      const newLayerId = this.generateUniqueId('layer', layer.id, 0);
+      const newLayer = {
+        ...layer,
+        id: newLayerId,
+        source: newSourceId
+      };
+      this.map.addLayer(newLayer);
+      layerInfos.push({ sourceId: newSourceId, layerId: newLayer.id });
     });
     this.cacheIServerMaps[nodeKey] = layerInfos;
+  }
+
+  generateUniqueId(type, newId, index) {
+    const isSource = type === 'source';
+    const method = isSource ? 'getSource' : 'getLayer';
+    if (this.map[method](newId)) {
+      index++;
+      // 判断是否带有-index后缀
+      if (newId.match(/-\d+/gi)) {
+        newId = newId.replace(/\d+/gi, index);
+      } else {
+        newId = `${newId}-${index}`;
+      }
+      return this.generateUniqueId(type, newId, index);
+    } else {
+      return newId;
+    }
   }
 
   removeLayer(nodeKey) {
