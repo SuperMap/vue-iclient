@@ -14,6 +14,18 @@ describe('LayerManagerViewModel', () => {
         return {
           epsgCode: 'EPSG:4326'
         };
+      },
+      getSource: (id) => {
+        if (id === 'iserver-tiles') {
+          return true;
+        }
+        return false;
+      },
+      getLayer: (id) => {
+        if (id === 'simple-tiles') {
+          return true;
+        }
+        return false;
       }
     };
   });
@@ -56,7 +68,7 @@ describe('LayerManagerViewModel', () => {
     };
     expect(viewModel.cacheIServerMaps[nodeKey]).toBeUndefined();
     viewModel.addMapStyle(style, nodeKey);
-    expect(viewModel.cacheIServerMaps[nodeKey]).toEqual([{ layerId: 'simple-tiles', sourceId: 'iserver-tiles' }]);
+    expect(viewModel.cacheIServerMaps[nodeKey]).toEqual([{ layerId: 'simple-tiles-1', sourceId: 'iserver-tiles-1' }]);
     expect(viewModel.map.addLayer).toHaveBeenCalledTimes(1);
     viewModel.addMapStyle(style, nodeKey);
     expect(viewModel.map.addLayer).toHaveBeenCalledTimes(1);
@@ -65,7 +77,10 @@ describe('LayerManagerViewModel', () => {
     viewModel.addMapStyle({}, nodeKey);
     expect(viewModel.cacheIServerMaps[nodeKey]).toEqual([]);
   });
-
+  it('generateUniqueId', () => {
+    const res = viewModel.generateUniqueId('source', 'iserver-tiles', 0);
+    expect(res).toBe('iserver-tiles-1');
+  });
   it('addLayer and remove', () => {
     let nodeKey = 'key1';
     const data = { nodeKey, mapId: 123, serviceUrl: 'http://fakeservice' };
