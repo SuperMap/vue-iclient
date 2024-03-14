@@ -50,6 +50,9 @@
       $selected: &;
       background-color: $selected-color;
     }
+    &-select, &-addon {
+      border-color: $border-color-secondary;
+    }
     &-select li {
       padding: 0 0 0 16px;
       &:not(#{$panel}-select-option-selected):hover{
