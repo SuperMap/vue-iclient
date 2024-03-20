@@ -116,7 +116,7 @@ export function setDatePickerMonthLocale(i18n) {
       if (language === 'zh') {
         language = language + '-cn';
       }
-      moment.defineLocale(language, datePickerConfig);
+      moment.updateLocale(language, datePickerConfig);
     }
   }
 }
