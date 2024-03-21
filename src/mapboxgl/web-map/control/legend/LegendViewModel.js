@@ -10,11 +10,13 @@ class LegendViewModel extends mapboxgl.Evented {
   constructor(webmap) {
     super(webmap);
     this.webmap = webmap;
-    this.sourceListModel = this.webmap ? this.webmap.getSourceListModel : {};
+    this.legendInfo = this.webmap.getLegendInfo();
   }
 
   getStyle(layerName) {
-    return this.sourceListModel && this.sourceListModel.getLegendStyle(layerName);
+    return this.legendInfo.filter((info) => {
+      return info.layerId === layerName;
+    });
   }
 }
 export default LegendViewModel;
