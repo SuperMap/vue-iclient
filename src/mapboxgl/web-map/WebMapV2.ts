@@ -2219,6 +2219,7 @@
        this._rectifyLayersOrder();
        this.triggerEvent('addlayerssucceeded', {
          map: this.map,
+         layers: this._appreciableLayers,
          mapparams: this.mapParams,
          sourceListModel: this._sourceListModel
        });

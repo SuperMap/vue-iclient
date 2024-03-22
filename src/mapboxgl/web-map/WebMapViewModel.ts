@@ -132,6 +132,7 @@ export default class WebMapViewModel extends Events {
     }
   ) {
     super();
+    this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
     if (typeof id === 'string' || typeof id === 'number') {
       this.mapId = id;
     } else if (id !== null && typeof id === 'object') {
@@ -172,7 +173,7 @@ export default class WebMapViewModel extends Events {
   public resize(keepBounds = false): void {
     this.map && this.map.resize();
     // @ts-ignore
-    this._handler.echartsLayerResize && this._handler.echartsLayerResize();
+    this._handler && this._handler.echartsLayerResize && this._handler.echartsLayerResize();
     const mapContainerStyle = window.getComputedStyle(document.getElementById(this.target));
     if (keepBounds && this.map && this.bounds && mapContainerStyle) {
       const zoom = this._getResizedZoom(this.bounds, mapContainerStyle);
@@ -392,7 +393,7 @@ export default class WebMapViewModel extends Events {
       withCredentials: this.withCredentials,
       target: this.target,
       mapInfo
-    }, this.mapOptions, this.map, this.layerFilter);
+    });
     this._registerWebMapV2Events(webMapHandler);
     return webMapHandler;
   }
