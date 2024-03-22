@@ -68,8 +68,6 @@ interface mapOptions {
   crs: string;
 }
 
-type layerType = 'POINT' | 'LINE' | 'POLYGON';
-
 export default class WebMapViewModel extends Events {
   map: mapboxglTypes.Map;
 
@@ -79,15 +77,11 @@ export default class WebMapViewModel extends Events {
 
   renderWorldCopies: boolean;
 
-  bearing: number;
-
-  pitch: number;
-
-  rasterTileSize: number;
-
   proxy: string | boolean;
 
   mapOptions: any;
+
+  options: any;
 
   layerFilter: Function;
 
@@ -117,9 +111,6 @@ export default class WebMapViewModel extends Events {
 
   private _cacheLayerId: Array<string> = [];
 
-  private _layerTimerList: Array<any> = [];
-
-  // 可感知图层集合
   private _appreciableLayers: Array<any> = [];
 
   private _handler: Object;
@@ -150,20 +141,14 @@ export default class WebMapViewModel extends Events {
       mapOptions.center = [0, 0];
       mapOptions.zoom = 0;
     }
-    if (this.centerValid(mapOptions.center)) {
-      this.center = mapOptions.center;
-    }
-    this.zoom = mapOptions.zoom;
     this.bounds = mapOptions.bounds;
-    this.bearing = mapOptions.bearing;
-    this.pitch = mapOptions.pitch;
     this.target = options.target || 'map';
     this.renderWorldCopies = mapOptions.renderWorldCopies;
-    this.rasterTileSize = mapOptions.rasterTileSize || 256;
     this.layerFilter = layerFilter;
     this._appreciableLayers = [];
     this.webMapService = new WebMapService(id, options);
     this.mapOptions = mapOptions;
+    this.options = options;
     this.eventTypes = [
       'getmapinfofailed',
       'crsnotsupport',
@@ -276,7 +261,8 @@ export default class WebMapViewModel extends Events {
       Object.keys(sources).forEach(sourceId => {
         // @ts-ignore
         if (sources[sourceId].type === 'raster' && sources[sourceId].rasterSource === 'iserver') {
-          // this._updateRasterSource(sourceId, { tileSize });
+          // @ts-ignore
+          this._handler._updateRasterSource && this._handler._updateRasterSource(sourceId, { tileSize });
         }
       });
     }
@@ -406,7 +392,7 @@ export default class WebMapViewModel extends Events {
       withCredentials: this.withCredentials,
       target: this.target,
       mapInfo
-    });
+    }, this.mapOptions, this.map, this.layerFilter);
     this._registerWebMapV2Events(webMapHandler);
     return webMapHandler;
   }
@@ -564,15 +550,7 @@ export default class WebMapViewModel extends Events {
       this.map.remove();
       this.map = null;
       this._sourceListModel = null;
-      this.center = null;
-      this.zoom = null;
       this._appreciableLayers = [];
-    }
-    if (this._layerTimerList.length) {
-      this._layerTimerList.forEach(timer => {
-        clearInterval(timer);
-      });
-      this._layerTimerList = [];
     }
   }
 
