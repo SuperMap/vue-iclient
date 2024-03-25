@@ -98,6 +98,7 @@
    private _sourceListModel: SourceListModel;
  
    private _legendList: any;
+
    private _handleDataflowFeaturesCallback: Function;
  
    private _initDataflowLayerCallback: Function;
@@ -109,7 +110,7 @@
    private _layerTimerList: Array<any> = [];
  
    private checkSameLayer: boolean;
-   // 可感知图层集合
+
    private _appreciableLayers: Array<any> = [];
  
    private _mapInfo: Object;
@@ -127,8 +128,6 @@
      super(id, options, mapOptions);
      if (typeof id === 'string' || typeof id === 'number') {
        this.mapId = id;
-     } else if (id !== null && typeof id === 'object') {
-       this.webMapInfo = id;
      }
      if (!this.mapId && !mapOptions.center && !mapOptions.zoom) {
        mapOptions.center = [0, 0];
@@ -152,10 +151,6 @@
      }
      this._taskID = new Date();
      this._getMapInfo(this._mapInfo, this._taskID);
-   }
- 
-   public getAppreciableLayers() {
-     return this._appreciableLayers;
    }
 
    public getLegendInfo() {
@@ -2692,9 +2687,7 @@
    
    cleanWebMap() {
      if (this.map) {
-       this.triggerEvent('beforeremovemap', {});
        this.stopCanvg();
-       this.map.remove();
        this.map = null;
        this._legendList = [];
        this._sourceListModel = null;

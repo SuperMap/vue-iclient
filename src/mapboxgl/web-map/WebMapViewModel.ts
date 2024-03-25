@@ -103,8 +103,6 @@ export default class WebMapViewModel extends Events {
 
   baseProjection: string;
 
-  _version: string;
-
   protected _taskID: Date;
 
   private _sourceListModel: SourceListModel;
@@ -149,7 +147,6 @@ export default class WebMapViewModel extends Events {
     this._appreciableLayers = [];
     this.webMapService = new WebMapService(id, options);
     this.mapOptions = mapOptions;
-    this.options = options;
     this.eventTypes = [
       'getmapinfofailed',
       'crsnotsupport',
@@ -393,8 +390,8 @@ export default class WebMapViewModel extends Events {
       withCredentials: this.withCredentials,
       target: this.target,
       mapInfo
-    });
-    this._registerWebMapV2Events(webMapHandler);
+    }, this.mapOptions, this.map, this.layerFilter);
+    this._registerV2Events(webMapHandler);
     return webMapHandler;
   }
 
@@ -449,8 +446,8 @@ export default class WebMapViewModel extends Events {
       server: this.serverUrl,
       withCredentials: this.withCredentials,
       target: this.target
-    });
-    this._registerWebMapEvents(webMapHandler);
+    }, this.mapOptions);
+    this._registerV3Events(webMapHandler);
     webMapHandler.createWebMap({
       ...mapInfo,
       layers: typeof this.layerFilter === 'function' ? mapInfo.layers.filter(this.layerFilter) : mapInfo.layers
@@ -458,7 +455,7 @@ export default class WebMapViewModel extends Events {
     return webMapHandler;
   }
 
-  _registerWebMapV2Events(webMapHandler): void {
+  _registerV2Events(webMapHandler): void {
     if (!webMapHandler) {
       return;
     }
@@ -484,7 +481,7 @@ export default class WebMapViewModel extends Events {
     });
   }
 
-  _registerWebMapEvents(webMapHandler): void {
+  _registerV3Events(webMapHandler): void {
     if (!webMapHandler) {
       return;
     }
@@ -513,7 +510,6 @@ export default class WebMapViewModel extends Events {
   }
 
   _getMapInfo(mapInfo, _taskID?) {
-    this._version = mapInfo.version;
     this._handler = +mapInfo.version.split('.')[0] === 3 ? this._createWebMapV3(mapInfo) : this._createWebMapV2(mapInfo);
   }
 
@@ -545,13 +541,20 @@ export default class WebMapViewModel extends Events {
   }
 
   cleanWebMap() {
+    if (this._handler) {
+       // @ts-ignore
+       this._handler.cleanWebMap && this._handler.cleanWebMap();
+    }
     if (this.map) {
       this.triggerEvent('beforeremovemap', {});
-      // this.stopCanvg();
       this.map.remove();
       this.map = null;
       this._sourceListModel = null;
       this._appreciableLayers = [];
+      if (this.mapOptions) {
+        this.mapOptions.zoom = null;
+        this.mapOptions.center = null;
+      }
     }
   }
 
@@ -570,7 +573,5 @@ export default class WebMapViewModel extends Events {
   public updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
     // @ts-ignore
     this._handler.updateOverlayLayer && this._handler.updateOverlayLayer(layerInfo, features, mergeByField);
-
-    
   }
 }
