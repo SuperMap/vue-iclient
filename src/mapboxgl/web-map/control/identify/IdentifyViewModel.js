@@ -83,12 +83,12 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
     }
     let layerStyle = this._setDefaultPaintWidth(this.map, type, id, defaultPaintTypes[type], this.layerStyle);
     if (type === 'circle' || type === 'line' || type === 'fill') {
-      layerStyle = layerStyle[type];
+      const _layerStyle = layerStyle[type];
       let highlightLayer = Object.assign({}, layer, {
         id: id + '-identify-SM-highlighted',
         type,
-        paint: (layerStyle && layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
-        layout: (layerStyle && layerStyle.layout) || { visibility: 'visible' },
+        paint: (_layerStyle && _layerStyle.paint) || Object.assign({}, paint, mbglStyle[type]),
+        layout: (_layerStyle && _layerStyle.layout) || { visibility: 'visible' },
         filter
       });
       this.map.addLayer(highlightLayer);
