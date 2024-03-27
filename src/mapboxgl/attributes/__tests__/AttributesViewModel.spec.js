@@ -1,3 +1,4 @@
+import flushPromises from 'flush-promises';
 import AttributesViewModel from '../AttributesViewModel.ts';
 
 describe('AttributesViewModel.ts', () => {
@@ -109,9 +110,43 @@ describe('AttributesViewModel.ts', () => {
       }
     }
   };
-
+  const features = [
+    {
+      type: 'Feature',
+      geometry: {
+        coordinates: [1, 1],
+        type: 'Point'
+      },
+      properties: {
+        SmID: 0,
+        index: 0,
+        站台: '满洲里2',
+        省份: '内蒙古2'
+      }
+    },
+    {
+      type: 'Feature',
+      geometry: {
+        coordinates: [1, 1],
+        type: 'Point'
+      },
+      properties: {
+        SmID: 0,
+        index: 0,
+        站台: '满洲里3',
+        省份: '内蒙古3'
+      }
+    }
+  ];
   it('setLayerName', () => {
-    const viewModel = new AttributesViewModel(options);
+    const map = {
+      getSource: () => ({
+        getData: () => ({
+          features
+        })
+      })
+    };
+    const viewModel = new AttributesViewModel({ map, ...options });
     const layerName = 'UTLayer';
     viewModel.setLayerName(layerName);
     expect(viewModel.layerName).toBe('UTLayer');
@@ -131,25 +166,35 @@ describe('AttributesViewModel.ts', () => {
       type: 'geoJSON',
       geoJSON: {
         type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              coordinates: [1, 1],
-              type: 'Point'
-            },
-            properties: {
-              SmID: 0,
-              index: 0,
-              站台: '满洲里',
-              省份: '内蒙古3'
-            }
-          }
-        ]
+        features
       }
     };
     viewModel.setDataset(dataset);
     expect(viewModel.dataset).toBe(dataset);
+  });
+  it('set totalCount', async done => {
+    const dataset = {
+      type: 'geoJSON',
+      geoJSON: {
+        type: 'FeatureCollection',
+        features
+      }
+    };
+    const nextOption = {
+      ...options,
+      totalCount: 1,
+      associateWithMap: {
+        enabled: false,
+        centerToFeature: false,
+        zoomToFeature: false
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    viewModel.setDataset(dataset);
+    await flushPromises();
+    expect(viewModel.totalCount).toBe(2);
+    expect(viewModel.dataset).toBe(dataset);
+    done();
   });
 
   it('setLazy', async () => {

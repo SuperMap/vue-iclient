@@ -301,7 +301,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         return;
       }
       if (attributesTitle && this.currentTitle && attributesTitle !== this.currentTitle) {
-        this.removed();
+        this.removeResources();
       }
       for (const key in this.featureMap) {
         features.push(this.featureMap[key]);
@@ -444,7 +444,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       if (this.useDataset()) {
         let datas = await this._getFeaturesFromDataset();
         features = datas.features;
-        !this.totalCount && (this.totalCount = datas.totalCount);
+        this.totalCount = datas.totalCount;
         if (this.canLazyLoad()) {
           if (this.dataset.url !== this.prevDatasetUrl) {
             let arr = this.dataset.dataName[0].split(':');
@@ -452,7 +452,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
               datasetName: arr[1],
               dataSourceName: arr[0],
               dataUrl: this.dataset.url
-            }
+            };
             // @ts-ignore
             this.totalCount = await new iServerRestService(this.dataset.url).getDataFeaturesCount(config);
             // @ts-ignore
@@ -642,10 +642,14 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   }
 
   removed() {
+    this.removeResources();
+    this.map = null;
+  }
+
+  removeResources() {
     this.map.getLayer(this.layerId) && this.map.removeLayer(this.layerId);
     this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
     this.map.getSource(this.sourceId) && this.map.removeSource(this.sourceId);
-    this.map = null;
   }
 }
 export default FeatureTableViewModel;
