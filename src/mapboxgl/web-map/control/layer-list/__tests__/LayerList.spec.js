@@ -56,7 +56,7 @@ describe('LayerList.vue', () => {
     await mapWrapperLoaded(mapWrapper);
     await flushPromises();
     expect(callback.mock.called).toBeTruthy;
-    let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleLayerGroupVisibility');
+    let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
     wrapper.findAll('.sm-components-icon-hidden').at(0).trigger('click');
     expect(spylayerVisibility).toHaveBeenCalledTimes(1);
     wrapper.vm.$nextTick();
@@ -127,7 +127,7 @@ describe('LayerList.vue', () => {
         mapTarget: 'map'
       }
     });
-    let spyProperty = jest.spyOn(wrapper.vm.viewModel, 'changeLayerGroupVisibility');
+    let spyProperty = jest.spyOn(wrapper.vm.viewModel, 'changeItemVisible');
     const callback = jest.fn();
     wrapper.vm.$on('loaded', callback);
     await mapWrapperLoaded(mapWrapper);

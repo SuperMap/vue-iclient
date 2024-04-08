@@ -444,7 +444,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       if (this.useDataset()) {
         let datas = await this._getFeaturesFromDataset();
         features = datas.features;
-        !this.totalCount && (this.totalCount = datas.totalCount);
+        this.totalCount = datas.totalCount;
         if (this.canLazyLoad()) {
           if (this.dataset.url !== this.prevDatasetUrl) {
             let arr = this.dataset.dataName[0].split(':');

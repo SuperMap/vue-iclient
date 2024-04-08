@@ -1,14 +1,16 @@
 import SourceModel from 'vue-iclient/src/mapboxgl/web-map/SourceModel';
 import LayerModel from 'vue-iclient/src/mapboxgl/web-map/LayerModel';
+import GroupUtil from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
 
-class SourceListModel {
+class SourceListModel extends GroupUtil {
   constructor(options) {
+    super();
     this.map = options.map;
     this.style = this.map.getStyle();
     this.layers = this.map.getStyle().layers;
     this.overlayLayers = this.map.overlayLayersManager;
     this.detailLayers = null;
-    this.sourceList = {};
+    this.sourceList = [];
     this.sourceNames = [];
     this._initLayers();
     this._initSource();
@@ -16,10 +18,10 @@ class SourceListModel {
   }
 
   getSourceList() {
-    let sourceList = {};
-    for (let key in this.sourceList) {
-      if (key && this.excludeSource(key)) {
-        sourceList[key] = this.sourceList[key];
+    let sourceList = [];
+    for (let item of this.sourceList) {
+      if (item && this.excludeSource(item.id)) {
+        sourceList.push(item);
       }
     }
     return sourceList;
@@ -91,15 +93,16 @@ class SourceListModel {
   _initSource() {
     this.detailLayers &&
       this.detailLayers.forEach(layer => {
-        if (!this.sourceList[layer.source]) {
-          const source = this.map.getSource(layer.source);
-          this.sourceList[layer.source] = new SourceModel({
-            source: layer.source,
-            type: source && source.type
+        let matchItem = this.sourceList.find(item => item.id === layer.source);
+        if (!matchItem) {
+          const sourceListItem = new SourceModel({
+            source: layer.source
           });
+          this.sourceList.unshift(sourceListItem);
           this.sourceNames.push(layer.source);
+          matchItem = sourceListItem;
         }
-        this.sourceList[layer.source].addLayer(new LayerModel(layer), layer.sourceLayer);
+        matchItem.addLayer(new LayerModel(layer), layer.sourceLayer);
       });
   }
 }

@@ -40,14 +40,12 @@ export default new Vue({
         map
       });
       const sourceList = sourceListModel.getSourceList();
-      for (let key in sourceList) {
-        if (key) {
-          let layers = sourceList[key].layers || [];
-          layers.forEach(item => {
-            if (item.source && item.type !== 'raster') {
-              sources.push(item.source);
-            }
-          });
+      for (let item of sourceList) {
+        if (item) {
+          let layer = item.layer;
+          if (layer.source && layer.type !== 'raster') {
+            sources.push(layer.source);
+          }
         }
       }
     }

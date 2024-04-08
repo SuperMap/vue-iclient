@@ -4,12 +4,14 @@
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
+import LayerListModel from 'vue-iclient/src/mapboxgl/web-map/LayerListModel';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import 'vue-iclient/static/libs/geostats/geostats';
 import 'vue-iclient/static/libs/json-sql/jsonsql';
 import { toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
 import WebMapService from '../../common/_utils/WebMapService';
 import WebMapV2 from './WebMapV2';
+import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 
 const WORLD_WIDTH = 360;
 // 迁徙图最大支持要素数量
@@ -106,6 +108,8 @@ export default class WebMapViewModel extends Events {
   protected _taskID: Date;
 
   private _sourceListModel: SourceListModel;
+
+  private _layerListModel: LayerListModel;
 
   private _cacheLayerId: Array<string> = [];
 
@@ -291,6 +295,75 @@ export default class WebMapViewModel extends Events {
     this._cacheLayerId = [];
   }
 
+  public getLayerDatas(layerName) {
+    if(this._layerListModel) {
+      const dataId = this.getDatasetIdByLayerId(layerName);
+      if(!dataId) return [];
+      let promise = new Promise((resolve, reject) => {
+        const dataService = new iPortalDataService('', this.withCredentials, { dataId, dataType: 'STRUCTUREDDATA' });
+        dataService.on({
+          getdatafailed: (e) => {
+            reject(e);
+          },
+          getdatasucceeded: (e) => {
+            resolve(e.features);
+          }
+        });
+        dataService.getData({});
+      });
+      return promise;
+    } else {
+      // @ts-ignore
+      return Promise.resolve(this.map.getSource(layerName).getData().features);
+    }
+  }
+
+  public getDatasetIdByLayerId(layerName) {
+    const matchLayer = this._appreciableLayers.find(layer => layer.layerID === layerName);
+    return matchLayer?.dataSource?.serverId;
+  }
+
+  public getLayerList() {
+    return this._layerListModel ? this._layerListModel.getLayerCatalog() : this._sourceListModel.getSourceList();
+  }
+
+  public getFlatLayers(layers) {
+    if(!layers) {
+      layers = this.getLayerList();
+    }
+    let flatLayers = [];
+    layers.forEach(layer => {
+      if (layer.children) {
+        flatLayers = flatLayers.concat(this.getFlatLayers(layer.children));
+      } else {
+        flatLayers.push(layer);
+      }
+    });
+    return flatLayers;
+  }
+
+  public changeItemVisible(item) {
+    const model = this._layerListModel || this._sourceListModel;
+    // 当前操作的图层/图层组的上级图层组为显示状态，才修改其显隐
+    const parentVisible = model.getGroupVisible(this.getLayerList(), item);
+    if(!parentVisible) {
+      return;
+    }
+    const visibility = item.visible ? 'none' : 'visible';
+    if(item.type === 'group') {
+      const targetLayers = model.getGroupChildrenLayers(item.children);
+      this.updateLayersVisible(targetLayers, visibility);
+    } else {
+      this.updateLayersVisible([item], visibility);
+    }
+  }
+
+  updateLayersVisible(layers, visibility) {
+    layers.forEach(layer => {
+      this.map.setLayoutProperty(layer.id, 'visibility', visibility);
+    });
+  }
+
   protected initWebMap() {
     this.cleanWebMap();
     this.serverUrl = this.serverUrl && this.webMapService.handleServerUrl(this.serverUrl);
@@ -447,7 +520,7 @@ export default class WebMapViewModel extends Events {
       withCredentials: this.withCredentials,
       target: this.target
     }, this.mapOptions);
-    this._registerV3Events(webMapHandler);
+    this._registerV3Events(webMapHandler, mapInfo);
     webMapHandler.createWebMap({
       ...mapInfo,
       layers: typeof this.layerFilter === 'function' ? mapInfo.layers.filter(this.layerFilter) : mapInfo.layers
@@ -481,7 +554,7 @@ export default class WebMapViewModel extends Events {
     });
   }
 
-  _registerV3Events(webMapHandler): void {
+  _registerV3Events(webMapHandler, mapInfo): void {
     if (!webMapHandler) {
       return;
     }
@@ -492,8 +565,9 @@ export default class WebMapViewModel extends Events {
     webMapHandler.on('addlayerssucceeded', ({ mapparams, layers }) => {
       this.mapParams = mapparams;
       this._appreciableLayers = layers;
-      this._sourceListModel = new SourceListModel({
-        map: this.map
+      this._layerListModel = new LayerListModel({
+        map: this.map,
+        layerCatalog: mapInfo.metadata.layerCatalog
       });
       this._cacheLayerId.push(...layers.map(layer => layer.id));
       this.triggerEvent('addlayerssucceeded', {

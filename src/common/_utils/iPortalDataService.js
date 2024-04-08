@@ -69,15 +69,16 @@ export default class iPortalDataService extends Events {
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
    */
-  getData(queryInfo, preferContent = false) {
+  getData(queryInfo = {}, preferContent = false) {
+    if (this.dataType === 'STRUCTUREDDATA') {
+      this._getStructureDatafromContent();
+      return;
+    }
+
     if (!this.url) {
       return;
     }
     let datasetUrl = this.url;
-    if (this.dataType === 'STRUCTUREDDATA') {
-      this._getStructureDatafromContent(datasetUrl, queryInfo);
-      return;
-    }
 
     if (preferContent) {
       this._getDatafromContent(datasetUrl, queryInfo);
