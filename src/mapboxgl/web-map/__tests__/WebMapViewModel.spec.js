@@ -1401,7 +1401,17 @@ describe('WebMapViewModel.spec', () => {
       mapinitialized: () => {
         viewModel._updateDataFlowFeature = jest.fn();
         viewModel._handleDataflowFeatures(
-          { filterCondition: '2020年人口总数>10' },
+          {
+            filterCondition: '2020年人口总数>10', pointStyle: {
+              "fillColor": "#ee4d5a",
+              "strokeWidth": 1,
+              "fillOpacity": 0.9,
+              "radius": 8,
+              "strokeColor": "#ffffff",
+              "type": "BASIC_POINT",
+              "strokeOpacity": 1
+            }
+          },
           { data: JSON.stringify({ properties: { '2020年人口总数': 15 } }) }
         );
         const res = viewModel.getFilterFeatures('2020年人口总数>10', [{ properties: { '2020年人口总数': 15 } }]);
