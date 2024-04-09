@@ -283,11 +283,7 @@ var Map = function (options) {
         tiles: []
       };
     } else {
-      return {
-        setCoordinates: function() {},
-        setData: function (data) {},
-        loadTile: function () {}
-      };
+      return null;
     }
   };
 

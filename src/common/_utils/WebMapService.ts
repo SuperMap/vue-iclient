@@ -1068,6 +1068,10 @@ export default class WebMapService extends Events {
       let x = Number(row[xfieldIndex]);
       let y = Number(row[yfieldIndex]);
 
+      if (isNaN(x) || isNaN(y)) {
+        continue;
+      }
+      
       // 属性信息
       let attributes = {};
       for (let index = 0; index < dataContent.colTitles.length; index++) {
