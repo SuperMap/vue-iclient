@@ -319,7 +319,7 @@ var Map = function (options) {
   this.off = function () {};
   this.addLayer = function (layer, before) {
     this.overlayLayersManager[layer.id] = layer;
-    if (typeof layer.source !== 'string'){
+    if (layer.source instanceof Object){
       this.addSource(layer.id, layer.source)
     }
     if (layer.onAdd) {
