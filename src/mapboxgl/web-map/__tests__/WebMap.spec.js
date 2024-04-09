@@ -6,6 +6,7 @@ import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
 import layerData_CSV from 'vue-iclient/test/unit/mocks/data/layerData';
+import csv_nullxy_Data from 'vue-iclient/test/unit/mocks/data/csv_data';
 import layerData_geojson from 'vue-iclient/test/unit/mocks/data/layerData_geojson';
 import markerLayer from 'vue-iclient/test/unit/mocks/data/WebMap/markerLayer';
 import markerData from 'vue-iclient/test/unit/mocks/data/WebMap/markerData';
@@ -643,5 +644,33 @@ describe('WebMap.vue', () => {
     await flushPromises();
     expect(callback).toHaveBeenCalledTimes(1);
     done();
+  });
+  it('ISVJ-7952 CSV nullXY', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal1.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': csv_nullxy_Data
+    };
+    mockFetch(fetchResource);
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      }
+    });
+    wrapper.vm.viewModel.on({ addlayerssucceeded: callback });
+    await mapWrapperLoaded(wrapper);
+    function callback(e) {
+    expect(spy).toBeCalled();
+    expect(wrapper.element.id).toEqual('map');
+    expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+    expect(wrapper.vm.mapId).toBe('123');
+    expect(wrapper.vm.map._sources['民航数据']).not.toBeNull();
+    expect(wrapper.vm.map._sources['民航数据'].data.features.length).toBe(1);
+    done();
+    }
   });
 });
