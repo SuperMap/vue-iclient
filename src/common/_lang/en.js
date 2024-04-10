@@ -135,7 +135,17 @@ export default {
     title: 'Legend',
     top: 'Highest',
     bottom: 'Lowest',
-    noMatchLayer: 'No matching layer'
+    noMatchLayer: 'No matching layer',
+    themeDefault: 'Default',
+    outOfRange: 'Out of range',
+    style: 'Style',
+    color: 'Color',
+    size: 'Size',
+    opacity: 'Opacity',
+    width: 'Width',
+    outlineColor: 'Outline Color',
+    parentheses: '({tips})',
+    colon: ':'
   },
   measure: {
     mapMeasure: 'Measure',

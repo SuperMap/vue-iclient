@@ -60,8 +60,7 @@ export default {
     DMS: '度分秒',
     Mercator: 'Web墨卡托'
   },
-  error: {
-  },
+  error: {},
   commontypes: {
     restData: 'SuperMap Rest 数据服务',
     restMap: 'SuperMap Rest 地图服务',
@@ -140,7 +139,17 @@ export default {
     title: '图例',
     top: '最高',
     bottom: '最低',
-    noMatchLayer: '没有匹配的图层'
+    noMatchLayer: '没有匹配的图层',
+    themeDefault: '缺省风格',
+    outOfRange: '范围以外的值',
+    style: '样式',
+    color: '颜色',
+    size: '大小',
+    opacity: '不透明度',
+    width: '宽度',
+    outlineColor: '轮廓色',
+    parentheses: '（{tips}）',
+    colon: '：'
   },
   measure: {
     mapMeasure: '量算',

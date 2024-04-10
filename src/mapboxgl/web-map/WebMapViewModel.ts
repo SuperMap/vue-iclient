@@ -115,7 +115,7 @@ export default class WebMapViewModel extends Events {
 
   private _appreciableLayers: Array<any> = [];
 
-  private _handler: Object;
+  private _handler: InstanceType<typeof WebMapV2>;
 
   protected webMapService: WebMapService;
 
@@ -173,8 +173,7 @@ export default class WebMapViewModel extends Events {
 
   public resize(keepBounds = false): void {
     this.map && this.map.resize();
-    // @ts-ignore
-    this._handler && this._handler.echartsLayerResize && this._handler.echartsLayerResize();
+    this._handler?.echartsLayerResize?.();
     const mapContainerStyle = window.getComputedStyle(document.getElementById(this.target));
     if (keepBounds && this.map && this.bounds && mapContainerStyle) {
       const zoom = this._getResizedZoom(this.bounds, mapContainerStyle);
@@ -263,8 +262,7 @@ export default class WebMapViewModel extends Events {
       Object.keys(sources).forEach(sourceId => {
         // @ts-ignore
         if (sources[sourceId].type === 'raster' && sources[sourceId].rasterSource === 'iserver') {
-          // @ts-ignore
-          this._handler._updateRasterSource && this._handler._updateRasterSource(sourceId, { tileSize });
+          this._handler._updateRasterSource?.(sourceId, { tileSize });
         }
       });
     }
@@ -276,8 +274,7 @@ export default class WebMapViewModel extends Events {
   }
 
   public getLegendInfo() {
-    // @ts-ignore
-    return this._handler.getLegendInfo();
+    return this._handler?.getLegendInfo() ?? [];
   }
 
   protected cleanLayers() {
@@ -296,16 +293,16 @@ export default class WebMapViewModel extends Events {
   }
 
   public getLayerDatas(layerName) {
-    if(this._layerListModel) {
+    if (this._layerListModel) {
       const dataId = this.getDatasetIdByLayerId(layerName);
-      if(!dataId) return [];
+      if (!dataId) return [];
       let promise = new Promise((resolve, reject) => {
         const dataService = new iPortalDataService('', this.withCredentials, { dataId, dataType: 'STRUCTUREDDATA' });
         dataService.on({
-          getdatafailed: (e) => {
+          getdatafailed: e => {
             reject(e);
           },
-          getdatasucceeded: (e) => {
+          getdatasucceeded: e => {
             resolve(e.features);
           }
         });
@@ -328,7 +325,7 @@ export default class WebMapViewModel extends Events {
   }
 
   public getFlatLayers(layers) {
-    if(!layers) {
+    if (!layers) {
       layers = this.getLayerList();
     }
     let flatLayers = [];
@@ -346,11 +343,11 @@ export default class WebMapViewModel extends Events {
     const model = this._layerListModel || this._sourceListModel;
     // 当前操作的图层/图层组的上级图层组为显示状态，才修改其显隐
     const parentVisible = model.getGroupVisible(this.getLayerList(), item);
-    if(!parentVisible) {
+    if (!parentVisible) {
       return;
     }
     const visibility = item.visible ? 'none' : 'visible';
-    if(item.type === 'group') {
+    if (item.type === 'group') {
       const targetLayers = model.getGroupChildrenLayers(item.children);
       this.updateLayersVisible(targetLayers, visibility);
     } else {
@@ -365,7 +362,7 @@ export default class WebMapViewModel extends Events {
   }
 
   protected initWebMap() {
-    this.cleanWebMap();
+    this.clean();
     this.serverUrl = this.serverUrl && this.webMapService.handleServerUrl(this.serverUrl);
     if (this.webMapInfo) {
       // 传入是webmap对象
@@ -458,75 +455,88 @@ export default class WebMapViewModel extends Events {
 
   _createWebMapV2(mapInfo) {
     this.baseProjection = toEpsgCode(mapInfo.crs);
-    const webMapHandler = new WebMapV2(this.mapId, {
-      serverUrl: this.serverUrl,
-      withCredentials: this.withCredentials,
-      target: this.target,
-      mapInfo
-    }, this.mapOptions, this.map, this.layerFilter);
+    const webMapHandler = new WebMapV2(
+      this.mapId,
+      {
+        serverUrl: this.serverUrl,
+        withCredentials: this.withCredentials,
+        target: this.target,
+        mapInfo
+      },
+      this.mapOptions,
+      this.map,
+      this.layerFilter
+    );
     this._registerV2Events(webMapHandler);
     return webMapHandler;
   }
 
   _createMap() {
     this.mapOptions.container = this.target;
-       if (this.mapOptions.crs && this.mapOptions.crs.epsgCode) {
-         this.mapOptions.crs = new mapboxgl.CRS(
-           this.mapOptions.crs.epsgCode,
-           this.mapOptions.crs.WKT,
-           this.mapOptions.crs.extent,
-           this.mapOptions.crs.unit
-         );
-       }
-       if (!this.mapOptions.transformRequest) {
-         this.mapOptions.transformRequest = (url: string, resourceType: string) => {
-           let proxy = '';
-           if (typeof this.proxy === 'string') {
-             let proxyType = 'data';
-             if (resourceType === 'Tile') {
-               proxyType = 'image';
-             }
-             proxy = this.webMapService.handleProxy(proxyType);
-           }
-           return {
-             url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
-             credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
-               ? 'include'
-               : 'omit'
-           };
-         };
-       }
-       setTimeout(() => {
-         let fadeDuration = 0;
-         if (Object.prototype.hasOwnProperty.call(this.mapOptions, 'fadeDuration')) {
-           fadeDuration = this.mapOptions.fadeDuration;
-         }
-         this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
-         this.map.on('load', () => {
-            this._sourceListModel = new SourceListModel({
-              map: this.map
-            });
-           this.triggerEvent('addlayerssucceeded', {
-             map: this.map,
-             mapparams: {},
-             layers: []
-           });
-         });
-       }, 0);
-  };
+    if (this.mapOptions.crs && this.mapOptions.crs.epsgCode) {
+      this.mapOptions.crs = new mapboxgl.CRS(
+        this.mapOptions.crs.epsgCode,
+        this.mapOptions.crs.WKT,
+        this.mapOptions.crs.extent,
+        this.mapOptions.crs.unit
+      );
+    }
+    if (!this.mapOptions.transformRequest) {
+      this.mapOptions.transformRequest = (url: string, resourceType: string) => {
+        let proxy = '';
+        if (typeof this.proxy === 'string') {
+          let proxyType = 'data';
+          if (resourceType === 'Tile') {
+            proxyType = 'image';
+          }
+          proxy = this.webMapService.handleProxy(proxyType);
+        }
+        return {
+          url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
+          credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
+            ? 'include'
+            : 'omit'
+        };
+      };
+    }
+    setTimeout(() => {
+      let fadeDuration = 0;
+      if (Object.prototype.hasOwnProperty.call(this.mapOptions, 'fadeDuration')) {
+        fadeDuration = this.mapOptions.fadeDuration;
+      }
+      this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
+      this.map.on('load', () => {
+        this._sourceListModel = new SourceListModel({
+          map: this.map
+        });
+        this.triggerEvent('addlayerssucceeded', {
+          map: this.map,
+          mapparams: {},
+          layers: []
+        });
+      });
+    }, 0);
+  }
 
   _createWebMapV3(mapInfo: any) {
     this.baseProjection = toEpsgCode(mapInfo.crs);
-    const webMapHandler = new mapboxgl.supermap.WebMapV3(this.mapId, {
-      server: this.serverUrl,
-      withCredentials: this.withCredentials,
-      target: this.target
-    }, this.mapOptions);
+    const webMapHandler = new mapboxgl.supermap.WebMapV3(
+      this.mapId,
+      {
+        server: this.serverUrl,
+        withCredentials: this.withCredentials,
+        target: this.target
+      },
+      this.mapOptions
+    );
     this._registerV3Events(webMapHandler, mapInfo);
-    webMapHandler.createWebMap({
-      ...mapInfo,
-      layers: typeof this.layerFilter === 'function' ? mapInfo.layers.filter(this.layerFilter) : mapInfo.layers
-    }, this.map);
+    webMapHandler.initializeMap(
+      {
+        ...mapInfo,
+        layers: typeof this.layerFilter === 'function' ? mapInfo.layers.filter(this.layerFilter) : mapInfo.layers
+      },
+      this.map
+    );
     return webMapHandler;
   }
 
@@ -549,8 +559,8 @@ export default class WebMapViewModel extends Events {
           map: map,
           mapparams: _this.mapParams
         });
-      },
-    })
+      }
+    });
     webMapHandler.on('projectionisnotmatch', () => {
       console.error('projection is not match');
     });
@@ -586,7 +596,8 @@ export default class WebMapViewModel extends Events {
   }
 
   _getMapInfo(mapInfo, _taskID?) {
-    this._handler = +mapInfo.version.split('.')[0] === 3 ? this._createWebMapV3(mapInfo) : this._createWebMapV2(mapInfo);
+    this._handler =
+      +mapInfo.version.split('.')[0] === 3 ? this._createWebMapV3(mapInfo) : this._createWebMapV2(mapInfo);
   }
 
   private _getResizedZoom(bounds, mapContainerStyle, tileSize = 512, worldWidth = WORLD_WIDTH) {
@@ -616,11 +627,8 @@ export default class WebMapViewModel extends Events {
     }
   }
 
-  cleanWebMap() {
-    if (this._handler) {
-       // @ts-ignore
-       this._handler.cleanWebMap && this._handler.cleanWebMap();
-    }
+  clean() {
+    this._handler?.clean();
     if (this.map) {
       this.triggerEvent('beforeremovemap', {});
       this.map.remove();
@@ -633,6 +641,10 @@ export default class WebMapViewModel extends Events {
         this.mapOptions.center = null;
       }
     }
+  }
+
+  cleanWebMap() {
+    this.clean();
   }
 
   private centerValid(center) {
@@ -648,7 +660,7 @@ export default class WebMapViewModel extends Events {
   }
 
   public updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
-    // @ts-ignore
-    this._handler.updateOverlayLayer && this._handler.updateOverlayLayer(layerInfo, features, mergeByField);
+    this._handler?.updateOverlayLayer?.(layerInfo, features, mergeByField);
   }
 }
+

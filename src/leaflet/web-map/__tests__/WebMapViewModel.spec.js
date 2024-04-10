@@ -756,7 +756,7 @@ describe('WebMapViewModel.spec', () => {
     }, 100);
   });
 
-  it('cleanWebMap', async done => {
+  it('clean', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined': layerData
     };
@@ -784,7 +784,7 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(id, commonOption);
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
-    viewModel.cleanWebMap();
+    viewModel.clean();
     setTimeout(() => {
       expect(callback.mock.called).toBeTruthy;
       expect(viewModel.center).toBe(null);

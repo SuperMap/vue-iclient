@@ -15,7 +15,7 @@ class LegendViewModel extends mapboxgl.Evented {
 
   getStyle(layerName) {
     return this.legendInfo.filter((info) => {
-      return info.layerId === layerName;
+      return info.layerId === layerName && info.styleGroup.length > 0;
     });
   }
 }

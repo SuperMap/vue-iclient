@@ -1,29 +1,13 @@
 import { mount } from '@vue/test-utils';
-import SmWebMap from '../../../WebMap.vue';
 import SmLegend from '../Legend.vue';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
-import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
-import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
-import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
-import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
+import mapLegends from 'vue-iclient/test/unit/mocks/data/WebMap/map_legends.json';
 
 describe('Legend.vue', () => {
   let wrapper;
   let mapWrapper;
 
   beforeEach(() => {
-    const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
-      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
-    };
-    mockFetch(fetchResource);
-    mapWrapper = mount(SmWebMap, {
-      propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
-      }
-    });
   });
 
   afterEach(() => {
@@ -36,14 +20,18 @@ describe('Legend.vue', () => {
     }
   });
 
-  it('render default correctly', async done => {
+  it('render default correctly', done => {
     wrapper = mount(SmLegend, {
       propsData: {
         layerNames: ['民航数据'],
         mapTarget: 'map'
       }
     });
-    await mapSubComponentLoaded(wrapper);
+    wrapper.vm.webmap = {
+      getLegendInfo: jest.fn(() => mapLegends)
+    }
+    wrapper.vm.$options.loaded.call(wrapper.vm);
+    expect(wrapper.vm.legendList).not.toEqual({});
     expect(wrapper.vm.mapTarget).toBe('map');
     done();
   });
