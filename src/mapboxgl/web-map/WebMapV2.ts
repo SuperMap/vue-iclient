@@ -2936,4 +2936,3 @@ export default class WebMap extends WebMapBase {
     );
   }
 }
-
