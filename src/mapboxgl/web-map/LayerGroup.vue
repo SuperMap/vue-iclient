@@ -57,10 +57,16 @@
 
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
+import SmCollapse from 'vue-iclient/src/common/collapse/Collapse.vue';
+import SmCollapsePanel from 'vue-iclient/src/common/collapse/Panel.vue';
 
 export default {
   name: 'LayerGroup',
   mixins: [Theme],
+  components: {
+    SmCollapse,
+    SmCollapsePanel
+  },
   props: {
     layerCatalog: {
       type: Array,

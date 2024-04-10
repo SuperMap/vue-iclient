@@ -15,7 +15,7 @@ class SourceModel {
       type: 'basic',
       layer: layer
     });
-    this.type = this.children?.length > 1 ? 'group' : 'basic';
+    this.type = this.children.length > 1 ? 'group' : 'basic';
     this.layer = this.type === 'basic' ? layer : undefined;
     if (layer.visibility === 'visible' || this.visible) {
       this.visible = true;

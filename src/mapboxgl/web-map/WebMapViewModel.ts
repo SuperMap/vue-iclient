@@ -324,7 +324,7 @@ export default class WebMapViewModel extends Events {
   }
 
   public getLayerList() {
-    return this._layerListModel ? this._layerListModel.getLayerCatalog() : this._sourceListModel.getSourceList();
+    return this._layerListModel ? this._layerListModel.getLayerCatalog() : this._sourceListModel?.getSourceList();
   }
 
   public getFlatLayers(layers) {
@@ -503,7 +503,9 @@ export default class WebMapViewModel extends Events {
          }
          this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
          this.map.on('load', () => {
-          console.log('this', this);
+            this._sourceListModel = new SourceListModel({
+              map: this.map
+            });
            this.triggerEvent('addlayerssucceeded', {
              map: this.map,
              mapparams: {},
@@ -624,6 +626,7 @@ export default class WebMapViewModel extends Events {
       this.map.remove();
       this.map = null;
       this._sourceListModel = null;
+      this._layerListModel = null;
       this._appreciableLayers = [];
       if (this.mapOptions) {
         this.mapOptions.zoom = null;

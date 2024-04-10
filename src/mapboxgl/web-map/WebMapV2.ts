@@ -1,23 +1,23 @@
 /* Copyright© 2000 - 2023 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
- import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
- import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
- import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
- import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
- import 'vue-iclient/static/libs/geostats/geostats';
- import 'vue-iclient/static/libs/json-sql/jsonsql';
- import echarts from 'echarts';
- import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
- import cloneDeep from 'lodash.clonedeep';
- import { geti18n } from 'vue-iclient/src/common/_lang/index';
- import WebMapBase from 'vue-iclient/src/common/web-map/WebMapBase';
- import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
- import { getProjection, registerProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
- import proj4 from 'proj4';
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
+import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import 'vue-iclient/static/libs/geostats/geostats';
+import 'vue-iclient/static/libs/json-sql/jsonsql';
+import echarts from 'echarts';
+import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
+import cloneDeep from 'lodash.clonedeep';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
+import WebMapBase from 'vue-iclient/src/common/web-map/WebMapBase';
+import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+import { getProjection, registerProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
+import proj4 from 'proj4';
 
- const WORLD_WIDTH = 360;
- // 迁徙图最大支持要素数量
+const WORLD_WIDTH = 360;
+// 迁徙图最大支持要素数量
  /**
   * @class WebMapViewModel
   * @category ViewModel
@@ -73,48 +73,48 @@
    container?: string;
    crs: string;
  }
- 
+
  type layerType = 'POINT' | 'LINE' | 'POLYGON';
- 
- export default class WebMap extends WebMapBase {
+
+export default class WebMap extends WebMapBase {
    map: mapboxglTypes.Map;
- 
+
    center: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
- 
+
    bounds: mapboxglTypes.LngLatBoundsLike;
 
    renderWorldCopies: boolean;
- 
+
    bearing: number;
- 
+
    pitch: number;
- 
+
    rasterTileSize: number;
- 
+
    layerFilter: Function;
- 
+
    baseLayerProxy: string | boolean;
- 
+
    private _sourceListModel: SourceListModel;
- 
+
    private _legendList: any;
 
    private _handleDataflowFeaturesCallback: Function;
- 
+
    private _initDataflowLayerCallback: Function;
- 
+
    private _dataflowService: any;
- 
+
    private _unprojectProjection: string;
- 
+
    private _layerTimerList: Array<any> = [];
- 
+
    private checkSameLayer: boolean;
 
    private _appreciableLayers: Array<any> = [];
- 
+
    private _mapInfo: Object;
- 
+
    constructor(
      id: string | number | Object,
      options: webMapOptions = {},
@@ -154,62 +154,62 @@
    }
 
    public getLegendInfo() {
-    return this._legendList;
+     return this._legendList;
    }
 
    _uniqueSymbolStyle(styleItem) {
-    const { style, radius, color } = styleItem;
-    let generateStyle: any = {};
-    switch (style.type) {
-      case 'BASIC_POINT':
-        generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
-        break;
-      case 'SYMBOL_POINT':
-        generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
-        generateStyle.fontSize = `${radius * 2}px`;
-        break;
-      case 'IMAGE_POINT':
-        generateStyle.background = `url(${style.imageInfo.url})`;
-        generateStyle.backgroundSize = 'contain';
-        generateStyle.width = `${(style.radius || radius) * 2}px`;
-        generateStyle.height = `${(style.radius || radius) * 2}px`;
-        break;
-      case 'SVG_POINT':
-        generateStyle['-webkit-mask'] = `url(${style.url})`;
-        generateStyle.backgroundColor = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
-        generateStyle['-webkit-mask-size'] = 'contain';
-        generateStyle.width = `${(style.radius || radius) * 2}px`;
-        generateStyle.height = `${(style.radius || radius) * 2}px`;
-        break;
-      default:
-        generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
-        break;
-    }
-    return generateStyle;
-  }
+     const { style, radius, color } = styleItem;
+     let generateStyle: any = {};
+     switch (style.type) {
+       case 'BASIC_POINT':
+         generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+         break;
+       case 'SYMBOL_POINT':
+         generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+         generateStyle.fontSize = `${radius * 2}px`;
+         break;
+       case 'IMAGE_POINT':
+         generateStyle.background = `url(${style.imageInfo.url})`;
+         generateStyle.backgroundSize = 'contain';
+         generateStyle.width = `${(style.radius || radius) * 2}px`;
+         generateStyle.height = `${(style.radius || radius) * 2}px`;
+         break;
+       case 'SVG_POINT':
+         generateStyle['-webkit-mask'] = `url(${style.url})`;
+         generateStyle.backgroundColor = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+         generateStyle['-webkit-mask-size'] = 'contain';
+         generateStyle.width = `${(style.radius || radius) * 2}px`;
+         generateStyle.height = `${(style.radius || radius) * 2}px`;
+         break;
+       default:
+         generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
+         break;
+     }
+     return generateStyle;
+   }
 
    _selectLayerType(featureType, style) {
-    if (style.className) {
-      return style.className;
-    }
-    const result = {
-      POLYGON: 'sm-components-icon-ploygon',
-      POINT: 'sm-components-icon-multi-point',
-      LINE: 'sm-components-icon-line'
-    }[featureType];
-    if (featureType === 'POINT' && style.type !== 'BASIC_POINT') {
-      return '';
-    }
-    return result;
-  }
- 
+     if (style.className) {
+       return style.className;
+     }
+     const result = {
+       POLYGON: 'sm-components-icon-ploygon',
+       POINT: 'sm-components-icon-multi-point',
+       LINE: 'sm-components-icon-line'
+     }[featureType];
+     if (featureType === 'POINT' && style.type !== 'BASIC_POINT') {
+       return '';
+     }
+     return result;
+   }
+
    get getSourceListModel(): SourceListModel {
      return this._sourceListModel;
    }
 
    _initWebMap(): void {
-    this.initWebMap();
-  }
+     this.initWebMap();
+   }
 
    _loadLayers(mapInfo, _taskID): void {
      if (this.map) {
@@ -221,14 +221,14 @@
        this._handleLayerInfo(mapInfo, _taskID);
      } else {
        setTimeout(() => {
-        this._createMap(mapInfo);
-        this.map.on('load', () => {
+         this._createMap(mapInfo);
+         this.map.on('load', () => {
            this._handleLayerInfo(mapInfo, _taskID);
-        });
+         });
        }, 0);
      }
    }
- 
+
    _setCRS(baseProjection, wkt, bounds): void {
      const crs = new mapboxgl.CRS(
        baseProjection,
@@ -238,14 +238,14 @@
      );
      mapboxgl.CRS.set(crs);
    }
- 
+
    _getMapInfo(mapInfo, _taskID): void {
      this._mapInfo = mapInfo;
      const { projection } = mapInfo;
      let bounds, wkt;
      this.baseProjection = toEpsgCode(projection);
      let defaultWktValue = getProjection(this.baseProjection);
- 
+
      if (defaultWktValue) {
        wkt = defaultWktValue;
      }
@@ -300,7 +300,7 @@
        this._loadLayers(mapInfo, _taskID);
      }
    }
- 
+
    _handleLayerInfo(mapInfo, _taskID): void {
      mapInfo = this._setLayerID(mapInfo);
      this._mapInfo = mapInfo;
@@ -328,7 +328,7 @@
        this._initGraticuleLayer(grid.graticule);
      }
    }
- 
+
    _setExpectLayerLen(mapInfo) {
      if (this._shouldLoadBaseLayer(mapInfo, this.layerFilter)) {
        this.expectLayerLen++;
@@ -340,15 +340,15 @@
        }
        this.expectLayerLen += overLayers.length;
        this._appreciableLayers = overLayers.map((layerInfo) => {
-         const { dataSource, layerType, name, themeSetting, visible } = layerInfo;
+         const { layerID, dataSource, layerType, name, themeSetting, visible } = layerInfo;
          let type = ['VECTOR', 'UNIQUE', 'RANGE', 'HEAT', 'MARKER', 'MIGRATION', 'RANK_SYMBOL'].includes(layerType) ? 'vector' : 'raster';
          return {
-           dataSource, layerType: type, name, themeSetting, visible
-         }
+           layerID, dataSource, layerType: type, name, themeSetting, visible
+         };
        });
      }
    }
- 
+
    _shouldLoadBaseLayer(mapInfo, layerFilter) {
      const baseLayer = mapInfo.baseLayer;
      if (!baseLayer) {
@@ -359,7 +359,7 @@
      }
      return true;
    }
- 
+
    _createMap(mapInfo?): void {
      // 获取字体样式
      const fontFamilys: string = this._getLabelFontFamily(mapInfo);
@@ -401,7 +401,7 @@
        }
        zoom += zoomBase;
      }
- 
+
      // 初始化 map
      this.map = new mapboxgl.Map({
        ...this.mapOptions,
@@ -446,7 +446,7 @@
       */
      this.triggerEvent('mapinitialized', { map: this.map });
    }
- 
+
    private _createMVTBaseLayer(layerInfo, addedCallback?: Function) {
      let url = layerInfo.dataSource.url;
      if (url.indexOf('/restjsr/') > -1 && !/\/style\.json$/.test(url)) {
@@ -475,14 +475,14 @@
          this.triggerEvent('getmapinfofailed', { error });
        });
    }
- 
+
    _initBaseLayer(mapInfo: any, addedCallback?: Function): void {
      const layerInfo = mapInfo.baseLayer || mapInfo;
      const layerType = this.getBaseLayerType(layerInfo);
      const mapUrls = this.getMapurls();
      let url: string;
      this.baseLayerProxy = this.webMapService.handleProxy('image');
- 
+
      switch (layerType) {
        case 'TIANDITU':
          this.baseLayerProxy = null;
@@ -517,7 +517,7 @@
          break;
      }
    }
- 
+
    _initOverlayLayers(layers: any, _taskID: any): void {
      // 存储地图上所有的图层对象
      if (this.expectLayerLen > 0) {
@@ -533,13 +533,13 @@
            });
            return;
          }
- 
+
          if (layer.visibleScale) {
            const { minScale, maxScale } = layer.visibleScale;
            layer.minzoom = Math.max(this._transformScaleToZoom(minScale), 0);
            layer.maxzoom = Math.min(24, this._transformScaleToZoom(maxScale) + 0.0000001);
          }
- 
+
          if (type === 'tile') {
            this._initBaseLayer(layer, () => {
              this._addLayerSucceeded();
@@ -564,7 +564,7 @@
        }, this);
      }
    }
- 
+
    _initOverlayLayer(layerInfo: any, features: any = [], mergeByField?: string) {
      const { layerID, layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
      layerInfo.visible = visible ? 'visible' : 'none';
@@ -577,13 +577,13 @@
        this._createMvtLayer(features.info, layerInfo, features.featureType);
        return;
      }
- 
+
      // mbgl 目前不能处理 geojson 复杂面情况
      // mbgl isssue https://github.com/mapbox/mapbox-gl-js/issues/7023
      if (features && features[0] && features[0].geometry && features[0].geometry.type === 'Polygon') {
        features = handleMultyPolygon(features);
      }
- 
+
      if (
        features &&
        projection &&
@@ -594,9 +594,9 @@
        this._unprojectProjection = this._defineProj4(projection);
        features = this.transformFeatures(features);
      }
- 
+
      features = this.handleLayerFeatures(features, layerInfo);
- 
+
      if (layerType === 'VECTOR') {
        if (featureType === 'POINT') {
          if (style.type === 'SYMBOL_POINT') {
@@ -630,14 +630,14 @@
        this._addLabelLayer(layerInfo, features, false);
      }
    }
- 
+
    _initGraticuleLayer(graticuleInfo: any) {
      const options = this._createGraticuleOptions(graticuleInfo);
      const graticuleLayers = new mapboxgl.supermap.GraticuleLayer(options);
      this.map.addLayer(graticuleLayers);
      this._setGraticuleDash(graticuleInfo.lineDash, graticuleLayers);
    }
- 
+
    private _createGraticuleOptions(graticuleInfo) {
      let { extent, lonLabelStyle, latLabelStyle } = graticuleInfo;
      const { strokeColor, lineDash, strokeWidth, interval } = graticuleInfo;
@@ -674,7 +674,7 @@
        latLabelStyle
      };
    }
- 
+
    private _setGraticuleDash(lindDasharray, graticuleLayers) {
      this.map.on('zoomend', () => {
        if (this.map.getZoom() < 3) {
@@ -684,7 +684,7 @@
        }
      });
    }
- 
+
    private _createTiandituLayer(mapInfo: any, addedCallback?: Function): void {
      const tiandituUrls = this._getTiandituUrl(mapInfo);
      const { labelLayerVisible, name, visible } = mapInfo.baseLayer;
@@ -695,7 +695,7 @@
      isLabel && this._addBaselayer(labelUrl, `${name}-label`, visible);
      addedCallback && addedCallback();
    }
- 
+
    private _createWMTSLayer(layerInfo, addedCallback?: Function): void {
      this.webMapService
        // @ts-ignore
@@ -723,7 +723,7 @@
          this.triggerEvent('getmapinfofailed', { error });
        });
    }
- 
+
    private _createBingLayer(layerName: string, layerInfo: any, addedCallback?: Function): void {
      const bingUrl =
        'https://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
@@ -731,10 +731,10 @@
      this._addBaselayer([bingUrl], layerName, layerInfo.visible);
      addedCallback && addedCallback();
    }
- 
+
    private _createXYZLayer(layerInfo: any, url: string, addedCallback?: Function): void {
      let urlArr: string[] = [];
- 
+
      if (layerInfo.layerType === 'OSM') {
        const res = url.match(/\w\-\w/g)[0];
        const start = res[0];
@@ -744,12 +744,12 @@
          alphabet += String.fromCharCode(i);
        }
        const alphabetArr = alphabet.split('');
- 
+
        const startIndex = alphabetArr.indexOf(start);
        const endIndex = alphabetArr.indexOf(end);
- 
+
        const res3 = alphabetArr.slice(startIndex, endIndex + 1);
- 
+
        for (let i = 0; i < res3.length; i++) {
          const replaceRes = url.replace(/{\w\-\w}/g, res3[i]);
          urlArr.push(replaceRes);
@@ -758,7 +758,7 @@
        const res = url.match(/\d\-\d/g)[0];
        const start = parseInt(res[0]);
        const end = parseInt(res[2]);
- 
+
        for (let i = start; i <= end; i++) {
          const replaceRes = url.replace(/{\d\-\d}/g, i.toString());
          urlArr.push(replaceRes);
@@ -770,7 +770,7 @@
      this._addBaselayer(urlArr, layerId, layerInfo.visible);
      addedCallback && addedCallback();
    }
- 
+
    private _createDynamicTiledLayer(layerInfo: any, addedCallback?: Function): void {
      const url = layerInfo.url;
      const layerId = layerInfo.layerID || layerInfo.name;
@@ -778,7 +778,7 @@
      this._addBaselayer([url], layerId, layerInfo.visible, minzoom, maxzoom, true);
      addedCallback && addedCallback();
    }
- 
+
    private _createWMSLayer(layerInfo: any, addedCallback?: Function): void {
      this.webMapService
        // @ts-ignore
@@ -806,7 +806,7 @@
          this.triggerEvent('getmapinfofailed', { error });
        });
    }
- 
+
    private _createVectorLayer(layerInfo: any, features: any): void {
      const type = layerInfo.featureType;
      const { layerID, minzoom, maxzoom, style, visible } = layerInfo;
@@ -854,7 +854,7 @@
        style.strokeColor &&
        this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
    }
- 
+
    private _getWMSUrl(mapInfo: any, version = '1.1.1'): string {
      let url = mapInfo.url;
      const options: any = {
@@ -880,7 +880,7 @@
      }
      return SuperMap.Util.urlAppend(url, this._getParamString(options, url));
    }
- 
+
    private _setLayerID(mapInfo): Array<Object> {
      const sumInfo: Object = {};
      const { baseLayer, layers = [] } = mapInfo;
@@ -910,7 +910,7 @@
      mapInfo.baseLayer = baseLayer;
      return mapInfo;
    }
- 
+
    private _generateUniqueLayerId(newId, index) {
      if (this.map.getLayer(newId)) {
        index++;
@@ -925,7 +925,7 @@
        return { newId, newIndex: index };
      }
    }
- 
+
    private _getResizedZoom(bounds, mapContainerStyle, tileSize = 512, worldWidth = WORLD_WIDTH) {
      const { width, height } = mapContainerStyle;
      const lngArcLength = Math.abs(bounds.getEast() - bounds.getWest());
@@ -937,11 +937,11 @@
      }
      return latResizeZoom;
    }
- 
+
    private _getBoundsRadian(point) {
      return (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (point * Math.PI) / 360));
    }
- 
+
    _createRestMapLayer(restMaps, layer) {
      restMaps.forEach(restMapInfo => {
        layer = this.getRestMapLayerInfo(restMapInfo, layer);
@@ -949,12 +949,12 @@
      });
      this._addLayerSucceeded();
    }
- 
+
    _addLayerSucceeded() {
      this.layerAdded++;
      this._sendMapToUser(this.layerAdded, this.expectLayerLen);
    }
- 
+
    private _createDataflowLayer(layerInfo) {
      const dataflowService = new mapboxgl.supermap.DataFlowService(layerInfo.wsUrl).initSubscribe();
      this._handleDataflowFeaturesCallback = this._handleDataflowFeatures.bind(this, layerInfo);
@@ -963,11 +963,11 @@
      dataflowService.on('messageSucceeded', this._handleDataflowFeaturesCallback);
      this._dataflowService = dataflowService;
    }
- 
+
    private _initDataflowLayer() {
      this._addLayerSucceeded();
    }
- 
+
    private _handleDataflowFeatures(layerInfo, e) {
      let features = [JSON.parse(e.data)];
      // this.transformFeatures([features]); // TODO 坐标系
@@ -976,7 +976,7 @@
        identifyField: layerInfo.identifyField,
        layerID: layerInfo.layerID
      });
- 
+
      if (layerInfo.projection === 'EPSG:3857') {
        features = this.transformFeatures(features);
      }
@@ -995,7 +995,7 @@
        this._addDataflowLayer(layerInfo, features[0]);
      }
    }
- 
+
    private _getDataFlowRotateStyle(features, directionField, identifyField) {
      const iconRotateExpression = ['match', ['get', identifyField]];
      features.forEach(feature => {
@@ -1015,7 +1015,7 @@
      iconRotateExpression.push(0);
      return iconRotateExpression;
    }
- 
+
    private _addDataflowLayer(layerInfo, feature) {
      const layerID = layerInfo.layerID;
      if (layerInfo.layerType === 'DATAFLOW_HEAT') {
@@ -1069,7 +1069,7 @@
        }
      }
    }
- 
+
    private _updateDataFlowFeature(sourceID, newFeature, layerInfo, type?) {
      const { identifyField, maxPointCount, directionField } = layerInfo;
      // @ts-ignore
@@ -1116,7 +1116,7 @@
        }
      }
    }
- 
+
    private _createMigrationLayer(layerInfo, features) {
      // @ts-ignore
      window.echarts = echarts;
@@ -1128,7 +1128,7 @@
      this.echartslayer.push(echartslayer);
      this._addLayerSucceeded();
    }
- 
+
    private _createRankSymbolLayer(layerInfo, features) {
      const { minzoom, maxzoom } = layerInfo;
      const fieldName = layerInfo.themeSetting.themeField;
@@ -1192,7 +1192,7 @@
        this._addLayerSucceeded();
      }
    }
- 
+
    private _addTextBackgroundImage(rgba: Array<number>): string {
      if (!rgba[3]) {
        return '';
@@ -1200,7 +1200,7 @@
      const width = 20; // The image will be 64 pixels square.
      const bytesPerPixel = 4; // Each pixel is represented by 4 bytes: red, green, blue, and alpha.
      const data = new Uint8Array(width * width * bytesPerPixel);
- 
+
      for (let x = 0; x < width; x++) {
        for (let y = 0; y < width; y++) {
          const offset = (y * width + x) * bytesPerPixel;
@@ -1225,7 +1225,7 @@
      }
      return imageId;
    }
- 
+
    private _addLabelLayer(layerInfo: any, features: any, addSource = false): void {
      const labelStyle = layerInfo.labelStyle;
      let { backgroundFill } = labelStyle;
@@ -1241,13 +1241,13 @@
      if (labelStyle.outlineColor && labelStyle.outlineWidth > 0) {
        textHaloColor = labelStyle.outlineColor;
      }
- 
+
      let textHaloWidth = (labelStyle.outlineWidth || 0) / 2;
      let textAnchor = labelStyle.textAlign || 'center';
      if (labelStyle.textBaseline && labelStyle.textBaseline !== 'middle') {
        textAnchor = `${labelStyle.textBaseline}${textAnchor === 'center' ? '' : `-${textAnchor}`}`;
      }
- 
+
      const textOffset =
        layerInfo.featureType === 'POINT'
          ? [labelStyle.offsetX / textSize || 0, labelStyle.offsetY / textSize || 0]
@@ -1290,7 +1290,7 @@
        maxzoom: maxzoom || 22
      });
    }
- 
+
    private _createSymbolLayer(
      layerInfo: any,
      features: any,
@@ -1357,7 +1357,7 @@
        this._addLayerSucceeded();
      }
    }
- 
+
    private _createGraphicLayer(
      layerInfo: any,
      features: any,
@@ -1367,7 +1367,7 @@
      filter?
    ) {
      const { layerID, minzoom, maxzoom, style } = layerInfo;
- 
+
      const source: mapboxglTypes.GeoJSONSourceRaw = {
        type: 'geojson',
        data: {
@@ -1477,7 +1477,7 @@
        }
      }
    }
- 
+
    private _createUniqueLayer(layerInfo: any, features: any): void {
      const symbolConvertFunctionFactory = {
        unicode: ({ unicode }): string => {
@@ -1519,7 +1519,7 @@
      const { layerID, minzoom, maxzoom, style } = layerInfo;
      const themeField = styleGroup[0].themeField;
      const type = layerInfo.featureType;
- 
+
      const defultLayerStyle = layerInfo.style;
      // 样式expression池 样式key值为webmap的样式key值
      const expressionMap: any = {};
@@ -1562,7 +1562,7 @@
      }
      // Todo 图例相关
      this._initLegendConfigInfo(layerInfo, styleGroup);
- 
+
      const source: mapboxglTypes.GeoJSONSourceRaw = {
        type: 'geojson',
        data: {
@@ -1577,7 +1577,7 @@
        // @ts-ignore
        this.map.getSource(sourceID).setData(source.data);
      }
- 
+
      const visible = layerInfo.visible;
      const layerCreateFcuntion = (type, sourceID, layerID, style, minzoom, maxzoom, filter?) => {
        const layerStyle = {
@@ -1743,7 +1743,7 @@
          }
          imageExpresssion.push('');
          svgExpresssion.push('');
- 
+
          const loadImagePromise = src => {
            return new Promise(resolve => {
              if (src.indexOf('svg') < 0) {
@@ -1807,7 +1807,7 @@
                iconSizeExpression.push(iconSize);
              }
              iconSizeExpression.push(1);
- 
+
              this._addLayer({
                id: `${layerID}-additional-image`,
                type: 'symbol',
@@ -1896,7 +1896,7 @@
      }
      this._addLayerSucceeded();
    }
- 
+
    private _getWMTSUrl(options: any): string {
      if (options.requestEncoding === 'REST' && options.restResourceURL) {
        return options.restResourceURL
@@ -1920,7 +1920,7 @@
      };
      return SuperMap.Util.urlAppend(options.kvpResourceUrl, this._getParamString(obj, options.kvpResourceUrl));
    }
- 
+
    private _createMarkerLayer(layerInfo: any, features: any): void {
      const { minzoom, maxzoom } = layerInfo;
      const markerLayerID = layerInfo.layerID;
@@ -2004,7 +2004,7 @@
          const featureInfo = this.setFeatureInfo(feature);
          feature.properties.useStyle = defaultStyle;
          feature.properties.featureInfo = featureInfo;
- 
+
          const source: mapboxglTypes.GeoJSONSourceRaw = {
            type: 'geojson',
            data: feature
@@ -2063,7 +2063,7 @@
        this._addLayerSucceeded();
      });
    }
- 
+
    private _createHeatLayer(layerInfo: any, features: any, addToMap = true): void {
      const { minzoom, maxzoom } = layerInfo;
      const style = layerInfo.themeSetting;
@@ -2071,19 +2071,19 @@
        gradient: style.colors.slice(),
        radius: parseInt(style.radius)
      };
- 
+
      // 自定义颜色
      const customSettings = style.customSettings;
      for (const i in customSettings) {
        layerOption.gradient[i] = customSettings[i];
      }
- 
+
      const color: string | mapboxglTypes.StyleFunction | mapboxglTypes.Expression = [
        'interpolate',
        ['linear'],
        ['heatmap-density']
      ];
- 
+
      const step = [0.1, 0.3, 0.5, 0.7, 1];
      layerOption.gradient.forEach((item, index) => {
        (<mapboxglTypes.Expression>color).push(step[index]);
@@ -2096,14 +2096,14 @@
        (<mapboxglTypes.Expression>color).push(item);
      });
      // 图例相关
-     this._initLegendConfigInfo(layerInfo, layerOption.gradient);
- 
+     this._initLegendConfigInfo(layerInfo, color);
+
      const paint: mapboxglTypes.HeatmapPaint = {
        'heatmap-color': color,
        'heatmap-radius': style.radius * 3,
        'heatmap-intensity': 2.8
      };
- 
+
      if (style.weight && features.length >= 4) {
        const weight = [];
        features.forEach(item => {
@@ -2135,15 +2135,15 @@
        this._addLayerSucceeded();
      }
    }
- 
+
    private _createRangeLayer(layerInfo: any, features: any): void {
      const fieldName = layerInfo.themeSetting.themeField;
      const featureType = layerInfo.featureType;
      const { minzoom, maxzoom, style } = layerInfo;
      const styleGroups = this.getRangeStyleGroup(layerInfo, features);
- 
+
      features = this.getFilterFeatures(layerInfo.filterCondition, features);
- 
+
      // 获取 expression
      const expression = ['match', ['get', 'index']];
      const datas = features.filter(row => {
@@ -2163,7 +2163,7 @@
        return true;
      }, this);
      expression.push('rgba(0, 0, 0, 0)');
- 
+
      const source: mapboxglTypes.GeoJSONSourceRaw = {
        type: 'geojson',
        data: {
@@ -2173,7 +2173,7 @@
      };
      // 图例处理
      this._initLegendConfigInfo(layerInfo, styleGroups);
- 
+
      // 获取样式
      const layerStyle: any = {
        layout: {}
@@ -2195,7 +2195,7 @@
        this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
      this._addLayerSucceeded();
    }
- 
+
    private _sendMapToUser(count: number, layersLen: number): void {
      if (count === layersLen) {
        /**
@@ -2207,7 +2207,7 @@
         * @property {string} mapParams.description - 地图描述。
         * @property {Array.<Object>} layers - 地图上所有的图层对象。
         */
- 
+
        this._sourceListModel = new SourceListModel({
          map: this.map
        });
@@ -2215,12 +2215,13 @@
        this.triggerEvent('addlayerssucceeded', {
          map: this.map,
          layers: this._appreciableLayers,
-         mapparams: this.mapParams,
+         // @ts-ignore
+         mapparams: this._mapInfo.mapParams,
          sourceListModel: this._sourceListModel
        });
      }
    }
- 
+
    private _moveLayer(layerID, beforLayerId = undefined) {
      if (this.map.getLayer(layerID)) {
        this.map.moveLayer(layerID, beforLayerId);
@@ -2228,7 +2229,7 @@
      }
      return false;
    }
- 
+
    private _rectifyLayersOrder() {
      const exsitLayers = this._appreciableLayers.filter(layer => !!this.map.getLayer(layer.layerID));
      const mapLayers = this.map.getStyle().layers;
@@ -2259,7 +2260,7 @@
        this._moveLayer(`${targetlayerId}-label`);
      }
    }
- 
+
    private _getParamString(obj: any, existingUrl: string, uppercase = false): string {
      const params = [];
      for (const i in obj) {
@@ -2267,7 +2268,7 @@
      }
      return (!existingUrl || existingUrl.indexOf('?') === -1 ? '?' : '&') + params.join('&');
    }
- 
+
    /**
     * @private
     * @function WebMapViewModel.prototype._transformStyleToMapBoxGl
@@ -2300,7 +2301,7 @@
          // strokeColor: 'fill-outline-color'
        };
      }
- 
+
      const newObj = {};
      for (const item in style) {
        if (transTable[item]) {
@@ -2334,10 +2335,10 @@
          newObj['circle-translate'] = [offsetX * style.radius, offsetY * style.radius];
        }
      }
- 
+
      return newObj;
    }
- 
+
    /**
     * @private
     * @function WebMapViewModel.prototype._addOverlayToMap
@@ -2376,7 +2377,7 @@
        this._addLayer(style);
      }
    }
- 
+
    private _addBaselayer(
      url: Array<string>,
      layerID: string,
@@ -2416,7 +2417,7 @@
      });
      this.baseLayerProxy = null;
    }
- 
+
    /**
     * @private
     * @function WebMapViewModel.prototype._addStrokeLineForPoly
@@ -2439,22 +2440,131 @@
      };
      this._addOverlayToMap('LINE', source, layerID, lineStyle, minzoom, maxzoom);
    }
- 
+
    private _initLegendConfigInfo(layerInfo: any, style: any): void {
-      const legendItem = {
-        layerId: layerInfo.layerID,
-        themeField: layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themeField,
-        styleGroup: style
-      };
-      if (layerInfo.layerType === 'UNIQUE') {
-        legendItem.styleGroup.forEach(styleGroup => {
-        styleGroup.className = this._selectLayerType(layerInfo.featureType, styleGroup.style);
-        styleGroup.style = this._uniqueSymbolStyle(styleGroup);
-      });
-      }
-      this._legendList.push(legendItem);
+     const legendItem = {
+       layerId: layerInfo.layerID,
+       layerTitle: layerInfo.layerID,
+       themeField: layerInfo.layerType === 'HEAT' ? layerInfo.themeSetting.weight : layerInfo.themeSetting.themeField,
+       styleGroup: style
+     };
+
+     const commonStyleGroupMapping = (styleGroup, layerInfo) => {
+       let newStyleGroup = {
+         style: {
+           shape: this._getShape(layerInfo.featureType),
+           type: this._getType(styleGroup.style.type)
+         }
+       };
+       this._addProps(newStyleGroup, styleGroup);
+       return newStyleGroup;
+     };
+
+     switch (layerInfo.layerType) {
+       case 'UNIQUE':
+         legendItem.styleGroup = legendItem.styleGroup.map(styleGroup => {
+           return {
+             fieldValue: styleGroup.value,
+             ...commonStyleGroupMapping(styleGroup, layerInfo)
+           };
+         });
+         break;
+       case 'RANGE':
+       case 'RANK_SYMBOL':
+         legendItem.styleGroup = legendItem.styleGroup.map(styleGroup => {
+           const newStyleGroup = {
+             start: styleGroup.start,
+             end: styleGroup.end,
+             ...commonStyleGroupMapping(styleGroup, layerInfo)
+           };
+           if(layerInfo.layerType === 'RANGE' && layerInfo.integerType) {
+             Object.assign(newStyleGroup, {
+               integerType: layerInfo.integerType
+             });
+           }
+           return newStyleGroup;
+         });
+         break;
+       case 'HEAT':
+         legendItem.styleGroup = [{
+           style: {
+             shape: 'POINT',
+             type: 'style',
+             colors: this._heatColorToGradient(legendItem.styleGroup)
+           }
+         }];
+         break;
+       default:
+         break;
+     }
+     this._legendList.push(legendItem);
    }
- 
+
+   _heatColorToGradient(colors = []) {
+     const colorList = [];
+     colors.forEach((color, index) => {
+       if (index > 5 && index % 2 === 0) {
+         colorList.push({
+           value: color,
+           key: index === 6 ? 0 : colors[index - 1]
+         });
+       }
+     });
+     return colorList;
+   }
+
+   _getType(type) {
+     return ['IMAGE_POINT', 'SVG_POINT'].includes(type) ? 'image' : 'style';
+   }
+
+   _getShape(shape) {
+     return shape === 'POLYGON' ? 'FILL' : shape;
+   }
+
+   _addProps(newStyleGroup, styleGroup) {
+     if (newStyleGroup.style.shape === 'POINT') {
+       Object.assign(newStyleGroup.style, {
+         color: styleGroup.style.fillColor || styleGroup.color,
+         opacity: styleGroup.style.fillOpacity,
+         fontSize: styleGroup.radius * 2 || styleGroup.style.fontSize || '14px'
+       });
+       if(newStyleGroup.style.type === 'image') {
+         Object.assign(newStyleGroup.style, {
+           url: styleGroup.style.imageInfo?.url || styleGroup.style.url
+         });
+         return;
+       }
+       if(styleGroup.style.className) {
+         Object.assign(newStyleGroup.style, {
+           icon: styleGroup.style.className
+         });
+         return;
+       }
+     }
+     if (newStyleGroup.style.shape === 'LINE') {
+       Object.assign(newStyleGroup.style, {
+         width: 20,
+         lineStyles: [{
+           color: styleGroup.color,
+           lineDash: [],
+           lineOffset: 0,
+           lineWidth: 2,
+           opacity: styleGroup.style.strokeOpacity || 1
+         }]
+       });
+       return;
+     }
+     if (newStyleGroup.style.shape === 'FILL') {
+       Object.assign(newStyleGroup.style, {
+         backgroundColor: styleGroup.style.fillColor || styleGroup.color,
+         opacity: styleGroup.style.fillOpacity,
+         outlineColor: styleGroup.style.strokeColor,
+         width: 20,
+         height: 20
+       });
+     }
+   }
+
    _createMvtLayer(info, layerInfo, featureType) {
      const style = this._getDataVectorTileStyle(featureType);
      const paint = this._transformStyleToMapBoxGl(style, featureType);
@@ -2481,7 +2591,7 @@
      });
      this._addLayerSucceeded();
    }
- 
+
    _getDataVectorTileStyle(featureType) {
      const styleParameters = {
        radius: 8, // 圆点半径
@@ -2504,7 +2614,7 @@
      }
      return styleParameters;
    }
- 
+
    _unproject(point: [number, number], isReverse = true): [number, number] {
      const sourceProjection = this._unprojectProjection || this.baseProjection;
      if (sourceProjection === 'EPSG:4326') {
@@ -2518,21 +2628,21 @@
      }
      return coor;
    }
- 
+
    private _getMapCenter(mapInfo) {
      // center
      let center: [number, number] | mapboxglTypes.LngLat;
      center = mapInfo.center && [mapInfo.center.x, mapInfo.center.y];
- 
+
      if (!center) {
        center = [0, 0];
      }
      center = this._unproject(center, false);
      center = new mapboxgl.LngLat(center[0], center[1]);
- 
+
      return center;
    }
- 
+
    private _getLabelFontFamily(mapInfo) {
      const fonts: string[] = [];
      const layers = mapInfo.layers;
@@ -2544,27 +2654,27 @@
      }
      fonts.push('supermapol-icons');
      const fontFamilys: string = fonts.join(',');
- 
+
      return fontFamilys;
    }
- 
+
    private _getTiandituUrl(mapInfo: any): { tiandituUrl: Array<string>; labelUrl: Array<string> } {
      const re = /t0/gi;
      type urlArr = Array<string>;
      const tiandituUrls: { tiandituUrl: urlArr; labelUrl: urlArr } = { tiandituUrl: [], labelUrl: [] };
- 
+
      const layerType = mapInfo.baseLayer.layerType.split('_')[1].toLowerCase();
      const isLabel = Boolean(mapInfo.baseLayer.labelLayerVisible);
      const token = this.tiandituKey || mapInfo.baseLayer.tk;
      let url = `https://t0.tianditu.gov.cn/{layer}_{proj}/wmts?tk=${token}`;
      let labelUrl = url;
- 
+
      const layerLabelMap = {
        vec: 'cva',
        ter: 'cta',
        img: 'cia'
      };
- 
+
      const tilematrixSet = this.baseProjection === 'EPSG:4326' ? 'c' : 'w';
      const options = {
        service: 'WMTS',
@@ -2577,17 +2687,17 @@
        width: 256,
        height: 256
      };
- 
+
      url += this._getParamString(options, url) + '&tilematrix={z}&tilerow={y}&tilecol={x}';
- 
+
      const tiandituUrl = url.replace('{layer}', layerType).replace('{proj}', tilematrixSet);
      const tiandituUrlArr: string[] = [];
- 
+
      for (let i = 0; i < 8; i++) {
        tiandituUrlArr.push(tiandituUrl.replace(re, `t${i}`));
      }
      tiandituUrls.tiandituUrl = tiandituUrlArr;
- 
+
      // 如果有 label 图层
      if (isLabel) {
        const labelLayer = layerLabelMap[layerType];
@@ -2600,10 +2710,10 @@
        }
        tiandituUrls.labelUrl = labelUrlArr;
      }
- 
+
      return tiandituUrls;
    }
- 
+
    private _defineProj4(projection: string, defaultEpsgCode?) {
      let epsgCode = projection;
      let epsgValue: string;
@@ -2617,7 +2727,7 @@
      }
      const defaultValue = getProjection(epsgCode);
      const defValue = epsgValue || defaultValue;
- 
+
      if (!defValue) {
        console.error(`${epsgCode} not define`);
      } else {
@@ -2626,7 +2736,7 @@
      }
      return epsgCode;
    }
- 
+
    private _fetchRequest(url: any, type: string, options: Object) {
      return SuperMap.FetchRequest.get(url, null, options).then(response => {
        return response[type]();
@@ -2638,25 +2748,25 @@
          console.log(error);
        });
    }
- 
+
    private getEpsgCodeWKT(projectionUrl, options) {
      if (!projectionUrl) {
        return;
      }
      return this._fetchRequest(projectionUrl, 'text', options);
    }
- 
+
    private getBounds(baseUrl, options) {
      if (!baseUrl) {
        return;
      }
      return this._fetchRequest(baseUrl, 'json', options);
    }
- 
+
    private _addLayer(layerInfo) {
      const { id } = layerInfo;
      layerInfo = Object.assign(layerInfo, { id });
- 
+
      if (this.map.getLayer(id)) {
        if (this.checkSameLayer && this._isSameRasterLayer(id, layerInfo)) return;
        this._updateLayer(layerInfo);
@@ -2664,7 +2774,7 @@
      }
      this.map.addLayer(layerInfo);
    }
- 
+
    private _isSameRasterLayer(id, layerInfo) {
      const {
        source: { type, tiles }
@@ -2684,7 +2794,7 @@
      }
      return false;
    }
-   
+
    cleanWebMap() {
      if (this.map) {
        this.stopCanvg();
@@ -2706,7 +2816,7 @@
        this._layerTimerList = [];
      }
    }
- 
+
    private centerValid(center) {
      if (
        center &&
@@ -2718,14 +2828,14 @@
      }
      return false;
    }
- 
+
    private _getResolution(bounds, tileSize = 512.0) {
      if (bounds.leftBottom && bounds.rightTop) {
        return Math.max(bounds.rightTop.x - bounds.leftBottom.x, bounds.rightTop.y - bounds.leftBottom.y) / tileSize;
      }
      return Math.max(bounds[2] - bounds[0], bounds[3] - bounds[1]) / tileSize;
    }
- 
+
    private _transformScaleToZoom(scale, crs?) {
      // @ts-ignore
      const extent = (crs || this.map.getCRS()).getExtent();
@@ -2735,7 +2845,7 @@
      const scaleDenominator = scale.split(':')[1];
      return Math.min(24, +Math.log2(scaleBase / +scaleDenominator).toFixed(2));
    }
- 
+
    private _updateLayer(layerInfo) {
      const {
        id,
@@ -2755,13 +2865,13 @@
        }
      }
    }
- 
+
    _updateRasterSource(sourceId, options) {
      if (!sourceId) {
        return;
      }
      const source = this.map.getSource(sourceId);
- 
+
      Object.assign(source, options);
      // @ts-ignore
      this.map.style.sourceCaches[sourceId].clearTiles();
@@ -2770,13 +2880,13 @@
      // @ts-ignore
      this.map.triggerRepaint();
    }
- 
+
    updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
      const layerId = layerInfo.layerId;
      // @ts-ignore
      const originLayerInfo = this._mapInfo.layers.find((layer) => {
        return layer.layerId === layerId;
-     })
+     });
      if (features) {
        this._initOverlayLayer(originLayerInfo, features, mergeByField);
      } else {
@@ -2784,12 +2894,11 @@
        this.getLayerFeatures(originLayerInfo, this._taskID, type);
      }
    }
- 
+
    isOnlineBaseLayer(url, projection) {
      return (
        url.startsWith('https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark') &&
        projection === 'EPSG:3857'
      );
    }
- }
- 
+}
