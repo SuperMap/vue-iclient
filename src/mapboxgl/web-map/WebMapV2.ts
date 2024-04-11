@@ -157,52 +157,6 @@ export default class WebMap extends WebMapBase {
     return this._legendList;
   }
 
-  _uniqueSymbolStyle(styleItem) {
-    const { style, radius, color } = styleItem;
-    let generateStyle: any = {};
-    switch (style.type) {
-      case 'BASIC_POINT':
-        generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
-        break;
-      case 'SYMBOL_POINT':
-        generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
-        generateStyle.fontSize = `${radius * 2}px`;
-        break;
-      case 'IMAGE_POINT':
-        generateStyle.background = `url(${style.imageInfo.url})`;
-        generateStyle.backgroundSize = 'contain';
-        generateStyle.width = `${(style.radius || radius) * 2}px`;
-        generateStyle.height = `${(style.radius || radius) * 2}px`;
-        break;
-      case 'SVG_POINT':
-        generateStyle['-webkit-mask'] = `url(${style.url})`;
-        generateStyle.backgroundColor = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
-        generateStyle['-webkit-mask-size'] = 'contain';
-        generateStyle.width = `${(style.radius || radius) * 2}px`;
-        generateStyle.height = `${(style.radius || radius) * 2}px`;
-        break;
-      default:
-        generateStyle.color = getColorWithOpacity(style.fillColor || color, style.fillOpacity);
-        break;
-    }
-    return generateStyle;
-  }
-
-  _selectLayerType(featureType, style) {
-    if (style.className) {
-      return style.className;
-    }
-    const result = {
-      POLYGON: 'sm-components-icon-ploygon',
-      POINT: 'sm-components-icon-multi-point',
-      LINE: 'sm-components-icon-line'
-    }[featureType];
-    if (featureType === 'POINT' && style.type !== 'BASIC_POINT') {
-      return '';
-    }
-    return result;
-  }
-
   get getSourceListModel(): SourceListModel {
     return this._sourceListModel;
   }
