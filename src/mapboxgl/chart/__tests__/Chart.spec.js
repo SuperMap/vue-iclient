@@ -4,7 +4,6 @@ import SmChart from '../Chart.vue';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import chart_restData from 'vue-iclient/test/unit/mocks/data/chart_restData';
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
-import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 import flushPromises from 'flush-promises';
 
 describe('Chart', () => {
@@ -110,7 +109,6 @@ describe('Chart', () => {
         ]
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.find('div#smchart-1').exists()).toBe(true);
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
@@ -235,7 +233,6 @@ describe('Chart', () => {
         }
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     done();
@@ -361,7 +358,6 @@ describe('Chart', () => {
         }
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     done();
@@ -482,7 +478,6 @@ describe('Chart', () => {
         }
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     done();
@@ -530,7 +525,6 @@ describe('Chart', () => {
         }
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     done();
@@ -723,7 +717,6 @@ describe('Chart', () => {
         colorGroup: ['#3fb1e3', '#6be6c1', '#626c91', '#a0a7e6', '#c4ebad']
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     done();
@@ -852,7 +845,6 @@ describe('Chart', () => {
         }
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     done();
@@ -892,7 +884,6 @@ describe('Chart', () => {
         ]
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     expect(wrapper.vm.mapTarget).toBe('map');
@@ -947,7 +938,6 @@ describe('Chart', () => {
         }
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     await wrapper.setProps({
@@ -1057,7 +1047,6 @@ describe('Chart', () => {
         ]
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     expect(wrapper.vm.mapTarget).toBe('map');
@@ -1112,7 +1101,6 @@ describe('Chart', () => {
         ]
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     expect(wrapper.vm.mapTarget).toBe('map');
@@ -1157,7 +1145,6 @@ describe('Chart', () => {
         ]
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     done();
@@ -1210,7 +1197,6 @@ describe('Chart', () => {
         ]
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     expect(wrapper.vm.$el.outerHTML).toContain('canvas');
     expect(wrapper.vm.mapTarget).toBe('map');
@@ -1279,7 +1265,6 @@ describe('Chart', () => {
         }
       }
     });
-    await mapSubComponentLoaded(wrapper);
     await flushPromises();
     wrapper.setProps({
       mapTarget: 'map',
@@ -1386,7 +1371,6 @@ describe('Chart', () => {
         }
       }
     });
-    await mapSubComponentLoaded(wrapper);
     let data=["四川","江苏","云南","江西","海南","台湾","上海","广东","福建","北京"]
     wrapper.vm._initAxisLabel({}, data)
     await flushPromises();

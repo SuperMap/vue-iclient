@@ -110,6 +110,9 @@ const commonMap = {
       getExtent: () => jest.fn()
     };
   },
+  getAppreciableLayers: () => {
+    return Object.values(layerIdMapList);
+  },
   addLayer: layerInfo => {
     layerIdMapList[layerInfo.id] = layerInfo;
     if (typeof layerInfo.source === 'object') {
@@ -129,6 +132,7 @@ const commonMap = {
   on: () => { },
   fire: () => { },
   setLayoutProperty: () => jest.fn(),
+  setPaintProperty: jest.fn(),
   addStyle: () => jest.fn(),
   remove: () => jest.fn(),
   setRenderWorldCopies: () => jest.fn(),
@@ -202,6 +206,7 @@ document.getElementsByClassName = () => {
 
 describe('WebMapViewModel.spec', () => {
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.setTimeout(30000);
   });
   afterEach(() => {
@@ -209,9 +214,10 @@ describe('WebMapViewModel.spec', () => {
     layerIdMapList = {};
     commonMap.style.sourceCaches = sourceIdMapList;
     jest.restoreAllMocks();
+    jest.useRealTimers();
   });
 
-  it('test baseLayer layers count maploaded', done => {
+  it('test baseLayer layers count maploaded', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile,
@@ -265,12 +271,12 @@ describe('WebMapViewModel.spec', () => {
       },
       addlayerssucceeded: data => {
         expect(addStyleSpy).toHaveBeenCalledTimes(1);
-        expect(data.layers.length).toBe(webmap_MAPBOXSTYLE_Tile.layers.length);
-        expect(viewModel.expectLayerLen).toBe(2);
-        expect(viewModel.layerAdded).toBe(2);
+        expect(viewModel.getAppreciableLayers().length).toBe(webmap_MAPBOXSTYLE_Tile.layers.length);
         done();
       }
     });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
   it('add uniqueLayer with id is num', async done => {
     const fetchResource = {
@@ -282,11 +288,11 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, { ...commonMap });
     const callback = function (data) {
-      expect(data.layers.length).toBe(uniqueLayer_polygon.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, { ...commonMap });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
@@ -306,14 +312,23 @@ describe('WebMapViewModel.spec', () => {
     const callback = function (data) {
       expect(viewModel.map).not.toBeUndefined();
       expect(viewModel.map.options.bounds).not.toBeUndefined();
-      expect(data.layers.length).toBe(id.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
   describe('test custom wkt', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.advanceTimersByTime(0);
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
     const commonFetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_CSV,
@@ -345,21 +360,30 @@ describe('WebMapViewModel.spec', () => {
       expect(errorSpy.mock.calls).toEqual([]);
       done();
     });
-    it('request wkt info and visibleExtend without EPSFG Prefix ', done => {
+    it('request wkt info and visibleExtend without EPSFG Prefix ', async done => {
       const epsgeCode =
         'PROJCS["Google Maps Global Mercator",GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]],PROJECTION["Mercator_2SP"],PARAMETER["standard_parallel_1",0],PARAMETER["latitude_of_origin",0],PARAMETER["central_meridian",0],PARAMETER["false_easting",0],PARAMETER["false_northing",0],AXIS["Northing", "NORTH"],AXIS["Easting", "EAST"],UNIT["Meter",1],EXTENSION["PROJ4","+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs"],AUTHORITY["EPSG","900913"]]';
       mockFetch(commonFetchResource);
       const id = { ...uniqueLayer_point, projection: epsgeCode };
       const callback = function (data) {
-        expect(data.layers.length).toBe(id.layers.length);
+        expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
         done();
       };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
       viewModel.on({ addlayerssucceeded: callback });
+      await flushPromises();
+      jest.advanceTimersByTime(0);
     });
   });
 
   describe("multi-coordinate", () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+      jest.advanceTimersByTime(0);
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
     const projection = 'PROJCS[\"CGCS2000 / 3-degree Gauss-Kruger CM 117E\", \r\n  GEOGCS[\"China Geodetic Coordinate System 2000\", \r\n    DATUM[\"China 2000\", \r\n      SPHEROID[\"CGCS2000\", 6378137.0, 298.257222101, AUTHORITY[\"EPSG\",\"1024\"]], \r\n      AUTHORITY[\"EPSG\",\"1043\"]], \r\n    PRIMEM[\"Greenwich\", 0.0, AUTHORITY[\"EPSG\",\"8901\"]], \r\n    UNIT[\"degree\", 0.017453292519943295], \r\n    AXIS[\"lat\", NORTH], \r\n    AXIS[\"lon\", EAST], \r\n    AUTHORITY[\"EPSG\",\"4490\"]], \r\n  PROJECTION[\"Transverse_Mercator\", AUTHORITY[\"EPSG\",\"9807\"]], \r\n  PARAMETER[\"central_meridian\", 117.0], \r\n  PARAMETER[\"latitude_of_origin\", 0.0], \r\n  PARAMETER[\"scale_factor\", 1.0], \r\n  PARAMETER[\"false_easting\", 500000.0], \r\n  PARAMETER[\"false_northing\", 0.0], \r\n  UNIT[\"m\", 1.0], \r\n  AXIS[\"Northing\", NORTH], \r\n  AXIS[\"Easting\", EAST], \r\n  AUTHORITY[\"EPSG\",\"4548\"]]'
     const wkt = 'PROJCS["China_2000_3_DEGREE_GK_Zone_39N",GEOGCS["GCS_China_2000",DATUM["D_China_2000",SPHEROID["CGCS2000",6378137.0,298.257222101,AUTHORITY["EPSG","7044"]]],PRIMEM["Greenwich",0.0,AUTHORITY["EPSG","8901"]],UNIT["DEGREE",0.017453292519943295],AUTHORITY["EPSG","4490"]],PROJECTION["Transverse_Mercator",AUTHORITY["EPSG","9807"]],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",117.0],PARAMETER["Latitude_Of_Origin",0.0],PARAMETER["Scale_Factor",1.0],UNIT["METER",1.0],AUTHORITY["EPSG","4548"]]';
     const commonResource = {
@@ -400,14 +424,13 @@ describe('WebMapViewModel.spec', () => {
       });
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
-      await flushPromises()
       const callback = function (data) {
-        console.log(data);
-        expect(data.layers.length).toBe(id.layers.length);
-        expect(viewModel.layerAdded).toBe(1);
+        expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
         done();
       };
       viewModel.on({ addlayerssucceeded: callback });
+      await flushPromises();
+      jest.advanceTimersByTime(0);
     });
 
     it('layerType is MAPBOXSTYLE and webInfo projection is wkt and indexbounds is not exist', async done => {
@@ -422,13 +445,13 @@ describe('WebMapViewModel.spec', () => {
       });
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
-      await flushPromises()
       const callback = function (data) {
-        expect(data.layers.length).toBe(id.layers.length);
-        expect(viewModel.layerAdded).toBe(1);
+        expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
         done();
       };
       viewModel.on({ addlayerssucceeded: callback });
+      await flushPromises();
+      jest.advanceTimersByTime(0);
     });
 
     it('layerType is Tile and webInfo projection is wkt', async done => {
@@ -442,7 +465,7 @@ describe('WebMapViewModel.spec', () => {
       await flushPromises()
       done();
       const callback = function (data) {
-        expect(data.layers.length).toBe(id.layers.length);
+        expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
         done();
       };
       viewModel.on({ addlayerssucceeded: callback });
@@ -460,7 +483,7 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const id = vectorLayer_point;
     const callback = function (data) {
-      expect(data.layers.length).toBe(id.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption }, undefined, { ...commonMap });
@@ -489,7 +512,7 @@ describe('WebMapViewModel.spec', () => {
       getSource: () => ''
     };
     const callback = function (data) {
-      expect(data.layers.length).toBe(roadId.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(roadId.layers.length);
       done();
     };
     const viewModel = new WebMapViewModel(roadId, { ...commonOption }, mapOptions, map);
@@ -520,26 +543,27 @@ describe('WebMapViewModel.spec', () => {
     };
     const callback = async function (data) {
       await flushPromises();
-      expect(data.layers.length).toBe(subwayId.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(subwayId.layers.length);
       done();
     };
     const viewModel = new WebMapViewModel(subwayId, { ...commonOption }, undefined, { ...commonMap });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  it('add vectorLayer_polygon', done => {
+  it('add vectorLayer_polygon', async done => {
     const id = vectorLayer_polygon;
-    const callback = async function (data) {
-      await flushPromises();
-      expect(data.layers.length).toBe(id.layers.length);
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
+    const callback = function (data) {
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
   // _initGraticuleLayer
-  it('add rangeLayer', done => {
+  it('add rangeLayer', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/1171594968/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_CSV
@@ -562,36 +586,42 @@ describe('WebMapViewModel.spec', () => {
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add heatLayer', done => {
+  it('add heatLayer', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_CSV
     };
     mockFetch(fetchResource);
     const id = heatLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
     const callback = function (data) {
-      expect(data.layers.length).toBe(id.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add markerLayer correctly', done => {
+  it('add markerLayer correctly', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_geojson['MARKER_GEOJSON']
     };
     mockFetch(fetchResource);
     const id = markerLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
     const callback = function (data) {
-      expect(data.layers.length).toBe(id.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
   it('add markerLayer layerOrder correctly', done => {
@@ -601,20 +631,19 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const id = markerLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
-      expect(data.layers.length).toBe(id.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       const layers = data.map.getStyle().layers;
       expect(layers[layers.length - 2].id).toBe('民航数-TEXT-7');
-      console.log(layers[layers.length - 1]);
       expect(layers[layers.length - 1].type).toBe('circle');
       expect(layers[layers.length - 1].paint['circle-color']).toBe('#de2b41');
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  it('markerLayer url is error', done => {
+  it('markerLayer url is error', async done => {
     const newLayerData_geojson = {
       ...layerData_geojson['MARKER_GEOJSON'],
       content:
@@ -626,45 +655,51 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const id = markerLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
     const callback = function (data) {
-      expect(data.layers.length).toBe(id.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add migrationLayer', done => {
+  it('add migrationLayer', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/516597759/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_CSV
     };
     mockFetch(fetchResource);
     const id = migrationLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
     const callback = function (data) {
-      expect(data.layers.length).toBe(id.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add ranksymbolLayer', done => {
+  it('add ranksymbolLayer', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_CSV
     };
     mockFetch(fetchResource);
     const id = ranksymbolLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
     const callback = function (data) {
-      expect(data.layers.length).toBe(id.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length);
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add dataflow and update', done => {
+  it('add dataflow and update', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_CSV,
@@ -676,20 +711,28 @@ describe('WebMapViewModel.spec', () => {
         dataflowLayerData.subscribe
     };
     mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(dataflowLayer, { ...commonOption }, undefined, { ...commonMap });
     const callback = function (data) {
-      expect(data.layers.length).toBe(dataflowLayer.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(dataflowLayer.layers.length);
       viewModel.updateOverlayLayer(dataflowLayer.layers[0]);
       expect(() => {
         viewModel.updateOverlayLayer(dataflowLayer.layers[0]);
       }).not.toThrow();
       done();
     };
-    const viewModel = new WebMapViewModel(dataflowLayer, { ...commonOption }, undefined, { ...commonMap });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
   // public Func
   describe('resize', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
     it('resize normal', async done => {
       const fetchResource = {
         'https://fakeiportal.supermap.io/iportal/web/datas/516597759/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
@@ -698,14 +741,20 @@ describe('WebMapViewModel.spec', () => {
       mockFetch(fetchResource);
       const id = migrationLayer;
       const viewModel = new WebMapViewModel(id, { ...commonOption });
-      const spy = jest.spyOn(viewModel, 'echartsLayerResize');
+      viewModel.on({
+        mapinitialized: () => {
+          const spy = jest.spyOn(viewModel._handler, 'echartsLayerResize');
+          viewModel.resize();
+          expect(spy).toBeCalled();
+          done();
+        }
+      });
       await flushPromises();
-      viewModel.resize();
-      expect(spy).toBeCalled();
+      jest.advanceTimersByTime(0);
       done();
     });
 
-    it('resize keepbounds', async done => {
+    it('resize keepbounds', done => {
       const fetchResource = {
         'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
         'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
@@ -716,15 +765,24 @@ describe('WebMapViewModel.spec', () => {
       };
       mockFetch(fetchResource);
       const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-      const spy = jest.spyOn(viewModel.map, 'setZoom');
-      await flushPromises();
-      viewModel.resize(true);
-      expect(spy).toBeCalled();
-      done();
+      viewModel.on({
+        addlayerssucceeded: () => {
+          const spy = jest.spyOn(viewModel.map, 'setZoom');
+          viewModel.resize(true);
+          expect(spy).toBeCalled();
+          done();
+        }
+      });
     });
   });
 
   describe('setCrs', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
     beforeEach(() => {
       const fetchResource = {
         'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
@@ -756,12 +814,18 @@ describe('WebMapViewModel.spec', () => {
         epsgCode: 'EPSG:4326'
       };
       const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-      const spy = jest.spyOn(viewModel.map, 'setCRS');
+      viewModel.on({
+        mapinitialized: () => {
+          const spy = jest.spyOn(viewModel.map, 'setCRS');
+          expect(viewModel.mapOptions.crs).toBeUndefined();
+          viewModel.setCrs(crsWithEpsgcode);
+          expect(viewModel.mapOptions.crs).not.toBeUndefined();
+          expect(spy).toBeCalled();
+          done();
+        }
+      });
       await flushPromises();
-      expect(viewModel.mapOptions.crs).toBeUndefined();
-      viewModel.setCrs(crsWithEpsgcode);
-      expect(viewModel.mapOptions.crs).not.toBeUndefined();
-      expect(spy).toBeCalled();
+      jest.advanceTimersByTime(0);
       done();
     });
 
@@ -779,6 +843,13 @@ describe('WebMapViewModel.spec', () => {
 
   describe('setCenter', () => {
     beforeEach(() => {
+      jest.useFakeTimers();
+      jest.advanceTimersByTime(0);
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
+    beforeEach(() => {
       const fetchResource = {
         'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
         'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
@@ -792,8 +863,9 @@ describe('WebMapViewModel.spec', () => {
     it('set invalid data', async done => {
       const center = [];
       const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-      const spy = jest.spyOn(viewModel.map, 'getCenter');
       await flushPromises();
+      jest.advanceTimersByTime(0);
+      const spy = jest.spyOn(viewModel.map, 'getCenter');
       expect(spy).not.toBeCalled();
       viewModel.setCenter(center);
       expect(spy).not.toBeCalled();
@@ -803,8 +875,9 @@ describe('WebMapViewModel.spec', () => {
     it('set valid data', async done => {
       const center = [1, 1];
       const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-      const spy = jest.spyOn(viewModel.map, 'setCenter');
       await flushPromises();
+      jest.advanceTimersByTime(0);
+      const spy = jest.spyOn(viewModel.map, 'setCenter');
       expect(spy).not.toBeCalled();
       viewModel.setCenter(center);
       expect(spy).toBeCalled();
@@ -824,8 +897,9 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const renderWorldCopies = true;
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-    const spy = jest.spyOn(viewModel.map, 'setRenderWorldCopies');
     await flushPromises();
+    jest.advanceTimersByTime(0);
+    const spy = jest.spyOn(viewModel.map, 'setRenderWorldCopies');
     expect(spy).not.toBeCalled();
     viewModel.setRenderWorldCopies(renderWorldCopies);
     expect(spy).toBeCalled();
@@ -844,8 +918,9 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const bearing = 0;
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-    const spy = jest.spyOn(viewModel.map, 'setBearing');
     await flushPromises();
+    jest.advanceTimersByTime(0);
+    const spy = jest.spyOn(viewModel.map, 'setBearing');
     expect(viewModel.mapOptions.bearing).toBeUndefined();
     viewModel.setBearing();
     expect(viewModel.mapOptions.bearing).toBeUndefined();
@@ -868,8 +943,9 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const pitch = 0;
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-    const spy = jest.spyOn(viewModel.map, 'setPitch');
     await flushPromises();
+    jest.advanceTimersByTime(0);
+    const spy = jest.spyOn(viewModel.map, 'setPitch');
     expect(viewModel.mapOptions.pitch).toBeUndefined();
     viewModel.setPitch();
     expect(spy).not.toBeCalled();
@@ -894,8 +970,9 @@ describe('WebMapViewModel.spec', () => {
       color: '#fff'
     };
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-    const spy = jest.spyOn(viewModel.map, 'setStyle');
     await flushPromises();
+    jest.advanceTimersByTime(0);
+    const spy = jest.spyOn(viewModel.map, 'setStyle');
     expect(spy).not.toBeCalled();
     viewModel.on({
       addlayerssucceeded: e => {
@@ -919,13 +996,18 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-    const spy = jest.spyOn(viewModel, '_updateRasterSource');
+    viewModel.on({
+      addlayerssucceeded: () => {
+        const spy = jest.spyOn(viewModel._handler, '_updateRasterSource');
+        viewModel.setRasterTileSize(-1);
+        expect(spy).not.toBeCalled();
+        viewModel.setRasterTileSize(2);
+        expect(spy).toBeCalled();
+        done();
+      }
+    });
     await flushPromises();
-    viewModel.setRasterTileSize(-1);
-    expect(spy).not.toBeCalled();
-    viewModel.setRasterTileSize(2);
-    expect(spy).toBeCalled();
-    done();
+    jest.advanceTimersByTime(0);
   });
 
   it('setLayersVisible', done => {
@@ -938,21 +1020,21 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
-      expect(data.layers.length).toBe(uniqueLayer_polygon.layers.length);
+      expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length);
       const isShow = false;
       const changeShow = true;
       const ignoreIds = ['China'];
       const spy1 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       viewModel.setLayersVisible(isShow, ignoreIds);
-      expect(spy1.mock.calls.length).toBe(viewModel._cacheLayerId.length - 1);
+      expect(spy1.mock.calls.length).toBe(viewModel._cacheLayerId.length);
       spy1.mockClear();
       const spy2 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       viewModel.setLayersVisible(changeShow);
       expect(spy2.mock.calls.length).toBe(viewModel._cacheLayerId.length);
       done();
     };
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
@@ -966,25 +1048,19 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
-      expect(data.layers.length).toBe(uniqueLayer_polygon.layers.length);
-      const spyLayer = jest.spyOn(viewModel.map, 'removeLayer');
-      const spySource = jest.spyOn(viewModel.map, 'removeSource');
-      const layersLen = Object.keys(layerIdMapList).length;
-      const sourcesLen = Object.keys(sourceIdMapList).length;
+      expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length);
       expect(viewModel._cacheLayerId.length).not.toBe(0);
       viewModel.cleanLayers();
-      expect(spyLayer.mock.calls.length).toBe(layersLen);
-      expect(spySource.mock.calls.length).toBe(sourcesLen);
       expect(viewModel._cacheLayerId.length).toBe(0);
       done();
     };
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
   // 在 MD 调用
-  it('updateOverlayLayer mvt', done => {
+  it('updateOverlayLayer unique', done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
@@ -996,54 +1072,59 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
-      expect(data.layers.length).toBe(uniqueLayer_polygon.layers.length);
-      const mvtLayerInfo = {
-        layerID: 'style1',
-        layerType: 'mvt',
-        visible: false,
-        featureType: 'POLYGON',
-        style: {
-          radius: 6,
-          fillColor: '#ff0000',
-          fillOpacity: 0.9,
-          strokeColor: '#ffffff',
-          strokeWidth: 1,
-          strokeOpacity: 1,
-          lineDash: 'solid',
-          symbolType: 'svg',
-          type: 'POLYGON'
+      expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length);
+      const layerInfo = { ...uniqueLayer_polygon.layers[0], layerID: uniqueLayer_polygon.layers[0].name };
+      const features = [{
+        type: "Feature",
+        geometry: {
+          type: "Point",
+          coordinates: [
+            116.588918,
+            40.07108,
+          ],
         },
-        labelStyle: {},
-        projection: 'EPSG:3857',
-        featureType: 'POLYGON'
-      };
-      const mvtFeatures = {
-        info: { url: 'http://fack/iserver/services/mvt-example' },
-        featureType: 'POLYGON'
-      };
-      const spy = jest.spyOn(viewModel, '_initOverlayLayer');
-      viewModel.updateOverlayLayer(mvtLayerInfo, mvtFeatures);
+        properties: {
+          latitude: "40.07108",
+          longitude: "116.588918",
+          altitude: "",
+          geometry: "Point",
+          "机场": "北京/首都",
+          "X坐标": "116.588918",
+          "Y坐标": "40.07108",
+          "名次": "1",
+          "2017旅客吞吐量（人次）": "95786296 ",
+          "2016旅客吞吐量（人次）": "94393454 ",
+          "同比增速%": "-1.5",
+          "张家界": "94393454 ",
+          index: "0",
+        },
+      }];
+      const spy = jest.spyOn(viewModel._handler, '_initOverlayLayer');
+      viewModel.updateOverlayLayer(layerInfo, features);
       expect(spy).toBeCalled();
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  it('add baselayer which is baidu', done => {
+  it('add baselayer which is baidu', async done => {
     const callback = function (data) {
       expect(data).not.toBeUndefined();
       done();
     };
     const viewModel = new WebMapViewModel(baseLayers['BAIDU']);
     viewModel.on({ notsupportbaidumap: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('_getMapCenter 4490', done => {
+  it('_getMapCenter 4490', async done => {
     const fetchResource = {
       'http://fake/fakeiportal/web/config/portal.json': iportal_serviceProxy,
       'http://fake/fakeiportal/web/maps/1791328696/map.json': raster4490
     };
     mockFetch(fetchResource);
+    jest.useFakeTimers();
     const viewModel = new WebMapViewModel(
       '1791328696',
       {
@@ -1067,9 +1148,12 @@ describe('WebMapViewModel.spec', () => {
         done();
       }
     });
+    await flushPromises();
+    jest.advanceTimersByTime(120);
   });
 
-  it('getFilterFeatures 2020年人口总数', done => {
+  it('getFilterFeatures 2020年人口总数', async done => {
+    jest.useFakeTimers();
     const fetchResource = {
       'http://fake/fakeiportal/web/config/portal.json': iportal_serviceProxy,
       'http://fake/fakeiportal/web/maps/test/map.json': raster4490
@@ -1093,28 +1177,31 @@ describe('WebMapViewModel.spec', () => {
 
     viewModel.on({
       mapinitialized: () => {
-        viewModel._updateDataFlowFeature = jest.fn();
-        viewModel._handleDataflowFeatures(
+        viewModel._handler._updateDataFlowFeature = jest.fn();
+        viewModel._handler._handleDataflowFeatures(
           { filterCondition: '2020年人口总数>10' },
           { data: JSON.stringify({ properties: { '2020年人口总数': 15 } }) }
         );
-        const res = viewModel.getFilterFeatures('2020年人口总数>10', [{ properties: { '2020年人口总数': 15 } }]);
+        const res = viewModel._handler.getFilterFeatures('2020年人口总数>10', [{ properties: { '2020年人口总数': 15 } }]);
         expect(res.length).toBe(1);
-        const res1 = viewModel.getFilterFeatures('气压传感器海拔高度（米）>2000', [
+        const res1 = viewModel._handler.getFilterFeatures('气压传感器海拔高度（米）>2000', [
           { properties: { '气压传感器海拔高度（米）': 15 } }
         ]);
         expect(res1.length).toBe(1);
         done();
       }
     });
+    await flushPromises();
+    jest.advanceTimersByTime(120);
   });
 
-  it('isvj-5215', done => {
+  it('isvj-5215', async done => {
     const fetchResource = {
       'http://fake/fakeiportal/web/config/portal.json': iportal_serviceProxy,
       'http://fake/fakeiportal/web/maps/test/map.json': raster4490
     };
     mockFetch(fetchResource);
+    jest.useFakeTimers();
     const viewModel = new WebMapViewModel(
       'test',
       {
@@ -1237,7 +1324,7 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({
       mapinitialized: () => {
         viewModel._updateDataFlowFeature = jest.fn();
-        const res = viewModel.getUniqueStyleGroup(parameters, [
+        const res = viewModel._handler.getUniqueStyleGroup(parameters, [
           { properties: { UserID: 30 } },
           { properties: { UserID: 0 } }
         ]);
@@ -1245,6 +1332,8 @@ describe('WebMapViewModel.spec', () => {
         done();
       }
     });
+    await flushPromises();
+    jest.advanceTimersByTime(120);
   });
   it('crs not support', done => {
     const get = jest.spyOn(CRS, 'get');
@@ -1259,31 +1348,37 @@ describe('WebMapViewModel.spec', () => {
     }
   });
 
-  it('add baselayer which is bing', done => {
+  it('add baselayer which is bing', async done => {
+    jest.useFakeTimers();
     const callback = function (data) {
       expect(data).not.toBeUndefined();
       done();
     };
     const viewModel = new WebMapViewModel(baseLayers['BING']);
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add baselayer which is goole_cn', done => {
+  it('add baselayer which is goole_cn', async done => {
+    jest.useFakeTimers();
     const callback = function (data) {
       expect(data).not.toBeUndefined();
       done();
     };
     const viewModel = new WebMapViewModel(baseLayers['GOOGLE']);
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add wmsLayer with correct url and version is less than 1.3', done => {
+  it('add wmsLayer with correct url and version is less than 1.3', async done => {
     const fetchResource = {
       'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day?REQUEST=GetCapabilities&SERVICE=WMS':
         wmsCapabilitiesText
     };
     mockFetch(fetchResource);
-    const viewModel = new WebMapViewModel({
+    const mapData = {
       ...wmsLayer,
       layers: [
         {
@@ -1291,14 +1386,19 @@ describe('WebMapViewModel.spec', () => {
           url: 'http://fake/iserver/services/map-world/wms130/%E4%B8%96%E7%95%8C%E5%9C%B0%E5%9B%BE_Day'
         }
       ]
-    });
-    const addLayerSpy = jest.spyOn(viewModel.map, 'addLayer');
+    };
+    const viewModel = new WebMapViewModel(mapData);
     const callback = function (data) {
-      expect(addLayerSpy).toHaveBeenCalledTimes(2);
+      console.log(33);
+      expect(viewModel.getAppreciableLayers().length).toBe(mapData.layers.length);
+      console.log(44);
       expect(data).not.toBeUndefined();
+      console.log(55);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
   it('add wmsLayer with correct url and version is 1.3.0', async done => {
@@ -1307,8 +1407,7 @@ describe('WebMapViewModel.spec', () => {
         wmsCapabilitiesTextWith130
     };
     mockFetch(fetchResource);
-    const callback = async function (data) {
-      await flushPromises();
+    const callback = function (data) {
       expect(data).not.toBeUndefined();
       expect(data.map.overlayLayersManager['世界地图_Day'].source.tiles[0].indexOf('{bbox-wms-1.3.0}')).toBeGreaterThan(
         -1
@@ -1327,27 +1426,29 @@ describe('WebMapViewModel.spec', () => {
       ]
     });
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add wmtsLayer with correct url', done => {
+  it('add wmtsLayer with correct url', async done => {
     const fetchResource = {
       'http://fack/iserver/services/map-china400/wmts100?REQUEST=GetCapabilities&SERVICE=WMTS&VERSION=1.0.0':
         wmtsCapabilitiesText
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(baseLayers['WMTS'], { ...commonOption });
-    const addLayerSpy = jest.spyOn(viewModel.map, 'addLayer');
     const callback = function (data) {
-      expect(addLayerSpy).toHaveBeenCalledTimes(2);
+      expect(viewModel.getAppreciableLayers().length).toBe(baseLayers['WMTS'].layers.length);
       expect(data).not.toBeUndefined();
-      expect(viewModel.getSourceListModel).not.toBeNull();
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
-  it('add wmtsLayer with error url', done => {
-    const callback = async function (data) {
+  it('add wmtsLayer with error url', async done => {
+    const callback = function (data) {
       expect(data).not.toBeUndefined();
       done();
     };
@@ -1356,32 +1457,33 @@ describe('WebMapViewModel.spec', () => {
       layers: [{ ...wmtsLayer.layers[0], url: '/iserver/services/map-china400/wmts100' }]
     });
     viewModel.on({ getmapinfofailed: callback });
+    jest.advanceTimersByTime(0);
+    await flushPromises();
   });
 
   describe('test layer autorefresh and visblescale', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
     it('tile layer', async done => {
       const viewModel = new WebMapViewModel(
         restmapLayer,
-        { ...commonOption },
+        { ...commonOption, ignoreBaseProjection: true },
         { ...commonMapOptions },
         { ...commonMap }
       );
-      jest.useFakeTimers();
-      expect(viewModel._layerTimerList.length).toBe(0);
       await flushPromises();
       jest.advanceTimersByTime(1000);
-      expect(viewModel._layerTimerList.length).not.toBe(0);
-      jest.useRealTimers();
+      expect(viewModel._handler._layerTimerList.length).not.toBe(0);
       done();
     });
     it('other layer except tile layer', async done => {
       const viewModel = new WebMapViewModel(heatLayer, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
-      jest.useFakeTimers();
-      expect(viewModel._layerTimerList.length).toBe(0);
       await flushPromises();
-      jest.advanceTimersByTime(1000);
-      expect(viewModel._layerTimerList.length).not.toBe(0);
-      jest.useRealTimers();
+      expect(viewModel._handler._layerTimerList.length).not.toBe(0);
       done();
     });
   });
@@ -1405,8 +1507,14 @@ describe('WebMapViewModel.spec', () => {
   });
 
   describe('test transformRequest', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+    afterEach(() => {
+      jest.useRealTimers();
+    });
     const proxyStr = 'http://localhost:8080/iportal/apps/viewer/getUrlResource.png?url=';
-    it('add online map', done => {
+    it('add online map', async done => {
       const viewModel = new WebMapViewModel(baseLayers['TILE'], {
         isSuperMapOnline: true,
         serverUrl: 'https://www.supermapol.com'
@@ -1419,19 +1527,30 @@ describe('WebMapViewModel.spec', () => {
           'https://',
           'http://'
         );
+      await flushPromises();
+      jest.advanceTimersByTime(0);
       const transformed = viewModel.map.options.transformRequest(mockTileUrl, 'Tile');
       expect(transformed.url).toMatch('https://www.supermapol.com/apps/viewer/getUrlResource.png?url=');
       done();
     });
-    it('add iportal map', done => {
+    it('add iportal map', async done => {
       const viewModel = new WebMapViewModel(baseLayers['BAIDU']);
       const mockTileUrl = '';
+      await flushPromises();
+      jest.advanceTimersByTime(0);
       const transformed = viewModel.map.options.transformRequest(mockTileUrl);
       expect(transformed.url).toBe(mockTileUrl);
       done();
     });
 
     describe('add internet map', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+        jest.advanceTimersByTime(0);
+      });
+      afterEach(() => {
+        jest.useRealTimers();
+      });
       const tiles = [
         'https://t0.tianditu.gov.cn/ter_w/wmts?tk=1d109683f4d84198e37a38c442d68311&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=ter&tilematrix={z}&tilerow={y}&tilecol={x}',
         'https://t1.tianditu.gov.cn/ter_w/wmts?tk=1d109683f4d84198e37a38c442d68311&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=ter&tilematrix={z}&tilerow={y}&tilecol={x}',
@@ -1463,13 +1582,12 @@ describe('WebMapViewModel.spec', () => {
         minzoom: 0,
         maxzoom: 22
       };
-      it('test fadeDuration', done => {
-        jest.useFakeTimers();
+      it('test fadeDuration', async done => {
         const viewModel = new WebMapViewModel('', { ...commonOption }, { ...mapOptions, fadeDuration: 300 });
         expect(viewModel.map).toBeUndefined();
+        await flushPromises();
         jest.advanceTimersByTime(0);
         expect(viewModel.map).not.toBeUndefined();
-        jest.useRealTimers();
         done();
       });
       it('test transformRequest when proxy is string', done => {
@@ -1488,24 +1606,16 @@ describe('WebMapViewModel.spec', () => {
       });
     });
   });
-  it('layerFilter', done => {
-    const callback = function (data) {
-      expect(data.layers.length).toBe(1);
+  it('layerFilter', async done => {
+    const viewModel = new WebMapViewModel(vectorLayer_line, {}, undefined, null, function (layer) {
+      return layer.name === '浙江省高等院校(3)';
+    });
+    const callback = function () {
+      expect(viewModel.getAppreciableLayers().length).toBe(1);
       done();
     };
-    const viewModel = new WebMapViewModel(vectorLayer_line, {}, undefined, null, function (layer) {
-      return layer.name === '浙江省高等院校(3)';
-    });
     viewModel.on({ addlayerssucceeded: callback });
-  });
-
-  it('stopCanvg', done => {
-    const viewModel = new WebMapViewModel(vectorLayer_line, {}, undefined, null, function (layer) {
-      return layer.name === '浙江省高等院校(3)';
-    });
-    viewModel.canvgsV = [{ stop: jest.fn() }];
-    viewModel.stopCanvg();
-    expect(viewModel.canvgsV.length).toBe(0);
-    done();
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 });

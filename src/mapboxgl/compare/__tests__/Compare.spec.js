@@ -2,7 +2,6 @@ import { mount, config } from '@vue/test-utils';
 import SmWebMap from '../../web-map/WebMap.vue';
 import SmCompare from '../Compare.vue';
 import Compare from '../index';
-import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
 
 jest.mock('mapbox-gl-compare', () => require('@mocks/compare'));
 
@@ -62,8 +61,7 @@ describe('Copmpare.vue', () => {
         };
       }
     });
-    await mapLoaded(wrapper.vm.$children[0].$children[0]);
-    await mapLoaded(wrapper.vm.$children[0].$children[1]);
+    await wrapper.vm.$nextTick();
     expect(wrapper.find('div.sm-component-compare').exists()).toBe(true);
     expect(wrapper.find('div#comparison-container').exists()).toBe(true);
     expect(wrapper.find('#beforeMap').exists()).toBe(true);
@@ -110,8 +108,7 @@ describe('Copmpare.vue', () => {
         }
       }
     );
-    await mapLoaded(wrapper.vm.$children[0].$children[0]);
-    await mapLoaded(wrapper.vm.$children[0].$children[1]);
+    await wrapper.vm.$nextTick();
     expect(wrapper.find('.sm-component-compare').attributes()).toHaveProperty('linesize', '5');
     expect(wrapper.find('.sm-component-compare').attributes()).toHaveProperty('slidebackground', '#f00');
     expect(wrapper.find('.sm-component-compare').attributes()).toHaveProperty('slidesize', '90');

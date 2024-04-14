@@ -589,7 +589,7 @@ describe('WebMap.vue', () => {
     });
     await mapWrapperLoaded(wrapper);
     expect(spy).toBeCalled();
-    wrapper.setProps({
+    await wrapper.setProps({
       mapId: '1234',
       serverUrl: 'https://fakeiportal1.supermap.io/iportal',
       withCredentials: false,

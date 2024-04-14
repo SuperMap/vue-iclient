@@ -119,10 +119,6 @@ export default class WebMapViewModel extends Events {
 
   protected webMapService: WebMapService;
 
-  protected layerAdded: number;
-
-  protected expectLayerLen: number;
-
   constructor(
     id: string | number | Object,
     options: webMapOptions = {},
@@ -135,6 +131,7 @@ export default class WebMapViewModel extends Events {
   ) {
     super();
     this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
+    this.proxy = options.proxy;
     if (typeof id === 'string' || typeof id === 'number') {
       this.mapId = id;
     } else if (id !== null && typeof id === 'object') {
@@ -146,6 +143,7 @@ export default class WebMapViewModel extends Events {
     }
     this.bounds = mapOptions.bounds;
     this.target = options.target || 'map';
+    this.options = options;
     this.renderWorldCopies = mapOptions.renderWorldCopies;
     this.layerFilter = layerFilter;
     this._appreciableLayers = [];
@@ -279,6 +277,7 @@ export default class WebMapViewModel extends Events {
 
   protected cleanLayers() {
     this._taskID = null;
+    // TODO 应该遍历的是可感知图层的渲染图层
     this._cacheLayerId.forEach(layerId => {
       if (this.map && this.map.getLayer(layerId)) {
         this.map.removeLayer(layerId);
@@ -458,16 +457,39 @@ export default class WebMapViewModel extends Events {
     const webMapHandler = new WebMapV2(
       this.mapId,
       {
+        ...this.options,
+        iportalServiceProxyUrlPrefix: this.webMapService.iportalServiceProxyUrl,
         serverUrl: this.serverUrl,
         withCredentials: this.withCredentials,
         target: this.target,
-        mapInfo
+        mapInfo,
+        parentEvents: {
+          ...this.eventTypes.reduce((events, name) => {
+            events[name] = (params) => {
+              this.triggerEvent(name, params);
+            };
+            return events;
+          }, {}),
+          mapinitialized: ({ map }) => {
+            this.map = map;
+            this.triggerEvent('mapinitialized', { map: this.map });
+          },
+          addlayerssucceeded: ({ mapparams, map, sourceListModel, layers }) => {
+            this.mapParams = mapparams;
+            this._sourceListModel = sourceListModel;
+            this._appreciableLayers = layers;
+            this._cacheLayerId.push(...layers.map(layer => layer.id));
+            this.triggerEvent('addlayerssucceeded', {
+              map: map,
+              mapparams: this.mapParams
+            });
+          }
+        }
       },
       this.mapOptions,
       this.map,
       this.layerFilter
     );
-    this._registerV2Events(webMapHandler);
     return webMapHandler;
   }
 
@@ -538,32 +560,6 @@ export default class WebMapViewModel extends Events {
       this.map
     );
     return webMapHandler;
-  }
-
-  _registerV2Events(webMapHandler): void {
-    if (!webMapHandler) {
-      return;
-    }
-    let _this = this;
-    webMapHandler.on({
-      mapinitialized: ({ map }) => {
-        this.map = map;
-        this.triggerEvent('mapinitialized', { map: this.map });
-      },
-      addlayerssucceeded: ({ mapparams, map, sourceListModel, layers }) => {
-        _this.mapParams = mapparams;
-        _this._sourceListModel = sourceListModel;
-        this._appreciableLayers = layers;
-        this._cacheLayerId.push(...layers.map(layer => layer.id));
-        _this.triggerEvent('addlayerssucceeded', {
-          map: map,
-          mapparams: _this.mapParams
-        });
-      }
-    });
-    webMapHandler.on('projectionisnotmatch', () => {
-      console.error('projection is not match');
-    });
   }
 
   _registerV3Events(webMapHandler, mapInfo): void {
@@ -663,4 +659,3 @@ export default class WebMapViewModel extends Events {
     this._handler?.updateOverlayLayer?.(layerInfo, features, mergeByField);
   }
 }
-

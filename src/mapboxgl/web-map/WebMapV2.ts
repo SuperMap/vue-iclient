@@ -115,6 +115,8 @@ export default class WebMap extends WebMapBase {
 
   private _mapInfo: Object;
 
+  private _parentEvents: Object;
+
   constructor(
     id: string | number | Object,
     options: webMapOptions = {},
@@ -146,6 +148,8 @@ export default class WebMap extends WebMapBase {
     this._legendList = [];
     this._appreciableLayers = [];
     this._mapInfo = options.mapInfo;
+    // @ts-ignore
+    this._parentEvents = options.parentEvents ?? {};
     if (map) {
       this.map = map;
     }
@@ -161,15 +165,13 @@ export default class WebMap extends WebMapBase {
     return this._sourceListModel;
   }
 
-  _initWebMap(): void {
-    this.initWebMap();
-  }
+  _initWebMap(): void {}
 
   _loadLayers(mapInfo, _taskID): void {
     if (this.map) {
       // @ts-ignore
       if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
-        this.triggerEvent('projectionIsNotMatch', {});
+        this._triggerEvent('projectionIsNotMatch', {});
         return;
       }
       this._handleLayerInfo(mapInfo, _taskID);
@@ -415,7 +417,7 @@ export default class WebMap extends WebMapBase {
     /**
      * @description Map 初始化成功。
      */
-    this.triggerEvent('mapinitialized', { map: this.map });
+    this._triggerEvent('mapinitialized', { map: this.map });
   }
 
   private _createMVTBaseLayer(layerInfo, addedCallback?: Function) {
@@ -443,7 +445,7 @@ export default class WebMap extends WebMapBase {
          * @description 获取地图信息失败。
          * @property {Object} error - 失败原因。
          */
-        this.triggerEvent('getmapinfofailed', { error });
+        this._triggerEvent('getmapinfofailed', { error });
       });
   }
 
@@ -480,7 +482,7 @@ export default class WebMap extends WebMapBase {
         this._createXYZLayer(layerInfo, url, addedCallback);
         break;
       case 'BAIDU':
-        this.triggerEvent('notsupportbaidumap', {});
+        this._triggerEvent('notsupportbaidumap', {});
         addedCallback && addedCallback();
         break;
       case 'MAPBOXSTYLE':
@@ -497,7 +499,7 @@ export default class WebMap extends WebMapBase {
         // TODO  ---  暂不支持 SAMPLE_DATA
         if (type === 'SAMPLE_DATA') {
           this._addLayerSucceeded();
-          this.triggerEvent('getlayerdatasourcefailed', {
+          this._triggerEvent('getlayerdatasourcefailed', {
             error: 'SAMPLE DATA is not supported',
             layer,
             map: this.map
@@ -699,7 +701,7 @@ export default class WebMap extends WebMapBase {
          * @description 获取地图信息失败。
          * @property {Object} error - 失败原因。
          */
-        this.triggerEvent('getmapinfofailed', { error });
+        this._triggerEvent('getmapinfofailed', { error });
       });
   }
 
@@ -782,7 +784,7 @@ export default class WebMap extends WebMapBase {
          * @description 获取地图信息失败。
          * @property {Object} error - 失败原因。
          */
-        this.triggerEvent('getmapinfofailed', { error });
+        this._triggerEvent('getmapinfofailed', { error });
       });
   }
 
@@ -950,7 +952,7 @@ export default class WebMap extends WebMapBase {
   private _handleDataflowFeatures(layerInfo, e) {
     let features = [JSON.parse(e.data)];
     // this.transformFeatures([features]); // TODO 坐标系
-    this.triggerEvent('dataflowfeatureupdated', {
+    this._triggerEvent('dataflowfeatureupdated', {
       features,
       identifyField: layerInfo.identifyField,
       layerID: layerInfo.layerID
@@ -2191,7 +2193,7 @@ export default class WebMap extends WebMapBase {
         map: this.map
       });
       this._rectifyLayersOrder();
-      this.triggerEvent('addlayerssucceeded', {
+      this._triggerEvent('addlayerssucceeded', {
         map: this.map,
         layers: this._appreciableLayers,
         // @ts-ignore
@@ -2870,10 +2872,9 @@ export default class WebMap extends WebMapBase {
   }
 
   updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
-    const layerId = layerInfo.layerId;
     // @ts-ignore
     const originLayerInfo = this._mapInfo.layers.find(layer => {
-      return layer.layerId === layerId;
+      return layer.layerID === layerInfo.layerID;
     });
     if (features) {
       this._initOverlayLayer(originLayerInfo, features, mergeByField);
@@ -2888,5 +2889,10 @@ export default class WebMap extends WebMapBase {
       url.startsWith('https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark') &&
       projection === 'EPSG:3857'
     );
+  }
+
+  _triggerEvent(name: string, params?: any) {
+    this.triggerEvent(name, params);
+    this._parentEvents[name]?.(params);
   }
 }

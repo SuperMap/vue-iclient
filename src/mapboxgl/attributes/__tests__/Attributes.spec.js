@@ -1,10 +1,11 @@
 import { mount, config } from '@vue/test-utils';
 import SmAttributes from '../Attributes.vue';
-import SmWebMap from '.././../web-map/WebMap.vue';
-import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
+import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded';
 
 describe('Attributes.vue', () => {
   let wrapper;
+  let mapWrapper;
   const fieldConfigs = [
     { value: '平均最低气温_Num', visible: false },
     { value: 'SmID', visible: false },
@@ -230,25 +231,6 @@ describe('Attributes.vue', () => {
     }
   };
 
-  const mapInfo = {
-    extent: {
-      leftBottom: { x: 0, y: 0 },
-      rightTop: { x: 0, y: 0 }
-    },
-    level: 5,
-    center: { x: 0, y: 0 },
-    baseLayer: {
-      layerType: 'TILE',
-      name: 'China',
-      url: 'http://test'
-    },
-    layers: [],
-    description: '',
-    projection: 'EPSG:3857',
-    title: 'testMap',
-    version: '1.0'
-  };
-
   beforeAll(() => {
     wrapper = null;
     config.mapLoad = false;
@@ -256,6 +238,7 @@ describe('Attributes.vue', () => {
 
   beforeEach(() => {
     wrapper = null;
+    mapWrapper = null;
   });
 
   afterEach(() => {
@@ -264,6 +247,9 @@ describe('Attributes.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
+    if (mapWrapper) {
+      mapWrapper.destroy();
+    }
   });
 
   afterAll(() => {
@@ -271,34 +257,14 @@ describe('Attributes.vue', () => {
   });
 
   it('render default correctly', async done => {
-    wrapper = mount(
-      {
-        template: `
-      <div>
-      <sm-web-map style="height:400px" :mapId="mapInfo"></sm-web-map>
-        <div style="positon:relative;height:400px;width:100%">
-          <sm-attributes layerName="UNIQUE-民航数-0" :fieldConfigs="fieldConfigs"></sm-attributes>
-        </div>
-      </div>`,
-        components: {
-          SmAttributes,
-          SmWebMap
-        },
-        data() {
-          return {
-            fieldConfigs: fieldConfigs,
-            mapInfo: mapInfo
-          };
-        }
-      },
-      {
-        sync: false
+    mapWrapper = await createEmptyMap();
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        layerName: "UNIQUE-民航数-0",
+        fieldConfigs: fieldConfigs
       }
-    );
-    const callback = jest.fn();
-    wrapper.vm.$children[1].$on('loaded', callback);
-    await mapLoaded(wrapper.vm.$children[0]);
-    expect(callback.mock.called).toBeTruthy;
+    });
+    await mapSubComponentLoaded(wrapper);
     expect(wrapper.find('.sm-component-attributes').exists()).toBe(true);
     const attributes = wrapper.findAll('.sm-component-attributes');
     attributes.setProps({
@@ -329,39 +295,24 @@ describe('Attributes.vue', () => {
   });
 
   it('associate map', async done => {
-    wrapper = mount({
-      template: `
-      <div>
-      <sm-web-map style="height:400px" :mapId="mapInfo"></sm-web-map>
-        <div style="positon:relative;height:400px;width:100%">
-          <sm-attributes layerName="UNIQUE-民航数-0" :fieldConfigs="fieldConfigs"></sm-attributes>
-        </div>
-      </div>`,
-      components: {
-        SmAttributes,
-        SmWebMap
-      },
-      data() {
-        return {
-          fieldConfigs: fieldConfigs,
-          mapInfo: mapInfo
-        };
+    mapWrapper = await createEmptyMap();
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        layerName: "UNIQUE-民航数-0",
+        fieldConfigs: fieldConfigs
       }
     });
-    const callback = jest.fn();
-    wrapper.vm.$children[1].$on('loaded', callback);
-    await mapLoaded(wrapper.vm.$children[0]);
-    expect(callback.mock.called).toBeTruthy;
+    await mapSubComponentLoaded(wrapper);
     let e = {
       point: {
         x: 0,
         y: 1
       }
     };
-    wrapper.vm.$children[1].viewModel.map.fire('click', e);
-    const spy = jest.spyOn(wrapper.vm.$children[1].viewModel, 'zoomToFeatures');
+    wrapper.vm.viewModel.map.fire('click', e);
+    const spy = jest.spyOn(wrapper.vm.viewModel, 'zoomToFeatures');
     // TODO 具名插槽 overlay 的节点找不到？
-    wrapper.vm.$children[1].setZoomToFeature();
+    wrapper.vm.setZoomToFeature();
     await wrapper.vm.$nextTick();
     expect(spy).toHaveBeenCalled();
     done();

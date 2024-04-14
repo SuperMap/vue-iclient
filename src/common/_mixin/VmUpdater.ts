@@ -36,7 +36,7 @@ export default class VmUpdater extends Vue {
             }
             let setFun = 'set' + item.replace(item[0], item[0].toUpperCase());
             // 子组件的viewModel
-            this.viewModel && this.viewModel[setFun](newVal);
+            this.viewModel && this.viewModel[setFun]?.(newVal);
           }
         },
         { deep: true }
