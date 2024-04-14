@@ -5,13 +5,81 @@ import LayerList from '../index';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
+import layer_v3 from 'vue-iclient/test/unit/mocks/data/WebMap/layer_v3';
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
-import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
-import flushPromises from 'flush-promises';
+import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
 
 describe('LayerList.vue', () => {
   let wrapper;
   let mapWrapper;
+
+  const commonMap = {
+    map:{
+      resize: () => jest.fn(),
+      getZoom: () => jest.fn(),
+      setZoom: () => jest.fn(),
+      setCRS: () => jest.fn(),
+      getCenter: () => {
+        return {
+          lng: 1,
+          lat: 2
+        };
+      },
+      setCenter: () => jest.fn(),
+      getBearing: () => 2,
+      setBearing: () => jest.fn(),
+      getPitch: () => 2,
+      setPitch: () => jest.fn(),
+      getStyle: () => {
+        return {
+          layers: [{
+            id: 1
+          }]
+        }
+      },
+      addSource: () => jest.fn(),
+      getSource: () => jest.fn(),
+      removeSource: jest.fn(),
+      triggerRepaint: () => jest.fn(),
+      style: jest.fn(),
+      getLayer: jest.fn(),
+      removeLayer: jest.fn(),
+      getCRS: () => {
+        return {
+          epsgCode: 'EPSG:3857',
+          getExtent: () => jest.fn()
+        };
+      },
+      addLayer: () => jest.fn(),
+      moveLayer: () => jest.fn(),
+      overlayLayersManager: {},
+      on: () => { },
+      off: () => { },
+      fire: () => { },
+      setLayoutProperty: () => jest.fn(),
+      addStyle: () => jest.fn(),
+      remove: () => jest.fn(),
+      setRenderWorldCopies: () => jest.fn(),
+      setStyle: () => jest.fn(),
+      loadImage: function (src, callback) {
+        callback(null, { width: 15 });
+      },
+      addImage: function () { },
+      hasImage: function () {
+        return false;
+      }
+    },
+    mapparams: {},
+    layers: []
+  };
+
+  mapboxgl.supermap.WebMapV3 = () => {
+    return {
+      on: (event, callback) => {
+        callback(commonMap);
+      }
+    }
+  }
 
   beforeEach(() => {
     wrapper = null;
@@ -46,21 +114,23 @@ describe('LayerList.vue', () => {
         mapId: '123'
       }
     });
-    wrapper = mount(SmLayerList, {
-      propsData: {
-        mapTarget: 'map'
-      }
-    });
-    const callback = jest.fn();
-    wrapper.vm.$on('loaded', callback);
-    await mapWrapperLoaded(mapWrapper);
-    await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
-    let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleLayerGroupVisibility');
-    wrapper.findAll('.sm-components-icon-hidden').at(0).trigger('click');
-    expect(spylayerVisibility).toHaveBeenCalledTimes(1);
-    wrapper.vm.$nextTick();
-    done();
+    const addCallback = function (data) {
+      wrapper = mount(SmLayerList, {
+        propsData: {
+          mapTarget: 'map'
+        }
+      });
+      const callback = jest.fn();
+      wrapper.vm.$on('loaded', callback);
+      expect(callback.mock.called).toBeTruthy;
+      let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
+      wrapper.vm.$nextTick(() => {
+        wrapper.find('.sm-component-layer-list__layer > i').trigger('click');
+        expect(spylayerVisibility).toHaveBeenCalledTimes(1);
+        done();
+      });
+    };
+    mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
   });
 
   it('layerGroupVisibility vector-tile', async done => {
@@ -122,23 +192,26 @@ describe('LayerList.vue', () => {
         mapOptions: mapOptions
       }
     });
-    wrapper = mount(SmLayerList, {
-      propsData: {
-        mapTarget: 'map'
-      }
-    });
-    let spyProperty = jest.spyOn(wrapper.vm.viewModel, 'changeLayerGroupVisibility');
-    const callback = jest.fn();
-    wrapper.vm.$on('loaded', callback);
-    await mapWrapperLoaded(mapWrapper);
-    await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
-    expect(wrapper.vm.mapTarget).toBe('map');
-    wrapper.vm.$nextTick(() => {
-      wrapper.find('i.sm-components-icon-visible').trigger('click');
-      expect(spyProperty).toHaveBeenCalledWith('vector-tiles', 'visible');
-      done();
-    });
+
+    const addCallback = function (data) {
+      wrapper = mount(SmLayerList, {
+        propsData: {
+          mapTarget: 'map'
+        }
+      });
+      let spyProperty = jest.spyOn(wrapper.vm.viewModel, 'changeItemVisible');
+      const callback = jest.fn();
+      wrapper.vm.$on('loaded', callback);
+      expect(callback.mock.called).toBeTruthy;
+      expect(wrapper.vm.mapTarget).toBe('map');
+      wrapper.vm.$nextTick(() => {
+        wrapper.find('.sm-components-icon-partially-visible').trigger('click');
+        expect(spyProperty).toHaveBeenCalledTimes(1);
+        done();
+      });
+    };
+    mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
+
   });
 
   it('attributes style', () => {
@@ -164,5 +237,37 @@ describe('LayerList.vue', () => {
     });
     expect(wrapper.find('div.sm-component-layer-list').exists()).toBe(true);
     expect(wrapper.vm.attributes.position).toBe('left');
+  });
+
+  it('render v3 layers', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': layer_v3,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+    };
+    mockFetch(fetchResource);
+    mapWrapper = mount(SmWebMap, {
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      }
+    });
+    const addCallback = function (data) {
+      wrapper = mount(SmLayerList, {
+        propsData: {
+          mapTarget: 'map'
+        }
+      });
+      const callback = jest.fn();
+      wrapper.vm.$on('loaded', callback);
+      expect(callback.mock.called).toBeTruthy;
+      let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
+      wrapper.vm.$nextTick(() => {
+        wrapper.find('.sm-component-layer-list__layer > i').trigger('click');
+        expect(spylayerVisibility).toHaveBeenCalledTimes(1);
+        done();
+      });
+    };
+    mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
   });
 });

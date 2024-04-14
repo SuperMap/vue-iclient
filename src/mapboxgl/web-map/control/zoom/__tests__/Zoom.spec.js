@@ -1,14 +1,11 @@
 import { mount, config } from '@vue/test-utils';
-import SmWebMap from '../../../../web-map/WebMap.vue';
 import SmZoom from '../Zoom.vue';
-import flushPromises from 'flush-promises';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
-import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
 
 describe('Zoom.vue', () => {
   let mapWrapper;
@@ -55,7 +52,7 @@ describe('Zoom.vue', () => {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
     };
     mockFetch(fetchResource);
-    mapWrapper = mount(SmWebMap, {
+    mapWrapper = await createEmptyMap({
       propsData: {
         serverUrl: 'https://fakeiportal.supermap.io/iportal',
         mapId: '123'
@@ -68,11 +65,7 @@ describe('Zoom.vue', () => {
         showZoomSlider: true
       }
     });
-    const callback = jest.fn();
-    wrapper.vm.$on('loaded', callback);
-    await mapWrapperLoaded(mapWrapper);
-    await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
+    await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.showZoom).toBe(true);
     expect(wrapper.vm.position).toBe('top-left');
     expect(wrapper.vm.showZoomSlider).toBe(true);
@@ -91,7 +84,7 @@ describe('Zoom.vue', () => {
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
     };
     mockFetch(fetchResource);
-    mapWrapper = mount(SmWebMap, {
+    mapWrapper = await createEmptyMap({
       propsData: {
         serverUrl: 'https://fakeiportal.supermap.io/iportal',
         mapId: '123'
@@ -104,11 +97,7 @@ describe('Zoom.vue', () => {
         showZoomSlider: true
       }
     });
-    const callback = jest.fn();
-    wrapper.vm.$on('loaded', callback);
-    await mapWrapperLoaded(mapWrapper);
-    await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
+    await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.showZoom).toBe(true);
     expect(wrapper.vm.position).toBe('top-left');
     expect(wrapper.vm.showZoomSlider).toBe(true);
@@ -131,7 +120,6 @@ describe('Zoom.vue', () => {
         showZoomSlider: true
       }
     });
-    await mapSubComponentLoaded(wrapper);
     const slider = jest.spyOn(wrapper.vm, 'setZoom');
     expect(wrapper.find('.sm-component-slider-handle').exists()).toBe(true);
     wrapper.vm.sliderChange();

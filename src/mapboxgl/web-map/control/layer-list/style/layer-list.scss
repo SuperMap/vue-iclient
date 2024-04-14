@@ -38,7 +38,7 @@
         .#{$iconfont-class-prefix}-solid-triangle-down {
           display: none;
         }
-        &.#{$collapse-prefix}-item-active {
+        &.#{$collapse-prefix}-item-active > .#{$collapse-prefix}-header{
           .#{$iconfont-class-prefix}-solid-triangle-right {
             display: none;
           }

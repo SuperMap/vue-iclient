@@ -142,7 +142,7 @@ describe('WebMapBase.spec', () => {
 
   it('initWebMap', () => {
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    newWebMapBaseObj.cleanWebMap = jest.fn();
+    newWebMapBaseObj.clean = jest.fn();
     newWebMapBaseObj._getMapInfo = jest.fn();
     newWebMapBaseObj.initWebMap();
     expect(newWebMapBaseObj.serverUrl).toBe('123/');

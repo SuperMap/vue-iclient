@@ -20,6 +20,8 @@ export default class iPortalDataService extends Events {
     this.url = url;
     this.withCredentials = withCredentials || false;
     this.epsgCode = options.epsgCode;
+    this.dataType = options.dataType;
+    this.dataId = options.dataId;
     this.iportalServiceProxyUrl = options.iportalServiceProxyUrl;
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
     this.resourceId = options.resourceId;
@@ -67,11 +69,17 @@ export default class iPortalDataService extends Events {
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
    */
-  getData(queryInfo, preferContent = false) {
+  getData(queryInfo = {}, preferContent = false) {
+    if (this.dataType === 'STRUCTUREDDATA') {
+      this._getStructureDatafromContent();
+      return;
+    }
+
     if (!this.url) {
       return;
     }
     let datasetUrl = this.url;
+
     if (preferContent) {
       this._getDatafromContent(datasetUrl, queryInfo);
       return;
@@ -111,6 +119,71 @@ export default class iPortalDataService extends Events {
         } else {
           this._getDatafromContent(datasetUrl, queryInfo);
         }
+      })
+      .catch(error => {
+        console.log(error);
+        this.triggerEvent('getdatafailed', {
+          error
+        });
+      });
+  }
+
+  _getStructureDatafromContent() {
+    let featureResults = [];
+    let dataId = this.dataId;
+    let url = '/iportal/web/datas/{dataId}/structureddata/ogc-features/collections/all/items.json';
+    url = url.replace('{dataId}', dataId);
+    let maxFeatures = 5000;
+    let allRequest = [];
+    this._getStructureData(url, maxFeatures, 0).then((data) => {
+      if (data) {
+        featureResults = data.features;
+        if (data.numberMatched < maxFeatures) {
+          this.iserverService._getFeaturesSucceed({ result: {
+            features: {
+              type: 'FeatureCollection',
+              features: featureResults
+            }
+          }});
+          return;
+        }
+
+        for (let i = maxFeatures; i < data.numberMatched;) {
+          allRequest.push(
+            this._getStructureData(url, maxFeatures, i)
+          );
+          i += maxFeatures;
+        }
+        // 所有请求结束
+        Promise.all(allRequest).then((results) =>{
+            // 结果合并
+          results.map((result) =>{
+            featureResults = featureResults.concat(result.features);
+          });
+          this.iserverService._getFeaturesSucceed({ result: {
+            features: {
+              type: 'FeatureCollection',
+              features: featureResults
+            }
+          }});
+        })
+      }
+    });
+  }
+
+  _getStructureData(url, count, offset) {
+    url = `${url}?limit=${count}`;
+    if (offset) {
+      url = url + '&offset=' + offset;
+    }
+    return SuperMap.FetchRequest.get(url, null, {
+      withCredentials: this.withCredentials
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        return data
       })
       .catch(error => {
         console.log(error);

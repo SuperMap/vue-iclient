@@ -95,15 +95,15 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
     this.$emit('changedata', { id, type });
   }
 
-  handleDatas(sourceList): treeSelectDataOption[] {
+  createLayersTreeData(layerCatalog) {
     const treeData: treeSelectDataOption[] = [];
-    this.sourceListDataCache = {};
-    Object.keys(sourceList).forEach((sourceName, sIndex) => {
-      let { id, type, visibility } = sourceList[sourceName];
+    layerCatalog.forEach(layer => {
+      let { id, title, type, visible } = layer;
+      let layerType = layer.layer?.type;
       let disabled = false;
       let selectable = true;
       if (this.filter) {
-        let res = this.filter(sourceList[sourceName], 'source', this.map) || {};
+        let res = this.filter(layerType, type, this.map) || {};
         disabled = res.disabled;
         selectable = res.selectable;
 
@@ -111,104 +111,32 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
           return;
         }
       }
-      const sourceValue = `${sourceName}+source`;
+      const layerValue = `${id}+${type}`;
       const sourceInfo: treeSelectDataOption = {
-        title: sourceName,
-        value: sourceValue,
-        key: `${sIndex}`,
+        title: title,
+        value: layerValue,
+        key: layer.id,
         disabled: !!disabled,
         selectable: selectable
       };
-      this.sourceListDataCache[sourceValue] = {
-        id,
-        type,
-        visibility
-      };
-      if (sourceList[sourceName].sourceLayerList) {
-        const sourceChildren = [];
-        Object.keys(sourceList[sourceName].sourceLayerList).forEach((sourceLayerName, slIndex) => {
-          let disabled = false;
-          let selectable = true;
-          const sourceLayerOption = {
-            id: null,
-            source: id,
-            sourceLayer: sourceLayerName
-          };
-          if (this.filter) {
-            let res = this.filter(sourceLayerOption, 'sourceLayer', this.map) || {};
-            disabled = res.disabled;
-            selectable = res.selectable;
-
-            if (typeof res.show === 'boolean' && res.show === false) {
-              return;
-            }
-          }
-          const sourceLayerValue = `${sourceLayerName}+sourceLayer`;
-          const sourceLayerInfo: treeSelectDataOption = {
-            title: sourceLayerName,
-            value: sourceLayerValue,
-            key: `${sIndex}-${slIndex}`,
-            disabled: !!disabled,
-            selectable
-          };
-
-          this.sourceListDataCache[sourceLayerValue] = sourceLayerOption;
-          let layers: layerOption[] = sourceList[sourceName].sourceLayerList[sourceLayerName];
-          const sourceLayerChildren = this.handleLayers(layers, `${sIndex}-${slIndex}`);
-          if (sourceLayerChildren.length) {
-            sourceLayerInfo.children = sourceLayerChildren;
-          }
-          sourceChildren.push(sourceLayerInfo);
-        });
-        if (sourceChildren.length) {
-          sourceInfo.children = sourceChildren;
-        }
-      } else {
-        let layers: layerOption[] = sourceList[sourceName].layers;
-        const layerChildren = this.handleLayers(layers, sIndex);
-        if (layerChildren.length) {
-          sourceInfo.children = layerChildren;
-        }
+      if(type === 'group') {
+        sourceInfo.children = this.createLayersTreeData(layer.children);
       }
+      this.sourceListDataCache[layerValue] = {
+        id,
+        type: layerType,
+        visibility: visible ? 'visible' : 'none'
+      };
       treeData.push(sourceInfo);
     });
     return treeData;
   }
 
-  handleLayers(layers: layerOption[], keyString: number | string): treeSelectDataOption[] {
-    const layerChildren = [];
-    layers.forEach((layerInfo, lIndex) => {
-      let { id, maxzoom, minzoom, source, sourceLayer, type, visibility } = layerInfo;
-      let disabled = false;
-      let selectable = true;
-      if (this.filter) {
-        let res = this.filter(layerInfo, 'layer', this.map) || {};
-        disabled = res.disabled;
-        selectable = res.selectable;
-
-        if (typeof res.show === 'boolean' && res.show === false) {
-          return;
-        }
-      }
-      const layerValue = `${layerInfo.id}+layer`;
-      layerChildren.push({
-        title: layerInfo.id,
-        value: layerValue,
-        key: `${keyString}-${lIndex}`,
-        disabled: !!disabled,
-        selectable
-      });
-      this.sourceListDataCache[layerValue] = {
-        id,
-        maxzoom,
-        minzoom,
-        source,
-        sourceLayer,
-        type,
-        visibility
-      };
-    });
-    return layerChildren;
+  handleDatas(sourceList): treeSelectDataOption[] {
+    let treeData: treeSelectDataOption[] = [];
+    this.sourceListDataCache = {};
+    treeData = this.createLayersTreeData(sourceList);
+    return treeData;
   }
 
   getPopupContainer(triggerNode) {

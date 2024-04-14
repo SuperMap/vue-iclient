@@ -114,7 +114,7 @@ export default abstract class WebMapBase extends Events {
 
   abstract _addLayerSucceeded();
   abstract _unproject(point: [number, number]): [number, number];
-  abstract cleanWebMap();
+  abstract clean();
 
   public echartsLayerResize(): void {
     this.echartslayer.forEach(echartslayer => {
@@ -184,7 +184,7 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected initWebMap() {
-    this.cleanWebMap();
+    this.clean();
     this.serverUrl = this.serverUrl && this.webMapService.handleServerUrl(this.serverUrl);
     if (this.webMapInfo) {
       // 传入是webmap对象

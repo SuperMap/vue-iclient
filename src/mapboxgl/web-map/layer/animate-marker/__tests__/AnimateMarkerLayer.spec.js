@@ -424,7 +424,6 @@ describe('AnimateMarkerLayer.vue', () => {
       features
     });
     expect(mockFn.mock.calls).toEqual([[true]]);
-    await mapSubComponentLoaded(wrapper);
     await wrapper.setProps({
       features: newFeatures
     });

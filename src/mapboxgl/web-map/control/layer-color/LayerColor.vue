@@ -72,6 +72,7 @@ const TYPE_MAP = {
   circle: ['circle-color', 'circle-stroke-color'],
   line: ['line-color'],
   fill: ['fill-color', 'fill-outline-color'],
+  background: ['background-color'],
   symbol: ['icon-color', 'icon-halo-color', 'text-color', 'text-halo-color']
 };
 
@@ -144,13 +145,13 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     return '';
   }
 
-  filtercb(item, type) {
-    if (item.type === 'raster') {
+  filtercb(layerType, type) {
+    if (layerType === 'raster' || layerType === 'heatmap') {
       return {
         show: false
       };
     }
-    if (type === 'sourceLayer' || type === 'source') {
+    if (type === 'group') {
       return {
         disabled: true
       };

@@ -1,5 +1,4 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
 
 /**
  * @class LayerListViewModel
@@ -14,7 +13,7 @@ interface MapEventCallBack {
 class LayerListViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
 
-  sourceList: Object;
+  sourceList: Array<Object>;
 
   sourceNames: Array<string>;
 
@@ -22,11 +21,9 @@ class LayerListViewModel extends mapboxgl.Evented {
 
   updateFn: MapEventCallBack;
 
-  sourceListModel: SourceListModel;
-
   constructor() {
     super();
-    this.sourceList = {};
+    this.sourceList = [];
     this.sourceNames = [];
   }
 
@@ -35,18 +32,15 @@ class LayerListViewModel extends mapboxgl.Evented {
   }
 
   setMap(mapInfo) {
-    const { map } = mapInfo;
+    const { map, webmap } = mapInfo;
     this.map = map;
+    this.webmap = webmap;
     this.updateFn = this._updateLayers.bind(this);
     this.map.on('styledata', this.updateFn);
   }
 
   initLayerList() {
-    this.sourceListModel = new SourceListModel({
-      map: this.map
-    });
-    this.sourceList = this.sourceListModel.getSourceList();
-    this.sourceNames = this.sourceListModel.getSourceNames().reverse();
+    this.sourceList = this.webmap.getLayerList();
     return this.sourceList;
   }
 
@@ -54,33 +48,32 @@ class LayerListViewModel extends mapboxgl.Evented {
     return this.sourceNames;
   }
 
-  changeLayerVisible(sourcelayer, sourceName: string, visibility: string) {
-    this.sourceListModel.getLayersBySourceLayer(sourceName, sourcelayer).forEach(layer => {
-      this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));
-    });
+  checkAttributesEnabled(item) {
+    const source = this.map.getSource(item.layer.source);
+    const hasDatasetId = this.webmap.getDatasetIdByLayerId(item.id);
+    return source.type === 'geojson' || hasDatasetId;
   }
 
-  changeVisibility(visibility: string) {
-    return visibility === 'visible' ? 'none' : 'visible';
+  async getLayerDatas(layerName) {
+    const features = await this.webmap.getLayerDatas(layerName);
+    return this.setDataset(features);
   }
 
-  changeLayerGroupVisibility(sourceName: string, visibility: string) {
-    let sourceLayers = this.sourceListModel.getSourceLayersBySource(sourceName);
-    if (sourceLayers) {
-      for (let sourcelayer in sourceLayers) {
-        sourceLayers[sourcelayer].forEach(layer => {
-          this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));
-        });
-      }
-    } else {
-      for (let layer of this.sourceList[sourceName].layers) {
-        this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));
-      }
+  // 将features转换成属性表dataset所需的GeoJSONParameter形式
+  setDataset(features) {
+    let dataset = { type: 'geoJSON', geoJSON: null };
+    if (features) {
+      dataset.geoJSON = { type: 'FeatureCollection', features };
     }
+    return dataset;
+  }
+
+  changeItemVisible(item) {
+    this.webmap.changeItemVisible(item);
   }
 
   removed() {
-    this.sourceList = {};
+    this.sourceList = [];
     this.sourceNames = [];
     this.map.off('styledata', this.updateFn);
   }

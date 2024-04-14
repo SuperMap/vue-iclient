@@ -4,38 +4,16 @@ import SmMeasure from '../Measure';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
-import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
+import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap';
 
 jest.mock('@libs/mapbox-gl-draw/mapbox-gl-draw', () => require('@mocks/mapboxgl_draw').MapboxDraw);
 
 describe('measure', () => {
   let mapWrapper;
   let measureWrapper;
-  const mapInfo = {
-    extent: {
-      leftBottom: { x: 0, y: 0 },
-      rightTop: { x: 0, y: 0 }
-    },
-    level: 5,
-    center: { x: 0, y: 0 },
-    baseLayer: {
-      layerType: 'TILE',
-      name: 'China',
-      url: 'http://test'
-    },
-    layers: [],
-    description: '',
-    projection: 'EPSG:3857',
-    title: 'testMap',
-    version: '1.0'
-  };
 
-  beforeEach(() => {
-    mapWrapper = mount(SmWebMap, {
-      propsData: {
-        mapId: mapInfo
-      }
-    });
+  beforeEach(async () => {
+    mapWrapper = await createEmptyMap();
   });
 
   afterEach(() => {
@@ -61,11 +39,10 @@ describe('measure', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point
     };
     mockFetch(fetchResource);
-    await mapWrapperLoaded(mapWrapper);
     const spychangeMode = jest.spyOn(measureWrapper.vm, 'changeMeasureMode');
     expect(measureWrapper.vm.mapTarget).toBe('map');
-    jest.useFakeTimers();
     await mapSubComponentLoaded(measureWrapper);
+    jest.useFakeTimers();
     expect(measureWrapper.find('.sm-component-measure').exists()).toBe(true);
     try {
       measureWrapper.find('.sm-component-measure__modeIcon').find('i.sm-components-icon-line').trigger('click');
@@ -127,10 +104,9 @@ describe('measure', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point
     };
     mockFetch(fetchResource);
-    await mapWrapperLoaded(mapWrapper);
     expect(measureWrapper.vm.mapTarget).toBe('map');
-    jest.useFakeTimers();
     await mapSubComponentLoaded(measureWrapper);
+    jest.useFakeTimers();
     expect(measureWrapper.vm.mapTarget).toBe('map');
     expect(measureWrapper.findAll('.sm-component-select-selection-selected-value').at(0).text()).toBe('kilometers');
     const spychangeMode = jest.spyOn(measureWrapper.vm.viewModel.draw, 'changeMode');
@@ -212,7 +188,6 @@ describe('measure', () => {
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point
     };
     mockFetch(fetchResource);
-    await mapWrapperLoaded(mapWrapper);
     await mapSubComponentLoaded(measureWrapper);
     try {
       expect(measureWrapper.vm.mapTarget).toBe('map');

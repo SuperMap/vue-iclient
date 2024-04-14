@@ -1,25 +1,26 @@
 class SourceModel {
   constructor(options) {
     this.id = options.source;
-    this.sourceLayerList = {};
-    this.layers = [];
+    this.title = options.source;
+    this.children = [];
+    this.sourceType = options.sourceType;
     this.type = options.type;
   }
 
-  addLayer(layer, sourceLayer) {
-    if (sourceLayer) {
-      if (!this.sourceLayerList[sourceLayer]) {
-        this.sourceLayerList[sourceLayer] = [];
-      }
-      this.sourceLayerList[sourceLayer].push(layer);
+  addLayer(layer) {
+    this.children.push({
+      id: layer.id,
+      title: layer.id,
+      visible: layer.visibility === 'visible',
+      type: 'basic',
+      layer: layer
+    });
+    this.type = this.children.length > 1 ? 'group' : 'basic';
+    this.layer = this.type === 'basic' ? layer : undefined;
+    if (layer.visibility === 'visible' || this.visible) {
+      this.visible = true;
     } else {
-      this.sourceLayerList = undefined;
-    }
-    this.layers.push(layer);
-    if ([layer.visibility, this.visibility].includes('visible')) {
-      this.visibility = 'visible';
-    } else {
-      this.visibility = 'none';
+      this.visible = false;
     }
   }
 }
