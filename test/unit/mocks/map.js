@@ -81,7 +81,7 @@ var Map = function (options) {
   var ne = new LngLat(-73.9397, 40.8002);
   var llb = new LngLatBounds(sw, ne);
   this.bounds = this.options.bounds || llb;
-  this.crs = new CRS();
+  this.crs = new CRS({ epsgCode: this.options.crs });
   try {
     this.center = this.options.center ? new LngLat(this.options.center.lng, this.options.center.lat) : new LngLat(0, 0);
   } catch (e) {

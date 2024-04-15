@@ -28,6 +28,7 @@ import {
 } from 'vue-iclient/test/unit/mocks/data/CapabilitiesText.js';
 import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.json';
 import dataflowLayer from 'vue-iclient/test/unit/mocks/data/WebMap/dataflowLayer.json';
+import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 import dataflowLayerData from 'vue-iclient/test/unit/mocks/data/dataflowLayerData.json';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import { webmap_MAPBOXSTYLE_Tile } from 'vue-iclient/test/unit/mocks/services';
@@ -1933,6 +1934,21 @@ describe('WebMapViewModel.spec', () => {
     });
     const callback = function () {
       expect(viewModel.getAppreciableLayers().length).toBe(1);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+  it('webmap3.0', async done => {
+    const fetchResource = {
+      'https://localhost:8190/iportal/web/maps/249495311': webmap3Datas[1]
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(webmap3Datas[0]);
+    const callback = function () {
+      expect(viewModel.getAppreciableLayers().length).toBeLessThanOrEqual(webmap3Datas[0].layers.length);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });

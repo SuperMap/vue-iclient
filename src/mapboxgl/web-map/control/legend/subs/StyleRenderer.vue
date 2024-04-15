@@ -125,24 +125,6 @@ export default {
     drawShape() {
       const canvas = document.getElementById(this.canvasId);
       const ctx = canvas.getContext('2d');
-      // const { colors } = this.styleRendererData;
-      // if (colors) {
-      //   const rect = {
-      //     width: 214,
-      //     height: 10
-      //   };
-      //   const gap = 5;
-      //   canvas.width = rect.width + gap * 2;
-      //   canvas.height = rect.height + gap * 6;
-      //   const gradient = ctx.createLinearGradient(gap, 0, rect.width + gap, 0);
-      //   gradient.addColorStop(0, colors[0].value);
-      //   gradient.addColorStop(1, colors[1].value);
-      //   ctx.beginPath();
-      //   ctx.fillStyle = gradient;
-      //   ctx.fillRect(gap, 0, rect.width, rect.height);
-      //   this.drawMinMaxShape({ ctx, gap, rect, colors });
-      //   return;
-      // }
       switch (this.shapeType) {
         case 'point': {
           const { fontSize, color, opacity } = this.styleRendererData;
@@ -184,37 +166,6 @@ export default {
         return this.drawMultiLine(canvas, ctx);
       }
       this.drawDashedLine(canvas, ctx);
-    },
-    drawMinMaxShape({ ctx, gap, rect, colors }) {
-      const width = gap * 2;
-      const height = gap + 3;
-      const outlineColor = '#d9d9d9';
-      const arrowY = gap;
-      ctx.globalAlpha = 0.25;
-      // min
-      ctx.beginPath();
-      ctx.moveTo(gap, rect.height);
-      ctx.lineTo(0, rect.height + arrowY);
-      ctx.lineTo(width, rect.height + arrowY);
-      ctx.fillStyle = outlineColor;
-      ctx.fill();
-      ctx.fillStyle = colors[0].value;
-      ctx.fillRect(0, rect.height + arrowY, width, height);
-      ctx.strokeStyle = outlineColor;
-      ctx.strokeRect(0, rect.height + arrowY, width, height);
-      // max
-      ctx.moveTo(gap + rect.width, rect.height);
-      ctx.lineTo(rect.width, arrowY + rect.height);
-      ctx.lineTo(rect.width + gap * 2, arrowY + rect.height);
-      ctx.fillStyle = outlineColor;
-      ctx.fill();
-      ctx.fillStyle = colors[1].value;
-      ctx.fillRect(rect.width, arrowY + rect.height, width, height);
-      ctx.strokeStyle = outlineColor;
-      ctx.strokeRect(rect.width, arrowY + rect.height, width, height);
-      ctx.globalAlpha = 1;
-      ctx.fillText(colors[0].key, 0, rect.height + arrowY + height + 12, 80);
-      ctx.fillText(colors[1].key, rect.width, arrowY + rect.height + height + 12, 80);
     },
     drawDashedLine(canvas, ctx) {
       const LEGEND_LINE_WIDTH = 100;

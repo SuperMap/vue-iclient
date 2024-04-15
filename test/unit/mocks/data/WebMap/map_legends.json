@@ -53,7 +53,7 @@
       {
         "styleField": null,
         "style": {
-          "type": "style",
+          "type": "image",
           "shape": "POINT",
           "sprite": { "sdf": false, "pixelRatio": 1, "width": 9, "x": 0, "y": 0, "height": 9 },
           "url": "http://localhost:8190/iportal/web/maps/168769956/sprites/sprite.png"

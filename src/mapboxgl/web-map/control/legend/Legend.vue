@@ -162,7 +162,7 @@ export default {
     }
   },
   loaded() {
-    this.viewModel = new LegendViewModel(this.webmap);
+    this.viewModel = new LegendViewModel();
     this.initLegendList();
   },
   removed() {
