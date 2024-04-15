@@ -1,4 +1,5 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import WebMapViewModel from '../web-map/WebMapViewModel';
 
 /**
  * @class LayerSelectViewModel
@@ -8,6 +9,7 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
  */
 class LayerSelectViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
+  webmap: InstanceType<typeof WebMapViewModel>;
   fire: any;
   updateFn: (data?: mapboxglTypes.MapStyleDataEvent) => void;
 
