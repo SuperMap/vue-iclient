@@ -14,10 +14,10 @@
       </div>
     </div>
     <div class="sm-component-legend__colorfieldrange">
-      <div class="color-field-holder" :title="range.min" :style="{ left: `${mapPaletteToStops[0].offset}px` }">
+      <div class="color-field-holder" :title="range.min" :style="{ left: `${minPaletteOffset}px` }">
         {{ range.min }}
       </div>
-      <div class="color-field-holder" :title="range.max" :style="{ right: `${mapPaletteToStops.at(-1).offset}px` }">
+      <div class="color-field-holder" :title="range.max" :style="{ right: `${maxPaletteOffset}px` }">
         {{ range.max }}
       </div>
     </div>
@@ -88,6 +88,12 @@ export default {
           offset: index === this.palette.length - 1 ? -HALF_STOP_WIDTH : offsetVal
         };
       });
+    },
+    minPaletteOffset() {
+      return this.mapPaletteToStops[0]?.offset;
+    },
+    maxPaletteOffset() {
+      return this.mapPaletteToStops.slice(-1)[0]?.offset;
     },
     linearColorStyle() {
       let colors = this.colors;
