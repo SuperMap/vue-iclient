@@ -1,4 +1,5 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
 
 /**
  * @class LayerListViewModel
@@ -12,6 +13,7 @@ interface MapEventCallBack {
 }
 class LayerListViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
+  webmap: InstanceType<typeof WebMapViewModel>;
 
   sourceList: Array<Object>;
 
