@@ -460,7 +460,7 @@ export default class WebMapViewModel extends Events {
             this.mapParams = mapparams;
             this._sourceListModel = sourceListModel;
             this._appreciableLayers = layers;
-            this._cacheLayerId.push(...layers.map(layer => layer.id));
+            this._cacheLayerId.push(...layers.map(layer => layer.renderLayers).flat());
             this.triggerEvent('addlayerssucceeded', {
               map: map,
               mapparams: this.mapParams
@@ -555,7 +555,7 @@ export default class WebMapViewModel extends Events {
     webMapHandler.on('addlayerssucceeded', ({ mapparams, layers }) => {
       this.mapParams = mapparams;
       this._appreciableLayers = layers;
-      this._cacheLayerId.push(...layers.map(layer => layer.id));
+      this._cacheLayerId.push(...layers.map(layer => layer.renderLayers).flat());
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams

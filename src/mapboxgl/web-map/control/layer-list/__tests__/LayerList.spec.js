@@ -77,7 +77,10 @@ describe('LayerList.vue', () => {
     return {
       on: (event, callback) => {
         callback(commonMap);
-      }
+      },
+      initializeMap: jest.fn(),
+      clean: jest.fn(),
+      getLayerCatalog: () => [{id: 'test', type: 'fill', title:'test', visible: true, renderLayers:['test'], renderSource:{id:'s1', type: 'vector'}, dataSource: {}}]
     }
   }
 
@@ -205,7 +208,18 @@ describe('LayerList.vue', () => {
       expect(callback.mock.called).toBeTruthy;
       expect(wrapper.vm.mapTarget).toBe('map');
       wrapper.vm.$nextTick(() => {
-        wrapper.find('.sm-components-icon-partially-visible').trigger('click');
+        const item = {
+          id: 'test',
+          visible: true,
+          type: 'group',
+          children: [{
+            id: 'test1',
+            visible: true,
+            type: 'vector',
+            renderLayers: ['test1']
+          }]
+        }
+        wrapper.vm.toggleItemVisibility(item)
         expect(spyProperty).toHaveBeenCalledTimes(1);
         done();
       });
