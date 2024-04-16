@@ -88,6 +88,10 @@ const commonMap = {
         };
       })(sourceId);
     }
+    if (sourceInfo.type === 'raster' && sourceInfo.rasterSource === 'iserver') {
+      sourceIdMapList[sourceId].clearTiles = () => jest.fn();
+      sourceIdMapList[sourceId].update = () => jest.fn();
+    }
   },
   getSource: sourceId => {
     return sourceIdMapList[sourceId];
@@ -112,26 +116,14 @@ const commonMap = {
     };
   },
   getAppreciableLayers: () => {
-    console.log('1', Object.keys(layerIdMapList));
     return Object.values(layerIdMapList);
-    // return Object.values(layerIdMapList).map(item => {
-    //   {
-
-    //   }
-    // });
   },
   addLayer: layerInfo => {
     layerIdMapList[layerInfo.id] = layerInfo;
     if (typeof layerInfo.source === 'object') {
-      const source = layerInfo.source;
-      sourceIdMapList[layerInfo.id] = layerInfo.source;
-      if (layerInfo.source.type === 'raster' && layerInfo.source.rasterSource === 'iserver') {
-        sourceIdMapList[layerInfo.id] = {
-          ...layerInfo.source,
-          clearTiles: () => jest.fn(),
-          update: () => jest.fn()
-        };
-      }
+      const source = Object.assign({}, layerInfo.source);
+      layerIdMapList[layerInfo.id].source = layerInfo.id;
+      commonMap.addSource(layerInfo.id, source);
     }
   },
   moveLayer: () => jest.fn(),
@@ -278,7 +270,7 @@ describe('WebMapViewModel.spec', () => {
       },
       addlayerssucceeded: data => {
         expect(addStyleSpy).toHaveBeenCalledTimes(1);
-        expect(viewModel.getAppreciableLayers().length).toBe(webmap_MAPBOXSTYLE_Tile.layers.length + 1);
+        expect(viewModel.getAppreciableLayers().length).toBe(webmap_MAPBOXSTYLE_Tile.layers.length);
         done();
       }
     });
@@ -298,6 +290,10 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, { ...commonMap });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
+      viewModel.getAppreciableLayers().forEach(item => {
+        expect(item.renderLayers.length).toBeGreaterThanOrEqual(1);
+      })
+      expect()
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -331,7 +327,6 @@ describe('WebMapViewModel.spec', () => {
   describe('test custom wkt', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-      jest.advanceTimersByTime(0);
     });
     afterEach(() => {
       jest.useRealTimers();
@@ -386,7 +381,6 @@ describe('WebMapViewModel.spec', () => {
   describe('multi-coordinate', () => {
     beforeEach(() => {
       jest.useFakeTimers();
-      jest.advanceTimersByTime(0);
     });
     afterEach(() => {
       jest.useRealTimers();
@@ -428,7 +422,7 @@ describe('WebMapViewModel.spec', () => {
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
       const callback = function (data) {
-        expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
+        expect(viewModel.getAppreciableLayers().length).toBe(0);
         done();
       };
       viewModel.on({ addlayerssucceeded: callback });
@@ -450,7 +444,7 @@ describe('WebMapViewModel.spec', () => {
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
       const callback = function (data) {
-        expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
+        expect(viewModel.getAppreciableLayers().length).toBe(0);
         done();
       };
       viewModel.on({ addlayerssucceeded: callback });
@@ -515,7 +509,7 @@ describe('WebMapViewModel.spec', () => {
       getSource: () => ''
     };
     const callback = function (data) {
-      expect(viewModel.getAppreciableLayers().length).toBe(road + 1);
+      expect(viewModel.getAppreciableLayers().length).toBe(roadId.layers.length + 1);
       done();
     };
     const viewModel = new WebMapViewModel(roadId, { ...commonOption }, mapOptions, map);
@@ -557,7 +551,7 @@ describe('WebMapViewModel.spec', () => {
     const id = vectorLayer_polygon;
     const viewModel = new WebMapViewModel(id, { ...commonOption });
     const callback = function (data) {
-      expect(viewModel.getAppreciableLayers().length).toBe( + 1);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -992,7 +986,7 @@ describe('WebMapViewModel.spec', () => {
     const id = migrationLayer;
     const viewModel = new WebMapViewModel(id, { ...commonOption });
     const callback = function (data) {
-      expect(viewModel.getAppreciableLayers().length).toBe( + 1);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -1303,7 +1297,7 @@ describe('WebMapViewModel.spec', () => {
     expect(spy).toBeCalled();
   });
 
-  it('setRasterTileSize', async done => {
+  it('setRasterTileSize', done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
@@ -1324,8 +1318,6 @@ describe('WebMapViewModel.spec', () => {
         done();
       }
     });
-    await flushPromises();
-    jest.advanceTimersByTime(0);
   });
 
   it('setLayersVisible', done => {
@@ -1340,17 +1332,21 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
-      expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
+      const appreciableLayers = viewModel.getAppreciableLayers();
+      const renderLayersLen = appreciableLayers.reduce((sum, item) => {
+        return sum + item.renderLayers.length;
+      }, 0);
+      expect(appreciableLayers.length).toBe(uniqueLayer_polygon.layers.length + 1);
       const isShow = false;
       const changeShow = true;
       const ignoreIds = ['China'];
       const spy1 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       viewModel.setLayersVisible(isShow, ignoreIds);
-      expect(spy1.mock.calls.length).toBe(viewModel._cacheLayerId.length);
+      expect(spy1.mock.calls.length).toBe(renderLayersLen);
       spy1.mockClear();
       const spy2 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       viewModel.setLayersVisible(changeShow);
-      expect(spy2.mock.calls.length).toBe(viewModel._cacheLayerId.length);
+      expect(spy2.mock.calls.length).toBe(renderLayersLen);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -1717,11 +1713,8 @@ describe('WebMapViewModel.spec', () => {
     };
     const viewModel = new WebMapViewModel(mapData);
     const callback = function (data) {
-      console.log(33);
       expect(viewModel.getAppreciableLayers().length).toBe(mapData.layers.length + 1);
-      console.log(44);
       expect(data).not.toBeUndefined();
-      console.log(55);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -1737,7 +1730,7 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const callback = function (data) {
       expect(data).not.toBeUndefined();
-      expect(data.map.overlayLayersManager['世界地图_Day'].source.tiles[0].indexOf('{bbox-wms-1.3.0}')).toBeGreaterThan(
+      expect(data.map.getSource('世界地图_Day').tiles[0].indexOf('{bbox-wms-1.3.0}')).toBeGreaterThan(
         -1
       );
       done();

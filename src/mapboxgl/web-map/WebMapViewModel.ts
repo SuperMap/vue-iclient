@@ -256,6 +256,7 @@ export default class WebMapViewModel extends Events {
       }
       const sources = this.map.getStyle().sources;
       Object.keys(sources).forEach(sourceId => {
+        console.log('sourceId', sources[sourceId]);
         // @ts-ignore
         if (sources[sourceId].type === 'raster' && sources[sourceId].rasterSource === 'iserver') {
           this._handler._updateRasterSource?.(sourceId, { tileSize });
@@ -591,13 +592,14 @@ export default class WebMapViewModel extends Events {
 
   public setLayersVisible(isShow, ignoreIds) {
     const show = isShow ? 'visible' : 'none';
-    if (this._cacheLayerId.length) {
-      this._cacheLayerId.forEach(layerId => {
+    this._appreciableLayers.forEach(item => {
+      item.renderLayers.forEach(layer => {
+        const layerId = layer.id;
         if ((ignoreIds && !ignoreIds.includes(layerId)) || !ignoreIds) {
           this.map.setLayoutProperty(layerId, 'visibility', show);
         }
       });
-    }
+    });
   }
 
   clean() {

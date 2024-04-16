@@ -445,7 +445,6 @@ export default class WebMap extends WebMapBase {
     const mapUrls = this.getMapurls();
     let url: string;
     this.baseLayerProxy = this.webMapService.handleProxy('image');
-    console.log('layerType222222222222222222', layerType);
     switch (layerType) {
       case 'TIANDITU':
         this.baseLayerProxy = null;
@@ -2170,7 +2169,9 @@ export default class WebMap extends WebMapBase {
   }
 
   private _sendMapToUser(count: number, layersLen: number): void {
+    console.log('_sendMapToUser', count, layersLen);
     if (count === layersLen) {
+      console.log('_sendMapToUser finished', count, layersLen);
       /**
        * @event WebMapViewModel#addlayerssucceeded
        * @description 添加图层成功。
@@ -2200,10 +2201,11 @@ export default class WebMap extends WebMapBase {
         };
       });
 
+      const layerCatalog = this.getLayerCatalog();
       this._appreciableLayers.forEach(appreciableLayer => {
-        const matchLayer = this.getLayerCatalog().find(layer => layer.id === appreciableLayer.id);
-        appreciableLayer.renderSource = matchLayer.renderSource;
-        appreciableLayer.renderLayers = matchLayer.renderLayers;
+        const matchLayer = layerCatalog.find(layer => layer.id === appreciableLayer.id) || {};
+        appreciableLayer.renderSource = matchLayer.renderSource || {};
+        appreciableLayer.renderLayers = matchLayer.renderLayers || [];
         appreciableLayer.type = matchLayer.type;
       });
       // @ts-ignore
@@ -2784,11 +2786,8 @@ export default class WebMap extends WebMapBase {
     const { id } = layerInfo;
     layerInfo = Object.assign(layerInfo, { id });
 
-    console.log('0000000000000000000000', id);
     if (this.map.getLayer(id)) {
-      console.log('1111111111111111111111111111111', id);
       if (this.checkSameLayer && this._isSameRasterLayer(id, layerInfo)) return;
-      console.log('22222222222222222222222222', id);
       this._updateLayer(layerInfo);
       return;
     }

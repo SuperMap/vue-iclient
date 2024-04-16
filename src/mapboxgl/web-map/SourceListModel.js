@@ -66,7 +66,7 @@ class SourceListModel {
         this.detailLayers.push({
           id: overlayer.id,
           visibility: overlayer.visibility ? 'visible' : 'none',
-          source: overlayer.id
+          source: typeof overlayer.source === 'object' ? overlayer.id : overlayer.source
         });
       }
     });
@@ -75,12 +75,14 @@ class SourceListModel {
   _initSource() {
     this.detailLayers &&
       this.detailLayers.forEach(layer => {
-        let matchItem = this.sourceList.find(item => item.id === layer.source);
+        let matchItem = this.sourceList.find(
+          item =>
+            item.renderSource.id === layer.source &&
+            (!item.renderSource.sourceLayer || item.renderSource.sourceLayer === layer['source-layer'])
+        );
         if (!matchItem) {
           const layerInfo = this.mapInfo?.layers.find(layerItem => layer.id === layerItem.layerID) || {};
-          const {
-            dataSource = {}, themeSetting = {}
-          } = layerInfo;
+          const { dataSource = {}, themeSetting = {} } = layerInfo;
           const source = this.map.getSource(layer.source);
           const sourceListItem = new SourceModel({
             dataSource,
