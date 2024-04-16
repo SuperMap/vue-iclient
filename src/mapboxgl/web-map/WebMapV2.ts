@@ -161,6 +161,10 @@ export default class WebMap extends WebMapBase {
     return this._legendList;
   }
 
+  public getLayerCatalog() {
+    return this._sourceListModel.getSourceList();
+  }
+
   get getSourceListModel(): SourceListModel {
     return this._sourceListModel;
   }
@@ -305,20 +309,6 @@ export default class WebMap extends WebMapBase {
         overLayers = overLayers.filter(this.layerFilter);
       }
       this.expectLayerLen += overLayers.length;
-      this._appreciableLayers = overLayers.map(layerInfo => {
-        const { layerID, dataSource, layerType, name, themeSetting, visible } = layerInfo;
-        let type = ['VECTOR', 'UNIQUE', 'RANGE', 'HEAT', 'MARKER', 'MIGRATION', 'RANK_SYMBOL'].includes(layerType)
-          ? 'vector'
-          : 'raster';
-        return {
-          layerID,
-          dataSource,
-          layerType: type,
-          name,
-          themeSetting,
-          visible
-        };
-      });
     }
   }
 
@@ -455,7 +445,7 @@ export default class WebMap extends WebMapBase {
     const mapUrls = this.getMapurls();
     let url: string;
     this.baseLayerProxy = this.webMapService.handleProxy('image');
-
+    console.log('layerType222222222222222222', layerType);
     switch (layerType) {
       case 'TIANDITU':
         this.baseLayerProxy = null;
@@ -2192,8 +2182,47 @@ export default class WebMap extends WebMapBase {
        */
 
       this._sourceListModel = new SourceListModel({
-        map: this.map
+        map: this.map,
+        mapInfo: this._mapInfo
       });
+
+      // @ts-ignore
+      this._appreciableLayers = this._mapInfo.layers.map(layerInfo => {
+        const { layerID, dataSource, name, themeSetting, visible } = layerInfo;
+        return {
+          id: layerID,
+          dataSource,
+          title: name,
+          themeSetting,
+          visible,
+          renderSource: {},
+          renderLayers: []
+        };
+      });
+
+      this._appreciableLayers.forEach(appreciableLayer => {
+        const matchLayer = this.getLayerCatalog().find(layer => layer.id === appreciableLayer.id);
+        appreciableLayer.renderSource = matchLayer.renderSource;
+        appreciableLayer.renderLayers = matchLayer.renderLayers;
+        appreciableLayer.type = matchLayer.type;
+      });
+      // @ts-ignore
+      const baseLayerId = this._mapInfo.baseLayer.name;
+      const baseLayer = this.map.getLayer(baseLayerId);
+      let baseLayerInfo;
+      if(baseLayer) {
+        baseLayerInfo = {
+          dataSource: {},
+          id: baseLayerId,
+          title: baseLayerId,
+          type: baseLayer?.type,
+          visible: true,
+          renderSource: {},
+          renderLayers: [baseLayerId],
+          themeSetting: {}
+        };
+      }
+      this._appreciableLayers = baseLayerInfo ? [baseLayerInfo].concat(this._appreciableLayers) : this._appreciableLayers;
       this._rectifyLayersOrder();
       this._triggerEvent('addlayerssucceeded', {
         map: this.map,
@@ -2755,8 +2784,11 @@ export default class WebMap extends WebMapBase {
     const { id } = layerInfo;
     layerInfo = Object.assign(layerInfo, { id });
 
+    console.log('0000000000000000000000', id);
     if (this.map.getLayer(id)) {
+      console.log('1111111111111111111111111111111', id);
       if (this.checkSameLayer && this._isSameRasterLayer(id, layerInfo)) return;
+      console.log('22222222222222222222222222', id);
       this._updateLayer(layerInfo);
       return;
     }

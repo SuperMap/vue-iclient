@@ -16,9 +16,8 @@
         <layer-group
           :layerCatalog="sourceList"
           :attributes="attributes"
-          :checkAttributesEnabled="checkAttributesEnabled"
           @toggleItemVisibility="toggleItemVisibility"
-          @toggleAttributesVisibility="(e,id,title) => toggleAttributesVisibility(e,id,title)">
+          @toggleAttributesVisibility="(e,item) => toggleAttributesVisibility(e,item)">
         </layer-group>
       </div>
     </sm-card>
@@ -206,10 +205,6 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel = new LayerListViewModel();
   }
 
-  checkAttributesEnabled(item) {
-    return this.viewModel.checkAttributesEnabled(item);
-  }
-
   toggleItemVisibility(item) {
     this.viewModel && this.viewModel.changeItemVisible(item);
   }
@@ -222,7 +217,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel.deleteLayer();
   }
 
-  toggleAttributesVisibility(e, layerName: string, title: string) {
+  toggleAttributesVisibility(e, item) {
     if (e.target.className.indexOf('sm-components-icon-attribute-open') !== -1) {
       e.target.setAttribute('class', this.attributesIconClass);
       this.displayAttributes = !this.displayAttributes;
@@ -230,22 +225,22 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
     this.closeAttributesIconClass();
     this.removeAttributes();
-    this.handleAttributesProps(layerName, title);
+    this.handleAttributesProps(item);
     e.target.setAttribute('class', `${this.attributesIconClass} sm-components-icon-attribute-open`);
     // @ts-ignore
     this.attributesContainer.appendChild(this.$refs.attributes.$el);
     this.displayAttributes = !this.displayAttributes;
   }
 
-  async handleAttributesProps(layerName: string, title: string) {
+  async handleAttributesProps(item) {
     const props = Object.assign({}, this.attributes);
     for (const key in props) {
       if (ATTRIBUTES_NEEDED_PROPS.indexOf(key) === -1) {
         delete props[key];
       }
     }
-    const dataset = await this.viewModel.getLayerDatas(layerName);
-    this.attributesProps = { dataset: Object.freeze(dataset), title, ...props };
+    const dataset = await this.viewModel.getLayerDatas(item);
+    this.attributesProps = { dataset: Object.freeze(dataset), title: item.title, ...props };
   }
 
   layerUpdate() {

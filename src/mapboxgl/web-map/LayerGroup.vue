@@ -26,7 +26,7 @@
             <i class="sm-components-icon-solid-triangle-down header-arrow" />
           </div>
         </template>
-        <layer-group v-on="$listeners" :layerCatalog="item.children" :attributes="attributes" :checkAttributesEnabled="checkAttributesEnabled"></layer-group>
+        <layer-group v-on="$listeners" :layerCatalog="item.children" :attributes="attributes" ></layer-group>
       </sm-collapse-panel>
 
       <div
@@ -79,9 +79,6 @@ export default {
       default() {
         return {};
       }
-    },
-    checkAttributesEnabled: {
-      type: Function
     }
   },
   computed: {
@@ -90,7 +87,9 @@ export default {
     },
     attributesEnabled() {
       return (item) => {
-        return this.attributes.enabled && (item.type === 'basic' && this.checkAttributesEnabled(item));
+        const isGeojson = item.renderSource.type === 'geojson';
+        const isStructureData = item.dataSource.type === 'STRUCTURE_DATA';
+        return this.attributes.enabled && (isGeojson || isStructureData);
       };
     }
   },
@@ -100,8 +99,7 @@ export default {
       item.visible = !item.visible;
     },
     toggleAttributesVisibility(e, item) {
-      const { title, id } = item;
-      this.$emit('toggleAttributesVisibility', e, id, title);
+      this.$emit('toggleAttributesVisibility', e, item);
     }
   }
 };

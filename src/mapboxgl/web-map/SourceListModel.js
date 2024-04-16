@@ -1,11 +1,10 @@
 import SourceModel from 'vue-iclient/src/mapboxgl/web-map/SourceModel';
 import LayerModel from 'vue-iclient/src/mapboxgl/web-map/LayerModel';
-import GroupUtil from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
 
-class SourceListModel extends GroupUtil {
+class SourceListModel {
   constructor(options) {
-    super();
     this.map = options.map;
+    this.mapInfo = options.mapInfo;
     this.style = this.map.getStyle();
     this.layers = this.map.getStyle().layers;
     this.overlayLayers = this.map.overlayLayersManager;
@@ -20,7 +19,7 @@ class SourceListModel extends GroupUtil {
   getSourceList() {
     let sourceList = [];
     for (let item of this.sourceList) {
-      if (item && this.excludeSource(item.id)) {
+      if (item.id && this.excludeSource(item.id)) {
         sourceList.push(item);
       }
     }
@@ -46,25 +45,8 @@ class SourceListModel extends GroupUtil {
     return true;
   }
 
-  getLegendStyle(sourceName) {
-    if (sourceName) {
-      return this.sourceList[sourceName] ? this.sourceList[sourceName].style : '';
-    }
-    const sourceList = Object.values(this.sourceList) || [];
-    const styles = sourceList.filter(item => !!item.style);
-    return styles;
-  }
-
   getLayers() {
     return this.detailLayers;
-  }
-
-  getLayersBySourceLayer(sourceName, sourceLayer) {
-    return this.sourceList[sourceName].sourceLayerList[sourceLayer];
-  }
-
-  getSourceLayersBySource(sourceName) {
-    return this.sourceList[sourceName].sourceLayerList;
   }
 
   addSourceStyle(sourceName, sourceStyle) {
@@ -95,14 +77,27 @@ class SourceListModel extends GroupUtil {
       this.detailLayers.forEach(layer => {
         let matchItem = this.sourceList.find(item => item.id === layer.source);
         if (!matchItem) {
+          const layerInfo = this.mapInfo?.layers.find(layerItem => layer.id === layerItem.layerID) || {};
+          const {
+            dataSource = {}, themeSetting = {}
+          } = layerInfo;
+          const source = this.map.getSource(layer.source);
           const sourceListItem = new SourceModel({
-            source: layer.source
+            dataSource,
+            source: layer.source,
+            type: layer.type,
+            renderSource: {
+              id: layer.source,
+              type: source && source.type,
+              sourceLayer: layer['source-layer']
+            },
+            themeSetting
           });
           this.sourceList.unshift(sourceListItem);
           this.sourceNames.push(layer.source);
           matchItem = sourceListItem;
         }
-        matchItem.addLayer(new LayerModel(layer), layer.sourceLayer);
+        matchItem.addLayer(new LayerModel(layer), layer['source-layer']);
       });
   }
 }

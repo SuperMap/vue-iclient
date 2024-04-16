@@ -99,11 +99,10 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
     const treeData: treeSelectDataOption[] = [];
     layerCatalog.forEach(layer => {
       let { id, title, type, visible } = layer;
-      let layerType = layer.layer?.type;
       let disabled = false;
       let selectable = true;
       if (this.filter) {
-        let res = this.filter(layerType, type, this.map) || {};
+        let res = this.filter(type, this.map) || {};
         disabled = res.disabled;
         selectable = res.selectable;
 
@@ -124,7 +123,7 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
       }
       this.sourceListDataCache[layerValue] = {
         id,
-        type: layerType,
+        type,
         visibility: visible ? 'visible' : 'none'
       };
       treeData.push(sourceInfo);
