@@ -50,14 +50,8 @@ class LayerListViewModel extends mapboxgl.Evented {
     return this.sourceNames;
   }
 
-  checkAttributesEnabled(item) {
-    const source = this.map.getSource(item.layer.source);
-    const hasDatasetId = this.webmap.getDatasetIdByLayerId(item.id);
-    return source.type === 'geojson' || hasDatasetId;
-  }
-
-  async getLayerDatas(layerName) {
-    const features = await this.webmap.getLayerDatas(layerName);
+  async getLayerDatas(item) {
+    const features = await this.webmap.getLayerDatas(item);
     return this.setDataset(features);
   }
 

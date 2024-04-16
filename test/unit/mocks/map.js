@@ -204,6 +204,7 @@ var Map = function (options) {
     }
     if (this._sources[name]) {
       return {
+        ...this._sources[name],
         setCoordinates: function() {},
         setData: function (data) {
           this._sources[name].data = data;
@@ -223,7 +224,8 @@ var Map = function (options) {
           }
         }.bind(this),
         _data: this._sources[name].data,
-        loadTile: function () {}
+        loadTile: function () {},
+        clearTiles: function () {}
       };
     }
     if (name === 'ChinaDark') {
@@ -320,7 +322,8 @@ var Map = function (options) {
   this.addLayer = function (layer, before) {
     this.overlayLayersManager[layer.id] = layer;
     if (layer.source instanceof Object){
-      this.addSource(layer.id, layer.source)
+      this.addSource(layer.id, Object.assign({}, layer.source))
+      this.overlayLayersManager[layer.id].source = layer.id;
     }
     if (layer.onAdd) {
       layer.onAdd(this);

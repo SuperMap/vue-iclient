@@ -145,8 +145,8 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     return '';
   }
 
-  filtercb(layerType, type) {
-    if (layerType === 'raster' || layerType === 'heatmap') {
+  filtercb(type) {
+    if (type === 'raster' || type === 'heatmap') {
       return {
         show: false
       };
