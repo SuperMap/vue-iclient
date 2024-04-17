@@ -1940,6 +1940,33 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
+  it('check label layer repeat', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_CSV,
+      'https://fakeiportal.supermap.io/iportal/web/datas/13136933/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_geojson['POINT_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const id = {
+      ...uniqueLayer_point,
+      level: '',
+      visibleExtent: [0, 1, 2, 3]
+    };
+    const callback = function () {
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
+      expect(viewModel._handler).not.toBeUndefined();
+      const spy = jest.spyOn(viewModel._handler, '_addLayer');
+      viewModel._handler._addLabelLayer({ layerID: 'jiuzhaigou2' });
+      expect(spy).not.toBeCalled();
+      done();
+    };
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
   it('webmap3.0', async done => {
     const fetchResource = {
       'https://localhost:8190/iportal/web/maps/249495311': webmap3Datas[1]

@@ -27,7 +27,7 @@
         >
           <template slot="header">
             <div v-if="isShowTitle" class="header-wrap" :style="headingTextColorStyle">
-              <div class="sm-component-legend__title add-ellipsis">{{ layerName }}</div>
+              <div class="sm-component-legend__title add-ellipsis">{{ layerStyles[0].layerTitle }}</div>
               <i
                 :class="
                   activeLegend.includes(layerName)

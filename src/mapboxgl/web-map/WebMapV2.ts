@@ -528,7 +528,7 @@ export default class WebMap extends WebMapBase {
   }
 
   _initOverlayLayer(layerInfo: any, features: any = [], mergeByField?: string) {
-    const { layerID, layerType, visible, style, featureType, labelStyle, projection } = layerInfo;
+    const { layerID, layerType, visible, style, featureType, projection } = layerInfo;
     layerInfo.visible = visible ? 'visible' : 'none';
     features = this.mergeFeatures(layerID, features, mergeByField);
     if (layerType === 'restMap') {
@@ -570,7 +570,7 @@ export default class WebMap extends WebMapBase {
         // 线和面
         this._createVectorLayer(layerInfo, features);
         // 不在 _createVectorLayer 里面处理 layerAdded++ 的原因：_createDataflowLayer 也调用了_createVectorLayer ，会导致layerAdded > expectLayerLen
-        this._addLayerSucceeded();
+        this._addLayerSucceeded({ layerInfo, features });
       }
     } else if (layerType === 'UNIQUE') {
       this._createUniqueLayer(layerInfo, features);
@@ -586,10 +586,6 @@ export default class WebMap extends WebMapBase {
       this._createRankSymbolLayer(layerInfo, features);
     } else if (layerType === 'DATAFLOW_POINT_TRACK' || layerType === 'DATAFLOW_HEAT') {
       this._createDataflowLayer(layerInfo);
-    }
-    if (labelStyle && labelStyle.labelField && layerType !== 'DATAFLOW_POINT_TRACK') {
-      // 存在标签专题图
-      this._addLabelLayer(layerInfo, features, false);
     }
   }
 
@@ -920,7 +916,11 @@ export default class WebMap extends WebMapBase {
     this._addLayerSucceeded();
   }
 
-  _addLayerSucceeded() {
+  _addLayerSucceeded(options?: { layerInfo: Record<string, any>, features: GeoJSON.Feature[] }) {
+    if (options?.layerInfo?.labelStyle?.labelField && options.layerInfo.layerType !== 'DATAFLOW_POINT_TRACK') {
+      // 存在标签专题图
+      this._addLabelLayer(options.layerInfo, options.features, false);
+    }
     this.layerAdded++;
     this._sendMapToUser(this.layerAdded, this.expectLayerLen);
   }
@@ -986,7 +986,7 @@ export default class WebMap extends WebMapBase {
     return iconRotateExpression;
   }
 
-  private _addDataflowLayer(layerInfo, feature) {
+  private async _addDataflowLayer(layerInfo, feature) {
     const layerID = layerInfo.layerID;
     if (layerInfo.layerType === 'DATAFLOW_HEAT') {
       if (!this.map.getSource(layerID)) {
@@ -1004,7 +1004,7 @@ export default class WebMap extends WebMapBase {
           layerInfo.identifyField
         );
         if (['BASIC_POINT', 'SVG_POINT', 'IMAGE_POINT'].includes(layerStyle.type)) {
-          this._createGraphicLayer(layerInfo, [feature], null, iconRotateExpression, false);
+          await this._createGraphicLayer(layerInfo, [feature], null, iconRotateExpression, false);
         } else {
           this._createSymbolLayer(layerInfo, [feature], null, iconRotateExpression, false);
         }
@@ -1096,7 +1096,7 @@ export default class WebMap extends WebMapBase {
     const echartslayer = new EchartsLayer(this.map);
     echartslayer.chart.setOption(options);
     this.echartslayer.push(echartslayer);
-    this._addLayerSucceeded();
+    this._addLayerSucceeded({ layerInfo, features });
   }
 
   private _createRankSymbolLayer(layerInfo, features) {
@@ -1159,7 +1159,7 @@ export default class WebMap extends WebMapBase {
       layerStyle.style = this._transformStyleToMapBoxGl(layerInfo.style, featureType, expression, 'circle-radius');
       const layerID = layerInfo.layerID;
       this._addOverlayToMap(featureType, source, layerID, layerStyle, minzoom, maxzoom);
-      this._addLayerSucceeded();
+      this._addLayerSucceeded({ layerInfo, features });
     }
   }
 
@@ -1197,6 +1197,10 @@ export default class WebMap extends WebMapBase {
   }
 
   private _addLabelLayer(layerInfo: any, features: any, addSource = false): void {
+    const labelLayerId = `${layerInfo.layerID}-label`;
+    if (this.map.getLayer(labelLayerId)) {
+      return;
+    }
     const labelStyle = layerInfo.labelStyle;
     let { backgroundFill } = labelStyle;
     const fontFamily = labelStyle.fontFamily;
@@ -1244,7 +1248,7 @@ export default class WebMap extends WebMapBase {
       });
     }
     this._addLayer({
-      id: `${layerInfo.layerID}-label`,
+      id: labelLayerId,
       type: 'symbol',
       source:
         this.map.getSource(layerInfo.layerID) && !addSource
@@ -1324,131 +1328,136 @@ export default class WebMap extends WebMapBase {
       features: features
     });
     if (addToMap) {
-      this._addLayerSucceeded();
+      this._addLayerSucceeded({ layerInfo, features });
     }
   }
 
-  private _createGraphicLayer(
+  private async _createGraphicLayer(
     layerInfo: any,
     features: any,
     iconSizeExpression?,
     iconRotateExpression?,
     addToMap = true,
     filter?
-  ) {
-    const { layerID, minzoom, maxzoom, style } = layerInfo;
+  ): Promise<void> {
+    return new Promise(resolve => {
+      const { layerID, minzoom, maxzoom, style } = layerInfo;
 
-    const source: mapboxglTypes.GeoJSONSourceRaw = {
-      type: 'geojson',
-      data: {
-        type: 'FeatureCollection',
-        features: features
-      }
-    };
-    if (!this.map.getSource(layerID)) {
-      this.map.addSource(layerID, source);
-    }
-    const iconID = `imageIcon-${layerID}`;
-    if (style.type === 'IMAGE_POINT') {
-      const imageInfo = style.imageInfo;
-      this.map.loadImage(imageInfo.url, (error, image) => {
-        if (error) {
-          console.error(error);
-          return;
-        }
-        const iconSize = Number.parseFloat((style.radius / image.width).toFixed(2)) * 2;
-        !this.map.hasImage(iconID) && this.map.addImage(iconID, image);
-        const layerOptions: any = {
-          id: layerID,
-          type: 'symbol',
-          source: layerID,
-          layout: {
-            'icon-image': iconID,
-            'icon-anchor': 'bottom-right',
-            'icon-size': iconSizeExpression || iconSize,
-            'icon-allow-overlap': true,
-            visibility: layerInfo.visible,
-            'icon-offset': [style.offsetX * image.width || 0, style.offsetY * image.height || 0],
-            'icon-rotate': iconRotateExpression || ((layerInfo.style.rotation || 0) * 180) / Math.PI
-          },
-          minzoom: minzoom || 0,
-          maxzoom: maxzoom || 22
-        };
-        if (filter) {
-          layerOptions.filter = filter;
-        }
-        this._addLayer(layerOptions);
-        if (addToMap) {
-          this._addLayerSucceeded();
-        }
-      });
-    } else if (style.type === 'SVG_POINT') {
-      const svgUrl = style.url;
-      if (!this._svgDiv) {
-        this._svgDiv = document.createElement('div');
-        document.body.appendChild(this._svgDiv);
-      }
-      this.getCanvasFromSVG(svgUrl, this._svgDiv, canvas => {
-        // this.handleSvgColor(style, canvas);
-        const imgUrl = canvas.toDataURL('img/png');
-        imgUrl &&
-          this.map.loadImage(imgUrl, (error, image) => {
-            if (error) {
-              console.log(error);
-            }
-            const iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2)) * 2;
-            if (iconSizeExpression && Array.isArray(iconSizeExpression)) {
-              iconSizeExpression = iconSizeExpression.map((item, index) => {
-                if (typeof item === 'number' && index % 2 === 1) {
-                  return (item / canvas.width) * 2;
-                }
-                return item;
-              });
-            }
-            !this.map.hasImage(svgUrl) && this.map.addImage(svgUrl, image, { sdf: true });
-            const layerOptions: any = {
-              id: layerID,
-              type: 'symbol',
-              source: layerID,
-              layout: {
-                'icon-image': svgUrl,
-                'icon-size': iconSizeExpression || iconSize,
-                'icon-anchor': 'bottom-right',
-                visibility: layerInfo.visible,
-                'icon-offset': [style.offsetX * canvas.width || 0, style.offsetY * canvas.height || 0],
-                'icon-allow-overlap': true,
-                'icon-rotate': iconRotateExpression || ((layerInfo.style.rotation || 0) * 180) / Math.PI
-              },
-              paint: {
-                'icon-color': style.fillColor
-              },
-              minzoom: minzoom || 0,
-              maxzoom: maxzoom || 22
-            };
-            if (filter) {
-              layerOptions.filter = filter;
-            }
-            this._addLayer(layerOptions);
-            if (addToMap) {
-              this._addLayerSucceeded();
-            }
-          });
-      });
-    } else {
-      const layerStyle = {
-        style: this._transformStyleToMapBoxGl(style, layerInfo.featureType),
-        layout: {
-          visibility: layerInfo.visible
+      const source: mapboxglTypes.GeoJSONSourceRaw = {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: features
         }
       };
-      this._addOverlayToMap('POINT', layerID, layerID, layerStyle, minzoom, maxzoom);
-      if (addToMap) {
-        this._addLayerSucceeded();
+      if (!this.map.getSource(layerID)) {
+        this.map.addSource(layerID, source);
       }
-    }
+      const iconID = `imageIcon-${layerID}`;
+      if (style.type === 'IMAGE_POINT') {
+        const imageInfo = style.imageInfo;
+        this.map.loadImage(imageInfo.url, (error, image) => {
+          if (error) {
+            console.error(error);
+            return;
+          }
+          const iconSize = Number.parseFloat((style.radius / image.width).toFixed(2)) * 2;
+          !this.map.hasImage(iconID) && this.map.addImage(iconID, image);
+          const layerOptions: any = {
+            id: layerID,
+            type: 'symbol',
+            source: layerID,
+            layout: {
+              'icon-image': iconID,
+              'icon-anchor': 'bottom-right',
+              'icon-size': iconSizeExpression || iconSize,
+              'icon-allow-overlap': true,
+              visibility: layerInfo.visible,
+              'icon-offset': [style.offsetX * image.width || 0, style.offsetY * image.height || 0],
+              'icon-rotate': iconRotateExpression || ((layerInfo.style.rotation || 0) * 180) / Math.PI
+            },
+            minzoom: minzoom || 0,
+            maxzoom: maxzoom || 22
+          };
+          if (filter) {
+            layerOptions.filter = filter;
+          }
+          this._addLayer(layerOptions);
+          if (addToMap) {
+            this._addLayerSucceeded({ layerInfo, features });
+          }
+          resolve();
+        });
+      } else if (style.type === 'SVG_POINT') {
+        const svgUrl = style.url;
+        if (!this._svgDiv) {
+          this._svgDiv = document.createElement('div');
+          document.body.appendChild(this._svgDiv);
+        }
+        this.getCanvasFromSVG(svgUrl, this._svgDiv, canvas => {
+          // this.handleSvgColor(style, canvas);
+          const imgUrl = canvas.toDataURL('img/png');
+          imgUrl &&
+            this.map.loadImage(imgUrl, (error, image) => {
+              if (error) {
+                console.log(error);
+              }
+              const iconSize = Number.parseFloat((style.radius / canvas.width).toFixed(2)) * 2;
+              if (iconSizeExpression && Array.isArray(iconSizeExpression)) {
+                iconSizeExpression = iconSizeExpression.map((item, index) => {
+                  if (typeof item === 'number' && index % 2 === 1) {
+                    return (item / canvas.width) * 2;
+                  }
+                  return item;
+                });
+              }
+              !this.map.hasImage(svgUrl) && this.map.addImage(svgUrl, image, { sdf: true });
+              const layerOptions: any = {
+                id: layerID,
+                type: 'symbol',
+                source: layerID,
+                layout: {
+                  'icon-image': svgUrl,
+                  'icon-size': iconSizeExpression || iconSize,
+                  'icon-anchor': 'bottom-right',
+                  visibility: layerInfo.visible,
+                  'icon-offset': [style.offsetX * canvas.width || 0, style.offsetY * canvas.height || 0],
+                  'icon-allow-overlap': true,
+                  'icon-rotate': iconRotateExpression || ((layerInfo.style.rotation || 0) * 180) / Math.PI
+                },
+                paint: {
+                  'icon-color': style.fillColor
+                },
+                minzoom: minzoom || 0,
+                maxzoom: maxzoom || 22
+              };
+              if (filter) {
+                layerOptions.filter = filter;
+              }
+              this._addLayer(layerOptions);
+              if (addToMap) {
+                this._addLayerSucceeded({ layerInfo, features });
+              }
+              resolve();
+            });
+        });
+      } else {
+        const layerStyle = {
+          style: this._transformStyleToMapBoxGl(style, layerInfo.featureType),
+          layout: {
+            visibility: layerInfo.visible
+          }
+        };
+        this._addOverlayToMap('POINT', layerID, layerID, layerStyle, minzoom, maxzoom);
+        if (addToMap) {
+          this._addLayerSucceeded({ layerInfo, features });
+        }
+        resolve();
+      }
+    });
   }
 
-  private _createUniqueLayer(layerInfo: any, features: any): void {
+  private async _createUniqueLayer(layerInfo: any, features: any): Promise<void> {
     const symbolConvertFunctionFactory = {
       unicode: ({ unicode }): string => {
         return String.fromCharCode(parseInt(unicode.replace(/^&#x/, ''), 16));
@@ -1752,7 +1761,7 @@ export default class WebMap extends WebMapBase {
           promiseList.push(loadImagePromise(src));
         });
         const symbolStyle = { ...style, ...expressionMap };
-        Promise.all(promiseList).then(images => {
+        await Promise.all(promiseList).then(images => {
           const imageSize = {};
           const radiusMap = {};
           const radiusExpress = expressionMap.radius || [];
@@ -1844,7 +1853,7 @@ export default class WebMap extends WebMapBase {
       } else if (style.type === 'IMAGE_POINT' || style.type === 'SVG_POINT') {
         const tmpLayerInfo = { ...layerInfo };
         tmpLayerInfo.style = { ...style, ...expressionMap, type: style.type };
-        this._createGraphicLayer(
+        await this._createGraphicLayer(
           tmpLayerInfo,
           features,
           '',
@@ -1864,7 +1873,7 @@ export default class WebMap extends WebMapBase {
         );
       }
     }
-    this._addLayerSucceeded();
+    this._addLayerSucceeded({ layerInfo, features });
   }
 
   private _getWMTSUrl(options: any): string {
@@ -2030,7 +2039,7 @@ export default class WebMap extends WebMapBase {
             this._addStrokeLineForPoly(defaultStyle, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
         }
       }
-      this._addLayerSucceeded();
+      this._addLayerSucceeded({ layerInfo, features });
     });
   }
 
@@ -2102,7 +2111,7 @@ export default class WebMap extends WebMapBase {
       maxzoom: maxzoom || 22
     });
     if (addToMap) {
-      this._addLayerSucceeded();
+      this._addLayerSucceeded({ layerInfo, features });
     }
   }
 
@@ -2165,7 +2174,7 @@ export default class WebMap extends WebMapBase {
     featureType === 'POLYGON' &&
       style.strokeColor &&
       this._addStrokeLineForPoly(style, layerID, layerID + '-strokeLine', visible, minzoom, maxzoom);
-    this._addLayerSucceeded();
+    this._addLayerSucceeded({ layerInfo, features });
   }
 
   private _sendMapToUser(count: number, layersLen: number): void {
@@ -2817,6 +2826,7 @@ export default class WebMap extends WebMapBase {
   clean() {
     if (this.map) {
       this.stopCanvg();
+      this.map.remove();
       this.map = null;
       this._legendList = [];
       this._sourceListModel = null;
