@@ -161,8 +161,10 @@ export default {
       }
     }
   },
-  loaded() {
+  created() {
     this.viewModel = new LegendViewModel();
+  },
+  loaded() {
     this.initLegendList();
   },
   removed() {

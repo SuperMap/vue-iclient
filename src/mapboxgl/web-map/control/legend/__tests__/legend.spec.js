@@ -26,8 +26,6 @@ describe('Legend.vue', () => {
     };
   };
 
-  beforeEach(() => {});
-
   afterEach(() => {
     jest.resetAllMocks();
     if (wrapper) {
@@ -48,11 +46,10 @@ describe('Legend.vue', () => {
     const webmap = {
       getLegendInfo: () => mapLegends
     };
-    wrapper.vm.$options.loaded.call(wrapper.vm);
     wrapper.vm.viewModel.setMap({
       webmap
     });
-    wrapper.vm.initLegendList();
+    wrapper.vm.$options.loaded.call(wrapper.vm);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.legendList).not.toEqual({});
     expect(wrapper.vm.mapTarget).toBe('map');
