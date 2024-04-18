@@ -1,10 +1,10 @@
 <script lang="ts">
+import type { CreateElement, VNode } from 'vue';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Swiper from './Swiper';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import { getSlotOptions, filterEmpty } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
-import { CreateElement } from 'vue';
 import isequal from 'lodash.isequal';
 import debounce from 'lodash.debounce';
 import { addListener, removeListener } from 'resize-detector';
@@ -313,7 +313,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       textColor: this.textColor,
       splitLine: this.splitLine
     };
-    let SwiperCompt;
+    let SwiperCompt: VNode | null = null;
     if (this.isRefresh) {
       SwiperCompt = h(
         // @ts-ignore
@@ -343,7 +343,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
             class: 'sm-component-slideshow__content',
             on: { mouseover: this.autoplayStop, mouseout: this.autoplayStart }
           },
-          SwiperCompt
+          [SwiperCompt]
         )
       ]
     );
