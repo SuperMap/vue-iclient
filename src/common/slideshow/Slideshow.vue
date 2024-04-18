@@ -51,6 +51,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'autoplay',
     'direction'
   ];
+
   activeIndexData: number = 0;
 
   // 当 loop 为 true && effect 为 cube, 幻灯片页数等于3会出现重叠。
@@ -312,6 +313,23 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       textColor: this.textColor,
       splitLine: this.splitLine
     };
+    let SwiperCompt;
+    if (this.isRefresh) {
+      SwiperCompt = h(
+        // @ts-ignore
+        Swiper,
+        {
+          domProps: { realIndex: this.activeIndex },
+          props: { options: this.swiperOptions },
+          on: {
+            slideChange: this.slideChange,
+            observerUpdate: this._observerUpdate
+          },
+          ref: 'mySwiper'
+        },
+        slots
+      );
+    }
     return h(
       'sm-collapse-card',
       {
@@ -325,23 +343,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
             class: 'sm-component-slideshow__content',
             on: { mouseover: this.autoplayStop, mouseout: this.autoplayStart }
           },
-          [
-            this.isRefresh
-              ? h(
-                  Swiper,
-                  {
-                    domProps: { realIndex: this.activeIndex },
-                    props: { options: this.swiperOptions },
-                    on: {
-                      slideChange: this.slideChange,
-                      observerUpdate: this._observerUpdate
-                    },
-                    ref: 'mySwiper'
-                  },
-                  slots
-                )
-              : null
-          ]
+          SwiperCompt
         )
       ]
     );

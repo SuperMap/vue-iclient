@@ -180,8 +180,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     this.features.forEach(feature => {
       labels[feature.properties[this.themeInfo.identifyField]] = feature.properties[this.themeInfo.field];
     });
-    const newFeatures = labelPoints.features.map(point => {
-      const properties = {};
+    const newFeatures = (labelPoints as GeoJSON.FeatureCollection).features.map((point) => {
+      const properties: GeoJSON.Feature['properties'] = {};
       properties[this.themeInfo.identifyField] = point.properties['省份'];
       properties[this.themeInfo.field] = labels[point.properties['省份']];
       point.properties = properties;
