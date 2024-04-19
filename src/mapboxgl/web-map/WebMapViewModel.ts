@@ -614,7 +614,7 @@ export default class WebMapViewModel extends Events {
   clean() {
     if (this.map) {
       this.triggerEvent('beforeremovemap', {});
-      this._handler?.clean();
+      this._handler ? this._handler.clean() : this.map.remove();
       this.map = null;
       this._sourceListModel = null;
       this._appreciableLayers = [];
