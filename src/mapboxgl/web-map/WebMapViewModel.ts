@@ -119,6 +119,12 @@ export default class WebMapViewModel extends Events {
 
   protected webMapService: WebMapService;
 
+  eventTypes: string[];
+
+  triggerEvent: (name: string, ...rest: any) => any;
+
+  on: (data: Record<string, (...rest: any) => void>) => void;
+
   constructor(
     id: string | number | Object,
     options: webMapOptions = {},
