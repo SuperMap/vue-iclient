@@ -264,7 +264,6 @@ export default class WebMapViewModel extends Events {
       }
       const sources = this.map.getStyle().sources;
       Object.keys(sources).forEach(sourceId => {
-        console.log('sourceId', sources[sourceId]);
         // @ts-ignore
         if (sources[sourceId].type === 'raster' && sources[sourceId].rasterSource === 'iserver') {
           this._handler._updateRasterSource?.(sourceId, { tileSize });
@@ -469,7 +468,7 @@ export default class WebMapViewModel extends Events {
             this._sourceListModel = sourceListModel;
             this._appreciableLayers = layers;
             this._cacheLayerId.push(...layers.map(layer => layer.renderLayers).flat());
-            this._layerList = this._handler.getLayerCatalog();
+            this._layerList = this._handler && this._handler.getLayerCatalog();
             this.triggerEvent('addlayerssucceeded', {
               map: map,
               mapparams: this.mapParams
@@ -565,7 +564,7 @@ export default class WebMapViewModel extends Events {
       this.mapParams = mapparams;
       this._appreciableLayers = layers;
       this._cacheLayerId.push(...layers.map(layer => layer.renderLayers).flat());
-      this._layerList = this._handler.getLayerCatalog();
+      this._layerList = this._handler && this._handler.getLayerCatalog();
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams

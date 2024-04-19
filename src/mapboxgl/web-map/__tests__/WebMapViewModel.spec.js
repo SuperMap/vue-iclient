@@ -1026,9 +1026,9 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(dataflowLayer, { ...commonOption }, undefined, { ...commonMap });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBe(dataflowLayer.layers.length + 1);
-      viewModel.updateOverlayLayer(dataflowLayer.layers[0]);
+      viewModel.updateOverlayLayer({ ...dataflowLayer.layers[0], id: dataflowLayer.layers[0].name } );
       expect(() => {
-        viewModel.updateOverlayLayer(dataflowLayer.layers[0]);
+        viewModel.updateOverlayLayer({ ...dataflowLayer.layers[0], id: dataflowLayer.layers[0].name } );
       }).not.toThrow();
       done();
     };
@@ -1387,7 +1387,7 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
-      const layerInfo = { ...uniqueLayer_polygon.layers[0], layerID: uniqueLayer_polygon.layers[0].name };
+      const layerInfo = { ...uniqueLayer_polygon.layers[0], id: uniqueLayer_polygon.layers[0].name };
       const features = [{
         type: "Feature",
         geometry: {

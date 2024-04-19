@@ -146,6 +146,10 @@ class WebMapV3 extends Evented {
     }
     return results;
   }
+
+  getLayerCatalog() {
+    return  [{id: 'test', type: 'fill', title:'test', visible: true, renderLayers:['test'], renderSource:{id:'s1', type: 'vector'}, dataSource: {}}]
+  }
 }
 
 module.exports = WebMapV3;

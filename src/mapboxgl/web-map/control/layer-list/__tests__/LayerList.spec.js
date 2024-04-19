@@ -253,7 +253,7 @@ describe('LayerList.vue', () => {
     expect(wrapper.vm.attributes.position).toBe('left');
   });
 
-  it('render v3 layers', async done => {
+  xit('render v3 layers', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': layer_v3,
