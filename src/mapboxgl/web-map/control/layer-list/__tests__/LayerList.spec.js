@@ -5,84 +5,12 @@ import LayerList from '../index';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
-import layer_v3 from 'vue-iclient/test/unit/mocks/data/WebMap/layer_v3';
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
-import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
+import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 
 describe('LayerList.vue', () => {
   let wrapper;
   let mapWrapper;
-
-  const commonMap = {
-    map:{
-      resize: () => jest.fn(),
-      getZoom: () => jest.fn(),
-      setZoom: () => jest.fn(),
-      setCRS: () => jest.fn(),
-      getCenter: () => {
-        return {
-          lng: 1,
-          lat: 2
-        };
-      },
-      setCenter: () => jest.fn(),
-      getBearing: () => 2,
-      setBearing: () => jest.fn(),
-      getPitch: () => 2,
-      setPitch: () => jest.fn(),
-      getStyle: () => {
-        return {
-          layers: [{
-            id: 1
-          }]
-        }
-      },
-      addSource: () => jest.fn(),
-      getSource: () => jest.fn(),
-      removeSource: jest.fn(),
-      triggerRepaint: () => jest.fn(),
-      style: jest.fn(),
-      getLayer: jest.fn(),
-      removeLayer: jest.fn(),
-      getCRS: () => {
-        return {
-          epsgCode: 'EPSG:3857',
-          getExtent: () => jest.fn()
-        };
-      },
-      addLayer: () => jest.fn(),
-      moveLayer: () => jest.fn(),
-      overlayLayersManager: {},
-      on: () => { },
-      off: () => { },
-      fire: () => { },
-      setLayoutProperty: () => jest.fn(),
-      addStyle: () => jest.fn(),
-      remove: () => jest.fn(),
-      setRenderWorldCopies: () => jest.fn(),
-      setStyle: () => jest.fn(),
-      loadImage: function (src, callback) {
-        callback(null, { width: 15 });
-      },
-      addImage: function () { },
-      hasImage: function () {
-        return false;
-      }
-    },
-    mapparams: {},
-    layers: []
-  };
-
-  mapboxgl.supermap.WebMapV3 = () => {
-    return {
-      on: (event, callback) => {
-        callback(commonMap);
-      },
-      initializeMap: jest.fn(),
-      clean: jest.fn(),
-      getLayerCatalog: () => [{id: 'test', type: 'fill', title:'test', visible: true, renderLayers:['test'], renderSource:{id:'s1', type: 'vector'}, dataSource: {}}]
-    }
-  }
 
   beforeEach(() => {
     wrapper = null;
@@ -253,10 +181,11 @@ describe('LayerList.vue', () => {
     expect(wrapper.vm.attributes.position).toBe('left');
   });
 
-  xit('render v3 layers', async done => {
+  it('render v3 layers', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
-      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': layer_v3,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap3Datas[0],
+      'https://fakeiportal.supermap.io/iportal/web/maps/123': webmap3Datas[1],
       'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
     };
     mockFetch(fetchResource);
