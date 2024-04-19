@@ -2178,9 +2178,7 @@ export default class WebMap extends WebMapBase {
   }
 
   private _sendMapToUser(count: number, layersLen: number): void {
-    console.log('_sendMapToUser', count, layersLen);
     if (count === layersLen) {
-      console.log('_sendMapToUser finished', count, layersLen);
       /**
        * @event WebMapViewModel#addlayerssucceeded
        * @description 添加图层成功。
@@ -2198,10 +2196,10 @@ export default class WebMap extends WebMapBase {
 
       // @ts-ignore
       this._appreciableLayers = this._mapInfo.layers.map(layerInfo => {
-        const { layerID, dataSource, name, themeSetting, visible } = layerInfo;
+        const { layerID, dataSource, name, themeSetting, visible, serverId } = layerInfo;
         return {
           id: layerID,
-          dataSource,
+          dataSource: dataSource || { serverId },
           title: name,
           themeSetting,
           visible,
@@ -2254,11 +2252,14 @@ export default class WebMap extends WebMapBase {
   }
 
   private _rectifyLayersOrder() {
-    const exsitLayers = this._appreciableLayers.filter(layer => !!this.map.getLayer(layer.layerID));
+    const renderLayers = this._appreciableLayers.reduce((layers, layer) => {
+      return layers.concat(layer.renderLayers);
+    }, []);
+    const exsitLayers = renderLayers.filter(layerId => !!this.map.getLayer(layerId));
     const mapLayers = this.map.getStyle().layers;
     for (let index = exsitLayers.length - 1; index > -1; index--) {
-      const targetlayerId = exsitLayers[index].layerID;
-      let beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1].layerID : undefined;
+      const targetlayerId = exsitLayers[index];
+      let beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1] : undefined;
       this._moveLayer(targetlayerId, beforLayerId);
       this._moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
       for (let index = 1; index < this.expectLayerLen + 1; index++) {
@@ -2917,7 +2918,7 @@ export default class WebMap extends WebMapBase {
   updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
     // @ts-ignore
     const originLayerInfo = this._mapInfo.layers.find(layer => {
-      return layer.layerID === layerInfo.layerID;
+      return layer.layerID === layerInfo.id;
     });
     if (features) {
       this._initOverlayLayer(originLayerInfo, features, mergeByField);

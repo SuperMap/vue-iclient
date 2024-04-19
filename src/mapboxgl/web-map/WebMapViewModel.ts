@@ -113,6 +113,8 @@ export default class WebMapViewModel extends Events {
 
   private _appreciableLayers: Array<any> = [];
 
+  private _layerList: Array<any> = [];
+
   private _handler: InstanceType<typeof WebMapV2>;
 
   protected webMapService: WebMapService;
@@ -294,7 +296,7 @@ export default class WebMapViewModel extends Events {
     const isGeojson = item.renderSource.type === 'geojson';
     if (isGeojson) {
       // @ts-ignore
-      return Promise.resolve(source.getData().features);
+      return Promise.resolve(this.map.getSource(item.renderSource.id).getData().features);
     } else {
       const dataId = item.dataSource.serverId;
       // TODO iserver服务也可获取要素
@@ -316,7 +318,7 @@ export default class WebMapViewModel extends Events {
   }
 
   public getLayerList() {
-    return this._handler ? this._handler.getLayerCatalog() : [];
+    return this._layerList;
   }
 
   public changeItemVisible(item) {
@@ -461,6 +463,7 @@ export default class WebMapViewModel extends Events {
             this._sourceListModel = sourceListModel;
             this._appreciableLayers = layers;
             this._cacheLayerId.push(...layers.map(layer => layer.renderLayers).flat());
+            this._layerList = this._handler.getLayerCatalog();
             this.triggerEvent('addlayerssucceeded', {
               map: map,
               mapparams: this.mapParams
@@ -556,6 +559,7 @@ export default class WebMapViewModel extends Events {
       this.mapParams = mapparams;
       this._appreciableLayers = layers;
       this._cacheLayerId.push(...layers.map(layer => layer.renderLayers).flat());
+      this._layerList = this._handler.getLayerCatalog();
       this.triggerEvent('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams
