@@ -2202,7 +2202,7 @@ export default class WebMap extends WebMapBase {
           dataSource: dataSource || { serverId },
           title: name,
           themeSetting,
-          visible,
+          visible: visible === 'visible',
           renderSource: {},
           renderLayers: []
         };
