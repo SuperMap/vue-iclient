@@ -7,7 +7,7 @@
     "dev": "webpack-dev-server --inline --progress --config build/webpack.dev.conf.js",
     "start": "npm run dev",
     "unit": "jest --config jest.config.js --coverage --testResultsProcessor jest-sonar-reporter",
-    "test": "npm run unit",
+    "test": "node test/unit/G6Spec.js && npm run unit",
     "lint": "eslint --ext .js,.ts,.vue src",
     "lint:fix": "eslint --fix --ext .js,.ts,.vue src",
     "build": "node --max_old_space_size=2048 build/build.js && node --max_old_space_size=2048 build/build.js -p",
