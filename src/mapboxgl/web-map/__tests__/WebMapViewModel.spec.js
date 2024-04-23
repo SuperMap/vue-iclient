@@ -293,7 +293,8 @@ describe('WebMapViewModel.spec', () => {
       viewModel.getAppreciableLayers().forEach(item => {
         expect(item.renderLayers.length).toBeGreaterThanOrEqual(1);
       })
-      expect()
+      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-opacity']).toBe(1);
+      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-color'][3]).toBe('rgba(213, 62, 79, 0.9)');
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
