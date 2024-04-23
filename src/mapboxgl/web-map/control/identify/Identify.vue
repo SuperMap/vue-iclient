@@ -8,7 +8,10 @@
     >
       <li v-for="(value, key, index) in popupProps" :key="index" class="content">
         <div class="left ellipsis" :title="key" :style="getWidthStyle.keyWidth">{{ key }}</div>
-        <div class="right ellipsis" :title="value" :style="getWidthStyle.valueWidth">{{ value }}</div>
+        <div class="right ellipsis" :title="value.value || value" :style="getWidthStyle.valueWidth">
+          <slot v-if="value.slotName" :name="value.slotName" :value="value.value"></slot>
+          <span v-else>{{ value.value || value }}</span>
+        </div>
       </li>
     </ul>
   </div>
@@ -229,13 +232,16 @@ export default {
     },
     // 过滤数据， 添加popup
     addPopup(feature, fields) {
+      this.viewModel.popup?.off('close', this.clearPopup);
       this.popupProps = {};
       if (feature.properties) {
         // 过滤字段
         if (fields.length > 0) {
           fields.forEach(field => {
-            if (Object.prototype.hasOwnProperty.call(feature.properties, field)) {
-              this.popupProps[field] = feature.properties[field];
+            const isObjArr = field instanceof Object;
+            const fieldName = isObjArr ? field.field : field;
+            if (Object.prototype.hasOwnProperty.call(feature.properties, fieldName)) {
+              this.popupProps[fieldName] = { value: feature.properties[fieldName], slotName: field.slotName };
             }
           });
         } else {
@@ -247,9 +253,14 @@ export default {
         this.$nextTick(() => {
           this.isHide = false; // 显示内容
           this.viewModel.addPopup(coordinates, this.$refs.Popup);
+          this.viewModel.popup.on('close', this.clearPopup);
           setPopupArrowStyle(this.tablePopupBgData);
         });
       }
+    },
+    clearPopup() {
+      // 如果不清除弹窗内容，当弹窗内容有视频，且开启自动播放+弹窗/全屏时，会导致更改配置时，即使没打开点选弹窗，视频也会自动弹窗播放
+      this.popupProps = {};
     },
     // 添加高亮图层
     addOverlayToMap(layer, filter) {
