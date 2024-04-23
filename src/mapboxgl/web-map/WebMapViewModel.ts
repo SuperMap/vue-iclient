@@ -1648,10 +1648,18 @@ export default class WebMapViewModel extends WebMapBase {
       if (Object.prototype.hasOwnProperty.call(expressionMap, key)) {
         const expression = expressionMap[key];
         const defaultStyleItem = defultLayerStyle[key] || defaultValueFactory[key];
+        const styleItem = { [key]: defaultStyleItem };
+        // 从customsetting里取了透明度和color一起处理了，layerinfo.style里的透明度就不需要了
+        if (key === 'fillColor') {
+          expressionMap['fillOpacity'] = 1;
+          styleItem['fillOpacity'] = isNaN(defultLayerStyle['fillOpacity']) ? 1 : defultLayerStyle['fillOpacity'];
+        }
+        if (key === 'strokeColor') {
+          expressionMap['strokeOpacity'] = 1;
+          styleItem['strokeOpacity'] = isNaN(defultLayerStyle['strokeOpacity']) ? 1 : defultLayerStyle['strokeOpacity'];
+        }
         const fn = symbolConvertFunctionFactory[key];
-        expression.push(
-          defaultStyleItem === undefined ? null : (fn && fn({ [key]: defaultStyleItem })) || defaultStyleItem
-        );
+        expression.push(defaultStyleItem === undefined ? null : (fn && fn(styleItem)) || defaultStyleItem);
       }
     }
     // Todo 图例相关

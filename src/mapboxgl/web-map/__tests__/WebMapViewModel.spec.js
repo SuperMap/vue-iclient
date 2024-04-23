@@ -284,6 +284,8 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const callback = function (data) {
       expect(data.layers.length).toBe(uniqueLayer_polygon.layers.length);
+      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-opacity']).toBe(1);
+      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-color'][3]).toBe('rgba(213, 62, 79, 0.9)');
       done();
     };
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, { ...commonMap });
