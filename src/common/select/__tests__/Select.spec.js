@@ -23,4 +23,10 @@ describe('Select.vue', () => {
     wrapper = mount(Select);
     expect(wrapper.find('.sm-component-select').exists()).toBe(true);
   });
+  it('change', () => {
+    wrapper = mount(SmSelect);
+    expect(wrapper.find('.sm-component-select').exists()).toBe(true);
+    wrapper.vm.$emit('change', 'test', {});
+  });
+  
 });
