@@ -26,8 +26,8 @@ export default {
     extralListeners() {
       const vm = this;
       return {
-        change: function(value) {
-          vm.$emit('change', value);
+        change: function(...args) {
+          vm.$emit('change', ...args);
         }
       };
     },
