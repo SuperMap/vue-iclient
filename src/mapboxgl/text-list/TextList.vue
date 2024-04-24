@@ -294,6 +294,11 @@ class SmTextList extends Mixins(Theme, Timer) {
     }
   }
 
+  @Watch('animateContent')
+  animateContentChanged(content) {
+    this.$emit('contentChange', content);
+  }
+
   @Watch('columns')
   columnsChanged(oldVal, newVal) {
     if ((this.content || this.featuresData) && !isequal(oldVal, newVal)) {
@@ -572,6 +577,11 @@ class SmTextList extends Mixins(Theme, Timer) {
         background: getColorWithOpacity(this.getColor(0), 0.4)
       }
     });
+  }
+
+  setContent(content) {
+    this.listData = this.handleContent(content);
+    this.getListHeightStyle();
   }
 
   setListData() {

@@ -93,4 +93,28 @@ describe('Indicator.vue', () => {
     expect(numItem.at(5).text()).toBe('.');
     expect(numItem.at(6).text()).toBe('7');
   });
+  it('changeIndicatorColor', () => {
+    wrapper = mount(SmIndicator, {
+      propsData: {
+        title: '建筑高度',
+        unit: '米',
+        num: '1588.66',
+        decimals: 1
+      }
+    });
+    wrapper.vm.changeIndicatorColor('#f00');
+    expect(wrapper.vm.indicatorColorData).toBe('#f00');
+  });
+  it('click', () => {
+    wrapper = mount(SmIndicator, {
+      propsData: {
+        title: '建筑高度',
+        unit: '米',
+        num: '1588.66',
+        decimals: 1
+      }
+    });
+    wrapper.find('.sm-component-indicator').trigger('click');
+    expect(wrapper.emitted().click).toBeTruthy();
+  });
 });
