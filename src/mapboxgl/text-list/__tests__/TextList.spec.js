@@ -690,4 +690,33 @@ describe('TextList.vue', () => {
     expect(wrapper.vm.activeClickRowIndex[0]).toBe(0);
     done();
   });
+  it('setContent', () => {
+    const newContent = [
+      {
+        站台: '漠河',
+        省份: '黑龙江1',
+        海拔: '296',
+        平均最低气温: '-47',
+        最热七天气温: '29'
+      },
+      {
+        站台: '塔河',
+        省份: '黑龙江2',
+        海拔: '357.4',
+        平均最低气温: '-42',
+        最热七天气温: '29'
+      }
+    ];
+    wrapper = mount(TextList, {
+      propsData: {
+        content: content,
+        header: header,
+        fields: fields,
+        autoRolling: false
+      }
+    });
+    wrapper.vm.$nextTick();
+    wrapper.vm.setContent(newContent);
+    expect(wrapper.vm.listData.length).toBe(2);
+  });
 });
