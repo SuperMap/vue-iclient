@@ -79,6 +79,7 @@ const TYPE_MAP = {
 interface selectLayerParams {
   id: string;
   type: string;
+  renderLayers: any
 }
 
 @Component({
@@ -94,7 +95,8 @@ interface selectLayerParams {
 class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
   selectLayer: selectLayerParams = {
     id: '',
-    type: ''
+    type: '',
+    renderLayers: []
   };
 
   selectProperty: string = '';
@@ -163,7 +165,8 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel.resetAllColor();
     this.selectLayer = {
       id: '',
-      type: ''
+      type: '',
+      renderLayers: []
     };
     this.propertyList = [];
   }
@@ -180,7 +183,9 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
 
   changePropertyColor(property, color) {
     if (this.selectLayer) {
-      this.viewModel.setLayerColor(this.selectLayer.id, property, color);
+      this.selectLayer.renderLayers.forEach(id => {
+        this.viewModel.setLayerColor(id, property, color);
+      });
     }
   }
 
@@ -205,9 +210,10 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     });
   }
 
-  handleLayerChange({ id, type }, label, extra) {
+  handleLayerChange({ id, type, renderLayers }, label, extra) {
     this.selectLayer.id = id;
     this.selectLayer.type = type;
+    this.selectLayer.renderLayers = renderLayers;
     this.updateProperty(id, extra.type);
     if (this.isSelect) {
       this.toggleSelectLayer();
@@ -220,6 +226,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     } = featureInfo;
     this.selectLayer.id = id;
     this.selectLayer.type = type;
+    this.selectLayer.renderLayers = [id];
     this.updateProperty(id, type);
   }
 

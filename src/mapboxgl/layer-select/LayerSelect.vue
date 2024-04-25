@@ -91,14 +91,15 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
   handleNodeChange(val, label) {
     const [id, type] = val.split('+');
     const extra = this.sourceListDataCache[val] || {};
-    this.$emit('change', { id, type }, label, extra);
-    this.$emit('changedata', { id, type });
+    const renderLayers = extra.renderLayers;
+    this.$emit('change', { id, type, renderLayers }, label, extra);
+    this.$emit('changedata', { id, type, renderLayers });
   }
 
   createLayersTreeData(layerCatalog) {
     const treeData: treeSelectDataOption[] = [];
     layerCatalog.forEach(layer => {
-      let { id, title, type, visible } = layer;
+      let { id, title, type, visible, renderLayers } = layer;
       let disabled = false;
       let selectable = true;
       if (this.filter) {
@@ -123,6 +124,7 @@ class LayerSelect extends Mixins(MapGetter, Theme) {
       }
       this.sourceListDataCache[layerValue] = {
         id,
+        renderLayers,
         type,
         visibility: visible ? 'visible' : 'none'
       };

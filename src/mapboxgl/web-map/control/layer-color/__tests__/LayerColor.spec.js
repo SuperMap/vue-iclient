@@ -67,4 +67,27 @@ describe('LayerColor.vue', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     done();
   });
+
+  it('changePropertyColor', async done => {
+    wrapper = mount(SmLayerColor, {
+      propsData: {
+        mapTarget: 'map',
+        collapsed: false
+      },
+      data() {
+        return {
+          selectLayer: {
+            id: 'layer1',
+            type: 'fill',
+            renderLayers: ['layer1', 'layer2']
+          }
+        }
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    const spyFn = jest.spyOn(wrapper.vm.viewModel, 'setLayerColor');
+    wrapper.vm.changePropertyColor('fill-color', '#f00');
+    expect(spyFn).toHaveBeenCalledTimes(2);
+    done();
+  });
 });
