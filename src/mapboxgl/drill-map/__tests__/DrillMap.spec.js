@@ -117,6 +117,7 @@ describe('DrillMap.vue', () => {
       }
     });
     await flushPromises();
+    await wrapper.vm.$nextTick();
     await mapWrapperLoaded(wrapper.find(SmWebMap));
     expect(spy).toHaveBeenCalledTimes(1);
     const map = wrapper.find('#map');
@@ -257,8 +258,8 @@ describe('DrillMap.vue', () => {
       }
     });
     await flushPromises();
+    await wrapper.vm.$nextTick();
     wrapper.find(SmWebMap).vm.$on('load', callback);
-    await mapWrapperLoaded(wrapper.find(SmWebMap));
     function callback(e) {
       expect(spy).toHaveBeenCalledTimes(1);
       const map = e.map;
@@ -322,6 +323,9 @@ describe('DrillMap.vue', () => {
       expect(map.getLayer(layerId).layout.visibility).toBe('visible');
       done();
     }
+    await mapWrapperLoaded(wrapper.find(SmWebMap));
+    await flushPromises();
+    await wrapper.vm.$nextTick();
   });
 
   it('click_blank', async done => {

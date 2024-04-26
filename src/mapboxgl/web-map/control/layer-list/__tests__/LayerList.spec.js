@@ -7,6 +7,7 @@ import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_servi
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
+import flushPromises from 'flush-promises';
 
 describe('LayerList.vue', () => {
   let wrapper;
@@ -195,7 +196,7 @@ describe('LayerList.vue', () => {
         mapId: '123'
       }
     });
-    const addCallback = function (data) {
+    const addCallback =  async (data) => {
       wrapper = mount(SmLayerList, {
         propsData: {
           mapTarget: 'map'
@@ -205,12 +206,12 @@ describe('LayerList.vue', () => {
       wrapper.vm.$on('loaded', callback);
       expect(callback.mock.called).toBeTruthy;
       let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
-      wrapper.vm.$nextTick(() => {
-        wrapper.find('.sm-component-layer-list__layer > i').trigger('click');
-        expect(spylayerVisibility).toHaveBeenCalledTimes(1);
-        done();
-      });
+      await wrapper.vm.$nextTick();
+      wrapper.find('.sm-component-layer-list__layer > i').trigger('click');
+      expect(spylayerVisibility).toHaveBeenCalledTimes(1);
+      done();
     };
     mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
+    await flushPromises();
   });
 });

@@ -81,9 +81,11 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   fire: any;
   on: any;
   bounds: mapboxglTypes.LngLatBoundsLike;
+  private _layers: any[] = [];
+  private _appreciableLayers: any[] = [];
 
   private _sourceListModel: SourceListModel;
-  private _legendInfo: any;
+  private _legendList: any[] = [];
 
   constructor(target: string, dataOptions: dataOptions = {}, mapOptions?: mapOptions) {
     super();
@@ -98,10 +100,6 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     this._initWebMap();
   }
 
-  get getSourceListModel(): SourceListModel {
-    return this._sourceListModel;
-  }
-
   private _initWebMap(): void {
     this._createMap();
     this.map.on('load', () => {
@@ -110,20 +108,14 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   }
 
   private _createMap(): void {
-    const { center, zoom, bearing, pitch, renderWorldCopies = false, interactive, style, bounds, preserveDrawingBuffer = false } = this.mapOptions;
-    // 初始化 map
-    style.glyphs = 'https://ncov.supermapol.com/statichtml/font/{fontstack}/{range}.pbf';
-    this.map = new mapboxgl.Map({
-      container: this.target,
-      center: center || { lng: 104.93846582803894, lat: 33.37080662210445 },
-      zoom: zoom || 3,
-      bearing: bearing || 0,
-      pitch: pitch || 0,
-      bounds,
-      renderWorldCopies,
-      preserveDrawingBuffer,
-      interactive: interactive === void 0 ? true : interactive,
-      style: style || {
+    const {
+      center,
+      zoom,
+      bearing,
+      pitch,
+      renderWorldCopies = false,
+      interactive,
+      style = {
         version: 8,
         sources: {
           [this.baseLayerId]: {
@@ -143,8 +135,25 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
             maxzoom: 22
           }
         ]
-      }
+      },
+      bounds,
+      preserveDrawingBuffer = false
+    } = this.mapOptions;
+    // 初始化 map
+    style.glyphs = 'https://ncov.supermapol.com/statichtml/font/{fontstack}/{range}.pbf';
+    this.map = new mapboxgl.Map({
+      container: this.target,
+      center: center || { lng: 104.93846582803894, lat: 33.37080662210445 },
+      zoom: zoom || 3,
+      bearing: bearing || 0,
+      pitch: pitch || 0,
+      bounds,
+      renderWorldCopies,
+      preserveDrawingBuffer,
+      interactive: interactive === void 0 ? true : interactive,
+      style
     });
+    this._layers.push(...style.layers);
   }
 
   private _handleLayerInfo(): void {
@@ -180,7 +189,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
     this.features.forEach(feature => {
       labels[feature.properties[this.themeInfo.identifyField]] = feature.properties[this.themeInfo.field];
     });
-    const newFeatures = (labelPoints as GeoJSON.FeatureCollection).features.map((point) => {
+    const newFeatures = (labelPoints as GeoJSON.FeatureCollection).features.map(point => {
       const properties: GeoJSON.Feature['properties'] = {};
       properties[this.themeInfo.identifyField] = point.properties['省份'];
       properties[this.themeInfo.field] = labels[point.properties['省份']];
@@ -322,24 +331,40 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       // 图例处理
       this._initLegendInfo();
     }
+
+    this._layers.push(
+      {
+        id: this.overLayerId,
+        name: this.overLayerId,
+        themeSetting: { themeField: this.themeInfo.field }
+      },
+      {
+        id: `${this.overLayerId}-label`,
+        name: `${this.overLayerId}-label`
+      }
+    );
     this._sendMapToUser();
   }
 
   private _sendMapToUser(): void {
     this._sourceListModel = new SourceListModel({
-      map: this.map
+      map: this.map,
+      layers: this._layers
     });
-    if (this._legendInfo) {
-      this._sourceListModel.addSourceStyle(this.overLayerId, this._legendInfo);
-    }
     /**
      * @event WebMapViewModel#addlayerssucceeded
      * @description 添加图层成功。
      * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
      * @property {Object} mapparams - 地图信息。。
      */
+    const appreciableLayers = this.getAppreciableLayers();
+    const matchLayers = appreciableLayers.filter((item: Record<string, any>) =>
+      this._layers.some(layer => layer.id === item.id)
+    );
     this.fire('addlayerssucceeded', {
-      map: this.map
+      map: this.map,
+      mapParams: { title: '', description: '' },
+      layers: matchLayers
     });
   }
 
@@ -361,14 +386,70 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   }
 
   private _initLegendInfo(): void {
-    this._legendInfo = {
-      layerType: 'RANGE',
-      featureType: 'POLYGON',
+    const legendItem = {
       layerId: this.overLayerId,
+      layerTitle: this.overLayerId,
       themeField: this.themeInfo.field,
-      styleGroup: this.themeInfo.styleGroup,
+      styleGroup: this.themeInfo.styleGroup.map((styleGroup: Record<string, any>) => {
+        const newStyleGroup = {
+          start: styleGroup.start,
+          end: styleGroup.end,
+          style: {
+            shape: 'FILL',
+            type: ['IMAGE_POINT', 'SVG_POINT'].includes(styleGroup.style.type) ? 'image' : 'style'
+          }
+        };
+        this._patchStyleDatas(newStyleGroup, styleGroup);
+      }),
       integerType: true
     };
+    this._legendList.push(legendItem);
+  }
+
+  _patchStyleDatas(newStyleGroup: Record<string, any>, styleGroup: Record<string, any>) {
+    if (newStyleGroup.style.shape === 'POINT') {
+      Object.assign(newStyleGroup.style, {
+        color: styleGroup.style.fillColor || styleGroup.color,
+        opacity: styleGroup.style.fillOpacity,
+        fontSize: styleGroup.radius * 2 || styleGroup.style.fontSize || '14px'
+      });
+      if (newStyleGroup.style.type === 'image') {
+        Object.assign(newStyleGroup.style, {
+          url: styleGroup.style.imageInfo?.url || styleGroup.style.url
+        });
+        return;
+      }
+      if (styleGroup.style.className) {
+        Object.assign(newStyleGroup.style, {
+          icon: styleGroup.style.className
+        });
+        return;
+      }
+    }
+    if (newStyleGroup.style.shape === 'LINE') {
+      Object.assign(newStyleGroup.style, {
+        width: 20,
+        lineStyles: [
+          {
+            color: styleGroup.color,
+            lineDash: [],
+            lineOffset: 0,
+            lineWidth: 2,
+            opacity: styleGroup.style.strokeOpacity || 1
+          }
+        ]
+      });
+      return;
+    }
+    if (newStyleGroup.style.shape === 'FILL') {
+      Object.assign(newStyleGroup.style, {
+        backgroundColor: styleGroup.style.fillColor || styleGroup.color,
+        opacity: styleGroup.style.fillOpacity,
+        outlineColor: styleGroup.style.strokeColor,
+        width: 20,
+        height: 20
+      });
+    }
   }
 
   private centerValid(center) {
@@ -487,5 +568,17 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       this.overLayerId = name || this.defaultOverLayerId;
       this._addOverLayer();
     }
+  }
+
+  getLegendInfo() {
+    return this._legendList;
+  }
+
+  getLayerList() {
+    return this._sourceListModel?.getSourceList() ?? [];
+  }
+
+  getAppreciableLayers() {
+    return this._sourceListModel?.getLayers() ?? [];
   }
 }

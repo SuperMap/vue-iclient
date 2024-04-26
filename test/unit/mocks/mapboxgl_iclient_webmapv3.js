@@ -8,6 +8,8 @@ class WebMapV3 extends Evented {
     this.options = options;
     this.mapOptions = mapOptions;
     this._mapResourceInfo = {};
+    this._layerIdRenameMapList = [];
+    this._layerCatalogsRenameMapList = []
   }
 
   initializeMap(mapInfo, map) {
@@ -61,6 +63,14 @@ class WebMapV3 extends Evented {
 
   getLegendInfo() {}
 
+  getAppreciableLayers() {
+    return this._generateLayers();
+  }
+
+  getLayerCatalog() {
+    return this._generateLayerCatalog();
+  }
+
   clean() {}
 
   _initLayers() {
@@ -83,50 +93,92 @@ class WebMapV3 extends Evented {
   }
 
   _addLayersToMap() {
-    const { sources, layers } = this._mapInfo;
+    const { sources, layers, metadata } = this._mapInfo;
     layers.forEach(layer => {
       layer.source && !this.map.getSource(layer.source) && this.map.addSource(layer.source, sources[layer.source]);
       this.map.addLayer(layer);
     });
-    this._appreciableLayers = this._generateLayers();
+    this._layerIdRenameMapList = layers.map(item => ({ renderId: item.id }));
+    this._layerCatalogsRenameMapList = metadata.layerCatalog;
+    const appreciableLayers = this.getAppreciableLayers();
+    const matchLayers = appreciableLayers.filter(item => layers.some(layer => layer.id === item.id));
     this.fire('addlayerssucceeded', {
       map: this.map,
       mapparams: {
         title: this._mapInfo.name,
         description: ''
       },
-      layers: this._appreciableLayers
+      layers: matchLayers
     });
   }
 
   _generateLayers() {
-    const { catalogs = [] } = this._mapResourceInfo;
+    const layersOnMap = this.map.getStyle().layers.map(layer => this.map.getLayer(layer.id));
+    const overlayLayers = Object.values(this.map.overlayLayersManager).reduce((layers, overlayLayer) => {
+      if (overlayLayer.id) {
+        layers.push({
+          id: overlayLayer.id,
+          visibility: overlayLayer.visibility || 'visible',
+          source: typeof overlayLayer.source === 'object' ? overlayLayer.id : overlayLayer.source,
+          type: overlayLayer.type
+        });
+      }
+      return layers;
+    }, []);
+    const allLayersOnMap = layersOnMap
+      .concat(overlayLayers)
+      .filter(layer => !this._appendLayers || this._layerIdRenameMapList.some(item => item.renderId === layer.id));
+    const { catalogs = [], datas = [] } = this._mapResourceInfo;
     const originLayers = this._getLayerInfosFromCatalogs(catalogs);
-    const layers = originLayers.map((layer) => {
-      const { title } = layer;
-      const layerFromMapInfo = this._mapInfo.layers.find((item) => {
-        return item.id === layer.id;
-      });
+    const layers = allLayersOnMap.map(layer => {
+      const matchOriginLayer = this._layerIdRenameMapList.find(item => item.renderId === layer.id) || {};
+      const matchLayer = originLayers.find(item => item.id === matchOriginLayer.originId) || {};
+      const { title = layer.id, visualization, layersContent, msDatasetId } = matchLayer;
       let dataType = '';
       let dataId = '';
-      for (const data of this._mapResourceInfo.datas) {
-        const matchData = data.datasets.find((dataset) => dataset.msDatasetId === layer.msDatasetId);
+      for (const data of datas) {
+        const matchData = data.datasets.find(dataset => dataset.msDatasetId === msDatasetId);
         if (matchData) {
           dataType = data.sourceType;
           dataId = matchData.datasetId;
           break;
         }
       }
+      const sourceOnMap = this.map.getSource(layer.source);
       const overlayLayers = {
+        id: layer.id,
+        type: layer.type,
+        title,
+        visible: layer.visibility ? layer.visibility === 'visible' : true,
+        renderSource: {
+          id: layer.source,
+          type: sourceOnMap && sourceOnMap.type,
+          sourceLayer: layer.sourceLayer
+        },
+        renderLayers: this._getRenderLayers(layersContent, layer.id),
         dataSource: {
           serverId: dataId,
           type: dataType
         },
-        layerID: layer.id,
-        layerType: layerFromMapInfo.type === 'raster' ? 'raster' : 'vector',
-        type: layerFromMapInfo.type,
-        name: title
+        themeSetting: {}
       };
+      if (visualization) {
+        const styleSettings = this._parseRendererStyleData(visualization.renderer);
+        const defaultStyleSetting = styleSettings[0];
+        if (defaultStyleSetting) {
+          let themeField = '';
+          if (defaultStyleSetting.type === 'heat') {
+            themeField = defaultStyleSetting.field;
+          } else if (defaultStyleSetting.color) {
+            themeField = defaultStyleSetting.color.field;
+          }
+          if (themeField) {
+            overlayLayers.themeSetting = {
+              themeField
+            };
+          }
+        }
+      }
       return overlayLayers;
     });
     return layers;
@@ -147,9 +199,80 @@ class WebMapV3 extends Evented {
     return results;
   }
 
-  getLayerCatalog() {
-    return  [{id: 'test', type: 'fill', title:'test', visible: true, renderLayers:['test'], renderSource:{id:'s1', type: 'vector'}, dataSource: {}}]
+  _generateLayerCatalog() {
+    const layerIdsFromCatalog = this._layerCatalogsRenameMapList.reduce((ids, item) => {
+      const list = this._collectChildrenKey([item], 'id');
+      ids.push(...list);
+      return ids;
+    }, []);
+    const appreciableLayers = this.getAppreciableLayers();
+    const extraLayers = appreciableLayers.filter((layer) => !layerIdsFromCatalog.some((id) => id === layer.id));
+    const layerCatalogs = this._layerCatalogsRenameMapList.concat(extraLayers);
+    const formatLayerCatalog = this._createFormatCatalogs(layerCatalogs, appreciableLayers);
+    this._updateLayerVisible(formatLayerCatalog);
+    return formatLayerCatalog;
+  }
+
+  _createFormatCatalogs(catalogs, appreciableLayers) {
+    const formatCatalogs = catalogs.map((catalog) => {
+      let formatItem;
+      const { id, title, type, visible, children, parts } = catalog;
+      if (catalog.type === 'group') {
+        formatItem = {
+          children: this._createFormatCatalogs(children, appreciableLayers),
+          id,
+          title,
+          type,
+          visible
+        };
+      } else {
+        const matchLayer = appreciableLayers.find((layer) => layer.id === id);
+        formatItem = {
+          dataSource: matchLayer.dataSource,
+          id,
+          type: matchLayer.type,
+          title,
+          visible: matchLayer.visible,
+          renderSource: matchLayer.renderSource,
+          renderLayers: this._getRenderLayers(parts, id),
+          themeSetting: matchLayer.themeSetting
+        };
+      }
+      return formatItem;
+    });
+    return formatCatalogs;
+  }
+
+  _updateLayerVisible(catalogs) {
+    for (const data of catalogs) {
+      const list = this._collectChildrenKey([data], 'visible');
+      data.visible = list.every((item) => item);
+    }
+  }
+
+  _collectChildrenKey(catalogs, key, list = []) {
+    for (const data of catalogs) {
+      if (data.type === 'group') {
+        this._collectChildrenKey(data.children, list);
+        continue;
+      }
+      list.push(data[key]);
+    }
+    return list;
+  }
+  
+  _getRenderLayers(layerIds, layerId) {
+    if (layerIds) {
+      if (layerIds.includes(layerId)) {
+        return layerIds;
+      } else {
+        return [layerId, ...layerIds];
+      }
+    } else {
+      return [layerId];
+    }
   }
 }
 
 module.exports = WebMapV3;
+

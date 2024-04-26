@@ -17,8 +17,6 @@ class LayerListViewModel extends mapboxgl.Evented {
 
   sourceList: Array<Object>;
 
-  sourceNames: Array<string>;
-
   fire: any;
 
   updateFn: MapEventCallBack;
@@ -26,7 +24,6 @@ class LayerListViewModel extends mapboxgl.Evented {
   constructor() {
     super();
     this.sourceList = [];
-    this.sourceNames = [];
   }
 
   _updateLayers() {
@@ -44,10 +41,6 @@ class LayerListViewModel extends mapboxgl.Evented {
   initLayerList() {
     this.sourceList = this.webmap.getLayerList();
     return this.sourceList;
-  }
-
-  getSourceNames() {
-    return this.sourceNames;
   }
 
   async getLayerDatas(item) {
@@ -70,7 +63,6 @@ class LayerListViewModel extends mapboxgl.Evented {
 
   removed() {
     this.sourceList = [];
-    this.sourceNames = [];
     this.map.off('styledata', this.updateFn);
   }
 }

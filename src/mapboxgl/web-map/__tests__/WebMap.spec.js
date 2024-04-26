@@ -57,6 +57,7 @@ describe('WebMap.vue', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
+    jest.clearAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
@@ -200,7 +201,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('123456');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const markerLayer = layers[1];
       expect(markerLayer.type).toBe('symbol');
@@ -233,7 +234,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('12345678');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const heatLayer = layers[1];
       expect(heatLayer.type).toBe('heatmap');
@@ -266,7 +267,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('147258369');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const vectorLayerPoint = layers[1];
       expect(vectorLayerPoint.type).toBe('circle');
@@ -297,7 +298,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('159357852');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const vectorLayerLine = layers[1];
       expect(vectorLayerLine.type).toBe('line');
@@ -329,7 +330,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.vm.mapId).toBe('123456789');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
       setTimeout(function () {
-        const layers = Object.values(e.map.overlayLayersManager);
+        const layers = e.map.getStyle().layers;
         expect(layers.length).toBe(3);
         const vectorLayerPoint = layers[1];
         expect(vectorLayerPoint.type).toBe('circle');
@@ -365,7 +366,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('2064629293');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(3);
       const vectorLayerPoint = layers[1];
       const id = vectorLayerPoint.id;
@@ -450,7 +451,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('1224625555');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const tiandituLayer = layers[0];
       expect(tiandituLayer.id).toBe('天地图地形');
@@ -482,7 +483,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('7894565555');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(1);
       const xyzLayer = layers[0];
       expect(xyzLayer.id).toBe('OpenStreetMap');
@@ -558,8 +559,7 @@ describe('WebMap.vue', () => {
     expect(spy).toBeCalled();
     expect(wrapper.vm.mapId).toBe('5785858575');
     expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-    const layers = Object.values(e.map.overlayLayersManager);
-    console.log('layers', layers);
+    const layers = e.map.getStyle().layers;
     expect(layers.length).toBe(2);
     const rangeLayerPoint = layers[1];
     const id = rangeLayerPoint.id;
@@ -578,7 +578,8 @@ describe('WebMap.vue', () => {
       'https://fakeiportal1.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
       'https://fakeiportal1.supermap.io/iportal/web/maps/1234/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData_CSV
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData_CSV,
+      'https://fakeiportal1.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=1234': layerData_CSV
     };
     mockFetch(fetchResource);
     const spy = jest.spyOn(mapboxgl, 'Map');
@@ -590,6 +591,8 @@ describe('WebMap.vue', () => {
     });
     await mapWrapperLoaded(wrapper);
     expect(spy).toBeCalled();
+    await flushPromises();
+    await wrapper.vm.$nextTick();
     await wrapper.setProps({
       mapId: '1234',
       serverUrl: 'https://fakeiportal1.supermap.io/iportal',
@@ -611,7 +614,7 @@ describe('WebMap.vue', () => {
       }
     });
     await flushPromises();
-    wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
     expect(wrapper.vm.mapId).toBe('1234');
     expect(wrapper.vm.serverUrl).toBe('https://fakeiportal1.supermap.io/iportal');
     expect(wrapper.vm.withCredentials).toBe(false);

@@ -4,103 +4,115 @@ import LayerModel from 'vue-iclient/src/mapboxgl/web-map/LayerModel';
 class SourceListModel {
   constructor(options) {
     this.map = options.map;
-    this.mapInfo = options.mapInfo;
-    this.style = this.map.getStyle();
-    this.layers = this.map.getStyle().layers;
-    this.overlayLayers = this.map.overlayLayersManager;
-    this.detailLayers = null;
-    this.sourceList = [];
-    this.sourceNames = [];
-    this._initLayers();
-    this._initSource();
+    this.layers = options.layers || [];
+    this.appendLayers = options.appendLayers || false;
     this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw'];
   }
 
-  getSourceList() {
-    let sourceList = [];
-    for (let item of this.sourceList) {
-      if (item.id && this.excludeSource(item.id)) {
-        sourceList.push(item);
-      }
-    }
-    return sourceList;
-  }
-
-  getSourceNames() {
-    const names = [];
-    this.sourceNames.forEach(element => {
-      if (element && this.excludeSource(element)) {
-        names.push(element);
-      }
-    });
-    return names;
-  }
-
-  excludeSource(key) {
-    for (let i = 0; i < this.excludeSourceNames.length; i++) {
-      if (key.indexOf(this.excludeSourceNames[i]) >= 0) {
-        return false;
-      }
-    }
-    return true;
-  }
-
   getLayers() {
-    return this.detailLayers;
+    const detailLayers = this._initLayers();
+    return this._initAppreciableLayers(detailLayers);
   }
 
-  addSourceStyle(sourceName, sourceStyle) {
-    if (this.sourceList[sourceName]) {
-      this.sourceList[sourceName].style = sourceStyle;
-    }
+  getSourceList() {
+    const detailLayers = this._initLayers();
+    return this._initSource(detailLayers);
   }
 
   _initLayers() {
-    this.layers &&
-      (this.detailLayers = this.layers.map(layer => {
-        return this.map.getLayer(layer.id);
-      }));
-    const overLayerList = Object.values(this.overlayLayers);
-    overLayerList.forEach(overlayer => {
-      if (overlayer.id) {
-        this.detailLayers.push({
-          id: overlayer.id,
-          visibility: overlayer.visibility ? 'visible' : 'none',
-          source: typeof overlayer.source === 'object' ? overlayer.id : overlayer.source
+    const layersOnMap = this.map.getStyle().layers.map(layer => this.map.getLayer(layer.id));
+    const overlayLayers = Object.values(this.map.overlayLayersManager).reduce((layers, overlayLayer) => {
+      if (overlayLayer.id) {
+        let visibility = overlayLayer.visibility;
+        if (!visibility && 'visible' in overlayLayer) {
+          visibility = overlayLayer.visible ? 'visible' : 'none';
+        }
+        let source = overlayLayer.source || overlayLayer.sourceId;
+        if (typeof source === 'object') {
+          source = overlayLayer.id;
+        }
+        layers.push({
+          id: overlayLayer.id,
+          visibility: overlayLayer.visibility || 'visible',
+          source,
+          type: overlayLayer.type
         });
       }
-    });
+      return layers;
+    }, []);
+    const renderLayers = layersOnMap
+      .concat(overlayLayers)
+      .filter(layer => !this.appendLayers || this.layers.some(item => layer.id === item.id));
+    return renderLayers.filter(layer => !this.excludeSourceNames.includes(layer.source));
   }
 
-  _initSource() {
-    this.detailLayers &&
-      this.detailLayers.forEach(layer => {
-        let matchItem = this.sourceList.find(
-          item =>
-            item.renderSource.id === layer.source &&
-            (!item.renderSource.sourceLayer || item.renderSource.sourceLayer === layer['source-layer'])
-        );
-        if (!matchItem) {
-          const layerInfo = this.mapInfo?.layers.find(layerItem => layer.id === layerItem.layerID) || {};
-          const { dataSource = {}, themeSetting = {} } = layerInfo;
-          const source = this.map.getSource(layer.source);
-          const sourceListItem = new SourceModel({
-            dataSource,
-            source: layer.source,
-            type: layer.type,
-            renderSource: {
-              id: layer.source,
-              type: source && source.type,
-              sourceLayer: layer['source-layer']
-            },
-            themeSetting
-          });
-          this.sourceList.unshift(sourceListItem);
-          this.sourceNames.push(layer.source);
-          matchItem = sourceListItem;
-        }
-        matchItem.addLayer(new LayerModel(layer), layer['source-layer']);
-      });
+  _initSource(detailLayers) {
+    const datas = detailLayers.reduce((sourceList, layer) => {
+      let matchItem = sourceList.find(item => item.renderSource.id === layer.source);
+      if (!matchItem) {
+        const sourceListItem = new SourceModel(this._createCommonFields(layer, 'source'));
+        sourceList.push(sourceListItem);
+        matchItem = sourceListItem;
+      }
+      matchItem.addLayer(new LayerModel(layer));
+      return sourceList;
+    }, []);
+    this._updateGroupVisible(datas);
+    return datas;
+  }
+
+  _initAppreciableLayers(detailLayers) {
+    // dv 没有关联一个可感知图层对应对个渲染图层的关系，默认相同source的layer就是渲染图层
+    return detailLayers.reduce((layers, layer) => {
+      let matchLayer = layers.find(
+        item =>
+          item.renderSource.id === layer.source &&
+          (!item.renderSource.sourceLayer || item.renderSource.sourceLayer === layer.sourceLayer)
+      );
+      if (!matchLayer) {
+        matchLayer = this._createCommonFields(layer, 'layer');
+        layers.push(matchLayer);
+      }
+      matchLayer.renderLayers.push(layer.id);
+      return layers;
+    }, []);
+  }
+
+  _createCommonFields(layer, category) {
+    const layerInfo = this.layers.find(layerItem => layer.id === layerItem.id) || {};
+    const {
+      dataSource,
+      themeSetting = {},
+      name = layer.id,
+      visible = layer.visibility ? layer.visibility === 'visible' : true,
+      serverId
+    } = layerInfo;
+    const sourceOnMap = this.map.getSource(layer.source);
+    const fields = {
+      id: layer.source,
+      title: name,
+      type: layer.type,
+      visible,
+      renderSource: {
+        id: layer.source,
+        type: sourceOnMap && sourceOnMap.type
+      },
+      renderLayers: [],
+      dataSource: dataSource || (serverId ? { serverId } : {}),
+      themeSetting
+    };
+    if (category === 'layer' && layer.sourceLayer) {
+      fields.renderSource.sourceLayer = layer.sourceLayer;
+    }
+    return fields;
+  }
+
+  _updateGroupVisible(sourceListDatas) {
+    for (const sourceData of sourceListDatas) {
+      if (sourceData.type === 'group') {
+        sourceData.visible = sourceData.children.every(item => item.visible);
+      }
+    }
   }
 }
 export default SourceListModel;

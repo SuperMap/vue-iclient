@@ -176,7 +176,7 @@ supermap.DataFlowService = serviceUrl => {
                   }
                 },
               });
-            } else if (event === 'messageSucceeded' && serviceUrl.includes('LineString')) {
+            } else if (serviceUrl.includes('LineString')) {
               callback({
                 featureResult: {
                   geometry: {
@@ -191,7 +191,7 @@ supermap.DataFlowService = serviceUrl => {
                   }
                 }
               });
-            } else if (event === 'messageSucceeded' && serviceUrl.includes('Line')) {
+            } else if (serviceUrl.includes('Line')) {
               callback({
                 featureResult: {
                   geometry: {
@@ -206,7 +206,7 @@ supermap.DataFlowService = serviceUrl => {
                   }
                 }
               });
-            } else if (event === 'messageSucceeded' && serviceUrl.includes('MultiPolygon')) {
+            } else if (serviceUrl.includes('MultiPolygon')) {
               callback({
                 featureResult: {
                   geometry: {
@@ -225,7 +225,7 @@ supermap.DataFlowService = serviceUrl => {
                   }
                 }
               });
-            } else if (event === 'messageSucceeded' && serviceUrl.includes('Polygon')) {
+            } else if (serviceUrl.includes('Polygon')) {
               callback({
                 featureResult: {
                   geometry: {
@@ -293,6 +293,9 @@ supermap.Util = {
 
 supermap.GraticuleLayer = () => {
   return {
+    id: 'GraticuleLayer',
+    overlay: true,
+    sourceId: 'GraticuleLayer',
     setStrokeStyle: jest.fn()
   }
 };

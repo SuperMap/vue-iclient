@@ -15,18 +15,38 @@ describe('LayerManagerViewModel', () => {
           epsgCode: 'EPSG:4326'
         };
       },
-      getSource: (id) => {
+      getSource: id => {
         if (id === 'iserver-tiles') {
           return true;
         }
         return false;
       },
-      getLayer: (id) => {
+      getLayer: id => {
         if (id === 'simple-tiles') {
           return true;
         }
         return false;
-      }
+      },
+      getBounds: () => {
+        return {
+          toArray: () => [
+            [0, 0],
+            [0, 0]
+          ]
+        };
+      },
+      getCenter: () => {
+        return {
+          toArray: () => [0, 0]
+        };
+      },
+      getZoom: jest.fn(),
+      getStyle: () => {
+        return {
+          layers: []
+        };
+      },
+      overlayLayersManager: {}
     };
   });
 
@@ -40,47 +60,52 @@ describe('LayerManagerViewModel', () => {
   it('addIServerLayer and remove', () => {
     const nodeKey = 'key1';
     const tileUrl = 'http://fake.tileurl';
-    expect(viewModel.cacheIServerMaps[nodeKey]).toBeUndefined();
+    const spy = jest.spyOn(viewModel, 'addLayer');
+    expect(viewModel.cacheMaps[nodeKey]).toBeUndefined();
     viewModel.addIServerLayer(tileUrl, nodeKey);
-    expect(viewModel.cacheIServerMaps[nodeKey]).toBeTruthy();
-    expect(viewModel.map.addLayer).toHaveBeenCalledTimes(1);
+    const webmap = viewModel.cacheMaps[nodeKey];
+    expect(viewModel.cacheMaps[nodeKey]).toBeTruthy();
+    expect(spy).toHaveBeenCalledTimes(1);
+    expect(viewModel.map.getZoom).toHaveBeenCalledTimes(1);
     viewModel.addIServerLayer(tileUrl, nodeKey);
-    expect(viewModel.map.addLayer).toHaveBeenCalledTimes(1);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(viewModel.map.getZoom).toHaveBeenCalledTimes(2);
+    expect(viewModel.cacheMaps[nodeKey]).toEqual(webmap);
     viewModel.removed();
-    expect(viewModel.cacheIServerMaps[nodeKey]).toBeUndefined();
+    expect(viewModel.cacheMaps[nodeKey]).toBeUndefined();
   });
 
   it('addMapStyle and remove', () => {
     const nodeKey = 'key1';
-    const style = {
-      version: 8,
-      sources: {
-        'iserver-tiles': {
-          type: 'raster',
-          tiles: ['https://iserver.supermap.io/iserver/services/map-china400/rest/maps/China'],
-          tileSize: 256,
-          prjCoordSys: { epsgCode: 3857 },
-          rasterSource: 'iserver',
-          proxy: null
-        }
-      },
-      layers: [{ id: 'simple-tiles', type: 'raster', source: 'iserver-tiles', minzoom: 0, maxzoom: 22 }]
+    const mapOptions = {
+      style: {
+        version: 8,
+        sources: {
+          'iserver-tiles': {
+            type: 'raster',
+            tiles: ['https://iserver.supermap.io/iserver/services/map-china400/rest/maps/China'],
+            tileSize: 256,
+            prjCoordSys: { epsgCode: 3857 },
+            rasterSource: 'iserver',
+            proxy: null
+          }
+        },
+        layers: [{ id: 'simple-tiles', type: 'raster', source: 'iserver-tiles', minzoom: 0, maxzoom: 22 }]
+      }
     };
-    expect(viewModel.cacheIServerMaps[nodeKey]).toBeUndefined();
-    viewModel.addMapStyle(style, nodeKey);
-    expect(viewModel.cacheIServerMaps[nodeKey]).toEqual([{ layerId: 'simple-tiles-1', sourceId: 'iserver-tiles-1' }]);
-    expect(viewModel.map.addLayer).toHaveBeenCalledTimes(1);
-    viewModel.addMapStyle(style, nodeKey);
-    expect(viewModel.map.addLayer).toHaveBeenCalledTimes(1);
+    const spy = jest.spyOn(viewModel, 'addLayer');
+    expect(viewModel.cacheMaps[nodeKey]).toBeUndefined();
+    viewModel.addMapStyle(mapOptions, nodeKey);
+    const webmap = viewModel.cacheMaps[nodeKey];
+    expect(viewModel.cacheMaps[nodeKey]).toBeTruthy();
+    expect(spy).toHaveBeenCalledTimes(1);
+    viewModel.addMapStyle(mapOptions, nodeKey);
+    expect(spy).toHaveBeenCalledTimes(2);
+    expect(viewModel.cacheMaps[nodeKey]).toEqual(webmap);
     viewModel.removed();
-    expect(viewModel.cacheIServerMaps[nodeKey]).toBeUndefined();
-    viewModel.addMapStyle({}, nodeKey);
-    expect(viewModel.cacheIServerMaps[nodeKey]).toEqual([]);
+    expect(viewModel.cacheMaps[nodeKey]).toBeUndefined();
   });
-  it('generateUniqueId', () => {
-    const res = viewModel.generateUniqueId('source', 'iserver-tiles', 0);
-    expect(res).toBe('iserver-tiles-1');
-  });
+
   it('addLayer and remove', () => {
     let nodeKey = 'key1';
     const data = { nodeKey, mapId: 123, serviceUrl: 'http://fakeservice' };
@@ -138,5 +163,6 @@ describe('LayerManagerViewModel', () => {
     expect(() => {
       viewModel.removeLayerLoop(layers[2]);
     }).not.toThrow();
-  })
+  });
 });
+

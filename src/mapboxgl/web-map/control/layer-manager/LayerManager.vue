@@ -42,10 +42,12 @@ import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import SmCard from 'vue-iclient/src/common/card/Card.vue';
 import SmDirectoryTree from 'vue-iclient/src/common/tree/DirectoryTree.vue';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
+import difference from 'lodash.difference';
 
 export default {
   name: 'SmLayerManager',
@@ -121,7 +123,7 @@ export default {
             return;
           }
           if (mapInfo.mapOptions) {
-            this.addMapStyle(mapInfo.mapOptions.style, nodeKey);
+            this.addMapStyle(mapInfo.mapOptions, nodeKey);
             return;
           }
           if (mapInfo.serverUrl) {
@@ -132,6 +134,7 @@ export default {
         const data = e.node.dataRef;
         this.viewModel.removeLayerLoop(data);
       }
+      this.updateMapCombinations();
     },
     addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy }) {
       if (!this.mapIsLoad) {
@@ -151,11 +154,11 @@ export default {
       }
       this.viewModel.addIServerLayer(serverUrl, nodeKey);
     },
-    addMapStyle(style, nodeKey) {
+    addMapStyle(mapOptions, nodeKey) {
       if (!this.mapIsLoad) {
         return;
       }
-      this.viewModel.addMapStyle(style, nodeKey);
+      this.viewModel.addMapStyle(mapOptions, nodeKey);
     },
     removeIServerLayer(nodeKey) {
       if (!this.mapIsLoad) {
@@ -209,8 +212,25 @@ export default {
           this.removeIServerLayer(key);
           this.removeMapStyle(key);
         });
+        this.updateMapCombinations();
       }
       this.checkedKeys = [];
+    },
+    updateMapCombinations() {
+      if (!this.prevSelectedKeys) {
+        this.prevSelectedKeys = [];
+      }
+      const cacheMaps = this.viewModel.getCacheMaps();
+      const currentSelectedKeys = Object.keys(cacheMaps);
+      const addedKeys = difference(currentSelectedKeys, this.prevSelectedKeys);
+      addedKeys.forEach(key => {
+        mapEvent.$options.setWebMap(this.getTargetName(), cacheMaps[key], key);
+      });
+      const removedKeys = difference(this.prevSelectedKeys, currentSelectedKeys);
+      removedKeys.forEach(key => {
+        mapEvent.$options.deleteWebMap(this.getTargetName(), key);
+      });
+      this.prevSelectedKeys = currentSelectedKeys;
     }
   },
   loaded() {

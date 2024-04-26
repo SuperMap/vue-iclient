@@ -56,7 +56,7 @@ interface webMapOptions {
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
   checkSameLayer?: boolean;
-  mapInfo?: Object;
+  parentEvents?: Record<string, Function>;
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
@@ -111,18 +111,19 @@ export default class WebMap extends WebMapBase {
 
   private checkSameLayer: boolean;
 
-  private _appreciableLayers: Array<any> = [];
+  private _mapInfo: Record<string, any>;
 
-  private _mapInfo: Object;
+  private _parentEvents: Record<string, Function>;
 
-  private _parentEvents: Object;
+  private _cacheLayerId: string[] = [];
+
+  private _appendLayers = false;
 
   constructor(
     id: string | number | Object,
     options: webMapOptions = {},
     // @ts-ignore fix-mapoptions
     mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
-    map?: mapboxglTypes.Map,
     layerFilter: Function = function () {
       return true;
     }
@@ -146,15 +147,16 @@ export default class WebMap extends WebMapBase {
     this.layerFilter = layerFilter;
     this.checkSameLayer = options.checkSameLayer;
     this._legendList = [];
-    this._appreciableLayers = [];
-    this._mapInfo = options.mapInfo;
-    // @ts-ignore
     this._parentEvents = options.parentEvents ?? {};
+    this._taskID = new Date();
+  }
+
+  initializeMap(mapInfo: Record<string, any>, map?: mapboxglTypes.Map) {
     if (map) {
+      this._appendLayers = true;
       this.map = map;
     }
-    this._taskID = new Date();
-    this._getMapInfo(this._mapInfo, this._taskID);
+    this._getMapInfo(mapInfo, this._taskID);
   }
 
   public getLegendInfo() {
@@ -162,11 +164,11 @@ export default class WebMap extends WebMapBase {
   }
 
   public getLayerCatalog() {
-    return this._sourceListModel.getSourceList();
+    return this._sourceListModel?.getSourceList() || [];
   }
 
-  get getSourceListModel(): SourceListModel {
-    return this._sourceListModel;
+  getAppreciableLayers() {
+    return this._sourceListModel?.getLayers() || [];
   }
 
   _initWebMap(): void {}
@@ -175,7 +177,7 @@ export default class WebMap extends WebMapBase {
     if (this.map) {
       // @ts-ignore
       if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
-        this._triggerEvent('projectionIsNotMatch', {});
+        this._triggerEvent('projectionisnotmatch', {});
         return;
       }
       this._handleLayerInfo(mapInfo, _taskID);
@@ -194,7 +196,7 @@ export default class WebMap extends WebMapBase {
     mapboxgl.CRS.set(crs);
   }
 
-  _getMapInfo(mapInfo, _taskID): void {
+  _getMapInfo(mapInfo: Record<string, any>, _taskID: Date): void {
     this._mapInfo = mapInfo;
     const { projection } = mapInfo;
     let bounds, wkt;
@@ -274,7 +276,6 @@ export default class WebMap extends WebMapBase {
   _handleLayerInfo(mapInfo, _taskID): void {
     mapInfo = this._setLayerID(mapInfo);
     this._mapInfo = mapInfo;
-    this._appreciableLayers = [];
     this.layerAdded = 0;
     this.expectLayerLen = 0;
     const { layers, grid } = mapInfo;
@@ -423,6 +424,11 @@ export default class WebMap extends WebMapBase {
           // @ts-ignore
           this.map.addStyle(style);
           addedCallback && addedCallback();
+          style.layers.forEach((item: Record<string, any>) => {
+            if (item.type !== 'background') {
+              this._cacheLayerId.push(item.id);
+            }
+          });
         },
         error => {
           addedCallback && addedCallback();
@@ -852,6 +858,7 @@ export default class WebMap extends WebMapBase {
     const { baseLayer, layers = [] } = mapInfo;
     if (!this.checkSameLayer) {
       const baseInfo = this._generateUniqueLayerId(baseLayer.name, 0);
+      baseLayer.title = baseLayer.name;
       baseLayer.name = baseInfo.newId;
     }
     const layerNames = layers.map(layer => layer.name);
@@ -892,22 +899,6 @@ export default class WebMap extends WebMapBase {
     }
   }
 
-  private _getResizedZoom(bounds, mapContainerStyle, tileSize = 512, worldWidth = WORLD_WIDTH) {
-    const { width, height } = mapContainerStyle;
-    const lngArcLength = Math.abs(bounds.getEast() - bounds.getWest());
-    const latArcLength = Math.abs(this._getBoundsRadian(bounds.getSouth()) - this._getBoundsRadian(bounds.getNorth()));
-    const lngResizeZoom = +Math.log2(worldWidth / ((lngArcLength / parseInt(width)) * tileSize)).toFixed(2);
-    const latResizeZoom = +Math.log2(worldWidth / ((latArcLength / parseInt(height)) * tileSize)).toFixed(2);
-    if (lngResizeZoom <= latResizeZoom) {
-      return lngResizeZoom;
-    }
-    return latResizeZoom;
-  }
-
-  private _getBoundsRadian(point) {
-    return (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (point * Math.PI) / 360));
-  }
-
   _createRestMapLayer(restMaps, layer) {
     restMaps.forEach(restMapInfo => {
       layer = this.getRestMapLayerInfo(restMapInfo, layer);
@@ -916,7 +907,7 @@ export default class WebMap extends WebMapBase {
     this._addLayerSucceeded();
   }
 
-  _addLayerSucceeded(options?: { layerInfo: Record<string, any>, features: GeoJSON.Feature[] }) {
+  _addLayerSucceeded(options?: { layerInfo: Record<string, any>; features: GeoJSON.Feature[] }) {
     if (options?.layerInfo?.labelStyle?.labelField && options.layerInfo.layerType !== 'DATAFLOW_POINT_TRACK') {
       // 存在标签专题图
       this._addLabelLayer(options.layerInfo, options.features, false);
@@ -2161,7 +2152,7 @@ export default class WebMap extends WebMapBase {
       }
     };
     // 图例处理
-    this._initLegendConfigInfo(layerInfo, styleGroups);
+    this._initLegendConfigInfo(layerInfo, styleGroups || []);
 
     // 获取样式
     const layerStyle: any = {
@@ -2197,56 +2188,34 @@ export default class WebMap extends WebMapBase {
        * @property {Array.<Object>} layers - 地图上所有的图层对象。
        */
 
+      // @ts-ignore
+      const layersFromMapInfo = this._mapInfo.layers
+        .map((layerInfo: Record<string, any>) => {
+          return {
+            ...layerInfo,
+            id: layerInfo.layerID
+          };
+        })
+        .filter((item: Record<string, any>) => this.map.getLayer(item.id));
+      const baseLayerId = this._mapInfo.baseLayer.name;
+      if (this.map.getLayer(baseLayerId)) {
+        layersFromMapInfo.unshift({
+          id: baseLayerId,
+          name: this._mapInfo.baseLayer.title || baseLayerId
+        });
+      }
       this._sourceListModel = new SourceListModel({
         map: this.map,
-        mapInfo: this._mapInfo
+        layers: layersFromMapInfo,
+        appendLayers: this._appendLayers
       });
-
-      // @ts-ignore
-      this._appreciableLayers = this._mapInfo.layers.map(layerInfo => {
-        const { layerID, dataSource, name, themeSetting, visible, serverId } = layerInfo;
-        return {
-          id: layerID,
-          dataSource: dataSource || { serverId },
-          title: name,
-          themeSetting,
-          visible: visible === 'visible',
-          renderSource: {},
-          renderLayers: []
-        };
-      });
-
-      const layerCatalog = this.getLayerCatalog();
-      this._appreciableLayers.forEach(appreciableLayer => {
-        const matchLayer = layerCatalog.find(layer => layer.id === appreciableLayer.id) || {};
-        appreciableLayer.renderSource = matchLayer.renderSource || {};
-        appreciableLayer.renderLayers = matchLayer.renderLayers || [];
-        appreciableLayer.type = matchLayer.type;
-      });
-      // @ts-ignore
-      const baseLayerId = this._mapInfo.baseLayer.name;
-      const baseLayer = this.map.getLayer(baseLayerId);
-      let baseLayerInfo;
-      if(baseLayer) {
-        baseLayerInfo = {
-          dataSource: {},
-          id: baseLayerId,
-          title: baseLayerId,
-          type: baseLayer?.type,
-          visible: true,
-          renderSource: {},
-          renderLayers: [baseLayerId],
-          themeSetting: {}
-        };
-      }
-      this._appreciableLayers = baseLayerInfo ? [baseLayerInfo].concat(this._appreciableLayers) : this._appreciableLayers;
-      this._rectifyLayersOrder();
+      const appreciableLayers = this.getAppreciableLayers();
+      this._rectifyLayersOrder(appreciableLayers);
+      const matchLayers = appreciableLayers.filter((item: Record<string, any>) => this._cacheLayerId.includes(item.id));
       this._triggerEvent('addlayerssucceeded', {
         map: this.map,
-        layers: this._appreciableLayers,
-        // @ts-ignore
-        mapparams: this._mapInfo.mapParams,
-        sourceListModel: this._sourceListModel
+        layers: matchLayers,
+        mapparams: this._mapInfo.mapParams
       });
     }
   }
@@ -2259,8 +2228,8 @@ export default class WebMap extends WebMapBase {
     return false;
   }
 
-  private _rectifyLayersOrder() {
-    const renderLayers = this._appreciableLayers.reduce((layers, layer) => {
+  private _rectifyLayersOrder(appreciableLayers: any[]) {
+    const renderLayers = appreciableLayers.reduce((layers, layer) => {
       return layers.concat(layer.renderLayers);
     }, []);
     const exsitLayers = renderLayers.filter(layerId => !!this.map.getLayer(layerId));
@@ -2509,11 +2478,6 @@ export default class WebMap extends WebMapBase {
             end: styleGroup.end,
             ...commonStyleGroupMapping(styleGroup, layerInfo)
           };
-          if (layerInfo.layerType === 'RANGE' && layerInfo.integerType) {
-            Object.assign(newStyleGroup, {
-              integerType: layerInfo.integerType
-            });
-          }
           return newStyleGroup;
         });
         break;
@@ -2810,6 +2774,7 @@ export default class WebMap extends WebMapBase {
       return;
     }
     this.map.addLayer(layerInfo);
+    this._cacheLayerId.push(id);
   }
 
   private _isSameRasterLayer(id, layerInfo) {
@@ -2841,11 +2806,11 @@ export default class WebMap extends WebMapBase {
       this._sourceListModel = null;
       this.center = null;
       this.zoom = null;
-      this._appreciableLayers = [];
       this._dataflowService &&
         this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback) &&
         this._dataflowService.off('subscribesucceeded', this._initDataflowLayerCallback);
       this._unprojectProjection = null;
+      this._cacheLayerId = [];
     }
     if (this._layerTimerList.length) {
       this._layerTimerList.forEach(timer => {
@@ -2853,10 +2818,6 @@ export default class WebMap extends WebMapBase {
       });
       this._layerTimerList = [];
     }
-  }
-
-  cleanWebMap() {
-    this.clean();
   }
 
   private centerValid(center) {

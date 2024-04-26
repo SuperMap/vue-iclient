@@ -11,18 +11,18 @@ class LayerManageViewModel extends mapboxgl.Evented {
   constructor() {
     super();
     this.cacheMaps = {};
-    this.cacheIServerMaps = {};
     this.readyNext = true; // 是否可以开始实例化下一个vm
     this.mapQuene = [];
   }
 
   setMap(mapInfo) {
-    const { map, mapTarget } = mapInfo;
+    const { map, mapTarget, webmap } = mapInfo;
     this.map = map;
     this.mapTarget = mapTarget;
+    this.mainWebMap = webmap;
   }
 
-  addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, layerFilter, proxy } = {}) {
+  addLayer({ nodeKey, serverUrl, mapId, withCredentials = false, layerFilter, proxy, mapOptions = {} } = {}) {
     // 通过唯一key来判断是否已经new了实例，用来过滤选中后父节点再选中导致的重复new实例
     if (this.cacheMaps[nodeKey]) {
       return;
@@ -47,7 +47,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
         proxy,
         target: this.mapTarget
       },
-      {},
+      mapOptions,
       this.map,
       layerFilter
     );
@@ -74,66 +74,41 @@ class LayerManageViewModel extends mapboxgl.Evented {
   }
 
   addIServerLayer(url, nodeKey) {
-    if (this.cacheIServerMaps[nodeKey]) {
-      return;
-    }
-    const epsgCode = this.map.getCRS().epsgCode.split(':')[1];
-    this.map.addLayer({
-      id: nodeKey,
-      type: 'raster',
-      source: {
-        type: 'raster',
-        tiles: [url],
-        tileSize: 256,
-        rasterSource: 'iserver',
-        prjCoordSys: { epsgCode }
+    const projection = this.map.getCRS().epsgCode;
+    const [leftBottom, rightTop] = this.map.getBounds().toArray();
+    const center = this.map.getCenter().toArray();
+    const mapInfo = {
+      extent: {
+        leftBottom: {
+          x: leftBottom[0],
+          y: leftBottom[1]
+        },
+        rightTop: {
+          x: rightTop[0],
+          y: rightTop[1]
+        }
       },
-      minzoom: 0,
-      maxzoom: 22
-    });
-    this.cacheIServerMaps[nodeKey] = true;
+      level: this.map.getZoom(),
+      center: {
+        x: center[0],
+        y: center[1]
+      },
+      baseLayer: {
+        layerType: 'TILE',
+        name: nodeKey,
+        url
+      },
+      layers: [],
+      description: '',
+      projection,
+      title: 'dv-tile',
+      version: '2.3.0',
+    };
+    this.addLayer({ nodeKey, mapId: mapInfo });
   }
 
-  addMapStyle(style, nodeKey) {
-    if (this.cacheIServerMaps[nodeKey]) {
-      return;
-    }
-    const layerInfos = [];
-    const { layers = [], sources = {} } = style || {};
-    layers.forEach(layer => {
-      const sourceData = sources[layer.source];
-      const sourceId = layer.source;
-      const newSourceId = this.generateUniqueId('source', sourceId, 0);
-      if (newSourceId && sourceData) {
-        this.map.addSource(newSourceId, sourceData);
-      }
-      const newLayerId = this.generateUniqueId('layer', layer.id, 0);
-      const newLayer = {
-        ...layer,
-        id: newLayerId,
-        source: newSourceId
-      };
-      this.map.addLayer(newLayer);
-      layerInfos.push({ sourceId: newSourceId, layerId: newLayer.id });
-    });
-    this.cacheIServerMaps[nodeKey] = layerInfos;
-  }
-
-  generateUniqueId(type, newId, index) {
-    const isSource = type === 'source';
-    const method = isSource ? 'getSource' : 'getLayer';
-    if (this.map[method](newId)) {
-      index++;
-      // 判断是否带有-index后缀
-      if (newId.match(/-\d+/gi)) {
-        newId = newId.replace(/\d+/gi, index);
-      } else {
-        newId = `${newId}-${index}`;
-      }
-      return this.generateUniqueId(type, newId, index);
-    } else {
-      return newId;
-    }
+  addMapStyle(mapOptions, nodeKey) {
+    this.addLayer({ nodeKey, mapId: null, serverUrl: null, mapOptions });
   }
 
   removeLayer(nodeKey) {
@@ -151,26 +126,11 @@ class LayerManageViewModel extends mapboxgl.Evented {
   }
 
   removeIServerLayer(nodeKey) {
-    if (this.cacheIServerMaps[nodeKey]) {
-      delete this.cacheIServerMaps[nodeKey];
-    }
-    if (this.map && this.map.getLayer(nodeKey)) {
-      this.map.removeLayer(nodeKey);
-      this.map.removeSource(nodeKey);
-    }
+    this.removeLayer(nodeKey);
   }
 
   removeMapStyle(nodeKey) {
-    const dataInfos = this.cacheIServerMaps[nodeKey];
-    if (dataInfos && this.map) {
-      delete this.cacheIServerMaps[nodeKey];
-      dataInfos.forEach(({ sourceId, layerId }) => {
-        if (this.map.getLayer(layerId)) {
-          this.map.removeLayer(layerId);
-          this.map.removeSource(sourceId);
-        }
-      });
-    }
+    this.removeLayer(nodeKey);
   }
 
   eachNode(datas, callback) {
@@ -204,12 +164,14 @@ class LayerManageViewModel extends mapboxgl.Evented {
     Object.keys(this.cacheMaps).forEach(nodeKey => {
       this.removeLayer(nodeKey);
     });
-    Object.keys(this.cacheIServerMaps).forEach(nodeKey => {
-      this.removeIServerLayer(nodeKey);
-      this.removeMapStyle(nodeKey);
-    });
     this.cacheMaps = {};
-    this.cacheIServerMaps = {};
+  }
+
+  getCacheMaps() {
+    return this.cacheMaps;
   }
 }
 export default LayerManageViewModel;
+
+
+

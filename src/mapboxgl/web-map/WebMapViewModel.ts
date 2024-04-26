@@ -3,13 +3,12 @@
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import 'vue-iclient/static/libs/geostats/geostats';
 import 'vue-iclient/static/libs/json-sql/jsonsql';
-import { toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
 import WebMapService from '../../common/_utils/WebMapService';
 import WebMapV2 from './WebMapV2';
+import MapStyle from './MapStyle';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import { getGroupVisible, getGroupChildrenLayers } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
 
@@ -70,6 +69,17 @@ interface mapOptions {
   crs: string;
 }
 
+interface MapHandler {
+  initializeMap: (mapInfo?: Record<string, any>, map?: mapboxglTypes.Map) => void;
+  clean: () => void;
+  getLayerCatalog: () => any[];
+  getLegendInfo: () => any[];
+  getAppreciableLayers: () => any[];
+  _updateRasterSource?: (sourceId: string, options: { tileSize: number }) => void;
+  echartsLayerResize?: () => void;
+  updateOverlayLayer?: (layerInfo: Record<string, any>, features: any, mergeByField?: string) => void;
+}
+
 export default class WebMapViewModel extends Events {
   map: mapboxglTypes.Map;
 
@@ -103,19 +113,11 @@ export default class WebMapViewModel extends Events {
 
   withCredentials: boolean;
 
-  baseProjection: string;
-
   protected _taskID: Date;
 
-  private _sourceListModel: SourceListModel;
+  private _cacheCleanLayers: any[] = [];
 
-  private _cacheLayerId: Array<string> = [];
-
-  private _appreciableLayers: Array<any> = [];
-
-  private _layerList: Array<any> = [];
-
-  private _handler: InstanceType<typeof WebMapV2>;
+  private _handler: MapHandler;
 
   protected webMapService: WebMapService;
 
@@ -150,9 +152,9 @@ export default class WebMapViewModel extends Events {
     this.bounds = mapOptions.bounds;
     this.target = options.target || 'map';
     this.options = options;
+    this.withCredentials = options.withCredentials || false;
     this.renderWorldCopies = mapOptions.renderWorldCopies;
     this.layerFilter = layerFilter;
-    this._appreciableLayers = [];
     this.webMapService = new WebMapService(id, options);
     this.mapOptions = mapOptions;
     this.eventTypes = [
@@ -162,17 +164,16 @@ export default class WebMapViewModel extends Events {
       'addlayerssucceeded',
       'notsupportmvt',
       'notsupportbaidumap',
-      'projectionIsNotMatch',
+      'projectionisnotmatch',
       'beforeremovemap',
       'mapinitialized'
     ];
+    this._mapInitializedHandler = this._mapInitializedHandler.bind(this);
+    this._addLayersSucceededHandler = this._addLayersSucceededHandler.bind(this);
     if (map) {
       this.map = map;
-      this._taskID = new Date();
-      this.getMapInfo(this._taskID);
-    } else {
-      this._initWebMap();
     }
+    this._initWebMap(!this.map);
   }
 
   public resize(keepBounds = false): void {
@@ -246,14 +247,7 @@ export default class WebMapViewModel extends Events {
   public setStyle(style): void {
     if (this.map) {
       this.mapOptions.style = style;
-      style && this.map.setStyle(style);
-      if (style && style.layers && style.layers.length > 0) {
-        this.triggerEvent('addlayerssucceeded', {
-          map: this.map,
-          mapparams: {},
-          layers: []
-        });
-      }
+      this._initWebMap();
     }
   }
 
@@ -273,28 +267,31 @@ export default class WebMapViewModel extends Events {
   }
 
   public getAppreciableLayers() {
-    // @ts-ignore
-    return this._appreciableLayers;
+    return this._handler?.getAppreciableLayers() ?? [];
   }
 
   public getLegendInfo() {
     return this._handler?.getLegendInfo() ?? [];
   }
 
+  public getLayerList() {
+    return this._handler?.getLayerCatalog() ?? [];
+  }
+
   protected cleanLayers() {
     this._taskID = null;
     // TODO 应该遍历的是可感知图层的渲染图层
-    this._cacheLayerId.forEach(layerId => {
-      if (this.map && this.map.getLayer(layerId)) {
-        this.map.removeLayer(layerId);
+    for(const item of this._cacheCleanLayers) {
+      item.renderLayers.forEach((layerId: string) => {
+        if (this.map?.getLayer(layerId)) {
+          this.map.removeLayer(layerId);
+        }
+      });
+      if (this.map?.getSource(item.renderSource.id)) {
+        this.map.removeSource(item.renderSource.id);
       }
-    });
-    this._cacheLayerId.forEach(layerId => {
-      if (this.map && this.map.getSource(layerId)) {
-        this.map.removeSource(layerId);
-      }
-    });
-    this._cacheLayerId = [];
+    }
+    this._cacheCleanLayers = [];
   }
 
   public getLayerDatas(item) {
@@ -322,10 +319,6 @@ export default class WebMapViewModel extends Events {
     }
   }
 
-  public getLayerList() {
-    return this._layerList;
-  }
-
   public changeItemVisible(item) {
     // 当前操作的图层/图层组的上级图层组为显示状态，才修改其显隐
     const parentVisible = getGroupVisible(this.getLayerList(), item);
@@ -349,8 +342,8 @@ export default class WebMapViewModel extends Events {
     });
   }
 
-  protected initWebMap() {
-    this.clean();
+  protected initWebMap(clean = true) {
+    clean && this.clean();
     this.serverUrl = this.serverUrl && this.webMapService.handleServerUrl(this.serverUrl);
     if (this.webMapInfo) {
       // 传入是webmap对象
@@ -360,10 +353,18 @@ export default class WebMapViewModel extends Events {
         description: this.webMapInfo.description
       };
       this.mapParams = mapInfo.mapParams;
-      this._getMapInfo(mapInfo);
+      Promise.resolve().then(() => {
+        this._getMapInfo(mapInfo);
+      }).catch((error) => {
+        this.triggerEvent('getmapinfofailed', { error });
+      });
       return;
     } else if (!this.mapId || !this.serverUrl) {
-      this._createMap();
+      Promise.resolve().then(() => {
+        this._createMap('MapStyle');
+      }).catch((error) => {
+        this.triggerEvent('getmapinfofailed', { error });
+      });
       return;
     }
     this._taskID = new Date();
@@ -421,7 +422,7 @@ export default class WebMapViewModel extends Events {
           }
           // 存储地图的名称以及描述等信息，返回给用户
           this.mapParams = mapInfo.mapParams;
-          this._getMapInfo(mapInfo, _taskID);
+          this._getMapInfo(mapInfo);
         },
         error => {
           throw error;
@@ -433,154 +434,98 @@ export default class WebMapViewModel extends Events {
       });
   }
 
-  get getSourceListModel(): SourceListModel {
-    return this._sourceListModel;
+  _initWebMap(clean = true): void {
+    this.initWebMap(clean);
   }
 
-  _initWebMap(): void {
-    this.initWebMap();
+  _createMapStyle(commonOptions: webMapOptions, commonEvents: Record<string, Function>) {
+    const mapStyleHandler = new MapStyle(this.mapId, commonOptions, this.mapOptions, this.map, this.layerFilter);
+    mapStyleHandler.on(commonEvents);
+    return mapStyleHandler;
   }
 
-  _createWebMapV2(mapInfo) {
-    this.baseProjection = toEpsgCode(mapInfo.crs);
+  _createWebMapV2(commonOptions: webMapOptions, commonEvents: Record<string, Function>, mapInfo: Record<string, any>) {
     const webMapHandler = new WebMapV2(
       this.mapId,
       {
-        ...this.options,
-        iportalServiceProxyUrlPrefix: this.webMapService.iportalServiceProxyUrl,
-        serverUrl: this.serverUrl,
-        withCredentials: this.withCredentials,
-        target: this.target,
-        mapInfo,
-        parentEvents: {
-          ...this.eventTypes.reduce((events, name) => {
-            events[name] = (params) => {
-              this.triggerEvent(name, params);
-            };
-            return events;
-          }, {}),
-          mapinitialized: ({ map }) => {
-            this.map = map;
-            this.triggerEvent('mapinitialized', { map: this.map });
-          },
-          addlayerssucceeded: ({ mapparams, map, sourceListModel, layers }) => {
-            this.mapParams = mapparams;
-            this._sourceListModel = sourceListModel;
-            this._appreciableLayers = layers;
-            this._cacheLayerId.push(...layers.map(layer => layer.renderLayers).flat());
-            this._layerList = this._handler && this._handler.getLayerCatalog();
-            this.triggerEvent('addlayerssucceeded', {
-              map: map,
-              mapparams: this.mapParams
-            });
-          }
-        }
+        ...commonOptions,
+        parentEvents: commonEvents
       },
       this.mapOptions,
-      this.map,
       this.layerFilter
     );
     return webMapHandler;
   }
 
-  _createMap() {
-    this.mapOptions.container = this.target;
-    if (this.mapOptions.crs && this.mapOptions.crs.epsgCode) {
-      this.mapOptions.crs = new mapboxgl.CRS(
-        this.mapOptions.crs.epsgCode,
-        this.mapOptions.crs.WKT,
-        this.mapOptions.crs.extent,
-        this.mapOptions.crs.unit
-      );
-    }
-    if (!this.mapOptions.transformRequest) {
-      this.mapOptions.transformRequest = (url: string, resourceType: string) => {
-        let proxy = '';
-        if (typeof this.proxy === 'string') {
-          let proxyType = 'data';
-          if (resourceType === 'Tile') {
-            proxyType = 'image';
-          }
-          proxy = this.webMapService.handleProxy(proxyType);
-        }
-        return {
-          url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
-          credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
-            ? 'include'
-            : 'omit'
-        };
-      };
-    }
-    setTimeout(() => {
-      let fadeDuration = 0;
-      if (Object.prototype.hasOwnProperty.call(this.mapOptions, 'fadeDuration')) {
-        fadeDuration = this.mapOptions.fadeDuration;
-      }
-      this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
-      this.map.on('load', () => {
-        this._sourceListModel = new SourceListModel({
-          map: this.map
-        });
-        this.triggerEvent('addlayerssucceeded', {
-          map: this.map,
-          mapparams: {},
-          layers: []
-        });
-      });
-    }, 0);
-  }
-
-  _createWebMapV3(mapInfo: any) {
-    this.baseProjection = toEpsgCode(mapInfo.crs);
+  _createWebMapV3(commonOptions: webMapOptions, commonEvents: Record<string, Function>) {
     const webMapHandler = new mapboxgl.supermap.WebMapV3(
       this.mapId,
-      {
-        server: this.serverUrl,
-        withCredentials: this.withCredentials,
-        target: this.target
-      },
+      { ...commonOptions, server: this.serverUrl },
       this.mapOptions
     );
-    this._registerV3Events(webMapHandler);
-    webMapHandler.initializeMap(
-      {
-        ...mapInfo,
-        layers: typeof this.layerFilter === 'function' ? mapInfo.layers.filter(this.layerFilter) : mapInfo.layers
-      },
-      this.map
-    );
+    for (const type in commonEvents) {
+      webMapHandler.on(type, commonEvents[type]);
+    }
     return webMapHandler;
   }
 
-  _registerV3Events(webMapHandler): void {
-    if (!webMapHandler) {
-      return;
-    }
-    webMapHandler.on('mapinitialized', ({ map }) => {
-      this.map = map;
-      this.triggerEvent('mapinitialized', { map: this.map });
-    });
-    webMapHandler.on('addlayerssucceeded', ({ mapparams, layers }) => {
-      this.mapParams = mapparams;
-      this._appreciableLayers = layers;
-      this._cacheLayerId.push(...layers.map(layer => layer.renderLayers).flat());
-      this._layerList = this._handler && this._handler.getLayerCatalog();
-      this.triggerEvent('addlayerssucceeded', {
-        map: this.map,
-        mapparams: this.mapParams
-      });
-    });
-    webMapHandler.on('getlayerresourcesfailed', () => {
-      console.error('map add images failed.');
-    });
-    webMapHandler.on('projectionisnotmatch', () => {
-      console.error('projection is not match');
+  _mapInitializedHandler({ map }) {
+    this.map = map;
+    this.triggerEvent('mapinitialized', { map: this.map });
+  }
+
+  _addLayersSucceededHandler({ mapparams, layers }) {
+    this.mapParams = mapparams;
+    this._cacheCleanLayers = layers;
+    this.triggerEvent('addlayerssucceeded', {
+      map: this.map,
+      mapparams: this.mapParams,
+      layers
     });
   }
 
-  _getMapInfo(mapInfo, _taskID?) {
-    this._handler =
-      +mapInfo.version.split('.')[0] === 3 ? this._createWebMapV3(mapInfo) : this._createWebMapV2(mapInfo);
+  _getMapInfo(mapInfo: Record<string, any>) {
+    const type = +mapInfo.version.split('.')[0] === 3 ? 'WebMap3' : 'WebMap2';
+    this._createMap(type, mapInfo);
+  }
+
+  _createMap(type: 'MapStyle' | 'WebMap3' | 'WebMap2', mapInfo?: Record<string, any>) {
+    const commonOptions: webMapOptions = {
+      ...this.options,
+      iportalServiceProxyUrlPrefix: this.webMapService.iportalServiceProxyUrl,
+      serverUrl: this.serverUrl,
+      withCredentials: this.withCredentials,
+      target: this.target
+    };
+    const commonEvents = {
+      ...this.eventTypes.reduce((events, name) => {
+        events[name] = params => {
+          this.triggerEvent(name, params);
+        };
+        return events;
+      }, {}),
+      mapinitialized: this._mapInitializedHandler,
+      addlayerssucceeded: this._addLayersSucceededHandler
+    };
+    switch (type) {
+      case 'MapStyle':
+        this._handler = this._createMapStyle(commonOptions, commonEvents);
+        break;
+      case 'WebMap3':
+        this._handler = this._createWebMapV3(commonOptions, commonEvents);
+        break;
+      default:
+        this._handler = this._createWebMapV2(commonOptions, commonEvents, mapInfo);
+        break;
+    }
+    let _mapInfo: Record<string, any> = {};
+    if (mapInfo) {
+      _mapInfo = {
+        ...mapInfo,
+        layers: typeof this.layerFilter === 'function' ? mapInfo.layers.filter(this.layerFilter) : mapInfo.layers
+      };
+    }
+    this._handler.initializeMap(_mapInfo, this.map);
   }
 
   private _getResizedZoom(bounds, mapContainerStyle, tileSize = 512, worldWidth = WORLD_WIDTH) {
@@ -601,7 +546,7 @@ export default class WebMapViewModel extends Events {
 
   public setLayersVisible(isShow, ignoreIds) {
     const show = isShow ? 'visible' : 'none';
-    this._appreciableLayers.forEach(item => {
+    this.getAppreciableLayers().forEach(item => {
       item.renderLayers.forEach(layer => {
         const layerId = layer.id;
         if ((ignoreIds && !ignoreIds.includes(layerId)) || !ignoreIds) {
@@ -614,10 +559,9 @@ export default class WebMapViewModel extends Events {
   clean() {
     if (this.map) {
       this.triggerEvent('beforeremovemap', {});
-      this._handler ? this._handler.clean() : this.map.remove();
+      this._handler.clean();
+      this._handler = null;
       this.map = null;
-      this._sourceListModel = null;
-      this._appreciableLayers = [];
       if (this.mapOptions) {
         this.mapOptions.zoom = null;
         this.mapOptions.center = null;

@@ -107,11 +107,9 @@ const ATTRIBUTES_NEEDED_PROPS = [
   removed() {
     this.removeAttributes();
     this.sourceList = [];
-    this.sourceNames = [];
   }
 })
 class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
-  sourceNames: Array<string> = [];
   sourceList: Array<Object> = [];
   layerList: Array<string> = [];
   attributesProps: Object = {};
@@ -157,10 +155,6 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
       }
       this.attributesProps = { ...oldProps, ...newProps };
     }
-  }
-
-  get enableSource() {
-    return intersection(this.sourceNames, this.sourceList && Object.keys(this.sourceList));
   }
 
   get attributesStyle() {
@@ -246,7 +240,6 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   layerUpdate() {
     this.$nextTick(() => {
       this.sourceList = this.viewModel && this.viewModel.initLayerList();
-      this.sourceNames = this.viewModel && this.viewModel.getSourceNames();
       // @ts-ignore
       if (this.attributesProps.layerName && this.sourceList[this.attributesProps.layerName].visibility === 'none') {
         this.closeAttributesIconClass();
