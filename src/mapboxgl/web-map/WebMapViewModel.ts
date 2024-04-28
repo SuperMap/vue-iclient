@@ -544,11 +544,10 @@ export default class WebMapViewModel extends Events {
     return (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (point * Math.PI) / 360));
   }
 
-  public setLayersVisible(isShow, ignoreIds) {
+  public setLayersVisible(isShow: boolean, ignoreIds?: string[]) {
     const show = isShow ? 'visible' : 'none';
     this.getAppreciableLayers().forEach(item => {
-      item.renderLayers.forEach(layer => {
-        const layerId = layer.id;
+      item.renderLayers.forEach((layerId: string) => {
         if ((ignoreIds && !ignoreIds.includes(layerId)) || !ignoreIds) {
           this.map.setLayoutProperty(layerId, 'visibility', show);
         }
@@ -587,5 +586,12 @@ export default class WebMapViewModel extends Events {
 
   public updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
     this._handler?.updateOverlayLayer?.(layerInfo, features, mergeByField);
+  }
+
+  get cacheLayerIds () {
+    return this._cacheCleanLayers.reduce((ids, item) => {
+      ids.push(...item.renderLayers);
+      return ids;
+    }, []);
   }
 }

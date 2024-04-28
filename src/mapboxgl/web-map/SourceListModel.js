@@ -22,7 +22,7 @@ class SourceListModel {
   _initLayers() {
     const layersOnMap = this.map.getStyle().layers.map(layer => this.map.getLayer(layer.id));
     const overlayLayers = Object.values(this.map.overlayLayersManager).reduce((layers, overlayLayer) => {
-      if (overlayLayer.id) {
+      if (overlayLayer.id && !layers.some(item => item.id === overlayLayer.id)) {
         let visibility = overlayLayer.visibility;
         if (!visibility && 'visible' in overlayLayer) {
           visibility = overlayLayer.visible ? 'visible' : 'none';
@@ -33,7 +33,7 @@ class SourceListModel {
         }
         layers.push({
           id: overlayLayer.id,
-          visibility: overlayLayer.visibility || 'visible',
+          visibility,
           source,
           type: overlayLayer.type
         });

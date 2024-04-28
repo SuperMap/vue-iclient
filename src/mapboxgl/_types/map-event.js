@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
-import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
 
 export default new Vue({
   mapCache: {},

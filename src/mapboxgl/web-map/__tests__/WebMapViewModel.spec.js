@@ -277,7 +277,7 @@ describe('WebMapViewModel.spec', () => {
     await flushPromises();
     jest.advanceTimersByTime(0);
   });
-  it('add uniqueLayer with id is num', async done => {
+  it('add uniqueLayer with id is num', done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
@@ -369,7 +369,7 @@ describe('WebMapViewModel.spec', () => {
       mockFetch(commonFetchResource);
       const id = { ...uniqueLayer_point, projection: epsgeCode };
       const callback = function (data) {
-        expect(viewModel.getAppreciableLayers().length).toBeGreaterThanOrEqual(id.layers.length + 1);
+        expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
         done();
       };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
@@ -1338,12 +1338,13 @@ describe('WebMapViewModel.spec', () => {
         return sum + item.renderLayers.length;
       }, 0);
       expect(appreciableLayers.length).toBe(uniqueLayer_polygon.layers.length + 1);
+      expect(viewModel.cacheLayerIds.length).toBe(renderLayersLen);
       const isShow = false;
       const changeShow = true;
       const ignoreIds = ['China'];
       const spy1 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       viewModel.setLayersVisible(isShow, ignoreIds);
-      expect(spy1.mock.calls.length).toBe(renderLayersLen);
+      expect(spy1.mock.calls.length).toBe(renderLayersLen - 1);
       spy1.mockClear();
       const spy2 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       viewModel.setLayersVisible(changeShow);
@@ -1957,7 +1958,7 @@ describe('WebMapViewModel.spec', () => {
       visibleExtent: [0, 1, 2, 3]
     };
     const callback = function () {
-      expect(viewModel.getAppreciableLayers().length).toBeGreaterThanOrEqual(id.layers.length + 1);
+      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
       expect(viewModel._handler).not.toBeUndefined();
       const spy = jest.spyOn(viewModel._handler, '_addLayer');
       viewModel._handler._addLabelLayer({ layerID: 'jiuzhaigou2' });
@@ -1965,6 +1966,67 @@ describe('WebMapViewModel.spec', () => {
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+  it('sourcelist overlayLayersManager and extra layers', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
+      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV,
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_geojson['LINE_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption });
+    const callback = function (data) {
+      const appreciableLayers1 = viewModel.getAppreciableLayers();
+      expect(appreciableLayers1.length).toBe(uniqueLayer_polygon.layers.length + 1);
+      expect(appreciableLayers1.length).toBeGreaterThanOrEqual(data.layers.length);
+      data.map.overlayLayersManager = {
+        GraticuleLayer: {
+          id: 'GraticuleLayer',
+          overlay: true,
+          sourceId: 'GraticuleLayer',
+          visible: true
+        },
+        EchartLayer: {
+          id: 'EchartLayer',
+          visibility: 'visible',
+          source: {
+            type: 'geoJSON',
+            data: null
+          }
+        },
+        GraticuleLayer1: {
+          id: 'GraticuleLayer',
+          overlay: true,
+          sourceId: 'GraticuleLayer'
+        }
+      };
+      expect(data.map).toEqual(viewModel._handler.map);
+      const appreciableLayers2 = viewModel.getAppreciableLayers();
+      expect(appreciableLayers2.length).toBe(uniqueLayer_polygon.layers.length + 1 + 2);
+      data.map.addLayer({
+        paint: {},
+        id: '北京市',
+        source: {
+          tiles: [
+            'http://localhost:8190/iportal/services/../web/datas/435608982/structureddata/tiles/{z}/{x}/{y}.mvt?epsgCode=3857&returnedFieldNames=%5B%22smpid%22%2C%22parent%22%2C%22adcode%22%2C%22level%22%2C%22centroid%22%2C%22childrenNum%22%2C%22center%22%2C%22subFeatureIndex%22%2C%22name%22%2C%22acroutes%22%2C%22geometry%22%5D&geometryFieldName=geometry'
+          ],
+          bounds: [115.423411, 39.442758, 117.514583, 41.0608],
+          type: 'vector'
+        },
+        'source-layer': '435608982$geometry',
+        type: 'fill'
+      })
+      const appreciableLayers3 = viewModel.getAppreciableLayers();
+      expect(appreciableLayers3.length).toBe(uniqueLayer_polygon.layers.length + 1 + 2 + 1);
+      done();
+    };
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     jest.advanceTimersByTime(0);
