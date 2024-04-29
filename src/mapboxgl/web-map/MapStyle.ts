@@ -57,7 +57,7 @@ export default class MapStyle extends Events {
 
   triggerEvent: (name: string, ...rest: any) => any;
 
-  on: (data: Record<string, (...rest: any) => void>) => void;
+  on: (data: Record<string, Function>) => void;
 
   constructor(
     id: string | number | Object,
