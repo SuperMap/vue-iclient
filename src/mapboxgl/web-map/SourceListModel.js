@@ -43,7 +43,19 @@ class SourceListModel {
     const renderLayers = layersOnMap
       .concat(overlayLayers)
       .filter(layer => !this.appendLayers || this.layers.some(item => layer.id === item.id));
-    return renderLayers.filter(layer => !this.excludeSourceNames.includes(layer.source));
+    const nextLayers = renderLayers.filter(layer => !this.excludeSourceNames.includes(layer.source));
+    const selfLayers = [];
+    const selfLayerIds = [];
+    // 排序
+    this.layers.forEach(item => {
+      const matchLayer = nextLayers.find(layer => layer.id === item.id);
+      if (matchLayer) {
+        selfLayers.push(matchLayer);
+        selfLayerIds.push(matchLayer.id);
+      }
+    });
+    const otherLayers = nextLayers.filter(item => !selfLayerIds.includes(item.id));
+    return selfLayers.concat(otherLayers);
   }
 
   _initSource(detailLayers) {
