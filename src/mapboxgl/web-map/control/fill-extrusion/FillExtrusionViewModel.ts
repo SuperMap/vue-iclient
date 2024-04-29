@@ -122,8 +122,8 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
       return sourceModel.renderLayers;
     }
     if (sourceModel.children?.length > 0) {
-      for (const data in sourceModel.children) {
-        const res = this.findLayerIds(data, sourceLayer);
+      for (const data of sourceModel.children) {
+        const res = this.findSourceLayerIds(data, sourceLayer);
         if (res) {
           return res;
         }
