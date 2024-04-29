@@ -2193,7 +2193,8 @@ export default class WebMap extends WebMapBase {
         .map((layerInfo: Record<string, any>) => {
           return {
             ...layerInfo,
-            id: layerInfo.layerID
+            id: layerInfo.layerID,
+            visible: layerInfo.visible === 'visible'
           };
         })
         .filter((item: Record<string, any>) => this.map.getLayer(item.id));

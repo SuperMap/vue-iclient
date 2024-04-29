@@ -498,4 +498,44 @@ describe('AttributesViewModel.ts', () => {
       }
     });
   });
+  it('change attribute when associateMap in layerlist', () => {
+    const nextOption = {
+      ...options,
+      map: {
+        getLayer: () => undefined,
+        getSource: () => {
+          return {
+            setData: () => jest.fn()
+          };
+        },
+        addLayer: () => jest.fn(),
+        removeSource: () => jest.fn(),
+        getBounds: () => {
+          return {
+            contains: () => true
+          };
+        }
+      },
+      featureMap: {
+        0: {
+          geometry: { coordinates: [0, 1], type: 'Point' },
+          id: 1,
+          properties: {
+            SmID: 1,
+            index: '0',
+            省份: '黑龙江',
+            站台: '漠河'
+          },
+          type: 'Feature'
+        }
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    const spy = jest.spyOn(viewModel.map, 'addLayer');
+    const attributesTitle1 = '全国671个气象站观测数据';
+    const attributesTitle2 = '地震统计数据';
+    viewModel.addOverlaysToMap([0], layerStyleOptions, attributesTitle1);
+    viewModel.addOverlaysToMap([], layerStyleOptions, attributesTitle2);
+    expect(spy).toBeCalled();
+  });
 });

@@ -297,11 +297,12 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     let type, id: string, paint;
     let features = [];
     if (!layer) {
-      if (!Object.keys(this.featureMap).length) {
-        return;
-      }
       if (attributesTitle && this.currentTitle && attributesTitle !== this.currentTitle) {
         this.removeResources();
+      }
+      this.currentTitle = attributesTitle;
+      if (!Object.keys(this.featureMap).length) {
+        return;
       }
       for (const key in this.featureMap) {
         features.push(this.featureMap[key]);
@@ -322,7 +323,6 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           break;
       }
       id = attributesTitle;
-      this.currentTitle = attributesTitle;
       this.sourceId = id + '-attributes-SM-highlighted-source';
       if (this.map.getSource(this.sourceId)) {
         // @ts-ignore
@@ -440,6 +440,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   async getDatas() {
     if (this.dataset || this.layerName) {
+      this.featureMap = {};
       let features;
       if (this.useDataset()) {
         let datas = await this._getFeaturesFromDataset();
