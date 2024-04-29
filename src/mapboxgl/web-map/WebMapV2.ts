@@ -140,6 +140,7 @@ export default class WebMap extends WebMapBase {
       this.center = mapOptions.center;
     }
     this.zoom = mapOptions.zoom;
+    this.renderWorldCopies = mapOptions.renderWorldCopies;
     this.bounds = mapOptions.bounds;
     this.bearing = mapOptions.bearing;
     this.pitch = mapOptions.pitch;
