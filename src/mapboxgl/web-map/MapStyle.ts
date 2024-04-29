@@ -55,6 +55,10 @@ export default class MapStyle extends Events {
   _layerIdRenameMapList: any[] = [];
   _appendLayers = false;
 
+  triggerEvent: (name: string, ...rest: any) => any;
+
+  on: (data: Record<string, (...rest: any) => void>) => void;
+
   constructor(
     id: string | number | Object,
     options: webMapOptions = {},
