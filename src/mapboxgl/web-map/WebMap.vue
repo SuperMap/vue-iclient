@@ -415,6 +415,15 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
           Message.error(this.$t('webmap.getLayerInfoFailed'));
         }
       },
+      getlayersfailed: e => {
+        /**
+         * @event getlayersfailed
+         * @desc 获取图层失败。
+         * @property {Object} error - 失败原因。
+         */
+        // @ts-ignore
+        Message.error(e.error);
+      },
       notsupportbaidumap: () => {
         // @ts-ignore
         Message.error(this.$t('webmap.baiduMapNotSupport'));

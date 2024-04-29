@@ -166,7 +166,8 @@ export default class WebMapViewModel extends Events {
       'notsupportbaidumap',
       'projectionisnotmatch',
       'beforeremovemap',
-      'mapinitialized'
+      'mapinitialized',
+      'getlayersfailed'
     ];
     this._mapInitializedHandler = this._mapInitializedHandler.bind(this);
     this._addLayersSucceededHandler = this._addLayersSucceededHandler.bind(this);
