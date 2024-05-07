@@ -1277,7 +1277,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const style = {
-      layers: ['test'],
+      layers: [{id: 'test'}],
       color: '#fff'
     };
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
@@ -2085,6 +2085,59 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(webmap3Datas[0]);
     const callback = function () {
       expect(viewModel.getAppreciableLayers().length).toBeLessThanOrEqual(webmap3Datas[0].layers.length + 1);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+  it('exclude source and layer', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
+      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV,
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_geojson['LINE_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption });
+    const callback = function (data) {
+      const appreciableLayers1 = viewModel.getAppreciableLayers();
+      expect(appreciableLayers1.length).toBe(uniqueLayer_polygon.layers.length + 1);
+      expect(appreciableLayers1.length).toBeGreaterThanOrEqual(data.layers.length);
+
+      data.map.addLayer({
+        paint: {},
+        id: '北京市-identify-SM-highlighted',
+        source: {
+          tiles: [
+            'http://localhost:8190/iportal/services/../web/datas/435608982/structureddata/tiles/{z}/{x}/{y}.mvt?epsgCode=3857&returnedFieldNames=%5B%22smpid%22%2C%22parent%22%2C%22adcode%22%2C%22level%22%2C%22centroid%22%2C%22childrenNum%22%2C%22center%22%2C%22subFeatureIndex%22%2C%22name%22%2C%22acroutes%22%2C%22geometry%22%5D&geometryFieldName=geometry'
+          ],
+          bounds: [115.423411, 39.442758, 117.514583, 41.0608],
+          type: 'vector'
+        },
+        type: 'fill'
+      })
+      data.map.addSource('mapbox-gl-draw-hot', {
+        type: 'geojson',
+        data: {
+          type: 'FeatureCollection',
+          features: []
+        }
+      });
+      data.map.addLayer({
+        metadata: {},
+        paint: {
+          'circle-color': "#f75564"
+        },
+        id: 'draw-vertex-active.hot',
+        source: 'mapbox-gl-draw-hot',
+        type: 'circle'
+      });
+      const appreciableLayers2 = viewModel.getAppreciableLayers();
+      expect(appreciableLayers2.length).toBe(uniqueLayer_polygon.layers.length + 1);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });

@@ -19,6 +19,15 @@ class SourceListModel {
     return this._initSource(detailLayers);
   }
 
+  excludeSource(key) {
+    for (let i = 0; i < this.excludeSourceNames.length; i++) {
+      if (key && key.indexOf(this.excludeSourceNames[i]) >= 0) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   _initLayers() {
     const layersOnMap = this.map.getStyle().layers.map(layer => this.map.getLayer(layer.id));
     const overlayLayers = Object.values(this.map.overlayLayersManager).reduce((layers, overlayLayer) => {
@@ -43,7 +52,7 @@ class SourceListModel {
     const renderLayers = layersOnMap
       .concat(overlayLayers)
       .filter(layer => !this.appendLayers || this.layers.some(item => layer.id === item.id));
-    const nextLayers = renderLayers.filter(layer => !this.excludeSourceNames.includes(layer.source));
+    const nextLayers = renderLayers.filter(layer => this.excludeSource(layer.source)).filter((layer) => !layer.id.includes('-SM-'));
     const selfLayers = [];
     const selfLayerIds = [];
     // 排序
