@@ -2031,6 +2031,51 @@ describe('WebMapViewModel.spec', () => {
     await flushPromises();
     jest.advanceTimersByTime(0);
   });
+  it('layer order', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
+      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV,
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      layerData_geojson['LINE_GEOJSON']
+    };
+    const map = {
+      ...commonMap,
+      getStyle: () => {
+        let layers = [];
+        if (layerIdMapList) {
+          for (const key in layerIdMapList) {
+            layers.push(layerIdMapList[key]);
+          }
+        }
+        // 模拟图层加载顺序
+        const delayerLayerIds = ['市级行政区划_1_2', '市级行政区划_1_2-strokeLine'];
+        delayerLayerIds.forEach(id => {
+          const index = layers.findIndex(layer => layer.id === id);
+          if (index !== -1) {
+            const delayerLayer = layers.splice(index, 1)[0];
+            layers.push(delayerLayer);
+          }
+        });
+        return {
+          sources: sourceIdMapList,
+          layers
+        };
+      }
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, {}, map);
+    const callback = function (data) {
+      const appreciableLayers = viewModel.getAppreciableLayers();
+      expect(appreciableLayers[1].id).toBe('市级行政区划_1_2');
+      expect(appreciableLayers[2].id).toBe('北京市轨道交通线路(2)');
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
 
   it('webmap3.0', async done => {
     const fetchResource = {
