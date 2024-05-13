@@ -675,15 +675,16 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
       }
     }
     modelRotate[bottomAxisIndex] += this.rotateFactor;
-    const modelAsMercatorCoordinate = mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude);
+    // @ts-ignore
+    const modelAsMercatorCoordinate = this.map.getCRS().fromLngLat(modelOrigin); // mapboxgl.MercatorCoordinate.fromLngLat(modelOrigin, modelAltitude);
     const modelTransform = {
       translateX: modelAsMercatorCoordinate.x,
       translateY: modelAsMercatorCoordinate.y,
-      translateZ: modelAsMercatorCoordinate.z,
+      translateZ: modelAltitude,
       rotateX: modelRotate[0],
       rotateY: modelRotate[1],
       rotateZ: modelRotate[2],
-      scale: modelAsMercatorCoordinate.meterInMercatorCoordinateUnits()
+      scale: 1 / (2 * Math.PI * 6378137)
     };
     return modelTransform;
   }
@@ -730,13 +731,37 @@ export default class TrackLayerViewModel extends mapboxgl.Evented {
     const size = bbox.getSize(new THREE.Vector3());
     const maxSize = Math.max(size.x, size.y, size.z);
     // @ts-ignore
-    const extent = this.map.getCRS().extent;
-    const maxExtent = Math.max(extent[2] - extent[0], extent[3] - extent[2]) / 512;
+    const { extent, unit } = this.map.getCRS();
+    const perMeterRatio = this._getMeterPerMapUnit(unit);
+    const maxExtent = Math.max((extent[2] - extent[0]) * perMeterRatio, (extent[3] - extent[2]) * perMeterRatio) / 512;
     const unitFactor = this._getUnitFactor();
     const resolution = ((maxSize / unitFactor) * scaleFactor * 8) / this.map.getCanvas().width;
     const zoom = Math.log2(maxExtent / resolution);
     this.map.setZoom(zoom);
     this.map.setCenter(this.currentPosition);
+  }
+
+  private _getMeterPerMapUnit(unit: string) {
+    switch (unit.toLowerCase()) {
+      case 'radians':
+        return 6370997 / (2 * Math.PI);
+      case 'degrees':
+      case 'deg':
+      case 'degree':
+      case 'dd':
+        return (2 * Math.PI * 6370997) / 360;
+      case 'ft':
+      case 'foot':
+        return 0.3048;
+      case 'us-ft':
+        return 1200 / 3937;
+      case 'inch':
+        return 1 / 2.5399999918e-2;
+      case 'kilometer':
+        return 1.0e-3;
+      default:
+        return 1;
+    }
   }
 
   private _getScaleFactor(scene: any): number {
