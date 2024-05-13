@@ -2144,4 +2144,36 @@ describe('WebMapViewModel.spec', () => {
     await flushPromises();
     jest.advanceTimersByTime(0);
   });
+
+  it ('updateLayersVisible', (done) => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
+      'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV,
+      'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_geojson['LINE_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, { ...commonMap });
+    const callback = function (data) {
+      const layers = data.map.getStyle().layers;
+      expect(layers.length).toBeGreaterThan(0);
+      const spy1 = jest.spyOn(viewModel.map, 'setLayoutProperty');
+      const l7MarkerLayer = {
+        show: jest.fn(),
+        hide: jest.fn() 
+      };
+      const visibleLayers = [{renderLayers: [layers[0].id]}, { l7MarkerLayer }];
+      viewModel.updateLayersVisible(visibleLayers, 'visible');
+      expect(spy1.mock.calls.length).toBe(1);
+      expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
+      viewModel.updateLayersVisible(visibleLayers, 'none');
+      expect(spy1.mock.calls.length).toBe(2);
+      expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
+      expect(l7MarkerLayer.hide).toHaveBeenCalledTimes(1);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  })
 });

@@ -337,6 +337,10 @@ export default class WebMapViewModel extends Events {
 
   updateLayersVisible(layers, visibility) {
     layers.forEach(layer => {
+      if ('l7MarkerLayer' in layer) {
+        visibility === 'visible' ? layer.l7MarkerLayer.show() : layer.l7MarkerLayer.hide();
+        return;
+      }
       layer.renderLayers.forEach(layerId => {
         this.map.setLayoutProperty(layerId, 'visibility', visibility);
       });
