@@ -4,6 +4,7 @@ import turfCenter from '@turf/center';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
+import getFeatures from 'vue-iclient/src/common/_utils/get-features';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
 
@@ -346,24 +347,16 @@ export default class SearchViewModel extends mapboxgl.Evented {
   _searchFromIportal(iportalDatas) {
     const sourceName = 'Iportal Search';
     iportalDatas.forEach(iportal => {
-      let iPortalService = new iPortalDataService(iportal.url, iportal.withCredentials || false, {
-        epsgCode: iportal.epsgCode
-      });
-      iPortalService.on({
-        getdatafailed: () => {
-          this._searchFeaturesFailed('', iportal.name || sourceName);
-        },
-        featureisempty: () => {
-          this._searchFeaturesSucceed([], iportal.name || sourceName);
-        },
-        getdatasucceeded: e => {
-          if (e.features) {
-            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, e.features);
+      getFeatures({ ...iportal })
+        .then(data => {
+          if (data.features) {
+            let resultFeatures = this._getFeaturesByKeyWord(this.keyWord, data.features);
             this._searchFeaturesSucceed(resultFeatures, iportal.name || sourceName);
           }
-        }
-      });
-      iPortalService.getData({ keyWord: this.keyWord });
+        })
+        .catch(() => {
+          this._searchFeaturesFailed('', iportal.name || sourceName);
+        });
     }, this);
   }
 

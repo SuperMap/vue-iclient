@@ -58,7 +58,12 @@ export default function getFeatures(dataset) {
         params = [datasetInfo, queryInfo];
       } else if (type === 'iPortal') {
         queryInfo.withCredentials = withCredentials;
-        superMapService = new iPortalDataService(url, withCredentials, { epsgCode });
+        superMapService = new iPortalDataService(url, withCredentials, {
+          epsgCode,
+          resourceId: dataset.id,
+          dataType: dataset.dataType,
+          dataId: dataset.id
+        });
         params = [queryInfo, !!preferContent];
       } else if (type === 'rest') {
         superMapService = new RestService({
