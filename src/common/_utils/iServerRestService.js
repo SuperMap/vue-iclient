@@ -1,5 +1,10 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { QueryBySQLParameters } from '@supermap/iclient-common/iServer/QueryBySQLParameters';
+import { FilterParameter } from '@supermap/iclient-common/iServer/FilterParameter';
+import { QueryBySQLService } from '@supermap/iclient-common/iServer/QueryBySQLService';
+import { FetchRequest } from '@supermap/iclient-common/util/FetchRequest';
+import { GetFeaturesBySQLParameters } from '@supermap/iclient-common/iServer/GetFeaturesBySQLParameters';
+import { GetFeaturesBySQLService } from '@supermap/iclient-common/iServer/GetFeaturesBySQLService';
+import { FeatureService } from '@supermap/iclient-common/iServer/FeatureService';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';
@@ -75,7 +80,7 @@ export function getServerEpsgCode(projectionUrl, options) {
   if (!projectionUrl) {
     return;
   }
-  return SuperMap.FetchRequest.get(projectionUrl, null, options)
+  return FetchRequest.get(projectionUrl, null, options)
     .then(response => {
       return response.json();
     })
@@ -220,14 +225,14 @@ export default class iServerRestService extends Events {
    */
   getDataFeaturesCount(datasetInfo) {
     let { datasetName, dataSourceName, dataUrl } = datasetInfo;
-    var sqlParam = new mapboxgl.supermap.GetFeaturesBySQLParameters({
+    var sqlParam = new GetFeaturesBySQLParameters({
       queryParameter: {
         name: datasetName + '@' + dataSourceName
       },
       datasetNames: [dataSourceName + ':' + datasetName]
     });
 
-    return new mapboxgl.supermap.FeatureService(dataUrl).getFeaturesCount(sqlParam).then(function (serviceResult) {
+    return new FeatureService(dataUrl).getFeaturesCount(sqlParam).then(function (serviceResult) {
       return serviceResult.result.totalCount;
     });
   }
@@ -242,21 +247,21 @@ export default class iServerRestService extends Events {
    */
   getFeaturesDatasetInfo(datasetInfo) {
     let { datasetName, dataSourceName, dataUrl } = datasetInfo;
-    var sqlParam = new mapboxgl.supermap.GetFeaturesBySQLParameters({
+    var sqlParam = new GetFeaturesBySQLParameters({
       queryParameter: {
         name: datasetName + '@' + dataSourceName
       },
       datasetNames: [dataSourceName + ':' + datasetName]
     });
 
-    return new mapboxgl.supermap.FeatureService(dataUrl).getFeaturesDatasetInfo(sqlParam).then(function (serviceResult) {
+    return new FeatureService(dataUrl).getFeaturesDatasetInfo(sqlParam).then(function (serviceResult) {
       return serviceResult.result[0].fieldInfos;
     });
   }
 
   _getMapFeatureBySql(url, queryInfo) {
     let queryBySQLParams, queryBySQLService;
-    queryBySQLParams = new SuperMap.QueryBySQLParameters({
+    queryBySQLParams = new QueryBySQLParameters({
       queryParams: [
         {
           name: queryInfo.name,
@@ -268,7 +273,7 @@ export default class iServerRestService extends Events {
       startRecord: this.options.fromIndex,
       expectCount: this.options.toIndex ? (this.options.toIndex - this.options.fromIndex + 1) : queryInfo.maxFeatures
     });
-    queryBySQLService = new SuperMap.QueryBySQLService(url, {
+    queryBySQLService = new QueryBySQLService(url, {
       proxy: this.options.proxy,
       withCredentials: queryInfo.withCredentials,
       eventListeners: {
@@ -284,7 +289,7 @@ export default class iServerRestService extends Events {
 
   _getDataFeaturesBySql(url, queryInfo) {
     let getFeatureBySQLParams, getFeatureBySQLService;
-    getFeatureBySQLParams = new SuperMap.GetFeaturesBySQLParameters({
+    getFeatureBySQLParams = new GetFeaturesBySQLParameters({
       queryParameter: {
         name: queryInfo.name,
         attributeFilter: queryInfo.attributeFilter,
@@ -297,7 +302,7 @@ export default class iServerRestService extends Events {
       maxFeatures: -1,
       returnFeaturesOnly: this.options.returnFeaturesOnly
     });
-    getFeatureBySQLService = new SuperMap.GetFeaturesBySQLService(url, {
+    getFeatureBySQLService = new GetFeaturesBySQLService(url, {
       proxy: this.options.proxy,
       withCredentials: queryInfo.withCredentials,
       eventListeners: {
@@ -383,7 +388,7 @@ export default class iServerRestService extends Events {
   }
 
   _getRestDataFields(fieldsUrl, queryInfo, callBack) {
-    SuperMap.FetchRequest.get(fieldsUrl, null, {
+    FetchRequest.get(fieldsUrl, null, {
       proxy: this.options.proxy,
       withCredentials: queryInfo.withCredentials
     })
@@ -401,15 +406,15 @@ export default class iServerRestService extends Events {
   }
 
   _getRestMapFields(url, layerName, callBack, withCredentials = false) {
-    let param = new SuperMap.QueryBySQLParameters({
+    let param = new QueryBySQLParameters({
       queryParams: [
-        new SuperMap.FilterParameter({
+        new FilterParameter({
           name: layerName,
           attributeFilter: 'SMID=0'
         })
       ]
     });
-    const queryBySQLSerice = new SuperMap.QueryBySQLService(url, {
+    const queryBySQLSerice = new QueryBySQLService(url, {
       proxy: this.options.proxy,
       withCredentials,
       eventListeners: {
