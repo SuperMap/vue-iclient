@@ -1,10 +1,12 @@
-import { QueryBySQLParameters } from '@supermap/iclient-common/iServer/QueryBySQLParameters';
-import { FilterParameter } from '@supermap/iclient-common/iServer/FilterParameter';
-import { QueryBySQLService } from '@supermap/iclient-common/iServer/QueryBySQLService';
-import { FetchRequest } from '@supermap/iclient-common/util/FetchRequest';
-import { GetFeaturesBySQLParameters } from '@supermap/iclient-common/iServer/GetFeaturesBySQLParameters';
-import { GetFeaturesBySQLService } from '@supermap/iclient-common/iServer/GetFeaturesBySQLService';
-import { FeatureService } from '@supermap/iclient-common/iServer/FeatureService';
+import {
+  QueryBySQLParameters,
+  FilterParameter,
+  QueryBySQLService,
+  FetchRequest,
+  GetFeaturesBySQLParameters,
+  GetFeaturesBySQLService,
+  FeatureService
+} from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';
@@ -215,7 +217,7 @@ export default class iServerRestService extends Events {
     }
   }
 
-/**
+  /**
    * @function iServerRestService.prototype.getDataFeaturesCount
    * @description 获取要素总数。
    * @param {Object} datasetInfo - 数据集参数。
@@ -271,7 +273,7 @@ export default class iServerRestService extends Events {
       ],
       queryOption: this.options.hasGeometry === false ? 'ATTRIBUTE' : 'ATTRIBUTEANDGEOMETRY',
       startRecord: this.options.fromIndex,
-      expectCount: this.options.toIndex ? (this.options.toIndex - this.options.fromIndex + 1) : queryInfo.maxFeatures
+      expectCount: this.options.toIndex ? this.options.toIndex - this.options.fromIndex + 1 : queryInfo.maxFeatures
     });
     queryBySQLService = new QueryBySQLService(url, {
       proxy: this.options.proxy,
@@ -342,11 +344,13 @@ export default class iServerRestService extends Events {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features || this.features;
-      let fields = []; let fieldCaptions = []; let fieldTypes = [];
-      if(results.result.datasetInfos) {
+      let fields = [];
+      let fieldCaptions = [];
+      let fieldTypes = [];
+      if (results.result.datasetInfos) {
         const fieldInfos = results.result.datasetInfos[0].fieldInfos;
         fieldInfos.forEach(fieldInfo => {
-          if(fieldInfo.name) {
+          if (fieldInfo.name) {
             fields.push(fieldInfo.name.toUpperCase());
             fieldCaptions.push(fieldInfo.caption.toUpperCase());
             fieldTypes.push(fieldInfo.type);
