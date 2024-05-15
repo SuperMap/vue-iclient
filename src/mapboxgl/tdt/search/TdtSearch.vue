@@ -109,7 +109,7 @@ export default {
       type: Object,
       default() {
         return {
-          searchUrl: 'https://api.tianditu.gov.cn/search',
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search',
           tk: ''
         };
       }
@@ -278,7 +278,7 @@ export default {
           case 'Point':
             this.componentId = 'PointsResult';
             componentProps.openPurePoiSearch = this.openPurePoiSearch;
-            componentProps.specifyAdminSearch = params && !!params.specifyAdminCode;
+            componentProps.specifyAdminSearch = params && !!params.specify;
             componentListeners['show-point-popup'] = this.generatePopup;
             componentListeners['set-highlight-icon'] = this.setHighlightIcon;
             componentListeners['change-pagination'] = this.getResultDetail;

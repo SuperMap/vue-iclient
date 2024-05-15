@@ -113,7 +113,7 @@ export default {
     },
     addPointToMap(info) {
       if (this.from === 'Search') {
-        let center = info.lonlat.split(' ');
+        let center = info.lonlat.split(',');
         this.$emit('show-point-popup', { coordinates: [+center[0], +center[1]], data: info });
       }
     },
@@ -147,7 +147,7 @@ export default {
         params.queryType = '7';
       }
       if (this.specifyAdminSearch) {
-        params.specifyAdminCode = this.prompt.adminCode;
+        params.specify = this.prompt.adminCode;
       }
       this.$emit('change-pagination', this.keyWord, params, this.openPurePoiSearch);
     },

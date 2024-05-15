@@ -164,7 +164,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
 
   _setPosition(type, data) {
     const { name, lonlat } = data;
-    let coordinates = lonlat.split(' ');
+    let coordinates = lonlat.split(',');
     coordinates = coordinates.length < 2 ? lonlat.split(',') : coordinates;
     this._transformMsg(type, [+coordinates[0], +coordinates[1]], name);
   }
@@ -245,7 +245,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
       level: Math.round(this.map.getZoom()) + 1,
       mapBound: this._toBBoxString() // 如果params里没有mapBound， 就重新获取一个（例如search）
     };
-    return tiandituSearch(data.searchUrl || 'https://api.tianditu.gov.cn/search', {
+    return tiandituSearch(data.searchUrl || 'https://api.tianditu.gov.cn/v2/search', {
       postStr: JSON.stringify(Object.assign({}, commonData, params)),
       type: 'query',
       tk: data.tk
@@ -307,7 +307,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     return { type, result: { count: +data.count, data: result, prompt: ((prompt || {}).admins || [])[0] } };
   }
 
-  _generatePointsFeatures(data, splitFlag = ' ') {
+  _generatePointsFeatures(data, splitFlag = ',') {
     return generatePointsFeatures(data, splitFlag);
   }
 
@@ -341,7 +341,7 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
         type: 'Polygon',
         coordinates: [
           data.map(item => {
-            const items = item.split(' ');
+            const items = item.split(',');
             items[0] = +items[0];
             items[1] = +items[1];
             return items;

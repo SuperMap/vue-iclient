@@ -143,7 +143,7 @@ export default {
       const params = {
         queryType: '7',
         queryTerminal: 10000,
-        specifyAdminCode: this.prompt.adminCode
+        specify: this.prompt.adminCode
       };
       this.$emit('search-points-result', this.keyWord, params, true);
     },

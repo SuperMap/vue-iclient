@@ -37,7 +37,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
   }
 
   // 分页的params里面应该有mapBound
-  searchPoints(keyWord, params, searchUrl = this.data.searchUrl || 'https://api.tianditu.gov.cn/search') {
+  searchPoints(keyWord, params, searchUrl = this.data.searchUrl || 'https://api.tianditu.gov.cn/v2/search') {
     const map = this.map;
     const commonData = {
       keyWord,
@@ -148,7 +148,7 @@ export default class TdtRouteViewModel extends mapboxgl.Evented {
     return toBBoxString(this.map);
   }
 
-  _generatePointsFeatures(data, splitFlag = ' ') {
+  _generatePointsFeatures(data, splitFlag = ',') {
     return generatePointsFeatures(data, splitFlag);
   }
 

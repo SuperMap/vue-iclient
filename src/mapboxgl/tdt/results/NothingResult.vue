@@ -78,7 +78,7 @@ export default {
       const params = {
         queryType: '1',
         queryTerminal: 10000,
-        specifyAdminCode: this.prompt.adminCode
+        specify: this.prompt.adminCode
       };
       if (this.from === 'Route') {
         params.queryType = '7';
