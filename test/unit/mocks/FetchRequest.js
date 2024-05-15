@@ -16,8 +16,9 @@ function mockFetch(resource) {
       }
     });
   };
-
-  jest.spyOn(SuperMap.FetchRequest, 'get').mockImplementation(mockImplementation);
+  if (window && window.SuperMap) {
+    jest.spyOn(SuperMap.FetchRequest, 'get').mockImplementation(mockImplementation);
+  }
   jest.spyOn(FetchRequest, 'get').mockImplementation(mockImplementation);
 }
 export default mockFetch;

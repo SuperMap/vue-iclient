@@ -44,6 +44,7 @@ import Timer from 'vue-iclient/src/common/_mixin/Timer';
 import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from 'vue-iclient/src/common/_utils/style/theme/chart';
 import EchartsDataService from 'vue-iclient/src/common/_utils/EchartsDataService';
 import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import { ColorsPickerUtil } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 import Message from 'vue-iclient/src/common/message/index.js';
 import { addListener, removeListener } from 'resize-detector';
@@ -1073,7 +1074,7 @@ export default {
       if (typeof this.colorGroupsData[0] === 'object') {
         return handleMultiGradient(this.colorGroupsData, serielDataLength);
       } else {
-        return SuperMap.ColorsPickerUtil.getGradientColors(this.colorGroupsData, serielDataLength, 'RANGE');
+        return ColorsPickerUtil.getGradientColors(this.colorGroupsData, serielDataLength, 'RANGE');
       }
     },
     // 控制label显示条数

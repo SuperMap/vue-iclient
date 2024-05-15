@@ -1,5 +1,6 @@
 import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import cloneDeep from 'lodash.clonedeep';
+import { ColorsPickerUtil } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 
 export const handleMultiGradient = (colorGroupsData, dataLength) => {
   let startColors = [];
@@ -11,8 +12,8 @@ export const handleMultiGradient = (colorGroupsData, dataLength) => {
     startColors.push(colorInfo.colorStops[0].color);
     endColors.push(colorInfo.colorStops[1].color);
   });
-  startColorGroups = SuperMap.ColorsPickerUtil.getGradientColors(startColors, dataLength, 'RANGE');
-  endColorGroups = SuperMap.ColorsPickerUtil.getGradientColors(endColors, dataLength, 'RANGE');
+  startColorGroups = ColorsPickerUtil.getGradientColors(startColors, dataLength, 'RANGE');
+  endColorGroups = ColorsPickerUtil.getGradientColors(endColors, dataLength, 'RANGE');
   for (let i = 0; i < dataLength; i++) {
     let colorGroupDataCopy = cloneDeep(colorGroupsData[0]);
     colorGroupDataCopy.colorStops = [
@@ -36,7 +37,7 @@ export const getMultiColorGroup = (colorGroup, dataNumber) => {
   if (colorGroup && dataNumber > colorGroup.length && typeof colorGroup[0] === 'object') {
     nextColorGroup = handleMultiGradient(colorGroup, dataNumber);
   } else {
-    nextColorGroup = SuperMap.ColorsPickerUtil.getGradientColors(colorGroup, dataNumber, 'RANGE');
+    nextColorGroup = ColorsPickerUtil.getGradientColors(colorGroup, dataNumber, 'RANGE');
   }
   return nextColorGroup;
 };
