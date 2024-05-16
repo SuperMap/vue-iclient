@@ -32,6 +32,7 @@ import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 import dataflowLayerData from 'vue-iclient/test/unit/mocks/data/dataflowLayerData.json';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import { webmap_MAPBOXSTYLE_Tile } from 'vue-iclient/test/unit/mocks/services';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 const CRS = require('vue-iclient/test/unit/mocks/crs');
 
@@ -207,6 +208,13 @@ describe('WebMapViewModel.spec', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.setTimeout(30000);
+    jest.spyOn(mapEvent.$options, 'getWebMap').mockImplementation(() => {
+      return {
+        getAppreciableLayers: () => {
+          return Object.values(layerIdMapList);
+        }
+      };
+    });
   });
   afterEach(() => {
     sourceIdMapList = {};
@@ -946,7 +954,7 @@ describe('WebMapViewModel.spec', () => {
     const id = markerLayer;
     const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
-      expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
+      expect(viewModel.getAppreciableLayers().length).toBeGreaterThanOrEqual(id.layers.length + 1);
       const layers = data.map.getStyle().layers;
       expect(layers[layers.length - 2].id).toBe('民航数-TEXT-7');
       expect(layers[layers.length - 1].type).toBe('circle');

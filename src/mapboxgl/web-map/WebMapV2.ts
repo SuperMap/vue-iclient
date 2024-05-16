@@ -15,6 +15,7 @@ import WebMapBase from 'vue-iclient/src/common/web-map/WebMapBase';
 import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import { getProjection, registerProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 const WORLD_WIDTH = 360;
 // 迁徙图最大支持要素数量
@@ -2206,13 +2207,20 @@ export default class WebMap extends WebMapBase {
           name: this._mapInfo.baseLayer.title || baseLayerId
         });
       }
+      // strokeLine之类
+      this._cacheLayerId.forEach((id) => {
+        if(!layersFromMapInfo.find(item => item.id === id)) {
+          layersFromMapInfo.push({ id });
+        }
+      });
       this._sourceListModel = new SourceListModel({
         map: this.map,
         layers: layersFromMapInfo,
         appendLayers: this._appendLayers
       });
       const appreciableLayers = this.getAppreciableLayers();
-      this._rectifyLayersOrder(appreciableLayers);
+      const allAppreciableLayers = this._appendLayers ? mapEvent.$options.getWebMap(this.target).getAppreciableLayers() : appreciableLayers;
+      this._rectifyLayersOrder(allAppreciableLayers);
       const matchLayers = appreciableLayers.filter((item: Record<string, any>) => this._cacheLayerId.includes(item.id));
       this._triggerEvent('addlayerssucceeded', {
         map: this.map,
@@ -2769,6 +2777,9 @@ export default class WebMap extends WebMapBase {
   private _addLayer(layerInfo) {
     const { id } = layerInfo;
     layerInfo = Object.assign(layerInfo, { id });
+    if(!this._cacheLayerId.includes(id)) {
+      this._cacheLayerId.push(id);
+    }
 
     if (this.map.getLayer(id)) {
       if (this.checkSameLayer && this._isSameRasterLayer(id, layerInfo)) return;
@@ -2776,7 +2787,6 @@ export default class WebMap extends WebMapBase {
       return;
     }
     this.map.addLayer(layerInfo);
-    this._cacheLayerId.push(id);
   }
 
   private _isSameRasterLayer(id, layerInfo) {
