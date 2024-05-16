@@ -20,7 +20,7 @@ export default {
   },
   computed: {
     themFieldLabel() {
-      let themeFieldText = this.$t('legend.themeField');
+      const themeFieldText = this.$t('legend.themeField');
       if (!this.styleField) {
         return themeFieldText;
       }

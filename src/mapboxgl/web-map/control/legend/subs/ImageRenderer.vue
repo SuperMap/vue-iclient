@@ -51,40 +51,75 @@ export default {
           height: sHeight = img.height
         } = {}
       } = this.styleRendererData;
-      let dispalyWidth = sWidth;
-      let dispalyHeight = sHeight;
+      let displayWidth = sWidth;
+      let displayHeight = sHeight;
       let fillColor;
+      let repeatPattern = false;
+      let displayIconWidth = 0;
+      let displayIconHeight = 0;
       switch (this.shape) {
         case 'point': {
           const { fontSize, color } = this.cssStyle;
           const size = parseInt(fontSize);
-          dispalyWidth = size;
-          dispalyHeight = size;
+          displayWidth = size;
+          displayHeight = size;
           fillColor = color;
           break;
         }
-        case 'fill':
-        case 'fillextrusion': {
-          const { width, height, backgroudColor } = this.cssStyle;
-          dispalyWidth = parseInt(width);
-          dispalyHeight = parseInt(height);
-          fillColor = backgroudColor;
+        case 'animateline': {
+          const { width, height, backgroundColor, iconStep } = this.cssStyle;
+          displayWidth = parseInt(width);
+          displayHeight = parseInt(height);
+          fillColor = backgroundColor;
+          repeatPattern = true;
+          displayIconWidth = iconStep;
+          displayIconHeight = displayHeight;
+          break;
+        }
+        case 'line': {
+          const { width, height, backgroundColor } = this.cssStyle;
+          displayWidth = parseInt(width);
+          displayHeight = parseInt(height);
+          fillColor = backgroundColor;
+          break;
         }
       }
-      canvas.width = dispalyWidth;
-      canvas.height = dispalyHeight;
+      canvas.width = displayWidth;
+      canvas.height = displayHeight;
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = fillColor;
+      ctx.fillRect(0, 0, displayWidth, displayHeight);
+      if (repeatPattern) {
+        const patternCanvas = document.createElement('canvas');
+        const patternContext = patternCanvas.getContext('2d');
+        patternCanvas.width = displayIconWidth;
+        patternCanvas.height = displayIconHeight;
+        patternContext.drawImage(
+          img,
+          sx * pixelRatio,
+          sy * pixelRatio,
+          sWidth,
+          sHeight,
+          0,
+          0, // 目标矩形（绘制到Canvas的位置）
+          displayIconWidth,
+          displayIconHeight // 目标矩形（绘制的宽度和高度）
+        );
+        const pattern = ctx.createPattern(patternCanvas, 'repeat');
+        ctx.fillStyle = pattern;
+        ctx.fillRect(0, 0, displayWidth, displayHeight);
+      }
       if (sdf) {
-        ctx.globalAlpha = opacity;
-        ctx.fillStyle = fillColor;
-        ctx.fillRect(0, 0, dispalyWidth, dispalyHeight);
         // set composite mode
         ctx.globalCompositeOperation = 'destination-in';
       }
-      // draw image
-      ctx.drawImage(img, sx * pixelRatio, sy * pixelRatio, sWidth, sHeight, 0, 0, dispalyWidth, dispalyHeight);
+      if (!repeatPattern) {
+        // draw image
+        ctx.drawImage(img, sx * pixelRatio, sy * pixelRatio, sWidth, sHeight, 0, 0, displayWidth, displayHeight);
+      }
       if (outlineColor) {
         ctx.strokeStyle = outlineColor;
-        ctx.strokeRect(0, 0, dispalyWidth, dispalyHeight);
+        ctx.strokeRect(0, 0, displayWidth, displayHeight);
       }
     }
   }

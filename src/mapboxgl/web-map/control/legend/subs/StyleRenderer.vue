@@ -3,12 +3,8 @@
   <div v-else-if="colors" :style="{ width: `${linearWidth}px` }">
     <div class="sm-component-legend__linearcolor" :style="linearColorStyle" />
     <div v-if="'styleField' in styleData" class="sm-component-legend__colorstop">
-      <div
-        v-for="(data, index) in mapPaletteToStops"
-        :key="index"
-        class="color-stop-holder"
-        :style="{ [index === mapPaletteToStops.length - 1 ? 'right' : 'left']: `${data.offset}px` }"
-      >
+      <div v-for="(data, index) in mapPaletteToStops" :key="index" class="color-stop-holder"
+        :style="{ [index === mapPaletteToStops.length - 1 ? 'right' : 'left']: `${data.offset}px` }">
         <div class="color-arrow"></div>
         <div class="color-value" :style="{ backgroundColor: data.color }" />
       </div>
@@ -28,6 +24,7 @@
 <script>
 import uniqueId from 'lodash.uniqueid';
 import omit from 'omit.js';
+import { hexToRgba } from 'vue-iclient/src/common/_utils/util';
 
 export default {
   props: {
@@ -38,7 +35,8 @@ export default {
   },
   data() {
     return {
-      linearWidth: 214
+      linearWidth: 214,
+      animateTimer: null
     };
   },
   computed: {
@@ -115,6 +113,9 @@ export default {
       this.drawShape();
     }
   },
+  beforeDestroy() {
+    this.animateTimer && window.clearInterval(this.animateTimer);
+  },
   methods: {
     colorsToPalatte(colors) {
       if (!colors) {
@@ -131,40 +132,103 @@ export default {
     drawShape() {
       const canvas = document.getElementById(this.canvasId);
       const ctx = canvas.getContext('2d');
+      const { opacity = 1, fontSize, width, height } = this.styleRendererData;
+      if ('width' in this.styleRendererData) {
+        canvas.width = parseInt(width);
+        canvas.height = parseInt(height);
+      } else {
+        const size = parseInt(fontSize);
+        canvas.width = size;
+        canvas.height = size;
+      }
+      ctx.globalAlpha = opacity;
       switch (this.shapeType) {
         case 'point': {
-          const { fontSize, color, opacity } = this.styleRendererData;
-          const size = parseInt(fontSize);
+          const { fontSize, color } = this.styleRendererData;
           const radius = parseInt(fontSize) / 2;
-          canvas.width = size;
-          canvas.height = size;
-          ctx.globalAlpha = opacity;
           ctx.arc(radius, radius, parseInt(fontSize) / 2, 0, 2 * Math.PI);
           ctx.fillStyle = color;
           ctx.fill();
           break;
         }
-        case 'line': {
-          const { width, height, opacity } = this.styleRendererData;
-          canvas.width = width;
+        case 'animatepoint': {
+          this.initAnimatePoint();
+          break;
+        }
+        case 'radarpoint': {
+          this.initRadar();
+          break;
+        }
+        case 'line':
+        case 'animateline': {
+          const { height } = this.styleRendererData;
           canvas.height = height && height < 1 ? 1 : height;
-          ctx.globalAlpha = opacity;
           this.drawLines(canvas, ctx);
           break;
         }
-        case 'fill':
-        case 'fillextrusion':
-          const { width, height, backgroundColor, outlineColor, opacity } = this.styleRendererData;
-          const rWidth = parseInt(width);
-          const rHeight = parseInt(height);
-          canvas.width = rWidth;
-          canvas.height = rHeight;
-          ctx.globalAlpha = opacity;
+        case 'rectangle': {
+          const { color, backgroundColor = color, outlineColor = backgroundColor } = this.styleRendererData;
           ctx.fillStyle = backgroundColor;
-          ctx.fillRect(0, 0, rWidth, rHeight);
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
           ctx.strokeStyle = outlineColor;
-          ctx.strokeRect(0, 0, rWidth, rHeight);
+          ctx.strokeRect(0, 0, canvas.width, canvas.height);
           break;
+        }
+        case 'triangle': {
+          const { color } = this.styleRendererData;
+
+          // 计算边长，选择宽度和高度中较小的那个，并乘以2/sqrt(3)来得到边长
+          // 因为等边三角形的高是边长的sqrt(3)/2，所以边长 = 高 * 2/sqrt(3)
+          const sideLength = Math.min(canvas.width, canvas.height) * 2 / Math.sqrt(3);
+
+          // 计算三角形顶点和底边的位置
+          const topX = canvas.width / 2; // 顶点位于顶部中央
+          const topY = 0;
+          const gap = canvas.width * 0.09;
+          const bottomLeftX = topX - sideLength / 2 + gap; // 左侧底角
+          const bottomLeftY = canvas.height;
+          const bottomRightX = topX + sideLength / 2 - gap; // 右侧底角
+          const bottomRightY = canvas.height;
+
+          // 绘制等边三角形
+          ctx.beginPath();
+          ctx.moveTo(topX, topY);
+          ctx.lineTo(bottomLeftX, bottomLeftY);
+          ctx.lineTo(bottomRightX, bottomRightY);
+          ctx.closePath();
+          ctx.fillStyle = color;
+          ctx.fill();
+          break;
+        }
+        case 'hexagon': {
+          const { fontSize, color } = this.styleRendererData;
+          const radius = parseInt(fontSize) / 2;
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          ctx.beginPath();
+          // 六边形的一个顶点与水平轴成30度角
+          const startAngle = Math.PI / 6; // 30度转换为弧度
+          // 绘制六边形的每个顶点
+          for (let i = 0; i < 6; i++) {
+            const angle = startAngle + (i * Math.PI / 3); // 每次增加60度（弧度）
+
+            // 计算每个顶点的x和y坐标
+            const x = centerX + radius * Math.cos(angle);
+            const y = centerY - radius * Math.sin(angle);
+
+            // 将第一个点移动到路径的起始位置
+            if (i === 0) {
+              ctx.moveTo(x, y);
+            } else {
+              // 后续的点用lineTo连接到路径上
+              ctx.lineTo(x, y);
+            }
+          }
+          // 描边六边形
+          ctx.fillStyle = color;
+          ctx.fill();
+          break;
+        }
       }
     },
     drawLines(canvas, ctx) {
@@ -287,6 +351,134 @@ export default {
         y = prefix + (canvasHeight - lineWidth) / 2 + lineOffset + 1;
       }
       return y;
+    },
+    initAnimatePoint() {
+      const { size, color, opacity, rings, speed } = this.styleRendererData;
+      const canvas = document.getElementById(this.canvasId);
+      if (!canvas) {
+        return;
+      }
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const x = size / 2; // x 坐标值
+      const y = size / 2; // y 坐标值
+      const startAngle = 0; // 开始点
+      const radius = size / 2;
+      const step = radius / rings;
+
+      const endAngle = Math.PI * 2; // 结束点
+
+      function createCircle(newR, i) {
+        if (!ctx) return;
+        ctx.beginPath();
+        ctx.arc(x, y, newR, startAngle, endAngle);
+        ctx.strokeStyle = color;
+        if (i === rings) {
+          ctx.strokeStyle = hexToRgba(color, 0.1);
+        }
+        if (rings <= 3) {
+          ctx.lineWidth = 1.5;
+        }
+        ctx.stroke();
+      }
+      // 1、静态圆
+      // for (let i = 0; i < rings; i++) {
+      //     createCircle(radius - i * step);
+      // }
+
+      // 动画圆
+      let i = 0;
+      const drawCircle = function () {
+        const r = speed > 0 ? 0 + i * step : radius - i * step;
+        createCircle(r, i);
+        if (i < rings) {
+          i++;
+        } else {
+          i = 0;
+        }
+      };
+
+      const render = function () {
+        const prev = ctx.globalCompositeOperation;
+        // 只显示canvas上原图像的重叠部分
+        ctx.globalCompositeOperation = 'destination-in';
+        // 设置主canvas的绘制透明度
+        ctx.globalAlpha = opacity;
+        // 这一步目的是将canvas上的图像变的透明
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        // 在原图像上重叠新图像
+        ctx.globalCompositeOperation = prev;
+        // 在主canvas上画新圆
+        drawCircle();
+      };
+      const timer = setInterval(render, speed * 100);
+      return timer;
+    },
+    initRadar() {
+      const { size, color, opacity, speed } = this.styleRendererData;
+      const canvas = document.getElementById(this.canvasId);
+      if (!canvas) {
+        return;
+      }
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) {
+        return;
+      }
+      ctx.globalAlpha = opacity;
+      const x = size / 2; // x 坐标值
+      const y = size / 2; // y 坐标值
+      const radius = size / 2;
+
+      function drawRadar(iDeg) {
+        if (!ctx) {
+          return;
+        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const startAngle = ((-90 + (speed < 0 ? iDeg : -iDeg)) / 180) * Math.PI;
+        const endAngle = ((90 + (speed < 0 ? iDeg : -iDeg)) / 180) * Math.PI;
+
+        let grd = ctx.createLinearGradient(1.5 * radius, 2 * radius, 1.5 * radius, 0);
+        if (iDeg >= 270) {
+          grd = ctx.createLinearGradient(0, 1.5 * radius, 2 * radius, 1.5 * radius);
+        } else if (iDeg >= 180) {
+          grd = ctx.createLinearGradient(0.5 * radius, 0, 0.5 * radius, 2 * radius);
+        } else if (iDeg >= 90) {
+          grd = ctx.createLinearGradient(2 * radius, 0.5 * radius, 0, 0.5 * radius);
+        }
+
+        grd.addColorStop(0, hexToRgba(color, 0));
+        grd.addColorStop(1, color);
+
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.moveTo(x, y);
+        ctx.arc(x, y, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fill();
+      }
+      // 静态扇形
+      // drawRadar(0);
+
+      let deg = 0;
+      function loop() {
+        deg = deg + 15;
+        drawRadar(deg);
+        if (deg === 360) {
+          deg = 0;
+        }
+      }
+      // 动画没有清除，应该是定时器没有关闭
+      const timer = setInterval(loop, (2 * Math.PI * radius) / speed);
+      return timer;
     }
   }
 };

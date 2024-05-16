@@ -13,30 +13,48 @@
   >
     <sm-card :bordered="false" :style="mode !== 'simple' && collapseCardBackgroundStyle">
       <template v-if="Object.keys(legendList).length > 0">
-      <sm-collapse
-        v-if="mode === 'panel'"
-        v-model="activeLegend"
-        class="sm-component-legend__table"
-      >
-        <sm-collapse-panel
+        <sm-collapse v-if="mode === 'panel'" v-model="activeLegend" class="sm-component-legend__table">
+          <sm-collapse-panel
+            v-for="(layerStyles, layerName) in legendList"
+            :key="layerName"
+            :disabled="!isShowTitle"
+            :showArrow="false"
+            :class="[isShowTitle ? '' : 'sm-component-legend__panel']"
+          >
+            <template slot="header">
+              <div v-if="isShowTitle" class="header-wrap" :style="headingTextColorStyle">
+                <div class="sm-component-legend__title add-ellipsis">{{ layerStyles[0].layerTitle }}</div>
+                <i
+                  :class="
+                    activeLegend.includes(layerName)
+                      ? 'sm-components-icon-solid-triangle-down'
+                      : 'sm-components-icon-solid-triangle-right'
+                  "
+                />
+              </div>
+            </template>
+            <template v-for="(style, index) in layerStyles">
+              <StyleField
+                v-if="isShowField"
+                :key="`field_${index}`"
+                :theme-field="style.themeField"
+                :style-field="style.styleField"
+              />
+              <div :key="`style_${index}`" class="sm-component-legend__wrap">
+                <StyleItem v-for="(item, j) in style.styleGroup" :key="`style_${index}_${j}`" :style-data="item" />
+              </div>
+            </template>
+          </sm-collapse-panel>
+        </sm-collapse>
+        <template v-else>
+        <div
           v-for="(layerStyles, layerName) in legendList"
           :key="layerName"
-          :disabled="!isShowTitle"
-          :showArrow="false"
-          :class="[isShowTitle ? '' : 'sm-component-legend__panel']"
+          class="sm-component-legend__noBorder"
         >
-          <template slot="header">
-            <div v-if="isShowTitle" class="header-wrap" :style="headingTextColorStyle">
-              <div class="sm-component-legend__title add-ellipsis">{{ layerStyles[0].layerTitle }}</div>
-              <i
-                :class="
-                  activeLegend.includes(layerName)
-                    ? 'sm-components-icon-solid-triangle-down'
-                    : 'sm-components-icon-solid-triangle-right'
-                "
-              />
-            </div>
-          </template>
+          <div v-if="isShowTitle" class="sm-component-legend__title add-ellipsis" :style="headingTextColorStyle">
+            {{ layerName }}
+          </div>
           <template v-for="(style, index) in layerStyles">
             <StyleField
               v-if="isShowField"
@@ -45,31 +63,12 @@
               :style-field="style.styleField"
             />
             <div :key="`style_${index}`" class="sm-component-legend__wrap">
-              <StyleItem
-                v-for="(item, j) in style.styleGroup"
-                :key="`style_${index}_${j}`"
-                :style-data="item"
-              />
+              <StyleItem v-for="(item, j) in style.styleGroup" :key="`style_${index}_${j}`" :style-data="item" />
             </div>
           </template>
-        </sm-collapse-panel>
-      </sm-collapse>
-      <div
-        v-for="(layerStyles, layerName) in legendList"
-        v-else
-        :key="layerName"
-        class="sm-component-legend__noBorder"
-      >
-        <div v-if="isShowTitle" class="sm-component-legend__title add-ellipsis" :style="headingTextColorStyle">
-          {{ layerName }}
         </div>
-        <template v-for="(style, index) in layerStyles">
-          <StyleField v-if="isShowField" :key="`field_${index}`" :theme-field="style.themeField" :style-field="style.styleField" />
-          <div :key="`style_${index}`" class="sm-component-legend__wrap">
-            <StyleItem v-for="(item, j) in style.styleGroup" :key="`style_${index}_${j}`" :style-data="item" />
-          </div>
+
         </template>
-      </div>
       </template>
     </sm-card>
   </sm-collapse-card>
@@ -151,7 +150,7 @@ export default {
       if (this.viewModel) {
         this.legendList = this.layerNames.reduce((list, name) => {
           const styles = this.viewModel.getStyle(name);
-          if (styles) {
+          if (styles && styles.length > 0) {
             list[name] = styles;
             !defaultChoosenLayers.length && defaultChoosenLayers.push(name);
           }
@@ -172,3 +171,4 @@ export default {
   }
 };
 </script>
+

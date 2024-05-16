@@ -39,7 +39,7 @@ describe('Legend.vue', () => {
   it('render default correctly', async done => {
     wrapper = mount(SmLegend, {
       propsData: {
-        layerNames: ['上海疫情点标注', '站点3', '未命名数据', '未命名数据(1)', '未命名数据(3)'],
+        layerNames: ['上海疫情点标注', '站点3', '未命名数据', '未命名数据(1)', '未命名数据(3)', '北京市轨道交通线路减'],
         mapTarget: 'map'
       }
     });
