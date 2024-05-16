@@ -6,6 +6,7 @@ import { GetFeaturesBySQLParameters } from '../src/common/iServer/GetFeaturesByS
 import { GetFeaturesBySQLService } from '../src/common/iServer/GetFeaturesBySQLService';
 import { FeatureService } from '../src/common/iServer/FeatureService';
 import { Util } from '../src/common/commontypes/Util';
+import { ColorsPickerUtil } from '../src/common/util/ColorsPickerUtil';
 
 export {
   QueryBySQLParameters,
@@ -15,5 +16,6 @@ export {
   GetFeaturesBySQLParameters,
   GetFeaturesBySQLService,
   FeatureService,
-  Util
+  Util,
+  ColorsPickerUtil
 };
