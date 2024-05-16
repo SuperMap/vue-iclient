@@ -76,7 +76,7 @@ export default {
           displayIconHeight = displayHeight;
           break;
         }
-        case 'line': {
+        case 'rectangle': {
           const { width, height, backgroundColor } = this.cssStyle;
           displayWidth = parseInt(width);
           displayHeight = parseInt(height);
