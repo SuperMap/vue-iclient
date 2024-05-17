@@ -1,5 +1,5 @@
 <template>
-  <canvas v-if="canvasId" :id="canvasId" />
+  <canvas :id="canvasId"></canvas>
 </template>
 
 <script>
@@ -9,8 +9,7 @@ import uniqueId from 'lodash.uniqueid';
 export default {
   props: {
     styleData: {
-      type: Object,
-      default: () => ({})
+      type: Object
     }
   },
   data() {

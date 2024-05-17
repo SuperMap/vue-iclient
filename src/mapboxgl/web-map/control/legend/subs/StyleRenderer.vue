@@ -29,8 +29,7 @@ import { hexToRgba } from 'vue-iclient/src/common/_utils/util';
 export default {
   props: {
     styleData: {
-      type: Object,
-      default: () => ({})
+      type: Object
     }
   },
   data() {
@@ -49,9 +48,6 @@ export default {
     },
     styleRendererData() {
       return this.styleData.style;
-    },
-    styleType() {
-      return this.styleRendererData.type;
     },
     shapeType() {
       return this.styleRendererData.shape.toLowerCase();
@@ -144,7 +140,7 @@ export default {
       ctx.globalAlpha = opacity;
       switch (this.shapeType) {
         case 'point': {
-          const { fontSize, color } = this.styleRendererData;
+          const { color } = this.styleRendererData;
           const radius = parseInt(fontSize) / 2;
           ctx.arc(radius, radius, parseInt(fontSize) / 2, 0, 2 * Math.PI);
           ctx.fillStyle = color;
@@ -161,7 +157,6 @@ export default {
         }
         case 'line':
         case 'animateline': {
-          const { height } = this.styleRendererData;
           canvas.height = height && height < 1 ? 1 : height;
           this.drawLines(canvas, ctx);
           break;

@@ -3,10 +3,12 @@ import SmLegend from '../Legend.vue';
 import StyleRenderer from '../subs/StyleRenderer.vue';
 import ImageRenderer from '../subs/ImageRenderer.vue';
 import mapLegends from 'vue-iclient/test/unit/mocks/data/WebMap/map_legends.json';
+import flushPromises from 'flush-promises';
 
 describe('Legend.vue', () => {
-  let wrapper;
-  let mapWrapper;
+  let wrapper, imageOnload;
+  const documentBak = document;
+  const ImageBak = Image;
 
   document.getElementById = () => {
     return {
@@ -17,23 +19,39 @@ describe('Legend.vue', () => {
         strokeRect: jest.fn(),
         clearRect: jest.fn(),
         beginPath: jest.fn(),
+        closePath: jest.fn(),
         setLineDash: jest.fn(),
         moveTo: jest.fn(),
         lineTo: jest.fn(),
         stroke: jest.fn(),
-        drawImage: jest.fn()
+        drawImage: jest.fn(),
+        createPattern: jest.fn()
       })
     };
   };
 
+  beforeAll(() => {
+    Object.defineProperty(Image.prototype, 'onload', {
+      get: function () {
+        return this._onload;
+      },
+      set: function (fn) {
+        imageOnload = fn;
+        this._onload = fn;
+      }
+    });
+  });
+
+  afterAll(() => {
+    global.Image = ImageBak;
+    global.document = documentBak;
+  });
+
   afterEach(() => {
-    jest.resetAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
-    if (mapWrapper) {
-      mapWrapper.destroy();
-    }
+    jest.resetAllMocks();
   });
 
   it('render default correctly', async done => {
@@ -51,10 +69,13 @@ describe('Legend.vue', () => {
     });
     wrapper.vm.$options.loaded.call(wrapper.vm);
     await wrapper.vm.$nextTick();
+    imageOnload();
+    await flushPromises();
     expect(wrapper.vm.legendList).not.toEqual({});
     expect(wrapper.vm.mapTarget).toBe('map');
-    expect(wrapper.find(StyleRenderer).exists()).toBeTruthy()
-    expect(wrapper.find(ImageRenderer).exists()).toBeTruthy()
+    expect(wrapper.find(StyleRenderer).exists()).toBeTruthy();
+    expect(wrapper.find(ImageRenderer).exists()).toBeTruthy();
     done();
   });
 });
+
