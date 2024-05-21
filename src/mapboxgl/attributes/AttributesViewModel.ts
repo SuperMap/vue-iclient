@@ -627,7 +627,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   }
 
   canLazyLoad() {
-    return this.lazy && this.dataset && this.dataset.url && this.dataset.type === 'iServer';
+    return !!(this.lazy && this.dataset && this.dataset.url && this.dataset.type === 'iServer' && this.dataset.dataName);
   }
 
   handleAssociateWithMap() {
