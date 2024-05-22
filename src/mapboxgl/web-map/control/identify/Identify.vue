@@ -269,6 +269,7 @@ export default {
     },
     changeClickedLayersCursor(layers = [], map = this.map) {
       layers &&
+        map &&
         layers.forEach(layer => {
           map.on('mousemove', layer, this.changeCursorPointer);
           map.on('mouseleave', layer, this.changeCursorGrab);

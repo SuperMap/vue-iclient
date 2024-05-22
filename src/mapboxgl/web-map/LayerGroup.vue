@@ -95,8 +95,7 @@ export default {
   },
   methods: {
     toggleItemVisibility(item) {
-      this.$emit('toggleItemVisibility', item);
-      item.visible = !item.visible;
+      this.$emit('toggleItemVisibility', item, !item.visible);
     },
     toggleAttributesVisibility(e, item) {
       this.$emit('toggleAttributesVisibility', e, item);

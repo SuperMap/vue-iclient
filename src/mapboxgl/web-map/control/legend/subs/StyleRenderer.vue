@@ -1,10 +1,17 @@
 <template>
   <i v-if="'icon' in styleRendererData" :class="styleRendererData.icon" :style="cssStyle" />
-  <div v-else-if="colors" :style="{ width: `${linearWidth}px` }">
+  <div
+    v-else-if="colors"
+    :style="{ width: `${linearWidth}px`, padding: `0 ${maxPaletteOffset}px 0 ${minPaletteOffset}px` }"
+  >
     <div class="sm-component-legend__linearcolor" :style="linearColorStyle" />
     <div v-if="'styleField' in styleData" class="sm-component-legend__colorstop">
-      <div v-for="(data, index) in mapPaletteToStops" :key="index" class="color-stop-holder"
-        :style="{ [index === mapPaletteToStops.length - 1 ? 'right' : 'left']: `${data.offset}px` }">
+      <div
+        v-for="(data, index) in mapPaletteToStops"
+        :key="index"
+        class="color-stop-holder"
+        :style="{ [index === mapPaletteToStops.length - 1 ? 'right' : 'left']: `${data.offset}px` }"
+      >
         <div class="color-arrow"></div>
         <div class="color-value" :style="{ backgroundColor: data.color }" />
       </div>
@@ -174,7 +181,7 @@ export default {
 
           // 计算边长，选择宽度和高度中较小的那个，并乘以2/sqrt(3)来得到边长
           // 因为等边三角形的高是边长的sqrt(3)/2，所以边长 = 高 * 2/sqrt(3)
-          const sideLength = Math.min(canvas.width, canvas.height) * 2 / Math.sqrt(3);
+          const sideLength = (Math.min(canvas.width, canvas.height) * 2) / Math.sqrt(3);
 
           // 计算三角形顶点和底边的位置
           const topX = canvas.width / 2; // 顶点位于顶部中央
@@ -205,7 +212,7 @@ export default {
           const startAngle = Math.PI / 6; // 30度转换为弧度
           // 绘制六边形的每个顶点
           for (let i = 0; i < 6; i++) {
-            const angle = startAngle + (i * Math.PI / 3); // 每次增加60度（弧度）
+            const angle = startAngle + (i * Math.PI) / 3; // 每次增加60度（弧度）
 
             // 计算每个顶点的x和y坐标
             const x = centerX + radius * Math.cos(angle);

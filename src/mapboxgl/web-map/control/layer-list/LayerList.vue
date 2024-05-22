@@ -199,8 +199,8 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel = new LayerListViewModel();
   }
 
-  toggleItemVisibility(item) {
-    this.viewModel && this.viewModel.changeItemVisible(item);
+  toggleItemVisibility(item: Object, visible: boolean) {
+    this.viewModel && this.viewModel.changeItemVisible(item, visible);
   }
 
   addNewLayer() {

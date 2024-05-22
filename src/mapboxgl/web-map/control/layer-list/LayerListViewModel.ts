@@ -35,7 +35,9 @@ class LayerListViewModel extends mapboxgl.Evented {
     this.map = map;
     this.webmap = webmap;
     this.updateFn = this._updateLayers.bind(this);
-    this.map.on('styledata', this.updateFn);
+    this.webmap.on({
+      layersupdated: this.updateFn
+    });
   }
 
   initLayerList() {
@@ -57,13 +59,15 @@ class LayerListViewModel extends mapboxgl.Evented {
     return dataset;
   }
 
-  changeItemVisible(item) {
-    this.webmap.changeItemVisible(item);
+  changeItemVisible(item: Record<string, any>, visible: boolean) {
+    this.webmap.changeItemVisible(item, visible);
   }
 
   removed() {
     this.sourceList = [];
-    this.map.off('styledata', this.updateFn);
+    this.webmap.un({
+      layersupdated: this.updateFn
+    });
   }
 }
 export default LayerListViewModel;

@@ -131,6 +131,7 @@ const commonMap = {
   moveLayer: () => jest.fn(),
   overlayLayersManager: {},
   on: () => {},
+  off: () => {},
   fire: () => {},
   setLayoutProperty: () => jest.fn(),
   setPaintProperty: jest.fn(),
@@ -2018,6 +2019,7 @@ describe('WebMapViewModel.spec', () => {
         }
       };
       expect(data.map).toEqual(viewModel._handler.map);
+      viewModel._styleDataUpdatedHandler();
       const appreciableLayers2 = viewModel.getAppreciableLayers();
       expect(appreciableLayers2.length).toBe(uniqueLayer_polygon.layers.length + 1 + 2);
       data.map.addLayer({
@@ -2032,7 +2034,8 @@ describe('WebMapViewModel.spec', () => {
         },
         'source-layer': '435608982$geometry',
         type: 'fill'
-      })
+      });
+      viewModel._styleDataUpdatedHandler();
       const appreciableLayers3 = viewModel.getAppreciableLayers();
       expect(appreciableLayers3.length).toBe(uniqueLayer_polygon.layers.length + 1 + 2 + 1);
       done();
@@ -2122,7 +2125,7 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
-  it('exclude source and layer', async done => {
+  it('exclude source and layer', done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
@@ -2171,8 +2174,6 @@ describe('WebMapViewModel.spec', () => {
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
-    await flushPromises();
-    jest.advanceTimersByTime(0);
   });
 
   it ('updateLayersVisible', (done) => {
@@ -2205,5 +2206,63 @@ describe('WebMapViewModel.spec', () => {
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it ('layersupdated event', async (done) => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile,
+      'https://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326/style.json':
+        {
+          version: 8,
+          sources: {
+            'raster-tiles': {
+              type: 'raster',
+              tiles: [
+                'http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
+              ],
+              tileSize: 256
+            }
+          },
+          layers: [
+            {
+              id: 'simple-tiles',
+              type: 'raster',
+              source: 'raster-tiles',
+              minzoom: 0,
+              maxzoom: 22
+            }
+          ]
+        }
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(
+      commonId,
+      { ...commonOption },
+      {
+        style: {
+          version: 8,
+          sources: {},
+          layers: []
+        },
+        center: [117.0514, 40.0387],
+        zoom: 7,
+        bearing: 0,
+        pitch: 0,
+        rasterTileSize: 256,
+        preserveDrawingBuffer: true,
+        container: 'map',
+        tileSize: 256
+      }
+    );
+    viewModel.on({
+      layersupdated: data => {
+        expect(data.appreciableLayers.length).toBeGreaterThan(0);
+        expect(data.layerCatalogs.length).toBeGreaterThan(0);
+        done();
+      }
+    });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   })
 });

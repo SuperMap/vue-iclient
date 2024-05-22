@@ -148,7 +148,7 @@ describe('LayerList.vue', () => {
             renderLayers: ['test1']
           }]
         }
-        wrapper.vm.toggleItemVisibility(item)
+        wrapper.vm.toggleItemVisibility(item, false)
         expect(spyProperty).toHaveBeenCalledTimes(1);
         done();
       });

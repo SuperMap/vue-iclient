@@ -47,27 +47,22 @@
           </sm-collapse-panel>
         </sm-collapse>
         <template v-else>
-        <div
-          v-for="(layerStyles, layerName) in legendList"
-          :key="layerName"
-          class="sm-component-legend__noBorder"
-        >
-          <div v-if="isShowTitle" class="sm-component-legend__title add-ellipsis" :style="headingTextColorStyle">
-            {{ layerName }}
-          </div>
-          <template v-for="(style, index) in layerStyles">
-            <StyleField
-              v-if="isShowField"
-              :key="`field_${index}`"
-              :theme-field="style.themeField"
-              :style-field="style.styleField"
-            />
-            <div :key="`style_${index}`" class="sm-component-legend__wrap">
-              <StyleItem v-for="(item, j) in style.styleGroup" :key="`style_${index}_${j}`" :style-data="item" />
+          <div v-for="(layerStyles, layerName) in legendList" :key="layerName" class="sm-component-legend__noBorder">
+            <div v-if="isShowTitle" class="sm-component-legend__title add-ellipsis" :style="headingTextColorStyle">
+              {{ layerName }}
             </div>
-          </template>
-        </div>
-
+            <template v-for="(style, index) in layerStyles">
+              <StyleField
+                v-if="isShowField"
+                :key="`field_${index}`"
+                :theme-field="style.themeField"
+                :style-field="style.styleField"
+              />
+              <div :key="`style_${index}`" class="sm-component-legend__wrap">
+                <StyleItem v-for="(item, j) in style.styleGroup" :key="`style_${index}_${j}`" :style-data="item" />
+              </div>
+            </template>
+          </div>
         </template>
       </template>
     </sm-card>
@@ -156,12 +151,20 @@ export default {
           }
           return list;
         }, {});
-        this.activeLegend = this.isShowTitle ? defaultChoosenLayers : Object.keys(this.legendList);
+        this.activeLegend = this.activeLegend.filter(item => this.legendList[item]);
+        if (!this.activeLegend.length && this.isShowTitle) {
+          this.activeLegend = defaultChoosenLayers;
+        }
       }
     }
   },
   created() {
     this.viewModel = new LegendViewModel();
+    this.initLegendListFn = this.initLegendList.bind(this);
+    this.viewModel.on('layersupdated', this.initLegendListFn);
+  },
+  beforeDestroy() {
+    this.viewModel.off('layersupdated', this.initLegendListFn);
   },
   loaded() {
     this.initLegendList();

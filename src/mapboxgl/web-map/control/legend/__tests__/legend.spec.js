@@ -62,7 +62,15 @@ describe('Legend.vue', () => {
       }
     });
     const webmap = {
-      getLegendInfo: () => mapLegends
+      getLegendInfo: () => mapLegends,
+      un: jest.fn(),
+      on: jest.fn(),
+      getAppreciableLayers: () => Object.values(mapLegends.reduce((layers, item) => {
+        if (!layers[item.layerId]) {
+          layers[item.layerId] = { id: item.layerId, visible: true };
+        }
+        return layers;
+      }, {}))
     };
     wrapper.vm.viewModel.setMap({
       webmap

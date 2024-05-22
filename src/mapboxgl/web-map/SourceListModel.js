@@ -77,7 +77,6 @@ class SourceListModel {
       matchItem.addLayer(layer);
       return sourceList;
     }, []);
-    this._updateGroupVisible(datas);
     return datas;
   }
 
@@ -124,14 +123,6 @@ class SourceListModel {
       fields.renderSource.sourceLayer = layer.sourceLayer;
     }
     return fields;
-  }
-
-  _updateGroupVisible(sourceListDatas) {
-    for (const sourceData of sourceListDatas) {
-      if (sourceData.type === 'group') {
-        sourceData.visible = sourceData.children.every(item => item.visible);
-      }
-    }
   }
 }
 export default SourceListModel;
