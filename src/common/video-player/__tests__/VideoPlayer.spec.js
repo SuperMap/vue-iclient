@@ -130,4 +130,31 @@ describe('VideoPlayer.vue', () => {
     const res9 = wrapper.vm.isMatchPosterUrl('http://127.0.0.0:8080/a.png');
     expect(res9).toBeTruthy();
   });
+  it('clear src when url is empty', async () => {
+    wrapper = mount(SmVideoPlayer, {
+      localVue,
+      propsData: {
+        url: 'rtmp://1.fakeurlAA.flv',
+        isFullscreen: false,
+        ratio: 'origin',
+        options: {
+          muted: true,
+          loop: false,
+          popupToPlay: true,
+          autoplay: false,
+          controlBar: true,
+          poster: ''
+        }
+      },
+      attachToDocument: 'body'
+    });
+    expect(wrapper.find('.sm-component-video-player').exists()).toBe(true);
+    expect(wrapper.vm.playerOptions.sources[0].src).toBe('rtmp://1.fakeurlAA.flv');
+    expect(wrapper.vm.modalPlayerOptions.sources[0].src).toBe('rtmp://1.fakeurlAA.flv');
+    await wrapper.setProps({
+      url: ''
+    });
+    expect(wrapper.vm.playerOptions.sources[0].src).toBe('');
+    expect(wrapper.vm.modalPlayerOptions.sources[0].src).toBe('');
+  });
 });

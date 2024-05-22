@@ -66,6 +66,7 @@ interface playerOptions {
   poster?: string;
   controlBar?: any;
   notSupportedMessage?: string;
+  suppressNotSupportedError?: Boolean;
   techOrder?: Array<string>;
   flash?: any;
   flvjs?: any;
@@ -228,17 +229,23 @@ class SmVideoPlayer extends Vue {
     }
   }
 
+  clearSrc() {
+    if (this.playerOptions.sources) {
+      this.playerOptions.sources[0].src = '';
+      this.modalPlayerOptions.sources[0].src = '';
+    }
+  }
+
   handlePlayerOptions(options = this.options) {
     if (!this.url) {
+      this.clearSrc();
+      this.playerOptions.suppressNotSupportedError = true;
       return {};
     }
     if (!this.checkUrl(this.url)) {
       // @ts-ignore
       Message.warning(this.$t('warning.unsupportedVideoAddress'), 1);
-      if (this.playerOptions.sources) {
-        this.playerOptions.sources[0].src = '';
-        this.modalPlayerOptions.sources[0].src = '';
-      }
+      this.clearSrc();
       return {};
     }
     if (!this.isMatchPosterUrl(options.poster)) {
