@@ -1,5 +1,4 @@
 import SourceModel from 'vue-iclient/src/mapboxgl/web-map/SourceModel';
-import LayerModel from 'vue-iclient/src/mapboxgl/web-map/LayerModel';
 
 class SourceListModel {
   constructor(options) {
@@ -15,8 +14,8 @@ class SourceListModel {
   }
 
   getSourceList() {
-    const detailLayers = this._initLayers();
-    return this._initSource(detailLayers);
+    const appreciableLayers = this.getLayers();
+    return this._initSource(appreciableLayers);
   }
 
   excludeSource(key) {
@@ -69,13 +68,13 @@ class SourceListModel {
 
   _initSource(detailLayers) {
     const datas = detailLayers.reduce((sourceList, layer) => {
-      let matchItem = sourceList.find(item => item.renderSource.id === layer.source);
+      let matchItem = sourceList.find(item => item.renderSource.id === layer.renderSource.id);
       if (!matchItem) {
-        const sourceListItem = new SourceModel(this._createCommonFields(layer, 'source'));
+        const sourceListItem = new SourceModel(layer);
         sourceList.push(sourceListItem);
         matchItem = sourceListItem;
       }
-      matchItem.addLayer(new LayerModel(layer));
+      matchItem.addLayer(layer);
       return sourceList;
     }, []);
     this._updateGroupVisible(datas);
@@ -91,7 +90,7 @@ class SourceListModel {
           (!item.renderSource.sourceLayer || item.renderSource.sourceLayer === layer.sourceLayer)
       );
       if (!matchLayer) {
-        matchLayer = this._createCommonFields(layer, 'layer');
+        matchLayer = this._createCommonFields(layer);
         layers.push(matchLayer);
       }
       matchLayer.renderLayers.push(layer.id);
@@ -99,19 +98,18 @@ class SourceListModel {
     }, []);
   }
 
-  _createCommonFields(layer, category) {
+  _createCommonFields(layer) {
     const layerInfo = this.layers.find(layerItem => layer.id === layerItem.id) || {};
     const {
       dataSource,
       themeSetting = {},
-      name = layer.id,
       visible = layer.visibility ? layer.visibility === 'visible' : true,
       serverId
     } = layerInfo;
     const sourceOnMap = this.map.getSource(layer.source);
     const fields = {
-      id: layer.source,
-      title: name,
+      id: layer.sourceLayer || layer.source,
+      title: layer.sourceLayer || layer.source,
       type: layer.type,
       visible,
       renderSource: {
@@ -122,7 +120,7 @@ class SourceListModel {
       dataSource: dataSource || (serverId ? { serverId } : {}),
       themeSetting
     };
-    if (category === 'layer' && layer.sourceLayer) {
+    if (layer.sourceLayer) {
       fields.renderSource.sourceLayer = layer.sourceLayer;
     }
     return fields;

@@ -116,7 +116,7 @@ export default class WebMap extends WebMapBase {
 
   private _parentEvents: Record<string, Function>;
 
-  private _cacheLayerId: string[] = [];
+  private _cacheLayerId: Map<string, Array<string>> = new Map();
 
   private _appendLayers = false;
 
@@ -426,11 +426,13 @@ export default class WebMap extends WebMapBase {
           // @ts-ignore
           this.map.addStyle(style);
           addedCallback && addedCallback();
+          const layerIds = [];
           style.layers.forEach((item: Record<string, any>) => {
             if (item.type !== 'background') {
-              this._cacheLayerId.push(item.id);
+              layerIds.push(item.id);
             }
           });
+          this._cacheLayerId.set(layerInfo.layerID, layerIds);
         },
         error => {
           addedCallback && addedCallback();
@@ -2191,15 +2193,19 @@ export default class WebMap extends WebMapBase {
        */
 
       // @ts-ignore
-      const layersFromMapInfo = this._mapInfo.layers
-        .map((layerInfo: Record<string, any>) => {
-          return {
+      const flatCacheLayerId = Array.from(this._cacheLayerId.values()).reduce((acc, val) => acc.concat(val), []);
+      const layersFromMapInfo = [];
+      this._mapInfo.layers.forEach((layerInfo: Record<string, any>) => {
+        const matchLayerIds = this._cacheLayerId.get(layerInfo.layerID);
+        matchLayerIds && matchLayerIds.forEach(id => {
+          layersFromMapInfo.push({
             ...layerInfo,
-            id: layerInfo.layerID,
-            visible: layerInfo.visible === 'visible'
-          };
-        })
-        .filter((item: Record<string, any>) => this.map.getLayer(item.id));
+            id,
+            visible: layerInfo.visible === 'visible' || layerInfo.visible === true
+          });
+        });
+      });
+
       const baseLayerId = this._mapInfo.baseLayer.name;
       if (this.map.getLayer(baseLayerId)) {
         layersFromMapInfo.unshift({
@@ -2208,7 +2214,7 @@ export default class WebMap extends WebMapBase {
         });
       }
       // strokeLine之类
-      this._cacheLayerId.forEach((id) => {
+      flatCacheLayerId.forEach((id) => {
         if(!layersFromMapInfo.find(item => item.id === id)) {
           layersFromMapInfo.push({ id });
         }
@@ -2221,7 +2227,7 @@ export default class WebMap extends WebMapBase {
       const appreciableLayers = this.getAppreciableLayers();
       const allAppreciableLayers = this._appendLayers ? mapEvent.$options.getWebMap(this.target).getAppreciableLayers() : appreciableLayers;
       this._rectifyLayersOrder(allAppreciableLayers);
-      const matchLayers = appreciableLayers.filter((item: Record<string, any>) => this._cacheLayerId.includes(item.id));
+      const matchLayers = appreciableLayers.filter((item: Record<string, any>) => flatCacheLayerId.includes(item.id));
       this._triggerEvent('addlayerssucceeded', {
         map: this.map,
         layers: matchLayers,
@@ -2777,8 +2783,8 @@ export default class WebMap extends WebMapBase {
   private _addLayer(layerInfo) {
     const { id } = layerInfo;
     layerInfo = Object.assign(layerInfo, { id });
-    if(!this._cacheLayerId.includes(id)) {
-      this._cacheLayerId.push(id);
+    if(!this._cacheLayerId.has(id)) {
+      this._cacheLayerId.set(id, [id]);
     }
 
     if (this.map.getLayer(id)) {
@@ -2822,7 +2828,7 @@ export default class WebMap extends WebMapBase {
         this._dataflowService.off('messageSucceeded', this._handleDataflowFeaturesCallback) &&
         this._dataflowService.off('subscribesucceeded', this._initDataflowLayerCallback);
       this._unprojectProjection = null;
-      this._cacheLayerId = [];
+      this._cacheLayerId = new Map();
     }
     if (this._layerTimerList.length) {
       this._layerTimerList.forEach(timer => {

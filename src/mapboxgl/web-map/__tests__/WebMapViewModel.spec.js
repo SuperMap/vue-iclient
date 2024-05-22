@@ -20,6 +20,7 @@ import baseLayers from 'vue-iclient/test/unit/mocks/data/WebMap/baseLayers.json'
 import wmsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmsLayer.json';
 import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
 import raster4490 from 'vue-iclient/test/unit/mocks/data/WebMap/raster4490.json';
+import mvtLayer from 'vue-iclient/test/unit/mocks/data/WebMap/mvtLayer.json';
 import {
   wmtsCapabilitiesText,
   wmsCapabilitiesTextWithoutVersion,
@@ -431,6 +432,7 @@ describe('WebMapViewModel.spec', () => {
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
       const callback = function (data) {
+        console.log(viewModel.getAppreciableLayers())
         expect(viewModel.getAppreciableLayers().length).toBe(Object.keys(styleJson.sources).length);
         done();
       };
@@ -2078,6 +2080,26 @@ describe('WebMapViewModel.spec', () => {
       const appreciableLayers = viewModel.getAppreciableLayers();
       expect(appreciableLayers[1].id).toBe('市级行政区划_1_2');
       expect(appreciableLayers[2].id).toBe('北京市轨道交通线路(2)');
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+  it('MAPBOXSTYLE layer order', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': mvtLayer,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':layerData_CSV,
+      'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': styleJson
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption });
+    const callback = function (data) {
+      const appreciableLayers = viewModel.getAppreciableLayers();
+      expect(appreciableLayers[1].id).toBe('ChinaqxAlberts_4548@fl-new');
+      expect(appreciableLayers[2].id).toBe('民航数据');
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
