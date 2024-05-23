@@ -362,11 +362,7 @@ export default class WebMapViewModel extends Events {
     }
   }
 
-  updateLayersVisible(
-    layers: Array<Record<string, any>>,
-    visibility: 'visible' | 'none',
-    ignoreIds: string[] = []
-  ) {
+  updateLayersVisible(layers: Array<Record<string, any>>, visibility: 'visible' | 'none', ignoreIds: string[] = []) {
     layers.forEach(layer => {
       const visbleId = this.getLayerVisibleId(layer);
       this._appreciableLayersVisibleMap.set(visbleId, visibility === 'visible');

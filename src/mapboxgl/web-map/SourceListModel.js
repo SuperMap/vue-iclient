@@ -31,10 +31,10 @@ class SourceListModel {
     const layersOnMap = this.map.getStyle().layers.map(layer => this.map.getLayer(layer.id));
     const overlayLayers = Object.values(this.map.overlayLayersManager).reduce((layers, overlayLayer) => {
       if (overlayLayer.id && !layers.some(item => item.id === overlayLayer.id)) {
-        let visibility = overlayLayer.visibility;
-        if (!visibility && 'visible' in overlayLayer) {
-          visibility = overlayLayer.visible ? 'visible' : 'none';
-        }
+        const visibility =
+          !('visible' in overlayLayer) || overlayLayer.visibility === 'visible' || overlayLayer.visible
+            ? 'visible'
+            : 'none';
         let source = overlayLayer.source || overlayLayer.sourceId;
         if (typeof source === 'object') {
           source = overlayLayer.id;

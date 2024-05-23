@@ -46,6 +46,15 @@ export default new Vue({
           }
           return () => datas;
         }
+        if (['changeItemVisible'].includes(propKey)) {
+          return function () {
+            const webmaps = webMapCombinations.map(item => item[1]);
+            const argumentsList = arguments;
+            webmaps.forEach((webmap) => {
+              webmap[propKey].apply(webmap, argumentsList);
+            });
+          };
+        }
         return target[propKey];
       }
     });

@@ -2210,7 +2210,8 @@ export default class WebMap extends WebMapBase {
       if (this.map.getLayer(baseLayerId)) {
         layersFromMapInfo.unshift({
           id: baseLayerId,
-          name: this._mapInfo.baseLayer.title || baseLayerId
+          name: this._mapInfo.baseLayer.title || baseLayerId,
+          visible: this._mapInfo.baseLayer.visible
         });
       }
       // strokeLine之类
