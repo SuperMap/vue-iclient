@@ -66,7 +66,7 @@ describe('getFeatures test', () => {
       "type": "FeatureCollection"
   }
     const fetchResource = {
-      '/iportal/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000': result
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000': result
     };
     mockFetch(fetchResource);
     const dataset = {
