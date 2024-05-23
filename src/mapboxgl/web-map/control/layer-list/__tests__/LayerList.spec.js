@@ -37,7 +37,8 @@ describe('LayerList.vue', () => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData
     };
     mockFetch(fetchResource);
     mapWrapper = mount(SmWebMap, {
@@ -141,20 +142,21 @@ describe('LayerList.vue', () => {
           id: 'test',
           visible: true,
           type: 'group',
-          children: [{
-            id: 'test1',
-            visible: true,
-            type: 'vector',
-            renderLayers: ['test1']
-          }]
-        }
-        wrapper.vm.toggleItemVisibility(item, false)
+          children: [
+            {
+              id: 'test1',
+              visible: true,
+              type: 'vector',
+              renderLayers: ['test1']
+            }
+          ]
+        };
+        wrapper.vm.toggleItemVisibility(item, false);
         expect(spyProperty).toHaveBeenCalledTimes(1);
         done();
       });
     };
     mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
-
   });
 
   it('attributes style', () => {
@@ -187,7 +189,8 @@ describe('LayerList.vue', () => {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap3Datas[0],
       'https://fakeiportal.supermap.io/iportal/web/maps/123': webmap3Datas[1],
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData
     };
     mockFetch(fetchResource);
     mapWrapper = mount(SmWebMap, {
@@ -196,7 +199,7 @@ describe('LayerList.vue', () => {
         mapId: '123'
       }
     });
-    const addCallback =  async (data) => {
+    const addCallback = async data => {
       wrapper = mount(SmLayerList, {
         propsData: {
           mapTarget: 'map'
@@ -214,4 +217,90 @@ describe('LayerList.vue', () => {
     mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
     await flushPromises();
   });
+
+  it('render setmap', async done => {
+    wrapper = mount(SmLayerList);
+    const layerCatalogs = [
+      {
+        children: [
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_C@China',
+            title: 'Xingkaihu_C_txt@China_L10-L10',
+            type: 'symbol',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_2',
+              type: 'vector',
+              sourceLayer: 'Xingkaihu_C_txt@China'
+            },
+            renderLayers: ['xingkaihu_C@China'],
+            themeSetting: {}
+          },
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_B@China',
+            title: 'Xingkaihu_B_txt@China_L10-L10',
+            type: 'symbol',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_3',
+              type: 'vector',
+              sourceLayer: 'Xingkaihu_B_txt@China'
+            },
+            renderLayers: ['xingkaihu_B@China'],
+            themeSetting: {}
+          }
+        ],
+        id: 'ms_group_1715581133212_2',
+        title: '未命名分组',
+        type: 'group',
+        visible: true
+      },
+      {
+        dataSource: {
+          serverId: '',
+          type: ''
+        },
+        id: 'ms-background',
+        title: 'ms-background',
+        type: 'background',
+        visible: true,
+        renderSource: {},
+        renderLayers: ['ms-background'],
+        themeSetting: {}
+      }
+    ];
+    let mockOnOptions;
+    const webmap = {
+      getLayerList: () => layerCatalogs,
+      un: jest.fn(),
+      on: jest.fn((options) => {
+        mockOnOptions = options;
+      })
+    };
+    const callback = function() {
+      expect(wrapper.find('.sm-component-layer-list__layer > .sm-components-icon-hidden').exists()).toBeTruthy();
+      done();
+    }
+    wrapper.vm.viewModel.on('layersUpdated', callback);
+    wrapper.vm.viewModel.setMap({
+      webmap
+    });
+    wrapper.vm.$options.loaded.call(wrapper.vm);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.sourceList).toEqual(layerCatalogs);
+    expect(wrapper.find('.sm-component-layer-list__layer > .sm-components-icon-visible').exists()).toBeTruthy();
+    expect(wrapper.find('.header-text > .sm-components-icon-partially-visible').exists()).toBeTruthy();
+    layerCatalogs[1].visible = false;
+    mockOnOptions.layersupdated();
+    mockOn();
+  });
 });
+

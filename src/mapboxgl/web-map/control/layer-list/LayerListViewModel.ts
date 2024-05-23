@@ -31,8 +31,7 @@ class LayerListViewModel extends mapboxgl.Evented {
   }
 
   setMap(mapInfo) {
-    const { map, webmap } = mapInfo;
-    this.map = map;
+    const { webmap } = mapInfo;
     this.webmap = webmap;
     this.updateFn = this._updateLayers.bind(this);
     this.webmap.on({

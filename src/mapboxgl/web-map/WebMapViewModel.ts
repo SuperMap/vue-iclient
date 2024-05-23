@@ -368,10 +368,8 @@ export default class WebMapViewModel extends Events {
     ignoreIds: string[] = []
   ) {
     layers.forEach(layer => {
-      if (!ignoreIds) {
-        const visbleId = this.getLayerVisibleId(layer);
-        this._appreciableLayersVisibleMap.set(visbleId, visibility === 'visible');
-      }
+      const visbleId = this.getLayerVisibleId(layer);
+      this._appreciableLayersVisibleMap.set(visbleId, visibility === 'visible');
       if ('l7MarkerLayer' in layer && !ignoreIds.some(id => id === layer.id)) {
         visibility === 'visible' ? layer.l7MarkerLayer.show() : layer.l7MarkerLayer.hide();
         return;
@@ -631,11 +629,15 @@ export default class WebMapViewModel extends Events {
     return (180 / Math.PI) * Math.log(Math.tan(Math.PI / 4 + (point * Math.PI) / 360));
   }
 
-  public setLayersVisible(isShow: boolean, ignoreIds?: string[]) {
+  public setLayersVisible(isShow: boolean, ignoreIds?: string[], onlyClear?: boolean) {
     const visibility = isShow ? 'visible' : 'none';
     this._appreciableLayersVisibleMap.clear();
-    const layers = this._handler?.getAppreciableLayers() ?? [];
-    this.updateLayersVisible(layers, visibility, ignoreIds);
+    if (!onlyClear) {
+      const layers = this._handler?.getAppreciableLayers() ?? [];
+      this.updateLayersVisible(layers, visibility, ignoreIds);
+      return;
+    }
+    this._styleDataUpdatedHandler();
   }
 
   clean() {

@@ -4,9 +4,14 @@ import StyleRenderer from '../subs/StyleRenderer.vue';
 import ImageRenderer from '../subs/ImageRenderer.vue';
 import mapLegends from 'vue-iclient/test/unit/mocks/data/WebMap/map_legends.json';
 import flushPromises from 'flush-promises';
+import SmWebMap from '../../../WebMap';
+import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
+import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
+import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
+import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 
 describe('Legend.vue', () => {
-  let wrapper, imageOnload;
+  let wrapper, mapWrapper, imageOnload;
   const documentBak = document;
   const ImageBak = Image;
 
@@ -50,6 +55,11 @@ describe('Legend.vue', () => {
   afterEach(() => {
     if (wrapper) {
       wrapper.destroy();
+      wrapper = null;
+    }
+    if (mapWrapper) {
+      mapWrapper.destroy();
+      mapWrapper = null;
     }
     jest.resetAllMocks();
   });
@@ -84,6 +94,37 @@ describe('Legend.vue', () => {
     expect(wrapper.find(StyleRenderer).exists()).toBeTruthy();
     expect(wrapper.find(ImageRenderer).exists()).toBeTruthy();
     done();
+  });
+
+  
+  it('mapload', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData
+    };
+    mockFetch(fetchResource);
+    mapWrapper = mount(SmWebMap, {
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      }
+    });
+    const addCallback = async function (data) {
+      wrapper = mount(SmLegend, {
+        propsData: {
+          layerNames: ['民航数据'],
+        }
+      });
+      const callback = jest.fn();
+      wrapper.vm.$on('loaded', callback);
+      await wrapper.vm.$nextTick();
+      expect(callback).toHaveBeenCalled();
+      expect(wrapper.vm.legendList['民航数据']).not.toBeUndefined();
+      done();
+    };
+    mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
   });
 });
 
