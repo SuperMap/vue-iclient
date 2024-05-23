@@ -32,7 +32,10 @@ class SourceListModel {
     const overlayLayers = Object.values(this.map.overlayLayersManager).reduce((layers, overlayLayer) => {
       if (overlayLayer.id && !layers.some(item => item.id === overlayLayer.id)) {
         const visibility =
-          !('visible' in overlayLayer) || overlayLayer.visibility === 'visible' || overlayLayer.visible
+          overlayLayer.visibility === 'visible' ||
+          overlayLayer.visibility ||
+          overlayLayer.visible ||
+          (!('visible' in overlayLayer) && !('visibility' in overlayLayer))
             ? 'visible'
             : 'none';
         let source = overlayLayer.source || overlayLayer.sourceId;
