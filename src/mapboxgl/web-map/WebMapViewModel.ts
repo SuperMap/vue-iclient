@@ -643,10 +643,6 @@ export default class WebMapViewModel extends Events {
       this._handler.clean();
       this._handler = null;
       this.map = null;
-      if (this.mapOptions) {
-        this.mapOptions.zoom = null;
-        this.mapOptions.center = null;
-      }
     }
   }
 

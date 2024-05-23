@@ -2265,4 +2265,20 @@ describe('WebMapViewModel.spec', () => {
     await flushPromises();
     jest.advanceTimersByTime(0);
   })
+
+  it('not clean zoom', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_geojson['MARKER_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const id = markerLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const callback = function (data) {
+      viewModel.setStyle({});
+      expect(viewModel.mapOptions.zoom).not.toBeNull();
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
 });
