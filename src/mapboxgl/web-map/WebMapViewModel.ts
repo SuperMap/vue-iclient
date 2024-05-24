@@ -480,12 +480,12 @@ export default class WebMapViewModel extends Events {
   }
 
   _createMapStyle(commonOptions: webMapOptions, commonEvents: Record<string, Function>) {
-    const mapStyleHandler = new MapStyle(this.mapId, commonOptions, this.mapOptions, this.map, this.layerFilter);
+    const mapStyleHandler = new MapStyle(this.mapId, commonOptions, this.mapOptions, this.layerFilter);
     mapStyleHandler.on(commonEvents);
     return mapStyleHandler;
   }
 
-  _createWebMapV2(commonOptions: webMapOptions, commonEvents: Record<string, Function>, mapInfo: Record<string, any>) {
+  _createWebMapV2(commonOptions: webMapOptions, commonEvents: Record<string, Function>) {
     const webMapHandler = new WebMapV2(
       this.mapId,
       {
@@ -596,7 +596,7 @@ export default class WebMapViewModel extends Events {
         this._handler = this._createWebMapV3(commonOptions, commonEvents);
         break;
       default:
-        this._handler = this._createWebMapV2(commonOptions, commonEvents, mapInfo);
+        this._handler = this._createWebMapV2(commonOptions, commonEvents);
         break;
     }
     let _mapInfo: Record<string, any> = {};
@@ -640,9 +640,13 @@ export default class WebMapViewModel extends Events {
     if (this.map) {
       this.triggerEvent('beforeremovemap', {});
       this.map.off('styledata', this._styleDataUpdatedHandler);
-      this._handler.clean();
+      this._handler?.clean();
       this._handler = null;
       this.map = null;
+      if (this.mapOptions && (this.mapId || this.webMapInfo)) {
+        this.mapOptions.center = null;
+        this.mapOptions.zoom = null;
+      }
     }
   }
 

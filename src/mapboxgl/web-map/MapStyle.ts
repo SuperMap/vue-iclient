@@ -3,6 +3,7 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
 import WebMapService from '../../common/_utils/WebMapService';
+import cloneDeep from 'lodash.clonedeep';
 
 interface webMapOptions {
   target?: string;
@@ -61,19 +62,16 @@ export default class MapStyle extends Events {
 
   constructor(
     id: string | number | Object,
-    options: webMapOptions = {},
-    mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
-    map?: mapboxglTypes.Map,
-    layerFilter: Function = function () {
-      return true;
-    }
+    options: webMapOptions,
+    mapOptions: mapOptions,
+    layerFilter: Function
   ) {
     super();
     this.target = options.target || 'map';
     this.options = options;
     this.proxy = options.proxy;
     this.withCredentials = options.withCredentials || false;
-    this.mapOptions = mapOptions;
+    this.mapOptions = cloneDeep(mapOptions);
     this.webMapService = new WebMapService(id, options);
     this.layerFilter = layerFilter;
     this.eventTypes = ['addlayerssucceeded', 'mapinitialized'];
@@ -109,7 +107,7 @@ export default class MapStyle extends Events {
           url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
           credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
             ? 'include'
-            : 'omit'
+            : undefined
         };
       };
     }

@@ -17,8 +17,6 @@ import { getProjection, registerProjection, toEpsgCode } from 'vue-iclient/src/c
 import proj4 from 'proj4';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
-const WORLD_WIDTH = 360;
-// 迁徙图最大支持要素数量
 /**
  * @class WebMapViewModel
  * @category ViewModel
@@ -123,8 +121,7 @@ export default class WebMap extends WebMapBase {
   constructor(
     id: string | number | Object,
     options: webMapOptions = {},
-    // @ts-ignore fix-mapoptions
-    mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
+    mapOptions: mapOptions,
     layerFilter: Function = function () {
       return true;
     }
@@ -132,10 +129,6 @@ export default class WebMap extends WebMapBase {
     super(id, options, mapOptions);
     if (typeof id === 'string' || typeof id === 'number') {
       this.mapId = id;
-    }
-    if (!this.mapId && !mapOptions.center && !mapOptions.zoom) {
-      mapOptions.center = [0, 0];
-      mapOptions.zoom = 0;
     }
     if (this.centerValid(mapOptions.center)) {
       this.center = mapOptions.center;
@@ -400,7 +393,7 @@ export default class WebMap extends WebMapBase {
           const proxy = this.webMapService.handleProxy('image');
           return {
             url: url,
-            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : 'omit'
+            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : undefined
           };
         }
         return { url };

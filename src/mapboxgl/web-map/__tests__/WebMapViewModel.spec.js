@@ -54,7 +54,9 @@ let layerIdMapList = {};
 let sourceIdMapList = {};
 const commonMap = {
   resize: () => jest.fn(),
-  getZoom: () => jest.fn(),
+  getZoom: () => {
+    return 2;
+  },
   setZoom: () => jest.fn(),
   setCRS: () => jest.fn(),
   getCenter: () => {
@@ -2266,7 +2268,7 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   })
 
-  it('not clean zoom', done => {
+  it('switch map and reset center zoom', done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData_geojson['MARKER_GEOJSON']
@@ -2275,8 +2277,24 @@ describe('WebMapViewModel.spec', () => {
     const id = markerLayer;
     const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
+      let zoom = viewModel.mapOptions.zoom;
+      let center = viewModel.mapOptions.center;
+      expect(zoom).toBe(commonMapOptions.zoom);
+      expect(center).toEqual(commonMapOptions.center);
       viewModel.setStyle({});
-      expect(viewModel.mapOptions.zoom).not.toBeNull();
+      expect(viewModel.mapOptions.zoom).toBeNull();
+      expect(viewModel.mapOptions.center).toBeNull();
+      viewModel.map = data.map;
+      center = [116, 30];
+      zoom = 16;
+      viewModel.setCenter(center);
+      expect(viewModel.mapOptions.center).toEqual(center);
+      viewModel.setZoom(zoom);
+      expect(viewModel.mapOptions.zoom).toBe(zoom);
+      viewModel.setMapId('');
+      viewModel.setStyle({});
+      expect(viewModel.mapOptions.zoom).toBe(zoom);
+      expect(viewModel.mapOptions.center).toEqual(center);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
