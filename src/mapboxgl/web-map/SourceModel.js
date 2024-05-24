@@ -2,7 +2,7 @@ class SourceModel {
   constructor(options) {
     this.dataSource = options.dataSource;
     this.id = options.renderSource.id;
-    this.title = options.renderSource.id;
+    this.title = options.title;
     this.renderSource = options.renderSource;
     this.renderLayers = [];
     this.type = options.type;
@@ -15,9 +15,13 @@ class SourceModel {
       if (!this.children) {
         this.children = [];
         this.type = 'group';
-        this.renderSource.sourceLayer = undefined;
+        this.renderSource = {};
+        this.dataSource = {};
+        this.themeSetting = {};
+        this.visible = true;
       }
       this.children.push(layer);
+      return;
     }
     this.renderLayers.push(...layer.renderLayers);
   }

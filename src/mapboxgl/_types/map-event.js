@@ -25,6 +25,7 @@ export default new Vue({
     }
     const webMapCombinations = this.webMapCache.get(webmapTarget);
     const [_, mainWebmap] = webMapCombinations.find(item => item[0] === webmapTarget);
+    const _this = this;
     const proxyWebMap = new Proxy(mainWebmap, {
       get: function (target, propKey) {
         if (['getAppreciableLayers', 'getLayerList', 'getLegendInfo'].includes(propKey)) {
@@ -35,14 +36,27 @@ export default new Vue({
             layers.push(...item[propKey]());
             return layers;
           }, []);
-          datas.push(...matchMainWebMap[propKey]());
-          if (['getAppreciableLayers', 'getLayerList'].includes(propKey)) {
-            datas = Array.from(datas.reduce((list, data) => {
-              if (!list.has(data.id)) {
-                list.set(data.id, data);
-              }
+          const mainWebMapDatas = matchMainWebMap[propKey]();
+          if (['getAppreciableLayers'].includes(propKey)) {
+            const sourceIds = datas.map(item => item.renderSource.id).filter(item => !!item);
+            const validDatas = mainWebMapDatas.filter(item => !sourceIds.some(id => item.renderSource.id === id));
+            datas.push(...validDatas);
+          }
+          if (['getLayerList'].includes(propKey)) {
+            const existSourceIds = datas.reduce((list, item) => {
+              const ids = _this.collectCatalogsKeys([item], ['renderSource.id']);
+              list.push(...ids);
               return list;
-            }, new Map()).values());
+            }, []);
+            for (const catalogs of mainWebMapDatas) {
+              const mainSourceIds = _this.collectCatalogsKeys([catalogs], ['renderSource.id']);
+              if (!mainSourceIds.some(id => existSourceIds.some(sourceId => sourceId === id))) {
+                datas.push(catalogs);
+              }
+            }
+          }
+          if (['getLegendInfo'].includes(propKey)) {
+            datas.push(...mainWebMapDatas);
           }
           return () => datas;
         }
@@ -50,7 +64,7 @@ export default new Vue({
           return function () {
             const webmaps = webMapCombinations.map(item => item[1]);
             const argumentsList = arguments;
-            webmaps.forEach((webmap) => {
+            webmaps.forEach(webmap => {
               webmap[propKey].apply(webmap, argumentsList);
             });
           };
@@ -84,5 +98,19 @@ export default new Vue({
       return;
     }
     this.webMapCache.delete(webmapTarget);
+  },
+  collectCatalogsKeys(catalogs, keys, list = []) {
+    for (const data of catalogs) {
+      if (data.children && data.children.length > 0) {
+        this.collectCatalogsKeys(data.children, keys, list);
+        continue;
+      }
+      keys.forEach(item => {
+        const paths = item.split('.');
+        const value = paths.reduce((data, path) => data && data[path], data);
+        value !== void 0 && list.push(value);
+      });
+    }
+    return list;
   }
 });

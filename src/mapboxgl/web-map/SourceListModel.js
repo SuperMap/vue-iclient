@@ -102,16 +102,18 @@ class SourceListModel {
 
   _createCommonFields(layer) {
     const layerInfo = this.layers.find(layerItem => layer.id === layerItem.id) || {};
+    const layerId = layer.sourceLayer || layer.source;
     const {
       dataSource,
       themeSetting = {},
+      name = layerId,
       visible = layer.visibility ? layer.visibility === 'visible' : true,
       serverId
     } = layerInfo;
     const sourceOnMap = this.map.getSource(layer.source);
     const fields = {
-      id: layer.sourceLayer || layer.source,
-      title: layer.sourceLayer || layer.source,
+      id: layerId,
+      title: name,
       type: layer.type,
       visible,
       renderSource: {

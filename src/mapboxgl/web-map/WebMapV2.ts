@@ -114,7 +114,7 @@ export default class WebMap extends WebMapBase {
 
   private _parentEvents: Record<string, Function>;
 
-  private _cacheLayerId: Map<string, Array<string>> = new Map();
+  private _cacheLayerId: Map<string, Array<{ layerId: string; name: string }>> = new Map();
 
   private _appendLayers = false;
 
@@ -425,7 +425,7 @@ export default class WebMap extends WebMapBase {
               layerIds.push(item.id);
             }
           });
-          this._cacheLayerId.set(layerInfo.layerID, layerIds);
+          this._cacheLayerId.set(layerInfo.layerID, layerIds.map((layerId: string) => ({ layerId, name: layerId })));
         },
         error => {
           addedCallback && addedCallback();
@@ -2186,14 +2186,15 @@ export default class WebMap extends WebMapBase {
        */
 
       // @ts-ignore
-      const flatCacheLayerId = Array.from(this._cacheLayerId.values()).reduce((acc, val) => acc.concat(val), []);
+      const flatCacheLayerId = Array.from(this._cacheLayerId.values()).reduce((acc, val) => acc.concat(val.map(item => item.layerId)), []);
       const layersFromMapInfo = [];
       this._mapInfo.layers.forEach((layerInfo: Record<string, any>) => {
         const matchLayerIds = this._cacheLayerId.get(layerInfo.layerID);
-        matchLayerIds && matchLayerIds.forEach(id => {
+        matchLayerIds && matchLayerIds.forEach(({ layerId, name }) => {
           layersFromMapInfo.push({
             ...layerInfo,
-            id,
+            id: layerId,
+            name,
             visible: layerInfo.visible === 'visible' || layerInfo.visible === true
           });
         });
@@ -2778,7 +2779,7 @@ export default class WebMap extends WebMapBase {
     const { id } = layerInfo;
     layerInfo = Object.assign(layerInfo, { id });
     if(!this._cacheLayerId.has(id)) {
-      this._cacheLayerId.set(id, [id]);
+      this._cacheLayerId.set(id, [{ layerId: id, name: layerInfo.name }]);
     }
 
     if (this.map.getLayer(id)) {
