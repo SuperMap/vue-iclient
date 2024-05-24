@@ -335,7 +335,7 @@ export default class WebMapViewModel extends Events {
       // TODO iserver服务也可获取要素
       if (!dataId) return [];
       let promise = new Promise((resolve, reject) => {
-        const dataService = new iPortalDataService('', this.withCredentials, { dataId, dataType: 'STRUCTUREDDATA' });
+        const dataService = new iPortalDataService(`${this.serverUrl}web/datas/${dataId}`, this.withCredentials, { dataType: 'STRUCTUREDDATA' });
         dataService.on({
           getdatafailed: e => {
             reject(e);

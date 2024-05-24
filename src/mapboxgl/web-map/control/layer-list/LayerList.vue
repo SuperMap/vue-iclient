@@ -163,7 +163,8 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     const style = Object.assign(
       {},
       {
-        height: '300px'
+        height: '300px',
+        'pointer-events': 'auto'
       },
       this.attributes.style
     );
