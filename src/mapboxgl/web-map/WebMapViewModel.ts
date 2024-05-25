@@ -118,6 +118,8 @@ export default class WebMapViewModel extends Events {
 
   private _cacheCleanLayers: any[] = [];
 
+  private _cacheLayerIds: string[];
+
   private _handler: MapHandler;
 
   private _appreciableLayersVisibleMap: Map<string, boolean> = new Map();
@@ -311,7 +313,7 @@ export default class WebMapViewModel extends Events {
 
   protected cleanLayers() {
     this._taskID = null;
-    // TODO 应该遍历的是可感知图层的渲染图层
+    const sourceList = [];
     for (const item of this._cacheCleanLayers) {
       item.renderLayers.forEach((layerId: string) => {
         if (this.map?.getLayer(layerId)) {
@@ -319,9 +321,12 @@ export default class WebMapViewModel extends Events {
         }
       });
       if (this.map?.getSource(item.renderSource.id)) {
-        this.map.removeSource(item.renderSource.id);
+        sourceList.push(item.renderSource.id);
       }
     }
+    Array.from(new Set(sourceList)).forEach(sourceId => {
+      this.map.removeSource(sourceId);
+    });
     this._cacheCleanLayers = [];
   }
 
@@ -554,9 +559,10 @@ export default class WebMapViewModel extends Events {
     return results;
   }
 
-  _addLayersSucceededHandler({ mapparams, layers }) {
+  _addLayersSucceededHandler({ mapparams, layers, cacheLayerIds }) {
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
+    this._cacheLayerIds = cacheLayerIds;
     this._styleDataUpdatedHandler();
     this.triggerEvent('addlayerssucceeded', {
       map: this.map,
@@ -626,10 +632,18 @@ export default class WebMapViewModel extends Events {
   }
 
   public setLayersVisible(isShow: boolean, ignoreIds?: string[], onlyClear?: boolean) {
+    // 只有 webmapv2 支持
     const visibility = isShow ? 'visible' : 'none';
     this._appreciableLayersVisibleMap.clear();
     if (!onlyClear) {
-      const layers = this._handler?.getAppreciableLayers() ?? [];
+      const layers = this._cacheLayerIds?.map(id => {
+        const layer = this.map.getLayer(id);
+        return {
+          id,
+          type: layer.type,
+          renderLayers: [id]
+        };
+      }) ?? [];
       this.updateLayersVisible(layers, visibility, ignoreIds);
       return;
     }
@@ -670,8 +684,8 @@ export default class WebMapViewModel extends Events {
     this._handler?.updateOverlayLayer?.(layerInfo, features, mergeByField);
   }
 
-  get cacheLayerIds() {
-    return this._cacheCleanLayers.reduce((ids, item) => {
+  get cacheLayerIds(): string[] {
+    return this._cacheLayerIds || this._cacheCleanLayers.reduce((ids, item) => {
       ids.push(...item.renderLayers);
       return ids;
     }, []);

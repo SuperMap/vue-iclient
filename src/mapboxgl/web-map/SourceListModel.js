@@ -54,7 +54,9 @@ class SourceListModel {
     const renderLayers = layersOnMap
       .concat(overlayLayers)
       .filter(layer => !this.appendLayers || this.layers.some(item => layer.id === item.id));
-    const nextLayers = renderLayers.filter(layer => this.excludeSource(layer.source)).filter((layer) => !layer.id.includes('-SM-'));
+    const nextLayers = renderLayers
+      .filter(layer => this.excludeSource(layer.source))
+      .filter(layer => !layer.id.includes('-SM-'));
     const selfLayers = [];
     const selfLayerIds = [];
     // 排序
@@ -71,7 +73,10 @@ class SourceListModel {
 
   _initSource(detailLayers) {
     const datas = detailLayers.reduce((sourceList, layer) => {
-      let matchItem = sourceList.find(item => item.renderSource.id === layer.renderSource.id);
+      let matchItem = sourceList.find(item => {
+        const sourceId = layer.renderSource.id || layer.id;
+        return item.id === sourceId;
+      });
       if (!matchItem) {
         const sourceListItem = new SourceModel(layer);
         sourceList.push(sourceListItem);
@@ -80,17 +85,17 @@ class SourceListModel {
       matchItem.addLayer(layer);
       return sourceList;
     }, []);
+    datas.reverse();
     return datas;
   }
 
   _initAppreciableLayers(detailLayers) {
     // dv 没有关联一个可感知图层对应对个渲染图层的关系，默认相同source的layer就是渲染图层
     return detailLayers.reduce((layers, layer) => {
-      let matchLayer = layers.find(
-        item =>
-          item.renderSource.id === layer.source &&
-          (!item.renderSource.sourceLayer || item.renderSource.sourceLayer === layer.sourceLayer)
-      );
+      let matchLayer = layers.find(item => {
+        const layerId = layer.sourceLayer || layer.source || layer.id;
+        return item.id === layerId;
+      });
       if (!matchLayer) {
         matchLayer = this._createCommonFields(layer);
         layers.push(matchLayer);
@@ -102,7 +107,8 @@ class SourceListModel {
 
   _createCommonFields(layer) {
     const layerInfo = this.layers.find(layerItem => layer.id === layerItem.id) || {};
-    const layerId = layer.sourceLayer || layer.source;
+    // type: background overlaymanager layers 只有 id
+    const layerId = layer.sourceLayer || layer.source || layer.id;
     const {
       dataSource,
       themeSetting = {},

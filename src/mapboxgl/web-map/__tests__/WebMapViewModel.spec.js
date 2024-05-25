@@ -1352,17 +1352,41 @@ describe('WebMapViewModel.spec', () => {
       }, 0);
       expect(appreciableLayers.length).toBe(uniqueLayer_polygon.layers.length + 1);
       expect(viewModel.cacheLayerIds.length).toBe(renderLayersLen);
-      const isShow = false;
-      const changeShow = true;
       const ignoreIds = ['China'];
       const spy1 = jest.spyOn(viewModel.map, 'setLayoutProperty');
-      viewModel.setLayersVisible(isShow, ignoreIds);
+      viewModel.setLayersVisible(false, ignoreIds);
       expect(spy1.mock.calls.length).toBe(renderLayersLen - 1);
       spy1.mockClear();
       const spy2 = jest.spyOn(viewModel.map, 'setLayoutProperty');
-      viewModel.setLayersVisible(changeShow);
+      viewModel.setLayersVisible(true);
       expect(spy2.mock.calls.length).toBe(renderLayersLen);
-      done();
+      spy1.mockClear();
+      spy2.mockClear();
+      const viewModel2 = new WebMapViewModel(
+        commonId,
+        { ...commonOption, checkSameLayer: true },
+        { ...commonMapOptions },
+        data.map
+      );
+      viewModel2.on({
+        addlayerssucceeded: () => {
+          const appreciableLayers = viewModel2.getAppreciableLayers();
+          expect(appreciableLayers.length).toBe(uniqueLayer_polygon.layers.length);
+          const renderLayersLen = appreciableLayers.reduce((sum, item) => {
+            return sum + item.renderLayers.length;
+          }, 0) + 1;
+          expect(viewModel2.cacheLayerIds.length).toBe(renderLayersLen);
+          const ignoreIds = ['China'];
+          const spy1 = jest.spyOn(viewModel2.map, 'setLayoutProperty');
+          viewModel2.setLayersVisible(false, ignoreIds);
+          expect(spy1.mock.calls.length).toBe(renderLayersLen - 1);
+          spy1.mockClear();
+          const spy2 = jest.spyOn(viewModel2.map, 'setLayoutProperty');
+          viewModel2.setLayersVisible(true);
+          expect(spy2.mock.calls.length).toBe(renderLayersLen);
+          done();
+        }
+      });
     };
     viewModel.on({ addlayerssucceeded: callback });
   });
@@ -2112,6 +2136,38 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
+  it('MAPBOXSTYLE layer repeat', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': mvtLayer,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':layerData_CSV,
+      'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': styleJson
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption });
+    const callback = function (data) {
+      const appreciableLayers = viewModel.getAppreciableLayers();
+      expect(appreciableLayers.length).toBe(3);
+      expect(appreciableLayers[0].id).toBe('China');
+      expect(appreciableLayers[1].id).toBe('ChinaqxAlberts_4548@fl-new');
+      expect(appreciableLayers[2].id).toBe('民航数据');
+      expect(viewModel.cacheLayerIds.length).toBe(4);
+      const webMapViewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, data.map);
+      webMapViewModel.on({
+        addlayerssucceeded: () => {
+          const appreciableLayers = webMapViewModel.getAppreciableLayers();
+          expect(appreciableLayers.length).toBe(2);
+          expect(appreciableLayers[0].id).toBe('China-1');
+          expect(appreciableLayers[1].id).toBe('民航数据-1');
+          done();
+        }
+      });
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
   it('webmap3.0', async done => {
     const fetchResource = {
       'https://localhost:8190/iportal/web/maps/249495311': webmap3Datas[1]
@@ -2119,7 +2175,9 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(webmap3Datas[0]);
     const callback = function () {
-      expect(viewModel.getAppreciableLayers().length).toBeLessThanOrEqual(webmap3Datas[0].layers.length + 1);
+      const layers = viewModel.getAppreciableLayers();
+      expect(layers.length).toBeLessThanOrEqual(webmap3Datas[0].layers.length + 1);
+      expect(viewModel.cacheLayerIds.length).toBe(layers.length);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -2300,3 +2358,6 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 });
+
+
+

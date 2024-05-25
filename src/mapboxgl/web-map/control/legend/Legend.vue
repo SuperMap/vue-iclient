@@ -151,10 +151,7 @@ export default {
           }
           return list;
         }, {});
-        this.activeLegend = this.activeLegend.filter(item => this.legendList[item]);
-        if (!this.activeLegend.length && this.isShowTitle) {
-          this.activeLegend = defaultChoosenLayers;
-        }
+        this.activeLegend = this.isShowTitle ? defaultChoosenLayers : Object.keys(this.legendList);
       }
     }
   },

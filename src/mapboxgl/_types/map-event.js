@@ -37,19 +37,14 @@ export default new Vue({
             return layers;
           }, []);
           const mainWebMapDatas = matchMainWebMap[propKey]();
-          if (['getAppreciableLayers'].includes(propKey)) {
-            const sourceIds = datas.map(item => item.renderSource.id).filter(item => !!item);
-            const validDatas = mainWebMapDatas.filter(item => !sourceIds.some(id => item.renderSource.id === id));
-            datas.push(...validDatas);
-          }
-          if (['getLayerList'].includes(propKey)) {
+          if (['getLayerList', 'getAppreciableLayers'].includes(propKey)) {
             const existSourceIds = datas.reduce((list, item) => {
-              const ids = _this.collectCatalogsKeys([item], ['renderSource.id']);
+              const ids = _this.collectCatalogsKeys([item]);
               list.push(...ids);
               return list;
             }, []);
             for (const catalogs of mainWebMapDatas) {
-              const mainSourceIds = _this.collectCatalogsKeys([catalogs], ['renderSource.id']);
+              const mainSourceIds = _this.collectCatalogsKeys([catalogs]);
               if (!mainSourceIds.some(id => existSourceIds.some(sourceId => sourceId === id))) {
                 datas.push(catalogs);
               }
@@ -99,17 +94,13 @@ export default new Vue({
     }
     this.webMapCache.delete(webmapTarget);
   },
-  collectCatalogsKeys(catalogs, keys, list = []) {
+  collectCatalogsKeys(catalogs, list = []) {
     for (const data of catalogs) {
       if (data.children && data.children.length > 0) {
-        this.collectCatalogsKeys(data.children, keys, list);
+        this.collectCatalogsKeys(data.children, list);
         continue;
       }
-      keys.forEach(item => {
-        const paths = item.split('.');
-        const value = paths.reduce((data, path) => data && data[path], data);
-        value !== void 0 && list.push(value);
-      });
+      list.push(data.renderSource.id || data.id);
     }
     return list;
   }

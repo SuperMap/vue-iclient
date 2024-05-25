@@ -9,13 +9,11 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 class LegendViewModel extends mapboxgl.Evented {
   constructor() {
     super();
-    this.legendInfo = [];
     this._layersUpdatedHandler = this._layersUpdatedHandler.bind(this);
   }
 
   setMap({ webmap }) {
     this.webmap = webmap;
-    this.legendInfo = this.webmap.getLegendInfo();
     this.webmap.on({
       layersupdated: this._layersUpdatedHandler
     });
@@ -23,7 +21,8 @@ class LegendViewModel extends mapboxgl.Evented {
 
   getStyle(layerName) {
     const appreciableLayers = this.webmap.getAppreciableLayers();
-    return this.legendInfo.filter(info => {
+    const legendInfo = this.webmap.getLegendInfo();
+    return legendInfo.filter(info => {
       return (
         info.layerId === layerName &&
         info.styleGroup.length > 0 &&
@@ -43,4 +42,3 @@ class LegendViewModel extends mapboxgl.Evented {
   }
 }
 export default LegendViewModel;
-

@@ -1,7 +1,7 @@
 class SourceModel {
   constructor(options) {
     this.dataSource = options.dataSource;
-    this.id = options.renderSource.id;
+    this.id = options.renderSource.id || options.id;
     this.title = options.title;
     this.renderSource = options.renderSource;
     this.renderLayers = [];
@@ -19,6 +19,7 @@ class SourceModel {
         this.dataSource = {};
         this.themeSetting = {};
         this.visible = true;
+        this.title = this.id;
       }
       this.children.push(layer);
       return;

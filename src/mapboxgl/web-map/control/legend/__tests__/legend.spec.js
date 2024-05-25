@@ -68,7 +68,8 @@ describe('Legend.vue', () => {
     wrapper = mount(SmLegend, {
       propsData: {
         layerNames: ['上海疫情点标注', '站点3', '未命名数据', '未命名数据(1)', '未命名数据(3)', '北京市轨道交通线路减'],
-        mapTarget: 'map'
+        mapTarget: 'map',
+        mode: 'panel'
       }
     });
     const webmap = {
@@ -122,6 +123,10 @@ describe('Legend.vue', () => {
       await wrapper.vm.$nextTick();
       expect(callback).toHaveBeenCalled();
       expect(wrapper.vm.legendList['民航数据']).not.toBeUndefined();
+      expect(wrapper.vm.activeLegend.length).toBe(Object.keys(wrapper.vm.legendList).length);
+      wrapper.setProps({ isShowTitle: true });
+      wrapper.vm.initLegendList();
+      expect(wrapper.vm.activeLegend.length).toBe(1);
       done();
     };
     mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });

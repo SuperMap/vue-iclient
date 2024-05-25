@@ -15,7 +15,6 @@ import WebMapBase from 'vue-iclient/src/common/web-map/WebMapBase';
 import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import { getProjection, registerProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 /**
  * @class WebMapViewModel
@@ -114,7 +113,7 @@ export default class WebMap extends WebMapBase {
 
   private _parentEvents: Record<string, Function>;
 
-  private _cacheLayerId: Map<string, Array<{ layerId: string; name: string }>> = new Map();
+  private _cacheLayerId: Map<string, Array<{ layerId: string; name: string; ignore?: boolean; }>> = new Map();
 
   private _appendLayers = false;
 
@@ -154,11 +153,11 @@ export default class WebMap extends WebMapBase {
     this._getMapInfo(mapInfo, this._taskID);
   }
 
-  public getLegendInfo() {
+  getLegendInfo() {
     return this._legendList;
   }
 
-  public getLayerCatalog() {
+  getLayerCatalog() {
     return this._sourceListModel?.getSourceList() || [];
   }
 
@@ -416,9 +415,13 @@ export default class WebMap extends WebMapBase {
       .getMapBoxStyle(url)
       .then(
         (style: any) => {
+          const sourceIds = Object.keys(style.sources);
+          if (sourceIds.some(id => this.map.getSource(id))) {
+            addedCallback && addedCallback();
+            return;
+          }
           // @ts-ignore
           this.map.addStyle(style);
-          addedCallback && addedCallback();
           const layerIds = [];
           style.layers.forEach((item: Record<string, any>) => {
             if (item.type !== 'background') {
@@ -426,6 +429,7 @@ export default class WebMap extends WebMapBase {
             }
           });
           this._cacheLayerId.set(layerInfo.layerID, layerIds.map((layerId: string) => ({ layerId, name: layerId })));
+          addedCallback && addedCallback();
         },
         error => {
           addedCallback && addedCallback();
@@ -2185,34 +2189,32 @@ export default class WebMap extends WebMapBase {
        * @property {Array.<Object>} layers - 地图上所有的图层对象。
        */
 
-      // @ts-ignore
-      const flatCacheLayerId = Array.from(this._cacheLayerId.values()).reduce((acc, val) => acc.concat(val.map(item => item.layerId)), []);
+      const cacheLayerToAddList = Array.from(this._cacheLayerId.values());
+      const flatCacheLayerId = cacheLayerToAddList.reduce((list: string[], layers) => {
+        const layerIds = layers.map(item => item.layerId);
+        list.push(...layerIds);
+        return list;
+      }, []);
       const layersFromMapInfo = [];
-      this._mapInfo.layers.forEach((layerInfo: Record<string, any>) => {
-        const matchLayerIds = this._cacheLayerId.get(layerInfo.layerID);
-        matchLayerIds && matchLayerIds.forEach(({ layerId, name }) => {
-          layersFromMapInfo.push({
+      // this._mapInfo.layers 是有序的
+      [this._mapInfo.baseLayer].concat(this._mapInfo.layers).forEach((layerInfo: Record<string, any>) => {
+        const matchLayers = this._cacheLayerId.get(layerInfo.layerID || layerInfo.name);
+        matchLayers?.forEach(({ layerId, name, ignore }) => {
+          ignore !== false && layersFromMapInfo.push({
             ...layerInfo,
             id: layerId,
             name,
-            visible: layerInfo.visible === 'visible' || layerInfo.visible === true
+            visible: layerInfo.visible === void 0 || layerInfo.visible === 'visible' || layerInfo.visible === true
           });
         });
       });
-
-      const baseLayerId = this._mapInfo.baseLayer.name;
-      if (this.map.getLayer(baseLayerId)) {
-        layersFromMapInfo.unshift({
-          id: baseLayerId,
-          name: this._mapInfo.baseLayer.title || baseLayerId,
-          visible: this._mapInfo.baseLayer.visible
-        });
-      }
       // strokeLine之类
-      flatCacheLayerId.forEach((id) => {
-        if(!layersFromMapInfo.find(item => item.id === id)) {
-          layersFromMapInfo.push({ id });
-        }
+      cacheLayerToAddList.forEach((layers) => {
+        layers.forEach(({ layerId, name, ignore }) => {
+          if(ignore !== false && !layersFromMapInfo.find(item => item.id === layerId)) {
+            layersFromMapInfo.push({ id: layerId, name });
+          }
+        });
       });
       this._sourceListModel = new SourceListModel({
         map: this.map,
@@ -2220,12 +2222,12 @@ export default class WebMap extends WebMapBase {
         appendLayers: this._appendLayers
       });
       const appreciableLayers = this.getAppreciableLayers();
-      const allAppreciableLayers = this._appendLayers ? mapEvent.$options.getWebMap(this.target).getAppreciableLayers() : appreciableLayers;
-      this._rectifyLayersOrder(allAppreciableLayers);
-      const matchLayers = appreciableLayers.filter((item: Record<string, any>) => flatCacheLayerId.includes(item.id));
+      this._rectifyLayersOrder(appreciableLayers);
+      const matchLayers = appreciableLayers.filter((item: Record<string, any>) => item.renderLayers.some((id: string) => flatCacheLayerId.some(layerId => layerId === id)));
       this._triggerEvent('addlayerssucceeded', {
         map: this.map,
         layers: matchLayers,
+        cacheLayerIds: flatCacheLayerId,
         mapparams: this._mapInfo.mapParams
       });
     }
@@ -2783,7 +2785,10 @@ export default class WebMap extends WebMapBase {
     }
 
     if (this.map.getLayer(id)) {
-      if (this.checkSameLayer && this._isSameRasterLayer(id, layerInfo)) return;
+      if (this.checkSameLayer && this._isSameRasterLayer(id, layerInfo)) {
+        this._cacheLayerId.set(id, [{ layerId: id, name: layerInfo.name, ignore: false }]);
+        return;
+      }
       this._updateLayer(layerInfo);
       return;
     }
