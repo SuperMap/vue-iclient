@@ -435,7 +435,6 @@ describe('WebMapViewModel.spec', () => {
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
       const callback = function (data) {
-        console.log(viewModel.getAppreciableLayers())
         expect(viewModel.getAppreciableLayers().length).toBe(Object.keys(styleJson.sources).length);
         done();
       };
