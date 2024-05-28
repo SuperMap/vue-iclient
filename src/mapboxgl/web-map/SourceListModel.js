@@ -5,7 +5,7 @@ class SourceListModel {
     this.map = options.map;
     this.layers = options.layers || [];
     this.appendLayers = options.appendLayers || false;
-    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw'];
+    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw', /tracklayer-\d+-line/];
   }
 
   getLayers() {
@@ -20,7 +20,7 @@ class SourceListModel {
 
   excludeSource(key) {
     for (let i = 0; i < this.excludeSourceNames.length; i++) {
-      if (key && key.indexOf(this.excludeSourceNames[i]) >= 0) {
+      if (key && key.match(this.excludeSourceNames[i])) {
         return false;
       }
     }
