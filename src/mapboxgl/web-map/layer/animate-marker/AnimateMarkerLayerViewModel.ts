@@ -88,7 +88,8 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
         visibility: 'visible'
       },
       paint: {
-        'circle-radius': 0
+        'circle-radius': 5,
+        'circle-opacity': 0
       }
     });
 
