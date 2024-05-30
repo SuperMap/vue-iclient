@@ -506,7 +506,7 @@ export default class WebMapViewModel extends Events {
   _createWebMapV3(commonOptions: webMapOptions, commonEvents: Record<string, Function>) {
     const webMapHandler = new mapboxgl.supermap.WebMapV3(
       this.mapId,
-      { ...commonOptions, server: this.serverUrl },
+      { ...commonOptions, server: this.serverUrl, iportalServiceProxyUrl: this.webMapService.iportalServiceProxyUrl },
       this.mapOptions
     );
     for (const type in commonEvents) {

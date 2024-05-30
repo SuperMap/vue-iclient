@@ -26,6 +26,7 @@ import mapboxstyleLayer from 'vue-iclient/test/unit/mocks/data/WebMap/mapboxstyl
 import migrationLayer from 'vue-iclient/test/unit/mocks/data/WebMap/migrationLayer.json';
 import flushPromises from 'flush-promises';
 import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
+import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 
 const localVue = createLocalVue();
 localVue.prototype.$message = message;
@@ -676,4 +677,73 @@ describe('WebMap.vue', () => {
     done();
     }
   });
+
+  it('listen getlayersfailed error is object', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/249495311/map.json': {
+        ...webmap3Datas[0],
+        layers: webmap3Datas[0].layers.map(item => {
+          return {
+            ...item,
+            metadata: {
+              typeFailure: 'object'
+            }
+          };
+        })
+      },
+      'https://fakeiportal.supermap.io/iportal/web/maps/249495311': webmap3Datas[1]
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '249495311'
+      }
+    });
+    wrapper.vm.viewModel.on({
+      getlayersfailed: error => {
+        expect(Object.prototype.toString.call(error) === '[object Error]');
+        done();
+      }
+    });
+    await mapWrapperLoaded(wrapper);
+    await flushPromises();
+  });
+
+  it('listen getlayersfailed error is string', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/249495311/map.json': {
+        ...webmap3Datas[0],
+        layers: webmap3Datas[0].layers.map(item => {
+          return {
+            ...item,
+            metadata: {
+              typeFailure: 'string'
+            }
+          };
+        })
+      },
+      'https://fakeiportal.supermap.io/iportal/web/maps/249495311': webmap3Datas[1]
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '249495311'
+      }
+    });
+    wrapper.vm.viewModel.on({
+      getlayersfailed: error => {
+        expect(Object.prototype.toString.call(error) === '[object String]');
+        done();
+      }
+    });
+    await mapWrapperLoaded(wrapper);
+    await flushPromises();
+  });
 });
+

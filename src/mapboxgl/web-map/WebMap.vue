@@ -421,8 +421,9 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
          * @desc 获取图层失败。
          * @property {Object} error - 失败原因。
          */
+        const errorMsg = Object.prototype.toString.call(e.error) === '[object Error]' ? this.$t('webmap.getLayerInfoFailed') : e.error;
         // @ts-ignore
-        Message.error(e.error);
+        Message.error(errorMsg);
       },
       notsupportbaidumap: () => {
         // @ts-ignore

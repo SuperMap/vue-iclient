@@ -9,7 +9,7 @@ class WebMapV3 extends Evented {
     this.mapOptions = mapOptions;
     this._mapResourceInfo = {};
     this._layerIdRenameMapList = [];
-    this._layerCatalogsRenameMapList = []
+    this._layerCatalogsRenameMapList = [];
   }
 
   initializeMap(mapInfo, map) {
@@ -98,6 +98,17 @@ class WebMapV3 extends Evented {
       layer.source && !this.map.getSource(layer.source) && this.map.addSource(layer.source, sources[layer.source]);
       this.map.addLayer(layer);
     });
+    const matchErrorLayer = layers.find(item => item.metadata.typeFailure);
+    if (matchErrorLayer) {
+      this.fire('getlayersfailed', {
+        error:
+          matchErrorLayer.metadata.typeFailure === 'string'
+            ? 'happen error'
+            : new TypeError('t.map is not a function'),
+        map: this.map
+      });
+      return;
+    }
     this._layerIdRenameMapList = layers.map(item => ({ renderId: item.id }));
     this._layerCatalogsRenameMapList = metadata.layerCatalog;
     const appreciableLayers = this.getAppreciableLayers();
@@ -206,7 +217,7 @@ class WebMapV3 extends Evented {
       return ids;
     }, []);
     const appreciableLayers = this.getAppreciableLayers();
-    const extraLayers = appreciableLayers.filter((layer) => !layerIdsFromCatalog.some((id) => id === layer.id));
+    const extraLayers = appreciableLayers.filter(layer => !layerIdsFromCatalog.some(id => id === layer.id));
     const layerCatalogs = this._layerCatalogsRenameMapList.concat(extraLayers);
     const formatLayerCatalog = this._createFormatCatalogs(layerCatalogs, appreciableLayers);
     this._updateLayerVisible(formatLayerCatalog);
@@ -214,7 +225,7 @@ class WebMapV3 extends Evented {
   }
 
   _createFormatCatalogs(catalogs, appreciableLayers) {
-    const formatCatalogs = catalogs.map((catalog) => {
+    const formatCatalogs = catalogs.map(catalog => {
       let formatItem;
       const { id, title, type, visible, children, parts } = catalog;
       if (catalog.type === 'group') {
@@ -226,7 +237,7 @@ class WebMapV3 extends Evented {
           visible
         };
       } else {
-        const matchLayer = appreciableLayers.find((layer) => layer.id === id);
+        const matchLayer = appreciableLayers.find(layer => layer.id === id);
         formatItem = {
           dataSource: matchLayer.dataSource,
           id,
@@ -246,7 +257,7 @@ class WebMapV3 extends Evented {
   _updateLayerVisible(catalogs) {
     for (const data of catalogs) {
       const list = this._collectChildrenKey([data], 'visible');
-      data.visible = list.every((item) => item);
+      data.visible = list.every(item => item);
     }
   }
 
@@ -260,7 +271,7 @@ class WebMapV3 extends Evented {
     }
     return list;
   }
-  
+
   _getRenderLayers(layerIds, layerId) {
     if (layerIds) {
       if (layerIds.includes(layerId)) {
