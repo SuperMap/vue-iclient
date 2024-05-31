@@ -30,7 +30,8 @@ describe('Legend.vue', () => {
         lineTo: jest.fn(),
         stroke: jest.fn(),
         drawImage: jest.fn(),
-        createPattern: jest.fn()
+        createPattern: jest.fn(),
+        createLinearGradient: jest.fn()
       })
     };
   };
