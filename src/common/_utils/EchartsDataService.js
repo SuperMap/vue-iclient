@@ -483,7 +483,7 @@ export default class EchartsDataService {
     if(typeof (statisticFunction) === 'function') {
       result = statisticFunction(fieldValues, features);
     } else {
-      result = statisticFunctions[statisticFunction] ? statisticFunctions[statisticFunction](fieldValues) : sum(fieldValues);
+      result = statisticFunctions[statisticFunction] ? statisticFunctions[statisticFunction](fieldValues) : statisticFunctions.sum(fieldValues);
     }
     return result;
   }
