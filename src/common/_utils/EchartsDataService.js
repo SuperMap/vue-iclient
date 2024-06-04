@@ -2,9 +2,8 @@ import getFeatures from 'vue-iclient/src/common/_utils/get-features';
 import tonumber from 'lodash.tonumber';
 import max from 'lodash.max';
 import orderBy from 'lodash.orderby';
-import { clearNumberComma, filterInvalidData } from 'vue-iclient/src/common/_utils/util';
+import { clearNumberComma, filterInvalidData, statisticFunctions } from 'vue-iclient/src/common/_utils/util';
 import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
-import { min, max as statisticsMax, mean, sum, mode, median, variance, standardDeviation } from 'simple-statistics';
 
 // 三方服务请求的结果为单对象的时候，是否要转成多个features
 export function tranformSingleToMulti(data) {
@@ -484,7 +483,6 @@ export default class EchartsDataService {
     if(typeof (statisticFunction) === 'function') {
       result = statisticFunction(fieldValues, features);
     } else {
-      const statisticFunctions = { min, max: statisticsMax, mean, sum, mode, median, variance, standardDeviation, count: fieldValues => fieldValues.length };
       result = statisticFunctions[statisticFunction] ? statisticFunctions[statisticFunction](fieldValues) : sum(fieldValues);
     }
     return result;
