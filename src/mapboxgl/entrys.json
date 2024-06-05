@@ -78,6 +78,7 @@
   "coordinate-conversion": "vue-iclient/src/mapboxgl/web-map/control/coordinate-conversion/index.js",
   "draw": "vue-iclient/src/mapboxgl/web-map/control/draw/index.js",
   "fly-to": "vue-iclient/src/mapboxgl/web-map/control/fly-to/index.js",
+  "map-popup": "vue-iclient/src/mapboxgl/web-map/map-popup/index.js",
   "identify": "vue-iclient/src/mapboxgl/web-map/control/identify/index.js",
   "layer-color": "vue-iclient/src/mapboxgl/web-map/control/layer-color/index.js",
   "layer-list": "vue-iclient/src/mapboxgl/web-map/control/layer-list/index.js",
