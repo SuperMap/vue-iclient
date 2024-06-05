@@ -69,7 +69,7 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
       return [];
     }
   })
-  columns: Array<Array<Object>>;
+  columns: Array<Object>;
 
   @Watch('currentCoordinate')
   currentCoordinatesChanged() {
@@ -86,7 +86,7 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
   }
 
   get tablePopupProps() {
-    return { data: this.data[this.currentIndex], columns: this.columns[this.currentIndex] };
+    return { data: this.data[this.currentIndex], columns: this.columns };
   }
 
   get headerTitle() {
