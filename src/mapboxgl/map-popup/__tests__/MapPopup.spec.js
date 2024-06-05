@@ -3,14 +3,8 @@ import SmMapPopup from '../MapPopup.vue';
 import SmWebMap from '../../web-map/WebMap';
 
 const columns = [
-  [
-    { dataIndex: 'attribute', width: 80 },
-    { dataIndex: 'attributeValue', width: 150 }
-  ],
-  [
-    { dataIndex: 'attribute', width: 80 },
-    { dataIndex: 'attributeValue', width: 150 }
-  ]
+  { dataIndex: 'attribute', width: 80 },
+  { dataIndex: 'attributeValue', width: 150 }
 ];
 const data = [
   [
