@@ -6,11 +6,8 @@
       :style="[listStyle.headerHeight, { background: headerStyleData.background, color: headerStyleData.color }]"
     >
       <div class="sm-component-text-list__header-content">
-        <template v-if="animateContent && animateContent.length > 0">
-          <template
-            v-for="(item, index) in (getColumns && getColumns.length > 0 && getColumns) ||
-            Object.keys(animateContent[0])"
-          >
+        <template v-if="animateContent && animateContent.length > 0 && getColumns.length > 0">
+          <template v-for="(item, index) in getColumns">
             <div
               :key="index"
               class="sm-component-text-list__header-title"
@@ -20,16 +17,16 @@
               <div
                 @click="
                   sortByField(
-                    getColumns[index].field + '-' + index,
+                    item.field + '-' + index,
                     index,
-                    !Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort
+                    !Number.isNaN(+listData[0][item.field + '-' + index]) && item.sort
                   )
                 "
               >
-                {{ getColumns[index].header }}
+                {{ item.header }}
               </div>
               <div
-                v-if="!Number.isNaN(+listData[0][getColumns[index].field + '-' + index]) && getColumns[index].sort"
+                v-if="!Number.isNaN(+listData[0][item.field + '-' + index]) && item.sort"
                 class="arrow-wrap"
                 :style="{ borderColor: headerStyleData.sortBtnColor }"
               >
@@ -85,11 +82,7 @@
               :key="key"
               :title="!getColumns[itemIndex].slots && items"
               :class="getColumns[itemIndex].slots && 'sm-component-text-list__slot'"
-              :style="[
-                listStyle.rowStyle,
-                { flex: getColumnWidth(itemIndex) },
-                getCellStyle(items, itemIndex)
-              ]"
+              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
             >
               <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">
                 {{ getColumns[itemIndex].fixInfo.prefix }}
@@ -174,7 +167,7 @@ interface ColumnParams {
   sort: true | false | undefined;
   defaultSortType: 'ascend' | 'descend' | 'none';
   fixInfo: FixInfoParams;
-  slots: SlotParams;
+  slots?: SlotParams;
 }
 
 interface HighlightOption {
@@ -491,7 +484,7 @@ class SmTextList extends Mixins(Theme, Timer) {
     };
   }
 
-  get getColumns() {
+  get getColumns(): ColumnParams[] {
     if (Array.isArray(this.columns)) {
       return this.columns;
     } else {
