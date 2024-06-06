@@ -21,6 +21,8 @@ import wmsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmsLayer.json';
 import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
 import raster4490 from 'vue-iclient/test/unit/mocks/data/WebMap/raster4490.json';
 import mvtLayer from 'vue-iclient/test/unit/mocks/data/WebMap/mvtLayer.json';
+import tiandituLayer from 'vue-iclient/test/unit/mocks/data/WebMap/tiandituLayer.json';
+
 import {
   wmtsCapabilitiesText,
   wmsCapabilitiesTextWithoutVersion,
@@ -2108,6 +2110,39 @@ describe('WebMapViewModel.spec', () => {
       const appreciableLayers = viewModel.getAppreciableLayers();
       expect(appreciableLayers[1].id).toBe('市级行政区划_1_2');
       expect(appreciableLayers[2].id).toBe('北京市轨道交通线路(2)');
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+  it('tdt label order', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+      layerData_geojson['MARKER_GEOJSON'],
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json':  {
+        ...tiandituLayer,
+        layers: [    
+          {
+            "layerType": "MARKER",
+            "visible": true,
+            "name": "民航数",
+            "serverId": 123456,
+            "layerStyle": {
+              "labelField": "minghang"
+            }
+          }
+        ]
+      }
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption });
+    const callback = function (data) {
+      const appreciableLayers = viewModel.getAppreciableLayers();
+      expect(appreciableLayers[0].id).toBe('天地图地形');
+      expect(appreciableLayers[1].id).toBe('天地图地形-label');
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });

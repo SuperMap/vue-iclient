@@ -428,7 +428,7 @@ export default class WebMap extends WebMapBase {
               layerIds.push(item.id);
             }
           });
-          this._cacheLayerId.set(layerInfo.layerID, layerIds.map((layerId: string) => ({ layerId, name: layerId })));
+          this._cacheLayerId.set(layerInfo.layerID || layerInfo.name, layerIds.map((layerId: string) => ({ layerId, name: layerId })));
           addedCallback && addedCallback();
         },
         error => {
@@ -2198,23 +2198,35 @@ export default class WebMap extends WebMapBase {
       const layersFromMapInfo = [];
       // this._mapInfo.layers 是有序的
       [this._mapInfo.baseLayer].concat(this._mapInfo.layers).forEach((layerInfo: Record<string, any>) => {
-        const matchLayers = this._cacheLayerId.get(layerInfo.layerID || layerInfo.name);
+        const targetLayerId = layerInfo.layerID || layerInfo.name;
+        const targetLayerVisible = layerInfo.visible === void 0 || layerInfo.visible === 'visible' || layerInfo.visible === true;
+        const matchLayers = this._cacheLayerId.get(targetLayerId);
         matchLayers?.forEach(({ layerId, name, ignore }) => {
           ignore !== false && layersFromMapInfo.push({
             ...layerInfo,
             id: layerId,
             name,
-            visible: layerInfo.visible === void 0 || layerInfo.visible === 'visible' || layerInfo.visible === true
+            visible: targetLayerVisible
           });
         });
-      });
-      // strokeLine之类
-      cacheLayerToAddList.forEach((layers) => {
-        layers.forEach(({ layerId, name, ignore }) => {
-          if(ignore !== false && !layersFromMapInfo.find(item => item.id === layerId)) {
-            layersFromMapInfo.push({ id: layerId, name });
+        if (this.map.getLayer(`${targetLayerId}-strokeLine`)) {
+          layersFromMapInfo.push({ id: `${targetLayerId}-strokeLine`, visible: targetLayerVisible });
+        }
+        const expandLayers = flatCacheLayerId.map(item => item.includes(targetLayerId));
+        for (let index = 1; index < expandLayers.length + 1; index++) {
+          const layerTypes = ['additional', 'additional-image', 'additional-svg', 'additional-linedasharray', 'additional-symbol', 'POINT', 'TEXT', 'LINESTRING', 'POLYGON'];
+          const layers = layerTypes.filter(type => this.map.getLayer(`${targetLayerId}-${type}-${index}`));
+          if (layers.length) {
+            layers.forEach(layer => {
+              layersFromMapInfo.push({ id: `${targetLayerId}-${layer}-${index}`, visible: targetLayerVisible });
+            });
+          } else {
+            break;
           }
-        });
+        }
+        if (this.map.getLayer(`${targetLayerId}-label`)) {
+          layersFromMapInfo.push({ id: `${targetLayerId}-label`, visible: targetLayerVisible });
+        }
       });
       this._sourceListModel = new SourceListModel({
         map: this.map,
@@ -2233,45 +2245,15 @@ export default class WebMap extends WebMapBase {
     }
   }
 
-  private _moveLayer(layerID, beforLayerId = undefined) {
-    if (this.map.getLayer(layerID)) {
-      this.map.moveLayer(layerID, beforLayerId);
-      return true;
-    }
-    return false;
-  }
-
   private _rectifyLayersOrder(appreciableLayers: any[]) {
     const renderLayers = appreciableLayers.reduce((layers, layer) => {
       return layers.concat(layer.renderLayers);
     }, []);
     const exsitLayers = renderLayers.filter(layerId => !!this.map.getLayer(layerId));
-    const mapLayers = this.map.getStyle().layers;
     for (let index = exsitLayers.length - 1; index > -1; index--) {
       const targetlayerId = exsitLayers[index];
       let beforLayerId = exsitLayers[index + 1] ? exsitLayers[index + 1] : undefined;
-      this._moveLayer(targetlayerId, beforLayerId);
-      this._moveLayer(`${targetlayerId}-strokeLine`, beforLayerId);
-      for (let index = 1; index < this.expectLayerLen + 1; index++) {
-        if (this._moveLayer(`${targetlayerId}-additional-${index}`, beforLayerId)) {
-          continue;
-        } else {
-          break;
-        }
-      }
-      if (mapLayers && mapLayers.length > 0) {
-        const expandLayers = mapLayers.map(item => item.id.includes(targetlayerId));
-        for (let index = 1; index < expandLayers.length; index++) {
-          if (this._moveLayer(`${targetlayerId}-POINT-${index}`, beforLayerId)) {
-            continue;
-          } else if (this._moveLayer(`${targetlayerId}-TEXT-${index}`, beforLayerId)) {
-            continue;
-          } else {
-            break;
-          }
-        }
-      }
-      this._moveLayer(`${targetlayerId}-label`);
+      this.map.moveLayer(targetlayerId, beforLayerId);
     }
   }
 
