@@ -152,7 +152,7 @@ describe('AttributesViewModel.ts', () => {
     expect(viewModel.layerName).toBe('UTLayer');
   });
 
-  it('setDataset', () => {
+  it('setDataset', async (done) => {
     const nextOption = {
       ...options,
       associateWithMap: {
@@ -162,7 +162,7 @@ describe('AttributesViewModel.ts', () => {
       }
     };
     const viewModel = new AttributesViewModel(nextOption);
-    const dataset = {
+    let dataset = {
       type: 'geoJSON',
       geoJSON: {
         type: 'FeatureCollection',
@@ -171,6 +171,17 @@ describe('AttributesViewModel.ts', () => {
     };
     viewModel.setDataset(dataset);
     expect(viewModel.dataset).toBe(dataset);
+    dataset = { type: '', url: '', geoJSON: null };
+    viewModel.setDataset(dataset);
+    expect(viewModel.dataset).toBe(dataset);
+    viewModel.setLayerName(null);
+    expect(viewModel.layerName).toBeNull();
+    viewModel.on('dataChanged', (options) => {
+      expect(options.content.length).toBe(0);
+      done();
+    });
+    viewModel.setDataset(dataset);
+    await flushPromises();
   });
   it('set totalCount', async done => {
     const dataset = {
