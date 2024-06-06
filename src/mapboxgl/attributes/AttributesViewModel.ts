@@ -440,12 +440,12 @@ class FeatureTableViewModel extends mapboxgl.Evented {
         const datas = await this._getFeaturesFromDataset();
         features = datas.features;
         totalCount = datas.totalCount;
-      } else {
+      } else if (this.layerName) {
         features = this._getFeaturesFromLayer(this.layerName);
         totalCount = features.length;
       }
       const content = this.toTableContent(features);
-      const columns = this.toTableColumns(features[0].properties);
+      const columns = this.toTableColumns(features?.[0].properties || []);
 
       this.fire('dataChanged', { content, totalCount, columns });
     }
