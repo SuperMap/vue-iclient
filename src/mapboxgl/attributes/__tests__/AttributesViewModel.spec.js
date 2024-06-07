@@ -117,7 +117,7 @@ describe('AttributesViewModel.ts', () => {
     expect(viewModel.layerName).toBe('UTLayer');
   });
 
-  it('setDataset', async (done) => {
+  it('setDataset', (done) => {
     const nextOption = {
       ...options,
       associateWithMap: {
@@ -160,7 +160,6 @@ describe('AttributesViewModel.ts', () => {
       done();
     });
     viewModel.setDataset(dataset);
-    await flushPromises();
   });
 
   it('setLazy', async () => {
