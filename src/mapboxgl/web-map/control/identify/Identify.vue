@@ -167,7 +167,7 @@ export default {
         } else {
           this.unbinddKeydownCtrl();
         }
-        this.$refs['map-popup'].removePopup();
+        this.$refs['map-popup'] && this.$refs['map-popup'].removePopup();
         this.clearPopupData();
       },
       immediate: true
