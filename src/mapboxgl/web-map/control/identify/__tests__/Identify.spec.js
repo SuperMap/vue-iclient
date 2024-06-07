@@ -207,7 +207,6 @@ describe('Identify.vue', () => {
         y: 10
       }
     });
-    console.log(wrapper.vm.popupProps);
     expect(wrapper.vm.popupProps).toEqual({
       机场: {
         slotName: undefined,
@@ -239,6 +238,7 @@ describe('Identify.vue', () => {
         y: 12
       }
     });
+
     expect(wrapper.vm.popupProps).toEqual({
       机场: {
         slotName: undefined,
@@ -252,6 +252,21 @@ describe('Identify.vue', () => {
     wrapper.vm.keyupCtrlCb({ key: 'Control' });
     expect(wrapper.vm.isKeydownCtrl).toBe(false);
     expect(wrapper.vm.popupProps).toEqual({ 机场: { slotName: undefined, value: '大连机场' } });
+
+    wrapper.vm.map.queryRenderedFeatures = () => {
+      return [];
+    };
+    wrapper.vm.map.fire('click', {
+      target: {
+        getLayer: jest.fn()
+      },
+      point: {
+        x: 11,
+        y: 12
+      }
+    });
+    expect(wrapper.vm.filters.length).toBe(1);
+
     expect(wrapper.vm.valueMaxWidth).toBe(170);
     done();
   });

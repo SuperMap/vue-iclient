@@ -246,10 +246,10 @@ export default {
     sourceMapClickFn(e) {
       // 如果点击其他的要素，移除之前的高亮
       this.viewModel.removeOverlayer(this.layers);
+      let features = this.bindQueryRenderedFeatures(e);
       // 只有多选且ctrl+click 或者 单选+click能触发
       if ((this.multiSelect && this.isKeydownCtrl) || !this.multiSelect) {
         // 获取点中图层的features
-        let features = this.bindQueryRenderedFeatures(e);
         if (features[0]) {
           let index = this.layers && this.layers.indexOf(features[0].layer.id);
           let fields;
@@ -267,6 +267,9 @@ export default {
         } else {
           this.clearPopupData();
         }
+      }
+      if (!features[0]) {
+        this.clearPopupData();
       }
     },
     // 给layer绑定queryRenderedFeatures
