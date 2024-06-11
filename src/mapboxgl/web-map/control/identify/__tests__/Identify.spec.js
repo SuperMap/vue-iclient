@@ -295,6 +295,60 @@ describe('Identify.vue', () => {
     done();
   });
 
+  it('changeLayers', async done => {
+    mapWrapper = await createEmptyMap();
+    wrapper = mount(SmIdentify, {
+      propsData: {
+        multiSelect: true,
+        layers: ['民航数据'],
+        fields: ['机场'],
+        autoResize: false
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    wrapper.vm.keydownCtrlCb({ ctrlKey: true });
+    expect(wrapper.vm.isKeydownCtrl).toBe(true);
+    wrapper.vm.map.queryRenderedFeatures = () => {
+      return [
+        {
+          _vectorTileFeature: { _keys: ['机场', 'id'] },
+          layer: { id: '民航数据' },
+          properties: {
+            id: 1,
+            机场: '天府机场'
+          }
+        }
+      ];
+    };
+    wrapper.vm.map.fire('click', {
+      target: {
+        getLayer: jest.fn()
+      },
+      point: {
+        x: 10,
+        y: 10
+      }
+    });
+    wrapper.setProps({layers: ['民航数据']})
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.popupProps).toEqual({
+      机场: {
+        slotName: undefined,
+        value: '天府机场'
+      }
+    });
+    expect(wrapper.vm.currentLayer.id).toEqual('民航数据');
+    expect(wrapper.vm.filters.length).toBe(2);
+    expect(wrapper.vm.currentIndex).toBe(0);
+
+    wrapper.setProps({layers: ['']})
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.currentLayer).toBe(null);
+    expect(wrapper.vm.filters.length).toBe(1);
+    expect(wrapper.vm.currentIndex).toBe(0);
+    done();
+  });
+
   it('multiSelect', async done => {
     mapWrapper = await createEmptyMap();
     wrapper = mount(SmIdentify, {
