@@ -36,6 +36,7 @@ import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
 import SmMapPopup from 'vue-iclient/src/mapboxgl/map-popup/MapPopup.vue';
+import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmIdentify',
@@ -151,10 +152,13 @@ export default {
   watch: {
     layers: {
       handler(val, oldVal) {
-        this.viewModel && this.viewModel.removed(oldVal);
-        this.clearPopupData();
-        this.removeCursorEvent(oldVal);
-        this.setViewModel();
+        if (!isEqual(val, oldVal)) {
+          this.viewModel && this.viewModel.removed(oldVal);
+          this.clearPopupData();
+          this.$refs['map-popup'] && this.$refs['map-popup'].removePopup();
+          this.removeCursorEvent(oldVal);
+          this.setViewModel();
+        }
       }
     },
     layerStyle() {
