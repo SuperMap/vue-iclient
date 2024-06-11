@@ -23,28 +23,6 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
     this.map = map;
     this.layers = options.layers || [];
     this.layerStyle = options.layerStyle || {};
-    this.popup = null;
-  }
-
-  /**
-   * @function IdentifyViewModel.prototype.addPopup
-   * @desc 添加弹窗。
-   * @param {Array} coordinates - 弹窗坐标。
-   * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
-   */
-  addPopup(coordinates, popupContainer) {
-    if (popupContainer) {
-      popupContainer.style.display = 'block';
-      this.popup = new mapboxgl.Popup({
-        maxWidth: 'none',
-        className: 'sm-mapboxgl-identify-popup sm-mapboxgl-tabel-popup',
-        closeButton: false
-      })
-        .setLngLat(coordinates)
-        .setDOMContent(popupContainer)
-        .addTo(this.map);
-    }
-    return this.popup;
   }
 
   /**
@@ -83,7 +61,7 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
     }
     let layerStyle = this._setDefaultPaintWidth(this.map, type, id, defaultPaintTypes[type], this.layerStyle);
     if (type === 'circle' || type === 'line' || type === 'fill') {
-      const _layerStyle= layerStyle[type];
+      const _layerStyle = layerStyle[type];
       let highlightLayer = Object.assign({}, layer, {
         id: id + '-identify-SM-highlighted',
         type,
@@ -123,18 +101,11 @@ export default class IdentifyViewModel extends mapboxgl.Evented {
 
   /**
    * @function IdentifyViewModel.prototype.removed
-   * @desc 清除popup和高亮图层。
+   * @desc 清除高亮图层。
    */
   removed(layers = this.layers) {
     // 移除高亮图层
-    this.removePopup();
     this.removeOverlayer(layers);
-  }
-
-  removePopup() {
-    if (this.popup) {
-      this.popup.remove() && (this.popup = null);
-    }
   }
 
   removeOverlayer(layers = this.layers) {
