@@ -10,6 +10,7 @@ import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap';
 describe('Identify.vue', () => {
   let wrapper;
   let identifyWrapper;
+  let mapWrapper;
   const mapInfo = {
     extent: {
       leftBottom: { x: 0, y: 0 },
@@ -38,6 +39,9 @@ describe('Identify.vue', () => {
     config.mapLoad = true;
     if (wrapper) {
       wrapper.destroy();
+    }
+    if(mapWrapper){
+      mapWrapper.destroy();
     }
   });
 
