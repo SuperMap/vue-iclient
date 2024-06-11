@@ -8,7 +8,7 @@
     ref="map-popup"
     @change="handleChange"
   >
-    <div slot="identify">
+    <div slot="identify" :style="[tablePopupBgStyle, getTextColorStyle]">
       <ul
         :class="[
           autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
