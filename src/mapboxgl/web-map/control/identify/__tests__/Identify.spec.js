@@ -6,6 +6,8 @@ import mapLoaded from 'vue-iclient/test/unit/mapLoaded.js';
 import { LineStyle, CircleStyle, FillStyle } from '../../../../_types/index';
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap';
+import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded';
+
 
 describe('Identify.vue', () => {
   let wrapper;
@@ -40,7 +42,7 @@ describe('Identify.vue', () => {
     if (wrapper) {
       wrapper.destroy();
     }
-    if(mapWrapper){
+    if (mapWrapper) {
       mapWrapper.destroy();
     }
   });
@@ -126,17 +128,50 @@ describe('Identify.vue', () => {
   it('clcik layer on map', async done => {
     // 设置外界传入的参数，对面填充和边框的颜色
     const color = '#FF0000';
-    mapWrapper = await createEmptyMap();
-    wrapper = mount(SmIdentify, {
-      propsData: {
-        layers: ['第七次人口普查全国各省人口数(未包含港澳台', '第七次人口普查全国各省人口数(未包含港澳台-strokeLine'],
-        fields: ['地区', '人口数'],
-        layerStyle: {
-          line: new LineStyle({ 'line-width': 3, 'line-color': '#3fb1e3' }),
-          circle: new CircleStyle({ 'circle-color': '#3fb1e3', 'circle-radius': 6 }),
-          fill: new FillStyle({ 'fill-color': '#3fb1e3', 'fill-opacity': 0.8 }),
-          stokeLine: new LineStyle({ 'line-width': 3, 'line-color': color })
-        }
+    wrapper = mount({
+      template: `
+        <sm-web-map style="height:700px" :mapId="mapInfo">
+          <sm-identify 
+            :fields="['地区','人口数']"
+            :layerStyle="layerStyles"
+            :layers="['第七次人口普查全国各省人口数(未包含港澳台','第七次人口普查全国各省人口数(未包含港澳台-strokeLine']">
+          </sm-identify>
+        </sm-web-map> `,
+      //  `<sm-web-map style="height:700px" :mapId="mapInfo">
+      //     <sm-identify :layers="['China']" :fields="['机场','同比增速%','2017旅客吞吐量（人次）']"></sm-identify>
+      //   </sm-web-map>`,
+      components: {
+        SmIdentify,
+        SmWebMap
+      },
+      data() {
+        return {
+          mapInfo: {
+            extent: {
+              leftBottom: { x: 0, y: 0 },
+              rightTop: { x: 0, y: 0 }
+            },
+            level: 5,
+            center: { x: 0, y: 0 },
+            baseLayer: {
+              mapId: 1160955209,
+              layerType: 'TILE',
+              name: 'China',
+              url: 'http://172.16.14.44:8190/iportal'
+            },
+            layers: [],
+            description: '',
+            projection: 'EPSG:3857',
+            title: 'testMap',
+            version: '1.0'
+          },
+          layerStyles: {
+            line: new LineStyle({ 'line-width': 3, 'line-color': '#3fb1e3' }),
+            circle: new CircleStyle({ 'circle-color': '#3fb1e3', 'circle-radius': 6 }),
+            fill: new FillStyle({ 'fill-color': '#3fb1e3', 'fill-opacity': 0.8 }),
+            stokeLine: new LineStyle({ 'line-width': 3, 'line-color': color })
+          }
+        };
       }
     });
     const callback = jest.fn();
