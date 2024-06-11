@@ -31,7 +31,11 @@ describe('Legend.vue', () => {
         stroke: jest.fn(),
         drawImage: jest.fn(),
         createPattern: jest.fn(),
-        createLinearGradient: jest.fn()
+        createLinearGradient: jest.fn(() => {
+          return {
+            addColorStop: jest.fn()
+          };
+        })
       })
     };
   };
@@ -66,6 +70,7 @@ describe('Legend.vue', () => {
   });
 
   it('render default correctly', async done => {
+    jest.useFakeTimers();
     wrapper = mount(SmLegend, {
       propsData: {
         layerNames: ['上海疫情点标注', '站点3', '未命名数据', '未命名数据(1)', '未命名数据(3)', '北京市轨道交通线路减'],
@@ -77,12 +82,15 @@ describe('Legend.vue', () => {
       getLegendInfo: () => mapLegends,
       un: jest.fn(),
       on: jest.fn(),
-      getAppreciableLayers: () => Object.values(mapLegends.reduce((layers, item) => {
-        if (!layers[item.layerId]) {
-          layers[item.layerId] = { id: item.layerId, visible: true };
-        }
-        return layers;
-      }, {}))
+      getAppreciableLayers: () =>
+        Object.values(
+          mapLegends.reduce((layers, item) => {
+            if (!layers[item.layerId]) {
+              layers[item.layerId] = { id: item.layerId, visible: true };
+            }
+            return layers;
+          }, {})
+        )
     };
     wrapper.vm.viewModel.setMap({
       webmap
@@ -91,14 +99,15 @@ describe('Legend.vue', () => {
     await wrapper.vm.$nextTick();
     imageOnload();
     await flushPromises();
+    jest.advanceTimersByTime(5000);
     expect(wrapper.vm.legendList).not.toEqual({});
     expect(wrapper.vm.mapTarget).toBe('map');
     expect(wrapper.find(StyleRenderer).exists()).toBeTruthy();
     expect(wrapper.find(ImageRenderer).exists()).toBeTruthy();
+    jest.useRealTimers();
     done();
   });
 
-  
   it('mapload', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
@@ -116,7 +125,7 @@ describe('Legend.vue', () => {
     const addCallback = async function (data) {
       wrapper = mount(SmLegend, {
         propsData: {
-          layerNames: ['民航数据'],
+          layerNames: ['民航数据']
         }
       });
       const callback = jest.fn();

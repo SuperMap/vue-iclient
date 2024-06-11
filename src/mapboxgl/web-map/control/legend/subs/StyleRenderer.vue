@@ -155,11 +155,11 @@ export default {
           break;
         }
         case 'animatepoint': {
-          this.initAnimatePoint();
+          this.animateTimer = this.initAnimatePoint();
           break;
         }
         case 'radarpoint': {
-          this.initRadar();
+          this.animateTimer = this.initRadar();
           break;
         }
         case 'line':
