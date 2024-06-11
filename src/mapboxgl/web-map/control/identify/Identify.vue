@@ -248,26 +248,22 @@ export default {
       // 如果点击其他的要素，移除之前的高亮
       this.viewModel.removeOverlayer(this.layers);
       let features = this.bindQueryRenderedFeatures(e);
-      // 只有多选且ctrl+click 或者 单选+click能触发
-      if ((this.multiSelect && this.isKeydownCtrl) || !this.multiSelect) {
-        // 获取点中图层的features
-        if (features[0]) {
-          let index = this.layers && this.layers.indexOf(features[0].layer.id);
-          let fields;
-          if (this.fields instanceof Array) {
-            // 如果是二维数组
-            fields = this.fields[index];
-            // 兼容一维数组
-            if (typeof fields === 'string') {
-              fields = this.fields;
-            }
-          } else if (this.fields instanceof Object && index === 0) {
+
+      // 获取点中图层的features
+      if (features[0]) {
+        let index = this.layers && this.layers.indexOf(features[0].layer.id);
+        let fields;
+        if (this.fields instanceof Array) {
+          // 如果是二维数组
+          fields = this.fields[index];
+          // 兼容一维数组
+          if (typeof fields === 'string') {
             fields = this.fields;
           }
-          this.layersMapClickFn(e, fields || [], features[0]);
-        } else {
-          this.clearPopupData();
+        } else if (this.fields instanceof Object && index === 0) {
+          fields = this.fields;
         }
+        this.layersMapClickFn(e, fields || [], features[0]);
       }
       if (!features[0]) {
         this.clearPopupData();
@@ -294,7 +290,7 @@ export default {
       this.setPopupData(popupProps, coordinates, feature);
 
       const filter = this.getFilter(feature);
-      if (this.multiSelect) {
+      if (this.multiSelect && this.isKeydownCtrl) {
         this.filters.push(filter);
       } else {
         this.filters = filter;
