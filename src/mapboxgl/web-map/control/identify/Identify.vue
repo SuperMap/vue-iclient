@@ -5,9 +5,10 @@
     :showIcon="multiSelect"
     :lnglats="lnglats"
     :defaultIndex="currentIndex"
+    :background="background"
+    :textColor="textColor"
     ref="map-popup"
     @change="handleChange"
-    :style="[tablePopupBgStyle, getTextColorStyle]"
   >
     <div slot="identify" >
       <ul
