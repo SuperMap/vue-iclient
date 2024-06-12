@@ -1,6 +1,5 @@
 <template>
-  <div v-show="false" class="sm-component-map-popup" ref="Popup" :style="[tablePopupBgStyle, getTextColorStyle]"
->
+  <div v-show="false" class="sm-component-map-popup" ref="Popup" :style="[tablePopupBgStyle, getTextColorStyle]">
     <div v-show="showIcon || title" class="sm-component-map-popup__header">
       <sm-icon
         v-show="showIcon"

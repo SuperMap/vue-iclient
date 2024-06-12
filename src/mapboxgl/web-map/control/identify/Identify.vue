@@ -8,6 +8,7 @@
     :background="background"
     :textColor="textColor"
     ref="map-popup"
+    :mapTarget="mapTarget"
     @change="handleChange"
   >
     <div slot="identify" >
