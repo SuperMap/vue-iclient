@@ -1461,6 +1461,50 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 
+  it('updateOverlayLayer GraphicLayer', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/1920557079/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_CSV,
+      'https://fakeiportal.supermap.io/iportal/web/datas/13136933/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_geojson['POINT_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const id = vectorLayer_point;
+    const viewModel = new WebMapViewModel(id, { ...commonOption }, undefined, { ...commonMap });
+    const callback = function (data) {
+      const sourceData1 = data.map.getSource('浙江省高等院校(3)')._data.features;
+      expect(sourceData1.length).toBe(2);
+      const layerInfo = { ...vectorLayer_point.layers[0], id: vectorLayer_point.layers[0].name };
+      const features = [
+        {
+          type: 'Feature',
+          properties: {
+            '机场': '上海/浦东',
+            'X坐标': '121.812361 ',
+            'Y坐标': '31.093992 ',
+            '名次': '2',
+            '2017旅客吞吐量（人次）': '70,001,237 ',
+            '2016旅客吞吐量（人次）': '66,002,414 ',
+            '同比增速%': '3.5 ',
+            '2017货邮吞吐量（吨）': '3,824,279.9 ',
+            '2016货邮吞吐量（吨）': '3,440,279.7 ',
+            '2017起降架次（架次）': '496,774 ',
+            '2016起降架次（架次）': '479,902 ',
+            index: 1
+          },
+          geometry: { type: 'Point', coordinates: [Array] }
+        }
+      ]
+      const spy = jest.spyOn(viewModel._handler, '_createGraphicLayer');
+      viewModel.updateOverlayLayer(layerInfo, features);
+      expect(spy).toBeCalled();
+      const sourceData2 = data.map.getSource('浙江省高等院校(3)')._data.features;
+      expect(sourceData2.length).toBe(1);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
   it('add baselayer which is baidu', async done => {
     const callback = function (data) {
       expect(data).not.toBeUndefined();
