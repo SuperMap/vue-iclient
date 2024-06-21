@@ -1471,6 +1471,9 @@ export default class WebMapViewModel extends WebMapBase {
     };
     if (!this.map.getSource(layerID)) {
       this.map.addSource(layerID, source);
+    } else {
+      // @ts-ignore
+      this.map.getSource(layerID).setData(source.data);
     }
     const iconID = `imageIcon-${layerID}`;
     if (style.type === 'IMAGE_POINT') {
