@@ -142,7 +142,7 @@ describe('Legend.vue', () => {
     mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
   });
 
-  it('map not load', done => {
+  it('map not load', async done => {
     wrapper = mount(SmLegend);
     await wrapper.setProps({ layerNames: ['民航数据'] })
     await wrapper.vm.$nextTick();
