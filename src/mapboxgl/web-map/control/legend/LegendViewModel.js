@@ -20,8 +20,8 @@ class LegendViewModel extends mapboxgl.Evented {
   }
 
   getStyle(layerName) {
-    const appreciableLayers = this.webmap.getAppreciableLayers();
-    const legendInfo = this.webmap.getLegendInfo();
+    const appreciableLayers = this.webmap?.getAppreciableLayers() || [];
+    const legendInfo = this.webmap?.getLegendInfo() || [];
     return legendInfo.filter(info => {
       return (
         info.layerId === layerName &&

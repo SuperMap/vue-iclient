@@ -71,6 +71,8 @@ class WebMapV3 extends Evented {
     return this._generateLayerCatalog();
   }
 
+  copyLayer() {}
+
   clean() {}
 
   _initLayers() {

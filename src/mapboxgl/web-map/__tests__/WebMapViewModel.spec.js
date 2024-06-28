@@ -2435,6 +2435,21 @@ describe('WebMapViewModel.spec', () => {
     };
     viewModel.on({ addlayerssucceeded: callback });
   });
+
+  it('copy layer', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_geojson['MARKER_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const id = markerLayer;
+    const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const callback = function (data) {
+      expect(viewModel.copyLayer('layer1')).not.toThrow();
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
 });
 
 

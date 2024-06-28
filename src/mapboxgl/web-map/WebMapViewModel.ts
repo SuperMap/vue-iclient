@@ -80,6 +80,7 @@ interface MapHandler {
   _updateRasterSource?: (sourceId: string, options: { tileSize: number }) => void;
   echartsLayerResize?: () => void;
   updateOverlayLayer?: (layerInfo: Record<string, any>, features: any, mergeByField?: string) => void;
+  copyLayer?: (id: string, layerInfo: Record<string, any>) => boolean;
 }
 
 export default class WebMapViewModel extends Events {
@@ -690,5 +691,9 @@ export default class WebMapViewModel extends Events {
       ids.push(...item.renderLayers);
       return ids;
     }, []);
+  }
+
+  copyLayer(id: string, layerInfo: Record<string, any>) {
+    return this._handler?.copyLayer?.(id, layerInfo);
   }
 }
