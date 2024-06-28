@@ -27,6 +27,7 @@ import proj4 from 'proj4';
  * @param {string} [options.accessToken] - 用于访问 SuperMap iPortal 、SuperMap Online 中受保护的服务。当设置 `id` 时有效。
  * @param {string} [options.accessKey] - SuperMap iServer 提供的一种基于 Token（令牌）的用户身份验证机制。当设置 `id` 时有效。
  * @param {String} [options.tiandituKey] - 用于访问天地图的服务。当设置 `id` 时有效。
+ * @param {String} [options.bingMapsKey] - 用于访问必应地图的服务。当设置 `id` 时有效。
  * @param {String} [options.googleMapsAPIKey] - 用于访问谷歌地图。当设置 `id` 时有效。
  * @param {String} [options.googleMapsLanguage] - 用于定义在谷歌地图图块上显示标签的语言。当设置 `id` 且底图为谷歌地图时有效。
  * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。当设置 `id` 时有效。
@@ -44,6 +45,7 @@ interface webMapOptions {
   accessToken?: string;
   accessKey?: string;
   tiandituKey?: string;
+  bingMapsKey?: string;
   googleMapsAPIKey?: string;
   googleMapsLanguage?: string;
   withCredentials?: boolean;
@@ -697,11 +699,29 @@ export default class WebMap extends WebMapBase {
       });
   }
 
-  private _createBingLayer(layerName: string, layerInfo: any, addedCallback?: Function): void {
-    const bingUrl =
-      'https://dynamic.t0.tiles.ditu.live.com/comp/ch/{quadkey}?it=G,TW,L,LA&mkt=zh-cn&og=109&cstl=w4c&ur=CN&n=z';
+  private async _createBingLayer(layerName: string, layerInfo: any, addedCallback?: Function): Promise<void> {
+    let metaInfoUrl =
+      `https://dev.virtualearth.net/REST/v1/Imagery/Metadata/RoadOnDemand?uriScheme=https&include=ImageryProviders&key=${this.bingMapsKey}&c=zh-cn`;
+    const metaInfo = await this._fetchRequest(metaInfoUrl, 'json', {
+      withoutFormatSuffix: true
+    });
+    if (
+      metaInfo.statusCode !== 200 ||
+      metaInfo.resourceSets.length !== 1 ||
+      metaInfo.resourceSets[0].resources.length !== 1
+    ) {
+      return;
+    }
+    const resource = metaInfo.resourceSets[0].resources[0];
+    const urls = [];
+    resource.imageUrlSubdomains.map(function (subdomain) {
+      const imageUrl = resource.imageUrl
+        .replace('{subdomain}', subdomain);
+      urls.push(imageUrl);
+    });
+
     // @ts-ignore
-    this._addBaselayer([bingUrl], layerName, layerInfo.visible);
+    this._addBaselayer(urls, layerName, layerInfo.visible);
     addedCallback && addedCallback();
   }
 
@@ -2735,7 +2755,7 @@ export default class WebMap extends WebMapBase {
     return epsgCode;
   }
 
-  private _fetchRequest(url: any, type: string, options: Object) {
+  private _fetchRequest(url: any, type: string, options?: Object) {
     return SuperMap.FetchRequest.get(url, null, options)
       .then(response => {
         return response[type]();

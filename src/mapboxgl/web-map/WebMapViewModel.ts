@@ -43,6 +43,7 @@ interface webMapOptions {
   accessToken?: string;
   accessKey?: string;
   tiandituKey?: string;
+  bingMapsKey?: string;
   googleMapsAPIKey?: string;
   googleMapsLanguage?: string;
   withCredentials?: boolean;

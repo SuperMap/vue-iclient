@@ -131,6 +131,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop() accessToken: string;
   @Prop() accessKey: string;
   @Prop() tiandituKey: string;
+  @Prop() bingMapsKey: string;
   @Prop() googleMapsAPIKey: string;
   @Prop({ default: 'zh-CN' }) googleMapsLanguage: string;
   @Prop({ default: false }) withCredentials: boolean;
@@ -324,6 +325,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       accessKey,
       tiandituKey,
       googleMapsLanguage,
+      bingMapsKey,
       googleMapsAPIKey,
       withCredentials,
       excludePortalProxyUrl,
@@ -341,6 +343,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         accessKey,
         tiandituKey,
         googleMapsLanguage,
+        bingMapsKey,
         googleMapsAPIKey,
         withCredentials,
         excludePortalProxyUrl,

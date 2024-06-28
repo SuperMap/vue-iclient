@@ -30,6 +30,8 @@ export default abstract class WebMapBase extends Events {
 
   tiandituKey: string;
 
+  bingMapsKey: string;
+
   googleMapsAPIKey: string;
 
   googleMapsLanguage: string;
@@ -81,6 +83,7 @@ export default abstract class WebMapBase extends Events {
     this.accessKey = options.accessKey;
     this.tiandituKey = options.tiandituKey || '';
     this.googleMapsAPIKey = options.googleMapsAPIKey || '';
+    this.bingMapsKey = options.bingMapsKey || '';
     this.googleMapsLanguage = options.googleMapsLanguage || 'zh-CN';
     this.withCredentials = options.withCredentials || false;
     this.proxy = options.proxy;

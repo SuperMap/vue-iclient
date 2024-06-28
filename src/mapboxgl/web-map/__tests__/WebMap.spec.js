@@ -745,5 +745,57 @@ describe('WebMap.vue', () => {
     await mapWrapperLoaded(wrapper);
     await flushPromises();
   });
+
+  it('bing map', async done => {
+    const metaInfo = {
+      resourceSets: [
+        {
+            "resources": [
+                {
+                    "__type": "ImageryMetadata:http://schemas.microsoft.com/search/local/ws/rest/v1",
+                    "imageHeight": 256,
+                    "imageUrl": "https://{subdomain}.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z",
+                    "imageUrlSubdomains": [
+                        "t0",
+                        "t1",
+                        "t2",
+                        "t3"
+                    ],
+                    "imageWidth": 256,
+                }
+            ]
+        }
+    ],
+      statusCode: 200,
+      statusDescription: "OK"
+    }
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/maps/1234/map.json': baseLayers['BING'],
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://dev.virtualearth.net/REST/v1/Imagery/Metadata/RoadOnDemand?uriScheme=https&include=ImageryProviders&key=AhOVlIlR89XkNyDsXBAb7TjabrEokPoqhjk4ncLm9cQkJ5ae_JyhgV1wMcWnVrko&c=zh-cn': metaInfo
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '1234',
+        bingMapsKey: 'AhOVlIlR89XkNyDsXBAb7TjabrEokPoqhjk4ncLm9cQkJ5ae_JyhgV1wMcWnVrko'
+      },
+    });
+    const callback = jest.fn();
+    wrapper.vm.viewModel.on({ addlayerssucceeded: callback });
+    await mapWrapperLoaded(wrapper);
+    const addBaseLayer = jest.spyOn(wrapper.vm.viewModel._handler, '_addBaselayer');
+    await flushPromises();
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(addBaseLayer).toHaveBeenCalledWith([
+      'https://t0.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z',
+      'https://t1.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z',
+      'https://t2.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z',
+      'https://t3.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z'
+    ], '必应地图', undefined);
+    done();
+  });
 });
 
