@@ -142,27 +142,12 @@ describe('Legend.vue', () => {
     mapWrapper.vm.viewModel.on({ addlayerssucceeded: addCallback });
   });
 
-  it('map not load', async done => {
-    const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
-      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
-        layerData
-    };
-    mockFetch(fetchResource);
-    mapWrapper = mount(SmWebMap, {
-      propsData: {
-        serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
-      }
-    });
-    const addCallback = async function (data) {
-      wrapper = mount(SmLegend);
-      await wrapper.setProps({ layerNames: ['民航数据'] })
-      await wrapper.vm.$nextTick();
-      expect(wrapper.vm.legendList['民航数据']).toBeUndefined();
-      done();
-    };
+  it('map not load', done => {
+    wrapper = mount(SmLegend);
+    await wrapper.setProps({ layerNames: ['民航数据'] })
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.legendList['民航数据']).toBeUndefined();
+    done();
   });
 });
 

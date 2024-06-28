@@ -2445,7 +2445,9 @@ describe('WebMapViewModel.spec', () => {
     const id = markerLayer;
     const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
-      expect(viewModel.copyLayer('layer1')).not.toThrow();
+      expect(() => {
+        viewModel.copyLayer('layer1');
+      }).not.toThrow();
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
