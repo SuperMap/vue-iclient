@@ -1760,11 +1760,39 @@ describe('WebMapViewModel.spec', () => {
 
   it('add baselayer which is bing', async done => {
     jest.useFakeTimers();
+    const metaInfo = {
+      resourceSets: [
+        {
+            "resources": [
+                {
+                    "__type": "ImageryMetadata:http://schemas.microsoft.com/search/local/ws/rest/v1",
+                    "imageHeight": 256,
+                    "imageUrl": "https://{subdomain}.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z",
+                    "imageUrlSubdomains": [
+                        "t0",
+                        "t1",
+                        "t2",
+                        "t3"
+                    ],
+                    "imageWidth": 256,
+                }
+            ]
+        }
+    ],
+      statusCode: 200,
+      statusDescription: "OK"
+    }
+    const fetchResource = {
+      'https://dev.virtualearth.net/REST/v1/Imagery/Metadata/RoadOnDemand?uriScheme=https&include=ImageryProviders&key=AhOVlIlR89XkNyDsXBAb7TjabrEokPoqhjk4ncLm9cQkJ5ae_JyhgV1wMcWnVrko&c=zh-cn': metaInfo
+    };
+    mockFetch(fetchResource);
     const callback = function (data) {
       expect(data).not.toBeUndefined();
       done();
     };
-    const viewModel = new WebMapViewModel(baseLayers['BING']);
+    const viewModel = new WebMapViewModel(baseLayers['BING'], {
+      bingMapsKey: 'AhOVlIlR89XkNyDsXBAb7TjabrEokPoqhjk4ncLm9cQkJ5ae_JyhgV1wMcWnVrko'
+    });
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     jest.advanceTimersByTime(0);
