@@ -100,7 +100,7 @@ export default new Vue({
         this.collectCatalogsKeys(data.children, list);
         continue;
       }
-      list.push(data.renderSource.id || data.id);
+      list.push(data.renderSource?.id || data.id);
     }
     return list;
   }
