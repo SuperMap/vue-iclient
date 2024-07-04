@@ -47,7 +47,6 @@ import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
-import difference from 'lodash.difference';
 
 export default {
   name: 'SmLayerManager',
@@ -103,6 +102,12 @@ export default {
   },
   created() {
     this.viewModel = new LayerManagerViewModel();
+    this.viewModel.on('layersadded', this.addMapCombination);
+    this.viewModel.on('layersremoved', this.removeMapCombination);
+  },
+  beforeDestroy() {
+    this.viewModel.off('layersadded', this.addMapCombination);
+    this.viewModel.off('layersremoved', this.removeMapCombination);
   },
   methods: {
     checkNode(key, e) {
@@ -134,7 +139,6 @@ export default {
         const data = e.node.dataRef;
         this.viewModel.removeLayerLoop(data);
       }
-      this.updateMapCombinations();
     },
     addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy }) {
       if (!this.mapIsLoad) {
@@ -212,25 +216,14 @@ export default {
           this.removeIServerLayer(key);
           this.removeMapStyle(key);
         });
-        this.updateMapCombinations();
       }
       this.checkedKeys = [];
     },
-    updateMapCombinations() {
-      if (!this.prevSelectedKeys) {
-        this.prevSelectedKeys = [];
-      }
-      const cacheMaps = this.viewModel.getCacheMaps();
-      const currentSelectedKeys = Object.keys(cacheMaps);
-      const addedKeys = difference(currentSelectedKeys, this.prevSelectedKeys);
-      addedKeys.forEach(key => {
-        mapEvent.$options.setWebMap(this.getTargetName(), cacheMaps[key], key);
-      });
-      const removedKeys = difference(this.prevSelectedKeys, currentSelectedKeys);
-      removedKeys.forEach(key => {
-        mapEvent.$options.deleteWebMap(this.getTargetName(), key);
-      });
-      this.prevSelectedKeys = currentSelectedKeys;
+    addMapCombination({ nodeKey, nodeValue }) {
+      mapEvent.$options.setWebMap(this.getTargetName(), nodeValue, nodeKey);
+    },
+    removeMapCombination({ nodeKey }) {
+      mapEvent.$options.deleteWebMap(this.getTargetName(), nodeKey);
     }
   },
   loaded() {

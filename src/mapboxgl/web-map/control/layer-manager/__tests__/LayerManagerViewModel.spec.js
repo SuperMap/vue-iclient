@@ -121,6 +121,11 @@ describe('LayerManagerViewModel', () => {
     viewModel.addLayer(data);
     expect(viewModel.mapQuene.length).toBe(1);
     expect(viewModel.mapQuene[0].nodeKey).toBe(nodeKey);
+    data.nodeKey = nodeKey;
+    viewModel.readyNext = false;
+    viewModel.addLayer(data);
+    expect(viewModel.mapQuene.length).toBe(1);
+    expect(viewModel.mapQuene[0].nodeKey).toBe(nodeKey);
   });
 
   it('removeLayerLoop', () => {
@@ -163,6 +168,35 @@ describe('LayerManagerViewModel', () => {
     expect(() => {
       viewModel.removeLayerLoop(layers[2]);
     }).not.toThrow();
+  });
+
+  it('layersadded', (done) => {
+    let nodeKey = 'key1';
+    const data = { nodeKey, mapId: 123, serviceUrl: 'http://fakeservice' };
+    expect(viewModel.cacheMaps[nodeKey]).toBeUndefined();
+    viewModel.addLayer(data);
+    expect(viewModel.cacheMaps[nodeKey]).not.toBeUndefined();
+    expect(viewModel.readyNext).toBeFalsy();
+    const layersAddedFn = jest.fn();
+    viewModel.on('layersadded', layersAddedFn);
+    viewModel.cacheMaps[nodeKey].triggerEvent('addlayerssucceeded', {});
+    expect(viewModel.readyNext).toBeTruthy();
+    expect(layersAddedFn).toHaveBeenCalledTimes(1);
+    done();
+  });
+
+  it('layersremoved', (done) => {
+    const layers = [
+      {
+        mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal', mapId: '801571284' },
+        title: '民航数据-单值'
+      }
+    ];
+    const layersRemovedFn = jest.fn();
+    viewModel.on('layersremoved', layersRemovedFn);
+    viewModel.removeLayerLoop(layers[0]);
+    expect(layersRemovedFn).toHaveBeenCalledTimes(1);
+    done();
   });
 });
 

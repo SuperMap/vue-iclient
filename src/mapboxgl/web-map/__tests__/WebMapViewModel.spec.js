@@ -1408,6 +1408,20 @@ describe('WebMapViewModel.spec', () => {
       expect(viewModel._cacheCleanLayers.length).not.toBe(0);
       viewModel.cleanLayers();
       expect(viewModel._cacheCleanLayers.length).toBe(0);
+      const getSourceSpy = jest.spyOn(data.map, 'getSource').mockImplementation(() => true);
+      const removeSourceSpy = jest.spyOn(data.map, 'removeSource');
+      viewModel._cacheCleanLayers = [{
+        renderLayers: ['layer1'],
+        renderSource: { id: 'source1' },
+        l7Layer: true
+      }, {
+        renderLayers: ['layer2'],
+        renderSource: { id: 'source2' }
+      }];
+      viewModel.cleanLayers();
+      expect(getSourceSpy).toHaveBeenCalledTimes(2);
+      expect(removeSourceSpy).toHaveBeenCalledTimes(1);
+      expect(viewModel._cacheCleanLayers.length).toBe(0);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -2361,7 +2375,7 @@ describe('WebMapViewModel.spec', () => {
         show: jest.fn(),
         hide: jest.fn() 
       };
-      const visibleLayers = [{renderLayers: [layers[0].id]}, { l7MarkerLayer }];
+      let visibleLayers = [{renderLayers: [layers[0].id]}, { l7MarkerLayer }];
       viewModel.updateLayersVisible(visibleLayers, 'visible');
       expect(spy1.mock.calls.length).toBe(1);
       expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
@@ -2369,6 +2383,10 @@ describe('WebMapViewModel.spec', () => {
       expect(spy1.mock.calls.length).toBe(2);
       expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
       expect(l7MarkerLayer.hide).toHaveBeenCalledTimes(1);
+      spy1.mockReset();
+      visibleLayers = [{ renderLayers: ['testlayer'], l7Layer: true }, { renderLayers: [layers[0].id] }];
+      viewModel.updateLayersVisible(visibleLayers, 'visible');
+      expect(spy1).toHaveBeenCalledTimes(1);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -2481,6 +2499,7 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 });
+
 
 
 

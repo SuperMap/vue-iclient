@@ -322,7 +322,7 @@ export default class WebMapViewModel extends Events {
           this.map.removeLayer(layerId);
         }
       });
-      if (this.map?.getSource(item.renderSource.id)) {
+      if (this.map?.getSource(item.renderSource.id) && !item.l7Layer) {
         sourceList.push(item.renderSource.id);
       }
     }
@@ -378,7 +378,7 @@ export default class WebMapViewModel extends Events {
         return;
       }
       layer.renderLayers.forEach((layerId: string) => {
-        if (!ignoreIds.some(id => id === layerId)) {
+        if (!ignoreIds.some(id => id === layerId) && (!layer.l7Layer || this.map.getLayer(layerId))) {
           this.map.setLayoutProperty(layerId, 'visibility', visibility);
         }
       });

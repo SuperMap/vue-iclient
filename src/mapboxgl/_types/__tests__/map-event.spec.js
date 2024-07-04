@@ -54,19 +54,19 @@ describe('map-event-mapboxgl', () => {
   it('webmap getLayerList', done => {
     const mainWebMap = {
       getLayerList: () => [
-        { id: 'layer1', renderSource: { id: 'source1' } },
+        { id: 'layer1', renderSource: { id: 'source1' }, renderLayers: ['layer1'] },
+        { id: 'layer1-label', renderSource: { id: 'source1' }, renderLayers: ['layer1-label'] },
         { id: 'layer5', renderSource: { id: 'source5' } },
         {
           id: 'layer3',
           type: 'group',
-          renderSource: {},
           children: [{ id: 'sourceLayer', renderSource: { id: 'source2', sourceLayer: 'sourceLayer2' } }]
         }
       ]
     };
     const webmap2 = {
       getLayerList: () => [
-        { id: 'layer1', renderSource: { id: 'source1' } },
+        { id: 'layer1', renderSource: { id: 'source1' }, renderLayers: ['layer1', 'layer1-label'] },
         {
           id: 'layer2',
           renderSource: {},

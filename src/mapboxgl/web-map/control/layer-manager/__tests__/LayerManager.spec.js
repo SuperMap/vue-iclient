@@ -7,6 +7,7 @@ import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import flushPromises from 'flush-promises';
 import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 const layers = [
   {
@@ -150,6 +151,28 @@ describe('LayerManager.vue', () => {
       layers: mapStyleLayers
     });
     expect(wrapper.vm.layers.length).toBe(1);
+    done();
+  });
+
+  it('toggle mapCombination', async done => {
+    wrapper = mount(SmLayerManager, {
+      propsData: {
+        defaultExpandAll: true,
+        mapTarget: 'map',
+        layers: [
+          {
+            mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal', mapId: '801571284' },
+            title: '民航数据-单值'
+          }
+        ]
+      }
+    });
+    const setWebMapSpy = jest.spyOn(mapEvent.$options, 'setWebMap').mockImplementation(() => {});
+    const removeWebMapSpy = jest.spyOn(mapEvent.$options, 'deleteWebMap').mockImplementation(() => {});
+    wrapper.vm.viewModel.fire('layersadded', { nodeKey: '1', nodeValue: {} });
+    expect(setWebMapSpy).toHaveBeenCalled();
+    wrapper.vm.viewModel.fire('layersremoved', { nodeKey: '2' });
+    expect(removeWebMapSpy).toHaveBeenCalled();
     done();
   });
 });

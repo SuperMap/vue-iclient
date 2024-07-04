@@ -100,7 +100,15 @@ export default new Vue({
         this.collectCatalogsKeys(data.children, list);
         continue;
       }
-      list.push(data.renderSource?.id || data.id);
+      let ids = [];
+      if (data.renderLayers?.length) {
+        ids.push(...data.renderLayers);
+      } else if (data.renderSource?.id) {
+        ids.push(data.renderSource.id);
+      } else {
+        ids.push(data.id);
+      }
+      list.push(...ids);
     }
     return list;
   }

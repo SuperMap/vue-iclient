@@ -29,17 +29,19 @@ class LayerManageViewModel extends mapboxgl.Evented {
     }
 
     if (!this.readyNext) {
-      this.mapQuene.push({
-        nodeKey,
-        mapId,
-        serverUrl,
-        withCredentials,
-        layerFilter,
-        proxy
-      });
+      if (!this.mapQuene.some(item => item.nodeKey === nodeKey)) {
+        this.mapQuene.push({
+          nodeKey,
+          mapId,
+          serverUrl,
+          withCredentials,
+          layerFilter,
+          proxy
+        });
+      }
       return;
     }
-    this.webMapViewModel = new WebMapViewModel(
+    const webMapViewModel = new WebMapViewModel(
       mapId,
       {
         serverUrl,
@@ -52,12 +54,15 @@ class LayerManageViewModel extends mapboxgl.Evented {
       layerFilter
     );
 
+    this.webMapViewModel = webMapViewModel;
+
     // 设置 readyNext 为 false
     this.readyNext = false;
     this.webMapViewModel.on({
       addlayerssucceeded: () => {
         // 设置 readyNext 为 true
         // 判断 是否缓存数组里有值，取出最新的，调用this.addLayer();
+        this.fire('layersadded', { nodeKey, nodeValue: webMapViewModel });
         this.handleNextMap();
       }
     });
@@ -102,7 +107,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       description: '',
       projection,
       title: 'dv-tile',
-      version: '2.3.0',
+      version: '2.3.0'
     };
     this.addLayer({ nodeKey, mapId: mapInfo });
   }
@@ -123,6 +128,7 @@ class LayerManageViewModel extends mapboxgl.Evented {
       this.cacheMaps[nodeKey].cleanLayers();
       delete this.cacheMaps[nodeKey];
     }
+    this.fire('layersremoved', { nodeKey });
   }
 
   removeIServerLayer(nodeKey) {
@@ -172,6 +178,3 @@ class LayerManageViewModel extends mapboxgl.Evented {
   }
 }
 export default LayerManageViewModel;
-
-
-
