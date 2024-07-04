@@ -19,3 +19,12 @@
 | splitLine    | 搜索框与查询结果的分割线                | boolean                 | -                      | true                                                     |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
+
+### Events
+
+| name   | 说明                           | 回调参数          |
+| :----- | :----------------------------- | :---------------- |
+| search-succeeded | 搜索成功后触发 | function({searchResult}) |
+| search-failed | 搜索失败后触发 | function(e) |
+| search-selected-info | 点击搜索结果时触发 | function(data) |
+| clear-search-result | 清除搜索时触发 | function() |

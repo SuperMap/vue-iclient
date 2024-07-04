@@ -61,3 +61,12 @@ export default {
 | notify         | 是否开启操作提示                                       | boolean                                                       | -                                                                                                                                                                   | true                                                                                                                                                    |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
+
+### Events
+
+| name   | 说明                           | 回调参数          |
+| :----- | :----------------------------- | :---------------- |
+| open-file-succeeded | 打开文件成功后触发 | function(result) |
+| open-file-failed | 打开文件失败后触发 | function(e) |
+| error-file-format | 文件格式不支持时触发 | function(e) |
+| open-empty-file | 文件内容为空时触发 | function(result) |

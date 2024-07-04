@@ -158,3 +158,13 @@
   }
 ]
 ```
+
+### Events
+
+| name | 说明               | 回调参数                                                                         |
+| :--- | :----------------- | :------------------------------------------------------------------------------- |
+| contentChange | 列表内容变化时触发 | function(content) |
+| cell-click | 鼠标点击数据行时触发 | function(item, rowIndex, event) |
+| cell-mouse-enter | 鼠标移入数据行时触发 | function(item, rowIndex, event) |
+| cell-mouse-leave | 鼠标移出数据行时触发 | function(item, rowIndex, event) |
+
