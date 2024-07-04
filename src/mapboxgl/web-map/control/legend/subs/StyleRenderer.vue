@@ -168,6 +168,7 @@ export default {
           this.drawLines(canvas, ctx);
           break;
         }
+        case 'fill':
         case 'rectangle': {
           const { color, backgroundColor = color, outlineColor = backgroundColor } = this.styleRendererData;
           ctx.fillStyle = backgroundColor;
