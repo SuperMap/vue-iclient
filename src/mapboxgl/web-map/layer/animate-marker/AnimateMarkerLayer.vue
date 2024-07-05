@@ -55,7 +55,7 @@ class AnimateMarkerLayer extends Mixins(MapGetter, Layer) {
 
   @Prop() textField: string;
 
-  @Prop() fitBounds: boolean = true;
+  @Prop({ default: true }) fitBounds: boolean;
 
   @Watch('features')
   featuresChanged(newVal, oldVal) {
