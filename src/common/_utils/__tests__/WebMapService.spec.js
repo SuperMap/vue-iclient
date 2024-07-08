@@ -769,4 +769,17 @@ describe('WebMapService.spec', () => {
       done();
     });
   });
+
+  it('handleWithCredentials', () => {
+    const mapId = uniqueLayer_polygon;
+    const service = new WebMapService(mapId, { ...options, iportalServiceProxyUrlPrefix: 'https://fakeiportal.supermap.io/portalproxy' });
+    expect(service.handleWithCredentials(null, 'https://www.supermapol.com/url', true)).toBe('');
+    const url = 'http://fakeurl';
+    expect(service.handleWithCredentials('https://fakeiportal.supermap.io/iportal/proxy', null, false)).toBeTruthy();
+    expect(service.handleWithCredentials('https://fakeiportal.supermap.io/iportal/proxy', 'https://fakeiportal.supermap.io/iportal/proxy/url', false)).toBeTruthy();
+    expect(service.handleWithCredentials('https://fakeiportal/proxy', null, true)).toBeTruthy();
+    expect(service.handleWithCredentials(null, 'https://fakeiportal.supermap.io/portalproxy/url', false)).toBeTruthy();
+    expect(service.handleWithCredentials(null, url, true)).toBeTruthy();
+    expect(service.handleWithCredentials(null, url)).toBeFalsy();
+  });
 });

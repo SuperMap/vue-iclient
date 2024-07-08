@@ -1010,7 +1010,10 @@ export default class WebMapService extends Events {
     return proxy;
   }
 
-  public handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean {
+  public handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean | string {
+    if (serviceUrl?.includes('https://www.supermapol.com')) {
+      return '';
+    }
     if (proxyUrl && proxyUrl.startsWith(this.serverUrl) && (!serviceUrl || serviceUrl.startsWith(proxyUrl))) {
       return true;
     }
