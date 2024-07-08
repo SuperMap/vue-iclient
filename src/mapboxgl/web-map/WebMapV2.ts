@@ -1214,6 +1214,11 @@ export default class WebMap extends WebMapBase {
       return;
     }
     const labelStyle = layerInfo.labelStyle;
+    const properties = features[0]?.properties;
+    const textField = labelStyle.labelField.replace(/{(.+)}/g, '$1');
+    if (!properties || !properties[textField]) {
+      return;
+    }
     let { backgroundFill } = labelStyle;
     const fontFamily = labelStyle.fontFamily;
     const { minzoom, maxzoom } = layerInfo;
