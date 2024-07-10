@@ -1100,6 +1100,7 @@ export default class WebMap extends WebMapBase {
   }
 
   private _createMigrationLayer(layerInfo, features) {
+    const { layerID, layerType } = layerInfo;
     // @ts-ignore
     window.echarts = echarts;
     const options = this.getEchartsLayerOptions(layerInfo, features, 'GLMap');
@@ -1108,6 +1109,19 @@ export default class WebMap extends WebMapBase {
     const echartslayer = new EchartsLayer(this.map);
     echartslayer.chart.setOption(options);
     this.echartslayer.push(echartslayer);
+    this._addLayer({
+      id: layerID,
+      type: layerType,
+      setLayoutProperty(name, value) {
+        if (name === 'visibility') {
+          if (value === 'visible') {
+            echartslayer.chart._dom.style.display = 'block';
+          } else {
+            echartslayer.chart._dom.style.display = 'none';
+          }
+        }
+      }
+    });
     this._addLayerSucceeded({ layerInfo, features });
   }
 
@@ -2791,7 +2805,7 @@ export default class WebMap extends WebMapBase {
   private _addLayer(layerInfo) {
     const { id } = layerInfo;
     layerInfo = Object.assign(layerInfo, { id });
-    if(!this._cacheLayerId.has(id)) {
+    if (!this._cacheLayerId.has(id)) {
       this._cacheLayerId.set(id, [{ layerId: id, name: layerInfo.name }]);
     }
 
