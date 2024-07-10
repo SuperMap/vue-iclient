@@ -422,8 +422,8 @@ export default {
           borderRadius: 2
         };
         firstVisualMap &&
-          firstVisualMap.pieces.forEach(item => {
-            axisLabel.rich[`${parseInt(item.min)}_${parseInt(item.max)}`] = {
+          firstVisualMap.pieces.forEach((item, index) => {
+            axisLabel.rich[`color_${index}`] = {
               backgroundColor: item.color,
               width: 20,
               height: 20,
@@ -437,9 +437,33 @@ export default {
           const leftLabel = label.slice(orderNumLength);
           const labelValue = serieData && +serieData[index];
           if (firstVisualMap) {
-            const matchItem = firstVisualMap.pieces.find(item => labelValue >= item.min && labelValue <= item.max);
-            if (matchItem) {
-              return [`{${parseInt(matchItem.min)}_${parseInt(matchItem.max)}|${orderNum}}  ${leftLabel}`].join('\n');
+            const matchItemIndex = firstVisualMap.pieces.findIndex(item => {
+              let condition = true;
+              if (item.min) {
+                condition = condition && labelValue >= item.min;
+              }
+              if (item.max) {
+                condition = condition && labelValue <= item.max;
+              }
+              if (item.lte) {
+                condition = condition && labelValue <= item.lte;
+              }
+              if (item.gte) {
+                condition = condition && labelValue >= item.gte;
+              }
+              if (item.lt) {
+                condition = condition && labelValue < item.lt;
+              }
+              if (item.gt) {
+                condition = condition && labelValue > item.gt;
+              }
+              if (item.value) {
+                condition = condition && labelValue === item.value;
+              }
+              return condition;
+            });
+            if (matchItemIndex > -1) {
+              return [`{color_${matchItemIndex}|${orderNum}}  ${leftLabel}`].join('\n');
             }
           }
           return [`{default|${orderNum}}  ${leftLabel}`].join('\n');

@@ -307,7 +307,7 @@ describe('Chart Mixin Component', () => {
     jest.useRealTimers();
   });
 
-  it('render rankBar chart', async () => {
+  it('render rankBar chart', async (done) => {
     const serieItem = {
       name: 'sale',
       emphasis: {
@@ -375,8 +375,27 @@ describe('Chart Mixin Component', () => {
             pieces: [
               {
                 min: 0,
-                max: 3000,
+                max: 500,
+                color: 'blue'
+              },
+              {
+                min: 800,
+                lt: 1842,
                 color: 'green'
+              },
+              {
+                gt: 1842,
+                max: 3400,
+                color: 'gray'
+              },
+              {
+                value: 1842,
+                color: 'purple'
+              },
+              {
+                lte: 4200,
+                gte: 3617,
+                color: 'pink'
               }
             ],
             outOfRange: {
@@ -388,6 +407,11 @@ describe('Chart Mixin Component', () => {
       }
     });
     expect(spyOptionHandlerFn).toHaveBeenCalled();
+    wrapper.vm.echartOptions.visualMap[0].pieces.forEach((item, index) => {
+      expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.rich[`color_${index}`]).not.toBeUndefined();
+    });
+    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('1Thu', 5)).toEqual([`{color_4|2}  Thu`].join('\n'))
+    done();
   });
 
   describe('render special chart which type is 2.5Bar', () => {
