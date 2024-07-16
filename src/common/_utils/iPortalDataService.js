@@ -152,7 +152,7 @@ export default class iPortalDataService extends Events {
 
         for (let i = maxFeatures; i < data.numberMatched;) {
           allRequest.push(
-            this._getStructureData(url, maxFeatures, i)
+            this._getStructureData(formatUrl, maxFeatures, i)
           );
           i += maxFeatures;
         }
