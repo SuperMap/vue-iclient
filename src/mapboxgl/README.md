@@ -8,7 +8,7 @@
 ## 安装
 
 ```
-npm install @supermap/vue-iclient-mapboxgl
+npm install @supermapgis/vue-iclient-mapboxgl
 ```
 
 ## 开发
@@ -17,7 +17,7 @@ npm install @supermap/vue-iclient-mapboxgl
 
 ```js
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 import App from './App.vue';
 
 Vue.use(VueiClient);

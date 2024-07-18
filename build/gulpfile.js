@@ -150,7 +150,7 @@ function compileCssjs(done) {
             file.contents = Buffer.from(
               content.replace(
                 `vue-iclient\/src\/${type}\/css.js`,
-                `@supermap/vue-iclient-${type}/dist/iclient-${type}-vue.min.css`
+                `@supermapgis/vue-iclient-${type}/dist/iclient-${type}-vue.min.css`
               )
             );
           }
@@ -201,11 +201,11 @@ function _cssjs(file, encoding) {
       .replace(/(\.\.\/)+(.*)_utils\//g, './_utils')
       .replace(
         /vue-iclient\/src\/mapboxgl\/tdt\/results\/style/g,
-        `@supermap/vue-iclient-${type}/lib/_utils/style/tdt-results`
+        `@supermapgis/vue-iclient-${type}/lib/_utils/style/tdt-results`
       )
-      .replace(/vue-iclient\/src\/mapboxgl/, `@supermap/vue-iclient-${type}/lib`)
-      .replace(/vue-iclient\/src\/common\//g, `@supermap/vue-iclient-${type}/lib/`)
-      .replace(/vue-iclient\/static\//g, `@supermap/vue-iclient-${type}/static/`)
+      .replace(/vue-iclient\/src\/mapboxgl/, `@supermapgis/vue-iclient-${type}/lib`)
+      .replace(/vue-iclient\/src\/common\//g, `@supermapgis/vue-iclient-${type}/lib/`)
+      .replace(/vue-iclient\/static\//g, `@supermapgis/vue-iclient-${type}/static/`)
       .replace(/\.less/g, '.css')
       .replace(/\.scss/g, '.css')
   );

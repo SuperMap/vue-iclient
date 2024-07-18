@@ -5,7 +5,7 @@
 ## LayerStyle
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let layerStyle = {
   circle: new VueiClient.commontypes.CircleStyle(
@@ -78,7 +78,7 @@ let layerStyle = {
 ## CircleStyle
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let circleStyle = new VueiClient.commontypes.CircleStyle(
   {
@@ -110,7 +110,7 @@ let circleStyle = new VueiClient.commontypes.CircleStyle(
 ## LineStyle
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let lineStyle = new VueiClient.commontypes.LineStyle(
   {
@@ -137,7 +137,7 @@ let lineStyle = new VueiClient.commontypes.LineStyle(
 ## FillStyle
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let fillStyle = new VueiClient.commontypes.FillStyle(
   {
@@ -166,7 +166,7 @@ let fillStyle = new VueiClient.commontypes.FillStyle(
 symbol 样式
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let symbolStyle = new VueiClient.commontypes.SymbolStyle(
   {
@@ -196,7 +196,7 @@ let symbolStyle = new VueiClient.commontypes.SymbolStyle(
 热力图样式
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let heatMapStyle = new VueiClient.commontypes.HeatMapStyle(
   {
@@ -236,7 +236,7 @@ let heatMapStyle = new VueiClient.commontypes.HeatMapStyle(
 ## iServerMapParameter
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let iServerMapParameter = new VueiClient.commontypes.iServerMapParameter({
   url: 'http://support.supermap.com.cn:8090/iserver/services/map-world/rest/maps/World',
@@ -258,7 +258,7 @@ let iServerMapParameter = new VueiClient.commontypes.iServerMapParameter({
 ## iServerDataParameter
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let iServerDataParameter = new VueiClient.commontypes.iServerDataParameter({
   url: host + 'http://support.supermap.com.cn:8090/iserver/services/data-world/rest/data',
@@ -280,7 +280,7 @@ let iServerDataParameter = new VueiClient.commontypes.iServerDataParameter({
 ## iPortalDataParameter
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let iPortalDataParameter = new VueiClient.commontypes.iPortalDataParameter({
   url: 'https://iportal.supermap.io/iportal/web/datas/676516522',
@@ -299,7 +299,7 @@ let iPortalDataParameter = new VueiClient.commontypes.iPortalDataParameter({
 ## GeoJSONParameter
 
 ```js
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 let geoJSONParameter = new VueiClient.commontypes.GeoJSONParameter({
   geoJSON: {

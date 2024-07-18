@@ -24,9 +24,9 @@ module.exports = {
   ],
   webpackFinal: async (config, { configType }) => {
     config.resolve.alias['vue-iclient'] = resolve('./');
-    config.resolve.alias['@supermap/vue-iclient-mapboxgl/static'] = resolve('./static');
-    config.resolve.alias['@supermap/vue-iclient-mapboxgl/lib'] = resolve('./lib/mapboxgl');
-    config.resolve.alias['@supermap/vue-iclient-mapboxgl'] = resolve('./lib/mapboxgl');
+    config.resolve.alias['@supermapgis/vue-iclient-mapboxgl/static'] = resolve('./static');
+    config.resolve.alias['@supermapgis/vue-iclient-mapboxgl/lib'] = resolve('./lib/mapboxgl');
+    config.resolve.alias['@supermapgis/vue-iclient-mapboxgl'] = resolve('./lib/mapboxgl');
     config.optimization = {
       splitChunks: {
         chunks: 'all',
@@ -36,7 +36,7 @@ module.exports = {
     };
     config.externals = [
       function (context, request, callback) {
-        if (request === '@supermap/vue-iclient-mapboxgl') {
+        if (request === '@supermapgis/vue-iclient-mapboxgl') {
           return callback(null, {});
         }
         callback();
@@ -53,7 +53,7 @@ module.exports = {
           [
             'import',
             {
-              libraryName: '@supermap/vue-iclient-mapboxgl',
+              libraryName: '@supermapgis/vue-iclient-mapboxgl',
               style: name => {
                 return `${name}/style/css`;
               },
