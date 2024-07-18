@@ -23,6 +23,10 @@ export function hexToRgba(hex, opacity) {
     ')'
   );
 }
+export function formatFontSize(fontSize) {
+  return typeof fontSize === 'number' ? fontSize + 'px' : fontSize;
+}
+
 export function isTransparent(color) {
   const rgba = colorcolor(color, 'rgba');
   return +rgba.match(/(\d(\.\d+)?)+/g)[3] === 0;

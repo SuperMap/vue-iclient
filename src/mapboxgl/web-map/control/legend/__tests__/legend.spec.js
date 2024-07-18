@@ -2,6 +2,7 @@ import { mount } from '@vue/test-utils';
 import SmLegend from '../Legend.vue';
 import StyleRenderer from '../subs/StyleRenderer.vue';
 import ImageRenderer from '../subs/ImageRenderer.vue';
+import StyleValue from '../subs/StyleValue.vue';
 import mapLegends from 'vue-iclient/test/unit/mocks/data/WebMap/map_legends.json';
 import flushPromises from 'flush-promises';
 import SmWebMap from '../../../WebMap';
@@ -104,6 +105,7 @@ describe('Legend.vue', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     expect(wrapper.find(StyleRenderer).exists()).toBeTruthy();
     expect(wrapper.find(ImageRenderer).exists()).toBeTruthy();
+    expect(wrapper.find(StyleValue).exists()).toBeTruthy();
     jest.useRealTimers();
     done();
   });

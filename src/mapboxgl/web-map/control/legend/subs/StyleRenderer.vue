@@ -31,7 +31,7 @@
 <script>
 import uniqueId from 'lodash.uniqueid';
 import omit from 'omit.js';
-import { hexToRgba } from 'vue-iclient/src/common/_utils/util';
+import { hexToRgba, formatFontSize } from 'vue-iclient/src/common/_utils/util';
 
 export default {
   props: {
@@ -108,6 +108,9 @@ export default {
       return { backgroundImage: `linear-gradient(90deg, ${colors})` };
     },
     cssStyle() {
+      if (this.shapeType === 'text') {
+        return { fontSize: formatFontSize(this.styleRendererData.textSize) };
+      }
       return omit(this.styleRendererData, ['type', 'shape', 'icon', 'colors']);
     }
   },

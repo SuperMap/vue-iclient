@@ -144,6 +144,8 @@ export default {
     opacity: 'Opacity',
     width: 'Width',
     outlineColor: 'Outline Color',
+    haloColor: 'Halo Color',
+    label: 'Label',
     parentheses: '({tips})',
     colon: ':'
   },

@@ -1,10 +1,12 @@
 <template>
-  <span class="sm-component-legend__fieldvalue add-ellipsis">
+  <span class="sm-component-legend__fieldvalue add-ellipsis" :style="textStyle">
     {{ fieldLabel }}
   </span>
 </template>
 
 <script>
+import { formatFontSize } from 'vue-iclient/src/common/_utils/util';
+
 export default {
   props: {
     styleData: {
@@ -13,6 +15,30 @@ export default {
     }
   },
   computed: {
+    isTextShapeType() {
+      return this.styleData.style.shape.toLowerCase() === 'text';
+    },
+    getTextShadow() {
+      return (textHaloWidth, textHaloBlur, textHaloColor) => {
+        const maxwidth = (textHaloBlur || 2) > (textHaloWidth || 2) ? textHaloBlur : textHaloWidth;
+        const width = maxwidth || 2;
+        textHaloColor = textHaloColor || '#242424';
+        return `2px 1px ${width}px ${textHaloColor} , 0 0 ${width}px ${textHaloColor}, 0 0 ${width}px ${textHaloColor}`;
+      };
+    },
+    textStyle() {
+      if (!this.isTextShapeType) {
+        return {};
+      }
+      const { textSize, textColor, textOpacity, textHaloColor, textHaloBlur, textHaloWidth, textFont } = this.styleData.style;
+      return {
+        fontSize: formatFontSize(textSize),
+        color: textColor,
+        opacity: textOpacity,
+        textShadow: this.getTextShadow(textHaloWidth, textHaloBlur, textHaloColor),
+        fontFamily: textFont
+      };
+    },
     fieldLabel() {
       if ('fieldValue' in this.styleData) {
         return this.styleData.fieldValue ?? this.$t('legend.themeDefault');

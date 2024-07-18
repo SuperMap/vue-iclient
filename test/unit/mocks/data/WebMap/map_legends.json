@@ -283,6 +283,29 @@
         }
       }
     ]
+  },
+  {
+  "themeField":"smpid",
+  "layerId":"未命名数据(3)",
+  "layerTitle":"未命名数据(3)",
+  "styleField":"textSize",
+  "styleGroup":[
+    {
+      "fieldValue":1,
+      "style":{
+        "type":"style",
+        "icon":"supermapol-icons-text-layer",
+        "textSize":8,
+        "textColor":"#FFFFFF",
+        "textOpacity":1,
+        "textHaloColor":"rgba(233,217,217,1)",
+        "textHaloBlur":1,
+        "textHaloWidth":1,
+        "textFont":["SimSun"],
+        "shape":"TEXT"
+        }
+      }
+    ]
   }
 ]
 

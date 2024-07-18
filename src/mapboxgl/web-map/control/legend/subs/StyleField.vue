@@ -30,7 +30,11 @@ export default {
         size: this.$t('legend.size'),
         opacity: this.$t('legend.opacity'),
         width: this.$t('legend.width'),
-        outlineColor: this.$t('legend.outlineColor')
+        outlineColor: this.$t('legend.outlineColor'),
+        textSize: this.$t('legend.label') + '-' + this.$t('legend.size'),
+        textOpacity: this.$t('legend.label') + '-' + this.$t('legend.opacity'),
+        textColor: this.$t('legend.label') + '-' + this.$t('legend.color'),
+        textHaloColor: this.$t('legend.label') + '-' + this.$t('legend.haloColor')
       };
       return themeFieldText + this.$t('legend.parentheses', { tips: tips[this.styleField] });
     },
