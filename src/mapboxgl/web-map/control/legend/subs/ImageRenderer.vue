@@ -52,7 +52,7 @@ export default {
       } = this.styleRendererData;
       let displayWidth = sWidth;
       let displayHeight = sHeight;
-      let fillColor;
+      let fillColor = 'transparent';
       let repeatPattern = false;
       let displayIconWidth = 0;
       let displayIconHeight = 0;
