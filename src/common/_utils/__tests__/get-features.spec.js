@@ -149,4 +149,69 @@ describe('getFeatures test', () => {
       done();
     })
   });
+
+
+  it('getStructureddata without dataType param', (done) => {
+    const result1 = {
+      "timeStamp": "2024-05-13T10:00:45Z",
+      "features": [],
+      "numberReturned": 5000,
+      "numberMatched": 8000,
+      "type": "FeatureCollection"
+    }
+
+    for (let i = 0; i < 5000; i++) {
+      result1.features.push({
+        "geometry": {},
+        "id": i,
+        "type": "Feature"
+      })
+    }
+
+    const result2 = {
+      "timeStamp": "2024-05-13T10:00:45Z",
+      "features": [],
+      "numberReturned": 5000,
+      "numberMatched": 8000,
+      "type": "FeatureCollection"
+    }
+
+    for (let i = 0; i < 3000; i++) {
+      result2.features.push({
+        "geometry": {},
+        "id": i,
+        "type": "Feature"
+      })
+    }
+
+    const metadata = {
+      "type": "STRUCTUREDDATA"
+    }
+
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/web/datas/1832028287?parentResType=DATA&parentResId=1832028287': metadata,
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000': result1,
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000&offset=5000': result2
+    };
+    mockFetch(fetchResource);
+    const dataset = {
+      "dataItemServices": [],
+      "withCredentials": true,
+      "displayName": "ms_line-北京市轨道交通线路-打印",
+      "serviceStatus": "DOES_NOT_INVOLVE",
+      "name": "北京市轨道交通线路-打印",
+      "preferContent": false,
+      "updateTime": "2024-05-10 10:25:14",
+      "id": "1832028287",
+      "type": "iPortal",
+      "url": "https://fakeiportal.supermap.io/web/datas/1832028287",
+      "mapTarget": "map_1715590875444",
+      "maxFeatures": 8,
+      "attributeFilter": "SmID>0"
+    }
+    getFeatures(dataset).then((data) => {
+      expect(data.features.length).toBe(8000);
+      done();
+    })
+  });
 });

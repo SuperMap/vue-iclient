@@ -96,6 +96,10 @@ export default class iPortalDataService extends Events {
           });
           return;
         }
+        if (data.type === 'STRUCTUREDDATA') {
+          this._getStructureDatafromContent();
+          return;
+        }
         // 是否有rest服务
         if (data.dataItemServices && data.dataItemServices.length > 0) {
           let dataItemServices = data.dataItemServices;
