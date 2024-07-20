@@ -6,10 +6,10 @@ require('ant-design-vue/dist/antd.css');
 
 require('leaflet/dist/leaflet.css');
 
-require('@supermap/vue-iclient-leaflet/static/libs/iclient-leaflet/iclient-leaflet.min.css');
+require('@supermapgis/vue-iclient-leaflet/static/libs/iclient-leaflet/iclient-leaflet.min.css');
 
-require('@supermap/vue-iclient-leaflet/dist/iclient-leaflet-vue.css');
+require('@supermapgis/vue-iclient-leaflet/dist/iclient-leaflet-vue.css');
 
-var iclient = require('@supermap/vue-iclient-leaflet/dist/iclient-leaflet-vue');
+var iclient = require('@supermapgis/vue-iclient-leaflet/dist/iclient-leaflet-vue');
 
 exports.default = iclient;
