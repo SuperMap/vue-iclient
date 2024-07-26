@@ -308,7 +308,7 @@ describe('WebMapViewModel.spec', () => {
         expect(item.renderLayers.length).toBeGreaterThanOrEqual(1);
       })
       expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-opacity']).toBe(1);
-      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-color'][3]).toBe('rgba(213, 62, 79, 0.9)');
+      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-color'][3]).toBe('rgba(230, 245, 153, 0.7)');
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });

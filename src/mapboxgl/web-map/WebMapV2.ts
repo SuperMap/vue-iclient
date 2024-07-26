@@ -1566,6 +1566,9 @@ export default class WebMap extends WebMapBase {
     for (const key in expressionMap) {
       if (Object.prototype.hasOwnProperty.call(expressionMap, key)) {
         const expression = expressionMap[key];
+        if (!Array.isArray(expression)) {
+          continue;
+        }
         const defaultStyleItem = defultLayerStyle[key] || defaultValueFactory[key];
         const styleItem = { [key]: defaultStyleItem };
         // 从customsetting里取了透明度和color一起处理了，layerinfo.style里的透明度就不需要了
