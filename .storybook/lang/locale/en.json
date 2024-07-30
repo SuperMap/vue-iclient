@@ -94,7 +94,19 @@
       "searchBox": "Search box",
       "size": "Size",
       "textArea": "TextArea",
-      "passwordBox": "Password Box"
+      "passwordBox": "Password Box",
+      "error": "Error",
+      "disabled": "Disabled",
+      "readOnly": "readOnly",
+      "unit": "Input with units"
+    },
+    "inputNumber": {
+      "title": "InputNumber",
+      "size": "Size",
+      "disabled":"Disabled",
+      "formatter": "Formatter",
+      "decimal": "Decimal",
+      "error": "Error"
     },
     "layout": {
       "title": "Layout"
@@ -169,9 +181,6 @@
       "clickable": "Clickable",
       "navigationSteps": "Navigation Steps"
     },
-    "inputNumber": {
-      "title": "InputNumber"
-    },
     "switch": {
       "title": "Switch",
       "textIcon": "Text & icon",
@@ -198,6 +207,17 @@
     "timeText": {
       "title": "Time Text",
       "size": "Size"
+    },
+    "timePicker": {
+      "title": "TimePicker",
+      "use12hours": "12-hour system",
+      "selectMinsAndHours": "Select Mins And Hours",
+      "size": "Size",
+      "suffix": "Suffix icon",
+      "extraFooter": "Extra Footer",
+      "disabled": "Disabled",
+      "steps": "Steps",
+      "controlled": "Controlled"
     },
     "transfer": {
       "title": "Transfer",

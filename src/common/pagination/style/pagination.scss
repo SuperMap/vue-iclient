@@ -17,7 +17,7 @@
 
   &-item:hover,
   &-item:focus {
-    border-color: $primary-5;
+    border-color: $pagination-border-hover-color;
     > a {
       color: $primary-5;
     }
@@ -59,6 +59,7 @@
 
   &-prev,
   &-next {
+    border-color: $pagination-border-default-color;
     @include b(pagination) {
       &-item-link {
         border-color: $pagination-border-default-color;
@@ -97,7 +98,10 @@
       }
     }
   }
-
+  &-options-quick-jumper,
+  &-options-size-changer{
+    border: $pagination-border-default-color;
+  }
   &#{$prefix}-disabled {
     @include b(pagination) {
       &-item {

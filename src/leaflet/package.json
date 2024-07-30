@@ -1,7 +1,7 @@
 {
-  "name": "@supermap/vue-iclient-leaflet",
+  "name": "@supermapgis/vue-iclient-leaflet",
   "description": "SuperMap iClient for Vue.js",
-  "version": "11.1.1",
+  "version": "11.2.0",
   "homepage": "http://iclient.supermap.io",
   "main": "lib/index",
   "dependencies": {
@@ -49,6 +49,7 @@
     "omit.js": "^2.0.2",
     "proj4": "^2.6.0",
     "resize-detector": "^0.2.0",
+    "simple-statistics": "^7.8.3",
     "swiper": "^6.8.4",
     "tinycolor2": "^1.4.2",
     "utm": "^1.1.1",

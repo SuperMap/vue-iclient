@@ -22,7 +22,7 @@ describe('chart test', () => {
     done();
   });
   it('chartThemeUtil null', done => {
-    const res = chartThemeUtil();
+    const res = chartThemeUtil( undefined, undefined, undefined, 217);
     expect(res.backgroundColor).toBe('rgba(255, 255, 255, 0.6)');
     expect(res.title.textStyle.color).toBe('#333');
     expect(res.color.length).toBe(217);

@@ -101,3 +101,11 @@
 | layerStyle    | 图层样式                                                                                                                                                                            | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle)                                         | -      | -      |
 
 > 支持 [Layer 混入参数](/zh/api/mixin/mixin.md#layer)
+
+### Events
+
+| name | 说明               | 回调参数                                                                         |
+| :--- | :----------------- | :------------------------------------------------------------------------------- |
+| subscribe-succeeded | 数据订阅成功后触发 | function(e)
+| subscribe-failed | 数据订阅失败后触发 | function(e)
+| data-updated | 数据更新成功后触发 | function(e)

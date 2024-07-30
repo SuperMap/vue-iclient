@@ -45,6 +45,7 @@ import { default as TimeLine } from 'vue-iclient/src/common/time-line/index.js';
 import { default as TimeRange } from 'vue-iclient/src/common/time-range/index.js';
 import { default as TimeSlider } from 'vue-iclient/src/common/time-slider/index.js';
 import { default as TimeText } from 'vue-iclient/src/common/time-text/index.js';
+import { default as TimePicker } from 'vue-iclient/src/common/time-picker/index.js';
 import { default as Tooltip } from 'vue-iclient/src/common/tooltip/index.js';
 import { default as Transfer } from 'vue-iclient/src/common/transfer/index.js';
 import { default as Tree } from 'vue-iclient/src/common/tree/index.js';
@@ -107,6 +108,7 @@ import { default as VideoPlusMarker } from 'vue-iclient/src/mapboxgl/video-plus/
 import { default as VideoPlusPopup } from 'vue-iclient/src/mapboxgl/video-plus/ui/popup/index';
 import { default as VideoPlusDraw } from 'vue-iclient/src/mapboxgl/video-plus/control/draw/index';
 import { default as GraphMap } from 'vue-iclient/src/mapboxgl/graph-map';
+import { default as MapPopup } from 'vue-iclient/src/mapboxgl/map-popup/index.js';
 
 const components = {
   Avatar,
@@ -151,6 +153,7 @@ const components = {
   TimeRange,
   TimeSlider,
   TimeText,
+  TimePicker,
   Tooltip,
   Transfer,
   Tree,
@@ -188,6 +191,7 @@ const components = {
   Draw,
   FlyTo,
   Identify,
+  MapPopup,
   LayerColor,
   LayerList,
   LayerManager,
@@ -314,6 +318,7 @@ export {
   Draw,
   FlyTo,
   Identify,
+  MapPopup,
   LayerColor,
   LayerList,
   LayerManager,

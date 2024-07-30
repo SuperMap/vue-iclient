@@ -30,6 +30,8 @@ export default abstract class WebMapBase extends Events {
 
   tiandituKey: string;
 
+  bingMapsKey: string;
+
   googleMapsAPIKey: string;
 
   googleMapsLanguage: string;
@@ -81,6 +83,7 @@ export default abstract class WebMapBase extends Events {
     this.accessKey = options.accessKey;
     this.tiandituKey = options.tiandituKey || '';
     this.googleMapsAPIKey = options.googleMapsAPIKey || '';
+    this.bingMapsKey = options.bingMapsKey || '';
     this.googleMapsLanguage = options.googleMapsLanguage || 'zh-CN';
     this.withCredentials = options.withCredentials || false;
     this.proxy = options.proxy;
@@ -114,7 +117,7 @@ export default abstract class WebMapBase extends Events {
 
   abstract _addLayerSucceeded();
   abstract _unproject(point: [number, number]): [number, number];
-  abstract cleanWebMap();
+  abstract clean();
 
   public echartsLayerResize(): void {
     this.echartslayer.forEach(echartslayer => {
@@ -184,7 +187,7 @@ export default abstract class WebMapBase extends Events {
   }
 
   protected initWebMap() {
-    this.cleanWebMap();
+    this.clean();
     this.serverUrl = this.serverUrl && this.webMapService.handleServerUrl(this.serverUrl);
     if (this.webMapInfo) {
       // 传入是webmap对象
@@ -791,6 +794,7 @@ export default abstract class WebMapBase extends Events {
       const customStyle = customSettings[name];
       if (typeof customStyle === 'object') {
         itemStyle = Object.assign(itemStyle, customStyle);
+        color = itemStyle.fillColor || itemStyle.strokeColor;
       } else {
         if (typeof customStyle === 'string') {
           color = customSettings[name];

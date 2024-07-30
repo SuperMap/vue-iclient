@@ -109,7 +109,7 @@ export default class ClusterLayerViewModel extends mapboxgl.Evented {
       filter: ['has', 'point_count'],
       layout: this.options.clusteredPointTextLayout || {
         'text-field': '{point_count_abbreviated}',
-        'text-font': ['DIN Offc Pro Medium', 'Arial Unicode MS Bold'],
+        'text-font': ['sans-serif'],
         'text-size': 12
       }
     });

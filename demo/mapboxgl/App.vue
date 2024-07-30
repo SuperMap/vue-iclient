@@ -9,27 +9,16 @@
       <sm-radio-button value="basic-components">基础组件</sm-radio-button>
     </sm-radio-group>
     <template v-if="componentType === 'map-sub-components'">
-      <sm-time-slider
-        v-bind="timePlayer"
-        style="position:absolute; top:100px;left:200px;z-index：100000"
-      ></sm-time-slider>
-      <sm-time-line
-        v-bind="timeLine"
-        style="position:absolute; top:300px;left:200px;z-index：100000"
-      ></sm-time-line>
-      <sm-time-range
-        v-bind="timeRange"
-        style="position:absolute; top:500px;left:200px;z-index：100000"
-      ></sm-time-range>
-      <!-- <sm-web-map
+      <sm-web-map
         v-if="show"
-        server-url="http://192.168.11.94:8190/iportal"
-        map-id="446054158"
-        :style="{ height: '400px' }"
+        server-url="http://localhost:8190/iportal"
+        :map-id="mapIdSelected"
         :pan-control="{ show: true, position: 'top-left' }"
         @load="mapLoaded"
-      ></sm-web-map>
-      <sm-web-map
+      >
+        <!-- server-url="http://192.168.11.94:8190/iportal"
+        map-id="446054158" -->
+        <!-- <sm-web-map
         target="map2"
         v-if="show"
         server-url="http://192.168.11.94:8190/iportal"
@@ -37,8 +26,8 @@
         :style="{ height: '400px', position:'relative', top: '400px' }"
         :pan-control="{ show: true, position: 'top-left' }"
         @load="mapLoaded"
-      ></sm-web-map>-->
-      <!--   <sm-pan />
+      ></sm-web-map> -->
+        <sm-pan />
         <sm-zoom :show-zoom-slider="true" />
         <sm-layer-list position="top-right" />
         <sm-measure position="top-right" />
@@ -67,7 +56,6 @@
           :address-match="addressMatch"
           :rest-map="restMapSearch"
           :rest-data="restDataSearch"
-          :iportal-data="iportalData"
           :online-local-search="onlineLocalSearch"
           :alwaysCenter="false"
           :data="searchData"
@@ -76,11 +64,38 @@
         <sm-tdt-route position="top-left" :data="routeData" />
         <sm-tdt-map-switcher position="top-left" :data="mapSwitcherData" />
         <sm-mini-map position="bottom-right" />
-      </sm-web-map>-->
+        <sm-identify :layers="inputLayers"></sm-identify>
+        <sm-input v-model="layerNamesInput" @blur="e => inputLayers = e.target.value.split(',')"></sm-input>
+      </sm-web-map>
     </template>
 
     <template v-if="componentType === 'chart-components'">
-      <sm-border type="border1" style="width: 460px; height: 260px;">
+      <!-- <div id="beforeMap" style="height: 100vh"></div>
+      <div id="afterMap" style="height: 100vh"></div> -->
+      <sm-compare
+        :beforeMapOptions='{
+                        target: "beforeMap",
+                        serverUrl: "http://localhost:8190/iportal",
+                        mapId: 617580084,
+                        mapOptions: {
+                            center: [-39.9535, 38.0542],
+                            zoom: 2.44
+
+                        }
+                    }'
+        :afterMapOptions='{
+                        target: "afterMap",
+                        serverUrl: "http://localhost:8190/iportal",
+                        mapId: 649033069,
+                        mapOptions: {
+                            center: [-39.9535, 38.0542],
+                            zoom: 2.44
+
+                        }
+                    }'
+      >
+      </sm-compare>
+      <!-- <sm-border type="border1" style="width: 460px; height: 260px;">
         <sm-chart
           :colorGroup="['red', 'blue']"
           :options="echartOption"
@@ -90,24 +105,11 @@
         />
       </sm-border>
       <sm-progress strokeColor="red" type="circle" :percent="80" />
-      <sm-liquid-fill
-        bordercolor="blue"
-        waveColor="red"
-        :value="0.3"
-        :waveCount="1"
-        position="bottom-right"
-      />
+      <sm-liquid-fill bordercolor="blue" waveColor="red" :value="0.3" :waveCount="1" position="bottom-right" /> -->
     </template>
 
     <template v-if="componentType === 'basic-components'">
-      <sm-indicator
-        title="人均收入"
-        unit="元"
-        indicatorColor="red"
-        textColor="red"
-        :num="12323412"
-        fontSize="18"
-      />
+      <sm-indicator title="人均收入" unit="元" indicatorColor="red" textColor="red" :num="12323412" fontSize="18" />
       <sm-text
         title="文本框"
         textColor="red"
@@ -149,9 +151,7 @@
         </sm-select>
         <sm-select default-value="lucy" style="width: 200px">
           <sm-select-opt-group>
-            <span slot="label">
-              <sm-icon type="user" />Manager
-            </span>
+            <span slot="label"> <sm-icon type="user" />Manager </span>
             <sm-select-option value="jack">Jack</sm-select-option>
             <sm-select-option value="lucy">Lucy</sm-select-option>
           </sm-select-opt-group>
@@ -159,16 +159,10 @@
             <sm-select-option value="Yiminghe">yiminghe</sm-select-option>
           </sm-select-opt-group>
         </sm-select>
-        <sm-select
-          mode="multiple"
-          placeholder="Please select"
-          :default-value="['a1', 'b2']"
-          style="width: 200px"
-        >
-          <sm-select-option
-            v-for="i in 25"
-            :key="(i + 9).toString(36) + i"
-          >{{ (i + 9).toString(36) + i }}</sm-select-option>
+        <sm-select mode="multiple" placeholder="Please select" :default-value="['a1', 'b2']" style="width: 200px">
+          <sm-select-option v-for="i in 25" :key="(i + 9).toString(36) + i">{{
+            (i + 9).toString(36) + i
+          }}</sm-select-option>
         </sm-select>
       </div>
 
@@ -236,13 +230,20 @@
           <sm-tab-pane key="3" tab="Tab 3">Content of Tab 3</sm-tab-pane>
         </sm-tabs>
       </div>
+      <sm-time-slider
+        v-bind="timePlayer"
+        style="position:absolute; top:100px;left:200px;z-index：100000"
+      ></sm-time-slider>
+      <sm-time-line v-bind="timeLine" style="position:absolute; top:300px;left:200px;z-index：100000"></sm-time-line>
+      <sm-time-range v-bind="timeRange" style="position:absolute; top:500px;left:200px;z-index：100000"></sm-time-range>
     </template>
 
     <div class="changeTheme">
-      <sm-button @click="changeStyle">深色主题</sm-button>
+      <!-- <sm-button @click="changeStyle">深色主题</sm-button>
       <sm-button @click="changeStyle1">浅色主题</sm-button>
       <sm-button @click="changeStyle3">暖灰色主题</sm-button>
-      <sm-button @click="changeStyle2">透明主题</sm-button>
+      <sm-button @click="changeStyle2">透明主题</sm-button> -->
+      <sm-select :options="webMapSelection" v-model="mapIdSelected" style="width: 220px"></sm-select>
     </div>
   </div>
 </template>
@@ -254,7 +255,31 @@ import data from './data/data.js';
 var host = 'http://support.supermap.com.cn:8090';
 export default Vue.extend({
   name: 'App',
-  mixins: [data] // demo data
+  mixins: [data], // demo data
+  data() {
+    return {
+      layerNamesInput: '',
+      inputLayers: [],
+      webMapSelection: [
+        { label: 'raster(png) 图层', value: '617580084'},
+        { label: 'raster(webp) 图层', value: '1175084848'},
+        { label: 'vector(mvt) 图层', value: '1911445594'},
+        { label: 'symbol 图层', value: '769608713'},
+        { label: '标记图层', value: '1243732508'},
+        { label: '天地图（经纬度）', value: '553036596'},
+        { label: '单值专题图-点线', value: '1942263014'},
+        { label: '单值专题图-面', value: '1414045798'},
+        { label: '分段专题图', value: '1951546125'},
+        { label: '热力图', value: '1338195847'},
+        { label: 'wmts 图层', value: '1953858999'},
+        { label: 'wms 图层', value: '649033069'},
+        { label: '3D 拉伸图层', value: '1481406908'},
+        { label: '空地图', value: '17311606'},
+        { label: '相同source多layer', value: '1703080254'},
+      ],
+      mapIdSelected: '617580084'
+    }
+  }
 });
 </script>
 

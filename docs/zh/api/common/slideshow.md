@@ -36,6 +36,8 @@
 | name   | 说明                           | 回调参数          |
 | :----- | :----------------------------- | :---------------- |
 | change | 更改当前活动幻灯片时将触发事件 | function(options) |
+> 其余幻灯片事件请参照 [Swiper](https://swiperjs.com/swiper-api#events)
+
 
 ### Methods
 

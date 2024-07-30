@@ -1,106 +1,139 @@
 import SourceModel from 'vue-iclient/src/mapboxgl/web-map/SourceModel';
-import LayerModel from 'vue-iclient/src/mapboxgl/web-map/LayerModel';
 
 class SourceListModel {
   constructor(options) {
     this.map = options.map;
-    this.style = this.map.getStyle();
-    this.layers = this.map.getStyle().layers;
-    this.overlayLayers = this.map.overlayLayersManager;
-    this.detailLayers = null;
-    this.sourceList = {};
-    this.sourceNames = [];
-    this._initLayers();
-    this._initSource();
-    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw'];
+    this.layers = options.layers || [];
+    this.appendLayers = options.appendLayers || false;
+    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw', /tracklayer-\d+-line/];
+  }
+
+  getLayers() {
+    const detailLayers = this._initLayers();
+    return this._initAppreciableLayers(detailLayers);
   }
 
   getSourceList() {
-    let sourceList = {};
-    for (let key in this.sourceList) {
-      if (key && this.excludeSource(key)) {
-        sourceList[key] = this.sourceList[key];
-      }
-    }
-    return sourceList;
-  }
-
-  getSourceNames() {
-    const names = [];
-    this.sourceNames.forEach(element => {
-      if (element && this.excludeSource(element)) {
-        names.push(element);
-      }
-    });
-    return names;
+    const appreciableLayers = this.getLayers();
+    return this._initSource(appreciableLayers);
   }
 
   excludeSource(key) {
     for (let i = 0; i < this.excludeSourceNames.length; i++) {
-      if (key.indexOf(this.excludeSourceNames[i]) >= 0) {
+      if (key && key.match(this.excludeSourceNames[i])) {
         return false;
       }
     }
     return true;
   }
 
-  getLegendStyle(sourceName) {
-    if (sourceName) {
-      return this.sourceList[sourceName] ? this.sourceList[sourceName].style : '';
-    }
-    const sourceList = Object.values(this.sourceList) || [];
-    const styles = sourceList.filter(item => !!item.style);
-    return styles;
-  }
-
-  getLayers() {
-    return this.detailLayers;
-  }
-
-  getLayersBySourceLayer(sourceName, sourceLayer) {
-    return this.sourceList[sourceName].sourceLayerList[sourceLayer];
-  }
-
-  getSourceLayersBySource(sourceName) {
-    return this.sourceList[sourceName].sourceLayerList;
-  }
-
-  addSourceStyle(sourceName, sourceStyle) {
-    if (this.sourceList[sourceName]) {
-      this.sourceList[sourceName].style = sourceStyle;
-    }
-  }
-
   _initLayers() {
-    this.layers &&
-      (this.detailLayers = this.layers.map(layer => {
-        return this.map.getLayer(layer.id);
-      }));
-    const overLayerList = Object.values(this.overlayLayers);
-    overLayerList.forEach(overlayer => {
-      if (overlayer.id) {
-        this.detailLayers.push({
-          id: overlayer.id,
-          visibility: overlayer.visibility ? 'visible' : 'none',
-          source: overlayer.id
+    const layersOnMap = this.map.getStyle().layers.map(layer => this.map.getLayer(layer.id));
+    const overlayLayers = Object.values(this.map.overlayLayersManager).reduce((layers, overlayLayer) => {
+      if (overlayLayer.id && !layers.some(item => item.id === overlayLayer.id)) {
+        const visibility =
+          overlayLayer.visibility === 'visible' ||
+          overlayLayer.visibility ||
+          overlayLayer.visible ||
+          (!('visible' in overlayLayer) && !('visibility' in overlayLayer))
+            ? 'visible'
+            : 'none';
+        let source = overlayLayer.source || overlayLayer.sourceId;
+        if (typeof source === 'object') {
+          source = overlayLayer.id;
+        }
+        layers.push({
+          id: overlayLayer.id,
+          visibility,
+          source,
+          type: overlayLayer.type
         });
       }
+      return layers;
+    }, []);
+    const renderLayers = layersOnMap
+      .concat(overlayLayers)
+      .filter(layer => !this.appendLayers || this.layers.some(item => layer.id === item.id));
+    const nextLayers = renderLayers
+      .filter(layer => this.excludeSource(layer.source))
+      .filter(layer => !layer.id.includes('-SM-'));
+    const selfLayers = [];
+    const selfLayerIds = [];
+    // 排序
+    this.layers.forEach(item => {
+      const matchLayer = nextLayers.find(layer => layer.id === item.id);
+      if (matchLayer) {
+        selfLayers.push(matchLayer);
+        selfLayerIds.push(matchLayer.id);
+      }
     });
+    const otherLayers = nextLayers.filter(item => !selfLayerIds.includes(item.id));
+    return selfLayers.concat(otherLayers);
   }
 
-  _initSource() {
-    this.detailLayers &&
-      this.detailLayers.forEach(layer => {
-        if (!this.sourceList[layer.source]) {
-          const source = this.map.getSource(layer.source);
-          this.sourceList[layer.source] = new SourceModel({
-            source: layer.source,
-            type: source && source.type
-          });
-          this.sourceNames.push(layer.source);
-        }
-        this.sourceList[layer.source].addLayer(new LayerModel(layer), layer.sourceLayer);
+  _initSource(detailLayers) {
+    const datas = detailLayers.reduce((sourceList, layer) => {
+      let matchItem = sourceList.find(item => {
+        const sourceId = layer.renderSource.id || layer.id;
+        return item.id === sourceId;
       });
+      if (!matchItem) {
+        const sourceListItem = new SourceModel(layer);
+        sourceList.push(sourceListItem);
+        matchItem = sourceListItem;
+      }
+      matchItem.addLayer(layer);
+      return sourceList;
+    }, []);
+    datas.reverse();
+    return datas;
+  }
+
+  _initAppreciableLayers(detailLayers) {
+    // dv 没有关联一个可感知图层对应对个渲染图层的关系，默认相同source的layer就是渲染图层
+    return detailLayers.reduce((layers, layer) => {
+      let matchLayer = layers.find(item => {
+        const layerId = layer.sourceLayer || layer.source || layer.id;
+        return item.id === layerId;
+      });
+      if (!matchLayer) {
+        matchLayer = this._createCommonFields(layer);
+        layers.push(matchLayer);
+      }
+      matchLayer.renderLayers.push(layer.id);
+      return layers;
+    }, []);
+  }
+
+  _createCommonFields(layer) {
+    const layerInfo = this.layers.find(layerItem => layer.id === layerItem.id) || {};
+    // type: background overlaymanager layers 只有 id
+    const layerId = layer.sourceLayer || layer.source || layer.id;
+    const {
+      dataSource,
+      themeSetting = {},
+      name = layerId,
+      visible = layer.visibility ? layer.visibility === 'visible' : true,
+      serverId
+    } = layerInfo;
+    const sourceOnMap = this.map.getSource(layer.source);
+    const fields = {
+      id: layerId,
+      title: name,
+      type: layer.type,
+      visible,
+      renderSource: {
+        id: layer.source,
+        type: sourceOnMap && sourceOnMap.type
+      },
+      renderLayers: [],
+      dataSource: dataSource || (serverId ? { serverId } : {}),
+      themeSetting
+    };
+    if (layer.sourceLayer) {
+      fields.renderSource.sourceLayer = layer.sourceLayer;
+    }
+    return fields;
   }
 }
 export default SourceListModel;

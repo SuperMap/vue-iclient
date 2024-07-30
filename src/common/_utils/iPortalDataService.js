@@ -1,5 +1,4 @@
-import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { FetchRequest, Util } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient/src/common/_utils/iServerRestService';
 import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient/src/common/_utils/util';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
@@ -20,6 +19,7 @@ export default class iPortalDataService extends Events {
     this.url = url;
     this.withCredentials = withCredentials || false;
     this.epsgCode = options.epsgCode;
+    this.dataType = options.dataType;
     this.iportalServiceProxyUrl = options.iportalServiceProxyUrl;
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
     this.resourceId = options.resourceId;
@@ -67,16 +67,22 @@ export default class iPortalDataService extends Events {
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
    */
-  getData(queryInfo, preferContent = false) {
+  getData(queryInfo = {}, preferContent = false) {
+    if (this.dataType === 'STRUCTUREDDATA') {
+      this._getStructureDatafromContent();
+      return;
+    }
+
     if (!this.url) {
       return;
     }
     let datasetUrl = this.url;
+
     if (preferContent) {
       this._getDatafromContent(datasetUrl, queryInfo);
       return;
     }
-    SuperMap.FetchRequest.get(datasetUrl, null, {
+    FetchRequest.get(datasetUrl, null, {
       withCredentials: this.withCredentials
     })
       .then(response => {
@@ -88,6 +94,10 @@ export default class iPortalDataService extends Events {
           this.triggerEvent('getdatafailed', {
             data
           });
+          return;
+        }
+        if (data.type === 'STRUCTUREDDATA') {
+          this._getStructureDatafromContent();
           return;
         }
         // 是否有rest服务
@@ -120,12 +130,83 @@ export default class iPortalDataService extends Events {
       });
   }
 
+  _getStructureDatafromContent() {
+    let featureResults = [];
+    let url = this.url;
+    if (url.includes('?')) {
+      url = url.split('?')[0];
+    }
+    let formatUrl = url + '/structureddata/ogc-features/collections/all/items.json';
+    let maxFeatures = 5000;
+    let allRequest = [];
+    this._getStructureData(formatUrl, maxFeatures, 0).then((data) => {
+      if (data) {
+        featureResults = data.features;
+        if (data.numberMatched < maxFeatures) {
+          this.iserverService._getFeaturesSucceed({
+            result: {
+              features: {
+                type: 'FeatureCollection',
+                features: featureResults
+              }
+            }
+          });
+          return;
+        }
+
+        for (let i = maxFeatures; i < data.numberMatched;) {
+          allRequest.push(
+            this._getStructureData(formatUrl, maxFeatures, i)
+          );
+          i += maxFeatures;
+        }
+        // 所有请求结束
+        Promise.all(allRequest).then((results) => {
+          // 结果合并
+          results.map((result) => {
+            featureResults = featureResults.concat(result.features);
+          });
+          this.iserverService._getFeaturesSucceed({
+            result: {
+              features: {
+                type: 'FeatureCollection',
+                features: featureResults
+              }
+            }
+          });
+        });
+      }
+    });
+  }
+
+  _getStructureData(url, count, offset) {
+    url = `${url}?limit=${count}`;
+    if (offset) {
+      url = url + '&offset=' + offset;
+    }
+    return FetchRequest.get(url, null, {
+      withCredentials: this.withCredentials
+    })
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        return data;
+      })
+      .catch(error => {
+        console.log(error);
+        this.triggerEvent('getdatafailed', {
+          error
+        });
+      });
+  }
+
   _getDatafromRest(serviceType, address, queryInfo) {
     if (serviceType === 'RESTDATA') {
-      let url = SuperMap.Util.urlPathAppend(address, 'data/datasources');
+      let url = Util.urlPathAppend(address, 'data/datasources');
       let dataSourceName;
       let datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, {
+      FetchRequest.get(url, null, {
         withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
       })
         .then(response => {
@@ -133,9 +214,9 @@ export default class iPortalDataService extends Events {
         })
         .then(data => {
           dataSourceName = data.datasourceNames && data.datasourceNames[0];
-          url = SuperMap.Util.urlPathAppend(address, `data/datasources/${dataSourceName}/datasets`);
+          url = Util.urlPathAppend(address, `data/datasources/${dataSourceName}/datasets`);
           // 请求获取数据集名
-          SuperMap.FetchRequest.get(url, null, {
+          FetchRequest.get(url, null, {
             withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
           })
             .then(response => {
@@ -148,7 +229,7 @@ export default class iPortalDataService extends Events {
                 {
                   datasetName,
                   dataSourceName,
-                  dataUrl: SuperMap.Util.urlPathAppend(address, 'data')
+                  dataUrl: Util.urlPathAppend(address, 'data')
                 },
                 Object.assign({}, queryInfo, {
                   withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
@@ -164,11 +245,11 @@ export default class iPortalDataService extends Events {
         });
     } else {
       // 如果是地图服务
-      let url = SuperMap.Util.urlPathAppend(address, 'maps');
+      let url = Util.urlPathAppend(address, 'maps');
       let mapName;
       let layerName;
       let path; // 请求获取地图名
-      SuperMap.FetchRequest.get(url, null, {
+      FetchRequest.get(url, null, {
         withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
       })
         .then(response => {
@@ -182,9 +263,9 @@ export default class iPortalDataService extends Events {
               path = handleDataParentRes(path, this.resourceId, 'DATA');
             }
           }
-          url = SuperMap.Util.urlPathAppend(address, `maps/${mapName}/layers`);
+          url = Util.urlPathAppend(address, `maps/${mapName}/layers`);
           // 请求获取图层名
-          SuperMap.FetchRequest.get(url, null, {
+          FetchRequest.get(url, null, {
             withCredentials: handleWithCredentials(url, this.iportalServiceProxyUrl, this.withCredentials)
           })
             .then(response => {
@@ -222,10 +303,10 @@ export default class iPortalDataService extends Events {
 
   _getDatafromContent(datasetUrl, queryInfo) {
     let result = {};
-    datasetUrl = SuperMap.Util.urlPathAppend(datasetUrl, 'content.json');
-    datasetUrl = SuperMap.Util.urlAppend(datasetUrl, 'pageSize=9999999&currentPage=1');
+    datasetUrl = Util.urlPathAppend(datasetUrl, 'content.json');
+    datasetUrl = Util.urlAppend(datasetUrl, 'pageSize=9999999&currentPage=1');
     // 获取图层数据
-    SuperMap.FetchRequest.get(datasetUrl, null, {
+    FetchRequest.get(datasetUrl, null, {
       withCredentials: this.withCredentials
     })
       .then(response => {

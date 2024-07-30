@@ -47,7 +47,7 @@
       class="sm-attributes-table"
       :data-source="tableData"
       :columns="compColumns"
-      :row-selection="{ selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows }"
+      :row-selection="tableOptions.showRowSelection ? { selectedRowKeys: selectedRowKeys, onChange: changeSelectedRows } : null"
       :pagination="paginationOptions"
       :bordered="tableOptions.showBorder"
       :showHeader="tableOptions.showHeader"
@@ -158,6 +158,7 @@ export interface StatisticsParams {
 export interface TableParams {
   showBorder?: boolean;
   showHeader?: boolean;
+  showRowSelection?: boolean;
   pagination?: PaginationParams;
 }
 
@@ -213,6 +214,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   tableOptions: TableParams = {
     showHeader: true,
     showBorder: true,
+    showRowSelection: true,
     pagination: {}
   };
 
@@ -242,6 +244,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       return {
         showHeader: true,
         showBorder: true,
+        showRowSelection: true,
         pagination: {}
       };
     }
@@ -430,7 +433,9 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
 
   handleChange(pagination, filters, sorter, { currentDataSource }) {
     this.currentDataSource = currentDataSource;
-    this.$set(this.paginationOptions, 'total', currentDataSource.length);
+    if (filters && Object.keys(filters).length) {
+      this.$set(this.paginationOptions, 'total', currentDataSource.length);
+    }
     this.getCurrentSelectedRowLength();
     this.paginationOptions = { ...this.paginationOptions, current: pagination.current };
     this.sorter = sorter;
@@ -443,6 +448,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
       if (totalCount) {
         // @ts-ignore
         this.totalCount = totalCount;
+        this.$set(this.paginationOptions, 'total', totalCount);
       }
       // @ts-ignore
       const hideColumns = this.columns.filter(item => !item.visible);
@@ -490,13 +496,14 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   }
 
   removed() {
-    this.viewModel.off('mapLoaded');
+    this.viewModel.off('dataChanged');
+    this.viewModel.off('clearselectedrows');
     this.viewModel.off('changeSelectLayer');
     this.viewModel = null;
   }
 
-  beforeDestory() {
-    this.$options.removed.call(this);
+  beforeDestroy() {
+    this.removed();
   }
 }
 

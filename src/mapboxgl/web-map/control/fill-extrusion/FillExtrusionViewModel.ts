@@ -62,7 +62,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
     if (!this.map) {
       return null;
     }
-    const source = <geoJSONSource> this.map.getSource(sourceId);
+    const source = <geoJSONSource>this.map.getSource(sourceId);
     if (!source || !source.getData) {
       return null;
     }
@@ -80,7 +80,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
     let selectedSourceModel = typeof source === 'object' && source;
     if (!selectedSourceModel && typeof source === 'string') {
       const sourceList = this._getSourceList();
-      selectedSourceModel = sourceList[source];
+      selectedSourceModel = sourceList.find((item: Record<string, any>) => item.renderSource.id === source);
     }
     const sourceData = selectedSourceModel && this._getSourceLayers(selectedSourceModel, sourceLayer);
     return sourceData;
@@ -110,35 +110,43 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
 
   private _getSourceList() {
     const sourceListModel = new SourceListModel({
-      map: this.map
+      map: this.map,
+      layers: []
     });
     const sourceList = sourceListModel.getSourceList();
     return sourceList;
   }
 
-  private _getSourceLayers(sourceModel: any, sourceLayer: string): sourceListParams {
-    let layers = null;
-    const sourceLayers = sourceModel.sourceLayerList ? {} : null;
-    const layerList = sourceLayers && sourceLayer ? sourceModel.sourceLayerList[sourceLayer] : sourceModel.layers;
-    layerList.forEach((item: mapboxglTypes.Layer) => {
-      if (item.type === 'fill') {
-        layers = layers || [];
-        const layer: layeEnhanceParams = this.map.getLayer(item.id);
-        const nextLayer: mapboxglTypes.Layer = cloneDeep(layer.serialize());
-        layers.push(nextLayer);
-        if (sourceLayers) {
-          // @ts-ignore
-          const sourceLayerName = item.sourceLayer;
-          if (!sourceLayers[sourceLayerName]) {
-            sourceLayers[sourceLayerName] = [];
-          }
-          sourceLayers[sourceLayerName].push(nextLayer);
+  private findSourceLayerIds(sourceModel: Record<string, any>, sourceLayer: string) {
+    if (sourceModel.renderSource.sourceLayer === sourceLayer) {
+      return sourceModel.renderLayers;
+    }
+    if (sourceModel.children?.length > 0) {
+      for (const data of sourceModel.children) {
+        const res = this.findSourceLayerIds(data, sourceLayer);
+        if (res) {
+          return res;
         }
       }
-    });
+    }
+  }
+
+  private _getSourceLayers(sourceModel: any, sourceLayer: string): sourceListParams {
+    const sourceLayerIds = this.findSourceLayerIds(sourceModel, sourceLayer);
+    const sourceLayers =
+      sourceLayerIds &&
+      sourceLayerIds
+        .map((item: string) => this.map.getLayer(item))
+        .filter((item: Record<string, any>) => item.type === 'fill')
+        .map((item: Record<string, any>) => cloneDeep(item).serialize());
+    const layerIds = sourceLayerIds || sourceModel.renderLayers;
+    const layerList = layerIds
+      .map((item: string) => this.map.getLayer(item))
+      .filter((item: Record<string, any>) => item.type === 'fill')
+      .map((item: Record<string, any>) => cloneDeep(item).serialize());
     return {
       id: sourceModel.id,
-      layers,
+      layers: layerList,
       sourceLayers
     };
   }

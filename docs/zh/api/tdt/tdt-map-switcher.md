@@ -17,3 +17,10 @@
 | headerName | 标题名                     | string | -      | '地图切换'                         |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
+
+### Events
+
+| name   | 说明                           | 回调参数          |
+| :----- | :----------------------------- | :---------------- |
+| change-select-map-type | 切换地图时将触发事件 | function(type) |
+| change-label-status | 切换地名显隐时将触发事件 | function(checked) |

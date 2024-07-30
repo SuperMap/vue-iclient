@@ -4,9 +4,38 @@
 
 @include b(input) {
   $input-prefix: &;
-  @include focus($primary-5, $primary-shadow-color);
+  @include focus-active($primary-5, $primary-shadow-color);
   &[disabled] {
     @include disabled();
+  }
+  @include e(error, '-') {
+    border-color: $input-error-color;
+    &:hover,
+    &:active,
+    &:focus {
+      border-color: $input-error-color;
+    }
+    @include focus-active-no-shadow();
+  }
+  &[readOnly=true] {
+    color: $input-read-only-color;
+    border-color: $input-read-only-border-color;
+    background-color: $input-read-only-bg;
+    &:hover {
+      border-color: $primary-5;
+    }
+    @include focus-active($primary-5, $primary-shadow-color);
+  }
+  @include e(unit, '-') {
+    #{$input-prefix}-group-addon {
+      color: $input-with-unit-color;
+      background-color: $input-bg;
+      border: $border-color-base;
+    }
+    #{$input-prefix}-disabled + #{$input-prefix}-group-addon {
+      color: $input-with-unit-disabled-color;
+      background-color: $input-addon-bg;
+    }
   }
   @include e(disabled, '-') {
     @include disabled();

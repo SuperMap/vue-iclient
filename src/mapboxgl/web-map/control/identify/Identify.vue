@@ -1,17 +1,33 @@
 <template>
-  <div v-show="false" ref="Popup" class="sm-component-identify" :style="[tablePopupBgStyle, getTextColorStyle]">
-    <ul
-      :class="[
-        autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
-        'sm-component-identify__content'
-      ]"
-    >
-      <li v-for="(value, key, index) in popupProps" :key="index" class="content">
-        <div class="left ellipsis" :title="key" :style="getWidthStyle.keyWidth">{{ key }}</div>
-        <div class="right ellipsis" :title="value" :style="getWidthStyle.valueWidth">{{ value }}</div>
-      </li>
-    </ul>
-  </div>
+  <SmMapPopup
+    class="sm-component-identify"
+    contentSlot="identify"
+    :showIcon="multiSelect"
+    :lnglats="lnglats"
+    :defaultIndex="currentIndex"
+    :background="background"
+    :textColor="textColor"
+    ref="map-popup"
+    :mapTarget="mapTarget"
+    @change="handleChange"
+  >
+    <div slot="identify" >
+      <ul
+        :class="[
+          autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
+          'sm-component-identify__content'
+        ]"
+      >
+        <li v-for="(value, key, index) in popupProps" :key="index" class="content">
+          <div class="left ellipsis" :title="key" :style="getWidthStyle.keyWidth">{{ key }}</div>
+          <div class="right ellipsis" :title="value.value || value" :style="getWidthStyle.valueWidth">
+            <slot v-if="value.slotName" :name="value.slotName" :value="value.value"></slot>
+            <span v-else>{{ value.value || value }}</span>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </SmMapPopup>
 </template>
 
 <script>
@@ -21,12 +37,19 @@ import IdentifyViewModel from './IdentifyViewModel';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
-import { setPopupArrowStyle, getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
+import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
+import SmMapPopup from 'vue-iclient/src/mapboxgl/map-popup/MapPopup.vue';
+import isEqual from 'lodash.isequal';
 
 export default {
   name: 'SmIdentify',
   mixins: [MapGetter, Theme],
+  components: { SmMapPopup },
   props: {
+    multiSelect: {
+      type: Boolean,
+      default: false
+    },
     layers: {
       type: Array,
       default() {
@@ -97,7 +120,11 @@ export default {
   data() {
     return {
       isHide: true, // 消除style里block
-      popupProps: {}
+      isKeydownCtrl: false,
+      currentIndex: 0,
+      allPopupDatas: [],
+      lnglats: [],
+      filters: ['any']
     };
   },
   computed: {
@@ -120,18 +147,37 @@ export default {
         }
       }
       return style;
+    },
+    popupProps() {
+      return this.allPopupDatas[this.currentIndex] || {};
     }
   },
   watch: {
     layers: {
       handler(val, oldVal) {
-        this.viewModel && this.viewModel.removed(oldVal);
-        this.removeCursorEvent(oldVal);
-        this.setViewModel();
+        if (!isEqual(val, oldVal)) {
+          this.viewModel && this.viewModel.removed(oldVal);
+          this.clearPopupData();
+          this.$refs['map-popup'] && this.$refs['map-popup'].removePopup();
+          this.removeCursorEvent(oldVal);
+          this.setViewModel();
+        }
       }
     },
     layerStyle() {
       this.setViewModel();
+    },
+    multiSelect: {
+      handler() {
+        if (this.multiSelect) {
+          this.bindKeydownCtrl();
+        } else {
+          this.unbinddKeydownCtrl();
+        }
+        this.$refs['map-popup'] && this.$refs['map-popup'].removePopup();
+        this.clearPopupData();
+      },
+      immediate: true
     }
   },
   loaded() {
@@ -150,6 +196,7 @@ export default {
       this.map.off('mousemove', this.changeCursorPointer);
       this.map.off('mouseleave', this.changeCursorGrab);
     }
+    this.unbinddKeydownCtrl();
     // 清除旧的高亮的图层
     this.viewModel && this.viewModel.removed();
   },
@@ -157,6 +204,9 @@ export default {
     this.$options.removed.call(this);
   },
   methods: {
+    handleChange(index) {
+      this.currentIndex = index;
+    },
     setViewModel() {
       if (this.layers) {
         this.viewModel = new IdentifyViewModel(this.map, {
@@ -168,6 +218,34 @@ export default {
         this.changeClickedLayersCursor(this.layers);
       }
     },
+    unbinddKeydownCtrl() {
+      if (this.keydownCtrlCb) {
+        window.removeEventListener('keydown', this.keydownCtrlCb);
+        this.keydownCtrlCb = null;
+      }
+      if (this.keyupCtrlCb) {
+        window.removeEventListener('keyup', this.keyupCtrlCb);
+        this.keyupCtrlCb = null;
+      }
+    },
+    bindKeydownCtrl() {
+      this.isKeydownCtrl = false;
+      this.unbinddKeydownCtrl();
+      this.keydownCtrlCb = e => {
+        if (e.ctrlKey && !this.isKeydownCtrl) {
+          this.clearPopupData();
+          this.$refs['map-popup'].removePopup();
+          this.isKeydownCtrl = true;
+        }
+      };
+      this.keyupCtrlCb = e => {
+        if (e.key === 'Control') {
+          this.isKeydownCtrl = false;
+        }
+      };
+      window.addEventListener('keydown', this.keydownCtrlCb);
+      window.addEventListener('keyup', this.keyupCtrlCb);
+    },
     // 给图层绑定popup和高亮
     bindMapClick(map) {
       map.on('click', this.sourceMapClickFn);
@@ -176,8 +254,9 @@ export default {
     sourceMapClickFn(e) {
       // 如果点击其他的要素，移除之前的高亮
       this.viewModel.removeOverlayer(this.layers);
-      // 获取点中图层的features
       let features = this.bindQueryRenderedFeatures(e);
+
+      // 获取点中图层的features
       if (features[0]) {
         let index = this.layers && this.layers.indexOf(features[0].layer.id);
         let fields;
@@ -193,6 +272,9 @@ export default {
         }
         this.layersMapClickFn(e, fields || [], features[0]);
       }
+      if (!features[0]) {
+        this.clearPopupData();
+      }
     },
     // 给layer绑定queryRenderedFeatures
     bindQueryRenderedFeatures(e, layers = this.layers) {
@@ -203,7 +285,7 @@ export default {
         [e.point.x + this.clickTolerance, e.point.y + this.clickTolerance]
       ];
       let features = map.queryRenderedFeatures(bbox, {
-        layers: layersOnMap
+        layers: this.currentLayer ? [this.currentLayer.id] : layersOnMap
       });
       return features;
     },
@@ -211,45 +293,79 @@ export default {
     layersMapClickFn(e, fields, feature) {
       let map = e.target;
       // 添加popup
-      this.addPopup(feature, fields);
+      const { popupProps, coordinates } = this.getPopupData(feature, fields);
+      this.setPopupData(popupProps, coordinates, feature);
+
+      const filter = this.getFilter(feature);
+      if (this.multiSelect && this.isKeydownCtrl) {
+        this.filters.push(filter);
+      } else {
+        this.filters = filter;
+      }
+      this.hightlightLayer(map, feature.layer, this.filters);
+    },
+    getFilter(feature) {
       // 高亮过滤(所有字段)
       let filter = ['all'];
       const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
+      const isNormalType = item => {
+        return typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean';
+      };
       feature._vectorTileFeature._keys.forEach(key => {
-        if (filterKeys.indexOf(key.toLowerCase()) === -1 && feature.properties[key] !== undefined) {
+        if (filterKeys.indexOf(key.toLowerCase()) === -1 && isNormalType(feature.properties[key])) {
           filter.push(['==', key, feature.properties[key]]);
         }
       });
+      return filter;
+    },
+    hightlightLayer(map, layer, filter) {
       // 添加高亮图层
-      this.addOverlayToMap(feature.layer, filter);
+      this.addOverlayToMap(layer, filter);
       // 给图层加上高亮
-      if (map.getLayer(feature.layer.id + '-identify-SM-highlighted')) {
-        map.setFilter(feature.layer.id + '-identify-SM-highlighted', filter);
+      if (map.getLayer(layer.id + '-identify-SM-highlighted')) {
+        map.setFilter(layer.id + '-identify-SM-highlighted', filter);
       }
     },
     // 过滤数据， 添加popup
-    addPopup(feature, fields) {
-      this.popupProps = {};
+    getPopupData(feature, fields) {
+      this.viewModel.popup?.off('close', this.clearPopup);
+      let popupProps = {};
       if (feature.properties) {
         // 过滤字段
         if (fields.length > 0) {
           fields.forEach(field => {
-            if (Object.prototype.hasOwnProperty.call(feature.properties, field)) {
-              this.popupProps[field] = feature.properties[field];
+            const isObjArr = field instanceof Object;
+            const fieldName = isObjArr ? field.field : field;
+            if (Object.prototype.hasOwnProperty.call(feature.properties, fieldName)) {
+              popupProps[fieldName] = { value: feature.properties[fieldName], slotName: field.slotName };
             }
           });
         } else {
           // 默认是读取layer的全部字段
-          this.popupProps = feature.properties;
+          popupProps = feature.properties;
         }
-        // 添加popup
-        const coordinates = getFeatureCenter(feature);
-        this.$nextTick(() => {
-          this.isHide = false; // 显示内容
-          this.viewModel.addPopup(coordinates, this.$refs.Popup);
-          setPopupArrowStyle(this.tablePopupBgData);
-        });
       }
+      const coordinates = getFeatureCenter(feature);
+      return { popupProps, coordinates };
+    },
+    clearPopupData() {
+      this.allPopupDatas = [];
+      this.lnglats = [];
+      this.currentIndex = 0;
+      this.currentLayer = null;
+      this.filters = ['any'];
+    },
+    setPopupData(popupProps, coordinates, feature) {
+      if (this.isKeydownCtrl) {
+        this.allPopupDatas.push(popupProps);
+        this.lnglats.push(coordinates);
+        this.currentLayer = feature.layer;
+      } else {
+        this.allPopupDatas = [popupProps];
+        this.lnglats = [coordinates];
+        this.currentLayer = null;
+      }
+      this.currentIndex = this.lnglats.length - 1;
     },
     // 添加高亮图层
     addOverlayToMap(layer, filter) {
@@ -258,6 +374,7 @@ export default {
     },
     changeClickedLayersCursor(layers = [], map = this.map) {
       layers &&
+        map &&
         layers.forEach(layer => {
           map.on('mousemove', layer, this.changeCursorPointer);
           map.on('mouseleave', layer, this.changeCursorGrab);

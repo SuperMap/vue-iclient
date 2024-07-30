@@ -4,6 +4,7 @@ import colorcolor from 'colorcolor';
 import getCenter from '@turf/center';
 import omit from 'omit.js';
 import tinyColor from 'tinycolor2';
+import { min, max as statisticsMax, mean, sum, mode, median, variance, standardDeviation } from 'simple-statistics';
 
 export function getDateTime(timeType) {
   return geti18n().d(new Date(), timeType.replace(/\+/g, '_'));
@@ -22,6 +23,10 @@ export function hexToRgba(hex, opacity) {
     ')'
   );
 }
+export function formatFontSize(fontSize) {
+  return typeof fontSize === 'number' ? fontSize + 'px' : fontSize;
+}
+
 export function isTransparent(color) {
   const rgba = colorcolor(color, 'rgba');
   return +rgba.match(/(\d(\.\d+)?)+/g)[3] === 0;
@@ -242,3 +247,5 @@ export function strip(num, precision = 12) {
 export function numberEqual(num1, num2, precision = 10E-6) {
   return Math.abs(+num1 - +num2) <= precision;
 }
+
+export const statisticFunctions = { min, max: statisticsMax, mean, sum, mode, median, variance, standardDeviation, count: fieldValues => fieldValues.length };

@@ -1,7 +1,7 @@
 {
-  "name": "@supermap/vue-iclient-mapboxgl",
+  "name": "@supermapgis/vue-iclient-mapboxgl",
   "description": "SuperMap iClient for Vue.js",
-  "version": "11.1.1",
+  "version": "11.2.0",
   "homepage": "http://iclient.supermap.io",
   "main": "lib/index",
   "dependencies": {
@@ -16,7 +16,7 @@
     "@turf/transform-scale": "^5.1.5",
     "@turf/meta": "^6.5.0",
     "@types/geojson": "^7946.0.7",
-    "@types/mapbox-gl": "^0.54.5",
+    "@types/mapbox-gl": "^1.12.1",
     "@types/node": "^12.0.3",
     "@types/three": "0.129.0",
     "ant-design-vue": "1.7.2",
@@ -55,6 +55,7 @@
     "proj4": "^2.6.0",
     "resize-detector": "^0.2.0",
     "shapefile": "^0.6.6",
+    "simple-statistics": "^7.8.3",
     "swiper": "^6.8.4",
     "three": "0.129.0",
     "three-wtm": "1.0.0",

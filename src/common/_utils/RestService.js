@@ -1,5 +1,4 @@
-import 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { getDataType } from 'vue-iclient/src/common/_utils/util';
 import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
@@ -30,7 +29,7 @@ export default class RestService extends Events {
     }
     // 如果是url， 就发送请求
     let url = data;
-    SuperMap.FetchRequest.get(url, null, { withoutFormatSuffix: true, proxy: this.options.proxy })
+    FetchRequest.get(url, null, { withoutFormatSuffix: true, proxy: this.options.proxy })
       .then(response => {
         return response.json();
       })

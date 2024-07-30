@@ -23,3 +23,10 @@
 | headerName  | 标题名                                                | string                                                                               | -      | '查询'                           |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
+
+### Events
+
+| name   | 说明                           | 回调参数          |
+| :----- | :----------------------------- | :---------------- |
+| query-succeeded | 查询成功后触发 | function(e) |
+| query-failed | 查询失败后触发 | function(e) |

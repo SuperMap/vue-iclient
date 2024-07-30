@@ -1,0 +1,69 @@
+@import '../../_utils/style/mixins/mixins.scss';
+@import '../../_utils/style/theme/theme.scss';
+
+@include b(time-picker) {
+  $prefix: &;
+  &:hover {
+    #{$prefix}-icon:not(:last-child) {
+      opacity: 0;
+    }
+  }
+
+  .anticon,
+  &-icon,
+  &-clear {
+    color: $text-color-secondary;
+  }
+  &-clear:hover {
+    color: $text-color;
+  }
+
+  &-input[disabled] + &-icon {
+    &, .anticon {
+      color: $disabled-color;
+    }
+  }
+
+  &-small {
+    #{$prefix}-input {
+      font-size: 12px;
+    }
+  }
+
+  @include e(md, '-') {
+    #{$prefix}-input {
+      height: 28px;
+      font-size: 12px;
+    }
+  }
+
+  @include e(panel, '-') {
+    $panel: &;
+    color: $text-color-active;
+    &-inner {
+      background-color: $select-dropdown-bg;
+    }
+    &-input {
+      background-color: $select-dropdown-bg;
+    }
+    &-select-option-selected {
+      $selected: &;
+      background-color: $selected-color;
+    }
+    &-select, &-addon {
+      border-color: $border-color-secondary;
+    }
+    &-select li {
+      padding: 0 0 0 16px;
+      &:not(#{$panel}-select-option-selected):hover{
+        background-color: $time-picker-item-hover-bg;
+      }
+      &:focus {
+        color: $text-color-active;
+      }
+    }
+    &-input-wrap {
+      display: none;
+    }
+  }
+}

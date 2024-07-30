@@ -42,6 +42,7 @@ import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import SmCard from 'vue-iclient/src/common/card/Card.vue';
 import SmDirectoryTree from 'vue-iclient/src/common/tree/DirectoryTree.vue';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
 import clonedeep from 'lodash.clonedeep';
@@ -101,6 +102,12 @@ export default {
   },
   created() {
     this.viewModel = new LayerManagerViewModel();
+    this.viewModel.on('layersadded', this.addMapCombination);
+    this.viewModel.on('layersremoved', this.removeMapCombination);
+  },
+  beforeDestroy() {
+    this.viewModel.off('layersadded', this.addMapCombination);
+    this.viewModel.off('layersremoved', this.removeMapCombination);
   },
   methods: {
     checkNode(key, e) {
@@ -121,7 +128,7 @@ export default {
             return;
           }
           if (mapInfo.mapOptions) {
-            this.addMapStyle(mapInfo.mapOptions.style, nodeKey);
+            this.addMapStyle(mapInfo.mapOptions, nodeKey);
             return;
           }
           if (mapInfo.serverUrl) {
@@ -151,11 +158,11 @@ export default {
       }
       this.viewModel.addIServerLayer(serverUrl, nodeKey);
     },
-    addMapStyle(style, nodeKey) {
+    addMapStyle(mapOptions, nodeKey) {
       if (!this.mapIsLoad) {
         return;
       }
-      this.viewModel.addMapStyle(style, nodeKey);
+      this.viewModel.addMapStyle(mapOptions, nodeKey);
     },
     removeIServerLayer(nodeKey) {
       if (!this.mapIsLoad) {
@@ -211,6 +218,12 @@ export default {
         });
       }
       this.checkedKeys = [];
+    },
+    addMapCombination({ nodeKey, nodeValue }) {
+      mapEvent.$options.setWebMap(this.getTargetName(), nodeValue, nodeKey);
+    },
+    removeMapCombination({ nodeKey }) {
+      mapEvent.$options.deleteWebMap(this.getTargetName(), nodeKey);
     }
   },
   loaded() {

@@ -1,3 +1,4 @@
+import flushPromises from 'flush-promises';
 import AttributesViewModel from '../AttributesViewModel.ts';
 
 describe('AttributesViewModel.ts', () => {
@@ -109,15 +110,50 @@ describe('AttributesViewModel.ts', () => {
       }
     }
   };
-
-  it('setLayerName', () => {
-    const viewModel = new AttributesViewModel(options);
+  const features = [
+    {
+      type: 'Feature',
+      geometry: {
+        coordinates: [1, 1],
+        type: 'Point'
+      },
+      properties: {
+        SmID: 0,
+        index: 0,
+        站台: '满洲里2',
+        省份: '内蒙古2'
+      }
+    },
+    {
+      type: 'Feature',
+      geometry: {
+        coordinates: [1, 1],
+        type: 'Point'
+      },
+      properties: {
+        SmID: 0,
+        index: 0,
+        站台: '满洲里3',
+        省份: '内蒙古3'
+      }
+    }
+  ];
+  it('setLayerName', (done) => {
+    const map = {
+      getSource: () => ({
+        getData: () => ({
+          features
+        })
+      })
+    };
+    const viewModel = new AttributesViewModel({ map, ...options });
     const layerName = 'UTLayer';
     viewModel.setLayerName(layerName);
     expect(viewModel.layerName).toBe('UTLayer');
+    done();
   });
 
-  it('setDataset', () => {
+  it('setDataset', (done) => {
     const nextOption = {
       ...options,
       associateWithMap: {
@@ -127,29 +163,58 @@ describe('AttributesViewModel.ts', () => {
       }
     };
     const viewModel = new AttributesViewModel(nextOption);
-    const dataset = {
+    let dataset = {
       type: 'geoJSON',
       geoJSON: {
         type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              coordinates: [1, 1],
-              type: 'Point'
-            },
-            properties: {
-              SmID: 0,
-              index: 0,
-              站台: '满洲里',
-              省份: '内蒙古3'
-            }
-          }
-        ]
+        features
       }
     };
     viewModel.setDataset(dataset);
     expect(viewModel.dataset).toBe(dataset);
+    dataset = { type: '', url: '', geoJSON: null };
+    viewModel.map = {
+      getSource: () => ({
+        getData: () => ({
+          features
+        })
+      })
+    };
+    viewModel.setDataset(dataset);
+    expect(viewModel.dataset).toBe(dataset);
+    viewModel.setLayerName(null);
+    expect(viewModel.layerName).toBeNull();
+    function callback (options) {
+      expect(options.content.length).toBe(0);
+      viewModel.off('dataChanged', callback);
+      done();
+    }
+    viewModel.on('dataChanged', callback);
+    viewModel.setDataset(dataset);
+  });
+  it('set totalCount', async done => {
+    const dataset = {
+      type: 'geoJSON',
+      geoJSON: {
+        type: 'FeatureCollection',
+        features
+      }
+    };
+    const nextOption = {
+      ...options,
+      totalCount: 1,
+      associateWithMap: {
+        enabled: false,
+        centerToFeature: false,
+        zoomToFeature: false
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    viewModel.setDataset(dataset);
+    await flushPromises();
+    expect(viewModel.totalCount).toBe(2);
+    expect(viewModel.dataset).toBe(dataset);
+    done();
   });
 
   it('setLazy', async () => {
@@ -170,6 +235,27 @@ describe('AttributesViewModel.ts', () => {
     const lazy = true;
     viewModel.setLazy(lazy);
     expect(viewModel.lazy).toBe(true);
+  });
+
+  it('check restmap not support lazy', async () => {
+    const nextOption = {
+      ...options,
+      dataset: {
+        layerName: 'Rivers@World',
+        type: 'iServer',
+        url: 'http://test'
+      },
+      lazy: true,
+      searchText: '漠河',
+      searchedColumn: '站台',
+      sorter: {
+        field: '温度',
+        order: 'ascend'
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    await flushPromises();
+    expect(viewModel.canLazyLoad()).toBe(false);
   });
 
   it('setsorter', () => {
@@ -446,11 +532,51 @@ describe('AttributesViewModel.ts', () => {
     const viewModel = new AttributesViewModel(options);
     const columns = viewModel.toTableColumns(headers);
     columns.forEach((element, index) => {
-      if([1, 2, 8].includes(index)){
+      if ([1, 2, 8].includes(index)) {
         expect(typeof element.sorter).toBe('function');
-      }else {
+      } else {
         expect(element.sorter).toBe(undefined);
       }
     });
+  });
+  it('change attribute when associateMap in layerlist', () => {
+    const nextOption = {
+      ...options,
+      map: {
+        getLayer: () => undefined,
+        getSource: () => {
+          return {
+            setData: () => jest.fn()
+          };
+        },
+        addLayer: () => jest.fn(),
+        removeSource: () => jest.fn(),
+        getBounds: () => {
+          return {
+            contains: () => true
+          };
+        }
+      },
+      featureMap: {
+        0: {
+          geometry: { coordinates: [0, 1], type: 'Point' },
+          id: 1,
+          properties: {
+            SmID: 1,
+            index: '0',
+            省份: '黑龙江',
+            站台: '漠河'
+          },
+          type: 'Feature'
+        }
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    const spy = jest.spyOn(viewModel.map, 'addLayer');
+    const attributesTitle1 = '全国671个气象站观测数据';
+    const attributesTitle2 = '地震统计数据';
+    viewModel.addOverlaysToMap([0], layerStyleOptions, attributesTitle1);
+    viewModel.addOverlaysToMap([], layerStyleOptions, attributesTitle2);
+    expect(spy).toBeCalled();
   });
 });

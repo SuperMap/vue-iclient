@@ -1,5 +1,6 @@
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { isXField, isYField, urlAppend, numberEqual } from 'vue-iclient/src/common/_utils/util';
+import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
 import * as convert from 'xml-js';
 import max from 'lodash.max';
 import min from 'lodash.min';
@@ -423,7 +424,7 @@ export default class WebMapService extends Events {
     return new Promise((resolve, reject) => {
       this._getFeatureBySQL(
         dataSource.url,
-        [dataSource.dataSourceName || layer.name],
+        [decodeURIComponent(dataSource.dataSourceName) || layer.name],
         result => {
           features = this.parseGeoJsonData2Feature({
             allDatas: {
@@ -1009,7 +1010,10 @@ export default class WebMapService extends Events {
     return proxy;
   }
 
-  public handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean {
+  public handleWithCredentials(proxyUrl?: string, serviceUrl?: string, defaultValue = this.withCredentials): boolean | string {
+    if (serviceUrl?.includes('https://www.supermapol.com')) {
+      return '';
+    }
     if (proxyUrl && proxyUrl.startsWith(this.serverUrl) && (!serviceUrl || serviceUrl.startsWith(proxyUrl))) {
       return true;
     }
@@ -1067,6 +1071,10 @@ export default class WebMapService extends Events {
       let x = Number(row[xfieldIndex]);
       let y = Number(row[yfieldIndex]);
 
+      if (isNaN(x) || isNaN(y)) {
+        continue;
+      }
+      
       // 属性信息
       let attributes = {};
       for (let index = 0; index < dataContent.colTitles.length; index++) {
@@ -1239,6 +1247,20 @@ export default class WebMapService extends Events {
       withCredentials: this.handleWithCredentials(proxy, url, false),
       eventListeners: {
         processCompleted: getFeaturesEventArgs => {
+          let result = getFeaturesEventArgs.result;
+          if(result && result.datasetInfos) {
+            let fields = []; let fieldCaptions = []; let fieldTypes = [];
+            const fieldInfos = result.datasetInfos[0].fieldInfos;
+            fieldInfos.forEach(fieldInfo => {
+              if(fieldInfo.name) {
+                fields.push(fieldInfo.name.toUpperCase());
+                fieldCaptions.push(fieldInfo.caption.toUpperCase());
+                fieldTypes.push(fieldInfo.type);
+              }
+            });
+            let data = statisticsFeatures(result.features.features, fields, fieldCaptions, fieldTypes);
+            getFeaturesEventArgs.result.features.features = data.features;
+          }
           processCompleted && processCompleted(getFeaturesEventArgs);
         },
         processFailed: e => {

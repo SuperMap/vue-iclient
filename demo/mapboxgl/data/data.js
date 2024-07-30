@@ -565,12 +565,25 @@ export default {
           title: '直辖市',
           children: [
             {
-              title: '上海',
+              title: 'vector3.0',
               mapInfo: {
-                serverUrl: 'https://www.supermapol.com/',
-                mapId: 394538195,
+                serverUrl: 'http://localhost:8190/iportal',
+                mapId: 1243732508,
                 layerFilter: function(layer) {
-                  if (layer.name === '上海_县级行政区划图@公众数据') {
+                  if (layer.id === '未命名数据') {
+                    return true;
+                  }
+                  return false;
+                }
+              }
+            },
+            {
+              title: 'raster3.0',
+              mapInfo: {
+                serverUrl: 'http://localhost:8190/iportal',
+                mapId: 649033069,
+                layerFilter: function(layer) {
+                  if (layer.id === 'China_wms130') {
                     return true;
                   }
                   return false;

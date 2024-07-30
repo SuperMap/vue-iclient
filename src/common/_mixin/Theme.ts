@@ -1,10 +1,10 @@
+import type { ThemeStyleParams } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 import Vue, { VNode, CreateElement } from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
 import { getDerivedColorsByTextColor } from 'vue-iclient/src/common/_utils/util';
 import { getPrimarySerialColors, getRootStyleSelector } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 
-type ThemeStyleParams = typeof globalEvent.$options.theme;
 @Component({
   name: 'Theme'
 })
@@ -194,9 +194,9 @@ export default class Theme extends Vue {
   }
 
   getRealColor(prop: string, acceptThemeStyle?: ThemeStyleParams) {
-    const themeStyle = acceptThemeStyle || globalEvent.$options.theme || {};
-    if (prop === 'colorGroup' || !themeStyle[prop] || !themeStyle[prop].includes('var')) {
-      return themeStyle[prop];
+    const themeStyle = (acceptThemeStyle || globalEvent.$options.theme) as unknown as ThemeStyleParams;
+    if (prop === 'colorGroup' || !themeStyle?.[prop]?.includes('var')) {
+      return themeStyle?.[prop];
     }
     const rootStyleSelector = getRootStyleSelector(themeStyle);
     const computedStyle = window.getComputedStyle(document.querySelector(rootStyleSelector));

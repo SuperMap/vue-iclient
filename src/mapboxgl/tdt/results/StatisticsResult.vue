@@ -9,7 +9,7 @@
       <div v-if="priorityCitys && priorityCitys.length > 0" class="priority-cities">
         <div v-for="(item, index) in priorityCitys" :key="index" class="city-item add-ellipsis" @click="searchDetail(item)">
           <a href="javascript:void(0)">
-            {{ item.name }}
+            {{ item.adminName }}
             <span>({{ item.count }})</span>
           </a>
         </div>
@@ -78,7 +78,7 @@ export default {
       const params = {
         queryType: '1',
         queryTerminal: 10000,
-        specifyAdminCode: adminCode
+        specify: adminCode
       };
       if (this.from === 'Route') {
         params.queryType = '7';
@@ -89,8 +89,9 @@ export default {
       this.$emit('search-points-result', this.keyWord, params, false);
     },
     searchDetail(info) {
-      if (info.lon && info.lat && !info.childAdmins) {
-        const center = [+info.lon, +info.lat];
+      if (info.lonlat && !info.childAdmins) {
+        const coor = info.lonlat.split(',');
+        const center = [+coor[0], +coor[1]];
         const map = this.$parent.map || this.$parent.$parent.map;
         map.easeTo({
           center

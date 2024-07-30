@@ -1085,7 +1085,7 @@ export default class WebMapViewModel extends WebMapBase {
     });
   }
 
-  public cleanWebMap() {
+  public clean() {
     if (this.map) {
       this.map.remove();
       this.stopCanvg();
@@ -1094,5 +1094,9 @@ export default class WebMapViewModel extends WebMapBase {
       this._dataFlowLayer.off('dataupdated', this._updateDataFlowFeaturesCallback);
       this._unprojectCrs = null;
     }
+  }
+
+  public cleanWebMap() {
+    this.clean();
   }
 }

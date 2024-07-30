@@ -7,14 +7,38 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
  * @extends mapboxgl.Evented
  */
 class LegendViewModel extends mapboxgl.Evented {
-  constructor(webmap) {
-    super(webmap);
+  constructor() {
+    super();
+    this._layersUpdatedHandler = this._layersUpdatedHandler.bind(this);
+  }
+
+  setMap({ webmap }) {
     this.webmap = webmap;
-    this.sourceListModel = this.webmap ? this.webmap.getSourceListModel : {};
+    this.webmap.on({
+      layersupdated: this._layersUpdatedHandler
+    });
   }
 
   getStyle(layerName) {
-    return this.sourceListModel && this.sourceListModel.getLegendStyle(layerName);
+    const appreciableLayers = this.webmap?.getAppreciableLayers() || [];
+    const legendInfo = this.webmap?.getLegendInfo() || [];
+    return legendInfo.filter(info => {
+      return (
+        info.layerId === layerName &&
+        info.styleGroup.length > 0 &&
+        appreciableLayers.some(layer => layer.id === info.layerId && layer.visible)
+      );
+    });
+  }
+
+  removed() {
+    this.webmap.un({
+      layersupdated: this._layersUpdatedHandler
+    });
+  }
+
+  _layersUpdatedHandler() {
+    this.fire('layersupdated');
   }
 }
 export default LegendViewModel;

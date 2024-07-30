@@ -3,7 +3,6 @@ import SmWebMap from '../WebMap.vue';
 import { message } from 'ant-design-vue';
 import L from '../../leaflet-wrapper';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
-import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
 import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_serviceProxy.json';
 import flushPromises from 'flush-promises';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';

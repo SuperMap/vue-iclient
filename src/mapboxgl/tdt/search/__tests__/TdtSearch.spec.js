@@ -56,7 +56,7 @@ describe('TdtSearch.vue', () => {
 
   it('search', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             count: '61719',
@@ -82,7 +82,7 @@ describe('TdtSearch.vue', () => {
             ]
           }
         });
-      } else if (e.url === 'https://api.tianditu.gov.cn/search/detail') {
+      } else if (e.url === 'https://api.tianditu.gov.cn/v2/search/detail') {
         return Promise.resolve({
           data: {
             area: {
@@ -132,7 +132,7 @@ describe('TdtSearch.vue', () => {
         mapTarget: 'map',
         collapsed: true,
         data: {
-          searchUrl: 'https://api.tianditu.gov.cn/search/detail',
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search/detail',
           tk: '1d109683f4d84198e37a38c442d68311'
         }
       });
@@ -146,7 +146,7 @@ describe('TdtSearch.vue', () => {
 
   it('search lineString detail', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             count: '61719',
@@ -196,7 +196,7 @@ describe('TdtSearch.vue', () => {
             totalprice: 0
           }
         });
-      } else if (e.url === 'https://api.tianditu.gov.cn/search/lineStringDetail') {
+      } else if (e.url === 'https://api.tianditu.gov.cn/v2/search/lineStringDetail') {
         return Promise.resolve({
           data: {
             dataversion: '2021-9-28 17:58:41',
@@ -250,7 +250,7 @@ describe('TdtSearch.vue', () => {
         mapTarget: 'map',
         collapsed: true,
         data: {
-          searchUrl: 'https://api.tianditu.gov.cn/search/lineStringDetail',
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search/lineStringDetail',
           tk: '1d109683f4d84198e37a38c442d68311'
         }
       });
@@ -264,7 +264,7 @@ describe('TdtSearch.vue', () => {
 
   it('search point detail', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             count: '61719',
@@ -285,7 +285,7 @@ describe('TdtSearch.vue', () => {
             ]
           }
         });
-      } else if (e.url === 'https://api.tianditu.gov.cn/search/pointDetail') {
+      } else if (e.url === 'https://api.tianditu.gov.cn/v2/search/pointDetail') {
         return Promise.resolve({
           data: {
             count: '1',
@@ -300,7 +300,7 @@ describe('TdtSearch.vue', () => {
                 eaddress: '',
                 ename: 'HuayangStationExit/EntranceB',
                 hotPointID: '90F80006632F5615',
-                lonlat: '104.067352 30.50491',
+                lonlat: '104.067352,30.50491',
                 name: '华阳地铁站-B口',
                 phone: ''
               }
@@ -343,7 +343,7 @@ describe('TdtSearch.vue', () => {
         mapTarget: 'map',
         collapsed: true,
         data: {
-          searchUrl: 'https://api.tianditu.gov.cn/search/pointDetail',
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search/pointDetail',
           tk: '1d109683f4d84198e37a38c442d68311'
         }
       });
@@ -357,7 +357,7 @@ describe('TdtSearch.vue', () => {
 
   it('keyboard event', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             count: '61719',
@@ -420,7 +420,7 @@ describe('TdtSearch.vue', () => {
 
   it('select search item', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             count: '61719',
@@ -441,7 +441,7 @@ describe('TdtSearch.vue', () => {
             ]
           }
         });
-      } else if (e.url === 'https://api.tianditu.gov.cn/search/pointDetail') {
+      } else if (e.url === 'https://api.tianditu.gov.cn/v2/search/pointDetail') {
         return Promise.resolve({
           data: {
             count: '1',
@@ -456,7 +456,7 @@ describe('TdtSearch.vue', () => {
                 eaddress: '',
                 ename: 'HuayangStationExit/EntranceB',
                 hotPointID: '90F80006632F5615',
-                lonlat: '104.067352 30.50491',
+                lonlat: '104.067352,30.50491',
                 name: '华阳地铁站-B口',
                 phone: ''
               }
@@ -496,7 +496,7 @@ describe('TdtSearch.vue', () => {
         collapsed: true,
         data: {
           tk: '1d109683f4d84198e37a38c442d68311',
-          searchUrl: 'https://api.tianditu.gov.cn/search/pointDetail'
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search/pointDetail'
         }
       }
     });

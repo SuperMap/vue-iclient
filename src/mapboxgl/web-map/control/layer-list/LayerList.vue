@@ -13,97 +13,12 @@
   >
     <sm-card class="sm-component-layer-list__a-card" :bordered="false" :style="headingTextColorStyle">
       <div class="sm-component-layer-list__content">
-        <sm-collapse
-          v-for="(name, index) in enableSource"
-          :key="index"
-          :bordered="false"
-          class="sm-component-layer-list__collapse"
-        >
-          <sm-collapse-panel
-            v-if="
-              typeof sourceList[name].sourceLayerList === 'object' &&
-              Object.keys(sourceList[name].sourceLayerList).length > 0
-            "
-            class="sm-component-layer-list__collapseitem"
-            :showArrow="false"
-          >
-            <template slot="header">
-              <div
-                class="header-wrap"
-                :class="{
-                  'header-wrap': true,
-                  'sm-component-layer-list__disabled': sourceList[name].visibility !== 'visible'
-                }"
-              >
-                <div class="header-text">
-                  <i
-                    :class="
-                      sourceList[name].visibility === 'visible'
-                        ? 'sm-components-icon-partially-visible'
-                        : 'sm-components-icon-hidden'
-                    "
-                    @click.stop="toggleLayerGroupVisibility(name, sourceList[name].visibility)"
-                  />
-                  <span class="add-ellipsis">{{ name }}</span>
-                </div>
-                <i class="sm-components-icon-solid-triangle-right header-arrow" />
-                <i class="sm-components-icon-solid-triangle-down header-arrow" />
-              </div>
-            </template>
-            <div
-              v-for="(sourcelayerValue, sourcelayerKey, i) in sourceList[name].sourceLayerList"
-              :key="i"
-              :class="{
-                'sm-component-layer-list__sourcelayeritem': true,
-                'sm-component-layer-list__disabled': sourcelayerValue[0].visibility !== 'visible'
-              }"
-              :style="getTextColorStyle"
-            >
-              <i
-                :class="
-                  sourcelayerValue[0].visibility === 'visible'
-                    ? 'sm-components-icon-visible'
-                    : 'sm-components-icon-hidden'
-                "
-                @click.stop="toggleVisibility(sourcelayerKey, name, sourcelayerValue[0].visibility)"
-              />
-              <div class="sm-component-layer-list__layergroupname add-ellipsis" :title="sourcelayerKey">
-                {{ sourcelayerKey }}
-              </div>
-            </div>
-          </sm-collapse-panel>
-
-          <div
-            v-else
-            :class="{
-              'sm-component-layer-list__elcarditem': true,
-              'sm-component-layer-list__disabled': sourceList[name].visibility !== 'visible'
-            }"
-          >
-            <div class="sm-component-layer-list__layer">
-              <i
-                :class="
-                  sourceList[name].visibility === 'visible' ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'
-                "
-                @click.stop="toggleLayerGroupVisibility(name, sourceList[name].visibility)"
-              />
-              <div class="sm-component-layer-list__layergroupname add-ellipsis" :title="name">{{ name }}</div>
-            </div>
-            <div
-              v-if="attributes.enabled && sourceList[name].type === 'geojson'"
-              class="sm-component-layer-list__attributes"
-            >
-              <i
-                :class="attributesIconClass"
-                :style="sourceList[name].visibility !== 'visible' && { cursor: 'not-allowed' }"
-                @click.stop="
-                  sourceList[name].visibility === 'visible' &&
-                    toggleAttributesVisibility($event, layerName(sourceList[name]))
-                "
-              />
-            </div>
-          </div>
-        </sm-collapse>
+        <layer-group
+          :layerCatalog="sourceList"
+          :attributes="attributes"
+          @toggleItemVisibility="toggleItemVisibility"
+          @toggleAttributesVisibility="(e,item) => toggleAttributesVisibility(e,item)">
+        </layer-group>
       </div>
     </sm-card>
     <sm-attributes
@@ -135,6 +50,7 @@ import SmAttributes, {
   ToolbarParams
 } from 'vue-iclient/src/mapboxgl/attributes/Attributes.vue';
 import LayerListViewModel from './LayerListViewModel';
+import LayerGroup from 'vue-iclient/src/mapboxgl/web-map/LayerGroup.vue';
 import intersection from 'lodash.intersection';
 import isEqual from 'lodash.isequal';
 
@@ -174,7 +90,8 @@ const ATTRIBUTES_NEEDED_PROPS = [
     SmCard,
     SmCollapse,
     SmCollapsePanel,
-    SmAttributes
+    SmAttributes,
+    LayerGroup
   },
   filters: {
     isVisible(visibility) {
@@ -189,13 +106,11 @@ const ATTRIBUTES_NEEDED_PROPS = [
   },
   removed() {
     this.removeAttributes();
-    this.sourceList = {};
-    this.sourceNames = [];
+    this.sourceList = [];
   }
 })
 class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
-  sourceNames: Array<string> = [];
-  sourceList: Object;
+  sourceList: Array<Object> = [];
   layerList: Array<string> = [];
   attributesProps: Object = {};
   layerUpdateFn: Function;
@@ -242,23 +157,14 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
   }
 
-  get enableSource() {
-    return intersection(this.sourceNames, this.sourceList && Object.keys(this.sourceList));
-  }
-
-  get layerName() {
-    return function (source) {
-      return source.layers[0].id;
-    };
-  }
-
   get attributesStyle() {
     let attributesStyle;
     let position;
     const style = Object.assign(
       {},
       {
-        height: '300px'
+        height: '300px',
+        'pointer-events': 'auto'
       },
       this.attributes.style
     );
@@ -294,8 +200,8 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel = new LayerListViewModel();
   }
 
-  toggleVisibility(sourceLayer, sourceName, visibility: string) {
-    this.viewModel && this.viewModel.changeLayerVisible(sourceLayer, sourceName, visibility);
+  toggleItemVisibility(item: Object, visible: boolean) {
+    this.viewModel && this.viewModel.changeItemVisible(item, visible);
   }
 
   addNewLayer() {
@@ -306,11 +212,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel.deleteLayer();
   }
 
-  toggleLayerGroupVisibility(sourceName, visibility: string) {
-    this.viewModel && this.viewModel.changeLayerGroupVisibility(sourceName, visibility);
-  }
-
-  toggleAttributesVisibility(e, layerName: string) {
+  toggleAttributesVisibility(e, item) {
     if (e.target.className.indexOf('sm-components-icon-attribute-open') !== -1) {
       e.target.setAttribute('class', this.attributesIconClass);
       this.displayAttributes = !this.displayAttributes;
@@ -318,27 +220,27 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
     this.closeAttributesIconClass();
     this.removeAttributes();
-    this.handleAttributesProps(layerName);
+    this.handleAttributesProps(item);
     e.target.setAttribute('class', `${this.attributesIconClass} sm-components-icon-attribute-open`);
     // @ts-ignore
     this.attributesContainer.appendChild(this.$refs.attributes.$el);
     this.displayAttributes = !this.displayAttributes;
   }
 
-  handleAttributesProps(layerName: string) {
+  async handleAttributesProps(item) {
     const props = Object.assign({}, this.attributes);
     for (const key in props) {
       if (ATTRIBUTES_NEEDED_PROPS.indexOf(key) === -1) {
         delete props[key];
       }
     }
-    this.attributesProps = { layerName, title: layerName, ...props };
+    const dataset = await this.viewModel.getLayerDatas(item);
+    this.attributesProps = { dataset: Object.freeze(dataset), title: item.title, ...props };
   }
 
   layerUpdate() {
     this.$nextTick(() => {
       this.sourceList = this.viewModel && this.viewModel.initLayerList();
-      this.sourceNames = this.viewModel && this.viewModel.getSourceNames();
       // @ts-ignore
       if (this.attributesProps.layerName && this.sourceList[this.attributesProps.layerName].visibility === 'none') {
         this.closeAttributesIconClass();

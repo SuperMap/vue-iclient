@@ -7,7 +7,7 @@
 ## 安装
 
 ```
-npm install @supermap/vue-iclient-leaflet
+npm install @supermapgis/vue-iclient-leaflet
 ```
 
 ## 开发
@@ -16,7 +16,7 @@ npm install @supermap/vue-iclient-leaflet
 
 ```js
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient-leaflet';
+import VueiClient from '@supermapgis/vue-iclient-leaflet';
 import App from './App.vue';
 
 Vue.use(VueiClient);

@@ -559,6 +559,9 @@ var results = {
 var GetFeaturesBySQLService = (SuperMap.GetFeaturesBySQLService = (url, options) => {
   const result = {
     result: {
+      datasetInfos: [{
+        fieldInfos:[{name: "SmID", caption: "SmID", type: "INT32"}, {name: "NAME", caption: "名称", type: "WTEXT"}]
+      }],
       features: {
         type: 'FeatureCollection',
         features: [
@@ -613,6 +616,9 @@ var QueryBySQLService = (SuperMap.QueryBySQLService = (url, options) => {
       recordsets: [
         {
           fields: {
+            0: 'SmID'
+          },
+          fieldCaptions: {
             0: 'SmID'
           },
           features: {

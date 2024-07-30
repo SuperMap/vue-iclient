@@ -18,7 +18,7 @@
   "baseLayer": {
     "layerType": "TILE",
     "name": "jubu4490",
-    "url": "http://172.16.15.131:8090/iserver/services/map-test4490-2/rest/maps/jubu4490"
+    "url": "http://fake:8090/iserver/services/map-test4490-2/rest/maps/jubu4490"
   },
   "layers": [],
   "description": "",

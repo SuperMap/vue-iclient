@@ -20,7 +20,8 @@ export default function getFeatures(dataset) {
       fromIndex,
       toIndex,
       hasGeometry,
-      orderBy
+      orderBy,
+      returnFeaturesOnly
     } = dataset;
     if (dataset && (url || geoJSON) && type) {
       let queryInfo = {
@@ -33,7 +34,8 @@ export default function getFeatures(dataset) {
         const options = {
           fromIndex,
           toIndex,
-          hasGeometry
+          hasGeometry,
+          returnFeaturesOnly
         };
         if (dataset.proxy) {
           options.proxy = dataset.proxy;
@@ -56,7 +58,12 @@ export default function getFeatures(dataset) {
         params = [datasetInfo, queryInfo];
       } else if (type === 'iPortal') {
         queryInfo.withCredentials = withCredentials;
-        superMapService = new iPortalDataService(url, withCredentials, { epsgCode });
+        superMapService = new iPortalDataService(url, withCredentials, {
+          epsgCode,
+          resourceId: dataset.id,
+          dataType: dataset.dataType,
+          dataId: dataset.id
+        });
         params = [queryInfo, !!preferContent];
       } else if (type === 'rest') {
         superMapService = new RestService({

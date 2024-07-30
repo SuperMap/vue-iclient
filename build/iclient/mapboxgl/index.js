@@ -1,4 +1,4 @@
-/* Copyright© 2000 - 2023 SuperMap Software Co.Ltd. All rights reserved.
+/* Copyright© 2000 - 2024 SuperMap Software Co.Ltd. All rights reserved.
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html.*/
 export {
@@ -119,7 +119,7 @@ export {
   ColorsPickerUtil,
   ArrayStatistic,
   ThemeStyle
-} from '@supermap/iclient-common';
+} from '@supermapgis/iclient-common';
 export { MapService } from './services/MapService';
 export { FeatureService } from './services/FeatureService';
 export { QueryService } from './services/QueryService';

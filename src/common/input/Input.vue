@@ -6,7 +6,9 @@ import Base from './BaseMixin.vue';
 
 export const inputTypes = {
   ...inputProps,
-  size: VueTypes.oneOf(['small', 'large', 'default', 'middle'])
+  size: VueTypes.oneOf(['small', 'large', 'default', 'middle']),
+  error: VueTypes.bool.def(false),
+  unit: VueTypes.string
 };
 
 export default {
@@ -17,12 +19,15 @@ export default {
   computed: {
     extralProps() {
       return {
-        size: this.size === 'middle' ? undefined : this.size
+        size: this.size === 'middle' ? undefined : this.size,
+        addonAfter: this.unit || this.addonAfter
       };
     },
     componentClass() {
       return {
-        'sm-component-input-affix-wrapper-md': this.size === 'middle'
+        'sm-component-input-affix-wrapper-md': this.size === 'middle',
+        'sm-component-input-error': this.error,
+        'sm-component-input-unit': this.unit
       };
     }
   },

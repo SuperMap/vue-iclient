@@ -1,10 +1,10 @@
 <script lang="ts">
+import type { CreateElement, VNode } from 'vue';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Swiper from './Swiper';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import { getSlotOptions, filterEmpty } from 'ant-design-vue/es/_util/props-util';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
-import { CreateElement } from 'vue';
 import isequal from 'lodash.isequal';
 import debounce from 'lodash.debounce';
 import { addListener, removeListener } from 'resize-detector';
@@ -51,6 +51,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'autoplay',
     'direction'
   ];
+
   activeIndexData: number = 0;
 
   // 当 loop 为 true && effect 为 cube, 幻灯片页数等于3会出现重叠。
@@ -312,6 +313,23 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       textColor: this.textColor,
       splitLine: this.splitLine
     };
+    let SwiperCompt: VNode | null = null;
+    if (this.isRefresh) {
+      SwiperCompt = h(
+        // @ts-ignore
+        Swiper,
+        {
+          domProps: { realIndex: this.activeIndex },
+          props: { options: this.swiperOptions },
+          on: {
+            slideChange: this.slideChange,
+            observerUpdate: this._observerUpdate
+          },
+          ref: 'mySwiper'
+        },
+        slots
+      );
+    }
     return h(
       'sm-collapse-card',
       {
@@ -325,23 +343,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
             class: 'sm-component-slideshow__content',
             on: { mouseover: this.autoplayStop, mouseout: this.autoplayStart }
           },
-          [
-            this.isRefresh
-              ? h(
-                  Swiper,
-                  {
-                    domProps: { realIndex: this.activeIndex },
-                    props: { options: this.swiperOptions },
-                    on: {
-                      slideChange: this.slideChange,
-                      observerUpdate: this._observerUpdate
-                    },
-                    ref: 'mySwiper'
-                  },
-                  slots
-                )
-              : null
-          ]
+          [SwiperCompt]
         )
       ]
     );

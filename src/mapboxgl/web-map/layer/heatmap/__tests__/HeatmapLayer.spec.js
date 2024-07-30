@@ -1,7 +1,6 @@
 import { mount, config } from '@vue/test-utils';
 import SmHeatmapLayer from '../HeatmapLayer.vue';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
-import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 
 describe('HeatmapLayer.vue', () => {
   let wrapper;
@@ -42,6 +41,9 @@ describe('HeatmapLayer.vue', () => {
 
   afterEach(() => {
     jest.restoreAllMocks();
+    if (mapWrapper) {
+      mapWrapper.destroy();
+    }
     if (wrapper) {
       wrapper.destroy();
     }
@@ -54,14 +56,13 @@ describe('HeatmapLayer.vue', () => {
     }
   })
 
-  it('render', async done => {
+  it('render', done => {
     wrapper = mount(SmHeatmapLayer, {
       propsData: {
         mapTarget: 'map',
         data
       }
     });
-    await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
     done();
   });
@@ -91,7 +92,6 @@ describe('HeatmapLayer.vue', () => {
       data: newData,
       layerStyle: {}
     });
-    await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.viewModel.data).toBe(newData);
     done();
   });

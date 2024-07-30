@@ -104,6 +104,7 @@ $link-active-color: $primary-7;
 // Border color
 $border-color-base: var(--border-color-base); // base border outline a component
 $border-color-split: var(--border-color-split); // split border inside a component
+$border-color-secondary: var(--border-color-secondary); 
 $border-color-inverse: $white;
 
 // Outline
@@ -114,6 +115,7 @@ $background-color-base: var(--background-base);
 
 // Disabled states
 $disabled-color: var(--disabled-text-color);
+$disabled-icon-color: var(--disabled-icon-color);
 $disabled-bg: var(--disabled-bg-color);
 $disabled-color-dark: rgba($white, 0.35);
 $disabled-border-color: var(--disabled-border-color);
@@ -142,12 +144,17 @@ $btn-primary-color: var(--button-primary-color);
 $btn-primary-bg: $primary-color;
 
 $btn-default-color: $text-color;
+$btn-opacity85-color: $text-color-active;
+$btn-default-border-color: var(--default-button-border);
 $btn-default-bg: transparent;
 $btn-default-border: var(--button-border-default-color);
 
 $btn-danger-color: $red-6;
 $btn-danger-bg: transparent;
 $btn-danger-border: $red-6;
+
+$btn-delete-hover-color: var(--btn-hover-color);
+$btn-delete-active-color: var(--btn-active-color);
 
 $btn-ghost-color: $text-color;
 $btn-ghost-bg: transparent;
@@ -163,6 +170,7 @@ $btn-height-md: 28px;
 
 // Checkbox
 $checkbox-color: $primary-6;
+$checkbox-selected-hover-color: $primary-7;
 $checkbox-check-color: #fff;
 
 // Descriptions
@@ -180,6 +188,7 @@ $empty-description-color: var(--empty-description-color);
 
 // Radio
 $radio-dot-color: $primary-6;
+$radio-dot-checked-hover-color: $primary-7;
 $radio-inner-disabled-bg: var(--radio-inner-disabled-bg);
 
 // Radio buttons
@@ -215,7 +224,15 @@ $input-number-handler-bg: $component-background;
 $input-number-handler-border-color: $border-color-base;
 $input-addon-bg: $background-color-light;
 $input-disabled-bg: $disabled-bg;
+$input-disabled-color: $disabled-bg;
 $input-height-md: 28px;
+$input-error-color: var(--error-color);
+$input-read-only-border-color: var(--read-only-border-color);
+$input-read-only-color: var(--read-only-color);
+$input-read-only-bg: var(--read-only-bg);
+$input-with-unit-color: var(--with-unit-color);
+$input-with-unit-disabled-color: var(--with-unit-disabled-color);
+$input-icon-color: var(--alpha45);
 
 // Form
 $label-required-color: $highlight-color;
@@ -309,7 +326,11 @@ $tag-default-bg: $background-color-light;
 $tag-default-color: $text-color;
 
 // TimePicker
-$time-picker-selected-bg: $background-color-base;
+$time-picker-selected-bg: $selected-color;
+$time-picker-item-hover-bg: var(--hover-bg);
+
+// DatePicker
+$date-item-hover-bg: var(--hover-bg);
 
 // Badge
 $badge-text-color: $component-background;
@@ -333,7 +354,7 @@ $comment-action-color: $text-color-secondary;
 $comment-action-hover-color: #595959;
 
 // Tabs
-$tabs-card-head-background: $background-color-light;
+$tabs-card-head-background: $component-background;
 $tabs-card-active-color: $primary-6;
 $tabs-ink-bar-color: $primary-6;
 $tabs-highlight-color: $primary-6;
@@ -361,6 +382,7 @@ $switch-loading-text-color: rgba(0, 0, 0, 0.65);
 
 // Pagination
 $pagination-border-default-color: var(--pagination-border-default-color);
+$pagination-border-hover-color: var(--hover-color);
 $pagination-disabled-active-bg-color: var(--disabled-darken-bg-color10);
 $pagination-item-bg-active: $primary-6;
 $pagination-ellipsis-color: var(--pagination-ellipsis-color);
@@ -377,7 +399,7 @@ $breadcrumb-link-color-hover: $primary-5;
 $breadcrumb-separator-color: $text-color-secondary;
 
 // Step
-
+$step-wait-background-color: var(--step-wait-background-color);
 // Slider
 $slider-rail-background-color: var(--slider-rail-background-color);
 $slider-rail-background-color-hover: $slider-rail-background-color;

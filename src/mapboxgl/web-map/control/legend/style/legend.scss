@@ -14,6 +14,7 @@
   border: none;
   min-width: 30px;
   min-height: 30px;
+
   .#{$card-collapse-prefix}__content {
     box-shadow: none;
     max-height: 400px;
@@ -52,6 +53,10 @@
 
   @include e(themefield) {
     padding-bottom: 10px;
+  }
+
+  @include e(fieldvalue) {
+    margin-left: 8px;
   }
 
   .is-not-header {
@@ -133,97 +138,18 @@
     .#{$collapse-prefix}-content-box {
       padding: 0;
       @include e(wrap) {
-        display: flex;
-        align-items: center;
         height: 100%;
         min-width: 80px;
-      }
-      @include e(range) {
-        overflow: hidden;
-        @include e(range-item) {
-          & > div {
-            > i {
-              display: inline-block;
-              vertical-align: text-bottom;
-              width: 14px;
-              height: 14px;
-            }
-          }
-        }
-      }
-
-      @include e(rank-icon) {
-        & > i {
-          display: inline-block;
-          vertical-align: middle;
-        }
-      }
-
-      @include e(heatbox) {
-        display: flex;
-        overflow: hidden !important;
-        height: 120px;
-      }
-
-      @include e(heat) {
-        height: 100%;
-        > i {
-          display: inline-block;
-          width: 14px;
-          height: 100%;
-        }
-      }
-      @include e(heatText range-item rank-item) {
-        span {
-          i {
-            font-size: inherit;
-          }
-        }
-      }
-      @include e(heatText) {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-      }
-
-      @include e(point) {
-        padding: 0;
-        margin: 0;
-        &::-webkit-scrollbar-thumb {
-          background: $scrollbar-background;
-        }
-      }
-
-      @include e(heatbox item range-item rank-item) {
-        margin-bottom: 8px;
-        line-height: 20px;
-        display: flex;
-        align-items: center;
-        > * {
-          &:first-child {
-            text-align: center;
-          }
-          &:last-child {
-            width: auto;
-            padding-left: 10px;
-          }
-        }
-        &:last-child {
-          margin-bottom: 0;
-        }
       }
 
       @include e(item) {
         list-style: none;
+        display: flex;
+        align-items: center;
+        margin: 8px 0 16px;
         > i {
           font-size: 14px;
         }
-      }
-
-      @include e(field-value) {
-        margin-left: 12px;
-        max-width: 86%;
       }
 
       @include e(title) {
@@ -232,6 +158,47 @@
           font-size: inherit;
         }
       }
+    }
+  }
+
+  @include e(linearcolor) {
+    height: 10px;
+  }
+
+  @include e(colorstop colorfieldrange) {
+    position: relative;
+    height: 15px;
+  }
+
+  @include e(colorstop) {
+    .color-stop-holder {
+      position: absolute;
+      width: 10px;
+      cursor: not-allowed;
+      opacity: 0.25;
+    }
+    .color-arrow {
+      width: 0;
+      height: 0;
+      border-right: 5px solid transparent;
+      border-bottom: 4px solid #d9d9d9;
+      border-left: 5px solid transparent;
+    }
+    .color-value {
+      width: 10px;
+      height: 8px;
+      border: 1px solid #d9d9d9;
+    }
+  }
+
+  @include e(colorfieldrange) {
+    .color-field-holder {
+      position: absolute;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      max-width: 80px;
+      margin-left: 2px;
     }
   }
 }

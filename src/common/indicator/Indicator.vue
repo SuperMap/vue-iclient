@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-indicator" :style="getBackgroundStyle">
+  <div class="sm-component-indicator" :style="getBackgroundStyle" @click="handleClick">
     <div :class="`sm-component-indicator__content sm-component-indicator__content-${mode}`">
       <span
         v-show="showTitleUnit"
@@ -178,7 +178,7 @@ export default {
       return this.separator.replace(/\d+/, '');
     },
     calDecimals() {
-      if (this.decimals > 0) {
+      if (this.decimals >= 0) {
         return this.decimals;
       }
       if (this.numData.toString().split('.')[1]) {
@@ -209,6 +209,9 @@ export default {
       if (this.url) {
         this.getData();
       }
+    },
+    indicatorNum(indicatorNum) {
+      this.$emit('indicatorNumChange', indicatorNum);
     }
   },
   mounted() {
@@ -262,7 +265,7 @@ export default {
       });
     },
     isNumber(str) {
-      return /^\d+$/.test(str);
+      return /^\d+(\.\d*)?$/.test(str);
     },
     timing() {
       this.getData();
@@ -287,12 +290,18 @@ export default {
       this.numData = +newData;
       this.indicatorNum = newData;
     },
+    changeIndicatorColor(color) {
+      this.indicatorColorData = color;
+    },
     getRestService() {
       if (!this.restService) {
         this.restService = new RestService({ proxy: this.proxy });
         this.restService.on({ getdatasucceeded: this.fetchData });
       }
       return this.restService;
+    },
+    handleClick() {
+      this.$emit('click', this.indicatorNum);
     }
   }
 };

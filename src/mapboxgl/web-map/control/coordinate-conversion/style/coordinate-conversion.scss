@@ -1,7 +1,7 @@
 @import '../../../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../../../common/_utils/style/theme/theme.scss';
 @import '../../../../../common/card/style/card.scss';
-@import '../../../../../common/collapse/style/collapse.scss';
+@import "../../../../../common/collapse-card/style/collapse-card.scss";
 @import '../../../../../common/input/style/input.scss';
 @import '../../../../../common/select/style/select.scss';
 
@@ -65,14 +65,6 @@
     }
     .sm-component-collapse-card__body {
       padding-left: 36px;
-    }
-  }
-  .sm-component-collapse-card__icon {
-    &,
-    i {
-      width: 32px;
-      height: 32px;
-      line-height: 32px;
     }
   }
   .sm-component-card-bordered {

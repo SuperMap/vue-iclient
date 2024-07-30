@@ -154,7 +154,7 @@ export default {
         return {
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',
-          searchUrl: 'https://api.tianditu.gov.cn/search',
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search',
           tk: ''
         };
       }
@@ -252,7 +252,7 @@ export default {
             case 'Point':
               this.componentId = 'PointsResult';
               componentProps.openPurePoiSearch = true;
-              componentProps.specifyAdminSearch = params && !!params.specifyAdminCode;
+              componentProps.specifyAdminSearch = params && !!params.specify;
               componentProps.resultBelongTo = this.status === 'toSetStart' ? 'start' : 'end';
               componentListeners['reset-start-point'] = this.resetStartPoint;
               componentListeners['reset-end-point'] = this.resetEndPoint;
@@ -299,7 +299,7 @@ export default {
     resetStartPoint(data) {
       if (data) {
         this.start = data.name;
-        this.startLnglat = data.lonlat ? [+data.lonlat.split(' ')[0], +data.lonlat.split(' ')[1]] : [0, 0];
+        this.startLnglat = data.lonlat ? [+data.lonlat.split(',')[0], +data.lonlat.split(',')[1]] : [0, 0];
         this.componentId = null;
         this.status = 'toSetEnd';
       }
@@ -307,7 +307,7 @@ export default {
     resetEndPoint(data) {
       if (data) {
         this.end = data.name;
-        this.endLnglat = data.lonlat ? [+data.lonlat.split(' ')[0], +data.lonlat.split(' ')[1]] : [0, 0];
+        this.endLnglat = data.lonlat ? [+data.lonlat.split(',')[0], +data.lonlat.split(',')[1]] : [0, 0];
         this.componentId = null;
         this.status = 'finished';
       }

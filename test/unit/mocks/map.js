@@ -72,7 +72,6 @@ var Map = function (options) {
   this.zoom = this.options.zoom || 0;
   this._container = this.options.container || 'map';
   // this.style;
-  this._layers = {};
   this.getContainer = function () {
     return this._container;
   };
@@ -81,7 +80,7 @@ var Map = function (options) {
   var ne = new LngLat(-73.9397, 40.8002);
   var llb = new LngLatBounds(sw, ne);
   this.bounds = this.options.bounds || llb;
-  this.crs = new CRS();
+  this.crs = new CRS({ epsgCode: this.options.crs });
   try {
     this.center = this.options.center ? new LngLat(this.options.center.lng, this.options.center.lat) : new LngLat(0, 0);
   } catch (e) {
@@ -90,14 +89,8 @@ var Map = function (options) {
   this.resize = function () {};
   this.style = options.style;
   this.setStyle = function (style, options) {
-    for (var i = 0, list = style.layers; i < list.length; i += 1) {
-      var layer = list[i];
-      this._layers[layer.id] = layer;
-    }
+    this.addStyle(style);
   };
-  if (options.style) {
-    this.setStyle(options.style);
-  }
   this.transform = {
     angle: 0
   };
@@ -138,9 +131,11 @@ var Map = function (options) {
   };
 
   this.getStyle = function () {
+    const layers = Object.values(this.addedLayers);
     if (this.style) {
-      return this.style;
+      return { ...this.style, layers: layers.concat(this.style.layers)};
     }
+    return { layers };
   };
 
   this.getContainer = function () {
@@ -204,6 +199,7 @@ var Map = function (options) {
     }
     if (this._sources[name]) {
       return {
+        ...this._sources[name],
         setCoordinates: function() {},
         setData: function (data) {
           this._sources[name].data = data;
@@ -223,7 +219,8 @@ var Map = function (options) {
           }
         }.bind(this),
         _data: this._sources[name].data,
-        loadTile: function () {}
+        loadTile: function () {},
+        clearTiles: function () {}
       };
     }
     if (name === 'ChinaDark') {
@@ -283,11 +280,7 @@ var Map = function (options) {
         tiles: []
       };
     } else {
-      return {
-        setCoordinates: function() {},
-        setData: function (data) {},
-        loadTile: function () {}
-      };
+      return null;
     }
   };
 
@@ -300,6 +293,7 @@ var Map = function (options) {
   };
 
   this.overlayLayersManager = {};
+  this.addedLayers = {};
 
   this.addSource = function (name, source) {
     this._sources[name] = source;
@@ -322,7 +316,15 @@ var Map = function (options) {
   };
   this.off = function () {};
   this.addLayer = function (layer, before) {
-    this.overlayLayersManager[layer.id] = layer;
+    if (layer.overlay) {
+      this.overlayLayersManager[layer.id] = layer;
+    } else {
+      this.addedLayers[layer.id] = layer;
+    }
+    if (layer.source instanceof Object){
+      this.addSource(layer.id, Object.assign({}, layer.source))
+      this.addedLayers[layer.id].source = layer.id;
+    }
     if (layer.onAdd) {
       layer.onAdd(this);
     }
@@ -333,6 +335,18 @@ var Map = function (options) {
   };
 
   this.addStyle = function (style, before) {
+    if (style.sources) {
+      for (const id in style.sources) {
+        this.addSource(id, style.sources[id]);
+      }
+    }
+    if (style.layers) {
+      style.layers.forEach((item) => {
+        if (item.type !== 'background') {
+          this.addLayer(item);
+        }
+      });
+    }
     return style;
   };
 
@@ -341,18 +355,16 @@ var Map = function (options) {
   this.getFilter = function (layerId) {};
   this.setFilter = function (layerId, filter) {};
   this.getLayer = function (id) {
-    if(this.overlayLayersManager[id]) {
+    if(this.addedLayers[id]) {
       if(id === 'POINT-0'){
         return ''
       }
-      return this.overlayLayersManager[id];
-    }
-    else if(this._layers[id]) {
-      return this._layers[id];
+      return this.addedLayers[id];
     }
     else if(id === 'China-identify-SM-highlighted'){
       return {}
     }
+    return this.overlayLayersManager[id];
   };
   this.getBounds = function () {
     return this.bounds;
@@ -595,6 +607,9 @@ var Map = function (options) {
   this.flyTo = options => {};
   this.setRenderWorldCopies = epsgCode => {};
   this.triggerRepaint = () => {};
+  if (options.style) {
+    this.setStyle(options.style);
+  }
   if (config.mapLoad) {
     setTimeout(() => {
       this.fire('load');

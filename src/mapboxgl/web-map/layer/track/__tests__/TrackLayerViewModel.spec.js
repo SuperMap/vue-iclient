@@ -35,6 +35,13 @@ describe('TrackLayerViewModel.ts', () => {
     unit: 'millimeter',
     url: './static/templates/car/car.obj'
   };
+  const mockCRS = {
+    fromLngLat: () => {
+      return { x: 0.2, y: 0.1, z: 0 };
+    },
+    extent: [512, 1024, 1536, 2048],
+    unit: 'meter'
+  };
 
   it('set url to add layer and IMAGE type from mapsource', () => {
     const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
@@ -67,7 +74,10 @@ describe('TrackLayerViewModel.ts', () => {
           setData: () => jest.fn()
         };
       },
-      easeTo: () => jest.fn()
+      easeTo: () => jest.fn(),
+      getCRS: () => {
+        return mockCRS;
+      }
     };
     const spy = jest.spyOn(viewModel.map, 'getSource');
     viewModel.setUrl('http://test/error');
@@ -97,7 +107,10 @@ describe('TrackLayerViewModel.ts', () => {
       addImage: () => jest.fn(),
       addLayer: () => jest.fn(),
       getLayer: () => jest.fn(),
-      addSource: () => jest.fn()
+      addSource: () => jest.fn(),
+      getCRS: () => {
+        return mockCRS;
+      }
     };
     const spy = jest.spyOn(viewModel.map, 'addLayer');
     viewModel.setUrl('http://test');
@@ -130,9 +143,7 @@ describe('TrackLayerViewModel.ts', () => {
       },
       getLayer: () => undefined,
       getCRS: () => {
-        return {
-          extent: [512, 1024, 1536, 2048]
-        };
+        return mockCRS;
       },
       getZoom: () => 1,
       setZoom: () => jest.fn(),
@@ -140,7 +151,7 @@ describe('TrackLayerViewModel.ts', () => {
       getCanvas: () => {
         return {
           width: 2
-        }
+        };
       }
     };
     const spy = jest.spyOn(viewModel.map, 'addLayer');
@@ -173,21 +184,19 @@ describe('TrackLayerViewModel.ts', () => {
             return {
               setData: () => jest.fn()
             };
-          },
+          }
         };
         layer.onAdd(map);
       },
       getLayer: () => undefined,
       getCRS: () => {
-        return {
-          extent: [512, 1024, 1536, 2048]
-        };
+        return mockCRS;
       },
       getZoom: () => 1,
       getCanvas: () => {
         return {
           width: 2
-        }
+        };
       }
     };
     const spy = jest.spyOn(viewModel.map, 'addLayer');
@@ -256,7 +265,10 @@ describe('TrackLayerViewModel.ts', () => {
       addLayer: () => jest.fn(),
       getSource: () => undefined,
       addSource: () => jest.fn(),
-      getLayer: () => undefined
+      getLayer: () => undefined,
+      getCRS: () => {
+        return mockCRS;
+      }
     };
     const spy = jest.spyOn(viewModel.map, 'addLayer');
     const timestampInfo = {
@@ -284,7 +296,10 @@ describe('TrackLayerViewModel.ts', () => {
       addLayer: () => jest.fn(),
       getSource: () => undefined,
       addSource: () => jest.fn(),
-      getLayer: () => undefined
+      getLayer: () => undefined,
+      getCRS: () => {
+        return mockCRS;
+      }
     };
     const spy = jest.spyOn(viewModel.map, 'addLayer');
     const timestampInfo = {
@@ -312,7 +327,10 @@ describe('TrackLayerViewModel.ts', () => {
       addLayer: () => jest.fn(),
       getSource: () => undefined,
       addSource: () => jest.fn(),
-      getLayer: () => undefined
+      getLayer: () => undefined,
+      getCRS: () => {
+        return mockCRS;
+      }
     };
     const spy = jest.spyOn(viewModel.map, 'addLayer');
     const timestampInfo = {
@@ -340,7 +358,10 @@ describe('TrackLayerViewModel.ts', () => {
       addLayer: () => jest.fn(),
       getSource: () => undefined,
       addSource: () => jest.fn(),
-      getLayer: () => undefined
+      getLayer: () => undefined,
+      getCRS: () => {
+        return mockCRS;
+      }
     };
     const spy = jest.spyOn(viewModel.map, 'addLayer');
     const timestampInfo = {
@@ -368,7 +389,10 @@ describe('TrackLayerViewModel.ts', () => {
       addLayer: () => jest.fn(),
       getSource: () => undefined,
       addSource: () => jest.fn(),
-      getLayer: () => undefined
+      getLayer: () => undefined,
+      getCRS: () => {
+        return mockCRS;
+      }
     };
     const spy = jest.spyOn(viewModel.map, 'addLayer');
     const timestampInfo = {
@@ -385,5 +409,61 @@ describe('TrackLayerViewModel.ts', () => {
     const viewModel = new TrackLayerViewModel(option);
     viewModel.reset();
     expect(viewModel.lineData).toEqual([]);
+  });
+  it('add model 4326Map', () => {
+    const nextOption = {
+      ...option,
+      loaderType: 'OBJ2',
+      fitBounds: false,
+      direction: {
+        front: '-z',
+        bottom: 'z'
+      }
+    };
+    const viewModel = new TrackLayerViewModel(nextOption);
+    const crs = { fromLngLat: jest.fn(), extent: [-180, -90, 180, 90], unit: 'degree' };
+    viewModel.map = {
+      getBearing: () => jest.fn(),
+      getSource: () => undefined,
+      addSource: () => jest.fn(),
+      setZoom: () => jest.fn(),
+      getZoom: () => 1,
+      getCRS: () => {
+        return crs;
+      },
+      addLayer: layer => {
+        const map = {
+          getCanvas: () => jest.fn(),
+          triggerRepaint: () => jest.fn(),
+          getSource: () => {
+            return {
+              setData: () => jest.fn()
+            };
+          }
+        };
+        layer.onAdd(map);
+        layer.render();
+      },
+      getLayer: () => undefined,
+      setCenter: () => jest.fn(),
+      getCanvas: () => {
+        return {
+          width: 2
+        };
+      }
+    };
+    const spy = jest.spyOn(crs, 'fromLngLat').mockImplementation(() => {
+      return { x: 0.2, y: 0.1, z: 0 };
+    });
+    const setZoomSpy = jest.spyOn(viewModel.map, 'setZoom');
+    const timestampInfo = {
+      currentTimestamp: 1640051713987,
+      nextTimestamp: 1640051713990,
+      prevTimestamp: 1640051713987,
+      step: 3000
+    };
+    viewModel.setPosition(timestampInfo);
+    expect(spy).toHaveBeenCalledWith([0, 0]);
+    expect(setZoomSpy).toHaveBeenCalledWith(22.63540564083981);
   });
 });

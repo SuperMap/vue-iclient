@@ -380,7 +380,33 @@ describe('WebMapService.spec', () => {
     const service = new WebMapService(mapId, options);
     expect.assertions(1);
     return service.getLayerFeatures(type, layer, baseProjection).then(data => {
-      expect(data).toStrictEqual(result);
+      expect(data.features[0].geometry).toStrictEqual(result.features[0].geometry);
+      done();
+    });
+  });
+
+  it('features will apply caption field when with caption config', async done => {
+    const type = 'rest_data';
+    const layer = {
+      dataSource: {
+        url: 'https://fakeiportal.supermap.io/iportal/processCompleted'
+      },
+      enableFields: ['latitude']
+    };
+    const baseProjection = 'EPSG:3857';
+    const result = {
+      features: [
+        {
+          geometry: { coordinates: [101.84004968, 26.0859968692659], type: 'Point' },
+          properties: { NAME: '四川省', SMID: '1', index: '0', lat: 26.0859968692659, lon: 101.84004968 },
+          type: 'Feature'
+        }
+      ],
+      type: 'feature'
+    };
+    const service = new WebMapService(mapId, options);
+    return service.getLayerFeatures(type, layer, baseProjection).then(data => {
+      expect(data.features[0].properties['名称']).toBe('四川省');
       done();
     });
   });
@@ -722,5 +748,38 @@ describe('WebMapService.spec', () => {
     };
     const service = new WebMapService(mapId, options);
     expect(service.getDatasourceType(layer)).toBe('user_data');
+  });
+
+  it('get Layer Features from rest_data and dataSource is Chinese', async done => {
+    const type = 'rest_data';
+    const layer = {
+      dataSource: {
+        "type": "REST_DATA",
+        "url": "https://fakeiportal.supermap.io/iportal/portalproxy/98587ae90bec41bd/iserver/services/data-ZhongGuoDiTu/rest/data",
+        "dataSourceName": "%E4%B8%AD%E5%9B%BD%E7%9F%A2%E9%87%8F%E6%95%B0%E6%8D%AE:飞机场"
+      },
+      enableFields: ['latitude']
+    };
+    const baseProjection = 'EPSG:3857';
+    const service = new WebMapService(mapId, options);
+    const spy = jest.spyOn(service, '_getFeatureBySQL');
+    expect.assertions(1);
+    return service.getLayerFeatures(type, layer, baseProjection).then(data => {
+      expect(spy).toBeCalledWith(expect.anything(), ["中国矢量数据:飞机场"], expect.anything(), expect.anything(), expect.anything());
+      done();
+    });
+  });
+
+  it('handleWithCredentials', () => {
+    const mapId = uniqueLayer_polygon;
+    const service = new WebMapService(mapId, { ...options, iportalServiceProxyUrlPrefix: 'https://fakeiportal.supermap.io/portalproxy' });
+    expect(service.handleWithCredentials(null, 'https://www.supermapol.com/url', true)).toBe('');
+    const url = 'http://fakeurl';
+    expect(service.handleWithCredentials('https://fakeiportal.supermap.io/iportal/proxy', null, false)).toBeTruthy();
+    expect(service.handleWithCredentials('https://fakeiportal.supermap.io/iportal/proxy', 'https://fakeiportal.supermap.io/iportal/proxy/url', false)).toBeTruthy();
+    expect(service.handleWithCredentials('https://fakeiportal/proxy', null, true)).toBeTruthy();
+    expect(service.handleWithCredentials(null, 'https://fakeiportal.supermap.io/portalproxy/url', false)).toBeTruthy();
+    expect(service.handleWithCredentials(null, url, true)).toBeTruthy();
+    expect(service.handleWithCredentials(null, url)).toBeFalsy();
   });
 });

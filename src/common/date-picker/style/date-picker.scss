@@ -5,6 +5,9 @@
 
 @include b(calendar-picker) {
   $calendar-picker-prefix: &;
+  &-icon {
+    color: $input-icon-color;
+  }
   &:hover {
     #{$calendar-picker-prefix}-clear + #{$calendar-picker-prefix}-icon {
       opacity: 0;
@@ -25,17 +28,24 @@
   background-color: $select-dropdown-bg;
   border: none;
 
+  @include e(panel, '-') {
+    #{$prefix}-input-wrap {
+      display: none;
+    }
+  }
+
   @include e(input, '-') {
     background: $select-dropdown-bg;
   }
 
   @include e(header, '-') {
+    border-color: $border-color-secondary;
     @include calendarPanelHeader($prefix);
   }
 
   @include e(date, '-') {
     &:hover {
-      background: $selected-color;
+      background: $date-item-hover-bg;
     }
     &:active {
       background: $click-color;
@@ -76,8 +86,8 @@
   }
 
   @include e(footer, '-') {
+    border-color: $border-color-secondary;
     &-btn {
-      text-align: right;
       padding-right: 10px;
       a {
         color: $primary-color;
@@ -118,11 +128,15 @@
   }
 
   @include e(range, '-') {
+    #{$prefix}-body, #{$prefix}-month-panel-body, #{$prefix}-year-panel-body, #{$prefix}-decade-panel-body {
+      border-color: $border-color-secondary;
+    }
     &-picker-separator {
       color: $text-color-secondary;
     }
     &-middle {
-      color: $text-color-secondary;
+      // color: $text-color-secondary;
+      display: none;
     }
     // #{$prefix}-today
     //   :not(#{$prefix}-disabled-cell)
@@ -155,7 +169,20 @@
     }
 
     &#{$prefix}-time {
+      #{$prefix}-time-picker {
+        top: 40px;
+        &-select {
+          border-color: $border-color-secondary;
+        }
+        #{$prefix}-time-picker-panel {
+          margin-top: -40px;
+          #{$prefix}-time-picker-inner {
+            border-color: $border-color-secondary;
+          }
+        }
+      }
       #{$prefix}-time-picker-combobox {
+        border-color: $border-color-secondary;
         background: $select-dropdown-bg;
       }
     }
@@ -174,15 +201,13 @@
 
         li {
           &:hover {
-            background: $selected-color;
+            background: $time-picker-item-hover-bg;
           }
           &:focus {
             background: $click-color;
-            color: #fff;
           }
           &#{$prefix-time-picker-select}-option-selected {
-            background: $primary-color;
-            color: #fff;
+            background: $selected-color;
           }
           &#{$prefix-time-picker-select}-option-disabled {
             @include disabled($background: transparent);
@@ -196,6 +221,9 @@
     $prefix-month-panel: &;
     @include panel-item(&, month);
 
+    &-header {
+      border-color: $border-color-secondary;
+    }
     &-cell {
       &-disabled {
         #{$prefix-month-panel}-month {

@@ -20,6 +20,9 @@ export const ButtonType = () => ({
     <sm-button type="danger">
       Danger
     </sm-button>
+    <sm-button type="delete">
+      Delete
+    </sm-button>
     <sm-button type="primary">
       按钮
     </sm-button>
@@ -103,6 +106,20 @@ export const DisabledState = () => ({
       Dashed(disabled)
     </sm-button>
     <br />
+    <sm-button style="margin:8px 10px" type="danger">
+      danger
+    </sm-button>
+    <sm-button style="margin:8px 10px" type="danger" disabled>
+      danger(disabled)
+    </sm-button>
+    <br />
+    <sm-button style="margin:8px 10px" type="delete">
+      Delete
+    </sm-button>
+    <sm-button style="margin:8px 10px" type="delete" disabled>
+      Delete(disabled)
+    </sm-button>
+    <br />
     <sm-button style="margin:8px 10px" type="link">
       Link
     </sm-button>
@@ -138,6 +155,9 @@ export const GhostButton = () => ({
     </sm-button>
     <sm-button type="danger" ghost>
       Danger
+    </sm-button>
+    <sm-button type="delete" ghost>
+      Delete
     </sm-button>
     <sm-button type="link" ghost>
       Link
@@ -186,6 +206,9 @@ export const ButtonSize = () => ({
     <sm-button type="danger" :size="size">
       Danger
     </sm-button>
+    <sm-button type="delete" :size="size">
+      Delete
+    </sm-button>
     <sm-button type="link" :size="size">
       Link
     </sm-button>
@@ -229,6 +252,9 @@ export const BlockButton = () => ({
     </sm-button>
     <sm-button style="margin:8px 0" type="danger" block>
       Danger
+    </sm-button>
+    <sm-button style="margin:8px 0" type="delete" block>
+      Delete
     </sm-button>
     <sm-button style="margin:8px 0" type="link" block>
       Link

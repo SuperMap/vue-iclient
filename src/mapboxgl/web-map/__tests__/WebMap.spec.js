@@ -6,6 +6,7 @@ import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
 import layerData_CSV from 'vue-iclient/test/unit/mocks/data/layerData';
+import csv_nullxy_Data from 'vue-iclient/test/unit/mocks/data/csv_data';
 import layerData_geojson from 'vue-iclient/test/unit/mocks/data/layerData_geojson';
 import markerLayer from 'vue-iclient/test/unit/mocks/data/WebMap/markerLayer';
 import markerData from 'vue-iclient/test/unit/mocks/data/WebMap/markerData';
@@ -25,6 +26,7 @@ import mapboxstyleLayer from 'vue-iclient/test/unit/mocks/data/WebMap/mapboxstyl
 import migrationLayer from 'vue-iclient/test/unit/mocks/data/WebMap/migrationLayer.json';
 import flushPromises from 'flush-promises';
 import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
+import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 
 const localVue = createLocalVue();
 localVue.prototype.$message = message;
@@ -56,6 +58,7 @@ describe('WebMap.vue', () => {
   afterEach(() => {
     jest.restoreAllMocks();
     jest.resetAllMocks();
+    jest.clearAllMocks();
     if (wrapper) {
       wrapper.destroy();
     }
@@ -199,7 +202,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('123456');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const markerLayer = layers[1];
       expect(markerLayer.type).toBe('symbol');
@@ -232,7 +235,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('12345678');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const heatLayer = layers[1];
       expect(heatLayer.type).toBe('heatmap');
@@ -265,7 +268,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('147258369');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const vectorLayerPoint = layers[1];
       expect(vectorLayerPoint.type).toBe('circle');
@@ -296,7 +299,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('159357852');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const vectorLayerLine = layers[1];
       expect(vectorLayerLine.type).toBe('line');
@@ -328,7 +331,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.vm.mapId).toBe('123456789');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
       setTimeout(function () {
-        const layers = Object.values(e.map.overlayLayersManager);
+        const layers = e.map.getStyle().layers;
         expect(layers.length).toBe(3);
         const vectorLayerPoint = layers[1];
         expect(vectorLayerPoint.type).toBe('circle');
@@ -364,7 +367,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('2064629293');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(3);
       const vectorLayerPoint = layers[1];
       const id = vectorLayerPoint.id;
@@ -449,7 +452,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('1224625555');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(2);
       const tiandituLayer = layers[0];
       expect(tiandituLayer.id).toBe('天地图地形');
@@ -481,7 +484,7 @@ describe('WebMap.vue', () => {
       expect(wrapper.element.id).toEqual('map');
       expect(wrapper.vm.mapId).toBe('7894565555');
       expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-      const layers = Object.values(e.map.overlayLayersManager);
+      const layers = e.map.getStyle().layers;
       expect(layers.length).toBe(1);
       const xyzLayer = layers[0];
       expect(xyzLayer.id).toBe('OpenStreetMap');
@@ -557,8 +560,7 @@ describe('WebMap.vue', () => {
     expect(spy).toBeCalled();
     expect(wrapper.vm.mapId).toBe('5785858575');
     expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
-    const layers = Object.values(e.map.overlayLayersManager);
-    console.log('layers', layers);
+    const layers = e.map.getStyle().layers;
     expect(layers.length).toBe(2);
     const rangeLayerPoint = layers[1];
     const id = rangeLayerPoint.id;
@@ -577,7 +579,8 @@ describe('WebMap.vue', () => {
       'https://fakeiportal1.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
       'https://fakeiportal1.supermap.io/iportal/web/maps/1234/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData_CSV
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData_CSV,
+      'https://fakeiportal1.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=1234': layerData_CSV
     };
     mockFetch(fetchResource);
     const spy = jest.spyOn(mapboxgl, 'Map');
@@ -589,7 +592,9 @@ describe('WebMap.vue', () => {
     });
     await mapWrapperLoaded(wrapper);
     expect(spy).toBeCalled();
-    wrapper.setProps({
+    await flushPromises();
+    await wrapper.vm.$nextTick();
+    await wrapper.setProps({
       mapId: '1234',
       serverUrl: 'https://fakeiportal1.supermap.io/iportal',
       withCredentials: false,
@@ -610,7 +615,7 @@ describe('WebMap.vue', () => {
       }
     });
     await flushPromises();
-    wrapper.vm.$nextTick();
+    await wrapper.vm.$nextTick();
     expect(wrapper.vm.mapId).toBe('1234');
     expect(wrapper.vm.serverUrl).toBe('https://fakeiportal1.supermap.io/iportal');
     expect(wrapper.vm.withCredentials).toBe(false);
@@ -644,4 +649,153 @@ describe('WebMap.vue', () => {
     expect(callback).toHaveBeenCalledTimes(1);
     done();
   });
+  it('ISVJ-7952 CSV nullXY', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal1.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': csv_nullxy_Data
+    };
+    mockFetch(fetchResource);
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      }
+    });
+    wrapper.vm.viewModel.on({ addlayerssucceeded: callback });
+    await mapWrapperLoaded(wrapper);
+    function callback(e) {
+    expect(spy).toBeCalled();
+    expect(wrapper.element.id).toEqual('map');
+    expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
+    expect(wrapper.vm.mapId).toBe('123');
+    expect(wrapper.vm.map._sources['民航数据']).not.toBeNull();
+    expect(wrapper.vm.map._sources['民航数据'].data.features.length).toBe(1);
+    done();
+    }
+  });
+
+  it('listen getlayersfailed error is object', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/249495311/map.json': {
+        ...webmap3Datas[0],
+        layers: webmap3Datas[0].layers.map(item => {
+          return {
+            ...item,
+            metadata: {
+              typeFailure: 'object'
+            }
+          };
+        })
+      },
+      'https://fakeiportal.supermap.io/iportal/web/maps/249495311': webmap3Datas[1]
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '249495311'
+      }
+    });
+    wrapper.vm.viewModel.on({
+      getlayersfailed: error => {
+        expect(Object.prototype.toString.call(error) === '[object Error]');
+        done();
+      }
+    });
+    await mapWrapperLoaded(wrapper);
+    await flushPromises();
+  });
+
+  it('listen getlayersfailed error is string', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/249495311/map.json': {
+        ...webmap3Datas[0],
+        layers: webmap3Datas[0].layers.map(item => {
+          return {
+            ...item,
+            metadata: {
+              typeFailure: 'string'
+            }
+          };
+        })
+      },
+      'https://fakeiportal.supermap.io/iportal/web/maps/249495311': webmap3Datas[1]
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '249495311'
+      }
+    });
+    wrapper.vm.viewModel.on({
+      getlayersfailed: error => {
+        expect(Object.prototype.toString.call(error) === '[object String]');
+        done();
+      }
+    });
+    await mapWrapperLoaded(wrapper);
+    await flushPromises();
+  });
+
+  it('bing map', async done => {
+    const metaInfo = {
+      resourceSets: [
+        {
+            "resources": [
+                {
+                    "__type": "ImageryMetadata:http://schemas.microsoft.com/search/local/ws/rest/v1",
+                    "imageHeight": 256,
+                    "imageUrl": "https://{subdomain}.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z",
+                    "imageUrlSubdomains": [
+                        "t0",
+                        "t1",
+                        "t2",
+                        "t3"
+                    ],
+                    "imageWidth": 256,
+                }
+            ]
+        }
+    ],
+      statusCode: 200,
+      statusDescription: "OK"
+    }
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/maps/1234/map.json': baseLayers['BING'],
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://dev.virtualearth.net/REST/v1/Imagery/Metadata/RoadOnDemand?uriScheme=https&include=ImageryProviders&key=AhOVlIlR89XkNyDsXBAb7TjabrEokPoqhjk4ncLm9cQkJ5ae_JyhgV1wMcWnVrko&c=zh-cn': metaInfo
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '1234',
+        bingMapsKey: 'AhOVlIlR89XkNyDsXBAb7TjabrEokPoqhjk4ncLm9cQkJ5ae_JyhgV1wMcWnVrko'
+      },
+    });
+    const callback = jest.fn();
+    wrapper.vm.viewModel.on({ addlayerssucceeded: callback });
+    await mapWrapperLoaded(wrapper);
+    const addBaseLayer = jest.spyOn(wrapper.vm.viewModel._handler, '_addBaselayer');
+    await flushPromises();
+    expect(callback).toHaveBeenCalledTimes(1);
+    expect(addBaseLayer).toHaveBeenCalledWith([
+      'https://t0.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z',
+      'https://t1.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z',
+      'https://t2.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z',
+      'https://t3.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z'
+    ], '必应地图', undefined);
+    done();
+  });
 });
+

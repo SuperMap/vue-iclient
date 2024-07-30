@@ -94,7 +94,19 @@
       "searchBox": "搜索框",
       "size": "大小",
       "textArea": "文本域",
-      "passwordBox": "密码框"
+      "passwordBox": "密码框",
+      "error": "错误",
+      "disabled": "不可用",
+      "readOnly": "只读",
+      "unit": "带单位的输入框"
+    },
+    "inputNumber": {
+      "title": "InputNumber 数字输入框",
+      "size": "大小",
+      "disabled":"不可用",
+      "formatter": "格式化",
+      "decimal": "小数",
+      "error": "错误"
     },
     "layout": {
       "title": "Layout 布局"
@@ -168,9 +180,6 @@
       "dotStyle": "点状步骤条",
       "clickable": "可点击",
       "navigationSteps": "导航步骤条"
-    },
-    "inputNumber": {
-      "title": "InputNumber 数字输入框"
     },
     "switch": {
       "title": "Switch 开关",
@@ -301,6 +310,17 @@
     "timeRange": {
       "title": "TimeRange 时间轴（段）",
       "style": "不同样式"
+    },
+    "timePicker": {
+      "title": "TimePicker 时间选择框",
+      "use12hours": "12小时制",
+      "selectMinsAndHours": "选择时分",
+      "size": "大小",
+      "suffix": "后缀图标",
+      "extraFooter": "附加内容",
+      "disabled": "禁用",
+      "steps": "步长",
+      "controlled": "受控组件"
     },
     "slideshow": {
       "title": "Slideshow 幻灯片",

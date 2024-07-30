@@ -136,7 +136,7 @@ export const config = {
   T_URL: 'https://map.tianditu.gov.cn',
   T_SSO_URL: 'https://sso.tianditu.gov.cn',
   T_UMS_URL: 'https://uums.tianditu.gov.cn',
-  SEARCH_URL: 'https://api.tianditu.gov.cn/search',
+  SEARCH_URL: 'https://api.tianditu.gov.cn/v2/search',
   DRIVE_URL: 'https://api.tianditu.gov.cn/drive',
   BUS_URL: 'https://api.tianditu.gov.cn/transit',
   GEOCODE_URL: 'https://api.tianditu.gov.cn/geocoder',
@@ -166,7 +166,7 @@ export const getStatisticsResult = data => {
       let parentKey = `0-${index}`;
       let item = {
         key: parentKey,
-        title: parent.name,
+        title: parent.adminName,
         info: parent,
         children: [],
         scopedSlots: { title: 'title', info: 'info' }
@@ -176,7 +176,7 @@ export const getStatisticsResult = data => {
           let childKey = `${parentKey}-${key}`;
           let subItem = {
             key: childKey,
-            title: child.name,
+            title: child.adminName,
             info: child,
             children: [],
             scopedSlots: { title: 'title', info: 'info' }
@@ -186,7 +186,7 @@ export const getStatisticsResult = data => {
               let grandKey = `${childKey}-${subKey}`;
               let grandItem = {
                 key: grandKey,
-                title: grandSon.name,
+                title: grandSon.adminName,
                 info: grandSon,
                 scopedSlots: { title: 'title', info: 'info' }
               };
@@ -318,7 +318,7 @@ export const clearSearchResultLayer = (map, searchRoutePoints) => {
 };
 
 // 构造点数据
-export const generatePointsFeatures = (data, splitFlag = ' ') => {
+export const generatePointsFeatures = (data, splitFlag = ',') => {
   const result = [];
   for (let index = data.length - 1; index >= 0; index--) {
     const item = data[index];

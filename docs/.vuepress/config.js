@@ -190,6 +190,7 @@ module.exports = {
                     'common/time-line',
                     'common/time-range',
                     'common/time-slider',
+                    'common/time-picker',
                     'common/attributes',
                     'common/slideshow'
                   ]

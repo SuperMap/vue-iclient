@@ -60,8 +60,7 @@ export default {
     DMS: '度分秒',
     Mercator: 'Web墨卡托'
   },
-  error: {
-  },
+  error: {},
   commontypes: {
     restData: 'SuperMap Rest 数据服务',
     restMap: 'SuperMap Rest 地图服务',
@@ -140,7 +139,19 @@ export default {
     title: '图例',
     top: '最高',
     bottom: '最低',
-    noMatchLayer: '没有匹配的图层'
+    noMatchLayer: '没有匹配的图层',
+    themeDefault: '缺省风格',
+    outOfRange: '范围以外的值',
+    style: '样式',
+    color: '颜色',
+    size: '大小',
+    opacity: '不透明度',
+    width: '宽度',
+    outlineColor: '轮廓色',
+    haloColor: '晕轮颜色',
+    label: '标签',
+    parentheses: '（{tips}）',
+    colon: '：'
   },
   measure: {
     mapMeasure: '量算',
@@ -270,7 +281,7 @@ export default {
     piecesBusRoute: '条公交线路',
     showDetail: '展开详情',
     busEndTime: '首末车时间',
-    relateAdress: '点击此处查看 "{keyWord}" 的相关地点',
+    relateAdress: "点击此处查看 '{keyWord}' 的相关地点",
     // areaResult
     switchTo: '已切换到'
   },
@@ -322,5 +333,10 @@ export default {
   },
   animateMarkerlayer: {
     unsupportedData: '当前图层不支持该数据，请重新传入数据！'
-  }
+  },
+  months: ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'],
+  weekdays: ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'],
+  monthsShort: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+  weekdaysShort: ['周日', '周一', '周二', '周三', '周四', '周五', '周六'],
+  weekdaysMin: ['日', '一', '二', '三', '四', '五', '六']
 };

@@ -75,7 +75,7 @@ describe('TdtRoute.vue', () => {
 
   it('search route', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             pois: [
@@ -84,7 +84,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: '81442006120E2708',
-                lonlat: '104.070792 30.69922',
+                lonlat: '104.070792,30.69922',
                 name: '成都站',
                 phone: '028-83322858'
               },
@@ -93,7 +93,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: 'C146608747031589',
-                lonlat: '104.139088 30.63114',
+                lonlat: '104.139088,30.63114',
                 name: '成都东站',
                 phone: '028-84116089'
               },
@@ -102,7 +102,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: '81104484B023A886',
-                lonlat: '104.066048 30.6083',
+                lonlat: '104.066048,30.6083',
                 name: '成都南站',
                 phone: '028-85136245'
               }
@@ -160,7 +160,7 @@ describe('TdtRoute.vue', () => {
           tk: '1d109683f4d84198e37a38c442d68311',
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',
-          searchUrl: 'https://api.tianditu.gov.cn/search'
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search'
         }
       }
     });
@@ -182,7 +182,7 @@ describe('TdtRoute.vue', () => {
 
   it('finish route', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             pois: [
@@ -191,7 +191,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: '81442006120E2708',
-                lonlat: '104.070792 30.69922',
+                lonlat: '104.070792,30.69922',
                 name: '成都站',
                 phone: '028-83322858'
               },
@@ -200,7 +200,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: 'C146608747031589',
-                lonlat: '104.139088 30.63114',
+                lonlat: '104.139088,30.63114',
                 name: '成都东站',
                 phone: '028-84116089'
               },
@@ -209,7 +209,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: '81104484B023A886',
-                lonlat: '104.066048 30.6083',
+                lonlat: '104.066048,30.6083',
                 name: '成都南站',
                 phone: '028-85136245'
               }
@@ -242,7 +242,7 @@ describe('TdtRoute.vue', () => {
           tk: '1d109683f4d84198e37a38c442d68311',
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',
-          searchUrl: 'https://api.tianditu.gov.cn/search'
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search'
         }
       }
     });
@@ -280,7 +280,7 @@ describe('TdtRoute.vue', () => {
         data: {
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',
-          searchUrl: 'https://api.tianditu.gov.cn/search',
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search',
           tk: '5465465464564564588888999999'
         }
       }
@@ -291,7 +291,7 @@ describe('TdtRoute.vue', () => {
       data: {
         carUrl: 'https://api.tianditu.gov.cn/drive',
         busUrl: 'https://api.tianditu.gov.cn/transit',
-        searchUrl: 'https://api.tianditu.gov.cn/search',
+        searchUrl: 'https://api.tianditu.gov.cn/v2/search',
         tk: '1d109683f4d84198e37a38c442d68311'
       }
     });
@@ -309,7 +309,7 @@ describe('TdtRoute.vue', () => {
           tk: '1d109683f4d84198e37a38c442d68311',
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',
-          searchUrl: 'https://api.tianditu.gov.cn/search'
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search'
         }
       }
     });
@@ -328,7 +328,7 @@ describe('TdtRoute.vue', () => {
 
   it('switch statistics route', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             count: '47352',
@@ -399,7 +399,7 @@ describe('TdtRoute.vue', () => {
           tk: '1d109683f4d84198e37a38c442d68311',
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',
-          searchUrl: 'https://api.tianditu.gov.cn/search'
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search'
         }
       }
     });
@@ -416,7 +416,7 @@ describe('TdtRoute.vue', () => {
 
   it('switch bus mode', async done => {
     mockAxios.mockImplementation(e => {
-      if (e.url === 'https://api.tianditu.gov.cn/search') {
+      if (e.url === 'https://api.tianditu.gov.cn/v2/search') {
         return Promise.resolve({
           data: {
             pois: [
@@ -425,7 +425,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: '81442006120E2708',
-                lonlat: '104.070792 30.69922',
+                lonlat: '104.070792,30.69922',
                 name: '成都站',
                 phone: '028-83322858'
               },
@@ -434,7 +434,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: 'C146608747031589',
-                lonlat: '104.139088 30.63114',
+                lonlat: '104.139088,30.63114',
                 name: '成都东站',
                 phone: '028-84116089'
               },
@@ -443,7 +443,7 @@ describe('TdtRoute.vue', () => {
                 eaddress: '',
                 ename: '',
                 hotPointID: '81104484B023A886',
-                lonlat: '104.066048 30.6083',
+                lonlat: '104.066048,30.6083',
                 name: '成都南站',
                 phone: '028-85136245'
               }
@@ -566,7 +566,7 @@ describe('TdtRoute.vue', () => {
           tk: '1d109683f4d84198e37a38c442d68311',
           carUrl: 'https://api.tianditu.gov.cn/drive',
           busUrl: 'https://api.tianditu.gov.cn/transit',
-          searchUrl: 'https://api.tianditu.gov.cn/search'
+          searchUrl: 'https://api.tianditu.gov.cn/v2/search'
         }
       }
     });

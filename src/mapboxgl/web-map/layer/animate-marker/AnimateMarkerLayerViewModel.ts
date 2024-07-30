@@ -15,12 +15,18 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
 
   fitBounds: boolean;
 
-  constructor(features: FeatureCollection, markersElement: HTMLElement[], fitBounds = true) {
+  layerId: string;
+
+  updateLayerFn: (data?: mapboxglTypes.MapStyleDataEvent) => void;
+
+  constructor(layerId, features: FeatureCollection, markersElement: HTMLElement[], fitBounds = true) {
     super();
+    this.layerId = layerId;
     this.features = features;
     this.markers = [];
     this.markersElement = markersElement;
     this.fitBounds = fitBounds;
+    this.updateLayerFn = this._updateLayer.bind(this);
   }
 
   public setMap(mapInfo) {
@@ -43,6 +49,15 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     this._initalizeMarkerLayer(fitBounds);
   }
 
+  public setLayerId(layerId) {
+    if (!this.features || JSON.stringify(this.features) === '{}') {
+      return;
+    }
+    this.removed();
+    this.layerId = layerId;
+    this._createMarker();
+  }
+
   private _initalizeMarkerLayer(fitBounds?) {
     if (!this.features || JSON.stringify(this.features) === '{}') {
       return;
@@ -61,6 +76,25 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     ) {
       return;
     }
+
+    this.map.addLayer({
+      id: this.layerId,
+      type: 'circle',
+      source: {
+        type: 'geojson',
+        data: this.features
+      },
+      layout: {
+        visibility: 'visible'
+      },
+      paint: {
+        'circle-radius': 5,
+        'circle-opacity': 0
+      }
+    });
+
+    this.map.on('styledata', this.updateLayerFn);
+
     this.features.features.forEach((point, index) => {
       // @ts-ignore
       let coordinates = point.geometry.coordinates;
@@ -85,7 +119,25 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     }
   }
 
+  private _updateLayer() {
+    let layer = this.map.getLayer(this.layerId);
+    if (layer) {
+      this.markers.length > 0 &&
+    this.markers.forEach(marker => {
+      // @ts-ignore
+      marker && (marker.getElement().style.display = layer.visibility === 'visible' ? 'block' : 'none');
+    });
+    }
+  }
+
   public removed() {
+    if (this.map) {
+      if(this.map.getLayer(this.layerId)) {
+        this.map.removeLayer(this.layerId);
+        this.map.removeSource(this.layerId);
+      }
+      this.map.off('styledata', this.updateLayerFn);
+    }
     this.markers.length > 0 &&
       this.markers.forEach(marker => {
         marker && marker.remove();

@@ -131,6 +131,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   @Prop() accessToken: string;
   @Prop() accessKey: string;
   @Prop() tiandituKey: string;
+  @Prop() bingMapsKey: string;
   @Prop() googleMapsAPIKey: string;
   @Prop({ default: 'zh-CN' }) googleMapsLanguage: string;
   @Prop({ default: false }) withCredentials: boolean;
@@ -324,6 +325,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       accessKey,
       tiandituKey,
       googleMapsLanguage,
+      bingMapsKey,
       googleMapsAPIKey,
       withCredentials,
       excludePortalProxyUrl,
@@ -341,6 +343,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         accessKey,
         tiandituKey,
         googleMapsLanguage,
+        bingMapsKey,
         googleMapsAPIKey,
         withCredentials,
         excludePortalProxyUrl,
@@ -414,6 +417,16 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
           // @ts-ignore
           Message.error(this.$t('webmap.getLayerInfoFailed'));
         }
+      },
+      getlayersfailed: e => {
+        /**
+         * @event getlayersfailed
+         * @desc 获取图层失败。
+         * @property {Object} error - 失败原因。
+         */
+        const errorMsg = Object.prototype.toString.call(e.error) === '[object Error]' ? this.$t('webmap.getLayerInfoFailed') : e.error;
+        // @ts-ignore
+        Message.error(errorMsg);
       },
       notsupportbaidumap: () => {
         // @ts-ignore

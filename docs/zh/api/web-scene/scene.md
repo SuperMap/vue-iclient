@@ -14,7 +14,7 @@ pageClass: web-scene
 
 ```js
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路径相对于根目录
 ```
@@ -50,3 +50,11 @@ Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路�
 | centerPostion | 扫描中心点 | { x: number; y: number; z: number } | -                              | -        |
 | period        | 扫描周期   | number                              | -                              | 2000     |
 | speed         | 扫描速度   | number                              | -                              | 500      |
+
+### Events
+
+| name | 说明               | 回调参数                                                                         |
+| :--- | :----------------- | :------------------------------------------------------------------------------- |
+| viewerPositionChanged | 场景中心点变化时触发 | function(position)
+| scanpositionchanged | 场景扫描中心点变化时触发 | function(position)
+| cesiumInstanceDidLoad | 实例加载完成后触发 | function(cesiumInstance)

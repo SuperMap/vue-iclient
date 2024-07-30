@@ -142,7 +142,7 @@ describe('WebMapBase.spec', () => {
 
   it('initWebMap', () => {
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
-    newWebMapBaseObj.cleanWebMap = jest.fn();
+    newWebMapBaseObj.clean = jest.fn();
     newWebMapBaseObj._getMapInfo = jest.fn();
     newWebMapBaseObj.initWebMap();
     expect(newWebMapBaseObj.serverUrl).toBe('123/');
@@ -848,6 +848,63 @@ describe('WebMapBase.spec', () => {
     ];
     const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
     expect(newWebMapBaseObj.getUniqueStyleGroup(parameters, features)[0].value).toBe('老虎海');
+  });
+
+  it('getUniqueStyleGroup when custom line color', () => {
+    const parameters = {
+      layerType: 'UNIQUE',
+      themeSetting: {
+        "themeField": "SmID",
+        "customSettings": {
+          "1": {
+            "strokeWidth": 2,
+            "lineDash": "solid",
+            "strokeColor": "#ffffff",
+            "type": "LINE",
+            "strokeOpacity": 1
+          },
+          "2": {
+            "strokeWidth": 2,
+            "lineDash": "solid",
+            "strokeColor": "#dddddd",
+            "type": "LINE",
+            "strokeOpacity": 1
+          },
+          "3": {
+            "strokeWidth": 2,
+            "lineDash": "solid",
+            "strokeColor": "#eeeeee",
+            "type": "LINE",
+            "strokeOpacity": 1
+          }
+        },
+        "colors": [
+          "#D53E4F",
+          "#FC8D59",
+          "#FEE08B",
+          "#FFFFBF",
+          "#E6F598",
+          "#99D594",
+          "#3288BD"
+        ]
+      },
+      style: { color: '#000' }
+    };
+    const features = [
+      {
+        geometry: { type: 'Point', coordinates: [0, 1] },
+        properties: {
+          title: '老虎海',
+          subtitle: '树正沟景点-老虎海',
+          imgUrl: './laohuhai.png',
+          description: '老虎海海拔2298米',
+          SmID: 1
+        },
+        type: 'Feature'
+      }
+    ];
+    const newWebMapBaseObj = cloneDeep(WebMapBaseObj);
+    expect(newWebMapBaseObj.getUniqueStyleGroup(parameters, features)[0].color).toBe('#ffffff');
   });
 
   it('handleSvgColor', () => {
