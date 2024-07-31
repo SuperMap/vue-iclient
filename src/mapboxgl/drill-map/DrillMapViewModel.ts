@@ -1,5 +1,6 @@
+import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
-import WebMapService from 'vue-iclient/src/common/_utils/WebMapService';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
 import clonedeep from 'lodash.clonedeep';
@@ -23,7 +24,7 @@ interface DrillMapParams {
   [propName: string]: any;
 }
 export default class WebMapViewModel extends Events {
-  webMapService: WebMapService;
+  webMapService: InstanceType<any>;
   map: mapboxglTypes.Map;
   data: DrillMapParams[];
   drillAnimation: mapboxglTypes.FitBoundsOptions;
@@ -296,7 +297,7 @@ export default class WebMapViewModel extends Events {
     for (let i = 0; i < this.data.length; i++) {
       const item = this.data[i];
       const { serverUrl, mapId } = item;
-      this.webMapService = new WebMapService(mapId, item);
+      this.webMapService = new mapboxgl.supermap.WebMapService(mapId, item);
       const promise = this.getMapInfo(mapId, serverUrl);
       if (promise) {
         if (i === 0) {
