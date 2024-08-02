@@ -57,6 +57,8 @@ interface webMapOptions {
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
   checkSameLayer?: boolean;
+  map?: mapboxglTypes.Map;
+  layerFilter?: () => boolean;
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
@@ -84,6 +86,7 @@ interface CRSOptions {
 interface MapHandler {
   initializeMap: (mapInfo?: Record<string, any>, map?: mapboxglTypes.Map) => void;
   clean: () => void;
+  cleanLayers: () => void;
   getLayerCatalog: () => any[];
   getLegendInfo: () => any[];
   getAppreciableLayers: () => any[];
@@ -116,8 +119,6 @@ export default class WebMapViewModel extends Events {
 
   options: any;
 
-  layerFilter: Function;
-
   mapId: string | number | Object;
 
   serverUrl: string;
@@ -148,17 +149,21 @@ export default class WebMapViewModel extends Events {
 
   constructor(
     id: string | number | Object,
-    options: webMapOptions = {},
+    options: webMapOptions = {
+      layerFilter: function () {
+        return true;
+      }
+    },
     // @ts-ignore fix-mapoptions
-    mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } },
-    map?: mapboxglTypes.Map,
-    layerFilter: Function = function () {
-      return true;
-    }
+    mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } }
   ) {
     super();
 
     this.mapId = id;
+    if (options.map) {
+      this.map = options.map;
+      this._appendLayers = true;
+    }
     this.options = {
       ...options,
       server: options.serverUrl || 'https://www.supermapol.com',
@@ -166,13 +171,13 @@ export default class WebMapViewModel extends Events {
       withCredentials: options.withCredentials || false
     };
     this.serverUrl = this.options.server;
-    this.layerFilter = layerFilter;
     this.mapOptions = mapOptions;
     this.eventTypes = [
       'getmapinfofailed',
       'crsnotsupport',
       'getlayerdatasourcefailed',
       'addlayerssucceeded',
+      'addLayerchanged',
       'notsupportmvt',
       'notsupportbaidumap',
       'projectionisnotmatch',
@@ -185,10 +190,7 @@ export default class WebMapViewModel extends Events {
     this._addLayersSucceededHandler = this._addLayersSucceededHandler.bind(this);
     this._styleDataUpdatedHandler = this._styleDataUpdatedHandler.bind(this);
     this._beforeMoveMapHandler = this._beforeMoveMapHandler.bind(this);
-    if (map) {
-      this.map = map;
-      this._appendLayers = true;
-    }
+    this._addLayerChangedHandler = this._addLayerChangedHandler.bind(this);
     this._initWebMap();
   }
 
@@ -258,21 +260,7 @@ export default class WebMapViewModel extends Events {
   }
 
   protected cleanLayers() {
-    const sourceList = [];
-    for (const item of this._cacheCleanLayers) {
-      item.renderLayers.forEach((layerId: string) => {
-        if (this.map?.getLayer(layerId)) {
-          this.map.removeLayer(layerId);
-        }
-      });
-      if (this.map?.getSource(item.renderSource.id) && !item.l7Layer) {
-        sourceList.push(item.renderSource.id);
-      }
-    }
-    Array.from(new Set(sourceList)).forEach(sourceId => {
-      this.map.removeSource(sourceId);
-    });
-    this._cacheCleanLayers = [];
+    this._handler?.cleanLayers();
   }
 
   getLayerDatas(item) {
@@ -285,7 +273,11 @@ export default class WebMapViewModel extends Events {
       // TODO iserver服务也可获取要素
       if (!dataId) return [];
       let promise = new Promise((resolve, reject) => {
-        const dataService = new iPortalDataService(`${this.serverUrl}web/datas/${dataId}`, this.options.withCredentials, { dataType: 'STRUCTUREDDATA' });
+        const dataService = new iPortalDataService(
+          `${this.serverUrl}web/datas/${dataId}`,
+          this.options.withCredentials,
+          { dataType: 'STRUCTUREDDATA' }
+        );
         dataService.on({
           getdatafailed: e => {
             reject(e);
@@ -334,14 +326,15 @@ export default class WebMapViewModel extends Events {
     const visibility = isShow ? 'visible' : 'none';
     this._appreciableLayersVisibleMap.clear();
     if (!onlyClear) {
-      const layers = this._cacheLayerIds?.map(id => {
-        const layer = this.map.getLayer(id);
-        return {
-          id,
-          type: layer.type,
-          renderLayers: [id]
-        };
-      }) ?? [];
+      const layers =
+        this._cacheLayerIds?.map(id => {
+          const layer = this.map.getLayer(id);
+          return {
+            id,
+            type: layer.type,
+            renderLayers: [id]
+          };
+        }) ?? [];
       this.updateLayersVisible(layers, visibility, ignoreIds);
       return;
     }
@@ -368,10 +361,13 @@ export default class WebMapViewModel extends Events {
   }
 
   get cacheLayerIds(): string[] {
-    return this._cacheLayerIds || this._cacheCleanLayers.reduce((ids, item) => {
-      ids.push(...item.renderLayers);
-      return ids;
-    }, []);
+    return (
+      this._cacheLayerIds ||
+      this._cacheCleanLayers.reduce((ids, item) => {
+        ids.push(...item.renderLayers);
+        return ids;
+      }, [])
+    );
   }
 
   private _initWebMap(): void {
@@ -422,16 +418,22 @@ export default class WebMapViewModel extends Events {
     return results;
   }
 
-  private _addLayersSucceededHandler({ mapparams, layers, cacheLayerIds }) {
+  private _addLayersSucceededHandler({ mapparams, layers }) {
     this.mapParams = mapparams;
-    this._cacheCleanLayers = layers;
-    this._cacheLayerIds = cacheLayerIds;
     this._styleDataUpdatedHandler();
     this.triggerEvent('addlayerssucceeded', {
       map: this.map,
       mapparams: this.mapParams,
       layers
     });
+  }
+
+  private _addLayerChangedHandler({ layers, cacheLayerIds, allLoaded }) {
+    this._cacheCleanLayers = layers;
+    this._cacheLayerIds = cacheLayerIds;
+    if (allLoaded) {
+      this._styleDataUpdatedHandler();
+    }
   }
 
   private _createMap() {
@@ -444,9 +446,10 @@ export default class WebMapViewModel extends Events {
       }, {}),
       mapinitialized: this._mapInitializedHandler,
       addlayerssucceeded: this._addLayersSucceededHandler,
+      addlayerchanged: this._addLayerChangedHandler,
       beforeremovemap: this._beforeMoveMapHandler
     };
-    this._handler = new mapboxgl.supermap.WebMap(this.mapId, this.options, this.mapOptions, this.map, this.layerFilter);
+    this._handler = new mapboxgl.supermap.WebMap(this.mapId, this.options, this.mapOptions);
     for (const type in commonEvents) {
       this._handler.on(type, commonEvents[type]);
     }

@@ -381,7 +381,7 @@ describe('WebMapViewModel.spec', () => {
       getSource: () => ''
     };
     const callback = jest.fn();
-    const viewModel = new WebMapViewModel(roadId, commonOption, mapOptions, map);
+    const viewModel = new WebMapViewModel(roadId, { ...commonOption, map }, mapOptions);
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     expect(callback.mock.called).toBeTruthy;
@@ -429,7 +429,7 @@ describe('WebMapViewModel.spec', () => {
     };
     const mapOption = undefined;
     const callback = jest.fn();
-    const viewModel = new WebMapViewModel(id, commonOption, mapOption, map);
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map }, mapOption);
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     expect(callback.mock.called).toBeTruthy;
@@ -484,7 +484,7 @@ describe('WebMapViewModel.spec', () => {
     };
     const mapOption = undefined;
     const callback = jest.fn();
-    const viewModel = new WebMapViewModel(id, commonOption, mapOption, map);
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map }, mapOption);
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     expect(callback.mock.called).toBeTruthy;
@@ -530,7 +530,7 @@ describe('WebMapViewModel.spec', () => {
     };
     const mapOption = undefined;
     const callback = jest.fn();
-    const viewModel = new WebMapViewModel(id, commonOption, mapOption, map);
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map }, mapOption);
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     expect(callback.mock.called).toBeTruthy;
@@ -833,7 +833,7 @@ describe('WebMapViewModel.spec', () => {
     };
     const mapOption = undefined;
     const callback = jest.fn();
-    const viewModel = new WebMapViewModel(id, commonOption, mapOption, map);
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map }, mapOption);
     viewModel.on({ addlayerssucceeded: callback });
     const layerInfo = {
       layerType: 'DATAFLOW_POINT_TRACK',

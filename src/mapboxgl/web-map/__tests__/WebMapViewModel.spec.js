@@ -301,7 +301,7 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
       viewModel.getAppreciableLayers().forEach(item => {
@@ -372,7 +372,7 @@ describe('WebMapViewModel.spec', () => {
         maxZoom: 0
       };
       const errorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-      new WebMapViewModel(uniqueLayer_point, { ...commonOption }, mapOptions, { ...commonMap });
+      new WebMapViewModel(uniqueLayer_point, { ...commonOption, map: commonMap }, mapOptions);
       await flushPromises();
       expect(errorSpy.mock.calls).toEqual([]);
       done();
@@ -498,7 +498,7 @@ describe('WebMapViewModel.spec', () => {
       expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
       done();
     };
-    const viewModel = new WebMapViewModel(id, { ...commonOption }, undefined, { ...commonMap });
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map: commonMap });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
@@ -558,7 +558,7 @@ describe('WebMapViewModel.spec', () => {
       expect(viewModel.getAppreciableLayers().length).toBe(subwayId.layers.length + 1);
       done();
     };
-    const viewModel = new WebMapViewModel(subwayId, { ...commonOption }, undefined, { ...commonMap });
+    const viewModel = new WebMapViewModel(subwayId, { ...commonOption, map: commonMap });
     viewModel.on({ addlayerssucceeded: callback });
   });
 
@@ -958,7 +958,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const id = markerLayer;
-    const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBeGreaterThanOrEqual(id.layers.length + 1);
       const layers = data.map.getStyle().layers;
@@ -1078,7 +1078,7 @@ describe('WebMapViewModel.spec', () => {
         dataflowLayerData.subscribe
     };
     mockFetch(fetchResource);
-    const viewModel = new WebMapViewModel(dataflowLayer, { ...commonOption }, undefined, { ...commonMap });
+    const viewModel = new WebMapViewModel(dataflowLayer, { ...commonOption, map: commonMap });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBeGreaterThanOrEqual(data.layers.length);
       viewModel.updateOverlayLayer({ ...dataflowLayer.layers[0], id: dataflowLayer.layers[0].name } );
@@ -1129,7 +1129,7 @@ describe('WebMapViewModel.spec', () => {
           layerData_geojson['LINE_GEOJSON']
       };
       mockFetch(fetchResource);
-      const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+      const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
       viewModel.on({
         addlayerssucceeded: () => {
           const spy = jest.spyOn(viewModel.map, 'setZoom');
@@ -1178,7 +1178,7 @@ describe('WebMapViewModel.spec', () => {
         ...crs,
         epsgCode: 'EPSG:4326'
       };
-      const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+      const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
       viewModel.on({
         mapinitialized: () => {
           const spy = jest.spyOn(viewModel.map, 'setCRS');
@@ -1195,7 +1195,7 @@ describe('WebMapViewModel.spec', () => {
     });
 
     it('do not take epsgcode', async done => {
-      const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+      const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
       const spy = jest.spyOn(viewModel.map, 'setCRS');
       await flushPromises();
       expect(viewModel.mapOptions.crs).toBeUndefined();
@@ -1227,7 +1227,7 @@ describe('WebMapViewModel.spec', () => {
     });
     it('set invalid data', async done => {
       const center = [];
-      const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+      const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
       await flushPromises();
       jest.advanceTimersByTime(0);
       const spy = jest.spyOn(viewModel.map, 'getCenter');
@@ -1239,7 +1239,7 @@ describe('WebMapViewModel.spec', () => {
 
     it('set valid data', async done => {
       const center = [1, 1];
-      const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+      const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
       await flushPromises();
       jest.advanceTimersByTime(0);
       const spy = jest.spyOn(viewModel.map, 'setCenter');
@@ -1261,7 +1261,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const renderWorldCopies = true;
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     await flushPromises();
     jest.advanceTimersByTime(0);
     const spy = jest.spyOn(viewModel.map, 'setRenderWorldCopies');
@@ -1282,7 +1282,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const bearing = 0;
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap}, { ...commonMapOptions });
     await flushPromises();
     jest.advanceTimersByTime(0);
     const spy = jest.spyOn(viewModel.map, 'setBearing');
@@ -1307,7 +1307,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const pitch = 0;
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     await flushPromises();
     jest.advanceTimersByTime(0);
     const spy = jest.spyOn(viewModel.map, 'setPitch');
@@ -1334,7 +1334,7 @@ describe('WebMapViewModel.spec', () => {
       layers: [{id: 'test'}],
       color: '#fff'
     };
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     await flushPromises();
     jest.advanceTimersByTime(0);
     const spy = jest.spyOn(viewModel, '_initWebMap');
@@ -1362,7 +1362,7 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     viewModel.on({
       addlayerssucceeded: () => {
         const spy = jest.spyOn(viewModel._handler, '_updateRasterSource');
@@ -1385,7 +1385,7 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function (data) {
       const appreciableLayers = viewModel.getAppreciableLayers();
       const renderLayersLen = appreciableLayers.reduce((sum, item) => {
@@ -1442,7 +1442,7 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
       expect(viewModel._cacheCleanLayers.length).not.toBe(0);
@@ -1478,7 +1478,7 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
       const layerInfo = { ...uniqueLayer_polygon.layers[0], id: uniqueLayer_polygon.layers[0].name };
@@ -1524,7 +1524,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const id = vectorLayer_point;
-    const viewModel = new WebMapViewModel(id, { ...commonOption }, undefined, { ...commonMap });
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map: commonMap });
     const callback = function (data) {
       const sourceData1 = data.map.getSource('浙江省高等院校(3)')._data.features;
       expect(sourceData1.length).toBe(2);
@@ -1970,7 +1970,7 @@ describe('WebMapViewModel.spec', () => {
       done();
     });
     it('other layer except tile layer', async done => {
-      const viewModel = new WebMapViewModel(heatLayer, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+      const viewModel = new WebMapViewModel(heatLayer, { ...commonOption, map: commonMap }, { ...commonMapOptions });
       await flushPromises();
       expect(viewModel._handler._layerTimerList.length).not.toBe(0);
       done();
@@ -2409,7 +2409,7 @@ describe('WebMapViewModel.spec', () => {
         layerData_geojson['LINE_GEOJSON']
     };
     mockFetch(fetchResource);
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, { ...commonMap });
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap });
     const callback = function (data) {
       const layers = data.map.getStyle().layers;
       expect(layers.length).toBeGreaterThan(0);
@@ -2500,7 +2500,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const id = markerLayer;
-    const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function (data) {
       let zoom = viewModel.mapOptions.zoom;
       let center = viewModel.mapOptions.center;
@@ -2532,7 +2532,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const id = markerLayer;
-    const viewModel = new WebMapViewModel(id, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
+    const viewModel = new WebMapViewModel(id, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function (data) {
       expect(() => {
         viewModel.copyLayer('layer1');
