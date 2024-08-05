@@ -31,7 +31,7 @@ export default {
     mapNotLoaded: 'The associated map has not been loaded yet, please wait for a second',
     unassociatedMap: 'You need to configure the associated map!',
     videojs:
-      'Please import video.js plugin: https://github.com/videojs/video.js, When playing rtmp, install flash related plugin: https://github.com/videojs/videojs-flash',
+      'Please import video.js plugin: https://github.com/videojs/video.js',
     flvPlayer:
       'Please import flv related plugin: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
