@@ -176,15 +176,6 @@
     left: 0;
     animation-fill-mode: forwards;
     margin: auto;
-    &:before,
-    :after {
-      content: '';
-      position: absolute;
-      display: block;
-      height: inherit;
-      width: inherit;
-      border-radius: inherit;
-    }
     width: var(--dots-width);
     height: var(--dots-height);
     box-shadow: var(--dots-box-shadow-x-negative) 0 0 var(--dots-box-shadow-radius1-negative) var(--light-color),
@@ -198,6 +189,12 @@
       0 0 4px 8px var(--line-color);
     &:before,
     &:after {
+      content: '';
+      position: absolute;
+      display: block;
+      height: inherit;
+      width: inherit;
+      border-radius: inherit;
       box-shadow: var(--dots-box-shadow-x-negative) 0 0 var(--dots-box-shadow-radius1-negative) var(--light-color),
         var(--dots-box-shadow-x-negative) 0 4px var(--dots-box-shadow-radius2-negative) var(--color),
         var(--dots-box-shadow-x) 0 0 var(--dots-box-shadow-radius1-negative) var(--light-color),
