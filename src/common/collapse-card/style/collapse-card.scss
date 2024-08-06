@@ -139,20 +139,20 @@
       }
     }
     @include when(top-left) {
+      transform-origin: top left;
       @include when(icon) {
         & > .sm-component-collapse-card__header {
           padding-left: 38px;
         }
       }
-      transform-origin: top left;
     }
     @include when(bottom-left) {
+      transform-origin: top left;
       @include when(icon) {
         & > .sm-component-collapse-card__header {
           padding-left: 38px;
         }
       }
-      transform-origin: top left;
     }
     @include when(not-header) {
       @include when(bottom-right) {

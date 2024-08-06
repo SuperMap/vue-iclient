@@ -226,6 +226,7 @@
   }
 }
 .sm-component-video-player-modal {
+  background: rgba(0, 0, 0, 0.7);
   .sm-component-modal-close {
     color: #a2a3a5;
     right: -5%;
@@ -257,7 +258,6 @@
       }
     }
   }
-  background: rgba(0, 0, 0, 0.7);
 }
 .sm-component-video-full-fill{
   video{

@@ -14,7 +14,7 @@ export default class Control extends Vue {
 
   @Prop({
     default: 'top-left',
-    validator(value) {
+    validator(value: string) {
       return ['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(value);
     }
   })

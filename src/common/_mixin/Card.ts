@@ -8,7 +8,7 @@ import SmCollapseCard from 'vue-iclient/src/common/collapse-card/CollapseCard.vu
 export default class CardMixin extends Vue {
   @Prop({
     default: 'top-left',
-    validator(value) {
+    validator(value: string) {
       return ['top-left', 'top-right', 'bottom-left', 'bottom-right'].includes(value);
     }
   })
