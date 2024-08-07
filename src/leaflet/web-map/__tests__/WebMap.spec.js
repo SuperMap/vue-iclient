@@ -48,12 +48,6 @@ describe('WebMap.vue', () => {
   });
 
   it('initial_serverUrl', async done => {
-    const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
-      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
-    };
-    mockFetch(fetchResource);
     wrapper = mount(SmWebMap, {
       localVue,
       propsData: {
@@ -69,12 +63,6 @@ describe('WebMap.vue', () => {
   });
 
   it('webmap resize', async done => {
-    const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
-      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
-    };
-    mockFetch(fetchResource);
     wrapper = mount(SmWebMap, {
       localVue,
       propsData: {

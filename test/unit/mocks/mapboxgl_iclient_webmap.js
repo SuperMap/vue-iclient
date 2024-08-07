@@ -1,7 +1,7 @@
 var Evented = require('mapbox-gl/src/util/evented');
 var { mapboxgl } = require('./mapboxgl');
 
-class WebMapV3 extends Evented {
+class WebMap extends Evented {
   constructor(mapId, options, mapOptions) {
     super();
     this.mapId = mapId;
@@ -10,20 +10,40 @@ class WebMapV3 extends Evented {
     this._mapResourceInfo = {};
     this._layerIdRenameMapList = [];
     this._layerCatalogsRenameMapList = [];
+    this.eventTypes = [
+      'getmapinfofailed',
+      'crsnotsupport',
+      'getlayerdatasourcefailed',
+      'addlayerssucceeded',
+      'notsupportmvt',
+      'notsupportbaidumap',
+      'projectionisnotmatch',
+      'beforeremovemap',
+      'mapinitialized',
+      'getlayersfailed',
+      'layersupdated'
+    ];
+    this._initWebMap();
+    if (this.mapOptions) {
+      this.mapOptions.transformRequest = jest.fn();
+    }
+  }
+  _initWebMap() {
+    this._createMap('WebMap2');
   }
 
-  initializeMap(mapInfo, map) {
+  _getMapInfo(mapInfo) {
+    const type = +mapInfo.version.split('.')[0] >= 3 ? 'WebMap3' : 'WebMap2';
+    this._createMap(type, mapInfo);
+  }
+
+  _createMap(mapInfo = this.mapOptions) {
     this._mapInfo = mapInfo;
-    if (map) {
-      this.map = map;
-      this._initLayers();
-      return;
-    }
     let {
       name,
       crs,
-      center = { lng: 0, lat: 0 },
-      zoom = 0,
+      center = new mapboxgl.LngLat(0, 0),
+      zoom = 4,
       bearing = 0,
       pitch = 0,
       minzoom,
@@ -55,19 +75,137 @@ class WebMapV3 extends Evented {
     };
     this.map = new mapboxgl.Map(mapOptions);
     this._sprite = sprite;
-    this.fire('mapinitialized', { map: this.map });
-    this.map.on('load', () => {
-      this._initLayers();
+    this._mapInitializedHandler({ map: this.map });
+    this._addLayersSucceededHandler({ mapparams: mapOptions, layers: [] });
+    this._addLayerChangedHandler();
+    // this.map.on('load', () => {
+    //   this._initLayers();
+    // });
+  }
+  _mapInitializedHandler({ map }) {
+    this.map = map;
+    Promise.resolve().then(() => {
+      this.fire('mapinitialized', { map: this.map });
     });
   }
+  _addLayersSucceededHandler({ mapparams, layers, cacheLayerIds }) {
+    this.mapParams = mapparams;
+    this._cacheCleanLayers = layers;
+    this._cacheLayerIds = cacheLayerIds;
+    console.log('_addLayersSucceededHandler-------------');
 
-  getLegendInfo() {}
+    setTimeout(() => {
+      console.log('addlayerssucceeded-------------');
+      this.fire('addlayerssucceeded', {
+        map: this.map,
+        mapparams: this.mapParams,
+        layers,
+        cacheLayerIds
+      });
+    }, 0);
+  }
+  _addLayerChangedHandler() {
+    Promise.resolve().then(() => {
+      this.fire('addlayerchanged', {
+        layers: [
+          {
+            visible: true,
+            children: [],
+            id: '民航数据',
+            title: '民航数据',
+            renderSource: { type: 'geojson' },
+            renderLayers: [],
+            dataSource: { type: 'STRUCTURE_DATA' },
+            type: 'line'
+          }
+        ],
+        allLoaded: true,
+        cacheLayerIds: ['民航数据']
+      });
+    });
+  }
+  _addLabelLayer() {}
+  echartsLayerResize() {}
+  updateOverlayLayer() {}
+  setRasterTileSize() {}
+  setBearing() {}
+  setRenderWorldCopies() {}
+  setServerUrl() {}
+  setPitch() {}
+  setStyle() {}
+  setMapId() {}
+  _updateRasterSource() {}
+  setCrs() {}
+  setCenter() {}
+  setZoom() {}
+  resize() {}
 
+  getLegendInfo() {
+    return [
+      {
+        visible: true,
+        layerId: '民航数据',
+        title: '民航数据',
+        styleGroup: [{ style: { type: 'image', url: '' } }],
+        type: 'line'
+      }
+    ];
+  }
+  cleanLayers() {}
   getAppreciableLayers() {
-    return this._generateLayers();
+    return [
+      {
+        visible: true,
+        children: [],
+        id: '民航数据',
+        title: '民航数据',
+        renderSource: { type: 'geojson' },
+        renderLayers: [],
+        dataSource: { type: 'STRUCTURE_DATA' },
+        type: 'line'
+      }
+    ];
   }
 
   getLayerCatalog() {
+    if (this.mapId === '123_v3') {
+      return [
+        {
+          visible: true,
+          children: [],
+          id: '北京市轨道交通线路减',
+          title: '北京市轨道交通线路减',
+          renderLayers: [],
+          renderSource: { type: 'geojson' },
+          dataSource: { type: 'STRUCTURE_DATA' },
+          type: 'composite'
+        }
+      ];
+    }
+    if (this.mapId === '123_layerlist') {
+      return [
+        {
+          visible: true,
+          children: [],
+          id: '北京市轨道交通线路减',
+          title: '北京市轨道交通线路减',
+          renderLayers: [],
+          renderSource: { type: 'geojson' },
+          dataSource: { type: 'STRUCTURE_DATA' },
+          type: 'composite'
+        },
+        {
+          visible: true,
+          children: [],
+          id: '北京市轨道交通线路减',
+          title: '北京市轨道交通线路减',
+          renderLayers: [],
+          renderSource: { type: 'geojson' },
+          dataSource: { type: 'STRUCTURE_DATA' },
+          type: 'group'
+        }
+      ];
+    }
     return this._generateLayerCatalog();
   }
 
@@ -285,4 +423,4 @@ class WebMapV3 extends Evented {
   }
 }
 
-module.exports = WebMapV3;
+module.exports = WebMap;
