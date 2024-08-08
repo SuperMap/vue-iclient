@@ -129,8 +129,6 @@ export default class WebMapViewModel extends Events {
 
   private _cacheCleanLayers: any[] = [];
 
-  private _cacheLayerIds: string[];
-
   private _handler: MapHandler;
 
   private _appreciableLayersVisibleMap: Map<string, boolean> = new Map();
@@ -308,12 +306,15 @@ export default class WebMapViewModel extends Events {
     layers.forEach(layer => {
       const visbleId = this._getLayerVisibleId(layer);
       this._appreciableLayersVisibleMap.set(visbleId, visibility === 'visible');
-      if ('l7MarkerLayer' in layer && !ignoreIds.some(id => id === layer.id)) {
-        visibility === 'visible' ? layer.l7MarkerLayer.show() : layer.l7MarkerLayer.hide();
+      if (
+        (layer.CLASS_INSTANCE?.show || layer.CLASS_INSTANCE?.hide) &&
+        !ignoreIds.some(id => id === layer.id)
+      ) {
+        visibility === 'visible' ? layer.CLASS_INSTANCE.show() : layer.CLASS_INSTANCE.hide();
         return;
       }
       layer.renderLayers.forEach((layerId: string) => {
-        if (!ignoreIds.some(id => id === layerId) && (!layer.l7Layer || this.map.getLayer(layerId))) {
+        if (!ignoreIds.some(id => id === layerId) && (layer.CLASS_NAME !== 'L7Layer' || this.map.getLayer(layerId))) {
           this.map.setLayoutProperty(layerId, 'visibility', visibility);
         }
       });
@@ -326,15 +327,14 @@ export default class WebMapViewModel extends Events {
     const visibility = isShow ? 'visible' : 'none';
     this._appreciableLayersVisibleMap.clear();
     if (!onlyClear) {
-      const layers =
-        this._cacheLayerIds?.map(id => {
-          const layer = this.map.getLayer(id);
-          return {
-            id,
-            type: layer.type,
-            renderLayers: [id]
-          };
-        }) ?? [];
+      const layers = this.cacheLayerIds.map(id => {
+        const layer = this.map.getLayer(id);
+        return {
+          id,
+          type: layer.type,
+          renderLayers: [id]
+        };
+      });
       this.updateLayersVisible(layers, visibility, ignoreIds);
       return;
     }
@@ -361,13 +361,7 @@ export default class WebMapViewModel extends Events {
   }
 
   get cacheLayerIds(): string[] {
-    return (
-      this._cacheLayerIds ||
-      this._cacheCleanLayers.reduce((ids, item) => {
-        ids.push(...item.renderLayers);
-        return ids;
-      }, [])
-    );
+    return this._cacheCleanLayers.reduce((ids, item) => ids.concat(item.renderLayers), []);
   }
 
   private _initWebMap(): void {
@@ -428,9 +422,8 @@ export default class WebMapViewModel extends Events {
     });
   }
 
-  private _addLayerChangedHandler({ layers, cacheLayerIds, allLoaded }) {
+  private _addLayerChangedHandler({ layers, allLoaded }) {
     this._cacheCleanLayers = layers;
-    this._cacheLayerIds = cacheLayerIds;
     if (allLoaded) {
       this._styleDataUpdatedHandler();
     }

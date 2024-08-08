@@ -707,7 +707,7 @@ describe('WebMapViewModel.spec', () => {
         show: jest.fn(),
         hide: jest.fn()
       };
-      let visibleLayers = [{ renderLayers: ['test'] }, { l7MarkerLayer }];
+      let visibleLayers = [{ renderLayers: ['test'] }, { CLASS_INSTANCE: l7MarkerLayer, CLASS_NAME: 'L7Layer' }];
       viewModel.updateLayersVisible(visibleLayers, 'visible');
       expect(spy1.mock.calls.length).toBe(1);
       expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
@@ -716,7 +716,7 @@ describe('WebMapViewModel.spec', () => {
       expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
       expect(l7MarkerLayer.hide).toHaveBeenCalledTimes(1);
       spy1.mockReset();
-      visibleLayers = [{ renderLayers: ['testlayer'], l7Layer: true }, { renderLayers: ['test'] }];
+      visibleLayers = [{ renderLayers: ['testlayer'], CLASS_NAME: 'L7Layer' }, { renderLayers: ['test'] }];
       viewModel.updateLayersVisible(visibleLayers, 'visible');
       expect(spy1).toHaveBeenCalledTimes(1);
       done();
