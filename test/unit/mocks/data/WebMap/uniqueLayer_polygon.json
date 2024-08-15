@@ -15,12 +15,12 @@
       "layerType": "UNIQUE",
       "visible": true,
       "themeSetting": {
-        "themeField": "行政区划_c",
+        "themeField": "机场",
         "customSettings": {
-          "四川省": {
+          "北京/首都": {
             "strokeWidth": 1,
             "fillColor": "#e6f599",
-            "fillOpacity": 0.9,
+            "fillOpacity": 0.7,
             "lineDash": "solid",
             "strokeColor": "#ffffff",
             "type": "POLYGON",

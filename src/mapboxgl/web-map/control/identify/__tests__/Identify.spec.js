@@ -8,7 +8,6 @@ import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded';
 
-
 describe('Identify.vue', () => {
   let wrapper;
   let identifyWrapper;
@@ -77,19 +76,13 @@ describe('Identify.vue', () => {
   });
 
   it('clcik map', async done => {
-    wrapper = mount({
-      template: `
-      <sm-web-map style="height:700px" :mapId="mapInfo">
-        <sm-identify :layers="['China']" :fields="['机场','同比增速%','2017旅客吞吐量（人次）']"></sm-identify>
-      </sm-web-map> `,
-      components: {
-        SmIdentify,
-        SmWebMap
-      },
-      data() {
-        return {
-          mapInfo: mapInfo
-        };
+    mapWrapper = await createEmptyMap();
+    wrapper = mount(SmIdentify, {
+      propsData: {
+        multiSelect: true,
+        layers: ['test'],
+        fields: ['机场'],
+        autoResize: false
       }
     });
     const spyPopup = jest.spyOn(mapboxgl, 'Popup');
@@ -105,11 +98,11 @@ describe('Identify.vue', () => {
       })
     });
     const callback = jest.fn();
-    identifyWrapper = wrapper.vm.$children[0].$children[0];
-    identifyWrapper.$on('loaded', callback);
-    await mapLoaded(wrapper.vm.$children[0]);
+    await mapSubComponentLoaded(wrapper);
     expect(callback.mock.called).toBeTruthy;
-    const spy = jest.spyOn(identifyWrapper.viewModel, 'removed');
+    const removed = jest.fn();
+    wrapper.vm.viewModel.removed =  removed ;
+    // const spy = jest.spyOn(wrapper.viewModel, 'removed');
     const e = {
       target: '',
       point: {
@@ -117,11 +110,12 @@ describe('Identify.vue', () => {
         y: 10
       }
     };
-    identifyWrapper.map.fire('click', e);
-    await wrapper.setProps({
-      layers: ['民航数据']
+    wrapper.vm.map.fire('click', e);
+    wrapper.setProps({
+      layers: ['China']
     });
-    expect(spy).toHaveBeenCalledTimes(1);
+    await wrapper.vm.$nextTick();
+    expect(removed).toHaveBeenCalledTimes(1);
     done();
   });
 
@@ -292,6 +286,60 @@ describe('Identify.vue', () => {
 
   it('render index correctly', done => {
     wrapper = mount(Identify);
+    done();
+  });
+
+  it('changeLayers', async done => {
+    mapWrapper = await createEmptyMap();
+    wrapper = mount(SmIdentify, {
+      propsData: {
+        multiSelect: true,
+        layers: ['民航数据'],
+        fields: ['机场'],
+        autoResize: false
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    wrapper.vm.keydownCtrlCb({ ctrlKey: true });
+    expect(wrapper.vm.isKeydownCtrl).toBe(true);
+    wrapper.vm.map.queryRenderedFeatures = () => {
+      return [
+        {
+          _vectorTileFeature: { _keys: ['机场', 'id'] },
+          layer: { id: '民航数据' },
+          properties: {
+            id: 1,
+            机场: '天府机场'
+          }
+        }
+      ];
+    };
+    wrapper.vm.map.fire('click', {
+      target: {
+        getLayer: jest.fn()
+      },
+      point: {
+        x: 10,
+        y: 10
+      }
+    });
+    wrapper.setProps({ layers: ['民航数据'] });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.popupProps).toEqual({
+      机场: {
+        slotName: undefined,
+        value: '天府机场'
+      }
+    });
+    expect(wrapper.vm.currentLayer.id).toEqual('民航数据');
+    expect(wrapper.vm.filters.length).toBe(2);
+    expect(wrapper.vm.currentIndex).toBe(0);
+
+    wrapper.setProps({ layers: [''] });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.currentLayer).toBe(null);
+    expect(wrapper.vm.filters.length).toBe(1);
+    expect(wrapper.vm.currentIndex).toBe(0);
     done();
   });
 

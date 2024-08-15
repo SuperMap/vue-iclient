@@ -81,6 +81,11 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
     this.currentIndex = this.defaultIndex;
   }
 
+  @Watch('tablePopupBgData')
+  tablePopupBgDataChanged() {
+    setPopupArrowStyle(this.tablePopupBgData);
+  }
+
   get currentCoordinate() {
     return this.lnglats[this.currentIndex];
   }

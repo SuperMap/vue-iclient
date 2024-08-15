@@ -158,4 +158,27 @@ describe('MapPopup.vue', () => {
     expect(wrapper.vm.tablePopupProps).toEqual({ data: data[1], columns: columns });
     done();
   });
+  it('change background', done => {
+    wrapper = mount(SmMapPopup, {
+      propsData: {
+        mapTarget: 'map',
+        defaultIndex: 0,
+        showIcon: true,
+        lnglats: [
+          [110, 30],
+          [120, 31]
+        ],
+        background:"#fff",
+        data: data,
+        columns: columns
+      }
+    });
+    wrapper.vm.$nextTick();
+    wrapper.vm.$options.loaded();
+    
+    wrapper.setProps({ background: "#333" });
+    wrapper.vm.$nextTick();
+    expect(wrapper.vm.tablePopupBgData).toBe('#333');
+    done();
+  });
 });

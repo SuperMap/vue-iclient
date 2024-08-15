@@ -6,7 +6,6 @@
       :options="playerOptions"
       :playsinline="true"
       :data-autoplay="autoplay"
-      :data-isLive="isRtmp"
       :data-popupplay="`${options.popupToPlay}`"
       :events = "['fullscreenchange']"
       @play="onPlayerPlay($event)"
@@ -30,7 +29,6 @@
         :options="modalPlayerOptions"
         :playsinline="true"
         :data-autoplay="autoplay"
-        :data-isLive="isRtmp"
         :data-popupplay="`${options.popupToPlay}`"
         @play="onModalPlayerPlay($event)"
         @loadeddata="onModalPlayerLoadeddata($event)"
@@ -49,7 +47,6 @@ import flvjs from 'flv.js';
 import 'videojs-flvjs-es6';
 import 'videojs-flash';
 import { videoPlayer } from 'vue-videojs7';
-import clonedeep from 'lodash.clonedeep';
 import SmModal from 'vue-iclient/src/common/modal/main';
 import Message from 'vue-iclient/src/common/message/index.js';
 
@@ -97,8 +94,6 @@ class SmVideoPlayer extends Vue {
 
   @Prop({ default: 'https://vjs.zencdn.net/swf/5.4.2/video-js.swf' }) swf: string;
 
-  @Prop({ default: 3000 }) replayTime: number; // 黑屏重新播放rtmp
-
   @Prop({ default: false }) isFullscreen: Boolean;
 
   @Prop({ default: 'origin' }) ratio: String;
@@ -116,10 +111,6 @@ class SmVideoPlayer extends Vue {
     controlBar?: Boolean; // 是否显示控制条
     poster?:string; // 封面
   };
-
-  get isRtmp() {
-    return this.checkUrl(this.url) && this.url.includes('rtmp://');
-  }
 
   get isFlv() {
     if (!flvjs && this.checkUrl(this.url) && this.url.includes('.flv')) {
@@ -157,7 +148,6 @@ class SmVideoPlayer extends Vue {
   @Watch('url')
   urlChanged() {
     this.handlePlayerOptions();
-    this.replayRtmp();
   }
 
   @Watch('playerOptions')
@@ -196,9 +186,6 @@ class SmVideoPlayer extends Vue {
       this.smPlayer = this.$refs.videoPlayer && this.$refs.videoPlayer.player;
       // @ts-ignore
       this.modalVideoPlayer = this.$refs.modalVideoPlayer && this.$refs.modalVideoPlayer.player;
-      setTimeout(() => {
-        this.replayRtmp();
-      });
       const player = this.modalVisible ? this.modalVideoPlayer : this.smPlayer;
       if (player) {
         player.muted(this.options.muted);
@@ -208,24 +195,6 @@ class SmVideoPlayer extends Vue {
       }
       this.$emit('instance-loaded', player);
     });
-  }
-
-  replayRtmp(player = this.player) {
-    if (this.isRtmp && player && player.el_) {
-      player.one('play', () => {
-        // @ts-ignore
-        this.timer = setTimeout(() => {
-          // @ts-ignore
-          clearTimeout(this.timer);
-          player.reset();
-          player.src(clonedeep(this.playerOptions.sources));
-        }, this.replayTime);
-      });
-      player.one('canplay', () => {
-        // @ts-ignore
-        clearTimeout(this.timer);
-      });
-    }
   }
 
   handlePlayerOptions(options = this.options) {
@@ -282,7 +251,7 @@ class SmVideoPlayer extends Vue {
       },
       notSupportedMessage: this.$t('warning.unavailableVideo')
     };
-    if (!this.url.includes('rtmp') && this.url.includes('.flv')) {
+    if (this.url.includes('.flv')) {
       commonOptions.techOrder = ['html5', 'flvjs'];
       // @ts-ignore
       commonOptions.sources[0].type = 'video/x-flv';
@@ -291,16 +260,11 @@ class SmVideoPlayer extends Vue {
       // @ts-ignore
       commonOptions.sources[0].type = 'video/mp4';
     }
-    if (this.url.includes('rtmp')) {
-      // @ts-ignore
-      commonOptions.techOrder = ['flash', 'html5'];
-      commonOptions.sources[0].type = 'rtmp/flv';
-    }
     if (this.url.includes('.m3u8')) {
       // @ts-ignore
       commonOptions.sources[0].type = 'application/x-mpegURL';
     }
-    this.playerOptions = Object.assign({}, commonOptions, { autoplay: this.isRtmp || options.autoplay });
+    this.playerOptions = Object.assign({}, commonOptions, { autoplay: options.autoplay });
     this.modalPlayerOptions = Object.assign({}, commonOptions, { autoplay: true, preload: 'none', height: '600' });
     return commonOptions;
   }
@@ -381,8 +345,7 @@ class SmVideoPlayer extends Vue {
         url.indexOf('mp4') < 0 &&
         url.indexOf('webm') < 0 &&
         url.indexOf('m3u8') < 0 &&
-        url.indexOf('flv') < 0 &&
-        url.indexOf('rtmp') < 0)
+        url.indexOf('flv') < 0)
     ) {
       match = false;
     } else {
@@ -395,7 +358,7 @@ class SmVideoPlayer extends Vue {
     if (!str) return false;
     const isFilePath = this.isMatchFileUrl(str);
     if(isFilePath) return true;
-    const reg = new RegExp('(https?|http|file|ftp|rtmp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
+    const reg = new RegExp('(https?|http|file|ftp)://[-A-Za-z0-9+&@#/%?=~_|!:,.;]+[-A-Za-z0-9+&@#/%=~_|]');
     return reg.test(str);
   }
 
