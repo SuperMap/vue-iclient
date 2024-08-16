@@ -76,8 +76,8 @@ class WebMap extends Evented {
     this.map = new mapboxgl.Map(mapOptions);
     this._sprite = sprite;
     this._mapInitializedHandler({ map: this.map });
-    this._addLayersSucceededHandler({ mapparams: mapOptions, layers: [] });
     this._addLayerChangedHandler();
+    this._addLayersSucceededHandler({ mapparams: mapOptions, layers: [] });
     // this.map.on('load', () => {
     //   this._initLayers();
     // });
@@ -88,19 +88,27 @@ class WebMap extends Evented {
       this.fire('mapinitialized', { map: this.map });
     });
   }
-  _addLayersSucceededHandler({ mapparams, layers, cacheLayerIds }) {
+  _addLayersSucceededHandler({ mapparams, layers }) {
     this.mapParams = mapparams;
-    this._cacheCleanLayers = layers;
-    this._cacheLayerIds = cacheLayerIds;
-    console.log('_addLayersSucceededHandler-------------');
 
     setTimeout(() => {
-      console.log('addlayerssucceeded-------------');
       this.fire('addlayerssucceeded', {
         map: this.map,
         mapparams: this.mapParams,
-        layers,
-        cacheLayerIds
+        layers: [
+          {
+            visible: true,
+            children: [],
+            id: '民航数据',
+            title: '民航数据',
+            renderSource: { type: 'geojson' },
+            renderLayers: ['民航数据'],
+            dataSource: { type: 'STRUCTURE_DATA' },
+            type: 'line'
+          }
+        ],
+        allLoaded: true,
+        cacheLayerIds: ['民航数据']
       });
     }, 0);
   }
@@ -114,7 +122,7 @@ class WebMap extends Evented {
             id: '民航数据',
             title: '民航数据',
             renderSource: { type: 'geojson' },
-            renderLayers: [],
+            renderLayers: ['民航数据'],
             dataSource: { type: 'STRUCTURE_DATA' },
             type: 'line'
           }

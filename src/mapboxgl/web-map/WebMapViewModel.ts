@@ -112,6 +112,13 @@ interface MapHandler {
   on: (type: string, callback: () => void) => void;
 }
 
+interface AddlayerssucceededParams {
+  map: mapboxglTypes.Map;
+  mapparams: Record<string, any>;
+  layers: Record<string, any>[];
+  allLoaded: boolean;
+}
+
 export default class WebMapViewModel extends Events {
   map: mapboxglTypes.Map;
 
@@ -412,14 +419,12 @@ export default class WebMapViewModel extends Events {
     return results;
   }
 
-  private _addLayersSucceededHandler({ mapparams, layers }) {
+  private _addLayersSucceededHandler(params: AddlayerssucceededParams) {
+    const { mapparams, layers } = params;
     this.mapParams = mapparams;
+    this._cacheCleanLayers = layers;
     this._styleDataUpdatedHandler();
-    this.triggerEvent('addlayerssucceeded', {
-      map: this.map,
-      mapparams: this.mapParams,
-      layers
-    });
+    this.triggerEvent('addlayerssucceeded', params);
   }
 
   private _addLayerChangedHandler({ layers, allLoaded }) {

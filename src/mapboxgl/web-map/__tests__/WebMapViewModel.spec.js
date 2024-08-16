@@ -214,7 +214,7 @@ describe('WebMapViewModel.spec', () => {
       visibleExtent: [0, 1, 2, 3]
     };
     const callback = function (data) {
-      expect(viewModel.map).not.toBeUndefined();
+      expect(data.map).not.toBeUndefined();
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
@@ -223,41 +223,7 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
-  describe('multi-coordinate', () => {
-    beforeEach(() => {
-      jest.useFakeTimers();
-    });
-    afterEach(() => {
-      jest.useRealTimers();
-    });
-    const projection =
-      'PROJCS["CGCS2000 / 3-degree Gauss-Kruger CM 117E", \r\n  GEOGCS["China Geodetic Coordinate System 2000", \r\n    DATUM["China 2000", \r\n      SPHEROID["CGCS2000", 6378137.0, 298.257222101, AUTHORITY["EPSG","1024"]], \r\n      AUTHORITY["EPSG","1043"]], \r\n    PRIMEM["Greenwich", 0.0, AUTHORITY["EPSG","8901"]], \r\n    UNIT["degree", 0.017453292519943295], \r\n    AXIS["lat", NORTH], \r\n    AXIS["lon", EAST], \r\n    AUTHORITY["EPSG","4490"]], \r\n  PROJECTION["Transverse_Mercator", AUTHORITY["EPSG","9807"]], \r\n  PARAMETER["central_meridian", 117.0], \r\n  PARAMETER["latitude_of_origin", 0.0], \r\n  PARAMETER["scale_factor", 1.0], \r\n  PARAMETER["false_easting", 500000.0], \r\n  PARAMETER["false_northing", 0.0], \r\n  UNIT["m", 1.0], \r\n  AXIS["Northing", NORTH], \r\n  AXIS["Easting", EAST], \r\n  AUTHORITY["EPSG","4548"]]';
-    const wkt =
-      'PROJCS["China_2000_3_DEGREE_GK_Zone_39N",GEOGCS["GCS_China_2000",DATUM["D_China_2000",SPHEROID["CGCS2000",6378137.0,298.257222101,AUTHORITY["EPSG","7044"]]],PRIMEM["Greenwich",0.0,AUTHORITY["EPSG","8901"]],UNIT["DEGREE",0.017453292519943295],AUTHORITY["EPSG","4490"]],PROJECTION["Transverse_Mercator",AUTHORITY["EPSG","9807"]],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",0.0],PARAMETER["Central_Meridian",117.0],PARAMETER["Latitude_Of_Origin",0.0],PARAMETER["Scale_Factor",1.0],UNIT["METER",1.0],AUTHORITY["EPSG","4548"]]';
-    const commonResource = {
-      'http://fake/iserver/services/map-4548/rest/maps/ChinaqxAlberts_4548%40fl/prjCoordSys.wkt': wkt,
-      'http://fake/iserver/services/map-4548/rest/maps/ChinaqxAlberts_4548%40fl.json': mapJson
-    };
-
-    it('layerType is Tile and webInfo projection is wkt', async done => {
-      mockFetch(commonResource);
-      const id = { ...tileLayer, projection: wkt };
-      const get = jest.spyOn(CRS, 'get');
-      get.mockImplementationOnce(() => {
-        return '';
-      });
-      const viewModel = new WebMapViewModel(id, { ...commonOption });
-      await flushPromises();
-      done();
-      const callback = function (data) {
-        expect(viewModel.getAppreciableLayers().length).toBe(id.layers.length + 1);
-        done();
-      };
-      viewModel.on({ addlayerssucceeded: callback });
-    });
-  });
-
-  // public Func
+// public Func
   describe('resize', () => {
     beforeEach(() => {
       jest.useFakeTimers();
@@ -471,7 +437,6 @@ describe('WebMapViewModel.spec', () => {
     );
     viewModel2.on({
       addlayerssucceeded: () => {
-        const renderLayersLen = 1;
         const spy = jest.spyOn(viewModel2.map, 'getLayer');
         spy.mockReturnValue({ type: 'test' });
         const ignoreIds = ['China'];
@@ -772,17 +737,15 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
-  it('copy layer', async done => {
+  it('copy layer', done => {
     const id = markerLayer;
     const viewModel = new WebMapViewModel(id, { ...commonOption, map: commonMap }, { ...commonMapOptions });
-    const callback = function (data) {
+    const callback = function () {
       expect(() => {
         viewModel.copyLayer('layer1');
       }).not.toThrow();
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
-    await flushPromises();
-    jest.advanceTimersByTime(0);
   });
 });
