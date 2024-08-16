@@ -297,7 +297,11 @@ export default class WebMapViewModel extends Events {
     }
   }
 
-  changeItemVisible(item: Record<string, any>, visible: boolean) {
+  changeItemVisible(id: string, visible: boolean) {
+    const item = this._findLayerCatalog(this.layerCatalogs, id);
+    if (!item) {
+      return;
+    }
     const visibility = visible ? 'visible' : 'none';
     if (item.type === 'group') {
       const visbleId = this._getLayerVisibleId(item);
@@ -465,6 +469,20 @@ export default class WebMapViewModel extends Events {
         this._updateLayerCatalogsVisible(data.children);
       }
     }
+  }
+
+  private _findLayerCatalog(catalogs: Array<Record<string, any>>, id: string) {
+    let matchData: Record<string, any> | undefined;
+    for (const data of catalogs) {
+      if (data.id === id) {
+        matchData = data;
+        break;
+      }
+      if (data.type === 'group') {
+        matchData = this._findLayerCatalog(data.children, id);
+      }
+    }
+    return matchData;
   }
 
   private _getLayerVisible(layer: Record<string, any>) {

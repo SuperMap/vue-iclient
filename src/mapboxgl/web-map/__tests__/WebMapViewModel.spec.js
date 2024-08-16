@@ -748,4 +748,31 @@ describe('WebMapViewModel.spec', () => {
     };
     viewModel.on({ addlayerssucceeded: callback });
   });
+
+  it('changeItemVisible', async done => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      const layerList = viewModel.getLayerList();
+      console.log(layerList);
+      expect(layerList.length).toBe(1);
+      const spy = jest.spyOn(data.map, 'setLayoutProperty');
+      viewModel.changeItemVisible('fakeid', true);
+      expect(spy).toHaveBeenCalledTimes(0);
+      viewModel.changeItemVisible(layerList[0].id, true);
+      expect(spy).toHaveBeenCalledTimes(1);
+      spy.mockClear();
+      viewModel.layerCatalogs = [{
+        id: 'group1',
+        title: 'group1',
+        type: 'group',
+        children: layerList
+      }];
+      viewModel.changeItemVisible('group1', true);
+      expect(spy).toHaveBeenCalledTimes(1);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
 });

@@ -51,8 +51,8 @@ import SmAttributes, {
 } from 'vue-iclient/src/mapboxgl/attributes/Attributes.vue';
 import LayerListViewModel from './LayerListViewModel';
 import LayerGroup from 'vue-iclient/src/mapboxgl/web-map/LayerGroup.vue';
-import intersection from 'lodash.intersection';
 import isEqual from 'lodash.isequal';
+import omit from 'omit.js';
 
 interface AttributesParams {
   enabled: boolean;
@@ -69,6 +69,20 @@ interface AttributesParams {
   pagination: PaginationParams;
   customHeaderRow: Function;
   customRow: Function;
+}
+
+interface LayerListItem {
+  id: string;
+  title: string;
+  type: string;
+  visible: boolean;
+  renderSource: Object;
+  renderLayers: string[];
+  dataSource: Object;
+  themeSetting: Object;
+  children?: LayerListItem[];
+  CLASS_NAME?: string;
+  CLASS_INSTANCE?: Object;
 }
 
 const ATTRIBUTES_NEEDED_PROPS = [
@@ -200,8 +214,8 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel = new LayerListViewModel();
   }
 
-  toggleItemVisibility(item: Object, visible: boolean) {
-    this.viewModel && this.viewModel.changeItemVisible(item, visible);
+  toggleItemVisibility(item: { id: string, [prop: string]: any; }, visible: boolean) {
+    this.viewModel && this.viewModel.changeItemVisible(item.id, visible);
   }
 
   addNewLayer() {
@@ -240,13 +254,25 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
 
   layerUpdate() {
     this.$nextTick(() => {
-      this.sourceList = this.viewModel && this.viewModel.initLayerList();
+      this.sourceList = this.viewModel && this.transformLayerList(this.viewModel.initLayerList());
       // @ts-ignore
       if (this.attributesProps.layerName && this.sourceList[this.attributesProps.layerName].visibility === 'none') {
         this.closeAttributesIconClass();
         this.removeAttributes();
       }
     });
+  }
+
+  transformLayerList(layerCatalog: LayerListItem[]) {
+    const layerList: LayerListItem[] = [];
+    layerCatalog.forEach(layer => {
+      const nextLayer = omit(layer, ['CLASS_INSTANCE']);
+      if(nextLayer.type === 'group') {
+        nextLayer.children = this.transformLayerList(layer.children);
+      }
+      layerList.push(nextLayer);
+    });
+    return layerList;
   }
 
   closeAttributesIconClass() {

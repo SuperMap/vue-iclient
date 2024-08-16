@@ -53,8 +53,8 @@ class LayerListViewModel extends mapboxgl.Evented {
     return dataset;
   }
 
-  changeItemVisible(item: Record<string, any>, visible: boolean) {
-    this.webmap.changeItemVisible(item, visible);
+  changeItemVisible(id: string, visible: boolean) {
+    this.webmap.changeItemVisible(id, visible);
   }
 
   removed() {
