@@ -12,6 +12,14 @@ const leafletMap = class {
   invalidateSize() {}
   remove() {}
 };
+
+class GeoJSON {
+  static coordsToLatLngs() {}
+  
+  on = jest.fn();
+  off = jest.fn();
+}
+
 module.exports = {
   Map: leafletMap,
   point: () => {},
@@ -59,13 +67,13 @@ module.exports = {
   layerGroup: () => {
     return {};
   },
-  geoJSON: () => {},
-  GeoJSON: {
-    coordsToLatLngs: () => {}
-  },
+  geoJSON: jest.fn(),
+  GeoJSON: GeoJSON,
   polyline: () => {},
   marker: () => {},
-  circleMarker: () => {},
+  circleMarker: jest.fn(),
   icon: () => {},
-  Popup: () => {} 
+  Popup: () => {},
+  Evented: class {},
+  svg: jest.fn()
 };
