@@ -3,6 +3,7 @@ const babelConfig = require('./babel.config')();
 
 process.env.VUE_CLI_BABEL_TARGET_NODE = true;
 process.env.VUE_CLI_BABEL_TRANSPILE_MODULES = true;
+babelConfig.presets.push('@babel/preset-typescript');
 babelConfig.inputSourceMap = false;
 
 module.exports = {
@@ -25,7 +26,7 @@ module.exports = {
     '^axios$': require.resolve('axios')
   },
   transform: {
-    '^.+\\.ts$': '<rootDir>/node_modules/ts-jest',
+    '^.+\\.ts$': '<rootDir>/node_modules/babel-jest',
     '^.+\\.js$': '<rootDir>/node_modules/babel-jest',
     '.*\\.(vue)$': '<rootDir>/node_modules/vue-jest',
     '.+\\.(css|styl|less|sass|scss|svg|png|jpg|ttf|woff|woff2)$': '<rootDir>/node_modules/jest-transform-stub'
@@ -48,10 +49,6 @@ module.exports = {
   modulePaths: ['src', 'node_modules'],
   reporters: ["default", "jest-teamcity"],
   globals: {
-    'ts-jest': {
-      tsConfig: '<rootDir>/tsconfig.json',
-      babelConfig: babelConfig
-    }
   },
 
   cache: false
