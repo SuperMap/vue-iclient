@@ -60,7 +60,7 @@ export default new Vue({
             const webmaps = webMapCombinations.map(item => item[1]);
             const argumentsList = arguments;
             webmaps.forEach(webmap => {
-              webmap[propKey].apply(webmap, argumentsList);
+              webmap[propKey]?.apply(webmap, argumentsList);
             });
           };
         }

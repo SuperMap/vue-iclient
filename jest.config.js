@@ -3,7 +3,7 @@ const babelConfig = require('./babel.config')();
 
 process.env.VUE_CLI_BABEL_TARGET_NODE = true;
 process.env.VUE_CLI_BABEL_TRANSPILE_MODULES = true;
-babelConfig.inputSourceMap = false;
+// babelConfig.inputSourceMap = false;
 
 module.exports = {
   rootDir: path.resolve(__dirname),

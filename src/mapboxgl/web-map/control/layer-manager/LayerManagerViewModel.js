@@ -47,11 +47,11 @@ class LayerManageViewModel extends mapboxgl.Evented {
         serverUrl,
         withCredentials,
         proxy,
-        target: this.mapTarget
+        target: this.mapTarget,
+        map: this.map,
+        layerFilter
       },
-      mapOptions,
-      this.map,
-      layerFilter
+      mapOptions
     );
 
     this.webMapViewModel = webMapViewModel;

@@ -1,5 +1,4 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from '../web-map/SourceListModel';
 import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
 import labelPoints from './config/label-points.json';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
@@ -82,9 +81,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   on: any;
   bounds: mapboxglTypes.LngLatBoundsLike;
   private _layers: any[] = [];
-  private _appreciableLayers: any[] = [];
 
-  private _sourceListModel: SourceListModel;
+  private _sourceListModel: InstanceType<any>;
   private _legendList: any[] = [];
 
   constructor(target: string, dataOptions: dataOptions = {}, mapOptions?: mapOptions) {
@@ -347,7 +345,7 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   }
 
   private _sendMapToUser(): void {
-    this._sourceListModel = new SourceListModel({
+    this._sourceListModel = new mapboxgl.supermap.SourceListModel({
       map: this.map,
       layers: this._layers
     });

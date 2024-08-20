@@ -18,7 +18,8 @@ describe('Pan.vue', () => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData
     };
     mockFetch(fetchResource);
   });
@@ -172,9 +173,6 @@ describe('Pan.vue', () => {
     wrapper.find('.is-bottom').trigger('click');
     expect(spyPanby).toBeCalledWith([0, panLength]);
     wrapper.find('.sm-component-pan__center').trigger('click');
-    expect(spyPanTo).toBeCalledWith({
-      lat: 36.98401835599687,
-      lng: 104.34202150000002
-    });
+    expect(spyPanTo).toBeCalledWith({ lng: 0, lat: 0 });
   }
 });

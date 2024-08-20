@@ -22,7 +22,7 @@ class WebMapV3 extends Evented {
     let {
       name,
       crs,
-      center = new mapboxgl.LngLat(0, 0),
+      center = { lng: 0, lat: 0 },
       zoom = 0,
       bearing = 0,
       pitch = 0,
@@ -104,9 +104,7 @@ class WebMapV3 extends Evented {
     if (matchErrorLayer) {
       this.fire('getlayersfailed', {
         error:
-          matchErrorLayer.metadata.typeFailure === 'string'
-            ? 'happen error'
-            : new TypeError('t.map is not a function'),
+          matchErrorLayer.metadata.typeFailure === 'string' ? 'happen error' : new TypeError('t.map is not a function'),
         map: this.map
       });
       return;
@@ -288,4 +286,3 @@ class WebMapV3 extends Evented {
 }
 
 module.exports = WebMapV3;
-

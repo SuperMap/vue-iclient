@@ -44,7 +44,7 @@ describe('LayerList.vue', () => {
     mapWrapper = mount(SmWebMap, {
       propsData: {
         serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
+        mapId: '123_layerlist'
       }
     });
     const addCallback = function (data) {
@@ -58,6 +58,7 @@ describe('LayerList.vue', () => {
       expect(callback.mock.called).toBeTruthy;
       let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
       wrapper.vm.$nextTick(() => {
+        expect(wrapper.find('.sm-component-layer-list__layer').exists()).toBe(true);
         wrapper.find('.sm-component-layer-list__layer > i').trigger('click');
         expect(spylayerVisibility).toHaveBeenCalledTimes(1);
         done();
@@ -196,7 +197,7 @@ describe('LayerList.vue', () => {
     mapWrapper = mount(SmWebMap, {
       propsData: {
         serverUrl: 'https://fakeiportal.supermap.io/iportal',
-        mapId: '123'
+        mapId: '123_v3'
       }
     });
     const addCallback = async data => {
@@ -238,7 +239,8 @@ describe('LayerList.vue', () => {
               sourceLayer: 'Xingkaihu_C_txt@China'
             },
             renderLayers: ['xingkaihu_C@China'],
-            themeSetting: {}
+            themeSetting: {},
+            CLASS_INSTANCE: {}
           },
           {
             dataSource: {
@@ -281,26 +283,25 @@ describe('LayerList.vue', () => {
     const webmap = {
       getLayerList: () => layerCatalogs,
       un: jest.fn(),
-      on: jest.fn((options) => {
+      on: jest.fn(options => {
         mockOnOptions = options;
       })
     };
-    const callback = function() {
+    const callback = function () {
       expect(wrapper.find('.sm-component-layer-list__layer > .sm-components-icon-hidden').exists()).toBeTruthy();
       done();
-    }
+    };
     wrapper.vm.viewModel.on('layersUpdated', callback);
     wrapper.vm.viewModel.setMap({
       webmap
     });
     wrapper.vm.$options.loaded.call(wrapper.vm);
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.sourceList).toEqual(layerCatalogs);
+    expect(wrapper.vm.sourceList).toEqual(wrapper.vm.transformLayerList(layerCatalogs));
     expect(wrapper.find('.sm-component-layer-list__layer > .sm-components-icon-visible').exists()).toBeTruthy();
     expect(wrapper.find('.header-text > .sm-components-icon-partially-visible').exists()).toBeTruthy();
-    layerCatalogs[1].visible = false;
+    wrapper.vm.sourceList[1].visible = false;
     mockOnOptions.layersupdated();
     mockOn();
   });
 });
-

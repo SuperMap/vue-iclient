@@ -1,3 +1,5 @@
+import { Events } from 'vue-iclient/src/common/_types/event/Events';
+
 var supermap = {
   cloudTileLayer: () => {
     return {};
@@ -32,8 +34,93 @@ var supermap = {
     return {};
   },
   themeFeature: class {},
-  wmtsLayer: () => {}
+  wmtsLayer: () => {},
+  createWebMapBaseExtending(SuperClass = Events, fireField = 'triggerEvent') {
+    return class WebMapBase extends SuperClass {
+      constructor(id, options, mapOptions) {
+        super();
+        this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
+        this.accessToken = options.accessToken;
+        this.accessKey = options.accessKey;
+        this.tiandituKey = options.tiandituKey || '';
+        this.googleMapsAPIKey = options.googleMapsAPIKey || '';
+        this.bingMapsKey = options.bingMapsKey || '';
+        this.googleMapsLanguage = options.googleMapsLanguage || 'zh-CN';
+        this.withCredentials = options.withCredentials || false;
+        this.proxy = options.proxy;
+        this.target = options.target || 'map';
+        this.excludePortalProxyUrl = options.excludePortalProxyUrl;
+        this.isSuperMapOnline = options.isSuperMapOnline;
+        this.ignoreBaseProjection = options.ignoreBaseProjection;
+        this.echartslayer = [];
+        this.canvgsV = [];
+        this.mapOptions = mapOptions;
+        this.eventTypes = ['getmapinfofailed', 'getlayerdatasourcefailed'];
+        this.mapId = id;
+        this.webMapInfo = null;
+      }
+      _initWebMap() {
+        throw new Error('_initWebMap is not implemented');
+      }
+      initWebMap() {
+        this.webMapService = {
+          getDatasourceType: () => 'dataflow'
+        };
+        if (this.mapId && typeof this.mapId === 'object' && this.mapId.layers) {
+          this._getMapInfo(this.mapId);
+          return;
+        }
+        this._getMapInfo({
+          projection: 'EPSG:3857',
+          baseLayer: {
+            layerType: ''
+          },
+          extent: {
+            leftBottom: { x: 0, y: 0 },
+            rightTop: { x: 10, y: 10 }
+          }
+        });
+      }
+      getBaseLayerType() {
+        return 'TILE';
+      }
+      handleLayerFeatures(features) {
+        return features;
+      }
+
+      getMapurls(mapurl = {}) {
+        const mapUrls = {
+          CLOUD: mapurl.CLOUD || 'http://t2.dituhui.com/FileService/image?map=quanguo&type=web&x={x}&y={y}&z={z}',
+          CLOUD_BLACK: mapurl.CLOUD_BLACK || 'http://t3.dituhui.com/MapService/getGdp?x={x}&y={y}&z={z}',
+          OSM: mapurl.OSM || 'https://{a-c}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          GOOGLE:
+            'https://maps.googleapis.com/maps/vt?pb=!1m5!1m4!1i{z}!2i{x}!3i{y}!4i256!2m3!1e0!2sm!3i540264686!3m12!2s{googleMapsLanguage}!3sUS!5e18!12m4!1e68!2m2!1sset!2sRoadmap!12m3!1e37!2m1!1ssmartmaps!4e0&key={googleMapsAPIKey}',
+          GOOGLE_CN: 'https://mt{0-3}.google.com/vt/lyrs=m&hl=zh-CN&gl=cn&x={x}&y={y}&z={z}',
+          JAPAN_STD: 'https://cyberjapandata.gsi.go.jp/xyz/std/{z}/{x}/{y}.png',
+          JAPAN_PALE: 'https://cyberjapandata.gsi.go.jp/xyz/pale/{z}/{x}/{y}.png',
+          JAPAN_RELIEF: 'https://cyberjapandata.gsi.go.jp/xyz/relief/{z}/{x}/{y}.png',
+          JAPAN_ORT: 'https://cyberjapandata.gsi.go.jp/xyz/ort/{z}/{x}/{y}.jpg'
+        };
+
+        return mapUrls;
+      }
+      transformFeatures(features) {
+        return features;
+      }
+      getCanvasFromSVG(url, test ,cb) {
+        const canvas = document.createElement('canvas');
+        canvas.id = `dataviz-canvas-`;
+        canvas.style.display = 'none';
+        return cb(canvas);
+      }
+      handleSvgColor() {}
+      getLayerFeatures() {}
+      echartsLayerResize() {}
+      stopCanvg() {}
+    };
+  }
 };
+
 var L = require('@mocks/leaflet');
 module.exports.SuperMap = require('./supermap');
 
