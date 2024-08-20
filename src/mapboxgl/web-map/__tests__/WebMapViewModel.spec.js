@@ -753,7 +753,6 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = async function (data) {
       const layerList = viewModel.getLayerList();
-      console.log(layerList);
       expect(layerList.length).toBe(1);
       const spy = jest.spyOn(data.map, 'setLayoutProperty');
       viewModel.changeItemVisible('fakeid', true);

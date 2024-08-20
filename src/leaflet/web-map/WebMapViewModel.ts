@@ -4,7 +4,8 @@ import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
 import 'vue-iclient/static/libs/geostats/geostats';
 import getCenter from '@turf/center';
-import { toEpsgCode, getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
+import proj4 from 'proj4';
+import { getProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
 
 interface WebMapOptions {
   target?: string;
@@ -77,7 +78,7 @@ export default class WebMapViewModel extends WebMapBase {
   private _unprojectCrs;
 
   constructor(id, options: WebMapOptions = {}, mapOptions: MapOptions = {}) {
-    super(id, options, mapOptions);
+    super(id, { ...options, proj4 }, mapOptions);
     this.center = mapOptions.center;
     this.zoom = mapOptions.zoom;
     this.eventTypes = [
@@ -807,8 +808,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _addLayerToMap({ layer, type = 'overlays', layerInfo, sendToMap = true }) {
     let { visible, layerID, name, index } = layerInfo;
-
-    sendToMap && (type = 'overlays');
+    if (sendToMap && type !== 'overlays') {
+      type = 'overlays';
+    }
     type === 'overlays' && layer.setZIndex && layer.setZIndex(index + 1);
 
     if (visible === undefined || visible) {
@@ -1111,11 +1113,11 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  protected getTransformCoodinatesCRS(epsgCode) {
+  protected getTransformCoodinatesCRS(epsgCode: number) {
     const defName = `EPSG:${epsgCode}`;
     const defValue = getProjection(defName);
     // @ts-ignore
-    return L.Proj.CRS(toEpsgCode(defValue), {
+    return L.Proj.CRS(defName, {
       def: defValue
     });
   }

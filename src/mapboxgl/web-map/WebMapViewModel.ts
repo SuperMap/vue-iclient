@@ -11,6 +11,7 @@ import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import { getGroupChildrenLayers } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
 import difference from 'lodash.difference';
+import proj4 from 'proj4';
 
 // @ts-ignore
 window.echarts = echarts;
@@ -171,9 +172,10 @@ export default class WebMapViewModel extends Events {
     }
     this.options = {
       ...options,
-      server: options.serverUrl || 'https://www.supermapol.com',
+      server: this._handleServerUrl(options.serverUrl || 'https://www.supermapol.com'),
       target: options.target || 'map',
-      withCredentials: options.withCredentials || false
+      withCredentials: options.withCredentials || false,
+      proj4
     };
     this.serverUrl = this.options.server;
     this.mapOptions = mapOptions;
@@ -200,56 +202,57 @@ export default class WebMapViewModel extends Events {
   }
 
   resize(keepBounds: boolean): void {
-    this._handler?.resize(keepBounds);
+    this._handler.resize(keepBounds);
   }
 
   setCrs(crs: CRSOptions): void {
-    this._handler?.setCrs(crs);
+    this._handler.setCrs(crs);
   }
 
   setCenter(center: [number, number]): void {
-    this._handler?.setCenter(center);
+    this._handler.setCenter(center);
   }
 
   setRenderWorldCopies(renderWorldCopies: boolean): void {
-    this._handler?.setRenderWorldCopies(renderWorldCopies);
+    this._handler.setRenderWorldCopies(renderWorldCopies);
   }
 
   setBearing(bearing: number): void {
-    this._handler?.setBearing(bearing);
+    this._handler.setBearing(bearing);
   }
 
   setPitch(pitch: number): void {
-    this._handler?.setPitch(pitch);
+    this._handler.setPitch(pitch);
   }
 
   setStyle(style: mapboxglTypes.Style): void {
-    this._handler?.setStyle(style);
+    this._handler.setStyle(style);
   }
 
   setRasterTileSize(tileSize: number) {
-    this._handler?.setRasterTileSize(tileSize);
+    this._handler.setRasterTileSize(tileSize);
   }
 
   setZoom(zoom: number) {
-    this._handler?.setZoom(zoom);
+    this._handler.setZoom(zoom);
   }
 
   setServerUrl(serverUrl: string): void {
-    this._handler?.setServerUrl(serverUrl);
+    this.serverUrl = this._handleServerUrl(serverUrl);
+    this._handler.setServerUrl(serverUrl);
   }
 
   setWithCredentials(withCredentials: boolean) {
     this.options.withCredentials = withCredentials;
-    this._handler?.setWithCredentials(withCredentials);
+    this._handler.setWithCredentials(withCredentials);
   }
 
   setProxy(proxy: string) {
-    this._handler?.setProxy(proxy);
+    this._handler.setProxy(proxy);
   }
 
   setMapId(mapId: string | number): void {
-    this._handler?.setMapId(mapId);
+    this._handler.setMapId(mapId);
   }
 
   getAppreciableLayers() {
@@ -257,7 +260,7 @@ export default class WebMapViewModel extends Events {
   }
 
   getLegendInfo() {
-    return this._handler?.getLegendInfo() ?? [];
+    return this._handler.getLegendInfo() ?? [];
   }
 
   getLayerList() {
@@ -265,7 +268,7 @@ export default class WebMapViewModel extends Events {
   }
 
   protected cleanLayers() {
-    this._handler?.cleanLayers();
+    this._handler.cleanLayers();
   }
 
   getLayerDatas(item) {
@@ -355,7 +358,7 @@ export default class WebMapViewModel extends Events {
   clean() {
     if (this.map) {
       this.map.off('styledata', this._styleDataUpdatedHandler);
-      this._handler?.clean();
+      this._handler.clean();
     }
   }
 
@@ -364,11 +367,11 @@ export default class WebMapViewModel extends Events {
   }
 
   updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
-    this._handler?.updateOverlayLayer(layerInfo, features, mergeByField);
+    this._handler.updateOverlayLayer(layerInfo, features, mergeByField);
   }
 
   copyLayer(id: string, layerInfo: Record<string, any>) {
-    return this._handler?.copyLayer(id, layerInfo);
+    return this._handler.copyLayer(id, layerInfo);
   }
 
   get cacheLayerIds(): string[] {
@@ -386,8 +389,8 @@ export default class WebMapViewModel extends Events {
   }
 
   private _styleDataUpdatedHandler() {
-    const layers = this._handler?.getAppreciableLayers() ?? [];
-    const layerCatalogs = this._handler?.getLayerCatalog() ?? [];
+    const layers = this._handler.getAppreciableLayers() ?? [];
+    const layerCatalogs = this._handler.getLayerCatalog() ?? [];
     const catalogIds = this._getCatalogVisibleIds(layerCatalogs);
     const visibleIds = Array.from(this._appreciableLayersVisibleMap.keys());
     const unsetKeys = difference(visibleIds, catalogIds);
@@ -492,5 +495,13 @@ export default class WebMapViewModel extends Events {
 
   private _getLayerVisibleId(layer: Record<string, any>) {
     return `${layer.type}-${layer.id}`;
+  }
+
+  _handleServerUrl(serverUrl: string) {
+    let urlArr: string[] = serverUrl.split('');
+    if (urlArr[urlArr.length - 1] !== '/') {
+      serverUrl += '/';
+    }
+    return serverUrl;
   }
 }

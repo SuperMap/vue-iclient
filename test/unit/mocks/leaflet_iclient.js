@@ -64,7 +64,34 @@ var supermap = {
       }
       initWebMap() {
         this.webMapService = {
-          getDatasourceType: () => 'dataflow'
+          getDatasourceType(layer) {
+            let { dataSource, layerType } = layer;
+            if (dataSource && dataSource.type === 'SAMPLE_DATA') {
+              return dataSource.type;
+            }
+            let type;
+            let isHosted = (dataSource && dataSource.serverId) || layerType === 'MARKER' || layerType === 'HOSTED_TILE';
+            let isTile =
+              layerType === 'SUPERMAP_REST' ||
+              layerType === 'TILE' ||
+              layerType === 'WMS' ||
+              layerType === 'WMTS' ||
+              layerType === 'MAPBOXSTYLE';
+            if (isHosted) {
+              type = 'hosted';
+            } else if (isTile) {
+              type = 'tile';
+            } else if (dataSource && dataSource.type === 'REST_DATA') {
+              type = 'rest_data';
+            } else if (dataSource && dataSource.type === 'REST_MAP' && dataSource.url) {
+              type = 'rest_map';
+            } else if (layerType === 'DATAFLOW_POINT_TRACK' || layerType === 'DATAFLOW_HEAT') {
+              type = 'dataflow';
+            } else if (dataSource && dataSource.type === 'USER_DATA') {
+              type = 'user_data';
+            }
+            return type;
+          }
         };
         if (this.mapId && typeof this.mapId === 'object' && this.mapId.layers) {
           this._getMapInfo(this.mapId);

@@ -199,6 +199,12 @@ describe('WebMapViewModel.spec', () => {
             customSettings: { 50136: '#D53E4F' }
           },
           dataSource: { type: 'PORTAL_DATA', serverId: 658963918 }
+        },
+        {
+          layerType: 'TILE',
+          visible: true,
+          name: 'ChinaqxAlberts_4548@fl',
+          url: 'http://fake/iserver/services/map-4548/rest/maps/ChinaqxAlberts_4548%40fl'
         }
       ],
       sourceType: 'DataViz',
