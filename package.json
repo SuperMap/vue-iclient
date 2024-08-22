@@ -210,7 +210,7 @@
     "through2": "^4.0.2",
     "ts-jest": "^26.5.1",
     "ts-loader": "^6.2.2",
-    "typescript": "^3.9.9",
+    "typescript": "4.1.6",
     "uglifyjs-webpack-plugin": "^2.1.1",
     "uppercamelcase": "^3.0.0",
     "url-loader": "^1.1.2",
