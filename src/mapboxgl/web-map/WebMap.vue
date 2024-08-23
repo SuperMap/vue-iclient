@@ -390,18 +390,17 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
          */
         this.load({ map: e.map });
       },
-      getmapinfofailed: e => {
+      mapcreatefailed: e => {
         /**
          * @event getMapFailed
          * @desc 获取 WebMap 地图信息失败。
          * @property {Object} error - 失败原因。
          */
         this.getMapFailed({ error: e.error });
-        // @ts-ignore
-        Message.error(e.error.message);
+        this.notifyErrorTip({ e, defaultTip: 'mapCreatedFailed' });
         this.spinning = false;
       },
-      getlayerdatasourcefailed: e => {
+      layercreatefailed: e => {
         /**
          * @event getLayerDatasourceFailed
          * @desc 获取图层数据失败。
@@ -411,32 +410,33 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
          */
         this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
         if (e.error === 'SAMPLE DATA is not supported') {
-          // @ts-ignore
-          Message.error(this.$t('webmap.sampleDataNotSupport'));
+          this.notifyErrorTip({ defaultTip: 'sampleDataNotSupport', showErrorMsg: false });
         } else {
-          // @ts-ignore
-          Message.error(this.$t('webmap.getLayerInfoFailed'));
+          this.notifyErrorTip({ e, defaultTip: 'getLayerInfoFailed' });
         }
       },
-      getlayersfailed: e => {
-        /**
-         * @event getlayersfailed
-         * @desc 获取图层失败。
-         * @property {Object} error - 失败原因。
-         */
-        const errorMsg = Object.prototype.toString.call(e.error) === '[object Error]' ? this.$t('webmap.getLayerInfoFailed') : e.error;
-        // @ts-ignore
-        Message.error(errorMsg);
+      baidumapnotsupport: () => {
+        this.notifyErrorTip({ defaultTip: 'baiduMapNotSupport', showErrorMsg: false });
       },
-      notsupportbaidumap: () => {
-        // @ts-ignore
-        Message.error(this.$t('webmap.baiduMapNotSupport'));
-      },
-      beforeremovemap: () => {
+      mapbeforeremove: () => {
         mapEvent.$options.deleteMap(this.target);
         mapEvent.$options.deleteWebMap(this.target);
       }
     });
+  }
+
+  notifyErrorTip({ e, defaultTip, showErrorMsg = true }: { e?: any; defaultTip: string; showErrorMsg?: boolean; }) {
+    let options: any;
+    if (showErrorMsg) {
+      let msg = '';
+      if (e.error && e.error.message) {
+        msg = e.error.message;
+      } else if (typeof e.error === 'string') {
+        msg = e.error;
+      }
+      options = { error: msg };
+    }
+    Message.error(this.$t(`webmap.${defaultTip}`, options));
   }
 
   destory(): void {

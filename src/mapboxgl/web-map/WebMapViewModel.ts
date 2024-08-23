@@ -36,10 +36,6 @@ window.EchartsLayer = EchartsLayer;
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
  * @param {boolean} [options.ignoreBaseProjection = 'false'] - 是否忽略底图坐标系和叠加图层坐标系不一致。
  * @param {String} [options.iportalServiceProxyUrlPrefix] - iportal的代理服务地址前缀。
- * @fires WebMapViewModel#mapinitialized
- * @fires WebMapViewModel#getmapinfofailed
- * @fires WebMapViewModel#getlayerdatasourcefailed
- * @fires WebMapViewModel#addlayerssucceeded
  */
 interface webMapOptions {
   target?: string;
@@ -89,13 +85,13 @@ interface MapHandler {
   clean: () => void;
   cleanLayers: () => void;
   getLayerCatalog: () => any[];
-  getLegendInfo: () => any[];
-  getAppreciableLayers: () => any[];
+  getLegends: () => any[];
+  getLayers: () => any[];
   echartsLayerResize: () => void;
   updateOverlayLayer: (layerInfo: Record<string, any>, features: any, mergeByField?: string) => void;
   copyLayer: (id: string, layerInfo: Record<string, any>) => boolean;
   resize: (keepBounds: boolean) => void;
-  setCrs: (crs: CRSOptions | string) => void;
+  setCRS: (crs: CRSOptions | string) => void;
   setCenter: (center: [number, number]) => void;
   setRenderWorldCopies: (renderWorldCopies: boolean) => void;
   setBearing: (bearing: number) => void;
@@ -134,6 +130,10 @@ export default class WebMapViewModel extends Events {
   mapParams: { title?: string; description?: string };
 
   eventTypes: string[];
+
+  webMapEventTypes: string[];
+
+  selfEventTypes: string[];
 
   private _cacheCleanLayers: any[] = [];
 
@@ -175,29 +175,29 @@ export default class WebMapViewModel extends Events {
       server: this._handleServerUrl(options.serverUrl || 'https://www.supermapol.com'),
       target: options.target || 'map',
       withCredentials: options.withCredentials || false,
+      credentialKey: (options.accessKey && 'key') || (options.accessToken && 'token'),
+      credentialValue: options.accessKey || options.accessToken,
       proj4
     };
     this.serverUrl = this.options.server;
     this.mapOptions = mapOptions;
-    this.eventTypes = [
-      'getmapinfofailed',
-      'crsnotsupport',
-      'getlayerdatasourcefailed',
-      'addlayerssucceeded',
-      'addLayerchanged',
-      'notsupportmvt',
-      'notsupportbaidumap',
-      'projectionisnotmatch',
-      'beforeremovemap',
+    this.webMapEventTypes = [
       'mapinitialized',
-      'getlayersfailed',
-      'layersupdated'
+      'mapcreatesucceeded',
+      'mapcreatefailed',
+      'layercreatefailed',
+      'layeraddchanged',
+      'baidumapnotsupport',
+      'projectionnotmatch',
+      'mapbeforeremove'
     ];
+    this.selfEventTypes = ['addlayerssucceeded', 'layersupdated'];
+    this.eventTypes = this.webMapEventTypes.concat(this.selfEventTypes);
     this._mapInitializedHandler = this._mapInitializedHandler.bind(this);
-    this._addLayersSucceededHandler = this._addLayersSucceededHandler.bind(this);
+    this._mapCreateSucceededHandlerHandler = this._mapCreateSucceededHandlerHandler.bind(this);
     this._styleDataUpdatedHandler = this._styleDataUpdatedHandler.bind(this);
-    this._beforeMoveMapHandler = this._beforeMoveMapHandler.bind(this);
-    this._addLayerChangedHandler = this._addLayerChangedHandler.bind(this);
+    this._mapBeforeRemoveHandler = this._mapBeforeRemoveHandler.bind(this);
+    this._layerAddChangedHandler = this._layerAddChangedHandler.bind(this);
     this._initWebMap();
   }
 
@@ -206,7 +206,7 @@ export default class WebMapViewModel extends Events {
   }
 
   setCrs(crs: CRSOptions): void {
-    this._handler.setCrs(crs);
+    this._handler.setCRS(crs);
   }
 
   setCenter(center: [number, number]): void {
@@ -255,12 +255,12 @@ export default class WebMapViewModel extends Events {
     this._handler.setMapId(mapId);
   }
 
-  getAppreciableLayers() {
+  getLayers() {
     return this.appreciableLayers;
   }
 
   getLegendInfo() {
-    return this._handler.getLegendInfo() ?? [];
+    return this._handler.getLegends();
   }
 
   getLayerList() {
@@ -389,7 +389,7 @@ export default class WebMapViewModel extends Events {
   }
 
   private _styleDataUpdatedHandler() {
-    const layers = this._handler.getAppreciableLayers() ?? [];
+    const layers = this._handler.getLayers() ?? [];
     const layerCatalogs = this._handler.getLayerCatalog() ?? [];
     const catalogIds = this._getCatalogVisibleIds(layerCatalogs);
     const visibleIds = Array.from(this._appreciableLayersVisibleMap.keys());
@@ -426,7 +426,7 @@ export default class WebMapViewModel extends Events {
     return results;
   }
 
-  private _addLayersSucceededHandler(params: AddlayerssucceededParams) {
+  private _mapCreateSucceededHandlerHandler(params: AddlayerssucceededParams) {
     const { mapparams, layers } = params;
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
@@ -434,7 +434,7 @@ export default class WebMapViewModel extends Events {
     this.triggerEvent('addlayerssucceeded', params);
   }
 
-  private _addLayerChangedHandler({ layers, allLoaded }) {
+  private _layerAddChangedHandler({ layers, allLoaded }) {
     this._cacheCleanLayers = layers;
     if (allLoaded) {
       this._styleDataUpdatedHandler();
@@ -443,16 +443,16 @@ export default class WebMapViewModel extends Events {
 
   private _createMap() {
     const commonEvents = {
-      ...this.eventTypes.reduce((events, name) => {
-        events[name] = params => {
+      ...this.webMapEventTypes.reduce((events, name) => {
+        events[name] = (params: any) => {
           this.triggerEvent(name, params);
         };
         return events;
       }, {}),
       mapinitialized: this._mapInitializedHandler,
-      addlayerssucceeded: this._addLayersSucceededHandler,
-      addlayerchanged: this._addLayerChangedHandler,
-      beforeremovemap: this._beforeMoveMapHandler
+      mapcreatesucceeded: this._mapCreateSucceededHandlerHandler,
+      layeraddchanged: this._layerAddChangedHandler,
+      mapbeforeremove: this._mapBeforeRemoveHandler
     };
     this._handler = new mapboxgl.supermap.WebMap(this.mapId, this.options, this.mapOptions);
     for (const type in commonEvents) {
@@ -460,8 +460,9 @@ export default class WebMapViewModel extends Events {
     }
   }
 
-  private _beforeMoveMapHandler() {
+  private _mapBeforeRemoveHandler() {
     this.map.off('styledata', this._styleDataUpdatedHandler);
+    this.triggerEvent('mapbeforeremove');
     this.map = null;
   }
 

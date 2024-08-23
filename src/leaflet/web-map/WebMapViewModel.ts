@@ -29,10 +29,10 @@ interface MapOptions {
 }
 
 // @ts-ignore
-const WebMapBase: InstanceType<any> = L.supermap.createWebMapBaseExtending(Events, 'triggerEvent');
+const WebMapV2Base: InstanceType<any> = L.supermap.createWebMapV2BaseExtending(Events, 'triggerEvent');
 
 // TODO 坐标系 / noWrap
-export default class WebMapViewModel extends WebMapBase {
+export default class WebMapViewModel extends WebMapV2Base {
   map: L.Map;
 
   mapOptions: MapOptions;
@@ -78,19 +78,28 @@ export default class WebMapViewModel extends WebMapBase {
   private _unprojectCrs;
 
   constructor(id, options: WebMapOptions = {}, mapOptions: MapOptions = {}) {
-    super(id, { ...options, proj4 }, mapOptions);
+    super(
+      id,
+      {
+        ...options,
+        credentialKey: (options.accessKey && 'key') || (options.accessToken && 'token'),
+        credentialValue: options.accessKey || options.accessToken,
+        proj4
+      },
+      mapOptions
+    );
     this.center = mapOptions.center;
     this.zoom = mapOptions.zoom;
     this.eventTypes = [
-      'getmapinfofailed',
-      'crsnotsupport',
-      'getlayerdatasourcefailed',
+      'mapinitialized',
+      'mapcreatesucceeded',
+      'mapcreatefailed',
+      'layercreatefailed',
+      'baidumapnotsupport',
+      'projectionnotmatch',
+      'mapbeforeremove',
       'addlayerssucceeded',
-      'notsupportmvt',
-      'notsupportbaidumap',
-      'projectionisnotmatch',
-      'beforeremovemap',
-      'mapinitialized'
+      'mvtnotsupport'
     ];
     this._initWebMap();
   }
@@ -211,7 +220,7 @@ export default class WebMapViewModel extends WebMapBase {
         layer = this._createBaiduTileLayer();
         break;
       case 'MAPBOXSTYLE':
-        this.triggerEvent('notsupportmvt', {});
+        this.triggerEvent('mvtnotsupport', {});
         break;
       default:
         break;
@@ -230,7 +239,7 @@ export default class WebMapViewModel extends WebMapBase {
         // TODO  ---  暂不支持 SAMPLE_DATA
         if (type === 'SAMPLE_DATA') {
           this._addLayerSucceeded();
-          this.triggerEvent('getlayerdatasourcefailed', {
+          this.triggerEvent('layercreatefailed', {
             error: 'SAMPLE DATA is not supported',
             layer,
             map: this.map
@@ -333,7 +342,7 @@ export default class WebMapViewModel extends WebMapBase {
     } catch (err) {
       console.error(err);
       this._addLayerSucceeded();
-      this.triggerEvent('getlayerdatasourcefailed', {
+      this.triggerEvent('layercreatefailed', {
         error: err,
         layer: layerInfo,
         map: this.map

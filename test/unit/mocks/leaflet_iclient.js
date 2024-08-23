@@ -35,13 +35,13 @@ var supermap = {
   },
   themeFeature: class {},
   wmtsLayer: () => {},
-  createWebMapBaseExtending(SuperClass = Events, fireField = 'triggerEvent') {
+  createWebMapV2BaseExtending(SuperClass = Events, fireField = 'triggerEvent') {
     return class WebMapBase extends SuperClass {
       constructor(id, options, mapOptions) {
         super();
         this.serverUrl = options.serverUrl || 'https://www.supermapol.com';
-        this.accessToken = options.accessToken;
-        this.accessKey = options.accessKey;
+        this.credentialValue = options.credentialValue;
+        this.credentialKey = options.credentialKey;
         this.tiandituKey = options.tiandituKey || '';
         this.googleMapsAPIKey = options.googleMapsAPIKey || '';
         this.bingMapsKey = options.bingMapsKey || '';
@@ -55,7 +55,7 @@ var supermap = {
         this.echartslayer = [];
         this.canvgsV = [];
         this.mapOptions = mapOptions;
-        this.eventTypes = ['getmapinfofailed', 'getlayerdatasourcefailed'];
+        this.eventTypes = ['mapcreatefailed'];
         this.mapId = id;
         this.webMapInfo = null;
       }

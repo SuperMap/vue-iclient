@@ -3,15 +3,12 @@ import flushPromises from 'flush-promises';
 import uniqueLayer_polygon from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_multi_points.json';
 import vectorLayer_line from 'vue-iclient/test/unit/mocks/data/WebMap/vectorLayer_line.json';
-import tileLayer from 'vue-iclient/test/unit/mocks/data/WebMap/tileLayer.json';
-import mapJson from 'vue-iclient/test/unit/mocks/data/WebMap/map.json';
 import markerLayer from 'vue-iclient/test/unit/mocks/data//WebMap/markerLayer.json';
 import migrationLayer from 'vue-iclient/test/unit/mocks/data//WebMap/migrationLayer.json';
 import baseLayers from 'vue-iclient/test/unit/mocks/data/WebMap/baseLayers.json';
 import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
 import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.json';
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
-import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 const CRS = require('vue-iclient/test/unit/mocks/crs');
@@ -288,7 +285,7 @@ describe('WebMapViewModel.spec', () => {
       const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
       viewModel.on({
         mapinitialized: () => {
-          const spy = jest.spyOn(viewModel._handler, 'setCrs');
+          const spy = jest.spyOn(viewModel._handler, 'setCRS');
           viewModel.setCrs(crsWithEpsgcode);
           expect(spy).toBeCalled();
           expect(spy.mock.calls[0][0]).toEqual(crsWithEpsgcode);
@@ -303,7 +300,7 @@ describe('WebMapViewModel.spec', () => {
     it('do not take epsgcode', async done => {
       const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
       await flushPromises();
-      const spy = jest.spyOn(viewModel._handler, 'setCrs');
+      const spy = jest.spyOn(viewModel._handler, 'setCRS');
       viewModel.setCrs(crs);
       expect(spy).toBeCalled();
       expect(spy.mock.calls[0][0]).toEqual(crs);
@@ -513,10 +510,10 @@ describe('WebMapViewModel.spec', () => {
       done();
     };
     const viewModel = new WebMapViewModel(baseLayers['BAIDU']);
-    viewModel.on({ notsupportbaidumap: callback });
+    viewModel.on({ baidumapnotsupport: callback });
     await flushPromises();
     jest.advanceTimersByTime(0);
-    viewModel._handler.fire('notsupportbaidumap', {});
+    viewModel._handler.fire('baidumapnotsupport', {});
   });
   it('crs not support', async done => {
     const get = jest.spyOn(CRS, 'get');
@@ -528,9 +525,9 @@ describe('WebMapViewModel.spec', () => {
       expect(error.message).toBe('webmap.crsNotSupport');
       done();
     };
-    viewModel.on({ getmapinfofailed: callback });
+    viewModel.on({ mapcreatefailed: callback });
     await flushPromises();
-    viewModel._handler.fire('getmapinfofailed', { error: { message: 'webmap.crsNotSupport' } });
+    viewModel._handler.fire('mapcreatefailed', { error: { message: 'webmap.crsNotSupport' } });
   });
 
   it('add baselayer which is bing', async done => {
@@ -568,11 +565,11 @@ describe('WebMapViewModel.spec', () => {
       ...wmtsLayer,
       layers: [{ ...wmtsLayer.layers[0], url: '/iserver/services/map-china400/wmts100' }]
     });
-    viewModel.on({ getmapinfofailed: callback });
+    viewModel.on({ mapcreatefailed: callback });
 
     await flushPromises();
     jest.advanceTimersByTime(120);
-    viewModel._handler.fire('getmapinfofailed', {});
+    viewModel._handler.fire('mapcreatefailed', {});
   });
 
   it('different projection', done => {

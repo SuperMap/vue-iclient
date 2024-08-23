@@ -3,6 +3,8 @@ import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import flushPromises from 'flush-promises';
 import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_serviceProxy.json';
 import markerLayer from 'vue-iclient/test/unit/mocks/data/WebMap/markerLayer';
+import geojsonData from 'vue-iclient/test/unit/mocks/data/layerData_geojson.json';
+
 
 const mapOptions = {
   container: 'map',
@@ -90,5 +92,56 @@ describe('NcpMapViewModel.spec', () => {
       expect(viewModel.mapOptions.pitch).toBe(6);
       done();
     }, 100);
+  });
+
+  it('add layers succeed', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': JSON.parse(geojsonData.POINT_GEOJSON.content)
+    };
+    mockFetch(fetchResource);
+    const viewModel = new NcpMapViewModel('', { ...dataOptions, url: 'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json' }, {
+      ...mapOptions,
+      style: {
+        version: 8,
+        sources: {
+          中国地图: {
+            type: 'raster',
+            tiles: [
+              'https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark/zxyTileImage.png?z={z}&x={x}&y={y}'
+            ],
+            tileSize: 256
+          },
+          mvtSource: {
+            type: 'raster',
+            tiles: [
+              'https://maptiles.supermapol.com/iserver/services/map_China/rest/maps/China_Dark/zxyTileImage.png?z={z}&x={x}&y={y}'
+            ],
+            tileSize: 256
+          }
+        },
+        layers: [
+          {
+            id: '中国地图',
+            source: '中国地图',
+            type: 'raster',
+            minzoom: 0,
+            maxzoom: 22
+          },
+          {
+            id: 'mvtlayer',
+            source: 'mvtSource',
+            type: 'raster',
+            minzoom: 0,
+            maxzoom: 22,
+            'source-layer': 'test-source-layer'
+          }
+        ]
+      }
+    });
+    viewModel.on('addlayerssucceeded', () => {
+      expect(viewModel._layers.length).toBe(3);
+      done();
+    })
+    await flushPromises();
   });
 });

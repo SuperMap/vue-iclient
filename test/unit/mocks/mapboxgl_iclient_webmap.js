@@ -11,17 +11,16 @@ class WebMap extends Evented {
     this._layerIdRenameMapList = [];
     this._layerCatalogsRenameMapList = [];
     this.eventTypes = [
-      'getmapinfofailed',
+      'mapcreatesucceeded',
+      'mapcreatefailed',
       'crsnotsupport',
-      'getlayerdatasourcefailed',
-      'addlayerssucceeded',
-      'notsupportmvt',
-      'notsupportbaidumap',
-      'projectionisnotmatch',
-      'beforeremovemap',
+      'baidumapnotsupport',
+      'projectionnotmatch',
+      'mapbeforeremove',
       'mapinitialized',
-      'getlayersfailed',
-      'layersupdated'
+      'layercreatefailed',
+      'layersupdated',
+      'layeraddchanged'
     ];
     this._initWebMap();
     if (this.mapOptions) {
@@ -92,7 +91,7 @@ class WebMap extends Evented {
     this.mapParams = mapparams;
 
     setTimeout(() => {
-      this.fire('addlayerssucceeded', {
+      this.fire('mapcreatesucceeded', {
         map: this.map,
         mapparams: this.mapParams,
         layers: [
@@ -114,7 +113,7 @@ class WebMap extends Evented {
   }
   _addLayerChangedHandler() {
     Promise.resolve().then(() => {
-      this.fire('addlayerchanged', {
+      this.fire('layeraddchanged', {
         layers: [
           {
             visible: true,
@@ -143,12 +142,12 @@ class WebMap extends Evented {
   setStyle() {}
   setMapId() {}
   _updateRasterSource() {}
-  setCrs() {}
+  setCRS() {}
   setCenter() {}
   setZoom() {}
   resize() {}
 
-  getLegendInfo() {
+  getLegends() {
     return [
       {
         visible: true,
@@ -160,7 +159,7 @@ class WebMap extends Evented {
     ];
   }
   cleanLayers() {}
-  getAppreciableLayers() {
+  getLayers() {
     return [
       {
         visible: true,
@@ -223,7 +222,7 @@ class WebMap extends Evented {
 
   _initLayers() {
     if (this.map && this.map.getCRS && this.map.getCRS().epsgCode !== this._mapInfo.crs) {
-      this.fire('projectionisnotmatch');
+      this.fire('projectionnotmatch');
       return;
     }
     if (typeof this.mapId !== 'string') {
@@ -248,7 +247,7 @@ class WebMap extends Evented {
     });
     const matchErrorLayer = layers.find(item => item.metadata.typeFailure);
     if (matchErrorLayer) {
-      this.fire('getlayersfailed', {
+      this.fire('layercreatefailed', {
         error:
           matchErrorLayer.metadata.typeFailure === 'string' ? 'happen error' : new TypeError('t.map is not a function'),
         map: this.map
@@ -257,9 +256,9 @@ class WebMap extends Evented {
     }
     this._layerIdRenameMapList = layers.map(item => ({ renderId: item.id }));
     this._layerCatalogsRenameMapList = metadata.layerCatalog;
-    const appreciableLayers = this.getAppreciableLayers();
+    const appreciableLayers = this.getLayers();
     const matchLayers = appreciableLayers.filter(item => layers.some(layer => layer.id === item.id));
-    this.fire('addlayerssucceeded', {
+    this.fire('mapcreatesucceeded', {
       map: this.map,
       mapparams: {
         title: this._mapInfo.name,
@@ -362,7 +361,7 @@ class WebMap extends Evented {
       ids.push(...list);
       return ids;
     }, []);
-    const appreciableLayers = this.getAppreciableLayers();
+    const appreciableLayers = this.getLayers();
     const extraLayers = appreciableLayers.filter(layer => !layerIdsFromCatalog.some(id => id === layer.id));
     const layerCatalogs = this._layerCatalogsRenameMapList.concat(extraLayers);
     const formatLayerCatalog = this._createFormatCatalogs(layerCatalogs, appreciableLayers);

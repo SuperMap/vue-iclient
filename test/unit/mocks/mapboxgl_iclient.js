@@ -4,7 +4,7 @@ var mapboxgl = require('@mocks/mapboxgl').mapboxgl;
 module.exports.SuperMap = require('./supermap');
 var WebMap = require('./mapboxgl_iclient_webmap');
 
-class SourceListModel {
+class SourceListModelV2 {
   constructor(options = {}) {
     this.map = options.map;
     this.layers = options.layers || [];
@@ -14,8 +14,10 @@ class SourceListModel {
   getLayers() {}
 
   getSourceList() {}
+
+  getSelfLayers() {}
 }
-function createWebMapBaseExtending() {
+function createWebMapV2BaseExtending() {
   return class WebMapBase {};
 }
 class WebMapService {
@@ -123,6 +125,6 @@ mapboxgl.supermap = {
   ...supermap,
   WebMapService,
   WebMap,
-  SourceListModel,
-  createWebMapBaseExtending
+  SourceListModelV2,
+  createWebMapV2BaseExtending
 };

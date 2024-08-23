@@ -108,7 +108,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
   }
 
   private _getSourceList() {
-    const sourceListModel = new mapboxgl.supermap.SourceListModel({
+    const sourceListModel = new mapboxgl.supermap.SourceListModelV2({
       map: this.map,
       layers: []
     });

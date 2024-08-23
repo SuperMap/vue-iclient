@@ -961,4 +961,102 @@ describe('WebMapViewModel.spec', () => {
     expect(callback.mock.called).toBeTruthy;
     done();
   });
+
+  it('accessKey credentialKey', done => {
+    const id = vectorLayer_point;
+    const viewModel = new WebMapViewModel(id, { ...commonOption, accessKey: 'test-key' });
+    expect(viewModel.credentialKey).toBe('key');
+    expect(viewModel.credentialValue).toBe('test-key');
+    done();
+  });
+
+  it('accessToken credentialKey', done => {
+    const id = vectorLayer_point;
+    const viewModel = new WebMapViewModel(id, { ...commonOption, accessToken: 'test-token' });
+    expect(viewModel.credentialKey).toBe('token');
+    expect(viewModel.credentialValue).toBe('test-token');
+    done();
+  });
+
+  it('unsupport mvt', (done) => {
+    const id = {
+      baseLayer: {
+        layerType: 'MAPBOXSTYLE',
+        name: '中国暗色地图',
+        url: 'https://test/iserver/services/map_China/rest/maps/China_Dark'
+      },
+      center: {
+        x: 0,
+        y: 0
+      },
+      description: '',
+      extent: {
+        leftBottom: {
+          x: 0,
+          y: 1
+        },
+        rightTop: {
+          x: 1,
+          y: 2
+        }
+      },
+      layers: [],
+      level: 3,
+      maxScale: '1:144447.92746805',
+      minScale: '1:591658710.909131',
+      projection: 'EPSG:3857',
+      rootUrl: 'http://test',
+      title: '无标题',
+      version: '2.3.0'
+    };
+    const webmap = new WebMapViewModel(id);
+    webmap.on('mvtnotsupport', () => {
+      expect(webmap.map).not.toBeUndefined();
+      done();
+    });
+  });
+
+  it('unspport sample data', (done) => {
+    const id = {
+      baseLayer: {
+        layerType: 'MAPBOXSTYLE',
+        name: '中国暗色地图',
+        url: 'https://test/iserver/services/map_China/rest/maps/China_Dark'
+      },
+      center: {
+        x: 0,
+        y: 0
+      },
+      description: '',
+      extent: {
+        leftBottom: {
+          x: 0,
+          y: 1
+        },
+        rightTop: {
+          x: 1,
+          y: 2
+        }
+      },
+      layers: [
+        {
+          layerType: 'UNIQUE',
+          dataSource: { type: 'SAMPLE_DATA' }
+        }
+      ],
+      level: 3,
+      maxScale: '1:144447.92746805',
+      minScale: '1:591658710.909131',
+      projection: 'EPSG:3857',
+      rootUrl: 'http://test',
+      title: '无标题',
+      version: '2.3.0'
+    };
+    const webmap = new WebMapViewModel(id);
+    webmap.on('layercreatefailed', (e) => {
+      expect(e.error).toBe('SAMPLE DATA is not supported');
+      done();
+    });
+  });
 });
+

@@ -694,7 +694,7 @@ describe('WebMap.vue', () => {
     }
   });
 
-  it('listen getlayersfailed error is object', async done => {
+  it('listen layercreatefailed error is object', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/249495311/map.json': {
@@ -719,17 +719,17 @@ describe('WebMap.vue', () => {
       }
     });
     wrapper.vm.viewModel.on({
-      getlayersfailed: error => {
+      layercreatefailed: error => {
         expect(Object.prototype.toString.call(error) === '[object Error]');
         done();
       }
     });
-    wrapper.vm.viewModel.triggerEvent('getlayersfailed', new Error('err'));
+    wrapper.vm.viewModel.triggerEvent('layercreatefailed', new Error('err'));
     await mapWrapperLoaded(wrapper);
     await flushPromises();
   });
 
-  it('listen getlayersfailed error is string', async done => {
+  it('listen layercreatefailed error is string', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/249495311/map.json': {
@@ -754,12 +754,12 @@ describe('WebMap.vue', () => {
       }
     });
     wrapper.vm.viewModel.on({
-      getlayersfailed: error => {
+      layercreatefailed: error => {
         expect(Object.prototype.toString.call(error) === '[object String]');
         done();
       }
     });
-    wrapper.vm.viewModel.triggerEvent('getlayersfailed', new String('err'));
+    wrapper.vm.viewModel.triggerEvent('layercreatefailed', new String('err'));
 
     await mapWrapperLoaded(wrapper);
     await flushPromises();
@@ -780,16 +780,16 @@ describe('WebMap.vue', () => {
       addlayerssucceeded: e => {
         expect(wrapper.vm.map).not.toBeNull();
       },
-      getmapinfofailed: e => {
+      mapcreatefailed: e => {
         expect(e.error).not.toBeNull();
       },
-      getlayerdatasourcefailed: e => {
+      layercreatefailed: e => {
         expect(e.error).not.toBeNull();
       },
-      notsupportbaidumap: e => {
+      baidumapnotsupport: e => {
         expect(true).toBe(true);
       },
-      beforeremovemap: e => {
+      mapbeforeremove: e => {
         expect(deleteMap).toBeCalled();
         expect(deleteWebMap).toBeCalled();
         done();
@@ -801,15 +801,15 @@ describe('WebMap.vue', () => {
     wrapper.vm.viewModel.triggerEvent('addlayerssucceeded', {
       map: { resize: jest.fn() }
     });
-    wrapper.vm.viewModel.triggerEvent('getmapinfofailed', {
+    wrapper.vm.viewModel.triggerEvent('mapcreatefailed', {
       error: { message: 'e' }
     });
-    wrapper.vm.viewModel.triggerEvent('getlayerdatasourcefailed', {
+    wrapper.vm.viewModel.triggerEvent('layercreatefailed', {
       error: 'SAMPLE DATA is not supported',
       map: { resize: jest.fn() }
     });
-    wrapper.vm.viewModel.triggerEvent('notsupportbaidumap');
-    wrapper.vm.viewModel.triggerEvent('beforeremovemap', {
+    wrapper.vm.viewModel.triggerEvent('baidumapnotsupport');
+    wrapper.vm.viewModel.triggerEvent('mapbeforeremove', {
       map: { resize: jest.fn() }
     });
   });
