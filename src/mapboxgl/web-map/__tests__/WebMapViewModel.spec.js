@@ -587,8 +587,8 @@ describe('WebMapViewModel.spec', () => {
       }
     };
     const viewModel = new WebMapViewModel(restmapLayer, { ...commonOption }, {}, map);
-    viewModel.on({ projectionisnotmatch: callback });
-    viewModel._handler.fire('projectionisnotmatch', {});
+    viewModel.on({ projectionnotmatch: callback });
+    viewModel._handler.fire('projectionnotmatch', {});
   });
 
   it('layerFilter', async done => {

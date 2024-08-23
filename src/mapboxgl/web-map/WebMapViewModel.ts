@@ -255,7 +255,7 @@ export default class WebMapViewModel extends Events {
     this._handler.setMapId(mapId);
   }
 
-  getLayers() {
+  getAppreciableLayers() {
     return this.appreciableLayers;
   }
 

@@ -1010,10 +1010,13 @@ describe('WebMapViewModel.spec', () => {
       version: '2.3.0'
     };
     const webmap = new WebMapViewModel(id);
-    webmap.on('mvtnotsupport', () => {
-      expect(webmap.map).not.toBeUndefined();
-      done();
+    webmap.on({
+      'mvtnotsupport': () => {
+        expect(webmap.map).not.toBeUndefined();
+        done();
+      }
     });
+    webmap._initBaseLayer(id);
   });
 
   it('unspport sample data', (done) => {
@@ -1053,10 +1056,13 @@ describe('WebMapViewModel.spec', () => {
       version: '2.3.0'
     };
     const webmap = new WebMapViewModel(id);
-    webmap.on('layercreatefailed', (e) => {
-      expect(e.error).toBe('SAMPLE DATA is not supported');
-      done();
+    webmap.on({
+      'layercreatefailed': (e) => {
+        expect(e.error).toBe('SAMPLE DATA is not supported');
+        done();
+      }
     });
+    webmap._initOverlayLayers(id.layers)
   });
 });
 

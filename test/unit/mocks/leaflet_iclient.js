@@ -108,8 +108,35 @@ var supermap = {
           }
         });
       }
-      getBaseLayerType() {
-        return 'TILE';
+      getBaseLayerType(layerInfo) {
+        let layerType = layerInfo.layerType; // 底图和rest地图兼容
+    
+        if (
+          layerType.indexOf('TIANDITU_VEC') > -1 ||
+          layerType.indexOf('TIANDITU_IMG') > -1 ||
+          layerType.indexOf('TIANDITU_TER') > -1
+        ) {
+          layerType = 'TIANDITU';
+        }
+    
+        switch (layerType) {
+          case 'TILE':
+          case 'SUPERMAP_REST':
+            return 'TILE';
+          case 'CLOUD':
+          case 'CLOUD_BLACK':
+            return 'CLOUD';
+          case 'OSM':
+          case 'JAPAN_ORT':
+          case 'JAPAN_RELIEF':
+          case 'JAPAN_PALE':
+          case 'JAPAN_STD':
+          case 'GOOGLE_CN':
+          case 'GOOGLE':
+            return 'XYZ';
+          default:
+            return layerType;
+        }
       }
       handleLayerFeatures(features) {
         return features;
