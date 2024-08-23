@@ -120,13 +120,13 @@ export default {
     loadingTip: 'Map is loading...',
     crsNotSupport: 'The coordinate system of the current map is not supported!',
     TileMatrixSetNotSuppport: 'Incoming TileMatrixSet is not supported!',
-    getLayerInfoFailed: 'Failed to load layer! {error}',
+    getLayerInfoFailed: 'Failed to load layer!',
     getThemeInfoFailed: 'Failed to get theme information!',
     crsnotsupport: 'Unsupported coordinate system!',
     baiduMapNotSupport: 'Baidu maps is not supported yet!',
     sampleDataNotSupport: 'Sample datas is not supported yet!',
     mvtNotSupport: 'Vector tile layers is not supported yet!',
-    mapCreatedFailed: 'Failed to load map! {error}'
+    mapCreatedFailed: 'Failed to load map!'
   },
   drillMap: {
     goBack: 'Go Back'

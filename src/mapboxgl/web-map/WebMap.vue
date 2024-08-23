@@ -426,17 +426,15 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   }
 
   notifyErrorTip({ e, defaultTip, showErrorMsg = true }: { e?: any; defaultTip: string; showErrorMsg?: boolean; }) {
-    let options: any;
+    let msg = '';
     if (showErrorMsg) {
-      let msg = '';
       if (e.error && e.error.message) {
         msg = e.error.message;
       } else if (typeof e.error === 'string') {
         msg = e.error;
       }
-      options = { error: msg };
     }
-    Message.error(this.$t(`webmap.${defaultTip}`, options));
+    Message.error(this.$t(`webmap.${defaultTip}` + msg));
   }
 
   destory(): void {
