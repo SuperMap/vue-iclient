@@ -20,6 +20,22 @@ class GeoJSON {
   off = jest.fn();
 }
 
+class TileLayer {
+  static extend(options) {
+    return function() {
+      return options;
+    };
+  }
+  static BingLayer() {}
+}
+
+function tileLayer() {
+  return new TileLayer();
+}
+tileLayer.wms = jest.fn((url, options) => {
+  return options.layers;
+});
+
 module.exports = {
   Map: leafletMap,
   point: () => {},
@@ -57,13 +73,8 @@ module.exports = {
       };
     }
   },
-  TileLayer: class {
-    static extend() {
-      return class {};
-    }
-    static BingLayer
-  },
-  tileLayer: {},
+  TileLayer,
+  tileLayer,
   layerGroup: () => {
     return {};
   },
@@ -77,3 +88,4 @@ module.exports = {
   Evented: class {},
   svg: jest.fn()
 };
+
