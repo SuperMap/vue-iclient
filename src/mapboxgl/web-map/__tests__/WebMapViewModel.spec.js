@@ -285,8 +285,16 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const callback = function (data) {
       expect(data.layers.length).toBe(uniqueLayer_polygon.layers.length);
-      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-opacity']).toBe(1);
-      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-color'][3]).toBe('rgba(230, 245, 153, 0.7)');
+      expect(
+        viewModel.map.getStyle().layers.find(item => {
+          return item.type === 'fill';
+        }).paint['fill-opacity']
+      ).toBe(1);
+      expect(
+        viewModel.map.getStyle().layers.find(item => {
+          return item.type === 'fill';
+        }).paint['fill-color'][3]
+      ).toBe('rgba(230, 245, 153, 0.7)');
       done();
     };
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, undefined, { ...commonMap });
@@ -314,6 +322,21 @@ describe('WebMapViewModel.spec', () => {
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
+  });
+  it('more vm iserver map ', done => {
+    const viewModel = new WebMapViewModel('', { ...commonOption, serverUrl: '' }, { ...commonMapOptions });
+    viewModel.on({
+      addlayerssucceeded: data => {
+        expect(viewModel._cacheLayerId).toEqual(['simple-tiles']);
+        const viewModel1 = new WebMapViewModel('', { ...commonOption, serverUrl: '' }, { ...commonMapOptions }, data.map);
+        viewModel1.on({
+          addlayerssucceeded: data => {
+            expect(viewModel1._cacheLayerId).toEqual(['simple-tiles']);
+            done();
+          }
+        });
+      }
+    });
   });
 
   describe('test custom wkt', () => {
@@ -409,7 +432,7 @@ describe('WebMapViewModel.spec', () => {
       viewModel.on({ addlayerssucceeded: callback });
     });
 
-    it('layerType is MAPBOXSTYLE and webInfo projection is wkt and indexbounds is not exist', async done => {
+    it('layerType is MAPBOXSTYLE and webInfo projection is wkt and indexbounds is not exist', done => {
       const fetchResource = {
         ...commonResource,
         'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json':
@@ -422,10 +445,10 @@ describe('WebMapViewModel.spec', () => {
       });
       const id = { ...tileLayer, ...baseLayer, projection: projection };
       const viewModel = new WebMapViewModel(id, { ...commonOption });
-      await flushPromises();
       const callback = function (data) {
         expect(data.layers.length).toBe(id.layers.length);
         expect(viewModel.layerAdded).toBe(1);
+        // expect(viewModel._cacheLayerId.length).toBe(2);
         done();
       };
       viewModel.on({ addlayerssucceeded: callback });
@@ -1356,10 +1379,10 @@ describe('WebMapViewModel.spec', () => {
         {
           type: 'Feature',
           properties: {
-            '机场': '上海/浦东',
-            'X坐标': '121.812361 ',
-            'Y坐标': '31.093992 ',
-            '名次': '2',
+            机场: '上海/浦东',
+            X坐标: '121.812361 ',
+            Y坐标: '31.093992 ',
+            名次: '2',
             '2017旅客吞吐量（人次）': '70,001,237 ',
             '2016旅客吞吐量（人次）': '66,002,414 ',
             '同比增速%': '3.5 ',
@@ -1371,7 +1394,7 @@ describe('WebMapViewModel.spec', () => {
           },
           geometry: { type: 'Point', coordinates: [Array] }
         }
-      ]
+      ];
       const spy = jest.spyOn(viewModel, '_createGraphicLayer');
       viewModel.updateOverlayLayer(layerInfo, features);
       expect(spy).toBeCalled();
@@ -1449,14 +1472,15 @@ describe('WebMapViewModel.spec', () => {
         viewModel._updateDataFlowFeature = jest.fn();
         viewModel._handleDataflowFeatures(
           {
-            filterCondition: '2020年人口总数>10', pointStyle: {
-              "fillColor": "#ee4d5a",
-              "strokeWidth": 1,
-              "fillOpacity": 0.9,
-              "radius": 8,
-              "strokeColor": "#ffffff",
-              "type": "BASIC_POINT",
-              "strokeOpacity": 1
+            filterCondition: '2020年人口总数>10',
+            pointStyle: {
+              fillColor: '#ee4d5a',
+              strokeWidth: 1,
+              fillOpacity: 0.9,
+              radius: 8,
+              strokeColor: '#ffffff',
+              type: 'BASIC_POINT',
+              strokeOpacity: 1
             }
           },
           { data: JSON.stringify({ properties: { '2020年人口总数': 15 } }) }
@@ -1730,20 +1754,20 @@ describe('WebMapViewModel.spec', () => {
         { ...commonMap }
       );
       jest.useFakeTimers();
-      expect(viewModel._layerTimerList.length).toBe(0);
+      expect(viewModel._layerTimerList.length).toBe(1);
       await flushPromises();
       jest.advanceTimersByTime(1000);
-      expect(viewModel._layerTimerList.length).not.toBe(0);
+      expect(viewModel._layerTimerList.length).toBe(1);
       jest.useRealTimers();
       done();
     });
     it('other layer except tile layer', async done => {
       const viewModel = new WebMapViewModel(heatLayer, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
       jest.useFakeTimers();
-      expect(viewModel._layerTimerList.length).toBe(0);
+      expect(viewModel._layerTimerList.length).toBe(1);
       await flushPromises();
       jest.advanceTimersByTime(1000);
-      expect(viewModel._layerTimerList.length).not.toBe(0);
+      expect(viewModel._layerTimerList.length).toBe(1);
       jest.useRealTimers();
       done();
     });

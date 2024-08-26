@@ -145,11 +145,8 @@ export default class WebMapViewModel extends WebMapBase {
     this._legendList = {};
     if (map) {
       this.map = map;
-      this._taskID = new Date();
-      this.getMapInfo(this._taskID);
-    } else {
-      this._initWebMap();
     }
+    this._initWebMap(!this.map);
   }
 
   public resize(keepBounds = false): void {
@@ -268,15 +265,17 @@ export default class WebMapViewModel extends WebMapBase {
     return this._sourceListModel;
   }
 
-  _initWebMap(): void {
-    this.initWebMap();
+  _initWebMap(clean = true): void {
+    this.initWebMap(clean);
   }
 
   _loadLayers(mapInfo, _taskID): void {
     if (this.map) {
       // @ts-ignore
       if (this.map.getCRS().epsgCode !== this.baseProjection && !this.ignoreBaseProjection) {
-        this.triggerEvent('projectionIsNotMatch', {});
+        Promise.resolve().then(() => {
+          this.triggerEvent('projectionIsNotMatch', {});
+        });
         return;
       }
       this._handleLayerInfo(mapInfo, _taskID);
@@ -444,6 +443,8 @@ export default class WebMapViewModel extends WebMapBase {
           fadeDuration = this.mapOptions.fadeDuration;
         }
         this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
+        const layerIds = this.mapOptions?.style?.layers?.map(layer=>layer.id) || [];
+        this._cacheLayerId.push(...layerIds);
         this.map.on('load', () => {
           this.triggerEvent('addlayerssucceeded', {
             map: this.map,
@@ -497,6 +498,8 @@ export default class WebMapViewModel extends WebMapBase {
     }
 
     // 初始化 map
+    const layerIds = this.mapOptions?.style?.layers?.map(layer=>layer.id) || [];
+    this._cacheLayerId.push(...layerIds);
     this.map = new mapboxgl.Map({
       ...this.mapOptions,
       container: this.target,
@@ -551,6 +554,8 @@ export default class WebMapViewModel extends WebMapBase {
       .getMapBoxStyle(url)
       .then(
         (style: any) => {
+          const layerIds = style?.layers?.map(layer => layer.id).filter(id => id !== 'background');
+          this._cacheLayerId.push(...layerIds);
           // @ts-ignore
           this.map.addStyle(style);
           addedCallback && addedCallback();

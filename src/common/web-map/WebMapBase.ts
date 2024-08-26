@@ -183,8 +183,8 @@ export default abstract class WebMapBase extends Events {
     }
   }
 
-  protected initWebMap() {
-    this.cleanWebMap();
+  protected initWebMap(clean = true) {
+    clean && this.cleanWebMap();
     this.serverUrl = this.serverUrl && this.webMapService.handleServerUrl(this.serverUrl);
     if (this.webMapInfo) {
       // 传入是webmap对象
