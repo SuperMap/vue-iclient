@@ -33,7 +33,8 @@ export default new Vue({
           webmaps.reverse();
           const matchMainWebMap = webMapCombinations.find(item => item[0] === webmapTarget)[1];
           let datas = webmaps.reduce((layers, item) => {
-            layers.push(...item[propKey]());
+            const subDatas = item[propKey]();
+            layers.push(...subDatas.filter(item => !item.reused));
             return layers;
           }, []);
           const mainWebMapDatas = matchMainWebMap[propKey]();
@@ -55,7 +56,7 @@ export default new Vue({
           }
           return () => datas;
         }
-        if (['changeItemVisible'].includes(propKey)) {
+        if (['changeItemVisible', 'setLayersVisible'].includes(propKey)) {
           return function () {
             const webmaps = webMapCombinations.map(item => item[1]);
             const argumentsList = arguments;
