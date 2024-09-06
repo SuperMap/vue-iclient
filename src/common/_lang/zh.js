@@ -82,7 +82,10 @@ export default {
     unSupportedData: '当前数据不支持与地图联动'
   },
   layerList: {
-    title: '图层'
+    title: '图层',
+    layerStyle: "图层样式",
+    attributes: "属性表",
+    zoomToMap: "缩放至地图"
   },
   slideshow: {
     title: '幻灯片'

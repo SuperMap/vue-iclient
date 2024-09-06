@@ -18,6 +18,35 @@
       border-radius: 0;
       color: inherit;
     }
+    & .sm-component-tree li span.sm-component-tree-switcher {
+      position: absolute;
+      right: 0;
+      top: 4px;
+      }
+    & .sm-component-tree > li {
+      position: relative;
+    }
+    & .sm-component-tree li span.sm-component-tree-switcher.sm-component-tree-switcher-noop {
+      display: none;
+    }
+    & .sm-component-tree-child-tree-open {
+      display: list-item;
+    }
+    & .sm-component-tree li .sm-component-tree-node-content-wrapper {
+      display: block;
+      width: 95%;
+      height: auto;
+    }
+    & .sm-component-tree-title {
+      display: block;
+    }
+    & .sm-component-tree-title .header-text {
+      display: inline-flex;
+      justify-content: space-between;
+    }
+    & .opacity-style {
+      width: 100%;
+    }
   }
   @include e(a-card) {
     padding-top: 4px;
@@ -108,7 +137,8 @@
     .header-wrap {
       justify-content: space-between;
       .header-text {
-        font-size: 0;
+        display: inline-flex;
+        justify-content: space-between;
         & > i,
         & > span {
           vertical-align: middle;

@@ -81,7 +81,10 @@ export default {
     unSupportedData: 'The current data does not support linkage with the map'
   },
   layerList: {
-    title: 'Layer'
+    title: 'Layer',
+    layerStyle: "layerStyle",
+    attributes: "Attributes",
+    zoomToMap: "zoomToMap"
   },
   slideshow: {
     title: 'Slideshow'
