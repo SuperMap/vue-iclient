@@ -46,12 +46,21 @@
       display: inline-flex;
       width: 100%;
     }
+    & .icon-buttons-visible {
+      visibility: visible;
+    }
+    & .icon-buttons-hidden {
+      visibility: hidden;
+    }
     & .sm-component-tree-title .header-text .icon-buttons{
       display: flex;
       justify-content: flex-end;
       width: 60px;
       &:last-child {
         margin-right: 0px;
+      }
+      & i:hover {
+        color: $primary-5
       }
     }
     & .opacity-style {
@@ -75,20 +84,6 @@
     &.#{$collapse-prefix} {
       > .#{$collapse-prefix}-item {
         border-bottom: none;
-        .#{$iconfont-class-prefix}-solid-triangle-right {
-          display: inline-block;
-        }
-        .#{$iconfont-class-prefix}-solid-triangle-down {
-          display: none;
-        }
-        &.#{$collapse-prefix}-item-active > .#{$collapse-prefix}-header{
-          .#{$iconfont-class-prefix}-solid-triangle-right {
-            display: none;
-          }
-          .#{$iconfont-class-prefix}-solid-triangle-down {
-            display: inline-block;
-          }
-        }
         > .#{$collapse-prefix}-header {
           color: inherit;
         }
@@ -115,7 +110,6 @@
       }
     }
 
-    .#{$iconfont-class-prefix}-partially-visible,
     .#{$iconfont-class-prefix}-visible {
       color: $primary-color;
     }
@@ -136,13 +130,6 @@
           font-size: 14px;
         }
       }
-    }
-    #{$layer-list-prefix}__layer {
-      display: flex;
-      width: 100%;
-      padding-right: 16px;
-    }
-    .header-wrap {
       .header-text {
         & > i,
         & > span {
@@ -160,10 +147,10 @@
   @include e(disabled) {
     color: $disabled-color !important;
   }
-  .sm-components-icon-attribute {
+  .sm-components-icon-attribute, .sm-components-icon-not-active {
     color: $text-color;
   }
-  .sm-components-icon-attribute-open {
+  .sm-components-icon-attribute-open, .sm-components-icon-active {
     color: $primary-5;
   }
 }

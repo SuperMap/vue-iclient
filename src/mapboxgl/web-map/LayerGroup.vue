@@ -1,12 +1,6 @@
 <template>
   <div>
-    <sm-tree
-      class="sm-component-layer-list__collapse draggable-tree"
-      draggable
-      :tree-data="treeData"
-      @dragenter="onDragEnter"
-      @drop="onDrop"
-    >
+    <sm-tree class="sm-component-layer-list__collapse draggable-tree" draggable :tree-data="treeData" @drop="onDrop">
       <template slot="custom" slot-scope="item">
         <div
           class="header-wrap"
@@ -15,13 +9,20 @@
             'sm-component-layer-list__disabled': !item.visible
           }"
         >
-          <div class="header-text">
+          <div
+            class="header-text"
+            @mouseenter="() => changeIconsStatus(item.id)"
+            @mouseleave="() => changeIconsStatus('')"
+          >
             <i
-              :class="item.visible ? 'sm-components-icon-partially-visible' : 'sm-components-icon-hidden'"
+              :class="item.visible ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'"
               @click.stop="toggleItemVisibility(item)"
             />
             <span class="add-ellipsis">{{ item.title }}</span>
-            <div v-if="showIcons && (item && item.type) !== 'group'" class="icon-buttons" style="display: flex">
+            <div
+              v-if="(item && item.type) !== 'group'"
+              :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
+            >
               <div v-if="zoomToMap.enabled" class="sm-component-layer-list__zoom">
                 <i
                   :class="attributesIconClass"
@@ -40,7 +41,11 @@
               </div>
               <div v-if="layerStyle.enabled" class="sm-component-layer-list__style">
                 <i
-                  :class="attributesIconClass"
+                  :class="[
+                    'sm-components-icon-attribute',
+                    'sm-components-icon-not-active',
+                    showOpacityItem === item.id && 'sm-components-icon-active'
+                  ]"
                   :style="!item.visible && { cursor: 'not-allowed' }"
                   :title="$t('layerList.layerStyle')"
                   @click.stop="item.visible && toggleLayerStyleVisibility($event, item)"
@@ -49,9 +54,16 @@
             </div>
           </div>
         </div>
-        <div v-show="item.id === showOpacity" class="opacity-style">
+        <div v-show="item.id === showOpacityItem" class="opacity-style">
           <div>{{ $t('layerList.opacity') }}</div>
-          <sm-slider :value="10" :min="0" :max="100" :step="1" :style="{...getColorStyle(0), width:'70%'}" @change="sliderChange" />
+          <sm-slider
+            :value="10"
+            :min="0"
+            :max="100"
+            :step="1"
+            :style="{ ...getColorStyle(0), width: '70%' }"
+            @change="sliderChange"
+          />
           <div>{{ 10 + '%' }}</div>
         </div>
       </template>
@@ -114,47 +126,33 @@ export default {
         const isStructureData = item.dataSource.type === 'STRUCTURE_DATA';
         return this.attributes.enabled && (isGeojson || isStructureData);
       };
-    },
-    treeData() {
-      const data = this.getTreeData(this.layerCatalog);
-      console.log(data);
-      return data;
+    }
+  },
+  watch: {
+    layerCatalog: {
+      handler: function (newVal, oldVal) {
+        this.treeData = this.getTreeData(this.layerCatalog);
+      },
+      deep: true,
+      immediate: true
     }
   },
   data() {
     return {
-      showIcons: true,
-      showOpacity: false
+      treeData: [],
+      showIconsItem: '',
+      showOpacityItem: ''
     };
   },
-  mounted() {
-    // this.promise();
-  },
   methods: {
-    promise() {
-      // this.a = 2;
-      Promise.resolve().then(() => {
-        console.log('promise1');
-      });
-      this.$nextTick(() => {
-        console.log('nextTick1');
-      });
-      Promise.resolve().then(() => {
-        console.log('promise2');
-      });
-      this.$nextTick(() => {
-        console.log('nextTick2');
-      });
-    },
     getTreeData(data) {
       const treeData = [];
       data.map(item => {
-        const data = { ...item, scopedSlots: { title: 'custom' } };
+        const data = { ...item, key: item.id, scopedSlots: { title: 'custom' } };
         if (data.children) {
           const children = this.getTreeData(data.children);
           data.children = children;
         }
-        console.log(item, data);
         treeData.push(data);
       });
       return treeData;
@@ -168,27 +166,27 @@ export default {
       this.$emit('toggleAttributesVisibility', e, item);
     },
     toggleLayerStyleVisibility(e, item) {
-      this.promise();
-      this.showOpacity = item.id;
+      if (this.showOpacityItem === item.id) {
+        this.showOpacityItem = '';
+      } else {
+        this.showOpacityItem = item.id;
+      }
     },
-    onDragEnter(info) {
-      console.log(info);
-      // expandedKeys 需要受控时设置
-      // this.expandedKeys = info.expandedKeys
+    changeIconsStatus(val) {
+      this.showIconsItem = val;
     },
     onDrop(info) {
-      console.log(info);
       const dropKey = info.node.eventKey;
       const dragKey = info.dragNode.eventKey;
       const dropPos = info.node.pos.split('-');
       const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-      const loop = (data, key, callback) => {
+      const loop = (data, id, callback) => {
         data.forEach((item, index, arr) => {
-          if (item.key === key) {
+          if (item.id === id) {
             return callback(item, index, arr);
           }
           if (item.children) {
-            return loop(item.children, key, callback);
+            return loop(item.children, id, callback);
           }
         });
       };
