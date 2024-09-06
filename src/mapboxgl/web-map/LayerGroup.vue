@@ -49,8 +49,10 @@
             </div>
           </div>
         </div>
-        <div v-show="item.id === showOpacity" class="opacity-style" sytle="">
-          <sm-slider :value="10" :min="0" :max="100" :step="1" :style="getColorStyle(0)" @change="sliderChange" />
+        <div v-show="item.id === showOpacity" class="opacity-style">
+          <div>{{ $t('layerList.opacity') }}</div>
+          <sm-slider :value="10" :min="0" :max="100" :step="1" :style="{...getColorStyle(0), width:'70%'}" @change="sliderChange" />
+          <div>{{ 10 + '%' }}</div>
         </div>
       </template>
     </sm-tree>

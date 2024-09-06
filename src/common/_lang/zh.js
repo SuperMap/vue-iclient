@@ -85,7 +85,8 @@ export default {
     title: '图层',
     layerStyle: "图层样式",
     attributes: "属性表",
-    zoomToMap: "缩放至地图"
+    zoomToMap: "缩放至地图",
+    opacity: "不透明度"
   },
   slideshow: {
     title: '幻灯片'

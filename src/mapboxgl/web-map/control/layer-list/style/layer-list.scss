@@ -11,6 +11,7 @@
   z-index: 10;
   @include e(content) {
     width: 100%;
+    min-width: 220px;
     height: 100%;
     padding: 0 16px;
     .#{$collapse-prefix} {
@@ -25,6 +26,7 @@
       }
     & .sm-component-tree > li {
       position: relative;
+
     }
     & .sm-component-tree li span.sm-component-tree-switcher.sm-component-tree-switcher-noop {
       display: none;
@@ -42,10 +44,22 @@
     }
     & .sm-component-tree-title .header-text {
       display: inline-flex;
-      justify-content: space-between;
+      width: 100%;
+    }
+    & .sm-component-tree-title .header-text .icon-buttons{
+      display: flex;
+      justify-content: flex-end;
+      width: 60px;
+      &:last-child {
+        margin-right: 0px;
+      }
     }
     & .opacity-style {
+      display:flex;
+      align-items:center;
       width: 100%;
+      padding-left: 23px;
+      font-size: 12px;
     }
   }
   @include e(a-card) {
@@ -91,14 +105,12 @@
         }
       }
     }
-    .#{$collapse-prefix}-header,
-    #{$layer-list-prefix}__elcarditem {
+    .#{$collapse-prefix}-header {
       padding: 6px 0 !important;
       border-bottom: 1px solid $border-color-split;
     }
     &:last-child {
-      .#{$collapse-prefix}-header,
-      #{$layer-list-prefix}__elcarditem {
+      .#{$collapse-prefix}-header{
         border-bottom-color: transparent;
       }
     }
@@ -111,7 +123,6 @@
       color: $disabled-color;
     }
     #{$layer-list-prefix}__sourcelayeritem,
-    #{$layer-list-prefix}__elcarditem,
     .header-wrap {
       display: flex;
       align-items: center;
@@ -126,24 +137,19 @@
         }
       }
     }
-    #{$layer-list-prefix}__elcarditem {
-      justify-content: space-between;
-    }
     #{$layer-list-prefix}__layer {
       display: flex;
       width: 100%;
       padding-right: 16px;
     }
     .header-wrap {
-      justify-content: space-between;
       .header-text {
-        display: inline-flex;
-        justify-content: space-between;
         & > i,
         & > span {
           vertical-align: middle;
         }
         & > span {
+          width: calc(100% - 85px);
           max-width: 200px;
           display: inline-block;
           font-size: 12px;
@@ -151,14 +157,8 @@
       }
     }
   }
-  @include e(sourcelayeritem) {
-    padding: 6px 0;
-  }
   @include e(disabled) {
     color: $disabled-color !important;
-  }
-  @include e(layergroupname) {
-    max-width: 200px;
   }
   .sm-components-icon-attribute {
     color: $text-color;
