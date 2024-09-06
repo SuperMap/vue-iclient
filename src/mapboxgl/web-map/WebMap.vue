@@ -434,7 +434,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         msg = e.error;
       }
     }
-    Message.error(this.$t(`webmap.${defaultTip}` + msg));
+    Message.error(this.$t(`webmap.${defaultTip}`) + msg);
   }
 
   destory(): void {
