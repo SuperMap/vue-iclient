@@ -306,9 +306,17 @@ describe('WebMapViewModel.spec', () => {
       expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
       viewModel.getAppreciableLayers().forEach(item => {
         expect(item.renderLayers.length).toBeGreaterThanOrEqual(1);
-      })
-      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-opacity']).toBe(1);
-      expect(viewModel.map.getStyle().layers.find((item)=>{return item.type === 'fill'}).paint['fill-color'][3]).toBe('rgba(230, 245, 153, 0.7)');
+      });
+      expect(
+        viewModel.map.getStyle().layers.find(item => {
+          return item.type === 'fill';
+        }).paint['fill-opacity']
+      ).toBe(1);
+      expect(
+        viewModel.map.getStyle().layers.find(item => {
+          return item.type === 'fill';
+        }).paint['fill-color'][3]
+      ).toBe('rgba(230, 245, 153, 0.7)');
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
@@ -911,7 +919,7 @@ describe('WebMapViewModel.spec', () => {
       viewModel._handler._createRangeLayer(layerInfo, features);
       expect(mockFun.mock.calls[0][3].style['fill-color'].length).toEqual(35);
       done();
-    }
+    };
     viewModel.on({ mapinitialized: callback });
     await flushPromises();
     jest.advanceTimersByTime(0);
@@ -993,10 +1001,11 @@ describe('WebMapViewModel.spec', () => {
   });
 
   it('markerLayer point linstring and text', async done => {
-    const content = '{"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"strokeColor":"#0081E2","strokeOpacity":1,"strokeWidth":5,"lineCap":"round","lineDash":"solid"},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"LineString","coordinates":[[103.21230856170534,35.93252826339496],[96.80142450317665,31.772281946203208]]}},{"type":"Feature","properties":{"dataViz_title":"这是文字"},"dv_v5_markerStyle":{"text":"这是文字","font":"33px 宋体","placement":"point","textAlign":"right","fillColor":"#595959","backgroundFill":"#ee8b8b","borderColor":"rgba(255,255,255,0)","borderWidth":4,"padding":[8,8,8,8],"maxWidth":358},"dv_v5_markerInfo":{"dataViz_title":"这是文字"},"geometry":{"type":"Point","coordinates":[101.56249999999991,26.728112105878537]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"src":"http://172.16.14.44:8190/iportal/apps/dataviz/static/imgs/markers/mark_red.png","scale":1,"anchor":[0.5,0.5],"imgWidth":48,"imgHeight":43},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[93.72012106170533,30.646288585669723]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"src":"http://172.16.14.44:8190/iportal/apps/dataviz/static/imgs/markers//ktv_red.png","scale":1,"anchor":[0.5,0.5],"imgWidth":48,"imgHeight":43},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[95.91738668670534,35.145840549134476]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"radius":10,"fillColor":"#53C41A","fillOpacity":0.73,"strokeColor":"#e20057","strokeOpacity":1,"strokeWidth":4},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[101.36660543670533,38.107643862311676]}}]}';
+    const content =
+      '{"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"strokeColor":"#0081E2","strokeOpacity":1,"strokeWidth":5,"lineCap":"round","lineDash":"solid"},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"LineString","coordinates":[[103.21230856170534,35.93252826339496],[96.80142450317665,31.772281946203208]]}},{"type":"Feature","properties":{"dataViz_title":"这是文字"},"dv_v5_markerStyle":{"text":"这是文字","font":"33px 宋体","placement":"point","textAlign":"right","fillColor":"#595959","backgroundFill":"#ee8b8b","borderColor":"rgba(255,255,255,0)","borderWidth":4,"padding":[8,8,8,8],"maxWidth":358},"dv_v5_markerInfo":{"dataViz_title":"这是文字"},"geometry":{"type":"Point","coordinates":[101.56249999999991,26.728112105878537]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"src":"http://172.16.14.44:8190/iportal/apps/dataviz/static/imgs/markers/mark_red.png","scale":1,"anchor":[0.5,0.5],"imgWidth":48,"imgHeight":43},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[93.72012106170533,30.646288585669723]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"src":"http://172.16.14.44:8190/iportal/apps/dataviz/static/imgs/markers//ktv_red.png","scale":1,"anchor":[0.5,0.5],"imgWidth":48,"imgHeight":43},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[95.91738668670534,35.145840549134476]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"radius":10,"fillColor":"#53C41A","fillOpacity":0.73,"strokeColor":"#e20057","strokeOpacity":1,"strokeWidth":4},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[101.36660543670533,38.107643862311676]}}]}';
     const newLayerData_geojson = {
       ...layerData_geojson['MARKER_GEOJSON'],
-      content 
+      content
     };
     const contentData = JSON.parse(content);
     const fetchResource = {
@@ -1004,12 +1013,14 @@ describe('WebMapViewModel.spec', () => {
         newLayerData_geojson
     };
     mockFetch(fetchResource);
-    const layers = [{
-      layerType: 'MARKER',
-      visible: true,
-      name: '未命名标注图层1',
-      serverId: '1795361105'
-    }];
+    const layers = [
+      {
+        layerType: 'MARKER',
+        visible: true,
+        name: '未命名标注图层1',
+        serverId: '1795361105'
+      }
+    ];
     const id = {
       ...markerLayer,
       layers
@@ -1081,9 +1092,9 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(dataflowLayer, { ...commonOption }, undefined, { ...commonMap });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBeGreaterThanOrEqual(data.layers.length);
-      viewModel.updateOverlayLayer({ ...dataflowLayer.layers[0], id: dataflowLayer.layers[0].name } );
+      viewModel.updateOverlayLayer({ ...dataflowLayer.layers[0], id: dataflowLayer.layers[0].name });
       expect(() => {
-        viewModel.updateOverlayLayer({ ...dataflowLayer.layers[0], id: dataflowLayer.layers[0].name } );
+        viewModel.updateOverlayLayer({ ...dataflowLayer.layers[0], id: dataflowLayer.layers[0].name });
       }).not.toThrow();
       done();
     };
@@ -1331,7 +1342,7 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const style = {
-      layers: [{id: 'test'}],
+      layers: [{ id: 'test' }],
       color: '#fff'
     };
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
@@ -1397,6 +1408,27 @@ describe('WebMapViewModel.spec', () => {
       const spy1 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       viewModel.setLayersVisible(false, ignoreIds);
       expect(spy1.mock.calls.length).toBe(renderLayersLen - 1);
+
+      viewModel.setLayersVisible(false, ignoreIds, true);
+      expect(spy1.mock.calls.length).toBe(renderLayersLen - 1);
+      const _cacheLayerIds = viewModel._cacheLayerIds;
+      viewModel._cacheLayerIds = null;
+      viewModel._cacheCleanLayers = [
+        {
+          id: 'l7',
+          title: 'China',
+          type: 'l7',
+          visible: true,
+          renderSource: { id: 'China', type: 'l7' },
+          renderLayers: ['l7'],
+          dataSource: {},
+          themeSetting: {}
+        }
+      ];
+      viewModel.setLayersVisible(false, ignoreIds, true);
+      expect(spy1.mock.calls.length).toBe(5);
+
+      viewModel._cacheLayerIds = _cacheLayerIds;
       spy1.mockClear();
       const spy2 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       viewModel.setLayersVisible(true);
@@ -1413,9 +1445,10 @@ describe('WebMapViewModel.spec', () => {
         addlayerssucceeded: () => {
           const appreciableLayers = viewModel2.getAppreciableLayers();
           expect(appreciableLayers.length).toBe(uniqueLayer_polygon.layers.length);
-          const renderLayersLen = appreciableLayers.reduce((sum, item) => {
-            return sum + item.renderLayers.length;
-          }, 0) + 1;
+          const renderLayersLen =
+            appreciableLayers.reduce((sum, item) => {
+              return sum + item.renderLayers.length;
+            }, 0) + 1;
           expect(viewModel2.cacheLayerIds.length).toBe(renderLayersLen);
           const ignoreIds = ['China'];
           const spy1 = jest.spyOn(viewModel2.map, 'setLayoutProperty');
@@ -1450,14 +1483,17 @@ describe('WebMapViewModel.spec', () => {
       expect(viewModel._cacheCleanLayers.length).toBe(0);
       const getSourceSpy = jest.spyOn(data.map, 'getSource').mockImplementation(() => true);
       const removeSourceSpy = jest.spyOn(data.map, 'removeSource');
-      viewModel._cacheCleanLayers = [{
-        renderLayers: ['layer1'],
-        renderSource: { id: 'source1' },
-        l7Layer: true
-      }, {
-        renderLayers: ['layer2'],
-        renderSource: { id: 'source2' }
-      }];
+      viewModel._cacheCleanLayers = [
+        {
+          renderLayers: ['layer1'],
+          renderSource: { id: 'source1' },
+          l7Layer: true
+        },
+        {
+          renderLayers: ['layer2'],
+          renderSource: { id: 'source2' }
+        }
+      ];
       viewModel.cleanLayers();
       expect(getSourceSpy).toHaveBeenCalledTimes(2);
       expect(removeSourceSpy).toHaveBeenCalledTimes(1);
@@ -1482,31 +1518,30 @@ describe('WebMapViewModel.spec', () => {
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
       const layerInfo = { ...uniqueLayer_polygon.layers[0], id: uniqueLayer_polygon.layers[0].name };
-      const features = [{
-        type: "Feature",
-        geometry: {
-          type: "Point",
-          coordinates: [
-            116.588918,
-            40.07108,
-          ],
-        },
-        properties: {
-          latitude: "40.07108",
-          longitude: "116.588918",
-          altitude: "",
-          geometry: "Point",
-          "机场": "北京/首都",
-          "X坐标": "116.588918",
-          "Y坐标": "40.07108",
-          "名次": "1",
-          "2017旅客吞吐量（人次）": "95786296 ",
-          "2016旅客吞吐量（人次）": "94393454 ",
-          "同比增速%": "-1.5",
-          "张家界": "94393454 ",
-          index: "0",
-        },
-      }];
+      const features = [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Point',
+            coordinates: [116.588918, 40.07108]
+          },
+          properties: {
+            latitude: '40.07108',
+            longitude: '116.588918',
+            altitude: '',
+            geometry: 'Point',
+            机场: '北京/首都',
+            X坐标: '116.588918',
+            Y坐标: '40.07108',
+            名次: '1',
+            '2017旅客吞吐量（人次）': '95786296 ',
+            '2016旅客吞吐量（人次）': '94393454 ',
+            '同比增速%': '-1.5',
+            张家界: '94393454 ',
+            index: '0'
+          }
+        }
+      ];
       const spy = jest.spyOn(viewModel._handler, '_initOverlayLayer');
       viewModel.updateOverlayLayer(layerInfo, features);
       expect(spy).toBeCalled();
@@ -1533,10 +1568,10 @@ describe('WebMapViewModel.spec', () => {
         {
           type: 'Feature',
           properties: {
-            '机场': '上海/浦东',
-            'X坐标': '121.812361 ',
-            'Y坐标': '31.093992 ',
-            '名次': '2',
+            机场: '上海/浦东',
+            X坐标: '121.812361 ',
+            Y坐标: '31.093992 ',
+            名次: '2',
             '2017旅客吞吐量（人次）': '70,001,237 ',
             '2016旅客吞吐量（人次）': '66,002,414 ',
             '同比增速%': '3.5 ',
@@ -1548,7 +1583,7 @@ describe('WebMapViewModel.spec', () => {
           },
           geometry: { type: 'Point', coordinates: [Array] }
         }
-      ]
+      ];
       const spy = jest.spyOn(viewModel._handler, '_createGraphicLayer');
       viewModel.updateOverlayLayer(layerInfo, features);
       expect(spy).toBeCalled();
@@ -1634,19 +1669,21 @@ describe('WebMapViewModel.spec', () => {
           {
             filterCondition: '2020年人口总数>10',
             pointStyle: {
-              "fillColor": "#ee4d5a",
-              "strokeWidth": 1,
-              "fillOpacity": 0.9,
-              "radius": 8,
-              "strokeColor": "#ffffff",
-              "type": "BASIC_POINT",
-              "strokeOpacity": 1
+              fillColor: '#ee4d5a',
+              strokeWidth: 1,
+              fillOpacity: 0.9,
+              radius: 8,
+              strokeColor: '#ffffff',
+              type: 'BASIC_POINT',
+              strokeOpacity: 1
             },
             layerID: 'test-empty'
           },
           { data: JSON.stringify({ properties: { '2020年人口总数': 15 } }) }
         );
-        const res = viewModel._handler.getFilterFeatures('2020年人口总数>10', [{ properties: { '2020年人口总数': 15 } }]);
+        const res = viewModel._handler.getFilterFeatures('2020年人口总数>10', [
+          { properties: { '2020年人口总数': 15 } }
+        ]);
         expect(res.length).toBe(1);
         const res1 = viewModel._handler.getFilterFeatures('气压传感器海拔高度（米）>2000', [
           { properties: { '气压传感器海拔高度（米）': 15 } }
@@ -1817,27 +1854,24 @@ describe('WebMapViewModel.spec', () => {
     const metaInfo = {
       resourceSets: [
         {
-            "resources": [
-                {
-                    "__type": "ImageryMetadata:http://schemas.microsoft.com/search/local/ws/rest/v1",
-                    "imageHeight": 256,
-                    "imageUrl": "https://{subdomain}.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z",
-                    "imageUrlSubdomains": [
-                        "t0",
-                        "t1",
-                        "t2",
-                        "t3"
-                    ],
-                    "imageWidth": 256,
-                }
-            ]
+          resources: [
+            {
+              __type: 'ImageryMetadata:http://schemas.microsoft.com/search/local/ws/rest/v1',
+              imageHeight: 256,
+              imageUrl:
+                'https://{subdomain}.ssl.ak.dynamic.tiles.virtualearth.net/comp/ch/{quadkey}?mkt=zh-CN&it=G,L&shading=hill&og=2505&n=z',
+              imageUrlSubdomains: ['t0', 't1', 't2', 't3'],
+              imageWidth: 256
+            }
+          ]
         }
-    ],
+      ],
       statusCode: 200,
-      statusDescription: "OK"
-    }
+      statusDescription: 'OK'
+    };
     const fetchResource = {
-      'https://dev.virtualearth.net/REST/v1/Imagery/Metadata/RoadOnDemand?uriScheme=https&include=ImageryProviders&key=AhOVlIlR89XkNyDsXBAb7TjabrEokPoqhjk4ncLm9cQkJ5ae_JyhgV1wMcWnVrko&c=zh-cn': metaInfo
+      'https://dev.virtualearth.net/REST/v1/Imagery/Metadata/RoadOnDemand?uriScheme=https&include=ImageryProviders&key=AhOVlIlR89XkNyDsXBAb7TjabrEokPoqhjk4ncLm9cQkJ5ae_JyhgV1wMcWnVrko&c=zh-cn':
+        metaInfo
     };
     mockFetch(fetchResource);
     const callback = function (data) {
@@ -1898,9 +1932,7 @@ describe('WebMapViewModel.spec', () => {
     mockFetch(fetchResource);
     const callback = function (data) {
       expect(data).not.toBeUndefined();
-      expect(data.map.getSource('世界地图_Day').tiles[0].indexOf('{bbox-wms-1.3.0}')).toBeGreaterThan(
-        -1
-      );
+      expect(data.map.getSource('世界地图_Day').tiles[0].indexOf('{bbox-wms-1.3.0}')).toBeGreaterThan(-1);
       done();
     };
     const viewModel = new WebMapViewModel({
@@ -2207,7 +2239,7 @@ describe('WebMapViewModel.spec', () => {
       'https://fakeiportal.supermap.io/iportal/web/datas/1960447494/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
         layerData_CSV,
       'https://fakeiportal.supermap.io/iportal/web/datas/144371940/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
-      layerData_geojson['LINE_GEOJSON']
+        layerData_geojson['LINE_GEOJSON']
     };
     const map = {
       ...commonMap,
@@ -2250,17 +2282,17 @@ describe('WebMapViewModel.spec', () => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/datas/123456/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
-      layerData_geojson['MARKER_GEOJSON'],
-      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json':  {
+        layerData_geojson['MARKER_GEOJSON'],
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': {
         ...tiandituLayer,
-        layers: [    
+        layers: [
           {
-            "layerType": "MARKER",
-            "visible": true,
-            "name": "民航数",
-            "serverId": 123456,
-            "layerStyle": {
-              "labelField": "minghang"
+            layerType: 'MARKER',
+            visible: true,
+            name: '民航数',
+            serverId: 123456,
+            layerStyle: {
+              labelField: 'minghang'
             }
           }
         ]
@@ -2283,8 +2315,10 @@ describe('WebMapViewModel.spec', () => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': mvtLayer,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':layerData_CSV,
-      'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': styleJson
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV,
+      'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json':
+        styleJson
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(commonId, { ...commonOption });
@@ -2303,8 +2337,10 @@ describe('WebMapViewModel.spec', () => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': mvtLayer,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':layerData_CSV,
-      'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': styleJson
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV,
+      'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json':
+        styleJson
     };
     mockFetch(fetchResource);
     const viewModel = new WebMapViewModel(commonId, { ...commonOption });
@@ -2375,7 +2411,7 @@ describe('WebMapViewModel.spec', () => {
           type: 'vector'
         },
         type: 'fill'
-      })
+      });
       data.map.addSource('mapbox-gl-draw-hot', {
         type: 'geojson',
         data: {
@@ -2386,7 +2422,7 @@ describe('WebMapViewModel.spec', () => {
       data.map.addLayer({
         metadata: {},
         paint: {
-          'circle-color': "#f75564"
+          'circle-color': '#f75564'
         },
         id: 'draw-vertex-active.hot',
         source: 'mapbox-gl-draw-hot',
@@ -2399,7 +2435,7 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  it ('updateLayersVisible', (done) => {
+  it('updateLayersVisible', done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_polygon,
@@ -2416,9 +2452,9 @@ describe('WebMapViewModel.spec', () => {
       const spy1 = jest.spyOn(viewModel.map, 'setLayoutProperty');
       const l7MarkerLayer = {
         show: jest.fn(),
-        hide: jest.fn() 
+        hide: jest.fn()
       };
-      let visibleLayers = [{renderLayers: [layers[0].id]}, { l7MarkerLayer }];
+      let visibleLayers = [{ renderLayers: [layers[0].id] }, { l7MarkerLayer }];
       viewModel.updateLayersVisible(visibleLayers, 'visible');
       expect(spy1.mock.calls.length).toBe(1);
       expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
@@ -2435,7 +2471,7 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  it ('layersupdated event', async (done) => {
+  it('layersupdated event', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile,
@@ -2491,7 +2527,7 @@ describe('WebMapViewModel.spec', () => {
     });
     await flushPromises();
     jest.advanceTimersByTime(0);
-  })
+  });
 
   it('switch map and reset center zoom', done => {
     const fetchResource = {
@@ -2542,13 +2578,3 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 });
-
-
-
-
-
-
-
-
-
-

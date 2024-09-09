@@ -179,14 +179,14 @@ export default class MapStyle extends Events {
   }
 
   _sendMapToUser() {
-    const appreciableLayers = this._generateAppreciableLayers();
+    const layersOnMap = this._generateAppreciableLayers();
     this._sourceListModel = new SourceListModel({
       map: this.map,
-      layers: appreciableLayers,
+      layers: layersOnMap,
       appendLayers: this._appendLayers
     });
     const matchLayers = this.getAppreciableLayers().filter((item: Record<string, any>) =>
-      appreciableLayers.some((layer: Record<string, any>) => layer.id === item.id)
+      layersOnMap.some((layer: Record<string, any>) => item.renderLayers.includes(layer.id))
     );
     this.triggerEvent('addlayerssucceeded', {
       map: this.map,

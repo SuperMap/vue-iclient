@@ -645,7 +645,7 @@ export default class WebMapViewModel extends Events {
           type: layer.type,
           renderLayers: [id]
         };
-      }) ?? [];
+      }) ?? this._cacheCleanLayers;
       this.updateLayersVisible(layers, visibility, ignoreIds);
       return;
     }
