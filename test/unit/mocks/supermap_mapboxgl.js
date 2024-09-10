@@ -250,6 +250,8 @@ supermap.Util = {
 
 supermap.GraticuleLayer = () => {
   return {
+    id: 'graticuleLayer_1',
+    visible: true,
     setStrokeStyle: jest.fn()
   }
 };

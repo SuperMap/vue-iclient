@@ -12,7 +12,7 @@ class SourceListModel {
     this.sourceNames = [];
     this._initLayers();
     this._initSource();
-    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw'];
+    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw', /graticuleLayer_\d+_line/];
   }
 
   getSourceList() {
@@ -37,7 +37,7 @@ class SourceListModel {
 
   excludeSource(key) {
     for (let i = 0; i < this.excludeSourceNames.length; i++) {
-      if (key.indexOf(this.excludeSourceNames[i]) >= 0) {
+      if (key && key.match(this.excludeSourceNames[i])) {
         return false;
       }
     }
@@ -81,7 +81,7 @@ class SourceListModel {
       if (overlayer.id) {
         this.detailLayers.push({
           id: overlayer.id,
-          visibility: overlayer.visibility ? 'visible' : 'none',
+          visibility: overlayer.visibility || overlayer.visible ? 'visible' : 'none',
           source: overlayer.id
         });
       }

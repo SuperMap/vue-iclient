@@ -583,6 +583,8 @@ describe('WebMapViewModel.spec', () => {
       expect(data).not.toBeUndefined();
       // 经纬网叠加完成后， 才触发addlayerssucceeded
       expect(viewModel.expectLayerLen).toBe(3);
+      expect(viewModel._cacheLayerId.length).toBe(3);
+      expect(Object.keys(viewModel._sourceListModel.getSourceList()).length).toBe(3);
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
