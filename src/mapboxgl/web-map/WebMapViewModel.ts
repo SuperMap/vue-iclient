@@ -409,6 +409,10 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   _createMap(mapInfo?): void {
+    if (this.map) {
+      this._addLayersToMap();
+      return;
+    }
     if (!mapInfo) {
       this.mapOptions.container = this.target;
       if (this.mapOptions.crs && this.mapOptions.crs.epsgCode) {
@@ -443,7 +447,7 @@ export default class WebMapViewModel extends WebMapBase {
           fadeDuration = this.mapOptions.fadeDuration;
         }
         this.map = new mapboxgl.Map({ ...this.mapOptions, fadeDuration });
-        const layerIds = this.mapOptions?.style?.layers?.map(layer=>layer.id) || [];
+        const layerIds = this.mapOptions?.style?.layers?.map(layer => layer.id) || [];
         this._cacheLayerId.push(...layerIds);
         this.map.on('load', () => {
           this.triggerEvent('addlayerssucceeded', {
@@ -498,7 +502,7 @@ export default class WebMapViewModel extends WebMapBase {
     }
 
     // 初始化 map
-    const layerIds = this.mapOptions?.style?.layers?.map(layer=>layer.id) || [];
+    const layerIds = this.mapOptions?.style?.layers?.map(layer => layer.id) || [];
     this._cacheLayerId.push(...layerIds);
     this.map = new mapboxgl.Map({
       ...this.mapOptions,
@@ -542,6 +546,55 @@ export default class WebMapViewModel extends WebMapBase {
      * @description Map 初始化成功。
      */
     this.triggerEvent('mapinitialized', { map: this.map });
+  }
+
+  _addLayersToMap() {
+    const { sources, layers } = this._setUniqueId(this.mapOptions.style);
+    layers.forEach(layer => {
+      layer.source && !this.map.getSource(layer.source) && this.map.addSource(layer.source, sources[layer.source]);
+      this.map.addLayer(layer);
+      this._cacheLayerId.push(layer.id);
+    });
+    Promise.resolve().then(() => {
+      this.triggerEvent('addlayerssucceeded', {
+        map: this.map,
+        mapparams: {},
+        layers: []
+      });
+    });
+  }
+
+  _setUniqueId(style: Record<string, any>) {
+    const layersToMap = JSON.parse(JSON.stringify(style.layers));
+    const nextSources = {};
+    const timestamp = `_${+new Date()}`;
+    const layerIdToChange = [];
+
+    for (const sourceId in style.sources) {
+      let nextSourceId = sourceId;
+      if (this.map.getSource(sourceId)) {
+        nextSourceId = sourceId + timestamp;
+      }
+      nextSources[nextSourceId] = style.sources[sourceId];
+      for (const layer of layersToMap) {
+        if (layer.source === sourceId) {
+          layer.source = nextSourceId;
+        }
+      }
+    }
+    for (const layer of layersToMap) {
+      const originId = layer.id;
+      if (this.map.getLayer(layer.id)) {
+        const layerId = layer.id + timestamp;
+        layer.id = layerId;
+      }
+      layerIdToChange.push({ originId: originId, renderId: layer.id });
+    }
+    return {
+      sources: nextSources,
+      layers: layersToMap,
+      layerIdMapList: layerIdToChange
+    };
   }
 
   private _createMVTBaseLayer(layerInfo, addedCallback?: Function) {

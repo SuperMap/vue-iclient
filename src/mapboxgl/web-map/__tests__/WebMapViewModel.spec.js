@@ -331,7 +331,7 @@ describe('WebMapViewModel.spec', () => {
         const viewModel1 = new WebMapViewModel('', { ...commonOption, serverUrl: '' }, { ...commonMapOptions }, data.map);
         viewModel1.on({
           addlayerssucceeded: data => {
-            expect(viewModel1._cacheLayerId).toEqual(['simple-tiles']);
+            expect(viewModel1._cacheLayerId.includes('simple-tiles_')).toBe(true);
             done();
           }
         });
