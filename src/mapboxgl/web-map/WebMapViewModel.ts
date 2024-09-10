@@ -395,6 +395,9 @@ export default class WebMapViewModel extends WebMapBase {
       this.expectLayerLen += overLayers.length;
       this._layers = overLayers;
     }
+    if (mapInfo.grid && mapInfo.grid.graticule) {
+      this.expectLayerLen++;
+    }
   }
 
   _shouldLoadBaseLayer(mapInfo, layerFilter) {
@@ -788,6 +791,7 @@ export default class WebMapViewModel extends WebMapBase {
     const graticuleLayers = new mapboxgl.supermap.GraticuleLayer(options);
     this.map.addLayer(graticuleLayers);
     this._setGraticuleDash(graticuleInfo.lineDash, graticuleLayers);
+    this._addLayerSucceeded();
   }
 
   private _createGraticuleOptions(graticuleInfo) {
@@ -2365,6 +2369,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _sendMapToUser(count: number, layersLen: number): void {
+    console.log('_sendMapToUser', count, layersLen)
     if (count === layersLen) {
       /**
        * @event WebMapViewModel#addlayerssucceeded

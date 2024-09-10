@@ -331,7 +331,8 @@ describe('WebMapViewModel.spec', () => {
         const viewModel1 = new WebMapViewModel('', { ...commonOption, serverUrl: '' }, { ...commonMapOptions }, data.map);
         viewModel1.on({
           addlayerssucceeded: data => {
-            expect(viewModel1._cacheLayerId.includes('simple-tiles_')).toBe(true);
+            console.log(viewModel1._cacheLayerId, viewModel1._cacheLayerId.includes('simple-tiles_'))
+            expect(viewModel1._cacheLayerId[0].includes('simple-tiles_')).toBe(true);
             done();
           }
         });
@@ -580,6 +581,8 @@ describe('WebMapViewModel.spec', () => {
       };
       viewModel.map.fire('zoomend');
       expect(data).not.toBeUndefined();
+      // 经纬网叠加完成后， 才触发addlayerssucceeded
+      expect(viewModel.expectLayerLen).toBe(3);
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });
