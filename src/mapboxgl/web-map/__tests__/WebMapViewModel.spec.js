@@ -1519,6 +1519,7 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption }, { ...commonMapOptions }, { ...commonMap });
     const callback = function (data) {
       expect(viewModel.getAppreciableLayers().length).toBe(uniqueLayer_polygon.layers.length + 1);
+      expect(viewModel.getLegendInfo().length).toBe(2);
       const layerInfo = { ...uniqueLayer_polygon.layers[0], id: uniqueLayer_polygon.layers[0].name };
       const features = [
         {
@@ -1547,6 +1548,7 @@ describe('WebMapViewModel.spec', () => {
       const spy = jest.spyOn(viewModel._handler, '_initOverlayLayer');
       viewModel.updateOverlayLayer(layerInfo, features);
       expect(spy).toBeCalled();
+      expect(viewModel.getLegendInfo().length).toBe(2);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });

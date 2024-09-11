@@ -2572,6 +2572,11 @@ export default class WebMap extends WebMapBase {
       default:
         break;
     }
+    const matchIndex = this._legendList.findIndex(item => item.layerId === layerInfo.layerID);
+    if (matchIndex > -1) {
+      this._legendList.splice(matchIndex, 1, legendItem);
+      return;
+    }
     this._legendList.push(legendItem);
   }
 
