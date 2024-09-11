@@ -414,6 +414,7 @@ export default class WebMap extends WebMapBase {
 
   private _createMVTBaseLayer(layerInfo, addedCallback?: Function) {
     let url = layerInfo.dataSource.url;
+    const visible = layerInfo.visible;
     if (url.indexOf('/restjsr/') > -1 && !/\/style\.json$/.test(url)) {
       url += '/style.json';
     }
@@ -427,6 +428,9 @@ export default class WebMap extends WebMapBase {
             addedCallback && addedCallback();
             return;
           }
+          style.layers.forEach(layer => {
+            layer.layout && (layer.layout.visibility = visible ? 'visible' : 'none');
+          });
           // @ts-ignore
           this.map.addStyle(style);
           const layerIds = [];

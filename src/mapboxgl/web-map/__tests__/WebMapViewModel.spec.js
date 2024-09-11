@@ -2579,4 +2579,27 @@ describe('WebMapViewModel.spec', () => {
     };
     viewModel.on({ addlayerssucceeded: callback });
   });
+
+  it('MAPBOXSTYLE visible false', async done => {
+    const mvtLayerClone = JSON.parse(JSON.stringify(mvtLayer));
+    mvtLayerClone.layers[0].visible = false;
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': mvtLayerClone,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':layerData_CSV,
+      'http://fake/iserver/services/map-4548new/restjsr/v1/vectortile/maps/ChinaqxAlberts_4548%40fl-new/style.json': styleJson
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption });
+    const callback = function (data) {
+      const appreciableLayers = viewModel.getAppreciableLayers();
+      expect(appreciableLayers[1].id).toBe('ChinaqxAlberts_4548@fl-new');
+      expect(appreciableLayers[1].visible).toBe(false);
+      expect(appreciableLayers[2].id).toBe('民航数据');
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
 });
