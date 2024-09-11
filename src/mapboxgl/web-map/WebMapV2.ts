@@ -115,9 +115,11 @@ export default class WebMap extends WebMapBase {
 
   private _parentEvents: Record<string, Function>;
 
-  private _cacheLayerId: Map<string, Array<{ layerId: string; name: string; ignore?: boolean; }>> = new Map();
+  private _cacheLayerId: Map<string, Array<{ layerId: string; name: string; ignore?: boolean }>> = new Map();
 
   private _appendLayers = false;
+
+  private _graticuleLayer: any;
 
   constructor(
     id: string | number | Object,
@@ -307,6 +309,9 @@ export default class WebMap extends WebMapBase {
       }
       this.expectLayerLen += overLayers.length;
     }
+    if (mapInfo.grid && mapInfo.grid.graticule) {
+      this.expectLayerLen++;
+    }
   }
 
   _shouldLoadBaseLayer(mapInfo, layerFilter) {
@@ -430,7 +435,10 @@ export default class WebMap extends WebMapBase {
               layerIds.push(item.id);
             }
           });
-          this._cacheLayerId.set(layerInfo.layerID || layerInfo.name, layerIds.map((layerId: string) => ({ layerId, name: layerId })));
+          this._cacheLayerId.set(
+            layerInfo.layerID || layerInfo.name,
+            layerIds.map((layerId: string) => ({ layerId, name: layerId }))
+          );
           addedCallback && addedCallback();
         },
         error => {
@@ -602,7 +610,13 @@ export default class WebMap extends WebMapBase {
     const options = this._createGraticuleOptions(graticuleInfo);
     const graticuleLayers = new mapboxgl.supermap.GraticuleLayer(options);
     this.map.addLayer(graticuleLayers);
+    this._graticuleLayer = graticuleLayers;
+    this._cacheLayerId.set(graticuleLayers.id, [
+      { layerId: graticuleLayers.id, name: 'GraticuleLayer' },
+      { layerId: graticuleLayers.sourceId, name: graticuleLayers.sourceId }
+    ]);
     this._setGraticuleDash(graticuleInfo.lineDash, graticuleLayers);
+    this._addLayerSucceeded();
   }
 
   private _createGraticuleOptions(graticuleInfo) {
@@ -638,7 +652,8 @@ export default class WebMap extends WebMapBase {
       extent,
       interval: interval && interval[0],
       lngLabelStyle: lonLabelStyle,
-      latLabelStyle
+      latLabelStyle,
+      layerID: `graticuleLayer_${+new Date()}`
     };
   }
 
@@ -700,8 +715,7 @@ export default class WebMap extends WebMapBase {
   }
 
   private async _createBingLayer(layerName: string, layerInfo: any, addedCallback?: Function): Promise<void> {
-    let metaInfoUrl =
-      `https://dev.virtualearth.net/REST/v1/Imagery/Metadata/RoadOnDemand?uriScheme=https&include=ImageryProviders&key=${this.bingMapsKey}&c=zh-cn`;
+    let metaInfoUrl = `https://dev.virtualearth.net/REST/v1/Imagery/Metadata/RoadOnDemand?uriScheme=https&include=ImageryProviders&key=${this.bingMapsKey}&c=zh-cn`;
     const metaInfo = await this._fetchRequest(metaInfoUrl, 'json', {
       withoutFormatSuffix: true
     });
@@ -715,8 +729,7 @@ export default class WebMap extends WebMapBase {
     const resource = metaInfo.resourceSets[0].resources[0];
     const urls = [];
     resource.imageUrlSubdomains.map(function (subdomain) {
-      const imageUrl = resource.imageUrl
-        .replace('{subdomain}', subdomain);
+      const imageUrl = resource.imageUrl.replace('{subdomain}', subdomain);
       urls.push(imageUrl);
     });
 
@@ -2242,25 +2255,42 @@ export default class WebMap extends WebMapBase {
         return list;
       }, []);
       const layersFromMapInfo = [];
+      const layerList = [this._mapInfo.baseLayer].concat(this._mapInfo.layers);
+      if (this._graticuleLayer) {
+        const { id: layerID, visible } = this._graticuleLayer;
+        layerList.push({ layerID, visible, name: 'GraticuleLayer' });
+      }
       // this._mapInfo.layers 是有序的
-      [this._mapInfo.baseLayer].concat(this._mapInfo.layers).forEach((layerInfo: Record<string, any>) => {
+      layerList.forEach((layerInfo: Record<string, any>) => {
         const targetLayerId = layerInfo.layerID || layerInfo.name;
-        const targetLayerVisible = layerInfo.visible === void 0 || layerInfo.visible === 'visible' || layerInfo.visible === true;
+        const targetLayerVisible =
+          layerInfo.visible === void 0 || layerInfo.visible === 'visible' || layerInfo.visible === true;
         const matchLayers = this._cacheLayerId.get(targetLayerId);
         matchLayers?.forEach(({ layerId, name, ignore }) => {
-          ignore !== false && layersFromMapInfo.push({
-            ...layerInfo,
-            id: layerId,
-            name,
-            visible: targetLayerVisible
-          });
+          ignore !== false &&
+            layersFromMapInfo.push({
+              ...layerInfo,
+              id: layerId,
+              name,
+              visible: targetLayerVisible
+            });
         });
         if (this.map.getLayer(`${targetLayerId}-strokeLine`)) {
           layersFromMapInfo.push({ id: `${targetLayerId}-strokeLine`, visible: targetLayerVisible });
         }
         const expandLayers = flatCacheLayerId.map(item => item.includes(targetLayerId));
         for (let index = 1; index < expandLayers.length + 1; index++) {
-          const layerTypes = ['additional', 'additional-image', 'additional-svg', 'additional-linedasharray', 'additional-symbol', 'POINT', 'TEXT', 'LINESTRING', 'POLYGON'];
+          const layerTypes = [
+            'additional',
+            'additional-image',
+            'additional-svg',
+            'additional-linedasharray',
+            'additional-symbol',
+            'POINT',
+            'TEXT',
+            'LINESTRING',
+            'POLYGON'
+          ];
           const layers = layerTypes.filter(type => this.map.getLayer(`${targetLayerId}-${type}-${index}`));
           if (layers.length) {
             layers.forEach(layer => {
@@ -2281,7 +2311,9 @@ export default class WebMap extends WebMapBase {
       });
       const appreciableLayers = this.getAppreciableLayers();
       this._rectifyLayersOrder(appreciableLayers);
-      const matchLayers = appreciableLayers.filter((item: Record<string, any>) => item.renderLayers.some((id: string) => flatCacheLayerId.some(layerId => layerId === id)));
+      const matchLayers = appreciableLayers.filter((item: Record<string, any>) =>
+        item.renderLayers.some((id: string) => flatCacheLayerId.some(layerId => layerId === id))
+      );
       this._triggerEvent('addlayerssucceeded', {
         map: this.map,
         layers: matchLayers,

@@ -602,6 +602,8 @@ describe('WebMapViewModel.spec', () => {
       };
       viewModel.map.fire('zoomend');
       expect(data).not.toBeUndefined();
+      expect(viewModel._handler._cacheLayerId.get('GraticuleLayer').length).toBe(2);
+      expect(Object.keys(viewModel._handler._sourceListModel.getSourceList()).length).toBe(3);
       done();
     };
     const viewModel = new WebMapViewModel(id, { ...commonOption });

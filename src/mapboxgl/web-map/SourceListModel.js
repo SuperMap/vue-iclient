@@ -5,7 +5,7 @@ class SourceListModel {
     this.map = options.map;
     this.layers = options.layers || [];
     this.appendLayers = options.appendLayers || false;
-    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw', /tracklayer-\d+-line/];
+    this.excludeSourceNames = ['tdt-search-', 'tdt-route-', 'smmeasure', 'mapbox-gl-draw', /tracklayer-\d+-line/, /graticuleLayer_\d+_line/];
   }
 
   getLayers() {
@@ -45,7 +45,7 @@ class SourceListModel {
         layers.push({
           id: overlayLayer.id,
           visibility,
-          source,
+          source: overlayLayer.id.match(/graticuleLayer_/) ? null : source,
           type: overlayLayer.type
         });
       }
