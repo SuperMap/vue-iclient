@@ -20,7 +20,6 @@
             />
             <span class="add-ellipsis">{{ item.title }}</span>
             <div
-              v-if="(item && item.type) !== 'group'"
               :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
             >
               <div v-if="zoomToMap.enabled" class="sm-component-layer-list__zoom">
@@ -31,7 +30,7 @@
                   @click.stop="item.visible && toggleAttributesVisibility($event, item)"
                 />
               </div>
-              <div v-if="attributesEnabled(item)" class="sm-component-layer-list__attributes">
+              <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)" class="sm-component-layer-list__attributes">
                 <i
                   :class="attributesIconClass"
                   :style="!item.visible && { cursor: 'not-allowed' }"
@@ -39,7 +38,7 @@
                   @click.stop="item.visible && toggleAttributesVisibility($event, item)"
                 />
               </div>
-              <div v-if="layerStyle.enabled" class="sm-component-layer-list__style">
+              <div v-if="(item && item.type) !== 'group' && layerStyle.enabled" class="sm-component-layer-list__style">
                 <i
                   :class="[
                     'sm-components-icon-attribute',

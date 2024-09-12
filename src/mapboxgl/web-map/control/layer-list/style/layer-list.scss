@@ -21,10 +21,13 @@
     }
     & .sm-component-tree li span.sm-component-tree-switcher {
       position: absolute;
-      right: 0;
+      right: 24px;
       top: 4px;
       }
-    & .sm-component-tree > li {
+    & .sm-component-tree-child-tree > li:first-child > span.sm-component-tree-switcher{ 
+      top: 8px;
+    }
+    & .sm-component-tree li {
       position: relative;
 
     }
@@ -56,8 +59,14 @@
       display: flex;
       justify-content: flex-end;
       width: 60px;
-      &:last-child {
+      & i {
         margin-right: 0px;
+      }
+      & div {
+        margin-right: 9px;
+      }
+      & div:last-child {
+        margin-right: 12px;
       }
       & i:hover {
         color: $primary-5
@@ -137,7 +146,6 @@
         }
         & > span {
           width: calc(100% - 85px);
-          max-width: 200px;
           display: inline-block;
           font-size: 12px;
         }
