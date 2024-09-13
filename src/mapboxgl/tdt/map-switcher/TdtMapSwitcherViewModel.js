@@ -19,8 +19,17 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
   }
 
   setMap(mapInfo) {
-    const { map } = mapInfo;
+    const { map, webmap } = mapInfo;
     this.map = map;
+    this.webmap = webmap;
+    this.updateFn = this._updateLayers.bind(this);
+    this.webmap.on({
+      layersupdated: this.updateFn
+    });
+  }
+
+  _updateLayers() {
+    this.fire('layersUpdated');
   }
 
   setTk(tk) {
@@ -38,10 +47,8 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
   }
 
   togglerLabelLayer(isChecked) {
-    const visible = isChecked ? 'visible' : 'none';
     const labelLayer = this.map && this.map.getLayer(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`));
-    labelLayer &&
-      this.map.setLayoutProperty(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`), 'visibility', visible);
+    labelLayer && this.webmap.changeItemVisible(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`), isChecked);
   }
 
   addLayer(sources, layers, fromTdt = true) {

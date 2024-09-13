@@ -73,4 +73,58 @@ describe('TdtMapSwitcher.vue', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     done();
   });
+
+  it('toggle LabelLayer', async done => {
+    wrapper = mount(SmTdtMapSwitcher, {
+      propsData: {
+        mapTarget: 'map',
+        collapsed: false,
+        data: {
+          select: 'img',
+          label: false,
+          tk: '1d109683f4d84198e37a38c442d68311'
+        }
+      }
+    });
+    let mockOnOptions;
+    const webmap = {
+      getLayerList: () => layerCatalogs,
+      changeItemVisible: () => {
+        mockOnOptions.layersupdated();
+      },
+      un: jest.fn(),
+      on: jest.fn(options => {
+        mockOnOptions = options;
+      })
+    };
+    const map = {
+      getStyle: () => {
+        return {
+          sources: [],
+          layers: []
+        }
+      },
+      getLayer: () => {
+        return {
+          id: 'tdtMapSwitcher.TiandituCia',
+          type: 'raster',
+          source: 'tdtMapSwitcher.TiandituCia',
+          visibility: 'none',
+          minzoom: 0,
+          maxzoom: 18
+        }
+      }
+    };
+    await mapSubComponentLoaded(wrapper);
+    const callback = function () {
+      expect(wrapper.vm.labelChecked).toBe(false);
+      done();
+    };
+    wrapper.vm.viewModel.on('layersUpdated', callback);
+    wrapper.vm.viewModel.setMap({
+      webmap,
+      map
+    });
+    wrapper.vm.viewModel.togglerLabelLayer(false);
+  });
 });
