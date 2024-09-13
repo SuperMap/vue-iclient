@@ -414,7 +414,6 @@ export default class WebMap extends WebMapBase {
 
   private _createMVTBaseLayer(layerInfo, addedCallback?: Function) {
     let url = layerInfo.dataSource.url;
-    const visible = layerInfo.visible;
     if (url.indexOf('/restjsr/') > -1 && !/\/style\.json$/.test(url)) {
       url += '/style.json';
     }
@@ -429,7 +428,7 @@ export default class WebMap extends WebMapBase {
             return;
           }
           style.layers.forEach(layer => {
-            layer.layout && (layer.layout.visibility = visible ? 'visible' : 'none');
+            layer.layout && (layer.layout.visibility = this._getVisibility(layerInfo.visible));
           });
           // @ts-ignore
           this.map.addStyle(style);
@@ -2490,7 +2489,7 @@ export default class WebMap extends WebMapBase {
       minzoom: minzoom || 0,
       maxzoom: maxzoom || 22,
       layout: {
-        visibility: visibility ? 'visible' : 'none'
+        visibility: this._getVisibility(visibility)
       }
     });
     this.baseLayerProxy = null;
@@ -2994,5 +2993,10 @@ export default class WebMap extends WebMapBase {
   _triggerEvent(name: string, params?: any) {
     this.triggerEvent(name, params);
     this._parentEvents[name]?.(params);
+  }
+
+  _getVisibility(visible) {
+    const visibility = (visible === true || visible === 'visible') ? 'visible' : 'none';
+    return visibility;
   }
 }
