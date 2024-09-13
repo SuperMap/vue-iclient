@@ -98,11 +98,8 @@ export default {
       this.labelChecked = checked;
       this.$emit('change-label-status', this.labelChecked);
     },
-    layerUpdate() {
-      const labelLayer = this.map && this.map.getLayer(this.$t(`tdtMapSwitcher.Tianditu${this.viewModel.tdtLabelType}`));
-      if (labelLayer && labelLayer.visibility) {
-        this.labelChecked = labelLayer.visibility === 'visible';
-      }
+    layerUpdate(e) {
+      this.labelChecked = e.visible;
     }
   },
   loaded() {
