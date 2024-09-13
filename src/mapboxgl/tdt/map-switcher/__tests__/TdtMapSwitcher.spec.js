@@ -113,7 +113,8 @@ describe('TdtMapSwitcher.vue', () => {
           minzoom: 0,
           maxzoom: 18
         }
-      }
+      },
+      addLayer: () => {}
     };
     await mapSubComponentLoaded(wrapper);
     const callback = function () {
@@ -125,6 +126,6 @@ describe('TdtMapSwitcher.vue', () => {
       webmap,
       map
     });
-    wrapper.vm.viewModel.togglerLabelLayer(false);
+    mockOnOptions.layersupdated();
   });
 });

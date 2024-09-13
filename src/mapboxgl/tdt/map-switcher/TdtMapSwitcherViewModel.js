@@ -29,7 +29,10 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
   }
 
   _updateLayers() {
-    this.fire('layersUpdated');
+    const labelLayer = this.map && this.map.getLayer(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`));
+    if (labelLayer && labelLayer.visibility) {
+      this.fire('layersUpdated', { visible: labelLayer.visibility === 'visible' });
+    }
   }
 
   setTk(tk) {
