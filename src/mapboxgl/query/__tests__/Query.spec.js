@@ -266,9 +266,11 @@ describe('query', () => {
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
+    const spyBounds = jest.spyOn(wrapper.vm.map, 'fitBounds');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', () => {
+    wrapper.vm.viewModel.on('querysucceeded', (e) => {
       expect(spyAddlayer).toBeCalled();
+      expect(spyBounds).toBeCalledWith(expect.arrayContaining([[180, 26.089841338515914]]),expect.anything());
       done();
     });
     wrapper.vm.jobInfos[0].spaceFilter = 'mapBounds';
