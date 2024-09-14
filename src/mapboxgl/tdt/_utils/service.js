@@ -260,7 +260,7 @@ export const addPoints = (map, sourceName, features) => {
       };
     }
     const bounds = bbox(transformScale(envelope(features), 1.7));
-    map.fitBounds([[bounds[0], bounds[1]], [bounds[2], bounds[3]]], { maxZoom: 17 });
+    map.fitBounds([[Math.max(bounds[0], -180), bounds[1]], [Math.min(bounds[2], 180), bounds[3]]], { maxZoom: 17 });
   }
 };
 // 清空search， route图层
