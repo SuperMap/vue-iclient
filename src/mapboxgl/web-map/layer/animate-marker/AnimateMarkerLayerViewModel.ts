@@ -110,8 +110,8 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
       this.fitBounds &&
         this.map.fitBounds(
           [
-            [bounds[0], bounds[1]],
-            [bounds[2], bounds[3]]
+            [Math.max(bounds[0], -180), bounds[1]],
+            [Math.min(bounds[2], 180), bounds[3]]
           ],
           { maxZoom: 17 }
         );
