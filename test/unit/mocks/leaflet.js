@@ -78,7 +78,9 @@ module.exports = {
   layerGroup: () => {
     return {};
   },
-  geoJSON: jest.fn(),
+  geoJSON: ()=>{
+    return new GeoJSON();
+  },
   GeoJSON: GeoJSON,
   polyline: () => {},
   marker: () => {},

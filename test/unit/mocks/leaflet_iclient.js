@@ -1,5 +1,4 @@
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
-
 var supermap = {
   cloudTileLayer: () => {
     return {};
@@ -168,7 +167,114 @@ var supermap = {
         return cb(canvas);
       }
       handleSvgColor() {}
-      getLayerFeatures() {}
+      getUniqueStyleGroup(){
+        return [];
+      }
+      getRangeStyleGroup(){
+        return [];
+      }
+      getFilterFeatures(undefined, features){
+        return features;
+      }
+      setFeatureInfo(){
+        return {}
+      }
+      createRankStyleSource(){
+        return { parameter:{}, styleGroups:[]}
+      }
+      getLayerFeatures(layer) {
+        setTimeout(() => {
+          var features = [
+              {
+                type: 'Feature',
+                properties: {
+                  SMID: '1',
+                  SMSDRIW: '116.38831',
+                  SMSDRIN: '40.980675',
+                  SMSDRIE: '116.60729',
+                  SMSDRIS: '40.803284',
+                  SMUSERID: '4',
+                  SMAREA: '1.3188454380984211E8',
+                  SMPERIMETER: '79616.58012922351',
+                  SMGEOMETRYSIZE: '588',
+                  LANDTYPE: '用材林',
+                  AREA: '132.0',
+                  AREA_1: '132',
+                  stringID: null,
+                  ID: 1
+                },
+                geometry: {
+                  type: 'PolyLine',
+                  coordinates: [
+                        [116.452409755349, 40.92656164358],
+                        [116.483357386004, 40.9069469918439],
+                        [116.442423257771, 40.9417511118507]
+                  ]
+                },
+                dv_v5_markerStyle:{},
+                id: 1
+              },
+              {
+                type: 'Feature',
+                properties: {
+                  SMID: '2',
+                  SMSDRIW: '116.60084',
+                  SMSDRIN: '41.040543',
+                  SMSDRIE: '116.72102',
+                  SMSDRIS: '40.853382',
+                  SMUSERID: '4',
+                  SMAREA: '9.680888002534656E7',
+                  SMPERIMETER: '50298.305148811625',
+                  SMGEOMETRYSIZE: '360',
+                  LANDTYPE: '用材林',
+                  AREA: '97.0',
+                  AREA_1: '97',
+                  stringID: null,
+                  ID: 2
+                },
+                geometry: {
+                  type: 'PolyLine',
+                  coordinates: [
+                        [116.656010024549, 41.036635850958],
+                        [116.656010024549, 41.136635850958]
+                  ]
+                },
+                dv_v5_markerStyle:{},
+                id: 2
+              },
+        
+              {
+                type: 'Feature',
+                properties: {
+                  SMID: '101',
+                  SMSDRIW: '117.33055',
+                  SMSDRIN: '38.620922',
+                  SMSDRIE: '117.53431',
+                  SMSDRIS: '38.56734',
+                  SMUSERID: '9',
+                  SMAREA: '4.042988389975608E7',
+                  SMPERIMETER: '39763.54581827346',
+                  SMGEOMETRYSIZE: '264',
+                  LANDTYPE: '水浇地',
+                  AREA: '40.0',
+                  AREA_1: '40',
+                  stringID: null,
+                  ID: 101
+                },
+                geometry: {
+                  type: 'PolyLine',
+                  coordinates: [
+                        [117.525891381017, 38.6144829360722],
+                        [117.525891381017, 38.7144829360722]
+                  ]
+                },
+                dv_v5_markerStyle:{},
+                id: 101
+              }]
+          this._initOverlayLayer(layer, features)
+        }, 100);
+        
+      }
       echartsLayerResize() {}
       stopCanvg() {}
     };

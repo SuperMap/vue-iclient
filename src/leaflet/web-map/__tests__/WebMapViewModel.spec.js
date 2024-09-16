@@ -5,7 +5,7 @@ import iportal_serviceProxy from '../../../../test/unit/mocks/data/iportal_servi
 import vectorLayer_point from '../../../../test/unit/mocks/data/WebMap/vectorLayer_point.json';
 import vectorLayer_line from '../../../../test/unit/mocks/data/WebMap/vectorLayer_line.json';
 import flushPromises from 'flush-promises';
-import ranksymbolLayer from '../../../../test/unit/mocks/data//WebMap/ranksymbolLayer.json';
+import ranksymbolLayer from '../../../../test/unit/mocks/data/WebMap/ranksymbolLayer.json';
 import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
 import wmsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmsLayer.json';
 import xyzLayer from 'vue-iclient/test/unit/mocks/data/WebMap/xyzLayer.json';
@@ -158,7 +158,7 @@ describe('WebMapViewModel.spec', () => {
     }).not.toThrow();
   });
 
-  it('uniqueLayer', () => {
+  it('uniqueLayer', async (done) => {
     const fetchResource = {
       'https://www.supermapol.com/web/datas/658963918/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
         layerData
@@ -210,9 +210,13 @@ describe('WebMapViewModel.spec', () => {
       sourceType: 'DataViz',
       thumbnail: 'http://127.0.0.1:8090/iportal/static/dataviz/static/imgs/thumbnail_default.png'
     };
-    expect(() => {
-      new WebMapViewModel(datavizWebMap_Unique);
-    }).not.toThrow();
+    const callback = ()=>{
+      done();
+    };
+    const viewModel = new WebMapViewModel(datavizWebMap_Unique);
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+   
   });
 
   it('rangeLayer', () => {
@@ -330,12 +334,12 @@ describe('WebMapViewModel.spec', () => {
     };
     mockFetch(fetchResource);
     const id = vectorLayer_point;
-    const callback = jest.fn();
+    const callback = ()=>{
+      done();
+    };
     const viewModel = new WebMapViewModel(id, commonOption);
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
-    done();
   });
 
   it('add vectorLayer_point with SYMBOL_POINT', async done => {
