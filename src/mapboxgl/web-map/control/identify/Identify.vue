@@ -336,8 +336,9 @@ export default {
           fields.forEach(field => {
             const isObjArr = field instanceof Object;
             const fieldName = isObjArr ? field.field : field;
+            const fieldTitle = isObjArr ? field.title : field;
             if (Object.prototype.hasOwnProperty.call(feature.properties, fieldName)) {
-              popupProps[fieldName] = { value: feature.properties[fieldName], slotName: field.slotName };
+              popupProps[fieldTitle || fieldName] = { value: feature.properties[fieldName], slotName: field.slotName };
             }
           });
         } else {
