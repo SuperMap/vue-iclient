@@ -27,12 +27,16 @@ class LayerSelectViewModel extends mapboxgl.Evented {
     const { map, webmap } = mapInfo;
     this.map = map;
     this.webmap = webmap;
-    this.map.on('styledata', this.updateFn);
+    this.webmap.on({
+      layerupdatechanged: this.updateFn
+    });
     this._updateLayers();
   }
 
   removed() {
-    this.map.off('styledata', this.updateFn);
+    this.webmap.un({
+      layerupdatechanged: this.updateFn
+    });
   }
 }
 export default LayerSelectViewModel;

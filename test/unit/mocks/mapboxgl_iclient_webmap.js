@@ -10,6 +10,7 @@ class WebMap extends Evented {
     this._mapResourceInfo = {};
     this._layerIdRenameMapList = [];
     this._layerCatalogsRenameMapList = [];
+    this._appreciableLayersVisibleMap = new Map()
     this.eventTypes = [
       'mapcreatesucceeded',
       'mapcreatefailed',
@@ -19,7 +20,7 @@ class WebMap extends Evented {
       'mapbeforeremove',
       'mapinitialized',
       'layercreatefailed',
-      'layersupdated',
+      'layerupdatechanged',
       'layeraddchanged'
     ];
     this._initWebMap();
@@ -216,9 +217,67 @@ class WebMap extends Evented {
     return this._generateLayerCatalog();
   }
 
+  toggleLayerVisible(id, visible) {
+    const item = this._findLayerCatalog(this.getLayerCatalog(), id);
+    if (!item) {
+      return;
+    }
+    const visibility = visible ? 'visible' : 'none';
+    if (item.type === 'group') {
+      const visbleId = this._getLayerVisibleId(item);
+      this._appreciableLayersVisibleMap.set(visbleId, visible);
+      const targetLayers = this._getGroupChildrenLayers(item.children);
+      this.setLayersVisible(targetLayers, visibility);
+    } else {
+      this.setLayersVisible([item], visibility);
+    }
+  }
+
+  setLayersVisible(layers, visibility) {
+    layers.forEach(layer => {
+      const visbleId = this._getLayerVisibleId(layer);
+      this._appreciableLayersVisibleMap.set(visbleId, visibility === 'visible');
+      if (
+        (layer.CLASS_INSTANCE?.show || layer.CLASS_INSTANCE?.hide)
+      ) {
+        visibility === 'visible' ? layer.CLASS_INSTANCE.show() : layer.CLASS_INSTANCE.hide();
+        return;
+      }
+      layer.renderLayers.forEach((layerId) => {
+        if (layer.CLASS_NAME !== 'L7Layer' || this.map.getLayer(layerId)) {
+          this.map.setLayoutProperty(layerId, 'visibility', visibility);
+        }
+      });
+    });
+    this.fire('layerupdatechanged');
+  }
+
   copyLayer() {}
 
   clean() {}
+
+  _findLayerCatalog(catalogs, id) {
+    let matchData;
+    for (const data of catalogs) {
+      if (data.id === id) {
+        matchData = data;
+        break;
+      }
+      if (data.type === 'group') {
+        matchData = this._findLayerCatalog(data.children, id);
+      }
+    }
+    return matchData;
+  }
+
+  _getLayerVisible(layer) {
+    const id = this._getLayerVisibleId(layer);
+    return this._appreciableLayersVisibleMap.has(id) ? this._appreciableLayersVisibleMap.get(id) : layer.visible;
+  }
+
+  _getLayerVisibleId(layer) {
+    return `${layer.type}-${layer.id}`;
+  }
 
   _initLayers() {
     if (this.map && this.map.getCRS && this.map.getCRS().epsgCode !== this._mapInfo.crs) {
@@ -427,6 +486,20 @@ class WebMap extends Evented {
     } else {
       return [layerId];
     }
+  }
+
+  _getGroupChildrenLayers(layerGroup) {
+    const targetItems = [];
+    for (const item of layerGroup) {
+      if (item.type !== 'group') {
+        targetItems.push(item);
+        continue;
+      }
+      // 图层组
+      const group = item;
+      targetItems.push(...this._getGroupChildrenLayers(group.children));
+    }
+    return targetItems;
   }
 }
 

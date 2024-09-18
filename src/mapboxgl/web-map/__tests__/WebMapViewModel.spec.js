@@ -660,65 +660,6 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
-  it('updateLayersVisible', async done => {
-    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap });
-    const callback = function (data) {
-      const layers = data.map.getStyle().layers;
-      const spy1 = jest.spyOn(viewModel.map, 'setLayoutProperty');
-      const l7MarkerLayer = {
-        show: jest.fn(),
-        hide: jest.fn()
-      };
-      let visibleLayers = [{ renderLayers: ['test'] }, { CLASS_INSTANCE: l7MarkerLayer, CLASS_NAME: 'L7Layer' }];
-      viewModel.updateLayersVisible(visibleLayers, 'visible');
-      expect(spy1.mock.calls.length).toBe(1);
-      expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
-      viewModel.updateLayersVisible(visibleLayers, 'none');
-      expect(spy1.mock.calls.length).toBe(2);
-      expect(l7MarkerLayer.show).toHaveBeenCalledTimes(1);
-      expect(l7MarkerLayer.hide).toHaveBeenCalledTimes(1);
-      spy1.mockReset();
-      visibleLayers = [{ renderLayers: ['testlayer'], CLASS_NAME: 'L7Layer' }, { renderLayers: ['test'] }];
-      viewModel.updateLayersVisible(visibleLayers, 'visible');
-      expect(spy1).toHaveBeenCalledTimes(1);
-      done();
-    };
-    viewModel.on({ addlayerssucceeded: callback });
-    await flushPromises();
-    jest.advanceTimersByTime(0);
-  });
-
-  it('layersupdated event', async done => {
-    const viewModel = new WebMapViewModel(
-      commonId,
-      { ...commonOption },
-      {
-        style: {
-          version: 8,
-          sources: {},
-          layers: []
-        },
-        center: [117.0514, 40.0387],
-        zoom: 7,
-        bearing: 0,
-        pitch: 0,
-        rasterTileSize: 256,
-        preserveDrawingBuffer: true,
-        container: 'map',
-        tileSize: 256
-      }
-    );
-    viewModel.on({
-      layersupdated: data => {
-        expect(data.appreciableLayers.length).toBeGreaterThan(0);
-        expect(data.layerCatalogs.length).toBeGreaterThan(0);
-        done();
-      }
-    });
-    await flushPromises();
-    jest.advanceTimersByTime(0);
-  });
-
   it('switch map and reset center zoom', async done => {
     const id = markerLayer;
     const viewModel = new WebMapViewModel(id, { ...commonOption, map: commonMap }, { ...commonMapOptions });
@@ -734,7 +675,7 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
-  it('copy layer', done => {
+  it('copy layer', async done => {
     const id = markerLayer;
     const viewModel = new WebMapViewModel(id, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function () {
@@ -744,6 +685,8 @@ describe('WebMapViewModel.spec', () => {
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
   });
 
   it('changeItemVisible', async done => {
@@ -754,18 +697,13 @@ describe('WebMapViewModel.spec', () => {
       const spy = jest.spyOn(data.map, 'setLayoutProperty');
       viewModel.changeItemVisible('fakeid', true);
       expect(spy).toHaveBeenCalledTimes(0);
+      viewModel.on({
+        'layerupdatechanged': () => {
+          expect(spy).toHaveBeenCalledTimes(1);
+          done();
+        }
+      });
       viewModel.changeItemVisible(layerList[0].id, true);
-      expect(spy).toHaveBeenCalledTimes(1);
-      spy.mockClear();
-      viewModel.layerCatalogs = [{
-        id: 'group1',
-        title: 'group1',
-        type: 'group',
-        children: layerList
-      }];
-      viewModel.changeItemVisible('group1', true);
-      expect(spy).toHaveBeenCalledTimes(1);
-      done();
     };
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();

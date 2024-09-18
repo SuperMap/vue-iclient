@@ -24,7 +24,7 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
     this.webmap = webmap;
     this.updateFn = this._updateLayers.bind(this);
     this.webmap.on({
-      layersupdated: this.updateFn
+      layerupdatechanged: this.updateFn
     });
   }
 

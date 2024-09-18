@@ -15,7 +15,7 @@ class LegendViewModel extends mapboxgl.Evented {
   setMap({ webmap }) {
     this.webmap = webmap;
     this.webmap.on({
-      layersupdated: this._layersUpdatedHandler
+      layerupdatechanged: this._layersUpdatedHandler
     });
   }
 
@@ -33,7 +33,7 @@ class LegendViewModel extends mapboxgl.Evented {
 
   removed() {
     this.webmap.un({
-      layersupdated: this._layersUpdatedHandler
+      layerupdatechanged: this._layersUpdatedHandler
     });
   }
 
