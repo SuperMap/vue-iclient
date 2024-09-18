@@ -90,7 +90,7 @@ describe('TdtMapSwitcher.vue', () => {
     const webmap = {
       getLayerList: () => layerCatalogs,
       changeItemVisible: () => {
-        mockOnOptions.layersupdated();
+        mockOnOptions.layerupdatechanged();
       },
       un: jest.fn(),
       on: jest.fn(options => {
@@ -126,6 +126,6 @@ describe('TdtMapSwitcher.vue', () => {
       webmap,
       map
     });
-    mockOnOptions.layersupdated();
+    mockOnOptions.layerupdatechanged();
   });
 });

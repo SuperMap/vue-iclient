@@ -301,7 +301,6 @@ describe('LayerList.vue', () => {
     expect(wrapper.find('.sm-component-layer-list__layer > .sm-components-icon-visible').exists()).toBeTruthy();
     expect(wrapper.find('.header-text > .sm-components-icon-partially-visible').exists()).toBeTruthy();
     wrapper.vm.sourceList[1].visible = false;
-    mockOnOptions.layersupdated();
-    mockOn();
+    mockOnOptions.layerupdatechanged();
   });
 });

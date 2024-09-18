@@ -30,7 +30,7 @@ class LayerListViewModel extends mapboxgl.Evented {
     this.webmap = webmap;
     this.updateFn = this._updateLayers.bind(this);
     this.webmap.on({
-      layersupdated: this.updateFn
+      layerupdatechanged: this.updateFn
     });
   }
 
@@ -59,7 +59,7 @@ class LayerListViewModel extends mapboxgl.Evented {
 
   removed() {
     this.webmap.un({
-      layersupdated: this.updateFn
+      layerupdatechanged: this.updateFn
     });
   }
 }

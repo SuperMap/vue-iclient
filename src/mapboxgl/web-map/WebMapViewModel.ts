@@ -9,8 +9,6 @@ import 'vue-iclient/static/libs/json-sql/jsonsql';
 import echarts from 'echarts';
 import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
-import { getGroupChildrenLayers } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
-import difference from 'lodash.difference';
 import proj4 from 'proj4';
 
 // @ts-ignore
@@ -88,6 +86,8 @@ interface MapHandler {
   getLegends: () => any[];
   getLayers: () => any[];
   getWebMapType: () => any;
+  setLayersVisible: (layers: Array<Record<string, any>>, visibility: 'visible' | 'none') => void;
+  toggleLayerVisible: (layerId: string, visible: boolean) => void;
   echartsLayerResize: () => void;
   updateOverlayLayer: (layerInfo: Record<string, any>, features: any, mergeByField?: string) => void;
   copyLayer: (id: string, layerInfo: Record<string, any>) => boolean;
@@ -139,15 +139,6 @@ export default class WebMapViewModel extends Events {
   private _cacheCleanLayers: any[] = [];
 
   private _handler: MapHandler;
-
-  private _appreciableLayersVisibleMap: Map<string, boolean> = new Map();
-
-  private appreciableLayers: Array<Record<string, any>> = [];
-
-  private layerCatalogs: Array<Record<string, any>> = [];
-
-  private _appendLayers = false;
-
   triggerEvent: (name: string, ...rest: any) => any;
 
   on: (data: Record<string, (...rest: any) => void>) => void;
@@ -169,7 +160,6 @@ export default class WebMapViewModel extends Events {
     this.mapId = id;
     if (options.map) {
       this.map = options.map;
-      this._appendLayers = true;
     }
     this.options = {
       ...options,
@@ -188,15 +178,15 @@ export default class WebMapViewModel extends Events {
       'mapcreatefailed',
       'layercreatefailed',
       'layeraddchanged',
+      'layerupdatechanged',
       'baidumapnotsupport',
       'projectionnotmatch',
       'mapbeforeremove'
     ];
-    this.selfEventTypes = ['addlayerssucceeded', 'layersupdated'];
+    this.selfEventTypes = ['addlayerssucceeded'];
     this.eventTypes = this.webMapEventTypes.concat(this.selfEventTypes);
     this._mapInitializedHandler = this._mapInitializedHandler.bind(this);
     this._mapCreateSucceededHandlerHandler = this._mapCreateSucceededHandlerHandler.bind(this);
-    this._styleDataUpdatedHandler = this._styleDataUpdatedHandler.bind(this);
     this._mapBeforeRemoveHandler = this._mapBeforeRemoveHandler.bind(this);
     this._layerAddChangedHandler = this._layerAddChangedHandler.bind(this);
     this._initWebMap();
@@ -257,7 +247,7 @@ export default class WebMapViewModel extends Events {
   }
 
   getAppreciableLayers() {
-    return this.appreciableLayers;
+    return this._handler.getLayers();
   }
 
   getLegendInfo() {
@@ -265,7 +255,7 @@ export default class WebMapViewModel extends Events {
   }
 
   getLayerList() {
-    return this.layerCatalogs;
+    return this._handler.getLayerCatalog();
   }
 
   getWebMapType() {
@@ -306,50 +296,17 @@ export default class WebMapViewModel extends Events {
   }
 
   changeItemVisible(id: string, visible: boolean) {
-    const item = this._findLayerCatalog(this.layerCatalogs, id);
-    if (!item) {
-      return;
-    }
-    const visibility = visible ? 'visible' : 'none';
-    if (item.type === 'group') {
-      const visbleId = this._getLayerVisibleId(item);
-      this._appreciableLayersVisibleMap.set(visbleId, visible);
-      const targetLayers = getGroupChildrenLayers(item.children);
-      this.updateLayersVisible(targetLayers, visibility);
-    } else {
-      this.updateLayersVisible([item], visibility);
-    }
-  }
-
-  updateLayersVisible(layers: Array<Record<string, any>>, visibility: 'visible' | 'none') {
-    layers.forEach(layer => {
-      const visbleId = this._getLayerVisibleId(layer);
-      this._appreciableLayersVisibleMap.set(visbleId, visibility === 'visible');
-      if (
-        (layer.CLASS_INSTANCE?.show || layer.CLASS_INSTANCE?.hide)
-      ) {
-        visibility === 'visible' ? layer.CLASS_INSTANCE.show() : layer.CLASS_INSTANCE.hide();
-        return;
-      }
-      layer.renderLayers.forEach((layerId: string) => {
-        if (layer.CLASS_NAME !== 'L7Layer' || this.map.getLayer(layerId)) {
-          this.map.setLayoutProperty(layerId, 'visibility', visibility);
-        }
-      });
-    });
-    this._styleDataUpdatedHandler();
+    this._handler.toggleLayerVisible(id, visible);
   }
 
   setLayersVisible(isShow: boolean, ignoreIds: string[] = []) {
-    // 只有 webmapv2 支持
     const visibility = isShow ? 'visible' : 'none';
     const layers = this._cacheCleanLayers.filter(item => !ignoreIds.some(sub => sub === item.id));
-    this.updateLayersVisible(layers, visibility);
+    this._handler.setLayersVisible(layers, visibility);
   }
 
   clean() {
     if (this.map) {
-      this.map.off('styledata', this._styleDataUpdatedHandler);
       this._handler.clean();
     }
   }
@@ -377,60 +334,17 @@ export default class WebMapViewModel extends Events {
   private _mapInitializedHandler({ map }) {
     this.map = map;
     this.triggerEvent('mapinitialized', { map: this.map });
-    this.map.on('styledata', this._styleDataUpdatedHandler);
-  }
-
-  private _styleDataUpdatedHandler() {
-    const layers = this._handler.getLayers() ?? [];
-    const layerCatalogs = this._handler.getLayerCatalog() ?? [];
-    const catalogIds = this._getCatalogVisibleIds(layerCatalogs);
-    const visibleIds = Array.from(this._appreciableLayersVisibleMap.keys());
-    const unsetKeys = difference(visibleIds, catalogIds);
-    unsetKeys.forEach((item: string) => {
-      this._appreciableLayersVisibleMap.delete(item);
-    });
-    this.appreciableLayers = layers.map(item => {
-      return {
-        ...item,
-        visible: this._getLayerVisible(item)
-      };
-    });
-    this._updateLayerCatalogsVisible(layerCatalogs);
-    this.layerCatalogs = layerCatalogs;
-    if (!this._appendLayers) {
-      this.triggerEvent('layersupdated', {
-        appreciableLayers: this.appreciableLayers,
-        layerCatalogs: this.layerCatalogs
-      });
-    }
-  }
-
-  private _getCatalogVisibleIds(layers: Array<Record<string, any>>) {
-    const results = [];
-    for (const layer of layers) {
-      results.push(this._getLayerVisibleId(layer));
-      const { children } = layer;
-      if (children && children.length > 0) {
-        const result = this._getCatalogVisibleIds(children);
-        results.push(...result);
-      }
-    }
-    return results;
   }
 
   private _mapCreateSucceededHandlerHandler(params: AddlayerssucceededParams) {
     const { mapparams, layers } = params;
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
-    this._styleDataUpdatedHandler();
     this.triggerEvent('addlayerssucceeded', params);
   }
 
-  private _layerAddChangedHandler({ layers, allLoaded }) {
+  private _layerAddChangedHandler({ layers }) {
     this._cacheCleanLayers = layers;
-    if (allLoaded) {
-      this._styleDataUpdatedHandler();
-    }
   }
 
   private _createMap() {
@@ -453,41 +367,8 @@ export default class WebMapViewModel extends Events {
   }
 
   private _mapBeforeRemoveHandler() {
-    this.map.off('styledata', this._styleDataUpdatedHandler);
     this.triggerEvent('mapbeforeremove');
     this.map = null;
-  }
-
-  private _updateLayerCatalogsVisible(catalogs: Array<Record<string, any>>) {
-    for (const data of catalogs) {
-      data.visible = this._getLayerVisible(data);
-      if (data.type === 'group') {
-        this._updateLayerCatalogsVisible(data.children);
-      }
-    }
-  }
-
-  private _findLayerCatalog(catalogs: Array<Record<string, any>>, id: string) {
-    let matchData: Record<string, any> | undefined;
-    for (const data of catalogs) {
-      if (data.id === id) {
-        matchData = data;
-        break;
-      }
-      if (data.type === 'group') {
-        matchData = this._findLayerCatalog(data.children, id);
-      }
-    }
-    return matchData;
-  }
-
-  private _getLayerVisible(layer: Record<string, any>) {
-    const id = this._getLayerVisibleId(layer);
-    return this._appreciableLayersVisibleMap.has(id) ? this._appreciableLayersVisibleMap.get(id) : layer.visible;
-  }
-
-  private _getLayerVisibleId(layer: Record<string, any>) {
-    return `${layer.type}-${layer.id}`;
   }
 
   _handleServerUrl(serverUrl: string) {
