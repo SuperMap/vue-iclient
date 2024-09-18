@@ -324,4 +324,55 @@ describe('Identify.vue', () => {
     expect(wrapper.vm.valueMaxWidth).toBe(170);
     done();
   });
+  it('field title', async done => {
+    mapWrapper = await createEmptyMap();
+    wrapper = mount(SmIdentify, {
+      propsData: {
+        multiSelect: true,
+        layers: ['民航数据'],
+        fields: [[
+          {
+            "slotName":"6",
+            "linkTitle":"",
+            "field":"机场",
+            "title":"机场22",
+            "linkTarget":"_blank",
+            "repeatOption":"left",
+            "type":"text"
+          }
+        ]],
+        autoResize: false
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.find('.sm-component-identify').exists()).toBe(true);
+    wrapper.vm.map.queryRenderedFeatures = () => {
+      return [
+        {
+          _vectorTileFeature: { _keys: ['机场', 'id'] },
+          layer: { id: '民航数据' },
+          properties: {
+            id: 1,
+            机场: '天府机场'
+          }
+        }
+      ];
+    };
+    wrapper.vm.map.fire('click', {
+      target: {
+        getLayer: jest.fn()
+      },
+      point: {
+        x: 10,
+        y: 10
+      }
+    });
+    expect(wrapper.vm.popupProps).toEqual({
+      机场22: {
+        slotName: '6',
+        value: '天府机场'
+      }
+    });
+    done();
+  });
 });
