@@ -15,5 +15,7 @@ function geti18n() {
 function getLanguage() {
   return 'zh';
 }
+function initi18n(){}
+var lang = {zh:{}}
 
-export { geti18n, getLanguage };
+export { geti18n, getLanguage, lang, initi18n };
