@@ -50,8 +50,9 @@ export default class TdtMapSwitcherViewModel extends mapboxgl.Evented {
   }
 
   togglerLabelLayer(isChecked) {
-    const labelLayer = this.map && this.map.getLayer(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`));
-    labelLayer && this.webmap.changeItemVisible(geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`), isChecked);
+    const appreciableLayers = this.webmap && this.webmap.getAppreciableLayers();
+    const labelLayer = appreciableLayers.find(layer => layer.id === geti18n().tc(`tdtMapSwitcher.Tianditu${this.tdtLabelType}`));
+    labelLayer && this.webmap.changeItemVisible(labelLayer, isChecked);
   }
 
   addLayer(sources, layers, fromTdt = true) {

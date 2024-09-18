@@ -89,6 +89,25 @@ describe('TdtMapSwitcher.vue', () => {
     let mockOnOptions;
     const webmap = {
       getLayerList: () => layerCatalogs,
+      getAppreciableLayers: () => {
+        return [
+          {
+            "dataSource": {},
+            "id": "tdtMapSwitcher.TiandituCia",
+            "title": "tdtMapSwitcher.TiandituCia",
+            "renderSource": {
+                "id": "tdtMapSwitcher.TiandituCia",
+                "type": "raster"
+            },
+            "renderLayers": [
+                "tdtMapSwitcher.TiandituCia"
+            ],
+            "type": "raster",
+            "themeSetting": {},
+            "visible": true
+          }
+      ]
+      },
       changeItemVisible: () => {
         mockOnOptions.layersupdated();
       },
