@@ -1,39 +1,40 @@
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 var supermap = {
   cloudTileLayer: () => {
-    return {};
+    return { _layerAdd : jest.fn() };
   },
   uniqueThemeLayer: () => {
-    return { addFeatures: () => {} };
+    return { addFeatures: () => {}, _layerAdd : jest.fn() };
   },
   rangeThemeLayer: () => {
-    return { addFeatures: () => {} };
+    return { addFeatures: () => {}, _layerAdd : jest.fn() };
   },
   labelThemeLayer: () => {
-    return { addFeatures: () => {} };
+    return { addFeatures: () => {}, _layerAdd : jest.fn() };
   },
   heatMapLayer: () => {
-    return { addFeatures: () => {} };
+    return { addFeatures: () => {}, _layerAdd : jest.fn() };
   },
   baiduTileLayer: () => {
-    return {};
+    return { _layerAdd : jest.fn() };
   },
   tiledMapLayer: () => {
-    return {};
+    return { _layerAdd : jest.fn() };
   },
   dataFlowLayer: () => {
     return {
       on: () => {},
       off: () => {},
       addLayer: () => {},
-      getLayerId: () => {}
+      getLayerId: () => {},
+      _layerAdd : jest.fn()
     };
   },
   tiandituTileLayer: () => {
-    return {};
+    return { _layerAdd : jest.fn() };
   },
   themeFeature: class {},
-  wmtsLayer: () => {},
+  wmtsLayer: () => { _layerAdd : jest.fn() },
   createWebMapV2BaseExtending(SuperClass = Events, fireField = 'triggerEvent') {
     return class WebMapBase extends SuperClass {
       constructor(id, options, mapOptions) {
