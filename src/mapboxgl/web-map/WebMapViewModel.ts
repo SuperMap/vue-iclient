@@ -87,6 +87,7 @@ interface MapHandler {
   getLayerCatalog: () => any[];
   getLegends: () => any[];
   getLayers: () => any[];
+  rectifyLayersOrder: (appreciableLayers: any[], topLayerBeforeId: string | undefined) => void;
   echartsLayerResize: () => void;
   updateOverlayLayer: (layerInfo: Record<string, any>, features: any, mergeByField?: string) => void;
   copyLayer: (id: string, layerInfo: Record<string, any>) => boolean;
@@ -261,6 +262,10 @@ export default class WebMapViewModel extends Events {
 
   getLegendInfo() {
     return this._handler.getLegends();
+  }
+
+  rectifyLayersOrder(appreciableLayers, topLayerBeforeId) {
+    return this._handler.rectifyLayersOrder(appreciableLayers, topLayerBeforeId);
   }
 
   getLayerList() {
