@@ -179,6 +179,9 @@ export default {
       const dragKey = info.dragNode.eventKey;
       const dropPos = info.node.pos.split('-');
       const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+      if (!info.dropToGap && this.getCatalogTypeById(this.layerCatalog, dropKey) !== 'group') {
+        return;
+      }
       const loop = (data, id, callback) => {
         data.forEach((item, index, arr) => {
           if (item.id === id) {
@@ -228,6 +231,18 @@ export default {
         }
       }
       this.treeData = data;
+    },
+    getCatalogTypeById(layerCatalog, id) {
+      for (let layer of layerCatalog) {
+        if (layer.id === id) {
+          return layer.type;
+        } else if (layer.type === 'group') {
+          const foundType = this.getTypeById(layer.children, id);
+          if (foundType) {
+            return foundType;
+          }
+        }
+      }
     }
   }
 };
