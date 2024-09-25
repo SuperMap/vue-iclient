@@ -16,6 +16,7 @@
         <layer-group
           :layerCatalog="sourceList"
           :attributes="attributes"
+          :dropHandler="onDropHanlder"
           @toggleItemVisibility="toggleItemVisibility"
           @toggleAttributesVisibility="(e,item) => toggleAttributesVisibility(e,item)">
         </layer-group>
@@ -53,6 +54,7 @@ import LayerListViewModel from './LayerListViewModel';
 import LayerGroup from 'vue-iclient/src/mapboxgl/web-map/LayerGroup.vue';
 import isEqual from 'lodash.isequal';
 import omit from 'omit.js';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 interface AttributesParams {
   enabled: boolean;
@@ -83,6 +85,20 @@ interface LayerListItem {
   children?: LayerListItem[];
   CLASS_NAME?: string;
   CLASS_INSTANCE?: Object;
+}
+
+interface TreeNodeDropEvent {
+  node: {
+    eventKey: string;
+    pos: string;
+    children: LayerListItem[];
+    expanded: boolean;
+  };
+  dragNode: {
+    eventKey: string;
+  };
+  dropPosition: number;
+  dropToGap: boolean;
 }
 
 const ATTRIBUTES_NEEDED_PROPS = [
@@ -273,6 +289,89 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
       layerList.push(nextLayer);
     });
     return layerList;
+  }
+
+  getCatalogTypeById(layerCatalog: any[], id: string) {
+    for (let layer of layerCatalog) {
+      if (layer.id === id) {
+        return layer.type;
+      } else if (layer.type === 'group') {
+        const foundType = this.getCatalogTypeById(layer.children, id);
+        if (foundType) {
+          return foundType;
+        }
+      }
+    }
+  }
+
+  onDrop(info: TreeNodeDropEvent, data: any[]) {
+    const dropKey = info.node.eventKey;
+    const dragKey = info.dragNode.eventKey;
+    const dropPos = info.node.pos.split('-');
+    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+    if (!info.dropToGap && this.getCatalogTypeById(data, dropKey) !== 'group') {
+      return null;
+    }
+    const loop = (data: any[], id: string, callback: (item: any, index: number, arr: any[]) => any) => {
+      data.forEach((item, index, arr) => {
+        if (item.id === id) {
+          return callback(item, index, arr);
+        }
+        if (item.children) {
+          return loop(item.children, id, callback);
+        }
+      });
+    };
+
+    // Find dragObject
+    let dragObj: any;
+    loop(data, dragKey, (item, index, arr) => {
+      arr.splice(index, 1);
+      dragObj = item;
+    });
+    if (!info.dropToGap) {
+      // Drop on the content
+      loop(data, dropKey, item => {
+        item.children = item.children || [];
+        // where to insert 示例添加到尾部，可以是随意位置
+        item.children.push(dragObj);
+      });
+    } else if (
+      (info.node.children || []).length > 0 && // Has children
+      info.node.expanded && // Is expanded
+      dropPosition === 1 // On the bottom gap
+    ) {
+      loop(data, dropKey, item => {
+        item.children = item.children || [];
+        // where to insert 示例添加到尾部，可以是随意位置
+        item.children.unshift(dragObj);
+      });
+    } else {
+      let ar: any[];
+      let i: number;
+      loop(data, dropKey, (item, index, arr) => {
+        ar = arr;
+        i = index;
+      });
+      if (dropPosition === -1) {
+        ar.splice(i, 0, dragObj);
+      } else {
+        ar.splice(i + 1, 0, dragObj);
+      }
+    }
+    return data;
+  }
+
+  onDropHanlder(info: TreeNodeDropEvent) {
+    const originLayerCatalog = this.viewModel.initLayerList();
+    const layerCatalog = this.onDrop(info, originLayerCatalog);
+    if (!layerCatalog) {
+      return;
+    }
+    this.sourceList = this.onDrop(info, this.sourceList);
+    // @ts-ignore
+    mapEvent.$options.setLayerCatalog(this.getTargetName(), layerCatalog);
+    this.viewModel.setLayersOrder();
   }
 
   closeAttributesIconClass() {

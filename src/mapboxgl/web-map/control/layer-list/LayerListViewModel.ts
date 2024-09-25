@@ -1,5 +1,6 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
+import { findLayerCatalog } from '../../GroupUtil';
 
 /**
  * @class LayerListViewModel
@@ -35,8 +36,8 @@ class LayerListViewModel extends mapboxgl.Evented {
   }
 
   initLayerList() {
-    const sourceList = this.webmap.getLayerList();
-    return sourceList;
+    this.sourceList = this.webmap.getLayerList();
+    return this.sourceList;
   }
 
   async getLayerDatas(item) {
@@ -54,7 +55,13 @@ class LayerListViewModel extends mapboxgl.Evented {
   }
 
   changeItemVisible(id: string, visible: boolean) {
-    this.webmap.changeItemVisible(id, visible);
+    const matchLayer = findLayerCatalog(this.sourceList, id);
+    this.webmap.changeItemVisible(matchLayer, visible);
+  }
+
+  setLayersOrder() {
+    const layers = this.webmap.getAppreciableLayers();
+    this.webmap.rectifyLayersOrder(layers);
   }
 
   removed() {

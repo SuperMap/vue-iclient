@@ -10,6 +10,7 @@ import echarts from 'echarts';
 import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import proj4 from 'proj4';
+import { getLayerCatalogIds } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
 
 // @ts-ignore
 window.echarts = echarts;
@@ -85,10 +86,10 @@ interface MapHandler {
   getLayerCatalog: () => any[];
   getLegends: () => any[];
   getLayers: () => any[];
-  rectifyLayersOrder: (appreciableLayers: any[], topLayerBeforeId: string | undefined) => void;
+  rectifyLayersOrder: (appreciableLayers: any[], topLayerBeforeId?: string) => void;
   getWebMapType: () => any;
   setLayersVisible: (layers: Array<Record<string, any>>, visibility: 'visible' | 'none') => void;
-  toggleLayerVisible: (layerId: string, visible: boolean) => void;
+  toggleLayerVisible: (layer: Record<string, any>, visible: boolean) => void;
   echartsLayerResize: () => void;
   updateOverlayLayer: (layerInfo: Record<string, any>, features: any, mergeByField?: string) => void;
   copyLayer: (id: string, layerInfo: Record<string, any>) => boolean;
@@ -139,7 +140,10 @@ export default class WebMapViewModel extends Events {
 
   private _cacheCleanLayers: any[] = [];
 
+  private _cacheLayerCatalogIds: string[] = [];
+
   private _handler: MapHandler;
+
   triggerEvent: (name: string, ...rest: any) => any;
 
   on: (data: Record<string, (...rest: any) => void>) => void;
@@ -255,7 +259,7 @@ export default class WebMapViewModel extends Events {
     return this._handler.getLegends();
   }
 
-  rectifyLayersOrder(appreciableLayers, topLayerBeforeId) {
+  rectifyLayersOrder(appreciableLayers: any[], topLayerBeforeId?: string) {
     return this._handler.rectifyLayersOrder(appreciableLayers, topLayerBeforeId);
   }
 
@@ -300,8 +304,8 @@ export default class WebMapViewModel extends Events {
     }
   }
 
-  changeItemVisible(id: string, visible: boolean) {
-    this._handler.toggleLayerVisible(id, visible);
+  changeItemVisible(layer: Record<string, any>, visible: boolean) {
+    this._handler.toggleLayerVisible(layer, visible);
   }
 
   setLayersVisible(isShow: boolean, ignoreIds: string[] = []) {
@@ -332,6 +336,10 @@ export default class WebMapViewModel extends Events {
     return this._cacheCleanLayers.reduce((ids, item) => ids.concat(item.id), []);
   }
 
+  get cacheLayerCatalogIds() {
+    return this._cacheLayerCatalogIds;
+  }
+
   private _initWebMap(): void {
     this._createMap();
   }
@@ -345,6 +353,7 @@ export default class WebMapViewModel extends Events {
     const { mapparams, layers } = params;
     this.mapParams = mapparams;
     this._cacheCleanLayers = layers;
+    this._cacheLayerCatalogIds = getLayerCatalogIds(this.getLayerList());
     this.triggerEvent('addlayerssucceeded', params);
   }
 

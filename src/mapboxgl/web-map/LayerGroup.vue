@@ -1,6 +1,6 @@
 <template>
   <div>
-    <sm-tree class="sm-component-layer-list__collapse draggable-tree" draggable :tree-data="treeData" @drop="onDrop">
+    <sm-tree class="sm-component-layer-list__collapse draggable-tree" draggable :tree-data="treeData" @drop="dropHandler">
       <template slot="custom" slot-scope="item">
         <div
           class="header-wrap"
@@ -113,7 +113,8 @@ export default {
           opacity: 1
         };
       }
-    }
+    },
+    dropHandler: Function
   },
   computed: {
     attributesIconClass() {
@@ -158,7 +159,6 @@ export default {
     },
     sliderChange(val) {},
     toggleItemVisibility(item) {
-      this.promise();
       this.$emit('toggleItemVisibility', item, !item.visible);
     },
     toggleAttributesVisibility(e, item) {
@@ -173,76 +173,6 @@ export default {
     },
     changeIconsStatus(val) {
       this.showIconsItem = val;
-    },
-    onDrop(info) {
-      const dropKey = info.node.eventKey;
-      const dragKey = info.dragNode.eventKey;
-      const dropPos = info.node.pos.split('-');
-      const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
-      if (!info.dropToGap && this.getCatalogTypeById(this.layerCatalog, dropKey) !== 'group') {
-        return;
-      }
-      const loop = (data, id, callback) => {
-        data.forEach((item, index, arr) => {
-          if (item.id === id) {
-            return callback(item, index, arr);
-          }
-          if (item.children) {
-            return loop(item.children, id, callback);
-          }
-        });
-      };
-      const data = [...this.treeData];
-
-      // Find dragObject
-      let dragObj;
-      loop(data, dragKey, (item, index, arr) => {
-        arr.splice(index, 1);
-        dragObj = item;
-      });
-      if (!info.dropToGap) {
-        // Drop on the content
-        loop(data, dropKey, item => {
-          item.children = item.children || [];
-          // where to insert 示例添加到尾部，可以是随意位置
-          item.children.push(dragObj);
-        });
-      } else if (
-        (info.node.children || []).length > 0 && // Has children
-        info.node.expanded && // Is expanded
-        dropPosition === 1 // On the bottom gap
-      ) {
-        loop(data, dropKey, item => {
-          item.children = item.children || [];
-          // where to insert 示例添加到尾部，可以是随意位置
-          item.children.unshift(dragObj);
-        });
-      } else {
-        let ar;
-        let i;
-        loop(data, dropKey, (item, index, arr) => {
-          ar = arr;
-          i = index;
-        });
-        if (dropPosition === -1) {
-          ar.splice(i, 0, dragObj);
-        } else {
-          ar.splice(i + 1, 0, dragObj);
-        }
-      }
-      this.treeData = data;
-    },
-    getCatalogTypeById(layerCatalog, id) {
-      for (let layer of layerCatalog) {
-        if (layer.id === id) {
-          return layer.type;
-        } else if (layer.type === 'group') {
-          const foundType = this.getTypeById(layer.children, id);
-          if (foundType) {
-            return foundType;
-          }
-        }
-      }
     }
   }
 };
