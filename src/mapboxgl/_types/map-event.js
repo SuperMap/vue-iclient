@@ -56,8 +56,10 @@ export default new Vue({
           if (['getLegendInfo'].includes(propKey)) {
             datas.push(...mainWebMapDatas);
           }
-          if (propKey === 'getLayerList' && _this.customLayerCatalogCache[webmapTarget]) {
-            datas = sortLayerCatalog(datas, _this.customLayerCatalogCache[webmapTarget]);
+          if (propKey === 'getLayerList') {
+            if (_this.customLayerCatalogCache[webmapTarget]) {
+              datas = sortLayerCatalog(datas, _this.customLayerCatalogCache[webmapTarget]);
+            }
             _this.updateLayerCatalogsVisible(datas);
           }
           if (propKey === 'getAppreciableLayers' && _this.customLayerCatalogCache[webmapTarget]) {
