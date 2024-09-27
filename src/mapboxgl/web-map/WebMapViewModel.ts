@@ -10,12 +10,31 @@ import echarts from 'echarts';
 import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import proj4 from 'proj4';
-import { getLayerCatalogIds } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
+import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
+import bbox from '@turf/bbox';
+import { points } from '@turf/helpers';
 
 // @ts-ignore
 window.echarts = echarts;
 // @ts-ignore
 window.EchartsLayer = EchartsLayer;
+
+const OPACITY_MAP = {
+  circle: ['circle-opacity', 'circle-stroke-opacity'],
+  line: 'line-opacity',
+  fill: 'fill-opacity',
+  background: 'background-opacity',
+  symbol: ['icon-opacity', 'text-opacity'],
+  raster: 'raster-opacity',
+  heatmap: 'heatmap-opacity',
+  'line-extrusion': 'line-extrusion-opacity',
+  'fill-extrusion': 'fill-extrusion-opacity',
+  'point-extrusion': 'point-extrusion-opacity',
+  'line-curve-extrusion': 'line-curve-extrusion-opacity',
+  'line-curve': 'line-curve-opacity',
+  'heatmap-extrusion': 'heatmap-extrusion-opacity',
+  radar: 'radar-opacity'
+};
 
 // 迁徙图最大支持要素数量
 /**
@@ -308,6 +327,143 @@ export default class WebMapViewModel extends Events {
     this._handler.toggleLayerVisible(layer, visible);
   }
 
+  zoomToBounds(id: string) {
+    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    if (!item) {
+      return;
+    }
+    const itemList = [];
+    if (item.type === 'group') {
+      const targetLayers = getGroupChildrenLayers(item.children);
+      itemList.push(...targetLayers);
+    } else {
+      itemList.push(item);
+    }
+    const sourceBoundsMap = {};
+    itemList.forEach(item => {
+      const sourceId = item.renderSource.id || item.id;
+      if (sourceBoundsMap[sourceId]) {
+        return;
+      }
+      const source = this.map.getSource(sourceId);
+      if (!source) {
+        if (item['CLASS_INSTANCE']) {
+          const instance = item['CLASS_INSTANCE'];
+          if (instance?.markers.length) {
+            const coordList = [];
+            instance?.markers.forEach(marker => {
+              coordList.push([marker.lngLat.lng, marker.lngLat.lat]);
+            });
+            const pointFeatures = points(coordList);
+            const bounds = bbox(pointFeatures);
+            sourceBoundsMap[sourceId] = bounds;
+          }
+        } else {
+          return;
+        }
+      }
+      // @ts-ignore
+      const bounds = source && source.bounds;
+      if (bounds) {
+        sourceBoundsMap[sourceId] = bounds;
+      } else if (source && source.type === 'geojson') {
+        // @ts-ignore
+        const datas = source.getData();
+        if (datas) {
+          const bounds = bbox(datas);
+          sourceBoundsMap[sourceId] = bounds;
+        }
+      }
+    });
+    const boundsList = [];
+    Object.keys(sourceBoundsMap).forEach(sourceId => {
+      const bounds = sourceBoundsMap[sourceId];
+      boundsList.push(bounds);
+    });
+    const maxBounds = this._getMaxBounds(boundsList);
+    if (maxBounds && !maxBounds.isEmpty()) {
+      this.map.fitBounds(maxBounds);
+    }
+  }
+
+  changeItemOpacity(id, opacity) {
+    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    if (!item) {
+      return;
+    }
+
+    if (item['CLASS_INSTANCE']) {
+      const instance = item['CLASS_INSTANCE'];
+      if (instance?.markers.length) {
+        instance?.markers.forEach(marker => {
+          marker.markerOption.element.style.opacity = opacity;
+        });
+      }
+      return;
+    }
+
+    if (item['CLASS_NAME'] && item['CLASS_NAME'] === 'L7Layer') {
+      const layer = this.map.getLayer(item.id);
+      // @ts-ignore
+      layer?.l7layer?.style({
+        opacity
+      });
+      // @ts-ignore
+      layer.reRender();
+      return;
+    }
+    item.renderLayers.forEach((layerId: string) => {
+      const layer = this.map.getLayer(layerId);
+      if (layer) {
+        let opacityName = OPACITY_MAP[layer.type];
+        opacityName = Array.isArray(opacityName) ? opacityName : [opacityName];
+        opacityName.forEach(fieldName => {
+          this.map.setPaintProperty(layerId, fieldName, opacity);
+        });
+      }
+    });
+  }
+
+  getLayerOpacityById(id) {
+    const item = findLayerCatalog(this._handler.getLayerCatalog(), id);
+    if (!item) {
+      return;
+    }
+
+    if (item['CLASS_INSTANCE']) {
+      const instance = item['CLASS_INSTANCE'];
+      const element = instance?.markers[0]?.markerOption?.element;
+      if (element) {
+        const opacity = element?.style?.opacity;
+        return opacity === '' ? 1 : +opacity;
+      }
+      return;
+    }
+
+    if (item['CLASS_NAME'] && item['CLASS_NAME'] === 'L7Layer') {
+      const layer = this.map.getLayer(item.id);
+      // @ts-ignore
+      let config = layer?.l7layer?.getLayerConfig();
+      return config?.opacity;
+    }
+    let opacity;
+    for (let i = 0; i < item.renderLayers.length; i++) {
+      const layerId = item.renderLayers[i];
+      const layer = this.map.getLayer(layerId);
+      if (layer) {
+        let opacityName = OPACITY_MAP[layer.type];
+        if (Array.isArray(opacityName)) {
+          opacityName = opacityName[0];
+        }
+        opacity = this.map.getPaintProperty(layerId, opacityName);
+        if (opacity !== undefined) {
+          break;
+        }
+      }
+    }
+    return opacity === undefined ? 1 : opacity;
+  }
+
   setLayersVisible(isShow: boolean, ignoreIds: string[] = []) {
     const visibility = isShow ? 'visible' : 'none';
     const layers = this._cacheCleanLayers.filter(item => !ignoreIds.some(sub => sub === item.id));
@@ -342,6 +498,14 @@ export default class WebMapViewModel extends Events {
 
   private _initWebMap(): void {
     this._createMap();
+  }
+
+  private _getMaxBounds(bounds) {
+    let maxBounds = new mapboxgl.LngLatBounds();
+    bounds.forEach(bound => {
+      maxBounds.extend(bound);
+    });
+    return maxBounds;
   }
 
   private _mapInitializedHandler({ map }) {

@@ -24,10 +24,10 @@
             >
               <div v-if="zoomToMap.enabled" class="sm-component-layer-list__zoom">
                 <i
-                  :class="attributesIconClass"
+                  class="sm-components-icon-locate"
                   :style="!item.visible && { cursor: 'not-allowed' }"
                   :title="$t('layerList.zoomToMap')"
-                  @click.stop="item.visible && toggleAttributesVisibility($event, item)"
+                  @click.stop="zoomToBounds(item)"
                 />
               </div>
               <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)" class="sm-component-layer-list__attributes">
@@ -38,7 +38,7 @@
                   @click.stop="item.visible && toggleAttributesVisibility($event, item)"
                 />
               </div>
-              <div v-if="(item && item.type) !== 'group' && layerStyle.enabled" class="sm-component-layer-list__style">
+              <div v-if="layerStyle.enabled && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
                 <i
                   :class="[
                     'sm-components-icon-attribute',
@@ -47,7 +47,7 @@
                   ]"
                   :style="!item.visible && { cursor: 'not-allowed' }"
                   :title="$t('layerList.layerStyle')"
-                  @click.stop="item.visible && toggleLayerStyleVisibility($event, item)"
+                  @click.stop="item.visible && changeItemOpacity(item)"
                 />
               </div>
             </div>
@@ -56,14 +56,14 @@
         <div v-show="item.id === showOpacityItem" class="opacity-style">
           <div>{{ $t('layerList.opacity') }}</div>
           <sm-slider
-            :value="10"
+            :value="formatOpacity"
             :min="0"
             :max="100"
             :step="1"
             :style="{ ...getColorStyle(0), width: '70%' }"
-            @change="sliderChange"
+            @change="changeOpacity"
           />
-          <div>{{ 10 + '%' }}</div>
+          <div>{{ formatOpacity + '%' }}</div>
         </div>
       </template>
     </sm-tree>
@@ -85,6 +85,10 @@ export default {
     SmTree
   },
   props: {
+    currentOpacity: {
+      type: Number,
+      default: 0
+    },
     layerCatalog: {
       type: Array,
       default() {
@@ -117,14 +121,17 @@ export default {
     dropHandler: Function
   },
   computed: {
+    formatOpacity() {
+      return +(this.currentOpacity * 100).toFixed(0);
+    },
     attributesIconClass() {
       return (this.attributes && this.attributes.iconClass) || 'sm-components-icon-attribute';
     },
     attributesEnabled() {
       return item => {
-        const isGeojson = item.renderSource.type === 'geojson';
-        const isStructureData = item.dataSource.type === 'STRUCTURE_DATA';
-        return this.attributes.enabled && (isGeojson || isStructureData);
+        const isGeojson = item.renderSource && item.renderSource.type === 'geojson';
+        const isStructureData = item.dataSource && item.dataSource.type === 'STRUCTURE_DATA';
+        return this.attributes.enabled && (isGeojson || isStructureData) && (item && item.type) !== 'group';
       };
     }
   },
@@ -157,22 +164,102 @@ export default {
       });
       return treeData;
     },
-    sliderChange(val) {},
+    changeOpacity(val) {
+      if (this.showOpacityItem) {
+        val = val / 100;
+        this.$emit('changeOpacity', this.showOpacityItem, val);
+        this.$emit('getLayerOpacityById', this.showOpacityItem);
+      }
+    },
     toggleItemVisibility(item) {
       this.$emit('toggleItemVisibility', item, !item.visible);
     },
     toggleAttributesVisibility(e, item) {
       this.$emit('toggleAttributesVisibility', e, item);
     },
-    toggleLayerStyleVisibility(e, item) {
+    changeItemOpacity(item) {
       if (this.showOpacityItem === item.id) {
         this.showOpacityItem = '';
       } else {
         this.showOpacityItem = item.id;
+        this.$emit('getLayerOpacityById', this.showOpacityItem);
       }
     },
     changeIconsStatus(val) {
       this.showIconsItem = val;
+    },
+    zoomToBounds(item) {
+      this.$emit('zoomToBounds', item);
+    },
+    onDrop(info) {
+      const dropKey = info.node.eventKey;
+      const dragKey = info.dragNode.eventKey;
+      const dropPos = info.node.pos.split('-');
+      const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+      if (!info.dropToGap && this.getCatalogTypeById(this.layerCatalog, dropKey) !== 'group') {
+        return;
+      }
+      const loop = (data, id, callback) => {
+        data.forEach((item, index, arr) => {
+          if (item.id === id) {
+            return callback(item, index, arr);
+          }
+          if (item.children) {
+            return loop(item.children, id, callback);
+          }
+        });
+      };
+      const data = [...this.treeData];
+
+      // Find dragObject
+      let dragObj;
+      loop(data, dragKey, (item, index, arr) => {
+        arr.splice(index, 1);
+        dragObj = item;
+      });
+      if (!info.dropToGap) {
+        // Drop on the content
+        loop(data, dropKey, item => {
+          item.children = item.children || [];
+          // where to insert 示例添加到尾部，可以是随意位置
+          item.children.push(dragObj);
+        });
+      } else if (
+        (info.node.children || []).length > 0 && // Has children
+        info.node.expanded && // Is expanded
+        dropPosition === 1 // On the bottom gap
+      ) {
+        loop(data, dropKey, item => {
+          item.children = item.children || [];
+          // where to insert 示例添加到尾部，可以是随意位置
+          item.children.unshift(dragObj);
+        });
+      } else {
+        let ar;
+        let i;
+        loop(data, dropKey, (item, index, arr) => {
+          ar = arr;
+          i = index;
+        });
+        if (dropPosition === -1) {
+          ar.splice(i, 0, dragObj);
+        } else {
+          ar.splice(i + 1, 0, dragObj);
+        }
+      }
+      this.treeData = data;
+    },
+    getCatalogTypeById(layerCatalog, id) {
+      for (let layer of layerCatalog) {
+        if (layer.id === id) {
+          return layer.type;
+        } else if (layer.type === 'group') {
+          const foundType = this.getTypeById(layer.children, id);
+          if (foundType) {
+            return foundType;
+          }
+        }
+      }
     }
   }
 };

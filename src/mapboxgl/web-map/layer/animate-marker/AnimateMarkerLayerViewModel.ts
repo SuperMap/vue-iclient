@@ -88,8 +88,8 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
         visibility: 'visible'
       },
       paint: {
-        'circle-radius': 5,
-        'circle-opacity': 0
+        'circle-radius': 0,
+        'circle-opacity': 1
       }
     });
 
@@ -121,12 +121,21 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
 
   private _updateLayer() {
     let layer = this.map.getLayer(this.layerId);
-    if (layer) {
-      this.markers.length > 0 &&
-    this.markers.forEach(marker => {
+    if (layer && this.markers.length) {
       // @ts-ignore
-      marker && (marker.getElement().style.display = layer.visibility === 'visible' ? 'block' : 'none');
-    });
+      const opacity = layer.getPaintProperty('circle-opacity');
+      let updateOpacity = null;
+      if (opacity !== +this.markers[0].getElement().style.opacity) {
+        updateOpacity = opacity;
+      }
+      this.markers.forEach(marker => {
+        if (updateOpacity !== null) {
+          // @ts-ignore
+          marker.getElement().style.opacity = updateOpacity;
+        }
+        // @ts-ignore
+        marker && (marker.getElement().style.display = layer.visibility === 'visible' ? 'block' : 'none');
+      });
     }
   }
 

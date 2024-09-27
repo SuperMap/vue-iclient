@@ -14,9 +14,13 @@
     <sm-card class="sm-component-layer-list__a-card" :bordered="false" :style="headingTextColorStyle">
       <div class="sm-component-layer-list__content">
         <layer-group
+          :currentOpacity="currentOpacity"
           :layerCatalog="sourceList"
           :attributes="attributes"
           :dropHandler="onDropHanlder"
+          @getLayerOpacityById="getLayerOpacityById"
+          @changeOpacity="changeOpacity"
+          @zoomToBounds="zoomToBounds"
           @toggleItemVisibility="toggleItemVisibility"
           @toggleAttributesVisibility="(e,item) => toggleAttributesVisibility(e,item)">
         </layer-group>
@@ -145,6 +149,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   attributesProps: Object = {};
   layerUpdateFn: Function;
   displayAttributes: Boolean = false;
+  currentOpacity: Number = 0;
 
   @Prop({ default: 'sm-components-icon-layer-list' }) iconClass: string;
   @Prop({
@@ -234,12 +239,24 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel && this.viewModel.changeItemVisible(item.id, visible);
   }
 
+  zoomToBounds(item: { id: string, [prop: string]: any; }) {
+    this.viewModel && this.viewModel.zoomToBounds(item.id);
+  }
+
   addNewLayer() {
     this.viewModel.addNewLayer();
   }
 
   deleteLayer() {
     this.viewModel.deleteLayer();
+  }
+
+  changeOpacity(id, opacity) {
+    this.viewModel.changeOpacity(id, opacity);
+  }
+
+  getLayerOpacityById(id) {
+    this.currentOpacity = this.viewModel.getLayerOpacityById(id);
   }
 
   toggleAttributesVisibility(e, item) {

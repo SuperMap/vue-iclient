@@ -64,6 +64,18 @@ class LayerListViewModel extends mapboxgl.Evented {
     this.webmap.rectifyLayersOrder(layers);
   }
 
+  changeOpacity(id: string, opacity: number) {
+    this.webmap.changeItemOpacity(id, opacity);
+  }
+
+  zoomToBounds(id: string) {
+    this.webmap.zoomToBounds(id);
+  }
+
+  getLayerOpacityById(id: string) {
+    return this.webmap.getLayerOpacityById(id);
+  }
+
   removed() {
     this.webmap.un({
       layerupdatechanged: this.updateFn
