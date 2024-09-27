@@ -61,10 +61,14 @@ export default new Vue({
               datas = sortLayerCatalog(datas, _this.customLayerCatalogCache[webmapTarget]);
             }
             _this.updateLayerCatalogsVisible(datas);
+            datas = _this.updateImmutableOrderLayers(datas);
           }
-          if (propKey === 'getAppreciableLayers' && _this.customLayerCatalogCache[webmapTarget]) {
-            const flatterLayers = flattenLayerCatalog(_this.customLayerCatalogCache[webmapTarget]);
-            datas = sortLayerCatalog(datas, flatterLayers.reverse());
+          if (propKey === 'getAppreciableLayers') {
+            if (_this.customLayerCatalogCache[webmapTarget]) {
+              const flatterLayers = flattenLayerCatalog(_this.customLayerCatalogCache[webmapTarget]);
+              datas = sortLayerCatalog(datas, flatterLayers.reverse());
+            }
+            datas = _this.updateImmutableOrderLayers(datas, true);
           }
           return () => datas;
         }
@@ -149,5 +153,17 @@ export default new Vue({
         this.updateLayerCatalogsVisible(data.children);
       }
     }
+  },
+  updateImmutableOrderLayers(layers, revert) {
+    let topLayers = layers.filter(item => item.layerOrder && item.layerOrder.toLowerCase() === 'top');
+    const migrationLayers = topLayers.filter(item => item.type === 'MIGRATION');
+    const leftTopLayers = topLayers.filter(item => item.type !== 'MIGRATION');
+    topLayers = migrationLayers.concat(leftTopLayers);
+    const bottomLayers = layers.filter(item => item.layerOrder && item.layerOrder.toLowerCase() === 'bottom');
+    const autoLayers = layers.filter(item => !item.layerOrder || item.layerOrder.toLowerCase() === 'auto');
+    if (revert) {
+      return bottomLayers.concat(autoLayers, topLayers);
+    }
+    return topLayers.concat(autoLayers, bottomLayers);
   }
 });

@@ -138,6 +138,12 @@ interface AddlayerssucceededParams {
   allLoaded: boolean;
 }
 
+interface LayerUpdateChangedParams {
+  layers: Record<string, any>[];
+  relevantLayers: Record<string, any>[];
+  layerCatalog: Record<string, any>[];
+}
+
 export default class WebMapViewModel extends Events {
   map: mapboxglTypes.Map;
 
@@ -201,7 +207,6 @@ export default class WebMapViewModel extends Events {
       'mapcreatesucceeded',
       'mapcreatefailed',
       'layercreatefailed',
-      'layeraddchanged',
       'layerupdatechanged',
       'baidumapnotsupport',
       'projectionnotmatch',
@@ -212,7 +217,7 @@ export default class WebMapViewModel extends Events {
     this._mapInitializedHandler = this._mapInitializedHandler.bind(this);
     this._mapCreateSucceededHandlerHandler = this._mapCreateSucceededHandlerHandler.bind(this);
     this._mapBeforeRemoveHandler = this._mapBeforeRemoveHandler.bind(this);
-    this._layerAddChangedHandler = this._layerAddChangedHandler.bind(this);
+    this._layerUpdateChangedHandler = this._layerUpdateChangedHandler.bind(this);
     this._initWebMap();
   }
 
@@ -521,8 +526,10 @@ export default class WebMapViewModel extends Events {
     this.triggerEvent('addlayerssucceeded', params);
   }
 
-  private _layerAddChangedHandler({ layers }) {
-    this._cacheCleanLayers = layers;
+  private _layerUpdateChangedHandler(params: LayerUpdateChangedParams) {
+    const { relevantLayers } = params;
+    this._cacheCleanLayers = relevantLayers;
+    this.triggerEvent('layerupdatechanged', params);
   }
 
   private _createMap() {
@@ -535,7 +542,7 @@ export default class WebMapViewModel extends Events {
       }, {}),
       mapinitialized: this._mapInitializedHandler,
       mapcreatesucceeded: this._mapCreateSucceededHandlerHandler,
-      layeraddchanged: this._layerAddChangedHandler,
+      layerupdatechanged: this._layerUpdateChangedHandler,
       mapbeforeremove: this._mapBeforeRemoveHandler
     };
     this._handler = new mapboxgl.supermap.WebMap(this.mapId, this.options, this.mapOptions);

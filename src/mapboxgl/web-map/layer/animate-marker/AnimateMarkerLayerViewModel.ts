@@ -90,6 +90,9 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
       paint: {
         'circle-radius': 0,
         'circle-opacity': 1
+      },
+      metadata: {
+        SM_Layer_Order: 'Top'
       }
     });
 

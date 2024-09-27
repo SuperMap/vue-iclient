@@ -159,6 +159,8 @@ export default {
         if (data.children) {
           const children = this.getTreeData(data.children);
           data.children = children;
+        } else if(item.layerOrder !== 'auto') {
+          data.disabled = true;
         }
         treeData.push(data);
       });
