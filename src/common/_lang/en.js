@@ -83,7 +83,7 @@ export default {
     title: 'Layer',
     layerStyle: 'layerStyle',
     attributes: 'Attributes',
-    zoomToMap: 'zoomToMap',
+    zoomToLayer: 'zoomToLayer',
     opacity: 'Opacity'
   },
   slideshow: {

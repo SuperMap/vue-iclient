@@ -21,15 +21,17 @@
     }
     & .sm-component-tree li span.sm-component-tree-switcher {
       position: absolute;
-      right: 24px;
+      right: 0px;
       top: 4px;
       }
+    & .sm-component-tree > li:first-child > span.sm-component-tree-switcher {
+      top: 7px;
+    }
     & .sm-component-tree-child-tree > li:first-child > span.sm-component-tree-switcher{ 
       top: 8px;
     }
     & .sm-component-tree li {
       position: relative;
-
     }
     & .sm-component-tree li span.sm-component-tree-switcher.sm-component-tree-switcher-noop {
       display: none;
@@ -39,8 +41,10 @@
     }
     & .sm-component-tree li .sm-component-tree-node-content-wrapper {
       display: block;
-      width: 95%;
+      width: 100%;
       height: auto;
+      border-top: 2px transparent solid;
+      border-bottom: 2px transparent solid;
     }
     & .sm-component-tree-title {
       display: block;

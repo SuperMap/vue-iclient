@@ -1,6 +1,6 @@
 <template>
   <div>
-    <sm-tree class="sm-component-layer-list__collapse draggable-tree" draggable :tree-data="treeData" @drop="dropHandler">
+    <sm-tree class="sm-component-layer-list__collapse draggable-tree" :draggable="layerOperations.layerOrder" :tree-data="treeData" @drop="dropHandler">
       <template slot="custom" slot-scope="item">
         <div
           class="header-wrap"
@@ -22,11 +22,11 @@
             <div
               :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
             >
-              <div v-if="zoomToMap.enabled" class="sm-component-layer-list__zoom">
+              <div v-if="layerOperations.zoomToLayer" class="sm-component-layer-list__zoom">
                 <i
                   class="sm-components-icon-locate"
                   :style="!item.visible && { cursor: 'not-allowed' }"
-                  :title="$t('layerList.zoomToMap')"
+                  :title="$t('layerList.zoomToLayer')"
                   @click.stop="zoomToBounds(item)"
                 />
               </div>
@@ -38,7 +38,7 @@
                   @click.stop="item.visible && toggleAttributesVisibility($event, item)"
                 />
               </div>
-              <div v-if="layerStyle.enabled && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
+              <div v-if="layerOperations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
                 <i
                   :class="[
                     'sm-components-icon-attribute',
@@ -53,7 +53,7 @@
             </div>
           </div>
         </div>
-        <div v-show="item.id === showOpacityItem" class="opacity-style">
+        <div v-show="layerOperations.opacity && item.id === showOpacityItem" class="opacity-style">
           <div>{{ $t('layerList.opacity') }}</div>
           <sm-slider
             :value="formatOpacity"
@@ -95,11 +95,13 @@ export default {
         return [];
       }
     },
-    zoomToMap: {
+    layerOperations: {
       type: Object,
       default() {
         return {
-          enabled: true
+          zoomToLayer: true,
+          layerOrder: false,
+          opacity: false
         };
       }
     },
@@ -107,15 +109,6 @@ export default {
       type: Object,
       default() {
         return {};
-      }
-    },
-    layerStyle: {
-      type: Object,
-      default() {
-        return {
-          enabled: true,
-          opacity: 1
-        };
       }
     },
     dropHandler: Function

@@ -17,6 +17,7 @@
           :currentOpacity="currentOpacity"
           :layerCatalog="sourceList"
           :attributes="attributes"
+          :layerOperations="layerOperations"
           :dropHandler="onDropHanlder"
           @getLayerOpacityById="getLayerOpacityById"
           @changeOpacity="changeOpacity"
@@ -165,6 +166,17 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
   })
   attributes: AttributesParams;
+
+  @Prop({
+    default() {
+      return {
+        zoomToLayer: true,
+        layerOrder: false,
+        opacity: false
+      };
+    }
+  })
+  layerOperations: Object;
 
   @Watch('attributes', { deep: true })
   attributesChanged(newval, oldval) {
