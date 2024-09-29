@@ -28,7 +28,20 @@ class WebMap extends Evented {
     }
   }
   _initWebMap() {
-    this._createMap('WebMap2');
+    this._createMap({
+      layers: [
+        {
+          visible: true,
+          children: [],
+          id: '民航数据',
+          title: '民航数据',
+          renderSource: { type: 'geojson' },
+          renderLayers: ['民航数据'],
+          dataSource: { type: 'STRUCTURE_DATA' },
+          type: 'line'
+        }
+      ]
+    });
   }
 
   _getMapInfo(mapInfo) {
@@ -248,7 +261,20 @@ class WebMap extends Evented {
         }
       });
     });
-    this.fire('layerupdatechanged');
+    this.fire('layerupdatechanged', {
+      relevantLayers: [
+        {
+          visible: true,
+          children: [],
+          id: '民航数据',
+          title: '民航数据',
+          renderSource: { type: 'geojson' },
+          renderLayers: ['民航数据'],
+          dataSource: { type: 'STRUCTURE_DATA' },
+          type: 'line'
+        }
+      ]
+    });
   }
 
   copyLayer() {}
