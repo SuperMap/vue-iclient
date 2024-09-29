@@ -109,9 +109,9 @@ const commonMap = {
   },
   moveLayer: () => jest.fn(),
   overlayLayersManager: {},
-  on: () => {},
-  off: () => {},
-  fire: () => {},
+  on: () => { },
+  off: () => { },
+  fire: () => { },
   setLayoutProperty: () => jest.fn(),
   setPaintProperty: jest.fn(),
   addStyle: () => jest.fn(),
@@ -121,7 +121,7 @@ const commonMap = {
   loadImage: function (src, callback) {
     callback(null, { width: 15 });
   },
-  addImage: function () {},
+  addImage: function () { },
   hasImage: function () {
     return false;
   }
@@ -221,7 +221,7 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
-// public Func
+  // public Func
   describe('resize', () => {
     beforeEach(() => {
       jest.useFakeTimers();
@@ -733,7 +733,73 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
-  test('should handle layer with opacity property', () => {
+  it('should handle source without bounds but with markers', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      const marker = { lngLat: { lng: 116.423411, lat: 39.442758 } };
+      const marker1 = { lngLat: { lng: 120, lat: 50 } };
+      viewModel.layerCatalogs = [{
+        id: 'radar1',
+        title: 'radar1',
+        type: 'circle',
+        renderLayers: ['radar1'],
+        'CLASS_INSTANCE': { markers: [marker, marker1] }
+      }];
+      jest.spyOn(data.map, 'getSource').mockReturnValueOnce(null);
+      const spy = jest.spyOn(data.map, 'fitBounds');
+      viewModel.zoomToBounds('radar1');
+      expect(spy).toHaveBeenCalledWith(new mapboxgl.LngLatBounds([116.423411, 39.442758], [120, 50]));
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('should handle source with geojson data', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = function (data) {
+      const geojsonData = {
+        type: 'FeatureCollection', features: [{
+          "type": "Feature",
+          "properties": {},
+          "geometry": {
+            "coordinates": [
+              [
+                [
+                  48.30078125000128,
+                  28.226970038917116
+                ],
+                [
+                  48.30078125000128,
+                  -9.015302333421928
+                ],
+                [
+                  92.42187500000131,
+                  -9.015302333421928
+                ],
+                [
+                  92.42187500000131,
+                  28.226970038917116
+                ],
+                [
+                  48.30078125000128,
+                  28.226970038917116
+                ]
+              ]
+            ],
+            "type": "Polygon"
+          }
+        }]
+      };
+      jest.spyOn(data.map, 'getSource').mockReturnValueOnce({ type: 'geojson', getData: jest.fn().mockReturnValueOnce(geojsonData) });
+      const spy = jest.spyOn(data.map, 'fitBounds');
+      viewModel.zoomToBounds('layerId');
+      expect(spy).toHaveBeenCalledWith(new mapboxgl.LngLatBounds([116.423411, 39.442758], [120, 50]));
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('should handle layer with opacity property', () => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = async function (data) {
       const spy1 = jest.spyOn(data.map, 'getLayer');
@@ -752,7 +818,46 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  test('should return undefined when layer not found', () => {
+  it('should handle CLASS_INSTANCE with markers', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      viewModel.layerCatalogs = [{
+        id: 'radar1',
+        title: 'radar1',
+        type: 'circle',
+        renderLayers: ['radar1'],
+        'CLASS_INSTANCE': {
+          markers: [
+            { markerOption: { element: { style: { opacity: 0 }} } },
+          ],
+        }
+      }];
+      viewModel.changeItemOpacity('radar1', 0.5);
+      expect(item['CLASS_INSTANCE'].markers[0].markerOption.element.style.opacity).toEqual(0.5);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('should handle L7Layer', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      viewModel.layerCatalogs = [{
+        id: 'radar2',
+        title: 'radar1',
+        type: 'circle',
+        renderLayers: ['radar1'],
+        'CLASS_NAME': 'L7Layer',
+      }];
+      viewModel.map.getLayer = jest.fn().mockReturnValueOnce({});
+      viewModel.changeItemOpacity('radar2', 0.5);
+      expect(viewModel.map.getLayer).toHaveBeenCalledWith(item.id);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('should return undefined when layer not found', () => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = async function (data) {
       const id = 'non-existent-id';
@@ -763,7 +868,7 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  test('should return opacity from CLASS_INSTANCE marker element', () => {
+  it('should return opacity from CLASS_INSTANCE marker element', () => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = async function (data) {
       viewModel.layerCatalogs = [{
@@ -784,7 +889,7 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
   });
 
-  test('should return opacity from L7Layer', () => {
+  it('should return opacity from L7Layer', () => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = async function (data) {
       viewModel.layerCatalogs = [{
@@ -802,6 +907,44 @@ describe('WebMapViewModel.spec', () => {
       const id = 'radar1';
       const opacity = getLayerOpacityById(id);
       expect(opacity).toEqual(0.7);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('should return opacity from map paint property', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      viewModel.layerCatalogs = [{
+        id: 'fillLayer1',
+        title: 'fillLayer1',
+        type: 'fill',
+        renderLayers: ['fillLayer1'],
+      }];
+      const id = 'fillLayer1';
+      viewModel.map.getLayer.mockReturnValueOnce({ type: 'fill' });
+      viewModel.map.getPaintProperty.mockReturnValueOnce(0.8);
+      const opacity = getLayerOpacityById.call(viewModel, id);
+      expect(opacity).toEqual(0.8);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  it('should return 1 when opacity is undefined', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      viewModel.layerCatalogs = [{
+        id: 'layer1',
+        title: 'layer1',
+        type: 'circle',
+        renderLayers: ['layer1'],
+      }];
+      const id = 'layer1';
+      viewModel.map.getLayer.mockReturnValueOnce({ type: 'circle' });
+      viewModel.map.getPaintProperty.mockReturnValueOnce(undefined);
+      const opacity = viewModel.getLayerOpacityById(id);
+      expect(opacity).toEqual(1);
       done();
     };
     viewModel.on({ addlayerssucceeded: callback });
