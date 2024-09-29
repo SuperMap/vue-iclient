@@ -11,12 +11,77 @@
   z-index: 10;
   @include e(content) {
     width: 100%;
+    min-width: 220px;
     height: 100%;
     padding: 0 16px;
     .#{$collapse-prefix} {
       background: transparent;
       border-radius: 0;
       color: inherit;
+    }
+    & .sm-component-tree li span.sm-component-tree-switcher {
+      position: absolute;
+      right: 0px;
+      top: 4px;
+      }
+    & .sm-component-tree > li:first-child > span.sm-component-tree-switcher {
+      top: 7px;
+    }
+    & .sm-component-tree-child-tree > li:first-child > span.sm-component-tree-switcher{ 
+      top: 8px;
+    }
+    & .sm-component-tree li {
+      position: relative;
+    }
+    & .sm-component-tree li span.sm-component-tree-switcher.sm-component-tree-switcher-noop {
+      display: none;
+    }
+    & .sm-component-tree-child-tree-open {
+      display: list-item;
+    }
+    & .sm-component-tree li .sm-component-tree-node-content-wrapper {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-top: 2px transparent solid;
+      border-bottom: 2px transparent solid;
+    }
+    & .sm-component-tree-title {
+      display: block;
+    }
+    & .sm-component-tree-title .header-text {
+      display: inline-flex;
+      width: 100%;
+    }
+    & .icon-buttons-visible {
+      visibility: visible;
+    }
+    & .icon-buttons-hidden {
+      visibility: hidden;
+    }
+    & .sm-component-tree-title .header-text .icon-buttons{
+      display: flex;
+      justify-content: flex-end;
+      width: 60px;
+      & i {
+        margin-right: 0px;
+      }
+      & div {
+        margin-right: 9px;
+      }
+      & div:last-child {
+        margin-right: 12px;
+      }
+      & i:hover {
+        color: $primary-5
+      }
+    }
+    & .opacity-style {
+      display:flex;
+      align-items:center;
+      width: 100%;
+      padding-left: 23px;
+      font-size: 12px;
     }
   }
   @include e(a-card) {
@@ -32,20 +97,6 @@
     &.#{$collapse-prefix} {
       > .#{$collapse-prefix}-item {
         border-bottom: none;
-        .#{$iconfont-class-prefix}-solid-triangle-right {
-          display: inline-block;
-        }
-        .#{$iconfont-class-prefix}-solid-triangle-down {
-          display: none;
-        }
-        &.#{$collapse-prefix}-item-active > .#{$collapse-prefix}-header{
-          .#{$iconfont-class-prefix}-solid-triangle-right {
-            display: none;
-          }
-          .#{$iconfont-class-prefix}-solid-triangle-down {
-            display: inline-block;
-          }
-        }
         > .#{$collapse-prefix}-header {
           color: inherit;
         }
@@ -62,19 +113,16 @@
         }
       }
     }
-    .#{$collapse-prefix}-header,
-    #{$layer-list-prefix}__elcarditem {
+    .#{$collapse-prefix}-header {
       padding: 6px 0 !important;
       border-bottom: 1px solid $border-color-split;
     }
     &:last-child {
-      .#{$collapse-prefix}-header,
-      #{$layer-list-prefix}__elcarditem {
+      .#{$collapse-prefix}-header{
         border-bottom-color: transparent;
       }
     }
 
-    .#{$iconfont-class-prefix}-partially-visible,
     .#{$iconfont-class-prefix}-visible {
       color: $primary-color;
     }
@@ -82,7 +130,6 @@
       color: $disabled-color;
     }
     #{$layer-list-prefix}__sourcelayeritem,
-    #{$layer-list-prefix}__elcarditem,
     .header-wrap {
       display: flex;
       align-items: center;
@@ -96,44 +143,26 @@
           font-size: 14px;
         }
       }
-    }
-    #{$layer-list-prefix}__elcarditem {
-      justify-content: space-between;
-    }
-    #{$layer-list-prefix}__layer {
-      display: flex;
-      width: 100%;
-      padding-right: 16px;
-    }
-    .header-wrap {
-      justify-content: space-between;
       .header-text {
-        font-size: 0;
         & > i,
         & > span {
           vertical-align: middle;
         }
         & > span {
-          max-width: 200px;
+          width: calc(100% - 85px);
           display: inline-block;
           font-size: 12px;
         }
       }
     }
   }
-  @include e(sourcelayeritem) {
-    padding: 6px 0;
-  }
   @include e(disabled) {
     color: $disabled-color !important;
   }
-  @include e(layergroupname) {
-    max-width: 200px;
-  }
-  .sm-components-icon-attribute {
+  .sm-components-icon-attribute, .sm-components-icon-not-active {
     color: $text-color;
   }
-  .sm-components-icon-attribute-open {
+  .sm-components-icon-attribute-open, .sm-components-icon-active {
     color: $primary-5;
   }
 }

@@ -30,8 +30,7 @@ export default {
     unavailableVideo: 'This video is temporarily unavailable, please try again later',
     mapNotLoaded: 'The associated map has not been loaded yet, please wait for a second',
     unassociatedMap: 'You need to configure the associated map!',
-    videojs:
-      'Please import video.js plugin: https://github.com/videojs/video.js',
+    videojs: 'Please import video.js plugin: https://github.com/videojs/video.js',
     flvPlayer:
       'Please import flv related plugin: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
@@ -81,7 +80,11 @@ export default {
     unSupportedData: 'The current data does not support linkage with the map'
   },
   layerList: {
-    title: 'Layer'
+    title: 'Layer',
+    layerStyle: 'layerStyle',
+    attributes: 'Attributes',
+    zoomToLayer: 'zoomToLayer',
+    opacity: 'Opacity'
   },
   slideshow: {
     title: 'Slideshow'

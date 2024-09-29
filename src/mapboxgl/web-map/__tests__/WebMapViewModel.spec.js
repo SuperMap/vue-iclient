@@ -10,6 +10,7 @@ import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
 import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.json';
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
 
 const CRS = require('vue-iclient/test/unit/mocks/crs');
 
@@ -708,5 +709,101 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     jest.advanceTimersByTime(0);
+  });
+
+  it('zoomToBounds', async done => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      const layerList = viewModel.getLayerList();
+      expect(layerList.length).toBe(1);
+      const spy = jest.spyOn(data.map, 'fitBounds');
+      jest.spyOn(data.map, 'getSource').mockImplementation(() => {
+        return {
+          bounds: new mapboxgl.LngLatBounds([115.423411, 39.442758], [117.514583, 41.0608])
+        };
+      });
+      viewModel.zoomToBounds('fakeid');
+      expect(spy).toHaveBeenCalledTimes(0);
+      viewModel.zoomToBounds(layerList[0].id);
+      expect(spy).toHaveBeenCalledTimes(1);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
+  test('should handle layer with opacity property', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      const spy1 = jest.spyOn(data.map, 'getLayer');
+      const spy2 = jest.spyOn(data.map, 'setPaintProperty');
+      viewModel.layerCatalogs = [{
+        id: 'radar1',
+        title: 'radar1',
+        type: 'circle',
+        renderLayers: ['radar1'],
+      }];
+      viewModel.changeItemOpacity('radar1', 0.5);
+      expect(spy1).toHaveBeenCalledWith('radar1');
+      expect(spy2).toHaveBeenCalledWith('radar1', 'circle-opacity', 0.5);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  test('should return undefined when layer not found', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      const id = 'non-existent-id';
+      const opacity = viewModel.getLayerOpacityById(id);
+      expect(opacity).toBeUndefined();
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  test('should return opacity from CLASS_INSTANCE marker element', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      viewModel.layerCatalogs = [{
+        id: 'radar1',
+        title: 'radar1',
+        type: 'radar',
+        'CLASS_INSTANCE': {
+          markers: [
+            { markerOption: { element: { style: { opacity: '0.5' } } } }
+          ]
+        }
+      }];
+      const id = 'radar1';
+      const opacity = viewModel.getLayerOpacityById(id);
+      expect(opacity).toEqual(0.5);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
+
+  test('should return opacity from L7Layer', () => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = async function (data) {
+      viewModel.layerCatalogs = [{
+        l7layer: { getLayerConfig: () => ({ opacity: 0.7 }) },
+        id: 'radar1',
+        title: 'radar1',
+        type: 'radar',
+        CLASS_NAME: 'L7Layer',
+        'CLASS_INSTANCE': {
+          markers: [
+            { markerOption: { element: { style: { opacity: '0.5' } } } }
+          ]
+        }
+      }];
+      const id = 'radar1';
+      const opacity = getLayerOpacityById(id);
+      expect(opacity).toEqual(0.7);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
   });
 });

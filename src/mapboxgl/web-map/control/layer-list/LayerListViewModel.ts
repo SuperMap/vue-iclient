@@ -1,5 +1,6 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
+import { findLayerCatalog } from '../../GroupUtil';
 
 /**
  * @class LayerListViewModel
@@ -8,9 +9,6 @@ import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
  * @fires layersUpdated - 图层更新
  * @extends mapboxgl.Evented
  */
-interface MapEventCallBack {
-  (e: mapboxglTypes.MapMouseEvent): void;
-}
 class LayerListViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
   webmap: InstanceType<typeof WebMapViewModel>;
@@ -19,7 +17,7 @@ class LayerListViewModel extends mapboxgl.Evented {
 
   fire: any;
 
-  updateFn: MapEventCallBack;
+  updateFn: (e?: mapboxglTypes.MapMouseEvent) => void;
 
   _updateLayers() {
     this.fire('layersUpdated');
@@ -35,8 +33,8 @@ class LayerListViewModel extends mapboxgl.Evented {
   }
 
   initLayerList() {
-    const sourceList = this.webmap.getLayerList();
-    return sourceList;
+    this.sourceList = this.webmap.getLayerList();
+    return this.sourceList;
   }
 
   async getLayerDatas(item) {
@@ -54,7 +52,25 @@ class LayerListViewModel extends mapboxgl.Evented {
   }
 
   changeItemVisible(id: string, visible: boolean) {
-    this.webmap.changeItemVisible(id, visible);
+    const matchLayer = findLayerCatalog(this.sourceList, id);
+    this.webmap.changeItemVisible(matchLayer, visible);
+  }
+
+  setLayersOrder() {
+    const layers = this.webmap.getAppreciableLayers();
+    this.webmap.rectifyLayersOrder(layers);
+  }
+
+  changeOpacity(id: string, opacity: number) {
+    this.webmap.changeItemOpacity(id, opacity);
+  }
+
+  zoomToBounds(id: string) {
+    this.webmap.zoomToBounds(id);
+  }
+
+  getLayerOpacityById(id: string) {
+    return this.webmap.getLayerOpacityById(id);
   }
 
   removed() {

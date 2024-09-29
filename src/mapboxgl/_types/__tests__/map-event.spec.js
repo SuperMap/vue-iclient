@@ -136,5 +136,97 @@ describe('map-event-mapboxgl', () => {
     expect(legendList[0]).toEqual(mapLegends[1]);
     done();
   });
+
+  it('webmap get ordered LayerList', done => {
+    const layerList1 = [
+      { id: 'layer1', renderSource: { id: 'source1' }, renderLayers: ['layer1'], visible: true },
+      {
+        id: 'group2',
+        type: 'group',
+        visible: true,
+        children: [{ id: 'sourceLayer', renderSource: { id: 'source2', sourceLayer: 'sourceLayer2' }, visible: true }]
+      }
+    ];
+    const layerList2 = [
+      { id: 'layer3', renderSource: { id: 'source3' }, renderLayers: ['layer3'], visible: true },
+      {
+        id: 'group4',
+        renderSource: {},
+        type: 'group',
+        visible: true,
+        children: [{ id: 'sourceLayer4', renderSource: { id: 'source4', sourceLayer: 'sourceLayer4' }, visible: true }]
+      }
+    ]
+    const mainWebMap = {
+      getLayerList: () => layerList1
+    };
+    const webmap2 = {
+      getLayerList: () => layerList2,
+      cacheLayerCatalogIds: ['layer3', 'group4', 'sourceLayer4']
+    };
+    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
+    mapEvent.$options.setWebMap(mapTarget, webmap2, 'webmap2');
+    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    const layerList = webmap.getLayerList();
+    expect(layerList.length).toBe(4);
+    expect(layerList).toEqual(layerList2.concat(layerList1));
+    const OrderedLyerList = layerList1.concat(layerList2);
+    mapEvent.$options.setLayerCatalog(mapTarget, OrderedLyerList);
+    const newLayerList = webmap.getLayerList();
+    expect(newLayerList).toEqual(OrderedLyerList);
+    expect(mapEvent.$options.customLayerCatalogCache[mapTarget].length).toEqual(4);
+    mapEvent.$options.deleteWebMap(mapTarget, 'webmap2');
+    expect(mapEvent.$options.customLayerCatalogCache[mapTarget].length).toEqual(2);
+    done();
+  });
+
+  it('webmap get ordered AppreciableLayers', done => {
+    const mainWebMap = {
+      getAppreciableLayers: () => [
+        { id: 'layer1', renderSource: { id: 'source1' } },
+        { id: 'layer2', renderSource: { id: 'source2' } }
+      ]
+    };
+    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
+    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    const appreciableLayers1 = webmap.getAppreciableLayers();
+    expect(appreciableLayers1[0].id).toBe('layer1');
+    const newLayerList = [
+      { id: 'layer1', renderSource: { id: 'source1' } },
+      { id: 'layer2', renderSource: { id: 'source2' } }
+    ];
+    mapEvent.$options.setLayerCatalog(mapTarget, newLayerList);
+    const appreciableLayers2 = webmap.getAppreciableLayers();
+    expect(appreciableLayers2[0].id).toBe('layer2');
+    done();
+  });
+
+  it('group visible is determined by children', done => {
+    const layerList1 = [
+      {
+        id: 'group1',
+        type: 'group',
+        visible: false,
+        children: [{ id: 'sourceLayer1', renderSource: { id: 'source1', sourceLayer: 'sourceLayer1' }, visible: true }]
+      },
+      {
+        id: 'group2',
+        type: 'group',
+        visible: true,
+        children: [{ id: 'sourceLayer', renderSource: { id: 'source2', sourceLayer: 'sourceLayer2' }, visible: false }]
+      }
+    ];
+    const mainWebMap = {
+      getLayerList: () => layerList1
+    };
+    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
+    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    const layerList = webmap.getLayerList();
+    expect(layerList[0].id).toBe('group1');
+    expect(layerList[0].visible).toBe(true);
+    expect(layerList[1].id).toBe('group2');
+    expect(layerList[1].visible).toBe(false);
+    done();
+  });
 });
 

@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import SmWebMap from '../../../WebMap';
 import SmLayerList from '../LayerList.vue';
+import LayerGroup from '../../../LayerGroup.vue';
 import LayerList from '../index';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
@@ -58,8 +59,8 @@ describe('LayerList.vue', () => {
       expect(callback.mock.called).toBeTruthy;
       let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
       wrapper.vm.$nextTick(() => {
-        expect(wrapper.find('.sm-component-layer-list__layer').exists()).toBe(true);
-        wrapper.find('.sm-component-layer-list__layer > i').trigger('click');
+        expect(wrapper.find('.header-text').exists()).toBe(true);
+        wrapper.find('.header-text > i').trigger('click');
         expect(spylayerVisibility).toHaveBeenCalledTimes(1);
         done();
       });
@@ -211,7 +212,7 @@ describe('LayerList.vue', () => {
       expect(callback.mock.called).toBeTruthy;
       let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
       await wrapper.vm.$nextTick();
-      wrapper.find('.sm-component-layer-list__layer > i').trigger('click');
+      wrapper.find('.header-text > i').trigger('click');
       expect(spylayerVisibility).toHaveBeenCalledTimes(1);
       done();
     };
@@ -288,7 +289,7 @@ describe('LayerList.vue', () => {
       })
     };
     const callback = function () {
-      expect(wrapper.find('.sm-component-layer-list__layer > .sm-components-icon-hidden').exists()).toBeTruthy();
+      expect(wrapper.find('.header-text > .sm-components-icon-hidden').exists()).toBeTruthy();
       done();
     };
     wrapper.vm.viewModel.on('layersUpdated', callback);
@@ -298,9 +299,108 @@ describe('LayerList.vue', () => {
     wrapper.vm.$options.loaded.call(wrapper.vm);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.sourceList).toEqual(wrapper.vm.transformLayerList(layerCatalogs));
-    expect(wrapper.find('.sm-component-layer-list__layer > .sm-components-icon-visible').exists()).toBeTruthy();
-    expect(wrapper.find('.header-text > .sm-components-icon-partially-visible').exists()).toBeTruthy();
+    expect(wrapper.find('.header-text > .sm-components-icon-visible').exists()).toBeTruthy();
     wrapper.vm.sourceList[1].visible = false;
     mockOnOptions.layerupdatechanged();
+  });
+
+  it('onDrop', async done => {
+    wrapper = mount(SmLayerList);
+    const layerCatalogs = [
+      {
+        dataSource: {
+          serverId: '',
+          type: ''
+        },
+        id: 'ms-fill',
+        title: 'ms-fill',
+        type: 'fill',
+        visible: true,
+        renderSource: {},
+        renderLayers: ['ms-fill'],
+        themeSetting: {}
+      },
+      {
+        dataSource: {
+          serverId: '',
+          type: ''
+        },
+        id: 'ms-background',
+        title: 'ms-background',
+        type: 'background',
+        visible: true,
+        renderSource: {},
+        renderLayers: ['ms-background'],
+        themeSetting: {}
+      },
+      {
+        children: [],
+        id: 'ms-group',
+        title: '未命名分组',
+        type: 'group',
+        visible: true
+      },
+    ];
+    let mockOnOptions;
+    const webmap = {
+      getLayerList: () => layerCatalogs,
+      getAppreciableLayers: () => layerCatalogs,
+      rectifyLayersOrder: jest.fn(),
+      un: jest.fn(),
+      on: jest.fn(options => {
+        mockOnOptions = options;
+      })
+    };
+    wrapper.vm.viewModel.setMap({
+      webmap
+    });
+    wrapper.vm.$options.loaded.call(wrapper.vm);
+    await wrapper.vm.$nextTick();
+    const dropToBottom = {
+      node: {
+        eventKey: 'ms-background',
+        pos: '0-1'
+      },
+      dragNode: {
+        eventKey: 'ms-fill'
+      },
+      dragNodesKeys: ['ms-fill'],
+      dropToGap: true,
+      dropPosition: 2
+    };
+    const dropIntoLayer = {
+      node: {
+        eventKey: 'ms-background',
+        pos: '0-0'
+      },
+      dragNode: {
+        eventKey: 'ms-fill'
+      },
+      dragNodesKeys: ['ms-fill'],
+      dropToGap: false,
+      dropPosition: 0
+    };
+    const dropIntoGroup = {
+      node: {
+        eventKey: 'ms-group',
+        pos: '0-3'
+      },
+      dragNode: {
+        eventKey: 'ms-fill'
+      },
+      dragNodesKeys: ['ms-fill'],
+      dropToGap: false,
+      dropPosition: 0
+    };
+    const layerGroupVm = wrapper.find(LayerGroup).vm;
+    expect(layerGroupVm.treeData.length).toBe(3);
+    expect(layerGroupVm.treeData[0].key).toBe('ms-fill');
+    wrapper.vm.onDropHanlder(dropToBottom);
+    expect(layerGroupVm.treeData[0].key).toBe('ms-background');
+    wrapper.vm.onDropHanlder(dropIntoLayer);
+    expect(layerGroupVm.treeData.length).toBe(3);
+    wrapper.vm.onDropHanlder(dropIntoGroup);
+    expect(layerGroupVm.treeData.length).toBe(2);
+    done();
   });
 });

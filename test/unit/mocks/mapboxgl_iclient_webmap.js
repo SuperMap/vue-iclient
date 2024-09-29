@@ -20,8 +20,7 @@ class WebMap extends Evented {
       'mapbeforeremove',
       'mapinitialized',
       'layercreatefailed',
-      'layerupdatechanged',
-      'layeraddchanged'
+      'layerupdatechanged'
     ];
     this._initWebMap();
     if (this.mapOptions) {
