@@ -160,6 +160,8 @@ class WebMap extends Evented {
   setCenter() {}
   setZoom() {}
   resize() {}
+  setWithCredentials() {}
+  setProxy() {}
 
   getLegends() {
     return [
