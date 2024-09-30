@@ -158,12 +158,13 @@ export default new Vue({
     let topLayers = layers.filter(item => item.layerOrder && item.layerOrder.toLowerCase() === 'top');
     const migrationLayers = topLayers.filter(item => item.type === 'MIGRATION');
     const leftTopLayers = topLayers.filter(item => item.type !== 'MIGRATION');
-    topLayers = migrationLayers.concat(leftTopLayers);
     const bottomLayers = layers.filter(item => item.layerOrder && item.layerOrder.toLowerCase() === 'bottom');
     const autoLayers = layers.filter(item => !item.layerOrder || item.layerOrder.toLowerCase() === 'auto');
     if (revert) {
+      topLayers = leftTopLayers.concat(migrationLayers);
       return bottomLayers.concat(autoLayers, topLayers);
     }
+    topLayers = migrationLayers.concat(leftTopLayers);
     return topLayers.concat(autoLayers, bottomLayers);
   }
 });
