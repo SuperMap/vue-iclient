@@ -11,7 +11,7 @@
     :mapTarget="mapTarget"
     @change="handleChange"
   >
-    <div slot="identify" >
+    <div>
       <ul
         :class="[
           autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
