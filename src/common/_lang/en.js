@@ -177,7 +177,8 @@ export default {
     query: 'Query',
     queryJob: 'Task',
     queryResult: 'Result',
-    attributeCondition: 'Attribute Condition',
+    attributeCondition: 'Query Condition',
+    keyQueryCondition: 'Search keyword',
     spatialFilter: 'Spatial Filter',
     mapBounds: 'Query within the whole map extent',
     currentMapBounds: 'Query within current viewbound',
@@ -189,7 +190,9 @@ export default {
     attributeValue: 'Attribute Value',
     noResults: 'The query result is empty!',
     queryFailed: 'Query failed!',
-    seviceNotSupport: 'This service does not support queries!'
+    seviceNotSupport: 'This service does not support queries!',
+    keyQueryPlaceholder: 'Please enter the search keyword',
+    sqlQueryPlaceholder: 'Please enter the SQL expression'
   },
   identify: {
     layerNotExit: "The layer '{layer}' does not exist in the map's style",

@@ -68,7 +68,7 @@ let layerStyle = {
 图层样式
 
 | 参数       | 说明                         | 类型                        | 可选值 | 默认值 |
-| :--------- | :--------------------------- | :-------------------------- | :----- | :----- |
+|:-----------|:---------------------------|:----------------------------|:-------|:-------|
 | circle     | MapboxGL 点图层样式配置      | [CircleStyle](#circlestyle) | -      | -      |
 | symbol     | MapboxGL symbol 图层样式配置 | [SymbolStyle](#symbolstyle) | -      | -      |
 | line       | MapboxGL 线图层样式配置      | [LineStyle](#linestyle)     | -      | -      |
@@ -103,7 +103,7 @@ let circleStyle = new VueiClient.commontypes.CircleStyle(
 点样式
 
 | 参数   | 说明                        | 类型                                                                       | 可选值 | 默认值 |
-| :----- | :-------------------------- | :------------------------------------------------------------------------- | :----- | :----- |
+|:-------|:--------------------------|:---------------------------------------------------------------------------|:-------|:-------|
 | paint  | MapboxGL 点图层 Paint 配置  | [paint](https://docs.mapbox.com/mapbox-gl-js/style-spec/#paint-property)   | -      | -      |
 | layout | MapboxGL 点图层 Layout 配置 | [layout](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
 
@@ -130,7 +130,7 @@ let lineStyle = new VueiClient.commontypes.LineStyle(
 线样式
 
 | 参数   | 说明                        | 类型                                                                       | 可选值 | 默认值 |
-| :----- | :-------------------------- | :------------------------------------------------------------------------- | :----- | :----- |
+|:-------|:--------------------------|:---------------------------------------------------------------------------|:-------|:-------|
 | paint  | MapboxGL 点图层 Paint 配置  | [paint](https://docs.mapbox.com/mapbox-gl-js/style-spec/#paint-property)   | -      | -      |
 | layout | MapboxGL 点图层 Layout 配置 | [layout](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
 
@@ -157,7 +157,7 @@ let fillStyle = new VueiClient.commontypes.FillStyle(
 面样式
 
 | 参数   | 说明                        | 类型                                                                       | 可选值 | 默认值 |
-| :----- | :-------------------------- | :------------------------------------------------------------------------- | :----- | :----- |
+|:-------|:--------------------------|:---------------------------------------------------------------------------|:-------|:-------|
 | paint  | MapboxGL 点图层 Paint 配置  | [paint](https://docs.mapbox.com/mapbox-gl-js/style-spec/#paint-property)   | -      | -      |
 | layout | MapboxGL 点图层 Layout 配置 | [layout](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
 
@@ -187,7 +187,7 @@ let symbolStyle = new VueiClient.commontypes.SymbolStyle(
 ```
 
 | 参数   | 说明                        | 类型                                                                       | 可选值 | 默认值 |
-| :----- | :-------------------------- | :------------------------------------------------------------------------- | :----- | :----- |
+|:-------|:--------------------------|:---------------------------------------------------------------------------|:-------|:-------|
 | paint  | MapboxGL 点图层 Paint 配置  | [paint](https://docs.mapbox.com/mapbox-gl-js/style-spec/#paint-property)   | -      | -      |
 | layout | MapboxGL 点图层 Layout 配置 | [layout](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
 
@@ -229,7 +229,7 @@ let heatMapStyle = new VueiClient.commontypes.HeatMapStyle(
 ```
 
 | 参数   | 说明                        | 类型                                                                       | 可选值 | 默认值 |
-| :----- | :-------------------------- | :------------------------------------------------------------------------- | :----- | :----- |
+|:-------|:--------------------------|:---------------------------------------------------------------------------|:-------|:-------|
 | paint  | MapboxGL 点图层 Paint 配置  | [paint](https://docs.mapbox.com/mapbox-gl-js/style-spec/#paint-property)   | -      | -      |
 | layout | MapboxGL 点图层 Layout 配置 | [layout](https://docs.mapbox.com/mapbox-gl-js/style-spec/#layout-property) | -      | -      |
 
@@ -245,14 +245,15 @@ let iServerMapParameter = new VueiClient.commontypes.iServerMapParameter({
 });
 ```
 
-| 参数            | 说明           | 类型               | 可选值 | 默认值                   |
-| :-------------- | :------------- | :----------------- | :----- | :----------------------- |
-| url             | 服务地址       | string             | -      | -                        |
-| layerName       | 查询图层名     | string             | -      | -                        |
-| attributeFilter | 属性过滤条件   | string             | -      | -                        |
-| maxFeatures     | 要素最大返回数 | number             | -      | 20                       |
-| name            | 服务名称       | string             | -      | 'SuperMap Rest 地图服务' |
-| proxy           | 代理地址       | string \| function | -      | -                        |
+| 参数            | 说明           | 类型               | 可选值             | 默认值                   |
+|:----------------|:-------------|:-------------------|:-------------------|:-------------------------|
+| url             | 服务地址       | string             | -                  | -                        |
+| layerName       | 查询图层名     | string             | -                  | -                        |
+| attributeFilter | 属性过滤条件   | string             | -                  | -                        |
+| maxFeatures     | 要素最大返回数 | number             | -                  | 20                       |
+| name            | 服务名称       | string             | -                  | 'SuperMap Rest 地图服务' |
+| proxy           | 代理地址       | string \| function | -                  | -                        |
+| queryMode       | 查询方式       | string             | 'KEYWORD' \| 'SQL' | 'SQL'                    |
 > 注意：旧的 RestMapParameter 基础类型仍然生效，且配置（与 iServerMapParameter 一致）不变。
 
 ## iServerDataParameter
@@ -267,14 +268,15 @@ let iServerDataParameter = new VueiClient.commontypes.iServerDataParameter({
 });
 ```
 
-| 参数            | 说明           | 类型               | 可选值 | 默认值                   |
-| :-------------- | :------------- | :----------------- | :----- | :----------------------- |
-| url             | 服务地址       | string             | -      | -                        |
-| dataName        | 查询数据集名   | string[]           | -      | -                        |
-| attributeFilter | 属性过滤条件   | string             | -      | -                        |
-| maxFeatures     | 要素最大返回数 | number             | -      | 20                       |
-| name            | 服务名称       | string             | -      | 'SuperMap Rest 数据服务' |
-| proxy           | 代理地址       | string \| function | -      | -                        |
+| 参数            | 说明           | 类型               | 可选值             | 默认值                   |
+|:----------------|:-------------|:-------------------|:-------------------|:-------------------------|
+| url             | 服务地址       | string             | -                  | -                        |
+| dataName        | 查询数据集名   | string[]           | -                  | -                        |
+| attributeFilter | 属性过滤条件   | string             | -                  | -                        |
+| maxFeatures     | 要素最大返回数 | number             | -                  | 20                       |
+| name            | 服务名称       | string             | -                  | 'SuperMap Rest 数据服务' |
+| proxy           | 代理地址       | string \| function | -                  | -                        |
+| queryMode       | 查询方式       | string             | 'KEYWORD' \| 'SQL' | 'SQL'                    |
 > 注意：旧的 RestDataParameter 基础类型仍然生效，且配置（与 iServerDataParameter 一致）不变。
 
 ## iPortalDataParameter
@@ -288,13 +290,14 @@ let iPortalDataParameter = new VueiClient.commontypes.iPortalDataParameter({
 });
 ```
 
-| 参数            | 说明                | 类型    | 可选值 | 默认值                  |
-| :-------------- | :------------------ | :------ | :----- | :---------------------- |
-| url             | 服务地址            | string  | -      | -                       |
-| attributeFilter | 属性过滤条件        | string  | -      | -                       |
-| maxFeatures     | 要素最大返回数      | number  | -      | 20                      |
-| name            | 服务名称            | string  | -      | 'SuperMap iPortal 数据' |
-| withCredentials | 请求是否携带 cookie | boolean | -      | false                   |
+| 参数            | 说明                | 类型    | 可选值             | 默认值                  |
+|:----------------|:------------------|:--------|:-------------------|:------------------------|
+| url             | 服务地址            | string  | -                  | -                       |
+| attributeFilter | 属性过滤条件        | string  | -                  | -                       |
+| maxFeatures     | 要素最大返回数      | number  | -                  | 20                      |
+| name            | 服务名称            | string  | -                  | 'SuperMap iPortal 数据' |
+| withCredentials | 请求是否携带 cookie | boolean | -                  | false                   |
+| queryMode       | 查询方式            | string  | 'KEYWORD' \| 'SQL' | 'SQL'                   |
 
 ## GeoJSONParameter
 
@@ -332,6 +335,6 @@ let geoJSONParameter = new VueiClient.commontypes.GeoJSONParameter({
 ```
 
 | 参数        | 说明           | 类型                            | 可选值 | 默认值 |
-| :---------- | :------------- | :------------------------------ | :----- | :----- |
+|:------------|:-------------|:--------------------------------|:-------|:-------|
 | geoJSON     | GeoJSON 数据   | [GeoJSON](https://geojson.org/) | -      | -      |
 | maxFeatures | 要素最大返回数 | number                          | -      | 20     |

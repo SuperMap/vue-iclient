@@ -1,39 +1,65 @@
 import airport from './data/airport.json';
-const fakeDataServiceResult = {
-  result: {
-    datasetInfos: [{
-      fieldInfos:[{name: "SmID", caption: "SmID", type: "INT32"}, {name: "NAME", caption: "名称", type: "WTEXT"}]
-    }],
-    currentCount: 1,
-    totalCount: 1,
-    features: {
-      type: 'FeatureCollection',
+
+const fakeMapServiceResult = {
+  recordsets: [
+    {
+      datasetName: 'Capitals@World#1',
       features: [
         {
-          type: 'Feature',
-          properties: {
-            SMID: '1',
-            NAME: '四川省'
-          },
+          fieldNames: ['SMID', 'NAME'],
+          fieldValues: ['1', '四川省'],
           geometry: {
-            type: 'MultiPolygon',
-            coordinates: [
-              [
-                [
-                  [101.84004968, 26.0859968692659],
-                  [101.95654423, 26.0888446242659],
-                  [101.84004968, 26.0859968692659]
-                ]
-              ]
-            ]
+            id: 1,
+            center: {
+              y: 7.105427357601002e-15,
+              x: 0
+            },
+            style: null,
+            parts: [5],
+            partTopo: [1],
+            points: [
+              {
+                y: 85.05112877980649,
+                x: -180
+              },
+              {
+                y: -85.05112877980648,
+                x: -180
+              },
+              {
+                y: -85.05112877980648,
+                x: 180
+              },
+              {
+                y: 85.05112877980649,
+                x: 180
+              },
+              {
+                y: 85.05112877980649,
+                x: -180
+              }
+            ],
+            type: 'REGION'
           }
         }
-      ]
+      ],
+      fieldCaptions: ['SMID', '名称'],
+      fieldTypes: ['INT32', 'WTEXT'],
+      fields: ['SMID', 'NAME']
     }
-  }
+  ],
+  totalCount: 1,
+  currentCount: 1,
+  customResponse: null,
 };
-// const fakeDataServiceResult =
-// {'queryMode':'SpatialQuery','queryParameters':{'customParams':null,'prjCoordSys':null,'expectCount':20,'networkType':"LINE",'queryOption':"ATTRIBUTEANDGEOMETRY",'queryParams':[{'name':"Capitals@World.1",'attributeFilter':"SmID%26gt;0"}],'startRecord':0,'holdTime':10,'returnCustomResult':false,'returnFeatureWithFieldCaption':false},'geometry':{'id':0,'style':null,'parts':[5],'points':[{'id':"SuperMap.Geometry_7",'bounds':null,'SRID':null,'x':88.78538087499851,'y':21.676702703064578,'tag':null,'type':"Point",'geometryType':"Point"},{'id':"SuperMap.Geometry_8",'bounds':null,'SRID':null,'x':119.89866212499828,'y':21.676702703064578,'tag':null,'type':"Point",'geometryType':"Point"},{'id':"SuperMap.Geometry_9",'bounds':null,'SRID':null,'x':119.89866212499828,'y':49.737884922662886,'tag':null,'type':"Point",'geometryType':"Point"},{'id':"SuperMap.Geometry_10",'bounds':null,'SRID':null,'x':88.78538087499851,'y':49.737884922662886,'tag':null,'type':"Point",'geometryType':"Point"},{'id':"SuperMap.Geometry_11",'bounds':null,'SRID':null,'x':88.78538087499851,'y':21.676702703064578,'tag':null,'type':"Point",'geometryType':"Point"}],'type':"REGION",'prjCoordSys':{'epsgCode':null}},'spatialQueryMode':"INTERSECT"};
+const fakeDataServiceResult = {
+  datasetInfos: [{
+    fieldInfos:[{name: "SmID", caption: "SmID", type: "INT32"}, {name: "NAME", caption: "名称", type: "WTEXT"}]
+  }],
+  currentCount: 1,
+  totalCount: 1,
+  features: fakeMapServiceResult.recordsets[0].features
+};
 
 const fakeAddressMatch = {
   result: [
@@ -47,71 +73,6 @@ const fakeAddressMatch = {
       filters: ['北京市', '海淀区']
     }
   ]
-};
-
-const fakeMapServiceResult = {
-  result: {
-    recordsets: [
-      {
-        datasetName: 'Capitals@World#1',
-        features: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              properties: {
-                SMID: '1',
-                NAME: '四川省'
-              },
-              geometry: {
-                type: 'MultiPolygon',
-                coordinates: [
-                  [
-                    [
-                      [101.84004968, 26.0859968692659],
-                      [181.95654423, 26.0888446242659],
-                      [101.95654423, 26.0888446242659],
-                      [101.84004968, 26.0859968692659]
-                    ]
-                  ]
-                ]
-              }
-            }
-          ]
-        },
-        fieldCaptions: [
-          'SMID',
-          '名称'
-        ],
-        fieldTypes: [
-          'INT32',
-          'DOUBLE',
-          'DOUBLE',
-          'INT32',
-          'INT32',
-          'INT32',
-          'INT32',
-          'DOUBLE',
-          'WTEXT',
-          'WTEXT',
-          'WTEXT',
-          'WTEXT',
-          'WTEXT',
-          'WTEXT',
-          'DOUBLE',
-          'WTEXT'
-        ],
-        fields: [
-          'SMID',
-          'NAME'
-        ]
-      }
-    ],
-    totalCount: 1,
-    currentCount: 1,
-    customResponse: null,
-    succeed: true
-  }
 };
 
 const featureResults = {
@@ -1881,6 +1842,29 @@ const fieldsJson = [
   }
 ];
 
+const REST_DATA_FIELDS_RESULT = [
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'SmID',
+    caption: 'SmID',
+    type: 'INT32',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  },
+  {
+    isRequired: false,
+    defaultValue: '',
+    name: 'NAME',
+    caption: '名称',
+    type: 'WTEXT',
+    maxLength: 60,
+    isZeroLengthAllowed: true,
+    isSystemField: false
+  }
+]
+
 const drill_map_mapjson = {
   extent: {
     leftBottom: {
@@ -2416,6 +2400,7 @@ module.exports = {
   searchGeocoding,
   search_mapjson,
   fieldsJson,
+  REST_DATA_FIELDS_RESULT,
   datas_beijing,
   portal_data,
   portal_data1,
@@ -2447,3 +2432,4 @@ module.exports = {
   wmsCapabilitiesText,
   webmap_MAPBOXSTYLE_Tile
 };
+

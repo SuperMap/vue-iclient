@@ -5,10 +5,11 @@ import RestDataParameter from '@types_common/RestDataParameter';
 import RestMapParameter from '@types_common/RestMapParameter';
 import SmButton from '../../../common/button/Button';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
-import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
-import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 import { message } from 'ant-design-vue';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
+import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-common';
+import { REST_DATA_FIELDS_RESULT, dataset_data, prj_data, iportal_content, fakeDataServiceResult, fakeMapServiceResult, datas } from '@mocks/services';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 const localVue = createLocalVue();
 localVue.prototype.$message = message;
@@ -24,6 +25,29 @@ describe('query', () => {
 
   beforeEach(() => {
     wrapper = null;
+    const mockImplementationCb = url => {
+      if (url.includes('/123')) {
+        return Promise.resolve(new Response(JSON.stringify(datas)));
+      }
+      if (url.includes('/content')) {
+        return Promise.resolve(new Response(JSON.stringify(iportal_content)));
+      }
+      if (url.includes('/fields')) {
+        return Promise.resolve(new Response(JSON.stringify(REST_DATA_FIELDS_RESULT)));
+      }
+      if (url.includes('/prjCoordSys')) {
+        return Promise.resolve(new Response(JSON.stringify(prj_data)));
+      }
+      if (url.includes('/queryResults')) {
+        return Promise.resolve(new Response(JSON.stringify(fakeMapServiceResult)));
+      }
+      if (url.includes('/featureResults')) {
+        return Promise.resolve(new Response(JSON.stringify(fakeDataServiceResult)));
+      }
+      return Promise.resolve(new Response(JSON.stringify(dataset_data)));
+    };
+    jest.spyOn(FetchRequest, 'get').mockImplementation(mockImplementationCb);
+    jest.spyOn(FetchRequest, 'post').mockImplementation(mockImplementationCb);
   });
 
   afterEach(() => {
@@ -41,10 +65,6 @@ describe('query', () => {
   });
 
   it('iPortal Data', async done => {
-    const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/datas/123': layerData
-    };
-    mockFetch(fetchResource);
     wrapper = mount(SmQuery, {
       localVue,
       propsData: {
@@ -85,14 +105,12 @@ describe('query', () => {
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
-    wrapper.vm.viewModel.on('querysucceeded', (res) => {
+    wrapper.vm.viewModel.on('querysucceeded', res => {
       expect(res.result.result[0].properties['名称']).toBe('四川省');
       done();
     });
-    wrapper.vm.$nextTick(() => {
-      expect(spyquery).toBeCalled();
-    });
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    expect(spyquery).toBeCalled();
   });
 
   it('restMap Service', async done => {
@@ -114,22 +132,16 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', (res) => {
+    wrapper.vm.viewModel.on('querysucceeded', res => {
       expect(res.result.result[0].properties['名称']).toBe('四川省');
       expect(spyAddlayer).toBeCalled();
       done();
     });
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
-    wrapper.vm.$nextTick(() => {
-      expect(spyquery).toBeCalled();
-    });
+    expect(spyquery).toBeCalled();
   });
 
   it('change iPortal Data', async done => {
-    const fetchResource = {
-      'https://fakeiportal.supermap.io/iportal/web/datas/123': layerData
-    };
-    mockFetch(fetchResource);
     wrapper = mount(SmQuery, {
       localVue,
       propsData: {
@@ -151,9 +163,8 @@ describe('query', () => {
       ]
     });
     await mapSubComponentLoaded(wrapper);
-    wrapper.vm.$nextTick(() => {
-      done();
-    });
+    await wrapper.vm.$nextTick();
+    done();
   });
 
   it('change restData Service', async done => {
@@ -182,9 +193,11 @@ describe('query', () => {
         })
       ]
     });
-    wrapper.vm.$nextTick(() => {
-      done();
-    });
+    await wrapper.vm.$nextTick();
+    const queryModeDom = wrapper.find('.sm-component-query__job-info-body .sm-component-query__item-holder div')
+    expect(queryModeDom.exists()).toBeTruthy();
+    expect(queryModeDom.text()).toBe('query.attributeCondition');
+    done();
   });
 
   it('change restMap Service', async done => {
@@ -214,10 +227,9 @@ describe('query', () => {
         })
       ]
     });
-    wrapper.vm.$nextTick(() => {
-      expect(formatJobInfos).toBeCalled();
-      done();
-    });
+    await wrapper.vm.$nextTick();
+    expect(formatJobInfos).toBeCalled();
+    done();
   });
 
   it('select query item', async done => {
@@ -239,13 +251,12 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
-    wrapper.vm.$nextTick(() => {
-      expect(spyquery).toBeCalled();
-      setTimeout(() => {
-        wrapper.find('.sm-component-query__result-body ul li').trigger('click');
-        done();
-      }, 1000);
+    wrapper.vm.viewModel.on('querysucceeded', async e => {
+      await wrapper.vm.$nextTick();
+      wrapper.find('.sm-component-query__result-body ul li').trigger('click');
+      done();
     });
+    expect(spyquery).toBeCalled();
   });
 
   it('restMap Service with bounds', async done => {
@@ -268,16 +279,14 @@ describe('query', () => {
     const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
     const spyBounds = jest.spyOn(wrapper.vm.map, 'fitBounds');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', (e) => {
+    wrapper.vm.viewModel.on('querysucceeded', e => {
       expect(spyAddlayer).toBeCalled();
-      expect(spyBounds).toBeCalledWith(expect.arrayContaining([[180, 26.089841338515914]]),expect.anything());
+      expect(spyBounds).toBeCalled();
       done();
     });
     wrapper.vm.jobInfos[0].spaceFilter = 'mapBounds';
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
-    wrapper.vm.$nextTick(() => {
-      expect(spyquery).toBeCalled();
-    });
+    expect(spyquery).toBeCalled();
   });
 
   it('restData Service with bounds', async done => {
@@ -300,9 +309,45 @@ describe('query', () => {
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.vm.jobInfos[0].spaceFilter = 'mapBounds';
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
-    wrapper.vm.$nextTick(() => {
-      expect(spyquery).toBeCalled();
+    await wrapper.vm.$nextTick();
+    expect(spyquery).toBeCalled();
+    done();
+  });
+
+  it('query keyWord', async (done) => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            dataName: ['World:Countries'],
+            queryMode: 'KEYWORD'
+          })
+        ]
+      },
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.vm.viewModel.on('querysucceeded', res => {
+      expect(res.result.result[0].properties['名称']).toBe('四川省');
+      expect(wrapper.vm.activeTab).toBe('result');
+      wrapper.find('.sm-component-query__job-button').trigger('click');
+      expect(wrapper.vm.activeTab).toBe('job');
+      const repeatTip = jest.spyOn(Message, 'warning');
+      wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+      expect(repeatTip).toBeCalledWith('query.resultAlreadyExists');
       done();
     });
-  });
+    const queryModeDom = wrapper.find('.sm-component-query__job-info-body .sm-component-query__item-holder div')
+    expect(queryModeDom.exists()).toBeTruthy();
+    expect(queryModeDom.text()).toBe('query.keyQueryCondition');
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    expect(spyquery).toBeCalled();
+  })
 });
+

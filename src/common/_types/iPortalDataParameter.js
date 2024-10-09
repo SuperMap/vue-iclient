@@ -8,5 +8,6 @@ export default class iPortalDataParameter {
     this.maxFeatures = options.maxFeatures || 20;
     this.name = options.name || geti18n().t('commontypes.iportalData');
     this.withCredentials = options.withCredentials || false;
+    this.queryMode = options.queryMode || 'SQL';
   }
 }

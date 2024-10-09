@@ -182,7 +182,8 @@ export default {
     query: '查询',
     queryJob: '任务',
     queryResult: '结果',
-    attributeCondition: '属性条件',
+    attributeCondition: '查询条件',
+    keyQueryCondition: '查询关键字',
     spatialFilter: '空间过滤器',
     mapBounds: '返回地图全图范围的要素',
     currentMapBounds: '返回当前地图范围内的要素',
@@ -194,7 +195,9 @@ export default {
     attributeValue: '属性值',
     noResults: '查询结果为空！',
     queryFailed: '查询失败!',
-    seviceNotSupport: '此服务不支持查询！'
+    seviceNotSupport: '此服务不支持查询！',
+    keyQueryPlaceholder: '请输入关查询键字',
+    sqlQueryPlaceholder: '请输入SQL表达式'
   },
   identify: {
     layerNotExit: "地图上不存在该图层: '{layer}'",

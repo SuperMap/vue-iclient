@@ -21,13 +21,17 @@ export default function getFeatures(dataset) {
       toIndex,
       hasGeometry,
       orderBy,
-      returnFeaturesOnly
+      returnFeaturesOnly,
+      bounds,
+      keyWord
     } = dataset;
     if (dataset && (url || geoJSON) && type) {
       let queryInfo = {
         maxFeatures: maxFeatures,
         attributeFilter: attributeFilter,
-        orderBy
+        orderBy,
+        bounds,
+        keyWord
       };
       if (type === 'iServer') {
         let datasetInfo;
@@ -79,6 +83,9 @@ export default function getFeatures(dataset) {
     if (superMapService) {
       superMapService.on({
         getdatasucceeded: function(data) {
+          resolve(data);
+        },
+        featureisempty: function(data) {
           resolve(data);
         },
         getdatafailed: function(e) {

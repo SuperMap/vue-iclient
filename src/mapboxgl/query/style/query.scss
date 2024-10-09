@@ -1,5 +1,6 @@
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
+@import '../../../common/input/style/input.scss';
 @import '../../../common/select/style/select.scss';
 @import '../../../common/button/style/button.scss';
 @import '../../../common/empty/style/empty.scss';
@@ -71,21 +72,24 @@
     margin: 0 -16px;
     background-color: $collapse-card-secondary-heard-bg;
   }
-  @include e((attribute, spatial-filter)) {
+  @include e(item-holder) {
+    margin-top: 8px;
+    &:first-child {
+      margin-top: 0;
+    }
     > div {
       &:first-child {
         line-height: 16px;
       }
     }
+    .sm-component-input {
+      font-size: 12px;
+    }
+    .sm-component-input, .sm-component-input-suffix {
+      color: inherit;
+    }
   }
-  @include e(attribute-name) {
-    text-align: center;
-    color: $primary-color;
-    font-size: 14px;
-    line-height: 22px;
-    margin: 4px 0 12px;
-  }
-  @include e(a-select) {
+  @include e(item-config) {
     margin-top: 8px;
     font-size: 12px;
     width: 100%;

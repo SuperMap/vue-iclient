@@ -1,84 +1,44 @@
 <template>
-  <sm-collapse-card
-    v-show="isShow"
-    :icon-class="iconClass"
-    :icon-position="position"
-    :header-name="headerName"
-    :auto-rotate="autoRotate"
-    :collapsed="collapsed"
-    :background="background"
-    :textColor="textColor"
-    :split-line="splitLine"
-    class="sm-component-query"
-  >
+  <sm-collapse-card v-show="isShow" :icon-class="iconClass" :icon-position="position" :header-name="headerName" :auto-rotate="autoRotate" :collapsed="collapsed" :background="background" :textColor="textColor" :split-line="splitLine" class="sm-component-query">
     <div class="sm-component-query__body" :style="getTextColorStyle">
       <div class="sm-component-query__choose-panel clearfix">
-        <div
-          :class="{ 'sm-component-query__job-button': true, 'is-active': activeTab === 'job', disabled: isQuery }"
-          :title="$t('query.queryJob')"
-          @click="activeTab = 'job'"
-        >
+        <div :class="{ 'sm-component-query__job-button': true, 'is-active': activeTab === 'job', disabled: isQuery }" :title="$t('query.queryJob')" @click="activeTab = 'job'">
           {{ $t('query.queryJob') }}
         </div>
-        <div
-          :class="{ 'sm-component-query__result-button': true, 'is-active': activeTab === 'result' }"
-          :title="$t('query.queryResult')"
-          @click="activeTab = 'result'"
-        >
+        <div :class="{ 'sm-component-query__result-button': true, 'is-active': activeTab === 'result' }" :title="$t('query.queryResult')" @click="activeTab = 'result'">
           {{ $t('query.queryResult') }}
         </div>
       </div>
       <div v-if="activeTab === 'job'" class="sm-component-query__job-info">
-        <div
-          v-for="(jobInfo, index) in jobInfos"
-          v-show="jobInfos.length > 0"
-          :key="index"
-          :style="headingTextColorStyle"
-          class="sm-component-query__job-info-panel"
-        >
-          <div
-            class="sm-component-query__job-info-header"
-            @click="activePanelIndex = activePanelIndex === index ? null : index"
-          >
+        <div v-for="(jobInfo, index) in jobInfos" v-show="jobInfos.length > 0" :key="index" :style="headingTextColorStyle" class="sm-component-query__job-info-panel">
+          <div class="sm-component-query__job-info-header" @click="activePanelIndex = activePanelIndex === index ? null : index">
             <span :title="jobInfo.queryParameter.name" class="sm-component-query__job-info-name">{{
               jobInfo.queryParameter.name
             }}</span>
-            <i
-              :class="
-                activePanelIndex !== index ? 'sm-components-icon-solid-triangle-right' : 'sm-components-icon-solid-triangle-down'
-              "
-            />
+            <i :class="activePanelIndex !== index ? 'sm-components-icon-solid-triangle-right' : 'sm-components-icon-solid-triangle-down'
+                " />
           </div>
-          <div
-            v-if="jobInfo.queryParameter.attributeFilter"
-            :class="{ 'sm-component-query__job-info-body': true, hidden: activePanelIndex !== index }"
-          >
-            <div class="sm-component-query__attribute">
-              <div>{{ $t('query.attributeCondition') }}</div>
-              <div class="sm-component-query__attribute-name">
-                {{ jobInfo.queryParameter.attributeFilter }}
-              </div>
+          <div :class="{ 'sm-component-query__job-info-body': true, hidden: activePanelIndex !== index }">
+            <div class="sm-component-query__item-holder">
+              <template v-if="jobInfo.queryParameter.queryMode === 'KEYWORD'">
+                <div>{{ $t('query.keyQueryCondition') }}</div>
+                <sm-input v-model="jobInfo.queryParameter.attributeFilter" allowClear class="sm-component-query__item-config" :style="getTextColorStyle" :placeholder="$t('query.keyQueryPlaceholder')" />
+              </template>
+              <template v-else>
+                <div>{{ $t('query.attributeCondition') }}</div>
+                <sm-input v-model="jobInfo.queryParameter.attributeFilter" allowClear class="sm-component-query__item-config" :style="getTextColorStyle" :placeholder="$t('query.sqlQueryPlaceholder')" />
+              </template>
             </div>
-            <div class="sm-component-query__spatial-filter">
+            <div class="sm-component-query__item-holder">
               <div>{{ $t('query.spatialFilter') }}</div>
-              <sm-select
-                v-model="jobInfo.spaceFilter"
-                class="sm-component-query__a-select"
-                :get-popup-container="getPopupContainer"
-                :style="getTextColorStyle"
-              >
+              <sm-select v-model="jobInfo.spaceFilter" class="sm-component-query__item-config" :get-popup-container="getPopupContainer" :style="getTextColorStyle">
                 <sm-select-option v-for="item in selectOptions" :key="item.value" :value="item.value">
                   {{ item.label }}
                 </sm-select-option>
               </sm-select>
             </div>
             <div class="sm-component-query__query-button">
-              <sm-button
-                type="primary"
-                size="small"
-                class="sm-component-query__a-button"
-                @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)"
-              >
+              <sm-button type="primary" size="small" class="sm-component-query__a-button" @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)">
                 {{ $t('query.applicate') }}
               </sm-button>
             </div>
@@ -101,14 +61,7 @@
           </div>
           <div class="sm-component-query__result-body">
             <ul>
-              <li
-                v-for="(item, index) in queryResult.result"
-                :key="index"
-                :title="getInfoOfSmid(item.properties)"
-                role="option"
-                :aria-selected="activeResultIndex === index"
-                @click="queryResultListClicked($event, index)"
-              >
+              <li v-for="(item, index) in queryResult.result" :key="index" :title="getInfoOfSmid(item.properties)" role="option" :aria-selected="activeResultIndex === index" @click="queryResultListClicked($event, index)">
                 {{ getInfoOfSmid(item.properties) }}
               </li>
             </ul>
@@ -116,14 +69,7 @@
         </template>
       </div>
     </div>
-    <TablePopup
-      v-show="false"
-      ref="queryTablePopup"
-      v-bind="tablePopupProps"
-      :split-line="splitLine"
-      :textColor="textColor"
-      :background="background"
-    />
+    <TablePopup v-show="false" ref="queryTablePopup" v-bind="tablePopupProps" :split-line="splitLine" :textColor="textColor" :background="background" />
   </sm-collapse-card>
 </template>
 <script>
@@ -135,6 +81,7 @@ import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import QueryViewModel from './QueryViewModel.js';
+import SmInput from 'vue-iclient/src/common/input/Input.vue';
 import SmSelect from 'vue-iclient/src/common/select/Select.vue';
 import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
 import SmButton from 'vue-iclient/src/common/button/Button.vue';
@@ -149,6 +96,7 @@ import isEqual from 'lodash.isequal';
 export default {
   name: 'SmQuery',
   components: {
+    SmInput,
     SmSelect,
     SmSelectOption,
     SmButton,
@@ -291,7 +239,7 @@ export default {
                 item.name &&
                   this.jobInfos.push({
                     spaceFilter: 'currentMapBounds',
-                    queryParameter: item
+                    queryParameter: Object.assign({}, item, { queryMode: item.queryMode || 'SQL' })
                   });
               }, this);
           }
@@ -301,7 +249,7 @@ export default {
     queryButtonClicked(jobInfo, value) {
       // @ts-ignore
       Message.destroy();
-      if (this.jobInfo === jobInfo && this.selectValue === value && this.queryResult) {
+      if (this.jobInfo === JSON.stringify(jobInfo) && this.selectValue === value && this.queryResult) {
         // @ts-ignore
         Message.warning(this.$t('query.resultAlreadyExists'));
         return;
@@ -310,9 +258,9 @@ export default {
       this.popup && this.popup.remove() && (this.popup = null);
       this.isQuery = true;
       this.activeTab = 'result';
-      this.jobInfo = jobInfo;
+      this.jobInfo = JSON.stringify(jobInfo);
       this.selectValue = value;
-      this.query(this.jobInfo, this.selectValue);
+      this.query(jobInfo, this.selectValue);
     },
     /**
      * 开始查询。

@@ -5,8 +5,7 @@ import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient/src/commo
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
-import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
-
+import getFeatures from 'vue-iclient/src/common/_utils/get-features';
 /**
  * @class QueryViewModel
  * @classdesc 查询组件功能类。
@@ -55,7 +54,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
    * @param {iPortalDataParameter|RestDataParameter|RestMapParameter} parameter - 查询配置参数。
    * @param {String} [queryBounds='mapBounds'] - 查询范围，可选值为 mapBounds（地图全图范围），currentMapBounds（当前地图范围）。
    */
-  query(queryParameter, queryBounds) {
+  async query(queryParameter, queryBounds) {
     if (!this.map) {
       return;
     }
@@ -67,277 +66,23 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
     this.queryResult = null;
     if (queryParameter) {
-      if (queryParameter.dataName) {
-        this._queryByRestData(queryParameter);
-      } else if (queryParameter.layerName) {
-        this._queryByRestMap(queryParameter);
-      } else {
-        this._queryByIportalData(queryParameter);
-      }
-    }
-    // if (queryParameter instanceof iPortalDataParameter) {
-    //   this._queryByIportalData(queryParameter);
-    // } else if (queryParameter instanceof RestDataParameter) {
-    //   this._queryByRestData(queryParameter);
-    // } else if (queryParameter instanceof RestMapParameter) {
-    //   this._queryByRestMap(queryParameter);
-    // }
-  }
-
-  _queryByRestMap(restMapParameter) {
-    const options = { withCredentials: restMapParameter.withCredentials || false };
-    if (restMapParameter.proxy) {
-      options.proxy = restMapParameter.proxy;
-    }
-    if (this.bounds) {
-      let param = new SuperMap.QueryByGeometryParameters({
-        queryParams: {
-          name: restMapParameter.layerName,
-          attributeFilter: restMapParameter.attributeFilter
-        },
-        prjCoordSys: {
-          epsgCode: 4326
-        },
-        spatialQueryMode: SuperMap.SpatialQueryMode.INTERSECT,
-        geometry: this.bounds,
-        startRecord: 0,
-        expectCount: restMapParameter.maxFeatures || this.maxFeatures
-      });
-      new mapboxgl.supermap.QueryService(restMapParameter.url, options).queryByGeometry(param, serviceResult => {
-        this._mapQuerySucceed(serviceResult, restMapParameter, options);
-      });
-    } else {
-      let param = new SuperMap.QueryBySQLParameters({
-        queryParams: {
-          name: restMapParameter.layerName,
-          attributeFilter: restMapParameter.attributeFilter
-        },
-        prjCoordSys: {
-          epsgCode: 4326
-        },
-        startRecord: 0,
-        expectCount: restMapParameter.maxFeatures || this.maxFeatures
-      });
-      new mapboxgl.supermap.QueryService(restMapParameter.url, options).queryBySQL(param, serviceResult => {
-        this._mapQuerySucceed(serviceResult, restMapParameter, options);
-      });
-    }
-  }
-
-  _queryByRestData(restDataParameter) {
-    let maxFeatures = restDataParameter.maxFeatures || this.maxFeatures;
-    let toIndex = maxFeatures === 1 ? 0 : maxFeatures - 1;
-    const options = { withCredentials: restDataParameter.withCredentials || false };
-    if (restDataParameter.proxy) {
-      options.proxy = restDataParameter.proxy;
-    }
-    if (this.bounds) {
-      let boundsParam = new SuperMap.GetFeaturesByBoundsParameters({
-        attributeFilter: restDataParameter.attributeFilter,
-        datasetNames: restDataParameter.dataName,
-        spatialQueryMode: 'INTERSECT',
-        geometry: this.bounds,
-        targetPrj: {
-          epsgCode: 4326
-        },
-        fromIndex: 0,
-        toIndex
-      });
-      new mapboxgl.supermap.FeatureService(restDataParameter.url, options).getFeaturesByGeometry(
-        boundsParam,
-        serviceResult => {
-          this._dataQuerySucceed(serviceResult, restDataParameter, options);
-        }
-      );
-    } else {
-      let param = new SuperMap.GetFeaturesBySQLParameters({
-        queryParameter: {
-          attributeFilter: restDataParameter.attributeFilter
-        },
-        targetPrj: {
-          epsgCode: 4326
-        },
-        datasetNames: restDataParameter.dataName,
-        fromIndex: 0,
-        toIndex
-      });
-      new mapboxgl.supermap.FeatureService(restDataParameter.url, options).getFeaturesBySQL(param, serviceResult => {
-        this._dataQuerySucceed(serviceResult, restDataParameter, options);
-      });
-    }
-  }
-
-  async _mapQuerySucceed(serviceResult, restMapParameter, options) {
-    let result = serviceResult.result;
-    if (result && result.totalCount !== 0) {
-      let resultFeatures = result.recordsets[0].features.features;
-      if(result.recordsets[0].fieldCaptions) {
-        let fields = result.recordsets[0].fields;
-        let fieldCaptions = result.recordsets[0].fieldCaptions;
-        let features = result.recordsets[0].features.features;
-        resultFeatures = statisticsFeatures(features, fields, fieldCaptions).features;
-      }
-      resultFeatures.length > 0 && (this.queryResult = { name: restMapParameter.name, result: resultFeatures });
-      this._addResultLayer(this.queryResult);
-      /**
-       * @event QueryViewModel#querysucceeded
-       * @description 查询成功后触发。
-       * @property {Object} e  - 事件对象。
-       */
-      this.fire('querysucceeded', { result: this.queryResult });
-    } else if (result && result.totalCount === 0) {
-      /**
-       * @event QueryViewModel#queryfailed
-       * @description 查询失败后触发。
-       * @property {Object} e  - 事件对象。
-       */
-      this.fire('queryfailed', { message: geti18n().t('query.noResults') });
-    } else {
-      this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
-    }
-  }
-
-  async _dataQuerySucceed(serviceResult, restDataParameter, options) {
-    let result = serviceResult.result;
-    if (result && result.totalCount !== 0) {
-      let resultFeatures = result.features.features;
-      if(result.datasetInfos) {
-        let fields = [];
-        let fieldCaptions = [];
-        const fieldInfos = result.datasetInfos[0].fieldInfos;
-        fieldInfos.forEach(fieldInfo => {
-          if(fieldInfo.name) {
-            fields.push(fieldInfo.name.toUpperCase());
-            fieldCaptions.push(fieldInfo.caption.toUpperCase());
-          }
-        });
-        resultFeatures = statisticsFeatures(resultFeatures, fields, fieldCaptions).features;
-      }
-      resultFeatures.length > 0 && (this.queryResult = { name: restDataParameter.name, result: resultFeatures });
-      this._addResultLayer(this.queryResult);
-      this.fire('querysucceeded', { result: this.queryResult });
-    } else if (result && result.totalCount === 0) {
-      this.fire('queryfailed', { message: geti18n().t('query.noResults') });
-    } else {
-      this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
-    }
-  }
-
-  _queryByIportalData(iportalDataParameter) {
-    let url = iportalDataParameter.url;
-    let withCredentials = iportalDataParameter.withCredentials || false;
-    SuperMap.FetchRequest.get(url, null, { withCredentials })
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
-        if (data.succeed === false) {
-          this.queryCount--;
-          // 请求失败
+      try {
+        const queryOptions = {
+          maxFeatures: queryParameter.maxFeatures || this.maxFeatures,
+          keyWord: queryParameter.queryMode === 'KEYWORD' ? queryParameter.attributeFilter : '',
+          bounds: this.bounds
+        };
+        const res = await getFeatures({ ...queryParameter, ...queryOptions });
+        if (res.type === 'featureisempty') {
+          this.fire('queryfailed', { message: geti18n().t('query.noResults') });
           return;
         }
-        // 是否有rest服务
-        if (data.dataItemServices && data.dataItemServices.length > 0) {
-          let dataItemServices = data.dataItemServices;
-          let resultData = dataItemServices.find(
-            item =>
-              (item.serviceType === 'RESTDATA' || item.serviceType === 'RESTMAP') && item.serviceStatus === 'PUBLISHED'
-          );
-          if (resultData) {
-            // 如果有服务，获取数据源和数据集, 然后请求rest服务
-            this._getDatafromRest(resultData.serviceType, resultData.address, iportalDataParameter);
-          } else {
-            this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
-          }
-        } else {
-          this.fire('queryfailed', { message: geti18n().t('query.seviceNotSupport') });
-        }
-      })
-      .catch(error => {
-        this.fire('queryfailed', { message: error });
-        console.log(error);
-      });
-  }
-
-  _getDatafromRest(serviceType, address, iportalDataParameter) {
-    if (serviceType === 'RESTDATA') {
-      let url = `${address}/data/datasources`;
-
-      let sourceName, datasetName; // 请求获取数据源名
-      SuperMap.FetchRequest.get(url, null, { withCredentials: iportalDataParameter.withCredentials })
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          sourceName = data.datasourceNames[0];
-          url = `${address}/data/datasources/${sourceName}/datasets`;
-          // 请求获取数据集名
-          SuperMap.FetchRequest.get(url, null, { withCredentials: iportalDataParameter.withCredentials })
-            .then(response => {
-              return response.json();
-            })
-            .then(data => {
-              datasetName = data.datasetNames[0];
-              // 请求restdata服务
-              this._queryByRestData({
-                dataName: [sourceName + ':' + datasetName],
-                url: `${address}/data`,
-                name: iportalDataParameter.name,
-                attributeFilter: iportalDataParameter.attributeFilter,
-                maxFeatures: iportalDataParameter.maxFeatures,
-                epsgCode: iportalDataParameter.epsgCode,
-                withCredentials: iportalDataParameter.withCredentials
-              });
-            })
-            .catch(error => {
-              this.fire('queryfailed', { message: error });
-              console.log(error);
-            });
-        })
-        .catch(error => {
-          this.fire('queryfailed', { message: error });
-          console.log(error);
-        });
-    } else {
-      // 如果是地图服务
-      let url = `${address}/maps`;
-      let mapName, layerName, path; // 请求获取地图名
-      SuperMap.FetchRequest.get(url, null, { withCredentials: iportalDataParameter.withCredentials })
-        .then(response => {
-          return response.json();
-        })
-        .then(data => {
-          mapName = data[0].name;
-          path = data[0].path;
-          url = url = `${address}/maps/${mapName}/layers`;
-          // 请求获取图层名
-          SuperMap.FetchRequest.get(url, null, { withCredentials: iportalDataParameter.withCredentials })
-            .then(response => {
-              return response.json();
-            })
-            .then(data => {
-              layerName = data[0].subLayers.layers[0].caption;
-              // 请求restmap服务
-              this._queryByRestMap({
-                layerName,
-                url: path,
-                name: iportalDataParameter.name,
-                attributeFilter: iportalDataParameter.attributeFilter,
-                maxFeatures: iportalDataParameter.maxFeatures,
-                epsgCode: iportalDataParameter.epsgCode,
-                withCredentials: iportalDataParameter.withCredentials
-              });
-              return layerName;
-            })
-            .catch(error => {
-              this.fire('queryfailed', { message: error });
-              console.log(error);
-            });
-        })
-        .catch(error => {
-          this.fire('queryfailed', { message: error });
-          console.log(error);
-        });
+        this.queryResult = { name: queryParameter.name, result: res.features };
+        this._addResultLayer(this.queryResult);
+        this.fire('querysucceeded', { result: this.queryResult });
+      } catch (error) {
+        this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
+      }
     }
   }
 
