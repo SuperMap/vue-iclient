@@ -16,7 +16,7 @@
     </div>
     <div class="sm-component-attribute-panel__content">
       <slot></slot>
-      <div v-if="$scopedSlots && Object.keys($scopedSlots).length && attributes">
+      <div v-if="$scopedSlots && Object.keys($scopedSlots).length && Object.keys(attributes).length">
         <ul>
           <li v-for="(value, key, index) in attributes" :key="index" class="content">
             <div class="left ellipsis" :title="key" style="{width: 110}">{{ key }}</div>
@@ -27,8 +27,8 @@
           </li>
         </ul>
       </div>
-      <sm-table-popup v-if="!$slots.default && !($scopedSlots && Object.keys($scopedSlots).length) && attributes" v-bind="tablePopupProps" class="sm-component-attribute-panel__self-content" />
-      <sm-empty v-if="!$slots.default && !attributes" />
+      <sm-table-popup v-if="!$slots.default && !($scopedSlots && Object.keys($scopedSlots).length) && Object.keys(attributes).length" v-bind="tablePopupProps" class="sm-component-attribute-panel__self-content" />
+      <sm-empty v-if="!$slots.default && !Object.keys(attributes).length" />
     </div>
   </div>
 </template>
