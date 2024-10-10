@@ -273,7 +273,17 @@ export default class iServerRestService extends Events {
     const expectCountOptions = this._calcFeaturesExpectCountOptions(queryInfo);
     const pickedCommonParams = {
       startRecord: expectCountOptions.fromIndex,
-      expectCount: expectCountOptions.maxFeatures
+      expectCount: expectCountOptions.maxFeatures,
+      prjCoordSys: {
+        epsgCode: 4326
+      },
+      queryParams: [
+        {
+          name: queryInfo.name,
+          attributeFilter: queryInfo.attributeFilter,
+          orderBy: queryInfo.orderBy
+        }
+      ]
     };
     if (queryInfo.bounds) {
       const params = this._getMapFeaturesParamsByGeometry(queryInfo, pickedCommonParams);
@@ -292,6 +302,9 @@ export default class iServerRestService extends Events {
     const expectCountOptions = this._calcFeaturesExpectCountOptions(queryInfo);
     const pickedCommonParams = {
       ...expectCountOptions,
+      targetPrj: {
+        epsgCode: 4326
+      },
       returnFeaturesOnly: this.options.returnFeaturesOnly
     };
     if (queryInfo.bounds) {
@@ -306,13 +319,6 @@ export default class iServerRestService extends Events {
   _getMapFeaturesParamsBySql(queryInfo, commonParams) {
     return new QueryBySQLParameters({
       ...commonParams,
-      queryParams: [
-        {
-          name: queryInfo.name,
-          attributeFilter: queryInfo.attributeFilter,
-          orderBy: queryInfo.orderBy
-        }
-      ],
       queryOption: this.options.hasGeometry === false ? 'ATTRIBUTE' : 'ATTRIBUTEANDGEOMETRY'
     });
   }
@@ -320,13 +326,6 @@ export default class iServerRestService extends Events {
   _getMapFeaturesParamsByGeometry(queryInfo, commonParams) {
     return new QueryByGeometryParameters({
       ...commonParams,
-      queryParams: [{
-        name: queryInfo.name,
-        attributeFilter: queryInfo.attributeFilter
-      }],
-      prjCoordSys: {
-        epsgCode: 4326
-      },
       spatialQueryMode: 'INTERSECT',
       geometry: this._transBoundsToGeometry(queryInfo)
     });
@@ -443,16 +442,6 @@ export default class iServerRestService extends Events {
         results
       });
       return;
-    }
-    // vertified 表示已经验证过 epsgCode且转化了features 比如iportalData从content.json获取的features
-    if (!results.result.vertified) {
-      // 关系型存储发布成服务后坐标一定是4326，但真实数据可能不是4326，判断一下暂时按照3857处理
-      data.features = await checkAndRectifyFeatures({
-        features: data.features,
-        epsgCode: this.options.epsgCode,
-        projectionUrl: this.projectionUrl,
-        options: { proxy: this.options.proxy }
-      });
     }
 
     /**
