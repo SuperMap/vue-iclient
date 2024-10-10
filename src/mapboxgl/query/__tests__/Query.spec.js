@@ -106,7 +106,7 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.vm.viewModel.on('querysucceeded', res => {
-      expect(res.result.result[0].properties['名称']).toBe('四川省');
+      expect(res.result.result[0].properties['NAME']).toBe('四川省');
       done();
     });
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
@@ -133,7 +133,7 @@ describe('query', () => {
     const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.vm.viewModel.on('querysucceeded', res => {
-      expect(res.result.result[0].properties['名称']).toBe('四川省');
+      expect(res.result.result[0].properties['NAME']).toBe('四川省');
       expect(spyAddlayer).toBeCalled();
       done();
     });
@@ -334,7 +334,7 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.vm.viewModel.on('querysucceeded', res => {
-      expect(res.result.result[0].properties['名称']).toBe('四川省');
+      expect(res.result.result[0].properties['NAME']).toBe('四川省');
       expect(wrapper.vm.activeTab).toBe('result');
       wrapper.find('.sm-component-query__job-button').trigger('click');
       expect(wrapper.vm.activeTab).toBe('job');

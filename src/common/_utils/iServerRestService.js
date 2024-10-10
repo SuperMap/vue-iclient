@@ -422,10 +422,11 @@ export default class iServerRestService extends Events {
         });
         return;
       }
-      let fields = [];
-      let fieldCaptions = [];
-      let fieldTypes = [];
+      let fields, fieldCaptions, fieldTypes;
       if (results.result.datasetInfos) {
+        fields = [];
+        fieldCaptions = [];
+        fieldTypes = [];
         const fieldInfos = results.result.datasetInfos[0].fieldInfos;
         fieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {

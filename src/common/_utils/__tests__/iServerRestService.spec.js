@@ -138,8 +138,8 @@ describe('iServerRestService', () => {
     service.on({
       getdatasucceeded: function (data) {
         expect(data.features[0].geometry).toBeTruthy();
-        expect(data.features[0].properties['名称']).toBeTruthy();
-        expect(data.features[0].properties.NAME).toBeFalsy();
+        expect(data.features[0].properties['NAME']).toBeTruthy();
+        expect(data.features[0].properties['名称']).toBeFalsy();
         expect(mockPostParams).toMatch(/'attributeFilter':"NAME LIKE '%25A%25'/);
         done();
       }
@@ -155,7 +155,8 @@ describe('iServerRestService', () => {
     );
     service.on({
       getdatasucceeded: data => {
-        expect(data.fields).toEqual(['SMID', '名称']);
+        expect(data.fields).toEqual(['SMID', 'NAME']);
+        expect(data.fieldCaptions).toEqual(['SMID', '名称']);
         done();
       }
     });
@@ -169,7 +170,8 @@ describe('iServerRestService', () => {
     );
     service.on({
       getdatasucceeded: data => {
-        expect(data.fields).toEqual(['SMID', '名称']);
+        expect(data.fields).toEqual(['SMID', 'NAME']);
+        expect(data.fieldCaptions).toEqual(['SMID', '名称']);
         expect(mockPostParams).toMatch(/'attributeFilter':"NAME LIKE '%25A%25'/);
         done();
       }
