@@ -1,5 +1,6 @@
 import { mount, config } from '@vue/test-utils';
 import SmIdentify from '../Identify.vue';
+// import SmMapPopup from '../../../../map-popup/MapPopup.vue';
 import Identify from '../index';
 import { LineStyle, CircleStyle, FillStyle } from '../../../../_types/index';
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
@@ -23,7 +24,23 @@ describe('Identify.vue', () => {
       wrapper.destroy();
     }
   });
-
+  it('render showPopup false', async done => {
+    mapWrapper = await createEmptyMap();
+    wrapper = mount(SmIdentify, {
+      propsData: {
+        layers: ['民航数据'],
+        fields: ['机场', '同比增速%', '2017旅客吞吐量（人次）'],
+        autoResize: false,
+        showPopup: false
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.showPopup).toBe(false);
+    // const comp = wrapper.findComponent(SmMapPopup);
+    // expect(comp.exists()).toBe(false);
+    done();
+  });
   it('render default correctly', async done => {
     mapWrapper = await createEmptyMap();
     wrapper = mount(SmIdentify, {
@@ -38,6 +55,8 @@ describe('Identify.vue', () => {
     wrapper.vm.getWidthStyle;
     expect(wrapper.vm.keyMaxWidth).toBe(110);
     expect(wrapper.vm.valueMaxWidth).toBe(170);
+    // const comp = wrapper.findComponent(SmMapPopup);
+    // expect(comp.exists()).toBe(true);
     done();
   });
 
@@ -206,7 +225,7 @@ describe('Identify.vue', () => {
         y: 10
       }
     });
-    wrapper.setProps({layers: ['民航数据']})
+    wrapper.setProps({ layers: ['民航数据'] });
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.popupProps).toEqual({
       机场: {
@@ -214,11 +233,21 @@ describe('Identify.vue', () => {
         value: '天府机场'
       }
     });
+    expect(wrapper.vm.total).toEqual(1);
+    expect(wrapper.vm.fieldsIndex).toEqual(0);
+    expect(wrapper.vm.currentLayerId).toEqual('民航数据');
+    expect(wrapper.vm.popupData).toEqual({
+      defaultIndex: 0,
+      total: 1,
+      data: [{ '机场': '天府机场' }],
+      title: '民航数据',
+      fieldsIndex: 0
+    });
     expect(wrapper.vm.currentLayer.id).toEqual('民航数据');
     expect(wrapper.vm.filters.length).toBe(2);
     expect(wrapper.vm.currentIndex).toBe(0);
 
-    wrapper.setProps({layers: ['']})
+    wrapper.setProps({ layers: [''] });
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.currentLayer).toBe(null);
     expect(wrapper.vm.filters.length).toBe(1);
@@ -330,17 +359,19 @@ describe('Identify.vue', () => {
       propsData: {
         multiSelect: true,
         layers: ['民航数据'],
-        fields: [[
-          {
-            "slotName":"6",
-            "linkTitle":"",
-            "field":"机场",
-            "title":"机场22",
-            "linkTarget":"_blank",
-            "repeatOption":"left",
-            "type":"text"
-          }
-        ]],
+        fields: [
+          [
+            {
+              slotName: '6',
+              linkTitle: '',
+              field: '机场',
+              title: '机场22',
+              linkTarget: '_blank',
+              repeatOption: 'left',
+              type: 'text'
+            }
+          ]
+        ],
         autoResize: false
       }
     });

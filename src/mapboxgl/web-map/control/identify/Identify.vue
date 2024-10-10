@@ -1,5 +1,6 @@
 <template>
   <SmMapPopup
+    v-if="showPopup"
     class="sm-component-identify"
     contentSlot="identify"
     :showIcon="multiSelect"
@@ -9,6 +10,7 @@
     :textColor="textColor"
     ref="map-popup"
     :mapTarget="mapTarget"
+    :title="currentLayerId"
     @change="handleChange"
   >
     <div>
@@ -46,6 +48,10 @@ export default {
   mixins: [MapGetter, Theme],
   components: { SmMapPopup },
   props: {
+    showPopup: {
+      type: Boolean,
+      default: true
+    },
     multiSelect: {
       type: Boolean,
       default: false
@@ -124,10 +130,30 @@ export default {
       currentIndex: 0,
       allPopupDatas: [],
       lnglats: [],
-      filters: ['any']
+      filters: ['any'],
+      currentLayerId: '',
+      fieldsIndex: 0
     };
   },
   computed: {
+    popupData() {
+      const data = this.allPopupDatas.map(item => {
+        const attributes = {};
+        for (let key in item) {
+          const { value } = item[key];
+          attributes[key] = value;
+        }
+        return attributes;
+      });
+
+      return {
+        defaultIndex: this.currentIndex,
+        total: data.length,
+        data,
+        title: this.currentLayerId,
+        fieldsIndex: this.fieldsIndex
+      };
+    },
     getWidthStyle() {
       let style = { keyWidth: {}, valueWidth: {} };
       if (!this.autoResize) {
@@ -150,9 +176,18 @@ export default {
     },
     popupProps() {
       return this.allPopupDatas[this.currentIndex] || {};
+    },
+    total() {
+      return this.allPopupDatas.length;
     }
   },
   watch: {
+    popupData: {
+      handler() {
+        this.$emit('dataChange', this.popupData);
+      },
+      deep: true
+    },
     layers: {
       handler(val, oldVal) {
         if (!isEqual(val, oldVal)) {
@@ -234,7 +269,7 @@ export default {
       this.keydownCtrlCb = e => {
         if (e.ctrlKey && !this.isKeydownCtrl) {
           this.clearPopupData();
-          this.$refs['map-popup'].removePopup();
+          this.$refs['map-popup'] && this.$refs['map-popup'].removePopup();
           this.isKeydownCtrl = true;
         }
       };
@@ -259,6 +294,7 @@ export default {
       // 获取点中图层的features
       if (features[0]) {
         let index = this.layers && this.layers.indexOf(features[0].layer.id);
+        this.fieldsIndex = index;
         let fields;
         if (this.fields instanceof Array) {
           // 如果是二维数组
@@ -328,7 +364,6 @@ export default {
     },
     // 过滤数据， 添加popup
     getPopupData(feature, fields) {
-      this.viewModel.popup?.off('close', this.clearPopup);
       let popupProps = {};
       if (feature.properties) {
         // 过滤字段
@@ -354,9 +389,11 @@ export default {
       this.lnglats = [];
       this.currentIndex = 0;
       this.currentLayer = null;
+      this.currentLayerId = '';
       this.filters = ['any'];
     },
     setPopupData(popupProps, coordinates, feature) {
+      this.currentLayerId = feature.layer.id;
       if (this.isKeydownCtrl) {
         this.allPopupDatas.push(popupProps);
         this.lnglats.push(coordinates);
