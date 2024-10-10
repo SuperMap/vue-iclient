@@ -240,7 +240,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   }
 
   get attributesIconClass() {
-    return (this.attributes && this.attributes.iconClass) || 'sm-components-icon-attribute';
+    return (this.attributes && this.attributes.iconClass) || 'sm-components-icon-attribute-table';
   }
 
   created() {

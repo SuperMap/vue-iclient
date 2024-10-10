@@ -24,7 +24,7 @@
             >
               <div v-if="layerOperations.zoomToLayer" class="sm-component-layer-list__zoom">
                 <i
-                  class="sm-components-icon-locate"
+                  class="sm-components-icon-suofangzhituceng"
                   :style="!item.visible && { cursor: 'not-allowed' }"
                   :title="$t('layerList.zoomToLayer')"
                   @click.stop="zoomToBounds(item)"
@@ -41,7 +41,7 @@
               <div v-if="layerOperations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
                 <i
                   :class="[
-                    'sm-components-icon-attribute',
+                    'sm-components-icon-tucengyangshi01',
                     'sm-components-icon-not-active',
                     showOpacityItem === item.id && 'sm-components-icon-active'
                   ]"
@@ -118,7 +118,7 @@ export default {
       return +(this.currentOpacity * 100).toFixed(0);
     },
     attributesIconClass() {
-      return (this.attributes && this.attributes.iconClass) || 'sm-components-icon-attribute';
+      return (this.attributes && this.attributes.iconClass) || 'sm-components-icon-attribute-table';
     },
     attributesEnabled() {
       return item => {
