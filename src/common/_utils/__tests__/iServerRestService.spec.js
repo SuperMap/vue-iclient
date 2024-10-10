@@ -140,7 +140,7 @@ describe('iServerRestService', () => {
         expect(data.features[0].geometry).toBeTruthy();
         expect(data.features[0].properties['名称']).toBeTruthy();
         expect(data.features[0].properties.NAME).toBeFalsy();
-        expect(mockPostParams).toMatch(/'attributeFilter':"名称 LIKE '%25A%25'/);
+        expect(mockPostParams).toMatch(/'attributeFilter':"NAME LIKE '%25A%25'/);
         done();
       }
     });
