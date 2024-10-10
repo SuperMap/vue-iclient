@@ -3,32 +3,38 @@
 
 @include b(attribute-panel) {
   min-width: 200px;
-  height: auto;
+  height: 100%;
+  overflow: auto;
   padding: 10px;
   border-radius: 4px;
   @include e(header) {
     width: 100%;
     display: inline-flex;
     align-items: center;
-    padding: 0px 15px 8px ;
+    padding: 0px 10px 8px ;
     border-bottom: 1px solid $border-color-split;
-    & .icon {
-      font-size: 16px;
-    }
-    & .left-icon {
-      padding-right: 5px;
-    }
-    & .right-icon {
-      padding-left: 5px;
-    }
-    & .disabled {
-      color: $disabled-color;
-    }
-    & .ellipsis {
-      max-width: calc(100% - 50px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .switchDataText {
+      position: absolute;
+      right: 10px;
+      .icon {
+        font-size: 16px;
+      }
+      .left-icon {
+        padding-right: 5px;
+      }
+      .right-icon {
+        padding-left: 5px;
+      }
+      .disabled {
+        color: $disabled-color;
+      }
+      .ellipsis {
+        vertical-align: top;
+        max-width: calc(100% - 50px);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
     }
   }
   @include e(content) {
@@ -40,7 +46,6 @@
         list-style: none;
         margin: 0;
         padding: 0;
-        overflow: auto;
         font-size: 14px;
         max-height: 200px;
         background: transparent;
@@ -54,16 +59,18 @@
           display: table-row;
           color: white;
           .left {
+            max-width: 110px;
             display: table-cell;
           }
           .right {
+            max-width: 170px;
             display: table-cell;
           }
-        }
-        .content .ellipsis {
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
+          .ellipsis {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
         }
       }
     }

@@ -1,8 +1,9 @@
 <template>
   <div class="sm-component-attribute-panel" :style="[getTextColorStyle]">
-    <div v-if="title">{{ title }}</div>
-    <div v-show="showIcon" class="sm-component-attribute-panel__header">
-      <sm-icon
+    <div class="sm-component-attribute-panel__header">
+      <div class="title">{{ title }}</div>
+      <div v-show="showIcon" class="switchDataText">
+        <sm-icon
         :class="['icon', 'left-icon', currentIndex === 0 && 'disabled']"
         type="caret-left"
         @click="changeIndex(-1)"
@@ -13,14 +14,15 @@
         :class="['icon', 'right-icon', currentIndex === total - 1 && 'disabled']"
         @click="changeIndex(1)"
       />
+      </div>
     </div>
     <div class="sm-component-attribute-panel__content">
       <slot></slot>
       <div v-if="$scopedSlots && Object.keys($scopedSlots).length && Object.keys(attributes).length">
         <ul>
           <li v-for="(value, key, index) in attributes" :key="index" class="content">
-            <div class="left ellipsis" :title="key" style="{width: 110}">{{ key }}</div>
-            <div class="right ellipsis" :title="value.value || value" style="{width: 170}">
+            <div class="left ellipsis" :title="key" :style="attributeStyle.keyStyle">{{ key }}</div>
+            <div class="right ellipsis" :title="value.value || value" :style="attributeStyle.valueStyle">
               <slot v-if="fieldsMap[key]" :name="fieldsMap[key]" :value="value"></slot>
               <span v-else>{{ value }}</span>
             </div>
@@ -55,6 +57,15 @@ class SmAttributePanel extends Mixins(Theme) {
   @Prop() total: number;
 
   @Prop() title: String;
+
+  @Prop({
+    default: () => {
+      return {
+        keyStyle: {},
+        valueStyle: {}
+      };
+    }
+  }) attributeStyle: Object;
 
   @Prop({
     default: () => {
