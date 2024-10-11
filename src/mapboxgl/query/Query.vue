@@ -151,6 +151,36 @@ export default {
         };
       }
     },
+    highlightStyle: {
+      type: Object,
+      default() {
+        return {
+          line: new LineStyle({
+            'line-width': 3,
+            'line-color': '#01ffff',
+            'line-opacity': 1
+          }),
+          circle: new CircleStyle({
+            'circle-color': '#01ffff',
+            'circle-opacity': 0.6,
+            'circle-radius': 8,
+            'circle-stroke-width': 2,
+            'circle-stroke-color': '#01ffff',
+            'circle-stroke-opacity': 1
+          }),
+          fill: new FillStyle({
+            'fill-color': '#01ffff',
+            'fill-opacity': 0.6,
+            'fill-outline-color': '#01ffff'
+          }),
+          strokeLine: new LineStyle({
+            'line-width': 3,
+            'line-color': '#01ffff',
+            'line-opacity': 1
+          })
+        };
+      }
+    },
     iportalData: {
       type: Array
     },
@@ -205,6 +235,9 @@ export default {
     },
     layerStyle() {
       this.viewModel && (this.viewModel.layerStyle = this.$props.layerStyle);
+    },
+    highlightStyle(next) {
+      this.viewModel && this.viewModel.setHighlightStyle(JSON.parse(JSON.stringify(next)));
     }
   },
   mounted() {
@@ -335,7 +368,7 @@ export default {
       this.popup && this.popup.remove() && (this.popup = null);
       this.jobInfo = null;
       this.activeResultIndex = null;
-      this.viewModel && this.viewModel.removed();
+      this.viewModel && this.viewModel.clear();
     },
     getInfoOfSmid(properties) {
       return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;

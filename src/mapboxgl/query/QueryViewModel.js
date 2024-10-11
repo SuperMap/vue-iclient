@@ -6,6 +6,8 @@ import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
 import getFeatures from 'vue-iclient/src/common/_utils/get-features';
+import HighlightLayer from 'vue-iclient/src/mapboxgl/_utils/HightlighLayer';
+
 /**
  * @class QueryViewModel
  * @classdesc 查询组件功能类。
@@ -23,29 +25,40 @@ import getFeatures from 'vue-iclient/src/common/_utils/get-features';
  * @fires QueryViewModel#queryfailed
  * @fires QueryViewModel#getfeatureinfosucceeded
  */
-export default class QueryViewModel extends mapboxgl.Evented {
+export default class QueryViewModel extends HighlightLayer {
   constructor(options) {
-    super();
+    super({ name: 'query', style: options.highlightStyle });
     this.options = options || {};
     this.maxFeatures = this.options.maxFeatures || 200;
     this.layerStyle = options.layerStyle || {};
+    this._handleMapSelectionChanged = this._handleMapSelectionChanged.bind(this);
   }
 
   setMap(mapInfo) {
     const { map } = mapInfo;
     this.map = map;
+    this.registerMapClick();
+    this.on('mapselectionchanged', this._handleMapSelectionChanged);
   }
 
   clearResultLayer() {
     if (this.map) {
       this.strokeLayerID && this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
       this.layerID && this.map.getLayer(this.layerID) && this.map.removeLayer(this.layerID);
+      this.removeHighlightLayers();
+      this.unregisterLayerMouseEvents();
     }
   }
 
-  removed() {
+  clear() {
     this.bounds = null;
     this.clearResultLayer();
+  }
+
+  removed() {
+    this.clear();
+    this.unregisterMapClick();
+    this.off('mapselectionchanged', this._handleMapSelectionChanged);
   }
 
   /**
@@ -59,7 +72,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       return;
     }
     this.queryParameter = queryParameter;
-    this.removed();
+    this.clear();
     this.queryBounds = queryBounds;
     if (queryBounds === 'currentMapBounds') {
       this.bounds = this.map.getBounds();
@@ -78,6 +91,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
           return;
         }
         this.queryResult = { name: queryParameter.name, result: res.features };
+        this.setFilterFields(res.fields);
         this._addResultLayer(this.queryResult);
         this.fire('querysucceeded', { result: this.queryResult });
       } catch (error) {
@@ -87,7 +101,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
   }
 
   _addResultLayer() {
-    this.layerID = this.queryParameter.name + new Date().getTime();
+    this.layerID = `${this.queryParameter.name}-SM-query-result`;
     let type = this.queryResult.result[0].geometry.type;
     let source = {
       type: 'geojson',
@@ -105,7 +119,6 @@ export default class QueryViewModel extends mapboxgl.Evented {
       ],
       { maxZoom: 17 }
     );
-    this.getPopupFeature();
   }
 
   /**
@@ -154,8 +167,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
    * @function QueryViewModel.prototype.getPopupFeature
    * @desc 获得地图点击位置的要素信息。调用此方法后，需要监听 'getfeatureinfosucceeded' 事件获得要素。
    */
-  getPopupFeature() {
-    this.map.on('click', this.layerID, e => {
+  getPopupFeature(e) {
+    if (e.features.length > 0) {
       let feature = e.features[0];
       let featureInfo = this._getFeatrueInfo(feature);
       /**
@@ -164,7 +177,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
        * @property {Object} e  - 事件对象。
        */
       this.fire('getfeatureinfosucceeded', { featureInfo });
-    });
+    }
   }
 
   /**
@@ -242,5 +255,10 @@ export default class QueryViewModel extends mapboxgl.Evented {
         paint: lineStyle
       });
     }
+    this.registerLayerMouseEvents([layerID, this.strokeLayerID].filter(item => !!item));
+  }
+
+  _handleMapSelectionChanged(e) {
+    this.getPopupFeature(e);
   }
 }

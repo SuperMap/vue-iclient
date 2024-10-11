@@ -348,6 +348,78 @@ describe('query', () => {
     expect(queryModeDom.text()).toBe('query.keyQueryCondition');
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
     expect(spyquery).toBeCalled();
-  })
+  });
+
+  it('query clear result', async (done) => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            dataName: ['World:Countries'],
+            queryMode: 'KEYWORD'
+          })
+        ]
+      },
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.vm.viewModel.on('querysucceeded', res => {
+      expect(res.result.result[0].properties['名称']).toBe('四川省');
+      expect(wrapper.vm.activeTab).toBe('result');
+      let resultHeader = wrapper.find('.sm-component-query__result-header i');
+      expect(resultHeader.exists()).toBeTruthy();
+      const clearSpy = jest.spyOn(wrapper.vm.viewModel, 'clear');
+      resultHeader.trigger('click');
+      expect(wrapper.find('.sm-component-query__result-header i').exists()).toBeFalsy();
+      expect(clearSpy).toBeCalled();
+      done();
+    });
+    const queryModeDom = wrapper.find('.sm-component-query__job-info-body .sm-component-query__item-holder div')
+    expect(queryModeDom.exists()).toBeTruthy();
+    expect(queryModeDom.text()).toBe('query.keyQueryCondition');
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    expect(spyquery).toBeCalled();
+  });
+
+  it('update highlight style', async (done) => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            dataName: ['World:Countries'],
+            queryMode: 'KEYWORD'
+          })
+        ]
+      },
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.highlightStyle).not.toBeUndefined();
+    const nextHighlightStyle = JSON.parse(JSON.stringify(wrapper.vm.highlightStyle));
+    nextHighlightStyle.circle = {
+      paint: {
+        'circle-color': 'red',
+        'circle-opacity': 0.6,
+        'circle-radius': 18,
+        'circle-stroke-width': 2,
+        'circle-stroke-color': '#01ffff',
+        'circle-stroke-opacity': 1
+      }
+    };
+    const setSpy = jest.spyOn(wrapper.vm.viewModel, 'setHighlightStyle');
+    wrapper.setProps({ highlightStyle: nextHighlightStyle });
+    expect(setSpy).toBeCalled();
+    done();
+  });
 });
 

@@ -88,7 +88,7 @@ export default {
             'fill-opacity': 0.6,
             'fill-outline-color': '#409eff'
           }),
-          stokeLine: new LineStyle({
+          strokeLine: new LineStyle({
             'line-width': 3,
             'line-color': '#409eff',
             'line-opacity': 1
