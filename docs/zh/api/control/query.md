@@ -19,6 +19,7 @@
 | iportalData | SuperMap iPortal 资源中心数据（该数据需要发布成服务） | [iPortalDataParameter](/zh/api/common-types/common-types.md#iportaldataparameter)[ ] | -      | -                                |
 | maxFeatures | 要素最大返回数                                        | number                                                                               | -      | 200                               |
 | layerStyle  | 查询结果的图层样式                                    | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle)                        | -      | -                                |
+| highlightStyle  | 选中查询结果的高亮图层样式                                    | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle)                        | -      | -                                |
 | iconClass   | 收缩按钮的 Font class 类名                            | string                                                                               | -      | 'sm-components-icon-search-list' |
 | headerName  | 标题名                                                | string                                                                               | -      | '查询'                           |
 
