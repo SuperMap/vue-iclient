@@ -364,13 +364,13 @@ describe('query', () => {
             queryMode: 'KEYWORD'
           })
         ]
-      },
+      }
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.vm.viewModel.on('querysucceeded', res => {
-      expect(res.result.result[0].properties['名称']).toBe('四川省');
+      expect(res.result.result[0].properties['NAME']).toBe('四川省');
       expect(wrapper.vm.activeTab).toBe('result');
       let resultHeader = wrapper.find('.sm-component-query__result-header i');
       expect(resultHeader.exists()).toBeTruthy();

@@ -120,7 +120,7 @@ describe('Identify.vue', () => {
     expect(spy).toHaveBeenCalledTimes(1);
 
     // 判断图层颜色是否被修改
-    expect(wrapper.vm.viewModel.layerStyle.stokeLine.paint['line-color']).toBe(color);
+    expect(wrapper.vm.viewModel.hightlightStyle.strokeLine.paint['line-color']).toBe(color);
 
     done();
   });
