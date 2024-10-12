@@ -1,19 +1,19 @@
 <template>
-  <div class="sm-component-attribute-panel" :style="[getTextColorStyle]">
+  <div class="sm-component-attribute-panel" :style="[getTextColorStyle, !showBorder && { border: 'none' }]">
     <div class="sm-component-attribute-panel__header">
       <div class="title">{{ title }}</div>
       <div v-show="showIcon" class="switchDataText">
         <sm-icon
-        :class="['icon', 'left-icon', currentIndex === 0 && 'disabled']"
-        type="caret-left"
-        @click="changeIndex(-1)"
-      />
-      <span class="ellipsis" :title="paginationContent">{{ paginationContent }}</span>
-      <sm-icon
-        type="caret-right"
-        :class="['icon', 'right-icon', currentIndex === total - 1 && 'disabled']"
-        @click="changeIndex(1)"
-      />
+          :class="['icon', 'left-icon', attrIndex === 0 && 'disabled']"
+          type="caret-left"
+          @click="changeIndex(-1)"
+        />
+        <span class="ellipsis" :title="paginationContent">{{ paginationContent }}</span>
+        <sm-icon
+          type="caret-right"
+          :class="['icon', 'right-icon', attrIndex === total - 1 && 'disabled']"
+          @click="changeIndex(1)"
+        />
       </div>
     </div>
     <div class="sm-component-attribute-panel__content">
@@ -21,15 +21,19 @@
       <div v-if="$scopedSlots && Object.keys($scopedSlots).length && Object.keys(attributes).length">
         <ul>
           <li v-for="(value, key, index) in attributes" :key="index" class="content">
-            <div class="left ellipsis" :title="key" :style="attributeStyle.keyStyle">{{ key }}</div>
-            <div class="right ellipsis" :title="value.value || value" :style="attributeStyle.valueStyle">
+            <div class="left ellipsis" :title="key" :style="formatStyle.keyStyle">{{ key }}</div>
+            <div class="right ellipsis" :title="value.value || value" :style="formatStyle.valueStyle">
               <slot v-if="fieldsMap[key]" :name="fieldsMap[key]" :value="value"></slot>
               <span v-else>{{ value }}</span>
             </div>
           </li>
         </ul>
       </div>
-      <sm-table-popup v-if="!$slots.default && !($scopedSlots && Object.keys($scopedSlots).length) && Object.keys(attributes).length" v-bind="tablePopupProps" class="sm-component-attribute-panel__self-content" />
+      <sm-table-popup
+        v-if="!$slots.default && !($scopedSlots && Object.keys($scopedSlots).length) && Object.keys(attributes).length"
+        v-bind="tablePopupProps"
+        class="sm-component-attribute-panel__self-content"
+      />
       <sm-empty v-if="!$slots.default && !Object.keys(attributes).length" />
     </div>
   </div>
@@ -46,17 +50,19 @@ import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
   components: { SmTablePopup, SmEmpty }
 })
 class SmAttributePanel extends Mixins(Theme) {
-  currentIndex = 0;
+  attrIndex = 0;
 
   @Prop({ default: false }) showIcon: Boolean;
 
-  @Prop({ default: 0 }) defaultIndex: number;
+  @Prop({ default: 0 }) currentIndex: number;
 
   @Prop() paginationText: String;
 
   @Prop() total: number;
 
   @Prop() title: String;
+
+  @Prop({ default: true }) showBorder: Boolean;
 
   @Prop({
     default: () => {
@@ -65,7 +71,8 @@ class SmAttributePanel extends Mixins(Theme) {
         valueStyle: {}
       };
     }
-  }) attributeStyle: Object;
+  })
+  attributeStyle: Object;
 
   @Prop({
     default: () => {
@@ -88,14 +95,14 @@ class SmAttributePanel extends Mixins(Theme) {
   })
   columns: Array<Object>;
 
-  @Watch('defaultIndex')
-  defaultIndexChanged() {
-    this.currentIndex = this.defaultIndex;
+  @Watch('currentIndex')
+  currentIndexChanged() {
+    this.attrIndex = this.currentIndex;
   }
 
   get fieldsMap() {
     const attributeMap = {};
-    this.fields.forEach((field) => {
+    this.fields.forEach(field => {
       // @ts-ignore
       attributeMap[field.field] = field.slotName;
     });
@@ -106,19 +113,36 @@ class SmAttributePanel extends Mixins(Theme) {
     if (this.paginationText) {
       return this.paginationText;
     }
-    return `${this.currentIndex + 1}/${this.total}`;
+    return `${this.attrIndex + 1}/${this.total}`;
   }
 
   get tablePopupProps() {
     return { data: [this.attributes], columns: this.columns };
   }
 
-  changeIndex(val) {
-    this.currentIndex += val;
-    if (this.currentIndex < 0) {
-      this.currentIndex = 0;
+  get formatStyle() {
+    let style = Object.assign({}, this.attributeStyle);
+    Object.keys(style).forEach(item => {
+      // @ts-ignore
+      if (Object.prototype.hasOwnProperty.call(style[item], 'width')) {
+        // @ts-ignore
+        style[item].width += 'px';
+      }
+      // @ts-ignore
+      if (Object.prototype.hasOwnProperty.call(style[item], 'height')) {
+        // @ts-ignore
+        style[item].height += 'px';
+      }
+    });
+    return style;
+  }
+
+  changeIndex(delta) {
+    this.attrIndex += delta;
+    if (this.attrIndex < 0) {
+      this.attrIndex = 0;
     }
-    this.$emit('change', this.currentIndex);
+    this.$emit('change', this.attrIndex);
   }
 }
 export default SmAttributePanel;
