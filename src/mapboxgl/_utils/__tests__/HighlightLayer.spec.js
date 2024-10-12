@@ -100,7 +100,7 @@ describe('HighlightLayer', () => {
       expect(layers.length).toBe(2);
       expect(layers[0].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
       expect(layers[1].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted-StrokeLine`);
-      const filterExp = viewModel._createFilterExp(features[0], viewModel.filterFields);
+      const filterExp = viewModel.createFilterExp(features[0], viewModel.filterFields);
       expect(layers[0].filter).toEqual(filterExp);
       expect(layers[1].filter).toEqual(filterExp);
       expect(viewModel.targetLayerIds).toEqual([mockLayerName]);
