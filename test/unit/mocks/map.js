@@ -367,7 +367,10 @@ var Map = function (options) {
       if(id === 'POINT-0'){
         return ''
       }
-      return this.addedLayers[id];
+      return {
+        ...this.addedLayers[id],
+        serialize: () => this.addedLayers[id]
+      };
     }
     else if(id === 'China-identify-SM-highlighted'){
       return {}

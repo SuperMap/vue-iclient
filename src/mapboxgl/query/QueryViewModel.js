@@ -128,15 +128,8 @@ export default class QueryViewModel extends HighlightLayer {
    * @returns {Object} 要素信息。
    */
   getFilterFeature(filter) {
-    let features = this.queryResult.result;
-    let feature;
-    for (let i = 0; i < features.length; i++) {
-      let propertiesValue = getValueCaseInsensitive(features[i].properties, 'smid');
-      if (filter === propertiesValue) {
-        feature = this._getFeatrueInfo(features[i]);
-        break;
-      }
-    }
+    let matchFeature = this._findFeatureByFieldValue(filter);
+    const feature = this._getFeatrueInfo(matchFeature);
     this.map.flyTo({ center: feature.coordinates });
     return feature;
   }
@@ -201,6 +194,13 @@ export default class QueryViewModel extends HighlightLayer {
       .addTo(this.map);
   }
 
+  highlightSelection(fieldValue) {
+    const feature = this._findFeatureByFieldValue(fieldValue);
+    const filterExp = this.createFilterExp(feature, this.filterFields);
+    this.removeHighlightLayers();
+    this.addHighlightLayers(this.map.getLayer(this.layerID).serialize(), filterExp);
+  }
+
   _addOverlayToMap(type, source, layerID) {
     let mbglStyle = {
       circle: {
@@ -260,5 +260,18 @@ export default class QueryViewModel extends HighlightLayer {
 
   _handleMapSelectionChanged(e) {
     this.getPopupFeature(e);
+  }
+
+  _findFeatureByFieldValue(fieldValue) {
+    let features = this.queryResult.result;
+    let feature;
+    for (let i = 0; i < features.length; i++) {
+      let propertiesValue = getValueCaseInsensitive(features[i].properties, 'smid');
+      if (fieldValue === propertiesValue) {
+        feature = features[i];
+        break;
+      }
+    }
+    return feature;
   }
 }

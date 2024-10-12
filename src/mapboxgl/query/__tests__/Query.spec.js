@@ -252,8 +252,9 @@ describe('query', () => {
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
     wrapper.vm.viewModel.on('querysucceeded', async e => {
-      await wrapper.vm.$nextTick();
-      wrapper.find('.sm-component-query__result-body ul li').trigger('click');
+      const selectionSpy = jest.spyOn(wrapper.vm.viewModel, 'highlightSelection');
+      await wrapper.find('.sm-component-query__result-body ul li').trigger('click');
+      expect(selectionSpy).toBeCalled();
       done();
     });
     expect(spyquery).toBeCalled();

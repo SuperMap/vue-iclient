@@ -161,7 +161,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     });
   }
 
-  addHighlightLayers(layer: mapboxglTypes.Layer, filter?: any[]) {
+  addHighlightLayers(layer: mapboxglTypes.Layer, filter: any[] = this.filterExp) {
     let type = layer.type as unknown as StyleTypes[number];
     let paint = layer.paint;
     const id = layer.id;
@@ -211,6 +211,22 @@ export default class HighlightLayer extends mapboxgl.Evented {
         this.map.removeLayer(layerId);
       }
     });
+  }
+
+  createFilterExp(feature: LayerClickedFeature, fields: string[] = this.filterFields) {
+    // 高亮过滤(所有字段)
+    const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
+    const isBasicType = (item: any) => {
+      return typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean';
+    };
+    const filter: any[] = ['all'];
+    const featureKeys: string[] = fields || feature._vectorTileFeature._keys;
+    return featureKeys.reduce((exp, key) => {
+      if (filterKeys.indexOf(key.toLowerCase()) === -1 && isBasicType(feature.properties[key])) {
+        exp.push(['==', key, feature.properties[key]]);
+      }
+      return exp;
+    }, filter);
   }
 
   _createLayerHighlightStyle(types: StyleTypes, layerId: string) {
@@ -272,7 +288,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     const features = this._queryLayerFeatures(e);
     this.removeHighlightLayers();
     if (features[0]?.layer) {
-      this.addHighlightLayers(features[0].layer, this.filterExp ?? this._createFilterExp(features[0], this.filterFields));
+      this.addHighlightLayers(features[0].layer, this.filterExp ?? this.createFilterExp(features[0]));
     }
     this.fire('mapselectionchanged', { features });
   }
@@ -296,21 +312,5 @@ export default class HighlightLayer extends mapboxgl.Evented {
       layers: layersOnMap
     }) as unknown as LayerClickedFeature[];
     return features;
-  }
-
-  _createFilterExp(feature: LayerClickedFeature, fields?: string[]) {
-    // 高亮过滤(所有字段)
-    const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
-    const isBasicType = (item: any) => {
-      return typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean';
-    };
-    const filter: any[] = ['all'];
-    const featureKeys: string[] = fields || feature._vectorTileFeature._keys;
-    return featureKeys.reduce((exp, key) => {
-      if (filterKeys.indexOf(key.toLowerCase()) === -1 && isBasicType(feature.properties[key])) {
-        exp.push(['==', key, feature.properties[key]]);
-      }
-      return exp;
-    }, filter);
   }
 }

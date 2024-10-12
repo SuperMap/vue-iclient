@@ -307,8 +307,10 @@ export default {
       this.activeResultIndex = index;
       this.popup && this.popup.remove() && (this.popup = null);
       let filter = e.target.innerHTML;
-      let feature = this.viewModel.getFilterFeature(filter.split('：')[1].trim());
+      const fieldValue = filter.split('：')[1].trim();
+      let feature = this.viewModel.getFilterFeature(fieldValue);
       this.addPopup(feature);
+      this.viewModel.highlightSelection(fieldValue);
     },
     registerEvents() {
       this.viewModel.on('querysucceeded', e => {
