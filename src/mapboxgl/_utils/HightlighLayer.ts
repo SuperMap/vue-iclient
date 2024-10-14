@@ -2,6 +2,7 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
+import { AnyLayer } from 'mapbox-gl';
 
 interface HighlightStyle {
   circle: InstanceType<typeof CircleStyle>;
@@ -185,7 +186,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
         layout: Object.assign({}, LAYER_DEFAULT_STYLE[type].layout, layerStyle?.layout),
         filter
       });
-      this.map.addLayer(highlightLayer);
+      this.map.addLayer(highlightLayer as AnyLayer);
       this.targetLayerIds.push(id);
       this.targetLayerIds = this._uniqueLayerIds(this.targetLayerIds);
     }
@@ -198,7 +199,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
         layout: Object.assign({}, LAYER_DEFAULT_STYLE['strokeLine'].layout, layerStyle?.layout),
         filter
       });
-      this.map.addLayer(highlightLayer);
+      this.map.addLayer(highlightLayer as AnyLayer);
     }
   }
 
