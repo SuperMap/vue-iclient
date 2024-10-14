@@ -108,6 +108,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
   filterExp?: any[];
   filterFields?: string[];
   clickTolerance = 5;
+  map: mapboxglTypes.Map;
 
   constructor(options: HighlightLayerOptions) {
     super();
