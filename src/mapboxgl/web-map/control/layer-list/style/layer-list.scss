@@ -70,6 +70,9 @@
         margin-right: 9px;
       }
       & div:last-child {
+        margin-right: 0px;
+      }
+      &.icon-buttons-in-group div{
         margin-right: 12px;
       }
       & i:hover {

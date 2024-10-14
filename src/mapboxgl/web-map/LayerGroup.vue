@@ -20,7 +20,7 @@
             />
             <span class="add-ellipsis">{{ item.title }}</span>
             <div
-              :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
+              :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden',  item.type === 'group' ? 'icon-buttons-in-group' : '']"
             >
               <div v-if="layerOperations.zoomToLayer" class="sm-component-layer-list__zoom">
                 <i

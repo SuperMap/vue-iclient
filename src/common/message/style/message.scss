@@ -4,6 +4,7 @@
 @include b(message) {
   &-notice-content {
     background: $message-background;
+    color: $text-color-active;
   }
 
   &-error .#{$iconfont-css-prefix} {

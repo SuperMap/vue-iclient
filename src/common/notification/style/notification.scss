@@ -3,7 +3,9 @@
 
 @include b(notification) {
   &-notice {
+    $notice-prefix: &;
     background: $message-background;
+    padding: 20px 24px 24px;
 
     &-message {
       color: $heading-color;
@@ -11,6 +13,7 @@
 
     @at-root {
       .#{$iconfont-css-prefix}#{&}-icon {
+        margin-left: 0;
         &-warning {
           color: $warning-color;
         }
@@ -24,6 +27,12 @@
       color: $text-color-secondary;
       &:hover {
         color: $text-color;
+      }
+    }
+
+    &-with-icon {
+      #{$notice-prefix}-message, #{$notice-prefix}-description {
+        margin-left: 36px;
       }
     }
   }
