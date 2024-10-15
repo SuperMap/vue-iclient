@@ -43,10 +43,17 @@ export default class QueryViewModel extends HighlightLayer {
 
   clearResultLayer() {
     if (this.map) {
-      this.strokeLayerID && this.map.getLayer(this.strokeLayerID) && this.map.removeLayer(this.strokeLayerID);
-      this.layerID && this.map.getLayer(this.layerID) && this.map.removeLayer(this.layerID);
       this.removeHighlightLayers();
       this.unregisterLayerMouseEvents();
+      const layerIds = [this.strokeLayerID, this.layerID].filter(item => !!item);
+      layerIds.forEach(item => {
+        if (this.map.getLayer(item)) {
+          this.map.removeLayer(item);
+        }
+        if (this.map.getSource(item)) {
+          this.map.removeSource(item);
+        }
+      });
     }
   }
 
