@@ -1390,6 +1390,11 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _addLabelLayer(layerInfo: any, features: any, addSource = false): void {
     const labelStyle = layerInfo.labelStyle;
+    const properties = features[0]?.properties;
+    const textField = labelStyle.labelField.replace(/{(.+)}/g, '$1');
+    if (!properties || !properties[textField]) {
+      return;
+    }
     let { backgroundFill } = labelStyle;
     const fontFamily = labelStyle.fontFamily;
     const { minzoom, maxzoom } = layerInfo;

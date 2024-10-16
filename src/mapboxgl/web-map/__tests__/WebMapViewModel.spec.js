@@ -1950,4 +1950,61 @@ describe('WebMapViewModel.spec', () => {
     };
     viewModel.on({ addlayerssucceeded: callback });
   });
+
+  it('label layer no label field', done => {
+    const layerInfo = {
+      layerType: 'UNIQUE',
+      visible: true,
+      themeSetting: {},
+      name: 'labeNoField',
+      featureType: 'POINT',
+      labelStyle: {
+        offsetX: 0,
+        textBaseline: 'bottom',
+        fontFamily: '黑体',
+        offsetY: -19,
+        outlineWidth: 0,
+        textAlign: 'center',
+        outlineColor: '#000000',
+        fontSize: '14px',
+        fill: '#333',
+        backgroundFill: [255, 255, 255, 0.8],
+        labelField: '{未设置}'
+      },
+      style: {
+        strokeWidth: 1,
+        offsetX: 0,
+        fillColor: '#E6F598',
+        offsetY: 0,
+        fillOpacity: 0.9,
+        radius: 15,
+        strokeColor: '#ffffff',
+        type: 'BASIC_POINT',
+        strokeOpacity: 1
+      },
+      projection: 'EPSG:4326',
+      enableFields: ['UserID']
+    };
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_CSV,
+      'https://fakeiportal.supermap.io/iportal/web/datas/13136933/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        layerData_geojson['POINT_GEOJSON']
+    };
+    mockFetch(fetchResource);
+    const id = {
+      ...uniqueLayer_point,
+      level: '',
+      visibleExtent: [0, 1, 2, 3]
+    };
+    const callback = function (data) {
+      expect(data.layers.length).toBe(id.layers.length);
+      const spy = jest.spyOn(viewModel, '_addLayer');
+      viewModel._addLabelLayer(layerInfo, [{ properties: {} }], true);
+      expect(spy).not.toBeCalled();
+      done();
+    };
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
+    viewModel.on({ addlayerssucceeded: callback });
+  });
 });
