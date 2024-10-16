@@ -332,6 +332,18 @@ var Map = function (options) {
   };
 
   this.addStyle = function (style, before) {
+    if (style.sources) {
+      for (const id in style.sources) {
+        this.addSource(id, style.sources[id]);
+      }
+    }
+    if (style.layers) {
+      style.layers.forEach((item) => {
+        if (item.type !== 'background') {
+          this.addLayer(item);
+        }
+      });
+    }
     return style;
   };
 

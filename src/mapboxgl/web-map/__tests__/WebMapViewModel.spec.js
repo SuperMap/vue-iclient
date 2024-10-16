@@ -1900,4 +1900,54 @@ describe('WebMapViewModel.spec', () => {
     expect(viewModel.canvgsV.length).toBe(0);
     done();
   });
+
+  it('MAPBOXSTYLE layer repeat', done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': webmap_MAPBOXSTYLE_Tile,
+      'https://fakeiportal.supermap.io/iserver/services/map-china400/restjsr/v1/vectortile/maps/China_4326/style.json':
+        {
+          version: 8,
+          sources: {
+            'raster-tiles': {
+              type: 'raster',
+              tiles: [
+                'http://fakeiportal.supermap.io/iserver/services/map-china400/rest/maps/China/zxyTileImage.png?z={z}&x={x}&y={y}'
+              ],
+              tileSize: 256
+            }
+          },
+          layers: [
+            {
+              id: 'simple-tiles',
+              type: 'raster',
+              source: 'raster-tiles',
+              minzoom: 0,
+              maxzoom: 22
+            }
+          ]
+        }
+    };
+    mockFetch(fetchResource);
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption });
+    const callback = function (data) {
+      expect(data.map._sources['raster-tiles']).not.toBeUndefined();
+      const layerIds = Object.keys(data.map.overlayLayersManager);
+      expect(layerIds.length).toBe(2);
+      expect(layerIds).toEqual(['京津地区地图', 'simple-tiles']);
+      expect(viewModel._cacheLayerId.length).toBe(2);
+      const webMapViewModel = new WebMapViewModel(commonId, { ...commonOption, ignoreBaseProjection: true }, undefined, data.map);
+      webMapViewModel.on({
+        addlayerssucceeded: (dataOther) => {
+          expect(dataOther.map._sources['raster-tiles']).not.toBeUndefined();
+          const layerIdsOther = Object.keys(dataOther.map.overlayLayersManager);
+          expect(layerIdsOther.length).toBe(3);
+          expect(layerIdsOther).toEqual(['京津地区地图', 'simple-tiles', '京津地区地图-1' ]);
+          expect(webMapViewModel._cacheLayerId.length).toBe(1);
+          done();
+        }
+      });
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
 });
