@@ -81,7 +81,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
     }
     const { layerId, layerStyle, sourceLayer, filter, minzoom, maxzoom } = this.options;
     const { paint = {}, layout = {} } = layerStyle || {};
-    const layer: mapboxglTypes.Layer = {
+    const layer: mapboxglTypes.FillExtrusionLayer = {
       id: layerId,
       source: sourceId || layerId,
       'source-layer': sourceLayer || '',
