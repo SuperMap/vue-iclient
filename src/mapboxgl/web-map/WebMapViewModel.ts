@@ -440,7 +440,7 @@ export default class WebMapViewModel extends WebMapBase {
             url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
             credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
               ? 'include'
-              : 'omit'
+              : undefined
           };
         };
       }
@@ -538,7 +538,7 @@ export default class WebMapViewModel extends WebMapBase {
           const proxy = this.webMapService.handleProxy('image');
           return {
             url: url,
-            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : 'omit'
+            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : undefined
           };
         }
         return { url };

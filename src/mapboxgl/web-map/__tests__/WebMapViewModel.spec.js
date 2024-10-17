@@ -1813,6 +1813,7 @@ describe('WebMapViewModel.spec', () => {
         );
       const transformed = viewModel.map.options.transformRequest(mockTileUrl, 'Tile');
       expect(transformed.url).toMatch('https://www.supermapol.com/apps/viewer/getUrlResource.png?url=');
+      expect(transformed.credentials).toBeUndefined();
       done();
     });
     it('add iportal map', done => {
@@ -1820,6 +1821,16 @@ describe('WebMapViewModel.spec', () => {
       const mockTileUrl = '';
       const transformed = viewModel.map.options.transformRequest(mockTileUrl);
       expect(transformed.url).toBe(mockTileUrl);
+      expect(transformed.credentials).toBeUndefined();
+      done();
+    });
+
+    it('add iportal map when url include proxy ', done => {
+      const viewModel = new WebMapViewModel(baseLayers['BAIDU'], { ...commonOption, proxy: proxyStr, iportalServiceProxyUrlPrefix: proxyStr });
+      const mockTileUrl = `${proxyStr}${encodeURIComponent('http://fake.url')}`;
+      const transformed = viewModel.map.options.transformRequest(mockTileUrl, 'Tile');
+      expect(transformed.url).toContain(mockTileUrl);
+      expect(transformed.credentials).toBe('include');
       done();
     });
 
@@ -1865,10 +1876,19 @@ describe('WebMapViewModel.spec', () => {
         done();
       });
       it('test transformRequest when proxy is string', done => {
-        const viewModel = new WebMapViewModel('', { ...commonOption, proxy: proxyStr }, { ...mapOptions });
+        const viewModel = new WebMapViewModel('', { ...commonOption, serverUrl: 'http://localhost:8080/iportal', proxy: proxyStr }, { ...mapOptions });
         const mockTileUrl = tiles[0].replace('{x}', 6).replace('{y}', 8).replace('{z}', 10);
         const transformed = viewModel.mapOptions.transformRequest(mockTileUrl, 'Tile');
         expect(transformed.url).toMatch(proxyStr);
+        expect(transformed.credentials).toBeUndefined();
+        done();
+      });
+      it('test transformRequest when url includes proxy', done => {
+        const viewModel = new WebMapViewModel('', { ...commonOption, serverUrl: 'http://localhost:8080/iportal', proxy: proxyStr }, { ...mapOptions });
+        const mockTileUrl = tiles[0].replace('{x}', 6).replace('{y}', 8).replace('{z}', 10);
+        const transformed = viewModel.mapOptions.transformRequest(`${proxyStr}${encodeURIComponent(mockTileUrl)}`, 'Tile');
+        expect(transformed.url).toMatch(proxyStr);
+        expect(transformed.credentials).toBe('include');
         done();
       });
       it('test transformRequest when proxy is false', done => {
@@ -1876,6 +1896,7 @@ describe('WebMapViewModel.spec', () => {
         const mockTileUrl = tiles[0].replace('{x}', 6).replace('{y}', 8).replace('{z}', 10);
         const transformed = viewModel.mapOptions.transformRequest(mockTileUrl, 'Tile');
         expect(transformed.url).toBe(mockTileUrl);
+        expect(transformed.credentials).toBeUndefined();
         done();
       });
     });
