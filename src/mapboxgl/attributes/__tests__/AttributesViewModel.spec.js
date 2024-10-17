@@ -182,6 +182,27 @@ describe('AttributesViewModel.ts', () => {
     expect(viewModel.lazy).toBe(true);
   });
 
+  it('check restmap not support lazy', async () => {
+    const nextOption = {
+      ...options,
+      dataset: {
+        layerName: 'Rivers@World',
+        type: 'iServer',
+        url: 'http://test'
+      },
+      lazy: true,
+      searchText: '漠河',
+      searchedColumn: '站台',
+      sorter: {
+        field: '温度',
+        order: 'ascend'
+      }
+    };
+    const viewModel = new AttributesViewModel(nextOption);
+    await flushPromises();
+    expect(viewModel.canLazyLoad()).toBe(false);
+  });
+
   it('setsorter', () => {
     const viewModel = new AttributesViewModel(options);
     const sorter = () => jest.fn();
@@ -456,9 +477,9 @@ describe('AttributesViewModel.ts', () => {
     const viewModel = new AttributesViewModel(options);
     const columns = viewModel.toTableColumns(headers);
     columns.forEach((element, index) => {
-      if([1, 2, 8].includes(index)){
+      if ([1, 2, 8].includes(index)) {
         expect(typeof element.sorter).toBe('function');
-      }else {
+      } else {
         expect(element.sorter).toBe(undefined);
       }
     });
