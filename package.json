@@ -40,7 +40,7 @@
     "@turf/transform-scale": "^5.1.5",
     "@types/geojson": "^7946.0.7",
     "@types/leaflet": "1.9.8",
-    "@types/mapbox-gl": "^0.54.5",
+    "@types/mapbox-gl": "^1.12.1",
     "@types/node": "^12.0.3",
     "@types/three": "0.129.0",
     "ant-design-vue": "1.7.2",
