@@ -2028,4 +2028,43 @@ describe('WebMapViewModel.spec', () => {
     const viewModel = new WebMapViewModel(id, { ...commonOption });
     viewModel.on({ addlayerssucceeded: callback });
   });
+  
+  it('markerLayer point linstring and text', done => {
+    const content = '{"type":"FeatureCollection","crs":{"type":"name","properties":{"name":"urn:ogc:def:crs:OGC:1.3:CRS84"}},"features":[{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"strokeColor":"#0081E2","strokeOpacity":1,"strokeWidth":5,"lineCap":"round","lineDash":"solid"},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"LineString","coordinates":[[103.21230856170534,35.93252826339496],[96.80142450317665,31.772281946203208]]}},{"type":"Feature","properties":{"dataViz_title":"这是文字"},"dv_v5_markerStyle":{"text":"这是文字","font":"33px 宋体","placement":"point","textAlign":"right","fillColor":"#595959","backgroundFill":"#ee8b8b","borderColor":"rgba(255,255,255,0)","borderWidth":4,"padding":[8,8,8,8],"maxWidth":358},"dv_v5_markerInfo":{"dataViz_title":"这是文字"},"geometry":{"type":"Point","coordinates":[101.56249999999991,26.728112105878537]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"src":"http://172.16.14.44:8190/iportal/apps/dataviz/static/imgs/markers/mark_red.png","scale":1,"anchor":[0.5,0.5],"imgWidth":48,"imgHeight":43},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[93.72012106170533,30.646288585669723]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"src":"http://172.16.14.44:8190/iportal/apps/dataviz/static/imgs/markers//ktv_red.png","scale":1,"anchor":[0.5,0.5],"imgWidth":48,"imgHeight":43},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[95.91738668670534,35.145840549134476]}},{"type":"Feature","properties":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"dv_v5_markerStyle":{"radius":10,"fillColor":"#53C41A","fillOpacity":0.73,"strokeColor":"#e20057","strokeOpacity":1,"strokeWidth":4},"dv_v5_markerInfo":{"dataViz_title":"","dataViz_description":"","dataViz_imgUrl":"","dataViz_url":"","dataViz_videoUrl":""},"geometry":{"type":"Point","coordinates":[101.36660543670533,38.107643862311676]}}]}';
+    const newLayerData_geojson = {
+      ...layerData_geojson['MARKER_GEOJSON'],
+      content 
+    };
+    const contentData = JSON.parse(content);
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/datas/1795361105/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=undefined':
+        newLayerData_geojson
+    };
+    mockFetch(fetchResource);
+    const layers = [{
+      layerType: 'MARKER',
+      visible: true,
+      name: '未命名标注图层1',
+      serverId: '1795361105'
+    }];
+    const id = {
+      ...markerLayer,
+      layers
+    };
+    const viewModel = new WebMapViewModel(id, { ...commonOption });
+    const callback = function (data) {
+      const layersOnMap = Object.values(data.map.overlayLayersManager);
+      expect(layersOnMap.length).toBe(contentData.features.length + 1);
+      expect(layersOnMap.length).toBe(viewModel._cacheLayerId.length);
+      const layerID = layers[0].name;
+      const firstMarkerLayer = layersOnMap.find(item => item.id === layerID);
+      expect(firstMarkerLayer).toBeTruthy();
+      expect(firstMarkerLayer.type).toBe('line');
+      expect(layersOnMap.some(item => item.id.includes(`${layerID}-LINESTRING`))).toBeFalsy();
+      expect(layersOnMap.some(item => item.id.includes(`${layerID}-TEXT`))).toBeTruthy();
+      expect(layersOnMap.filter(item => item.id.includes(`${layerID}-POINT-`))).toHaveLength(3);
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+  });
 });
