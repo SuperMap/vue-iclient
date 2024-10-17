@@ -199,7 +199,6 @@ describe('AttributesViewModel.ts', () => {
       }
     };
     const viewModel = new AttributesViewModel(nextOption);
-    await flushPromises();
     expect(viewModel.canLazyLoad()).toBe(false);
   });
 
