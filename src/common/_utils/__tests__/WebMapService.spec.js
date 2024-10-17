@@ -762,4 +762,24 @@ describe('WebMapService.spec', () => {
     expect(service.handleWithCredentials(null, url, true)).toBeTruthy();
     expect(service.handleWithCredentials(null, url)).toBeFalsy();
   });
+
+  it('get Layer Features from rest_data and dataSource is Chinese', done => {
+    const type = 'rest_data';
+    const layer = {
+      dataSource: {
+        "type": "REST_DATA",
+        "url": "https://fakeiportal.supermap.io/iportal/portalproxy/98587ae90bec41bd/iserver/services/data-ZhongGuoDiTu/rest/data",
+        "dataSourceName": "%E4%B8%AD%E5%9B%BD%E7%9F%A2%E9%87%8F%E6%95%B0%E6%8D%AE:飞机场"
+      },
+      enableFields: ['latitude']
+    };
+    const baseProjection = 'EPSG:3857';
+    const service = new WebMapService(mapId, options);
+    const spy = jest.spyOn(service, '_getFeatureBySQL');
+    expect.assertions(1);
+    service.getLayerFeatures(type, layer, baseProjection).then(data => {
+      expect(spy).toBeCalledWith(expect.anything(), ["中国矢量数据:飞机场"], expect.anything(), expect.anything(), expect.anything());
+      done();
+    });
+  });
 });
