@@ -152,4 +152,17 @@ describe('TimeLine.vue', () => {
     });
     wrapper.vm.setPlayState(true);
   });
+
+  it('render margin', async () => {
+    wrapper = mount(SmTimeLine, {
+      propsData: {
+        data: ['3月15号数据', '3月16号数据', '3月17号数据'],
+        left: 20,
+        right: 20,
+        top: 20,
+        bottom: 20
+      }
+    });
+    expect(wrapper.vm.options.baseOption.timeline.left).toBe(20);
+  });
 });

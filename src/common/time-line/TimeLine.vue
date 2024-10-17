@@ -50,6 +50,10 @@ export default class SmTimeLine extends Mixins(Theme) {
   @Prop({ default: true }) loop: boolean;
   @Prop({ default: 3000 }) playInterval: string | number;
   @Prop({ default: 0 }) currentIndex: number;
+  @Prop({ default: 'auto' }) left: string | number;
+  @Prop({ default: 'auto' }) right: string | number;
+  @Prop({ default: 'auto' }) top: string | number;
+  @Prop({ default: 'auto' }) bottom: string | number;
   @Prop({
     default() {
       return [];
@@ -168,9 +172,10 @@ export default class SmTimeLine extends Mixins(Theme) {
             ...(this.emphasis || {})
           },
           padding: 0,
-          left: 0,
-          right: 0,
-          top: 'middle'
+          left: this.left,
+          right: this.right,
+          top: this.top,
+          bottom: this.bottom
         },
         tooltip: {
           position: function(point, params, dom, rect, size) {
