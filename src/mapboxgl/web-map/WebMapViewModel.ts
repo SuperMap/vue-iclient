@@ -2716,7 +2716,7 @@ export default class WebMapViewModel extends WebMapBase {
   }
 
   private _getLabelFontFamily(mapInfo) {
-    const fonts: string[] = [];
+    const fonts: string[] = ['sans-serif'];
     const layers = mapInfo.layers;
     // 获取 label 图层字体类型
     if (layers && layers.length > 0) {
