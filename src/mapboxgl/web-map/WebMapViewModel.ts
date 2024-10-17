@@ -440,7 +440,7 @@ export default class WebMapViewModel extends WebMapBase {
             url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
             credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
               ? 'include'
-              : 'omit'
+              : undefined
           };
         };
       }
@@ -538,7 +538,7 @@ export default class WebMapViewModel extends WebMapBase {
           const proxy = this.webMapService.handleProxy('image');
           return {
             url: url,
-            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : 'omit'
+            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : undefined
           };
         }
         return { url };
@@ -2127,17 +2127,18 @@ export default class WebMapViewModel extends WebMapBase {
       if (!markerSrc[layerID]) {
         markerSrc[layerID] = {
           src: defaultStyle.src,
-          defaultStyle
+          defaultStyle,
+          geomType
         };
       }
     });
-    const loadImagePromise = (layerID: string, { src, defaultStyle }) => {
+    const loadImagePromise = (layerID: string, { src, defaultStyle, geomType }) => {
       return new Promise(resolve => {
-        if (!src) {
+        if (!src && geomType !== 'TEXT') {
           resolve({ [layerID]: undefined });
           return;
         }
-        if (src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
+        if (src && src.indexOf('svg') < 0 && (src.startsWith('http://') || src.startsWith('https://'))) {
           this.map.loadImage(src, (error, image) => {
             if (error) {
               console.log(error);
