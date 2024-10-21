@@ -22,18 +22,13 @@
         <ul>
           <li v-for="(value, key, index) in attributes" :key="index" class="content">
             <div class="left ellipsis" :title="key" :style="formatStyle.keyStyle">{{ key }}</div>
-            <div class="right ellipsis" :title="value.value || value" :style="formatStyle.valueStyle">
+            <div class="right ellipsis" :title="value" :style="formatStyle.valueStyle">
               <slot v-if="fieldsMap[key]" :name="fieldsMap[key]" :value="value"></slot>
               <span v-else>{{ value }}</span>
             </div>
           </li>
         </ul>
       </div>
-      <sm-table-popup
-        v-if="!$slots.default && !($scopedSlots && Object.keys($scopedSlots).length) && Object.keys(attributes).length"
-        v-bind="tablePopupProps"
-        class="sm-component-attribute-panel__self-content"
-      />
       <sm-empty v-if="!$slots.default && !Object.keys(attributes).length" />
     </div>
   </div>
@@ -42,12 +37,11 @@
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import SmTablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
 
 @Component({
   name: 'SmAttributePanel',
-  components: { SmTablePopup, SmEmpty }
+  components: { SmEmpty }
 })
 class SmAttributePanel extends Mixins(Theme) {
   attrIndex = 0;
@@ -88,13 +82,6 @@ class SmAttributePanel extends Mixins(Theme) {
   })
   attributes: Object;
 
-  @Prop({
-    default: () => {
-      return [];
-    }
-  })
-  columns: Array<Object>;
-
   @Watch('currentIndex')
   currentIndexChanged() {
     this.attrIndex = this.currentIndex;
@@ -116,22 +103,32 @@ class SmAttributePanel extends Mixins(Theme) {
     return `${this.attrIndex + 1}/${this.total}`;
   }
 
-  get tablePopupProps() {
-    return { data: [this.attributes], columns: this.columns };
-  }
-
   get formatStyle() {
     let style = Object.assign({}, this.attributeStyle);
     Object.keys(style).forEach(item => {
       // @ts-ignore
       if (Object.prototype.hasOwnProperty.call(style[item], 'width')) {
         // @ts-ignore
-        style[item].width += 'px';
+        if (style[item].width === 0) {
+          style[item].width = 'unset';
+          style[item].flex = 1;
+        } else {
+          if (style[item].width !== 'unset') {
+            style[item].width += 'px';
+          }
+          style[item].flex = 'unset';
+        }
       }
       // @ts-ignore
       if (Object.prototype.hasOwnProperty.call(style[item], 'height')) {
         // @ts-ignore
-        style[item].height += 'px';
+        if (style[item].height === 0) {
+          style[item].height = 'unset';
+        } else {
+          if (style[item].height !== 'unset') {
+            style[item].height += 'px';
+          }
+        }
       }
     });
     return style;
