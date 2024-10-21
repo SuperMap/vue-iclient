@@ -5,14 +5,13 @@
   min-width: 200px;
   height: 100%;
   overflow: auto;
-  padding: 10px;
   border-radius: 4px;
   border: 1px solid $border-color-split;
   @include e(header) {
     width: 100%;
     display: inline-flex;
     align-items: center;
-    padding: 0px 8px 4px ;
+    padding: 8px 8px 2px ;
     border-bottom: 2px solid $border-color-split;
     .switchDataText {
       position: absolute;
@@ -48,17 +47,15 @@
         margin: 0;
         padding: 0;
         font-size: 14px;
-        max-height: 200px;
         background: transparent;
         li {
           > div {
-            padding: 4px 16px;
+            margin: 4px 16px;
           }
         }
         border-collapse: separate;
         .content {
           display: flex;
-          justify-content: space-around;
           .left {
             width: 110px;
           }
