@@ -105,8 +105,8 @@ describe('query', () => {
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', res => {
-      expect(res.result.result[0].properties['NAME']).toBe('四川省');
+    wrapper.vm.$on('query-succeeded', () => {
+      expect(wrapper.vm.queryResult.result[0]['NAME']).toBe('四川省');
       done();
     });
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
@@ -132,8 +132,8 @@ describe('query', () => {
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', res => {
-      expect(res.result.result[0].properties['NAME']).toBe('四川省');
+    wrapper.vm.$on('query-succeeded', () => {
+      expect(wrapper.vm.queryResult.result[0]['NAME']).toBe('四川省');
       expect(spyAddlayer).toBeCalled();
       done();
     });
@@ -244,17 +244,25 @@ describe('query', () => {
             maxFeatures: 30,
             dataName: ['World:Countries']
           })
-        ]
+        ],
+        multiSelect: false
       }
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
     wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
-    wrapper.vm.viewModel.on('querysucceeded', async e => {
-      const selectionSpy = jest.spyOn(wrapper.vm.viewModel, 'highlightSelection');
-      await wrapper.find('.sm-component-query__result-body ul li').trigger('click');
+    wrapper.vm.$on('query-succeeded', async () => {
+      const highlightDom = wrapper.find({ ref: wrapper.vm.highlightCompRefName });
+      const selectionSpy = jest.spyOn(highlightDom.vm, 'updateHighlightDatas');
+      await wrapper.findAll('.sm-component-query__result-body ul li').at(0).trigger('click');
+      expect(highlightDom.exists()).toBeTruthy();
       expect(selectionSpy).toBeCalled();
+      expect(wrapper.vm.activeResultIndexList).toEqual([0]);
+      await wrapper.findAll('.sm-component-query__result-body ul li').at(1).trigger('click');
+      expect(wrapper.vm.activeResultIndexList).toEqual([1]);
+      await wrapper.findAll('.sm-component-query__result-body ul li').at(1).trigger('click');
+      expect(wrapper.vm.activeResultIndexList).toEqual([]);
       done();
     });
     expect(spyquery).toBeCalled();
@@ -280,7 +288,7 @@ describe('query', () => {
     const spyAddlayer = jest.spyOn(wrapper.vm.map, 'addLayer');
     const spyBounds = jest.spyOn(wrapper.vm.map, 'fitBounds');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', e => {
+    wrapper.vm.$on('query-succeeded', () => {
       expect(spyAddlayer).toBeCalled();
       expect(spyBounds).toBeCalled();
       done();
@@ -334,8 +342,8 @@ describe('query', () => {
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', res => {
-      expect(res.result.result[0].properties['NAME']).toBe('四川省');
+    wrapper.vm.$on('query-succeeded', () => {
+      expect(wrapper.vm.queryResult.result[0]['NAME']).toBe('四川省');
       expect(wrapper.vm.activeTab).toBe('result');
       wrapper.find('.sm-component-query__job-button').trigger('click');
       expect(wrapper.vm.activeTab).toBe('job');
@@ -370,8 +378,8 @@ describe('query', () => {
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
     const spyquery = jest.spyOn(wrapper.vm, 'query');
-    wrapper.vm.viewModel.on('querysucceeded', res => {
-      expect(res.result.result[0].properties['NAME']).toBe('四川省');
+    wrapper.vm.$on('query-succeeded', () => {
+      expect(wrapper.vm.queryResult.result[0]['NAME']).toBe('四川省');
       expect(wrapper.vm.activeTab).toBe('result');
       let resultHeader = wrapper.find('.sm-component-query__result-header i');
       expect(resultHeader.exists()).toBeTruthy();
@@ -388,7 +396,7 @@ describe('query', () => {
     expect(spyquery).toBeCalled();
   });
 
-  it('update highlight style', async (done) => {
+  it('multiSelect true', async (done) => {
     wrapper = mount(SmQuery, {
       localVue,
       propsData: {
@@ -398,29 +406,30 @@ describe('query', () => {
             url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
             attributeFilter: 'SmID>0',
             maxFeatures: 30,
-            dataName: ['World:Countries'],
-            queryMode: 'KEYWORD'
+            dataName: ['World:Countries']
           })
-        ]
-      },
+        ],
+        multiSelect: true
+      }
     });
     await mapSubComponentLoaded(wrapper);
-    expect(wrapper.vm.highlightStyle).not.toBeUndefined();
-    const nextHighlightStyle = JSON.parse(JSON.stringify(wrapper.vm.highlightStyle));
-    nextHighlightStyle.circle = {
-      paint: {
-        'circle-color': 'red',
-        'circle-opacity': 0.6,
-        'circle-radius': 18,
-        'circle-stroke-width': 2,
-        'circle-stroke-color': '#01ffff',
-        'circle-stroke-opacity': 1
-      }
-    };
-    const setSpy = jest.spyOn(wrapper.vm.viewModel, 'setHighlightStyle');
-    wrapper.setProps({ highlightStyle: nextHighlightStyle });
-    expect(setSpy).toBeCalled();
-    done();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    wrapper.vm.$on('query-succeeded', async () => {
+      const highlightDom = wrapper.find({ ref: wrapper.vm.highlightCompRefName });
+      const selectionSpy = jest.spyOn(highlightDom.vm, 'updateHighlightDatas');
+      await wrapper.findAll('.sm-component-query__result-body ul li').at(0).trigger('click');
+      expect(highlightDom.exists()).toBeTruthy();
+      expect(selectionSpy).toBeCalled();
+      expect(wrapper.vm.activeResultIndexList).toEqual([0]);
+      await wrapper.findAll('.sm-component-query__result-body ul li').at(1).trigger('click');
+      expect(wrapper.vm.activeResultIndexList).toEqual([0, 1]);
+      await wrapper.findAll('.sm-component-query__result-body ul li').at(0).trigger('click');
+      expect(wrapper.vm.activeResultIndexList).toEqual([1]);
+      done();
+    });
+    expect(spyquery).toBeCalled();
   });
 });
 

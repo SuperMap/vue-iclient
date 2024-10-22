@@ -6,7 +6,7 @@
 @import '../../../common/empty/style/empty.scss';
 @import '../../../common/spin/style/spin.scss';
 @import '../../../common/icon/style/icon.scss';
-@import '../../../common/table-popup/style/table-popup.scss';
+@import '../../layer-highlight/style/layer-highlight.scss';
 
 @include b(query) {
   $query-prefix: &;
@@ -151,12 +151,18 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        position: relative;
         &:hover {
           color: $hover-color;
         }
         &[aria-selected='true'] {
           color: $primary-color;
           background-color: $select-item-hover-bg;
+        }
+        > i {
+          position: absolute;
+          right: 16px;
+          top: 0;
         }
       }
     }

@@ -109,6 +109,7 @@ import { default as VideoPlusPopup } from 'vue-iclient/src/mapboxgl/video-plus/u
 import { default as VideoPlusDraw } from 'vue-iclient/src/mapboxgl/video-plus/control/draw/index';
 import { default as GraphMap } from 'vue-iclient/src/mapboxgl/graph-map';
 import { default as MapPopup } from 'vue-iclient/src/mapboxgl/map-popup/index.js';
+import { default as HighlightLayer } from 'vue-iclient/src/mapboxgl/layer-highlight/index.js';
 
 const components = {
   Avatar,
@@ -192,6 +193,7 @@ const components = {
   FlyTo,
   Identify,
   MapPopup,
+  HighlightLayer,
   LayerColor,
   LayerList,
   LayerManager,

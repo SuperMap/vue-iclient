@@ -1,12 +1,11 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
+import { getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
 import getFeatures from 'vue-iclient/src/common/_utils/get-features';
-import HighlightLayer from 'vue-iclient/src/mapboxgl/_utils/HightlighLayer';
 
 /**
  * @class QueryViewModel
@@ -25,31 +24,28 @@ import HighlightLayer from 'vue-iclient/src/mapboxgl/_utils/HightlighLayer';
  * @fires QueryViewModel#queryfailed
  * @fires QueryViewModel#getfeatureinfosucceeded
  */
-export default class QueryViewModel extends HighlightLayer {
+export default class QueryViewModel extends mapboxgl.Evented {
   constructor(options) {
     super({ name: 'query', style: options.highlightStyle });
     this.options = options || {};
     this.maxFeatures = this.options.maxFeatures || 200;
     this.layerStyle = options.layerStyle || {};
-    this._handleMapSelectionChanged = this._handleMapSelectionChanged.bind(this);
   }
 
   setMap(mapInfo) {
     const { map } = mapInfo;
     this.map = map;
-    this.registerMapClick();
-    this.on('mapselectionchanged', this._handleMapSelectionChanged);
   }
 
-  clearResultLayer() {
+  clearResultLayer(relatedLayerIds) {
     if (this.map) {
-      this.removeHighlightLayers();
-      this.unregisterLayerMouseEvents();
-      const layerIds = [this.strokeLayerID, this.layerID].filter(item => !!item);
+      const layerIds = [this.strokeLayerID, this.layerID].concat(relatedLayerIds).filter(item => !!item);
       layerIds.forEach(item => {
         if (this.map.getLayer(item)) {
           this.map.removeLayer(item);
         }
+      });
+      layerIds.forEach(item => {
         if (this.map.getSource(item)) {
           this.map.removeSource(item);
         }
@@ -57,15 +53,9 @@ export default class QueryViewModel extends HighlightLayer {
     }
   }
 
-  clear() {
+  clear(layerIds) {
     this.bounds = null;
-    this.clearResultLayer();
-  }
-
-  removed() {
-    this.clear();
-    this.unregisterMapClick();
-    this.off('mapselectionchanged', this._handleMapSelectionChanged);
+    this.clearResultLayer(layerIds);
   }
 
   /**
@@ -97,10 +87,9 @@ export default class QueryViewModel extends HighlightLayer {
           this.fire('queryfailed', { message: geti18n().t('query.noResults') });
           return;
         }
-        this.queryResult = { name: queryParameter.name, result: res.features };
-        this.setFilterFields(res.fields);
+        this.queryResult = { name: queryParameter.name, result: res.features, fields: res.fields };
         this._addResultLayer(this.queryResult);
-        this.fire('querysucceeded', { result: this.queryResult });
+        this.fire('querysucceeded', { result: this.queryResult, layers: [this.layerID, this.strokeLayerID].filter(item => !!item) });
       } catch (error) {
         this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
       }
@@ -126,86 +115,6 @@ export default class QueryViewModel extends HighlightLayer {
       ],
       { maxZoom: 17 }
     );
-  }
-
-  /**
-   * @function QueryViewModel.prototype.getFilterFeature
-   * @desc 获取过滤后的要素。
-   * @param {String|Number} filter - 过滤条件，值应为要素的 properties 中的某个值。
-   * @returns {Object} 要素信息。
-   */
-  getFilterFeature(filter) {
-    let matchFeature = this._findFeatureByFieldValue(filter);
-    const feature = this._getFeatrueInfo(matchFeature);
-    this.map.flyTo({ center: feature.coordinates });
-    return feature;
-  }
-
-  _getFeatrueInfo(feature) {
-    let featureInfo = {};
-    let coordinates;
-    let geometry = feature.geometry;
-    if (
-      geometry.type === 'MultiPolygon' ||
-      geometry.type === 'Polygon' ||
-      geometry.type === 'LineString' ||
-      geometry.type === 'MultiLineString'
-    ) {
-      coordinates = getFeatureCenter(feature);
-    } else {
-      coordinates = geometry.coordinates;
-    }
-    featureInfo.coordinates = coordinates;
-    featureInfo.info = [];
-    for (let key in feature.properties) {
-      feature.properties[key] && featureInfo.info.push({ attribute: key, attributeValue: feature.properties[key] });
-    }
-    return featureInfo;
-  }
-
-  /**
-   * @function QueryViewModel.prototype.getPopupFeature
-   * @desc 获得地图点击位置的要素信息。调用此方法后，需要监听 'getfeatureinfosucceeded' 事件获得要素。
-   */
-  getPopupFeature(e) {
-    if (e.features.length > 0) {
-      let feature = e.features[0];
-      let featureInfo = this._getFeatrueInfo(feature);
-      /**
-       * @event QueryViewModel#getfeatureinfosucceeded
-       * @description 获取要素信息成功后触发。
-       * @property {Object} e  - 事件对象。
-       */
-      this.fire('getfeatureinfosucceeded', { featureInfo });
-    }
-  }
-
-  /**
-   * @function QueryViewModel.prototype.addPopup
-   * @desc 添加弹窗。
-   * @param {Array} coordinates - 弹窗坐标。
-   * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
-   */
-  addPopup(coordinates, popupContainer) {
-    popupContainer.style.display = 'block';
-    this.map.flyTo({ center: coordinates });
-    return new mapboxgl.Popup({
-      className: 'sm-mapboxgl-tabel-popup',
-      closeOnClick: true,
-      closeButton: false,
-      maxWidth: 'none',
-      anchor: 'bottom'
-    })
-      .setLngLat(coordinates)
-      .setDOMContent(popupContainer)
-      .addTo(this.map);
-  }
-
-  highlightSelection(fieldValue) {
-    const feature = this._findFeatureByFieldValue(fieldValue);
-    const filterExp = this.createFilterExp(feature, this.filterFields);
-    this.removeHighlightLayers();
-    this.addHighlightLayers(this.map.getLayer(this.layerID).serialize(), filterExp);
   }
 
   _addOverlayToMap(type, source, layerID) {
@@ -262,23 +171,5 @@ export default class QueryViewModel extends HighlightLayer {
         paint: lineStyle
       });
     }
-    this.registerLayerMouseEvents([layerID, this.strokeLayerID].filter(item => !!item));
-  }
-
-  _handleMapSelectionChanged(e) {
-    this.getPopupFeature(e);
-  }
-
-  _findFeatureByFieldValue(fieldValue) {
-    let features = this.queryResult.result;
-    let feature;
-    for (let i = 0; i < features.length; i++) {
-      let propertiesValue = getValueCaseInsensitive(features[i].properties, 'smid');
-      if (fieldValue === propertiesValue) {
-        feature = features[i];
-        break;
-      }
-    }
-    return feature;
   }
 }

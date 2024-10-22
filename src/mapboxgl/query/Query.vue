@@ -1,44 +1,99 @@
 <template>
-  <sm-collapse-card v-show="isShow" :icon-class="iconClass" :icon-position="position" :header-name="headerName" :auto-rotate="autoRotate" :collapsed="collapsed" :background="background" :textColor="textColor" :split-line="splitLine" class="sm-component-query">
+  <sm-collapse-card
+    v-show="isShow"
+    :icon-class="iconClass"
+    :icon-position="position"
+    :header-name="headerName"
+    :auto-rotate="autoRotate"
+    :collapsed="collapsed"
+    :background="background"
+    :textColor="textColor"
+    :split-line="splitLine"
+    class="sm-component-query"
+  >
     <div class="sm-component-query__body" :style="getTextColorStyle">
       <div class="sm-component-query__choose-panel clearfix">
-        <div :class="{ 'sm-component-query__job-button': true, 'is-active': activeTab === 'job', disabled: isQuery }" :title="$t('query.queryJob')" @click="activeTab = 'job'">
+        <div
+          :class="{ 'sm-component-query__job-button': true, 'is-active': activeTab === 'job', disabled: isQuery }"
+          :title="$t('query.queryJob')"
+          @click="activeTab = 'job'"
+        >
           {{ $t('query.queryJob') }}
         </div>
-        <div :class="{ 'sm-component-query__result-button': true, 'is-active': activeTab === 'result' }" :title="$t('query.queryResult')" @click="activeTab = 'result'">
+        <div
+          :class="{ 'sm-component-query__result-button': true, 'is-active': activeTab === 'result' }"
+          :title="$t('query.queryResult')"
+          @click="activeTab = 'result'"
+        >
           {{ $t('query.queryResult') }}
         </div>
       </div>
       <div v-if="activeTab === 'job'" class="sm-component-query__job-info">
-        <div v-for="(jobInfo, index) in jobInfos" v-show="jobInfos.length > 0" :key="index" :style="headingTextColorStyle" class="sm-component-query__job-info-panel">
-          <div class="sm-component-query__job-info-header" @click="activePanelIndex = activePanelIndex === index ? null : index">
+        <div
+          v-for="(jobInfo, index) in jobInfos"
+          v-show="jobInfos.length > 0"
+          :key="index"
+          :style="headingTextColorStyle"
+          class="sm-component-query__job-info-panel"
+        >
+          <div
+            class="sm-component-query__job-info-header"
+            @click="activePanelIndex = activePanelIndex === index ? null : index"
+          >
             <span :title="jobInfo.queryParameter.name" class="sm-component-query__job-info-name">{{
               jobInfo.queryParameter.name
             }}</span>
-            <i :class="activePanelIndex !== index ? 'sm-components-icon-solid-triangle-right' : 'sm-components-icon-solid-triangle-down'
-                " />
+            <i
+              :class="
+                activePanelIndex !== index
+                  ? 'sm-components-icon-solid-triangle-right'
+                  : 'sm-components-icon-solid-triangle-down'
+              "
+            />
           </div>
           <div :class="{ 'sm-component-query__job-info-body': true, hidden: activePanelIndex !== index }">
             <div class="sm-component-query__item-holder">
               <template v-if="jobInfo.queryParameter.queryMode === 'KEYWORD'">
                 <div>{{ $t('query.keyQueryCondition') }}</div>
-                <sm-input v-model="jobInfo.queryParameter.attributeFilter" allowClear class="sm-component-query__item-config" :style="getTextColorStyle" :placeholder="$t('query.keyQueryPlaceholder')" />
+                <sm-input
+                  v-model="jobInfo.queryParameter.attributeFilter"
+                  allowClear
+                  class="sm-component-query__item-config"
+                  :style="getTextColorStyle"
+                  :placeholder="$t('query.keyQueryPlaceholder')"
+                />
               </template>
               <template v-else>
                 <div>{{ $t('query.attributeCondition') }}</div>
-                <sm-input v-model="jobInfo.queryParameter.attributeFilter" allowClear class="sm-component-query__item-config" :style="getTextColorStyle" :placeholder="$t('query.sqlQueryPlaceholder')" />
+                <sm-input
+                  v-model="jobInfo.queryParameter.attributeFilter"
+                  allowClear
+                  class="sm-component-query__item-config"
+                  :style="getTextColorStyle"
+                  :placeholder="$t('query.sqlQueryPlaceholder')"
+                />
               </template>
             </div>
             <div class="sm-component-query__item-holder">
               <div>{{ $t('query.spatialFilter') }}</div>
-              <sm-select v-model="jobInfo.spaceFilter" class="sm-component-query__item-config" :get-popup-container="getPopupContainer" :style="getTextColorStyle">
+              <sm-select
+                v-model="jobInfo.spaceFilter"
+                class="sm-component-query__item-config"
+                :get-popup-container="getPopupContainer"
+                :style="getTextColorStyle"
+              >
                 <sm-select-option v-for="item in selectOptions" :key="item.value" :value="item.value">
                   {{ item.label }}
                 </sm-select-option>
               </sm-select>
             </div>
             <div class="sm-component-query__query-button">
-              <sm-button type="primary" size="small" class="sm-component-query__a-button" @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)">
+              <sm-button
+                type="primary"
+                size="small"
+                class="sm-component-query__a-button"
+                @click="queryButtonClicked(jobInfo.queryParameter, jobInfo.spaceFilter)"
+              >
                 {{ $t('query.applicate') }}
               </sm-button>
             </div>
@@ -61,15 +116,39 @@
           </div>
           <div class="sm-component-query__result-body">
             <ul>
-              <li v-for="(item, index) in queryResult.result" :key="index" :title="getInfoOfSmid(item.properties)" role="option" :aria-selected="activeResultIndex === index" @click="queryResultListClicked($event, index)">
-                {{ getInfoOfSmid(item.properties) }}
+              <li
+                v-for="(item, index) in queryResult.result"
+                :key="index"
+                :title="resultDisplayTitle(item)"
+                role="option"
+                :aria-selected="activeResultIndexList.includes(index)"
+                @click="queryResultListClicked($event, index)"
+              >
+                {{ resultDisplayTitle(item) }}
+                <i v-if="activeResultIndexList.includes(index) && multiSelect" class="sm-components-icon-delete" />
               </li>
             </ul>
           </div>
         </template>
       </div>
     </div>
-    <TablePopup v-show="false" ref="queryTablePopup" v-bind="tablePopupProps" :split-line="splitLine" :textColor="textColor" :background="background" />
+    <SmLayerHighlight
+      v-if="showPopup"
+      uniqueName="query-popup"
+      :layers="resultLayers"
+      :highlightStyle="highlightStyle"
+      :featureFieldsMap="featureFieldsMap"
+      :displayFieldsMap="displayFieldsMap"
+      :multiSelection="multiSelect"
+      :clickTolerance="clickTolerance"
+      :popupStyle="popupStyle"
+      :background="popupStyle.background || background"
+      :textColor="popupStyle.background || textColor"
+      :mapTarget="mapTarget"
+      :customColumnRenders="$scopedSlots"
+      :ref="highlightCompRefName"
+      @mapselectionchanged="handleMapSeletionChanged"
+    />
   </sm-collapse-card>
 </template>
 <script>
@@ -89,8 +168,8 @@ import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
 import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import Message from 'vue-iclient/src/common/message/Message.js';
-import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
-import { setPopupArrowStyle, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
+import SmLayerHighlight from 'vue-iclient/src/mapboxgl/layer-highlight/LayerHighlight';
+import { getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
 
 export default {
@@ -103,7 +182,7 @@ export default {
     SmEmpty,
     SmSpin,
     SmIcon,
-    TablePopup
+    SmLayerHighlight
   },
   mixins: [MapGetter, Control, Theme, Card],
   props: {
@@ -189,12 +268,33 @@ export default {
     },
     restMap: {
       type: Array
+    },
+    showPopup: {
+      type: Boolean,
+      default: true
+    },
+    popupStyle: {
+      type: Object,
+      default: () => {
+        return {
+          keyWidth: 80,
+          valueWidth: 150,
+          keyMaxWidth: 160,
+          valueMaxWidth: 300
+        };
+      }
+    },
+    multiSelect: {
+      type: Boolean,
+      default: false
+    },
+    clickTolerance: {
+      type: Number,
+      default: 5
     }
   },
   data() {
     return {
-      isHidden: false,
-      message: null,
       selectOptions: [
         {
           label: this.$t('query.currentMapBounds'),
@@ -208,11 +308,40 @@ export default {
       queryResult: null,
       activeTab: 'job',
       activePanelIndex: null,
-      activeResultIndex: null,
+      activeResultIndexList: [],
+      activeQueryJob: null,
       isQuery: false,
       jobInfos: [],
-      tablePopupProps: {}
+      resultLayers: [],
+      highlightCompRefName: 'query-highlight'
     };
+  },
+  computed: {
+    resultDisplayTitle() {
+      return function(properties) {
+        return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;
+      };
+    },
+    featureFieldsMap() {
+      if (this.resultLayers.length > 0) {
+        const { fields } = this.queryResult;
+        return this.resultLayers.reduce((list, layerId) => {
+          list[layerId] = fields;
+          return list;
+        }, {});
+      }
+      return null;
+    },
+    displayFieldsMap() {
+      if (this.resultLayers.length > 0) {
+        const { fields } = this.activeQueryJob;
+        return this.resultLayers.reduce((list, layerId) => {
+          list[layerId] = fields;
+          return list;
+        }, {});
+      }
+      return null;
+    }
   },
   watch: {
     iportalData(newVal, oldVal) {
@@ -235,9 +364,6 @@ export default {
     },
     layerStyle() {
       this.viewModel && (this.viewModel.layerStyle = this.$props.layerStyle);
-    },
-    highlightStyle(next) {
-      this.viewModel && this.viewModel.setHighlightStyle(JSON.parse(JSON.stringify(next)));
     }
   },
   mounted() {
@@ -245,23 +371,15 @@ export default {
     this.registerEvents();
   },
   loaded() {
-    this.clear();
+    this.clearResult();
   },
   created() {
     this.viewModel = new QueryViewModel(this.$props);
   },
   removed() {
-    this.queryResult = null;
-    this.jobInfo = null;
-    this.activeTab = 'job';
-    this.popup && this.popup.remove() && (this.popup = null);
+    this.clearResult();
   },
   methods: {
-    clear() {
-      this.queryResult = null;
-      this.map && this.viewModel && this.viewModel.clearResultLayer();
-      this.popup && this.popup.remove() && (this.popup = null);
-    },
     formatJobInfos() {
       if (this.viewModel) {
         this.jobInfos = [];
@@ -282,18 +400,17 @@ export default {
     queryButtonClicked(jobInfo, value) {
       // @ts-ignore
       Message.destroy();
-      if (this.jobInfo === JSON.stringify(jobInfo) && this.selectValue === value && this.queryResult) {
+      if (JSON.stringify(this.activeQueryJob) === JSON.stringify(jobInfo) && this.selectValue === value && this.queryResult) {
         // @ts-ignore
         Message.warning(this.$t('query.resultAlreadyExists'));
         return;
       }
-      this.queryResult = null;
-      this.popup && this.popup.remove() && (this.popup = null);
+      this.clearResult();
       this.isQuery = true;
       this.activeTab = 'result';
-      this.jobInfo = JSON.stringify(jobInfo);
+      this.activeQueryJob = jobInfo;
       this.selectValue = value;
-      this.query(jobInfo, this.selectValue);
+      this.query(JSON.parse(JSON.stringify(jobInfo)), this.selectValue);
     },
     /**
      * 开始查询。
@@ -304,18 +421,26 @@ export default {
       this.viewModel.query(parameter, bounds);
     },
     queryResultListClicked(e, index) {
-      this.activeResultIndex = index;
-      this.popup && this.popup.remove() && (this.popup = null);
-      let filter = e.target.innerHTML;
-      const fieldValue = filter.split('：')[1].trim();
-      let feature = this.viewModel.getFilterFeature(fieldValue);
-      this.addPopup(feature);
-      this.viewModel.highlightSelection(fieldValue);
+      if (this.activeResultIndexList.includes(index)) {
+        this.activeResultIndexList.splice(this.activeResultIndexList.indexOf(index), 1);
+      } else if (this.multiSelect) {
+        this.activeResultIndexList.push(index);
+      } else{
+        this.activeResultIndexList = [index];
+      }
+      const highlightComp = this.$refs[this.highlightCompRefName];
+      const features = this.activeResultIndexList.map(i => this.resultFeatures[i]);
+      highlightComp && highlightComp.updateHighlightDatas({ features, layerId: this.resultLayers[0] });
     },
     registerEvents() {
       this.viewModel.on('querysucceeded', e => {
         this.isQuery = false;
-        this.queryResult = e.result;
+        this.queryResult = {
+          ...e.result,
+          result: e.result.result.map(item => item.properties)
+        };
+        this.resultFeatures = e.result.result;
+        this.resultLayers = e.layers;
         /**
          * @event querySucceeded
          * @desc 查询成功后触发。
@@ -335,45 +460,23 @@ export default {
          */
         this.$emit('query-failed', e);
       });
-      this.addPopupToFeature();
-    },
-    addPopupToFeature() {
-      this.viewModel.on('getfeatureinfosucceeded', e => {
-        let featuerInfo = e.featureInfo;
-        this.addPopup(featuerInfo);
-      });
-    },
-    addPopup(featuerInfo) {
-      this.popup && this.popup.remove() && (this.popup = null);
-      if (featuerInfo.info.length >= 1) {
-        let state = {
-          columns: [
-            { title: this.$t('query.attribute'), dataIndex: 'attribute', width: 80 },
-            { title: this.$t('query.attributeValue'), dataIndex: 'attributeValue', width: 150 }
-          ],
-          data: featuerInfo.info
-        };
-
-        this.tablePopupProps = { ...state };
-
-        this.$nextTick(() => {
-          this.popup = this.viewModel.addPopup(featuerInfo.coordinates, this.$refs.queryTablePopup.$el);
-          setPopupArrowStyle(this.tablePopupBgData);
-        });
-      }
     },
     getPopupContainer(triggerNode) {
       return triggerNode.parentNode;
     },
     clearResult() {
+      this.activeTab = 'job';
+      this.activeResultIndexList = [];
+      this.resultLayers = [];
       this.queryResult = null;
-      this.popup && this.popup.remove() && (this.popup = null);
-      this.jobInfo = null;
-      this.activeResultIndex = null;
-      this.viewModel && this.viewModel.clear();
+      this.activeQueryJob = null;
+      this.viewModel && this.viewModel.clear(this.highlightLayerIds);
     },
-    getInfoOfSmid(properties) {
-      return `SmID：${getValueCaseInsensitive(properties, 'smid')}`;
+    handleMapSeletionChanged(e) {
+      this.highlightLayerIds = e.highlightLayerIds;
+      if (e.dataSelectorMode !== 'ALL') {
+        this.activeResultIndexList = [];
+      }
     }
   }
 };

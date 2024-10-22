@@ -71,6 +71,8 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
   })
   columns: Array<Object>;
 
+  @Prop({ default: true }) showHeader: Boolean;
+
   @Watch('currentCoordinate')
   currentCoordinatesChanged() {
     this.addPopup();
@@ -86,12 +88,25 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
     setPopupArrowStyle(this.tablePopupBgData);
   }
 
+  @Watch('data')
+  dataChanged() {
+    if (!this.data.length) {
+      this.removePopup();
+    }
+  }
+
   get currentCoordinate() {
     return this.lnglats[this.currentIndex];
   }
 
   get tablePopupProps() {
-    return { data: this.data[this.currentIndex], columns: this.columns };
+    return {
+      data: this.data[this.currentIndex],
+      columns: this.columns,
+      showHeader: this.showHeader,
+      background: 'transparent',
+      color: 'inherit'
+    };
   }
 
   get headerTitle() {

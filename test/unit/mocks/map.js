@@ -470,6 +470,7 @@ var Map = function (options) {
             imgUrl: './laohuhai.png',
             description: '老虎海海拔2298米',
             flag: true,
+            smid: 1,
             index: 1
           },
           _vectorTileFeature: {

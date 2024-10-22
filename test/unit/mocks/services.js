@@ -41,6 +41,31 @@ const fakeMapServiceResult = {
             ],
             type: 'REGION'
           }
+        },
+        {
+          fieldNames: ['SMID', 'NAME'],
+          fieldValues: ['2', '广东省'],
+          geometry: {
+            id: 1,
+            center: {
+              y: 7.105427357601002e-15,
+              x: 0
+            },
+            style: null,
+            parts: [5],
+            partTopo: [1],
+            points: [
+              {
+                y: 85.05112877980649,
+                x: -180
+              },
+              {
+                y: 85.05112877980649,
+                x: -180
+              }
+            ],
+            type: 'REGION'
+          }
         }
       ],
       fieldCaptions: ['SMID', '名称'],
