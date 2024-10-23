@@ -37,4 +37,13 @@ describe('Image.vue', () => {
     wrapper = mount(Image);
     expect(wrapper.find('.sm-component-image').exists()).toBe(true);
   });
+
+  it('preview', () => {
+    wrapper = mount(Image);
+    wrapper.setProps({
+      preview: false
+    });
+    wrapper.vm.startPreview();
+    expect(wrapper.vm.previewVisible).toBeFalsy();
+  });
 });
