@@ -58,7 +58,7 @@ describe('MapPopup.vue', () => {
     expect(wrapper.find('.sm-component-map-popup__self-content').exists()).toBe(true);
     expect(wrapper.vm.currentIndex).toBe(0);
     expect(wrapper.vm.headerTitle).toBe('图层1');
-    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[0], columns: columns });
+    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[0], columns: columns, showHeader: true, background: 'transparent', color: 'inherit' });
 
     done();
   });
@@ -129,7 +129,7 @@ describe('MapPopup.vue', () => {
     expect(wrapper.vm.showIcon).toBe(true);
     expect(wrapper.vm.headerTitle).toBe('2/2');
     expect(wrapper.vm.currentCoordinate).toEqual([120, 31]);
-    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[1], columns: columns });
+    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[1], columns: columns, showHeader: true, background: 'transparent', color: 'inherit' });
     done();
   });
   it('trigger change index', done => {
@@ -155,7 +155,7 @@ describe('MapPopup.vue', () => {
     });
     wrapper.find('.right-icon').trigger('click');
     expect(wrapper.vm.currentCoordinate).toEqual([120, 31]);
-    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[1], columns: columns });
+    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[1], columns: columns, showHeader: true, background: 'transparent', color: 'inherit' });
     done();
   });
   it('change background', done => {

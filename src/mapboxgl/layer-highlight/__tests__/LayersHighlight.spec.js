@@ -160,7 +160,7 @@ describe('LayerHighlight.vue', () => {
         highlightStyle: {}
       }
     });
-    const setSpy = jest.spyOn(wrapper.vm.viewModel, 'clickTolerance');
+    const setSpy = jest.spyOn(wrapper.vm.viewModel, 'setClickTolerance');
     wrapper.setProps({ clickTolerance: 8 });
     wrapper.vm.$nextTick();
     expect(setSpy).toBeCalled();
