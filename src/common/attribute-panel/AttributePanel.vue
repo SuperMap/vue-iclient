@@ -29,6 +29,11 @@
           </li>
         </ul>
       </div>
+      <sm-table-popup
+        v-if="!$slots.default && !($scopedSlots && Object.keys($scopedSlots).length) && Object.keys(attributes).length"
+        v-bind="tablePopupProps"
+        class="sm-component-attribute-panel__self-content"
+      />
       <sm-empty v-if="!$slots.default && !Object.keys(attributes).length" />
     </div>
   </div>
@@ -38,10 +43,12 @@
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
+import SmTablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
+import cloneDeep from 'lodash/cloneDeep';
 
 @Component({
   name: 'SmAttributePanel',
-  components: { SmEmpty }
+  components: { SmTablePopup, SmEmpty }
 })
 class SmAttributePanel extends Mixins(Theme) {
   attrIndex = 0;
@@ -82,6 +89,13 @@ class SmAttributePanel extends Mixins(Theme) {
   })
   attributes: Object;
 
+  @Prop({
+    default: () => {
+      return [];
+    }
+  })
+  columns: Array<Object>;
+
   @Watch('currentIndex')
   currentIndexChanged() {
     this.attrIndex = this.currentIndex;
@@ -103,8 +117,12 @@ class SmAttributePanel extends Mixins(Theme) {
     return `${this.attrIndex + 1}/${this.total}`;
   }
 
+  get tablePopupProps() {
+    return { data: [this.attributes], columns: this.columns };
+  }
+
   get formatStyle() {
-    let style = Object.assign({}, this.attributeStyle);
+    let style = cloneDeep(this.attributeStyle);
     Object.keys(style).forEach(item => {
       // @ts-ignore
       if (Object.prototype.hasOwnProperty.call(style[item], 'width')) {
