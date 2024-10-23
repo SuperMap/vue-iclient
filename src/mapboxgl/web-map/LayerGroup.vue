@@ -24,16 +24,16 @@
             >
               <div v-if="layerOperations.zoomToLayer" class="sm-component-layer-list__zoom">
                 <i
-                  class="sm-components-icon-suofangzhituceng"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
+                  :class="['sm-components-icon-suofangzhituceng', (item.visible || !item.disabled) && 'highlight-icon']"
+                  :style="(!item.visible || item.disabled) && { cursor: 'not-allowed' }"
                   :title="$t('layerList.zoomToLayer')"
-                  @click.stop="zoomToBounds(item)"
+                  @click.stop="item.visible && zoomToBounds(item)"
                 />
               </div>
               <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)" class="sm-component-layer-list__attributes">
                 <i
                   :class="attributesIconClass"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
+                  :style="(!item.visible || item.disabled) && { cursor: 'not-allowed' }"
                   :title="$t('layerList.attributes')"
                   @click.stop="item.visible && toggleAttributesVisibility($event, item)"
                 />
@@ -45,7 +45,7 @@
                     'sm-components-icon-not-active',
                     showOpacityItem === item.id && 'sm-components-icon-active'
                   ]"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
+                  :style="(!item.visible || item.disabled) && { cursor: 'not-allowed' }"
                   :title="$t('layerList.layerStyle')"
                   @click.stop="item.visible && changeItemOpacity(item)"
                 />

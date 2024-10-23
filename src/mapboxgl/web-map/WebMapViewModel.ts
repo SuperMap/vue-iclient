@@ -352,6 +352,18 @@ export default class WebMapViewModel extends Events {
       }
       const source = this.map.getSource(sourceId);
       if (!source) {
+        if (item.type && item.type === 'MIGRATION') {
+          // @ts-ignore
+          const echartsLayer = this._handler._handler.getEchartsLayerById(item.renderLayers[0]);
+          if (echartsLayer && echartsLayer.features) {
+            const bounds = bbox({
+              type: 'FeatureCollection',
+              features: echartsLayer.features
+            });
+            sourceBoundsMap[sourceId] = bounds;
+          }
+        }
+
         if (item['CLASS_INSTANCE']) {
           const instance = item['CLASS_INSTANCE'];
           if (instance?.markers.length) {
@@ -371,7 +383,8 @@ export default class WebMapViewModel extends Events {
       const bounds = source && source.bounds;
       if (bounds) {
         sourceBoundsMap[sourceId] = bounds;
-      } else if (source && source.type === 'geojson') {
+        // @ts-ignore
+      } else if (source && (source.type === 'geojson' || source.type === 'json')) {
         // @ts-ignore
         const datas = source.getData();
         if (datas) {
