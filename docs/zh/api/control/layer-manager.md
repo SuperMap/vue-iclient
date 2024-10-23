@@ -42,11 +42,12 @@ new Vue({
 
 | 参数             | 说明                                                             | 类型                                             | 可选值                        | 默认值                             |
 | :--------------- | :--------------------------------------------------------------- | :----------------------------------------------- | :---------------------------- | :--------------------------------- |
-| layers           | treeNodes 数据                                                       | -                                                | <a href="#layer">layer</a>[ ] | -                                  |
-| replaceFields    | 替换 treeNode 中 title,key,children 字段为 treeData 中对应的字段 | {children:'children', title:'title', key:'key' } | object                        | -                                  |
-| defaultExpandAll | 默认展开所有树节点                                               | false                                            | boolean                       | -                                  |
+| layers           | treeNodes 数据                                                       | <a href="#layer">layer</a>[ ] | -                                  | -                                                |
+| replaceFields    | 替换 treeNode 中 title,key,children 字段为 treeData 中对应的字段 |   object  |  {children:'children', title:'title', key:'key' }  | -                                  |
+| defaultExpandAll | 默认展开所有树节点                                               |        boolean                                     |          -              |     false                              |
 | iconClass        | 收缩按钮的 Font class 类名                                       | string                                           | -                             | 'sm-components-icon-layer-manager' |
 | headerName       | 标题名                                                           | string                                           | -                             | '图层管理'                         |
+| defaultCheckedKeys       | 默认选中复选框的树节点             | string[]                             | -                             |             []            |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
 

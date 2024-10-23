@@ -175,4 +175,30 @@ describe('LayerManager.vue', () => {
     expect(removeWebMapSpy).toHaveBeenCalled();
     done();
   });
+
+  it('defaultCheckedKeys', async done => {
+    wrapper = mount(SmLayerManager, {
+      propsData: {
+        defaultExpandAll: true,
+        collapse: false,
+        mapTarget: 'map',
+        layers: [
+          {
+            mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal', mapId: '801571284' },
+            title: '民航数据-单值'
+          }
+        ]
+      }
+    });
+    const spyadd= jest.spyOn(wrapper.vm, 'addLayer');
+    const key = wrapper.vm.treeData[0].key;
+    await wrapper.setProps({
+      defaultCheckedKeys: [key]
+    });
+    await mapWrapperLoaded(mapWrapper);
+    await flushPromises();
+    expect(wrapper.vm.checkedKeys).toEqual([key]);
+    expect(spyadd).toBeCalled();
+    done();
+  });
 });

@@ -78,6 +78,12 @@ export default {
     defaultExpandAll: {
       type: Boolean,
       default: false
+    },
+    defaultCheckedKeys: {
+      type: Array,
+      default() {
+        return [];
+      }
     }
   },
   data() {
@@ -113,32 +119,50 @@ export default {
     checkNode(key, e) {
       this.checkedKeys = key;
       if (e.checked) {
-        if (!e.checkedNodes || !e.checkedNodes.length) {
-          return;
-        }
-        e.checkedNodes.forEach(node => {
-          const mapInfo = node.data.props.mapInfo;
-          if (!mapInfo) {
-            return;
-          }
-          const nodeKey = node.key;
-          if (mapInfo.mapId && mapInfo.serverUrl) {
-            const { serverUrl, mapId, withCredentials, layerFilter, proxy } = mapInfo;
-            this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy });
-            return;
-          }
-          if (mapInfo.mapOptions) {
-            this.addMapStyle(mapInfo.mapOptions, nodeKey);
-            return;
-          }
-          if (mapInfo.serverUrl) {
-            this.addIServerLayer(mapInfo.serverUrl, nodeKey);
-          }
-        });
+        this.addLayerByCheckedKeys(key);
       } else {
         const data = e.node.dataRef;
         this.viewModel.removeLayerLoop(data);
       }
+    },
+    addLayerByCheckedKeys(checkedKeys) {
+      if (!checkedKeys || !checkedKeys.length) {
+        return;
+      }
+      checkedKeys.forEach(key => {
+        const node = this.getNodeByKey(this.treeData, key);
+        const mapInfo = node.mapInfo;
+        if (!mapInfo) {
+          return;
+        }
+        const nodeKey = node.key;
+        if (mapInfo.mapId && mapInfo.serverUrl) {
+          const { serverUrl, mapId, withCredentials, layerFilter, proxy } = mapInfo;
+          this.addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy });
+          return;
+        }
+        if (mapInfo.mapOptions) {
+          this.addMapStyle(mapInfo.mapOptions, nodeKey);
+          return;
+        }
+        if (mapInfo.serverUrl) {
+          this.addIServerLayer(mapInfo.serverUrl, nodeKey);
+        }
+      });
+    },
+    getNodeByKey(datas, key) {
+      for (const data of datas) {
+        if (data.key === key) {
+          return data;
+        }
+        if (data.children && data.children.length > 0) {
+          const found = this.getNodeByKey(data.children, key);
+          if (found) {
+            return found;
+          }
+        }
+      }
+      return null;
     },
     addLayer({ nodeKey, serverUrl, mapId, withCredentials, layerFilter, proxy }) {
       if (!this.mapIsLoad) {
@@ -228,6 +252,10 @@ export default {
   },
   loaded() {
     this.mapIsLoad = true;
+    if (this.defaultCheckedKeys.length) {
+      this.checkedKeys = this.defaultCheckedKeys;
+      this.addLayerByCheckedKeys(this.checkedKeys);
+    }
   },
   removed() {
     this.checkedKeys = [];
