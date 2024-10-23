@@ -67,7 +67,7 @@ export default {
           keyWidth: 80,
           valueWidth: 150,
           keyMaxWidth: 160,
-          valueWidth: 300
+          valueMaxWidth: 300
         };
       }
     },
