@@ -853,6 +853,67 @@ describe('WebMapViewModel.spec', () => {
     jest.advanceTimersByTime(0);
   });
 
+  it('zoomToBounds migrationLayer', async done => {
+    const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
+    const callback = function (data) {
+      jest.spyOn(viewModel._handler, 'getLayerCatalog').mockImplementation(() => {
+        return [{
+          id: 'radar1',
+          title: 'radar1',
+          type: 'MIGRATION',
+          renderSource: [],
+          renderLayers: ['radar1'],
+        }];
+      });
+      viewModel._handler._handler = {
+        getEchartsLayerById: jest.fn()
+      };
+      jest.spyOn(viewModel._handler._handler, 'getEchartsLayerById').mockImplementation(() => {
+        return {
+          features: [{
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "coordinates": [
+                [
+                  [
+                    48.30078125000128,
+                    28.226970038917116
+                  ],
+                  [
+                    48.30078125000128,
+                    -9.015302333421928
+                  ],
+                  [
+                    92.42187500000131,
+                    -9.015302333421928
+                  ],
+                  [
+                    92.42187500000131,
+                    28.226970038917116
+                  ],
+                  [
+                    48.30078125000128,
+                    28.226970038917116
+                  ]
+                ]
+              ],
+              "type": "Polygon"
+            }
+          }]
+        }
+      });
+      const spy = jest.spyOn(data.map, 'fitBounds');
+      jest.spyOn(viewModel, '_getMaxBounds').mockReturnValueOnce(new mapboxgl.LngLatBounds([116.423411, 39.442758], [120, 50]));
+      viewModel.zoomToBounds('radar1');
+      expect(spy).toHaveBeenCalledWith(new mapboxgl.LngLatBounds([116.423411, 39.442758], [120, 50]));
+      done();
+    };
+    viewModel.on({ addlayerssucceeded: callback });
+    await flushPromises();
+    jest.advanceTimersByTime(0);
+  });
+
   it('should handle source without bounds but with markers', async (done) => {
     const viewModel = new WebMapViewModel(commonId, { ...commonOption, map: commonMap }, { ...commonMapOptions });
     const callback = function (data) {
