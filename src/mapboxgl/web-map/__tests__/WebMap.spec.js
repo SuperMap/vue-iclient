@@ -4,6 +4,7 @@ import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
 import { message } from 'ant-design-vue';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_serviceProxy';
+import zxytilelayer from 'vue-iclient/test/unit/mocks/data/WebMap/zxytilelayer';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
 import layerData_CSV from 'vue-iclient/test/unit/mocks/data/layerData';
 import layerData_geojson from 'vue-iclient/test/unit/mocks/data/layerData_geojson';
@@ -672,5 +673,30 @@ describe('WebMap.vue', () => {
     expect(wrapper.vm.map._sources['民航数据'].data.features.length).toBe(1);
     done();
     }
+  });
+  it('initial zxytile layer extent world', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/4845656956/map.json': zxytilelayer
+    };
+    mockFetch(fetchResource);
+    const spy = jest.spyOn(mapboxgl, 'Map');
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '4845656956'
+      }
+    });
+    const callback = ({ layers }) => {
+      expect(layers[0].layerType).toEqual('ZXY_TILE');
+      done();
+    };
+    wrapper.vm.viewModel.on({ addlayerssucceeded: callback });
+    await mapWrapperLoaded(wrapper);
+    expect(spy).toBeCalled();
+    expect(wrapper.element.id).toEqual('map');
+    expect(wrapper.vm.mapId).toBe('4845656956');
+    expect(wrapper.vm.serverUrl).toBe('https://fakeiportal.supermap.io/iportal');
   });
 });

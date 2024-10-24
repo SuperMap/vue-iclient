@@ -15,6 +15,7 @@ import WebMapBase from 'vue-iclient/src/common/web-map/WebMapBase';
 import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
 import { getProjection, registerProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';
+import isEqual from 'lodash.isequal';
 
 const WORLD_WIDTH = 360;
 // 迁徙图最大支持要素数量
@@ -661,6 +662,9 @@ export default class WebMapViewModel extends WebMapBase {
       case 'TILE':
         this._createDynamicTiledLayer(layerInfo, addedCallback);
         break;
+      case 'ZXY_TILE':
+        this._createZXYLayer(layerInfo, addedCallback);
+        break;
       case 'CLOUD':
       case 'XYZ':
         url = mapUrls[layerInfo.layerType]
@@ -930,6 +934,19 @@ export default class WebMapViewModel extends WebMapBase {
     }
     const layerId = layerInfo.layerID || layerInfo.name;
     this._addBaselayer(urlArr, layerId, layerInfo.visible);
+    addedCallback && addedCallback();
+  }
+
+  private _createZXYLayer(layerInfo: any, addedCallback?: Function): void {
+    // @ts-ignore
+    const mapExtent = this.map.getCRS()?.getExtent()?.map(item => item.toFixed(2));
+    const layerExtent = [-20037508.3427892, -20037508.342789408, 20037508.342789248, 20037508.342789087].map(item => item.toFixed(2));
+    if (isEqual(mapExtent, layerExtent)) {
+      const { url, subdomains, layerID, name, visible } = layerInfo;
+      const urls = (subdomains && subdomains.length) ? subdomains.map(item => url.replace('{s}', item)) : [url];
+      const layerId = layerID || name;
+      this._addBaselayer(urls, layerId, visible);
+    }
     addedCallback && addedCallback();
   }
 
