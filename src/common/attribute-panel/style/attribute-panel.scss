@@ -41,6 +41,9 @@
     width: 100%;
     height: auto;
     padding-top: 5px;
+    .sm-component-table-content {
+      max-height: none !important;
+    }
     div > {
       ul {
         list-style: none;
@@ -54,20 +57,20 @@
           }
         }
         border-collapse: separate;
-        .content {
-          display: flex;
-          .left {
-            width: 110px;
-          }
-          .right {
-            width: 170px;
-          }
-          .ellipsis {
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-          }
-        }
+        // .content {
+        //   display: flex;
+        //   .left {
+        //     width: 110px;
+        //   }
+        //   .right {
+        //     width: 170px;
+        //   }
+        //   .ellipsis {
+        //     overflow: hidden;
+        //     text-overflow: ellipsis;
+        //     white-space: nowrap;
+        //   }
+        // }
       }
     }
    

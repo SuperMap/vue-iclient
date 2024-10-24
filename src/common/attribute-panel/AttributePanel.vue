@@ -17,24 +17,8 @@
       </div>
     </div>
     <div class="sm-component-attribute-panel__content">
-      <slot></slot>
-      <div v-if="$scopedSlots && Object.keys($scopedSlots).length && Object.keys(attributes).length">
-        <ul>
-          <li v-for="(value, key, index) in attributes" :key="index" class="content">
-            <div class="left ellipsis" :title="key" :style="formatStyle.keyStyle">{{ key }}</div>
-            <div class="right ellipsis" :title="value" :style="formatStyle.valueStyle">
-              <slot v-if="fieldsMap[key]" :name="fieldsMap[key]" :value="value"></slot>
-              <span v-else>{{ value }}</span>
-            </div>
-          </li>
-        </ul>
-      </div>
-      <sm-table-popup
-        v-if="!$slots.default && !($scopedSlots && Object.keys($scopedSlots).length) && Object.keys(attributes).length"
-        v-bind="tablePopupProps"
-        class="sm-component-attribute-panel__self-content"
-      />
-      <sm-empty v-if="!$slots.default && !Object.keys(attributes).length" />
+      <sm-table-popup v-if="attributes.length" v-bind="tablePopupProps" class="sm-component-map-popup__self-content" />
+      <sm-empty v-if="!attributes.length" />
     </div>
   </div>
 </template>
@@ -44,7 +28,6 @@ import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
 import SmTablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
-import cloneDeep from 'lodash/cloneDeep';
 
 @Component({
   name: 'SmAttributePanel',
@@ -63,31 +46,16 @@ class SmAttributePanel extends Mixins(Theme) {
 
   @Prop() title: String;
 
-  @Prop({ default: true }) showBorder: Boolean;
+  @Prop({ default: true }) showHeader: Boolean;
 
-  @Prop({
-    default: () => {
-      return {
-        keyStyle: {},
-        valueStyle: {}
-      };
-    }
-  })
-  attributeStyle: Object;
+  @Prop({ default: true }) showBorder: Boolean;
 
   @Prop({
     default: () => {
       return [];
     }
   })
-  fields: Array<Object>;
-
-  @Prop({
-    default: () => {
-      return {};
-    }
-  })
-  attributes: Object;
+  attributes: Array<Object>;
 
   @Prop({
     default: () => {
@@ -101,15 +69,6 @@ class SmAttributePanel extends Mixins(Theme) {
     this.attrIndex = this.currentIndex;
   }
 
-  get fieldsMap() {
-    const attributeMap = {};
-    this.fields.forEach(field => {
-      // @ts-ignore
-      attributeMap[field.field] = field.slotName;
-    });
-    return attributeMap;
-  }
-
   get paginationContent() {
     if (this.paginationText) {
       return this.paginationText;
@@ -118,38 +77,13 @@ class SmAttributePanel extends Mixins(Theme) {
   }
 
   get tablePopupProps() {
-    return { data: [this.attributes], columns: this.columns };
-  }
-
-  get formatStyle() {
-    let style = cloneDeep(this.attributeStyle);
-    Object.keys(style).forEach(item => {
-      // @ts-ignore
-      if (Object.prototype.hasOwnProperty.call(style[item], 'width')) {
-        // @ts-ignore
-        if (style[item].width === 0) {
-          style[item].width = 'unset';
-          style[item].flex = 1;
-        } else {
-          if (style[item].width !== 'unset') {
-            style[item].width += 'px';
-          }
-          style[item].flex = 'unset';
-        }
-      }
-      // @ts-ignore
-      if (Object.prototype.hasOwnProperty.call(style[item], 'height')) {
-        // @ts-ignore
-        if (style[item].height === 0) {
-          style[item].height = 'unset';
-        } else {
-          if (style[item].height !== 'unset') {
-            style[item].height += 'px';
-          }
-        }
-      }
-    });
-    return style;
+    return {
+      data: this.attributes,
+      columns: this.columns,
+      showHeader: this.showHeader,
+      background: 'transparent',
+      color: 'inherit'
+    };
   }
 
   changeIndex(delta) {

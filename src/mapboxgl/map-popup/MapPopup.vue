@@ -7,11 +7,10 @@
       :currentIndex="defaultIndex"
       :showBorder="false"
       :textColor="textColor"
-      :data="data"
+      :attributes="data"
       :columns="columns"
       @change="changeIndex"
     >
-      <slot></slot>
     </sm-attribute-panel>
   </div>
 </template>
