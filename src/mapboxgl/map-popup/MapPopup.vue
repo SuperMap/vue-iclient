@@ -7,11 +7,10 @@
       :currentIndex="defaultIndex"
       :showBorder="false"
       :textColor="textColor"
-      :data="data"
+      :attributes="data"
       :columns="columns"
       @change="changeIndex"
     >
-      <slot></slot>
     </sm-attribute-panel>
   </div>
 </template>
@@ -65,6 +64,8 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
   })
   columns: Array<Object>;
 
+  @Prop({ default: true }) showHeader: Boolean;
+
   @Watch('currentCoordinate')
   currentCoordinatesChanged() {
     this.addPopup();
@@ -78,6 +79,13 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
   @Watch('tablePopupBgData')
   tablePopupBgDataChanged() {
     setPopupArrowStyle(this.tablePopupBgData);
+  }
+
+  @Watch('data')
+  dataChanged() {
+    if (!this.data.length) {
+      this.removePopup();
+    }
   }
 
   get currentCoordinate() {
