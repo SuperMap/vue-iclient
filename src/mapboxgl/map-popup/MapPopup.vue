@@ -7,7 +7,7 @@
       :currentIndex="defaultIndex"
       :showBorder="false"
       :textColor="textColor"
-      :attributes="data"
+      :attributes="data[defaultIndex]"
       :columns="columns"
       @change="changeIndex"
     >
