@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import SmMapPopup from '../MapPopup.vue';
 import SmWebMap from '../../web-map/WebMap';
+import SmTablePopup from '../../../common/table-popup/TablePopup';
 
 const columns = [
   { dataIndex: 'attribute', width: 80 },
@@ -55,7 +56,7 @@ describe('MapPopup.vue', () => {
     });
     wrapper.vm.$nextTick();
     expect(wrapper.find('.sm-component-map-popup').exists()).toBe(true);
-    expect(wrapper.find('.sm-component-map-popup__self-content').exists()).toBe(true);
+    expect(wrapper.find(SmTablePopup).exists()).toBe(true);
     expect(wrapper.vm.currentIndex).toBe(0);
     done();
   });
@@ -75,29 +76,9 @@ describe('MapPopup.vue', () => {
     });
     wrapper.vm.$nextTick();
     expect(wrapper.find('.sm-component-map-popup').exists()).toBe(true);
-    expect(wrapper.find('.sm-component-map-popup__self-content').exists()).toBe(true);
+    expect(wrapper.find(SmTablePopup).exists()).toBe(true);
     expect(wrapper.find('.icon').exists()).toBe(true);
     expect(wrapper.vm.showIcon).toBe(true);
-    done();
-  });
-  it('contentSlot', done => {
-    wrapper = mount(SmMapPopup, {
-      propsData: {
-        mapTarget: 'map',
-        defaultIndex: 0,
-        showIcon: true,
-        lnglats: [
-          [110, 30],
-          [120, 31]
-        ],
-      },
-      slots: {
-        identify: '<div class="slot-test">test</div>' // 将匹配 `<slot name="FooBar" />`。
-      }
-    });
-    wrapper.vm.$nextTick();
-    expect(wrapper.find('.sm-component-map-popup').exists()).toBe(true);
-    expect(wrapper.find('.sm-component-map-popup__self-content').exists()).toBe(false);
     done();
   });
   it('changeDefaultIndex', done => {

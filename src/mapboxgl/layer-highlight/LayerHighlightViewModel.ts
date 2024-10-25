@@ -375,7 +375,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     this.dataSelectorMode = DataSelectorMode.SINGLE;
   }
 
-  destroy() {
+  removed() {
     this.clear();
     this.unregisterLayerMouseEvents();
     this.unregisterLayerMultiClick();

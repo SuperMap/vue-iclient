@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="sm-component-attribute-panel__content">
-      <sm-table-popup v-bind="tablePopupProps" class="sm-component-map-popup__self-content" />
+      <sm-table-popup v-bind="tablePopupProps" />
     </div>
   </div>
 </template>

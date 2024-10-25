@@ -50,7 +50,7 @@ describe('LayerHighlightViewModel', () => {
   });
 
   afterEach(() => {
-    viewModel.destroy();
+    viewModel.removed();
   });
 
   it('toogle show highlight layers', done => {
@@ -117,6 +117,7 @@ describe('LayerHighlightViewModel', () => {
         viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
       });
     });
+    viewModel.setTargetLayers(['layer1']);
     viewModel.setMultiSelection(true);
     expect(keyboardEvents.keydown).not.toBeUndefined();
     expect(keyboardEvents.keyup).not.toBeUndefined();
@@ -124,6 +125,7 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('map click same feature', done => {
+    viewModel.setTargetLayers(['layer1']);
     const keyboardEvents = {};
     jest.spyOn(window, 'addEventListener').mockImplementation((type, cb) => {
       keyboardEvents[type] = cb;
@@ -195,6 +197,7 @@ describe('LayerHighlightViewModel', () => {
   });
 
   it('map click empty', done => {
+    viewModel.setTargetLayers(['layer1']);
     viewModel.once('mapselectionchanged', ({ features }) => {
       expect(features.length).toBe(0);
       viewModel.unregisterMapClick();
