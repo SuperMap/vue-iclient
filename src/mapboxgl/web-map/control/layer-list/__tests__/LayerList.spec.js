@@ -60,7 +60,7 @@ describe('LayerList.vue', () => {
       let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
       wrapper.vm.$nextTick(() => {
         expect(wrapper.find('.header-text').exists()).toBe(true);
-        wrapper.find('.header-text > i').trigger('click');
+        wrapper.find('.header-text .sm-components-icon-visible').trigger('click');
         expect(spylayerVisibility).toHaveBeenCalledTimes(1);
         done();
       });
@@ -212,7 +212,7 @@ describe('LayerList.vue', () => {
       expect(callback.mock.called).toBeTruthy;
       let spylayerVisibility = jest.spyOn(wrapper.vm, 'toggleItemVisibility');
       await wrapper.vm.$nextTick();
-      wrapper.find('.header-text > i').trigger('click');
+      wrapper.find('.header-text .sm-components-icon-visible').trigger('click');
       expect(spylayerVisibility).toHaveBeenCalledTimes(1);
       done();
     };
@@ -289,7 +289,7 @@ describe('LayerList.vue', () => {
       })
     };
     const callback = function () {
-      expect(wrapper.find('.header-text > .sm-components-icon-hidden').exists()).toBeTruthy();
+      expect(wrapper.find('.header-text  .sm-components-icon-hidden').exists()).toBeTruthy();
       done();
     };
     wrapper.vm.viewModel.on('layersUpdated', callback);
@@ -299,7 +299,7 @@ describe('LayerList.vue', () => {
     wrapper.vm.$options.loaded.call(wrapper.vm);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.sourceList).toEqual(wrapper.vm.transformLayerList(layerCatalogs));
-    expect(wrapper.find('.header-text > .sm-components-icon-visible').exists()).toBeTruthy();
+    expect(wrapper.find('.header-text  .sm-components-icon-visible').exists()).toBeTruthy();
     wrapper.vm.sourceList[1].visible = false;
     mockOnOptions.layerupdatechanged();
   });

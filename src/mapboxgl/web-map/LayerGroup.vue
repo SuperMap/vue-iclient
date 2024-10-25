@@ -1,9 +1,9 @@
 <template>
   <div>
-    <sm-tree class="sm-component-layer-list__collapse draggable-tree" :draggable="layerOperations.layerOrder" :tree-data="treeData" @drop="dropHandler">
+    <sm-tree class="sm-component-layer-list__collapse draggable-tree" blockNode :draggable="layerOperations.layerOrder" :tree-data="treeData" @drop="dropHandler">
+      <i slot="switcherIcon" class="sm-components-icon-right" />
       <template slot="custom" slot-scope="item">
         <div
-          class="header-wrap"
           :class="{
             'header-wrap': true,
             'sm-component-layer-list__disabled': !item.visible
@@ -14,13 +14,9 @@
             @mouseenter="() => changeIconsStatus(item.id)"
             @mouseleave="() => changeIconsStatus('')"
           >
-            <i
-              :class="item.visible ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'"
-              @click.stop="toggleItemVisibility(item)"
-            />
             <span class="add-ellipsis">{{ item.title }}</span>
             <div
-              :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden',  item.type === 'group' ? 'icon-buttons-in-group' : '']"
+              :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
             >
               <div v-if="layerOperations.zoomToLayer" class="sm-component-layer-list__zoom">
                 <i
@@ -48,6 +44,12 @@
                   :style="(!item.visible || item.disabled) && { cursor: 'not-allowed' }"
                   :title="$t('layerList.layerStyle')"
                   @click.stop="item.visible && changeItemOpacity(item)"
+                />
+              </div>
+              <div>
+                <i
+                  :class="item.visible ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'"
+                  @click.stop="toggleItemVisibility(item)"
                 />
               </div>
             </div>

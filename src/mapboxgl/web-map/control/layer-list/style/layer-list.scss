@@ -11,47 +11,70 @@
   z-index: 10;
   @include e(content) {
     width: 100%;
-    min-width: 220px;
     height: 100%;
-    padding: 0 16px;
+    overflow: auto;
+    >div {
+      min-width: 220px;
+      padding-left: 8px;
+      position: relative;
+    }
     .#{$collapse-prefix} {
       background: transparent;
       border-radius: 0;
       color: inherit;
     }
+    .sm-component-tree li ul {
+      padding-left: 20px;
+    }
     & .sm-component-tree li span.sm-component-tree-switcher {
-      position: absolute;
-      right: 0px;
-      top: 4px;
-      }
-    & .sm-component-tree > li:first-child > span.sm-component-tree-switcher {
-      top: 7px;
-    }
-    & .sm-component-tree-child-tree > li:first-child > span.sm-component-tree-switcher{ 
-      top: 8px;
-    }
-    & .sm-component-tree li {
       position: relative;
+      z-index: 1;
+      width: 16px;
+      height: 16px;
+      line-height: 16px;
+      vertical-align: middle;
+      margin-right: 4px;
+      i {
+        font-size: 16px !important;
+        font-weight: normal !important;
+      }
+      &.sm-component-tree-switcher_open {
+        rotate: 90deg;
+      }
     }
-    & .sm-component-tree li span.sm-component-tree-switcher.sm-component-tree-switcher-noop {
-      display: none;
+    & .sm-component-tree li .sm-component-tree-node-content-wrapper {
+      width: calc(100% - 20px);
+      height: auto;
+      padding: 0;
+      &::before {
+        position: absolute;
+        right: 0;
+        left: 0;
+        height: 32px;
+        transition: all .3s;
+        transform: translateY(-6px);
+        content: "";
+      }
+      &:hover, &.sm-component-tree-node-selected {
+        background-color: transparent;
+      }
+      &:hover::before{
+        background-color: $tree-node-selected-bg;
+      }
+    }
+    & .sm-component-tree-treenode-selected {
+      >span.sm-component-tree-node-content-wrapper::before {
+        background-color: $tree-node-selected-bg;
+      }
     }
     & .sm-component-tree-child-tree-open {
       display: list-item;
     }
-    & .sm-component-tree li .sm-component-tree-node-content-wrapper {
-      display: block;
-      width: 100%;
-      height: auto;
-      border-top: 2px transparent solid;
-      border-bottom: 2px transparent solid;
-    }
-    & .sm-component-tree-title {
-      display: block;
-    }
     & .sm-component-tree-title .header-text {
       display: inline-flex;
       width: 100%;
+      position: relative;
+      z-index: 1;
     }
     & .icon-buttons-visible {
       visibility: visible;
@@ -62,18 +85,14 @@
     & .sm-component-tree-title .header-text .icon-buttons{
       display: flex;
       justify-content: flex-end;
-      width: 60px;
+      width: 96px;
+      margin-left: 16px;
       & i {
         margin-right: 0px;
+        font-size: 16px;
       }
       & div {
-        margin-right: 9px;
-      }
-      & div:last-child {
-        margin-right: 0px;
-      }
-      &.icon-buttons-in-group div{
-        margin-right: 12px;
+        margin-right: 8px;
       }
       & .highlight-icon:hover {
         color: $primary-5
@@ -82,9 +101,24 @@
     & .opacity-style {
       display:flex;
       align-items:center;
-      width: 100%;
-      padding-left: 23px;
+      width: 80%;
+      padding-left: 24px;
       font-size: 12px;
+      height: 20px;
+      line-height: 20px;
+      position: relative;
+      margin-top: 8px;
+      &::before {
+        position: absolute;
+        left: 8px;
+        top: 0;
+        content: "";
+        height: 14px;
+        width: 8px;
+        border: 1px solid $border-color-split;
+        border-top: none;
+        border-right: none;
+      }
     }
   }
   @include e(a-card) {
@@ -126,9 +160,6 @@
       }
     }
 
-    .#{$iconfont-class-prefix}-visible {
-      color: $primary-color;
-    }
     .#{$iconfont-class-prefix}-hidden {
       color: $disabled-color;
     }
@@ -152,7 +183,7 @@
           vertical-align: middle;
         }
         & > span {
-          width: calc(100% - 85px);
+          width: calc(100% - 112px);
           display: inline-block;
           font-size: 12px;
         }
