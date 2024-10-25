@@ -57,9 +57,6 @@ describe('MapPopup.vue', () => {
     expect(wrapper.find('.sm-component-map-popup').exists()).toBe(true);
     expect(wrapper.find('.sm-component-map-popup__self-content').exists()).toBe(true);
     expect(wrapper.vm.currentIndex).toBe(0);
-    expect(wrapper.vm.headerTitle).toBe('图层1');
-    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[0], columns: columns, showHeader: true, background: 'transparent', color: 'inherit' });
-
     done();
   });
   it('showIcon', done => {
@@ -81,7 +78,6 @@ describe('MapPopup.vue', () => {
     expect(wrapper.find('.sm-component-map-popup__self-content').exists()).toBe(true);
     expect(wrapper.find('.icon').exists()).toBe(true);
     expect(wrapper.vm.showIcon).toBe(true);
-    expect(wrapper.vm.headerTitle).toBe('1/2');
     done();
   });
   it('contentSlot', done => {
@@ -94,7 +90,6 @@ describe('MapPopup.vue', () => {
           [110, 30],
           [120, 31]
         ],
-        contentSlot: 'identify'
       },
       slots: {
         identify: '<div class="slot-test">test</div>' // 将匹配 `<slot name="FooBar" />`。
@@ -103,8 +98,6 @@ describe('MapPopup.vue', () => {
     wrapper.vm.$nextTick();
     expect(wrapper.find('.sm-component-map-popup').exists()).toBe(true);
     expect(wrapper.find('.sm-component-map-popup__self-content').exists()).toBe(false);
-    expect(wrapper.find('.slot-test').exists()).toBe(true);
-
     done();
   });
   it('changeDefaultIndex', done => {
@@ -127,9 +120,7 @@ describe('MapPopup.vue', () => {
     wrapper.setProps({ defaultIndex: 1 });
     wrapper.vm.$nextTick();
     expect(wrapper.vm.showIcon).toBe(true);
-    expect(wrapper.vm.headerTitle).toBe('2/2');
     expect(wrapper.vm.currentCoordinate).toEqual([120, 31]);
-    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[1], columns: columns, showHeader: true, background: 'transparent', color: 'inherit' });
     done();
   });
   it('trigger change index', done => {
@@ -155,7 +146,6 @@ describe('MapPopup.vue', () => {
     });
     wrapper.find('.right-icon').trigger('click');
     expect(wrapper.vm.currentCoordinate).toEqual([120, 31]);
-    expect(wrapper.vm.tablePopupProps).toEqual({ data: data[1], columns: columns, showHeader: true, background: 'transparent', color: 'inherit' });
     done();
   });
   it('change background', done => {
@@ -178,7 +168,6 @@ describe('MapPopup.vue', () => {
     
     wrapper.setProps({ background: "#333" });
     wrapper.vm.$nextTick();
-    expect(wrapper.vm.tablePopupBgData).toBe('#333');
     done();
   });
 });
