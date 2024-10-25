@@ -1,7 +1,6 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import { getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';

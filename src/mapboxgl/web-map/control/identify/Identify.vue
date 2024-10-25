@@ -11,6 +11,8 @@
     :background="background"
     :textColor="textColor"
     :mapTarget="mapTarget"
+    :showPopup="showPopup"
+    @mapselectionchanged="handleMapSelectionChanged"
   />
 </template>
 
@@ -27,6 +29,10 @@ export default {
   mixins: [MapGetter, Theme],
   components: { SmLayerHighlight },
   props: {
+    showPopup: {
+      type: Boolean,
+      default: true
+    },
     multiSelect: {
       type: Boolean,
       default: false
@@ -128,15 +134,19 @@ export default {
         }
         const fieldsFormatter = fields && fields.map(field => {
           const isObjArr = field instanceof Object;
-          return {
-            field: isObjArr ? field.field : field,
-            title: isObjArr ? field.title : field,
-            slotName: isObjArr ? field.slotName : undefined
+          return isObjArr ? field : {
+            field: field,
+            title: field
           };
         });
         list[layerId] = fieldsFormatter;
         return list;
       }, {});
+    }
+  },
+  methods: {
+    handleMapSelectionChanged(e) {
+      this.$emit('datachange', { ...e, fields: this.displayFieldsMap[e.targetId] });
     }
   }
 };

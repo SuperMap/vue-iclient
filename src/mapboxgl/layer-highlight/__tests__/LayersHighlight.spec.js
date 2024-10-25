@@ -69,8 +69,7 @@ describe('LayerHighlight.vue', () => {
     });
     wrapper.vm.$nextTick();
     expect(wrapper.find(SmMapPopup).exists()).toBe(true);
-    expect(wrapper.vm.tablePopupProps.columns.length).toBe(2);
-    expect(wrapper.vm.tablePopupProps.showHeader).toBe(false);
+    expect(wrapper.vm.tableColumns.length).toBe(2);
     done();
   });
 
@@ -195,6 +194,25 @@ describe('LayerHighlight.vue', () => {
     expect(wrapper.vm.allPopupDatas).toEqual(params.popupInfos);
     expect(wrapper.vm.lnglats).toEqual(params.lnglats);
     expect(wrapper.vm.currentIndex).toBe(1);
+    done();
+  });
+
+  it('mapopup change index', done => {
+    wrapper = mount(SmLayerHighlight, {
+      propsData: {
+        mapTarget: 'map',
+        uniqueName: 'Test',
+        layers: ['layer1'],
+        highlightStyle
+      }
+    });
+    wrapper.vm.$nextTick();
+    const mapPopupNode = wrapper.find(SmMapPopup).exists();
+    expect(mapPopupNode).toBe(true);
+    expect(wrapper.vm.currentIndex).toBe(0);
+    wrapper.vm.handleChange(1);
+    expect(wrapper.vm.currentIndex).toBe(1);
+    expect(wrapper.emitted().mapselectionchanged.length).toBe(1);
     done();
   });
 });

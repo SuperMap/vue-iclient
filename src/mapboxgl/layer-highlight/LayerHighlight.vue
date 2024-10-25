@@ -1,5 +1,6 @@
 <template>
   <SmMapPopup
+    v-if="showPopup"
     class="sm-component-layer-highlight"
     :ref="uniqueName"
     :showIcon="multiSelection"
@@ -9,7 +10,7 @@
     :background="background"
     :textColor="textColor"
     :mapTarget="mapTarget"
-    :columns="tablePopupProps.columns"
+    :columns="tableColumns"
     :showHeader="false"
     @change="handleChange"
   />
@@ -73,6 +74,10 @@ export default {
     },
     customColumnRenders: {
       type: Object
+    },
+    showPopup: {
+      type: Boolean,
+      default: true
     }
   },
   data() {
@@ -107,28 +112,28 @@ export default {
       }
       return style;
     },
-    tablePopupProps() {
-      const state = {
-        columns: [
-          {
-            dataIndex: 'attribute',
-            customRender: (text, record) => {
-              return <div style={this.columnStyle.keyStyle}>{record.alias || text}</div>;
-            }
-          },
-          {
-            dataIndex: 'attributeValue',
-            customRender: (text, record) => {
-              const valueCustomRender = record.slotName && ((this.customColumnRenders || {})[record.slotName] || this.$parent && this.$parent.$scopedSlots[record.slotName]);
-              if (valueCustomRender) {
-                return <div style={this.columnStyle.valueStyle}>{valueCustomRender({ value: text })}</div>;
-              }
-              return <div style={this.columnStyle.valueStyle}>{text}</div>;
-            }
+    tableColumns() {
+      return [
+        {
+          dataIndex: 'attribute',
+          customRender: (text, record) => {
+            return <div style={this.columnStyle.keyStyle}>{record.alias || text}</div>;
           }
-        ]
-      };
-      return { ...state, showHeader: false };
+        },
+        {
+          dataIndex: 'attributeValue',
+          customRender: (text, record) => {
+            const valueCustomRender =
+              record.slotName &&
+              ((this.customColumnRenders || {})[record.slotName] ||
+                (this.$parent && this.$parent.$scopedSlots[record.slotName]));
+            if (valueCustomRender) {
+              return <div style={this.columnStyle.valueStyle}>{valueCustomRender({ value: text })}</div>;
+            }
+            return <div style={this.columnStyle.valueStyle}>{text}</div>;
+          }
+        }
+      ];
     }
   },
   watch: {
@@ -183,11 +188,17 @@ export default {
         if (!features[0]) {
           this.clearPopupData();
         }
-        this.$emit('mapselectionchanged', e);
+        this.mapSelectionsParams = {
+          ...e,
+          dataSeletionIndex: this.currentIndex,
+          layerName: e.targetId
+        };
+        this.$emit('mapselectionchanged', this.mapSelectionsParams);
       });
     },
     handleChange(index) {
       this.currentIndex = index;
+      this.$emit('mapselectionchanged', { ...this.mapSelectionsParams, dataSeletionIndex: this.currentIndex });
     },
     clearPopupData(clear = true) {
       this.allPopupDatas = [];
@@ -202,4 +213,3 @@ export default {
   }
 };
 </script>
-

@@ -133,7 +133,6 @@
       </div>
     </div>
     <SmLayerHighlight
-      v-if="showPopup"
       uniqueName="query-popup"
       :layers="resultLayers"
       :highlightStyle="highlightStyle"
@@ -146,6 +145,7 @@
       :textColor="popupStyle.background || textColor"
       :mapTarget="mapTarget"
       :customColumnRenders="$scopedSlots"
+      :showPopup="showPopup"
       :ref="highlightCompRefName"
       @mapselectionchanged="handleMapSeletionChanged"
     />
@@ -171,6 +171,7 @@ import Message from 'vue-iclient/src/common/message/Message.js';
 import SmLayerHighlight from 'vue-iclient/src/mapboxgl/layer-highlight/LayerHighlight';
 import { getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
+import omit from 'omit.js';
 
 export default {
   name: 'SmQuery',
@@ -345,19 +346,19 @@ export default {
   },
   watch: {
     iportalData(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
+      if (!this.isSameData([newVal, oldVal])) {
         this.clearResult();
         this.formatJobInfos();
       }
     },
     restData(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
+      if (!this.isSameData([newVal, oldVal])) {
         this.clearResult();
         this.formatJobInfos();
       }
     },
     restMap(newVal, oldVal) {
-      if (!isEqual(newVal, oldVal)) {
+      if (!this.isSameData([newVal, oldVal])) {
         this.clearResult();
         this.formatJobInfos();
       }
@@ -477,6 +478,19 @@ export default {
       if (e.dataSelectorMode !== 'ALL') {
         this.activeResultIndexList = [];
       }
+      this.$emit('datachange', { ...e, layerName: this.queryResult.name, fields: this.activeQueryJob.fields });
+    },
+    isSameData(compareDatas) {
+      const nextList = compareDatas.map(data => data && data.map(item => {
+        if (item.fields && item.fields.length > 0) {
+          return {
+            ...item,
+            fields: item.fields.map(sub => omit(sub, ['slotName']))
+          };
+        }
+        return item;
+      }));
+      return isEqual(...nextList);
     }
   }
 };

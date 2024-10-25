@@ -8,7 +8,17 @@ import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
 import { message } from 'ant-design-vue';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-common';
-import { REST_DATA_FIELDS_RESULT, dataset_data, prj_data, iportal_content, fakeDataServiceResult, fakeMapServiceResult, datas } from '@mocks/services';
+import {
+  REST_DATA_FIELDS_RESULT,
+  dataset_data,
+  prj_data,
+  iportal_content,
+  fakeDataServiceResult,
+  fakeMapServiceResult,
+  datas,
+  restMap_Layers_Res,
+  restMap_Maps_Res
+} from '@mocks/services';
 import Message from 'vue-iclient/src/common/message/Message.js';
 
 const localVue = createLocalVue();
@@ -26,7 +36,7 @@ describe('query', () => {
   beforeEach(() => {
     wrapper = null;
     const mockImplementationCb = url => {
-      if (url.includes('/123')) {
+      if (url.indexOf('/123') > -1) {
         return Promise.resolve(new Response(JSON.stringify(datas)));
       }
       if (url.includes('/content')) {
@@ -38,11 +48,17 @@ describe('query', () => {
       if (url.includes('/prjCoordSys')) {
         return Promise.resolve(new Response(JSON.stringify(prj_data)));
       }
+      if (url.includes('/maps/mapOfsupermap1_pg/layers')) {
+        return Promise.resolve(new Response(JSON.stringify(restMap_Layers_Res)));
+      }
       if (url.includes('/queryResults')) {
         return Promise.resolve(new Response(JSON.stringify(fakeMapServiceResult)));
       }
       if (url.includes('/featureResults')) {
         return Promise.resolve(new Response(JSON.stringify(fakeDataServiceResult)));
+      }
+      if (url.includes('/maps')) {
+        return Promise.resolve(new Response(JSON.stringify(restMap_Maps_Res)));
       }
       return Promise.resolve(new Response(JSON.stringify(dataset_data)));
     };
@@ -154,17 +170,24 @@ describe('query', () => {
         ]
       }
     });
-    wrapper.setProps({
-      iportalData: [
-        new iPortalDataParameter({
-          url: 'https://fakeiportal.supermap.io/iportal/web/datas/123456',
-          attributeFilter: 'SmID>0'
-        })
-      ]
-    });
     await mapSubComponentLoaded(wrapper);
-    await wrapper.vm.$nextTick();
-    done();
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.vm.$on('query-succeeded', () => {
+      expect(wrapper.vm.queryResult.result[0]['NAME']).toBe('四川省');
+      wrapper.setProps({
+        iportalData: [
+          new iPortalDataParameter({
+            url: 'https://fakeiportal.supermap.io/iportal/web/datas/123456',
+            attributeFilter: 'SmID>0'
+          })
+        ]
+      });
+      expect(wrapper.vm.queryResult).toBeFalsy();
+      done();
+    });
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    expect(spyquery).toBeCalled();
   });
 
   it('change restData Service', async done => {
@@ -183,21 +206,28 @@ describe('query', () => {
       }
     });
     await mapSubComponentLoaded(wrapper);
-    wrapper.setProps({
-      restData: [
-        new RestDataParameter({
-          url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data1',
-          attributeFilter: 'SmID>0',
-          maxFeatures: 40,
-          dataName: ['World:Countries']
-        })
-      ]
-    });
-    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.mapTarget).toBe('map');
     const queryModeDom = wrapper.find('.sm-component-query__job-info-body .sm-component-query__item-holder div')
     expect(queryModeDom.exists()).toBeTruthy();
     expect(queryModeDom.text()).toBe('query.attributeCondition');
-    done();
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.vm.$on('query-succeeded', () => {
+      expect(wrapper.vm.queryResult.result[0]['NAME']).toBe('四川省');
+      wrapper.setProps({
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data1',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 40,
+            dataName: ['World:Countries']
+          })
+        ]
+      });
+      expect(wrapper.vm.queryResult).toBeFalsy();
+      done();
+    });
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    expect(spyquery).toBeCalled();
   });
 
   it('change restMap Service', async done => {
@@ -216,20 +246,67 @@ describe('query', () => {
       }
     });
     await mapSubComponentLoaded(wrapper);
-    const formatJobInfos = jest.spyOn(wrapper.vm, 'formatJobInfos');
-    wrapper.setProps({
-      restMap: [
-        new RestMapParameter({
-          url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World1',
-          attributeFilter: 'SmID>0',
-          maxFeatures: 40,
-          layerName: 'Rivers@World'
-        })
-      ]
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.vm.$on('query-succeeded', () => {
+      expect(wrapper.vm.queryResult.result[0]['NAME']).toBe('四川省');
+      const formatJobInfos = jest.spyOn(wrapper.vm, 'formatJobInfos');
+      wrapper.setProps({
+        restMap: [
+          new RestMapParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World1',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 40,
+            layerName: 'Rivers@World'
+          })
+        ]
+      });
+      expect(wrapper.vm.queryResult).toBeFalsy();
+      expect(formatJobInfos).toBeCalled();
+      done();
     });
-    await wrapper.vm.$nextTick();
-    expect(formatJobInfos).toBeCalled();
-    done();
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    expect(spyquery).toBeCalled();
+  });
+
+  it('change same restMap Service', async done => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restMap: [
+          new RestMapParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            layerName: 'Rivers@World'
+          })
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const spyquery = jest.spyOn(wrapper.vm, 'query');
+    wrapper.vm.$on('query-succeeded', () => {
+      const currentResult = wrapper.vm.queryResult;
+      expect(wrapper.vm.queryResult.result[0]['NAME']).toBe('四川省');
+      const formatJobInfos = jest.spyOn(wrapper.vm, 'formatJobInfos');
+      wrapper.setProps({
+        restMap: [
+          new RestMapParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/map-world/rest/maps/World',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            layerName: 'Rivers@World'
+          })
+        ]
+      });
+      expect(wrapper.vm.queryResult).toEqual(currentResult);
+      expect(formatJobInfos).not.toBeCalled();
+      done();
+    });
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
+    expect(spyquery).toBeCalled();
   });
 
   it('select query item', async done => {
@@ -431,5 +508,28 @@ describe('query', () => {
     });
     expect(spyquery).toBeCalled();
   });
+
+  it('showPopup false', async (done) => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        restData: [
+          new RestDataParameter({
+            url: 'https://fakeiserver.supermap.io/iserver/services/data-world/rest/data',
+            attributeFilter: 'SmID>0',
+            maxFeatures: 30,
+            dataName: ['World:Countries']
+          })
+        ]
+      }
+    });
+    expect(wrapper.find('.sm-component-layer-highlight').exists()).toBeTruthy();
+    wrapper.setProps({ showPopup: false });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.find('.sm-component-layer-highlight').exists()).toBeFalsy();
+    done();
+  });
 });
+
 

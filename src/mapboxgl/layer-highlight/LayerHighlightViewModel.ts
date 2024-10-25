@@ -77,6 +77,7 @@ interface MapSelectionChangedEmit {
   popupInfos: PopupFeatureInfo['info'][];
   lnglats: PopupFeatureInfo['coordinates'][];
   highlightLayerIds: string[];
+  targetId: string | undefined;
   dataSelectorMode: DataSelectorMode;
 }
 
@@ -516,9 +517,12 @@ export default class HighlightLayer extends mapboxgl.Evented {
       popupInfos: popupDatas.map(item => item.info),
       lnglats: popupDatas.map(item => item.coordinates),
       highlightLayerIds: this.getHighlightLayerIds(this.highlightOptions.layerIds),
+      targetId: activeTargetLayer?.id,
       dataSelectorMode: this.dataSelectorMode
     };
-    this.fire('mapselectionchanged', emitData);
+    if (this.highlightOptions.layerIds.length > 0) {
+      this.fire('mapselectionchanged', emitData);
+    }
   }
 
   private handleLayerKeydown(e: KeyboardEvent) {

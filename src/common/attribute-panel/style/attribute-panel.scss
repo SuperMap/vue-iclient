@@ -1,5 +1,6 @@
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
+@import '../../../common/table-popup/style/table-popup.scss';
 
 @include b(attribute-panel) {
   min-width: 200px;

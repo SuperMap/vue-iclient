@@ -17,8 +17,7 @@
       </div>
     </div>
     <div class="sm-component-attribute-panel__content">
-      <sm-table-popup v-if="attributes.length" v-bind="tablePopupProps" class="sm-component-map-popup__self-content" />
-      <sm-empty v-if="!attributes.length" />
+      <sm-table-popup v-bind="tablePopupProps" class="sm-component-map-popup__self-content" />
     </div>
   </div>
 </template>
@@ -26,12 +25,11 @@
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import SmEmpty from 'vue-iclient/src/common/empty/Empty.vue';
 import SmTablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 
 @Component({
   name: 'SmAttributePanel',
-  components: { SmTablePopup, SmEmpty }
+  components: { SmTablePopup }
 })
 class SmAttributePanel extends Mixins(Theme) {
   attrIndex = 0;
@@ -82,7 +80,7 @@ class SmAttributePanel extends Mixins(Theme) {
       columns: this.columns,
       showHeader: this.showHeader,
       background: 'transparent',
-      color: 'inherit'
+      textColor: 'inherit'
     };
   }
 

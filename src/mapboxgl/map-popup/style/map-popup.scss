@@ -1,5 +1,6 @@
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
+@import '../../../common/attribute-panel/style/attribute-panel.scss';
 
 @include b(map-popup) {
   min-width: 200px;

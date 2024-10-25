@@ -16,7 +16,7 @@
 | multiSelect         | 是否开启多选                                                          | boolean                                                     | -      | false      |
 | layers         | 查询的图层 Id                                                          | string[ ]                                                     | -      | -      |
 | fields         | 弹窗内容显示的字段名。默认显示图层的所有字段                           | array[ ]                                                      | -      | -      |
-| clickTolerance | 点击位置的检测容限。以像素为单位，将获取点击位置为圆心，检测容限为半径范围内的要素 | number                                                        | 5      | -      |
+| clickTolerance | 点击位置的检测容限。以像素为单位，将获取点击位置为圆心，检测容限为半径范围内的要素 | number                                                        | -      | 5      |
 | layerStyle     | 高亮要素样式                                                           | [LayerStyle](/zh/api/common-types/common-types.md#layerstyle) | -      | -      |
 | autoResize     | 自适应宽度                                                             | boolean                                                       | -      | true   |
 | keyMaxWidth    | 键列的最大宽度                                                         | number                                                        | -      | 110    |
