@@ -15,45 +15,29 @@ describe('AttributePanel.vue', () => {
   });
 
   it('render', async done => {
+    let attr = [
+      {
+          "attribute": "video",
+          "alias": "sdsad",
+          "attributeValue": "https://www.runoob.com/try/demo_source/mov_bbb.mp4",
+          "slotName": "cbb14af2926911ef890f1b2f76bec1a4"
+      },
+      {
+          "attribute": "image",
+          "alias": "sdsad",
+          "attributeValue": "http://gips2.baidu.com/it/u=195724436,3554684702&fm=3028&app=3028&f=JPEG&fmt=auto?w=1280&h=960",
+          "slotName": "cbb14af3926911ef890f1b2f76bec1a4"
+      }
+    ];
     wrapper = mount(SmAttributePanel, {
       localVue,
       propsData: {
-        attributeStyle: {
-          "keyStyle":
-          {
-            "fontFamily": "微软雅黑",
-            "color": "",
-            "textAlign": "left",
-            "width": "110",
-            "fontSize": "0.296296rem",
-            "fontWeight": "normal",
-            "height": "unset",
-            "flex": "unset"
-          },
-          "valueStyle": {
-            "fontFamily": "微软雅黑",
-            "color": "",
-            "textAlign": "left",
-            "width": "170",
-            "fontSize": "0.296296rem",
-            "fontWeight": "normal",
-            "height": "unset",
-            "flex": "unset"
-          }
-        },
-        attributes: {
-          "链接": "www.test.com",
-          "text": "weidapao2",
-        },
-        fields: [
-          { "slotName": "11", "linkTitle": "", "field": "链接", "linkTarget": "_blank", "repeatOption": "left", "title": "链接", "type": "text" },
-          { "slotName": "13", "linkTitle": "", "field": "text", "linkTarget": "_blank", "repeatOption": "left", "title": "text", "type": "text" }]
+        attributes: attr
       },
       attachToDocument: 'body'
     });
     await wrapper.vm.$nextTick();
-    expect(wrapper.vm.fieldsMap).toEqual({ "链接": "11", "text": "13" });
-    expect(wrapper.vm.formatStyle).toEqual({ "keyStyle": { "fontFamily": "微软雅黑", "color": "", "textAlign": "left", "width": "110px", "fontSize": "0.296296rem", "fontWeight": "normal", "height": "unset", "flex": "unset" }, "valueStyle": { "fontFamily": "微软雅黑", "color": "", "textAlign": "left", "width": "170px", "fontSize": "0.296296rem", "fontWeight": "normal", "height": "unset", "flex": "unset" } });
+    expect(wrapper.vm.tablePopupProps.data).toEqual(attr);
     wrapper.vm.changeIndex(1);
     expect(wrapper.vm.attrIndex).toBe(1);
     done();
