@@ -42,6 +42,9 @@
     width: 100%;
     height: auto;
     padding-top: 5px;
+    tr {
+      display: flex;
+    }
     .sm-component-table-content {
       max-height: none !important;
     }
