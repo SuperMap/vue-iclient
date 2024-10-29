@@ -119,7 +119,7 @@ export {
   ColorsPickerUtil,
   ArrayStatistic,
   ThemeStyle
-} from '@supermap/iclient-common';
+} from '@supermapgis/iclient-common';
 export { MapService } from './services/MapService';
 export { FeatureService } from './services/FeatureService';
 export { QueryService } from './services/QueryService';

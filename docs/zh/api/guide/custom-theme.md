@@ -9,7 +9,7 @@ Vue-iClient-MapboxGL 内置了 [13 套主题](https://github.com/SuperMap/vue-ic
 ```js
 // 完整引入Vue-iClient-MapboxGL
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 import App from './App.vue';
 
 // 可以通过两种方式使用内置主题
@@ -25,8 +25,8 @@ VueiClient.setTheme('light');
 ```js
 // 按需引入Vue-iClient-MapboxGL
 import Vue from 'vue';
-import { Button } from '@supermap/vue-iclient-mapboxgl';
-import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
+import { Button } from '@supermapgis/vue-iclient-mapboxgl';
+import { setTheme } from '@supermapgis/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
 
 // 通过 setTheme 方法设置主题。
 setTheme('light');
@@ -51,7 +51,7 @@ Vue.use(Button);
 ```js
 // 完整引入Vue-iClient-MapboxGL
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 import App from './App.vue';
 
 let theme = {
@@ -69,8 +69,8 @@ VueiClient.setTheme(theme);
 
 ```js
 // 按需引入Vue-iClient-MapboxGL
-import { Button } from '@supermap/vue-iclient-mapboxgl';
-import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
+import { Button } from '@supermapgis/vue-iclient-mapboxgl';
+import { setTheme } from '@supermapgis/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
 
 let theme = {
   textColor: '#eee',

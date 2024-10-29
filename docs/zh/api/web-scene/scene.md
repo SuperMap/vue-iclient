@@ -14,7 +14,7 @@ pageClass: web-scene
 
 ```js
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 
 Vue.use(VueiClient, { cesiumPath: './Build/Cesium/Cesium.js' }); // 此 url 路径相对于根目录
 ```

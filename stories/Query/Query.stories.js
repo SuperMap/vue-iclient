@@ -1,7 +1,7 @@
 import {
   toI18n
 } from '../../.storybook/lang';
-import RestMapParameter from '@supermap/vue-iclient-mapboxgl/lib/_types/RestMapParameter.js'; // 需要引用具体的路径
+import RestMapParameter from '@supermapgis/vue-iclient-mapboxgl/lib/_types/RestMapParameter.js'; // 需要引用具体的路径
 import theme from '../setThemeMixin/setTheme';
 
 export default {

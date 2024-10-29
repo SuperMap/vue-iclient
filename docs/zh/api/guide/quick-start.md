@@ -23,7 +23,7 @@
 
 ```js
 import Vue from 'vue';
-import VueiClient from '@supermap/vue-iclient-mapboxgl';
+import VueiClient from '@supermapgis/vue-iclient-mapboxgl';
 import App from './App.vue';
 
 Vue.use(VueiClient);
@@ -36,11 +36,11 @@ new Vue({
 
 #### 局部导入
 
-局部导入的组件也会引入整个@supermap/vue-iclient-mapboxgl 模块。
+局部导入的组件也会引入整个@supermapgis/vue-iclient-mapboxgl 模块。
 
 ```js
 import Vue from 'vue';
-import { Button, message } from '@supermap/vue-iclient-mapboxgl';
+import { Button, message } from '@supermapgis/vue-iclient-mapboxgl';
 import App from './App.vue';
 
 /* v10.2.0+ 自动注册 Button下组件，如 Button.Group */
@@ -58,8 +58,8 @@ new Vue({
 第一种方式：单独引入每个组件来按需加载组件。
 
 ```js
-import Button from '@supermap/vue-iclient-mapboxgl/lib/button';
-import '@supermap/vue-iclient-mapboxgl/lib/button/style';
+import Button from '@supermapgis/vue-iclient-mapboxgl/lib/button';
+import '@supermapgis/vue-iclient-mapboxgl/lib/button/style';
 ```
 
 第二种方式：借助 babel-plugin-import，我们可以只引入需要的组件，以达到减小项目体积的目的：
@@ -77,7 +77,7 @@ npm install babel-plugin-import -D
   "plugins": [
     ["import",
       {
-      "libraryName": "@supermap/vue-iclient-mapboxgl",
+      "libraryName": "@supermapgis/vue-iclient-mapboxgl",
       "style": "css"
       }
     ]
@@ -88,15 +88,15 @@ npm install babel-plugin-import -D
 接下来，如果你只希望引入部分组件，比如 Button 和 message：
 
 ```js
-import { Button, message } from '@supermap/vue-iclient-mapboxgl';
+import { Button, message } from '@supermapgis/vue-iclient-mapboxgl';
 
 /* 通过Vue.use注册组件 */
 Vue.use(Button);
 Vue.prototype.$message = message;
 
 /* 或者通过Vue.component注册组件。注意：使用该方法需要手动注册国际化和主题。*/
-import { lang, locale } from '@supermap/vue-iclient-mapboxgl/lib/_lang';
-import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme';
+import { lang, locale } from '@supermapgis/vue-iclient-mapboxgl/lib/_lang';
+import { setTheme } from '@supermapgis/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme';
 Vue.use(locale, { locale: lang.zh }); // 注册国际化
 setTheme('light'); // 注册主题
 Vue.component(Button.name, Button);
@@ -203,7 +203,7 @@ import {
   TdtMapSwitcher,
   TdtRoute,
   TdtSearch
-} from '@supermap/vue-iclient-mapboxgl';
+} from '@supermapgis/vue-iclient-mapboxgl';
 
 Vue.use(Avatar);
 Vue.use(Border);

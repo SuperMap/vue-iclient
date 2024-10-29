@@ -96,9 +96,9 @@ import {
   VideoPlusLayer,
   VideoPlusMarker,
   VideoPlusPopup
-} from '@supermap/vue-iclient-mapboxgl';
-import { setTheme } from '@supermap/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
-import { locale } from '@supermap/vue-iclient-mapboxgl/lib/_lang'; // 需要引用具体的路径
+} from '@supermapgis/vue-iclient-mapboxgl';
+import { setTheme } from '@supermapgis/vue-iclient-mapboxgl/lib/_utils/style/theme/set-theme'; // 需要引用具体的路径
+import { locale } from '@supermapgis/vue-iclient-mapboxgl/lib/_lang'; // 需要引用具体的路径
 import i18n from './lang';
 
 setTheme('dark');

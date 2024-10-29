@@ -2,9 +2,9 @@ import {
   toI18n
 } from '../../.storybook/lang';
 import theme from '../setThemeMixin/setTheme';
-import AddressMatchParameter from '@supermap/vue-iclient-mapboxgl/lib/_types/AddressMatchParameter.js'; // 需要引用具体的路径
-import RestMapParameter from '@supermap/vue-iclient-mapboxgl/lib/_types/RestMapParameter.js'; // 需要引用具体的路径
-import RestDataParameter from '@supermap/vue-iclient-mapboxgl/lib/_types/RestDataParameter.js'; // 需要引用具体的路径
+import AddressMatchParameter from '@supermapgis/vue-iclient-mapboxgl/lib/_types/AddressMatchParameter.js'; // 需要引用具体的路径
+import RestMapParameter from '@supermapgis/vue-iclient-mapboxgl/lib/_types/RestMapParameter.js'; // 需要引用具体的路径
+import RestDataParameter from '@supermapgis/vue-iclient-mapboxgl/lib/_types/RestDataParameter.js'; // 需要引用具体的路径
 
 export default {
   title: `${toI18n('gisComponent.title')}/${toI18n('gisComponent.tdtPoi.title')}`,
