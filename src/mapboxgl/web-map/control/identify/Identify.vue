@@ -11,7 +11,7 @@
     :mapTarget="mapTarget"
     @change="handleChange"
   >
-    <div slot="identify" >
+    <div slot="identify">
       <ul
         :class="[
           autoResize ? 'sm-component-identify__auto' : 'sm-component-identify__custom',
@@ -19,10 +19,15 @@
         ]"
       >
         <li v-for="(value, key, index) in popupProps" :key="index" class="content">
-          <div class="left ellipsis" :title="key" :style="getWidthStyle.keyWidth">{{ key }}</div>
-          <div class="right ellipsis" :title="value.value || value" :style="getWidthStyle.valueWidth">
-            <slot v-if="value.slotName" :name="value.slotName" :value="value.value"></slot>
-            <span v-else>{{ value.value || value }}</span>
+          <div class="left" :title="key" :style="getColStyle.keyStyle">{{ key }}</div>
+          <div class="right" :title="value.value || value" :style="getColStyle.valueStyle">
+            <slot
+              v-if="value.slotName"
+              :name="value.slotName"
+              :value="value.value"
+              :style="getColStyle.valueStyle"
+            ></slot>
+            <span v-else :style="getColStyle.valueStyle">{{ value.value || value }}</span>
           </div>
         </li>
       </ul>
@@ -115,6 +120,14 @@ export default {
     valueWidth: {
       type: [Number, String],
       default: 170
+    },
+    keyWordStyle: {
+      type: String,
+      default: 'ellipsis'
+    },
+    valueWordStyle: {
+      type: String,
+      default: 'ellipsis'
     }
   },
   data() {
@@ -128,23 +141,45 @@ export default {
     };
   },
   computed: {
-    getWidthStyle() {
-      let style = { keyWidth: {}, valueWidth: {} };
+    getColStyle() {
+      let style = { keyStyle: {}, valueStyle: {} };
       if (!this.autoResize) {
         if (this.keyWidth) {
-          style.keyWidth.width = this.keyWidth + 'px';
+          style.keyStyle.width = this.keyWidth + 'px';
         }
         if (this.valueWidth) {
-          style.valueWidth.width = this.valueWidth + 'px';
+          style.valueStyle.width = this.valueWidth + 'px';
         }
-        return style;
       } else {
         if (this.keyMaxWidth) {
-          style.keyWidth.maxWidth = this.keyMaxWidth + 'px';
+          style.keyStyle.maxWidth = this.keyMaxWidth + 'px';
         }
         if (this.valueMaxWidth) {
-          style.valueWidth.maxWidth = this.valueMaxWidth + 'px';
+          style.valueStyle.maxWidth = this.valueMaxWidth + 'px';
         }
+      }
+      const textStyle = this.getTextStyle;
+      return {
+        keyStyle: { ...style.keyStyle, ...textStyle.keyStyle },
+        valueStyle: { ...style.valueStyle, ...textStyle.valueStyle }
+      };
+    },
+    getTextStyle() {
+      let style = { keyStyle: {}, valueStyle: {} };
+      const ellipsisStyle = {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      };
+      if (this.keyWordStyle === 'ellipsis') {
+        style.keyStyle = { ...ellipsisStyle };
+      } else {
+        style.keyStyle = { wordWrap: 'break-word' };
+      }
+      if (this.valueWordStyle === 'ellipsis') {
+        style.valueStyle = { ...ellipsisStyle };
+      } else {
+        style.valueStyle = { wordWrap: 'break-word' };
       }
       return style;
     },

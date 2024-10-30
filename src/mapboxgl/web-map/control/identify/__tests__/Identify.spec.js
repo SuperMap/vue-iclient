@@ -38,6 +38,9 @@ describe('Identify.vue', () => {
     wrapper.vm.getWidthStyle;
     expect(wrapper.vm.keyMaxWidth).toBe(110);
     expect(wrapper.vm.valueMaxWidth).toBe(170);
+    const style = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
+    expect(wrapper.vm.getTextStyle.keyStyle).toEqual({ ...style });
+    expect(wrapper.vm.getTextStyle.valueStyle).toEqual({ ...style });
     done();
   });
 
