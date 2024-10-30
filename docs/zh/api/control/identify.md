@@ -22,5 +22,7 @@
 | valueMaxWidth  | 值列的最大宽度                                                         | number                                                        | -      | 170    |
 | keyWidth       | 键列的宽度                                                             | number                                                        | -      | 110    |
 | valueWidth     | 值列的宽度                                                             | number                                                        | -      | 170    |
+| keyWordStyle   | 键列的文本样式，省略号或自动换行                                         | string                                                        |   'ellipsis', 'wrap'   | 'ellipsis'    |
+| valueWordStyle | 值列的文本杨思， 省略号或自动换行                                          | string                                                        |  'ellipsis', 'wrap'       | 'ellipsis'    |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)
