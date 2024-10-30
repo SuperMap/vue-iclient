@@ -68,7 +68,9 @@ export default {
           keyWidth: 80,
           valueWidth: 150,
           keyMaxWidth: 160,
-          valueMaxWidth: 300
+          valueMaxWidth: 300,
+          keyWordStyle: 'ellipsis',
+          valueWordStyle: 'ellipsis'
         };
       }
     },
@@ -92,7 +94,7 @@ export default {
       return this.allPopupDatas[this.currentIndex] || [];
     },
     columnStyle() {
-      const { autoResize, keyWidth, valueWidth, keyMaxWidth, valueMaxWidth } = this.popupStyle;
+      const { autoResize, keyWidth, valueWidth, keyMaxWidth, valueMaxWidth, keyWordStyle, valueWordStyle} = this.popupStyle;
       let style = { keyStyle: {}, valueStyle: {} };
       if (!autoResize) {
         if (keyWidth) {
@@ -101,7 +103,6 @@ export default {
         if (valueWidth) {
           style.valueStyle.width = valueWidth + 'px';
         }
-        return style;
       } else {
         if (keyMaxWidth) {
           style.keyStyle.maxWidth = keyMaxWidth + 'px';
@@ -110,6 +111,17 @@ export default {
           style.valueStyle.maxWidth = valueMaxWidth + 'px';
         }
       }
+      const ellipsisStyle = {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        whiteSpace: 'nowrap'
+      }
+      if (keyWordStyle === 'ellipsis'){
+        style.keyStyle = {...style.keyStyle, ...ellipsisStyle}
+      }
+      if (valueWordStyle === 'ellipsis'){
+        style.valueStyle = {...style.valueStyle, ...ellipsisStyle}
+      }
       return style;
     },
     tableColumns() {
@@ -117,7 +129,7 @@ export default {
         {
           dataIndex: 'attribute',
           customRender: (text, record) => {
-            return <div style={this.columnStyle.keyStyle}>{record.alias || text}</div>;
+            return <div style={this.columnStyle.keyStyle} title={record.alias || text}>{record.alias || text}</div>;
           }
         },
         {
@@ -127,10 +139,11 @@ export default {
               record.slotName &&
               ((this.customColumnRenders || {})[record.slotName] ||
                 (this.$parent && this.$parent.$scopedSlots[record.slotName]));
+            const style = this.columnStyle.valueStyle;
             if (valueCustomRender) {
-              return <div style={this.columnStyle.valueStyle}>{valueCustomRender({ value: text })}</div>;
+              return <div style={style} title={text}>{valueCustomRender({ value: text, style })}</div>;
             }
-            return <div style={this.columnStyle.valueStyle}>{text}</div>;
+            return <div style={style} title={text}>{text}</div>;
           }
         }
       ];

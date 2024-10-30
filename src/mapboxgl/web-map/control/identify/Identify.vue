@@ -102,7 +102,15 @@ export default {
     valueWidth: {
       type: [Number, String],
       default: 170
-    }
+    },
+    keyWordStyle: {
+      type: String,
+      default: 'ellipsis'
+    },
+    valueWordStyle: {
+      type: String,
+      default: 'ellipsis'
+    },
   },
   data() {
     return {
@@ -116,6 +124,8 @@ export default {
         valueWidth: this.valueWidth,
         keyMaxWidth: this.keyMaxWidth,
         valueMaxWidth: this.valueMaxWidth,
+        keyWordStyle: this.keyWordStyle,
+        valueWordStyle: this.valueWordStyle,
         autoResize: this.autoResize
       };
     },
