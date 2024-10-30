@@ -47,6 +47,7 @@ import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
+import difference from 'lodash.difference';
 
 export default {
   name: 'SmLayerManager',
@@ -104,6 +105,30 @@ export default {
       },
       deep: true,
       immediate: true
+    },
+    defaultCheckedKeys(keys, oldKeys) {
+      if (isequal(keys, oldKeys)) {
+        return;
+      }
+      const newCheckedKeys = [].concat(this.checkedKeys);
+      if (keys.length > oldKeys.length) {
+        // 新增了一个初始加载的图层
+        const addKey = difference(keys, oldKeys);
+        this.addLayerByCheckedKeys(addKey);
+        if (!newCheckedKeys.includes(addKey[0])) {
+          newCheckedKeys.push(addKey[0]);
+        }
+      } else {
+        // 删除了一个初始加载的图层
+        const delKey = difference(oldKeys, keys);
+        const node = this.getNodeByKey(this.treeData, delKey[0]);
+        this.viewModel.removeLayerLoop(node);
+        if (newCheckedKeys.includes(delKey[0])) {
+          const indexToRemove = newCheckedKeys.indexOf(delKey[0]);
+          newCheckedKeys.splice(indexToRemove, 1);
+        }
+      }
+      this.checkedKeys = newCheckedKeys;
     }
   },
   created() {

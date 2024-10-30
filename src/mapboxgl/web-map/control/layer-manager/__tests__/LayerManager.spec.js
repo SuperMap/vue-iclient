@@ -198,6 +198,10 @@ describe('LayerManager.vue', () => {
     await mapWrapperLoaded(mapWrapper);
     await flushPromises();
     expect(wrapper.vm.checkedKeys).toEqual([key]);
+    await wrapper.setProps({
+      defaultCheckedKeys: []
+    });
+    expect(wrapper.vm.checkedKeys).toEqual([]);
     expect(spyadd).toBeCalled();
     done();
   });
