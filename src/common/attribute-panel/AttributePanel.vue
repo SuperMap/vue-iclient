@@ -80,7 +80,7 @@ class SmAttributePanel extends Mixins(Theme) {
       columns: this.columns,
       showHeader: this.showHeader,
       background: 'transparent',
-      textColor: 'inherit'
+      textColor: this.textColor
     };
   }
 

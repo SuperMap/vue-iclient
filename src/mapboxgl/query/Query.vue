@@ -142,7 +142,7 @@
       :clickTolerance="clickTolerance"
       :popupStyle="popupStyle"
       :background="popupStyle.background || background"
-      :textColor="popupStyle.background || textColor"
+      :textColor="popupStyle.textColor || textColor"
       :mapTarget="mapTarget"
       :customColumnRenders="$scopedSlots"
       :showPopup="showPopup"

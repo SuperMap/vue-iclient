@@ -94,33 +94,34 @@ export default {
       return this.allPopupDatas[this.currentIndex] || [];
     },
     columnStyle() {
-      const { autoResize, keyWidth, valueWidth, keyMaxWidth, valueMaxWidth, keyWordStyle, valueWordStyle} = this.popupStyle;
-      let style = { keyStyle: {}, valueStyle: {} };
+      const { autoResize, keyWidth, valueWidth, keyMaxWidth, valueMaxWidth, keyWordStyle, valueWordStyle } = this.popupStyle;
+      const style = { keyStyle: {}, valueStyle: {} };
+      if (keyWidth) {
+        style.keyStyle.minWidth = keyWidth + 'px';
+      }
+      if (valueWidth) {
+        style.valueStyle.minWidth = valueWidth + 'px';
+      }
+      if (keyMaxWidth) {
+        style.keyStyle.maxWidth = keyMaxWidth + 'px';
+      }
+      if (valueMaxWidth) {
+        style.valueStyle.maxWidth = valueMaxWidth + 'px';
+      }
       if (!autoResize) {
-        if (keyWidth) {
-          style.keyStyle.width = keyWidth + 'px';
-        }
-        if (valueWidth) {
-          style.valueStyle.width = valueWidth + 'px';
-        }
-      } else {
-        if (keyMaxWidth) {
-          style.keyStyle.maxWidth = keyMaxWidth + 'px';
-        }
-        if (valueMaxWidth) {
-          style.valueStyle.maxWidth = valueMaxWidth + 'px';
-        }
+        style.keyStyle.maxWidth = style.keyStyle.minWidth;
+        style.valueStyle.maxWidth = style.valueStyle.minWidth;
       }
       const ellipsisStyle = {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
+      };
+      if (keyWordStyle === 'ellipsis') {
+        style.keyStyle = { ...style.keyStyle, ...ellipsisStyle };
       }
-      if (keyWordStyle === 'ellipsis'){
-        style.keyStyle = {...style.keyStyle, ...ellipsisStyle}
-      }
-      if (valueWordStyle === 'ellipsis'){
-        style.valueStyle = {...style.valueStyle, ...ellipsisStyle}
+      if (valueWordStyle === 'ellipsis') {
+        style.valueStyle = { ...style.valueStyle, ...ellipsisStyle };
       }
       return style;
     },

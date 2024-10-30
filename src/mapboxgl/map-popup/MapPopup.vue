@@ -9,6 +9,7 @@
       :textColor="textColor"
       :attributes="data[defaultIndex]"
       :columns="columns"
+      :showHeader="showHeader"
       @change="changeIndex"
     >
     </sm-attribute-panel>

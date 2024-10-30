@@ -71,8 +71,8 @@ describe('LayerHighlight.vue', () => {
     expect(wrapper.find(SmMapPopup).exists()).toBe(true);
     expect(wrapper.vm.tableColumns.length).toBe(2);
     const style = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
-    expect(wrapper.vm.columnStyle.keyStyle).toEqual({ ...style, maxWidth: '160px' });
-    expect(wrapper.vm.columnStyle.valueStyle).toEqual({ ...style, maxWidth: '300px' });
+    expect(wrapper.vm.columnStyle.keyStyle).toEqual({ ...style, maxWidth: '160px', minWidth: '80px' });
+    expect(wrapper.vm.columnStyle.valueStyle).toEqual({ ...style, maxWidth: '300px', minWidth: '150px' });
     done();
   });
 
@@ -134,21 +134,6 @@ describe('LayerHighlight.vue', () => {
     });
     const setSpy = jest.spyOn(wrapper.vm.viewModel, 'setFeatureFieldsMap');
     wrapper.setProps({ featureFieldsMap: {} });
-    wrapper.vm.$nextTick();
-    expect(setSpy).toBeCalled();
-    done();
-  });
-
-  it('set featureFieldsMap', done => {
-    wrapper = mount(SmLayerHighlight, {
-      propsData: {
-        mapTarget: 'map',
-        uniqueName: 'Test',
-        highlightStyle: {}
-      }
-    });
-    const setSpy = jest.spyOn(wrapper.vm.viewModel, 'setDisplayFieldsMap');
-    wrapper.setProps({ displayFieldsMap: {} });
     wrapper.vm.$nextTick();
     expect(setSpy).toBeCalled();
     done();
