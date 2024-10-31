@@ -71,8 +71,8 @@ describe('LayerHighlight.vue', () => {
     expect(wrapper.find(SmMapPopup).exists()).toBe(true);
     expect(wrapper.vm.tableColumns.length).toBe(2);
     const style = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
-    expect(wrapper.vm.columnStyle.keyStyle).toEqual({ ...style, maxWidth: '160px', minWidth: '80px' });
-    expect(wrapper.vm.columnStyle.valueStyle).toEqual({ ...style, maxWidth: '300px', minWidth: '150px' });
+    expect(wrapper.vm.columnStyle.keyStyle).toEqual({ ...style, maxWidth: '160px' });
+    expect(wrapper.vm.columnStyle.valueStyle).toEqual({ ...style, maxWidth: '300px' });
     done();
   });
 
