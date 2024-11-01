@@ -13,6 +13,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.sm-components-icon-complete:before {
+  content: "\e6a0";
+}
+
 .sm-components-icon-tucengyangshi01:before {
   content: "\e661";
 }

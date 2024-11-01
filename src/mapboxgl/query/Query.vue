@@ -125,7 +125,7 @@
                 @click="queryResultListClicked($event, index)"
               >
                 {{ resultDisplayTitle(item) }}
-                <i v-if="activeResultIndexList.includes(index) && multiSelect" class="sm-components-icon-delete" />
+                <i v-if="activeResultIndexList.includes(index) && multiSelect" class="sm-components-icon-complete" />
               </li>
             </ul>
           </div>
