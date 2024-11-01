@@ -147,6 +147,7 @@
       :customColumnRenders="$scopedSlots"
       :showPopup="showPopup"
       :ref="highlightCompRefName"
+      :title="queryResult && queryResult.name"
       @mapselectionchanged="handleMapSeletionChanged"
     />
   </sm-collapse-card>

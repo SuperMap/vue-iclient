@@ -175,13 +175,19 @@ describe('LayerHighlight.vue', () => {
       lnglats: [
         [0, 0],
         [1, 2]
-      ]
+      ],
+      targetId: 'layer1'
     };
+    expect(wrapper.vm.displayTitle).toBe('');
     wrapper.vm.viewModel.fire('mapselectionchanged', params);
     expect(wrapper.emitted().mapselectionchanged).toBeTruthy();
     expect(wrapper.vm.allPopupDatas).toEqual(params.popupInfos);
     expect(wrapper.vm.lnglats).toEqual(params.lnglats);
     expect(wrapper.vm.currentIndex).toBe(1);
+    expect(wrapper.vm.displayTitle).toBe(params.targetId);
+    const title = 'layer2';
+    wrapper.setProps({ title });
+    expect(wrapper.vm.displayTitle).toBe(title);
     done();
   });
 

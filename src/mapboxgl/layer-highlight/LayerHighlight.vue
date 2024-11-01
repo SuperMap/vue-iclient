@@ -12,6 +12,7 @@
     :mapTarget="mapTarget"
     :columns="tableColumns"
     :showHeader="false"
+    :title="displayTitle"
     @change="handleChange"
   />
 </template>
@@ -29,6 +30,9 @@ export default {
   components: { SmMapPopup },
   props: {
     uniqueName: {
+      type: String
+    },
+    title: {
       type: String
     },
     layers: {
@@ -86,7 +90,8 @@ export default {
     return {
       currentIndex: 0,
       allPopupDatas: [],
-      lnglats: []
+      lnglats: [],
+      activeTargetName: ''
     };
   },
   computed: {
@@ -140,7 +145,6 @@ export default {
               ((this.customColumnRenders || {})[record.slotName] ||
                 (this.$parent && this.$parent.$scopedSlots[record.slotName]));
             const style = this.columnStyle.valueStyle;
-            console.log(style)
             if (valueCustomRender) {
               return <div style={style} title={text}>{valueCustomRender({ value: text, style })}</div>;
             }
@@ -148,6 +152,9 @@ export default {
           }
         }
       ];
+    },
+    displayTitle() {
+      return this.title || this.activeTargetName;
     }
   },
   watch: {
@@ -207,6 +214,7 @@ export default {
           dataSeletionIndex: this.currentIndex,
           layerName: e.targetId
         };
+        this.activeTargetName = e.targetId;
         this.$emit('mapselectionchanged', this.mapSelectionsParams);
       });
     },

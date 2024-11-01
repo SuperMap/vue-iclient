@@ -2,7 +2,7 @@
   <div v-show="false" class="sm-component-map-popup" ref="Popup" :style="[tablePopupBgStyle, getTextColorStyle]">
     <sm-attribute-panel
       :showIcon="showIcon"
-      :paginationText="title"
+      :title="title"
       :total="lnglats.length || data.length"
       :currentIndex="defaultIndex"
       :showBorder="false"
