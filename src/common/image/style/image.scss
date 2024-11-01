@@ -18,6 +18,17 @@
     }
   }
   @include e(preview) {
+    .sm-component-modal-content {
+      .sm-component-modal-close {
+        margin-left: -64px;
+        .sm-component-modal-close-x {
+          font-size: 40px;
+        }
+      }
+     
+    }
+  }
+  @include e(previewFull) {
     width: 100% !important;
     padding: 0 !important;
     .sm-component-modal-content {
@@ -28,6 +39,13 @@
       .sm-component-modal-close {
         display: none;
       }
+      .sm-component-modal-close {
+        margin-left: -64px;
+        .sm-component-modal-close-x {
+          font-size: 40px;
+        }
+      }
+     
     }
   }
 

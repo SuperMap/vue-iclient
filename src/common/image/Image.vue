@@ -1,24 +1,20 @@
 <template>
   <div class="sm-component-image" :style="[getBackgroundStyle, getTextColorStyle]">
-    <a
-      :class="['sm-component-image__link']"
-      :href="realHref"
-      @click="handleLinkClick"
-      :target="target"
-    >
+    <a :class="['sm-component-image__link']" :href="realHref" @click="handleLinkClick" :target="target">
       <div v-if="src" @click="startPreview" class="sm-component-image__content" :style="[repeatStyle, imgUrl]"></div>
       <i v-else class="sm-components-icon-tupian sm-component-image__defaultImg"></i>
     </a>
     <sm-modal
       v-model="previewVisible"
-      :zIndex="10000"
+      :zIndex="1009"
       centered
-      :dialogClass="dialogClass"
-      :dialogStyle="dialogStyle"
-      :bodyStyle="bodyStyle"
+      width="50%"
+      :dialogClass="fullScreenStyle.dialogClass"
+      :dialogStyle="fullScreenStyle.dialogStyle"
+      :bodyStyle="fullScreenStyle.bodyStyle"
       :footer="null"
     >
-      <img :src="src" @click="endPreview" :style="{'object-fit': 'contain', width: '100%', height: '100%'}"/>
+      <img :src="src" @click="endPreview" :style="{ 'object-fit': 'contain', width: '100%', height: '100%' }" />
     </sm-modal>
   </div>
 </template>
@@ -27,6 +23,7 @@
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import { parseUrl } from 'vue-iclient/src/common/_utils/util';
 import SmModal from 'vue-iclient/src/common/modal/Modal.vue';
+import Message from 'vue-iclient/src/common/message/index.js';
 
 export default {
   name: 'SmImage',
@@ -44,9 +41,9 @@ export default {
       type: String,
       default: ''
     },
-    preview: {
-      type: Boolean,
-      default: true
+    previewMode: {
+      type: String,
+      default: 'none'
     },
     target: {
       type: String,
@@ -55,16 +52,6 @@ export default {
   },
   data() {
     return {
-      dialogStyle: {
-        backgroundColor: 'transparent',
-        height: '100%'
-      },
-      dialogClass: 'sm-component-image__preview',
-      bodyStyle: {
-        padding: 0,
-        width: '100%',
-        height: '100%'
-      },
       previewVisible: false,
       repeatOption: {
         center: {
@@ -92,6 +79,27 @@ export default {
     };
   },
   computed: {
+    fullScreenStyle() {
+      return this.previewMode === 'fullScreen'
+        ? {
+          dialogStyle: {
+            backgroundColor: 'transparent',
+            height: '100%'
+          },
+          dialogClass: 'sm-component-image__full',
+          bodyStyle: {
+            padding: 0,
+            width: '100%',
+            height: '100%'
+          }
+        }
+        : {
+          dialogClass: 'sm-component-image__preview',
+          bodyStyle: {
+            padding: 0
+          }
+        };
+    },
     repeatStyle() {
       return this.repeatOption[this.repeat];
     },
@@ -115,9 +123,10 @@ export default {
       }
     },
     startPreview() {
-      if (!this.preview) {
+      if (this.previewMode === 'none') {
         return;
       }
+      Message.info(this.previewMode === 'popup' ? this.$t('info.pressEscToExit') : this.$t('info.pressEscOrClickToExit'), 3);
       this.previewVisible = true;
     },
     endPreview() {

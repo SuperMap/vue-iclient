@@ -10,6 +10,7 @@
 | :----- | :--------- | :----- | :------------------------------------------------------------- | :------- |
 | src    | 图片地址   | string | -                                                              | -        |
 | repeat | 图片重复   | string | 'center' \| 'noRepeat' \| 'repeatX' \| 'repeatY' \| 'repeatXY' | 'center' |
+| preivewMode | 图片预览   | string | 'none' \| 'popup' \| 'full' | 'none' |
 | href   | 超链接地址 | string | -                                                              | -        |
 | target | 跳转窗口   | string | -                                                              | '\_self' |
 

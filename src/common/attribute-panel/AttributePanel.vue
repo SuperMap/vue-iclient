@@ -44,8 +44,6 @@ class SmAttributePanel extends Mixins(Theme) {
 
   @Prop() title: String;
 
-  @Prop({ default: true }) showHeader: Boolean;
-
   @Prop({ default: true }) showBorder: Boolean;
 
   @Prop({
@@ -78,7 +76,7 @@ class SmAttributePanel extends Mixins(Theme) {
     return {
       data: this.attributes,
       columns: this.columns,
-      showHeader: this.showHeader,
+      showHeader: false,
       background: 'transparent',
       textColor: this.textColor
     };

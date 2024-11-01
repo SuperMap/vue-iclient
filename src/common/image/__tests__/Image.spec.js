@@ -38,12 +38,21 @@ describe('Image.vue', () => {
     expect(wrapper.find('.sm-component-image').exists()).toBe(true);
   });
 
-  it('preview', () => {
+  it('no preview', () => {
     wrapper = mount(Image);
     wrapper.setProps({
-      preview: false
+      previewMode: 'none'
     });
     wrapper.vm.startPreview();
     expect(wrapper.vm.previewVisible).toBeFalsy();
+  });
+
+  it('preview', () => {
+    wrapper = mount(Image);
+    wrapper.setProps({
+      previewMode: 'popup'
+    });
+    wrapper.vm.startPreview();
+    expect(wrapper.vm.previewVisible).toBeTruthy();
   });
 });

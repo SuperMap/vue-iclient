@@ -39,7 +39,8 @@ export default {
   },
   info: {
     loading: '加载中',
-    pressEscToExit: '按下 ESC 键或点击关闭按钮退出'
+    pressEscToExit: '按下 ESC 键或点击关闭按钮退出',
+    pressEscOrClickToExit: '按下 ESC 键或点击任意位置退出'
   },
   unit: {
     kilometers: '千米',

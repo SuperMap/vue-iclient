@@ -21,7 +21,7 @@
               <div v-if="layerOperations.zoomToLayer" class="sm-component-layer-list__zoom">
                 <i
                   :class="['sm-components-icon-suofangzhituceng', (item.visible || !item.disabled) && 'highlight-icon']"
-                  :style="(!item.visible || item.disabled) && { cursor: 'not-allowed' }"
+                  :style="!item.visible && { cursor: 'not-allowed' }"
                   :title="$t('layerList.zoomToLayer')"
                   @click.stop="item.visible && zoomToBounds(item)"
                 />

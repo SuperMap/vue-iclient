@@ -37,7 +37,8 @@ export default {
   success: { copySucccess: 'copy success' },
   info: {
     loading: 'Loading...',
-    pressEscToExit: 'Press the ESC key or click the close button to exit'
+    pressEscToExit: 'Press the ESC key or click the close button to exit',
+    pressEscOrClickToExit: 'Press the ESC key or click anywhere to exit'
   },
   unit: {
     kilometers: 'km',
