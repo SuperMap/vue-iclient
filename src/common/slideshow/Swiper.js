@@ -26,4 +26,4 @@ SwiperClass.use([
 const { Swiper, SwiperSlide } = getAwesomeSwiper(SwiperClass);
 
 export default Swiper;
-export { SwiperSlide };
+export { SwiperSlide, SwiperClass };
