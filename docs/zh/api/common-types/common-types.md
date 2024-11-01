@@ -299,6 +299,8 @@ let iPortalDataParameter = new VueiClient.commontypes.iPortalDataParameter({
 | withCredentials | 请求是否携带 cookie | boolean | -                  | false                   |
 | queryMode       | 查询方式            | string  | 'KEYWORD' \| 'SQL' | 'SQL'                   |
 
+> queryMode 仅当数据发布为服务时生效。
+
 ## GeoJSONParameter
 
 ```js
