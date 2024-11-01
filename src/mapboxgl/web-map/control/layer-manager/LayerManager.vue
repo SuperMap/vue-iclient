@@ -48,6 +48,7 @@ import uniqueId from 'lodash.uniqueid';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
 import difference from 'lodash.difference';
+import omit from 'omit.js';
 
 export default {
   name: 'SmLayerManager',
@@ -79,12 +80,6 @@ export default {
     defaultExpandAll: {
       type: Boolean,
       default: false
-    },
-    defaultCheckedKeys: {
-      type: Array,
-      default() {
-        return [];
-      }
     }
   },
   data() {
@@ -94,12 +89,24 @@ export default {
       mapIsLoad: false
     };
   },
+  computed: {
+    defaultCheckedKeys() {
+      const keys = [];
+      this.eachNode(this.treeData, function (data) {
+        if (data.visible) {
+          keys.push(data.key);
+        }
+      });
+      return keys;
+    }
+  },
   watch: {
     layers: {
       handler(newVal, oldVal) {
-        if (oldVal && !isequal(newVal, oldVal)) {
+        if (oldVal && !isequal(this.omitVisible(newVal), this.omitVisible(oldVal))) {
           this.cleanStatus();
         }
+        this.oldTreeData = clonedeep(oldVal);
         this.treeData = clonedeep(newVal);
         this.insertProperty(this.treeData);
       },
@@ -112,21 +119,25 @@ export default {
       }
       const newCheckedKeys = [].concat(this.checkedKeys);
       if (keys.length > oldKeys.length) {
-        // 新增了一个初始加载的图层
+        // 开启图层初始加载后，同步在图层管理里勾选上,并添加图层到map
         const addKey = difference(keys, oldKeys);
         this.addLayerByCheckedKeys(addKey);
-        if (!newCheckedKeys.includes(addKey[0])) {
-          newCheckedKeys.push(addKey[0]);
-        }
+        addKey.forEach(key => {
+          if (!newCheckedKeys.includes(key)) {
+            newCheckedKeys.push(key);
+          }
+        });
       } else {
-        // 删除了一个初始加载的图层
+        // 关闭图层初始加载后，同步在图层管理里取消勾选,并从map删除图层
         const delKey = difference(oldKeys, keys);
-        const node = this.getNodeByKey(this.treeData, delKey[0]);
-        this.viewModel.removeLayerLoop(node);
-        if (newCheckedKeys.includes(delKey[0])) {
-          const indexToRemove = newCheckedKeys.indexOf(delKey[0]);
-          newCheckedKeys.splice(indexToRemove, 1);
-        }
+        delKey.forEach(key => {
+          const node = this.getNodeByKey(this.oldTreeData, key);
+          this.viewModel.removeLayerLoop(node);
+          if (newCheckedKeys.includes(key)) {
+            const indexToRemove = newCheckedKeys.indexOf(key);
+            newCheckedKeys.splice(indexToRemove, 1);
+          }
+        });
       }
       this.checkedKeys = newCheckedKeys;
     }
@@ -141,6 +152,15 @@ export default {
     this.viewModel.off('layersremoved', this.removeMapCombination);
   },
   methods: {
+    omitVisible(val) {
+      return val.map(item => {
+        const newItem = omit(item, ['visible']);
+        if (newItem.children) {
+          newItem.children = this.omitVisible(newItem.children, ['visible']);
+        }
+        return newItem;
+      });
+    },
     checkNode(key, e) {
       this.checkedKeys = key;
       if (e.checked) {

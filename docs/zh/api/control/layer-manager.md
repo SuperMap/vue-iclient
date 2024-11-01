@@ -47,7 +47,6 @@ new Vue({
 | defaultExpandAll | 默认展开所有树节点                                               |        boolean                                     |          -              |     false                              |
 | iconClass        | 收缩按钮的 Font class 类名                                       | string                                           | -                             | 'sm-components-icon-layer-manager' |
 | headerName       | 标题名                                                           | string                                           | -                             | '图层管理'                         |
-| defaultCheckedKeys       | 默认选中复选框的树节点             | string[]                             | -                             |             []            |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)和[卡片混入参数](/zh/api/mixin/mixin.md#collapsedcard)和 [Control 混入参数](/zh/api/mixin/mixin.md#control)
 
@@ -58,6 +57,7 @@ new Vue({
 | title    | 标题         | string                         | -      | -      |
 | children | 子节点数据   | array                          | -      | -      |
 | mapInfo  | 地图配置对象 | <a href="#mapinfo">mapInfo</a> | -      | -      |
+| visible  | 地图是否初始加载 | boolean                     | -      | -      |
 
 ### mapInfo
 

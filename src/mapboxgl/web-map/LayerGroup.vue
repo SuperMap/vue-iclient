@@ -1,6 +1,6 @@
 <template>
   <div>
-    <sm-tree class="sm-component-layer-list__collapse draggable-tree" blockNode :draggable="layerOperations.layerOrder" :tree-data="treeData" @drop="dropHandler">
+    <sm-tree class="sm-component-layer-list__collapse draggable-tree" blockNode :draggable="operations.draggable" :tree-data="treeData" @drop="dropHandler">
       <i slot="switcherIcon" class="sm-components-icon-right" />
       <template slot="custom" slot-scope="item">
         <div
@@ -18,7 +18,7 @@
             <div
               :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
             >
-              <div v-if="layerOperations.zoomToLayer" class="sm-component-layer-list__zoom">
+              <div v-if="operations.fitBounds" class="sm-component-layer-list__zoom">
                 <i
                   :class="['sm-components-icon-suofangzhituceng', (item.visible || !item.disabled) && 'highlight-icon']"
                   :style="!item.visible && { cursor: 'not-allowed' }"
@@ -34,7 +34,7 @@
                   @click.stop="item.visible && toggleAttributesVisibility($event, item)"
                 />
               </div>
-              <div v-if="layerOperations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
+              <div v-if="operations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
                 <i
                   :class="[
                     'sm-components-icon-tucengyangshi01',
@@ -55,7 +55,7 @@
             </div>
           </div>
         </div>
-        <div v-show="layerOperations.opacity && item.id === showOpacityItem" class="opacity-style">
+        <div v-show="operations.opacity && item.id === showOpacityItem" class="opacity-style">
           <div>{{ $t('layerList.opacity') }}</div>
           <sm-slider
             :value="formatOpacity"
@@ -97,12 +97,12 @@ export default {
         return [];
       }
     },
-    layerOperations: {
+    operations: {
       type: Object,
       default() {
         return {
-          zoomToLayer: true,
-          layerOrder: false,
+          fitBounds: true,
+          draggable: false,
           opacity: false
         };
       }
