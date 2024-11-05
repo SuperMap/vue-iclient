@@ -1,6 +1,6 @@
 {
   "name": "@supermapgis/vue-iclient",
-  "version": "11.3.0-dev",
+  "version": "11.3.0",
   "description": "SuperMap iClient for Vue.js",
   "homepage": "https://iclient.supermap.io",
   "scripts": {
