@@ -3,7 +3,7 @@ import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
-
+import isEqual from 'lodash.isequal';
 interface HighlightStyle {
   circle: InstanceType<typeof CircleStyle>;
   line: InstanceType<typeof LineStyle>;
@@ -491,10 +491,12 @@ export default class HighlightLayer extends mapboxgl.Evented {
           break;
         case DataSelectorMode.MULTIPLE: {
           const id = matchTargetFeature.id || getValueCaseInsensitive(matchTargetFeature.properties, 'smid');
-          if (
-            !id ||
-            !this.resultFeatures.map(item => item.id || getValueCaseInsensitive(item.properties, 'smid')).includes(id)
-          ) {
+          const includesSameId = id
+            ? this.resultFeatures.map(item => item.id || getValueCaseInsensitive(item.properties, 'smid')).includes(id)
+            : false;
+          const isClickSameFeature =
+            includesSameId || this.resultFeatures.some(item => isEqual(item.geometry, matchTargetFeature.geometry));
+          if (!isClickSameFeature) {
             this.resultFeatures.push(matchTargetFeature);
           }
           break;

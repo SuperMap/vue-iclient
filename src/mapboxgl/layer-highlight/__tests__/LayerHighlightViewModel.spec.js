@@ -124,7 +124,7 @@ describe('LayerHighlightViewModel', () => {
     keyboardEvents.keydown({ ctrlKey: 'Control' });
   });
 
-  it('map click same feature', done => {
+  it('map click same feature by smid', done => {
     viewModel.setTargetLayers(['layer1']);
     const keyboardEvents = {};
     jest.spyOn(window, 'addEventListener').mockImplementation((type, cb) => {
@@ -156,6 +156,101 @@ describe('LayerHighlightViewModel', () => {
           expect(nextLayer1Filter).toEqual(layer1Filter);
           expect(nextLayer2Filter).toEqual(layer2Filter);
           done();
+        });
+        Promise.resolve().then(() => {
+          viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+        });
+      });
+      Promise.resolve().then(() => {
+        viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+      });
+    });
+    viewModel.setMultiSelection(true);
+    expect(keyboardEvents.keydown).not.toBeUndefined();
+    expect(keyboardEvents.keyup).not.toBeUndefined();
+    keyboardEvents.keydown({ ctrlKey: 'Control' });
+  });
+  
+  it('map click same feature by geometry', done => {
+    viewModel.setTargetLayers(['layer1']);
+    const keyboardEvents = {};
+    jest.spyOn(window, 'addEventListener').mockImplementation((type, cb) => {
+      keyboardEvents[type] = cb;
+    });
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => {
+      return [
+        {
+          type: 'feature',
+          properties: {
+            index: 1
+          },
+          geometry: {
+            type: 'MultiPolygon',
+            coordinates: [
+              [
+                [
+                  [116.452409755349, 40.92656164358],
+                  [116.483357386004, 40.9069469918439],
+
+                  [116.442423257771, 40.9417511118507],
+                  [116.452409755349, 40.92656164358]
+                ]
+              ],
+              [
+                [
+                  [116.560117987415, 40.9749988417875],
+
+                  [116.547892153981, 40.9705907375336],
+                  [116.552270926448, 40.980672910927],
+                  [116.560117987415, 40.9749988417875]
+                ]
+              ]
+            ]
+          }
+        }
+      ];
+    });
+    viewModel.once('mapselectionchanged', ({ features, dataSelectorMode }) => {
+      expect(features.length).toBe(0);
+      expect(dataSelectorMode).toBe('SINGLE');
+      viewModel.once('mapselectionchanged', ({ features, dataSelectorMode }) => {
+        expect(dataSelectorMode).toBe('MULTIPLE');
+        expect(features.length).toBeGreaterThan(0);
+        viewModel.once('mapselectionchanged', ({ features: nextFeatures, dataSelectorMode }) => {
+          expect(dataSelectorMode).toBe('MULTIPLE');
+          expect(nextFeatures.length).toBe(features.length);
+          viewModel.once('mapselectionchanged', ({ features: nextFeatures, dataSelectorMode }) => {
+            expect(dataSelectorMode).toBe('MULTIPLE');
+            expect(nextFeatures.length).toBe(features.length);
+            done();
+          });
+          jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => {
+            return [
+              {
+                type: 'feature',
+                properties: {
+                  index: 1
+                },
+                geometry: {
+                  type: 'MultiPolygon',
+                  coordinates: [
+                    [
+                      [
+                        [116.452409755349, 40.92656164358],
+                        [116.483357386004, 40.9069469918439],
+
+                        [116.442423257771, 40.9417511118507],
+                        [116.452409755349, 40.92656164358]
+                      ]
+                    ]
+                  ]
+                }
+              }
+            ];
+          });
+          Promise.resolve().then(() => {
+            viewModel.map.fire('click', { target: map, point: { x: 5, y: 5 } });
+          });
         });
         Promise.resolve().then(() => {
           viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
@@ -225,4 +320,3 @@ describe('LayerHighlightViewModel', () => {
     done();
   });
 });
-
