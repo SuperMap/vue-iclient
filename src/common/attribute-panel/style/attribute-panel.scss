@@ -12,11 +12,12 @@
     width: 100%;
     display: inline-flex;
     align-items: center;
-    padding: 8px 8px 2px ;
+    padding: 8px;
     border-bottom: 2px solid $border-color-split;
     .switchDataText {
       position: absolute;
       right: 10px;
+      display: flex;
       .icon {
         font-size: 16px;
       }
@@ -29,22 +30,18 @@
       .disabled {
         color: $disabled-color;
       }
-      .ellipsis {
-        vertical-align: top;
-        max-width: calc(100% - 50px);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
+    }
+    .ellipsis {
+      max-width: calc(100% - 80px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
   }
   @include e(content) {
     width: 100%;
     height: auto;
     padding-top: 5px;
-    tr {
-      display: flex;
-    }
     .sm-component-table-content {
       max-height: none !important;
     }

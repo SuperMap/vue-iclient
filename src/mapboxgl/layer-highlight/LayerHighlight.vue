@@ -122,7 +122,7 @@ export default {
         whiteSpace: 'nowrap'
       };
       if (keyWordStyle === 'ellipsis') {
-        style.keyStyle = { ...style.keyStyle, ...ellipsisStyle };
+        style.keyStyle = { ...style.keyStyle, ...ellipsisStyle, height: '22px' };
       }
       if (valueWordStyle === 'ellipsis') {
         style.valueStyle = { ...style.valueStyle, ...ellipsisStyle };

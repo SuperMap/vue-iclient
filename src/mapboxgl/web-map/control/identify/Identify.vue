@@ -89,19 +89,19 @@ export default {
     },
     keyMaxWidth: {
       type: [Number, String],
-      default: 110
+      default: 100
     },
     valueMaxWidth: {
       type: [Number, String],
-      default: 170
+      default: 160
     },
     keyWidth: {
       type: [Number, String],
-      default: 110
+      default: 100
     },
     valueWidth: {
       type: [Number, String],
-      default: 170
+      default: 160
     },
     keyWordStyle: {
       type: String,

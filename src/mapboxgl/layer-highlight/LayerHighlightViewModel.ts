@@ -354,7 +354,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     const featureInfo: PopupFeatureInfo = {
       coordinates: this.calcFeatureCenterCoordinates(feature),
       info: displayFieldsList.reduce((list: PopupFieldsInfo[], item) => {
-        if (feature.properties[item.field]) {
+        if (Object.prototype.hasOwnProperty.call(feature.properties, item.field)) {
           list.push({
             attribute: item.field,
             alias: item.title,

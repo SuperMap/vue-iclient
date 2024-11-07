@@ -1,14 +1,14 @@
 <template>
   <div class="sm-component-attribute-panel" :style="[getTextColorStyle, !showBorder && { border: 'none' }]">
     <div class="sm-component-attribute-panel__header">
-      <div class="title">{{ title }}</div>
+      <div class="title ellipsis" :title="title">{{ title }}</div>
       <div v-show="showIcon" class="switchDataText">
         <sm-icon
           :class="['icon', 'left-icon', attrIndex === 0 && 'disabled']"
           type="caret-left"
           @click="changeIndex(-1)"
         />
-        <span class="ellipsis" :title="paginationContent">{{ paginationContent }}</span>
+        <span :title="paginationContent">{{ paginationContent }}</span>
         <sm-icon
           type="caret-right"
           :class="['icon', 'right-icon', attrIndex === total - 1 && 'disabled']"
