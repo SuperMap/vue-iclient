@@ -6,6 +6,28 @@ import omit from 'omit.js';
 import tinyColor from 'tinycolor2';
 import { min, max as statisticsMax, mean, sum, mode, median, variance, standardDeviation } from 'simple-statistics';
 
+export function escapeHTML(strings) {
+  var result = '';
+  for (var i = 0; i < strings.length; i++) {
+    result += strings[i];
+    if (i + 1 < arguments.length) {
+      var value = arguments[i + 1] || '';
+      result += String(value).replace(/[&<>"'/]/g,
+        function (s) {
+          return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            '\'': '&apos;',
+            '/': '&#x2F;'
+          }[s];
+        });
+    }
+  }
+  return result;
+}
+
 export function getDateTime(timeType) {
   return geti18n().d(new Date(), timeType.replace(/\+/g, '_'));
 }
@@ -245,3 +267,4 @@ export function numberEqual(num1, num2, precision = 10E-6) {
 }
 
 export const statisticFunctions = { min, max: statisticsMax, mean, sum, mode, median, variance, standardDeviation, count: fieldValues => fieldValues.length };
+

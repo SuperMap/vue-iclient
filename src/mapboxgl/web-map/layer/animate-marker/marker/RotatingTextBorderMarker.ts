@@ -1,4 +1,6 @@
 import { FeatureCollection } from 'geojson';
+// @ts-ignore
+import { escapeHTML } from 'vue-iclient/src/common/_utils/util';
 import Marker from './Marker';
 
 interface markerOptions {
@@ -47,7 +49,7 @@ export default class RotatingTextBorderMarker extends Marker {
     for (let i = 0; i < name.length; i++) {
       let properties = this.features.features[i] && this.features.features[i].properties;
       if (properties && properties[textField]) {
-        name[i].innerHTML = properties[textField];
+        name[i].innerHTML = escapeHTML`${properties[textField]}`;
       } else {
         name[i].innerHTML = '';
       }
@@ -92,7 +94,7 @@ export default class RotatingTextBorderMarker extends Marker {
       }
       let span = document.createElement('span');
       span.className = 'sm-component-animate-marker__text';
-      span.innerHTML = name || '';
+      span.innerHTML = escapeHTML`${name}` || '';
       border.appendChild(span);
       if (this.options.colors && this.options.colors.length && this.options.colors.length > 0) {
         markerContainer.style.setProperty('--border-color', this.options.colors[0]);

@@ -1,5 +1,6 @@
 import { FeatureCollection, Feature } from 'geojson';
-import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+// @ts-ignore
+import { getColorWithOpacity, escapeHTML } from 'vue-iclient/src/common/_utils/util';
 
 interface markerOptions {
   width?: number;
@@ -40,7 +41,7 @@ export default abstract class Marker {
     for (let i = 0; i < name.length; i++) {
       const properties = this.features.features[i] && this.features.features[i].properties;
       if (properties && properties[textField]) {
-        name[i].innerHTML = properties[textField];
+        name[i].innerHTML = escapeHTML`${properties[textField]}`;
       } else {
         name[i].innerHTML = '';
       }
@@ -82,7 +83,7 @@ export default abstract class Marker {
     this.options.textFontSize && (nameContainer.style.fontSize = this.options.textFontSize + 'px');
     const nameSpan = document.createElement('span');
     nameSpan.className = `sm-component-animate-marker__${className} sm-component-animate-marker__name`;
-    nameSpan.innerHTML = name || '';
+    nameSpan.innerHTML = escapeHTML`${name}` || '';
     nameContainer.appendChild(nameSpan);
     return nameContainer;
   }

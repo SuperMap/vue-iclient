@@ -16,6 +16,7 @@ import {
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
+import { escapeHTML } from 'vue-iclient/src/common/_utils/util';
 
 export default class TdtSearchViewModel extends mapboxgl.Evented {
   constructor(options) {
@@ -126,25 +127,18 @@ export default class TdtSearchViewModel extends mapboxgl.Evented {
     `;
     const content = document.createElement('div');
     content.className = 'content';
-    content.innerHTML = `
-      ${
-  from === 'Point'
-    ? `<div>
-          <div class="phone">${geti18n().t('tdtSearch.phone')}： ${data.phone || geti18n().t('tdtSearch.noData')}</div>
-          <div class="address">${geti18n().t('tdtSearch.address')}： ${data.address ||
-              geti18n().t('tdtSearch.noData')}</div>
-        </div>`
-    : ''
-}
-      ${
-  from === 'LineString'
-    ? `<div>
-        <div class="address">${geti18n().t('tdtSearch.transport')}： ${data.address ||
-              geti18n().t('tdtSearch.noData')}</div>
-      </div>`
-    : ''
-}
-    `;
+    const pointHtml = escapeHTML`<div>
+      <div class="phone">${geti18n().t('tdtSearch.phone')}： ${data.phone || geti18n().t('tdtSearch.noData')}</div>
+      <div class="address">${geti18n().t('tdtSearch.address')}： ${
+      data.address || geti18n().t('tdtSearch.noData')
+    }</div>
+    </div>`;
+    const lineHtml = escapeHTML`<div>
+    <div class="address">${geti18n().t('tdtSearch.transport')}： ${
+      data.address || geti18n().t('tdtSearch.noData')
+    }</div>
+  </div>`;
+    content.innerHTML = from === 'Point' ? pointHtml : from === 'LineString' ? lineHtml : '';
     const group = document.createElement('div');
     group.className = 'operate-group';
     const startItem = document.createElement('div');
