@@ -199,4 +199,7 @@
   .sm-components-icon-attribute-open, .sm-components-icon-active {
     color: $primary-5;
   }
+  .sm-component-tree li span[draggable=false] {
+    border: none;
+  }
 }
