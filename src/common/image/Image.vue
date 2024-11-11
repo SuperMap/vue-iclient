@@ -1,7 +1,10 @@
 <template>
   <div class="sm-component-image" :style="[getBackgroundStyle, getTextColorStyle]">
     <a :class="['sm-component-image__link']" :href="realHref" @click="handleLinkClick" :target="target">
-      <div v-if="src" @click="startPreview" class="sm-component-image__content" :style="[repeatStyle, imgUrl]"></div>
+      <div v-if="src" @click="startPreview" class="sm-component-image__content" :style="[repeatStyle, imgUrl]">
+        <!-- 用img标签确保没有给定宽高时，能使用src图片的宽高 -->
+        <img :src="src" style="visibility: hidden; max-width: 100%; max-height: 100%" />
+      </div>
       <i v-else class="sm-components-icon-tupian sm-component-image__defaultImg"></i>
     </a>
     <sm-modal
@@ -57,6 +60,11 @@ export default {
         center: {
           backgroundRepeat: 'no-repeat',
           backgroundPosition: 'center',
+          backgroundSize: 'contain'
+        },
+        left: {
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'left center',
           backgroundSize: 'contain'
         },
         noRepeat: {
