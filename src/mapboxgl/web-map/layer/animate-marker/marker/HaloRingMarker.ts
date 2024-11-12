@@ -17,7 +17,7 @@ export default class HaloRingMarker extends Marker {
 
   public setMarkersWidth(width: number): void {
     this.options.width = width;
-    let markerContainer = document.getElementsByClassName('sm-component-animate-marker--halo-ring');
+    let markerContainer = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--halo-ring`);
     for (let i = 0; i < markerContainer.length; i++) {
       // @ts-ignore
       let style = markerContainer[i].style;
@@ -31,7 +31,7 @@ export default class HaloRingMarker extends Marker {
   public setMarkersColors(colors: [string, string]): void {
     this.options.colors = colors;
     if (colors && colors.length && colors.length > 0) {
-      let markerContainer = document.getElementsByClassName('sm-component-animate-marker--halo-ring');
+      let markerContainer = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--halo-ring`);
       for (let i = 0; i < markerContainer.length; i++) {
         // @ts-ignore
         let style = markerContainer[i].style;
@@ -46,7 +46,7 @@ export default class HaloRingMarker extends Marker {
   _createMarker(): void {
     this.features.features.forEach(point => {
       let markerContainer = document.createElement('div');
-      markerContainer.className = 'sm-component-animate-marker--halo-ring';
+      markerContainer.className = `${this.uuid} sm-component-animate-marker--halo-ring`;
       let childElements = this._createMakerElement(8, 'div', [
         'sm-component-animate-marker__ring',
         'sm-component-animate-marker__halo'

@@ -1,5 +1,6 @@
 import { FeatureCollection, Feature } from 'geojson';
 import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+import UniqueId from 'lodash.uniqueid';
 
 interface markerOptions {
   width?: number;
@@ -9,6 +10,8 @@ interface markerOptions {
   textFontSize?: number;
 }
 export default abstract class Marker {
+  uuid: string;
+
   features: FeatureCollection;
 
   markersElement: HTMLElement[] = [];
@@ -18,6 +21,7 @@ export default abstract class Marker {
   constructor(features: FeatureCollection, options: markerOptions = {}) {
     this.features = features;
     this.options = options;
+    this.uuid = UniqueId(`smanimatemarkerlayer-`);
   }
 
   public setFeatures(features: FeatureCollection): void {
