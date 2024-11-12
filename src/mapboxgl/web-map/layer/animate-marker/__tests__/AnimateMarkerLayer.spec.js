@@ -82,6 +82,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -99,6 +100,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -116,6 +118,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -133,6 +136,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -150,6 +154,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 

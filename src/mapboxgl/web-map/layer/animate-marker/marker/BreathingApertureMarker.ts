@@ -17,7 +17,8 @@ export default class BreathingApertureMarker extends Marker {
 
   public setMarkersWidth(width: number): void {
     this.options.width = width;
-    let pulse = document.getElementsByClassName('sm-component-animate-marker__pulse');
+    let pulse = document.querySelectorAll(`.${this.uuid} .sm-component-animate-marker__pulse`);
+
     for (let i = 0; i < pulse.length; i++) {
       // @ts-ignore
       this._setBreathingApertureWidth(pulse[i].style);
@@ -27,12 +28,12 @@ export default class BreathingApertureMarker extends Marker {
   public setMarkersColors(colors: [string, string]): void {
     this.options.colors = colors;
     if (colors && colors.length && colors.length > 0) {
-      let dot = document.getElementsByClassName('sm-component-animate-marker__dot-point');
+      let dot = document.querySelectorAll(`.${this.uuid} .sm-component-animate-marker__dot-point`);
       for (let i = 0; i < dot.length; i++) {
         // @ts-ignore
         dot[i].style.background = this.options.colors[0];
       }
-      let pulse = document.getElementsByClassName('sm-component-animate-marker__pulse');
+      let pulse = document.querySelectorAll(`.${this.uuid} .sm-component-animate-marker__pulse`);
       for (let i = 0; i < pulse.length; i++) {
         // @ts-ignore
         let style = pulse[i].style;
@@ -45,7 +46,7 @@ export default class BreathingApertureMarker extends Marker {
   _createMarker(): void {
     this.features.features.forEach(point => {
       let markerContainer = document.createElement('div');
-      markerContainer.className = 'sm-component-animate-marker--breathing-aperture';
+      markerContainer.className = `${this.uuid} sm-component-animate-marker--breathing-aperture`;
       let dot = document.createElement('span');
       dot.className = 'sm-component-animate-marker__dot-point';
       let colors;
