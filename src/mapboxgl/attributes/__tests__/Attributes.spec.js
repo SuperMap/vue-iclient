@@ -446,4 +446,46 @@ describe('Attributes.vue', () => {
     expect(wrapper.findAll('.sm-component-table-selection-column').length).toBe(0);
     done();
   });
+
+  it('map select feature should change total number', async done => {
+    wrapper = mount(SmAttributes, {
+      propsData: {
+        dataset: testData,
+        fieldConfigs: testDataConfigs,
+        table: {
+          showRowSelection: false,
+        }
+      }
+    });
+    await wrapper.vm.$nextTick();
+    wrapper.vm.handleMapSelectedFeature({
+      "type": "Feature",
+      "properties": {
+        "index": 1
+      },
+      "geometry": {
+        "coordinates": [
+          103.24498334165708,
+          60.681735579909144
+        ],
+        "type": "Point"
+      }
+    });
+    expect(wrapper.vm.selectedRowLength).toBe(1);
+    wrapper.vm.handleMapSelectedFeature({
+      "type": "Feature",
+      "properties": {
+        "index": 2
+      },
+      "geometry": {
+        "coordinates": [
+          103.24498334165708,
+          60.681735579909144
+        ],
+        "type": "Point"
+      }
+    });
+    expect(wrapper.vm.selectedRowLength).toBe(2);
+    done();
+  });
 });
