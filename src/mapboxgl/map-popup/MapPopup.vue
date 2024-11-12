@@ -114,6 +114,7 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
   get filterData() {
     return cloneDeep(this.data).map(propertyList => {
       return propertyList.map(item => {
+        // @ts-ignore
         delete item.slotName;
         return item;
       });
