@@ -17,7 +17,8 @@ export default class DiffusedApertureMarker extends Marker {
 
   public setMarkersWidth(width: number): void {
     this.options.width = width;
-    let markerContainer = document.getElementsByClassName('sm-component-animate-marker--diffused-aperture');
+    let markerContainer = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--diffused-aperture`);
+
     for (let i = 0; i < markerContainer.length; i++) {
       // @ts-ignore
       let style = markerContainer[i].style;
@@ -28,7 +29,7 @@ export default class DiffusedApertureMarker extends Marker {
   public setMarkersColors(colors: [string, string]): void {
     this.options.colors = colors;
     if (colors && colors.length && colors.length > 0) {
-      let markerContainer = document.getElementsByClassName('sm-component-animate-marker--diffused-aperture');
+      let markerContainer = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--diffused-aperture`);
       for (let i = 0; i < markerContainer.length; i++) {
         // @ts-ignore
         let style = markerContainer[i].style;
@@ -41,7 +42,7 @@ export default class DiffusedApertureMarker extends Marker {
   _createMarker(): void {
     this.features.features.forEach(point => {
       let markerContainer = document.createElement('div');
-      markerContainer.className = 'sm-component-animate-marker--diffused-aperture';
+      markerContainer.className = `${this.uuid} sm-component-animate-marker--diffused-aperture`;
       let wrapper = document.createElement('div');
       wrapper.className = 'sm-component-animate-marker__diffused-aperture-wrapper';
       let bg = document.createElement('div');

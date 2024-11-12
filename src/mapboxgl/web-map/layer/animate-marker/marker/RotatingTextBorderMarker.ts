@@ -16,8 +16,7 @@ export default class RotatingTextBorderMarker extends Marker {
   options: markerOptions;
 
   constructor(features: FeatureCollection, options: markerOptions = {}) {
-    super(features);
-    this.options = options;
+    super(features, options);
     this.features && this._createMarker();
   }
 
@@ -83,7 +82,7 @@ export default class RotatingTextBorderMarker extends Marker {
   _createMarker(): void {
     this.features.features.forEach(point => {
       let markerContainer = document.createElement('div');
-      markerContainer.className = 'sm-component-animate-marker--text-boder';
+      markerContainer.className = `${this.uuid} sm-component-animate-marker--text-boder`;
       let border = document.createElement('div');
       border.className = 'sm-component-animate-marker__boder';
 
@@ -125,7 +124,7 @@ export default class RotatingTextBorderMarker extends Marker {
   }
 
   private _setMarkerContainerProperty(properties) {
-    let markerContainer = document.getElementsByClassName('sm-component-animate-marker--text-boder');
+    let markerContainer = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--text-boder`);
     for (let i = 0; i < markerContainer.length; i++) {
       // @ts-ignore
       let style = markerContainer[i].style;

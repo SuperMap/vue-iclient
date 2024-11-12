@@ -17,7 +17,8 @@ export default class FluorescenceMarker extends Marker {
 
   public setMarkersWidth(width: number): void {
     this.options.width = width;
-    let markerContainer = document.getElementsByClassName('sm-component-animate-marker--fluorescence');
+    let markerContainer = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--fluorescence`);
+
     for (let i = 0; i < markerContainer.length; i++) {
       // @ts-ignore
       this._setFluorescenceWidth(markerContainer[i].style);
@@ -27,7 +28,7 @@ export default class FluorescenceMarker extends Marker {
   public setMarkersColors(colors: [string, string]): void {
     this.options.colors = colors;
     if (colors && colors.length && colors.length > 0) {
-      let markerContainer = document.getElementsByClassName('sm-component-animate-marker--fluorescence');
+      let markerContainer = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--fluorescence`);
       for (let i = 0; i < markerContainer.length; i++) {
         // @ts-ignore
         this._setFluorescenceColor(markerContainer[i].style);
@@ -38,7 +39,7 @@ export default class FluorescenceMarker extends Marker {
   _createMarker(): void {
     this.features.features.forEach(point => {
       let markerContainer = document.createElement('div');
-      markerContainer.className = 'sm-component-animate-marker--fluorescence';
+      markerContainer.className = `${this.uuid} sm-component-animate-marker--fluorescence`;
       let marker = document.createElement('div');
       marker.className = 'sm-component-animate-marker__fluorescence';
       markerContainer.appendChild(marker);

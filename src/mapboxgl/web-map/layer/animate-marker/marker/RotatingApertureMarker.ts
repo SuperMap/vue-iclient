@@ -20,7 +20,7 @@ export default class RotatingApertureMarker extends Marker {
     if (!this.options.width || this.options.width < 40) {
       return;
     }
-    let dotsMarker = document.getElementsByClassName('sm-component-animate-marker--rotating-aperture');
+    let dotsMarker = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--rotating-aperture`);
 
     for (let i = 0; i < dotsMarker.length; i++) {
       // @ts-ignore
@@ -37,7 +37,7 @@ export default class RotatingApertureMarker extends Marker {
   public setMarkersColors(colors: [string, string]): void {
     this.options.colors = colors;
     if (colors && colors.length && colors.length > 0) {
-      let dotsMarker = document.getElementsByClassName('sm-component-animate-marker--rotating-aperture');
+      let dotsMarker = document.querySelectorAll(`.${this.uuid}.sm-component-animate-marker--rotating-aperture`);
       for (let i = 0; i < dotsMarker.length; i++) {
         // @ts-ignore
         let style = dotsMarker[i].style;
@@ -52,7 +52,7 @@ export default class RotatingApertureMarker extends Marker {
     this.features.features.forEach(point => {
       let width = this.options.width && this.options.width >= 40 ? this.options.width : 50;
       let markerContainer = document.createElement('div');
-      markerContainer.className = 'sm-component-animate-marker--rotating-aperture';
+      markerContainer.className = `sm-component-animate-marker--rotating-aperture ${this.uuid}` ;
 
       let childElements = this._createMakerElement(3, 'div', [
         'sm-component-animate-marker__dots',
