@@ -4,14 +4,12 @@
 <sm-attribute-panel
   :attrbiutes="[
     {
-        "attribute": "链接",
-        "alias": "bbb",
-        "attributeValue": "www.test1.com"
+        "title": "链接",
+        "value": "www.test1.com"
     },
     {
-        "attribute": "文本",
-        "alias": "text",
-        "attributeValue": "test1"
+        "title": "文本",
+        "value": "test1"
     }
   ]"
 ></sm-attribute-panel>
@@ -21,13 +19,10 @@
 
 | 参数           | 说明                                                                                   | 类型    | 可选值 | 默认值 |
 | :------------- | :------------------------------------------------------------------------------------- | :------ | :----- | :----- |
-| showIcon       | 显示分页                                                                               | boolean | -      | false  |
-| currentIndex   | 当前页索引                                                                             | number  | -      | 0      |
-| paginationText | 自定义分页文本                                                                         | string  | -      |
-| total          | 总分页数                                                                               | number  | -      | -      |
 | title          | 标题                                                                                   | string  | -      | -      |
-| attributes     | 属性数据                                                                               | array   | -      | []     |
-| columns        | 列配置, 具体属性参考[表格列配置文档](https://1x.antdv.com/components/table-cn/#Column) | array   | -      | []     |
+| attributes     | 属性数据,格式为 [{ title: '', value: ''}]                                                                               | array   | -      | []     |
+| titleRender     | 属性数据标题列渲染函数，格式为 Function(text, record, index) {}                                                                               | function   | -      | -     |
+| valueRender     | 属性数据值列渲染函数，格式为 Function(text, record, index) {}                                                                              | function   | -      | -     |
 | showBorder     | 显示边框                                                                               | boolean | -      | true   |
 
 > 支持[主题混入参数](/zh/api/mixin/mixin.md#theme)

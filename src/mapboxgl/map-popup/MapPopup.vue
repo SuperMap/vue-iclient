@@ -1,17 +1,30 @@
 <template>
   <div v-show="false" class="sm-component-map-popup" ref="Popup" :style="[tablePopupBgStyle, getTextColorStyle]">
     <sm-attribute-panel
-      :showIcon="showIcon"
       :title="title"
-      :total="lnglats.length || data.length"
-      :currentIndex="defaultIndex"
       :showBorder="false"
       :textColor="textColor"
-      :attributes="data[defaultIndex]"
-      :columns="columns"
+      :attributes="filterData[defaultIndex]"
+      :titleRender="titleRender"
+      :valueRender="valueRender"
       :showHeader="showHeader"
-      @change="changeIndex"
     >
+      <template slot="header">
+        <div class="title ellipsis" :title="title">{{ title }}</div>
+        <div v-show="showIcon" class="switchDataText">
+          <sm-icon
+            :class="['icon', 'left-icon', currentIndex === 0 && 'disabled']"
+            type="caret-left"
+            @click="changeIndex(-1)"
+          />
+          <span :title="paginationContent">{{ paginationContent }}</span>
+          <sm-icon
+            type="caret-right"
+            :class="['icon', 'right-icon', currentIndex === (lnglats.length || data.length) - 1 && 'disabled']"
+            @click="changeIndex(1)"
+          />
+        </div>
+      </template>
     </sm-attribute-panel>
   </div>
 </template>
@@ -23,6 +36,7 @@ import SmAttributePanel from 'vue-iclient/src/common/attribute-panel/AttributePa
 import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
 import MapPopupViewModel from './MapPopupViewModel';
 import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import cloneDeep from 'lodash/cloneDeep';
 
 @Component({
   name: 'SmMapPopup',
@@ -65,6 +79,10 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
   })
   columns: Array<Object>;
 
+  @Prop() titleRender: Function;
+
+  @Prop() valueRender: Function;
+
   @Prop({ default: true }) showHeader: Boolean;
 
   @Watch('currentCoordinate')
@@ -93,6 +111,19 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
     return this.lnglats[this.currentIndex];
   }
 
+  get filterData() {
+    return cloneDeep(this.data).map(propertyList => {
+      return propertyList.map(item => {
+        delete item.slotName;
+        return item;
+      });
+    });
+  }
+
+  get paginationContent() {
+    return `${this.currentIndex + 1}/${this.lnglats.length || this.data.length}`;
+  }
+
   removePopup() {
     this.viewModel && this.viewModel.removePopup();
   }
@@ -103,9 +134,12 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
     setPopupArrowStyle(this.tablePopupBgData);
   }
 
-  changeIndex(index) {
-    this.currentIndex = index;
-    this.$emit('change', index);
+  changeIndex(delta) {
+    this.currentIndex += delta;
+    if (this.currentIndex < 0) {
+      this.currentIndex = 0;
+    }
+    this.$emit('change', this.currentIndex);
   }
 }
 export default SmMapPopup;

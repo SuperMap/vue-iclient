@@ -88,7 +88,7 @@ export default {
   },
   computed: {
     fullScreenStyle() {
-      return this.previewMode === 'fullScreen'
+      return this.previewMode === 'full'
         ? {
           dialogStyle: {
             backgroundColor: 'transparent',

@@ -10,7 +10,8 @@
     :background="background"
     :textColor="textColor"
     :mapTarget="mapTarget"
-    :columns="tableColumns"
+    :titleRender="titleRender"
+    :valueRender="valueRender"
     :showHeader="false"
     :title="displayTitle"
     @change="handleChange"
@@ -99,7 +100,15 @@ export default {
       return this.allPopupDatas[this.currentIndex] || [];
     },
     columnStyle() {
-      const { autoResize, keyWidth, valueWidth, keyMaxWidth, valueMaxWidth, keyWordStyle, valueWordStyle } = this.popupStyle;
+      const {
+        autoResize,
+        keyWidth,
+        valueWidth,
+        keyMaxWidth,
+        valueMaxWidth,
+        keyWordStyle,
+        valueWordStyle
+      } = this.popupStyle;
       const style = { keyStyle: {}, valueStyle: {} };
       if (!autoResize) {
         if (keyWidth) {
@@ -128,30 +137,6 @@ export default {
         style.valueStyle = { ...style.valueStyle, ...ellipsisStyle };
       }
       return style;
-    },
-    tableColumns() {
-      return [
-        {
-          dataIndex: 'attribute',
-          customRender: (text, record) => {
-            return <div style={this.columnStyle.keyStyle} title={record.alias || text}>{record.alias || text}</div>;
-          }
-        },
-        {
-          dataIndex: 'attributeValue',
-          customRender: (text, record) => {
-            const valueCustomRender =
-              record.slotName &&
-              ((this.customColumnRenders || {})[record.slotName] ||
-                (this.$parent && this.$parent.$scopedSlots[record.slotName]));
-            const style = this.columnStyle.valueStyle;
-            if (valueCustomRender) {
-              return <div style={style} title={text}>{valueCustomRender({ value: text, style })}</div>;
-            }
-            return <div style={style} title={text}>{text}</div>;
-          }
-        }
-      ];
     },
     displayTitle() {
       return this.title || this.activeTargetName;
@@ -198,6 +183,39 @@ export default {
     this.clearPopupData();
   },
   methods: {
+    titleRender(text) {
+      return (
+        <div style={this.columnStyle.keyStyle} title={text}>
+          {text}
+        </div>
+      );
+    },
+    valueRender(text, record) {
+      let targetField;
+      Object.keys(this.displayFieldsMap).forEach((layerID) => {
+        targetField = this.displayFieldsMap[layerID].find((item) => {
+          return item.title === record.title || item.field === record.title;
+        });
+      });
+      const slotName = targetField?.slotName;
+      const valueCustomRender =
+        slotName &&
+        ((this.customColumnRenders || {})[slotName] ||
+          (this.$parent && this.$parent.$scopedSlots[slotName]));
+      const style = this.columnStyle.valueStyle;
+      if (valueCustomRender) {
+        return (
+          <div style={style} title={text}>
+            {valueCustomRender({ value: text, style })}
+          </div>
+        );
+      }
+      return (
+        <div style={style} title={text}>
+          {text}
+        </div>
+      );
+    },
     registerEvents() {
       this.viewModel.on('mapselectionchanged', e => {
         const features = e.features;

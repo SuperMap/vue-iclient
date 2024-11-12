@@ -1,20 +1,8 @@
 <template>
   <div class="sm-component-attribute-panel" :style="[getTextColorStyle, !showBorder && { border: 'none' }]">
     <div class="sm-component-attribute-panel__header">
-      <div class="title ellipsis" :title="title">{{ title }}</div>
-      <div v-show="showIcon" class="switchDataText">
-        <sm-icon
-          :class="['icon', 'left-icon', attrIndex === 0 && 'disabled']"
-          type="caret-left"
-          @click="changeIndex(-1)"
-        />
-        <span :title="paginationContent">{{ paginationContent }}</span>
-        <sm-icon
-          type="caret-right"
-          :class="['icon', 'right-icon', attrIndex === total - 1 && 'disabled']"
-          @click="changeIndex(1)"
-        />
-      </div>
+      <div v-if="!$slots.header && title !== undefined" class="title ellipsis" :title="title">{{ title }}</div>
+      <slot name="header" />
     </div>
     <div class="sm-component-attribute-panel__content">
       <sm-table-popup v-bind="tablePopupProps" />
@@ -23,7 +11,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
+import { Component, Prop, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import SmTablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 
@@ -32,19 +20,13 @@ import SmTablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
   components: { SmTablePopup }
 })
 class SmAttributePanel extends Mixins(Theme) {
-  attrIndex = 0;
-
-  @Prop({ default: false }) showIcon: Boolean;
-
-  @Prop({ default: 0 }) currentIndex: number;
-
-  @Prop() paginationText: String;
-
-  @Prop() total: number;
-
   @Prop() title: String;
 
   @Prop({ default: true }) showBorder: Boolean;
+
+  @Prop() titleRender: Function;
+
+  @Prop() valueRender: Function;
 
   @Prop({
     default: () => {
@@ -53,41 +35,23 @@ class SmAttributePanel extends Mixins(Theme) {
   })
   attributes: Array<Object>;
 
-  @Prop({
-    default: () => {
-      return [];
-    }
-  })
-  columns: Array<Object>;
-
-  @Watch('currentIndex')
-  currentIndexChanged() {
-    this.attrIndex = this.currentIndex;
-  }
-
-  get paginationContent() {
-    if (this.paginationText) {
-      return this.paginationText;
-    }
-    return `${this.attrIndex + 1}/${this.total}`;
-  }
-
   get tablePopupProps() {
     return {
       data: this.attributes,
-      columns: this.columns,
+      columns: [
+        {
+          dataIndex: 'title',
+          customRender: this.titleRender
+        },
+        {
+          dataIndex: 'value',
+          customRender: this.valueRender
+        }
+      ],
       showHeader: false,
       background: 'transparent',
       textColor: this.textColor
     };
-  }
-
-  changeIndex(delta) {
-    this.attrIndex += delta;
-    if (this.attrIndex < 0) {
-      this.attrIndex = 0;
-    }
-    this.$emit('change', this.attrIndex);
   }
 }
 export default SmAttributePanel;

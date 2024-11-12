@@ -50,9 +50,8 @@ type LayerClickedFeature = mapboxglTypes.MapboxGeoJSONFeature & {
 };
 
 interface PopupFieldsInfo {
-  attribute: string;
-  attributeValue: string;
-  alias?: string;
+  title: string;
+  value: string;
   slotName?: string;
 }
 
@@ -356,9 +355,8 @@ export default class HighlightLayer extends mapboxgl.Evented {
       info: displayFieldsList.reduce((list: PopupFieldsInfo[], item) => {
         if (Object.prototype.hasOwnProperty.call(feature.properties, item.field)) {
           list.push({
-            attribute: item.field,
-            alias: item.title,
-            attributeValue: feature.properties[item.field],
+            title: item.title || item.field,
+            value: feature.properties[item.field],
             slotName: item.slotName
           });
         }

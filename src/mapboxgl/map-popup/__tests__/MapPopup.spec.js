@@ -4,19 +4,19 @@ import SmWebMap from '../../web-map/WebMap';
 import SmTablePopup from '../../../common/table-popup/TablePopup';
 
 const columns = [
-  { dataIndex: 'attribute', width: 80 },
-  { dataIndex: 'attributeValue', width: 150 }
+  { dataIndex: 'title', width: 80 },
+  { dataIndex: 'value', width: 150 }
 ];
 const data = [
   [
-    { attribute: 'name', attributeValue: '福建省' },
-    { attribute: 'childrenNum', attributeValue: 9 },
-    { attribute: 'index', attributeValue: 25 }
+    { title: 'name', value: '福建省' },
+    { title: 'childrenNum', value: 9 },
+    { title: 'index', value: 25 }
   ],
   [
-    { attribute: 'name', attributeValue: '福建省' },
-    { attribute: 'childrenNum', attributeValue: 12 },
-    { attribute: 'index', attributeValue: 123 }
+    { title: 'name', value: '福建省' },
+    { title: 'childrenNum', value: 12 },
+    { title: 'index', value: 123 }
   ]
 ];
 describe('MapPopup.vue', () => {

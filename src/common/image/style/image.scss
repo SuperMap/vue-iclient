@@ -28,7 +28,7 @@
      
     }
   }
-  @include e(previewFull) {
+  @include e(full) {
     width: 100% !important;
     padding: 0 !important;
     .sm-component-modal-content {

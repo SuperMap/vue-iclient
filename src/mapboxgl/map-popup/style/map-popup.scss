@@ -7,4 +7,24 @@
   height: auto;
   padding: 10px;
   border-radius: 4px;
+  .title {
+    margin: 8px 14px;
+  }
+  .switchDataText {
+    position: absolute;
+    right: 10px;
+    top: 18px;
+    .icon {
+      font-size: 16px;
+    }
+    .left-icon {
+      padding-right: 5px;
+    }
+    .right-icon {
+      padding-left: 5px;
+    }
+    .disabled {
+      color: $disabled-color;
+    }
+  }
 }
