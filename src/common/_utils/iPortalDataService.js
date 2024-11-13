@@ -163,7 +163,7 @@ export default class iPortalDataService extends Events {
         // 所有请求结束
         Promise.all(allRequest).then((results) => {
           // 结果合并
-          results.map((result) => {
+          results.forEach((result) => {
             featureResults = featureResults.concat(result.features);
           });
           this.iserverService._getFeaturesSucceed({
