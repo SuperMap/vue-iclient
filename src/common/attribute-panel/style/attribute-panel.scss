@@ -11,6 +11,9 @@
   @include e(header) {
     width: 100%;
     border-bottom: 1px solid $border-color-split;
+    .title {
+      margin: 8px 14px;
+    }
     .ellipsis {
       max-width: calc(100% - 80px);
       overflow: hidden;
