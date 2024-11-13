@@ -538,6 +538,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
       let columnConfig = {
         title: propertyName,
         dataIndex: propertyName,
+        ellipsis: true,
         visible: true
       };
       if (!isNaN(parseFloat(headers[propertyName])) && !isNaN(+headers[propertyName])) {
@@ -581,17 +582,17 @@ class FeatureTableViewModel extends mapboxgl.Evented {
               customRender: 'customRender'
             };
           }
-          // @ts-ignore
-          if (!columnConfig.customCell) {
-            // @ts-ignore
-            columnConfig.customCell = record => {
-              return {
-                attrs: {
-                  title: record[copyConfig.dataIndex]
-                }
-              };
-            };
-          }
+        }
+      }
+      // @ts-ignore
+      if(!columnConfig.customCell) {
+        // @ts-ignore
+        columnConfig.customCell = (record) => {
+          return {
+            attrs: {
+              title: record[propertyName]
+            }
+          };
         }
       }
       columns.push(columnConfig);

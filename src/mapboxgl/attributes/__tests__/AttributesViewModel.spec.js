@@ -537,6 +537,8 @@ describe('AttributesViewModel.ts', () => {
       } else {
         expect(element.sorter).toBe(undefined);
       }
+      expect(element.ellipsis).toBe(true);
+      expect(element.customCell).not.toBe(undefined);
     });
   });
   it('change attribute when associateMap in layerlist', () => {
