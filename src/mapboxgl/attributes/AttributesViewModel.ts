@@ -595,6 +595,17 @@ class FeatureTableViewModel extends mapboxgl.Evented {
           };
         }
       }
+      // @ts-ignore
+      if(!columnConfig.customHeaderCell) {
+        // @ts-ignore
+        columnConfig.customHeaderCell = () => {
+          return {
+            attrs: {
+              title: propertyName
+            }
+          };
+        }
+      }
       columns.push(columnConfig);
     });
     let columnOrder = [];
