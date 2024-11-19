@@ -9,13 +9,16 @@
   border-radius: 4px;
   border: 1px solid $border-color-split;
   @include e(header) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
     width: 100%;
     border-bottom: 1px solid $border-color-split;
     .title {
-      margin: 8px 14px;
+      padding: 8px 16px;
     }
     .ellipsis {
-      max-width: calc(100% - 80px);
+      width: calc(100% - 80px);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;

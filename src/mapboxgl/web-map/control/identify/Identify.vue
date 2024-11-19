@@ -12,6 +12,7 @@
     :textColor="textColor"
     :mapTarget="mapTarget"
     :showPopup="showPopup"
+    :title="title"
     @mapselectionchanged="handleMapSelectionChanged"
   />
 </template>
@@ -29,6 +30,9 @@ export default {
   mixins: [MapGetter, Theme],
   components: { SmLayerHighlight },
   props: {
+    title: {
+      type: String
+    },
     showPopup: {
       type: Boolean,
       default: true
