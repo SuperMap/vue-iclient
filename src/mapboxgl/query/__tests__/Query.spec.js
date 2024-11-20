@@ -39,6 +39,9 @@ describe('query', () => {
       if (url.indexOf('/123') > -1) {
         return Promise.resolve(new Response(JSON.stringify(datas)));
       }
+      if (url.indexOf('/1763883342') > -1) {
+        return Promise.resolve(new Response(JSON.stringify({ ...datas, dataItemServices: [] })));
+      }
       if (url.includes('/content')) {
         return Promise.resolve(new Response(JSON.stringify(iportal_content)));
       }
@@ -101,6 +104,50 @@ describe('query', () => {
       expect(spyquery).toBeCalled();
       done();
     });
+  });
+
+  it('iPortal unpublished Data', async done => {
+    wrapper = mount(SmQuery, {
+      localVue,
+      propsData: {
+        mapTarget: 'map',
+        iportalData: [
+          {
+            name: '四川省电站发电-四川发电站上月发电量',
+            displayName: '分段&-四川省电站发电-四川发电站上月发电量',
+            mapTarget: 'map_1731901870198',
+            type: 'iPortal',
+            id: '1763883342',
+            url: 'http://lcoalhost:8190/iportal/web/datas/1763883342',
+            dataType: 'GEOJSON',
+            updateTime: '2024-10-25 11:38:12',
+            serviceStatus: 'PUBLISHED',
+            dataItemServices: null,
+            withCredentials: false,
+            preferContent: true,
+            maxFeatures: 8,
+            queryMode: 'SQL',
+            fields: [],
+            attributeFilter: 'SmID>0'
+          }
+        ]
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    expect(wrapper.vm.mapTarget).toBe('map');
+    const queryErrorTip = jest.spyOn(Message, 'warning');
+    wrapper.vm.$on('query-failed', (e) => {
+      expect(queryErrorTip).toHaveBeenCalledTimes(1);
+      expect(queryErrorTip).toHaveBeenCalledWith(e.message);
+      expect(e.message).toBe('query.seviceNotSupport');
+      expect(wrapper.vm.isQuery).toBe(false);
+      expect(wrapper.vm.activeTab).toBe('job');
+      expect(wrapper.vm.activeResultIndexList).toEqual([]);
+      expect(wrapper.vm.queryResult).toBeNull();
+      expect(wrapper.vm.activeQueryJob).toBeNull();
+      done();
+    })
+    wrapper.find(SmButton).find('.sm-component-query__a-button').trigger('click');
   });
 
   it('restData Service', async done => {

@@ -81,6 +81,9 @@ export default class QueryViewModel extends mapboxgl.Evented {
           keyWord: queryParameter.queryMode === 'KEYWORD' ? queryParameter.attributeFilter : '',
           bounds: this.bounds
         };
+        if (queryParameter.type === 'iPortal') {
+          queryOptions.onlyService = true;
+        }
         const res = await getFeatures({ ...queryParameter, ...queryOptions });
         if (res.type === 'featureisempty') {
           this.fire('queryfailed', { message: geti18n().t('query.noResults') });
@@ -90,7 +93,8 @@ export default class QueryViewModel extends mapboxgl.Evented {
         this._addResultLayer(this.queryResult);
         this.fire('querysucceeded', { result: this.queryResult, layers: [this.layerID, this.strokeLayerID].filter(item => !!item) });
       } catch (error) {
-        this.fire('queryfailed', { message: geti18n().t('query.queryFailed') });
+        const message = error.onlyService ? geti18n().t('query.seviceNotSupport') : geti18n().t('query.queryFailed');
+        this.fire('queryfailed', { message });
       }
     }
   }

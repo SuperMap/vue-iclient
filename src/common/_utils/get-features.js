@@ -23,7 +23,8 @@ export default function getFeatures(dataset) {
       orderBy,
       returnFeaturesOnly,
       bounds,
-      keyWord
+      keyWord,
+      onlyService
     } = dataset;
     if (dataset && (url || geoJSON) && type) {
       let queryInfo = {
@@ -62,6 +63,9 @@ export default function getFeatures(dataset) {
         params = [datasetInfo, queryInfo];
       } else if (type === 'iPortal') {
         queryInfo.withCredentials = withCredentials;
+        if (onlyService !== undefined) {
+          queryInfo.onlyService = onlyService;
+        }
         superMapService = new iPortalDataService(url, withCredentials, {
           epsgCode,
           resourceId: dataset.id,
