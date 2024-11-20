@@ -39,14 +39,17 @@ describe('LayerHighlightViewModel', () => {
   let map;
   const uniqueName = 'Test';
   const mockLayerName = 'China';
+  const copyLayerSpy = jest.fn();
   let viewModel;
 
   beforeEach(() => {
     map = new Map({
       style: { center: [0, 0], zoom: 1, layers: [], sources: {} }
     });
+
     viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle });
-    viewModel.setMap({ map });
+    const webmap = { copyLayer: copyLayerSpy };
+    viewModel.setMap({ map, webmap });
   });
 
   afterEach(() => {
@@ -71,6 +74,76 @@ describe('LayerHighlightViewModel', () => {
     done();
   });
 
+  it('map click l7 animate marker', done => {
+    const setSelectedDatas = jest.fn();
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          smpid: 7,
+          type: '分类5',
+          _id: 177554
+        },
+        layer: { paint: {}, l7layer: {}, setSelectedDatas },
+        geometry: {
+          type: 'Point',
+          coordinates: [122.20916748046851, 31.332525032307764]
+        }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle, layerIds: ['动画点'] });
+    const webmap = { copyLayer: copyLayerSpy };
+    viewModel.setMap({ map, webmap });
+    
+    viewModel.once('mapselectionchanged', ({ features }) => {
+      expect(features.length).toBeGreaterThan(0);
+      expect(copyLayerSpy).toBeCalled()
+      expect(setSelectedDatas).toBeCalled()
+      viewModel.removeHighlightLayers();
+      expect(setSelectedDatas).toBeCalled()
+      viewModel.unregisterMapClick();
+      done();
+    });
+    expect(viewModel.featureFields).toBeUndefined();
+    const featureFieldsMap = { [mockLayerName]: ['type'] };
+    viewModel.setFeatureFieldsMap(featureFieldsMap);
+    expect(viewModel.highlightOptions.featureFieldsMap).toEqual(featureFieldsMap);
+    viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+  });
+  it('map click ms fill extrusion', done => {
+    jest.spyOn(map, 'queryRenderedFeatures').mockImplementation(() => [
+      {
+        type: 'Feature',
+        properties: {
+          type: '分类5',
+          _id: 177554
+        },
+        layer: {id:'3d填充面', type: 'fill-extrusion', paint: {} },
+        geometry: {
+          type: 'Polygon',
+          coordinates: [[[122.20916748046851, 31.332525032307764]]]
+        }
+      }
+    ]);
+    const viewModel = new LayerHighlightViewModel({ name: uniqueName, style: highlightStyle, layerIds: ['3d填充面'] });
+    const webmap = { copyLayer: copyLayerSpy };
+    viewModel.setMap({ map, webmap });
+    
+    viewModel.once('mapselectionchanged', () => {
+      const layers = map.getStyle().layers;
+      expect(layers.length).toBe(1);
+      expect(layers[0].id).toBe(`3d填充面-${uniqueName}-SM-highlighted`);
+      expect(layers[0].paint).toEqual({"fill-extrusion-color": "#01ffff", "fill-extrusion-opacity": 0.6});
+      viewModel.unregisterMapClick();
+      done();
+    });
+    expect(viewModel.featureFields).toBeUndefined();
+    const featureFieldsMap = { '3d填充面': ['type'] };
+    viewModel.setFeatureFieldsMap(featureFieldsMap);
+    expect(viewModel.highlightOptions.featureFieldsMap).toEqual(featureFieldsMap);
+    viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+  });
+
   it('map click target layer by specified featureFields', done => {
     viewModel.once('mapselectionchanged', ({ features }) => {
       expect(features.length).toBeGreaterThan(0);
@@ -78,8 +151,8 @@ describe('LayerHighlightViewModel', () => {
       expect(layers.length).toBe(2);
       expect(layers[0].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
       expect(layers[1].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted-StrokeLine`);
-      expect(layers[0].filter[0]).toBe('all');
-      expect(layers[1].filter[0]).toBe('all');
+      expect(layers[0].filter[0]).toBe('any');
+      expect(layers[1].filter[0]).toBe('any');
       expect(viewModel.highlightOptions.layerIds).toEqual([mockLayerName]);
       viewModel.removeHighlightLayers();
       expect(map.getStyle().layers.length).toBe(0);
@@ -170,7 +243,7 @@ describe('LayerHighlightViewModel', () => {
     expect(keyboardEvents.keyup).not.toBeUndefined();
     keyboardEvents.keydown({ ctrlKey: 'Control' });
   });
-  
+
   it('map click same feature by geometry', done => {
     viewModel.setTargetLayers(['layer1']);
     const keyboardEvents = {};

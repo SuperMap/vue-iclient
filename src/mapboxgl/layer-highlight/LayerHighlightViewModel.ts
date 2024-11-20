@@ -8,6 +8,7 @@ interface HighlightStyle {
   circle: InstanceType<typeof CircleStyle>;
   line: InstanceType<typeof LineStyle>;
   fill: InstanceType<typeof FillStyle>;
+  fillExtrusion?: any;
   strokeLine?: InstanceType<typeof LineStyle>;
   stokeLine?: InstanceType<typeof LineStyle>;
 }
@@ -97,6 +98,8 @@ interface CreateRelatedDatasParams {
   isMultiple?: boolean;
 }
 
+type mapboxEnhanceLayer = mapboxglTypes.Layer & { l7layer?: any };
+
 const HIGHLIGHT_COLOR = '#01ffff';
 
 const PAINT_BASIC_ATTRS: BasicStyleAttrs = {
@@ -136,6 +139,15 @@ const LAYER_DEFAULT_STYLE = {
       'fill-color': HIGHLIGHT_COLOR,
       'fill-opacity': 0.6,
       'fill-outline-color': HIGHLIGHT_COLOR
+    },
+    layout: {
+      visibility: 'visible'
+    }
+  },
+  'fill-extrusion': {
+    paint: {
+      'fill-extrusion-color': HIGHLIGHT_COLOR,
+      'fill-extrusion-opacity': 0.6
     },
     layout: {
       visibility: 'visible'
@@ -192,8 +204,9 @@ export default class HighlightLayer extends mapboxgl.Evented {
     };
   }
 
-  setMap({ map }: MapLoadInfo) {
+  setMap({ map, webmap }: MapLoadInfo) {
     this.map = map;
+    this.webmap = webmap;
     this.registerMapClick();
     this.setTargetLayers(this.highlightOptions.layerIds);
   }
@@ -273,8 +286,54 @@ export default class HighlightLayer extends mapboxgl.Evented {
       this.map.off('mouseleave', layerId, this.handleMapMouseLeave);
     });
   }
+  highlightL7Layer({ layer, features, filter }) {
+    const { type, id, paint } = layer;
+    const nextPaint = Object.assign({}, paint);
+    let styleType = type;
+    const highlightLayerStyle: HighlightStyle = JSON.parse(JSON.stringify(this.highlightOptions.style));
+    switch (type) {
+      case 'line-extrusion':
+        styleType = 'line';
+        break;
+      case 'radar':
+      case 'point-extrusion':
+        styleType = 'circle';
+        break;
+      default:
+        styleType = highlightLayerStyle[type] ? type : 'fill';
+        break;
+    }
+    const paintKeys = Object.keys(paint);
+    const { paint: paintStyle } = highlightLayerStyle[styleType];
+    for (const key in paintStyle) {
+      const matchKey = paintKeys.find(item => item.replace(`${type}-`, '') === key.replace(`${styleType}-`, ''));
+      if (matchKey) {
+        nextPaint[matchKey] = key.match(/-(radius|width)/)
+          ? Math.max(paintStyle[key], nextPaint[matchKey])
+          : paintStyle[key];
+      }
+    }
+    this.webmap.copyLayer(id, { id: `${id}-${this.highlightOptions.name}-SM-highlighted`, filter, paint: nextPaint });
+    this.setL7Filter(layer, features);
+  }
 
-  addHighlightLayers(layer: mapboxglTypes.Layer, filter: any) {
+  setL7Filter(layer, features) {
+    layer.setSelectedDatas(features);
+    const layerFilter = this.map.getFilter(layer.id);
+    this.map.setFilter(layer.id, layerFilter);
+  }
+
+  addHighlightLayers(layer: mapboxEnhanceLayer, filter: any, features) {
+    const { l7layer } = layer;
+    if (l7layer) {
+      this.highlightL7Layer({ layer, features, filter });
+      return;
+    } else {
+      this.addNormalHighlightLayers(layer, filter);
+    }
+  }
+
+  addNormalHighlightLayers(layer: mapboxglTypes.Layer, filter: any) {
     let type = layer.type as unknown as StyleTypes[number];
     let paint = layer.paint;
     const id = layer.id;
@@ -288,7 +347,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       types.push('strokeLine');
     }
     const layerHighlightStyle = this.createLayerHighlightStyle(types, id);
-    if (['circle', 'line', 'fill'].includes(type)) {
+    if (['circle', 'line', 'fill', 'fill-extrusion'].includes(type)) {
       const layerStyle = layerHighlightStyle[type];
       const highlightLayer = Object.assign({}, layer, {
         id: this.createHightlightLayerId(id),
@@ -330,6 +389,13 @@ export default class HighlightLayer extends mapboxgl.Evented {
     if (!this.map) {
       return;
     }
+    this.highlightOptions.layerIds.forEach(layerId =>{
+      const layer = this.map.getLayer(layerId);
+      // @ts-ignore
+      if (layer?.l7layer) {
+        this.setL7Filter(layer, []);
+      }
+    })
     const layersToRemove = this.getHighlightLayerIds(this.highlightOptions.layerIds);
     layersToRemove.forEach(layerId => {
       if (this.map.getLayer(layerId)) {
@@ -399,15 +465,28 @@ export default class HighlightLayer extends mapboxgl.Evented {
     fields = this.highlightOptions.featureFieldsMap?.[targetId]
   }: CreateFilterExpParams) {
     // 高亮过滤(所有字段)
-    const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo'];
+    const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo', '_id', 'id', 'smgeometry'];
     const isBasicType = (item: any) => {
       return typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean';
     };
+    const UNIQUE_FIELD = ['SMID', 'SMPID'];
+    const properties = feature.properties || {};
+    let uniqueId;
+    for (const name of UNIQUE_FIELD) {
+      for (const attr in properties) {
+        if (attr.toUpperCase() === name) {
+          uniqueId = attr;
+          break;
+        }
+      }
+    }
     const filter: any[] = ['all'];
-    const featureKeys: string[] = fields || feature._vectorTileFeature?._keys || Object.keys(feature.properties);
+    const keys: string[] = fields || feature._vectorTileFeature?._keys || Object.keys(feature.properties);
+    const featureKeys = uniqueId ? [uniqueId] : keys;
+
     return featureKeys.reduce((exp, key) => {
       if (filterKeys.indexOf(key.toLowerCase()) === -1 && isBasicType(feature.properties[key])) {
-        exp.push(['==', key, feature.properties[key]]);
+        exp.push(['==', ['get', key], feature.properties[key]]);
       }
       return exp;
     }, filter);
@@ -433,6 +512,13 @@ export default class HighlightLayer extends mapboxgl.Evented {
           }
         });
       });
+      // 3d填充面的样式用普通面的配置项
+      highlightStyle['fill-extrusion'] = {
+        paint: {
+          'fill-extrusion-color': highlightStyle.fill.paint['fill-color'],
+          'fill-extrusion-opacity': highlightStyle.fill.paint['fill-opacity'],
+        }
+      };
     return highlightStyle;
   }
 
@@ -450,7 +536,12 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return layerIds.reduce((idList, layerId) => {
       const highlightLayerId = this.createHightlightLayerId(layerId);
       const highlightStrokeLayerId = this.createHighlightStrokeLayerId(layerId);
-      idList.push(highlightLayerId, highlightStrokeLayerId);
+      if (this.map.getLayer(highlightLayerId)) {
+        idList.push(highlightLayerId);
+      }
+      if (this.map.getLayer(highlightStrokeLayerId)) {
+        idList.push(highlightStrokeLayerId);
+      }
       return idList;
     }, []);
   }
@@ -510,7 +601,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       };
       const filterExps = this.createFilterExps(params);
       popupDatas = this.createPopupDatas(params);
-      this.addHighlightLayers(activeTargetLayer, filterExps);
+      this.addHighlightLayers(activeTargetLayer as mapboxEnhanceLayer, filterExps, this.resultFeatures);
     }
     const emitData: MapSelectionChangedEmit = {
       features,
@@ -565,11 +656,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     return features.reduce(
       (filterExps: any[], feature) => {
         const filterExp = this.createFilterExp({ feature, targetId });
-        if (isMultiple) {
-          filterExps.push(filterExp);
-        } else {
-          filterExps = filterExp;
-        }
+        filterExps.push(filterExp);
         return filterExps;
       },
       ['any']
