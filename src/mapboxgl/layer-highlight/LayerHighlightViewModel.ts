@@ -2,6 +2,7 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
+import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
 import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
 interface HighlightStyle {
@@ -59,11 +60,6 @@ interface PopupFieldsInfo {
 interface PopupFeatureInfo {
   coordinates: LayerClickedFeature['geometry']['coordinates'];
   info: PopupFieldsInfo[];
-}
-
-interface MapLoadInfo {
-  map: mapboxglTypes.Map;
-  [prop: string]: any;
 }
 
 enum DataSelectorMode {
@@ -183,6 +179,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
   private resultFeatures: LayerClickedFeature[] = [];
   highlightOptions: HighlightLayerOptions;
   map: mapboxglTypes.Map;
+  webmap: InstanceType<typeof WebMapViewModel>;
   fire: (type: string, params?: any) => void;
 
   constructor(options: HighlightLayerOptions) {
@@ -204,7 +201,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     };
   }
 
-  setMap({ map, webmap }: MapLoadInfo) {
+  setMap({ map, webmap }: mapInfoType) {
     this.map = map;
     this.webmap = webmap;
     this.registerMapClick();
