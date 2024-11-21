@@ -3,6 +3,9 @@ import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
 interface MapEventCallBack {
   (e: mapboxglTypes.MapMouseEvent): void;
 }
+const L7_STYLE_COLOR = {
+  'text-halo-color': ['stroke']
+};
 
 class LayerColorViewModel extends mapboxgl.Evented {
   map: mapboxglTypes.Map;
@@ -22,6 +25,26 @@ class LayerColorViewModel extends mapboxgl.Evented {
     this.map = map;
   }
 
+  getLayerType(layerId) {
+    const layer = this.map.getLayer(layerId);
+    return layer?.type;
+  }
+
+  setL7LayerColor(layer, property, color) {
+    if (L7_STYLE_COLOR[property]) {
+      const style = {};
+      L7_STYLE_COLOR[property].forEach(property => {
+        style[property] = color;
+      });
+      // @ts-ignore
+      layer.l7layer.style(style);
+    } else {
+      // @ts-ignore
+      layer.l7layer.color(color);
+    }
+    layer.reRender();
+  }
+
   setLayerColor(layerId, property, color) {
     if (!layerId || !property || !this.map) {
       return;
@@ -33,9 +56,8 @@ class LayerColorViewModel extends mapboxgl.Evented {
     const layer = this.map.getLayer(layerId);
     // @ts-ignore
     if (layer && layer.l7layer) {
-      // @ts-ignore
-      layer.l7layer.color(color);
-      this._cacheColors[layerId] = color;
+      this.setL7LayerColor(layer, property, color);
+      this._cacheColors[layerId] = { ...(this._cacheColors[layerId] || {}), [property]: color };
       return;
     }
 
@@ -46,8 +68,8 @@ class LayerColorViewModel extends mapboxgl.Evented {
     if ((!layerId && !property) || !this.map) {
       return;
     }
-    if (this._cacheColors[layerId]) {
-      return this._cacheColors[layerId];
+    if (this._cacheColors[layerId] && this._cacheColors[layerId][property]) {
+      return this._cacheColors[layerId][property];
     }
 
     return this.map.getPaintProperty(layerId, property);
@@ -61,8 +83,7 @@ class LayerColorViewModel extends mapboxgl.Evented {
       Object.keys(properties).forEach((propertyName) => {
         // @ts-ignore
         if (layer && layer.l7layer) {
-          // @ts-ignore
-          layer.l7layer.color(properties[propertyName]);
+          this.setL7LayerColor(layer, propertyName, properties[propertyName]);
         } else {
           this.map.setPaintProperty(layerId, propertyName, properties[propertyName]);
         }
