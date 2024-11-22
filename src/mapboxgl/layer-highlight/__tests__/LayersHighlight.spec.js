@@ -64,7 +64,8 @@ describe('LayerHighlight.vue', () => {
         mapTarget: 'map',
         uniqueName: 'Test',
         layers: ['layer1'],
-        highlightStyle
+        highlightStyle,
+        displayFieldsMap: { layer1: undefined }
       }
     });
     wrapper.vm.$nextTick();
@@ -72,6 +73,7 @@ describe('LayerHighlight.vue', () => {
     const style = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' };
     expect(wrapper.vm.columnStyle.keyStyle).toEqual({ ...style, maxWidth: '160px', height: '22px' });
     expect(wrapper.vm.columnStyle.valueStyle).toEqual({ ...style, maxWidth: '300px' });
+    expect(wrapper.vm.valueRender('test', {})).not.toBeNull();
     done();
   });
 

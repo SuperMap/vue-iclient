@@ -7,13 +7,10 @@
   height: auto;
   padding: 10px;
   border-radius: 4px;
-  .title {
-    margin: 8px 14px;
-  }
   .switchDataText {
-    position: absolute;
-    right: 10px;
-    top: 18px;
+    display: inline-flex;
+    padding: 8px 0px;
+    margin-right: 10px;
     span {
       vertical-align: 3px;
     }
