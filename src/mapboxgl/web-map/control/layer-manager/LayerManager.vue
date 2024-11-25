@@ -49,6 +49,7 @@ import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
 import difference from 'lodash.difference';
 import omit from 'omit.js';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 export default {
   name: 'SmLayerManager',
@@ -145,10 +146,12 @@ export default {
   created() {
     this.viewModel = new LayerManagerViewModel();
     this.viewModel.on('layersadded', this.addMapCombination);
+    this.viewModel.on('layerorsourcenameduplicated', this.handleLayerOrSourceNameDuplicated);
     this.viewModel.on('layersremoved', this.removeMapCombination);
   },
   beforeDestroy() {
     this.viewModel.off('layersadded', this.addMapCombination);
+    this.viewModel.off('layerorsourcenameduplicated', this.handleLayerOrSourceNameDuplicated);
     this.viewModel.off('layersremoved', this.removeMapCombination);
   },
   methods: {
@@ -293,6 +296,9 @@ export default {
     },
     removeMapCombination({ nodeKey }) {
       mapEvent.$options.deleteWebMap(this.getTargetName(), nodeKey);
+    },
+    handleLayerOrSourceNameDuplicated() {
+      Message.error(this.$t('webmap.layerorsourcenameduplicated'));
     }
   },
   loaded() {

@@ -209,6 +209,7 @@ export default class WebMapViewModel extends Events {
       'layercreatefailed',
       'layerupdatechanged',
       'baidumapnotsupport',
+      'layerorsourcenameduplicated',
       'projectionnotmatch',
       'mapbeforeremove'
     ];

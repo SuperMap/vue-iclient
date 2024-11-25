@@ -128,6 +128,7 @@ export default {
     getThemeInfoFailed: 'Failed to get theme information!',
     crsnotsupport: 'Unsupported coordinate system!',
     baiduMapNotSupport: 'Baidu maps is not supported yet!',
+    layerorsourcenameduplicated: 'layer or source name duplicated and cannot be added!',
     sampleDataNotSupport: 'Sample datas is not supported yet!',
     mvtNotSupport: 'Vector tile layers is not supported yet!',
     mapCreatedFailed: 'Failed to load map!'

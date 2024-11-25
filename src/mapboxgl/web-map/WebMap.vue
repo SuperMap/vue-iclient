@@ -418,6 +418,9 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       baidumapnotsupport: () => {
         this.notifyErrorTip({ defaultTip: 'baiduMapNotSupport', showErrorMsg: false });
       },
+      layerorsourcenameduplicated: () => {
+        this.notifyErrorTip({ defaultTip: 'layerorsourcenameduplicated', showErrorMsg: false });
+      },
       mapbeforeremove: () => {
         mapEvent.$options.deleteMap(this.target);
         mapEvent.$options.deleteWebMap(this.target);

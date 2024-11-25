@@ -178,10 +178,14 @@ describe('LayerManagerViewModel', () => {
     expect(viewModel.cacheMaps[nodeKey]).not.toBeUndefined();
     expect(viewModel.readyNext).toBeFalsy();
     const layersAddedFn = jest.fn();
+    const layerorsourcenameduplicatedFn = jest.fn();
     viewModel.on('layersadded', layersAddedFn);
+    viewModel.on('layerorsourcenameduplicated', layerorsourcenameduplicatedFn);
     viewModel.cacheMaps[nodeKey].triggerEvent('addlayerssucceeded', {});
+    viewModel.cacheMaps[nodeKey].triggerEvent('layerorsourcenameduplicated', {});
     expect(viewModel.readyNext).toBeTruthy();
     expect(layersAddedFn).toHaveBeenCalledTimes(1);
+    expect(layerorsourcenameduplicatedFn).toHaveBeenCalledTimes(1);
     done();
   });
 

@@ -789,6 +789,9 @@ describe('WebMap.vue', () => {
       baidumapnotsupport: e => {
         expect(true).toBe(true);
       },
+      layerorsourcenameduplicated: () => {
+        expect(true).toBe(true);
+      },
       mapbeforeremove: e => {
         expect(deleteMap).toBeCalled();
         expect(deleteWebMap).toBeCalled();
@@ -809,6 +812,7 @@ describe('WebMap.vue', () => {
       map: { resize: jest.fn() }
     });
     wrapper.vm.viewModel.triggerEvent('baidumapnotsupport');
+    wrapper.vm.viewModel.triggerEvent('layerorsourcenameduplicated');
     wrapper.vm.viewModel.triggerEvent('mapbeforeremove', {
       map: { resize: jest.fn() }
     });

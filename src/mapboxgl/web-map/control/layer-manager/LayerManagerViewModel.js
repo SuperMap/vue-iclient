@@ -59,6 +59,9 @@ class LayerManageViewModel extends mapboxgl.Evented {
     // 设置 readyNext 为 false
     this.readyNext = false;
     this.webMapViewModel.on({
+      layerorsourcenameduplicated: () => {
+        this.fire('layerorsourcenameduplicated', {});
+      },
       addlayerssucceeded: () => {
         // 设置 readyNext 为 true
         // 判断 是否缓存数组里有值，取出最新的，调用this.addLayer();
