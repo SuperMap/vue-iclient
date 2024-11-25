@@ -132,6 +132,7 @@ export default {
     baiduMapNotSupport: '暂不支持加载百度地图！',
     layerorsourcenameduplicated: '图层名或数据源名重复无法添加',
     sampleDataNotSupport: '暂不支持加载示例数据！',
+    drillLayersNotSupport: '暂不支持加载下钻图层！',
     mvtNotSupport: '暂不支持加载矢量瓦片图层！',
     mapCreatedFailed: '地图加载失败！'
   },

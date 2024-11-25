@@ -130,6 +130,7 @@ export default {
     baiduMapNotSupport: 'Baidu maps is not supported yet!',
     layerorsourcenameduplicated: 'layer or source name duplicated and cannot be added!',
     sampleDataNotSupport: 'Sample datas is not supported yet!',
+    drillLayersNotSupport: 'Drill-down layers are not supported yet!',
     mvtNotSupport: 'Vector tile layers is not supported yet!',
     mapCreatedFailed: 'Failed to load map!'
   },

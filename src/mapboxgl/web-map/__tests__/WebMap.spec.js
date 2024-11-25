@@ -28,6 +28,7 @@ import flushPromises from 'flush-promises';
 import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import Message from 'vue-iclient/src/common/message/Message.js';
 
 const localVue = createLocalVue();
 localVue.prototype.$message = message;
@@ -771,6 +772,9 @@ describe('WebMap.vue', () => {
       propsData: {
         serverUrl: 'https://fakeiportal.supermap.io/iportal',
         mapId: '249495311'
+      },
+      mocks: {
+        $t: (msg) => msg
       }
     });
     const deleteMap = jest.spyOn(mapEvent.$options, 'deleteMap');
@@ -782,6 +786,13 @@ describe('WebMap.vue', () => {
       },
       mapcreatefailed: e => {
         expect(e.error).not.toBeNull();
+        const errorSpy = jest.spyOn(Message, 'error');
+        if (e.error_code) {
+          errorSpy.toHaveBeenCalledWith('webmap.drillLayersNotSupport');
+        }
+        if (e.error === 'SAMPLE DATA is not supported') {
+          errorSpy.toHaveBeenCalledWith('webmap.sampleDataNotSupport');
+        }
       },
       layercreatefailed: e => {
         expect(e.error).not.toBeNull();
@@ -809,6 +820,11 @@ describe('WebMap.vue', () => {
     });
     wrapper.vm.viewModel.triggerEvent('layercreatefailed', {
       error: 'SAMPLE DATA is not supported',
+      map: { resize: jest.fn() }
+    });
+    wrapper.vm.viewModel.triggerEvent('layercreatefailed', {
+      error: 'drill layers are not supported yet',
+      error_code: 'DRILL_LAYERS_NOT_SUPPORTED',
       map: { resize: jest.fn() }
     });
     wrapper.vm.viewModel.triggerEvent('baidumapnotsupport');

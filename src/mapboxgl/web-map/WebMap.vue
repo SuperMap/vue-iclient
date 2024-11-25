@@ -411,6 +411,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         this.getLayerDatasourceFailed({ error: e.error, layer: e.layer, map: e.map });
         if (e.error === 'SAMPLE DATA is not supported') {
           this.notifyErrorTip({ defaultTip: 'sampleDataNotSupport', showErrorMsg: false });
+        } else if (e.error_code === 'DRILL_LAYERS_NOT_SUPPORTED') {
+          this.notifyErrorTip({ defaultTip: 'drillLayersNotSupport', showErrorMsg: false });
         } else {
           this.notifyErrorTip({ e, defaultTip: 'getLayerInfoFailed' });
         }
