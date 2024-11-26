@@ -110,7 +110,7 @@ interface MapHandler {
   setLayersVisible: (layers: Array<Record<string, any>>, visibility: 'visible' | 'none') => void;
   toggleLayerVisible: (layer: Record<string, any>, visible: boolean) => void;
   echartsLayerResize: () => void;
-  updateOverlayLayer: (layerInfo: Record<string, any>, features: any, mergeByField?: string) => void;
+  updateOverlayLayer: (layerInfo: Record<string, any>, features: any, mergeByField?: string, featureProjection?: string) => void;
   copyLayer: (id: string, layerInfo: Record<string, any>) => boolean;
   resize: (keepBounds: boolean) => void;
   setCRS: (crs: CRSOptions | string) => void;
@@ -499,8 +499,8 @@ export default class WebMapViewModel extends Events {
     this.clean();
   }
 
-  updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string) {
-    this._handler.updateOverlayLayer(layerInfo, features, mergeByField);
+  updateOverlayLayer(layerInfo: any, features: any, mergeByField?: string, featureProjection?: string) {
+    this._handler.updateOverlayLayer(layerInfo, features, mergeByField, featureProjection);
   }
 
   copyLayer(id: string, layerInfo: Record<string, any>) {
