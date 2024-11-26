@@ -134,7 +134,8 @@ export default {
     sampleDataNotSupport: '暂不支持加载示例数据！',
     drillLayersNotSupport: '暂不支持加载下钻图层！',
     mvtNotSupport: '暂不支持加载矢量瓦片图层！',
-    mapCreatedFailed: '地图加载失败！'
+    mapCreatedFailed: '地图加载失败！',
+    projectionnotmatch: '{title}与当前地图投影不匹配！'
   },
   videoPlus: {
     loadingTip: '视频加载中...'

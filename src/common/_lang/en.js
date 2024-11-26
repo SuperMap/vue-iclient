@@ -132,7 +132,8 @@ export default {
     sampleDataNotSupport: 'Sample datas is not supported yet!',
     drillLayersNotSupport: 'Drill-down layers are not supported yet!',
     mvtNotSupport: 'Vector tile layers is not supported yet!',
-    mapCreatedFailed: 'Failed to load map!'
+    mapCreatedFailed: 'Failed to load map!',
+    projectionnotmatch: '{title} does not match the current map projection!'
   },
   drillMap: {
     goBack: 'Go Back'

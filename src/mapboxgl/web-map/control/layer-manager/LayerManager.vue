@@ -148,11 +148,13 @@ export default {
     this.viewModel.on('layersadded', this.addMapCombination);
     this.viewModel.on('layerorsourcenameduplicated', this.handleLayerOrSourceNameDuplicated);
     this.viewModel.on('layersremoved', this.removeMapCombination);
+    this.viewModel.on('projectionnotmatch', this.addLayerField);
   },
   beforeDestroy() {
     this.viewModel.off('layersadded', this.addMapCombination);
     this.viewModel.off('layerorsourcenameduplicated', this.handleLayerOrSourceNameDuplicated);
     this.viewModel.off('layersremoved', this.removeMapCombination);
+    this.viewModel.off('projectionnotmatch', this.addLayerField);
   },
   methods: {
     omitVisible(val) {
@@ -299,6 +301,10 @@ export default {
     },
     handleLayerOrSourceNameDuplicated() {
       Message.error(this.$t('webmap.layerorsourcenameduplicated'));
+    },
+    addLayerField({ e, nodeKey }) {
+      const node = this.getNodeByKey(this.treeData, nodeKey);
+      Message.error(this.$t(`webmap.${e.type}`, { title: node ? node.title : '' }));
     }
   },
   loaded() {

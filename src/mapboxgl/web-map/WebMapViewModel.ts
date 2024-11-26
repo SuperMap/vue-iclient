@@ -52,7 +52,7 @@ const OPACITY_MAP = {
  * @param {String} [options.googleMapsLanguage] - 用于定义在谷歌地图图块上显示标签的语言。当设置 `id` 且底图为谷歌地图时有效。
  * @param {boolean} [options.withCredentials=false] - 请求是否携带 cookie。当设置 `id` 时有效。
  * @param {boolean} [options.excludePortalProxyUrl] - server 传递过来的 URL 是否带有代理。当设置 `id` 时有效。
- * @param {boolean} [options.ignoreBaseProjection = 'false'] - 是否忽略底图坐标系和叠加图层坐标系不一致。
+ * @param {boolean} [options.ignoreBaseProjection =false] - 是否忽略底图坐标系和叠加图层坐标系不一致。
  * @param {String} [options.iportalServiceProxyUrlPrefix] - iportal的代理服务地址前缀。
  */
 interface webMapOptions {
