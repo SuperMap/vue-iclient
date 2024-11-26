@@ -6,6 +6,8 @@ import 'vue-iclient/static/libs/geostats/geostats';
 import getCenter from '@turf/center';
 import proj4 from 'proj4';
 import { getProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
+// @ts-ignore
+import { createWebMapV2BaseExtending } from 'vue-iclient/static/libs/iclient-common/iclient-common-webmapv2base';
 
 interface WebMapOptions {
   target?: string;
@@ -27,9 +29,8 @@ interface MapOptions {
   crs?: L.CRS;
   preferCanvas?: boolean;
 }
-
 // @ts-ignore
-const WebMapV2Base: InstanceType<any> = L.supermap.createWebMapV2BaseExtending(Events, 'triggerEvent');
+const WebMapV2Base: InstanceType<any> = createWebMapV2BaseExtending(Events, 'triggerEvent');
 
 // TODO 坐标系 / noWrap
 export default class WebMapViewModel extends WebMapV2Base {
