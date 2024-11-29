@@ -77,6 +77,7 @@ import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import SmCollapse from 'vue-iclient/src/common/collapse/Collapse.vue';
 import SmCollapsePanel from 'vue-iclient/src/common/collapse/Panel.vue';
 import SmTree from 'vue-iclient/src/common/tree/Tree.vue';
+import SmSlider from 'vue-iclient/src/common/slider/Slider.vue';
 
 export default {
   name: 'LayerGroup',
@@ -84,7 +85,8 @@ export default {
   components: {
     SmCollapse,
     SmCollapsePanel,
-    SmTree
+    SmTree,
+    SmSlider
   },
   props: {
     currentOpacity: {
