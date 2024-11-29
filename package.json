@@ -218,7 +218,7 @@
     "vue-class-component": "^7.2.6",
     "vue-eslint-parser": "^7.6.0",
     "vue-jest": "^3.0.2",
-    "vue-loader": "^15.5.1",
+    "vue-loader": "15.5.1",
     "vue-server-renderer": "2.6.14",
     "vue-style-loader": "^4.1.2",
     "vue-template-compiler": "2.6.14",
