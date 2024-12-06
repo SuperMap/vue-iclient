@@ -2,6 +2,7 @@ import { FetchRequest, Util } from 'vue-iclient/static/libs/iclient-common/iclie
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient/src/common/_utils/iServerRestService';
 import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient/src/common/_utils/util';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 /**
  * @class iPortalDataService
@@ -78,10 +79,12 @@ export default class iPortalDataService extends Events {
     }
     let datasetUrl = this.url;
 
-    if (preferContent) {
+    const onlyService = queryInfo.onlyService;
+    if (preferContent && !onlyService) {
       this._getDatafromContent(datasetUrl, queryInfo);
       return;
     }
+    delete queryInfo.onlyService;
     FetchRequest.get(datasetUrl, null, {
       withCredentials: this.withCredentials
     })
@@ -100,8 +103,16 @@ export default class iPortalDataService extends Events {
           this._getStructureDatafromContent();
           return;
         }
+        const hasService = data.dataItemServices && data.dataItemServices.length > 0;
+        if (onlyService && !hasService) {
+          this.triggerEvent('getdatafailed', {
+            error: { message: geti18n().t('query.seviceNotSupport') },
+            onlyService
+          });
+          return;
+        }
         // 是否有rest服务
-        if (data.dataItemServices && data.dataItemServices.length > 0) {
+        if (hasService) {
           let dataItemServices = data.dataItemServices;
           let resultData = dataItemServices.find(
             item =>
@@ -163,7 +174,7 @@ export default class iPortalDataService extends Events {
         // 所有请求结束
         Promise.all(allRequest).then((results) => {
           // 结果合并
-          results.map((result) => {
+          results.forEach((result) => {
             featureResults = featureResults.concat(result.features);
           });
           this.iserverService._getFeaturesSucceed({

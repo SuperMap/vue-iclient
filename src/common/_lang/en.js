@@ -30,15 +30,15 @@ export default {
     unavailableVideo: 'This video is temporarily unavailable, please try again later',
     mapNotLoaded: 'The associated map has not been loaded yet, please wait for a second',
     unassociatedMap: 'You need to configure the associated map!',
-    videojs:
-      'Please import video.js plugin: https://github.com/videojs/video.js, When playing rtmp, install flash related plugin: https://github.com/videojs/videojs-flash',
+    videojs: 'Please import video.js plugin: https://github.com/videojs/video.js',
     flvPlayer:
       'Please import flv related plugin: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
   success: { copySucccess: 'copy success' },
   info: {
     loading: 'Loading...',
-    pressEscToExit: 'Press the ESC key or click the close button to exit'
+    pressEscToExit: 'Press the ESC key or click the close button to exit',
+    pressEscOrClickToExit: 'Press the ESC key or click anywhere to exit'
   },
   unit: {
     kilometers: 'km',
@@ -81,7 +81,11 @@ export default {
     unSupportedData: 'The current data does not support linkage with the map'
   },
   layerList: {
-    title: 'Layer'
+    title: 'Layer',
+    layerStyle: 'layerStyle',
+    attributes: 'Attributes',
+    zoomToLayer: 'zoomToLayer',
+    opacity: 'Opacity'
   },
   slideshow: {
     title: 'Slideshow'
@@ -120,12 +124,16 @@ export default {
     loadingTip: 'Map is loading...',
     crsNotSupport: 'The coordinate system of the current map is not supported!',
     TileMatrixSetNotSuppport: 'Incoming TileMatrixSet is not supported!',
-    getLayerInfoFailed: 'Failed to get layer information!',
+    getLayerInfoFailed: 'Failed to load layer!',
     getThemeInfoFailed: 'Failed to get theme information!',
     crsnotsupport: 'Unsupported coordinate system!',
     baiduMapNotSupport: 'Baidu maps is not supported yet!',
+    layerorsourcenameduplicated: 'layer or source name duplicated and cannot be added!',
     sampleDataNotSupport: 'Sample datas is not supported yet!',
-    mvtNotSupport: 'Vector tile layers is not supported yet!'
+    drillLayersNotSupport: 'Drill-down layers are not supported yet!',
+    mvtNotSupport: 'Vector tile layers is not supported yet!',
+    mapCreatedFailed: 'Failed to load map!',
+    projectionnotmatch: '{title} does not match the current map projection!'
   },
   drillMap: {
     goBack: 'Go Back'
@@ -173,7 +181,8 @@ export default {
     query: 'Query',
     queryJob: 'Task',
     queryResult: 'Result',
-    attributeCondition: 'Attribute Condition',
+    attributeCondition: 'Query Condition',
+    keyQueryCondition: 'Search keyword',
     spatialFilter: 'Spatial Filter',
     mapBounds: 'Query within the whole map extent',
     currentMapBounds: 'Query within current viewbound',
@@ -185,7 +194,9 @@ export default {
     attributeValue: 'Attribute Value',
     noResults: 'The query result is empty!',
     queryFailed: 'Query failed!',
-    seviceNotSupport: 'This service does not support queries!'
+    seviceNotSupport: 'This service does not support queries!',
+    keyQueryPlaceholder: 'Please enter the search keyword',
+    sqlQueryPlaceholder: 'Please enter the SQL expression'
   },
   identify: {
     layerNotExit: "The layer '{layer}' does not exist in the map's style",

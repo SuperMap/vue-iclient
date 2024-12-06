@@ -371,6 +371,7 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
     if (!this.selectedRowKeys.includes(index)) {
       this.selectedRowKeys.push(index);
     }
+    this.selectedRowLength = this.selectedRowKeys.length;
     let pageNumber = Math.ceil((index + 1) / this.paginationOptions.pageSize);
     let featureIndex = index % this.paginationOptions.pageSize;
     this.$set(this.paginationOptions, 'current', pageNumber);
@@ -406,8 +407,8 @@ class SmAttributes extends Mixins(MapGetter, Theme, VmUpdater) {
   getCurrentSelectedRowLength() {
     let currentSelectedRowKeys = [];
     this.currentDataSource.forEach(data => {
-      if(this.selectedRowKeys.indexOf(data['index']) !== -1) {
-        currentSelectedRowKeys.push(data['index']);
+      if(this.selectedRowKeys.indexOf(+data['index']) !== -1) {
+        currentSelectedRowKeys.push(+data['index']);
       }
     });
     this.selectedRowLength = currentSelectedRowKeys.length;

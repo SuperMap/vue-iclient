@@ -1,40 +1,90 @@
 import airport from './data/airport.json';
-const fakeDataServiceResult = {
-  result: {
-    datasetInfos: [{
-      fieldInfos:[{name: "SmID", caption: "SmID", type: "INT32"}, {name: "NAME", caption: "名称", type: "WTEXT"}]
-    }],
-    currentCount: 1,
-    totalCount: 1,
-    features: {
-      type: 'FeatureCollection',
+
+const fakeMapServiceResult = {
+  recordsets: [
+    {
+      datasetName: 'Capitals@World#1',
       features: [
         {
-          type: 'Feature',
-          properties: {
-            SMID: '1',
-            NAME: '四川省'
-          },
+          fieldNames: ['SMID', 'NAME'],
+          fieldValues: ['1', '四川省'],
           geometry: {
-            type: 'MultiPolygon',
-            coordinates: [
-              [
-                [
-                  [101.84004968, 26.0859968692659],
-
-                  [101.95654423, 26.0888446242659],
-                  [101.84004968, 26.0859968692659]
-                ]
-              ]
-            ]
+            id: 1,
+            center: {
+              y: 7.105427357601002e-15,
+              x: 0
+            },
+            style: null,
+            parts: [5],
+            partTopo: [1],
+            points: [
+              {
+                y: 85.05112877980649,
+                x: -180
+              },
+              {
+                y: -85.05112877980648,
+                x: -180
+              },
+              {
+                y: -85.05112877980648,
+                x: 180
+              },
+              {
+                y: 85.05112877980649,
+                x: 180
+              },
+              {
+                y: 85.05112877980649,
+                x: -180
+              }
+            ],
+            type: 'REGION'
+          }
+        },
+        {
+          fieldNames: ['SMID', 'NAME'],
+          fieldValues: ['2', '广东省'],
+          geometry: {
+            id: 1,
+            center: {
+              y: 7.105427357601002e-15,
+              x: 0
+            },
+            style: null,
+            parts: [5],
+            partTopo: [1],
+            points: [
+              {
+                y: 85.05112877980649,
+                x: -180
+              },
+              {
+                y: 85.05112877980649,
+                x: -180
+              }
+            ],
+            type: 'REGION'
           }
         }
-      ]
+      ],
+      fieldCaptions: ['SMID', '名称'],
+      fieldTypes: ['INT32', 'WTEXT'],
+      fields: ['SMID', 'NAME']
     }
-  }
+  ],
+  totalCount: 1,
+  currentCount: 1,
+  customResponse: null,
 };
-// const fakeDataServiceResult =
-// {'queryMode':'SpatialQuery','queryParameters':{'customParams':null,'prjCoordSys':null,'expectCount':20,'networkType':"LINE",'queryOption':"ATTRIBUTEANDGEOMETRY",'queryParams':[{'name':"Capitals@World.1",'attributeFilter':"SmID%26gt;0"}],'startRecord':0,'holdTime':10,'returnCustomResult':false,'returnFeatureWithFieldCaption':false},'geometry':{'id':0,'style':null,'parts':[5],'points':[{'id':"SuperMap.Geometry_7",'bounds':null,'SRID':null,'x':88.78538087499851,'y':21.676702703064578,'tag':null,'type':"Point",'geometryType':"Point"},{'id':"SuperMap.Geometry_8",'bounds':null,'SRID':null,'x':119.89866212499828,'y':21.676702703064578,'tag':null,'type':"Point",'geometryType':"Point"},{'id':"SuperMap.Geometry_9",'bounds':null,'SRID':null,'x':119.89866212499828,'y':49.737884922662886,'tag':null,'type':"Point",'geometryType':"Point"},{'id':"SuperMap.Geometry_10",'bounds':null,'SRID':null,'x':88.78538087499851,'y':49.737884922662886,'tag':null,'type':"Point",'geometryType':"Point"},{'id':"SuperMap.Geometry_11",'bounds':null,'SRID':null,'x':88.78538087499851,'y':21.676702703064578,'tag':null,'type':"Point",'geometryType':"Point"}],'type':"REGION",'prjCoordSys':{'epsgCode':null}},'spatialQueryMode':"INTERSECT"};
+const fakeDataServiceResult = {
+  datasetInfos: [{
+    fieldInfos:[{name: "SmID", caption: "SmID", type: "INT32"}, {name: "NAME", caption: "名称", type: "WTEXT"}]
+  }],
+  currentCount: 1,
+  totalCount: 1,
+  features: fakeMapServiceResult.recordsets[0].features
+};
 
 const fakeAddressMatch = {
   result: [
@@ -48,71 +98,6 @@ const fakeAddressMatch = {
       filters: ['北京市', '海淀区']
     }
   ]
-};
-
-const fakeMapServiceResult = {
-  result: {
-    recordsets: [
-      {
-        datasetName: 'Capitals@World#1',
-        features: {
-          type: 'FeatureCollection',
-          features: [
-            {
-              type: 'Feature',
-              properties: {
-                SMID: '1',
-                NAME: '四川省'
-              },
-              geometry: {
-                type: 'MultiPolygon',
-                coordinates: [
-                  [
-                    [
-                      [101.84004968, 26.0859968692659],
-
-                      [101.95654423, 26.0888446242659],
-                      [101.84004968, 26.0859968692659]
-                    ]
-                  ]
-                ]
-              }
-            }
-          ]
-        },
-        fieldCaptions: [
-          'SMID',
-          '名称'
-        ],
-        fieldTypes: [
-          'INT32',
-          'DOUBLE',
-          'DOUBLE',
-          'INT32',
-          'INT32',
-          'INT32',
-          'INT32',
-          'DOUBLE',
-          'WTEXT',
-          'WTEXT',
-          'WTEXT',
-          'WTEXT',
-          'WTEXT',
-          'WTEXT',
-          'DOUBLE',
-          'WTEXT'
-        ],
-        fields: [
-          'SMID',
-          'NAME'
-        ]
-      }
-    ],
-    totalCount: 1,
-    currentCount: 1,
-    customResponse: null,
-    succeed: true
-  }
 };
 
 const featureResults = {
@@ -1882,6 +1867,29 @@ const fieldsJson = [
   }
 ];
 
+const REST_DATA_FIELDS_RESULT = [
+  {
+    isRequired: true,
+    defaultValue: '',
+    name: 'SmID',
+    caption: 'SmID',
+    type: 'INT32',
+    maxLength: 4,
+    isZeroLengthAllowed: true,
+    isSystemField: true
+  },
+  {
+    isRequired: false,
+    defaultValue: '',
+    name: 'NAME',
+    caption: '名称',
+    type: 'WTEXT',
+    maxLength: 60,
+    isZeroLengthAllowed: true,
+    isSystemField: false
+  }
+]
+
 const drill_map_mapjson = {
   extent: {
     leftBottom: {
@@ -2398,6 +2406,27 @@ const webmap_MAPBOXSTYLE_Tile = {
 const wmsCapabilitiesText =
   '<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE WMT_MS_Capabilities SYSTEM "http://fakeiserver.supermap.io/iserver/services/map-world/wms111?request=getdtd&file=wms,1.1.1,capabilities_1_1_1.dtd"><WMT_MS_Capabilities version="1.1.1"><Service><Name>OGC:WMS</Name><Title>map-world_wms111</Title><Abstract>北京超图软件股份有限公司提供的 WMS 服务. 联系方式: support@supermap.com</Abstract><KeywordList><Keyword>iServer</Keyword></KeywordList><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://fakeiserver.supermap.io/iserver/services/map-world/wms111?" xlink:type="simple" /><ContactInformation><ContactPersonPrimary><ContactPerson>联系人姓名</ContactPerson><ContactOrganization>北京超图软件股份有限公司</ContactOrganization></ContactPersonPrimary><ContactPosition /><ContactAddress><AddressType>postal</AddressType><Address>北京市朝阳区酒仙桥北路甲10号院电子城IT产业园107号楼6层</Address><City>北京</City><StateOrProvince>北京</StateOrProvince><PostCode>100015</PostCode><Country>中国</Country></ContactAddress><ContactVoiceTelephone>+86-10-59896655</ContactVoiceTelephone><ContactFacsimileTelephone>+86-10-59896666</ContactFacsimileTelephone><ContactElectronicMailAddress>support@supermap.com</ContactElectronicMailAddress></ContactInformation><Fees>none</Fees><AccessConstraints>none</AccessConstraints></Service><Capability><Request><GetCapabilities><Format>application/vnd.ogc.wms_xml</Format><Format>text/xml</Format><Format>text/html</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://fakeiserver.supermap.io/iserver/services/map-world/wms111?" xlink:type="simple" /></Get><Post><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://fakeiserver.supermap.io/iserver/services/map-world/wms111?" xlink:type="simple" /></Post></HTTP></DCPType></GetCapabilities><GetMap><Format>image/png</Format><Format>image/bmp</Format><Format>image/jpeg</Format><Format>image/gif</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://fakeiserver.supermap.io/iserver/services/map-world/wms111?" xlink:type="simple" /></Get></HTTP></DCPType></GetMap><GetFeatureInfo><Format>application/vnd.ogc.wms_xml</Format><Format>text/xml</Format><Format>text/html</Format><DCPType><HTTP><Get><OnlineResource xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="http://fakeiserver.supermap.io/iserver/services/map-world/wms111?" xlink:type="simple" /></Get></HTTP></DCPType></GetFeatureInfo></Request><Exception><Format>application/vnd.ogc.se_xml</Format><Format>XML</Format></Exception><UserDefinedSymbolization SupportSLD="1" UserLayer="0" UserStyle="1" RemoteWFS="0" /><Layer queryable="0"><Title /><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.003750834279726E7" maxy="2.0037508342789244E7" /><Layer queryable="1"><Name>0</Name><Title>世界地图_Day</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.00000000003598" maxx="180.00000000007202" maxy="90.00000000000001" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.003750834279726E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>1</Name><Title>World</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>2</Name><Title>世界地图_Gray</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>3</Name><Title>世界地图</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>4</Name><Title>World Map</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>5</Name><Title>世界地图_Night</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="90.0" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /></Layer><Layer queryable="1"><Name>6</Name><Title>World_Common</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:4326" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:3857" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /><BoundingBox SRS="EPSG:0" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8625154.223060824" /></Layer><Layer queryable="1"><Name>7</Name><Title>World_Robinson</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:4326" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:3857" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /><BoundingBox SRS="EPSG:0" minx="-1.700583333052523E7" miny="-8625154.223060824" maxx="1.700583333052523E7" maxy="8691252.148623722" /></Layer><Layer queryable="1"><Name>8</Name><Title>World_VanderGrintenI</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:4326" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /><BoundingBox SRS="EPSG:0" minx="-2.0037508342789244E7" miny="-2.003750834278924E7" maxx="2.0037508342789244E7" maxy="2.003750834278924E7" /></Layer><Layer queryable="1"><Name>9</Name><Title>World_AirLine_Part</Title><SRS>EPSG:4326</SRS><SRS>EPSG:3857</SRS><SRS>EPSG:0</SRS><LatLonBoundingBox minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /><BoundingBox SRS="EPSG:4326" minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /><BoundingBox SRS="EPSG:3857" minx="-2.0037508342789244E7" miny="-2.0037508342789236E7" maxx="2.0037508342789244E7" maxy="2.0037508342789244E7" /><BoundingBox SRS="EPSG:0" minx="-180.0" miny="-90.0" maxx="180.0" maxy="85.88623405603997" /></Layer></Layer></Capability></WMT_MS_Capabilities>';
 
+const restMap_Layers_Res = [
+  {
+    subLayers: {
+      layers: [
+        {
+          caption: 'dataGeoJson_620714185@supermap1_pg',
+          name: 'dataGeoJson_620714185@supermap1_pg'
+        }
+      ]
+    }
+  }
+];
+
+const restMap_Maps_Res = [
+  {
+    resourceConfigID: 'map',
+    path: 'http://172.16.15.94:8195/portalproxy/83d5d8bcb61cb7f4/iserver/services/map_sichuanshengdianzhanfadian-sichuanfadianzhanshangyuefadianliang_uu09rsi8/rest/maps/mapOfsupermap1_pg',
+    name: 'mapOfsupermap1_pg'
+  }
+];
+
 module.exports = {
   fakeDataServiceResult,
   fakeMapServiceResult,
@@ -2417,6 +2446,7 @@ module.exports = {
   searchGeocoding,
   search_mapjson,
   fieldsJson,
+  REST_DATA_FIELDS_RESULT,
   datas_beijing,
   portal_data,
   portal_data1,
@@ -2446,5 +2476,10 @@ module.exports = {
   webmap_migrationLayer,
   webmap_rangeLayer,
   wmsCapabilitiesText,
-  webmap_MAPBOXSTYLE_Tile
+  webmap_MAPBOXSTYLE_Tile,
+  restMap_Layers_Res,
+  restMap_Maps_Res
 };
+
+
+

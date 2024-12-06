@@ -1,5 +1,5 @@
 <script lang="ts">
-import type { CreateElement, VNode } from 'vue';
+import type { CreateElement } from 'vue';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Swiper from './Swiper';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
@@ -11,22 +11,23 @@ import { addListener, removeListener } from 'resize-detector';
 import 'swiper/swiper-bundle.min.css';
 
 interface swiperOptionsType {
-  initialSlide: Number;
-  direction: String;
-  speed: Number;
-  loopedSlides: Number;
-  loop: Boolean;
-  grabCursor: Boolean;
-  mousewheel: Boolean;
-  keyboard: Boolean;
-  autoplay: Boolean | Object;
-  effect: String;
+  initialSlide: number;
+  direction: string;
+  speed: number;
+  loopedSlides: number;
+  loop: boolean;
+  grabCursor: boolean;
+  mousewheel: boolean;
+  keyboard: boolean;
+  autoplay: boolean | Object;
+  effect: string;
   navigation?: Object;
   pagination?: Object;
   scrollbar?: Object;
-  observer: Boolean;
-  observeParents: Boolean;
-  observeSlideChildren: Boolean;
+  observer: boolean;
+  observeParents: boolean;
+  observeSlideChildren: boolean;
+  on: Object;
 }
 
 @Component({
@@ -39,7 +40,7 @@ interface swiperOptionsType {
 class Slideshow extends Mixins(Theme, BaseCard) {
   __resizeHandler: Function;
   swiper: any;
-  isRefresh: boolean = true;
+  swiperCmptKey: number = +new Date();
   manualUpdateProps: string[] = [
     'speed',
     'loop',
@@ -51,8 +52,6 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     'autoplay',
     'direction'
   ];
-
-  activeIndexData: number = 0;
 
   // 当 loop 为 true && effect 为 cube, 幻灯片页数等于3会出现重叠。
   loopedSlides: number = 3;
@@ -89,7 +88,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
 
   get swiperOptions() {
     let options: swiperOptionsType = {
-      initialSlide: this.defaultActiveIndex,
+      initialSlide: this.activeIndex ?? this.defaultActiveIndex,
       direction: this.direction,
       speed: this.speed,
       loop: this.loop,
@@ -101,7 +100,10 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       effect: this.effect,
       observer: true,
       observeParents: true,
-      observeSlideChildren: true
+      observeSlideChildren: true,
+      on: {
+        init: this.slideInit
+      }
     };
     this.navigation && (options.navigation = this.navigation);
     this.pagination && (options.pagination = this.pagination);
@@ -134,13 +136,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     this.autoResizeHandler();
   }
 
-  created() {
-    this.activeIndexData = this.defaultActiveIndex || this.activeIndex;
-  }
-
   mounted() {
-    // @ts-ignore
-    this.swiper = this.$refs.mySwiper.$swiper;
     this.watchOptions();
     this.autoResizeHandler();
   }
@@ -148,6 +144,12 @@ class Slideshow extends Mixins(Theme, BaseCard) {
   beforeDestroy() {
     // @ts-ignore
     removeListener(this.$el, this.__resizeHandler);
+  }
+
+  slideInit(swiper: any) {
+    this.swiper = swiper;
+    this.goTo(this.swiperOptions.initialSlide, 0);
+    this.$emit('init', swiper);
   }
 
   slideChange() {
@@ -159,62 +161,11 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     };
     this.$emit('change', changeParameter);
     this.$emit('indexChange', this.swiper.realIndex);
-    this.activeIndexData = this.swiper.realIndex;
   }
 
   _activeIndexChangedHandler(newIndex: number) {
-    const prevActiveIndexData = this.activeIndexData;
-    if (prevActiveIndexData === newIndex) {
-      return;
-    }
-    this.activeIndexData = newIndex;
-    if (this.loop) {
-      const changeType = this._getChangeType(newIndex, prevActiveIndexData);
-      if (['next', 'loopToFirst'].includes(changeType)) {
-        this.next();
-        return;
-      }
-      if (['prev', 'loopToLast'].includes(changeType)) {
-        this.prev();
-        return;
-      }
-    }
-    this.goTo(newIndex, this.speed);
-  }
-
-  _getChangeType(newIndex, oldIndex) {
-    const childrenLength = this._getChildrenLength();
-    const offset = newIndex - oldIndex;
-    if (offset === 1) {
-      return 'next';
-    }
-    if (offset === -1) {
-      return 'prev';
-    }
-    if (oldIndex === childrenLength - 1 && newIndex === 0) {
-      return 'loopToFirst';
-    }
-    if (oldIndex === 0 && newIndex === childrenLength - 1) {
-      return 'loopToLast';
-    }
-    return 'jump';
-  }
-
-  _observerUpdate(swiper, mutationRecord) {
-    if (mutationRecord.type === 'childList') {
-      this.goTo(this.activeIndexData, 0);
-      this.$emit('childrenlistchange');
-    }
-  }
-
-  _reload() {
-    this.isRefresh = false;
     this.$nextTick(() => {
-      this.isRefresh = true;
-      this.$nextTick(() => {
-        // @ts-ignore
-        this.swiper = this.$refs.mySwiper.$swiper;
-      });
+      this.goTo(newIndex, 0);
     });
   }
 
@@ -231,7 +182,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
     this.swiper.slidePrev(speed);
   }
 
-  goTo(index: number, speed?: number) {
+  goTo(index: number, speed: number) {
     if (this.swiper) {
       this.loop ? this.swiper.slideToLoop(index, speed) : this.swiper.slideTo(index, speed);
     }
@@ -255,7 +206,7 @@ class Slideshow extends Mixins(Theme, BaseCard) {
         item,
         function (newVal, oldVal) {
           if (!isequal(newVal, oldVal)) {
-            this._reload();
+            this.swiperCmptKey = +new Date();
           }
         },
         { deep: true }
@@ -313,23 +264,19 @@ class Slideshow extends Mixins(Theme, BaseCard) {
       textColor: this.textColor,
       splitLine: this.splitLine
     };
-    let SwiperCompt: VNode | null = null;
-    if (this.isRefresh) {
-      SwiperCompt = h(
-        // @ts-ignore
-        Swiper,
-        {
-          domProps: { realIndex: this.activeIndex },
-          props: { options: this.swiperOptions },
-          on: {
-            slideChange: this.slideChange,
-            observerUpdate: this._observerUpdate
-          },
-          ref: 'mySwiper'
+    const SwiperCompt = h(
+      // @ts-ignore
+      Swiper,
+      {
+        domProps: { realIndex: this.activeIndex },
+        props: { options: this.swiperOptions },
+        on: {
+          slideChange: this.slideChange
         },
-        slots
-      );
-    }
+        key: this.swiperCmptKey
+      },
+      slots
+    );
     return h(
       'sm-collapse-card',
       {

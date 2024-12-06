@@ -170,6 +170,20 @@ describe('LayerManagerViewModel', () => {
     }).not.toThrow();
   });
 
+  it('projectionnotmatch', (done) => {
+    let nodeKey = 'key1';
+    const data = { nodeKey, mapId: 123, serviceUrl: 'http://fakeservice' };
+    expect(viewModel.cacheMaps[nodeKey]).toBeUndefined();
+    viewModel.addLayer(data);
+    expect(viewModel.cacheMaps[nodeKey]).not.toBeUndefined();
+    expect(viewModel.readyNext).toBeFalsy();
+    const spyon = jest.fn();
+    viewModel.on('projectionnotmatch', spyon);
+    viewModel.cacheMaps[nodeKey].triggerEvent('projectionnotmatch', {});
+    expect(viewModel.readyNext).toBeTruthy();
+    expect(spyon).toHaveBeenCalledTimes(1);
+    done();
+  });
   it('layersadded', (done) => {
     let nodeKey = 'key1';
     const data = { nodeKey, mapId: 123, serviceUrl: 'http://fakeservice' };
@@ -178,10 +192,14 @@ describe('LayerManagerViewModel', () => {
     expect(viewModel.cacheMaps[nodeKey]).not.toBeUndefined();
     expect(viewModel.readyNext).toBeFalsy();
     const layersAddedFn = jest.fn();
+    const layerorsourcenameduplicatedFn = jest.fn();
     viewModel.on('layersadded', layersAddedFn);
+    viewModel.on('layerorsourcenameduplicated', layerorsourcenameduplicatedFn);
     viewModel.cacheMaps[nodeKey].triggerEvent('addlayerssucceeded', {});
+    viewModel.cacheMaps[nodeKey].triggerEvent('layerorsourcenameduplicated', {});
     expect(viewModel.readyNext).toBeTruthy();
     expect(layersAddedFn).toHaveBeenCalledTimes(1);
+    expect(layerorsourcenameduplicatedFn).toHaveBeenCalledTimes(1);
     done();
   });
 

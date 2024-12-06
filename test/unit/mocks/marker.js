@@ -12,6 +12,7 @@ class Marker extends Evented {
     }
 
     addTo(map) {
+      return this;
     }
 
     remove() {
@@ -25,6 +26,9 @@ class Marker extends Evented {
         // this._pos = null;
         // this._update();
         return this;
+    }
+
+    getElement() {
     }
 
     setPopup(popup) {

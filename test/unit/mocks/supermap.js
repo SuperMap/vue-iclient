@@ -428,7 +428,7 @@ var FetchRequest = (SuperMap.FetchRequest = {
         process.nextTick(() => resolve(new Response(JSON.stringify(fakeLandUse))));
       }
       /// iserver/services/data-world/rest/data/datasources/World/datasets/Countries/fields.rjson.json
-      else if (url.indexOf('fields.rjson') > -1) {
+      else if (url.indexOf('fields.json') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(fieldsJson))));
       } else if (url.indexOf('data_sichuan-2-/rest/data/datasources/supermap1_pg/datasets') > -1) {
         process.nextTick(() => resolve(new Response(JSON.stringify(datasets))));

@@ -11,11 +11,47 @@ const leafletMap = class {
   addLayer() {}
   invalidateSize() {}
   remove() {}
+  _layers = {}
+  whenReady() {}
 };
+
+class GeoJSON {
+  static coordsToLatLngs() {}
+  
+  on = jest.fn();
+  off = jest.fn();
+  _layerAdd = jest.fn();
+}
+
+class TileLayer {
+  static extend(options) {
+    return function() {
+      options._layerAdd = jest.fn()
+      return options;
+    };
+  }
+  static BingLayer() {}
+  _layerAdd = jest.fn()
+}
+
+function tileLayer() {
+  return new TileLayer();
+}
+// tileLayer.wms = {jest.fn((url, options) => {
+//   return options.layers;
+// })};
+class WMS {
+  _layerAdd = jest.fn()
+}
+function wms() {
+  return new WMS();
+}
+tileLayer.wms = wms;
+
 module.exports = {
   Map: leafletMap,
-  point: () => {},
-  latLng: () => {},
+  point: () => { _layerAdd : jest.fn()},
+  latLng: () => {_layerAdd : jest.fn()},
   map: () => {
     return new leafletMap();
   },
@@ -35,6 +71,7 @@ module.exports = {
       }
     }
   },
+
   crs: class {
     unproject() {
       return [];
@@ -49,23 +86,23 @@ module.exports = {
       };
     }
   },
-  TileLayer: class {
-    static extend() {
-      return class {};
-    }
-    static BingLayer
-  },
-  tileLayer: {},
+  TileLayer,
+  tileLayer,
   layerGroup: () => {
-    return {};
+    return {_layerAdd : jest.fn()};
   },
-  geoJSON: () => {},
-  GeoJSON: {
-    coordsToLatLngs: () => {}
+  geoJSON: ()=>{
+    return new GeoJSON();
   },
-  polyline: () => {},
-  marker: () => {},
-  circleMarker: () => {},
-  icon: () => {},
-  Popup: () => {} 
+  GeoJSON: GeoJSON,
+  polyline: () => {_layerAdd : jest.fn()},
+  marker: () => {_layerAdd : jest.fn()},
+  circleMarker: jest.fn(),
+  circle: jest.fn(),
+  icon: () => {_layerAdd : jest.fn()},
+  Icon: {Default:class {static mergeOptions=jest.fn()}},
+  Popup: () => {},
+  Evented: class {},
+  svg: jest.fn()
 };
+

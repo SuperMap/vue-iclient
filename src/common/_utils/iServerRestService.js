@@ -1,11 +1,17 @@
 import {
   QueryBySQLParameters,
+  QueryByGeometryParameters,
   FilterParameter,
   QueryBySQLService,
   FetchRequest,
+  FeatureService,
+  QueryService,
   GetFeaturesBySQLParameters,
-  GetFeaturesBySQLService,
-  FeatureService
+  GetFeaturesByBoundsParameters,
+  Util,
+  GeometryPolygon,
+  GeometryLinearRing,
+  GeometryPoint
 } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
@@ -17,11 +23,6 @@ import cloneDeep from 'lodash.clonedeep';
 export function _getValueOfEpsgCode(epsgCode) {
   const defName = `EPSG:${epsgCode}`;
   const defValue = getProjection(defName);
-  if (!defValue) {
-    console.error(`${defName} not define`);
-  } else {
-    !proj4.defs(defName) && proj4.defs(defName, defValue);
-  }
   return {
     name: defName,
     value: defValue
@@ -66,9 +67,9 @@ export function vertifyEpsgCode(firstFeature) {
 }
 
 export function transformFeatures(epsgCode, features) {
-  const projName = _getValueOfEpsgCode(epsgCode).name;
+  const { name: projName, value: projValue } = _getValueOfEpsgCode(epsgCode);
   const transformedFeatures = features.map(feature => {
-    if (proj4.defs(projName) && feature.geometry && feature.geometry.coordinates) {
+    if (projValue && feature.geometry && feature.geometry.coordinates) {
       const coordinates = feature.geometry.coordinates;
       feature.geometry.coordinates = _transformCoordinates(coordinates, projName);
     }
@@ -134,7 +135,10 @@ export default class iServerRestService extends Events {
     super();
     this.url = url;
     this.options = options || {};
+    this.options.fromIndex = this.options.fromIndex ?? 0;
     this.eventTypes = ['getdatasucceeded', 'getdatafailed', 'featureisempty'];
+    this._defaultMaxFeatures = 1000;
+    this._queryResultHandler = this._queryResultHandler.bind(this);
   }
 
   getData(datasetInfo, queryInfo) {
@@ -173,19 +177,19 @@ export default class iServerRestService extends Events {
   getMapFeatures(datasetInfo, queryInfo) {
     let { dataUrl, mapName } = datasetInfo;
     queryInfo.name = mapName;
-    this.projectionUrl = `${dataUrl}/prjCoordSys`;
+    this.projectionUrl = Util.urlPathAppend(dataUrl, 'prjCoordSys');
     if (queryInfo.keyWord) {
       this._getRestMapFields(
         dataUrl,
         mapName,
         fields => {
-          queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
-          this._getMapFeatureBySql(dataUrl, queryInfo);
+          const attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
+          this._queryMapFeatures(dataUrl, { ...queryInfo, attributeFilter });
         },
         queryInfo.withCredentials
       );
     } else {
-      this._getMapFeatureBySql(dataUrl, queryInfo);
+      this._queryMapFeatures(dataUrl, queryInfo);
     }
   }
 
@@ -205,15 +209,15 @@ export default class iServerRestService extends Events {
     let { datasetName, dataSourceName, dataUrl } = datasetInfo;
     queryInfo.name = datasetName + '@' + dataSourceName;
     queryInfo.datasetNames = [dataSourceName + ':' + datasetName];
-    this.projectionUrl = `${dataUrl}/datasources/${dataSourceName}/datasets/${datasetName}`;
+    this.projectionUrl = Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}`);
     if (queryInfo.keyWord) {
-      let fieldsUrl = dataUrl + `/datasources/${dataSourceName}/datasets/${datasetName}/fields.rjson?returnAll=true`;
+      let fieldsUrl = Util.urlAppend(Util.urlPathAppend(dataUrl, `datasources/${dataSourceName}/datasets/${datasetName}/fields`), 'returnAll=true');
       this._getRestDataFields(fieldsUrl, queryInfo, fields => {
-        queryInfo.attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
-        this._getDataFeaturesBySql(dataUrl, queryInfo);
+        const attributeFilter = this._getAttributeFilterByKeywords(fields, queryInfo.keyWord);
+        this._queryDataFeatures(dataUrl, { ...queryInfo, attributeFilter });
       });
     } else {
-      this._getDataFeaturesBySql(dataUrl, queryInfo);
+      this._queryDataFeatures(dataUrl, queryInfo);
     }
   }
 
@@ -261,61 +265,129 @@ export default class iServerRestService extends Events {
     });
   }
 
-  _getMapFeatureBySql(url, queryInfo) {
-    let queryBySQLParams, queryBySQLService;
-    queryBySQLParams = new QueryBySQLParameters({
+  _queryMapFeatures(url, queryInfo) {
+    const queryService = new QueryService(url, {
+      proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials
+    });
+    const expectCountOptions = this._calcFeaturesExpectCountOptions(queryInfo);
+    const pickedCommonParams = {
+      startRecord: expectCountOptions.fromIndex,
+      expectCount: expectCountOptions.maxFeatures,
+      prjCoordSys: {
+        epsgCode: 4326
+      },
       queryParams: [
         {
           name: queryInfo.name,
           attributeFilter: queryInfo.attributeFilter,
           orderBy: queryInfo.orderBy
         }
-      ],
-      queryOption: this.options.hasGeometry === false ? 'ATTRIBUTE' : 'ATTRIBUTEANDGEOMETRY',
-      startRecord: this.options.fromIndex,
-      expectCount: this.options.toIndex ? this.options.toIndex - this.options.fromIndex + 1 : queryInfo.maxFeatures
-    });
-    queryBySQLService = new QueryBySQLService(url, {
-      proxy: this.options.proxy,
-      withCredentials: queryInfo.withCredentials,
-      eventListeners: {
-        processCompleted: this._getFeaturesSucceed.bind(this),
-        processFailed: serviceResult => {
-          console.error(serviceResult.error);
-          this.fetchFailed(serviceResult.error);
-        }
-      }
-    });
-    queryBySQLService.processAsync(queryBySQLParams);
+      ]
+    };
+    if (queryInfo.bounds) {
+      const params = this._getMapFeaturesParamsByGeometry(queryInfo, pickedCommonParams);
+      queryService.queryByGeometry(params, this._queryResultHandler);
+      return;
+    }
+    const params = this._getMapFeaturesParamsBySql(queryInfo, pickedCommonParams);
+    queryService.queryBySQL(params, this._queryResultHandler);
   }
 
-  _getDataFeaturesBySql(url, queryInfo) {
-    let getFeatureBySQLParams, getFeatureBySQLService;
-    getFeatureBySQLParams = new GetFeaturesBySQLParameters({
+  _queryDataFeatures(url, queryInfo) {
+    const featureService = new FeatureService(url, {
+      proxy: this.options.proxy,
+      withCredentials: queryInfo.withCredentials
+    });
+    const expectCountOptions = this._calcFeaturesExpectCountOptions(queryInfo);
+    const pickedCommonParams = {
+      ...expectCountOptions,
+      targetPrj: {
+        epsgCode: 4326
+      },
+      returnFeaturesOnly: this.options.returnFeaturesOnly
+    };
+    if (queryInfo.bounds) {
+      const params = this._getDataFeaturesParamsByGeometry(queryInfo, pickedCommonParams);
+      featureService.getFeaturesByGeometry(params, this._queryResultHandler);
+      return;
+    }
+    const params = this._getDataFeaturesParamsBySql(queryInfo, pickedCommonParams);
+    featureService.getFeaturesBySQL(params, this._queryResultHandler);
+  }
+
+  _getMapFeaturesParamsBySql(queryInfo, commonParams) {
+    return new QueryBySQLParameters({
+      ...commonParams,
+      queryOption: this.options.hasGeometry === false ? 'ATTRIBUTE' : 'ATTRIBUTEANDGEOMETRY'
+    });
+  }
+
+  _getMapFeaturesParamsByGeometry(queryInfo, commonParams) {
+    return new QueryByGeometryParameters({
+      ...commonParams,
+      spatialQueryMode: 'INTERSECT',
+      geometry: this._transBoundsToGeometry(queryInfo)
+    });
+  }
+
+  _getDataFeaturesParamsBySql(queryInfo, commonParams) {
+    return new GetFeaturesBySQLParameters({
+      ...commonParams,
       queryParameter: {
         name: queryInfo.name,
         attributeFilter: queryInfo.attributeFilter,
         orderBy: queryInfo.orderBy
       },
       hasGeometry: this.options.hasGeometry,
+      datasetNames: queryInfo.datasetNames
+    });
+  }
+
+  _getDataFeaturesParamsByGeometry(queryInfo, commonParams) {
+    return new GetFeaturesByBoundsParameters({
+      ...commonParams,
+      attributeFilter: queryInfo.attributeFilter,
       datasetNames: queryInfo.datasetNames,
-      fromIndex: this.options.fromIndex || 0,
-      toIndex: this.options.toIndex || (queryInfo.maxFeatures >= 1000 ? -1 : queryInfo.maxFeatures - 1),
-      maxFeatures: -1,
-      returnFeaturesOnly: this.options.returnFeaturesOnly
+      spatialQueryMode: 'INTERSECT',
+      geometry: this._transBoundsToGeometry(queryInfo)
     });
-    getFeatureBySQLService = new GetFeaturesBySQLService(url, {
-      proxy: this.options.proxy,
-      withCredentials: queryInfo.withCredentials,
-      eventListeners: {
-        processCompleted: this._getFeaturesSucceed.bind(this),
-        processFailed: serviceResult => {
-          console.error(serviceResult.error);
-          this.fetchFailed(serviceResult.error);
-        }
-      }
-    });
-    getFeatureBySQLService.processAsync(getFeatureBySQLParams);
+  }
+
+  _transBoundsToGeometry(queryInfo) {
+    const lnglatBounds = queryInfo.bounds;
+    const west = lnglatBounds.getWest();
+    const east = lnglatBounds.getEast();
+    const sourth = lnglatBounds.getSouth();
+    const north = lnglatBounds.getNorth();
+    const geometry = new GeometryPolygon([
+      new GeometryLinearRing([
+        new GeometryPoint(west, sourth),
+        new GeometryPoint(east, sourth),
+        new GeometryPoint(east, north),
+        new GeometryPoint(west, north)
+      ])
+    ]);
+    geometry.SRID = 4326;
+    return geometry;
+  }
+
+  _calcFeaturesExpectCountOptions(queryInfo) {
+    const maxFeatures = queryInfo.maxFeatures ?? this._defaultMaxFeatures;
+    const toIndex = this.options.toIndex ?? maxFeatures - 1;
+    return {
+      fromIndex: this.options.fromIndex,
+      toIndex,
+      maxFeatures: toIndex - this.options.fromIndex + 1
+    };
+  }
+
+  _queryResultHandler(serviceResult) {
+    if (serviceResult.type === 'processCompleted') {
+      this._getFeaturesSucceed(serviceResult);
+      return;
+    }
+    this._getFeaturesFailed(serviceResult);
   }
 
   async _getFeaturesSucceed(results) {
@@ -344,10 +416,17 @@ export default class iServerRestService extends Events {
       // 数据来自restdata---results.result.features
       this.features = results.result.features;
       features = this.features.features || this.features;
-      let fields = [];
-      let fieldCaptions = [];
-      let fieldTypes = [];
+      if (results.result.totalCount === 0) {
+        this.triggerEvent('featureisempty', {
+          results
+        });
+        return;
+      }
+      let fields, fieldCaptions, fieldTypes;
       if (results.result.datasetInfos) {
+        fields = [];
+        fieldCaptions = [];
+        fieldTypes = [];
         const fieldInfos = results.result.datasetInfos[0].fieldInfos;
         fieldInfos.forEach(fieldInfo => {
           if (fieldInfo.name) {
@@ -357,30 +436,13 @@ export default class iServerRestService extends Events {
           }
         });
       }
-      if (features && features.length > 0) {
-        data = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
-        results.result.totalCount && (data.totalCount = results.result.totalCount);
-      } else {
-        this.triggerEvent('featureisempty', {
-          results
-        });
-        return;
-      }
+      data = statisticsFeatures(features, fields, fieldCaptions, fieldTypes);
+      data.totalCount = results.result.totalCount;
     } else {
       this.triggerEvent('getdatafailed', {
         results
       });
       return;
-    }
-    // vertified 表示已经验证过 epsgCode且转化了features 比如iportalData从content.json获取的features
-    if (!results.result.vertified) {
-      // 关系型存储发布成服务后坐标一定是4326，但真实数据可能不是4326，判断一下暂时按照3857处理
-      data.features = await checkAndRectifyFeatures({
-        features: data.features,
-        epsgCode: this.options.epsgCode,
-        projectionUrl: this.projectionUrl,
-        options: { proxy: this.options.proxy }
-      });
     }
 
     /**
@@ -389,6 +451,10 @@ export default class iServerRestService extends Events {
      * @property {Object} e  - 事件对象。
      */
     this.triggerEvent('getdatasucceeded', data);
+  }
+
+  _getFeaturesFailed(serviceResult) {
+    this.fetchFailed(serviceResult.error);
   }
 
   _getRestDataFields(fieldsUrl, queryInfo, callBack) {
@@ -426,7 +492,7 @@ export default class iServerRestService extends Events {
           let fields;
           if (serviceResult.result) {
             let result = serviceResult.result.recordsets[0];
-            fields = this._getFiledsByType(['CHAR', 'TEXT', 'WTEXT'], result.fieldCaptions, result.fieldTypes);
+            fields = this._getFiledsByType(['CHAR', 'TEXT', 'WTEXT'], result.fields, result.fieldTypes);
           }
           fields && callBack(fields, serviceResult.result.recordsets[0]);
         },

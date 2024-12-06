@@ -1,82 +1,8 @@
 import {
-  fakeDataServiceResult,
-  fakeMapServiceResult,
   fakeAddressMatch
 } from './services';
 const supermap = {};
 
-supermap.FeatureService = () => {
-  return {
-    getFeaturesBySQL: (param, callback) =>
-      setTimeout(() => {
-        callback(fakeDataServiceResult);
-      }, 0),
-    getFeaturesByBounds: (param, callback) =>
-      setTimeout(() => {
-        callback(fakeDataServiceResult);
-      }, 0),
-    getFeaturesByGeometry: (param, callback) =>
-      setTimeout(() => {
-        callback(fakeDataServiceResult);
-      }, 0),
-    getFeaturesDatasetInfo: (param, callback) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          callback && callback({
-            result: [{
-              fieldInfos: [{
-                name: 'capital',
-                caption: 'Capital'
-              }]
-            }]
-          });
-          resolve({
-            result: [{
-              fieldInfos: [{
-                name: 'capital',
-                caption: 'Capital'
-              }]
-            }]
-          })
-        }, 0)
-      });
-    },
-    getFeaturesCount: (param, callback) => {
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          callback && callback({
-            result: {
-              totalCount: 500
-            }
-          });
-          resolve({
-            result: {
-              totalCount: 500
-            }
-          });
-        }, 0)
-      })
-    }
-      
-  };
-};
-
-supermap.QueryService = () => {
-  return {
-    queryBySQL: (param, callback) =>
-      setTimeout(() => {
-        callback(fakeMapServiceResult);
-      }, 0),
-    queryByBounds: (param, callback) =>
-      setTimeout(() => {
-        callback(fakeMapServiceResult);
-      }, 0),
-    queryByGeometry: (param, callback) =>
-      setTimeout(() => {
-        callback(fakeMapServiceResult);
-      }, 0)
-  };
-};
 
 supermap.AddressMatchService = () => {
   return {

@@ -15,6 +15,7 @@ module.exports = function (api) {
   ];
   const plugins = [
     '@babel/plugin-transform-runtime',
+    'transform-vue-jsx',
     'transform-flow-strip-types',
     '@babel/plugin-transform-modules-commonjs',
     [

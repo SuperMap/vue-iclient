@@ -68,8 +68,18 @@ describe('TdtMapSwitcherViewModel', () => {
         proxy: null
       }
     };
+    let mockOnOptions;
+    const webmap = {
+      getLayerList: () => layerCatalogs,
+      changeItemVisible: jest.fn(),
+      un: jest.fn(),
+      on: jest.fn(options => {
+        mockOnOptions = options;
+      })
+    };
     viewModel.setMap({
-      map: mapMockFn(initLayers, initSources)
+      map: mapMockFn(initLayers, initSources),
+      webmap: webmap
     });
     expect(viewModel.map.getStyle().layers).toEqual(initLayers);
     expect(viewModel.map.getStyle().sources).toEqual(initSources);

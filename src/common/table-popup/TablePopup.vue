@@ -9,6 +9,7 @@
       :columns="columns"
       :rowKey="(record, index) => index"
       :pagination="false"
+      :showHeader="showHeader"
     />
   </div>
 </template>
@@ -37,6 +38,10 @@ export default {
       }
     },
     splitLine: {
+      type: Boolean,
+      default: true
+    },
+    showHeader: {
       type: Boolean,
       default: true
     }

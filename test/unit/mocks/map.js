@@ -350,7 +350,15 @@ var Map = function (options) {
     return style;
   };
 
-  this.removeLayer = function (layerId) {};
+  this.removeLayer = function (layerId) {
+    if(this.addedLayers[layerId]) {
+      delete this.addedLayers[layerId];
+      return;
+    }
+    if(this.overlayLayersManager[layerId]){
+      delete this.overlayLayersManager[layerId];
+    }
+  };
   this.moveLayer = function (layerId) {};
   this.getFilter = function (layerId) {};
   this.setFilter = function (layerId, filter) {};
@@ -359,7 +367,10 @@ var Map = function (options) {
       if(id === 'POINT-0'){
         return ''
       }
-      return this.addedLayers[id];
+      return {
+        ...this.addedLayers[id],
+        serialize: () => this.addedLayers[id]
+      };
     }
     else if(id === 'China-identify-SM-highlighted'){
       return {}
@@ -447,7 +458,8 @@ var Map = function (options) {
       const feature = [
         {
           layer: {
-            id: 'China'
+            id: 'China',
+            type: 'fill'
           },
           geometry: { type: 'Point', coordinates: [0, 1] },
           type: 'Point',
@@ -457,6 +469,8 @@ var Map = function (options) {
             subtitle: '树正沟景点-老虎海',
             imgUrl: './laohuhai.png',
             description: '老虎海海拔2298米',
+            flag: true,
+            smid: 1,
             index: 1
           },
           _vectorTileFeature: {

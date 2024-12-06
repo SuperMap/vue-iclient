@@ -97,6 +97,9 @@ export default {
       this.viewModel.togglerLabelLayer(checked);
       this.labelChecked = checked;
       this.$emit('change-label-status', this.labelChecked);
+    },
+    layerUpdate(e) {
+      this.labelChecked = e.visible;
     }
   },
   loaded() {
@@ -104,6 +107,11 @@ export default {
       this.viewModel.changeBaseLayer(this.data.select);
       this.togglerLabelLayer(this.data.label);
     }
+    this.layerUpdateFn = this.layerUpdate.bind(this);
+    this.viewModel.on('layersUpdated', this.layerUpdateFn);
+  },
+  beforeDestory() {
+    this.viewModel && this.viewModel.off('layersUpdated', this.layerUpdateFn);
   }
 };
 </script>

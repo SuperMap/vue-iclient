@@ -31,7 +31,7 @@ export default {
     mapNotLoaded: '关联的地图尚未加载完整，请稍后',
     unassociatedMap: '您需要配置关联地图！',
     videojs:
-      '请引入video.js插件: https://github.com/videojs/video.js； 当播放rtmp时，安装flash相关插件：https://github.com/videojs/videojs-flash',
+      '请引入video.js插件: https://github.com/videojs/video.js',
     flvPlayer: '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
   },
   success: {
@@ -39,7 +39,8 @@ export default {
   },
   info: {
     loading: '加载中',
-    pressEscToExit: '按下 ESC 键或点击关闭按钮退出'
+    pressEscToExit: '按下 ESC 键或点击关闭按钮退出',
+    pressEscOrClickToExit: '按下 ESC 键或点击任意位置退出'
   },
   unit: {
     kilometers: '千米',
@@ -82,7 +83,11 @@ export default {
     unSupportedData: '当前数据不支持与地图联动'
   },
   layerList: {
-    title: '图层'
+    title: '图层',
+    layerStyle: '图层样式',
+    attributes: '属性表',
+    zoomToLayer: '缩放至图层',
+    opacity: '不透明度'
   },
   slideshow: {
     title: '幻灯片'
@@ -121,12 +126,16 @@ export default {
     loadingTip: '地图加载中...',
     crsNotSupport: '不支持当前地图的坐标系！',
     TileMatrixSetNotSuppport: '不支持传入的 TileMatrixSet！',
-    getLayerInfoFailed: '获取图层信息失败！',
+    getLayerInfoFailed: '图层加载失败！',
     getThemeInfoFailed: '获取图层样式信息失败！',
     crsnotsupport: '不支持的坐标系！',
     baiduMapNotSupport: '暂不支持加载百度地图！',
+    layerorsourcenameduplicated: '图层名或数据源名重复无法添加',
     sampleDataNotSupport: '暂不支持加载示例数据！',
-    mvtNotSupport: '暂不支持加载矢量瓦片图层！'
+    drillLayersNotSupport: '暂不支持加载下钻图层！',
+    mvtNotSupport: '暂不支持加载矢量瓦片图层！',
+    mapCreatedFailed: '地图加载失败！',
+    projectionnotmatch: '{title}与当前地图投影不匹配！'
   },
   videoPlus: {
     loadingTip: '视频加载中...'
@@ -177,7 +186,8 @@ export default {
     query: '查询',
     queryJob: '任务',
     queryResult: '结果',
-    attributeCondition: '属性条件',
+    attributeCondition: '查询条件',
+    keyQueryCondition: '查询关键字',
     spatialFilter: '空间过滤器',
     mapBounds: '返回地图全图范围的要素',
     currentMapBounds: '返回当前地图范围内的要素',
@@ -189,7 +199,9 @@ export default {
     attributeValue: '属性值',
     noResults: '查询结果为空！',
     queryFailed: '查询失败!',
-    seviceNotSupport: '此服务不支持查询！'
+    seviceNotSupport: '此服务不支持查询！',
+    keyQueryPlaceholder: '请输入关查询键字',
+    sqlQueryPlaceholder: '请输入SQL表达式'
   },
   identify: {
     layerNotExit: "地图上不存在该图层: '{layer}'",

@@ -165,7 +165,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
          */
         this.load({ map: e.map });
       },
-      getmapinfofailed: e => {
+      mapcreatefailed: e => {
         /**
          * @event getMapFailed
          * @desc 获取 WebMap 地图信息失败。
@@ -176,7 +176,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         Message.error(e.error.message);
         this.spinning = false;
       },
-      getlayerdatasourcefailed: e => {
+      layercreatefailed: e => {
         /**
          * @event getLayerDatasourceFailed
          * @desc 获取图层数据失败。
@@ -193,9 +193,9 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
           Message.error(this.$t('webmap.getLayerInfoFailed'));
         }
       },
-      notsupportmvt: () => {
+      mvtnotsupport: () => {
         // @ts-ignore
-        Message.error('暂不支持加载矢量瓦片图层！');
+        Message.error(this.$t('webmap.mvtNotSupport'));
         this.spinning = false;
       }
     });

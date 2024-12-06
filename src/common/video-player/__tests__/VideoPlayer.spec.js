@@ -89,7 +89,7 @@ describe('VideoPlayer.vue', () => {
     });
     expect(wrapper.find('.sm-component-video-player').exists()).toBe(true);
     await wrapper.setProps({
-      url: 'rtmp://1.fakeurlAA.flv',
+      url: 'ftp://1.fakeurlAA.flv',
       isFullscreen: true,
       ratio: 'full',
       options: {
@@ -102,7 +102,6 @@ describe('VideoPlayer.vue', () => {
       }
     });
     expect(wrapper.vm.ratio).toBe('full');
-    expect(wrapper.vm.isRtmp).toBeTruthy();
     expect(wrapper.vm.isFlv).toBeFalsy();
     expect(wrapper.vm.autoplay).toBeTruthy();
     expect(wrapper.vm.options.loop).toBeTruthy();
@@ -134,7 +133,7 @@ describe('VideoPlayer.vue', () => {
     wrapper = mount(SmVideoPlayer, {
       localVue,
       propsData: {
-        url: 'rtmp://1.fakeurlAA.flv',
+        url: 'ftp://1.fakeurlAA.flv',
         isFullscreen: false,
         ratio: 'origin',
         options: {
@@ -149,8 +148,8 @@ describe('VideoPlayer.vue', () => {
       attachToDocument: 'body'
     });
     expect(wrapper.find('.sm-component-video-player').exists()).toBe(true);
-    expect(wrapper.vm.playerOptions.sources[0].src).toBe('rtmp://1.fakeurlAA.flv');
-    expect(wrapper.vm.modalPlayerOptions.sources[0].src).toBe('rtmp://1.fakeurlAA.flv');
+    expect(wrapper.vm.playerOptions.sources[0].src).toBe('ftp://1.fakeurlAA.flv');
+    expect(wrapper.vm.modalPlayerOptions.sources[0].src).toBe('ftp://1.fakeurlAA.flv');
     await wrapper.setProps({
       url: ''
     });

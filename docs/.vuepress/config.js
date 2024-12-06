@@ -192,7 +192,8 @@ module.exports = {
                     'common/time-slider',
                     'common/time-picker',
                     'common/attributes',
-                    'common/slideshow'
+                    'common/slideshow',
+                    'common/attribute-panel'
                   ]
                 },
                 {

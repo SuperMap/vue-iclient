@@ -8,6 +8,7 @@ import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import flushPromises from 'flush-promises';
 import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
 import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import Message from 'vue-iclient/src/common/message/index.js';
 
 const layers = [
   {
@@ -27,7 +28,8 @@ describe('LayerManager.vue', () => {
     const fetchresource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
       'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
-      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123': layerData
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData
     };
     mockFetch(fetchresource);
     mapWrapper = mount(SmWebMap, {
@@ -154,6 +156,24 @@ describe('LayerManager.vue', () => {
     done();
   });
 
+  it('projectionnotmatch', async done => {
+    wrapper = mount(SmLayerManager, {
+      propsData: {
+        defaultExpandAll: true,
+        mapTarget: 'map',
+        layers: [
+          {
+            mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal', mapId: '801571284' },
+            title: '民航数据-单值'
+          }
+        ]
+      }
+    });
+    const spyFn = jest.spyOn(Message, 'error');
+    wrapper.vm.viewModel.fire('projectionnotmatch', { e: { type: 'projectionnotmatch' } });
+    expect(spyFn).toHaveBeenCalled();
+    done();
+  });
   it('toggle mapCombination', async done => {
     wrapper = mount(SmLayerManager, {
       propsData: {
@@ -173,6 +193,51 @@ describe('LayerManager.vue', () => {
     expect(setWebMapSpy).toHaveBeenCalled();
     wrapper.vm.viewModel.fire('layersremoved', { nodeKey: '2' });
     expect(removeWebMapSpy).toHaveBeenCalled();
+    done();
+  });
+
+  it('defaultCheckedKeys', async done => {
+    wrapper = mount(SmLayerManager, {
+      propsData: {
+        defaultExpandAll: true,
+        collapse: false,
+        mapTarget: 'map',
+        layers: [
+          {
+            mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal', mapId: '801571284' },
+            title: '民航数据-单值'
+          }
+        ]
+      }
+    });
+    const treeData = [
+      {
+        mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal', mapId: '801571284' },
+        title: '民航数据-单值',
+        key: 'key1',
+        visible: true
+      }
+    ];
+    const spyadd = jest.spyOn(wrapper.vm, 'addLayer');
+    await wrapper.setData({
+      treeData: treeData
+    });
+    await mapWrapperLoaded(mapWrapper);
+    await flushPromises();
+    expect(wrapper.vm.checkedKeys).toEqual(['key1']);
+    wrapper.vm.oldTreeData = treeData;
+    await wrapper.setData({
+      treeData: [
+        {
+          mapInfo: { serverUrl: 'https://fakeiportal.supermap.io/iportal', mapId: '801571284' },
+          title: '民航数据-单值',
+          key: 'key1',
+          visible: false
+        }
+      ]
+    });
+    expect(wrapper.vm.checkedKeys).toEqual([]);
+    expect(spyadd).toBeCalled();
     done();
   });
 });

@@ -1,44 +1,30 @@
 @import '../../../common/_utils/style/mixins/mixins.scss';
 @import '../../../common/_utils/style/theme/theme.scss';
+@import '../../../common/attribute-panel/style/attribute-panel.scss';
 
 @include b(map-popup) {
   min-width: 200px;
   height: auto;
   padding: 10px;
   border-radius: 4px;
-  @include e(header) {
-    width: 100%;
+  .switchDataText {
     display: inline-flex;
-    align-items: center;
-    padding: 0px 15px 8px ;
-    border-bottom: 1px solid $border-color-split;
-    & .icon {
+    padding: 8px 0px;
+    margin-right: 10px;
+    span {
+      vertical-align: 3px;
+    }
+    .icon {
       font-size: 16px;
     }
-    & .left-icon {
+    .left-icon {
       padding-right: 5px;
     }
-    & .right-icon {
+    .right-icon {
       padding-left: 5px;
     }
-    & .disabled {
+    .disabled {
       color: $disabled-color;
-    }
-    & .ellipsis {
-      max-width: calc(100% - 50px);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-  }
-  @include e(content) {
-    width: 100%;
-    height: auto;
-    padding-top: 5px;
-    @include e(self-content) {
-      & .sm-component-table-thead {
-        display: none;
-      }
     }
   }
 }

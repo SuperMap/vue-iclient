@@ -1,0 +1,14 @@
+@import '../../../common/_utils/style/mixins/mixins.scss';
+@import '../../../common/_utils/style/theme/theme.scss';
+@import '../../map-popup/style/map-popup.scss';
+
+@include b(layer-highlight) {
+  border-radius: 4px;
+  .sm-component-table-popup__table {
+    &.sm-component-table-wrapper {
+      .sm-component-table-content {
+        overflow-x: hidden;
+      }
+    }
+  }
+}

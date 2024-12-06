@@ -1,5 +1,4 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from '../web-map/SourceListModel';
 import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
 import labelPoints from './config/label-points.json';
 import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
@@ -36,31 +35,37 @@ const defaultThemeInfo = {
     {
       color: '#fdebcf',
       start: 1,
-      end: 9
+      end: 9,
+      style: {}
     },
     {
       color: '#f59e83',
       start: 9,
-      end: 99
+      end: 99,
+      style: {}
     },
     {
       color: '#e55a4e',
       start: 99,
-      end: 499
+      end: 499,
+      style: {}
     },
     {
       color: '#cb2a2f',
       start: 499,
-      end: 999
+      end: 999,
+      style: {}
     },
     {
       color: '#811c24',
       start: 999,
-      end: 10000
+      end: 10000,
+      style: {}
     },
     {
       color: '#4f070d',
-      start: 10000
+      start: 10000,
+      style: {}
     }
   ]
 };
@@ -82,9 +87,8 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
   on: any;
   bounds: mapboxglTypes.LngLatBoundsLike;
   private _layers: any[] = [];
-  private _appreciableLayers: any[] = [];
 
-  private _sourceListModel: SourceListModel;
+  private _sourceListModel: InstanceType<any>;
   private _legendList: any[] = [];
 
   constructor(target: string, dataOptions: dataOptions = {}, mapOptions?: mapOptions) {
@@ -153,7 +157,25 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       interactive: interactive === void 0 ? true : interactive,
       style
     });
-    this._layers.push(...style.layers);
+    const layersFromMapTyle = this._generateAppreciableLayers(style.layers);
+    this._layers.push(...layersFromMapTyle);
+  }
+
+  private _generateAppreciableLayers(layersFromStyle: Array<any>) {
+    return layersFromStyle.reduce((layers: Array<Record<string, any>>, layer: Record<string, any>) => {
+      const id = layer['source-layer'] || layer.source || layer.id;
+      const matchLayer = layers.find(item => item.id === id);
+      if (matchLayer) {
+        matchLayer.renderLayers.push(layer.id);
+      } else {
+        layers.push({
+          ...layer,
+          id,
+          renderLayers: [layer.id]
+        });
+      }
+      return layers;
+    }, []);
   }
 
   private _handleLayerInfo(): void {
@@ -336,18 +358,15 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
       {
         id: this.overLayerId,
         name: this.overLayerId,
-        themeSetting: { themeField: this.themeInfo.field }
-      },
-      {
-        id: `${this.overLayerId}-label`,
-        name: `${this.overLayerId}-label`
+        themeSetting: { themeField: this.themeInfo.field },
+        renderLayers: [this.overLayerId, `${this.overLayerId}-label`, `${this.overLayerId}-strokeLine`]
       }
     );
     this._sendMapToUser();
   }
 
   private _sendMapToUser(): void {
-    this._sourceListModel = new SourceListModel({
+    this._sourceListModel = new mapboxgl.supermap.SourceListModelV2({
       map: this.map,
       layers: this._layers
     });
@@ -357,14 +376,10 @@ export default class NcpMapViewModel extends mapboxgl.Evented {
      * @property {mapboxglTypes.Map} map - MapBoxGL Map 对象。
      * @property {Object} mapparams - 地图信息。。
      */
-    const appreciableLayers = this.getAppreciableLayers();
-    const matchLayers = appreciableLayers.filter((item: Record<string, any>) =>
-      this._layers.some(layer => layer.id === item.id)
-    );
     this.fire('addlayerssucceeded', {
       map: this.map,
       mapParams: { title: '', description: '' },
-      layers: matchLayers
+      layers: this._sourceListModel.getSelfLayers()
     });
   }
 

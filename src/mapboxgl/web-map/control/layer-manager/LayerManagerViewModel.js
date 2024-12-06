@@ -47,11 +47,11 @@ class LayerManageViewModel extends mapboxgl.Evented {
         serverUrl,
         withCredentials,
         proxy,
-        target: this.mapTarget
+        target: this.mapTarget,
+        map: this.map,
+        layerFilter
       },
-      mapOptions,
-      this.map,
-      layerFilter
+      mapOptions
     );
 
     this.webMapViewModel = webMapViewModel;
@@ -59,12 +59,19 @@ class LayerManageViewModel extends mapboxgl.Evented {
     // 设置 readyNext 为 false
     this.readyNext = false;
     this.webMapViewModel.on({
+      layerorsourcenameduplicated: () => {
+        this.fire('layerorsourcenameduplicated', {});
+      },
       addlayerssucceeded: () => {
         // 设置 readyNext 为 true
         // 判断 是否缓存数组里有值，取出最新的，调用this.addLayer();
         this.fire('layersadded', { nodeKey, nodeValue: webMapViewModel });
         this.handleNextMap();
-      }
+      },
+      projectionnotmatch: (e) => {
+        this.fire('projectionnotmatch', { nodeKey, e });
+        this.handleNextMap();
+      },
     });
     // this.webMapViewModel.addWebMap(layerFilter);
     this.cacheMaps[nodeKey] = this.webMapViewModel;

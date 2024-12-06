@@ -1,5 +1,4 @@
 import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';
 import cloneDeep from 'lodash.clonedeep';
 
 export interface layerStyleParams {
@@ -109,7 +108,7 @@ export default class FillExtrusionViewModel extends mapboxgl.Evented {
   }
 
   private _getSourceList() {
-    const sourceListModel = new SourceListModel({
+    const sourceListModel = new mapboxgl.supermap.SourceListModelV2({
       map: this.map,
       layers: []
     });

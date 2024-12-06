@@ -14,8 +14,14 @@
     <sm-card class="sm-component-layer-list__a-card" :bordered="false" :style="headingTextColorStyle">
       <div class="sm-component-layer-list__content">
         <layer-group
+          :currentOpacity="currentOpacity"
           :layerCatalog="sourceList"
           :attributes="attributes"
+          :operations="operations"
+          :dropHandler="onDropHanlder"
+          @getLayerOpacityById="getLayerOpacityById"
+          @changeOpacity="changeOpacity"
+          @zoomToBounds="zoomToBounds"
           @toggleItemVisibility="toggleItemVisibility"
           @toggleAttributesVisibility="(e,item) => toggleAttributesVisibility(e,item)">
         </layer-group>
@@ -51,8 +57,9 @@ import SmAttributes, {
 } from 'vue-iclient/src/mapboxgl/attributes/Attributes.vue';
 import LayerListViewModel from './LayerListViewModel';
 import LayerGroup from 'vue-iclient/src/mapboxgl/web-map/LayerGroup.vue';
-import intersection from 'lodash.intersection';
 import isEqual from 'lodash.isequal';
+import omit from 'omit.js';
+import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
 
 interface AttributesParams {
   enabled: boolean;
@@ -69,6 +76,34 @@ interface AttributesParams {
   pagination: PaginationParams;
   customHeaderRow: Function;
   customRow: Function;
+}
+
+interface LayerListItem {
+  id: string;
+  title: string;
+  type: string;
+  visible: boolean;
+  renderSource: Object;
+  renderLayers: string[];
+  dataSource: Object;
+  themeSetting: Object;
+  children?: LayerListItem[];
+  CLASS_NAME?: string;
+  CLASS_INSTANCE?: Object;
+}
+
+interface TreeNodeDropEvent {
+  node: {
+    eventKey: string;
+    pos: string;
+    children: LayerListItem[];
+    expanded: boolean;
+  };
+  dragNode: {
+    eventKey: string;
+  };
+  dropPosition: number;
+  dropToGap: boolean;
 }
 
 const ATTRIBUTES_NEEDED_PROPS = [
@@ -115,6 +150,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   attributesProps: Object = {};
   layerUpdateFn: Function;
   displayAttributes: Boolean = false;
+  currentOpacity: Number = 0;
 
   @Prop({ default: 'sm-components-icon-layer-list' }) iconClass: string;
   @Prop({
@@ -130,6 +166,17 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
   })
   attributes: AttributesParams;
+
+  @Prop({
+    default() {
+      return {
+        fitBounds: true,
+        draggable: false,
+        opacity: false
+      };
+    }
+  })
+  operations: Object;
 
   @Watch('attributes', { deep: true })
   attributesChanged(newval, oldval) {
@@ -193,15 +240,19 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
   }
 
   get attributesIconClass() {
-    return (this.attributes && this.attributes.iconClass) || 'sm-components-icon-attribute';
+    return (this.attributes && this.attributes.iconClass) || 'sm-components-icon-attribute-table';
   }
 
   created() {
     this.viewModel = new LayerListViewModel();
   }
 
-  toggleItemVisibility(item: Object, visible: boolean) {
-    this.viewModel && this.viewModel.changeItemVisible(item, visible);
+  toggleItemVisibility(item: { id: string, [prop: string]: any; }, visible: boolean) {
+    this.viewModel && this.viewModel.changeItemVisible(item.id, visible);
+  }
+
+  zoomToBounds(item: { id: string, [prop: string]: any; }) {
+    this.viewModel && this.viewModel.zoomToBounds(item.id);
   }
 
   addNewLayer() {
@@ -210,6 +261,14 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
 
   deleteLayer() {
     this.viewModel.deleteLayer();
+  }
+
+  changeOpacity(id, opacity) {
+    this.viewModel.changeOpacity(id, opacity);
+  }
+
+  getLayerOpacityById(id) {
+    this.currentOpacity = this.viewModel.getLayerOpacityById(id);
   }
 
   toggleAttributesVisibility(e, item) {
@@ -240,13 +299,108 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
 
   layerUpdate() {
     this.$nextTick(() => {
-      this.sourceList = this.viewModel && this.viewModel.initLayerList();
+      this.sourceList = this.viewModel && this.transformLayerList(this.viewModel.initLayerList());
       // @ts-ignore
       if (this.attributesProps.layerName && this.sourceList[this.attributesProps.layerName].visibility === 'none') {
         this.closeAttributesIconClass();
         this.removeAttributes();
       }
     });
+  }
+
+  transformLayerList(layerCatalog: LayerListItem[]) {
+    const layerList: LayerListItem[] = [];
+    layerCatalog.forEach(layer => {
+      const nextLayer = omit(layer, ['CLASS_INSTANCE']);
+      if(nextLayer.type === 'group') {
+        nextLayer.children = this.transformLayerList(layer.children);
+      }
+      layerList.push(nextLayer);
+    });
+    return layerList;
+  }
+
+  getCatalogTypeById(layerCatalog: any[], id: string) {
+    for (let layer of layerCatalog) {
+      if (layer.id === id) {
+        return layer.type;
+      } else if (layer.type === 'group') {
+        const foundType = this.getCatalogTypeById(layer.children, id);
+        if (foundType) {
+          return foundType;
+        }
+      }
+    }
+  }
+
+  onDrop(info: TreeNodeDropEvent, data: any[]) {
+    const dropKey = info.node.eventKey;
+    const dragKey = info.dragNode.eventKey;
+    const dropPos = info.node.pos.split('-');
+    const dropPosition = info.dropPosition - Number(dropPos[dropPos.length - 1]);
+    if (!info.dropToGap && this.getCatalogTypeById(data, dropKey) !== 'group') {
+      return null;
+    }
+    const loop = (data: any[], id: string, callback: (item: any, index: number, arr: any[]) => any) => {
+      data.forEach((item, index, arr) => {
+        if (item.id === id) {
+          return callback(item, index, arr);
+        }
+        if (item.children) {
+          return loop(item.children, id, callback);
+        }
+      });
+    };
+
+    // Find dragObject
+    let dragObj: any;
+    loop(data, dragKey, (item, index, arr) => {
+      arr.splice(index, 1);
+      dragObj = item;
+    });
+    if (!info.dropToGap) {
+      // Drop on the content
+      loop(data, dropKey, item => {
+        item.children = item.children || [];
+        // where to insert 示例添加到尾部，可以是随意位置
+        item.children.push(dragObj);
+      });
+    } else if (
+      (info.node.children || []).length > 0 && // Has children
+      info.node.expanded && // Is expanded
+      dropPosition === 1 // On the bottom gap
+    ) {
+      loop(data, dropKey, item => {
+        item.children = item.children || [];
+        // where to insert 示例添加到尾部，可以是随意位置
+        item.children.unshift(dragObj);
+      });
+    } else {
+      let ar: any[];
+      let i: number;
+      loop(data, dropKey, (item, index, arr) => {
+        ar = arr;
+        i = index;
+      });
+      if (dropPosition === -1) {
+        ar.splice(i, 0, dragObj);
+      } else {
+        ar.splice(i + 1, 0, dragObj);
+      }
+    }
+    return data;
+  }
+
+  onDropHanlder(info: TreeNodeDropEvent) {
+    const originLayerCatalog = this.viewModel.initLayerList();
+    const layerCatalog = this.onDrop(info, originLayerCatalog);
+    if (!layerCatalog) {
+      return;
+    }
+    this.sourceList = this.onDrop(info, this.sourceList);
+    // @ts-ignore
+    mapEvent.$options.setLayerCatalog(this.getTargetName(), layerCatalog);
+    this.viewModel.setLayersOrder();
   }
 
   closeAttributesIconClass() {

@@ -82,6 +82,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -99,6 +100,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -116,6 +118,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -133,6 +136,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -150,6 +154,7 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     await mapSubComponentLoaded(wrapper);
     expect(wrapper.vm.mapTarget).toBe('map');
+    expect(wrapper.vm.viewModel.markersElement[0].className.includes('smanimatemarkerlayer-')).toBe(true);
     done();
   });
 
@@ -496,6 +501,52 @@ describe('AnimateMarkerLayer.vue', () => {
     });
     expect(spy).toHaveBeenCalled();
     expect(wrapper.vm.viewModel.layerId).toBe('test-id2');
+    done();
+  });
+
+  it('change marker opacity', async done => {
+    const newFeatures= {
+      features: [
+        {
+          geometry: {
+            type: 'Point',
+            coordinates: [122, 53]
+          },
+          properties: {
+            SmID: '10'
+          },
+          type: 'Feature'
+        }
+      ],
+      type: 'FeatureCollection'
+    };
+    wrapper = mount(SmAnimateMarkerLayer, {
+      propsData: {
+        features: newFeatures,
+        mapTarget: 'map',
+        textField: 'name',
+        layerId: 'test-id1'
+      }
+    });
+    await mapSubComponentLoaded(wrapper);
+    jest.spyOn(wrapper.vm.map, 'getLayer').mockImplementation(() => {
+      return {
+        visibility: 'visible',
+        getPaintProperty() {
+          return 0.5;
+        }
+      };
+    });
+    const spy2 = jest.spyOn(wrapper.vm.viewModel.markers[0], 'getElement').mockImplementation(() => {
+      return {
+       style: {
+        display: 'block',
+        opacity: undefined
+       }
+      };
+    });
+    wrapper.vm.viewModel._updateLayer();
+    expect(spy2).toHaveBeenCalledTimes(3);
     done();
   });
 });

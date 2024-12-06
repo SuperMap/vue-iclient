@@ -30,21 +30,23 @@
             @click.native="toggleSelectLayer"
           ></sm-icon>
         </div>
-        <div
-          v-for="(propertyInfo, index) in propertyList"
-          :key="index"
-          :class="['sm-component-layer-color__color-picker', capture && 'select-margin']"
-        >
-          <span>{{ propertyMap(propertyInfo.name) }}</span>
-          <sm-color-picker
-            :value="propertyInfo.color"
-            @change="
-              color => {
-                changePropertyColor(propertyInfo.name, color);
-              }
-            "
-          ></sm-color-picker>
-        </div>
+        <template v-for="(item, type) in propertyList">
+          <div
+            v-for="(propertyInfo, index) in item"
+            :key="type + index"
+            :class="['sm-component-layer-color__color-picker', capture && 'select-margin']"
+          >
+            <span>{{ propertyMap(propertyInfo.name) }}</span>
+            <sm-color-picker
+              :value="propertyInfo.color"
+              @change="
+                color => {
+                  changePropertyColor(propertyInfo.name, color, type);
+                }
+              "
+            ></sm-color-picker>
+          </div>
+        </template>
         <div class="sm-component-layer-color__btn-group">
           <sm-button v-if="reset" type="primary" size="small" @click="resetAllLayerColor">{{
             $t('layerColor.reset')
@@ -86,7 +88,7 @@ const TYPE_MAP = {
 interface selectLayerParams {
   id: string;
   type: string;
-  renderLayers: any
+  renderLayers: any;
 }
 
 @Component({
@@ -107,7 +109,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
   };
 
   selectProperty: string = '';
-  propertyList: Array<string> = [];
+  propertyList: object = {};
 
   get propertyMap() {
     return name => {
@@ -150,9 +152,8 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     this.viewModel.on('changeSelectLayer', this._changeSelectLayer);
   }
 
-  getPropertyColor(propertyName) {
-    if (this.selectLayer) {
-      const { id } = this.selectLayer;
+  getPropertyColor(id, propertyName) {
+    if (id) {
       const color = this.viewModel.getLayerColor(id, propertyName);
       if (typeof color === 'string') {
         return color || '';
@@ -162,7 +163,8 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
   }
 
   filtercb(type) {
-    if (type === 'raster' || type === 'heatmap') {
+    const EXCLUDE_TYPEs = ['raster', 'heatmap', 'chart'];
+    if (EXCLUDE_TYPEs.includes(type)) {
       return {
         show: false
       };
@@ -182,7 +184,7 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
       type: '',
       renderLayers: []
     };
-    this.propertyList = [];
+    this.propertyList = {};
   }
 
   toggleSelectLayer() {
@@ -195,40 +197,44 @@ class SmLayerColor extends Mixins(MapGetter, Control, Theme, BaseCard) {
     }
   }
 
-  changePropertyColor(property, color) {
+  changePropertyColor(property, color, type) {
     if (this.selectLayer) {
-      this.selectLayer.renderLayers.forEach(id => {
-        this.viewModel.setLayerColor(id, property, color);
-      });
+      this.selectLayer.renderLayers
+        .filter(layerId => this.viewModel.getLayerType(layerId) === type)
+        .forEach(id => {
+          this.viewModel.setLayerColor(id, property, color);
+        });
     }
   }
 
   updateProperty(layerId, type) {
-    this.propertyList = this._getLayerColorProperty(layerId, type);
-    if (this.propertyList.length) {
-      for (let info of this.propertyList) {
+    this.propertyList[type] = this._getLayerColorProperty(type);
+    for (let info of this.propertyList[type]) {
+      // @ts-ignore
+      let color = this.getPropertyColor(layerId, info.name);
+      if (color) {
         // @ts-ignore
-        let color = this.getPropertyColor(info.name);
-        if (color) {
-          // @ts-ignore
-          info.color = color;
-        }
+        info.color = color;
       }
     }
   }
 
-  _getLayerColorProperty(layerId, type) {
-    const propertyList = TYPE_MAP[type];
-    return propertyList.map(name => {
+  _getLayerColorProperty(type) {
+    const data = TYPE_MAP[type];
+    return data.map(name => {
       return { name, color: '' };
     });
   }
 
-  handleLayerChange({ id, type, renderLayers }, label, extra) {
+  handleLayerChange({ id, type, renderLayers }) {
     this.selectLayer.id = id;
     this.selectLayer.type = type;
     this.selectLayer.renderLayers = renderLayers;
-    this.updateProperty(id, extra.type);
+    this.propertyList = {};
+    renderLayers.map(layerId => {
+      const type = this.viewModel.getLayerType(layerId);
+      this.updateProperty(layerId, type);
+    });
     if (this.isSelect) {
       this.toggleSelectLayer();
     }

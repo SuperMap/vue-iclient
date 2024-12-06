@@ -1,12 +1,15 @@
 import L from '../leaflet-wrapper';
+import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
 import 'vue-iclient/static/libs/geostats/geostats';
 import getCenter from '@turf/center';
-import WebMapBase from 'vue-iclient/src/common/web-map/WebMapBase';
-import { toEpsgCode, getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
+import proj4 from 'proj4';
+import { getProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
+// @ts-ignore
+import { createWebMapV2BaseExtending } from 'vue-iclient/static/libs/iclient-common/iclient-common-webmapv2base';
 
-interface webMapOptions {
+interface WebMapOptions {
   target?: string;
   serverUrl?: string;
   accessToken?: string;
@@ -17,7 +20,7 @@ interface webMapOptions {
   isSuperMapOnline?: boolean;
 }
 
-interface mapOptions {
+interface MapOptions {
   center?: [number, number] | L.LatLng;
   zoom?: number;
   maxBounds?: [[number, number], [number, number]] | L.Bounds;
@@ -26,18 +29,40 @@ interface mapOptions {
   crs?: L.CRS;
   preferCanvas?: boolean;
 }
+// @ts-ignore
+const WebMapV2Base: InstanceType<any> = createWebMapV2BaseExtending(Events, 'triggerEvent');
 
 // TODO 坐标系 / noWrap
-export default class WebMapViewModel extends WebMapBase {
+export default class WebMapViewModel extends WebMapV2Base {
   map: L.Map;
 
+  mapOptions: MapOptions;
+
+  serverUrl: string;
+
   center: [number, number] | L.LatLng;
+
+  zoom: number;
+
+  target: string;
 
   mapParams: { title?: string; description?: string };
 
   layers: any = {};
 
   crs: L.CRS;
+
+  baseProjection: string;
+
+  triggerEvent: any;
+
+  eventTypes: string[];
+
+  protected _layers: any = [];
+
+  protected layerAdded: number;
+
+  protected expectLayerLen: number;
 
   private _dataFlowLayer: any;
 
@@ -53,10 +78,30 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _unprojectCrs;
 
-  constructor(id, options: webMapOptions = {}, mapOptions: mapOptions = {}) {
-    super(id, options, mapOptions);
+  constructor(id, options: WebMapOptions = {}, mapOptions: MapOptions = {}) {
+    super(
+      id,
+      {
+        ...options,
+        credentialKey: (options.accessKey && 'key') || (options.accessToken && 'token'),
+        credentialValue: options.accessKey || options.accessToken,
+        proj4
+      },
+      mapOptions
+    );
     this.center = mapOptions.center;
     this.zoom = mapOptions.zoom;
+    this.eventTypes = [
+      'mapinitialized',
+      'mapcreatesucceeded',
+      'mapcreatefailed',
+      'layercreatefailed',
+      'baidumapnotsupport',
+      'projectionnotmatch',
+      'mapbeforeremove',
+      'addlayerssucceeded',
+      'mvtnotsupport'
+    ];
     this._initWebMap();
   }
 
@@ -176,7 +221,7 @@ export default class WebMapViewModel extends WebMapBase {
         layer = this._createBaiduTileLayer();
         break;
       case 'MAPBOXSTYLE':
-        this.triggerEvent('notsupportmvt', {});
+        this.triggerEvent('mvtnotsupport', {});
         break;
       default:
         break;
@@ -195,7 +240,7 @@ export default class WebMapViewModel extends WebMapBase {
         // TODO  ---  暂不支持 SAMPLE_DATA
         if (type === 'SAMPLE_DATA') {
           this._addLayerSucceeded();
-          this.triggerEvent('getlayerdatasourcefailed', {
+          this.triggerEvent('layercreatefailed', {
             error: 'SAMPLE DATA is not supported',
             layer,
             map: this.map
@@ -298,7 +343,7 @@ export default class WebMapViewModel extends WebMapBase {
     } catch (err) {
       console.error(err);
       this._addLayerSucceeded();
-      this.triggerEvent('getlayerdatasourcefailed', {
+      this.triggerEvent('layercreatefailed', {
         error: err,
         layer: layerInfo,
         map: this.map
@@ -684,9 +729,10 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _createMigrationLayer(layerInfo, features) {
     // window['echarts'] = echarts;
-    let options = this.getEchartsLayerOptions(layerInfo, features, 'leaflet');
+    const options = this.getEchartsLayerOptions(layerInfo, features, 'leaflet');
+    options.GLMap = { roam: true };
     // @ts-ignore
-    let layer = L.supermap.echartsLayer(options);
+    const layer = L.supermap.echartsLayer(options);
     this.echartslayer.push(layer);
     return layer;
   }
@@ -772,8 +818,9 @@ export default class WebMapViewModel extends WebMapBase {
 
   private _addLayerToMap({ layer, type = 'overlays', layerInfo, sendToMap = true }) {
     let { visible, layerID, name, index } = layerInfo;
-
-    sendToMap && (type = 'overlays');
+    if (sendToMap && type !== 'overlays') {
+      type = 'overlays';
+    }
     type === 'overlays' && layer.setZIndex && layer.setZIndex(index + 1);
 
     if (visible === undefined || visible) {
@@ -1076,11 +1123,11 @@ export default class WebMapViewModel extends WebMapBase {
     }
   }
 
-  protected getTransformCoodinatesCRS(epsgCode) {
+  protected getTransformCoodinatesCRS(epsgCode: number) {
     const defName = `EPSG:${epsgCode}`;
     const defValue = getProjection(defName);
     // @ts-ignore
-    return L.Proj.CRS(toEpsgCode(defValue), {
+    return L.Proj.CRS(defName, {
       def: defValue
     });
   }
@@ -1091,7 +1138,7 @@ export default class WebMapViewModel extends WebMapBase {
       this.stopCanvg();
       this.center = null;
       this.zoom = null;
-      this._dataFlowLayer.off('dataupdated', this._updateDataFlowFeaturesCallback);
+      this._dataFlowLayer?.off('dataupdated', this._updateDataFlowFeaturesCallback);
       this._unprojectCrs = null;
     }
   }

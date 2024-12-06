@@ -88,8 +88,11 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
         visibility: 'visible'
       },
       paint: {
-        'circle-radius': 5,
-        'circle-opacity': 0
+        'circle-radius': 0,
+        'circle-opacity': 1
+      },
+      metadata: {
+        SM_Layer_Order: 'Top'
       }
     });
 
@@ -111,8 +114,8 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
       this.fitBounds &&
         this.map.fitBounds(
           [
-            [bounds[0], bounds[1]],
-            [bounds[2], bounds[3]]
+            [Math.max(bounds[0], -180), bounds[1]],
+            [Math.min(bounds[2], 180), bounds[3]]
           ],
           { maxZoom: 17 }
         );
@@ -121,12 +124,21 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
 
   private _updateLayer() {
     let layer = this.map.getLayer(this.layerId);
-    if (layer) {
-      this.markers.length > 0 &&
-    this.markers.forEach(marker => {
+    if (layer && this.markers.length) {
       // @ts-ignore
-      marker && (marker.getElement().style.display = layer.visibility === 'visible' ? 'block' : 'none');
-    });
+      const opacity = layer.getPaintProperty('circle-opacity');
+      let updateOpacity = null;
+      if (opacity !== +this.markers[0].getElement().style.opacity) {
+        updateOpacity = opacity;
+      }
+      this.markers.forEach(marker => {
+        if (updateOpacity !== null) {
+          // @ts-ignore
+          marker.getElement().style.opacity = updateOpacity;
+        }
+        // @ts-ignore
+        marker && (marker.getElement().style.display = layer.visibility === 'visible' ? 'block' : 'none');
+      });
     }
   }
 

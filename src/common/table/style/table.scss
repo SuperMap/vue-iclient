@@ -7,6 +7,7 @@
   
   &-thead > tr > th {
     background: $table-header-bg;
+    position: relative;
     // .#{$iconfont-css-prefix}-filter,
     // #{$table-prefix}-filter-icon {
     //   color: $table-header-icon-color;
@@ -113,6 +114,41 @@
         .#{$ant-prefix}-dropdown-menu-submenu-title::after {
           color: $primary-color;
         }
+      }
+    }
+  }
+  &:not(&-bordered) {
+    #{$table-prefix}-thead > tr > th::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: 0;
+      width: 1px;
+      height: 14px;
+      background-color: $border-color-secondary;
+      transform: translateY(-50%);
+    }
+  }
+
+  &-thead > tr > th,
+  &-tbody > tr > td {
+    padding: 13px 24px;
+  }
+
+  &-middle {
+    > #{$table-prefix}-content > #{$table-prefix}-body > table {
+      > #{$table-prefix}-thead > tr > th,
+      > #{$table-prefix}-tbody > tr > td {
+        padding: 9px 24px;
+      }
+    }
+  }
+
+  &-small {
+    > #{$table-prefix}-content > #{$table-prefix}-body > table {
+      > #{$table-prefix}-thead > tr > th,
+      > #{$table-prefix}-tbody > tr > td {
+        padding: 5px 24px;
       }
     }
   }

@@ -2,6 +2,7 @@ import { mount, createLocalVue, config } from '@vue/test-utils';
 import SmCoordinateConversion from '../CoordinateConversion.vue';
 import { Input } from 'ant-design-vue';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
+import proj4 from 'proj4';
 
 const localVue = createLocalVue();
 localVue.use(Input);
@@ -140,6 +141,8 @@ describe('CoordinateConversion.vue', () => {
         };
       }
     });
+    const wkt4326 = 'GEOGCS["WGS 84",DATUM["WGS_1984",SPHEROID["WGS 84",6378137,298.257223563,AUTHORITY["EPSG","7030"]],AUTHORITY["EPSG","6326"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],AXIS["Easting", "EAST"],AXIS["Northing", "NORTH"],UNIT["degree",0.0174532925199433,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4326"]]';
+    const spyDefs = jest.spyOn(proj4, 'defs').mockImplementation(() => wkt4326);
     const spy = jest.spyOn(wrapper.vm.viewModel, '_clearMarker');
     const selectEle = wrapper.find('.sm-component-coordinate-conversion__a-select');
     expect(selectEle.exists()).toBe(true);
@@ -148,6 +151,7 @@ describe('CoordinateConversion.vue', () => {
     expect(spy).toHaveBeenCalledTimes(1);
     selectEle.vm.$emit('change', 'BASEMAP');
     expect(wrapper.vm.inputValue).toEqual('10.000 10.000');
+    expect(spyDefs).toHaveBeenCalled();;
     const inputEle = wrapper.find('.sm-component-coordinate-conversion__a-input');
     const e = {
       target: {
@@ -156,6 +160,7 @@ describe('CoordinateConversion.vue', () => {
     };
     inputEle.vm.$emit('blur', e);
     expect(wrapper.vm.coordinate).toEqual({ lat: NaN, lng: NaN });
+    spyDefs.mockClear();
   });
 
   it('change format to XY', () => {
