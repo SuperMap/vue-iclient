@@ -1,8 +1,8 @@
 import { getDataType } from 'vue-iclient/src/common/_utils/util';
 import proj4 from 'proj4';
 
-function defineProjection(epsgCode, projection) {
-  if (proj4.defs(epsgCode)) {
+function defineProjection(epsgCode, projection, isCover) {
+  if (proj4.defs(epsgCode) && !isCover) {
     return;
   }
   if (!projection) {
@@ -12,15 +12,15 @@ function defineProjection(epsgCode, projection) {
   proj4.defs(epsgCode, projection);
 }
 
-export function registerProjection(epsgKey, epsgValue) {
+export function registerProjection(epsgKey, epsgValue, isCover) {
   if (getDataType(arguments[0]) === '[object Object]' && arguments.length === 1) {
     const projections = arguments[0];
     for (const epsgCode in projections) {
-      defineProjection(epsgCode, projections[epsgCode]);
+      defineProjection(epsgCode, projections[epsgCode], isCover);
     }
     return;
   }
-  defineProjection(epsgKey, epsgValue);
+  defineProjection(epsgKey, epsgValue, isCover);
 }
 
 export function getProjection(epsgKey) {
@@ -56,5 +56,14 @@ export function toEpsgCode(wkt) {
     } else {
       return '';
     }
+  }
+}
+
+export function transformCoodinates({ coordinates, sourceProjection, destProjection = 'EPSG:4326' }) {
+  try {
+    return proj4(sourceProjection, destProjection, coordinates);
+  } catch (error) {
+    const errorMsg = `${error} is not defined`;
+    throw errorMsg;
   }
 }

@@ -99,7 +99,6 @@ interface CRSOptions {
 }
 
 interface MapHandler {
-  initializeMap: (mapInfo?: Record<string, any>, map?: mapboxglTypes.Map) => void;
   clean: () => void;
   cleanLayers: () => void;
   getLayerCatalog: () => any[];
