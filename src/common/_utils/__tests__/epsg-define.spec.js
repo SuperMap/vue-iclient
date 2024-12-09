@@ -1,4 +1,4 @@
-import { registerProjection, getProjection, toEpsgCode } from '../epsg-define';
+import { registerProjection, getProjection, toEpsgCode, transformCoodinates } from '../epsg-define';
 import proj4 from 'proj4';
 
 describe('epsg-define', () => {
@@ -38,6 +38,28 @@ describe('epsg-define', () => {
     expect(toEpsgCode(projections['EPSG:4548'])).toBe('EPSG:4548');
     expect(toEpsgCode('EPSG:2343')).toBe('EPSG:2343');
     expect(toEpsgCode({})).toBe('');
+    done();
+  });
+
+  it('register cover', done => {
+    const spy = jest.spyOn(proj4, 'defs');
+    registerProjection('EPSG:3857', projections['EPSG:4548'], true);
+    expect(getProjection('EPSG:3857')).not.toBeUndefined();
+    expect(spy).toHaveBeenCalledWith('EPSG:3857', projections['EPSG:4548']);
+    done();
+  });
+
+  it('transformCoodinates', done => {
+    registerProjection('EPSG:4548', projections['EPSG:4548']);
+    const result = transformCoodinates({ coordinates: [478591, 3734142], sourceProjection: 'EPSG:4548' });
+    expect(result).toEqual([116.76898148293563, 33.733651143352695]);
+    expect(() =>
+      transformCoodinates({
+        coordinates: [478591, 3734142],
+        sourceProjection: 'EPSG:4548',
+        destProjection: 'EPSG:2210'
+      })
+    ).toThrow('EPSG:2210 is not defined');
     done();
   });
 });
