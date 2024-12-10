@@ -5,6 +5,7 @@ import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
 import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
 import isEqual from 'lodash.isequal';
+
 interface HighlightStyle {
   circle: InstanceType<typeof CircleStyle>;
   line: InstanceType<typeof LineStyle>;
@@ -283,6 +284,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
       this.map.off('mouseleave', layerId, this.handleMapMouseLeave);
     });
   }
+
   highlightL7Layer({ layer, features, filter }) {
     const { type, id, paint } = layer;
     const nextPaint = Object.assign({}, paint);
@@ -324,7 +326,6 @@ export default class HighlightLayer extends mapboxgl.Evented {
     const { l7layer } = layer;
     if (l7layer) {
       this.highlightL7Layer({ layer, features, filter });
-      return;
     } else {
       this.addNormalHighlightLayers(layer, filter);
     }
@@ -383,16 +384,17 @@ export default class HighlightLayer extends mapboxgl.Evented {
   }
 
   removeHighlightLayers() {
-    if (!this.map) {
+    // @ts-expect-error
+    if (!this.map || !this.map.style) {
       return;
     }
-    this.highlightOptions.layerIds.forEach(layerId =>{
+    this.highlightOptions.layerIds.forEach(layerId => {
       const layer = this.map.getLayer(layerId);
       // @ts-ignore
       if (layer?.l7layer) {
         this.setL7Filter(layer, []);
       }
-    })
+    });
     const layersToRemove = this.getHighlightLayerIds(this.highlightOptions.layerIds);
     layersToRemove.forEach(layerId => {
       if (this.map.getLayer(layerId)) {
@@ -462,7 +464,21 @@ export default class HighlightLayer extends mapboxgl.Evented {
     fields = this.highlightOptions.featureFieldsMap?.[targetId]
   }: CreateFilterExpParams) {
     // 高亮过滤(所有字段)
-    const filterKeys = ['smx', 'smy', 'lon', 'lat', 'longitude', 'latitude', 'x', 'y', 'usestyle', 'featureinfo', '_id', 'id', 'smgeometry'];
+    const filterKeys = [
+      'smx',
+      'smy',
+      'lon',
+      'lat',
+      'longitude',
+      'latitude',
+      'x',
+      'y',
+      'usestyle',
+      'featureinfo',
+      '_id',
+      'id',
+      'smgeometry'
+    ];
     const isBasicType = (item: any) => {
       return typeof item === 'string' || typeof item === 'number' || typeof item === 'boolean';
     };
@@ -509,13 +525,13 @@ export default class HighlightLayer extends mapboxgl.Evented {
           }
         });
       });
-      // 3d填充面的样式用普通面的配置项
-      highlightStyle['fill-extrusion'] = {
-        paint: {
-          'fill-extrusion-color': highlightStyle.fill.paint['fill-color'],
-          'fill-extrusion-opacity': highlightStyle.fill.paint['fill-opacity'],
-        }
-      };
+    // 3d填充面的样式用普通面的配置项
+    highlightStyle['fill-extrusion'] = {
+      paint: {
+        'fill-extrusion-color': highlightStyle.fill.paint['fill-color'],
+        'fill-extrusion-opacity': highlightStyle.fill.paint['fill-opacity']
+      }
+    };
     return highlightStyle;
   }
 
