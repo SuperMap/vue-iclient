@@ -58,6 +58,7 @@ interface webMapOptions {
   iportalServiceProxyUrlPrefix?: string;
   checkSameLayer?: boolean;
   parentEvents?: Record<string, Function>;
+  tileTransformRequest?: (url?: string) => Object;
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
@@ -122,6 +123,8 @@ export default class WebMap extends WebMapBase {
 
   private _graticuleLayer: any;
 
+  private _tileTransformRequest: webMapOptions['tileTransformRequest'];
+
   constructor(
     id: string | number | Object,
     options: webMapOptions = {},
@@ -147,6 +150,7 @@ export default class WebMap extends WebMapBase {
     this.checkSameLayer = options.checkSameLayer;
     this._legendList = [];
     this._parentEvents = options.parentEvents ?? {};
+    this._tileTransformRequest = options.tileTransformRequest;
     this._taskID = new Date();
   }
 
@@ -401,7 +405,8 @@ export default class WebMap extends WebMapBase {
           const proxy = this.webMapService.handleProxy('image');
           return {
             url: url,
-            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : undefined
+            credentials: this.webMapService.handleWithCredentials(proxy, url, false) ? 'include' : undefined,
+            ...this._tileTransformRequest?.(url)
           };
         }
         return { url };

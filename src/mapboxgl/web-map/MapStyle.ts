@@ -21,6 +21,7 @@ interface webMapOptions {
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
   checkSameLayer?: boolean;
+  tileTransformRequest?: (url?: string) => Object;
 }
 
 interface mapOptions {
@@ -107,7 +108,8 @@ export default class MapStyle extends Events {
           url: proxy ? `${proxy}${encodeURIComponent(url)}` : url,
           credentials: this.webMapService.handleWithCredentials(proxy, url, this.withCredentials || false)
             ? 'include'
-            : undefined
+            : undefined,
+          ...this.options.tileTransformRequest?.(url)
         };
       };
     }

@@ -54,6 +54,7 @@ interface webMapOptions {
   proxy?: boolean | string;
   iportalServiceProxyUrlPrefix?: string;
   checkSameLayer?: boolean;
+  tileTransformRequest?: (url?: string) => Object;
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
