@@ -74,6 +74,7 @@ interface webMapOptions {
   checkSameLayer?: boolean;
   map?: mapboxglTypes.Map;
   layerFilter?: () => boolean;
+  tileTransformRequest?: (url?: string) => Object;
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
