@@ -98,6 +98,29 @@ describe('WebMap.vue', () => {
     done();
   });
 
+  xit('xyztilelayernotsupport', async done => {
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
+      'https://fakeiportal.supermap.io/iportal/web/maps/123/map.json': uniqueLayer_point,
+      'https://fakeiportal.supermap.io/iportal/web/datas/676516522/content.json?pageSize=9999999&currentPage=1&parentResType=MAP&parentResId=123':
+        layerData_CSV
+    };
+    mockFetch(fetchResource);
+    wrapper = mount(SmWebMap, {
+      localVue,
+      propsData: {
+        serverUrl: 'https://fakeiportal.supermap.io/iportal',
+        mapId: '123'
+      },
+      stubs: ['SmPan', 'SmScale', 'SmZoom']
+    });
+    await mapWrapperLoaded(wrapper);
+    const spy = jest.spyOn(wrapper.vm, 'notifyErrorTip');
+    expect(spy).toBeCalled();
+    wrapper.vm.viewModel.triggerEvent('xyztilelayernotsupport', {});
+    await flushPromises();
+    done();
+  });
   it('initial_Control', async done => {
     const fetchResource = {
       'https://fakeiportal.supermap.io/iportal/web/config/portal.json': iportal_serviceProxy,
@@ -774,7 +797,7 @@ describe('WebMap.vue', () => {
         mapId: '249495311'
       },
       mocks: {
-        $t: (msg) => msg
+        $t: msg => msg
       }
     });
     const deleteMap = jest.spyOn(mapEvent.$options, 'deleteMap');
@@ -793,6 +816,9 @@ describe('WebMap.vue', () => {
         if (e.error === 'SAMPLE DATA is not supported') {
           errorSpy.toHaveBeenCalledWith('webmap.sampleDataNotSupport');
         }
+      },
+      xyztilelayernotsupport: e => {
+        expect(e.error).not.toBeNull();
       },
       layercreatefailed: e => {
         expect(e.error).not.toBeNull();
@@ -831,6 +857,11 @@ describe('WebMap.vue', () => {
     wrapper.vm.viewModel.triggerEvent('layerorsourcenameduplicated');
     wrapper.vm.viewModel.triggerEvent('mapbeforeremove', {
       map: { resize: jest.fn() }
+    });
+    wrapper.vm.viewModel.triggerEvent('xyztilelayernotsupport', {
+      error: 'xyztilelayernotsupport',
+      error_code: 'xyztilelayernotsupport',
+      layer: { name: 'xyz' }
     });
   });
 

@@ -211,6 +211,7 @@ export default class WebMapViewModel extends Events {
       'baidumapnotsupport',
       'layerorsourcenameduplicated',
       'projectionnotmatch',
+      'xyztilelayernotsupport',
       'mapbeforeremove'
     ];
     this.selfEventTypes = ['addlayerssucceeded'];

@@ -623,6 +623,25 @@ describe('WebMapViewModel.spec', () => {
     viewModel._handler.fire('projectionnotmatch', {});
   });
 
+  it('xyztilelayernotsupport', done => {
+    const callback = function (data) {
+      expect(data).not.toBeUndefined();
+      done();
+    };
+    const map = {
+      ...commonMap,
+      getCRS: () => {
+        return {
+          epsgCode: 'EPSG:4326',
+          getExtent: () => jest.fn()
+        };
+      }
+    };
+    const viewModel = new WebMapViewModel(restmapLayer, { ...commonOption }, {}, map);
+    viewModel.on({ xyztilelayernotsupport: callback });
+    viewModel._handler.fire('xyztilelayernotsupport', {error: 'xyztilelayernotsupport'});
+  });
+
   it('layerFilter', async done => {
     const viewModel = new WebMapViewModel(vectorLayer_line, {}, undefined, null, function (layer) {
       return layer.name === '浙江省高等院校(3)';
@@ -634,6 +653,19 @@ describe('WebMapViewModel.spec', () => {
     viewModel.on({ addlayerssucceeded: callback });
     await flushPromises();
     jest.advanceTimersByTime(0);
+  });
+
+  it('xyztilelayernotsupport', async done => {
+    const viewModel = new WebMapViewModel(vectorLayer_line, {}, undefined, null, function (layer) {
+      return layer.name === '浙江省高等院校(3)';
+    });
+    const callback = function (e) {
+      expect(e).not.toBeUndefined();
+      done();
+    };
+    viewModel.on({ xyztilelayernotsupport: callback });
+    viewModel._handler.fire('xyztilelayernotsupport', {});
+    await flushPromises();
   });
 
   it('webmap3.0', async done => {
