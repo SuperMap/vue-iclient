@@ -230,9 +230,9 @@ export default class WebMapService extends Events {
     });
   }
 
-  public getMapBoxStyle(styleURL) {
+  public getMapBoxStyle(styleURL, withoutFormatSuffix = false) {
     return new Promise((resolve, reject) => {
-      SuperMap.FetchRequest.get(styleURL)
+      SuperMap.FetchRequest.get(styleURL, {}, { withoutFormatSuffix })
         .then(response => {
           return response.json();
         })

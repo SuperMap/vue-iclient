@@ -606,9 +606,10 @@ export default class WebMapViewModel extends WebMapBase {
     if (url.indexOf('/restjsr/') > -1 && !/\/style\.json$/.test(url)) {
       url += '/style.json';
     }
+    const withoutFormatSuffix = url.indexOf('/restjsr/') === -1;
     this.webMapService
       // @ts-ignore
-      .getMapBoxStyle(url)
+      .getMapBoxStyle(url, withoutFormatSuffix)
       .then(
         (style: any) => {
           const sourceIds = Object.keys(style.sources);
