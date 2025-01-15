@@ -41,7 +41,11 @@ import cloneDeep from 'lodash.clonedeep';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Timer from 'vue-iclient/src/common/_mixin/Timer';
-import { chartThemeUtil, handleMultiGradient, getMultiColorGroup } from 'vue-iclient/src/common/_utils/style/theme/chart';
+import {
+  chartThemeUtil,
+  handleMultiGradient,
+  getMultiColorGroup
+} from 'vue-iclient/src/common/_utils/style/theme/chart';
 import EchartsDataService from 'vue-iclient/src/common/_utils/EchartsDataService';
 import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
 import { ColorsPickerUtil } from 'vue-iclient/static/libs/iclient-common/iclient-common';
@@ -582,6 +586,22 @@ export default {
         this.echartOptions = this._optionsHandler(echartOptions, options);
       });
     },
+    _getDecimalsFormatterVal(val, decimals) {
+      if (!Number.isFinite(+val)) {
+        return val;
+      }
+      return decimals === -1 || typeof decimals !== 'number' ? val : Number(val).toFixed(decimals);
+    },
+    _handleRadarAxisLabelFormatter(options) {
+      if (typeof options.radar.decimals === 'number') {
+        for (let key in options.radar.indicator) {
+          const item = options.radar.indicator[key];
+          item.text = this._getDecimalsFormatterVal(item.text, options.radar.decimals);
+        }
+        delete options.radar.decimals;
+      }
+      return options;
+    },
     _optionsHandler(options, dataOptions, dataZoomChanged) {
       dataOptions = dataOptions && cloneDeep(dataOptions); // clone 避免引起重复刷新
       options = options && cloneDeep(options); // clone 避免引起重复刷新
@@ -741,8 +761,8 @@ export default {
       }
       if (options && options.radar && dataOptions.radar) {
         options.radar.indicator = Object.assign({}, dataOptions.radar.indicator || {});
+        this._handleRadarAxisLabelFormatter(options);
       }
-
       let series = dataOptions.series;
       let isRingShine = options.series && options.series[0] && options.series[0].outerGap >= 0;
       if (series && series.length && series[0].type === 'pie') {
