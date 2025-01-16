@@ -307,7 +307,7 @@ describe('Chart Mixin Component', () => {
     jest.useRealTimers();
   });
 
-  it('render rankBar chart', async (done) => {
+  it('render rankBar chart', async done => {
     const serieItem = {
       name: 'sale',
       emphasis: {
@@ -410,7 +410,7 @@ describe('Chart Mixin Component', () => {
     wrapper.vm.echartOptions.visualMap[0].pieces.forEach((item, index) => {
       expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.rich[`color_${index}`]).not.toBeUndefined();
     });
-    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('1Thu', 5)).toEqual([`{color_4|2}  Thu`].join('\n'))
+    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('1Thu', 5)).toEqual([`{color_4|2}  Thu`].join('\n'));
     done();
   });
 
@@ -489,7 +489,7 @@ describe('Chart Mixin Component', () => {
           sort: 'descending',
           seriesType: '2.5Bar'
         }
-      ]
+      ];
       wrapper = factory({
         options: {
           ...options,
@@ -533,7 +533,7 @@ describe('Chart Mixin Component', () => {
           sort: 'descending',
           seriesType: '2.5Bar'
         }
-      ]
+      ];
       const geoJSONDataset = {
         maxFeatures: 20,
         url: '',
@@ -545,14 +545,14 @@ describe('Chart Mixin Component', () => {
               properties: {
                 '0-num': 100,
                 '1-num': 160,
-                timestamp:"2020-10-01 12:45:02"
+                timestamp: '2020-10-01 12:45:02'
               }
             },
             {
               properties: {
                 '0-num': 120,
                 '1-num': 170,
-                timestamp:"2020-10-02 12:45:02"
+                timestamp: '2020-10-02 12:45:02'
               }
             }
           ]
@@ -580,9 +580,9 @@ describe('Chart Mixin Component', () => {
       const echartSeriesLen = wrapper.vm.echartOptions.series.length;
       expect(echartSeriesLen).toBeGreaterThan(options.series.length);
       expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].type).toBe('pictorialBar');
-      expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].symbolSize).toStrictEqual(["50%", 10]);
-      expect(wrapper.vm.echartOptions.series[0].barGap).toBe("0");
-      expect(wrapper.vm.echartOptions.series[1].barGap).toBe("0");
+      expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].symbolSize).toStrictEqual(['50%', 10]);
+      expect(wrapper.vm.echartOptions.series[0].barGap).toBe('0');
+      expect(wrapper.vm.echartOptions.series[1].barGap).toBe('0');
       expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toBeUndefined;
       expect(wrapper.vm.echartOptions.series[1].itemStyle.color).not.toBeUndefined;
     });
@@ -742,12 +742,15 @@ describe('Chart Mixin Component', () => {
   });
 
   it('trigger echarts events', () => {
-    wrapper = factory({
-      options: optionFactory(),
-      datasetOptions: datasetOptionsFactory(['bar']),
-      dataset: geoJSONDataset,
-      associatedMap: true
-    }, { localVue });
+    wrapper = factory(
+      {
+        options: optionFactory(),
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset,
+        associatedMap: true
+      },
+      { localVue }
+    );
     const chartInstance = wrapper.vm._getEchart();
     expect(chartInstance).not.toBeUndefined();
     const params = { dataIndex: 0 };
@@ -755,5 +758,33 @@ describe('Chart Mixin Component', () => {
     expect(wrapper.emitted().click).toBeTruthy();
     expect(wrapper.emitted().click.length).toBe(1);
     expect(wrapper.emitted().click[0]).toEqual([params]);
+  });
+  it('radar decimals', () => {
+    wrapper = factory(
+      {
+        options: optionFactory(),
+        datasetOptions: datasetOptionsFactory(['radar']),
+        dataset: geoJSONDataset,
+        associatedMap: true
+      },
+      { localVue }
+    );
+    const chartInstance = wrapper.vm._getEchart();
+    expect(chartInstance).not.toBeUndefined();
+    const options = wrapper.vm._handleRadarAxisLabelFormatter({
+      radar: {
+        decimals: 1,
+        indicator: { 0: { text: '1.232', vlaue: 1.232 } }
+      }
+    });
+    expect(options.radar.indicator[0].text).toBe('1.2');
+    expect(options.radar.decimals).toBeUndefined();
+    const options1 = wrapper.vm._handleRadarAxisLabelFormatter({
+      radar: {
+        decimals: -1,
+        indicator: { 0: { text: '1.232', vlaue: 1.232 } }
+      }
+    });
+    expect(options1.radar.indicator[0].text).toBe('1.232');
   });
 });
