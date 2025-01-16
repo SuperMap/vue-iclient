@@ -1,0 +1,325 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/mapboxgl/web-map/control/compass/CompassViewModel.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../../../index.html">All files</a> / <a href="index.html">src/mapboxgl/web-map/control/compass</a> CompassViewModel.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">86.48% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>32/37</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">50% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>4/8</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">75% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>9/12</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">85.29% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>29/34</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input oninput="onInput()" type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+export default class CompassViewModel extends mapboxgl.Evented {
+    constructor(options) {
+        super();
+        this.rotateEventFn = this._rotateEvent.bind(this);
+        this.pitchEventFn = this._pitchEvent.bind(this);
+        this.visualizePitch = options &amp;&amp; options.visualizePitch;
+    }
+    setMap(mapInfo) {
+        const { map } = mapInfo;
+        this.map = map;
+        this.map.on('rotate', this.rotateEventFn);
+        this.map.on('pitch', this.pitchEventFn);
+    }
+    setVisualizePitch(visualizePitch) {
+        this.visualizePitch = visualizePitch;
+    }
+    /**
+     * @function CompassViewModel.prototype.initAngle
+     * @description 获取初始化地图后的倾斜角度和俯仰角度。
+     */
+    initAngle() {
+        return {
+            angle: this._getAngle(),
+            pitch: this.map.getPitch()
+        };
+    }
+    /**
+     * @function CompassViewModel.prototype._getAngle
+     * @description 获取地图的旋转角度。
+     */
+    _getAngle() {
+        // @ts-ignore
+        return this.map.transform.angle;
+    }
+    /**
+     * @function CompassViewModel.prototype.resetNorth
+     * @description 以动态转换的方式将地图旋转到 0 度方位角（正北方）。
+     */
+    resetNorth() {
+        this.map.resetNorth();
+    }
+    /**
+     * @function CompassViewModel.prototype.resetNorthPitch
+     * @description 以动态转换的方式将地图旋转到 0 度方位角（正北方）和 0 度倾斜角。
+     */
+<span class="fstat-no" title="function not covered" >    resetNorthPitch(</span>) {
+<span class="cstat-no" title="statement not covered" >        this.map.resetNorthPitch();</span>
+    }
+    /**
+     * @function CompassViewModel.prototype._rotatePitchEventFn
+     * @description 获取地图的旋转角度。
+     */
+<span class="fstat-no" title="function not covered" >    _rotateEvent(</span>) {
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.rotatePitchCallBack) {</span>
+<span class="cstat-no" title="statement not covered" >            this.rotatePitchCallBack(this._getAngle(), this.map.getPitch());</span>
+        }
+    }
+    /**
+     * @function CompassViewModel.prototype._rotatePitchEventFn
+     * @description 获取地图的旋转角度。
+     */
+<span class="fstat-no" title="function not covered" >    _pitchEvent(</span>) {
+<span class="cstat-no" title="statement not covered" >        <span class="missing-if-branch" title="if path not taken" >I</span>if (this.visualizePitch &amp;&amp; this.rotatePitchCallBack) {</span>
+<span class="cstat-no" title="statement not covered" >            this.rotatePitchCallBack(this._getAngle(), this.map.getPitch());</span>
+        }
+    }
+    /**
+     * @function CompassViewModel.prototype.changeEventOn
+     * @description 倾斜或俯仰的角度改变事件监听后回调函数fn。
+     * @param {Funciton} fn - 回调函数
+     */
+    rotateEventOn(fn) {
+        this.rotatePitchCallBack = fn;
+    }
+    removed() {
+        this.map.off('rotate', this.rotateEventFn);
+        this.map.off('pitch', this.pitchEventFn);
+    }
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJmaWxlIjoiQzpcXFVzZXJzXFxBZG1pbmlzdHJhdG9yXFxEZXNrdG9wXFx2dWUtaWNsaWVudFxcc3JjXFxtYXBib3hnbFxcd2ViLW1hcFxcY29udHJvbFxcY29tcGFzc1xcQ29tcGFzc1ZpZXdNb2RlbC50cyIsIm1hcHBpbmdzIjoiQUFBQSxPQUFPLFFBQVEsTUFBTSxvREFBb0QsQ0FBQztBQWtCMUUsTUFBTSxDQUFDLE9BQU8sT0FBTyxnQkFBaUIsU0FBUSxRQUFRLENBQUMsT0FBTztJQU81RCxZQUFZLE9BQXFCO1FBQy9CLEtBQUssRUFBRSxDQUFDO1FBQ1IsSUFBSSxDQUFDLGFBQWEsR0FBRyxJQUFJLENBQUMsWUFBWSxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQztRQUNsRCxJQUFJLENBQUMsWUFBWSxHQUFHLElBQUksQ0FBQyxXQUFXLENBQUMsSUFBSSxDQUFDLElBQUksQ0FBQyxDQUFDO1FBQ2hELElBQUksQ0FBQyxjQUFjLEdBQUcsT0FBTyxJQUFJLE9BQU8sQ0FBQyxjQUFjLENBQUM7SUFDMUQsQ0FBQztJQUVELE1BQU0sQ0FBQyxPQUFvQjtRQUN6QixNQUFNLEVBQUUsR0FBRyxFQUFFLEdBQUcsT0FBTyxDQUFDO1FBQ3hCLElBQUksQ0FBQyxHQUFHLEdBQUcsR0FBRyxDQUFDO1FBQ2YsSUFBSSxDQUFDLEdBQUcsQ0FBQyxFQUFFLENBQUMsUUFBUSxFQUFFLElBQUksQ0FBQyxhQUFhLENBQUMsQ0FBQztRQUMxQyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxPQUFPLEVBQUUsSUFBSSxDQUFDLFlBQVksQ0FBQyxDQUFDO0lBQzFDLENBQUM7SUFFRCxpQkFBaUIsQ0FBQyxjQUF1QjtRQUN2QyxJQUFJLENBQUMsY0FBYyxHQUFHLGNBQWMsQ0FBQztJQUN2QyxDQUFDO0lBRUQ7OztPQUdHO0lBQ0gsU0FBUztRQUNQLE9BQU87WUFDTCxLQUFLLEVBQUUsSUFBSSxDQUFDLFNBQVMsRUFBRTtZQUN2QixLQUFLLEVBQUUsSUFBSSxDQUFDLEdBQUcsQ0FBQyxRQUFRLEVBQUU7U0FDM0IsQ0FBQztJQUNKLENBQUM7SUFFRDs7O09BR0c7SUFDSCxTQUFTO1FBQ1AsYUFBYTtRQUNiLE9BQU8sSUFBSSxDQUFDLEdBQUcsQ0FBQyxTQUFTLENBQUMsS0FBSyxDQUFDO0lBQ2xDLENBQUM7SUFFRDs7O09BR0c7SUFDSCxVQUFVO1FBQ1IsSUFBSSxDQUFDLEdBQUcsQ0FBQyxVQUFVLEVBQUUsQ0FBQztJQUN4QixDQUFDO0lBRUQ7OztPQUdHO0lBQ0gsZUFBZTtRQUNiLElBQUksQ0FBQyxHQUFHLENBQUMsZUFBZSxFQUFFLENBQUM7SUFDN0IsQ0FBQztJQUVEOzs7T0FHRztJQUNLLFlBQVk7UUFDbEIsSUFBSSxJQUFJLENBQUMsbUJBQW1CLEVBQUU7WUFDNUIsSUFBSSxDQUFDLG1CQUFtQixDQUFDLElBQUksQ0FBQyxTQUFTLEVBQUUsRUFBRSxJQUFJLENBQUMsR0FBRyxDQUFDLFFBQVEsRUFBRSxDQUFDLENBQUM7U0FDakU7SUFDSCxDQUFDO0lBRUQ7OztPQUdHO0lBQ0ssV0FBVztRQUNqQixJQUFJLElBQUksQ0FBQyxjQUFjLElBQUksSUFBSSxDQUFDLG1CQUFtQixFQUFFO1lBQ25ELElBQUksQ0FBQyxtQkFBbUIsQ0FBQyxJQUFJLENBQUMsU0FBUyxFQUFFLEVBQUUsSUFBSSxDQUFDLEdBQUcsQ0FBQyxRQUFRLEVBQUUsQ0FBQyxDQUFDO1NBQ2pFO0lBQ0gsQ0FBQztJQUVEOzs7O09BSUc7SUFDSCxhQUFhLENBQUMsRUFBTztRQUNuQixJQUFJLENBQUMsbUJBQW1CLEdBQUcsRUFBRSxDQUFDO0lBQ2hDLENBQUM7SUFFRCxPQUFPO1FBQ0wsSUFBSSxDQUFDLEdBQUcsQ0FBQyxHQUFHLENBQUMsUUFBUSxFQUFFLElBQUksQ0FBQyxhQUFhLENBQUMsQ0FBQztRQUMzQyxJQUFJLENBQUMsR0FBRyxDQUFDLEdBQUcsQ0FBQyxPQUFPLEVBQUUsSUFBSSxDQUFDLFlBQVksQ0FBQyxDQUFDO0lBQzNDLENBQUM7Q0FDRiIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXEFkbWluaXN0cmF0b3JcXERlc2t0b3BcXHZ1ZS1pY2xpZW50XFxzcmNcXG1hcGJveGdsXFx3ZWItbWFwXFxjb250cm9sXFxjb21wYXNzXFxDb21wYXNzVmlld01vZGVsLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBtYXBib3hnbCBmcm9tICd2dWUtaWNsaWVudC9zdGF0aWMvbGlicy9tYXBib3hnbC9tYXBib3gtZ2wtZW5oYW5jZSc7XHJcblxyXG4vKipcclxuICogQGNsYXNzIENvbXBhc3NWaWV3TW9kZWxcclxuICogQGRlc2NyaXB0aW9uIGNvbXBhc3Mgdmlld01vZGVs77yI5oyH5Y2X6ZKIdm3lsYLvvIkuXHJcbiAqIEBwYXJhbSB7T2JqZWN0fSBtYXAgLSDlnLDlm77lr7nosaHjgIJcclxuICogQGZpcmVzIENvbXBhc3NWaWV3TW9kZWwjbW91c2VXaGVlbFxyXG4gKiBAZXh0ZW5kcyBtYXBib3hnbC5FdmVudGVkXHJcbiAqL1xyXG5cclxuaW50ZXJmYWNlIG1hcEVuaGFuY2UgZXh0ZW5kcyBtYXBib3hnbFR5cGVzLk1hcCB7XHJcbiAgcmVzZXROb3J0aFBpdGNoPzogKG9wdGlvbnM/OiBtYXBib3hnbFR5cGVzLkFuaW1hdGlvbk9wdGlvbnMsIGV2ZW50RGF0YT86IG1hcGJveGdsVHlwZXMuRXZlbnREYXRhKSA9PiB0aGlzO1xyXG59XHJcblxyXG5pbnRlcmZhY2Ugb3B0aW9uc1R5cGVzIHtcclxuICB2aXN1YWxpemVQaXRjaDogYm9vbGVhbjtcclxufVxyXG5cclxuZXhwb3J0IGRlZmF1bHQgY2xhc3MgQ29tcGFzc1ZpZXdNb2RlbCBleHRlbmRzIG1hcGJveGdsLkV2ZW50ZWQge1xyXG4gIG1hcDogbWFwRW5oYW5jZTtcclxuICByb3RhdGVQaXRjaENhbGxCYWNrOiBhbnk7XHJcbiAgdmlzdWFsaXplUGl0Y2g6IGJvb2xlYW47XHJcbiAgcm90YXRlRXZlbnRGbjogKGRhdGE6IG1hcGJveGdsVHlwZXMuTWFwYm94RXZlbnQ8TW91c2VFdmVudCB8IFRvdWNoRXZlbnQgfCB1bmRlZmluZWQ+KSA9PiB2b2lkO1xyXG4gIHBpdGNoRXZlbnRGbjogKGRhdGE6IG1hcGJveGdsVHlwZXMuTWFwYm94RXZlbnQ8TW91c2VFdmVudCB8IFRvdWNoRXZlbnQgfCB1bmRlZmluZWQ+KSA9PiB2b2lkO1xyXG5cclxuICBjb25zdHJ1Y3RvcihvcHRpb25zOiBvcHRpb25zVHlwZXMpIHtcclxuICAgIHN1cGVyKCk7XHJcbiAgICB0aGlzLnJvdGF0ZUV2ZW50Rm4gPSB0aGlzLl9yb3RhdGVFdmVudC5iaW5kKHRoaXMpO1xyXG4gICAgdGhpcy5waXRjaEV2ZW50Rm4gPSB0aGlzLl9waXRjaEV2ZW50LmJpbmQodGhpcyk7XHJcbiAgICB0aGlzLnZpc3VhbGl6ZVBpdGNoID0gb3B0aW9ucyAmJiBvcHRpb25zLnZpc3VhbGl6ZVBpdGNoO1xyXG4gIH1cclxuXHJcbiAgc2V0TWFwKG1hcEluZm86IG1hcEluZm9UeXBlKSB7XHJcbiAgICBjb25zdCB7IG1hcCB9ID0gbWFwSW5mbztcclxuICAgIHRoaXMubWFwID0gbWFwO1xyXG4gICAgdGhpcy5tYXAub24oJ3JvdGF0ZScsIHRoaXMucm90YXRlRXZlbnRGbik7XHJcbiAgICB0aGlzLm1hcC5vbigncGl0Y2gnLCB0aGlzLnBpdGNoRXZlbnRGbik7XHJcbiAgfVxyXG5cclxuICBzZXRWaXN1YWxpemVQaXRjaCh2aXN1YWxpemVQaXRjaDogYm9vbGVhbikge1xyXG4gICAgdGhpcy52aXN1YWxpemVQaXRjaCA9IHZpc3VhbGl6ZVBpdGNoO1xyXG4gIH1cclxuXHJcbiAgLyoqXHJcbiAgICogQGZ1bmN0aW9uIENvbXBhc3NWaWV3TW9kZWwucHJvdG90eXBlLmluaXRBbmdsZVxyXG4gICAqIEBkZXNjcmlwdGlvbiDojrflj5bliJ3lp4vljJblnLDlm77lkI7nmoTlgL7mlpzop5Lluqblkozkv6/ku7Dop5LluqbjgIJcclxuICAgKi9cclxuICBpbml0QW5nbGUoKSB7XHJcbiAgICByZXR1cm4ge1xyXG4gICAgICBhbmdsZTogdGhpcy5fZ2V0QW5nbGUoKSxcclxuICAgICAgcGl0Y2g6IHRoaXMubWFwLmdldFBpdGNoKClcclxuICAgIH07XHJcbiAgfVxyXG5cclxuICAvKipcclxuICAgKiBAZnVuY3Rpb24gQ29tcGFzc1ZpZXdNb2RlbC5wcm90b3R5cGUuX2dldEFuZ2xlXHJcbiAgICogQGRlc2NyaXB0aW9uIOiOt+WPluWcsOWbvueahOaXi+i9rOinkuW6puOAglxyXG4gICAqL1xyXG4gIF9nZXRBbmdsZSgpIHtcclxuICAgIC8vIEB0cy1pZ25vcmVcclxuICAgIHJldHVybiB0aGlzLm1hcC50cmFuc2Zvcm0uYW5nbGU7XHJcbiAgfVxyXG5cclxuICAvKipcclxuICAgKiBAZnVuY3Rpb24gQ29tcGFzc1ZpZXdNb2RlbC5wcm90b3R5cGUucmVzZXROb3J0aFxyXG4gICAqIEBkZXNjcmlwdGlvbiDku6XliqjmgIHovazmjaLnmoTmlrnlvI/lsIblnLDlm77ml4vovazliLAgMCDluqbmlrnkvY3op5LvvIjmraPljJfmlrnvvInjgIJcclxuICAgKi9cclxuICByZXNldE5vcnRoKCkge1xyXG4gICAgdGhpcy5tYXAucmVzZXROb3J0aCgpO1xyXG4gIH1cclxuXHJcbiAgLyoqXHJcbiAgICogQGZ1bmN0aW9uIENvbXBhc3NWaWV3TW9kZWwucHJvdG90eXBlLnJlc2V0Tm9ydGhQaXRjaFxyXG4gICAqIEBkZXNjcmlwdGlvbiDku6XliqjmgIHovazmjaLnmoTmlrnlvI/lsIblnLDlm77ml4vovazliLAgMCDluqbmlrnkvY3op5LvvIjmraPljJfmlrnvvInlkowgMCDluqblgL7mlpzop5LjgIJcclxuICAgKi9cclxuICByZXNldE5vcnRoUGl0Y2goKSB7XHJcbiAgICB0aGlzLm1hcC5yZXNldE5vcnRoUGl0Y2goKTtcclxuICB9XHJcblxyXG4gIC8qKlxyXG4gICAqIEBmdW5jdGlvbiBDb21wYXNzVmlld01vZGVsLnByb3RvdHlwZS5fcm90YXRlUGl0Y2hFdmVudEZuXHJcbiAgICogQGRlc2NyaXB0aW9uIOiOt+WPluWcsOWbvueahOaXi+i9rOinkuW6puOAglxyXG4gICAqL1xyXG4gIHByaXZhdGUgX3JvdGF0ZUV2ZW50KCkge1xyXG4gICAgaWYgKHRoaXMucm90YXRlUGl0Y2hDYWxsQmFjaykge1xyXG4gICAgICB0aGlzLnJvdGF0ZVBpdGNoQ2FsbEJhY2sodGhpcy5fZ2V0QW5nbGUoKSwgdGhpcy5tYXAuZ2V0UGl0Y2goKSk7XHJcbiAgICB9XHJcbiAgfVxyXG5cclxuICAvKipcclxuICAgKiBAZnVuY3Rpb24gQ29tcGFzc1ZpZXdNb2RlbC5wcm90b3R5cGUuX3JvdGF0ZVBpdGNoRXZlbnRGblxyXG4gICAqIEBkZXNjcmlwdGlvbiDojrflj5blnLDlm77nmoTml4vovazop5LluqbjgIJcclxuICAgKi9cclxuICBwcml2YXRlIF9waXRjaEV2ZW50KCkge1xyXG4gICAgaWYgKHRoaXMudmlzdWFsaXplUGl0Y2ggJiYgdGhpcy5yb3RhdGVQaXRjaENhbGxCYWNrKSB7XHJcbiAgICAgIHRoaXMucm90YXRlUGl0Y2hDYWxsQmFjayh0aGlzLl9nZXRBbmdsZSgpLCB0aGlzLm1hcC5nZXRQaXRjaCgpKTtcclxuICAgIH1cclxuICB9XHJcblxyXG4gIC8qKlxyXG4gICAqIEBmdW5jdGlvbiBDb21wYXNzVmlld01vZGVsLnByb3RvdHlwZS5jaGFuZ2VFdmVudE9uXHJcbiAgICogQGRlc2NyaXB0aW9uIOWAvuaWnOaIluS/r+S7sOeahOinkuW6puaUueWPmOS6i+S7tuebkeWQrOWQjuWbnuiwg+WHveaVsGZu44CCXHJcbiAgICogQHBhcmFtIHtGdW5jaXRvbn0gZm4gLSDlm57osIPlh73mlbBcclxuICAgKi9cclxuICByb3RhdGVFdmVudE9uKGZuOiBhbnkpIHtcclxuICAgIHRoaXMucm90YXRlUGl0Y2hDYWxsQmFjayA9IGZuO1xyXG4gIH1cclxuXHJcbiAgcmVtb3ZlZCgpIHtcclxuICAgIHRoaXMubWFwLm9mZigncm90YXRlJywgdGhpcy5yb3RhdGVFdmVudEZuKTtcclxuICAgIHRoaXMubWFwLm9mZigncGl0Y2gnLCB0aGlzLnBpdGNoRXZlbnRGbik7XHJcbiAgfVxyXG59XHJcbiJdLCJ2ZXJzaW9uIjozfQ==</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2023-08-26T06:41:47.215Z
+            </div>
+        <script src="../../../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../../../sorter.js"></script>
+        <script src="../../../../../block-navigation.js"></script>
+    </body>
+</html>
+    

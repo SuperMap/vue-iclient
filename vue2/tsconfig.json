@@ -1,0 +1,16 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../",
+    "outDir": "../vue2/dist/",
+    // 是相对于"baseUrl"进行解析
+    "paths": {
+      "vue": ["node_modules/vue/types"],
+      // 解决ts文件中的别名问题
+      "vue-iclient/*": ["./vue2/*"],
+      "@static/*": ["static/*"],
+      "@libs/*": ["static/libs/*"],
+      "*.ts": ["*"]
+    }
+  }
+}

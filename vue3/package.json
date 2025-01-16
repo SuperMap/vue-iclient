@@ -1,0 +1,23 @@
+{
+  "name": "@supermapgis/vue-iclient",
+  "version": "12.0.0-dev",
+  "description": "SuperMap iClient for Vue.js",
+  "homepage": "https://iclient.supermap.io",
+  "author": "SuperMap_FE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperMap/vue-iclient.git"
+  },
+  "keywords": [
+    "SuperMap",
+    "Mapbox GL",
+    "Vue"
+  ],
+  "jestSonar": {
+    "reportPath": "test/unit/report",
+    "reportFile": "test-reporter.xml",
+    "indent": 4,
+    "reportedFilePath": "relative"
+  },
+  "license": "Apache-2.0"
+}

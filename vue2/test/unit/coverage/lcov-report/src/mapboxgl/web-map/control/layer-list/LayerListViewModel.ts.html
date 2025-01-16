@@ -1,0 +1,259 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/mapboxgl/web-map/control/layer-list/LayerListViewModel.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../../../index.html">All files</a> / <a href="index.html">src/mapboxgl/web-map/control/layer-list</a> LayerListViewModel.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">41.66% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>20/48</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">11.76% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>2/17</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">15.38% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>2/13</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">40.47% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>17/42</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input oninput="onInput()" type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import SourceListModel from 'vue-iclient/src/mapboxgl/web-map/SourceListModel';<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="missing-if-branch" title="if path not taken" >I</span></span></span>
+class LayerListViewModel extends mapboxgl.Evented {
+    constructor() {
+        super();
+        this.sourceList = {};
+        this.sourceNames = [];
+    }
+<span class="fstat-no" title="function not covered" >    _updateLayers(</span>) {
+<span class="cstat-no" title="statement not covered" >        this.fire('layersUpdated');</span>
+    }
+<span class="fstat-no" title="function not covered" >    setMap(</span>mapInfo) {
+        const { map } = <span class="cstat-no" title="statement not covered" >mapInfo;</span>
+<span class="cstat-no" title="statement not covered" >        this.map = map;</span>
+<span class="cstat-no" title="statement not covered" >        this.updateFn = this._updateLayers.bind(this);</span>
+<span class="cstat-no" title="statement not covered" >        this.map.on('styledata', this.updateFn);</span>
+    }
+<span class="fstat-no" title="function not covered" >    initLayerList(</span>) {
+<span class="cstat-no" title="statement not covered" >        this.sourceListModel = new SourceListModel({</span>
+            map: this.map
+        });
+<span class="cstat-no" title="statement not covered" >        this.sourceList = this.sourceListModel.getSourceList();</span>
+<span class="cstat-no" title="statement not covered" >        this.sourceNames = this.sourceListModel.getSourceNames().reverse();</span>
+<span class="cstat-no" title="statement not covered" >        return this.sourceList;</span>
+    }
+<span class="fstat-no" title="function not covered" >    getSourceNames(</span>) {
+<span class="cstat-no" title="statement not covered" >        return this.sourceNames;</span>
+    }
+<span class="fstat-no" title="function not covered" >    changeLayerVisible(</span>sourcelayer, sourceName, visibility) <span class="cstat-no" title="statement not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >        this.sourceListModel.getLayersBySourceLayer(sourceName, sourcelayer).forEach(<span class="fstat-no" title="function not covered" >layer </span>=&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));</span>
+        });
+    }
+<span class="fstat-no" title="function not covered" >    changeVisibility(</span>visibility) {
+<span class="cstat-no" title="statement not covered" >        return visibility === 'visible' ? 'none' : 'visible';</span>
+    }
+<span class="fstat-no" title="function not covered" >    changeLayerGroupVisibility(</span>sourceName, visibility) <span class="cstat-no" title="statement not covered" >{</span>
+        let sourceLayers = <span class="cstat-no" title="statement not covered" >this.sourceListModel.getSourceLayersBySource(sourceName);</span>
+<span class="cstat-no" title="statement not covered" >        if (sourceLayers) {</span>
+<span class="cstat-no" title="statement not covered" >            for (let sourcelayer in sourceLayers) {</span>
+<span class="cstat-no" title="statement not covered" >                sourceLayers[sourcelayer].forEach(<span class="fstat-no" title="function not covered" >layer </span>=&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                    this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));</span>
+                });
+            }
+        }
+        else {
+<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" >            for (let layer<span class="cstat-no" title="statement not covered" > of t</span>his.sourceList[sourceName].layers) {</span></span>
+<span class="cstat-no" title="statement not covered" >                this.map.setLayoutProperty(layer.id, 'visibility', this.changeVisibility(visibility));</span>
+            }
+        }
+    }
+<span class="fstat-no" title="function not covered" >    removed(</span>) {
+<span class="cstat-no" title="statement not covered" >        this.sourceList = {};</span>
+<span class="cstat-no" title="statement not covered" >        this.sourceNames = [];</span>
+<span class="cstat-no" title="statement not covered" >        this.map.off('styledata', this.updateFn);</span>
+    }
+}
+export default LayerListViewModel;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJmaWxlIjoiQzpcXFVzZXJzXFxBZG1pbmlzdHJhdG9yXFxEZXNrdG9wXFx2dWUtaWNsaWVudFxcc3JjXFxtYXBib3hnbFxcd2ViLW1hcFxcY29udHJvbFxcbGF5ZXItbGlzdFxcTGF5ZXJMaXN0Vmlld01vZGVsLnRzIiwibWFwcGluZ3MiOiJBQUFBLE9BQU8sUUFBUSxNQUFNLG9EQUFvRCxDQUFDO0FBQzFFLE9BQU8sZUFBZSxNQUFNLGtEQUFrRCxDQUFDO0FBWS9FLE1BQU0sa0JBQW1CLFNBQVEsUUFBUSxDQUFDLE9BQU87SUFhL0M7UUFDRSxLQUFLLEVBQUUsQ0FBQztRQUNSLElBQUksQ0FBQyxVQUFVLEdBQUcsRUFBRSxDQUFDO1FBQ3JCLElBQUksQ0FBQyxXQUFXLEdBQUcsRUFBRSxDQUFDO0lBQ3hCLENBQUM7SUFFRCxhQUFhO1FBQ1gsSUFBSSxDQUFDLElBQUksQ0FBQyxlQUFlLENBQUMsQ0FBQztJQUM3QixDQUFDO0lBRUQsTUFBTSxDQUFDLE9BQU87UUFDWixNQUFNLEVBQUUsR0FBRyxFQUFFLEdBQUcsT0FBTyxDQUFDO1FBQ3hCLElBQUksQ0FBQyxHQUFHLEdBQUcsR0FBRyxDQUFDO1FBQ2YsSUFBSSxDQUFDLFFBQVEsR0FBRyxJQUFJLENBQUMsYUFBYSxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQztRQUM5QyxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxXQUFXLEVBQUUsSUFBSSxDQUFDLFFBQVEsQ0FBQyxDQUFDO0lBQzFDLENBQUM7SUFFRCxhQUFhO1FBQ1gsSUFBSSxDQUFDLGVBQWUsR0FBRyxJQUFJLGVBQWUsQ0FBQztZQUN6QyxHQUFHLEVBQUUsSUFBSSxDQUFDLEdBQUc7U0FDZCxDQUFDLENBQUM7UUFDSCxJQUFJLENBQUMsVUFBVSxHQUFHLElBQUksQ0FBQyxlQUFlLENBQUMsYUFBYSxFQUFFLENBQUM7UUFDdkQsSUFBSSxDQUFDLFdBQVcsR0FBRyxJQUFJLENBQUMsZUFBZSxDQUFDLGNBQWMsRUFBRSxDQUFDLE9BQU8sRUFBRSxDQUFDO1FBQ25FLE9BQU8sSUFBSSxDQUFDLFVBQVUsQ0FBQztJQUN6QixDQUFDO0lBRUQsY0FBYztRQUNaLE9BQU8sSUFBSSxDQUFDLFdBQVcsQ0FBQztJQUMxQixDQUFDO0lBRUQsa0JBQWtCLENBQUMsV0FBVyxFQUFFLFVBQWtCLEVBQUUsVUFBa0I7UUFDcEUsSUFBSSxDQUFDLGVBQWUsQ0FBQyxzQkFBc0IsQ0FBQyxVQUFVLEVBQUUsV0FBVyxDQUFDLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxFQUFFO1lBQ25GLElBQUksQ0FBQyxHQUFHLENBQUMsaUJBQWlCLENBQUMsS0FBSyxDQUFDLEVBQUUsRUFBRSxZQUFZLEVBQUUsSUFBSSxDQUFDLGdCQUFnQixDQUFDLFVBQVUsQ0FBQyxDQUFDLENBQUM7UUFDeEYsQ0FBQyxDQUFDLENBQUM7SUFDTCxDQUFDO0lBRUQsZ0JBQWdCLENBQUMsVUFBa0I7UUFDakMsT0FBTyxVQUFVLEtBQUssU0FBUyxDQUFDLENBQUMsQ0FBQyxNQUFNLENBQUMsQ0FBQyxDQUFDLFNBQVMsQ0FBQztJQUN2RCxDQUFDO0lBRUQsMEJBQTBCLENBQUMsVUFBa0IsRUFBRSxVQUFrQjtRQUMvRCxJQUFJLFlBQVksR0FBRyxJQUFJLENBQUMsZUFBZSxDQUFDLHVCQUF1QixDQUFDLFVBQVUsQ0FBQyxDQUFDO1FBQzVFLElBQUksWUFBWSxFQUFFO1lBQ2hCLEtBQUssSUFBSSxXQUFXLElBQUksWUFBWSxFQUFFO2dCQUNwQyxZQUFZLENBQUMsV0FBVyxDQUFDLENBQUMsT0FBTyxDQUFDLEtBQUssQ0FBQyxFQUFFO29CQUN4QyxJQUFJLENBQUMsR0FBRyxDQUFDLGlCQUFpQixDQUFDLEtBQUssQ0FBQyxFQUFFLEVBQUUsWUFBWSxFQUFFLElBQUksQ0FBQyxnQkFBZ0IsQ0FBQyxVQUFVLENBQUMsQ0FBQyxDQUFDO2dCQUN4RixDQUFDLENBQUMsQ0FBQzthQUNKO1NBQ0Y7YUFBTTtZQUNMLEtBQUssSUFBSSxLQUFLLElBQUksSUFBSSxDQUFDLFVBQVUsQ0FBQyxVQUFVLENBQUMsQ0FBQyxNQUFNLEVBQUU7Z0JBQ3BELElBQUksQ0FBQyxHQUFHLENBQUMsaUJBQWlCLENBQUMsS0FBSyxDQUFDLEVBQUUsRUFBRSxZQUFZLEVBQUUsSUFBSSxDQUFDLGdCQUFnQixDQUFDLFVBQVUsQ0FBQyxDQUFDLENBQUM7YUFDdkY7U0FDRjtJQUNILENBQUM7SUFFRCxPQUFPO1FBQ0wsSUFBSSxDQUFDLFVBQVUsR0FBRyxFQUFFLENBQUM7UUFDckIsSUFBSSxDQUFDLFdBQVcsR0FBRyxFQUFFLENBQUM7UUFDdEIsSUFBSSxDQUFDLEdBQUcsQ0FBQyxHQUFHLENBQUMsV0FBVyxFQUFFLElBQUksQ0FBQyxRQUFRLENBQUMsQ0FBQztJQUMzQyxDQUFDO0NBQ0Y7QUFDRCxlQUFlLGtCQUFrQixDQUFDIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xcQWRtaW5pc3RyYXRvclxcRGVza3RvcFxcdnVlLWljbGllbnRcXHNyY1xcbWFwYm94Z2xcXHdlYi1tYXBcXGNvbnRyb2xcXGxheWVyLWxpc3RcXExheWVyTGlzdFZpZXdNb2RlbC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgbWFwYm94Z2wgZnJvbSAndnVlLWljbGllbnQvc3RhdGljL2xpYnMvbWFwYm94Z2wvbWFwYm94LWdsLWVuaGFuY2UnO1xyXG5pbXBvcnQgU291cmNlTGlzdE1vZGVsIGZyb20gJ3Z1ZS1pY2xpZW50L3NyYy9tYXBib3hnbC93ZWItbWFwL1NvdXJjZUxpc3RNb2RlbCc7XHJcblxyXG4vKipcclxuICogQGNsYXNzIExheWVyTGlzdFZpZXdNb2RlbFxyXG4gKiBAZGVzY3JpcHRpb24gTGF5ZXJMaXN0IHZpZXdNb2RlbC5cclxuICogQHBhcmFtIHtPYmplY3R9IG1hcCAtIG1hcOWunuS+i+WvueixoeOAglxyXG4gKiBAZmlyZXMgbGF5ZXJzVXBkYXRlZCAtIOWbvuWxguabtOaWsFxyXG4gKiBAZXh0ZW5kcyBtYXBib3hnbC5FdmVudGVkXHJcbiAqL1xyXG5pbnRlcmZhY2UgTWFwRXZlbnRDYWxsQmFjayB7XHJcbiAgKGU6IG1hcGJveGdsVHlwZXMuTWFwTW91c2VFdmVudCk6IHZvaWQ7XHJcbn1cclxuY2xhc3MgTGF5ZXJMaXN0Vmlld01vZGVsIGV4dGVuZHMgbWFwYm94Z2wuRXZlbnRlZCB7XHJcbiAgbWFwOiBtYXBib3hnbFR5cGVzLk1hcDtcclxuXHJcbiAgc291cmNlTGlzdDogT2JqZWN0O1xyXG5cclxuICBzb3VyY2VOYW1lczogQXJyYXk8c3RyaW5nPjtcclxuXHJcbiAgZmlyZTogYW55O1xyXG5cclxuICB1cGRhdGVGbjogTWFwRXZlbnRDYWxsQmFjaztcclxuXHJcbiAgc291cmNlTGlzdE1vZGVsOiBTb3VyY2VMaXN0TW9kZWw7XHJcblxyXG4gIGNvbnN0cnVjdG9yKCkge1xyXG4gICAgc3VwZXIoKTtcclxuICAgIHRoaXMuc291cmNlTGlzdCA9IHt9O1xyXG4gICAgdGhpcy5zb3VyY2VOYW1lcyA9IFtdO1xyXG4gIH1cclxuXHJcbiAgX3VwZGF0ZUxheWVycygpIHtcclxuICAgIHRoaXMuZmlyZSgnbGF5ZXJzVXBkYXRlZCcpO1xyXG4gIH1cclxuXHJcbiAgc2V0TWFwKG1hcEluZm8pIHtcclxuICAgIGNvbnN0IHsgbWFwIH0gPSBtYXBJbmZvO1xyXG4gICAgdGhpcy5tYXAgPSBtYXA7XHJcbiAgICB0aGlzLnVwZGF0ZUZuID0gdGhpcy5fdXBkYXRlTGF5ZXJzLmJpbmQodGhpcyk7XHJcbiAgICB0aGlzLm1hcC5vbignc3R5bGVkYXRhJywgdGhpcy51cGRhdGVGbik7XHJcbiAgfVxyXG5cclxuICBpbml0TGF5ZXJMaXN0KCkge1xyXG4gICAgdGhpcy5zb3VyY2VMaXN0TW9kZWwgPSBuZXcgU291cmNlTGlzdE1vZGVsKHtcclxuICAgICAgbWFwOiB0aGlzLm1hcFxyXG4gICAgfSk7XHJcbiAgICB0aGlzLnNvdXJjZUxpc3QgPSB0aGlzLnNvdXJjZUxpc3RNb2RlbC5nZXRTb3VyY2VMaXN0KCk7XHJcbiAgICB0aGlzLnNvdXJjZU5hbWVzID0gdGhpcy5zb3VyY2VMaXN0TW9kZWwuZ2V0U291cmNlTmFtZXMoKS5yZXZlcnNlKCk7XHJcbiAgICByZXR1cm4gdGhpcy5zb3VyY2VMaXN0O1xyXG4gIH1cclxuXHJcbiAgZ2V0U291cmNlTmFtZXMoKSB7XHJcbiAgICByZXR1cm4gdGhpcy5zb3VyY2VOYW1lcztcclxuICB9XHJcblxyXG4gIGNoYW5nZUxheWVyVmlzaWJsZShzb3VyY2VsYXllciwgc291cmNlTmFtZTogc3RyaW5nLCB2aXNpYmlsaXR5OiBzdHJpbmcpIHtcclxuICAgIHRoaXMuc291cmNlTGlzdE1vZGVsLmdldExheWVyc0J5U291cmNlTGF5ZXIoc291cmNlTmFtZSwgc291cmNlbGF5ZXIpLmZvckVhY2gobGF5ZXIgPT4ge1xyXG4gICAgICB0aGlzLm1hcC5zZXRMYXlvdXRQcm9wZXJ0eShsYXllci5pZCwgJ3Zpc2liaWxpdHknLCB0aGlzLmNoYW5nZVZpc2liaWxpdHkodmlzaWJpbGl0eSkpO1xyXG4gICAgfSk7XHJcbiAgfVxyXG5cclxuICBjaGFuZ2VWaXNpYmlsaXR5KHZpc2liaWxpdHk6IHN0cmluZykge1xyXG4gICAgcmV0dXJuIHZpc2liaWxpdHkgPT09ICd2aXNpYmxlJyA/ICdub25lJyA6ICd2aXNpYmxlJztcclxuICB9XHJcblxyXG4gIGNoYW5nZUxheWVyR3JvdXBWaXNpYmlsaXR5KHNvdXJjZU5hbWU6IHN0cmluZywgdmlzaWJpbGl0eTogc3RyaW5nKSB7XHJcbiAgICBsZXQgc291cmNlTGF5ZXJzID0gdGhpcy5zb3VyY2VMaXN0TW9kZWwuZ2V0U291cmNlTGF5ZXJzQnlTb3VyY2Uoc291cmNlTmFtZSk7XHJcbiAgICBpZiAoc291cmNlTGF5ZXJzKSB7XHJcbiAgICAgIGZvciAobGV0IHNvdXJjZWxheWVyIGluIHNvdXJjZUxheWVycykge1xyXG4gICAgICAgIHNvdXJjZUxheWVyc1tzb3VyY2VsYXllcl0uZm9yRWFjaChsYXllciA9PiB7XHJcbiAgICAgICAgICB0aGlzLm1hcC5zZXRMYXlvdXRQcm9wZXJ0eShsYXllci5pZCwgJ3Zpc2liaWxpdHknLCB0aGlzLmNoYW5nZVZpc2liaWxpdHkodmlzaWJpbGl0eSkpO1xyXG4gICAgICAgIH0pO1xyXG4gICAgICB9XHJcbiAgICB9IGVsc2Uge1xyXG4gICAgICBmb3IgKGxldCBsYXllciBvZiB0aGlzLnNvdXJjZUxpc3Rbc291cmNlTmFtZV0ubGF5ZXJzKSB7XHJcbiAgICAgICAgdGhpcy5tYXAuc2V0TGF5b3V0UHJvcGVydHkobGF5ZXIuaWQsICd2aXNpYmlsaXR5JywgdGhpcy5jaGFuZ2VWaXNpYmlsaXR5KHZpc2liaWxpdHkpKTtcclxuICAgICAgfVxyXG4gICAgfVxyXG4gIH1cclxuXHJcbiAgcmVtb3ZlZCgpIHtcclxuICAgIHRoaXMuc291cmNlTGlzdCA9IHt9O1xyXG4gICAgdGhpcy5zb3VyY2VOYW1lcyA9IFtdO1xyXG4gICAgdGhpcy5tYXAub2ZmKCdzdHlsZWRhdGEnLCB0aGlzLnVwZGF0ZUZuKTtcclxuICB9XHJcbn1cclxuZXhwb3J0IGRlZmF1bHQgTGF5ZXJMaXN0Vmlld01vZGVsO1xyXG4iXSwidmVyc2lvbiI6M30=</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2023-08-26T06:41:47.215Z
+            </div>
+        <script src="../../../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../../../sorter.js"></script>
+        <script src="../../../../../block-navigation.js"></script>
+    </body>
+</html>
+    

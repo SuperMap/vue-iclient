@@ -1,0 +1,211 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/mapboxgl/video-plus/ui/marker/MarkerViewModel.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../../../index.html">All files</a> / <a href="index.html">src/mapboxgl/video-plus/ui/marker</a> MarkerViewModel.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">91.66% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>33/36</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">100% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>3/3</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">75% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>9/12</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">90.9% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>30/33</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input oninput="onInput()" type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line high'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+const EVENTS = ['drag', 'dragstart', 'dragend'];
+export default class MarkerViewModel extends mapboxgl.Evented {
+    constructor(options) {
+        super();
+        this.marker = new mapboxgl.Marker(options);
+        this._bindEventFn = this._bindEvent.bind(this);
+    }
+    setVideoPlus({ videoPlus }) {
+        this.videoPlus = videoPlus;
+        this.init();
+    }
+    init() {
+        this.fire('load', this.videoPlus);
+        EVENTS.forEach(eventName =&gt; {
+            this.marker.on(eventName, this._bindEventFn);
+        });
+    }
+<span class="fstat-no" title="function not covered" >    _bindEvent(</span>e) {
+<span class="cstat-no" title="statement not covered" >        this.fire(e.type, e);</span>
+    }
+    setCoordinate(coordinate) {
+        return this.videoPlus.setCoordinate(this.marker, coordinate);
+    }
+    addToMap() {
+        return this.videoPlus.addToMap(this.marker);
+    }
+<span class="fstat-no" title="function not covered" >    setDraggable(</span>next) {
+<span class="cstat-no" title="statement not covered" >        this.marker.setDraggable(next);</span>
+    }
+<span class="fstat-no" title="function not covered" >    togglePopup(</span>) {
+<span class="cstat-no" title="statement not covered" >        return this.marker.togglePopup();</span>
+    }
+    removed() {
+        if (this.marker) {
+            this.marker.remove();
+        }
+        EVENTS.forEach(eventName =&gt; {
+            this.marker.off(eventName, this._bindEventFn);
+        });
+    }
+}
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJmaWxlIjoiQzpcXFVzZXJzXFxBZG1pbmlzdHJhdG9yXFxEZXNrdG9wXFx2dWUtaWNsaWVudFxcc3JjXFxtYXBib3hnbFxcdmlkZW8tcGx1c1xcdWlcXG1hcmtlclxcTWFya2VyVmlld01vZGVsLnRzIiwibWFwcGluZ3MiOiJBQUFBLE9BQU8sUUFBUSxNQUFNLG9EQUFvRCxDQUFDO0FBRTFFLE1BQU0sTUFBTSxHQUFHLENBQUMsTUFBTSxFQUFFLFdBQVcsRUFBRSxTQUFTLENBQUMsQ0FBQztBQUNoRCxNQUFNLENBQUMsT0FBTyxPQUFPLGVBQWdCLFNBQVEsUUFBUSxDQUFDLE9BQU87SUFNM0QsWUFBWSxPQUFPO1FBQ2pCLEtBQUssRUFBRSxDQUFDO1FBQ1IsSUFBSSxDQUFDLE1BQU0sR0FBRyxJQUFJLFFBQVEsQ0FBQyxNQUFNLENBQUMsT0FBTyxDQUFDLENBQUM7UUFDM0MsSUFBSSxDQUFDLFlBQVksR0FBRyxJQUFJLENBQUMsVUFBVSxDQUFDLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQztJQUNqRCxDQUFDO0lBRUQsWUFBWSxDQUFDLEVBQUUsU0FBUyxFQUFFO1FBQ3hCLElBQUksQ0FBQyxTQUFTLEdBQUcsU0FBUyxDQUFDO1FBQzNCLElBQUksQ0FBQyxJQUFJLEVBQUUsQ0FBQztJQUNkLENBQUM7SUFFRCxJQUFJO1FBQ0YsSUFBSSxDQUFDLElBQUksQ0FBQyxNQUFNLEVBQUUsSUFBSSxDQUFDLFNBQVMsQ0FBQyxDQUFDO1FBQ2xDLE1BQU0sQ0FBQyxPQUFPLENBQUMsU0FBUyxDQUFDLEVBQUU7WUFDekIsSUFBSSxDQUFDLE1BQU0sQ0FBQyxFQUFFLENBQUMsU0FBUyxFQUFFLElBQUksQ0FBQyxZQUFZLENBQUMsQ0FBQztRQUMvQyxDQUFDLENBQUMsQ0FBQztJQUNMLENBQUM7SUFFRCxVQUFVLENBQUMsQ0FBQztRQUNWLElBQUksQ0FBQyxJQUFJLENBQUMsQ0FBQyxDQUFDLElBQUksRUFBRSxDQUFDLENBQUMsQ0FBQztJQUN2QixDQUFDO0lBRUQsYUFBYSxDQUFDLFVBQVU7UUFDdEIsT0FBTyxJQUFJLENBQUMsU0FBUyxDQUFDLGFBQWEsQ0FBQyxJQUFJLENBQUMsTUFBTSxFQUFFLFVBQVUsQ0FBQyxDQUFDO0lBQy9ELENBQUM7SUFFRCxRQUFRO1FBQ04sT0FBTyxJQUFJLENBQUMsU0FBUyxDQUFDLFFBQVEsQ0FBQyxJQUFJLENBQUMsTUFBTSxDQUFDLENBQUM7SUFDOUMsQ0FBQztJQUVELFlBQVksQ0FBQyxJQUFJO1FBQ2YsSUFBSSxDQUFDLE1BQU0sQ0FBQyxZQUFZLENBQUMsSUFBSSxDQUFDLENBQUM7SUFDakMsQ0FBQztJQUVELFdBQVc7UUFDVCxPQUFPLElBQUksQ0FBQyxNQUFNLENBQUMsV0FBVyxFQUFFLENBQUM7SUFDbkMsQ0FBQztJQUVELE9BQU87UUFDTCxJQUFJLElBQUksQ0FBQyxNQUFNLEVBQUU7WUFDZixJQUFJLENBQUMsTUFBTSxDQUFDLE1BQU0sRUFBRSxDQUFDO1NBQ3RCO1FBQ0QsTUFBTSxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUMsRUFBRTtZQUN6QixJQUFJLENBQUMsTUFBTSxDQUFDLEdBQUcsQ0FBQyxTQUFTLEVBQUUsSUFBSSxDQUFDLFlBQVksQ0FBQyxDQUFDO1FBQ2hELENBQUMsQ0FBQyxDQUFDO0lBQ0wsQ0FBQztDQUNGIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xcQWRtaW5pc3RyYXRvclxcRGVza3RvcFxcdnVlLWljbGllbnRcXHNyY1xcbWFwYm94Z2xcXHZpZGVvLXBsdXNcXHVpXFxtYXJrZXJcXE1hcmtlclZpZXdNb2RlbC50cyJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgbWFwYm94Z2wgZnJvbSAndnVlLWljbGllbnQvc3RhdGljL2xpYnMvbWFwYm94Z2wvbWFwYm94LWdsLWVuaGFuY2UnO1xyXG5cclxuY29uc3QgRVZFTlRTID0gWydkcmFnJywgJ2RyYWdzdGFydCcsICdkcmFnZW5kJ107XHJcbmV4cG9ydCBkZWZhdWx0IGNsYXNzIE1hcmtlclZpZXdNb2RlbCBleHRlbmRzIG1hcGJveGdsLkV2ZW50ZWQge1xyXG4gIG9wdGlvbnM6IE9iamVjdDtcclxuICBtYXJrZXI6IGFueTtcclxuICBmaXJlOiBhbnk7XHJcbiAgX2JpbmRFdmVudEZuOiBGdW5jdGlvbjtcclxuICB2aWRlb1BsdXM6IGFueTtcclxuICBjb25zdHJ1Y3RvcihvcHRpb25zKSB7XHJcbiAgICBzdXBlcigpO1xyXG4gICAgdGhpcy5tYXJrZXIgPSBuZXcgbWFwYm94Z2wuTWFya2VyKG9wdGlvbnMpO1xyXG4gICAgdGhpcy5fYmluZEV2ZW50Rm4gPSB0aGlzLl9iaW5kRXZlbnQuYmluZCh0aGlzKTtcclxuICB9XHJcblxyXG4gIHNldFZpZGVvUGx1cyh7IHZpZGVvUGx1cyB9KSB7XHJcbiAgICB0aGlzLnZpZGVvUGx1cyA9IHZpZGVvUGx1cztcclxuICAgIHRoaXMuaW5pdCgpO1xyXG4gIH1cclxuXHJcbiAgaW5pdCgpIHtcclxuICAgIHRoaXMuZmlyZSgnbG9hZCcsIHRoaXMudmlkZW9QbHVzKTtcclxuICAgIEVWRU5UUy5mb3JFYWNoKGV2ZW50TmFtZSA9PiB7XHJcbiAgICAgIHRoaXMubWFya2VyLm9uKGV2ZW50TmFtZSwgdGhpcy5fYmluZEV2ZW50Rm4pO1xyXG4gICAgfSk7XHJcbiAgfVxyXG5cclxuICBfYmluZEV2ZW50KGUpIHtcclxuICAgIHRoaXMuZmlyZShlLnR5cGUsIGUpO1xyXG4gIH1cclxuXHJcbiAgc2V0Q29vcmRpbmF0ZShjb29yZGluYXRlKSB7XHJcbiAgICByZXR1cm4gdGhpcy52aWRlb1BsdXMuc2V0Q29vcmRpbmF0ZSh0aGlzLm1hcmtlciwgY29vcmRpbmF0ZSk7XHJcbiAgfVxyXG5cclxuICBhZGRUb01hcCgpIHtcclxuICAgIHJldHVybiB0aGlzLnZpZGVvUGx1cy5hZGRUb01hcCh0aGlzLm1hcmtlcik7XHJcbiAgfVxyXG5cclxuICBzZXREcmFnZ2FibGUobmV4dCkge1xyXG4gICAgdGhpcy5tYXJrZXIuc2V0RHJhZ2dhYmxlKG5leHQpO1xyXG4gIH1cclxuXHJcbiAgdG9nZ2xlUG9wdXAoKSB7XHJcbiAgICByZXR1cm4gdGhpcy5tYXJrZXIudG9nZ2xlUG9wdXAoKTtcclxuICB9XHJcblxyXG4gIHJlbW92ZWQoKSB7XHJcbiAgICBpZiAodGhpcy5tYXJrZXIpIHtcclxuICAgICAgdGhpcy5tYXJrZXIucmVtb3ZlKCk7XHJcbiAgICB9XHJcbiAgICBFVkVOVFMuZm9yRWFjaChldmVudE5hbWUgPT4ge1xyXG4gICAgICB0aGlzLm1hcmtlci5vZmYoZXZlbnROYW1lLCB0aGlzLl9iaW5kRXZlbnRGbik7XHJcbiAgICB9KTtcclxuICB9XHJcbn1cclxuIl0sInZlcnNpb24iOjN9</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2023-08-26T06:41:47.215Z
+            </div>
+        <script src="../../../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../../../sorter.js"></script>
+        <script src="../../../../../block-navigation.js"></script>
+    </body>
+</html>
+    

@@ -1,0 +1,136 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/common/modal/main.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/common/modal</a> main.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">57.89% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>11/19</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/14</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">33.33% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>1/3</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">73.33% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>11/15</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input oninput="onInput()" type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line medium'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span></td><td class="text"><pre class="prettyprint lang-js">import AntdModal from 'ant-design-vue/es/modal';
+import Modal from './Modal.vue';
+const defaultPrefixCls = 'sm-component-modal';
+const btnDefaultPrefixCls = 'sm-component-btn';
+['info', 'success', 'error', 'warn', 'warning', 'confirm'].forEach((item) =&gt; {
+    const typeCallback = AntdModal[item];
+    Modal[item] = <span class="fstat-no" title="function not covered" >function (c</span>onfig) {
+        const { props: okButtonProps<span class="cstat-no" title="statement not covered" > = {} } = <span class="cstat-no" title="statement not covered" >c</span>onfig.okButtonProps || {}<span class="cstat-no" title="statement not covered" >;</span></span>
+        const { props: cancelButtonProps<span class="cstat-no" title="statement not covered" > = {} } = <span class="cstat-no" title="statement not covered" >c</span>onfig.cancelButtonProps || {}<span class="cstat-no" title="statement not covered" >;</span></span>
+<span class="cstat-no" title="statement not covered" >        return typeCallback(Object.assign(Object.assign({}, config), { prefixCls: config.prefixCls || defaultPrefixCls, okButtonProps: Object.assign(Object.assign({}, config.okButtonProps), { props: Object.assign(Object.assign({}, okButtonProps), { prefixCls: okButtonProps.prefixCls || btnDefaultPrefixCls }) }), cancelButtonProps: Object.assign(Object.assign({}, config.cancelButtonProps), { props: Object.assign(Object.assign({}, cancelButtonProps), { prefixCls: cancelButtonProps.prefixCls || btnDefaultPrefixCls }) }) }));</span>
+    };
+});
+Modal['destroyAll'] = <span class="fstat-no" title="function not covered" >function () {</span>
+<span class="cstat-no" title="statement not covered" >    return AntdModal['destroyAll']();</span>
+};
+const ModalInstance = Modal;
+export default ModalInstance;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJmaWxlIjoiQzpcXFVzZXJzXFxBZG1pbmlzdHJhdG9yXFxEZXNrdG9wXFx2dWUtaWNsaWVudFxcc3JjXFxjb21tb25cXG1vZGFsXFxtYWluLnRzIiwibWFwcGluZ3MiOiJBQUFBLE9BQU8sU0FBUyxNQUFNLHlCQUF5QixDQUFDO0FBQ2hELE9BQU8sS0FBSyxNQUFNLGFBQWEsQ0FBQztBQWNoQyxNQUFNLGdCQUFnQixHQUFHLG9CQUFvQixDQUFDO0FBQzlDLE1BQU0sbUJBQW1CLEdBQUcsa0JBQWtCLENBQUM7QUFDL0MsQ0FBQyxNQUFNLEVBQUUsU0FBUyxFQUFFLE9BQU8sRUFBRSxNQUFNLEVBQUUsU0FBUyxFQUFFLFNBQVMsQ0FBQyxDQUFDLE9BQU8sQ0FBQyxDQUFDLElBQVksRUFBRSxFQUFFO0lBQ2xGLE1BQU0sWUFBWSxHQUFHLFNBQVMsQ0FBQyxJQUFJLENBQUMsQ0FBQztJQUNyQyxLQUFLLENBQUMsSUFBSSxDQUFDLEdBQUcsVUFBVSxNQUFXO1FBQ2pDLE1BQU0sRUFBRSxLQUFLLEVBQUUsYUFBYSxHQUFHLEVBQUUsRUFBRSxHQUFHLE1BQU0sQ0FBQyxhQUFhLElBQUksRUFBRSxDQUFDO1FBQ2pFLE1BQU0sRUFBRSxLQUFLLEVBQUUsaUJBQWlCLEdBQUcsRUFBRSxFQUFFLEdBQUcsTUFBTSxDQUFDLGlCQUFpQixJQUFJLEVBQUUsQ0FBQztRQUN6RSxPQUFPLFlBQVksaUNBQ2QsTUFBTSxLQUNULFNBQVMsRUFBRSxNQUFNLENBQUMsU0FBUyxJQUFJLGdCQUFnQixFQUMvQyxhQUFhLGtDQUNSLE1BQU0sQ0FBQyxhQUFhLEtBQ3ZCLEtBQUssa0NBQ0EsYUFBYSxLQUNoQixTQUFTLEVBQUUsYUFBYSxDQUFDLFNBQVMsSUFBSSxtQkFBbUIsUUFHN0QsaUJBQWlCLGtDQUNaLE1BQU0sQ0FBQyxpQkFBaUIsS0FDM0IsS0FBSyxrQ0FDQSxpQkFBaUIsS0FDcEIsU0FBUyxFQUFFLGlCQUFpQixDQUFDLFNBQVMsSUFBSSxtQkFBbUIsVUFHakUsQ0FBQztJQUNMLENBQUMsQ0FBQztBQUNKLENBQUMsQ0FBQyxDQUFDO0FBRUgsS0FBSyxDQUFDLFlBQVksQ0FBQyxHQUFHO0lBQ3BCLE9BQU8sU0FBUyxDQUFDLFlBQVksQ0FBQyxFQUFFLENBQUM7QUFDbkMsQ0FBQyxDQUFDO0FBRUYsTUFBTSxhQUFhLEdBQTZCLEtBQUssQ0FBQztBQUN0RCxlQUFlLGFBQWEsQ0FBQyIsIm5hbWVzIjpbXSwic291cmNlcyI6WyJDOlxcVXNlcnNcXEFkbWluaXN0cmF0b3JcXERlc2t0b3BcXHZ1ZS1pY2xpZW50XFxzcmNcXGNvbW1vblxcbW9kYWxcXG1haW4udHMiXSwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IEFudGRNb2RhbCBmcm9tICdhbnQtZGVzaWduLXZ1ZS9lcy9tb2RhbCc7XHJcbmltcG9ydCBNb2RhbCBmcm9tICcuL01vZGFsLnZ1ZSc7XHJcblxyXG50eXBlIE1vZGFsSW5zdGFuY2VUeXBlID0gdHlwZW9mIE1vZGFsO1xyXG5cclxuaW50ZXJmYWNlIE1vZGFsSW5zdGFuY2VDb25zdHJ1Y3RvciBleHRlbmRzIE1vZGFsSW5zdGFuY2VUeXBlIHtcclxuICBpbmZvPzogRnVuY3Rpb247XHJcbiAgc3VjY2Vzcz86IEZ1bmN0aW9uO1xyXG4gIGVycm9yPzogRnVuY3Rpb247XHJcbiAgd2FybmluZz86IEZ1bmN0aW9uO1xyXG4gIHdhcm4/OiBGdW5jdGlvbjtcclxuICBjb25maXJtPzogRnVuY3Rpb247XHJcbiAgZGVzdHJveUFsbD86IEZ1bmN0aW9uO1xyXG59XHJcblxyXG5jb25zdCBkZWZhdWx0UHJlZml4Q2xzID0gJ3NtLWNvbXBvbmVudC1tb2RhbCc7XHJcbmNvbnN0IGJ0bkRlZmF1bHRQcmVmaXhDbHMgPSAnc20tY29tcG9uZW50LWJ0bic7XHJcblsnaW5mbycsICdzdWNjZXNzJywgJ2Vycm9yJywgJ3dhcm4nLCAnd2FybmluZycsICdjb25maXJtJ10uZm9yRWFjaCgoaXRlbTogc3RyaW5nKSA9PiB7XHJcbiAgY29uc3QgdHlwZUNhbGxiYWNrID0gQW50ZE1vZGFsW2l0ZW1dO1xyXG4gIE1vZGFsW2l0ZW1dID0gZnVuY3Rpb24gKGNvbmZpZzogYW55KSB7XHJcbiAgICBjb25zdCB7IHByb3BzOiBva0J1dHRvblByb3BzID0ge30gfSA9IGNvbmZpZy5va0J1dHRvblByb3BzIHx8IHt9O1xyXG4gICAgY29uc3QgeyBwcm9wczogY2FuY2VsQnV0dG9uUHJvcHMgPSB7fSB9ID0gY29uZmlnLmNhbmNlbEJ1dHRvblByb3BzIHx8IHt9O1xyXG4gICAgcmV0dXJuIHR5cGVDYWxsYmFjayh7XHJcbiAgICAgIC4uLmNvbmZpZyxcclxuICAgICAgcHJlZml4Q2xzOiBjb25maWcucHJlZml4Q2xzIHx8IGRlZmF1bHRQcmVmaXhDbHMsXHJcbiAgICAgIG9rQnV0dG9uUHJvcHM6IHtcclxuICAgICAgICAuLi5jb25maWcub2tCdXR0b25Qcm9wcyxcclxuICAgICAgICBwcm9wczoge1xyXG4gICAgICAgICAgLi4ub2tCdXR0b25Qcm9wcyxcclxuICAgICAgICAgIHByZWZpeENsczogb2tCdXR0b25Qcm9wcy5wcmVmaXhDbHMgfHwgYnRuRGVmYXVsdFByZWZpeENsc1xyXG4gICAgICAgIH1cclxuICAgICAgfSxcclxuICAgICAgY2FuY2VsQnV0dG9uUHJvcHM6IHtcclxuICAgICAgICAuLi5jb25maWcuY2FuY2VsQnV0dG9uUHJvcHMsXHJcbiAgICAgICAgcHJvcHM6IHtcclxuICAgICAgICAgIC4uLmNhbmNlbEJ1dHRvblByb3BzLFxyXG4gICAgICAgICAgcHJlZml4Q2xzOiBjYW5jZWxCdXR0b25Qcm9wcy5wcmVmaXhDbHMgfHwgYnRuRGVmYXVsdFByZWZpeENsc1xyXG4gICAgICAgIH1cclxuICAgICAgfVxyXG4gICAgfSk7XHJcbiAgfTtcclxufSk7XHJcblxyXG5Nb2RhbFsnZGVzdHJveUFsbCddID0gZnVuY3Rpb24gKCkge1xyXG4gIHJldHVybiBBbnRkTW9kYWxbJ2Rlc3Ryb3lBbGwnXSgpO1xyXG59O1xyXG5cclxuY29uc3QgTW9kYWxJbnN0YW5jZTogTW9kYWxJbnN0YW5jZUNvbnN0cnVjdG9yID0gTW9kYWw7XHJcbmV4cG9ydCBkZWZhdWx0IE1vZGFsSW5zdGFuY2U7XHJcbiJdLCJ2ZXJzaW9uIjozfQ==</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2023-08-26T06:41:47.215Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    

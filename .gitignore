@@ -1,8 +1,8 @@
 .DS_Store
 .history
 node_modules/
-/dist/
-/lib/
+**/dist/**
+**/lib/**
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*

@@ -1,0 +1,274 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/leaflet/web-map/_mixin/map-events.ts</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../../index.html">All files</a> / <a href="index.html">src/leaflet/web-map/_mixin</a> map-events.ts</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">70.58% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>24/34</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">46.15% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>12/26</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">42.85% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>3/7</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">72% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>18/25</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input oninput="onInput()" type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line medium'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span></td><td class="text"><pre class="prettyprint lang-js">var __decorate = (this &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >this.__decorate)</span> || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c &lt; 3 ? target : <span class="branch-1 cbranch-no" title="branch not covered" >desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc,</span> d;
+    <span class="missing-if-branch" title="if path not taken" >I</span>if (typeof Reflect === "object" &amp;&amp; typeof Reflect.decorate === "function") <span class="cstat-no" title="statement not covered" >r = Reflect.decorate(decorators, target, key, desc);</span>
+    else for (var i = decorators.length - 1; i &gt;= 0; i--) if (d = decorators[i]) r = (c &lt; 3 ? d(r) : <span class="branch-1 cbranch-no" title="branch not covered" >c &gt; 3 ? d(target, key, r) : d(target, key))</span> || <span class="branch-1 cbranch-no" title="branch not covered" >r;</span>
+    return c &gt; 3 &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >r </span>&amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >Object.defineProperty(target, key, r),</span> r;
+};
+import Vue from 'vue';
+import { Component } from 'vue-property-decorator';
+const MAP_EVENT_NAMES = [
+    'zoomlevelschange',
+    'resize',
+    'unload',
+    'viewreset',
+    'load',
+    'zoomstart',
+    'movestart',
+    'zoom',
+    'move',
+    'zoomend',
+    'moveend',
+    'popupopen',
+    'popupclose',
+    'autopanstart',
+    'tooltipopen',
+    'tooltipclose',
+    'locationerror',
+    'locationfound',
+    'click',
+    'dblclick',
+    'mousedown',
+    'mouseup',
+    'mouseover',
+    'mouseout',
+    'mousemove',
+    'contextmenu',
+    'keypress',
+    'keydown',
+    'keyup',
+    'preclick',
+    'zoomanim'
+];
+let MapEvents = class MapEvents extends Vue {
+<span class="fstat-no" title="function not covered" >    mapEventCallback(</span>event, <span class="cstat-no" title="statement not covered" >data = {}) <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>{</span></span>
+<span class="cstat-no" title="statement not covered" >        this.emitMapEvent(event.type, Object.assign({ mapboxEvent: event }, data));</span>
+    }
+    bindMapEvents() {
+        Object.keys(this.$listeners).forEach(<span class="fstat-no" title="function not covered" >eventName </span>=&gt; {
+<span class="cstat-no" title="statement not covered" >            <span class="missing-if-branch" title="if path not taken" >I</span>if (MAP_EVENT_NAMES.includes(eventName)) {</span>
+<span class="cstat-no" title="statement not covered" >                this.bindMapEvent(eventName, this.mapEventCallback.bind(this));</span>
+            }
+        });
+    }
+<span class="fstat-no" title="function not covered" >    emitMapEvent(</span>name, <span class="cstat-no" title="statement not covered" >data = {}) <span class="cstat-no" title="statement not covered" ><span class="missing-if-branch" title="if path not taken" >I</span>{</span></span>
+<span class="cstat-no" title="statement not covered" >        this.$emit(name, Object.assign({ map: this.map, component: this }, data));</span>
+    }
+<span class="fstat-no" title="function not covered" >    bindMapEvent(</span>eventName, eventCallback) {
+<span class="cstat-no" title="statement not covered" >        this.map.on(eventName, eventCallback);</span>
+    }
+};
+MapEvents = __decorate([
+    Component
+], MapEvents);
+export default MapEvents;
+//# sourceMappingURL=data:application/json;charset=utf-8;base64,eyJmaWxlIjoiQzpcXFVzZXJzXFxBZG1pbmlzdHJhdG9yXFxEZXNrdG9wXFx2dWUtaWNsaWVudFxcc3JjXFxsZWFmbGV0XFx3ZWItbWFwXFxfbWl4aW5cXG1hcC1ldmVudHMudHMiLCJtYXBwaW5ncyI6Ijs7Ozs7O0FBQUEsT0FBTyxHQUFHLE1BQU0sS0FBSyxDQUFDO0FBQ3RCLE9BQU8sRUFBRSxTQUFTLEVBQUUsTUFBTSx3QkFBd0IsQ0FBQztBQUVuRCxNQUFNLGVBQWUsR0FBYTtJQUNoQyxrQkFBa0I7SUFDbEIsUUFBUTtJQUNSLFFBQVE7SUFDUixXQUFXO0lBQ1gsTUFBTTtJQUNOLFdBQVc7SUFDWCxXQUFXO0lBQ1gsTUFBTTtJQUNOLE1BQU07SUFDTixTQUFTO0lBQ1QsU0FBUztJQUNULFdBQVc7SUFDWCxZQUFZO0lBQ1osY0FBYztJQUNkLGFBQWE7SUFDYixjQUFjO0lBQ2QsZUFBZTtJQUNmLGVBQWU7SUFDZixPQUFPO0lBQ1AsVUFBVTtJQUNWLFdBQVc7SUFDWCxTQUFTO0lBQ1QsV0FBVztJQUNYLFVBQVU7SUFDVixXQUFXO0lBQ1gsYUFBYTtJQUNiLFVBQVU7SUFDVixTQUFTO0lBQ1QsT0FBTztJQUNQLFVBQVU7SUFDVixVQUFVO0NBQ1gsQ0FBQztBQUdGLElBQXFCLFNBQVMsR0FBOUIsTUFBcUIsU0FBVSxTQUFRLEdBQUc7SUFHaEMsZ0JBQWdCLENBQUMsS0FBSyxFQUFFLElBQUksR0FBRyxFQUFFO1FBQ3ZDLElBQUksQ0FBQyxZQUFZLENBQUMsS0FBSyxDQUFDLElBQUksa0JBQUksV0FBVyxFQUFFLEtBQUssSUFBSyxJQUFJLEVBQUcsQ0FBQztJQUNqRSxDQUFDO0lBRUQsYUFBYTtRQUNYLE1BQU0sQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLFVBQVUsQ0FBQyxDQUFDLE9BQU8sQ0FBQyxTQUFTLENBQUMsRUFBRTtZQUMvQyxJQUFJLGVBQWUsQ0FBQyxRQUFRLENBQUMsU0FBUyxDQUFDLEVBQUU7Z0JBQ3ZDLElBQUksQ0FBQyxZQUFZLENBQUMsU0FBUyxFQUFFLElBQUksQ0FBQyxnQkFBZ0IsQ0FBQyxJQUFJLENBQUMsSUFBSSxDQUFDLENBQUMsQ0FBQzthQUNoRTtRQUNILENBQUMsQ0FBQyxDQUFDO0lBQ0wsQ0FBQztJQUVPLFlBQVksQ0FBQyxJQUFZLEVBQUUsSUFBSSxHQUFHLEVBQUU7UUFDMUMsSUFBSSxDQUFDLEtBQUssQ0FBQyxJQUFJLGtCQUNiLEdBQUcsRUFBRSxJQUFJLENBQUMsR0FBRyxFQUNiLFNBQVMsRUFBRSxJQUFJLElBQ1osSUFBSSxFQUNQLENBQUM7SUFDTCxDQUFDO0lBRU8sWUFBWSxDQUFDLFNBQWlCLEVBQUUsYUFBYTtRQUNuRCxJQUFJLENBQUMsR0FBRyxDQUFDLEVBQUUsQ0FBQyxTQUFTLEVBQUUsYUFBYSxDQUFDLENBQUM7SUFDeEMsQ0FBQztDQUNGLENBQUE7QUExQm9CLFNBQVM7SUFEN0IsU0FBUztHQUNXLFNBQVMsQ0EwQjdCO2VBMUJvQixTQUFTIiwibmFtZXMiOltdLCJzb3VyY2VzIjpbIkM6XFxVc2Vyc1xcQWRtaW5pc3RyYXRvclxcRGVza3RvcFxcdnVlLWljbGllbnRcXHNyY1xcbGVhZmxldFxcd2ViLW1hcFxcX21peGluXFxtYXAtZXZlbnRzLnRzIl0sInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBWdWUgZnJvbSAndnVlJztcclxuaW1wb3J0IHsgQ29tcG9uZW50IH0gZnJvbSAndnVlLXByb3BlcnR5LWRlY29yYXRvcic7XHJcblxyXG5jb25zdCBNQVBfRVZFTlRfTkFNRVM6IHN0cmluZ1tdID0gW1xyXG4gICd6b29tbGV2ZWxzY2hhbmdlJyxcclxuICAncmVzaXplJyxcclxuICAndW5sb2FkJyxcclxuICAndmlld3Jlc2V0JyxcclxuICAnbG9hZCcsXHJcbiAgJ3pvb21zdGFydCcsXHJcbiAgJ21vdmVzdGFydCcsXHJcbiAgJ3pvb20nLFxyXG4gICdtb3ZlJyxcclxuICAnem9vbWVuZCcsXHJcbiAgJ21vdmVlbmQnLFxyXG4gICdwb3B1cG9wZW4nLFxyXG4gICdwb3B1cGNsb3NlJyxcclxuICAnYXV0b3BhbnN0YXJ0JyxcclxuICAndG9vbHRpcG9wZW4nLFxyXG4gICd0b29sdGlwY2xvc2UnLFxyXG4gICdsb2NhdGlvbmVycm9yJyxcclxuICAnbG9jYXRpb25mb3VuZCcsXHJcbiAgJ2NsaWNrJyxcclxuICAnZGJsY2xpY2snLFxyXG4gICdtb3VzZWRvd24nLFxyXG4gICdtb3VzZXVwJyxcclxuICAnbW91c2VvdmVyJyxcclxuICAnbW91c2VvdXQnLFxyXG4gICdtb3VzZW1vdmUnLFxyXG4gICdjb250ZXh0bWVudScsXHJcbiAgJ2tleXByZXNzJyxcclxuICAna2V5ZG93bicsXHJcbiAgJ2tleXVwJyxcclxuICAncHJlY2xpY2snLFxyXG4gICd6b29tYW5pbSdcclxuXTtcclxuXHJcbkBDb21wb25lbnRcclxuZXhwb3J0IGRlZmF1bHQgY2xhc3MgTWFwRXZlbnRzIGV4dGVuZHMgVnVlIHtcclxuICBtYXA6IEwuTWFwO1xyXG5cclxuICBwcml2YXRlIG1hcEV2ZW50Q2FsbGJhY2soZXZlbnQsIGRhdGEgPSB7fSk6IHZvaWQge1xyXG4gICAgdGhpcy5lbWl0TWFwRXZlbnQoZXZlbnQudHlwZSwgeyBtYXBib3hFdmVudDogZXZlbnQsIC4uLmRhdGEgfSk7XHJcbiAgfVxyXG5cclxuICBiaW5kTWFwRXZlbnRzKCk6IHZvaWQge1xyXG4gICAgT2JqZWN0LmtleXModGhpcy4kbGlzdGVuZXJzKS5mb3JFYWNoKGV2ZW50TmFtZSA9PiB7XHJcbiAgICAgIGlmIChNQVBfRVZFTlRfTkFNRVMuaW5jbHVkZXMoZXZlbnROYW1lKSkge1xyXG4gICAgICAgIHRoaXMuYmluZE1hcEV2ZW50KGV2ZW50TmFtZSwgdGhpcy5tYXBFdmVudENhbGxiYWNrLmJpbmQodGhpcykpO1xyXG4gICAgICB9XHJcbiAgICB9KTtcclxuICB9XHJcblxyXG4gIHByaXZhdGUgZW1pdE1hcEV2ZW50KG5hbWU6IHN0cmluZywgZGF0YSA9IHt9KTogdm9pZCB7XHJcbiAgICB0aGlzLiRlbWl0KG5hbWUsIHtcclxuICAgICAgbWFwOiB0aGlzLm1hcCxcclxuICAgICAgY29tcG9uZW50OiB0aGlzLFxyXG4gICAgICAuLi5kYXRhXHJcbiAgICB9KTtcclxuICB9XHJcblxyXG4gIHByaXZhdGUgYmluZE1hcEV2ZW50KGV2ZW50TmFtZTogc3RyaW5nLCBldmVudENhbGxiYWNrKSB7XHJcbiAgICB0aGlzLm1hcC5vbihldmVudE5hbWUsIGV2ZW50Q2FsbGJhY2spO1xyXG4gIH1cclxufVxyXG4iXSwidmVyc2lvbiI6M30=</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2023-08-26T06:41:47.215Z
+            </div>
+        <script src="../../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../../sorter.js"></script>
+        <script src="../../../../block-navigation.js"></script>
+    </body>
+</html>
+    
