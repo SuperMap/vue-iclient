@@ -53,4 +53,13 @@ describe('Progress.vue', () => {
     })
     expect(wrapper.vm.calWidth).toBe(3);
   })
+  it('decimals', async() => {
+    wrapper = mount(Progress,{
+      propsData: {
+        percent: '50',
+        decimals: 2
+      }
+    })
+    expect(wrapper.find('.sm-component-progress-text').text()).toBe('50.00%');
+  })
 })
