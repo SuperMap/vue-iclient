@@ -47,7 +47,7 @@ import {
   getMultiColorGroup
 } from 'vue-iclient/src/common/_utils/style/theme/chart';
 import EchartsDataService from 'vue-iclient/src/common/_utils/EchartsDataService';
-import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import { getFeatureCenter, getColorWithOpacity, setPopupArrowStyle, getDecimalsFormatterVal } from 'vue-iclient/src/common/_utils/util';
 import { ColorsPickerUtil } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 import Message from 'vue-iclient/src/common/message/index.js';
@@ -586,17 +586,11 @@ export default {
         this.echartOptions = this._optionsHandler(echartOptions, options);
       });
     },
-    _getDecimalsFormatterVal(val, decimals) {
-      if (!Number.isFinite(+val)) {
-        return val;
-      }
-      return decimals === -1 || typeof decimals !== 'number' ? val : Number(val).toFixed(decimals);
-    },
     _handleRadarAxisLabelFormatter(options) {
       if (typeof options.radar.decimals === 'number') {
         for (let key in options.radar.indicator) {
           const item = options.radar.indicator[key];
-          item.text = this._getDecimalsFormatterVal(item.text, options.radar.decimals);
+          item.text = getDecimalsFormatterVal(item.text, options.radar.decimals);
         }
         delete options.radar.decimals;
       }
