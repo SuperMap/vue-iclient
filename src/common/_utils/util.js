@@ -249,3 +249,10 @@ export function numberEqual(num1, num2, precision = 10E-6) {
 }
 
 export const statisticFunctions = { min, max: statisticsMax, mean, sum, mode, median, variance, standardDeviation, count: fieldValues => fieldValues.length };
+
+export function getDecimalsFormatterVal(val, decimals) {
+  if (!Number.isFinite(+val)) {
+    return val;
+  }
+  return decimals === -1 || typeof decimals !== 'number' ? val : Number(val).toFixed(decimals);
+}
