@@ -324,7 +324,10 @@ describe('Chart Mixin Component', () => {
     const series = [serieItem];
     const options = {
       xAxis: yAxis,
-      yAxis: xAxis,
+      yAxis: {
+        ...xAxis,
+        decimals: 2
+      },
       legend,
       series
     };
@@ -411,6 +414,7 @@ describe('Chart Mixin Component', () => {
       expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.rich[`color_${index}`]).not.toBeUndefined();
     });
     expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('1Thu', 5)).toEqual([`{color_4|2}  Thu`].join('\n'));
+    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('11.234', 1)).toEqual([`{color_1|2}  1.23`].join('\n'));
     done();
   });
 
