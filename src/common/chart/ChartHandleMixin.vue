@@ -56,7 +56,8 @@ export default {
         axis = yAxis;
         dataOptions.yAxis = dataOptions.xAxis;
         delete dataOptions.xAxis;
-        this._initAxisLabel(yAxis.axisLabel, dataOptions.yAxis[0].data, options.visualMap, dataOptions.series);
+        this._initAxisLabel(yAxis.axisLabel, yAxis.decimals, dataOptions.yAxis[0].data, options.visualMap, dataOptions.series);
+        delete options.yAxis.decimals;
       }
       if (dataOptions.series.length === 0) {
         axis = [{}];
@@ -353,7 +354,7 @@ export default {
       });
       return parallelShowNumber;
     },
-    _initAxisLabel(axisLabel, data, visualMap, series) {
+    _initAxisLabel(axisLabel, decimals, data, visualMap, series) {
       if (!this.xBar) {
         return;
       }
@@ -386,7 +387,7 @@ export default {
         const serieData = series && series[sortSeriesIndex].data;
         axisLabel.formatter = function (label, index) {
           const orderNum = parseInt(label.slice(0, orderNumLength)) + 1;
-          const leftLabel = label.slice(orderNumLength);
+          const leftLabel = getDecimalsFormatterVal(label.slice(orderNumLength), decimals);
           const labelValue = serieData && +serieData[index];
           if (firstVisualMap) {
             const matchItemIndex = firstVisualMap.pieces.findIndex(item => {
