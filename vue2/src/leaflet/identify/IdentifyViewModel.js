@@ -1,5 +1,5 @@
 import L from 'vue-iclient/src/leaflet/leaflet-wrapper';
-import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
+import 'vue-iclient-static/libs/iclient-leaflet/iclient-leaflet.min';
 import cloneDeep from 'lodash.clonedeep';
 /**
  * @class IdentifyViewModel

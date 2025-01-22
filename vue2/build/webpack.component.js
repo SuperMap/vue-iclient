@@ -6,14 +6,15 @@ const utils = require('./utils');
 const type = utils.getMapLibName();
 let entry;
 
-if (process.argv.includes('-index')) {
+if (process.argv.includes('--index')) {
   entry = { index: `vue-iclient/src/${type}/index.ts` };
 }
 const config = require('../config/externals');
 const entrys = require(path.resolve(__dirname, `../src/${type}/entrys.json`));
 const alias = {
   vue$: 'vue/dist/vue.esm.js',
-  'vue-iclient': path.resolve(__dirname, '../')
+  'vue-iclient': path.resolve(__dirname, '../'),
+  'vue-iclient-static': path.resolve(__dirname, '../../static')
 };
 
 const webpackConfig = {
@@ -29,13 +30,13 @@ const webpackConfig = {
   resolve: {
     extensions: ['.ts', '.js', '.tsx', '.vue', '.json'],
     alias: alias,
-    modules: ['node_modules']
+    modules: [path.resolve(__dirname, '../node_modules'), 'node_modules']
   },
   externals: config.libExternals[type],
   performance: {
     hints: false
   },
-  stats: 'none',
+  stats: 'errors-only',
   optimization: {
     minimize: false
   },

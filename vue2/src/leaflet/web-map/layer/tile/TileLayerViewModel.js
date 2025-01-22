@@ -1,5 +1,5 @@
 import L from 'leaflet';
-import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
+import 'vue-iclient-static/libs/iclient-leaflet/iclient-leaflet.min';
 import { capitalizeFirstLetter } from 'vue-iclient/src/leaflet/_utils/props-binder';
 
 export default class RasterTileLayerViewModel extends L.Evented {

@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 const tileUrlTemplate =

@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';

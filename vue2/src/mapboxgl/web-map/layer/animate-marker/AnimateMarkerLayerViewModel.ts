@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import envelope from '@turf/envelope';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';

@@ -1,6 +1,6 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import cloneDeep from 'lodash.clonedeep';
-import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 /**
  * @class DataFlowLayerViewModel
  * @category ViewModel

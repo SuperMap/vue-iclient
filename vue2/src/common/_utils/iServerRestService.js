@@ -12,7 +12,7 @@ import {
   GeometryPolygon,
   GeometryLinearRing,
   GeometryPoint
-} from 'vue-iclient/static/libs/iclient-common/iclient-common';
+} from 'vue-iclient-static/libs/iclient-common/iclient-common';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
 import proj4 from 'proj4';

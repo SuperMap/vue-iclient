@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import FileModel from './FileModel';
 import { getFileType } from './FileTypes';
 import FileReaderUtil from './FileReaderUtil';

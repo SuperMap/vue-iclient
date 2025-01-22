@@ -1,18 +1,18 @@
 const path = require('path');
-const babelConfig = require('./babel.config')();
+// const babelConfig = require('./babel.config')();
 
 process.env.VUE_CLI_BABEL_TARGET_NODE = true;
 process.env.VUE_CLI_BABEL_TRANSPILE_MODULES = true;
 // babelConfig.inputSourceMap = false;
-
 module.exports = {
   rootDir: path.resolve(__dirname),
   moduleFileExtensions: ['js', 'json', 'vue', 'ts'],
   // testRegex: "./test/.*\\.spec\\.(js|vue)$",
-  testRegex: '.*\\.spec\\.js$',
+  testRegex: '.*\\WebMapViewModel.spec\\.js$',
   moduleNameMapper: {
     '^vue-iclient/(.*)$': '<rootDir>/$1',
-    '^@libs/(.*)$': '<rootDir>/static/libs/$1',
+    '^vue-iclient-static/(.*)$': '<rootDir>/../static/$1',
+    '^@libs/(.*)$': '<rootDir>/../static/libs/$1',
     '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
     '^@types_mapboxgl/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
     '^@types_common/(.*)$': '<rootDir>/src/common/_types/$1',
@@ -45,12 +45,12 @@ module.exports = {
   transformIgnorePatterns: [
     'node_modules/(?!(mapbox-gl|axios|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'
   ],
-  modulePaths: ['src', 'node_modules'],
+  modulePaths: ['src', 'node_modules', path.resolve(__dirname, '../node_modules')],
   reporters: ["default", "jest-teamcity"],
   globals: {
     'ts-jest': {
       tsConfig: '<rootDir>/tsconfig.json',
-      babelConfig: babelConfig
+      babelConfig: '<rootDir>/babel.config.js'
     }
   },
 

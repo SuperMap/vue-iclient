@@ -1,7 +1,7 @@
 import turfLength from '@turf/length';
 import turfArea from '@turf/area';
 import { convertArea } from '@turf/helpers';
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 

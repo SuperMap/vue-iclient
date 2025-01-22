@@ -1,3 +1,5 @@
+const path = require('path');
+
 module.exports = function (api) {
   api && api.cache(true);
   const presets = [
@@ -35,6 +37,6 @@ module.exports = function (api) {
   return {
     presets,
     plugins,
-    ignore: ['./static/libs/mapboxgl']
+    ignore: [path.resolve(__dirname, '../static/libs/mapboxgl')]
   };
 };

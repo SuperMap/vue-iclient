@@ -1,3 +1,5 @@
+const path = require('path');
+
 // https://eslint.org/docs/user-guide/configuring
 module.exports = {
   root: true,
@@ -14,7 +16,7 @@ module.exports = {
     },
     'import/resolver': {
       alias: {
-        map: [['vue-iclient', './']],
+        map: [['vue-iclient', path.resolve(__dirname, './')], ['vue-iclient-static', path.resolve(__dirname, '../static')]],
         extensions: ['.js', '.ts', '.vue', '.json']
       },
       node: {
@@ -37,6 +39,9 @@ module.exports = {
     ecmaVersion: 6,
     ecmaFeatures: {
       legacyDecorators: true
+    },
+    babelOptions: {
+      configFile: path.resolve(__dirname, './babel.config.js') // 指定 Babel 配置文件路径
     }
   },
   plugins: ['vue', 'import'], // '@typescript-eslint'

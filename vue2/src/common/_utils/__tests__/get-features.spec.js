@@ -1,7 +1,7 @@
 import getFeatures from '../get-features';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
-import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-common';
+import { FetchRequest } from 'vue-iclient-static/libs/iclient-common/iclient-common';
 
 describe('getFeatures test', () => {
   const dataInfo = {

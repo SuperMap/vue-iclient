@@ -1,13 +1,13 @@
 import L from '../leaflet-wrapper';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
-import 'vue-iclient/static/libs/iclient-leaflet/iclient-leaflet.min';
+import 'vue-iclient-static/libs/iclient-leaflet/iclient-leaflet.min';
 // import echarts from 'echarts';  // TODO iclient 拿不到 echarts ???
-import 'vue-iclient/static/libs/geostats/geostats';
+import 'vue-iclient-static/libs/geostats/geostats';
 import getCenter from '@turf/center';
 import proj4 from 'proj4';
 import { getProjection, toEpsgCode } from 'vue-iclient/src/common/_utils/epsg-define';
 // @ts-ignore
-import { createWebMapV2BaseExtending } from 'vue-iclient/static/libs/iclient-common/iclient-common-webmapv2base';
+import { createWebMapV2BaseExtending } from 'vue-iclient-static/libs/iclient-common/iclient-common-webmapv2base';
 
 interface WebMapOptions {
   target?: string;

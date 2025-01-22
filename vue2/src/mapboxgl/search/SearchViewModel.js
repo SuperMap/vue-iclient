@@ -1,7 +1,7 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
-import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
 import getFeatures from 'vue-iclient/src/common/_utils/get-features';

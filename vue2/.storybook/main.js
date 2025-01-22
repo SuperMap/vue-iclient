@@ -32,9 +32,11 @@ module.exports = {
   webpackFinal: async (config, { configType }) => {
     config.module.noParse = /(mapbox-gl-enhance)\.js$/;
     config.resolve.alias['vue-iclient'] = resolve('./');
-    config.resolve.alias['@supermapgis/vue-iclient-mapboxgl/static'] = resolve('./static');
+    config.resolve.alias['vue-iclient-static'] = resolve('../static');
+    config.resolve.alias['@supermapgis/vue-iclient-mapboxgl/static'] = resolve('../static');
     config.resolve.alias['@supermapgis/vue-iclient-mapboxgl/lib'] = resolve('./lib/mapboxgl');
     config.resolve.alias['@supermapgis/vue-iclient-mapboxgl'] = resolve('./lib/mapboxgl');
+    config.resolve.modules = [path.resolve(__dirname, '../node_modules'), 'node_modules'];
     config.optimization = {
       splitChunks: {
         cacheGroups: {

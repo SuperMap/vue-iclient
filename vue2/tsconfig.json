@@ -34,6 +34,7 @@
       "vue": ["node_modules/vue/types"],
       // 解决ts文件中的别名问题
       "vue-iclient/*": ["./*"],
+      "vue-iclient-static/*": ["../static/*"],
       "*.ts": ["*"]
     }
   },

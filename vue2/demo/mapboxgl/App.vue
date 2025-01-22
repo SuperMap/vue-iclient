@@ -11,8 +11,8 @@
     <template v-if="componentType === 'map-sub-components'">
       <sm-web-map
         v-if="show"
-        server-url="http://localhost:8190/iportal"
-        :map-id="mapIdSelected"
+        server-url="http://172.16.14.44:8190/iportal"
+        :map-id="692091022"
         :pan-control="{ show: true, position: 'top-left' }"
         @load="mapLoaded"
       >

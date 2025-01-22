@@ -37,8 +37,10 @@ module.exports = {
     extensions: ['.ts', '.js', '.vue', '.json'],
     alias: {
       vue$: 'vue/dist/vue.esm.js',
-      'vue-iclient': path.resolve(__dirname, '../')
-    }
+      'vue-iclient': path.resolve(__dirname, '../'),
+      'vue-iclient-static': path.resolve(__dirname, '../../static')
+    },
+    modules: [path.resolve(__dirname, '../node_modules'), 'node_modules']
   },
   module: {
     rules: [
@@ -69,7 +71,7 @@ module.exports = {
         include: [
           resolve('src'),
           resolve('test'),
-          resolve('static/libs/json-sql'),
+          path.resolve(__dirname, '../../static/libs/json-sql'),
           // resolve('node_modules/webpack-dev-server/client'),
           resolve('node_modules/vue-echarts'),
           resolve('node_modules/resize-detector'),

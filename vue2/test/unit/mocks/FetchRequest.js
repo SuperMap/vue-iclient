@@ -1,4 +1,4 @@
-import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-common';
+import { FetchRequest } from '@libs/iclient-common/iclient-common';
 
 function mockFetch(resource) {
   const mockImplementation = url => {

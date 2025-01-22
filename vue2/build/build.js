@@ -13,7 +13,6 @@ let webpackConfig = require('./webpack.mapboxgl.conf');
 const utils = require('./utils');
 
 const mapLibName = utils.getMapLibName();
-
 if (mapLibName) {
   webpackConfig = require(`./webpack.${mapLibName}.conf`);
 }

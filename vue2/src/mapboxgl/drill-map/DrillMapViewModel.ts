@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';

@@ -7,7 +7,7 @@ import SmButton from '../../../common/button/Button';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
 import { message } from 'ant-design-vue';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
-import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-common';
+import { FetchRequest } from 'vue-iclient-static/libs/iclient-common/iclient-common';
 import {
   REST_DATA_FIELDS_RESULT,
   dataset_data,

@@ -1,6 +1,6 @@
 const fs = require('fs');
 
-const path = './static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js';
+const path = '../static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js';
 const data = fs.readFileSync(path, 'utf8');
 
 if (data.includes('function(){try{return G6}catch(e)')) {

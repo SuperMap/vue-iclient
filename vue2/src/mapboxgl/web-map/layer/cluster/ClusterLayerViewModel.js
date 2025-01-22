@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 /**
  * @class ClusterLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。

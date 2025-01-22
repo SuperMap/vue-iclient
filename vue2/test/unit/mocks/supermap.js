@@ -45,7 +45,7 @@ import {
   webmap_migrationLayer,
   webmap_MAPBOXSTYLE_Tile
 } from './services';
-import '../../../static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import '@libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 var SuperMap = (window.SuperMap = window.SuperMap || {});
 

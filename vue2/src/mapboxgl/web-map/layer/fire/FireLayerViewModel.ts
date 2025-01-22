@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import Tendrils from './assets/tendrils.png';
 import { FeatureCollection } from 'geojson';
 /**

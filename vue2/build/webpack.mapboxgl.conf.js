@@ -59,7 +59,7 @@ const webpackConfig = merge(baseWebpackConfig, {
    `),
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../static/mbgl-index.js'),
+        from: path.resolve(__dirname, '../../static/mbgl-index.js'),
         to: path.resolve(__dirname, '../dist/mapboxgl/index.js')
       }
     ])

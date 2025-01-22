@@ -1,4 +1,4 @@
-import { FetchRequest } from 'vue-iclient/static/libs/iclient-common/iclient-common';
+import { FetchRequest } from 'vue-iclient-static/libs/iclient-common/iclient-common';
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
 import { getDataType } from 'vue-iclient/src/common/_utils/util';
 import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';

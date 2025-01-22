@@ -2,12 +2,12 @@
  * This program are made available under the terms of the Apache License, Version 2.0
  * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
 import { Events } from 'vue-iclient/src/common/_types/event/Events';
-import mapboxgl from 'vue-iclient/static/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient/static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import 'vue-iclient/static/libs/geostats/geostats';
-import 'vue-iclient/static/libs/json-sql/jsonsql';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import 'vue-iclient-static/libs/geostats/geostats';
+import 'vue-iclient-static/libs/json-sql/jsonsql';
 import echarts from 'echarts';
-import EchartsLayer from 'vue-iclient/static/libs/echarts-layer/EchartsLayer';
+import EchartsLayer from 'vue-iclient-static/libs/echarts-layer/EchartsLayer';
 import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
 import proj4 from 'proj4';
 import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
