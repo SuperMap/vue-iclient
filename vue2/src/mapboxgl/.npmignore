@@ -4,28 +4,28 @@ node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-/test/
+test/
 **/__tests__
-**/build/
-**/config/
-**/demo/
-**/docs/
+build/
+config/
+demo/
+docs/
 
-**/dist/leaflet/
-**/dist/mapboxgl/
-**/lib/mapboxgl/
-**/lib/leaflet/
+dist/leaflet/
+dist/mapboxgl/
+lib/mapboxgl/
+lib/leaflet/
 
 **/static/libs/Cesium/
 **/static/libs/iclient-leaflet/
 **/static/mbgl-index.js
 **/static/leaflet-index.js
 
-**/src/classic/
-**/src/leaflet/
-**/src/openlayers/
-**/src/mapboxgl/tsconfig.json
-**/src/mapboxgl/package.json
+src/classic/
+src/leaflet/
+src/openlayers/
+src/mapboxgl/tsconfig.json
+src/mapboxgl/package.json
 
 .git
 .github
@@ -37,8 +37,9 @@ yarn-error.log*
 babel.config.js
 index.html
 jest.config.js
-**/.storybook
-**/stories/
+.storybook
+stories/
+storybook
 
 # Editor directories and files
 .idea
@@ -49,4 +50,4 @@ jest.config.js
 *.sln
 package-lock.json
 sonar-project.properties
-**/src/**/package.json
+src/**/package.json

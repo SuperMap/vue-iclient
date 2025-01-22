@@ -13,7 +13,7 @@ compFiles.forEach(compName => {
   const styleJsPath = path.resolve(__dirname, filePath, `${compName}/style/css.js`);
   try {
     fs.statSync(stylePath);
-    fs.readFile(styleJsPath , 'utf8', function (err) {
+    fs.readFile(styleJsPath, 'utf8', function (err) {
       if (err) {
         throw new Error(`按需引入的lib包：${styleJsPath}不存在`);
       }

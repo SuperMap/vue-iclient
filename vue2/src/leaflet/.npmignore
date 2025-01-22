@@ -1,20 +1,20 @@
 .DS_Store
 .history
-**/node_modules/
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-**/test/
+test/
 **/__tests__
-**/build/
-**/config/
-**/demo/
-**/docs/
+build/
+config/
+demo/
+docs/
 
-**/dist/mapboxgl/
-**/dist/leaflet/
-**/lib/mapboxgl/
-**/lib/leaflet/
+dist/mapboxgl/
+dist/leaflet/
+lib/mapboxgl/
+lib/leaflet/
 
 **/static/libs/Cesium/
 **/static/libs/deckgl/
@@ -24,11 +24,11 @@ yarn-error.log*
 **/static/mbgl-index.js
 **/static/leaflet-index.js
 
-**/src/classic/
-**/src/mapboxgl/
-**/src/openlayers/
-**/src/leaflet/tsconfig.json
-**/src/leaflet/package.json
+src/classic/
+src/mapboxgl/
+src/openlayers/
+src/leaflet/tsconfig.json
+src/leaflet/package.json
 
 .git
 .github
@@ -40,8 +40,9 @@ yarn-error.log*
 babel.config.js
 index.html
 jest.config.js
-**/.storybook
-**/stories/
+.storybook
+stories/
+storybook
 
 # Editor directories and files
 .idea

@@ -18,3 +18,5 @@ yarn-error.log*
 *.sln
 **/package-lock.json
 **/storybook
+vue2/static
+vue3/static
