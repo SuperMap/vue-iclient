@@ -73,7 +73,7 @@ if (isMinify) {
       cache: true,
       parallel: true,
       sourceMap: config.build.productionSourceMap,
-      uglifyOptions: {
+      terserOptions: {
         warnings: false
       }
     })

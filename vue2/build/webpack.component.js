@@ -61,7 +61,7 @@ const webpackConfig = {
       },
       {
         test: /\.jsx?$/,
-        include: process.cwd(),
+        include: [process.cwd(), path.resolve(__dirname, '../../static')],
         loader: 'babel-loader'
       },
       {
