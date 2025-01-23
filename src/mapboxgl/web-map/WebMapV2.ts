@@ -439,7 +439,7 @@ export default class WebMap extends WebMapBase {
             layer.layout && (layer.layout.visibility = this._getVisibility(layerInfo.visible));
           });
           // @ts-ignore
-          this.map.addStyle(style);
+          this.map.addStyle(style, undefined, undefined, undefined, url);
           const layerIds = [];
           style.layers.forEach((item: Record<string, any>) => {
             if (item.type !== 'background') {
