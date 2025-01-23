@@ -620,7 +620,7 @@ export default class WebMapViewModel extends WebMapBase {
           const layerIds = style.layers.map(layer => layer.id).filter(id => id !== 'background');
           this._cacheLayerId.push(...layerIds);
           // @ts-ignore
-          this.map.addStyle(style);
+          this.map.addStyle(style, undefined, undefined, undefined, url);
           addedCallback && addedCallback();
         },
         error => {
