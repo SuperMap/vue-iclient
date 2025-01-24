@@ -14,10 +14,10 @@ import {
   PKG_BRAND_NAME,
   PKG_CAMELCASE_LOCAL_NAME,
   PKG_CAMELCASE_NAME,
-  getPkgName,
   getEpOutput,
   getEpRoot,
-  getLocaleRoot
+  getLocaleRoot,
+  getPkgByCommand
 } from '@supermapgis/build-utils'
 import { Alias } from '../plugins/alias'
 import { formatBundleFilename, generateExternal, withTaskName, writeBundles } from '../utils'
@@ -26,11 +26,11 @@ import type { TaskFunction } from 'gulp'
 import type { Plugin } from 'rollup'
 
 const banner = `/*! ${PKG_BRAND_NAME} v${'0.0.1'} */\n`
-const pkgName = getPkgName()
-const epOutput = getEpOutput(pkgName)
-const epRoot = getEpRoot(pkgName)
-const localeRoot = getLocaleRoot(pkgName)
+
 async function buildFullEntry(minify: boolean) {
+  const pkgName = getPkgByCommand(process.argv)
+  const epOutput = getEpOutput(pkgName)
+  const epRoot = getEpRoot(pkgName)
   const plugins: Plugin[] = [
     Alias(),
     VueMacros({
@@ -107,6 +107,10 @@ async function buildFullEntry(minify: boolean) {
 }
 
 async function buildFullLocale(minify: boolean) {
+  const pkgName = getPkgByCommand(process.argv)
+  const epOutput = getEpOutput(pkgName)
+  const localeRoot = getLocaleRoot(pkgName)
+
   const files = await glob(`**/**/*.ts`, {
     cwd: path.resolve(localeRoot, 'lang'),
     absolute: true
