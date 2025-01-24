@@ -1,4 +1,4 @@
-import WebMapViewModel from '../WebMapViewModel.ts';
+import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel.ts';
 import flushPromises from 'flush-promises';
 import uniqueLayer_polygon from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_polygon.json';
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_multi_points.json';

@@ -6,9 +6,10 @@ process.env.VUE_CLI_BABEL_TRANSPILE_MODULES = true;
 // babelConfig.inputSourceMap = false;
 module.exports = {
   rootDir: path.resolve(__dirname),
+  roots: ['<rootDir>', '<rootDir>/../core'],
   moduleFileExtensions: ['js', 'json', 'vue', 'ts'],
   // testRegex: "./test/.*\\.spec\\.(js|vue)$",
-  testRegex: '.*\\WebMapViewModel.spec\\.js$',
+  testRegex: '.*\\.spec\\.js$',
   moduleNameMapper: {
     '^vue-iclient/(.*)$': '<rootDir>/$1',
     '^vue-iclient-core/(.*)$': '<rootDir>/../core/$1',
@@ -21,7 +22,7 @@ module.exports = {
     '@i18n/(.*)$': '<rootDir>/src/common/$1',
     '@leaflet/(.*)$': '<rootDir>/src/leaflet/$1',
     '\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$':
-    '<rootDir>/test/unit/assetsTransformer.js',
+      '<rootDir>/test/unit/assetsTransformer.js',
     '^axios$': require.resolve('axios')
   },
   transform: {
@@ -40,13 +41,19 @@ module.exports = {
     '!src/mapboxgl/web-map/layer/fill-extrusion/**',
     '!src/mapboxgl/web-map/control/fill-extrusion/**',
     '!**/node_modules/**',
-    '!mapboxgl/*/__tests__/**/type.{js,jsx}'
+    '!mapboxgl/*/__tests__/**/type.{js,jsx}',
+    '<rootDir>/../core/**/!(*libs)/**/!(*.spec).{js,ts}',
+    '!<rootDir>/../core/libs/**' // 明确排除 core/libs 目录下的所有文
   ],
   transformIgnorePatterns: [
     'node_modules/(?!(mapbox-gl|axios|element-ui|ant-design-vue|geographic-coordinate-converter|videojs-flvjs-es6|vue-videojs7|three)/)'
   ],
-  modulePaths: ['src', 'node_modules', path.resolve(__dirname, '../node_modules')],
-  reporters: ["default", "jest-teamcity"],
+  modulePaths: [
+    'src',
+    'node_modules',
+    path.resolve(__dirname, 'node_modules')
+  ],
+  reporters: ['default', 'jest-teamcity'],
   globals: {
     'ts-jest': {
       tsConfig: '<rootDir>/tsconfig.json',

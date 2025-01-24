@@ -61,7 +61,7 @@ const webpackConfig = {
       },
       {
         test: /\.jsx?$/,
-        include: [process.cwd(), path.resolve(__dirname, '../../core')],
+        include: [process.cwd(), (filePath) => filePath.startsWith(path.resolve(__dirname, '../../core')) && !filePath.startsWith(path.resolve(__dirname, '../../core/libs'))],
         loader: 'babel-loader'
       },
       {

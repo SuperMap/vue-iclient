@@ -29,9 +29,9 @@
     // 是相对于"baseUrl"进行解析
     "paths": {
       // 解决ts文件中的别名问题
-      "vue-iclient-core/*": ["./core/*"]
+      "vue-iclient-core/*": ["*/"]
     }
   },
-  "include": ["core/**/*"],
-  "exclude": ["core/libs"]
+  "include": ["*"],
+  "exclude": ["libs"]
 }

@@ -35,7 +35,8 @@
       // 解决ts文件中的别名问题
       "vue-iclient/*": ["./*"],
       "vue-iclient-core/*": ["../core/*"],
-      "*.ts": ["*"]
+      "*.ts": ["*"],
+      "*": ["node_modules/*"]
     }
   },
   "include": ["src/**/*", "demo/**/*"],

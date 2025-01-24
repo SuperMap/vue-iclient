@@ -15,7 +15,10 @@ describe('TimeText.vue', () => {
 
   it('render', () => {
     wrapper = mount(SmTimeText, {
-      propsData: {}
+      propsData: {},
+      mocks: {
+        $d: (msg) => msg
+      }
     });
     expect(wrapper.find('.sm-component-time-text').exists()).toBe(true);
   });

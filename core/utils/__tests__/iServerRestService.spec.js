@@ -1,5 +1,5 @@
-import iServerRestService, { transformFeatures } from '../../../common/_utils/iServerRestService';
-import { getProjection, registerProjection } from '../../../common/_utils/epsg-define';
+import iServerRestService, { transformFeatures } from '../iServerRestService';
+import { getProjection, registerProjection } from '../epsg-define';
 import { FetchRequest } from 'vue-iclient-core/libs/iclient-common/iclient-common';
 import { REST_DATA_FIELDS_RESULT, prj_data } from '@mocks/services';
 
