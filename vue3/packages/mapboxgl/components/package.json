@@ -1,0 +1,44 @@
+{
+  "name": "@supermapgis/vue-iclient-mapboxgl",
+  "description": "SuperMap iClient for Vue.js",
+  "version": "11.3.0",
+  "homepage": "http://iclient.supermap.io",
+  "type": "module",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "unpkg": "dist/antd.min.js",
+  "typings": "es/index.d.ts",
+  "files": [
+    "dist",
+    "lib",
+    "es",
+    "typings/global.d.ts",
+    "locale"
+  ],
+  "peerDependencies": {
+    "vue": ">=3.5.13"
+  },
+  "engines": {
+    "node": ">= 6.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 9"
+  ],
+  "author": "SuperMap_FE",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperMap/vue-iclient.git"
+  },
+  "keywords": [
+    "SuperMap",
+    "MapboxGL v1",
+    "Vue3"
+  ],
+  "scripts": {
+    "postpublish": "git checkout ./package.json ./src/sfc.d.ts ./tsconfig.json && rimraf ./dist"
+  }
+}

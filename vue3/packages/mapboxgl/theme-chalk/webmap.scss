@@ -1,0 +1,8 @@
+@use 'mixins/mixins' as *;
+@use './common/theme.scss' as *;
+
+@include b(button) {
+}
+div {
+  color: yellow;
+}
