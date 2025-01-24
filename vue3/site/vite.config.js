@@ -11,6 +11,9 @@ export default defineConfig({
     alias: {
       '@supermapgis/vue-iclient-mapboxgl': fileURLToPath(
         new URL('../packages/mapboxgl/components', import.meta.url)
+      ),
+      '@supermapgis/mapboxgl/theme-chalk': fileURLToPath(
+        new URL('../packages/mapboxgl/theme-chalk', import.meta.url)
       )
       // node_modules: fileURLToPath(new URL('../node_modules', import.meta.url))
     }

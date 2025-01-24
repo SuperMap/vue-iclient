@@ -1,11 +1,11 @@
-import { getPkgByCommand, getPKGNAME, PKG_PREFIX } from '@supermapgis/build-utils'
+import { getPkgByCommand, getPKG_NAME, PKG_PREFIX } from '@supermapgis/build-utils'
 import { buildConfig } from '../build-info'
 
 import type { Module } from '../build-info'
 
 /** used for type generator */
 const pkgName = getPkgByCommand(process.argv)
-const PKG_NAME = getPKGNAME(pkgName)
+const PKG_NAME = getPKG_NAME(pkgName)
 export const pathRewriter = (module: Module) => {
   const config = buildConfig[module]
 

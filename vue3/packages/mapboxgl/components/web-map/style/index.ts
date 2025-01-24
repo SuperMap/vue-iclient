@@ -1,2 +1,2 @@
-import '@supermapgis/vue-iclient-mapboxgl/theme-chalk/base.scss'
-import '@supermapgis/vue-iclient-mapboxgl/theme-chalk/webmap.scss'
+import '@supermapgis/mapboxgl/theme-chalk/base.scss'
+import '@supermapgis/mapboxgl/theme-chalk/webmap.scss'

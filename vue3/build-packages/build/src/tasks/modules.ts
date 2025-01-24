@@ -91,8 +91,6 @@ async function buildModulesStyles() {
       onlyFiles: true
     })
   )
-  console.log(input)
-
   const bundle = await rollup({
     input,
     plugins,

@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supermapgis/vue-iclient-mapboxgl/theme-chalk": "workspace:*",
+    "@supermapgis/mapboxgl/theme-chalk": "workspace:*",
     "@supermapgis/vue-iclient-mapboxgl": "workspace:*",
     "vue": "3.5.12"
   },

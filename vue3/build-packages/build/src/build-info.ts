@@ -1,12 +1,12 @@
 import path from 'path'
-import { getPKGNAME } from '@supermapgis/build-utils'
+import { getPKG_NAME } from '@supermapgis/build-utils'
 import { getPkgByCommand, getEpOutput } from '@supermapgis/build-utils'
 
 import type { ModuleFormat } from 'rollup'
 
 const pkgName = getPkgByCommand(process.argv)
 const epOutput = getEpOutput(pkgName)
-const PKG_NAME = getPKGNAME(pkgName)
+const PKG_NAME = getPKG_NAME(pkgName)
 
 export const modules = ['esm', 'cjs'] as const
 export type Module = (typeof modules)[number]

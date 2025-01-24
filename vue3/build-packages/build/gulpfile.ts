@@ -51,15 +51,15 @@ export default series(
   withTaskName('createOutput', () => mkdir(epOutput, { recursive: true })),
 
   parallel(
-    // runTask(`buildModules`, pkgName),
-    runTask('buildFullBundle', pkgName)
-    // runTask('generateTypesDefinitions', pkgName)
-    // series(
-    //   withTaskName('buildThemeChalk', () =>
-    //     run(`pnpm run -C packages/${pkgName}/theme-chalk build`)
-    //   ),
-    //   copyFullStyle
-    // )
+    runTask(`buildModules`, pkgName),
+    runTask('buildFullBundle', pkgName),
+    runTask('generateTypesDefinitions', pkgName),
+    series(
+      withTaskName('buildThemeChalk', () =>
+        run(`pnpm run -C packages/${pkgName}/theme-chalk build`)
+      ),
+      copyFullStyle
+    )
   ),
 
   parallel(copyTypesDefinitions, copyFiles)
