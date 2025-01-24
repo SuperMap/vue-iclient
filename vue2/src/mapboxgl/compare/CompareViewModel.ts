@@ -1,4 +1,4 @@
-import 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import 'mapbox-gl-compare';
 
 export type mapType = mapboxglTypes.Map;

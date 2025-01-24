@@ -6,7 +6,7 @@ import ThirdService from 'vue-iclient/src/common/_mixin/ThirdService';
 import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
 import { ResizeSensor } from 'css-element-queries';
-import { strip } from '../_utils/util';
+import { strip } from 'vue-iclient-core/utils/util';
 
 export const progressTypes = {
   ...ProgressProps,

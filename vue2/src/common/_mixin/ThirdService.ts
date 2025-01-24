@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import RestService from 'vue-iclient/src/common/_utils/RestService';
+import RestService from 'vue-iclient-core/utils/RestService';
 
 @Component
 export default class ThirdService extends Vue {

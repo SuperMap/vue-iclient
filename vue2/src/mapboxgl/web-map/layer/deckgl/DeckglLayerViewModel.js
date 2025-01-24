@@ -1,6 +1,6 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import 'vue-iclient-static/libs/deckgl/deck.gl.min';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import 'vue-iclient-core/libs/deckgl/deck.gl.min';
 
 export default class DeckglLayerViewModel extends mapboxgl.Evented {
   constructor(deckglProps) {

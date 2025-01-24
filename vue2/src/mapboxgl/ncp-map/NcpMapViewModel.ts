@@ -1,7 +1,7 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
 import labelPoints from './config/label-points.json';
-import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 
 export interface dataOptions {
   url?: string;

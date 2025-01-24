@@ -37,6 +37,6 @@ module.exports = function (api) {
   return {
     presets,
     plugins,
-    ignore: [path.resolve(__dirname, '../static/libs/mapboxgl')]
+    ignore: [path.resolve(__dirname, '../core/libs/mapboxgl')]
   };
 };

@@ -1,4 +1,4 @@
-import { registerProjection } from 'vue-iclient/src/common/_utils/epsg-define';
+import { registerProjection } from 'vue-iclient-core/utils/epsg-define';
 import { lang, initi18n } from 'vue-iclient/src/common/_lang/index';
 import { setTheme } from 'vue-iclient/src/common/_utils/style/theme/set-theme';
 import Base from 'ant-design-vue/es/base';

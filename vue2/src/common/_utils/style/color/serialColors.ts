@@ -1,6 +1,6 @@
 import colorPalette from 'vue-iclient/src/common/_utils/style/color/colorPalette';
 import themeFactory from 'vue-iclient/src/common/_utils/style/theme/theme.json';
-import { getColorWithOpacity, getDarkenColor, getDataType } from 'vue-iclient/src/common/_utils/util';
+import { getColorWithOpacity, getDarkenColor, getDataType } from 'vue-iclient-core/utils/util';
 import cssVars from 'css-vars-ponyfill';
 
 export interface styleConfigParams {

@@ -85,7 +85,7 @@ import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
 import SmCard from 'vue-iclient/src/common/card/Card.vue';
 import SmCollapse from 'vue-iclient/src/common/collapse/Collapse.vue';
 import CoordinateConversionViewModel from './CoordinateConversionViewModel';
-import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
+import { getProjection } from 'vue-iclient-core/utils/epsg-define';
 import ClipboardJS from 'clipboard';
 import proj4 from 'proj4';
 import UniqueId from 'lodash.uniqueid';

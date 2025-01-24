@@ -1,7 +1,7 @@
-import { FetchRequest } from 'vue-iclient-static/libs/iclient-common/iclient-common';
-import { Events } from 'vue-iclient/src/common/_types/event/Events';
-import { getDataType } from 'vue-iclient/src/common/_utils/util';
-import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
+import { FetchRequest } from 'vue-iclient-core/libs/iclient-common/iclient-common';
+import { Events } from 'vue-iclient-core/types/event/Events';
+import { getDataType } from 'vue-iclient-core/utils/util';
+import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
 
 export default class RestService extends Events {
   constructor(options) {

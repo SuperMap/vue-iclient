@@ -1,5 +1,5 @@
 import L from '../leaflet-wrapper';
-import 'vue-iclient-static/libs/iclient-leaflet/iclient-leaflet.min';
+import 'vue-iclient-core/libs/iclient-leaflet/iclient-leaflet.min';
 /**
  * @class MarkerViewModel
  * @description 点选 viewModel.

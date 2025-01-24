@@ -2,7 +2,7 @@ import * as XLSX from 'xlsx';
 import { FileTypes } from './FileTypes';
 import { open } from 'shapefile';
 import { handleMultyPolygon } from 'vue-iclient/src/mapboxgl/_utils/geometry-util';
-import { isXField, isYField } from 'vue-iclient/src/common/_utils/util';
+import { isXField, isYField } from 'vue-iclient-core/utils/util';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 const FileReaderUtil = {

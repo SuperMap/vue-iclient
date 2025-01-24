@@ -1,4 +1,4 @@
-import { getDataType } from 'vue-iclient/src/common/_utils/util';
+import { getDataType } from 'vue-iclient-core/utils/util';
 import proj4 from 'proj4';
 
 function defineProjection(epsgCode, projection, isCover) {

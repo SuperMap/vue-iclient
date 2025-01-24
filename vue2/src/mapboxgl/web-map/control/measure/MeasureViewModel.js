@@ -1,9 +1,9 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import length from '@turf/length';
 import area from '@turf/area';
 import center from '@turf/center';
 import { convertLength, convertArea } from '@turf/helpers';
-import { reservedDecimal } from 'vue-iclient/src/common/_utils/util';
+import { reservedDecimal } from 'vue-iclient-core/utils/util';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
 

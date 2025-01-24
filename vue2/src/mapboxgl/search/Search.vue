@@ -112,7 +112,7 @@ import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import SmInput from 'vue-iclient/src/common/input/Input.vue';
 import Message from 'vue-iclient/src/common/message/Message.js';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
-import { setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import { setPopupArrowStyle } from 'vue-iclient-core/utils/util';
 import isEqual from 'lodash.isequal';
 
 export default {

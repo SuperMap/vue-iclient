@@ -48,6 +48,6 @@ fs.copy(path.resolve(__dirname, `../dist/${key}/`), path.resolve(__dirname, `../
 fs.copy(path.resolve(__dirname, `../lib/${key}/`), path.resolve(__dirname, `../lib/`), err => {
   if (err) throw err;
 });
-fs.copy(path.resolve(__dirname, '../../static'), path.resolve(__dirname, `../static/`), err => {
+fs.copy(path.resolve(__dirname, '../../core/libs'), path.resolve(__dirname, `../static/libs`), err => {
   if (err) throw err;
 });

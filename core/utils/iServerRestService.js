@@ -12,12 +12,12 @@ import {
   GeometryPolygon,
   GeometryLinearRing,
   GeometryPoint
-} from 'vue-iclient-static/libs/iclient-common/iclient-common';
-import { Events } from 'vue-iclient/src/common/_types/event/Events';
-import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
+} from 'vue-iclient-core/libs/iclient-common/iclient-common';
+import { Events } from 'vue-iclient-core/types/event/Events';
+import { getProjection } from 'vue-iclient-core/utils/epsg-define';
 import proj4 from 'proj4';
-import { isMatchUrl } from 'vue-iclient/src/common/_utils/util';
-import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
+import { isMatchUrl } from 'vue-iclient-core/utils/util';
+import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
 import cloneDeep from 'lodash.clonedeep';
 
 export function _getValueOfEpsgCode(epsgCode) {

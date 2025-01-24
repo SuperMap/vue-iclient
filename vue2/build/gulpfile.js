@@ -201,7 +201,8 @@ function _cssjs(file, encoding) {
       )
       .replace(/vue-iclient\/src\/mapboxgl/, `@supermapgis/vue-iclient-${type}/lib`)
       .replace(/vue-iclient\/src\/common\//g, `@supermapgis/vue-iclient-${type}/lib/`)
-      .replace(/vue-iclient-static\//g, `@supermapgis/vue-iclient-${type}/static/`)
+      .replace(/vue-iclient-core\/libs\//g, `@supermapgis/vue-iclient-${type}/static/libs/`)
+      .replace(/vue-iclient-core\/assets\//g, `@supermapgis/vue-iclient-${type}/lib/_assets/`)
       .replace(/\.less/g, '.css')
       .replace(/\.scss/g, '.css')
   );
@@ -217,9 +218,14 @@ function compileCopy() {
   // 全局配置组件没有style 生成config-provider/style/index.js css.js
   // []
   // 拷贝theme.json和_assets和tdt
-  let gulpFile = ['../src/common/_utils*/style/**/*.json', '../src/common/_assets*/iconfont*/*'];
+  let gulpFile = ['../src/common/_utils*/style/**/*.json'];
   type === 'mapboxgl' && gulpFile.push('../src/mapboxgl/tdt/_assets*/sprite*');
   return gulp.src(gulpFile).pipe(gulp.dest(output_path));
+}
+
+function compileCopyIconfont() {
+  const iconfontSource = '../../core/assets/iconfont*/*';
+  return gulp.src(iconfontSource).pipe(gulp.dest(`${output_path}_assets/`));
 }
 function createStyle(filePath) {
   fileSave(filePath + '/index.js').write('', 'utf8');
@@ -239,4 +245,4 @@ function createLayerStyle(filePath) {
   });
 }
 
-exports.build = gulp.parallel(compileCopy, compileSass, compileLess, compileCssjs);
+exports.build = gulp.parallel(compileCopy, compileCopyIconfont, compileSass, compileLess, compileCssjs);

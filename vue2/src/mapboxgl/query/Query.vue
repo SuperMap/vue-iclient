@@ -170,7 +170,7 @@ import SmSpin from 'vue-iclient/src/common/spin/Spin.vue';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import Message from 'vue-iclient/src/common/message/Message.js';
 import SmLayerHighlight from 'vue-iclient/src/mapboxgl/layer-highlight/LayerHighlight';
-import { getValueCaseInsensitive } from 'vue-iclient/src/common/_utils/util';
+import { getValueCaseInsensitive } from 'vue-iclient-core/utils/util';
 import isEqual from 'lodash.isequal';
 import omit from 'omit.js';
 

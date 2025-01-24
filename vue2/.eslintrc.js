@@ -16,7 +16,7 @@ module.exports = {
     },
     'import/resolver': {
       alias: {
-        map: [['vue-iclient', path.resolve(__dirname, './')], ['vue-iclient-static', path.resolve(__dirname, '../static')]],
+        map: [['vue-iclient', path.resolve(__dirname, './')], ['vue-iclient-core', path.resolve(__dirname, '../core')]],
         extensions: ['.js', '.ts', '.vue', '.json']
       },
       node: {

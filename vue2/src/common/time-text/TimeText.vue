@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import { getDateTime } from 'vue-iclient/src/common/_utils/util';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 
 export default {
@@ -41,10 +40,13 @@ export default {
     // 初始化
     initTime(timeType) {
       clearInterval(this.timeInterval);
-      this.time = getDateTime(timeType);
+      this.time = this.getDateTime(timeType);
       this.timeInterval = setInterval(() => {
-        this.time = getDateTime(timeType);
+        this.time = this.getDateTime(timeType);
       }, 1000);
+    },
+    getDateTime(timeType) {
+      return this.$d(new Date(), timeType.replace(/\+/g, '_'));
     }
   }
 };

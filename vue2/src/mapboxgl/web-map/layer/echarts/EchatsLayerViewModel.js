@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
-import EchartsLayer from 'vue-iclient-static/libs/echarts-layer/EchartsLayer';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import EchartsLayer from 'vue-iclient-core/libs/echarts-layer/EchartsLayer';
 /**
  * @class EchatsLayerViewModel
  * @param {mapboxgl.map} map - mapboxgl map 对象。

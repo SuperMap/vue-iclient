@@ -59,7 +59,7 @@ const webpackConfig = merge(baseWebpackConfig, {
    `),
     new CopyWebpackPlugin([
       {
-        from: path.resolve(__dirname, '../../static/leaflet-index.js'),
+        from: path.resolve(__dirname, '../src/leaflet/leaflet-index.js'),
         to: path.resolve(__dirname, '../dist/leaflet/index.js')
       }
     ])

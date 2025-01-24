@@ -21,8 +21,6 @@ lib/leaflet/
 **/static/libs/iclient-mapboxgl/
 **/static/libs/mapboxgl/
 **/static/libs/mapbox-gl-draw/
-**/static/mbgl-index.js
-**/static/leaflet-index.js
 
 src/classic/
 src/mapboxgl/

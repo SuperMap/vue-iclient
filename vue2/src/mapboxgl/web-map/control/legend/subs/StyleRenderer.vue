@@ -31,7 +31,7 @@
 <script>
 import uniqueId from 'lodash.uniqueid';
 import omit from 'omit.js';
-import { hexToRgba, formatFontSize } from 'vue-iclient/src/common/_utils/util';
+import { hexToRgba, formatFontSize } from 'vue-iclient-core/utils/util';
 
 export default {
   props: {

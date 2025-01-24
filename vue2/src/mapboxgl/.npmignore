@@ -18,8 +18,6 @@ lib/leaflet/
 
 **/static/libs/Cesium/
 **/static/libs/iclient-leaflet/
-**/static/mbgl-index.js
-**/static/leaflet-index.js
 
 src/classic/
 src/leaflet/

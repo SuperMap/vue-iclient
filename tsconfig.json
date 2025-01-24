@@ -1,0 +1,37 @@
+{
+  "compilerOptions": {
+    // 编译目标平台
+    "target": "es6",
+    // 输出目录
+    // 添加需要的解析的语法，否则TS会检测出错。
+    "lib": ["es2015", "es2016", "dom"],
+    // 模块的解析
+    "moduleResolution": "node",
+    // 指定生成哪个模块系统代码
+    "module": "es2015",
+    // 在表达式和声明上有隐含的any类型时报错
+    "noImplicitAny": false,
+    // 把 ts 文件编译成 js 文件的时候，同时生成对应的 map 文件
+    "sourceMap": true,
+    // 允许编译javascript文件
+    "allowJs": true,
+    // 指定基础目录
+    "baseUrl": "./",
+    // 启用装饰器
+    "experimentalDecorators": true,
+    // 允许从没有设置默认导出的模块中默认导入。这并不影响代码的输出，仅为了类型检查。
+    "allowSyntheticDefaultImports": true,
+    // 移除注释
+    "removeComments": true,
+    "pretty": true,
+    // 函数返回值
+    "noImplicitReturns": true,
+    // 是相对于"baseUrl"进行解析
+    "paths": {
+      // 解决ts文件中的别名问题
+      "vue-iclient-core/*": ["./core/*"]
+    }
+  },
+  "include": ["core/**/*"],
+  "exclude": ["core/libs"]
+}

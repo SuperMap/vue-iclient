@@ -1,4 +1,4 @@
-import { FunctionExt } from '../BaseTypes';
+import { FunctionExt } from 'vue-iclient-core/types/event/BaseTypes';
 
 describe('BaseTypes', () => {
   const fnc = function () {

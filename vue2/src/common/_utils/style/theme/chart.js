@@ -1,6 +1,6 @@
-import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+import { getColorWithOpacity } from 'vue-iclient-core/utils/util';
 import cloneDeep from 'lodash.clonedeep';
-import { ColorsPickerUtil } from 'vue-iclient-static/libs/iclient-common/iclient-common';
+import { ColorsPickerUtil } from 'vue-iclient-core/libs/iclient-common/iclient-common';
 
 export const handleMultiGradient = (colorGroupsData, dataLength) => {
   let startColors = [];

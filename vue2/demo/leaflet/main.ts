@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Vue from 'vue';
 import 'leaflet/dist/leaflet.css';
-import 'vue-iclient-static/libs/iclient-leaflet/iclient-leaflet.min.css';
+import 'vue-iclient-core/libs/iclient-leaflet/iclient-leaflet.min.css';
 import SmComponents from '../../src/leaflet';
 import App from './App.vue';
 import 'ant-design-vue/dist/antd.css';

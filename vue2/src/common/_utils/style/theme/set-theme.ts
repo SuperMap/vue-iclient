@@ -2,7 +2,7 @@ import Vue from 'vue';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
 import themeFactory from 'vue-iclient/src/common/_utils/style/theme/theme.json';
 import { dealWithTheme, ThemeStyleParams } from 'vue-iclient/src/common/_utils/style/color/serialColors';
-import { objectWithoutProperties } from 'vue-iclient/src/common/_utils/util';
+import { objectWithoutProperties } from 'vue-iclient-core/utils/util';
 
 interface triggerParams {
   triggerEvent: boolean;

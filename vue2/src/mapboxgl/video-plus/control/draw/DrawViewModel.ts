@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
-import MapboxDraw from 'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import MapboxDraw from 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw';
 
 export default class DrawViewModel extends mapboxgl.Evented {
   fire: any;

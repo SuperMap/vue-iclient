@@ -1,4 +1,4 @@
-import { Events } from 'vue-iclient/src/common/_types/event/Events';
+import { Events } from 'vue-iclient-core/types/event/Events';
 var supermap = {
   cloudTileLayer: () => {
     return { _layerAdd : jest.fn() };

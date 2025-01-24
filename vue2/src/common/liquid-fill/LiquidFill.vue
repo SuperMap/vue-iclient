@@ -9,7 +9,7 @@ import Timer from 'vue-iclient/src/common/_mixin/Timer';
 import ThirdService from 'vue-iclient/src/common/_mixin/ThirdService';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash.debounce';
-import { strip } from '../_utils/util';
+import { strip } from 'vue-iclient-core/utils/util';
 
 export default {
   name: 'SmLiquidFill',

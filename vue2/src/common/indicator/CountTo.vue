@@ -13,7 +13,7 @@
 
 <script>
 import countTo from 'vue-count-to';
-import { isTransparent } from 'vue-iclient/src/common/_utils/util';
+import { isTransparent } from 'vue-iclient-core/utils/util';
 
 export default {
   name: 'SmCountTo',

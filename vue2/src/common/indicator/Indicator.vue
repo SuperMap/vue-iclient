@@ -35,7 +35,7 @@
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Timer from 'vue-iclient/src/common/_mixin/Timer';
-import RestService from 'vue-iclient/src/common/_utils/RestService';
+import RestService from 'vue-iclient-core/utils/RestService';
 import CountTo from './CountTo';
 
 export default {

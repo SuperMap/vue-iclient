@@ -1,8 +1,7 @@
-import { FetchRequest, Util } from 'vue-iclient-static/libs/iclient-common/iclient-common';
-import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient/src/common/_utils/iServerRestService';
-import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient/src/common/_utils/util';
-import { Events } from 'vue-iclient/src/common/_types/event/Events';
-import { geti18n } from 'vue-iclient/src/common/_lang/index';
+import { FetchRequest, Util } from 'vue-iclient-core/libs/iclient-common/iclient-common';
+import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient-core/utils/iServerRestService';
+import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient-core/utils/util';
+import { Events } from 'vue-iclient-core/types/event/Events';
 
 /**
  * @class iPortalDataService
@@ -106,7 +105,7 @@ export default class iPortalDataService extends Events {
         const hasService = data.dataItemServices && data.dataItemServices.length > 0;
         if (onlyService && !hasService) {
           this.triggerEvent('getdatafailed', {
-            error: { message: geti18n().t('query.seviceNotSupport') },
+            error: { message: 'This service cannot support to query!' },
             onlyService
           });
           return;

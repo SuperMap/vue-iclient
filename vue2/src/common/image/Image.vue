@@ -24,7 +24,7 @@
 
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import { parseUrl } from 'vue-iclient/src/common/_utils/util';
+import { parseUrl } from 'vue-iclient-core/utils/util';
 import SmModal from 'vue-iclient/src/common/modal/Modal.vue';
 import Message from 'vue-iclient/src/common/message/index.js';
 

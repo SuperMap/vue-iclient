@@ -1,4 +1,4 @@
-import { registerProjection } from 'vue-iclient/src/common/_utils/epsg-define';
+import { registerProjection } from 'vue-iclient-core/utils/epsg-define';
 import { lang, setLocale, initi18n } from 'vue-iclient/src/common/_lang/index';
 import * as commontypes from 'vue-iclient/src/mapboxgl/_types/index';
 import * as utils from 'vue-iclient/src/mapboxgl/_utils/index';

@@ -12,7 +12,7 @@
 </template>
 
 <script lang="ts">
-import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+import { getColorWithOpacity } from 'vue-iclient-core/utils/util';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import ECharts from 'vue-echarts';
 import { Component, Prop, Mixins, Emit } from 'vue-property-decorator';

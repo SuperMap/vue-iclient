@@ -112,10 +112,10 @@
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash.debounce';
-import getFeatures from 'vue-iclient/src/common/_utils/get-features';
+import getFeatures from 'vue-iclient-core/utils/get-features';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Timer from 'vue-iclient/src/common/_mixin/Timer';
-import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+import { getColorWithOpacity } from 'vue-iclient-core/utils/util';
 import merge from 'lodash.merge';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';

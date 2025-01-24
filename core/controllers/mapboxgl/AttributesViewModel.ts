@@ -1,12 +1,12 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
 import clonedeep from 'lodash.clonedeep';
 import mergewith from 'lodash.mergewith';
 import difference from 'lodash.difference';
-import getFeatures from '../../common/_utils/get-features';
-import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
-import { statisticsFeatures } from 'vue-iclient/src/common/_utils/statistics';
+import getFeatures from 'vue-iclient-core/utils/get-features';
+import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
+import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
 
 /**
  * @class AttributesViewModel

@@ -6,7 +6,7 @@ import themeLayerData from '../../data/themeLayerData.json';
 import deckglLayerData from '../../data/sf-bike-parking.json';
 import axios from 'axios';
 import proj4 from 'proj4';
-import { getProjection } from 'vue-iclient/src/common/_utils/epsg-define';
+import { getProjection } from 'vue-iclient-core/utils/epsg-define';
 
 export default {
   data() {

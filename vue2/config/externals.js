@@ -13,7 +13,7 @@ var externals = {};
 var installExternals = {
   'vue-iclient/src/common/_utils/style/theme/set-theme': `@supermapgis/vue-iclient-${type}/lib/_utils/style/theme/set-theme`,
   'vue-iclient/src/common/_lang/index': `@supermapgis/vue-iclient-${type}/lib/_lang/index.js`,
-  'vue-iclient/src/common/_utils/epsg-define': `@supermapgis/vue-iclient-${type}/lib/_utils/epsg-define.js`,
+  'vue-iclient-core/utils/epsg-define': `@supermapgis/vue-iclient-${type}/lib/_utils/epsg-define.js`,
   [`vue-iclient/src/${type}/_types/index`]: `@supermapgis/vue-iclient-${type}/lib/_types/index.js`,
   [`vue-iclient/src/${type}/_utils/index`]: `@supermapgis/vue-iclient-${type}/lib/_utils/index.js`,
   [`vue-iclient/src/${type}/style`]: `@supermapgis/vue-iclient-${type}/lib/style.js`
@@ -25,6 +25,9 @@ for (let key in allFiels) {
     const oldFilePath = filePath.replace(/\.(j|t)s/, '');
     const newFilePath = filePath
       .replace('vue-iclient/', `@supermapgis/vue-iclient-${type}/`)
+      .replace('vue-iclient-core/utils/', `@supermapgis/vue-iclient-${type}/lib/_utils/`)
+      .replace('vue-iclient-core/types/', `@supermapgis/vue-iclient-${type}/lib/_types/`)
+      .replace('vue-iclient-core/assets/', `@supermapgis/vue-iclient-${type}/lib/_assets/`)
       .replace('src/common/web-map', `lib/_mixin`)
       .replace('src/common', 'lib')
       .replace(`src/${type}`, 'lib')
@@ -129,7 +132,7 @@ const mapboxglExteranls = Object.assign(
 );
 
 const leafletExternalsFun = function (context, request, callback) {
-  if (/\/vue-iclient-static\/libs\/deckgl\/deck.gl/.test(request)) {
+  if (/\/vue-iclient-core\/libs\/deckgl\/deck.gl/.test(request)) {
     return callback(null, {
       root: 'DeckGL',
       commonjs: '@supermapgis/vue-iclient-leaflet/static/libs/deckgl/deck.gl.min.js',
@@ -137,7 +140,7 @@ const leafletExternalsFun = function (context, request, callback) {
       amd: '@supermapgis/vue-iclient-leaflet/static/libs/deckgl/deck.gl.min.js'
     });
   }
-  if (/\/vue-iclient-static\/libs\/iclient-leaflet\/iclient-leaflet/.test(request)) {
+  if (/\/vue-iclient-core\/libs\/iclient-leaflet\/iclient-leaflet/.test(request)) {
     return callback(null, {
       root: 'SuperMap',
       commonjs: '@supermapgis/vue-iclient-leaflet/static/libs/iclient-leaflet/iclient-leaflet.min.js',
@@ -157,7 +160,7 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       amd: 'three/examples/jsm/loaders/GLTFLoader'
     });
   }
-  if (/vue-iclient-static\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
+  if (/vue-iclient-core\/libs\/mapboxgl\/mapbox-gl-enhance/.test(request)) {
     return callback(null, {
       root: 'mapboxgl',
       commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapboxgl/mapbox-gl-enhance.js',
@@ -165,7 +168,7 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapboxgl/mapbox-gl-enhance.js'
     });
   }
-  if (/vue-iclient-static\/libs\/deckgl\/deck.gl/.test(request)) {
+  if (/vue-iclient-core\/libs\/deckgl\/deck.gl/.test(request)) {
     return callback(null, {
       root: 'DeckGL',
       commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/deckgl/deck.gl.min.js',
@@ -173,7 +176,7 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/deckgl/deck.gl.min.js'
     });
   }
-  if (/vue-iclient-static\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
+  if (/vue-iclient-core\/libs\/echarts-layer\/EchartsLayer/.test(request)) {
     return callback(null, {
       root: 'EchartsLayer',
       commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/echarts-layer/EchartsLayer.js',
@@ -181,7 +184,7 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/echarts-layer/EchartsLayer.js'
     });
   }
-  if (/vue-iclient-static\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
+  if (/vue-iclient-core\/libs\/iclient-mapboxgl\/iclient-mapboxgl/.test(request)) {
     return callback(null, {
       root: 'SuperMap',
       commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js',
@@ -189,7 +192,7 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/iclient-mapboxgl/iclient-mapboxgl.min.js'
     });
   }
-  if (/vue-iclient-static\/libs\/mapbox-gl-draw\/mapbox-gl-draw/.test(request)) {
+  if (/vue-iclient-core\/libs\/mapbox-gl-draw\/mapbox-gl-draw/.test(request)) {
     return callback(null, {
       root: 'MapboxDraw',
       commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapbox-gl-draw/mapbox-gl-draw.js',
@@ -197,7 +200,7 @@ const mapboxglExteranlsFun = function (context, request, callback) {
       amd: '@supermapgis/vue-iclient-mapboxgl/static/libs/mapbox-gl-draw/mapbox-gl-draw.js'
     });
   }
-  if (/vue-iclient-static\/libs\/g6\/g6/.test(request)) {
+  if (/vue-iclient-core\/libs\/g6\/g6/.test(request)) {
     return callback(null, {
       root: 'G6',
       commonjs: '@supermapgis/vue-iclient-mapboxgl/static/libs/g6/g6.min.js',
@@ -209,8 +212,8 @@ const mapboxglExteranlsFun = function (context, request, callback) {
 };
 
 const libExtral = {
-  'vue-iclient-static/libs/geostats/geostats': `@supermapgis/vue-iclient-${type}/static/libs/geostats/geostats`,
-  'vue-iclient-static/libs/json-sql/jsonsql': `@supermapgis/vue-iclient-${type}/static/libs/json-sql/jsonsql`,
+  'vue-iclient-core/libs/geostats/geostats': `@supermapgis/vue-iclient-${type}/static/libs/geostats/geostats`,
+  'vue-iclient-core/libs/json-sql/jsonsql': `@supermapgis/vue-iclient-${type}/static/libs/json-sql/jsonsql`,
   'vue-iclient/src/common/_utils/style/theme/theme.json': `@supermapgis/vue-iclient-${type}/lib/_utils/style/theme/theme.json`,
   [`vue-iclient/src/${type}/style`]: `@supermapgis/vue-iclient-${type}/lib/style.js`,
   'vue-iclient/src/init': `@supermapgis/vue-iclient-${type}/lib/init.js`

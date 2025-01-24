@@ -1,6 +1,6 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
-import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import { Events } from 'vue-iclient/src/common/_types/event/Events';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import { Events } from 'vue-iclient-core/types/event/Events';
 import bbox from '@turf/bbox';
 import transformScale from '@turf/transform-scale';
 import clonedeep from 'lodash.clonedeep';

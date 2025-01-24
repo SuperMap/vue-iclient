@@ -1,12 +1,12 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
-import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
-import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
-import getFeatures from 'vue-iclient/src/common/_utils/get-features';
+import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import iPortalDataService from 'vue-iclient-core/utils/iPortalDataService';
+import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
+import getFeatures from 'vue-iclient-core/utils/get-features';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
-import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
+import { getFeatureCenter } from 'vue-iclient-core/utils/util';
 
 /**
  * @class SearchViewModel

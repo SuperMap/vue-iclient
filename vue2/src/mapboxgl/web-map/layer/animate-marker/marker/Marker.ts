@@ -1,5 +1,5 @@
 import { FeatureCollection, Feature } from 'geojson';
-import { getColorWithOpacity } from 'vue-iclient/src/common/_utils/util';
+import { getColorWithOpacity } from 'vue-iclient-core/utils/util';
 import UniqueId from 'lodash.uniqueid';
 
 interface markerOptions {

@@ -12,7 +12,7 @@ import MapGetter from 'vue-iclient/src/leaflet/_mixin/map-getter';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import IdentifyViewModel from './IdentifyViewModel';
 import isEqual from 'lodash.isequal';
-import { getFeatureCenter } from 'vue-iclient/src/common/_utils/util';
+import { getFeatureCenter } from 'vue-iclient-core/utils/util';
 import Message from 'vue-iclient/src/common/message/index.js';
 
 export default {

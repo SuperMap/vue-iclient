@@ -55,7 +55,7 @@ import SmAttributes, {
   TableParams,
   ToolbarParams
 } from 'vue-iclient/src/mapboxgl/attributes/Attributes.vue';
-import LayerListViewModel from './LayerListViewModel';
+import LayerListViewModel from 'vue-iclient-core/controllers/mapboxgl/LayerListViewModel';
 import LayerGroup from 'vue-iclient/src/mapboxgl/web-map/LayerGroup.vue';
 import isEqual from 'lodash.isequal';
 import omit from 'omit.js';

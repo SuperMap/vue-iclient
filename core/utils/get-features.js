@@ -1,6 +1,6 @@
-import iServerRestService from 'vue-iclient/src/common/_utils/iServerRestService';
-import iPortalDataService from 'vue-iclient/src/common/_utils/iPortalDataService';
-import RestService from 'vue-iclient/src/common/_utils/RestService';
+import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
+import iPortalDataService from 'vue-iclient-core/utils/iPortalDataService';
+import RestService from 'vue-iclient-core/utils/RestService';
 
 export default function getFeatures(dataset) {
   let superMapService;

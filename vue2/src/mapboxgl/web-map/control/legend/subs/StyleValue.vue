@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { formatFontSize } from 'vue-iclient/src/common/_utils/util';
+import { formatFontSize } from 'vue-iclient-core/utils/util';
 
 export default {
   props: {

@@ -38,7 +38,7 @@ module.exports = {
     alias: {
       vue$: 'vue/dist/vue.esm.js',
       'vue-iclient': path.resolve(__dirname, '../'),
-      'vue-iclient-static': path.resolve(__dirname, '../../static')
+      'vue-iclient-core': path.resolve(__dirname, '../../core')
     },
     modules: [path.resolve(__dirname, '../node_modules'), 'node_modules']
   },
@@ -71,7 +71,8 @@ module.exports = {
         include: [
           resolve('src'),
           resolve('test'),
-          path.resolve(__dirname, '../../static/libs/json-sql'),
+          (filePath) => filePath.startsWith(path.resolve(__dirname, '../../core')) && !filePath.startsWith(path.resolve(__dirname, '../../core/libs')),
+          path.resolve(__dirname, '../../core/libs/json-sql'),
           // resolve('node_modules/webpack-dev-server/client'),
           resolve('node_modules/vue-echarts'),
           resolve('node_modules/resize-detector'),
@@ -83,7 +84,8 @@ module.exports = {
           resolve('node_modules/swiper'),
           resolve('node_modules/vue-awesome-swiper'),
           resolve('node_modules/dom7')
-        ]
+        ],
+        exclude: [path.resolve(__dirname, '../../core/libs')]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

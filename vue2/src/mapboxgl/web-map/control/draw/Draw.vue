@@ -36,7 +36,7 @@ import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import DrawViewModel from './DrawViewModel';
 import uniqueId from 'lodash.uniqueid';
 import { Component, Prop, Mixins } from 'vue-property-decorator';
-import 'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 
 @Component({
   name: 'SmDraw',

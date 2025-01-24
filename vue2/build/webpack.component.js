@@ -14,7 +14,7 @@ const entrys = require(path.resolve(__dirname, `../src/${type}/entrys.json`));
 const alias = {
   vue$: 'vue/dist/vue.esm.js',
   'vue-iclient': path.resolve(__dirname, '../'),
-  'vue-iclient-static': path.resolve(__dirname, '../../static')
+  'vue-iclient-core': path.resolve(__dirname, '../../core')
 };
 
 const webpackConfig = {
@@ -61,7 +61,7 @@ const webpackConfig = {
       },
       {
         test: /\.jsx?$/,
-        include: [process.cwd(), path.resolve(__dirname, '../../static')],
+        include: [process.cwd(), path.resolve(__dirname, '../../core')],
         loader: 'babel-loader'
       },
       {

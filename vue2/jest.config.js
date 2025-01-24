@@ -11,8 +11,8 @@ module.exports = {
   testRegex: '.*\\WebMapViewModel.spec\\.js$',
   moduleNameMapper: {
     '^vue-iclient/(.*)$': '<rootDir>/$1',
-    '^vue-iclient-static/(.*)$': '<rootDir>/../static/$1',
-    '^@libs/(.*)$': '<rootDir>/../static/libs/$1',
+    '^vue-iclient-core/(.*)$': '<rootDir>/../core/$1',
+    '^@libs/(.*)$': '<rootDir>/../core/libs/$1',
     '^@mocks/(.*)$': '<rootDir>/test/unit/mocks/$1',
     '^@types_mapboxgl/(.*)$': '<rootDir>/src/mapboxgl/_types/$1',
     '^@types_common/(.*)$': '<rootDir>/src/common/_types/$1',

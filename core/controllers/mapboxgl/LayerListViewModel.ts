@@ -1,6 +1,6 @@
-import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
-import WebMapViewModel from 'vue-iclient/src/mapboxgl/web-map/WebMapViewModel';
-import { findLayerCatalog } from '../../GroupUtil';
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel';
+import { findLayerCatalog } from 'vue-iclient-core/controllers/mapboxgl/utils/layerCatalogGroupUtil';
 
 /**
  * @class LayerListViewModel

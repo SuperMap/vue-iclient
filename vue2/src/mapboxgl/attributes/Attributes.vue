@@ -116,7 +116,7 @@ import SmCheckbox from 'vue-iclient/src/common/checkbox/Checkbox.vue';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
-import AttributesViewModel from './AttributesViewModel';
+import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/AttributesViewModel';
 import clonedeep from 'lodash.clonedeep';
 import isequal from 'lodash.isequal';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';

@@ -1,7 +1,7 @@
 /* eslint-disable */
 import Vue from 'vue';
-import 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance.css';
-import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min.css';
+import 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance.css';
+import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min.css';
 import SmComponents from '../../src/mapboxgl';
 import App from './App.vue';
 

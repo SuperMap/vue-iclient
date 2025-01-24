@@ -2,7 +2,7 @@ import type { ThemeStyleParams } from 'vue-iclient/src/common/_utils/style/color
 import Vue, { VNode, CreateElement } from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
 import globalEvent from 'vue-iclient/src/common/_utils/global-event';
-import { getDerivedColorsByTextColor } from 'vue-iclient/src/common/_utils/util';
+import { getDerivedColorsByTextColor } from 'vue-iclient-core/utils/util';
 import { getPrimarySerialColors, getRootStyleSelector } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 
 @Component({

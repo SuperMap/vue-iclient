@@ -4,7 +4,7 @@ import Icon from 'ant-design-vue/es/icon';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import AntdRender from 'vue-iclient/src/common/_mixin/AntdRender';
 import VueTypes from 'vue-iclient/src/common/_utils/vue-types';
-import { objectWithoutProperties } from 'vue-iclient/src/common/_utils/util';
+import { objectWithoutProperties } from 'vue-iclient-core/utils/util';
 
 export const iconTypes = {
   tabIndex: VueTypes.number,
