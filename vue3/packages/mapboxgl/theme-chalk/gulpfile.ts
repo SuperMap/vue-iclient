@@ -91,7 +91,7 @@ function buildDarkCssVars() {
 }
 
 /**
- * copy from packages/mapboxgl/theme-chalk/dist to dist/element-plus/theme-chalk
+ * copy from packages/mapboxgl/theme-chalk/dist to dist/vue-iclient-mapboxgl/theme-chalk
  */
 export function copyThemeChalkBundle() {
   return src(`${distFolder}/**`).pipe(dest(distBundle))

@@ -2,7 +2,6 @@
   "name": "@supermapgis/build-utils",
   "version": "0.0.1",
   "private": true,
-  "description": "Build utils for Element Plus",
   "license": "MIT",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

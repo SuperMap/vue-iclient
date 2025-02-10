@@ -2,4 +2,4 @@ packages:
   - packages/**/*
   - packages/**/theme-chalk
   - site
-  - build-packages/*
+  - build-tools/*

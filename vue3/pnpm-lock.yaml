@@ -8,12 +8,12 @@ importers:
 
   .:
     dependencies:
+      '@supermapgis/mapboxgl/theme-chalk':
+        specifier: workspace:*
+        version: link:packages/mapboxgl/theme-chalk
       '@supermapgis/vue-iclient-mapboxgl':
         specifier: workspace:*
         version: link:packages/mapboxgl/components
-      '@supermapgis/vue-iclient-mapboxgl/theme-chalk':
-        specifier: workspace:*
-        version: link:packages/mapboxgl/theme-chalk
       vue:
         specifier: 3.5.12
         version: 3.5.12(typescript@5.6.3)
@@ -23,10 +23,10 @@ importers:
         version: 4.0.43(@pnpm/logger@4.0.0)(@yarnpkg/core@4.2.0(typanion@3.14.0))(typanion@3.14.0)
       '@supermapgis/build':
         specifier: workspace:*
-        version: link:build-packages/build
+        version: link:build-tools/build
       '@supermapgis/build-utils':
         specifier: workspace:*
-        version: link:build-packages/build-utils
+        version: link:build-tools/build-utils
       '@tsconfig/node22':
         specifier: ^22.0.0
         version: 22.0.0
@@ -97,7 +97,7 @@ importers:
         specifier: ^2.1.10
         version: 2.2.0(typescript@5.6.3)
 
-  build-packages/build:
+  build-tools/build:
     dependencies:
       '@pnpm/find-workspace-packages':
         specifier: ^4.0.16
@@ -173,7 +173,7 @@ importers:
         specifier: ^3.2.37
         version: 3.5.13(typescript@5.6.3)
 
-  build-packages/build-utils:
+  build-tools/build-utils:
     dependencies:
       '@pnpm/find-workspace-packages':
         specifier: ^4.0.16
@@ -245,12 +245,12 @@ importers:
 
   site:
     dependencies:
+      '@supermapgis/mapboxgl/theme-chalk':
+        specifier: workspace:*
+        version: link:../packages/mapboxgl/theme-chalk
       '@supermapgis/vue-iclient-mapboxgl':
         specifier: workspace:*
         version: link:../packages/mapboxgl/components
-      '@supermapgis/vue-iclient-mapboxgl/theme-chalk':
-        specifier: workspace:*
-        version: link:../packages/mapboxgl/theme-chalk
       vue:
         specifier: 3.5.12
         version: 3.5.12(typescript@5.6.3)
