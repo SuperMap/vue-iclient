@@ -258,11 +258,19 @@ describe('AttributesViewModel.ts', () => {
     expect(viewModel.canLazyLoad()).toBe(false);
   });
 
-  it('setsorter', () => {
+  it('setsorter', (done) => {
     const viewModel = new AttributesViewModel(options);
+    viewModel.map = {
+      getSource: () => ({
+        getData: () => ({
+          features
+        })
+      })
+    };
     const sorter = () => jest.fn();
     viewModel.setSorter(sorter);
     expect(viewModel.sorter).toBe(sorter);
+    done();
   });
 
   it('associateWithMap', () => {
@@ -279,7 +287,14 @@ describe('AttributesViewModel.ts', () => {
 
   it('setFieldInfo', () => {
     const viewModel = new AttributesViewModel(options);
-    const fieldConfigs = { value: '最低气温', visible: false };
+    viewModel.map = {
+      getSource: () => ({
+        getData: () => ({
+          features
+        })
+      })
+    };
+    const fieldConfigs = [{ value: '最低气温', visible: false }];
     viewModel.setFieldInfo(fieldConfigs);
     expect(viewModel.fieldConfigs).toBe(fieldConfigs);
   });

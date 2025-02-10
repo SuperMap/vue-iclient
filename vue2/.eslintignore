@@ -5,5 +5,5 @@
 /test/
 /test/unit/coverage/
 /demo
-*.spec.js
+/**/*.spec.js
 /**/*.d.ts
