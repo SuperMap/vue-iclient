@@ -6,6 +6,9 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  define: {
+    global: 'window',
+  },
   plugins: [vue(), vueDevTools()],
   resolve: {
     alias: {
@@ -14,6 +17,9 @@ export default defineConfig({
       ),
       '@supermapgis/mapboxgl/theme-chalk': fileURLToPath(
         new URL('../packages/mapboxgl/theme-chalk', import.meta.url)
+      ),
+      'vue-iclient-core': fileURLToPath(
+        new URL('../../core', import.meta.url)
       )
       // node_modules: fileURLToPath(new URL('../node_modules', import.meta.url))
     }
@@ -28,7 +34,13 @@ export default defineConfig({
       }
     }
   },
+  optimizeDeps: {
+    include: ['vue-iclient-core/libs/iclient-common/iclient-common', 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance']
+  },
   build: {
+    commonjsOptions: {
+      include: ['vue-iclient-core/libs/iclient-common/iclient-common', 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance']
+    },
     rollupOptions: {
       // https://rollupjs.org/configuration-options/
     }

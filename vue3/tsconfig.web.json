@@ -15,6 +15,7 @@
   },
   "include": [
     "packages",
+     "../core",
     "typings/env.d.ts"
   ],
   "exclude": [

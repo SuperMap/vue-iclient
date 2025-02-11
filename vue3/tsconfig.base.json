@@ -13,12 +13,13 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "removeComments": false,
-    "rootDir": ".",
+    "rootDir": "../",
     "types": [],
     "paths": {
       "@supermapgis/*": [
         "vue-iclient-mapboxgl/*"
-      ]
+      ],
+      "vue-iclient-core/*": ["../core/*"]
     },
     "preserveSymlinks": true
   }
