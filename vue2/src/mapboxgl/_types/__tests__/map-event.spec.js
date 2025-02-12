@@ -1,4 +1,4 @@
-import mapEvent from '../map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import mapLegends from 'vue-iclient/test/unit/mocks/data/WebMap/map_legends.json';
 
 describe('map-event-mapboxgl', () => {
@@ -7,7 +7,7 @@ describe('map-event-mapboxgl', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
-    mapEvent.$options.deleteWebMap(mapTarget);
+    mapEvent.deleteWebMap(mapTarget);
   });
 
   it('webmap changeItemVisible', done => {
@@ -22,11 +22,11 @@ describe('map-event-mapboxgl', () => {
       getAppreciableLayers: () => [{ id: 'layer2', renderSource: { id: 'layer2' } }],
       cacheLayerIds: ['layer2']
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    mapEvent.$options.setWebMap(mapTarget, webmap2, 'webmap2');
-    let webmap = mapEvent.$options.getWebMap('map');
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    mapEvent.setWebMap(mapTarget, webmap2, 'webmap2');
+    let webmap = mapEvent.getWebMap('map');
     expect(webmap).toBeUndefined();
-    webmap = mapEvent.$options.getWebMap(mapTarget);
+    webmap = mapEvent.getWebMap(mapTarget);
     expect(webmap).not.toBeUndefined();
     expect(webmap.getAppreciableLayers().length).toBe(2);
     webmap.changeItemVisible();
@@ -55,12 +55,12 @@ describe('map-event-mapboxgl', () => {
       ],
       cacheLayerIds: ['layer1', 'layer3']
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    mapEvent.$options.setWebMap(mapTarget, webmap2, 'webmap2');
-    mapEvent.$options.setWebMap(mapTarget, webmap3, 'webmap3');
-    let webmap = mapEvent.$options.getWebMap('map');
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    mapEvent.setWebMap(mapTarget, webmap2, 'webmap2');
+    mapEvent.setWebMap(mapTarget, webmap3, 'webmap3');
+    let webmap = mapEvent.getWebMap('map');
     expect(webmap).toBeUndefined();
-    webmap = mapEvent.$options.getWebMap(mapTarget);
+    webmap = mapEvent.getWebMap(mapTarget);
     expect(webmap).not.toBeUndefined();
     expect(webmap.getAppreciableLayers().length).toBe(3);
     webmap.setLayersVisible();
@@ -76,9 +76,9 @@ describe('map-event-mapboxgl', () => {
     const webmap2 = {
       getAppreciableLayers: () => [{ id: 'layer2', renderSource: { id: 'source1' } }]
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    mapEvent.$options.setWebMap(mapTarget, webmap2, 'webmap2');
-    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    mapEvent.setWebMap(mapTarget, webmap2, 'webmap2');
+    const webmap = mapEvent.getWebMap(mapTarget);
     const layers = webmap.getAppreciableLayers();
     expect(layers.length).toBe(1);
     expect(layers[0]).toEqual(webmap2.getAppreciableLayers()[0]);
@@ -115,9 +115,9 @@ describe('map-event-mapboxgl', () => {
         }
       ]
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    mapEvent.$options.setWebMap(mapTarget, webmap2, 'webmap2');
-    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    mapEvent.setWebMap(mapTarget, webmap2, 'webmap2');
+    const webmap = mapEvent.getWebMap(mapTarget);
     const layerList = webmap.getLayerList();
     expect(layerList.length).toBe(4);
     expect(layerList[0]).toEqual(webmap2.getLayerList()[0]);
@@ -131,9 +131,9 @@ describe('map-event-mapboxgl', () => {
     const webmap2 = {
       getLegendInfo: () => [mapLegends[1]]
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    mapEvent.$options.setWebMap(mapTarget, webmap2, 'webmap2');
-    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    mapEvent.setWebMap(mapTarget, webmap2, 'webmap2');
+    const webmap = mapEvent.getWebMap(mapTarget);
     const legendList = webmap.getLegendInfo();
     expect(legendList.length).toBe(2);
     expect(legendList[0]).toEqual(mapLegends[1]);
@@ -167,19 +167,19 @@ describe('map-event-mapboxgl', () => {
       getLayerList: () => layerList2,
       cacheLayerCatalogIds: ['layer3', 'group4', 'sourceLayer4']
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    mapEvent.$options.setWebMap(mapTarget, webmap2, 'webmap2');
-    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    mapEvent.setWebMap(mapTarget, webmap2, 'webmap2');
+    const webmap = mapEvent.getWebMap(mapTarget);
     const layerList = webmap.getLayerList();
     expect(layerList.length).toBe(4);
     expect(layerList).toEqual(layerList2.concat(layerList1));
     const OrderedLyerList = layerList1.concat(layerList2);
-    mapEvent.$options.setLayerCatalog(mapTarget, OrderedLyerList);
+    mapEvent.setLayerCatalog(mapTarget, OrderedLyerList);
     const newLayerList = webmap.getLayerList();
     expect(newLayerList).toEqual(OrderedLyerList);
-    expect(mapEvent.$options.customLayerCatalogCache[mapTarget].length).toEqual(4);
-    mapEvent.$options.deleteWebMap(mapTarget, 'webmap2');
-    expect(mapEvent.$options.customLayerCatalogCache[mapTarget].length).toEqual(2);
+    expect(mapEvent.customLayerCatalogCache[mapTarget].length).toEqual(4);
+    mapEvent.deleteWebMap(mapTarget, 'webmap2');
+    expect(mapEvent.customLayerCatalogCache[mapTarget].length).toEqual(2);
     done();
   });
 
@@ -190,15 +190,15 @@ describe('map-event-mapboxgl', () => {
         { id: 'layer2', renderSource: { id: 'source2' } }
       ]
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    const webmap = mapEvent.getWebMap(mapTarget);
     const appreciableLayers1 = webmap.getAppreciableLayers();
     expect(appreciableLayers1[0].id).toBe('layer1');
     const newLayerList = [
       { id: 'layer1', renderSource: { id: 'source1' } },
       { id: 'layer2', renderSource: { id: 'source2' } }
     ];
-    mapEvent.$options.setLayerCatalog(mapTarget, newLayerList);
+    mapEvent.setLayerCatalog(mapTarget, newLayerList);
     const appreciableLayers2 = webmap.getAppreciableLayers();
     expect(appreciableLayers2[0].id).toBe('layer2');
     done();
@@ -228,8 +228,8 @@ describe('map-event-mapboxgl', () => {
     const mainWebMap = {
       getLayerList: () => layerList1
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    const webmap = mapEvent.getWebMap(mapTarget);
     const layerList = webmap.getLayerList();
     expect(layerList[0].id).toBe('group1');
     expect(layerList[0].visible).toBe(true);
@@ -317,9 +317,9 @@ describe('map-event-mapboxgl', () => {
         fire: jest.fn()
       }
     };
-    mapEvent.$options.setWebMap(mapTarget, mainWebMap);
-    mapEvent.$options.setWebMap(mapTarget, webmap2, 'webmap2');
-    const webmap = mapEvent.$options.getWebMap(mapTarget);
+    mapEvent.setWebMap(mapTarget, mainWebMap);
+    mapEvent.setWebMap(mapTarget, webmap2, 'webmap2');
+    const webmap = mapEvent.getWebMap(mapTarget);
     const layerList = webmap.getLayerList();
     expect(layerList.length).toBe(5);
     expect(layerList[0]).toEqual(layerList1[0]);
@@ -335,7 +335,7 @@ describe('map-event-mapboxgl', () => {
     expect(layers[3]).toEqual(layerList1[1]);
     expect(layers[4]).toEqual(layerList1[0]);
     expect(webmap2.map.fire).toHaveBeenCalledWith('data', { dataType: 'style' });
-    const allWebMap = mapEvent.$options.getAllWebMap();
+    const allWebMap = mapEvent.getAllWebMap();
     expect(allWebMap[mapTarget]).not.toBeUndefined();
     done();
   });

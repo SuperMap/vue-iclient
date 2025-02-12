@@ -1,27 +1,41 @@
-import Vue from 'vue';
-import globalEvent from 'vue-iclient/src/common/_utils/global-event';
-import { flattenLayerCatalog, getGroupChildrenLayers, removeLayersByIds, sortLayerCatalog } from '../web-map/GroupUtil';
+import { flattenLayerCatalog, getGroupChildrenLayers, removeLayersByIds, sortLayerCatalog } from 'vue-iclient-core/controllers/mapboxgl/utils/layerCatalogGroupUtil';
+import { Events } from 'vue-iclient-core/types/event/Events';
 
-export default new Vue({
-  customLayerCatalogCache: {},
-  mapCache: {},
-  webMapCache: new Map(),
-  getMap: function (mapTarget) {
+export class MapEvent extends Events {
+  customLayerCatalogCache: Record<string, Array<Record<string, any>>> = {};
+  mapCache: Record<string, Record<string, any>> = {};
+  webMapCache: Map<string, InstanceType<any>> = new Map();
+
+  constructor() {
+    super();
+    this.eventTypes = ['load-map', 'delete-map'];
+  }
+
+  getMap(mapTarget: string) {
     return this.mapCache[mapTarget];
-  },
-  getAllMaps: function () {
+  }
+
+  getAllMaps() {
     return this.mapCache;
-  },
-  setMap: function (mapTarget, map) {
+  }
+
+  setMap(mapTarget: string, map: Record<string, any>, webmap?: InstanceType<any>) {
     this.mapCache[mapTarget] = map;
-  },
-  deleteMap: function (mapTarget) {
+    if (webmap) {
+      this.setWebMap(mapTarget, webmap);
+    }
+    this.triggerEvent('load-map', { map, mapTarget });
+  }
+
+  deleteMap(mapTarget: string) {
     if (this.mapCache[mapTarget]) {
-      globalEvent.$emit('delete-map', mapTarget);
+      this.triggerEvent('delete-map', { mapTarget });
       delete this.mapCache[mapTarget];
     }
-  },
-  getWebMap: function (webmapTarget) {
+    this.deleteWebMap(mapTarget);
+  }
+
+  getWebMap(webmapTarget: string) {
     if (!this.webMapCache.has(webmapTarget)) {
       return;
     }
@@ -29,7 +43,7 @@ export default new Vue({
     const [_, mainWebmap] = webMapCombinations.find(item => item[0] === webmapTarget);
     const _this = this;
     const proxyWebMap = new Proxy(mainWebmap, {
-      get: function (target, propKey) {
+      get: function (target, propKey: string) {
         if (['getAppreciableLayers', 'getLayerList', 'getLegendInfo'].includes(propKey)) {
           const webmaps = webMapCombinations.filter(item => item[0] !== webmapTarget).map(item => item[1]);
           webmaps.reverse();
@@ -74,9 +88,9 @@ export default new Vue({
         }
         if (['changeItemVisible', 'setLayersVisible'].includes(propKey)) {
           return function () {
-            const webmaps = webMapCombinations.map(item => item[1]);
+            const webmaps = webMapCombinations.map((item: [string, InstanceType<any>]) => item[1]);
             const argumentsList = arguments;
-            webmaps.forEach(webmap => {
+            webmaps.forEach((webmap: InstanceType<any>) => {
               webmap[propKey]?.apply(webmap, argumentsList);
             });
           };
@@ -85,24 +99,27 @@ export default new Vue({
       }
     });
     return proxyWebMap;
-  },
-  getAllWebMap: function () {
+  }
+
+  getAllWebMap() {
     const webMapCache = {};
     for (const target of this.webMapCache.keys()) {
       webMapCache[target] = this.getWebMap(target);
     }
     return webMapCache;
-  },
-  setWebMap: function (webmapTarget, webmap, identifyId = webmapTarget) {
+  }
+
+  setWebMap(webmapTarget: string, webmap: InstanceType<any>, identifyId = webmapTarget) {
     if (!this.webMapCache.has(webmapTarget)) {
       this.webMapCache.set(webmapTarget, []);
     }
     this.webMapCache.get(webmapTarget).push([identifyId, webmap]);
     if (identifyId !== webmapTarget && webmap.map) {
-      webmap.map.fire('data', { dataType: 'style' });
+      webmap.map?.fire('data', { dataType: 'style' });
     }
-  },
-  deleteWebMap: function (webmapTarget, identifyId) {
+  }
+
+  deleteWebMap(webmapTarget: string, identifyId?: string) {
     if (!this.webMapCache.has(webmapTarget)) {
       return;
     }
@@ -122,7 +139,8 @@ export default new Vue({
     }
     this.webMapCache.delete(webmapTarget);
     delete this.customLayerCatalogCache[webmapTarget];
-  },
+  }
+
   collectCatalogsKeys(layerCatalog) {
     const ids = [];
     for (const layer of layerCatalog) {
@@ -138,10 +156,12 @@ export default new Vue({
       }
     }
     return ids;
-  },
+  }
+
   setLayerCatalog(webmapTarget, data) {
     this.customLayerCatalogCache[webmapTarget] = data;
-  },
+  }
+
   updateLayerCatalogsVisible(catalogs) {
     for (const data of catalogs) {
       if (data.children && data.children.length > 0) {
@@ -153,8 +173,9 @@ export default new Vue({
         this.updateLayerCatalogsVisible(data.children);
       }
     }
-  },
-  updateImmutableOrderLayers(layers, revert) {
+  }
+  
+  updateImmutableOrderLayers(layers: Array<Record<string, any>>, revert?: boolean) {
     let topLayers = layers.filter(item => item.layerOrder && item.layerOrder.toLowerCase() === 'top');
     const migrationLayers = topLayers.filter(item => item.type === 'MIGRATION');
     const leftTopLayers = topLayers.filter(item => item.type !== 'MIGRATION');
@@ -167,4 +188,6 @@ export default new Vue({
     topLayers = migrationLayers.concat(leftTopLayers);
     return topLayers.concat(autoLayers, bottomLayers);
   }
-});
+}
+
+export default new MapEvent();

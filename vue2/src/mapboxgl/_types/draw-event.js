@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import MapboxDraw from 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import assignIn from 'lodash.assignin';
 import isEqual from 'lodash.isequal';
 
@@ -267,7 +267,7 @@ export default new Vue({
     styles = defaultStyles
   }) {
     let draw = this.drawList[mapTarget];
-    const map = mapEvent.$options.getMap(mapTarget);
+    const map = mapEvent.getMap(mapTarget);
     const prevMap = this.mapList[mapTarget];
     const isSame = isEqual(map, prevMap);
     if (map && !isSame && create) {

@@ -42,7 +42,7 @@
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import SmCard from 'vue-iclient/src/common/card/Card.vue';
 import SmCollapse from 'vue-iclient/src/common/collapse/Collapse.vue';
@@ -59,7 +59,7 @@ import LayerListViewModel from 'vue-iclient-core/controllers/mapboxgl/LayerListV
 import LayerGroup from 'vue-iclient/src/mapboxgl/web-map/LayerGroup.vue';
 import isEqual from 'lodash.isequal';
 import omit from 'omit.js';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 
 interface AttributesParams {
   enabled: boolean;
@@ -398,8 +398,7 @@ class SmLayerList extends Mixins(MapGetter, Control, Theme, BaseCard) {
       return;
     }
     this.sourceList = this.onDrop(info, this.sourceList);
-    // @ts-ignore
-    mapEvent.$options.setLayerCatalog(this.getTargetName(), layerCatalog);
+    mapEvent.setLayerCatalog(this.getTargetName(), layerCatalog);
     this.viewModel.setLayersOrder();
   }
 

@@ -10,7 +10,7 @@
 
 <script lang="ts">
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import MapEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/map-events';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
@@ -280,8 +280,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   }
 
   destroyed() {
-    mapEvent.$options.deleteMap(this.target);
-    mapEvent.$options.deleteWebMap(this.target);
+    mapEvent.deleteMap(this.target);
     this.viewModel.cleanWebMap();
   }
 
@@ -380,9 +379,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
     this.viewModel.on({
       addlayerssucceeded: e => {
         this.spinning = false;
-        mapEvent.$options.setMap(this.target, e.map);
-        this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
-        mapEvent.$emit('load-map', e.map, this.target);
+        mapEvent.setMap(this.target, e.map, this.viewModel);
         e.map.resize();
         this.map = e.map;
         // 绑定map event
@@ -432,8 +429,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         this.notifyErrorTip({ defaultTip: 'layerorsourcenameduplicated', showErrorMsg: false });
       },
       mapbeforeremove: () => {
-        mapEvent.$options.deleteMap(this.target);
-        mapEvent.$options.deleteWebMap(this.target);
+        mapEvent.deleteMap(this.target);
       }
     });
   }

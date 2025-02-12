@@ -20,7 +20,7 @@
 
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import LayerHighlightViewModel from './LayerHighlightViewModel';
 import SmMapPopup from 'vue-iclient/src/mapboxgl/map-popup/MapPopup.vue';
 import isEqual from 'lodash.isequal';

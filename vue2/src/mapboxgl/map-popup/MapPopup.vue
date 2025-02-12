@@ -33,7 +33,7 @@
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import SmAttributePanel from 'vue-iclient/src/common/attribute-panel/AttributePanel.vue';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import MapPopupViewModel from './MapPopupViewModel';
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util';
 import cloneDeep from 'lodash/cloneDeep';

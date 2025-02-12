@@ -4,7 +4,7 @@
 
 <script lang='ts'>
 import { Component, Mixins, Prop, Watch } from 'vue-property-decorator';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
 import SmVectorTileLayer from '../vector-tile/VectorTileLayer.vue';
 import SmGeojsonLayer from '../geojson/GeojsonLayer.vue';

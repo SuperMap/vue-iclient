@@ -4,7 +4,8 @@ const path = require('path');
 module.exports = {
   root: true,
   env: {
-    node: true
+    node: true,
+    jest: true
   },
   globals: {
     SuperMap: 'readonly',
@@ -140,7 +141,7 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 0,
         '@typescript-eslint/ban-ts-comment': 0,
         '@typescript-eslint/no-empty-function': 0,
-        '@typescript-eslint/no-this-alias':0,
+        '@typescript-eslint/no-this-alias': 0,
         '@typescript-eslint/ban-types': [
           'error',
           {
@@ -176,7 +177,7 @@ module.exports = {
         'prefer-const': 0
       },
       parserOptions: {
-        project: './tsconfig.json',
+        project: path.resolve(__dirname, './tsconfig.json'),
         ecmaFeatures: {
           jsx: true
         }

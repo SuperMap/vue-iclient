@@ -17,6 +17,7 @@
     "allowJs": true,
     // 指定基础目录
     "baseUrl": "./",
+    "outDir": "./dist",
     // 启用装饰器
     "experimentalDecorators": true,
     // 允许从没有设置默认导出的模块中默认导入。这并不影响代码的输出，仅为了类型检查。
@@ -26,12 +27,14 @@
     "pretty": true,
     // 函数返回值
     "noImplicitReturns": true,
+    "resolveJsonModule": true,
     // 是相对于"baseUrl"进行解析
     "paths": {
       // 解决ts文件中的别名问题
-      "vue-iclient-core/*": ["*/"]
+      "vue-iclient-core/*": ["./*"],
+      "*.json": ["*.json"]
     }
   },
-  "include": ["*"],
-  "exclude": ["libs"]
+  "include": ["./**/*"],
+  "exclude": ["libs", "node_modules"]
 }

@@ -103,7 +103,7 @@
 <script lang="ts">
 import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import SmTable from 'vue-iclient/src/common/table/Table.vue';
 import SmDropdown from 'vue-iclient/src/common/dropdown/Dropdown.vue';
 import SmMenu from 'vue-iclient/src/common/menu/Menu.vue';

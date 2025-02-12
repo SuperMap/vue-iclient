@@ -1,21 +1,31 @@
-import Vue from 'vue';
-import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import { Events } from 'vue-iclient-core/types/event/Events';
 
-export default new Vue({
-  videoCache: {},
-  getVideo: function(target) {
+export class VideoPlusEvent extends Events {
+  constructor() {
+    super();
+    this.eventTypes = ['load-video', 'delete-video'];
+    this.videoCache = {};
+  }
+
+  getVideo(target) {
     return this.videoCache[target];
-  },
-  getAllVideos: function() {
+  }
+
+  getAllVideos() {
     return this.videoCache;
-  },
-  setVideo: function(target, video) {
+  }
+
+  setVideo(target, video) {
     this.videoCache[target] = video;
-  },
-  deleteVideo: function(target) {
+    this.triggerEvent('load-video', { videoTarget: target, video });
+  }
+
+  deleteVideo(target) {
     if (this.videoCache[target]) {
-      globalEvent.$emit('delete-video', target);
+      this.triggerEvent('delete-video', { videoTarget: target });
       delete this.videoCache[target];
     }
   }
-});
+}
+
+export default new VideoPlusEvent();

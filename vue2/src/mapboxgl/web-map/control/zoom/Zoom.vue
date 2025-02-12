@@ -39,7 +39,7 @@
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import ZoomViewModel from './ZoomViewModel';
 import SmButton from 'vue-iclient/src/common/button/Button.vue';
 import SmSlider from 'vue-iclient/src/common/slider/Slider.vue';

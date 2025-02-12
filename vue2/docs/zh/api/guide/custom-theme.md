@@ -1,6 +1,6 @@
 # 自定义主题
 
-Vue-iClient-MapboxGL 内置了 [13 套主题](https://github.com/SuperMap/vue-iclient/blob/master/src/common/_utils/style/theme/theme.json)，CSS 命名采用 BEM 的风格，方便使用者覆盖样式。
+Vue-iClient-MapboxGL 内置了 [13 套主题](https://github.com/SuperMap/vue-iclient/blob/master/core/utils/style/theme/theme.json)，CSS 命名采用 BEM 的风格，方便使用者覆盖样式。
 
 你可以通过以下方式定义主题。
 
@@ -44,7 +44,7 @@ Vue.use(Button);
 | componentBackground | 背景颜色 | string    | -      | -      |
 | colorGroup          | 颜色数组 | string[ ] | -      | -      |
 
-> 以上是一些最常用的通用变量，所有样式变量可以在 [这里](https://github.com/SuperMap/vue-iclient/blob/dev/src/common/_utils/style/theme/theme.json) 找到。
+> 以上是一些最常用的通用变量，所有样式变量可以在 [这里](https://github.com/SuperMap/vue-iclient/blob/master/core/utils/style/theme/theme.json) 找到。
 
 如下例所示：
 

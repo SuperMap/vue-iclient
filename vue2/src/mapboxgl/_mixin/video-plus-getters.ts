@@ -1,9 +1,7 @@
 // 新创建一个vue实例实时监听获得map对象
-import videoEvent from 'vue-iclient/src/mapboxgl/_types/video-plus-event';
-import globalEvent from 'vue-iclient/src/common/_utils/global-event';
-
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
+import videoEvent from 'vue-iclient/src/mapboxgl/_types/video-plus-event';
 
 function callHook(vm, hook, ...params) {
   const { options } = vm.constructor;
@@ -35,39 +33,44 @@ export default class VideoPlusGetter extends Vue {
     if (newVal && oldVal && newVal !== oldVal) {
       // 多个map切换的时候，需要删除该组件与前一个map的图层绑定
       const prevTarget = oldVal || this.firstDefaultTarget;
-      // @ts-ignore
-      const prevVideo = videoEvent.$options.getVideo(prevTarget);
+      const prevVideo = videoEvent.getVideo(prevTarget);
       if (prevVideo) {
         this.removeVideo(prevVideo, prevTarget);
       }
-      // @ts-ignore
-      if (videoEvent.$options.getVideo(newVal)) {
+      if (videoEvent.getVideo(newVal)) {
         this.loadVideo(newVal);
       }
     }
   }
 
+  created() {
+    this.loadVideoSucceed = this.loadVideoSucceed.bind(this);
+    this.removeVideoSucceed = this.removeVideoSucceed.bind(this);
+  }
+
   mounted() {
     const targetName = this.getTargetName();
     this.firstDefaultTarget = targetName;
-    // @ts-ignore
-    if (videoEvent.$options.getVideo(targetName)) {
+    if (videoEvent.getVideo(targetName)) {
       this.loadVideo(targetName);
     }
-    videoEvent.$on('load-video', this.loadVideoSucceed);
-    globalEvent.$on('delete-video', this.removeVideoSucceed);
+    videoEvent.on({
+      'load-video': this.loadVideoSucceed,
+      'delete-video': this.removeVideoSucceed
+    });
   }
 
   beforeDestroy() {
     this.removeVideo();
-    videoEvent.$off('load-video', this.loadVideoSucceed);
-    globalEvent.$off('delete-video', this.removeVideoSucceed);
+    videoEvent.un({
+      'load-video': this.loadVideoSucceed,
+      'delete-video': this.removeVideoSucceed
+    });
   }
 
   getFirstTarget(): string {
     let targetName: string;
-    // @ts-ignore
-    const mapList = videoEvent.$options.getAllVideos();
+    const mapList = videoEvent.getAllVideos();
     for (let target in mapList) {
       if (target) {
         targetName = target;
@@ -91,8 +94,7 @@ export default class VideoPlusGetter extends Vue {
     if (!this.firstDefaultTarget) {
       this.firstDefaultTarget = targetName;
     }
-    // @ts-ignore
-    this.videoPlus = videoEvent.$options.getVideo(targetName);
+    this.videoPlus = videoEvent.getVideo(targetName);
     // @ts-ignore
     this.viewModel &&
       typeof this.viewModel.setVideoPlus === 'function' &&
@@ -116,14 +118,14 @@ export default class VideoPlusGetter extends Vue {
     }
   }
 
-  loadVideoSucceed(videoPlus, target) {
+  loadVideoSucceed({ videoTarget: target }) {
     const targetName = this.getTargetName();
     if (target === targetName) {
       this.loadVideo(target);
     }
   }
 
-  removeVideoSucceed(target) {
+  removeVideoSucceed({ videoTarget: target }) {
     const targetName = this.getTargetName();
     if (target === targetName) {
       this.removeVideo();

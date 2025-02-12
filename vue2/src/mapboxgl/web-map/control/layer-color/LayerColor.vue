@@ -61,7 +61,7 @@
 import { Component, Prop, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import SmCard from 'vue-iclient/src/common/card/Card.vue';
 import SmButton from 'vue-iclient/src/common/button/Button.vue';

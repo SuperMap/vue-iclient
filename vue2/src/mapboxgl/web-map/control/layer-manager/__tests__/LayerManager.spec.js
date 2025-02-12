@@ -7,7 +7,7 @@ import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 import flushPromises from 'flush-promises';
 import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import Message from 'vue-iclient/src/common/message/index.js';
 
 const layers = [
@@ -187,8 +187,8 @@ describe('LayerManager.vue', () => {
         ]
       }
     });
-    const setWebMapSpy = jest.spyOn(mapEvent.$options, 'setWebMap').mockImplementation(() => {});
-    const removeWebMapSpy = jest.spyOn(mapEvent.$options, 'deleteWebMap').mockImplementation(() => {});
+    const setWebMapSpy = jest.spyOn(mapEvent, 'setWebMap').mockImplementation(() => {});
+    const removeWebMapSpy = jest.spyOn(mapEvent, 'deleteWebMap').mockImplementation(() => {});
     wrapper.vm.viewModel.fire('layersadded', { nodeKey: '1', nodeValue: {} });
     expect(setWebMapSpy).toHaveBeenCalled();
     wrapper.vm.viewModel.fire('layersremoved', { nodeKey: '2' });

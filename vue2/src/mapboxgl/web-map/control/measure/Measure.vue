@@ -65,7 +65,7 @@
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import SmSelect from 'vue-iclient/src/common/select/Select.vue';
 import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';

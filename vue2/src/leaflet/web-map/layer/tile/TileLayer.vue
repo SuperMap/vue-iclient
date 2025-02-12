@@ -1,5 +1,5 @@
 <script>
-import MapGetter from 'vue-iclient/src/leaflet/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import TileLayerViewModel from './TileLayerViewModel';
 import { capitalizeFirstLetter } from 'vue-iclient/src/leaflet/_utils/props-binder';
 import TileLayer from 'vue-iclient/src/leaflet/_mixin/TileLayer';

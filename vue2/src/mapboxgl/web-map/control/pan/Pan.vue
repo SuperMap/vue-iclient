@@ -27,7 +27,7 @@
 </template>
 <script>
 import PanViewModel from './PanViewModel';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 

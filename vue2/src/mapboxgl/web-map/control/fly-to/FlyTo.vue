@@ -1,7 +1,7 @@
 <script lang="ts">
 import { CreateElement, VNode } from 'vue';
 import { Component, Mixins, Prop, Emit, Watch } from 'vue-property-decorator';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';

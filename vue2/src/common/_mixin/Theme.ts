@@ -1,7 +1,7 @@
 import type { ThemeStyleParams } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 import Vue, { VNode, CreateElement } from 'vue';
 import { Component, Prop, Emit } from 'vue-property-decorator';
-import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import globalEvent from 'vue-iclient-core/utils/global-event';
 import { getDerivedColorsByTextColor } from 'vue-iclient-core/utils/util';
 import { getPrimarySerialColors, getRootStyleSelector } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 
@@ -119,19 +119,24 @@ export default class Theme extends Vue {
   }
 
   created() {
+    this.changeThemeCallback = this.changeThemeCallback.bind(this);
     this.initThemeData();
     this.registerPropListener();
   }
 
   mounted() {
-    globalEvent.$on('change-theme', this.changeThemeCallback);
+    globalEvent.on({
+      'change-theme': this.changeThemeCallback
+    });
   }
 
   beforeDestroy() {
-    globalEvent.$off('change-theme', this.changeThemeCallback);
+    globalEvent.un({
+      'change-theme': this.changeThemeCallback
+    });
   }
 
-  changeThemeCallback(themeStyle: ThemeStyleParams) {
+  changeThemeCallback({ themeStyle }: { themeStyle: ThemeStyleParams }) {
     this.setDataRelatedProps(themeStyle, true);
     if ('background' in themeStyle) {
       this.setDataRelatedWithBackgound('', themeStyle);
@@ -170,7 +175,7 @@ export default class Theme extends Vue {
   }
 
   setDataRelatedProps(themeStyle?: ThemeStyleParams, themePriority?: boolean) {
-    const themeStyleData = themeStyle || globalEvent.$options.theme || {};
+    const themeStyleData = themeStyle || globalEvent.theme || {};
     const $props = this.getSelfProps();
     $props.forEach((prop: string) => {
       if (prop in themeStyleData) {
@@ -194,7 +199,7 @@ export default class Theme extends Vue {
   }
 
   getRealColor(prop: string, acceptThemeStyle?: ThemeStyleParams) {
-    const themeStyle = (acceptThemeStyle || globalEvent.$options.theme) as unknown as ThemeStyleParams;
+    const themeStyle = (acceptThemeStyle || globalEvent.theme) as unknown as ThemeStyleParams;
     if (prop === 'colorGroup' || !themeStyle?.[prop]?.includes('var')) {
       return themeStyle?.[prop];
     }

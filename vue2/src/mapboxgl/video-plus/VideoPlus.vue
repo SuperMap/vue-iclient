@@ -112,9 +112,7 @@ class SmVideoPlus extends Vue {
     // @ts-ignore
     this.viewModel.on('load', e => {
       this.spinning = false;
-      // @ts-ignore
-      videoPlusEvent.$options.setVideo(this.target, e.videoPlus);
-      videoPlusEvent.$emit('load-video', e.videoPlus, this.target);
+      videoPlusEvent.setVideo(this.target, e.videoPlus);
       /**
        * @event load
        * @desc videoPlus 加载完成之后触发。
@@ -144,8 +142,7 @@ class SmVideoPlus extends Vue {
 
   destroyed() {
     this.viewModel.removed();
-    // @ts-ignore
-    videoPlusEvent.$options.deleteVideo(this.target);
+    videoPlusEvent.deleteVideo(this.target);
   }
 
   /* emit */

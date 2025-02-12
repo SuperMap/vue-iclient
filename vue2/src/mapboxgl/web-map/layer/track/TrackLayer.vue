@@ -1,6 +1,6 @@
 <script lang="ts">
 import { Component, Mixins, Prop } from 'vue-property-decorator';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import TrackLayerViewModel, { layerStyleParams, positionTimeStampParams, directionParams } from './TrackLayerViewModel';
 // eslint-disable-next-line

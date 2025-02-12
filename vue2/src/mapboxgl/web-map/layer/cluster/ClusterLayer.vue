@@ -1,5 +1,5 @@
 <script>
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import ClusterLayerViewModel from './ClusterLayerViewModel';
 import Layer from 'vue-iclient/src/mapboxgl/_mixin/layer';
 import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';

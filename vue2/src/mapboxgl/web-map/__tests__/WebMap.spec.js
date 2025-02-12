@@ -27,7 +27,7 @@ import migrationLayer from 'vue-iclient/test/unit/mocks/data/WebMap/migrationLay
 import flushPromises from 'flush-promises';
 import mapWrapperLoaded from 'vue-iclient/test/unit/mapWrapperLoaded.js';
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import Message from 'vue-iclient/src/common/message/Message.js';
 
 const localVue = createLocalVue();
@@ -800,8 +800,8 @@ describe('WebMap.vue', () => {
         $t: msg => msg
       }
     });
-    const deleteMap = jest.spyOn(mapEvent.$options, 'deleteMap');
-    const deleteWebMap = jest.spyOn(mapEvent.$options, 'deleteWebMap');
+    const deleteMap = jest.spyOn(mapEvent, 'deleteMap');
+    const deleteWebMap = jest.spyOn(mapEvent, 'deleteWebMap');
 
     wrapper.vm.viewModel.on({
       addlayerssucceeded: e => {

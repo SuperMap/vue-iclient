@@ -9,7 +9,7 @@ import baseLayers from 'vue-iclient/test/unit/mocks/data/WebMap/baseLayers.json'
 import wmtsLayer from 'vue-iclient/test/unit/mocks/data/WebMap/wmtsLayer.json';
 import restmapLayer from 'vue-iclient/test/unit/mocks/data/WebMap/restmapLayer.json';
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import mapboxgl from '@libs/mapboxgl/mapbox-gl-enhance.js';
 import mockFetch from 'vue-iclient/test/unit/mocks/FetchRequest';
 
@@ -190,7 +190,7 @@ describe('WebMapViewModel.spec', () => {
   beforeEach(() => {
     jest.useFakeTimers();
     jest.setTimeout(30000);
-    jest.spyOn(mapEvent.$options, 'getWebMap').mockImplementation(() => {
+    jest.spyOn(mapEvent, 'getWebMap').mockImplementation(() => {
       return {
         getAppreciableLayers: () => {
           return Object.values(layerIdMapList);

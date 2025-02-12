@@ -1,6 +1,6 @@
 import { mount, shallowMount } from '@vue/test-utils';
 import SmButton from '../../button';
-import globalEvent from 'vue-iclient/src/common/_utils/global-event';
+import globalEvent from 'vue-iclient-core/utils/global-event';
 import Theme from '../Theme';
 
 describe('Theme.ts', () => {
@@ -46,7 +46,7 @@ describe('Theme.ts', () => {
     expect(wrapper.vm.backgroundData).toBe(propsData.background);
     expect(wrapper.vm.textColorsData).not.toBeUndefined();
     expect(wrapper.vm.collapseCardHeaderBgData).toBe(wrapper.vm.background);
-    globalEvent.$emit('change-theme', themeStyle);
+    globalEvent.changeTheme(themeStyle);
     expect(wrapper.vm.backgroundData).toBe(themeStyle.background);
     expect(wrapper.vm.collapseCardHeaderBgData).not.toBe(wrapper.vm.background);
   });
@@ -59,7 +59,7 @@ describe('Theme.ts', () => {
     const currentBackgroundData = wrapper.vm.backgroundData;
     expect(currentBackgroundData).toBe(propsData.background);
     expect(wrapper.vm.collapseCardHeaderBgData).toBe(wrapper.vm.background);
-    globalEvent.$emit('change-theme', themeStyleWithoutBackground);
+    globalEvent.changeTheme(themeStyleWithoutBackground);
     expect(wrapper.vm.collapseCardHeaderBgData).toBe(wrapper.vm.background);
   });
 });

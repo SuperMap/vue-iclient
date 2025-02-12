@@ -1,5 +1,5 @@
 import colorPalette from 'vue-iclient/src/common/_utils/style/color/colorPalette';
-import themeFactory from 'vue-iclient/src/common/_utils/style/theme/theme.json';
+import themeFactory from 'vue-iclient-core/utils/style/theme/theme.json';
 import { getColorWithOpacity, getDarkenColor, getDataType } from 'vue-iclient-core/utils/util';
 import cssVars from 'css-vars-ponyfill';
 
@@ -11,7 +11,7 @@ export interface styleConfigParams {
   };
 }
 
-const lightTheme = themeFactory && themeFactory[1];
+const lightTheme = themeFactory[1];
 export type ThemeStyleParams = typeof lightTheme & styleConfigParams;
 
 export interface FunctionColorParams {

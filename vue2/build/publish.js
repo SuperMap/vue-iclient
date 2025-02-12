@@ -48,6 +48,14 @@ fs.copy(path.resolve(__dirname, `../dist/${key}/`), path.resolve(__dirname, `../
 fs.copy(path.resolve(__dirname, `../lib/${key}/`), path.resolve(__dirname, `../lib/`), err => {
   if (err) throw err;
 });
+fs.copy(path.resolve(__dirname, '../../core'), path.resolve(__dirname, `../core`), {
+  filter: (src) => {
+    // 排除 tsconfig.json 和 libs 目录
+    return !src.includes('tsconfig.json') && !src.includes(path.resolve(__dirname, '../../core/libs'));
+  }
+}, err => {
+  if (err) throw err;
+});
 fs.copy(path.resolve(__dirname, '../../core/libs'), path.resolve(__dirname, `../static/libs`), err => {
   if (err) throw err;
 });

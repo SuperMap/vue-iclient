@@ -217,15 +217,20 @@ function compileCopy() {
   });
   // 全局配置组件没有style 生成config-provider/style/index.js css.js
   // []
-  // 拷贝theme.json和_assets和tdt
+  // 拷贝_assets和tdt
   let gulpFile = ['../src/common/_utils*/style/**/*.json'];
   type === 'mapboxgl' && gulpFile.push('../src/mapboxgl/tdt/_assets*/sprite*');
   return gulp.src(gulpFile).pipe(gulp.dest(output_path));
 }
-
+// 拷贝iconfont
 function compileCopyIconfont() {
   const iconfontSource = '../../core/assets/iconfont*/*';
   return gulp.src(iconfontSource).pipe(gulp.dest(`${output_path}_assets/`));
+}
+// 拷贝theme.json
+function compileThemeJson() {
+  const iconfontSource = '../../core/utils/style*/**/*.json';
+  return gulp.src(iconfontSource).pipe(gulp.dest(`${output_path}_utils/`));
 }
 function createStyle(filePath) {
   fileSave(filePath + '/index.js').write('', 'utf8');
@@ -245,4 +250,4 @@ function createLayerStyle(filePath) {
   });
 }
 
-exports.build = gulp.parallel(compileCopy, compileCopyIconfont, compileSass, compileLess, compileCssjs);
+exports.build = gulp.parallel(compileCopy, compileCopyIconfont, compileThemeJson, compileSass, compileLess, compileCssjs);

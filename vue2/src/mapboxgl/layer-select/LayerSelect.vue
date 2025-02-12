@@ -13,7 +13,7 @@
 <script lang="ts">
 import { Component, Prop, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import TreeSelect from 'vue-iclient/src/common/tree-select/TreeSelect.vue';
 import LayerSelectViewModel from './LayerSelectViewModel';
 

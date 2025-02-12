@@ -76,7 +76,7 @@
 </template>
 <script lang="ts">
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import SmInput from 'vue-iclient/src/common/input/Input.vue';

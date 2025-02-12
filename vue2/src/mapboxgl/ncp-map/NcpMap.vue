@@ -7,7 +7,7 @@
 
 <script lang="ts">
 import NcpMapViewModel, { dataOptions, mapOptions } from './NcpMapViewModel';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import MapEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/map-events';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import { Component, Prop, Mixins, Emit, Provide } from 'vue-property-decorator';
@@ -58,8 +58,7 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
 
   beforeDestroy() {
     this.destory();
-    mapEvent.$options.deleteMap(this.target);
-    mapEvent.$options.deleteWebMap(this.target);
+    mapEvent.deleteMap(this.target);
   }
 
   /* emit */
@@ -108,9 +107,7 @@ class SmNcpMap extends Mixins(VmUpdater, MapEvents) {
   registerEvents(): void {
     this.viewModel.on('addlayerssucceeded', e => {
       this.spinning = false;
-      mapEvent.$options.setMap(this.target, e.map);
-      this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
-      mapEvent.$emit('load-map', e.map, this.target);
+      mapEvent.setMap(this.target, e.map, this.viewModel);
       e.map.resize();
       this.map = e.map;
       // 绑定map event

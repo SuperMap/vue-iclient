@@ -3,7 +3,7 @@ import Popper from 'vue-iclient/src/leaflet/_mixin/Popper.js';
 import Options from 'vue-iclient/src/leaflet/_mixin/Options.js';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import MapGetter from 'vue-iclient/src/leaflet/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import PopupViewModel from './PopupViewModel';
 
 export default {

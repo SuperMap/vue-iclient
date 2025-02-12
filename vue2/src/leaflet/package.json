@@ -90,6 +90,6 @@
     "Vue"
   ],
   "scripts": {
-    "postpublish": "git checkout ./package.json ./src/sfc.d.ts ./tsconfig.json && rimraf ./dist"
+    "postpublish": "git checkout ./package.json ./src/sfc.d.ts ./tsconfig.json && rimraf ./dist ./core"
   }
 }

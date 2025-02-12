@@ -39,10 +39,10 @@
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import BaseCard from 'vue-iclient/src/common/_mixin/Card';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import SmCard from 'vue-iclient/src/common/card/Card.vue';
 import SmDirectoryTree from 'vue-iclient/src/common/tree/DirectoryTree.vue';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import LayerManagerViewModel from './LayerManagerViewModel';
 import uniqueId from 'lodash.uniqueid';
 import clonedeep from 'lodash.clonedeep';
@@ -294,10 +294,10 @@ export default {
       this.checkedKeys = [];
     },
     addMapCombination({ nodeKey, nodeValue }) {
-      mapEvent.$options.setWebMap(this.getTargetName(), nodeValue, nodeKey);
+      mapEvent.setWebMap(this.getTargetName(), nodeValue, nodeKey);
     },
     removeMapCombination({ nodeKey }) {
-      mapEvent.$options.deleteWebMap(this.getTargetName(), nodeKey);
+      mapEvent.deleteWebMap(this.getTargetName(), nodeKey);
     },
     handleLayerOrSourceNameDuplicated() {
       Message.error(this.$t('webmap.layerorsourcenameduplicated'));

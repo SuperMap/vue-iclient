@@ -1,6 +1,6 @@
 
 <script>
-import MapGetter from 'vue-iclient/src/leaflet/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import MarkerViewModel from './MarkerViewModel';
 import Options from 'vue-iclient/src/leaflet/_mixin/Options.js';

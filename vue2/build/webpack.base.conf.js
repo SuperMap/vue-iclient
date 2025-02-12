@@ -84,8 +84,7 @@ module.exports = {
           resolve('node_modules/swiper'),
           resolve('node_modules/vue-awesome-swiper'),
           resolve('node_modules/dom7')
-        ],
-        exclude: [path.resolve(__dirname, '../../core/libs')]
+        ]
       },
       {
         test: /\.(png|jpe?g|gif|svg)(\?.*)?$/,

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import mapEvent from 'vue-iclient/src/mapboxgl/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 
 @Component
 export default class Control extends Vue {
@@ -32,6 +32,7 @@ export default class Control extends Vue {
     const parentName = this.$parent.$options.name;
     this.parentIsWebMapOrMap =
       parentName && ['smwebmap', 'smncpmap'].includes(this.$parent.$options.name.toLowerCase());
+    this.controlLoadMapSucceed = this.controlLoadMapSucceed.bind(this);
   }
 
   mounted() {
@@ -45,16 +46,20 @@ export default class Control extends Vue {
         $el.style && ($el.style.display = 'none');
       }
       const targetName = this.getControlMapName();
-      if (mapEvent.$options.getMap(targetName)) {
-        this.mapLoaded(mapEvent.$options.getMap(targetName));
+      if (mapEvent.getMap(targetName)) {
+        this.mapLoaded(mapEvent.getMap(targetName) as unknown as mapboxglTypes.Map);
       }
-      mapEvent.$on('load-map', this.controlLoadMapSucceed);
+      mapEvent.on({
+        'load-map': this.controlLoadMapSucceed
+      });
     }
   }
 
   beforeDestroy() {
     this.remove();
-    mapEvent.$off('load-map', this.controlLoadMapSucceed);
+    mapEvent.un({
+      'load-map': this.controlLoadMapSucceed
+    });
   }
 
   initControl(): mapboxglTypes.IControl {
@@ -88,12 +93,12 @@ export default class Control extends Vue {
       // @ts-ignore
       selfParent.target;
     // @ts-ignore
-    return this.mapTarget || parentTarget || Object.keys(mapEvent.$options.getAllMaps())[0];
+    return this.mapTarget || parentTarget || Object.keys(mapEvent.getAllMaps())[0];
   }
 
-  controlLoadMapSucceed(map: mapboxglTypes.Map, target: string): void {
+  controlLoadMapSucceed({ map, mapTarget }: { map: mapboxglTypes.Map, mapTarget: string }): void {
     const targetName = this.getControlMapName();
-    if (target === targetName) {
+    if (mapTarget === targetName) {
       this.mapLoaded(map);
     }
   }

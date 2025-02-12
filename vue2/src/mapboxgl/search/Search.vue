@@ -105,7 +105,7 @@
 </template>
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import MapGetter from 'vue-iclient/src/mapboxgl/_mixin/map-getter';
+import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import SearchViewModel from './SearchViewModel';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';

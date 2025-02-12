@@ -116,7 +116,8 @@ describe('Pan.vue', () => {
     wrapper.vm.$children[1].$on('loaded', callback);
     await mapLoaded(wrapper.vm.$children[0]);
     await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
+    await wrapper.vm.$nextTick();
+    expect(callback).toBeCalled();
     expect(wrapper.vm.$children[1].getTargetName()).toBe('map');
     testClick(wrapper, wrapper.vm.$children[1].map);
     done();
@@ -148,7 +149,8 @@ describe('Pan.vue', () => {
     await mapLoaded(wrapper.vm.$children[3]);
     await mapLoaded(wrapper.vm.$children[4]);
     await flushPromises();
-    expect(callback.mock.called).toBeTruthy;
+    await wrapper.vm.$nextTick();
+    expect(callback).toBeCalled();
     expect(wrapper.vm.$children[2].getTargetName()).toBe('map1');
     testClick(wrapper, wrapper.vm.$children[2].map);
     done();

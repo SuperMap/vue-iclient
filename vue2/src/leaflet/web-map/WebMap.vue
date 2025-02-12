@@ -8,7 +8,7 @@
 <script lang='ts'>
 import WebMapViewModel from './WebMapViewModel';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
-import mapEvent from 'vue-iclient/src/leaflet/_types/map-event';
+import mapEvent from 'vue-iclient-core/types/map-event';
 import { Component, Prop, Mixins, Emit, Watch, Provide } from 'vue-property-decorator';
 import { addListener, removeListener } from 'resize-detector';
 import debounce from 'lodash.debounce';
@@ -68,8 +68,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
 
   beforeDestroy() {
     this.destory();
-    mapEvent.$options.deleteMap(this.target);
-    mapEvent.$options.deleteWebMap(this.target);
+    mapEvent.deleteMap(this.target);
   }
 
   /* emit */
@@ -145,9 +144,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
     this.viewModel.on({
       addlayerssucceeded: e => {
         this.spinning = false;
-        mapEvent.$options.setMap(this.target, e.map);
-        this.viewModel && mapEvent.$options.setWebMap(this.target, this.viewModel);
-        mapEvent.$emit('load-map', e.map, this.target);
+        mapEvent.setMap(this.target, e.map, this.viewModel);
         this.map = e.map;
         this.mapObject = e.map;
         this.ready = true;

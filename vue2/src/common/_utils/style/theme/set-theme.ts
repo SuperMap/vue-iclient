@@ -1,6 +1,6 @@
 import Vue from 'vue';
-import globalEvent from 'vue-iclient/src/common/_utils/global-event';
-import themeFactory from 'vue-iclient/src/common/_utils/style/theme/theme.json';
+import globalEvent from 'vue-iclient-core/utils/global-event';
+import themeFactory from 'vue-iclient-core/utils/style/theme/theme.json';
 import { dealWithTheme, ThemeStyleParams } from 'vue-iclient/src/common/_utils/style/color/serialColors';
 import { objectWithoutProperties } from 'vue-iclient-core/utils/util';
 
@@ -28,9 +28,9 @@ export const setTheme = (themeStyle: any = {}, triggerInfo?: triggerParams) => {
   if (themeStyle && (typeof themeStyle === 'string' || 'componentBackground' in themeStyle)) {
     nextTheme.background = nextTheme.componentBackground;
   }
-  globalEvent.$options.theme = nextTheme;
+  globalEvent.theme = nextTheme;
   if (!triggerInfo || triggerInfo.triggerEvent === true) {
-    globalEvent.$emit('change-theme', objectWithoutProperties(nextTheme, (triggerInfo || {}).ignoreElements || []));
+    globalEvent.changeTheme(objectWithoutProperties(nextTheme, (triggerInfo || {}).ignoreElements || []));
   }
   // @ts-ignore
   if (!Vue.iclient) {
