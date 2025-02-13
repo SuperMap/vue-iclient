@@ -3,20 +3,14 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "preserve",
-    "lib": [
-      "ES2018",
-      "DOM",
-      "DOM.Iterable"
-    ],
-    "types": [
-      "unplugin-vue-macros/macros-global"
-    ],
+    "lib": ["ES2018", "DOM", "DOM.Iterable"],
+    "types": ["unplugin-vue-macros/macros-global"],
     "skipLibCheck": true
   },
   "include": [
     "packages",
-    "../core",
-    "typings/env.d.ts"
+    "typings/**/*.d.ts",
+    "env.d.ts"
   ],
   "exclude": [
     "node_modules",

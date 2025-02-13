@@ -1,7 +1,8 @@
 {
   "extends": "./tsconfig.base.json",
   "include": [
-    "mapboxgl/**/__tests__/*",
+    "packages",
+    "typings/**/*.d.ts",
     "env.d.ts"
   ],
   "exclude": [
@@ -11,11 +12,11 @@
   ],
   "compilerOptions": {
     "incremental": true,
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.vitest.tsbuildinfo",
-    "lib": [],
+    "composite": true,
     "types": [
       "node",
-      "jsdom"
+      "jsdom",
+      "vitest/globals"
     ]
   }
 }

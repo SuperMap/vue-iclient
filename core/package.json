@@ -2,17 +2,12 @@
   "name": "vue-iclient-core",
   "private": true,
   "license": "MIT",
-  "peerDependencies": {
-    "vue": "^3.2.0"
-  },
   "dependencies": {
-    "@rollup/plugin-commonjs": "^28.0.2",
     "@turf/bbox": "^7.2.0",
     "@turf/center": "^7.2.0",
     "@turf/helpers": "^6.1.4",
     "@turf/transform-scale": "^7.2.0",
     "@types/lodash": "^4.17.15",
-    "ant-design-vue": "^4.2.6",
     "colorcolor": "^1.1.1",
     "echarts": "^4.8.0",
     "lodash.clonedeep": "^4.5.0",

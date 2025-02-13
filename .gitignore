@@ -8,6 +8,8 @@ yarn-debug.log*
 yarn-error.log*
 **/test/unit/coverage/
 **/test/unit/report/
+**/tests/unit/coverage/
+**/tests/unit/report/
 **/docs/.vuepress/dist/**
 # Editor directories and files
 .idea

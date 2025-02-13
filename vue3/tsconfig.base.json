@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "outDir": "dist",
+    "baseUrl": "./",
+    "outDir": "./dist",
     "target": "es2018",
     "module": "esnext",
-    "baseUrl": ".",
     "sourceMap": false,
     "moduleResolution": "node",
     "allowJs": false,
@@ -13,17 +13,8 @@
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "removeComments": false,
-    "rootDir": "../",
-    "types": [],
-    "paths": {
-      "@supermapgis/*": [
-        "vue-iclient-mapboxgl/*",
-        "vue-iclient-common/*",
-        "mapboxgl/utils/*",
-        "common/utils/*",
-      ],
-      "vue-iclient-core/*": ["../core/*"]
-    },
+    "noImplicitAny": false,
+    "pretty": true,
     "preserveSymlinks": true
   }
 }

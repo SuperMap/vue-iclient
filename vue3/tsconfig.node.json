@@ -2,13 +2,10 @@
   "extends": "./tsconfig.base.json",
   "include": [
     "vite.config.*",
-    "vitest.config.*",
-    "cypress.config.*",
-    "nightwatch.conf.*",
-    "playwright.config.*",
-    "packages/**/*"
+    "packages"
   ],
   "compilerOptions": {
+    "composite": true,
     "noEmit": true,
     "module": "ESNext",
     "moduleResolution": "Bundler",

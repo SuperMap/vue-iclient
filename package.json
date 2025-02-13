@@ -6,7 +6,7 @@
   "scripts": {
     "install:all": "npm run install:vue2 && npm run install:vue3",
     "install:vue2": "npm install --legacy-peer-deps --prefix vue2",
-    "install:vue3": "npm install --legacy-peer-deps --prefix vue3",
+    "install:vue3": "pnpm install -C vue3",
     "dev:vue2": "npm run dev --prefix vue2 --",
     "build:vue2": "npm run build --prefix vue2 --",
     "docs:dev:vue2": "npm run docs:dev --prefix vue2",
