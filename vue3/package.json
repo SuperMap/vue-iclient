@@ -31,8 +31,13 @@
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit"
   },
   "dependencies": {
+    "@supermapgis/common/theme-chalk": "workspace:*",
+    "@supermapgis/common/utils": "workspace:*",
     "@supermapgis/mapboxgl/theme-chalk": "workspace:*",
+    "@supermapgis/mapboxgl/utils": "workspace:*",
     "@supermapgis/vue-iclient-mapboxgl": "workspace:*",
+    "@supermapgis/vue-iclient-common": "workspace:*",
+    "vue-iclient-core": "workspace:*",
     "vue": "3.5.12"
   },
   "devDependencies": {

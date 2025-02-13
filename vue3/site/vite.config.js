@@ -18,6 +18,13 @@ export default defineConfig({
       '@supermapgis/mapboxgl/theme-chalk': fileURLToPath(
         new URL('../packages/mapboxgl/theme-chalk', import.meta.url)
       ),
+
+      '@supermapgis/common/theme-chalk': fileURLToPath(
+        new URL('../packages/common/theme-chalk', import.meta.url)
+      ),
+      '@supermapgis/vue-iclient-common': fileURLToPath(
+        new URL('../packages/common/components', import.meta.url)
+      ),
       'vue-iclient-core': fileURLToPath(
         new URL('../../core', import.meta.url)
       )

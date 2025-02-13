@@ -1,0 +1,16 @@
+{
+  "name": "@supermapgis/common/theme-chalk",
+  "version": "0.0.1",
+  "keywords": [
+    "vue-components",
+    "theme-chalk",
+    "theme-light"
+  ],
+  "main": "index.css",
+  "unpkg": "index.css",
+  "jsdelivr": "index.css",
+  "style": "index.css",
+  "scripts": {
+    "clean": "rimraf dist"
+  }
+}

@@ -3,3 +3,4 @@ packages:
   - packages/**/theme-chalk
   - site
   - build-tools/*
+  - ../core

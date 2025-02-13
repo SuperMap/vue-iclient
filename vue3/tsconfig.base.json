@@ -17,7 +17,10 @@
     "types": [],
     "paths": {
       "@supermapgis/*": [
-        "vue-iclient-mapboxgl/*"
+        "vue-iclient-mapboxgl/*",
+        "vue-iclient-common/*",
+        "mapboxgl/utils/*",
+        "common/utils/*",
       ],
       "vue-iclient-core/*": ["../core/*"]
     },
