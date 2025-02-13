@@ -1,7 +1,7 @@
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import CircleStyle from 'vue-iclient/src/mapboxgl/_types/CircleStyle';
-import LineStyle from 'vue-iclient/src/mapboxgl/_types/LineStyle';
-import FillStyle from 'vue-iclient/src/mapboxgl/_types/FillStyle';
+import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
+import LineStyle from 'vue-iclient-core/controllers/mapboxgl/_types/LineStyle';
+import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel';
 import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient-core/utils/util';
 import isEqual from 'lodash.isequal';
