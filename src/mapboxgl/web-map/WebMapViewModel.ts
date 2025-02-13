@@ -619,6 +619,19 @@ export default class WebMapViewModel extends WebMapBase {
           }
           const layerIds = style.layers.map(layer => layer.id).filter(id => id !== 'background');
           this._cacheLayerId.push(...layerIds);
+          if (layerInfo.dataSource.type === 'ARCGIS_VECTORTILE') {
+            let paramUrl = url.split('?')[1];
+            Object.keys(style.sources).forEach((key) => {
+              Object.keys(style.sources[key]).forEach((fieldName) => {
+                if (fieldName === 'url') {
+                  if (typeof style.sources[key][fieldName] === 'string' && !this.isAbsoluteURL(style.sources[key][fieldName])) {
+                    style.sources[key][fieldName] = this.relative2absolute(style.sources[key][fieldName], url);
+                  }
+                  style.sources[key][fieldName] = style.sources[key][fieldName] + (paramUrl ? '?' + paramUrl + '&f=json' : '?f=json');
+                }
+              });
+            });
+          }
           // @ts-ignore
           this.map.addStyle(style, undefined, undefined, undefined, url);
           addedCallback && addedCallback();
@@ -2897,6 +2910,23 @@ export default class WebMapViewModel extends WebMapBase {
         }
       });
     }
+  }
+
+  private isAbsoluteURL(url) {
+    try {
+      const res = new URL(url);
+      return !!res;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  private relative2absolute(url, base) {
+    let newUrl = new URL(url, base);
+    if (newUrl && newUrl.href) {
+      return decodeURIComponent(newUrl.href);
+    }
+    return null;
   }
 
   cleanWebMap() {
