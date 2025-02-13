@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { getProjection } from 'vue-iclient-core/utils/epsg-define'
 import { xxx } from '@supermapgis/mapboxgl/utils'
+import { getProjection } from 'vue-iclient-core/utils/epsg-define'
+import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/AttributesViewModel'
 
 defineProps<{
   msg: string
@@ -24,7 +25,7 @@ const handleClick = () => {
     inputValue.value = ''
   }
 }
-console.log(getProjection('EPSG:3857'), xxx)
+console.log(getProjection('EPSG:3857'), xxx, AttributesViewModel)
 </script>
 
 <template>

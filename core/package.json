@@ -2,12 +2,15 @@
   "name": "vue-iclient-core",
   "private": true,
   "license": "MIT",
+  "devDependencies": {
+    "@types/lodash": "^4.17.15",
+    "@types/mapbox-gl": "^1.12.1"
+  },
   "dependencies": {
     "@turf/bbox": "^7.2.0",
     "@turf/center": "^7.2.0",
     "@turf/helpers": "^6.1.4",
     "@turf/transform-scale": "^7.2.0",
-    "@types/lodash": "^4.17.15",
     "colorcolor": "^1.1.1",
     "echarts": "^4.8.0",
     "lodash.clonedeep": "^4.5.0",

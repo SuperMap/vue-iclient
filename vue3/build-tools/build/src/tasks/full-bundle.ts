@@ -3,52 +3,49 @@ import { nodeResolve } from '@rollup/plugin-node-resolve'
 import { rollup } from 'rollup'
 import replace from '@rollup/plugin-replace'
 import commonjs from '@rollup/plugin-commonjs'
+import alias from '@rollup/plugin-alias'
 import vue from '@vitejs/plugin-vue'
-import VueMacros from 'unplugin-vue-macros/rollup'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import esbuild, { minify as minifyPlugin } from 'rollup-plugin-esbuild'
 import { parallel } from 'gulp'
 import glob from 'fast-glob'
 import { camelCase, upperFirst } from 'lodash-unified'
 import {
-  PKG_BRAND_NAME,
-  PKG_CAMELCASE_LOCAL_NAME,
-  PKG_CAMELCASE_NAME,
+  getPKG_BRAND_NAME,
   getEpOutput,
   getEpRoot,
   getLocaleRoot,
-  getPkgByCommand
+  getPkgByCommand,
+  coreRoot
 } from '@supermapgis/build-utils'
-import { Alias } from '../plugins/alias'
+import { FullAlias } from '../plugins/alias'
 import { formatBundleFilename, generateExternal, withTaskName, writeBundles } from '../utils'
 import { target } from '../build-info'
 import type { TaskFunction } from 'gulp'
 import type { Plugin } from 'rollup'
 
-const banner = `/*! ${PKG_BRAND_NAME} v${'0.0.1'} */\n`
-
-async function buildFullEntry(minify: boolean) {
+async function buildFullEntry(minify: boolean, banner: string) {
   const pkgName = getPkgByCommand(process.argv)
   const epOutput = getEpOutput(pkgName)
   const epRoot = getEpRoot(pkgName)
+  const PKG_BRAND_NAME = getPKG_BRAND_NAME(pkgName)
+  const PKG_CAMELCASE_NAME = PKG_BRAND_NAME.replace(/\s/g, '')
+
   const plugins: Plugin[] = [
-    Alias(),
-    VueMacros({
-      setupComponent: false,
-      setupSFC: false,
-      plugins: {
-        vue: vue({
-          isProduction: true,
-          template: {
-            compilerOptions: {
-              hoistStatic: false,
-              cacheHandlers: false
-            }
-          }
-        }),
-        vueJsx: vueJsx()
-      }
+    FullAlias(),
+    alias({
+      entries: [{ find: 'vue-iclient-core', replacement: coreRoot }]
     }),
+    vue({
+      isProduction: true,
+      template: {
+        compilerOptions: {
+          hoistStatic: false,
+          cacheHandlers: false
+        }
+      }
+    }) as Plugin,
+    vueJsx() as Plugin,
     nodeResolve({
       extensions: ['.mjs', '.js', '.json', '.ts']
     }),
@@ -67,7 +64,8 @@ async function buildFullEntry(minify: boolean) {
       legalComments: 'eof'
     }),
     replace({
-      'process.env.NODE_ENV': JSON.stringify('production')
+      'process.env.NODE_ENV': JSON.stringify('production'),
+      preventAssignment: true
     })
   ]
   if (minify) {
@@ -88,7 +86,7 @@ async function buildFullEntry(minify: boolean) {
   await writeBundles(bundle, [
     {
       format: 'umd',
-      file: path.resolve(epOutput, 'dist', formatBundleFilename('index.full', minify, 'js')),
+      file: path.resolve(epOutput, 'dist', formatBundleFilename('index', minify, 'js')),
       exports: 'named',
       name: PKG_CAMELCASE_NAME,
       globals: {
@@ -99,14 +97,14 @@ async function buildFullEntry(minify: boolean) {
     },
     {
       format: 'esm',
-      file: path.resolve(epOutput, 'dist', formatBundleFilename('index.full', minify, 'mjs')),
+      file: path.resolve(epOutput, 'dist', formatBundleFilename('index', minify, 'mjs')),
       sourcemap: minify,
       banner
     }
   ])
 }
 
-async function buildFullLocale(minify: boolean) {
+async function buildFullLocale(minify: boolean, banner: string) {
   const pkgName = getPkgByCommand(process.argv)
   const epOutput = getEpOutput(pkgName)
   const localeRoot = getLocaleRoot(pkgName)
@@ -135,7 +133,7 @@ async function buildFullLocale(minify: boolean) {
           format: 'umd',
           file: path.resolve(epOutput, 'dist/locale', formatBundleFilename(filename, minify, 'js')),
           exports: 'default',
-          name: `${PKG_CAMELCASE_LOCAL_NAME}${name}`,
+          // name: `${PKG_CAMELCASE_LOCAL_NAME}${name}`,
           sourcemap: minify,
           banner
         },
@@ -154,8 +152,13 @@ async function buildFullLocale(minify: boolean) {
   )
 }
 
-export const buildFull = (minify: boolean) => async () =>
-  Promise.all([buildFullEntry(minify), buildFullLocale(minify)])
+export const buildFull = (minify: boolean) => async () => {
+  const pkgName = getPkgByCommand(process.argv)
+  const PKG_BRAND_NAME = getPKG_BRAND_NAME(pkgName)
+  const banner = `/*! ${PKG_BRAND_NAME} v${'0.0.1'} */\n`
+  // return Promise.all([buildFullEntry(minify, banner), buildFullLocale(minify, banner)])
+  return Promise.all([buildFullEntry(minify, banner)])
+}
 
 export const buildFullBundle: TaskFunction = parallel(
   withTaskName('buildFullMinified', buildFull(true)),

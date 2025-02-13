@@ -1,5 +1,4 @@
-@use '../../common/theme-chalk/mixins/mixins' as * ;
-@use '../../common/theme-chalk/base/theme.scss';
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as * ;
 
 @include b(button) {
   color: red;

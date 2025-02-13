@@ -6,10 +6,7 @@
     "theme-chalk",
     "theme-light"
   ],
-  "main": "index.css",
-  "unpkg": "index.css",
-  "jsdelivr": "index.css",
-  "style": "index.css",
+  "main": "index.common.scss",
   "scripts": {
     "clean": "rimraf dist"
   }

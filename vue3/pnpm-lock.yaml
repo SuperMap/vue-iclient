@@ -26,6 +26,9 @@ importers:
       '@supermapgis/vue-iclient-mapboxgl':
         specifier: workspace:*
         version: link:packages/mapboxgl/components
+      '@types/mapbox-gl':
+        specifier: ^3.4.1
+        version: 3.4.1
       vue:
         specifier: 3.5.12
         version: 3.5.12(typescript@5.6.3)
@@ -174,6 +177,19 @@ importers:
       tinycolor2:
         specifier: ^1.6.0
         version: 1.6.0
+<<<<<<< Updated upstream
+=======
+      vue:
+        specifier: ^3.2.0
+        version: 3.5.12(typescript@5.6.3)
+    devDependencies:
+      '@types/lodash':
+        specifier: ^4.17.15
+        version: 4.17.15
+      '@types/mapbox-gl':
+        specifier: ^1.12.1
+        version: 1.13.10
+>>>>>>> Stashed changes
 
   build-tools/build:
     dependencies:
@@ -382,6 +398,10 @@ importers:
       vue:
         specifier: '>=3.5.13'
         version: 3.5.13(typescript@5.6.3)
+    devDependencies:
+      '@types/mapbox-gl':
+        specifier: ^1.12.1
+        version: 1.13.10
 
   packages/mapboxgl/theme-chalk:
     devDependencies:
@@ -436,12 +456,6 @@ importers:
 
   site:
     dependencies:
-      '@supermapgis/mapboxgl/theme-chalk':
-        specifier: workspace:*
-        version: link:../packages/mapboxgl/theme-chalk
-      '@supermapgis/vue-iclient-mapboxgl':
-        specifier: workspace:*
-        version: link:../packages/mapboxgl/components
       vue:
         specifier: 3.5.12
         version: 3.5.12(typescript@5.6.3)
@@ -2132,6 +2146,12 @@ packages:
 
   '@types/lodash@4.17.15':
     resolution: {integrity: sha512-w/P33JFeySuhN6JLkysYUK2gEmy9kHHFN7E8ro0tkfmlDOgxBDzWEZ/J8cWA+fHqFevpswDTFZnDx+R9lbL6xw==}
+
+  '@types/mapbox-gl@1.13.10':
+    resolution: {integrity: sha512-0oUy5d5nT3L480MRviAnaBUEXuWCG/7M4ZQo0n8eJ/LLMgJ0nMbjv7M+qoPl4TAj6yVVWKTvkukXvW9QHH1GVw==}
+
+  '@types/mapbox-gl@3.4.1':
+    resolution: {integrity: sha512-NsGKKtgW93B+UaLPti6B7NwlxYlES5DpV5Gzj9F75rK5ALKsqSk15CiEHbOnTr09RGbr6ZYiCdI+59NNNcAImg==}
 
   '@types/node-sass@4.11.8':
     resolution: {integrity: sha512-dWWMGPX8uselSQ1MLzDvQnVz5Qy1pe7SJuUl1Yqi2NCNRkrk5DmHlP44VZmTWm+buR2T217+5zEAPbAmTwKIOQ==}
@@ -9557,6 +9577,14 @@ snapshots:
       '@types/lodash': 4.17.15
 
   '@types/lodash@4.17.15': {}
+
+  '@types/mapbox-gl@1.13.10':
+    dependencies:
+      '@types/geojson': 7946.0.16
+
+  '@types/mapbox-gl@3.4.1':
+    dependencies:
+      '@types/geojson': 7946.0.16
 
   '@types/node-sass@4.11.8':
     dependencies:

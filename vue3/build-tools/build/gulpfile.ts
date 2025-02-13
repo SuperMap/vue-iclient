@@ -1,6 +1,6 @@
 import path from 'path'
 import { copyFile, mkdir } from 'fs/promises'
-import { copy } from 'fs-extra'
+import { copy, remove } from 'fs-extra'
 import { parallel, series } from 'gulp'
 import {
   buildOutput,
@@ -45,6 +45,9 @@ export const copyFullStyle = async () => {
     path.resolve(epOutput, 'dist/index.css')
   )
 }
+const removeCommonIndexThemeChalk = async () => {
+  await remove(path.join(epOutput, 'theme-chalk', 'index.common.css'))
+}
 
 export default series(
   withTaskName('clean', () => run('pnpm run clean')),
@@ -54,12 +57,7 @@ export default series(
     runTask(`buildModules`, pkgName),
     runTask('buildFullBundle', pkgName),
     runTask('generateTypesDefinitions', pkgName),
-    series(
-      withTaskName('buildThemeChalk', () =>
-        run(`pnpm run -C packages/${pkgName}/theme-chalk build`)
-      ),
-      copyFullStyle
-    )
+    series(runTask('buildThemeChalk', pkgName), copyFullStyle, removeCommonIndexThemeChalk)
   ),
 
   parallel(copyTypesDefinitions, copyFiles)

@@ -35,10 +35,11 @@
     "@supermapgis/common/utils": "workspace:*",
     "@supermapgis/mapboxgl/theme-chalk": "workspace:*",
     "@supermapgis/mapboxgl/utils": "workspace:*",
-    "@supermapgis/vue-iclient-mapboxgl": "workspace:*",
     "@supermapgis/vue-iclient-common": "workspace:*",
-    "vue-iclient-core": "workspace:*",
-    "vue": "3.5.12"
+    "@supermapgis/vue-iclient-mapboxgl": "workspace:*",
+    "@types/mapbox-gl": "^3.4.1",
+    "vue": "3.5.12",
+    "vue-iclient-core": "workspace:*"
   },
   "devDependencies": {
     "@pnpm/find-workspace-packages": "^4.0.16",

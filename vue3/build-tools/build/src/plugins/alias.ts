@@ -42,3 +42,23 @@ export function Alias(): Plugin {
     }
   }
 }
+export function FullAlias(): Plugin {
+  const themeChalk = 'theme-chalk'
+  const sourceCommonThemeChalk = `${PKG_PREFIX}/common/${themeChalk}` as const
+  const sourceThemeChalk = `${PKG_PREFIX}/${pkgName}/${themeChalk}` as const
+  const bundleThemeChalk = `${PKG_PREFIX}/${PKG_NAME}/${themeChalk}` as const
+  return {
+    name: 'alias-plugin',
+    resolveId(id) {
+      if (!(id.startsWith(sourceCommonThemeChalk) || id.startsWith(sourceThemeChalk))) return
+      const idStr = id
+        .replaceAll(sourceThemeChalk, bundleThemeChalk)
+        .replaceAll(sourceCommonThemeChalk, bundleThemeChalk)
+
+      return {
+        id: idStr,
+        external: 'absolute'
+      }
+    }
+  }
+}

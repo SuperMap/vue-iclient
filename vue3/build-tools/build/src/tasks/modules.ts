@@ -7,7 +7,7 @@ import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
 import esbuild from 'rollup-plugin-esbuild'
 import glob from 'fast-glob'
-import { cp } from 'fs/promises'
+import { copy } from 'fs-extra'
 import {
   excludeFiles,
   getPkgRoot,
@@ -21,14 +21,6 @@ import { buildConfigEntries, target } from '../build-info'
 import type { TaskFunction } from 'gulp'
 
 import type { OutputOptions, Plugin } from 'rollup'
-
-// 定义别名映射
-const aliasConfig = {
-  entries: [
-    { find: '@supermapgis/mapboxgl', replacement: '@supermapgis/vue-iclient-mapboxgl' },
-    { find: '@supermapgis/common', replacement: '@supermapgis/vue-iclient-mapboxgl' }
-  ]
-}
 
 const pkgName = getPkgByCommand(process.argv)
 const pkgRoot = getPkgRoot(pkgName)
@@ -74,7 +66,6 @@ async function buildModulesComponents(rootDir, folder = 'components') {
       onlyFiles: true
     })
   )
-  console.log(input)
   await buildModulesTools({
     input,
     folder,
@@ -117,8 +108,6 @@ async function buildModulesStyles(rootDir, folder = 'components') {
       onlyFiles: true
     })
   )
-  console.log(input)
-
   const bundle = await rollup({
     input,
     plugins,
@@ -163,16 +152,16 @@ export const copyCore = async () => {
       const filePath = path.basename(item)
       const libPath = path.resolve(epOutput, 'lib/core/libs/', filePath)
       const esPath = path.resolve(epOutput, 'es/core/libs/', filePath)
-      await cp(item, libPath, { recursive: true })
-      await cp(item, esPath, { recursive: true })
+      await copy(item, libPath)
+      await copy(item, esPath)
     })
   }
   const copyAssets = async () => {
     const root = path.resolve(coreRoot, `assets`)
     const libPath = path.resolve(epOutput, 'lib/core/assets')
     const esPath = path.resolve(epOutput, 'es/core/assets')
-    await cp(root, libPath, { recursive: true })
-    await cp(root, esPath, { recursive: true })
+    await copy(root, libPath)
+    await copy(root, esPath)
   }
   await copyLibs()
   await copyAssets()
@@ -182,17 +171,19 @@ async function buildComponents() {
   await buildModulesComponents(pkgRoot)
 }
 
+async function buildUtils() {
+  await buildModulesComponents(pkgRoot, 'utils')
+  await buildModulesComponents(pkgCommonRoot, 'utils')
+}
+async function buildStyles() {
+  await buildModulesStyles(pkgRoot)
+  await buildModulesStyles(pkgCommonRoot)
+}
+
 export const buildModules: TaskFunction = parallel(
   series(
     withTaskName('buildModulesComponents', () => buildModulesComponents(coreRoot, 'core')),
     copyCore
   ),
-  series(
-    withTaskName('buildModulesComponents', () => buildModulesComponents(pkgRoot)),
-    withTaskName('buildModulesComponents', () => buildModulesComponents(pkgCommonRoot)),
-    withTaskName('buildModulesComponents', () => buildModulesComponents(pkgRoot, 'utils')),
-    withTaskName('buildModulesComponents', () => buildModulesComponents(pkgCommonRoot, 'utils')),
-    withTaskName('buildModulesStyles', () => buildModulesStyles(pkgRoot)),
-    withTaskName('buildModulesStyles', () => buildModulesStyles(pkgCommonRoot))
-  )
+  series(buildComponents, buildUtils, buildStyles)
 )
