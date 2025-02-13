@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { getProjection } from 'vue-iclient-core/utils/epsg-define'
+import { xxx } from '@supermapgis/mapboxgl/utils'
+
 defineProps<{
   msg: string
   msg1?: number
@@ -21,6 +24,7 @@ const handleClick = () => {
     inputValue.value = ''
   }
 }
+console.log(getProjection('EPSG:3857'), xxx)
 </script>
 
 <template>

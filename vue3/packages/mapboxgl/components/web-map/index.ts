@@ -1,6 +1,6 @@
-import { withInstall } from '../_utils'
+import { withInstall } from '@supermapgis/common/utils/index.common'
 import webmap from './webmap.vue'
-import type { SFCWithInstall } from '../_utils'
+import type { SFCWithInstall } from '@supermapgis/common/utils/index.common'
 
 export const WebMap: SFCWithInstall<typeof webmap> = withInstall(webmap)
 export default WebMap

@@ -1,2 +1,2 @@
-export * from '../../common/components'
+export * from '@supermapgis/vue-iclient-common/index.common'
 export * from './web-map'

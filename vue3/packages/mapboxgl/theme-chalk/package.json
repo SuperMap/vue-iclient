@@ -11,8 +11,7 @@
   "jsdelivr": "index.css",
   "style": "index.css",
   "scripts": {
-    "clean": "rimraf dist",
-    "build": "gulp --require @esbuild-kit/cjs-loader"
+    "clean": "rimraf dist"
   },
   "devDependencies": {
     "@esbuild-kit/cjs-loader": "^2.2.1",

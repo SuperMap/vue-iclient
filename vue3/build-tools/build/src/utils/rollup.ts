@@ -4,8 +4,8 @@ import type { OutputOptions, RollupBuild } from 'rollup'
 
 const pkgName = getPkgByCommand(process.argv)
 const epPackage = getEpPackage(pkgName)
-export const generateExternal = async (options: { full: boolean }) => {
-  const { dependencies, peerDependencies } = getPackageDependencies(epPackage)
+export const generateExternal = async (options: { full: boolean }, path = epPackage) => {
+  const { dependencies, peerDependencies } = getPackageDependencies(path)
   return (id: string) => {
     const packages: string[] = [...peerDependencies]
     if (!options.full) {

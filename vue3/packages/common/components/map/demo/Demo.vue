@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import WebMap from '../webmap.vue'
+import Map from '../map.vue'
 import '../style'
 </script>
 <template>
   <div>
-    <WebMap></WebMap>
+    <Map></Map>
     <div class="hello">helllo</div>
   </div>
 </template>

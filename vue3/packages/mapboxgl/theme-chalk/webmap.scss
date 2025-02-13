@@ -1,7 +1,8 @@
-@use 'mixins/mixins' as *;
-@use './common/theme.scss' as *;
+@use '../../common/theme-chalk/mixins/mixins' as * ;
+@use '../../common/theme-chalk/base/theme.scss';
 
 @include b(button) {
+  color: red;
 }
 div {
   color: yellow;

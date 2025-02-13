@@ -1,0 +1,9 @@
+{
+  "name": "@supermapgis/common/utils",
+  "private": true,
+  "license": "MIT",
+  "main": "index.common.js",
+  "peerDependencies": {
+    "vue": "^3.2.0"
+  }
+}
