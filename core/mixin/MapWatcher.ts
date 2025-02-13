@@ -12,14 +12,13 @@ interface ViewModel {
   [key: string]: any;
 }
 
-interface ParentInfo {
+export interface MapVmInfo {
   name: string;
   target: string | undefined | null;
 }
 
 interface MountedParams {
   viewModel?: ViewModel;
-  mapTarget?: string | null;
 }
 
 interface EventParams {
@@ -41,14 +40,14 @@ export default class MapWatcher extends Events {
   mapTarget: string;
   firstDefaultTarget: string;
   _mapEvent: MapEvent;
-  _parentInfo: ParentInfo | undefined;
+  _mapVmInfo: MapVmInfo | undefined;
 
-  constructor(mapEvent: MapEvent, mapTarget: string, parentInfo?: ParentInfo) {
+  constructor(mapEvent: MapEvent, mapTarget: string, mapVmInfo?: MapVmInfo) {
     super();
     this.eventTypes = ['hook:loaded', 'hook:removed'];
     this._mapEvent = mapEvent;
     this.mapTarget = mapTarget;
-    this._parentInfo = parentInfo;
+    this._mapVmInfo = mapVmInfo;
     this.loadMapSucceed = this.loadMapSucceed.bind(this);
     this.removeMapSucceed = this.removeMapSucceed.bind(this);
   }
@@ -73,7 +72,7 @@ export default class MapWatcher extends Events {
      * 如果子组件和 map 同层级，且没有设置 mapTarget 时，则默认渲染到第一个 map 上
      *
      */
-    const selfParent = this._parentInfo;
+    const selfParent = this._mapVmInfo;
     const parentTarget =
       ['smwebmap', 'smncpmap'].includes(selfParent?.name?.toLowerCase()) &&
       selfParent.target;

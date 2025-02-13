@@ -22,25 +22,12 @@
     "@types/mapbox-gl": "^1.12.1"
   },
   "dependencies": {
-    "@turf/bbox": "^7.2.0",
-    "@turf/center": "^7.2.0",
-    "@turf/helpers": "^6.1.4",
-    "@turf/transform-scale": "^7.2.0",
-    "@types/lodash": "^4.17.15",
+    "@ant-design/icons-vue": "^7.0.1",
     "ant-design-vue": "^4.2.6",
-    "colorcolor": "^1.1.1",
-    "echarts": "^4.8.0",
     "lodash.clonedeep": "^4.5.0",
-    "lodash.difference": "^4.5.0",
-    "lodash.max": "^4.0.1",
-    "lodash.merge": "^4.6.1",
-    "lodash.mergewith": "^4.6.2",
-    "lodash.tonumber": "^4.0.3",
-    "lodash.orderby": "^4.6.0",
-    "omit.js": "^2.0.2",
-    "proj4": "^2.15.0",
-    "simple-statistics": "^7.8.7",
-    "tinycolor2": "^1.6.0"
+    "lodash.debounce": "^4.0.8",
+    "lodash.isequal": "^4.5.0",
+    "resize-detector": "0.x"
   },
   "engines": {
     "node": ">= 6.0.0",

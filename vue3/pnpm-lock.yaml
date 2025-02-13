@@ -332,69 +332,33 @@ importers:
 
   packages/common/utils:
     dependencies:
-      vue:
-        specifier: ^3.2.0
-        version: 3.5.12(typescript@5.6.3)
-
-  packages/mapboxgl/components:
-    dependencies:
-      '@turf/bbox':
-        specifier: ^7.2.0
-        version: 7.2.0
-      '@turf/center':
-        specifier: ^7.2.0
-        version: 7.2.0
-      '@turf/helpers':
-        specifier: ^6.1.4
-        version: 6.5.0
-      '@turf/transform-scale':
-        specifier: ^7.2.0
-        version: 7.2.0
-      '@types/lodash':
-        specifier: ^4.17.15
-        version: 4.17.15
       ant-design-vue:
         specifier: ^4.2.6
         version: 4.2.6(vue@3.5.13(typescript@5.6.3))
-      colorcolor:
-        specifier: ^1.1.1
-        version: 1.1.1
-      echarts:
-        specifier: ^4.8.0
-        version: 4.9.0
+      vue:
+        specifier: ^3.2.0
+        version: 3.5.13(typescript@5.6.3)
+
+  packages/mapboxgl/components:
+    dependencies:
+      '@ant-design/icons-vue':
+        specifier: ^7.0.1
+        version: 7.0.1(vue@3.5.13(typescript@5.6.3))
+      ant-design-vue:
+        specifier: ^4.2.6
+        version: 4.2.6(vue@3.5.13(typescript@5.6.3))
       lodash.clonedeep:
         specifier: ^4.5.0
         version: 4.5.0
-      lodash.difference:
+      lodash.debounce:
+        specifier: ^4.0.8
+        version: 4.0.8
+      lodash.isequal:
         specifier: ^4.5.0
         version: 4.5.0
-      lodash.max:
-        specifier: ^4.0.1
-        version: 4.0.1
-      lodash.merge:
-        specifier: ^4.6.1
-        version: 4.6.2
-      lodash.mergewith:
-        specifier: ^4.6.2
-        version: 4.6.2
-      lodash.orderby:
-        specifier: ^4.6.0
-        version: 4.6.0
-      lodash.tonumber:
-        specifier: ^4.0.3
-        version: 4.0.3
-      omit.js:
-        specifier: ^2.0.2
-        version: 2.0.2
-      proj4:
-        specifier: ^2.15.0
-        version: 2.15.0
-      simple-statistics:
-        specifier: ^7.8.7
-        version: 7.8.7
-      tinycolor2:
-        specifier: ^1.6.0
-        version: 1.6.0
+      resize-detector:
+        specifier: 0.x
+        version: 0.3.0
       vue:
         specifier: '>=3.5.13'
         version: 3.5.13(typescript@5.6.3)
@@ -5043,8 +5007,14 @@ packages:
   lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
 
+  lodash.debounce@4.0.8:
+    resolution: {integrity: sha512-FT1yDzDYEoYWhnSGnpE/4Kj1fLZkDFyqRb7fNt6FdYOSxlUWAtp42Eh6Wb0rGIv/m9Bgo7x4GhQbm5Ys4SG5ow==}
+
   lodash.difference@4.5.0:
     resolution: {integrity: sha512-dS2j+W26TQ7taQBGN8Lbbq04ssV3emRw4NY58WErlTO29pIqS0HmoT5aJ9+TUQ1N3G+JOZSji4eugsWwGp9yPA==}
+
+  lodash.isequal@4.5.0:
+    resolution: {integrity: sha512-pDo3lu8Jhfjqls6GkMgpahsF9kCyayhgykjyLMNFTKWrpVdAQtYyB4muAMWozBB4ig/dtWAmsMxLEI8wuz+DYQ==}
 
   lodash.max@4.0.1:
     resolution: {integrity: sha512-iykTDTb7PK33HSQmKy34zv+hh4WEu7WonJPXQcgODzUbbtradtNs8RsD/GI7XV++60KaKR1xhW56N4ISqHesfQ==}
@@ -6309,6 +6279,9 @@ packages:
 
   require-main-filename@1.0.1:
     resolution: {integrity: sha512-IqSUtOVP4ksd1C/ej5zeEh/BIP2ajqpn8c5x+q99gvcIG/Qf0cud5raVnE/Dwd0ua9TXYDoDc0RE5hBSdz22Ug==}
+
+  resize-detector@0.3.0:
+    resolution: {integrity: sha512-R/tCuvuOHQ8o2boRP6vgx8hXCCy87H1eY9V5imBYeVNyNVpuL9ciReSccLj2gDcax9+2weXy3bc8Vv+NRXeEvQ==}
 
   resize-observer-polyfill@1.5.1:
     resolution: {integrity: sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==}
@@ -13134,7 +13107,11 @@ snapshots:
 
   lodash.clonedeep@4.5.0: {}
 
+  lodash.debounce@4.0.8: {}
+
   lodash.difference@4.5.0: {}
+
+  lodash.isequal@4.5.0: {}
 
   lodash.max@4.0.1: {}
 
@@ -14408,6 +14385,8 @@ snapshots:
   require-directory@2.1.1: {}
 
   require-main-filename@1.0.1: {}
+
+  resize-detector@0.3.0: {}
 
   resize-observer-polyfill@1.5.1: {}
 

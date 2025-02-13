@@ -70,7 +70,7 @@ interface identifyParam {
   show?: boolean;
   layers?: Array<Object>;
   fields?: Array<string>;
-  layerStyle?: Array<Object>;
+  layerStyle?: Object;
   clickAreaAround?: number;
 }
 

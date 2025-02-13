@@ -7,7 +7,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 // https://vite.dev/config/
 export default defineConfig({
   define: {
-    global: 'window',
+    global: 'window'
   },
   plugins: [vue(), vueDevTools()],
   resolve: {
@@ -23,6 +23,9 @@ export default defineConfig({
       ),
       '@supermapgis/common/theme-chalk': fileURLToPath(
         new URL('../packages/common/theme-chalk', import.meta.url)
+      ),
+      '@supermapgis/vue-iclient-common': fileURLToPath(
+        new URL('../packages/common/components', import.meta.url)
       ),
       'vue-iclient-core': fileURLToPath(
         new URL('../../core', import.meta.url)
@@ -41,11 +44,19 @@ export default defineConfig({
     }
   },
   optimizeDeps: {
-    include: ['vue-iclient-core/libs/iclient-common/iclient-common', 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance']
+    include: [
+      'vue-iclient-core/libs/iclient-common/iclient-common',
+      'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance',
+      'vue-iclient-core/libs/echarts-layer/EchartsLayer'
+    ]
   },
   build: {
     commonjsOptions: {
-      include: ['vue-iclient-core/libs/iclient-common/iclient-common', 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance']
+      include: [
+        'vue-iclient-core/libs/iclient-common/iclient-common',
+        'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance',
+        'vue-iclient-core/libs/echarts-layer/EchartsLayer'
+      ]
     },
     rollupOptions: {
       // https://rollupjs.org/configuration-options/

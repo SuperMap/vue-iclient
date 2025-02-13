@@ -3,6 +3,6 @@ import Attributes from '../attributes.vue'
 import '../style'
 </script>
 <template>
-  <Attributes>1</Attributes>
+  <Attributes v-bind="$attrs"></Attributes>
 </template>
 <style scoped></style>

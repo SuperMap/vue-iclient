@@ -4,8 +4,12 @@ import '../style'
 </script>
 <template>
   <div>
-    <WebMap></WebMap>
-    <div class="hello">helllo</div>
+    <WebMap v-bind="$attrs"></WebMap>
   </div>
 </template>
-<style scoped></style>
+<style>
+#map {
+  width: 100%;
+  height: 900px;
+}
+</style>

@@ -89,7 +89,7 @@ import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyl
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/_types/LineStyle';
 import { useVmUpdater } from '../../../common/hooks/VmUpdater'; 
-import { useMapGetter } from '../../../common/hooks/map-getter'; 
+import { useMapGetter } from '@supermapgis/common/utils/hooks/useMapGetter'; 
 import { Table as ATable, Dropdown as ADropdown, Menu as AMenu, MenuItem as AMenuItem, SubMenu as ASubMenu, Checkbox as ACheckbox, Button as AButton, Input as AInput } from 'ant-design-vue';
 import { MenuOutlined, SearchOutlined, FilterOutlined  } from '@ant-design/icons-vue';
 

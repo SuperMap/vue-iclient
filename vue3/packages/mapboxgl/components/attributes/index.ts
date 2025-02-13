@@ -1,6 +1,6 @@
-import { withInstall } from '../_utils'
+import type { SFCWithInstall } from '@supermapgis/common/utils'
+import { withInstall } from '@supermapgis/common/utils'
 import attributes from './attributes.vue'
-import type { SFCWithInstall } from '../_utils'
 
 export const Attributes: SFCWithInstall<typeof attributes> = withInstall(attributes)
 export default Attributes
