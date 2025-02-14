@@ -3,14 +3,20 @@
   "compilerOptions": {
     "composite": true,
     "jsx": "preserve",
-    "lib": ["ES2018", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2018",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "skipLibCheck": true
   },
+  "types": [
+    "mapbox-gl"
+  ],
   "include": [
     "packages",
     "typings/**/*.d.ts",
-    "env.d.ts",
-    "packages/mapboxgl/components/types.d.ts"
+    "env.d.ts"
   ],
   "exclude": [
     "node_modules",

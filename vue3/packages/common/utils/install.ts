@@ -6,7 +6,7 @@ export type { SFCWithInstall }
 
 export const withInstall = <T>(comp: T) => {
   ;(comp as SFCWithInstall<T>).install = (app: App): void => {
-    // @ts-ignore
+    // @ts-expect-error
     app.component(comp?.name, comp)
   }
   return comp as SFCWithInstall<T>

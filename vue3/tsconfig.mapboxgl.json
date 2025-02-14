@@ -10,11 +10,13 @@
     ],
     "skipLibCheck": true
   },
+  "types": [
+    "mapbox-gl"
+  ],
   "include": [
     "packages/common",
     "packages/mapboxgl",
     "typings/env.d.ts",
-    "packages/mapboxgl/components/types.d.ts"
   ],
   "exclude": [
     "node_modules",

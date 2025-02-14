@@ -1,1 +1,0 @@
-import mapboxglTypes = mapboxgl
