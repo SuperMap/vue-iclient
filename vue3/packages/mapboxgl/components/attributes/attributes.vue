@@ -88,7 +88,7 @@ import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/Attribute
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/_types/LineStyle';
-import { useVmUpdater } from '../../../common/hooks/VmUpdater'; 
+import { useVmUpdater } from '@supermapgis/common/utils/hooks/VmUpdater'; 
 import { useMapGetter } from '@supermapgis/common/utils/hooks/useMapGetter'; 
 import { Table as ATable, Dropdown as ADropdown, Menu as AMenu, MenuItem as AMenuItem, SubMenu as ASubMenu, Checkbox as ACheckbox, Button as AButton, Input as AInput } from 'ant-design-vue';
 import { MenuOutlined, SearchOutlined, FilterOutlined  } from '@ant-design/icons-vue';
@@ -272,14 +272,13 @@ const viewModelProps = computed(() => {
 });
 
 useVmUpdater(viewModelProps, viewModel);
-useMapGetter(props, emit);
 
 
 const associateMap = computed(() => props.associateWithMap.enabled);
 
 const allCount = computed(() => {
   if ('total' in paginationOptions) {
-    return paginationOptions.total;
+    return paginationOptions.value.total;
   }
   return totalCount.value;
 });
@@ -299,9 +298,9 @@ const handleMapSelectedFeature = (feature) => {
     selectedRowKeys.value.push(index);
   }
   selectedRowLength.value = selectedRowKeys.value.length;
-  let pageNumber = Math.ceil((index + 1) / paginationOptions.pageSize);
-  let featureIndex = index % paginationOptions.pageSize;
-  paginationOptions.current = pageNumber;
+  let pageNumber = Math.ceil((index + 1) / paginationOptions.value.pageSize);
+  let featureIndex = index % paginationOptions.value.pageSize;
+  paginationOptions.value.current = pageNumber;
   const tableWrap = tableInstance.value.$el;
   if (tableWrap && tableWrap.scrollHeight > tableWrap.clientHeight) {
     tableWrap.scrollTop = 0;
@@ -361,10 +360,10 @@ const setZoomToFeature = () => {
 const handleChange = (pagination, filters, newSorter, { currentDataSource }) => {
   currentDataSource.value = currentDataSource;
   if (filters && Object.keys(filters).length) {
-    paginationOptions.total = currentDataSource.length;
+    paginationOptions.value.total = currentDataSource.length;
   }
   getCurrentSelectedRowLength();
-  paginationOptions.current = pagination.current;
+  paginationOptions.value.current = pagination.current;
   sorter.value = newSorter;
   emit('change', pagination, filters, newSorter, { currentDataSource });
 };
@@ -374,7 +373,7 @@ const bindEvents = () => {
     const { content, totalCount: newTotalCount, columns: newColumns } = datas;
     if (newTotalCount) {
       totalCount.value = newTotalCount;
-      paginationOptions.total = newTotalCount;
+      paginationOptions.value.total = newTotalCount;
     }
     const hideColumns = columns.value.filter(item => !item.visible);
     hideColumns.forEach(element => {
@@ -456,7 +455,7 @@ watch(() => props.fieldConfigs, (newVal) => {
 onMounted(() => {
   fieldInfo.value = clonedeep(props.fieldConfigs);
   viewModel.value = new AttributesViewModel({
-    paginationOptions,
+    paginationOptions: paginationOptions.value,
     ...props,
     fieldConfigs: fieldInfo.value
   });
