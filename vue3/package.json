@@ -23,7 +23,7 @@
     "build:site": "pnpm --dir ./site build",
     "clean": "pnpm run clean:dist && pnpm run -r --parallel clean",
     "clean:dist": "rimraf dist",
-    "build-mapboxgl": "pnpm --dir build-tools/build start --pkg mapboxgl",
+    "build-mapboxgl": "pnpm --dir tools/build start --pkg mapboxgl",
     "build-mapboxgl:theme": "pnpm --dir packages/mapboxgl/theme-chalk build",
     "stub": "pnpm run -r --parallel stub",
     "typecheck": "run-p typecheck:web typecheck:node",

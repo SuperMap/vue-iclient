@@ -23,7 +23,7 @@ export const getUtilsRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'utils')
 export const getThemeRoot = (pkg: Pkg | 'common') => resolve(getPkgRoot(pkg), 'theme-chalk')
 export const getEpRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'components')
 
-export const buildRoot = resolve(projRoot, 'build-tools', 'build')
+export const buildRoot = resolve(projRoot, 'tools', 'build')
 
 /** `/dist` */
 export const buildOutput = resolve(projRoot, 'dist')

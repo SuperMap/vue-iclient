@@ -11,7 +11,7 @@ export default [
 
   {
     name: 'app/files-to-ignore',
-    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '.history/*', 'env.d.ts', "build-tools/**"]
+    ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**', '.history/*', 'env.d.ts', "tools/**"]
   },
   ...pluginVue.configs['flat/essential'],
   ...vueTsEslintConfig(),
