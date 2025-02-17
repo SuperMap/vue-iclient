@@ -2,8 +2,7 @@ import { computed, inject, isRef, ref, unref } from 'vue'
 import { get } from 'lodash-es'
 import ZHCN from '@supermapgis/common/locale/lang/zh-cn'
 
-import type { MaybeRef } from '@vueuse/core'
-import type { InjectionKey, Ref } from 'vue'
+import type { InjectionKey, Ref, MaybeRef } from 'vue'
 import type { Language } from '@supermapgis/common/locale'
 
 export type TranslatorOption = Record<string, string | number>

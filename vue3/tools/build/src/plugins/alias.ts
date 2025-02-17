@@ -26,7 +26,6 @@ export function Alias(): Plugin {
         .replaceAll(source, `${PKG_PREFIX}/${PKG_NAME}/`)
         .replaceAll(sourceCommonComp, `${PKG_PREFIX}/${PKG_NAME}`)
         .replaceAll(sourceCommon, `${PKG_PREFIX}/${PKG_NAME}/`)
-
       return {
         id: idStr,
         external: 'absolute'

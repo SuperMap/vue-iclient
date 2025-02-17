@@ -14,7 +14,8 @@ import {
   getPkgRoot,
   getPkgByCommand,
   coreRoot,
-  getEpOutput
+  getEpOutput,
+  projRoot
 } from '@supermapgis/build-utils'
 import { generateExternal, withTaskName, writeBundles } from '../utils'
 import { Alias } from '../plugins/alias'
@@ -71,7 +72,7 @@ async function buildModulesComponents(rootDir, folder = 'components') {
   await buildModulesTools({
     input,
     folder,
-    externalsConfig: path.resolve(root, 'package.json'),
+    externalsConfig: path.resolve(projRoot, 'package.json'),
     preserveModulesRoot: root
   })
 }
@@ -81,7 +82,14 @@ async function buildModulesTools({ input, externalsConfig, folder, preserveModul
     input,
     plugins,
     external: await generateExternal({ full: false }, externalsConfig),
-    treeshake: { moduleSideEffects: false }
+    treeshake: { moduleSideEffects: false },
+    onwarn(warning, warn) {
+      const { code, importer } = warning
+      if (code === 'CIRCULAR_DEPENDENCY' && importer.includes('ant-design-vue')) {
+        return
+      }
+      warn(warning);
+    }
   })
   await writeBundles(
     bundle,

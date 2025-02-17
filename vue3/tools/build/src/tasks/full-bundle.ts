@@ -13,6 +13,7 @@ import {
   getEpOutput,
   getEpRoot,
   getLocaleRoot,
+  getPkgRoot,
   getPkgByCommand,
   coreRoot
 } from '@supermapgis/build-utils'
@@ -28,11 +29,16 @@ async function buildFullEntry(minify: boolean, banner: string) {
   const epRoot = getEpRoot(pkgName)
   const PKG_BRAND_NAME = getPKG_BRAND_NAME(pkgName)
   const PKG_CAMELCASE_NAME = PKG_BRAND_NAME.replace(/\s/g, '')
+  const commonRoot = path.resolve(getPkgRoot('common'))
 
   const plugins: Plugin[] = [
     FullAlias(),
     alias({
-      entries: [{ find: 'vue-iclient-core', replacement: coreRoot }]
+      entries: [
+        { find: 'vue-iclient-core', replacement: coreRoot },
+        { find: '@supermapgis/common', replacement: commonRoot },
+        { find: `@supermapgis/${pkgName}`, replacement: path.resolve(getPkgRoot(pkgName)) }
+      ]
     }),
     vue({
       isProduction: true,
@@ -79,7 +85,14 @@ async function buildFullEntry(minify: boolean, banner: string) {
     input: path.resolve(epRoot, 'index.ts'),
     plugins,
     external: await generateExternal({ full: true }),
-    treeshake: true
+    treeshake: true,
+    onwarn(warning, warn) {
+      const { code, importer } = warning
+      if (code === 'CIRCULAR_DEPENDENCY' && importer.includes('ant-design-vue')) {
+        return
+      }
+      warn(warning)
+    }
   })
   await writeBundles(bundle, [
     {

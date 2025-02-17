@@ -2,8 +2,7 @@ import { computed, getCurrentInstance, inject, provide, ref, unref } from 'vue'
 import { localeContextKey, useLocale } from '@supermapgis/common/hooks'
 import { configProviderContextKey } from '../constants'
 
-import type { MaybeRef } from '@vueuse/core'
-import type { App, Ref } from 'vue'
+import type { App, Ref, MaybeRef } from 'vue'
 import type { ConfigProviderContext } from '../constants'
 
 const globalConfig = ref<ConfigProviderContext>()
