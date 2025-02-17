@@ -15,11 +15,6 @@ export default class VmUpdater extends Vue {
     }
   }
 
-  // 组件设置vm实例
-  public setViewModel(viewModel) {
-    this.viewModel = viewModel;
-  }
-
   // 给vm的props绑定监听
   watchViewModelOptions(viewModelProps) {
     // 给每个vm层的props绑定监听，然后操作vm层的视图变化,必须在vue实例化的时候调用

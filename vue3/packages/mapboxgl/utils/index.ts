@@ -1,2 +1,2 @@
 export const a = 'mapboxgl'
-export { xxx } from './test/test'
+export * from './vue-types'

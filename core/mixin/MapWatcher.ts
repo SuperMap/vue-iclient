@@ -42,6 +42,10 @@ export default class MapWatcher extends Events {
   _mapEvent: MapEvent;
   _mapVmInfo: MapVmInfo | undefined;
 
+  triggerEvent: (name: string, ...rest: any) => any;
+  on: (data: Record<string, (...rest: any) => void>) => void;
+  un: (data: Record<string, (...rest: any) => void>) => void;
+
   constructor(mapEvent: MapEvent, mapTarget: string, mapVmInfo?: MapVmInfo) {
     super();
     this.eventTypes = ['hook:loaded', 'hook:removed'];

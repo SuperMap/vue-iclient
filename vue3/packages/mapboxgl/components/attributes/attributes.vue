@@ -87,7 +87,7 @@ import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/Attribute
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/_types/LineStyle';
-import { useMapGetter, useVmUpdater, useLocale } from '@supermapgis/common/hooks'; 
+import { useMapGetter, useVmProps, useLocale } from '@supermapgis/common/hooks'; 
 import { Table as ATable, Dropdown as ADropdown, Menu as AMenu, MenuItem as AMenuItem, SubMenu as ASubMenu, Checkbox as ACheckbox, Button as AButton, Input as AInput } from 'ant-design-vue';
 import { MenuOutlined, SearchOutlined, FilterOutlined  } from '@ant-design/icons-vue';
 
@@ -141,6 +141,8 @@ export interface ToolbarParams {
   showColumnsControl?: boolean;
   showRefresh?: boolean;
 }
+
+const viewModelProps = ['layerName', 'dataset', 'lazy', 'associateWithMap', 'fieldInfo', 'paginationOptions', 'sorter']
 
 const emit = defineEmits(['rowSelect', 'change', 'loaded']);
 
@@ -257,21 +259,7 @@ let tableOptions = ref<TableParams>({
   showRowSelection: true,
   pagination: {}
 });
-const viewModel = ref<AttributesViewModel | null>(null);
 const tableInstance = ref();
-const viewModelProps = computed(() => {
-  return {
-    layerName: props.layerName,
-    dataset: props.dataset,
-    lazy: props.lazy,
-    associateWithMap: props.associateWithMap,
-    fieldInfo: fieldInfo.value,
-    paginationOptions: paginationOptions.value,
-    sorter: sorter.value
-  }
-});
-
-useVmUpdater(viewModelProps, viewModel);
 
 
 const associateMap = computed(() => props.associateWithMap.enabled);
@@ -291,6 +279,9 @@ const compColumns = computed(() => {
       return column;
     });
 });
+
+let viewModel: InstanceType<typeof AttributesViewModel>
+const { setViewModel } = useVmProps(props, viewModelProps)
 
 const handleMapSelectedFeature = (feature) => {
   let index = +feature.properties.index;
@@ -352,8 +343,8 @@ const clearSelectedRows = () => {
 };
 
 const setZoomToFeature = () => {
-  if (associateMap.value && viewModel.value) {
-    viewModel.value.zoomToFeatures(selectedRowKeys.value, { zoomToFeature: true });
+  if (associateMap.value && viewModel) {
+    viewModel.zoomToFeatures(selectedRowKeys.value);
   }
 };
 
@@ -369,7 +360,7 @@ const handleChange = (pagination, filters, newSorter, { currentDataSource }) => 
 };
 
 const bindEvents = () => {
-  viewModel.value.on('dataChanged', (datas) => {
+  viewModel.on('dataChanged', (datas) => {
     const { content, totalCount: newTotalCount, columns: newColumns } = datas;
     if (newTotalCount) {
       totalCount.value = newTotalCount;
@@ -387,11 +378,11 @@ const bindEvents = () => {
     tableData.value = content;
   });
 
-  viewModel.value.on('clearselectedrows', () => {
+  viewModel.on('clearselectedrows', () => {
     clearSelectedRows();
   });
 
-  viewModel.value.on('changeSelectLayer', (feature) => {
+  viewModel.on('changeSelectLayer', (feature) => {
     handleMapSelectedFeature(feature);
   });
 };
@@ -399,21 +390,21 @@ const bindEvents = () => {
 const refreshData = () => {
   clearSelectedRows();
   tableData.value = [];
-  viewModel.value.refresh();
+  viewModel.refresh();
 };
 
 const handleSearch = (selectedKeys, confirm, dataIndex) => {
   console.log('selectedKeys, confirm, dataIndex', selectedKeys, dataIndex);
   searchedColumn.value = dataIndex;
   searchText.value = selectedKeys[0];
-  viewModel.value.setSearchText(searchText.value, searchedColumn.value);
+  viewModel.setSearchText(searchText.value, searchedColumn.value);
   confirm();
 };
 
 const handleSearchReset = (clearFilters) => {
   clearFilters();
   searchText.value = '';
-  viewModel.value.setSearchText();
+  viewModel.setSearchText();
 };
 
 // const getPopupContainerFn = () => {
@@ -421,16 +412,16 @@ const handleSearchReset = (clearFilters) => {
 // };
 
 const removed = () => {
-  viewModel.value.off('dataChanged');
-  viewModel.value.off('clearselectedrows');
-  viewModel.value.off('changeSelectLayer');
-  viewModel.value = null;
+  viewModel.off('dataChanged');
+  viewModel.off('clearselectedrows');
+  viewModel.off('changeSelectLayer');
+  viewModel = null;
 };
 
 watch(selectedRowKeys, (newVal) => {
   emit('rowSelect', newVal);
-  if (associateMap.value && viewModel.value) {
-    viewModel.value.addOverlaysToMap(newVal, props.layerStyle, props.title);
+  if (associateMap.value && viewModel) {
+    viewModel.addOverlaysToMap(newVal, props.layerStyle, props.title);
   }
 });
 
@@ -454,11 +445,12 @@ watch(() => props.fieldConfigs, (newVal) => {
 
 onMounted(() => {
   fieldInfo.value = cloneDeep(props.fieldConfigs);
-  viewModel.value = new AttributesViewModel({
+  viewModel = new AttributesViewModel({
     paginationOptions: paginationOptions.value,
     ...props,
     fieldConfigs: fieldInfo.value
   });
+  setViewModel(viewModel);
   bindEvents();
 });
 

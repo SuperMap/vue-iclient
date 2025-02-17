@@ -59,7 +59,8 @@ export default class MapEvents extends Vue {
     this.emitMapEvent(event.type, { mapboxEvent: event, ...data });
   }
 
-  bindMapEvents(): void {
+  bindMapEvents(map: mapboxglTypes.Map): void {
+    this.map = map;
     Object.keys(this.$listeners).forEach(eventName => {
       if (MAP_EVENT_NAMES.includes(eventName)) {
         this.bindMapEvent(eventName, this.mapEventCallback.bind(this));

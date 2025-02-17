@@ -126,6 +126,8 @@ class FeatureTableViewModel extends mapboxgl.Evented {
 
   totalCount: number;
 
+  on: (evt: string, fn: Function) => void;
+
   constructor(options) {
     super();
     this.selectedKeys = [];

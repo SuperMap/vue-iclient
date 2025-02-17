@@ -77,7 +77,7 @@ interface webMapOptions {
   layerFilter?: () => boolean;
   tileTransformRequest?: (url?: string) => Object;
 }
-interface mapOptions {
+export interface MapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
   zoom?: number;
   bounds?: mapboxglTypes.LngLatBoundsLike;
@@ -91,6 +91,7 @@ interface mapOptions {
   rasterTileSize?: number;
   container?: string;
   crs: string;
+  [key: string]: any;
 }
 
 interface CRSOptions {
@@ -148,7 +149,7 @@ interface LayerUpdateChangedParams {
 export default class WebMapViewModel extends Events {
   map: mapboxglTypes.Map;
 
-  mapOptions: any;
+  mapOptions: MapOptions;
 
   options: any;
 
@@ -184,7 +185,7 @@ export default class WebMapViewModel extends Events {
       }
     },
     // @ts-ignore fix-mapoptions
-    mapOptions: mapOptions = { style: { version: 8, sources: {}, layers: [] } }
+    mapOptions: MapOptions = { style: { version: 8, sources: {}, layers: [] } }
   ) {
     super();
 

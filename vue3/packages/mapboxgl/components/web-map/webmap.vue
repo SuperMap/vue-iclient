@@ -1,176 +1,42 @@
 <script setup lang="ts">
+import type { WebMapProps, WebMapEmits, ControlProps } from './webmap'
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
 import mapEvent from 'vue-iclient-core/types/map-event'
-// import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater'
-// import MapEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/map-events'
+import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
+import useVmProps from '@supermapgis/common/hooks/useVmProps'
 import { addListener, removeListener } from 'resize-detector'
-import { debounce } from 'lodash-es'
-// import SmSpin from 'vue-iclient/src/common/spin/Spin.vue'
-// import Message from 'vue-iclient/src/common/message/Message.js'
-import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed } from 'vue'
+import { debounce, pick, cloneDeep } from 'lodash-es'
+import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useAttrs, getCurrentInstance } from 'vue'
 import { Spin as ASpin } from 'ant-design-vue'
+import { webMapPropsDefault } from './webmap'
 
-interface commonControlParam {
-  show?: boolean
-  position?: string
-  background?: string
-  textColor?: string
-}
+const viewModelProps = [
+  'mapId',
+  'serverUrl',
+  'mapOptions.center',
+  'mapOptions.zoom',
+  'mapOptions.crs',
+  'mapOptions.style',
+  'mapOptions.minZoom',
+  'mapOptions.maxZoom',
+  'mapOptions.maxBounds',
+  'mapOptions.renderWorldCopies',
+  'mapOptions.bearing',
+  'mapOptions.pitch',
+  'mapOptions.rasterTileSize',
+  'withCredentials',
+  'proxy'
+]
 
-interface cardCommonParam extends commonControlParam {
-  collapsed?: boolean
-  headerName?: string
-}
+const props = withDefaults(defineProps<WebMapProps>(), webMapPropsDefault)
 
-interface zoomParam extends commonControlParam {
-  showZoomSlider?: boolean
-}
-
-interface measureParam extends cardCommonParam {
-  showUnitSelect?: boolean
-  distanceDefaultUnit?: string
-  areaDefaultUnit?: string
-}
-
-interface legendParam extends cardCommonParam {
-  layerNames: Array<string>
-  isShowTitle?: boolean
-  isShowField?: boolean
-  mode?: string
-}
-
-interface queryParam extends cardCommonParam {
-  maxFeatures?: number
-  layerStyle?: Record<string, any>
-  iportalData?: Array<Record<string, any>>
-  restData?: Array<Record<string, any>>
-  restMap?: Array<Record<string, any>>
-}
-
-interface searchParam extends commonControlParam {
-  maxFeatures?: number
-  layerNames?: Array<string>
-  onlineLocalSearch?: Object
-  iportalData?: Array<Object>
-  restData?: Array<Object>
-  restMap?: Array<Object>
-  addressMatch?: Array<string>
-}
-
-interface identifyParam {
-  show?: boolean
-  layers?: Array<Object>
-  fields?: Array<string>
-  layerStyle?: Object
-  clickAreaAround?: number
-}
-
-interface layerManageParam {
-  show?: boolean
-  layers?: Array<Object>
-}
-
-interface controlProps {
-  panControl?: commonControlParam
-  scaleControl?: commonControlParam
-  zoomControl?: zoomParam
-  miniMapControl?: cardCommonParam
-  layerListControl?: cardCommonParam
-  measureControl?: measureParam
-  legendControl?: legendParam
-  queryControl?: queryParam
-  searchControl?: searchParam
-  identifyControl?: identifyParam
-  layerManagerControl?: layerManageParam
-}
-
-const props = withDefaults(
-  defineProps<{
-    mapId: string | number | Record<string, any>
-    target?: string
-    serverUrl?: string
-    accessToken?: string
-    accessKey?: string
-    tiandituKey?: string
-    bingMapsKey?: string
-    googleMapsAPIKey?: string
-    googleMapsLanguage?: string
-    withCredentials?: boolean
-    excludePortalProxyUrl?: boolean
-    isSuperMapOnline?: boolean
-    proxy?: boolean | string
-    defaultLoading?: boolean
-    loading?: boolean
-    background?: string
-    iportalServiceProxyUrlPrefix?: string
-    mapOptions?: Record<string, any>
-    autoresize?: boolean
-    keepBounds?: boolean
-    panControl?: commonControlParam
-    scaleControl?: commonControlParam
-    zoomControl?: zoomParam
-    miniMapControl?: cardCommonParam
-    layerListControl?: cardCommonParam
-    measureControl?: measureParam
-    legendControl?: legendParam
-    queryControl?: queryParam
-    searchControl?: searchParam
-    identifyControl?: identifyParam
-    layerManagerControl?: layerManageParam
-    tileTransformRequest?: (url: string) => Object
-  }>(),
-  {
-    target: 'map',
-    serverUrl: 'https://www.supermapol.com',
-    googleMapsLanguage: 'zh-CN',
-    withCredentials: false,
-    defaultLoading: false,
-    loading: false,
-    autoresize: true,
-    keepBounds: true,
-    panControl: () => ({ show: false, position: 'top-left' }),
-    scaleControl: () => ({ show: false, position: 'bottom-left' }),
-    zoomControl: () => ({ show: false, position: 'top-left' }),
-    miniMapControl: () => ({ show: false, position: 'bottom-right' }),
-    layerListControl: () => ({ show: false, position: 'top-right' }),
-    measureControl: () => ({
-      show: false,
-      position: 'top-right',
-      showUnitSelect: true,
-      distanceDefaultUnit: 'kilometers',
-      areaDefaultUnit: 'kilometers'
-    }),
-    legendControl: () => ({
-      show: false,
-      position: 'bottom-left',
-      layerNames: [],
-      isShowTitle: false,
-      isShowField: false,
-      mode: 'simple'
-    }),
-    queryControl: () => ({ show: false, position: 'top-right' }),
-    searchControl: () => ({ show: false, position: 'top-right' }),
-    identifyControl: () => ({
-      show: false,
-      layers: [],
-      fields: [],
-      layerStyle: {},
-      clickAreaAround: 5
-    }),
-    layerManagerControl: () => ({ show: false, layers: [] })
-  }
-)
-
-const emit = defineEmits<{
-  (e: 'load', data: { map: any }): void
-  (e: 'getMapFailed', data: { error: any }): void
-  (e: 'getLayerDatasourceFailed', data: { error: any; layer: any; map: any }): void
-}>()
+const emit = defineEmits(['load', 'getMapFailed', 'getLayerDatasourceFailed'].concat(MAP_EVENT_NAMES)) as unknown as WebMapEmits
 
 const el = ref<HTMLInputElement | null>(null)
 const spinning = ref(true)
+
 const controlComponents = computed(() => {
-  const controls: controlProps = {}
+  const controls: ControlProps = {}
   for (let key in props) {
     if (key.includes('Control') && props[key].show) {
       const controlName = key.replace('Control', '')
@@ -181,63 +47,45 @@ const controlComponents = computed(() => {
   return controls
 })
 
+let map: any
+let viewModel: InstanceType<typeof WebMapViewModel>
+let mapEventsInstance: InstanceType<typeof MapEvents>
+let __resizeHandler: () => void
+
+const { setViewModel } = useVmProps(props, viewModelProps)
+const attrs = useAttrs();
+const componentInstance = getCurrentInstance();
+
 const resize = () => {
   if (viewModel && viewModel.resize) {
     viewModel.resize(props.keepBounds)
   }
 }
 
-let map: any
-let viewModel: InstanceType<typeof WebMapViewModel>
-let __resizeHandler: () => void
 const initializeWebMap = () => {
-  let {
-    target,
-    serverUrl,
-    accessToken,
-    accessKey,
-    tiandituKey,
-    googleMapsLanguage,
-    bingMapsKey,
-    googleMapsAPIKey,
-    withCredentials,
-    excludePortalProxyUrl,
-    isSuperMapOnline,
-    proxy,
-    mapOptions,
-    iportalServiceProxyUrlPrefix,
-    tileTransformRequest
-  } = props
+  mapEventsInstance = new MapEvents(cloneDeep(attrs));
   viewModel = new WebMapViewModel(
     props.mapId,
-    {
-      target,
-      serverUrl,
-      accessToken,
-      accessKey,
-      tiandituKey,
-      googleMapsLanguage,
-      bingMapsKey,
-      googleMapsAPIKey,
-      withCredentials,
-      excludePortalProxyUrl,
-      isSuperMapOnline,
-      proxy,
-      iportalServiceProxyUrlPrefix,
-      tileTransformRequest
-    },
-    mapOptions
+    pick(props, [
+      'target',
+      'serverUrl',
+      'accessToken',
+      'accessKey',
+      'tiandituKey',
+      'googleMapsLanguage',
+      'bingMapsKey',
+      'googleMapsAPIKey',
+      'withCredentials',
+      'excludePortalProxyUrl',
+      'isSuperMapOnline',
+      'proxy',
+      'mapOptions',
+      'iportalServiceProxyUrlPrefix',
+      'tileTransformRequest'
+    ]),
+    props.mapOptions
   )
-  if (props.autoresize) {
-    __resizeHandler = debounce(
-      () => {
-        resize()
-      },
-      100,
-      { leading: true }
-    )
-    addListener(el.value, __resizeHandler)
-  }
+  setViewModel(viewModel)
 }
 
 const registerEvents = () => {
@@ -248,7 +96,7 @@ const registerEvents = () => {
       e.map.resize()
       map = e.map
       // 绑定map event
-      // this.bindMapEvents();
+      mapEventsInstance.bindMapEvents(e.map);
       /**
        * @event load
        * @desc webmap 加载完成之后触发。
@@ -297,6 +145,24 @@ const registerEvents = () => {
       mapEvent.deleteMap(props.target)
     }
   })
+  const builtInEvents = MAP_EVENT_NAMES.reduce((listeners, eventName) => {
+    listeners[eventName] = ({ mapParams }: { mapParams: Record<string, any> }) => {
+      // @ts-ignore
+      emit(eventName, { ...mapParams, component: componentInstance })
+    }
+    return listeners;
+  }, {} as Record<string , any>);
+  mapEventsInstance.on(builtInEvents);
+  if (props.autoresize) {
+    __resizeHandler = debounce(
+      () => {
+        resize()
+      },
+      100,
+      { leading: true }
+    )
+    addListener(el.value, __resizeHandler)
+  }
 }
 
 const notifyErrorTip = ({
@@ -327,7 +193,7 @@ const destory = () => {
 
 watch(
   () => props.mapId,
-  (newVal: string, oldVal: string) => {
+  () => {
     if (props.defaultLoading) {
       spinning.value = true
     }
@@ -335,7 +201,7 @@ watch(
 )
 watch(
   () => props.loading,
-  (newVal: string) => {
+  (newVal: boolean) => {
     spinning.value = newVal
   }
 )
@@ -368,6 +234,6 @@ onUnmounted(() => {
       <component :is="controlName" v-bind="controlProps"></component>
     </template>
     <!-- :tip="$t('webmap.loadingTip')" -->
-    <a-spin v-if="spinning" size="large" :spinning="spinning" />
+    <ASpin v-if="spinning" size="large" :spinning="spinning" />
   </div>
 </template>
