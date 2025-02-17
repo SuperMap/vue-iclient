@@ -1,5 +1,5 @@
 import type { Pkg } from './paths'
-import { upperFirst } from 'lodash-unified'
+import { upperFirst } from 'lodash-es'
 
 export const PKG_PREFIX = '@supermapgis'
 export const getPKG_NAME = (name: Pkg) => `vue-iclient-${name}`

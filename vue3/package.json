@@ -47,8 +47,7 @@
     "vue": "3.5.12",
     "vue-iclient-core": "workspace:*",
     "ant-design-vue": "^4.2.6",
-    "lodash-es": "^4.17.21",
-    "lodash-unified": "^1.0.2"
+    "lodash-es": "^4.17.21"
   },
   "devDependencies": {
     "@pnpm/find-workspace-packages": "^4.0.16",

@@ -1,5 +1,5 @@
 import { watch, onMounted } from 'vue'
-import { isEqual } from 'lodash-unified'
+import { isEqual } from 'lodash-es'
 
 export function useVmUpdater(viewModelProps, viewModel) {
   const watchViewModelOptions = viewModelProps => {

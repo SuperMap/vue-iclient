@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@ant-design/icons-vue':
+        specifier: ^7.0.1
+        version: 7.0.1(vue@3.5.12(typescript@5.6.3))
       '@supermapgis/common/hooks':
         specifier: workspace:*
         version: link:packages/common/hooks
@@ -47,9 +50,6 @@ importers:
       lodash-es:
         specifier: ^4.17.21
         version: 4.17.21
-      lodash-unified:
-        specifier: ^1.0.2
-        version: 1.0.3(@types/lodash-es@4.17.12)(lodash-es@4.17.21)(lodash@4.17.21)
       vue:
         specifier: 3.5.12
         version: 3.5.12(typescript@5.6.3)
@@ -62,10 +62,10 @@ importers:
         version: 4.0.43(@pnpm/logger@4.0.0)(@yarnpkg/core@4.2.0(typanion@3.14.0))(typanion@3.14.0)
       '@supermapgis/build':
         specifier: workspace:*
-        version: link:build-tools/build
+        version: link:tools/build
       '@supermapgis/build-utils':
         specifier: workspace:*
-        version: link:build-tools/build-utils
+        version: link:tools/build-utils
       '@tsconfig/node22':
         specifier: ^22.0.0
         version: 22.0.0
@@ -200,7 +200,69 @@ importers:
         specifier: ^1.12.1
         version: 1.13.10
 
-  build-tools/build:
+  packages/common/components:
+    dependencies:
+      vue:
+        specifier: '>=3.5.13'
+        version: 3.5.13(typescript@5.6.3)
+
+  packages/common/hooks:
+    dependencies:
+      vue:
+        specifier: ^3.2.0
+        version: 3.5.12(typescript@5.6.3)
+
+  packages/common/locale: {}
+
+  packages/common/theme-chalk: {}
+
+  packages/common/utils:
+    dependencies:
+      vue:
+        specifier: ^3.2.0
+        version: 3.5.12(typescript@5.6.3)
+
+  packages/mapboxgl/components:
+    dependencies:
+      '@ant-design/icons-vue':
+        specifier: ^7.0.1
+        version: 7.0.1(vue@3.5.13(typescript@5.6.3))
+      resize-detector:
+        specifier: 0.x
+        version: 0.3.0
+      vue:
+        specifier: '>=3.5.13'
+        version: 3.5.13(typescript@5.6.3)
+    devDependencies:
+      '@types/mapbox-gl':
+        specifier: ^1.12.1
+        version: 1.13.10
+
+  packages/mapboxgl/theme-chalk: {}
+
+  packages/mapboxgl/utils:
+    dependencies:
+      vue:
+        specifier: ^3.2.0
+        version: 3.5.12(typescript@5.6.3)
+
+  site:
+    dependencies:
+      vue:
+        specifier: 3.5.12
+        version: 3.5.12(typescript@5.6.3)
+    devDependencies:
+      '@vitejs/plugin-vue':
+        specifier: ^5.2.1
+        version: 5.2.1(vite@6.1.0(@types/node@22.13.4)(jiti@2.4.2)(sass@1.85.0))(vue@3.5.12(typescript@5.6.3))
+      vite:
+        specifier: ^6.0.5
+        version: 6.1.0(@types/node@22.13.4)(jiti@2.4.2)(sass@1.85.0)
+      vite-plugin-vue-devtools:
+        specifier: ^7.6.8
+        version: 7.7.2(rollup@4.34.7)(vite@6.1.0(@types/node@22.13.4)(jiti@2.4.2)(sass@1.85.0))(vue@3.5.12(typescript@5.6.3))
+
+  tools/build:
     dependencies:
       '@pnpm/find-workspace-packages':
         specifier: ^4.0.16
@@ -274,12 +336,6 @@ importers:
       gulp-sass:
         specifier: ^6.0.0
         version: 6.0.0
-      lodash:
-        specifier: ^4.17.21
-        version: 4.17.21
-      lodash-unified:
-        specifier: ^1.0.2
-        version: 1.0.3(@types/lodash-es@4.17.12)(lodash-es@4.17.21)(lodash@4.17.21)
       postcss:
         specifier: ^8.4.35
         version: 8.5.2
@@ -309,7 +365,7 @@ importers:
         specifier: ^3.2.37
         version: 3.5.12(typescript@5.6.3)
 
-  build-tools/build-utils:
+  tools/build-utils:
     dependencies:
       '@pnpm/find-workspace-packages':
         specifier: ^4.0.16
@@ -324,111 +380,6 @@ importers:
       unbuild:
         specifier: ^2.0.0
         version: 2.0.0(sass@1.85.0)(typescript@5.6.3)(vue-tsc@2.2.2(typescript@5.6.3))
-
-  packages/common/components:
-    dependencies:
-      vue:
-        specifier: '>=3.5.13'
-        version: 3.5.13(typescript@5.6.3)
-
-  packages/common/hooks:
-    dependencies:
-      vue:
-        specifier: ^3.2.0
-        version: 3.5.12(typescript@5.6.3)
-
-  packages/common/locale: {}
-
-  packages/common/theme-chalk: {}
-
-  packages/common/utils:
-    dependencies:
-      vue:
-        specifier: ^3.2.0
-        version: 3.5.12(typescript@5.6.3)
-
-  packages/mapboxgl/components:
-    dependencies:
-      '@ant-design/icons-vue':
-        specifier: ^7.0.1
-        version: 7.0.1(vue@3.5.13(typescript@5.6.3))
-      resize-detector:
-        specifier: 0.x
-        version: 0.3.0
-      vue:
-        specifier: '>=3.5.13'
-        version: 3.5.13(typescript@5.6.3)
-    devDependencies:
-      '@types/mapbox-gl':
-        specifier: ^1.12.1
-        version: 1.13.10
-
-  packages/mapboxgl/theme-chalk:
-    devDependencies:
-      '@esbuild-kit/cjs-loader':
-        specifier: ^2.2.1
-        version: 2.4.4
-      '@types/gulp-autoprefixer':
-        specifier: ^0.0.33
-        version: 0.0.33
-      '@types/gulp-rename':
-        specifier: ^2.0.1
-        version: 2.0.6
-      '@types/gulp-sass':
-        specifier: ^5.0.0
-        version: 5.0.4
-      chalk:
-        specifier: ^5.0.1
-        version: 5.4.1
-      consola:
-        specifier: ^2.15.3
-        version: 2.15.3
-      cssnano:
-        specifier: ^6.0.5
-        version: 6.1.2(postcss@8.5.2)
-      gulp:
-        specifier: ^4.0.2
-        version: 4.0.2
-      gulp-autoprefixer:
-        specifier: ^8.0.0
-        version: 8.0.0(gulp@4.0.2)
-      gulp-rename:
-        specifier: ^2.0.0
-        version: 2.0.0
-      gulp-sass:
-        specifier: ^6.0.0
-        version: 6.0.0
-      postcss:
-        specifier: ^8.4.35
-        version: 8.5.2
-      sass:
-        specifier: ^1.79.3
-        version: 1.85.0
-      vinyl:
-        specifier: 2.2.1
-        version: 2.2.1
-
-  packages/mapboxgl/utils:
-    dependencies:
-      vue:
-        specifier: ^3.2.0
-        version: 3.5.12(typescript@5.6.3)
-
-  site:
-    dependencies:
-      vue:
-        specifier: 3.5.12
-        version: 3.5.12(typescript@5.6.3)
-    devDependencies:
-      '@vitejs/plugin-vue':
-        specifier: ^5.2.1
-        version: 5.2.1(vite@6.1.0(@types/node@22.13.4)(jiti@2.4.2)(sass@1.85.0))(vue@3.5.12(typescript@5.6.3))
-      vite:
-        specifier: ^6.0.5
-        version: 6.1.0(@types/node@22.13.4)(jiti@2.4.2)(sass@1.85.0)
-      vite-plugin-vue-devtools:
-        specifier: ^7.6.8
-        version: 7.7.2(rollup@4.34.7)(vite@6.1.0(@types/node@22.13.4)(jiti@2.4.2)(sass@1.85.0))(vue@3.5.12(typescript@5.6.3))
 
 packages:
 
@@ -4595,13 +4546,6 @@ packages:
 
   lodash-es@4.17.21:
     resolution: {integrity: sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==}
-
-  lodash-unified@1.0.3:
-    resolution: {integrity: sha512-WK9qSozxXOD7ZJQlpSqOT+om2ZfcT4yO+03FuzAHD0wF6S0l0090LRPDx3vhTTLZ8cFKpBn+IOcVXK6qOcIlfQ==}
-    peerDependencies:
-      '@types/lodash-es': '*'
-      lodash: '*'
-      lodash-es: '*'
 
   lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
@@ -12020,12 +11964,6 @@ snapshots:
       p-locate: 5.0.0
 
   lodash-es@4.17.21: {}
-
-  lodash-unified@1.0.3(@types/lodash-es@4.17.12)(lodash-es@4.17.21)(lodash@4.17.21):
-    dependencies:
-      '@types/lodash-es': 4.17.12
-      lodash: 4.17.21
-      lodash-es: 4.17.21
 
   lodash.clonedeep@4.5.0: {}
 

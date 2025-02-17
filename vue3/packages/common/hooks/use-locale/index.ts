@@ -1,5 +1,5 @@
 import { computed, inject, isRef, ref, unref } from 'vue'
-import { get } from 'lodash-unified'
+import { get } from 'lodash-es'
 import ZHCN from '@supermapgis/common/locale/lang/zh-cn'
 
 import type { MaybeRef } from '@vueuse/core'

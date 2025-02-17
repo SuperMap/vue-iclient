@@ -2,5 +2,5 @@ packages:
   - packages/**/*
   - packages/**/theme-chalk
   - site
-  - build-tools/*
+  - tools/*
   - ../core

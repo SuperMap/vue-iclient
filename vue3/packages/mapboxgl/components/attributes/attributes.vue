@@ -82,7 +82,7 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
-import { isEqual, cloneDeep} from 'lodash-unified';
+import { isEqual, cloneDeep} from 'lodash-es';
 import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/AttributesViewModel';
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
