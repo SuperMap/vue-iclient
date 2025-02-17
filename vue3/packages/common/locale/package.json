@@ -1,0 +1,6 @@
+{
+  "name": "@supermapgis/common/locale",
+  "private": true,
+  "license": "MIT",
+  "main": "index.js"
+}

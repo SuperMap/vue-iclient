@@ -82,16 +82,16 @@
 
 <script setup lang="ts">
 import { computed, ref, watch, onMounted, onBeforeUnmount } from 'vue';
-import clonedeep from 'lodash.clonedeep';
-import isequal from 'lodash.isequal';
+import { isEqual, cloneDeep} from 'lodash-unified';
 import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/AttributesViewModel';
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/_types/LineStyle';
-import { useVmUpdater } from '@supermapgis/common/utils/hooks/VmUpdater'; 
-import { useMapGetter } from '@supermapgis/common/utils/hooks/useMapGetter'; 
+import { useMapGetter, useVmUpdater, useLocale } from '@supermapgis/common/hooks'; 
 import { Table as ATable, Dropdown as ADropdown, Menu as AMenu, MenuItem as AMenuItem, SubMenu as ASubMenu, Checkbox as ACheckbox, Button as AButton, Input as AInput } from 'ant-design-vue';
 import { MenuOutlined, SearchOutlined, FilterOutlined  } from '@ant-design/icons-vue';
+
+const { t } = useLocale()
 
 export interface PaginationParams {
   defaultCurrent?: number;
@@ -284,7 +284,7 @@ const allCount = computed(() => {
 });
 
 const compColumns = computed(() => {
-  return clonedeep(columns.value)
+  return cloneDeep(columns.value)
     .filter(column => column.visible)
     .map(column => {
       delete column.visible;
@@ -435,14 +435,14 @@ watch(selectedRowKeys, (newVal) => {
 });
 
 watch(() => props.table, (newVal, oldVal) => {
-  if (!isequal(newVal, oldVal)) {
+  if (!isEqual(newVal, oldVal)) {
     tableOptions.value = Object.assign({}, tableOptions.value, newVal);
     paginationOptions.value = Object.assign({}, paginationOptions.value, newVal.pagination);
   }
 });
 
 watch(() => props.fieldConfigs, (newVal) => {
-  if (!isequal(newVal, fieldInfo.value)) {
+  if (!isEqual(newVal, fieldInfo.value)) {
     let total = 0;
     newVal.forEach((item) => {
       total += item.width || 128;
@@ -453,7 +453,7 @@ watch(() => props.fieldConfigs, (newVal) => {
 });
 
 onMounted(() => {
-  fieldInfo.value = clonedeep(props.fieldConfigs);
+  fieldInfo.value = cloneDeep(props.fieldConfigs);
   viewModel.value = new AttributesViewModel({
     paginationOptions: paginationOptions.value,
     ...props,

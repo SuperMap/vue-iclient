@@ -4,10 +4,10 @@ import mapEvent from 'vue-iclient-core/types/map-event'
 // import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater'
 // import MapEvents from 'vue-iclient/src/mapboxgl/web-map/_mixin/map-events'
 import { addListener, removeListener } from 'resize-detector'
-import debounce from 'lodash.debounce'
+import { debounce } from 'lodash-unified'
 // import SmSpin from 'vue-iclient/src/common/spin/Spin.vue'
 // import Message from 'vue-iclient/src/common/message/Message.js'
-import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed  } from 'vue'
+import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed } from 'vue'
 import { Spin as ASpin } from 'ant-design-vue'
 
 interface commonControlParam {

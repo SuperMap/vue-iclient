@@ -23,10 +23,6 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
-    "ant-design-vue": "^4.2.6",
-    "lodash.clonedeep": "^4.5.0",
-    "lodash.debounce": "^4.0.8",
-    "lodash.isequal": "^4.5.0",
     "resize-detector": "0.x"
   },
   "engines": {

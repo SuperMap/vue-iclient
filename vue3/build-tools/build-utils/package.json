@@ -21,11 +21,9 @@
   "dependencies": {
     "@pnpm/find-workspace-packages": "^4.0.16",
     "@pnpm/logger": "^4.0.0",
-    "consola": "^2.15.3",
-    "lodash-unified": "^1.0.2"
+    "consola": "^2.15.3"
   },
   "devDependencies": {
-    "minimist": "^1.2.8",
     "unbuild": "^2.0.0"
   }
 }

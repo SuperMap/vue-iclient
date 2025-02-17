@@ -87,18 +87,18 @@ function buildTheme(filePath: string, distFolder: string) {
  * TODO: 暗色主题
  * @returns
  */
-function buildDarkCssVars(distFolder: string) {
-  // const sass = gulpSass(dartSass)
-  return src(path.resolve(__dirname, 'src/dark/css-vars.scss'))
-    .pipe(
-      sass({
-        loadPaths: [path.resolve(__dirname, '..', '..', '..', '..', 'node_modules')]
-      }).on('error', sass.logError)
-    )
-    .pipe(autoprefixer({ cascade: false }))
-    .pipe(compressWithCssnano())
-    .pipe(dest(`${distFolder}/dark`))
-}
+// function buildDarkCssVars(distFolder: string) {
+//   // const sass = gulpSass(dartSass)
+//   return src(path.resolve(__dirname, 'src/dark/css-vars.scss'))
+//     .pipe(
+//       sass({
+//         loadPaths: [path.resolve(__dirname, '..', '..', '..', '..', 'node_modules')]
+//       }).on('error', sass.logError)
+//     )
+//     .pipe(autoprefixer({ cascade: false }))
+//     .pipe(compressWithCssnano())
+//     .pipe(dest(`${distFolder}/dark`))
+// }
 
 /**
  * copy from packages/mapboxgl/theme-chalk/dist to dist/vue-iclient-mapboxgl/theme-chalk

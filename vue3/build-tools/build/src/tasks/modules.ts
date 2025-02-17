@@ -8,6 +8,7 @@ import commonjs from '@rollup/plugin-commonjs'
 import esbuild from 'rollup-plugin-esbuild'
 import glob from 'fast-glob'
 import { copy } from 'fs-extra'
+import fs from 'fs'
 import {
   excludeFiles,
   getPkgRoot,
@@ -54,13 +55,14 @@ const plugins: Plugin[] = [
 
 async function buildModulesComponents(rootDir, folder = 'components') {
   const root = folder === 'core' ? coreRoot : path.resolve(rootDir, folder)
+  const defaultPath = ['**/*.{js,ts}']
   const libsPath = {
     core: ['**/*.{js,ts,vue}', '!**/libs/**'],
     components: ['**/*.{js,ts,vue}', '!**/style/(index|css).{js,ts,vue}'],
-    utils: ['**/*.{js,ts}']
+    utils: defaultPath
   }
   const input = excludeFiles(
-    await glob(libsPath[folder], {
+    await glob(libsPath[folder] || defaultPath, {
       cwd: root,
       absolute: true,
       onlyFiles: true
@@ -166,24 +168,29 @@ export const copyCore = async () => {
   await copyLibs()
   await copyAssets()
 }
-async function buildComponents() {
-  await buildModulesComponents(pkgCommonRoot)
-  await buildModulesComponents(pkgRoot)
-}
-
-async function buildUtils() {
-  await buildModulesComponents(pkgRoot, 'utils')
-  await buildModulesComponents(pkgCommonRoot, 'utils')
+export async function buildTool(root = pkgCommonRoot) {
+  const exclude = ['theme-chalk']
+  const path = getFolderDirectory(root).filter(item => !exclude.includes(item))
+  for (const item of path) {
+    await buildModulesComponents(root, item)
+  }
 }
 async function buildStyles() {
   await buildModulesStyles(pkgRoot)
   await buildModulesStyles(pkgCommonRoot)
 }
-
+function getFolderDirectory(path) {
+  const directories = fs.readdirSync(path)
+  return directories
+}
 export const buildModules: TaskFunction = parallel(
   series(
-    withTaskName('buildModulesComponents', () => buildModulesComponents(coreRoot, 'core')),
+    withTaskName('buildModulesCore', () => buildModulesComponents(coreRoot, 'core')),
     copyCore
   ),
-  series(buildComponents, buildUtils, buildStyles)
+  series(
+    withTaskName('buildPkgModules', () => buildTool(pkgRoot)),
+    withTaskName('buildCommonModules', () => buildTool()),
+    buildStyles
+  )
 )

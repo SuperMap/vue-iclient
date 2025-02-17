@@ -22,7 +22,9 @@
     "unit:vue2": "npm run unit --prefix vue2",
     "test:vue2": "npm run test --prefix vue2",
     "lint:vue2": "npm run lint --prefix vue2",
-    "lint:fix:vue2": "npm run lint:fix --prefix vue2"
+    "lint:fix:vue2": "npm run lint:fix --prefix vue2",
+    "postinstall": "pnpm stub",
+    "prepare": "husky install"
   },
   "browserslist": [
     "> 1%",
@@ -48,5 +50,12 @@
   "engines": {
     "npm": ">=7.0.0"
   },
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "devDependencies": {
+    "husky": "^8.0.0",
+    "lint-staged": "^15.4.3"
+  },
+  "lint-staged": {
+    "vue3/**/*.{vue,js,ts,jsx,tsx,md,json}": "pnpm --dir ./vue3 lint"
+  }
 }

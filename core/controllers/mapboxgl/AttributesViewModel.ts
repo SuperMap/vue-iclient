@@ -7,6 +7,7 @@ import difference from 'lodash.difference';
 import getFeatures from 'vue-iclient-core/utils/get-features';
 import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
 import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
+import type mapboxglTypes from 'mapbox-gl'
 
 /**
  * @class AttributesViewModel

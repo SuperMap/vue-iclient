@@ -13,6 +13,7 @@ import proj4 from 'proj4';
 import { getLayerCatalogIds, getGroupChildrenLayers, findLayerCatalog } from 'vue-iclient-core/controllers/mapboxgl/utils/layerCatalogGroupUtil';
 import bbox from '@turf/bbox';
 import { points } from '@turf/helpers';
+import type mapboxglTypes from 'mapbox-gl'
 
 // @ts-ignore
 window.echarts = echarts;
