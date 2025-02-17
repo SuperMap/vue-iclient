@@ -2,7 +2,7 @@ import type { WatchHandle } from 'vue'
 import { watch } from 'vue'
 import { isEqual } from 'lodash-es'
 
-export default function useVmProps(props: Record<string, any>, viewModelProps: string[]) {
+export function useVmProps(props: Record<string, any>, viewModelProps: string[]) {
   let viewModel: InstanceType<any>
   let watcherStops: WatchHandle[] = []
 
