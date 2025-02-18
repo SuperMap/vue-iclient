@@ -1,75 +1,53 @@
 <template>
   <div>
-    <a-tree :class="['sm-component-layer-list__collapse', operations.draggable && 'draggable-tree']" blockNode :draggable="operations.draggable" :tree-data="treeData" @drop="dropHandler">
-      <template #switcherIcon>
-        <RightOutlined />
-      </template>
+    <a-tree :class="['sm-component-layer-list__collapse', operations.draggable && 'draggable-tree']" blockNode
+      :draggable="operations.draggable" :tree-data="treeData" @drop="dropHandler">
+      <template #switcherIcon="{ switcherCls }"><down-outlined :class="switcherCls" /></template>
       <template #title="item">
-        <div
-          :class="{
-            'header-wrap': true,
-            'sm-component-layer-list__disabled': !item.visible
-          }"
-        >
-          <div
-            class="header-text"
-            @mouseenter="() => changeIconsStatus(item.id)"
-          >
+        <div :class="{
+          'header-wrap': true,
+          'sm-component-layer-list__disabled': !item.visible
+        }">
+          <div class="header-text" @mouseenter="() => changeIconsStatus(item.id)"
+            @mouseleave="() => changeIconsStatus('')">
             <span class="add-ellipsis">{{ item.title }}</span>
-            <div
-              :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
-            >
+            <div :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']">
               <div v-if="operations.fitBounds" class="sm-component-layer-list__zoom">
-                <FullscreenOutlined 
-                  :class="['sm-components-icon-suofangzhituceng', (item.visible || !item.disabled) && 'highlight-icon']"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
-                  title="layerList.zoomToLayer"
-                  @click.stop="item.visible && zoomToBounds(item)"
-                />
-              </div>
-              <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)" class="sm-component-layer-list__attributes">
                 <FullscreenOutlined
-                  :class="attributesIconClass"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
-                  title="layerList.attributes"
-                  @click.stop="item.visible && toggleAttributesVisibility($event, item)"
-                />
+                  :class="['sm-components-icon-suofangzhituceng', (item.visible || !item.disabled) && 'highlight-icon']"
+                  :style="!item.visible && { cursor: 'not-allowed' }" :title="t('layerList.zoomToLayer')"
+                  @click.stop="item.visible && zoomToBounds(item)" />
+              </div>
+              <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)"
+                class="sm-component-layer-list__attributes">
+                <FullscreenOutlined :class="attributesIconClass" :style="!item.visible && { cursor: 'not-allowed' }"
+                  title="layerList.attributes" @click.stop="item.visible && toggleAttributesVisibility($event, item)" />
               </div>
               <div v-if="operations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
-                <FullscreenOutlined
-                  :class="[
-                    'sm-components-icon-tucengyangshi01',
-                    'sm-components-icon-not-active',
-                    showOpacityItem === item.id && 'sm-components-icon-active'
-                  ]"
-                  :style="!item.visible && { cursor: 'not-allowed' }"
-                  title="layerList.layerStyle"
-                  @click.stop="item.visible && changeItemOpacity(item)"
-                />
+                <FullscreenOutlined :class="[
+                  'sm-components-icon-tucengyangshi01',
+                  'sm-components-icon-not-active',
+                  showOpacityItem === item.id && 'sm-components-icon-active'
+                ]" :style="!item.visible && { cursor: 'not-allowed' }" title="layerList.layerStyle"
+                  @click.stop="item.visible && changeItemOpacity(item)" />
               </div>
               <div>
                 <!-- <i
                   :class="item.visible ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'"
                   @click.stop="toggleItemVisibility(item)"
                 /> -->
-                <EyeOutlined 
-                  :class="item.visible ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'"
-                  @click.stop="toggleItemVisibility(item)"
-                />
+                <EyeOutlined v-if="item.visible" class="sm-components-icon-visible"
+                  @click.stop="toggleItemVisibility(item)" />
+                <EyeInvisibleOutlined v-else class="sm-components-icon-hidden"
+                  @click.stop="toggleItemVisibility(item)" />
               </div>
             </div>
           </div>
         </div>
         <div v-show="operations.opacity && item.id === showOpacityItem" class="opacity-style">
           <div>layerList.opacity</div>
-          <a-slider
-            :value="formatOpacity"
-            :min="0"
-            :max="100"
-            :step="1"
-            :style="{ width: '70%' }"
-            @change="changeOpacity"
-          />
+          <a-slider :value="formatOpacity" :min="0" :max="100" :step="1" :style="{ width: '70%' }"
+            @change="changeOpacity" />
           <div>{{ formatOpacity + '%' }}</div>
         </div>
       </template>
@@ -80,8 +58,10 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue';
 import { Tree as ATree, Slider as ASlider } from 'ant-design-vue';
-import { RightOutlined, FullscreenOutlined, EyeOutlined } from '@ant-design/icons-vue';
+import { DownOutlined, FullscreenOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons-vue';
+import { useLocale } from '@supermapgis/common/hooks';
 
+const { t } = useLocale()
 const props = defineProps({
   currentOpacity: {
     type: Number,
