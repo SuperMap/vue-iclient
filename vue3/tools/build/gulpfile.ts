@@ -30,7 +30,7 @@ export const copyFiles = () =>
   ])
 
 export const copyTypesDefinitions: TaskFunction = done => {
-  const src = path.resolve(buildOutput, 'types', 'packages', pkgName)
+  const src = path.resolve(buildOutput, 'types', 'packages', `all-${pkgName}`)
   const copyTypes = (module: Module) =>
     withTaskName(`copyTypes:${module}`, () =>
       copy(src, buildConfig[module].output.path, { recursive: true })
@@ -54,13 +54,13 @@ export default series(
   withTaskName('createOutput', () => mkdir(epOutput, { recursive: true })),
 
   parallel(
-    // runTask(`buildModules`, pkgName),
+    runTask(`buildModules`, pkgName),
     // runTask('buildFullBundle', pkgName)
-    runTask('generateTypesDefinitions', pkgName),
-    // series(runTask('buildThemeChalk', pkgName), copyFullStyle, removeCommonIndexThemeChalk)
-  )
+    // runTask('generateTypesDefinitions', pkgName),
+    series(runTask('buildThemeChalk', pkgName), copyFullStyle, removeCommonIndexThemeChalk)
+  ),
 
-  // parallel( copyFiles)
+  parallel(copyFiles)
 )
 
 export * from './src'

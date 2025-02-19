@@ -1,6 +1,6 @@
 import { provideGlobalConfig } from '@supermapgis/common/components/config-provider'
 import type { ConfigProviderContext } from '@supermapgis/common/components/config-provider'
-import type { App, Plugin } from '@vue/runtime-core'
+import type { App, Plugin } from 'vue'
 export const INSTALLED_KEY = Symbol('INSTALLED_KEY')
 
 export const makeInstaller = (components: Plugin[] = []) => {

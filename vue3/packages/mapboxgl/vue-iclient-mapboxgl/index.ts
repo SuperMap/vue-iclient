@@ -1,6 +1,7 @@
 import installer from './defaults'
 export * from '@supermapgis/mapboxgl/components'
-// export * from '@supermapgis/common/hooks'
+export * from '@supermapgis/common/components/index.common'
+export * from '@supermapgis/common/hooks'
 export * from './make-installer'
 
 export const install = installer.install

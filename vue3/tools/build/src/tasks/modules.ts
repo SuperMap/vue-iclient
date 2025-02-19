@@ -33,8 +33,17 @@ const plugins: Plugin[] = [
   FullAlias(),
   replace({
     'vue3/packages/common/': ``,
-    [`vue3/packages/${pkgName}/`]: ``
+    [`vue3/packages/${pkgName}/`]: ``,
+    // [`./${pkgName}/`]: './',
+    // './common': '',
+    preventAssignment: true
   }),
+  {
+    name: 'replace-chunk-during-render',
+    renderChunk(code) {
+      return code.replaceAll('./common/', './').replaceAll(`./${pkgName}/`, './')
+    }
+  },
   vue({
     isProduction: true,
     template: {
@@ -50,7 +59,7 @@ const plugins: Plugin[] = [
   }),
   commonjs(),
   esbuild({
-    sourceMap: true,
+    sourceMap: false,
     target,
     loaders: {
       '.vue': 'ts'
@@ -81,13 +90,12 @@ async function buildModulesComponents(root = pkgRoot) {
         exports: module === 'cjs' ? 'named' : undefined,
         preserveModules: true,
         preserveModulesRoot: root,
-        sourcemap: true,
+        sourcemap: false,
         entryFileNames: `[name].${config.ext}`
       }
     })
   )
 }
-
 
 async function buildModulesTools({ input, externalsConfig, folder, preserveModulesRoot }) {
   const bundle = await rollup({
@@ -144,7 +152,7 @@ async function buildModulesStyles(rootDir, folder = 'components') {
         exports: module === 'cjs' ? 'named' : undefined,
         preserveModules: true,
         preserveModulesRoot: root,
-        sourcemap: true,
+        sourcemap: false,
         entryFileNames: `[name].${config.ext}`
       }
     })
@@ -198,6 +206,10 @@ async function removeMoreModules() {
   await remove(path.join(epOutput, 'es', `vue-iclient-${pkgName}`))
   await remove(path.join(epOutput, 'lib', 'vue3'))
   await remove(path.join(epOutput, 'es', 'vue3'))
+  await remove(path.join(epOutput, 'lib', 'mapboxgl'))
+  await remove(path.join(epOutput, 'es', 'mapboxgl'))
+  await remove(path.join(epOutput, 'lib', 'common'))
+  await remove(path.join(epOutput, 'es', 'common'))
 }
 export const buildModules: TaskFunction = parallel(
   // series(
