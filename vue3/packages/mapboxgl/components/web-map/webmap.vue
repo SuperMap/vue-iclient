@@ -3,7 +3,7 @@ import type { WebMapProps, WebMapEmits, ControlProps } from './webmap'
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
 import mapEvent from 'vue-iclient-core/types/map-event'
 import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
-import useVmProps from '@supermapgis/common/hooks/useVmProps'
+import { useVmProps, useLocale } from '@supermapgis/common/hooks'
 import { addListener, removeListener } from 'resize-detector'
 import { debounce, pick, cloneDeep } from 'lodash-es'
 import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useAttrs, getCurrentInstance } from 'vue'
@@ -27,6 +27,10 @@ const viewModelProps = [
   'withCredentials',
   'proxy'
 ]
+
+defineOptions({
+  name: 'SmWebMap',
+});
 
 const props = withDefaults(defineProps<WebMapProps>(), webMapPropsDefault)
 
@@ -52,6 +56,7 @@ let viewModel: InstanceType<typeof WebMapViewModel>
 let mapEventsInstance: InstanceType<typeof MapEvents>
 let __resizeHandler: () => void
 
+const { t } = useLocale()
 const { setViewModel } = useVmProps(props, viewModelProps)
 const attrs = useAttrs();
 const componentInstance = getCurrentInstance();
@@ -133,7 +138,7 @@ const registerEvents = () => {
       // ZXY_TILE与底图的分辨率、原点不匹配。
     },
     xyztilelayernotsupport: e => {
-      // notifyErrorTip({ defaultTip: this.$t(`webmap.xyztilelayernotsupport`, { title: e.layer.name }), showErrorMsg: false });
+      notifyErrorTip({ defaultTip: t(`webmap.xyztilelayernotsupport`, { title: e.layer.name }), showErrorMsg: false });
     },
     baidumapnotsupport: () => {
       notifyErrorTip({ defaultTip: 'baiduMapNotSupport', showErrorMsg: false })
@@ -182,7 +187,7 @@ const notifyErrorTip = ({
       msg = e.error
     }
   }
-  // Message.error(this.$t(`webmap.${defaultTip}`) + msg);
+  // Message.error(t(`webmap.${defaultTip}`) + msg);
 }
 
 const destory = () => {
@@ -233,7 +238,6 @@ onUnmounted(() => {
     <template v-for="(controlProps, controlName) in controlComponents" :key="controlName">
       <component :is="controlName" v-bind="controlProps"></component>
     </template>
-    <!-- :tip="$t('webmap.loadingTip')" -->
-    <ASpin v-if="spinning" size="large" :spinning="spinning" />
+    <ASpin v-if="spinning" size="large" :spinning="spinning" :tip="t('webmap.loadingTip')" />
   </div>
 </template>

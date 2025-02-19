@@ -1,5 +1,4 @@
 // 新创建一个vue实例实时监听获得map对象
-import mapEvent from 'vue-iclient-core/types/map-event';
 import MapWatcher from 'vue-iclient-core/mixin/MapWatcher';
 import Message from 'vue-iclient/src/common/message/Message.js';
 
@@ -40,12 +39,9 @@ export default class MapGetter extends Vue {
   created() {
     this._onHookLoaded = this._onHookLoaded.bind(this);
     this._onHookRemoved = this._onHookRemoved.bind(this);
-    this._mapWatcher = new MapWatcher(
-      mapEvent,
-      this.mapTarget,
-      // @ts-ignore
-      this.$parent && { name: this.$parent.$options.name, target: this.$parent.target }
-    );
+    // @ts-ignore
+    const parentTarget = this.$parent && ['smwebmap', 'smncpmap'].includes(this.$parent.$options.name.toLowerCase()) && this.$parent.target;
+    this._mapWatcher = new MapWatcher(this.mapTarget, parentTarget);
     this._mapWatcher.on({
       'hook:loaded': this._onHookLoaded,
       'hook:removed': this._onHookRemoved
@@ -53,12 +49,12 @@ export default class MapGetter extends Vue {
   }
 
   mounted() {
-    this._mapWatcher.mounted({ viewModel: this.viewModel });
+    this._mapWatcher.onMounted({ viewModel: this.viewModel });
   }
 
   beforeDestroy() {
     if (this._mapWatcher) {
-      this._mapWatcher.unmounted();
+      this._mapWatcher.onUnmounted();
       this._mapWatcher.un({
         'hook:loaded': this._onHookLoaded
       });

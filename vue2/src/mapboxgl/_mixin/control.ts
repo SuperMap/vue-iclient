@@ -1,14 +1,13 @@
 import Vue from 'vue';
 import { Component, Prop, Watch } from 'vue-property-decorator';
-import mapEvent from 'vue-iclient-core/types/map-event';
+import MapControl from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl';
 
 @Component
 export default class Control extends Vue {
   parentIsWebMapOrMap: boolean;
-  filterDelayLoad: boolean;
+  isDelayLoading: boolean;
   isShow = true;
-  map: mapboxglTypes.Map;
-  control: mapboxglTypes.IControl;
+  _mapControl: InstanceType<typeof MapControl>;
 
   @Prop() mapTarget: string;
 
@@ -22,91 +21,53 @@ export default class Control extends Vue {
 
   @Watch('position')
   positionChanged() {
-    if (this.$el && this.parentIsWebMapOrMap) {
-      this.remove();
-      this.addTo();
-    }
+    this._mapControl?.onPositionChanged(this.position);
   }
 
   created() {
     const parentName = this.$parent.$options.name;
     this.parentIsWebMapOrMap =
       parentName && ['smwebmap', 'smncpmap'].includes(this.$parent.$options.name.toLowerCase());
-    this.controlLoadMapSucceed = this.controlLoadMapSucceed.bind(this);
+    this.controlLoaded = this.controlLoaded.bind(this);
   }
 
   mounted() {
-    this.filterDelayLoad = !['smwebmap', 'smminimap', 'smncpmap'].includes(
+    const parentTarget =
+      this.$parent &&
+      ['smwebmap', 'smncpmap'].includes(this.$parent.$options.name.toLowerCase()) &&
+      // @ts-ignore
+      this.$parent.target;
+    this._mapControl = new MapControl({
+      el: <HTMLElement>this.$el,
+      position: this.position,
+      mapTarget: this.mapTarget,
+      parentTarget
+    });
+    this._mapControl.on({
+      'hook:loaded': this.controlLoaded
+    });
+    this.isDelayLoading = !['smwebmap', 'smminimap', 'smncpmap'].includes(
       this.$options.name && this.$options.name.toLowerCase()
     );
     if (this.$el && this.parentIsWebMapOrMap) {
-      if (this.filterDelayLoad) {
+      if (this.isDelayLoading) {
         this.isShow = false;
         const $el = <HTMLElement>this.$el;
         $el.style && ($el.style.display = 'none');
       }
-      const targetName = this.getControlMapName();
-      if (mapEvent.getMap(targetName)) {
-        this.mapLoaded(mapEvent.getMap(targetName) as unknown as mapboxglTypes.Map);
-      }
-      mapEvent.on({
-        'load-map': this.controlLoadMapSucceed
-      });
+      this._mapControl.onMounted();
     }
   }
 
   beforeDestroy() {
-    this.remove();
-    mapEvent.un({
-      'load-map': this.controlLoadMapSucceed
+    this._mapControl.un({
+      'hook:loaded': this.controlLoaded
     });
+    this._mapControl.onBeforeUnmount();
   }
 
-  initControl(): mapboxglTypes.IControl {
-    const self = this;
-    return {
-      onAdd() {
-        return <HTMLElement>self.$el;
-      },
-      onRemove() {
-        return self.map;
-      }
-    };
-  }
-
-  addTo(): void {
-    this.control = this.initControl();
-    this.map.addControl(this.control, this.position);
-    this.$el && this.$el.classList && this.$el.classList.add('mapboxgl-ctrl');
-  }
-
-  remove(): void {
-    this.control && this.map && this.map.removeControl(this.control);
-  }
-
-  getControlMapName(): string {
-    const selfParent = this.$parent;
-    const parentTarget =
-      selfParent &&
-      selfParent.$options.name &&
-      selfParent.$options.name.toLowerCase() === 'smwebmap' &&
-      // @ts-ignore
-      selfParent.target;
-    // @ts-ignore
-    return this.mapTarget || parentTarget || Object.keys(mapEvent.getAllMaps())[0];
-  }
-
-  controlLoadMapSucceed({ map, mapTarget }: { map: mapboxglTypes.Map, mapTarget: string }): void {
-    const targetName = this.getControlMapName();
-    if (mapTarget === targetName) {
-      this.mapLoaded(map);
-    }
-  }
-
-  mapLoaded(map: mapboxglTypes.Map): void {
-    this.map = map;
-    this.addTo();
-    if (this.filterDelayLoad) {
+  controlLoaded() {
+    if (this.isDelayLoading) {
       this.isShow = true;
       const $el = <HTMLElement>this.$el;
       $el && $el.style && ($el.style.display = 'block');

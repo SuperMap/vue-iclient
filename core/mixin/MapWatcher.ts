@@ -1,4 +1,5 @@
 import { Events } from 'vue-iclient-core/types/event/Events';
+import mapEvent from 'vue-iclient-core/types/map-event';
 
 interface SetMapParams {
   map: Record<string, any>;
@@ -12,11 +13,6 @@ interface ViewModel {
   [key: string]: any;
 }
 
-export interface MapVmInfo {
-  name: string;
-  target: string | undefined | null;
-}
-
 interface MountedParams {
   viewModel?: ViewModel;
 }
@@ -26,39 +22,30 @@ interface EventParams {
   mapTarget: string;
 }
 
-interface MapEvent extends InstanceType<typeof Events> {
-  getAllMaps: () => Record<string, Record<string, any>>;
-  getMap: (target: string) => Record<string, any> | undefined;
-  getWebMap: (target: string) => InstanceType<any> | undefined;
-  [key: string]: any;
-}
-
 export default class MapWatcher extends Events {
   map: Record<string, any>;
   webmap: InstanceType<any>;
   viewModel: ViewModel;
   mapTarget: string;
   firstDefaultTarget: string;
-  _mapEvent: MapEvent;
-  _mapVmInfo: MapVmInfo | undefined;
+  private _parentTarget: string;
 
   triggerEvent: (name: string, ...rest: any) => any;
   on: (data: Record<string, (...rest: any) => void>) => void;
   un: (data: Record<string, (...rest: any) => void>) => void;
 
-  constructor(mapEvent: MapEvent, mapTarget: string, mapVmInfo?: MapVmInfo) {
+  constructor(mapTarget: string, parentTarget?: string) {
     super();
     this.eventTypes = ['hook:loaded', 'hook:removed'];
-    this._mapEvent = mapEvent;
     this.mapTarget = mapTarget;
-    this._mapVmInfo = mapVmInfo;
+    this._parentTarget = parentTarget;
     this.loadMapSucceed = this.loadMapSucceed.bind(this);
     this.removeMapSucceed = this.removeMapSucceed.bind(this);
   }
 
   get firstTarget(): string {
     let targetName: string;
-    const mapList = this._mapEvent.getAllMaps();
+    const mapList = mapEvent.getAllMaps();
     for (let target in mapList) {
       if (target) {
         targetName = target;
@@ -76,29 +63,25 @@ export default class MapWatcher extends Events {
      * 如果子组件和 map 同层级，且没有设置 mapTarget 时，则默认渲染到第一个 map 上
      *
      */
-    const selfParent = this._mapVmInfo;
-    const parentTarget =
-      ['smwebmap', 'smncpmap'].includes(selfParent?.name?.toLowerCase()) &&
-      selfParent.target;
-    return this.mapTarget || parentTarget || this.firstTarget;
+    return this.mapTarget || this._parentTarget || this.firstTarget;
   }
 
-  mounted({ viewModel }: MountedParams = {}) {
+  onMounted({ viewModel }: MountedParams = {}) {
     this.viewModel = viewModel;
     const targetName = this.targetName;
     this.firstDefaultTarget = targetName;
-    if (this._mapEvent.getMap(targetName)) {
+    if (mapEvent.getMap(targetName)) {
       this.loadMap(targetName);
     }
-    this._mapEvent.on({
+    mapEvent.on({
       'load-map': this.loadMapSucceed,
       'delete-map': this.removeMapSucceed
     });
   }
 
-  unmounted() {
+  onUnmounted() {
     this.removeMap();
-    this._mapEvent.un({
+    mapEvent.un({
       'load-map': this.loadMapSucceed,
       'delete-map': this.removeMapSucceed
     });
@@ -109,14 +92,14 @@ export default class MapWatcher extends Events {
     prev: string | undefined | null
   ) {
     this.mapTarget = next;
-    if (next && prev && next !== prev) {
+    const prevTarget = prev || this.firstDefaultTarget;
+    if (next && next !== prevTarget) {
       // 多个map切换的时候，需要删除该组件与前一个map的图层绑定
-      const prevTarget = prev || this.firstDefaultTarget;
-      const prevMap = this._mapEvent.getMap(prevTarget);
+      const prevMap = mapEvent.getMap(prevTarget);
       if (prevMap) {
         this.removeMap(prevMap, prevTarget);
       }
-      if (this._mapEvent.getMap(next)) {
+      if (mapEvent.getMap(next)) {
         this.loadMap(next);
       }
     }
@@ -126,8 +109,8 @@ export default class MapWatcher extends Events {
     if (!this.firstDefaultTarget) {
       this.firstDefaultTarget = targetName;
     }
-    this.map = this._mapEvent.getMap(targetName);
-    this.webmap = this._mapEvent.getWebMap(targetName);
+    this.map = mapEvent.getMap(targetName);
+    this.webmap = mapEvent.getWebMap(targetName);
     this.viewModel &&
       typeof this.viewModel.setMap === 'function' &&
       this.viewModel.setMap({

@@ -1,7 +1,9 @@
 import type { PropType, DefineComponent } from 'vue'
-import type { InferDefaults, ShortEmits } from '@supermapgis/mapboxgl/utils'
+import type { ShortEmits } from '@supermapgis/common/utils/vue-types'
 import type { MapOptions } from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
 import type { MapEventName } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
+import type{ Map } from 'mapbox-gl'
+import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 
 export interface CommonControlParam {
   show?: boolean
@@ -258,7 +260,7 @@ export const webMapProps = () => ({
   }
 })
 
-// export type WebMapProps = Partial<ExtractPropTypes<ReturnType<typeof webMapProps1>>>
+// export type WebMapProps = Partial<ExtractPropTypes<ReturnType<typeof webMapProps>>>
 export type WebMapProps = {
   mapId?: string | number | Record<string, any>
   target?: string
@@ -294,6 +296,8 @@ export type WebMapProps = {
   tileTransformRequest?: (url: string) => Object
 }
 
+export const webMapPropsDefault = getPropsDefaults<WebMapProps>(webMapProps())
+
 export type LoadEvent = {
   map: mapboxgl.Map
 }
@@ -309,7 +313,7 @@ export type GetLayerDatasourceFailedEvent = {
 }
 
 export type MapEventHandler = {
-  map: mapboxglTypes.Map
+  map: Map
   component: DefineComponent<{}, {}, any>
   mapboxEvent: { type: string; [key: string]: any }
   [key: string]: any
@@ -326,12 +330,5 @@ export interface WebMapEmitsMap extends MapEventHandlers {
 }
 
 export type WebMapEmits = ShortEmits<WebMapEmitsMap>
-
-export const webMapPropsDefault = Object.entries(webMapProps()).reduce((acc, [key, value]) => {
-  if (value.default !== undefined) {
-    acc[key] = value.default
-  }
-  return acc
-}, {} as InferDefaults<WebMapProps>)
 
 export default webMapProps

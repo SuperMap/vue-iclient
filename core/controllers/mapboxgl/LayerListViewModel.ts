@@ -16,7 +16,9 @@ class LayerListViewModel extends mapboxgl.Evented {
 
   sourceList: Array<Object>;
 
-  fire: any;
+  fire: (type: string, ...params: any) => void;
+  on: (type: string, callback: () => void) => void;
+  off: (type: string, callback: () => void) => void;
 
   updateFn: (e?: mapboxglTypes.MapMouseEvent) => void;
 

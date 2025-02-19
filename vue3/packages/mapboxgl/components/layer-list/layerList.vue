@@ -1,8 +1,12 @@
 <template>
-  <!-- <div ref="el" class="sm-component-layer-list" style="position: relative;z-index: 9;"> -->
   <sm-collapse-card
+    v-show="isShow"
     :icon-class="iconClass"
-    :header-name="headerName"
+    :header-name="headerName || t('layerList.title')"
+    :auto-rotate="autoRotate"
+    :collapsed="collapsed"
+    :split-line="splitLine"
+    ref="root-el"
     class="sm-component-layer-list"
   >
     <a-card class="sm-component-layer-list__a-card" :bordered="false" style="">
@@ -21,91 +25,48 @@
         ></layer-group>
       </div>
     </a-card>
-    <sm-attributes v-show="displayAttributes" ref="attributesRef" :mapTarget="getTargetName()" :style="attributesStyle"
-      v-bind="attributesProps">
-    </sm-attributes>
-</sm-collapse-card>
-    
-  <!-- </div> -->
+    <sm-attributes
+      v-show="displayAttributes"
+      ref="attributes-el"
+      :mapTarget="getTargetName()"
+      :style="attributesStyle"
+      v-bind="attributesProps"
+    ></sm-attributes>
+  </sm-collapse-card>
 </template>
 
 <script lang="ts" setup>
 // import Theme from 'vue-iclient/src/common/_mixin/Theme';
 // import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 // import BaseCard from 'vue-iclient/src/common/_mixin/Card';
+import type { Map } from 'mapbox-gl'
+import type {
+  LayerListProps,
+  LayerListEmits,
+  TreeNodeDropEvent,
+  AttributesParams,
+  LayerListItem
+} from './layerList'
 import {
   ref,
-  reactive,
-  toRef,
   computed,
-  defineProps,
   watch,
-  onMounted,
   onBeforeUnmount,
-  nextTick
+  nextTick,
+  useTemplateRef,
+  onBeforeMount
 } from 'vue'
 import { useMapGetter, useLocale } from '@supermapgis/common/hooks'
+import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import { Card as ACard } from 'ant-design-vue'
-import SmAttributes, {
-  PaginationParams,
-  FieldConfigParams,
-  AssociateWithMapParams,
-  StatisticsParams,
-  TableParams,
-  ToolbarParams
-} from '@supermapgis/vue-iclient-mapboxgl/attributes/attributes.vue'
-import SmCollapseCard from '@supermapgis/vue-iclient-common/collapse-card/collapseCard.vue';
+import SmAttributes from '@supermapgis/vue-iclient-mapboxgl/attributes/attributes.vue'
+import SmCollapseCard from '@supermapgis/vue-iclient-common/collapse-card/collapseCard.vue'
 import LayerListViewModel from 'vue-iclient-core/controllers/mapboxgl/LayerListViewModel'
 import LayerGroup from './layerGroup.vue'
 import { isEqual } from 'lodash-es'
 import omit from 'omit.js'
 import mapEvent from 'vue-iclient-core/types/map-event'
-import {  } from '@supermapgis/common/hooks';
-
-interface AttributesParams {
-  enabled: boolean
-  getContainer: Function
-  style: Object
-  position: string // top-right top-left bottom-right bottom-left top bottom left right
-  title: string
-  iconClass: string
-  associateWithMap: AssociateWithMapParams
-  statistics: StatisticsParams
-  toolbar: ToolbarParams
-  table: TableParams
-  fieldConfig: FieldConfigParams
-  pagination: PaginationParams
-  customHeaderRow: Function
-  customRow: Function
-}
-
-interface LayerListItem {
-  id: string
-  title: string
-  type: string
-  visible: boolean
-  renderSource: Object
-  renderLayers: string[]
-  dataSource: Object
-  themeSetting: Object
-  children?: LayerListItem[]
-  CLASS_NAME?: string
-  CLASS_INSTANCE?: Object
-}
-
-interface TreeNodeDropEvent {
-  node: {
-    eventKey: string
-    pos: string
-    children: LayerListItem[]
-    expanded: boolean
-  }
-  dragNode: {
-    eventKey: string
-  }
-  dropPosition: number
-  dropToGap: boolean
-}
+import { layerListPropsDefault } from './layerList'
 
 const ATTRIBUTES_NEEDED_PROPS = [
   'title',
@@ -120,81 +81,25 @@ const ATTRIBUTES_NEEDED_PROPS = [
   'customRow'
 ]
 
-const props = defineProps({
-  iconClass: {
-    type: String,
-    default: 'sm-components-icon-layer-list'
-  },
-  headerName: {
-    type: String,
-    default: () => 'layerList.title'
-  },
-  attributes: {
-    type: Object,
-    default: () => ({})
-  },
-  operations: {
-    type: Object,
-    default: () => ({
-      fitBounds: true,
-      draggable: false,
-      opacity: false
-    })
-  },
-  mapTarget: String
+defineOptions({
+  name: 'SmLayerList'
 })
+
+const props = withDefaults(defineProps<LayerListProps>(), layerListPropsDefault)
+
+defineEmits(['loaded']) as unknown as LayerListEmits
 
 const sourceList = ref([])
-const layerList = ref([])
-const attributesProps = reactive({})
+const attributesProps = ref<AttributesParams>({})
 const displayAttributes = ref(false)
 const currentOpacity = ref(0)
-const layerUpdateFn = ref(null)
-const attributesRef = ref()
-const el = ref()
+const attributesEl = useTemplateRef<HTMLElement>('attributes-el')
+const rootEl = useTemplateRef<HTMLElement>('root-el')
+
 let viewModel: InstanceType<typeof LayerListViewModel>
-viewModel = new LayerListViewModel()
-const mapVmInfo = {name: '', target: ''}
-const { getTargetName, setViewModel } = useMapGetter({mapPropGetter: () => props.mapTarget, mapVmInfo, viewModel, loaded, removed})
+const { getTargetName, setViewModel } = useMapGetter<Map>({ loaded, removed })
+const { isShow, parentIsWebMapOrMap } = useMapControl()
 const { t } = useLocale()
-setViewModel(viewModel)
-
-onBeforeUnmount(() => {
-  if (viewModel) {
-    viewModel.off('layersUpdated', layerUpdateFn.value)
-  }
-  removeAttributes()
-  sourceList.value = []
-})
-
-watch(
-  () => props.attributes,
-  (newval, oldval) => {
-    if (displayAttributes.value) {
-      if (!newval.enabled) {
-        removeAttributes()
-        return
-      }
-      if (!isEqual(newval.getContainer, oldval.getContainer)) {
-        removeAttributes()
-        const container = newval.getContainer
-          ? newval.getContainer()
-          : document.getElementById(getTargetName())
-        container.appendChild(attributesRef.value.$el)
-        displayAttributes.value = !displayAttributes.value
-      }
-      const oldProps = attributesProps
-      const newProps = { ...newval }
-      for (const key in newProps) {
-        if (ATTRIBUTES_NEEDED_PROPS.indexOf(key) === -1) {
-          delete newProps[key]
-        }
-      }
-      Object.assign(attributesProps, newProps)
-    }
-  },
-  { deep: true }
-)
 
 // Computed
 const attributesStyle = computed(() => {
@@ -224,10 +129,50 @@ const attributesIconClass = computed(() => {
   return props.attributes?.iconClass || 'sm-components-icon-attribute-table'
 })
 
+watch(
+  () => props.attributes,
+  (newVal: LayerListProps['attributes'], oldVal: LayerListProps['attributes']) => {
+    if (displayAttributes.value) {
+      if (!newVal.enabled) {
+        removeAttributes()
+        return
+      }
+      if (!isEqual(newVal.getContainer, oldVal.getContainer)) {
+        removeAttributes()
+        const container = newVal?.getContainer() || document.getElementById(getTargetName())
+        container.appendChild(attributesEl.value)
+        displayAttributes.value = !displayAttributes.value
+      }
+      const newProps = { ...newVal }
+      for (const key in newProps) {
+        if (ATTRIBUTES_NEEDED_PROPS.indexOf(key) === -1) {
+          delete newProps[key]
+        }
+      }
+      attributesProps.value = {
+        ...attributesProps.value,
+        ...newProps
+      }
+    }
+  },
+  { deep: true }
+)
+
+onBeforeMount(() => {
+  viewModel = new LayerListViewModel()
+  setViewModel(viewModel)
+})
+
+onBeforeUnmount(() => {
+  if (viewModel) {
+    viewModel.off('layersUpdated', layerUpdate)
+  }
+})
+
 function loaded() {
-  // if (!parentIsWebMapOrMap.value) {
-  //   el.value.$el.classList.add('layer-list-container')
-  // }
+  if (!parentIsWebMapOrMap) {
+    rootEl.value.classList.add('layer-list-container')
+  }
   layerUpdate()
   viewModel.on('layersUpdated', layerUpdate)
 }
@@ -237,45 +182,40 @@ function removed() {
   sourceList.value = []
 }
 
-function toggleItemVisibility(item: { id: string;[prop: string]: any }, visible: boolean) {
-  viewModel && viewModel.changeItemVisible(item.id, visible)
+function toggleItemVisibility(item: { id: string; [prop: string]: any }, visible: boolean) {
+  viewModel?.changeItemVisible(item.id, visible)
 }
 
-function zoomToBounds(item: { id: string;[prop: string]: any }) {
-  viewModel && viewModel.zoomToBounds(item.id)
+function zoomToBounds(item: { id: string; [prop: string]: any }) {
+  viewModel?.zoomToBounds(item.id)
 }
 
-function addNewLayer() {
-  viewModel.addNewLayer()
-}
-
-function deleteLayer() {
-  viewModel.deleteLayer()
-}
-
-function changeOpacity(id, opacity) {
+function changeOpacity(id: string, opacity: number) {
   viewModel.changeOpacity(id, opacity)
 }
 
-function getLayerOpacityById(id) {
+function getLayerOpacityById(id: string) {
   currentOpacity.value = viewModel.getLayerOpacityById(id)
 }
 
-function toggleAttributesVisibility(e, item) {
-  if (e.currentTarget.className.indexOf('sm-components-icon-attribute-open') !== -1) {
-    e.currentTarget.setAttribute('class', attributesIconClass.value)
+function toggleAttributesVisibility(e: MouseEvent & { target: Element }, item) {
+  if (e.target.className.indexOf('sm-components-icon-attribute-open') !== -1) {
+    e.target.setAttribute('class', attributesIconClass.value)
     displayAttributes.value = !displayAttributes.value
     return
   }
   closeAttributesIconClass()
   removeAttributes()
   handleAttributesProps(item)
-  e.currentTarget.setAttribute('class', `${attributesIconClass.value} sm-components-icon-attribute-open`)
-  attributesContainer.value.appendChild(attributesRef.value.$el)
+  e.target.setAttribute(
+    'class',
+    `${attributesIconClass.value} sm-components-icon-attribute-open`
+  )
+  attributesContainer.value.appendChild(attributesEl.value)
   displayAttributes.value = !displayAttributes.value
 }
 
-async function handleAttributesProps(item) {
+async function handleAttributesProps(item: Record<string, any>) {
   const propsClone = Object.assign({}, props.attributes)
   for (const key in propsClone) {
     if (ATTRIBUTES_NEEDED_PROPS.indexOf(key) === -1) {
@@ -283,19 +223,15 @@ async function handleAttributesProps(item) {
     }
   }
   const dataset = await viewModel.getLayerDatas(item)
-  Object.assign(attributesProps, {
-    dataset: Object.freeze(dataset),
-    title: item.title,
-    ...propsClone
-  })
+  attributesProps.value = { dataset: Object.freeze(dataset), title: item.title, ...propsClone };
 }
 
 function layerUpdate() {
   nextTick(() => {
-    sourceList.value = transformLayerList(viewModel.initLayerList())
+    sourceList.value = viewModel && transformLayerList(viewModel.initLayerList() as LayerListItem[])
     if (
-      attributesProps.layerName &&
-      sourceList.value[attributesProps.layerName].visibility === 'none'
+      attributesProps.value.layerName &&
+      sourceList.value[attributesProps.value.layerName].visibility === 'none'
     ) {
       closeAttributesIconClass()
       removeAttributes()
@@ -409,10 +345,10 @@ function closeAttributesIconClass() {
 }
 
 function removeAttributes() {
-  if (attributesRef.value && displayAttributes.value) {
-    const attributesParentDom = attributesRef.value.parentElement
+  if (attributesEl.value && displayAttributes.value) {
+    const attributesParentDom = attributesEl.value.parentElement
     displayAttributes.value = !displayAttributes.value
-    attributesParentDom.removeChild(attributesRef.value)
+    attributesParentDom.removeChild(attributesEl.value)
   }
 }
 </script>

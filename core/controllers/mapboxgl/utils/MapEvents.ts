@@ -1,3 +1,4 @@
+import type { Map } from 'mapbox-gl';
 import { Events } from 'vue-iclient-core/types/event/Events';
 
 export const MAP_EVENT_NAMES = [
@@ -53,7 +54,7 @@ export const MAP_EVENT_NAMES = [
 export type MapEventName = (typeof MAP_EVENT_NAMES)[number];
 
 export default class MapEvents extends Events {
-  map: mapboxglTypes.Map;
+  map: Map;
   builtInEvents: string[];
   listeners: Record<string, (...params: any) => void>;
 
@@ -68,7 +69,7 @@ export default class MapEvents extends Events {
     this.eventTypes = this.builtInEvents;
   }
 
-  bindMapEvents(map: mapboxglTypes.Map): void {
+  bindMapEvents(map: Map): void {
     this.map = map;
     Object.keys(this.listeners).forEach((eventName) => {
       if (this.builtInEvents.includes(eventName)) {

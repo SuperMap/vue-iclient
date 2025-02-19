@@ -1,2 +1,4 @@
 export const a = 'mapboxgl'
-export * from './vue-types'
+
+export * from './card-props'
+export * from './control-props'
