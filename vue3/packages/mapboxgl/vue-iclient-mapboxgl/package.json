@@ -1,0 +1,63 @@
+{
+  "name": "@supermapgis/vue-iclient-mapboxgl",
+  "description": "SuperMap iClient for Vue.js",
+  "version": "12.0.3",
+  "homepage": "http://iclient.supermap.io",
+  "type": "module",
+  "main": "lib/index.js",
+  "module": "es/index.mjs",
+  "files": [
+    "dist",
+    "lib",
+    "es",
+    "global.d.ts",
+    "theme-chalk"
+  ],
+  "peerDependencies": {
+    "vue": ">=3.5.13"
+  },
+  "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
+    "resize-detector": "0.x",
+    "ant-design-vue": "^4.2.6",
+    "lodash-es": "^4.17.21",
+    "vue": "3.5.12",
+    "@turf/bbox": "^7.2.0",
+    "@turf/center": "^7.2.0",
+    "@turf/helpers": "^6.1.4",
+    "@turf/transform-scale": "^7.2.0",
+    "colorcolor": "^1.1.1",
+    "echarts": "^4.8.0",
+    "lodash.clonedeep": "^4.5.0",
+    "lodash.difference": "^4.5.0",
+    "lodash.max": "^4.0.1",
+    "lodash.merge": "^4.6.1",
+    "lodash.mergewith": "^4.6.2",
+    "lodash.tonumber": "^4.0.3",
+    "lodash.orderby": "^4.6.0",
+    "omit.js": "^2.0.2",
+    "proj4": "^2.15.0",
+    "simple-statistics": "^7.8.7",
+    "tinycolor2": "^1.6.0"
+  },
+  "engines": {
+    "node": ">= 6.0.0",
+    "npm": ">= 3.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not ie <= 9"
+  ],
+  "author": "SuperMap_FE",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SuperMap/vue-iclient.git"
+  },
+  "keywords": [
+    "SuperMap",
+    "MapboxGL v1",
+    "Vue3"
+  ]
+}

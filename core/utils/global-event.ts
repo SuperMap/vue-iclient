@@ -1,4 +1,4 @@
-import themeFactory from 'vue-iclient-core/utils/style/theme/theme.json';
+import themeFactory from 'vue-iclient-core/utils/style/theme/theme';
 import { Events } from 'vue-iclient-core/types/event/Events';
 
 export class GlobalEvent extends Events {

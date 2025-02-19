@@ -54,13 +54,13 @@ export default series(
   withTaskName('createOutput', () => mkdir(epOutput, { recursive: true })),
 
   parallel(
-    runTask(`buildModules`, pkgName),
-    runTask('buildFullBundle', pkgName),
+    // runTask(`buildModules`, pkgName),
+    // runTask('buildFullBundle', pkgName)
     runTask('generateTypesDefinitions', pkgName),
-    series(runTask('buildThemeChalk', pkgName), copyFullStyle, removeCommonIndexThemeChalk)
-  ),
+    // series(runTask('buildThemeChalk', pkgName), copyFullStyle, removeCommonIndexThemeChalk)
+  )
 
-  parallel(copyTypesDefinitions, copyFiles)
+  // parallel( copyFiles)
 )
 
 export * from './src'

@@ -14,7 +14,7 @@
     "mapbox-gl"
   ],
   "include": [
-    "packages/mapboxgl",
+    "packages/common",
     "typings/env.d.ts",
   ],
   "exclude": [

@@ -33,13 +33,13 @@ async function buildFullEntry(minify: boolean, banner: string) {
 
   const plugins: Plugin[] = [
     FullAlias(),
-    alias({
-      entries: [
-        { find: 'vue-iclient-core', replacement: coreRoot },
-        { find: '@supermapgis/common', replacement: commonRoot },
-        { find: `@supermapgis/${pkgName}`, replacement: path.resolve(getPkgRoot(pkgName)) }
-      ]
-    }),
+    // alias({
+    //   entries: [
+    //     { find: 'vue-iclient-core', replacement: coreRoot },
+    //     { find: '@supermapgis/common', replacement: commonRoot },
+    //     { find: `@supermapgis/${pkgName}`, replacement: path.resolve(getPkgRoot(pkgName)) }
+    //   ]
+    // }),
     vue({
       isProduction: true,
       template: {
@@ -80,7 +80,7 @@ async function buildFullEntry(minify: boolean, banner: string) {
       })
     )
   }
-
+console.log('input', path.resolve(epRoot, 'index.ts'))
   const bundle = await rollup({
     input: path.resolve(epRoot, 'index.ts'),
     plugins,

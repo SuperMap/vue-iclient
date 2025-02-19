@@ -1,6 +1,6 @@
 packages:
-  - packages/**/*
-  - packages/**/theme-chalk
+  - packages/*/*
+  - packages/*/theme-chalk
   - site
   - tools/*
   - ../core

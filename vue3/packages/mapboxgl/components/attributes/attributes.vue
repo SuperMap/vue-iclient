@@ -1,5 +1,6 @@
 <template>
   <div class="sm-component-attributes">
+    {{ t('sm.webmap.test') }}
     <div class="sm-component-attributes__header">
       <div class="sm-component-attributes__count">
         <span v-if="title" class="layer-name">{{ title }}</span>

@@ -11,10 +11,7 @@ export const generateExternal = async (options: { full: boolean }, path = epPack
     if (!options.full) {
       packages.push('@vue', ...dependencies)
     }
-
-    return [...new Set(packages)].some(
-      pkg => id === pkg || id.startsWith(`${pkg}/`) || id.startsWith(`@supermapgis/vue-iclient-${pkgName}`)
-    )
+    return [...new Set(packages)].some(pkg => id === pkg || id.startsWith(`${pkg}/`))
   }
 }
 

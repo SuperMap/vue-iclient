@@ -22,12 +22,13 @@
     "typecheck": "run-p typecheck:web typecheck:node",
     "typecheck:web": "vue-tsc -p tsconfig.web.json --composite false --noEmit",
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
-    "postinstall": "pnpm stub"
+    "postinstall": "pnpm stub",
+    "publish-mapboxgl": "pnpm --dir ./dist publish --registry http://localhost:4873 --no-git-checks"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
-    "@supermapgis/vue-iclient-common": "workspace:*",
-    "@supermapgis/vue-iclient-mapboxgl": "workspace:*",
+    "@supermapgis/common/components": "workspace:*",
+    "@supermapgis/mapboxgl/components": "workspace:*",
     "@turf/bbox": "^7.2.0",
     "@turf/center": "^7.2.0",
     "@turf/helpers": "^6.1.4",

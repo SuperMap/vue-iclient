@@ -1,4 +1,4 @@
-[
+export default [
   {
     "title": "经典深色",
     "label": "dark",

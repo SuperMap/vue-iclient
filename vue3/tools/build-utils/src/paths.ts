@@ -21,7 +21,7 @@ export const getLocaleRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'locale')
 export const getCompRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'components')
 export const getUtilsRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'utils')
 export const getThemeRoot = (pkg: Pkg | 'common') => resolve(getPkgRoot(pkg), 'theme-chalk')
-export const getEpRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'components')
+export const getEpRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), `vue-iclient-${pkg}`)
 
 export const buildRoot = resolve(projRoot, 'tools', 'build')
 

@@ -11,10 +11,10 @@ importers:
       '@ant-design/icons-vue':
         specifier: ^7.0.1
         version: 7.0.1(vue@3.5.12(typescript@5.6.3))
-      '@supermapgis/vue-iclient-common':
+      '@supermapgis/common/components':
         specifier: workspace:*
         version: link:packages/common/components
-      '@supermapgis/vue-iclient-mapboxgl':
+      '@supermapgis/mapboxgl/components':
         specifier: workspace:*
         version: link:packages/mapboxgl/components
       '@turf/bbox':
@@ -77,6 +77,9 @@ importers:
       proj4:
         specifier: ^2.15.0
         version: 2.15.0
+      resize-detector:
+        specifier: 0.x
+        version: 0.3.0
       simple-statistics:
         specifier: ^7.8.7
         version: 7.8.7
@@ -275,6 +278,20 @@ importers:
 
   packages/mapboxgl/components:
     dependencies:
+      vue:
+        specifier: ^3.2.0
+        version: 3.5.12(typescript@5.6.3)
+
+  packages/mapboxgl/theme-chalk: {}
+
+  packages/mapboxgl/utils:
+    dependencies:
+      vue:
+        specifier: ^3.2.0
+        version: 3.5.12(typescript@5.6.3)
+
+  packages/mapboxgl/vue-iclient-mapboxgl:
+    dependencies:
       '@ant-design/icons-vue':
         specifier: ^7.0.1
         version: 7.0.1(vue@3.5.12(typescript@5.6.3))
@@ -340,20 +357,6 @@ importers:
         version: 1.6.0
       vue:
         specifier: 3.5.12
-        version: 3.5.12(typescript@5.6.3)
-
-  packages/mapboxgl/hooks:
-    dependencies:
-      vue:
-        specifier: ^3.2.0
-        version: 3.5.12(typescript@5.6.3)
-
-  packages/mapboxgl/theme-chalk: {}
-
-  packages/mapboxgl/utils:
-    dependencies:
-      vue:
-        specifier: ^3.2.0
         version: 3.5.12(typescript@5.6.3)
 
   site:

@@ -1,5 +1,5 @@
 {
-  "name": "@supermapgis/vue-iclient-common",
+  "name": "@supermapgis/common/components",
   "type": "module",
   "main": "lib/index.common.js",
   "module": "es/index.common.js",

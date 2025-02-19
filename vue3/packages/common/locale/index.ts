@@ -1,4 +1,5 @@
 import zhCn from './lang/zh-cn'
+import en from './lang/en'
 
 export type TranslatePair = {
   [key: string]: string | string[] | TranslatePair
@@ -9,4 +10,4 @@ export type Language = {
   sm: TranslatePair
 }
 
-export { zhCn }
+export { zhCn, en }

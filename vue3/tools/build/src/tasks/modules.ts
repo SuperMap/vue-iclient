@@ -5,9 +5,10 @@ import vue from '@vitejs/plugin-vue'
 import vueJsx from '@vitejs/plugin-vue-jsx'
 import { nodeResolve } from '@rollup/plugin-node-resolve'
 import commonjs from '@rollup/plugin-commonjs'
+import replace from '@rollup/plugin-replace'
 import esbuild from 'rollup-plugin-esbuild'
 import glob from 'fast-glob'
-import { copy } from 'fs-extra'
+import { copy, remove } from 'fs-extra'
 import fs from 'fs'
 import {
   excludeFiles,
@@ -15,13 +16,12 @@ import {
   getPkgByCommand,
   coreRoot,
   getEpOutput,
-  projRoot
+  getEpRoot
 } from '@supermapgis/build-utils'
 import { generateExternal, withTaskName, writeBundles } from '../utils'
-import { Alias } from '../plugins/alias'
+import { FullAlias } from '../plugins/alias'
 import { buildConfigEntries, target } from '../build-info'
 import type { TaskFunction } from 'gulp'
-
 import type { OutputOptions, Plugin } from 'rollup'
 
 const pkgName = getPkgByCommand(process.argv)
@@ -30,7 +30,11 @@ const pkgCommonRoot = getPkgRoot('common')
 const epOutput = getEpOutput(pkgName)
 
 const plugins: Plugin[] = [
-  Alias(),
+  FullAlias(),
+  replace({
+    'vue3/packages/common/': ``,
+    [`vue3/packages/${pkgName}/`]: ``
+  }),
   vue({
     isProduction: true,
     template: {
@@ -53,42 +57,50 @@ const plugins: Plugin[] = [
     }
   })
 ]
-
-async function buildModulesComponents(rootDir, folder = 'components') {
-  const root = folder === 'core' ? coreRoot : path.resolve(rootDir, folder)
-  const defaultPath = ['**/*.{js,ts}']
-  const libsPath = {
-    core: ['**/*.{js,ts,vue}', '!**/libs/**'],
-    components: ['**/*.{js,ts,vue}', '!**/style/(index|css).{js,ts,vue}'],
-    utils: defaultPath
-  }
+async function buildModulesComponents(root = pkgRoot) {
   const input = excludeFiles(
-    await glob(libsPath[folder] || defaultPath, {
+    await glob(['**/*.{js,ts,vue}', '!**/style/(index|css).{js,ts,vue}'], {
       cwd: root,
       absolute: true,
       onlyFiles: true
     })
   )
-  await buildModulesTools({
+  const bundle = await rollup({
     input,
-    folder,
-    externalsConfig: path.resolve(projRoot, 'package.json'),
-    preserveModulesRoot: root
+    plugins,
+    external: await generateExternal({ full: false }),
+    treeshake: false
   })
+
+  await writeBundles(
+    bundle,
+    buildConfigEntries.map(([module, config]): OutputOptions => {
+      return {
+        format: config.format,
+        dir: config.output.path,
+        exports: module === 'cjs' ? 'named' : undefined,
+        preserveModules: true,
+        preserveModulesRoot: root,
+        sourcemap: true,
+        entryFileNames: `[name].${config.ext}`
+      }
+    })
+  )
 }
+
 
 async function buildModulesTools({ input, externalsConfig, folder, preserveModulesRoot }) {
   const bundle = await rollup({
     input,
     plugins,
-    external: await generateExternal({ full: false }, externalsConfig),
+    external: await generateExternal({ full: false }),
     treeshake: { moduleSideEffects: false },
     onwarn(warning, warn) {
       const { code, importer } = warning
       if (code === 'CIRCULAR_DEPENDENCY' && importer.includes('ant-design-vue')) {
         return
       }
-      warn(warning);
+      warn(warning)
     }
   })
   await writeBundles(
@@ -128,7 +140,7 @@ async function buildModulesStyles(rootDir, folder = 'components') {
     buildConfigEntries.map(([module, config]): OutputOptions => {
       return {
         format: config.format,
-        dir: path.resolve(config.output.path),
+        dir: path.resolve(config.output.path, 'components'),
         exports: module === 'cjs' ? 'named' : undefined,
         preserveModules: true,
         preserveModulesRoot: root,
@@ -176,29 +188,30 @@ export const copyCore = async () => {
   await copyLibs()
   await copyAssets()
 }
-export async function buildTool(root = pkgCommonRoot) {
-  const exclude = ['theme-chalk']
-  const path = getFolderDirectory(root).filter(item => !exclude.includes(item))
-  for (const item of path) {
-    await buildModulesComponents(root, item)
-  }
-}
 async function buildStyles() {
   await buildModulesStyles(pkgRoot)
   await buildModulesStyles(pkgCommonRoot)
 }
-function getFolderDirectory(path) {
-  const directories = fs.readdirSync(path)
-  return directories
+
+async function removeMoreModules() {
+  await remove(path.join(epOutput, 'lib', `vue-iclient-${pkgName}`))
+  await remove(path.join(epOutput, 'es', `vue-iclient-${pkgName}`))
+  await remove(path.join(epOutput, 'lib', 'vue3'))
+  await remove(path.join(epOutput, 'es', 'vue3'))
 }
 export const buildModules: TaskFunction = parallel(
+  // series(
+  //   withTaskName('buildModulesCore', () => buildModulesComponents(coreRoot, 'core')),
+  //   copyCore
+  // withTaskName('buildPkgModules', () => buildTool(pkgRoot)),
+  // withTaskName('buildModulesComponents', () => buildModulesComponents(pkgCommonRoot))
+  // withTaskName('buildCommonModules', () => buildTool())
+  // ),
   series(
-    withTaskName('buildModulesCore', () => buildModulesComponents(coreRoot, 'core')),
-    copyCore
-  ),
-  series(
-    withTaskName('buildPkgModules', () => buildTool(pkgRoot)),
-    withTaskName('buildCommonModules', () => buildTool()),
+    withTaskName('buildModulesComponents', () => buildModulesComponents(getEpRoot(pkgName))),
+    withTaskName('buildPkgModules', () => buildModulesComponents(pkgRoot)),
+    withTaskName('buildCommonModules', () => buildModulesComponents(pkgCommonRoot)),
+    removeMoreModules,
     buildStyles
   )
 )
