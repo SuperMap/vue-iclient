@@ -1,6 +1,6 @@
 import { mount, config } from '@vue/test-utils';
 import SmGeojsonLayer from '../GeojsonLayer.vue';
-import CircleStyle from '../../../../_types/CircleStyle';
+import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 

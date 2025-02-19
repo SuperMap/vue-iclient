@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils';
 import '@libs/mapboxgl/mapbox-gl-enhance.js';
 import SmVideoLayer from '../VideoLayer.vue';
-import CircleStyle from '../../../_types/CircleStyle';
+import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
 import createEmptyVideoPlus from 'vue-iclient/test/unit/createEmptyVideoPlus.js';
 import videoPlusSubComponentLoaded from 'vue-iclient/test/unit/videoPlusSubComponentLoaded.js';
 import mockVideo from 'video.js';
