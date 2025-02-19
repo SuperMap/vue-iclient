@@ -13,18 +13,18 @@
             <span class="add-ellipsis">{{ item.title }}</span>
             <div :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']">
               <div v-if="operations.fitBounds" class="sm-component-layer-list__zoom">
-                <FullscreenOutlined
+                <i
                   :class="['sm-components-icon-suofangzhituceng', (item.visible || !item.disabled) && 'highlight-icon']"
                   :style="!item.visible && { cursor: 'not-allowed' }" :title="t('layerList.zoomToLayer')"
                   @click.stop="item.visible && zoomToBounds(item)" />
               </div>
               <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)"
                 class="sm-component-layer-list__attributes">
-                <FullscreenOutlined :class="attributesIconClass" :style="!item.visible && { cursor: 'not-allowed' }"
+                <i :class="attributesIconClass" :style="!item.visible && { cursor: 'not-allowed' }"
                   title="layerList.attributes" @click.stop="item.visible && toggleAttributesVisibility($event, item)" />
               </div>
               <div v-if="operations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
-                <FullscreenOutlined :class="[
+                <i :class="[
                   'sm-components-icon-tucengyangshi01',
                   'sm-components-icon-not-active',
                   showOpacityItem === item.id && 'sm-components-icon-active'
@@ -32,14 +32,10 @@
                   @click.stop="item.visible && changeItemOpacity(item)" />
               </div>
               <div>
-                <!-- <i
+                <i
                   :class="item.visible ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'"
                   @click.stop="toggleItemVisibility(item)"
-                /> -->
-                <EyeOutlined v-if="item.visible" class="sm-components-icon-visible"
-                  @click.stop="toggleItemVisibility(item)" />
-                <EyeInvisibleOutlined v-else class="sm-components-icon-hidden"
-                  @click.stop="toggleItemVisibility(item)" />
+                />
               </div>
             </div>
           </div>
@@ -58,7 +54,6 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue';
 import { Tree as ATree, Slider as ASlider } from 'ant-design-vue';
-import { DownOutlined, FullscreenOutlined, EyeOutlined, EyeInvisibleOutlined } from '@ant-design/icons-vue';
 import { useLocale } from '@supermapgis/common/hooks';
 
 const { t } = useLocale()

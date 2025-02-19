@@ -14,13 +14,23 @@ const handleMousedown = (params: Record<string, any>) => {
 </script>
 <template>
   <div>
-    <Button @click="changeMapId(1641486307)">切换地图</Button>
-    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="mapId" @mousedown="handleMousedown"></WebMap>
+    <div><Button @click="changeMapId(1641486307)">切换地图</Button></div>
+    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="mapId" target="map" @mousedown="handleMousedown"></WebMap>
   </div>
 </template>
 <style>
-#map {
-  width: 100%;
+#map, #map1 {
+  position: absolute;
+  top: 80px;
+  width: 48%;
   height: 900px;
+  margin-top: 300px;
+}
+#map {
+  margin-right: 20px;
+  left: 0;
+}
+#map1 {
+  right: 0;
 }
 </style>

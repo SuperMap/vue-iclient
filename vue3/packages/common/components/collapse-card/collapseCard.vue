@@ -12,8 +12,7 @@
       :style="[collapseCardHeaderBgStyle, headingTextColorStyle]"
       @click="iconClicked"
     >
-      <!-- <i :style="iconStyle" :class="{ [iconClass]: true, ['is-auto-rotate']: autoRotate }" /> -->
-      <SwitcherOutlined />
+      <i :style="iconStyle" :class="{ [iconClass]: true, ['is-auto-rotate']: autoRotate }" />
     </div>
     <transition name="sm-component-zoom-in" @after-leave="toggleTransition('leave')" @enter="toggleTransition('enter')">
       <div
@@ -42,9 +41,8 @@
 </template>
 
 <script setup>
-// import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import { ref, computed, watch, onMounted, onBeforeMount, nextTick } from 'vue';
-import { SwitcherOutlined } from '@ant-design/icons-vue';
+import { ref, computed, watch, onMounted, nextTick } from 'vue';
+import { useTheme } from '@supermapgis/common/hooks'
 
 const props = defineProps({
   iconPosition: {
@@ -71,14 +69,15 @@ const props = defineProps({
   }
 });
 
+const { getTextColorStyle, headingTextColorStyle, collapseCardHeaderBgStyle, collapseCardBackgroundStyle } = useTheme()
+
 const isShow = ref(true);
 const transform = ref(null);
 
 // 计算属性
 const getCardStyle = computed(() => {
   const style = { background: 'transparent' };
-  // return !props.iconClass && !props.headerName ? style : collapseCardBackgroundStyle;
-  return !props.iconClass && !props.headerName ? style : {};
+  return !props.iconClass && !props.headerName ? style : collapseCardBackgroundStyle;
 });
 
 const iconStyle = computed(() => {

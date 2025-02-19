@@ -38,6 +38,7 @@
     "@types/mapbox-gl": "^3.4.1",
     "ant-design-vue": "^4.2.6",
     "colorcolor": "^1.1.1",
+    "css-vars-ponyfill": "^2.2.1",
     "echarts": "^4.8.0",
     "lodash-es": "^4.17.21",
     "lodash.clonedeep": "^4.5.0",

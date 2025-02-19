@@ -6,10 +6,12 @@
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     :split-line="splitLine"
+    :background="background"
+    :textColor="textColor"
     ref="root-el"
     class="sm-component-layer-list"
   >
-    <a-card class="sm-component-layer-list__a-card" :bordered="false" style="">
+    <a-card class="sm-component-layer-list__a-card" :bordered="false" :style="headingTextColorStyle">
       <div class="sm-component-layer-list__content">
         <layer-group
           :currentOpacity="currentOpacity"
@@ -36,9 +38,6 @@
 </template>
 
 <script lang="ts" setup>
-// import Theme from 'vue-iclient/src/common/_mixin/Theme';
-// import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
-// import BaseCard from 'vue-iclient/src/common/_mixin/Card';
 import type { Map } from 'mapbox-gl'
 import type {
   LayerListProps,
@@ -56,7 +55,7 @@ import {
   useTemplateRef,
   onBeforeMount
 } from 'vue'
-import { useMapGetter, useLocale } from '@supermapgis/common/hooks'
+import { useMapGetter, useLocale, useTheme } from '@supermapgis/common/hooks'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import { Card as ACard } from 'ant-design-vue'
 import SmAttributes from '@supermapgis/vue-iclient-mapboxgl/attributes/attributes.vue'
@@ -89,6 +88,12 @@ const props = withDefaults(defineProps<LayerListProps>(), layerListPropsDefault)
 
 defineEmits(['loaded']) as unknown as LayerListEmits
 
+let viewModel: InstanceType<typeof LayerListViewModel>
+const { getTargetName, setViewModel } = useMapGetter<Map>({ loaded, removed })
+const { isShow, parentIsWebMapOrMap } = useMapControl()
+const { t } = useLocale()
+const { headingTextColorStyle } = useTheme()
+
 const sourceList = ref([])
 const attributesProps = ref<AttributesParams>({})
 const displayAttributes = ref(false)
@@ -96,10 +101,6 @@ const currentOpacity = ref(0)
 const attributesEl = useTemplateRef<HTMLElement>('attributes-el')
 const rootEl = useTemplateRef<HTMLElement>('root-el')
 
-let viewModel: InstanceType<typeof LayerListViewModel>
-const { getTargetName, setViewModel } = useMapGetter<Map>({ loaded, removed })
-const { isShow, parentIsWebMapOrMap } = useMapControl()
-const { t } = useLocale()
 
 // Computed
 const attributesStyle = computed(() => {

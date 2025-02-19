@@ -1,2 +1,2 @@
-@use '../../common/theme-chalk/mixins/mixins.scss' as *;
-@use '../../common/theme-chalk/base/theme.scss' as *;
+@use './base.scss';
+@use '@supermapgis/common/theme-chalk/collapseCard.scss'

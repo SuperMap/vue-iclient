@@ -17,8 +17,11 @@ export type ShortEmits<T extends Record<string, any>> = UnionToIntersection<
     [K in keyof T]: (evt: K, ...args: T[K]) => void
   }>
 >
+
+type NativeTypeConstructor = StringConstructor | ObjectConstructor | BooleanConstructor | NumberConstructor | ArrayConstructor
+
 type PropsDef = {
-  [K: string]: StringConstructor | ObjectConstructor | BooleanConstructor | NumberConstructor | { type: any; default?: NativeType }
+  [K: string]: { type: any; default?: NativeType } | NativeTypeConstructor
 }
 export function getPropsDefaults<T>(props: PropsDef) {
   return Object.entries(props).reduce(

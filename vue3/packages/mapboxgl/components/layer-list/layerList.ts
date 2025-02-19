@@ -1,5 +1,5 @@
 import type { PropType, CSSProperties } from 'vue'
-import type { ShortEmits } from '@supermapgis/common/utils/vue-types'
+import type { ShortEmits, ThemeProps } from '@supermapgis/common/utils'
 import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
 import type {
   PaginationParams,
@@ -10,7 +10,7 @@ import type {
   ToolbarParams
 } from '@supermapgis/vue-iclient-mapboxgl/attributes/attributes.vue'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
+import { getPropsDefaults, themeProps } from '@supermapgis/common/utils'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 
 export interface AttributesParams {
@@ -90,13 +90,13 @@ export const layerListProps = () => ({
 })
 
 // export type LayerListProps = Partial<ExtractPropTypes<ReturnType<typeof layerListProps>>>
-export interface LayerListProps extends CardProps, ControlProps {
+export interface LayerListProps extends CardProps, ControlProps, ThemeProps {
   attributes?: AttributesParams
   operations?: Operations
 }
 
 export const layerListPropsDefault = getPropsDefaults<LayerListProps>(
-  Object.assign(cardProps(), controlProps(), layerListProps())
+  Object.assign(cardProps(), controlProps(), themeProps(), layerListProps())
 )
 
 export type layerListEmitsMap = {

@@ -12,16 +12,19 @@ export default defineConfig({
   plugins: [vue(), vueDevTools()],
   resolve: {
     alias: {
-      '@supermapgis/mapboxgl': fileURLToPath(
-        new URL('../packages/mapboxgl', import.meta.url)
-      ),
-      '@supermapgis/common': fileURLToPath(
-        new URL('../packages/common', import.meta.url)
-      ),
-      'vue-iclient-core': fileURLToPath(
-        new URL('../../core', import.meta.url)
-      )
+      '@supermapgis/mapboxgl': fileURLToPath(new URL('../packages/mapboxgl', import.meta.url)),
+      '@supermapgis/common': fileURLToPath(new URL('../packages/common', import.meta.url)),
+      'vue-iclient-core': fileURLToPath(new URL('../../core', import.meta.url))
       // node_modules: fileURLToPath(new URL('../node_modules', import.meta.url))
+    }
+  },
+  server: {
+    fs: {
+      allow: [
+        // 添加包含字体文件的目录
+        fileURLToPath(new URL('../../core/assets/iconfont', import.meta.url)),
+        fileURLToPath(new URL('../', import.meta.url)),
+      ]
     }
   },
   css: {
