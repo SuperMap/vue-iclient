@@ -2,7 +2,7 @@
   "name": "@supermapgis/common/hooks",
   "private": true,
   "license": "MIT",
-  "main": "index.js",
+  "main": "index.common.js",
   "peerDependencies": {
     "vue": "^3.2.0"
   }
