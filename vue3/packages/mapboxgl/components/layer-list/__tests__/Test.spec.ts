@@ -1,5 +1,5 @@
 import { mount } from '@vue/test-utils';
-import WebMap from '@supermapgis/vue-iclient-mapboxgl/web-map/webmap.vue';
+import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue';
 import { statisticsFeatures } from 'vue-iclient-core/utils/statistics';
 
 describe('WebMap', () => {

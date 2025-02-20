@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import WebMap from '@supermapgis/vue-iclient-mapboxgl/web-map/webmap.vue'
+import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
 import LayerList from '../layerList.vue'
 import { Button } from 'ant-design-vue';
 import { ref } from 'vue'
