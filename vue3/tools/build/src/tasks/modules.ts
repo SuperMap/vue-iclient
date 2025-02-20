@@ -41,7 +41,10 @@ const plugins: Plugin[] = [
   {
     name: 'replace-chunk-during-render',
     renderChunk(code) {
-      return code.replaceAll('./common/', './').replaceAll(`./${pkgName}/`, './')
+      return code
+        .replaceAll('./common/', './')
+        .replaceAll(`./${pkgName}/`, './')
+        .replaceAll('.scss', '.css')
     }
   },
   vue({

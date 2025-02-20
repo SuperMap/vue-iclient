@@ -44,6 +44,9 @@ importers:
       colorcolor:
         specifier: ^1.1.1
         version: 1.1.1
+      css-vars-ponyfill:
+        specifier: ^2.2.1
+        version: 2.4.9
       echarts:
         specifier: ^4.8.0
         version: 4.9.0
@@ -207,6 +210,9 @@ importers:
       colorcolor:
         specifier: ^1.1.1
         version: 1.1.1
+      css-vars-ponyfill:
+        specifier: ^2.2.1
+        version: 2.4.9
       echarts:
         specifier: ^4.8.0
         version: 4.9.0
@@ -2979,6 +2985,9 @@ packages:
     resolution: {integrity: sha512-6Fv1DV/TYw//QF5IzQdqsNDjx/wc8TrMBZsqjL9eW01tWb7R7k/mq+/VXfJCl7SoD5emsJop9cOByJZfs8hYIw==}
     engines: {node: ^10 || ^12.20.0 || ^14.13.0 || >=15.0.0}
 
+  css-vars-ponyfill@2.4.9:
+    resolution: {integrity: sha512-aZyLue5bdiGVNCiCclNjo123D8I7kyoYNUaAvz+H1JalX1ye4Ilz7jNRRH5YbM+dYD6ucejiydGwk7lol/GCXQ==}
+
   css-what@6.1.0:
     resolution: {integrity: sha512-HTUrgRJ7r4dsZKU6GjmpfRK1O76h97Z8MfS1G0FozR+oF2kG6Vfe8JE6zwrkbxigziPHinCJ+gCPjA9EaBDtRw==}
     engines: {node: '>= 6'}
@@ -3822,6 +3831,9 @@ packages:
 
   get-caller-file@1.0.3:
     resolution: {integrity: sha512-3t6rVToeoZfYSGd8YoLFR2DJkiQrIiUrGcjvFX2mDw3bn6k2OtwHN0TNCLbBO+w8qTvimhDkv+LSscbJY1vE6w==}
+
+  get-css-data@2.1.1:
+    resolution: {integrity: sha512-JpMa/f5P4mDXKg6l5/2cHL5xNY77Jap7tHyduMa6BF0E2a7bQ6Tvaz2BIMjeVYZYLcmOZ5w2Ro0yVJEI41tMbw==}
 
   get-intrinsic@1.2.7:
     resolution: {integrity: sha512-VW6Pxhsrk0KAOqs3WEd0klDiF/+V7gQOpAvY1jVU/LHmaD/kQO4523aiJuikX/QAKYiW6x8Jh+RJej1almdtCA==}
@@ -10113,6 +10125,11 @@ snapshots:
       mdn-data: 2.0.30
       source-map-js: 1.2.1
 
+  css-vars-ponyfill@2.4.9:
+    dependencies:
+      balanced-match: 1.0.2
+      get-css-data: 2.1.1
+
   css-what@6.1.0: {}
 
   cssesc@3.0.0: {}
@@ -11154,6 +11171,8 @@ snapshots:
   gensync@1.0.0-beta.2: {}
 
   get-caller-file@1.0.3: {}
+
+  get-css-data@2.1.1: {}
 
   get-intrinsic@1.2.7:
     dependencies:

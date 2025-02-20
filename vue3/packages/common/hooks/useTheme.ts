@@ -1,10 +1,10 @@
-import type { ThemeProps } from '@supermapgis/common/utils'
+import type { ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { ThemeStyleParams } from 'vue-iclient-core/utils/style/color/serialColors';
 import { ref, computed, reactive, watch, toRefs, onBeforeMount, onMounted, onBeforeUnmount, getCurrentInstance } from 'vue'
 import globalEvent from 'vue-iclient-core/utils/global-event';
 import { getDerivedColorsByTextColor } from 'vue-iclient-core/utils/util';
 import { getPrimarySerialColors, getRootStyleSelector } from 'vue-iclient-core/utils/style/color/serialColors';
-import { themeProps } from '@supermapgis/common/utils'
+import { themeProps } from '@supermapgis/common/utils/index.common'
 
 interface ThemeData {
   backgroundData: string
