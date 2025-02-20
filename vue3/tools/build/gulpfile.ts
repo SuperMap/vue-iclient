@@ -55,12 +55,12 @@ export default series(
 
   parallel(
     runTask(`buildModules`, pkgName),
-    // runTask('buildFullBundle', pkgName)
-    // runTask('generateTypesDefinitions', pkgName),
+    runTask('buildFullBundle', pkgName),
+    runTask('generateTypesDefinitions', pkgName),
     series(runTask('buildThemeChalk', pkgName), copyFullStyle, removeCommonIndexThemeChalk)
   ),
 
-  parallel(copyFiles)
+  parallel(copyTypesDefinitions, copyFiles)
 )
 
 export * from './src'
