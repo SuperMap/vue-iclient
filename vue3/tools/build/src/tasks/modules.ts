@@ -9,7 +9,6 @@ import replace from '@rollup/plugin-replace'
 import esbuild from 'rollup-plugin-esbuild'
 import glob from 'fast-glob'
 import { copy, remove } from 'fs-extra'
-import fs from 'fs'
 import {
   excludeFiles,
   getPkgRoot,
