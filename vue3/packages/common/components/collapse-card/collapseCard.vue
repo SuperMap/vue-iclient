@@ -42,7 +42,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, nextTick } from 'vue';
-import { useTheme } from '@supermapgis/common/hooks'
+import { useTheme } from '@supermapgis/common/hooks/index.common'
 
 const props = defineProps({
   iconPosition: {

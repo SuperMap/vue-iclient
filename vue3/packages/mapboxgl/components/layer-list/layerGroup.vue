@@ -54,7 +54,7 @@
 <script lang="ts" setup>
 import { ref, computed, watch } from 'vue';
 import { Tree as ATree, Slider as ASlider } from 'ant-design-vue';
-import { useLocale } from '@supermapgis/common/hooks';
+import { useLocale } from '@supermapgis/common/hooks/index.common';
 
 const { t } = useLocale()
 const props = defineProps({

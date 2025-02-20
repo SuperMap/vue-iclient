@@ -1,5 +1,5 @@
 import { computed, getCurrentInstance, inject, provide, ref, unref } from 'vue'
-import { localeContextKey, useLocale } from '@supermapgis/common/hooks'
+import { localeContextKey, useLocale } from '@supermapgis/common/hooks/index.common'
 import { configProviderContextKey } from '../constants'
 
 import type { App, Ref, MaybeRef } from 'vue'

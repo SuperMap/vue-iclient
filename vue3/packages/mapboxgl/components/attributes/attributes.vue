@@ -98,7 +98,7 @@ import type {
 import { attributesPropsDefault } from './attributes'
 import { isEqual, cloneDeep} from 'lodash-es';
 import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/AttributesViewModel';
-import { useMapGetter, useVmProps, useLocale, useTheme } from '@supermapgis/common/hooks'; 
+import { useMapGetter, useVmProps, useLocale, useTheme } from '@supermapgis/common/hooks/index.common'; 
 import { Table as ATable, Dropdown as ADropdown, Menu as AMenu, MenuItem as AMenuItem, SubMenu as ASubMenu, Checkbox as ACheckbox, Button as AButton, Input as AInput } from 'ant-design-vue';
 import { MenuOutlined, SearchOutlined, FilterOutlined  } from '@ant-design/icons-vue';
 

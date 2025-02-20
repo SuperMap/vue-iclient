@@ -55,7 +55,7 @@ import {
   useTemplateRef,
   onBeforeMount
 } from 'vue'
-import { useMapGetter, useLocale, useTheme } from '@supermapgis/common/hooks'
+import { useMapGetter, useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import { Card as ACard } from 'ant-design-vue'
 import SmAttributes from '@supermapgis/mapboxgl/components/attributes/attributes.vue'
