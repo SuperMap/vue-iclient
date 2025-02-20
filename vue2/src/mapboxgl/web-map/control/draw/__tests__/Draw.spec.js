@@ -1,8 +1,8 @@
 import { mount, config } from '@vue/test-utils';
 import SmDraw from '../Draw.vue';
-import LineStyle from 'vue-iclient-core/controllers/mapboxgl/_types/LineStyle';
-import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
-import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
+import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
+import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
+import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
 

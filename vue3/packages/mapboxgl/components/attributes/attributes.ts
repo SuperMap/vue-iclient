@@ -1,9 +1,9 @@
 import type { ShortEmits } from '@supermapgis/common/utils/vue-types'
 import type { ThemeProps } from '@supermapgis/common/utils'
 import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
-import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
-import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
-import LineStyle from 'vue-iclient-core/controllers/mapboxgl/_types/LineStyle';
+import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
+import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle';
+import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
 
 export interface PaginationParams {
   defaultCurrent?: number;

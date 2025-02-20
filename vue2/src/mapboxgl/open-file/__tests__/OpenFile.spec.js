@@ -1,8 +1,8 @@
 import { mount, createLocalVue, config } from '@vue/test-utils';
 import SmOpenFile from '../OpenFile.vue';
-import LineStyle from 'vue-iclient-core/controllers/mapboxgl/_types/LineStyle';
-import FillStyle from 'vue-iclient-core/controllers/mapboxgl/_types/FillStyle';
-import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/_types/CircleStyle';
+import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
+import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle';
+import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
 import { message } from 'ant-design-vue';
 import createEmptyMap from 'vue-iclient/test/unit/createEmptyMap.js';
 import mapSubComponentLoaded from 'vue-iclient/test/unit/mapSubComponentLoaded.js';
