@@ -1,5 +1,5 @@
 import globalEvent from 'vue-iclient-core/utils/global-event';
-import themeFactory from 'vue-iclient-core/utils/style/theme/theme.json';
+import themeFactory from 'vue-iclient-core/utils/style/theme/theme';
 import { dealWithTheme, ThemeStyleParams } from 'vue-iclient-core/utils/style/color/serialColors';
 import { objectWithoutProperties } from 'vue-iclient-core/utils/util';
 
@@ -31,4 +31,5 @@ export const setTheme = (themeStyle: any = {}, triggerInfo?: triggerParams) => {
   if (!triggerInfo || triggerInfo.triggerEvent === true) {
     globalEvent.changeTheme(objectWithoutProperties(nextTheme, (triggerInfo || {}).ignoreElements || []));
   }
+  return nextTheme;
 };

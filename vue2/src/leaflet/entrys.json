@@ -96,8 +96,9 @@
   "_utils/vue-types/utils": "vue-iclient/src/common/_utils/vue-types/utils.js",
   "_utils/style/theme/chart": "vue-iclient/src/common/_utils/style/theme/chart.js",
   "_utils/style/theme/set-theme": "vue-iclient/src/common/_utils/style/theme/set-theme.ts",
-  "_utils/style/color/colorPalette": "vue-iclient/src/common/_utils/style/color/colorPalette.ts",
-  "_utils/style/color/serialColors": "vue-iclient/src/common/_utils/style/color/serialColors.ts",
+  "_utils/style/theme/theme": "vue-iclient-core/utils/style/theme/theme.ts",
+  "_utils/style/color/colorPalette": "vue-iclient-core/utils/style/color/colorPalette.ts",
+  "_utils/style/color/serialColors": "vue-iclient-core/utils/style/color/serialColors.ts",
   "_types/index": "vue-iclient/src/leaflet/_types/index.js",
   "_types/map-event": "vue-iclient-core/types/map-event.ts",
   "_utils/props-binder": "vue-iclient/src/leaflet/_utils/props-binder.js"

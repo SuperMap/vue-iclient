@@ -12,6 +12,7 @@ var externals = {};
 // index.ts打包external所有引入的文件, 包括install.js和导出的js
 var installExternals = {
   'vue-iclient/src/common/_utils/style/theme/set-theme': `@supermapgis/vue-iclient-${type}/lib/_utils/style/theme/set-theme`,
+  'vue-iclient-core/utils/style/theme/theme': `@supermapgis/vue-iclient-${type}/lib/_utils/style/theme/theme`,
   'vue-iclient/src/common/_lang/index': `@supermapgis/vue-iclient-${type}/lib/_lang/index.js`,
   'vue-iclient-core/utils/epsg-define': `@supermapgis/vue-iclient-${type}/lib/_utils/epsg-define.js`,
   [`vue-iclient/src/${type}/_types/index`]: `@supermapgis/vue-iclient-${type}/lib/_types/index.js`,

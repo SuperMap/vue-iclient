@@ -1,3 +1,5 @@
+import type { PropType } from 'vue'
+
 export const themeProps = () => ({
   background: String,
   textColor: String,

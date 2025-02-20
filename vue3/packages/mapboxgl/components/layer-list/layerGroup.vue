@@ -2,7 +2,7 @@
   <div>
     <a-tree :class="['sm-component-layer-list__collapse', operations.draggable && 'draggable-tree']" blockNode
       :draggable="operations.draggable" :tree-data="treeData" @drop="dropHandler">
-      <template #switcherIcon="{ switcherCls }"><down-outlined :class="switcherCls" /></template>
+      <template #switcherIcon><i class="sm-components-icon-right" /></template>
       <template #title="item">
         <div :class="{
           'header-wrap': true,
