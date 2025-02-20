@@ -3,10 +3,11 @@ import { Events } from 'vue-iclient-core/types/event/Events';
 
 export class GlobalEvent extends Events {
   _theme: any = themeFactory[1];
-  eventTypes: string[];
   on: (data: Record<string, (...rest: any) => void>) => void;
   un: (data: Record<string, (...rest: any) => void>) => void;
-
+  triggerEvent: (name: string, ...rest: any) => any;
+  eventTypes: string[];
+  
   constructor() {
     super();
     this.eventTypes = ['change-theme'];

@@ -8,11 +8,19 @@
       "DOM",
       "DOM.Iterable"
     ],
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "*": [
+        "node_modules/*",
+        ".pnpm/*"
+      ]
+    },
+    "types": [
+      "mapbox-gl",
+      "vite/client",
+      "vue"
+    ]
   },
-  "types": [
-    "mapbox-gl"
-  ],
   "include": [
     "packages/mapboxgl",
     "typings/env.d.ts",

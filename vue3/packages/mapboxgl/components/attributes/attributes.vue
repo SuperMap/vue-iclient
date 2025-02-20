@@ -120,7 +120,6 @@ let paginationOptions = ref<PaginationParams>({
   defaultCurrent: 1
 });
 const sorter = ref<Object>({});
-const openKeys = ref<Array<string>>([]);
 const loading = ref<boolean>(false);
 const searchText = ref<string>('');
 const searchedColumn = ref<string>('');

@@ -1,16 +1,24 @@
 {
   "extends": "./tsconfig.base.json",
-  "include": [
-    "vite.config.*",
-    "packages"
-  ],
   "compilerOptions": {
     "composite": true,
-    "noEmit": true,
-    "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "lib": [
+      "ESNext"
+    ],
     "types": [
       "node"
-    ]
-  }
+    ],
+    "skipLibCheck": true
+  },
+  "include": [
+    "tools/**/*",
+    "tools/**/*.json",
+    "packages/*/theme-chalk/*",
+    "packages/*/vue-iclient-mapboxgl/package.json"
+  ],
+  "exclude": [
+    "**/__tests__/**",
+    "**/tests/**",
+    "**/dist"
+  ]
 }

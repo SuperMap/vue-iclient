@@ -33,7 +33,8 @@ export default class MapWatcher extends Events {
   triggerEvent: (name: string, ...rest: any) => any;
   on: (data: Record<string, (...rest: any) => void>) => void;
   un: (data: Record<string, (...rest: any) => void>) => void;
-
+  eventTypes: string[];
+  
   constructor(mapTarget: string, parentTarget?: string) {
     super();
     this.eventTypes = ['hook:loaded', 'hook:removed'];

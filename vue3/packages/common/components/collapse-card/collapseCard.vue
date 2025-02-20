@@ -140,6 +140,7 @@ function toggleTransition(type) {
   nextTick(() => {
     const iconDom = document.querySelector('.sm-component-collapse-card__icon');
     if (iconDom) {
+      // @ts-ignore
       iconDom.style.position = type === 'leave' ? 'relative' : 'absolute';
     }
   });
@@ -154,5 +155,3 @@ function resetIconTransform() {
 
 const emit = defineEmits(['content-show-state']);
 </script>
-
-<style lang="scss"></style>

@@ -6,6 +6,11 @@ export class MapEvent extends Events {
   mapCache: Record<string, Record<string, any>> = {};
   webMapCache: Map<string, InstanceType<any>> = new Map();
 
+  triggerEvent: (name: string, ...rest: any) => any;
+  on: (data: Record<string, (...rest: any) => void>) => void;
+  un: (data: Record<string, (...rest: any) => void>) => void;
+  eventTypes: string[];
+  
   constructor() {
     super();
     this.eventTypes = ['load-map', 'delete-map'];

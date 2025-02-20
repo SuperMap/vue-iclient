@@ -7,7 +7,7 @@ import { useVmProps, useLocale } from '@supermapgis/common/hooks'
 import { addListener, removeListener } from 'resize-detector'
 import { debounce, pick, cloneDeep } from 'lodash-es'
 import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useAttrs, getCurrentInstance } from 'vue'
-import { Spin as ASpin } from 'ant-design-vue'
+import { Spin as ASpin, message } from 'ant-design-vue'
 import { webMapPropsDefault } from './webmap'
 
 const viewModelProps = [
@@ -51,7 +51,6 @@ const controlComponents = computed(() => {
   return controls
 })
 
-let map: any
 let viewModel: InstanceType<typeof WebMapViewModel>
 let mapEventsInstance: InstanceType<typeof MapEvents>
 let __resizeHandler: () => void
@@ -99,7 +98,6 @@ const registerEvents = () => {
       spinning.value = false
       mapEvent.setMap(props.target, e.map, viewModel)
       e.map.resize()
-      map = e.map
       // 绑定map event
       mapEventsInstance.bindMapEvents(e.map);
       /**
@@ -187,7 +185,7 @@ const notifyErrorTip = ({
       msg = e.error
     }
   }
-  // Message.error(t(`webmap.${defaultTip}`) + msg);
+  message.error(t(`webmap.${defaultTip}`) + msg);
 }
 
 const destory = () => {

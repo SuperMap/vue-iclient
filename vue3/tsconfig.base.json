@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "baseUrl": "./",
+    "baseUrl": ".",
     "outDir": "./dist",
     "target": "es2018",
     "module": "esnext",
@@ -16,6 +16,17 @@
     "removeComments": false,
     "noImplicitAny": false,
     "pretty": true,
-    "preserveSymlinks": true
+    "preserveSymlinks": true,
+    "paths": {
+      "*": [
+        "node_modules/*",
+        ".pnpm/*"
+      ]
+    },
+    "types": [
+      "mapbox-gl",
+      "vite/client",
+      "vue"
+    ]
   }
 }

@@ -10,9 +10,6 @@
     ],
     "skipLibCheck": true
   },
-  "types": [
-    "mapbox-gl"
-  ],
   "include": [
     "packages",
     "typings/**/*.d.ts",
