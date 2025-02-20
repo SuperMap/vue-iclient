@@ -21,14 +21,14 @@
               <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)"
                 class="sm-component-layer-list__attributes">
                 <i :class="attributesIconClass" :style="!item.visible && { cursor: 'not-allowed' }"
-                  title="layerList.attributes" @click.stop="item.visible && toggleAttributesVisibility($event, item)" />
+                  :title="t('layerList.attributes')" @click.stop="item.visible && toggleAttributesVisibility($event, item)" />
               </div>
               <div v-if="operations.opacity && (item && item.type) !== 'group'" class="sm-component-layer-list__style">
                 <i :class="[
                   'sm-components-icon-tucengyangshi01',
                   'sm-components-icon-not-active',
                   showOpacityItem === item.id && 'sm-components-icon-active'
-                ]" :style="!item.visible && { cursor: 'not-allowed' }" title="layerList.layerStyle"
+                ]" :style="!item.visible && { cursor: 'not-allowed' }" :title="t('layerList.layerStyle')"
                   @click.stop="item.visible && changeItemOpacity(item)" />
               </div>
               <div>
@@ -41,7 +41,7 @@
           </div>
         </div>
         <div v-show="operations.opacity && item.id === showOpacityItem" class="opacity-style">
-          <div>layerList.opacity</div>
+          <div>{{ t('layerList.opacity') }}</div>
           <a-slider :value="formatOpacity" :min="0" :max="100" :step="1" :style="{ width: '70%' }"
             @change="changeOpacity" />
           <div>{{ formatOpacity + '%' }}</div>

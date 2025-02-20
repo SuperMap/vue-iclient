@@ -8,7 +8,7 @@ import type {
   StatisticsParams,
   TableParams,
   ToolbarParams
-} from '@supermapgis/vue-iclient-mapboxgl/attributes/attributes.vue'
+} from '@supermapgis/mapboxgl/components/attributes/attributes.ts'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
 import { getPropsDefaults, themeProps } from '@supermapgis/common/utils'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'

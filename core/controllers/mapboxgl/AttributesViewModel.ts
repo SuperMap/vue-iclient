@@ -127,6 +127,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
   totalCount: number;
 
   on: (evt: string, fn: Function) => void;
+  off: (evt: string) => void;
 
   constructor(options) {
     super();
@@ -197,7 +198,7 @@ class FeatureTableViewModel extends mapboxgl.Evented {
     this.getDatas();
   }
 
-  setSearchText(searchText, searchedColumn) {
+  setSearchText(searchText?: string, searchedColumn?: string) {
     this.searchText = searchText;
     this.searchedColumn = searchedColumn;
     this.getDatas();
