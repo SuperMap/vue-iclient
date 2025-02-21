@@ -5,7 +5,6 @@
   "type": "module",
   "main": "lib/index.js",
   "module": "es/index.js",
-  "unpkg": "dist/antd.min.js",
   "typings": "es/index.d.ts",
   "scripts": {
     "test:unit": "vitest run --coverage",
@@ -23,7 +22,7 @@
     "typecheck:web": "vue-tsc -p tsconfig.web.json --composite false --noEmit",
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
     "postinstall": "pnpm stub",
-    "publish-mapboxgl": "pnpm --dir ./dist publish --registry http://localhost:4873 --no-git-checks"
+    "publish-mapboxgl": "pnpm publish --registry http://localhost:4873 --no-git-checks"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",

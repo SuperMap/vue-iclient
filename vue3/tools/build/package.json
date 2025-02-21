@@ -7,6 +7,7 @@
   "types": "./dist/index.d.ts",
   "scripts": {
     "start": "gulp --require @esbuild-kit/cjs-loader -f gulpfile.ts",
+    "maxSize": "node --max-old-space-size=8192 --expose-gc --gc-global node_modules/rollup/dist/rollup.js -c && node --max-old-space-size=8192 --expose-gc --gc-global node_modules/rollup/dist/es/rollup.js -c",
     "dev": "pnpm run stub",
     "stub": "unbuild --stub"
   },
@@ -39,14 +40,15 @@
     "gulp-replace": "^1.1.4",
     "gulp-sass": "^6.0.0",
     "postcss": "^8.4.35",
-    "rollup": "^2.75.7",
-    "rollup-plugin-esbuild": "^4.9.1",
+    "rollup": "4.34.6",
+    "rollup-plugin-esbuild": "6.1.1",
     "sass": "^1.79.3",
     "vinyl": "2.2.1"
   },
   "devDependencies": {
     "@esbuild-kit/cjs-loader": "^2.2.1",
     "@pnpm/types": "^8.4.0",
+    "rollup-plugin-visualizer": "^5.14.0",
     "unbuild": "^2.0.0",
     "vue": "^3.2.37"
   }

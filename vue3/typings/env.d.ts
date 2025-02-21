@@ -1,6 +1,6 @@
 import type { vShow } from 'vue'
+import type { INSTALLED_KEY } from '@supermapgis/common/utils/index.common'
 
-export const INSTALLED_KEY = Symbol('INSTALLED_KEY')
 declare global {
   const process: {
     env: {
