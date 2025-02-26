@@ -1,5 +1,6 @@
 import type { PropType, CSSProperties } from 'vue'
-import type { ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
+import type { ShortEmits } from '@supermapgis/common/utils/index.common'
+import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
 import type {
   PaginationParams,
@@ -10,7 +11,8 @@ import type {
   ToolbarParams
 } from '@supermapgis/mapboxgl/components/attributes/attributes.ts'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import { getPropsDefaults, themeProps } from '@supermapgis/common/utils/index.common'
+import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
+import { themeProps } from '@supermapgis/common/components/theme/theme'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 
 export interface AttributesParams {
@@ -72,11 +74,11 @@ export const layerListProps = () => ({
     default: 'sm-components-icon-layer-list'
   },
   attributes: {
-    type: Object,
+    type: Object as PropType<AttributesParams>,
     default: () => ({})
   },
   operations: {
-    type: Object,
+    type: Object as PropType<Operations>,
     default: () => ({
       fitBounds: true,
       draggable: false,

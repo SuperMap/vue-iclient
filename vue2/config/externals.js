@@ -215,7 +215,7 @@ const mapboxglExteranlsFun = function (context, request, callback) {
 const libExtral = {
   'vue-iclient-core/libs/geostats/geostats': `@supermapgis/vue-iclient-${type}/static/libs/geostats/geostats`,
   'vue-iclient-core/libs/json-sql/jsonsql': `@supermapgis/vue-iclient-${type}/static/libs/json-sql/jsonsql`,
-  'vue-iclient-core/utils/style/theme/theme.json': `@supermapgis/vue-iclient-${type}/lib/_utils/style/theme/theme.json`,
+  'vue-iclient-core/utils/style/theme/theme': `@supermapgis/vue-iclient-${type}/lib/_utils/style/theme/theme`,
   [`vue-iclient/src/${type}/style`]: `@supermapgis/vue-iclient-${type}/lib/style.js`,
   'vue-iclient/src/init': `@supermapgis/vue-iclient-${type}/lib/init.js`
 };

@@ -1,35 +1,10 @@
-import globalEvent from 'vue-iclient-core/utils/global-event';
-import themeFactory from 'vue-iclient-core/utils/style/theme/theme';
-import { dealWithTheme, ThemeStyleParams } from 'vue-iclient-core/utils/style/color/serialColors';
-import { objectWithoutProperties } from 'vue-iclient-core/utils/util';
+export const isBrowser = typeof window !== 'undefined';
 
-interface triggerParams {
-  triggerEvent: boolean;
-  ignoreElements: string[];
+export const isNativeSupport = isBrowser && window.CSS && window.CSS.supports && window.CSS.supports('(--a: 0)');
+export function toStyleVariable(variable: string) {
+  return `--${variable.replace(/[A-Z]/g, '-$&').toLowerCase()}`;
 }
 
-export const setTheme = (themeStyle: any = {}, triggerInfo?: triggerParams) => {
-  let acceptedThemeStyle = themeStyle;
-  if (typeof themeStyle === 'string') {
-    acceptedThemeStyle = themeFactory.find((item: ThemeStyleParams) => item.label === themeStyle) || themeFactory[1];
-  } else if (acceptedThemeStyle.componentBackground) {
-    if (!acceptedThemeStyle.collapseCardHeaderBg) {
-      acceptedThemeStyle.collapseCardHeaderBg = acceptedThemeStyle.componentBackground;
-    }
-    if (!acceptedThemeStyle.collapseCardBackground) {
-      acceptedThemeStyle.collapseCardBackground = acceptedThemeStyle.componentBackground;
-    }
-  }
-  const nextThemeData = dealWithTheme(acceptedThemeStyle);
-  const nextTheme = {
-    ...nextThemeData.themeStyle
-  };
-  if (themeStyle && (typeof themeStyle === 'string' || 'componentBackground' in themeStyle)) {
-    nextTheme.background = nextTheme.componentBackground;
-  }
-  globalEvent.theme = nextTheme;
-  if (!triggerInfo || triggerInfo.triggerEvent === true) {
-    globalEvent.changeTheme(objectWithoutProperties(nextTheme, (triggerInfo || {}).ignoreElements || []));
-  }
-  return nextTheme;
-};
+export function getRootStyleSelector(className?: string) {
+  return className && isNativeSupport ? `.${className}` : ':root';
+}

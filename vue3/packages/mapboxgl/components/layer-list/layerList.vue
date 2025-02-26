@@ -2,6 +2,7 @@
   <sm-collapse-card
     v-show="isShow"
     :icon-class="iconClass"
+    :icon-position="position"
     :header-name="headerName || t('layerList.title')"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
@@ -11,7 +12,11 @@
     ref="root-el"
     class="sm-component-layer-list"
   >
-    <a-card class="sm-component-layer-list__a-card" :bordered="false" :style="headingTextColorStyle">
+    <sm-card
+      class="sm-component-layer-list__a-card"
+      :bordered="false"
+      :style="textColorHeadingStyle"
+    >
       <div class="sm-component-layer-list__content">
         <layer-group
           :currentOpacity="currentOpacity"
@@ -26,7 +31,7 @@
           @toggleAttributesVisibility="(e, item) => toggleAttributesVisibility(e, item)"
         ></layer-group>
       </div>
-    </a-card>
+    </sm-card>
     <sm-attributes
       v-show="displayAttributes"
       ref="attributes-el"
@@ -55,11 +60,12 @@ import {
   useTemplateRef,
   onBeforeMount
 } from 'vue'
-import { useMapGetter, useLocale, useTheme } from '@supermapgis/common/hooks/index.common'
+import { useTheme } from '@supermapgis/common/components/theme/theme'
+import { useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
-import { Card as ACard } from 'ant-design-vue'
 import SmAttributes from '@supermapgis/mapboxgl/components/attributes/attributes.vue'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapseCard.vue'
+import SmCard from '@supermapgis/common/components/card/Card'
 import LayerListViewModel from 'vue-iclient-core/controllers/mapboxgl/LayerListViewModel'
 import LayerGroup from './layerGroup.vue'
 import { isEqual } from 'lodash-es'
@@ -92,7 +98,7 @@ let viewModel: InstanceType<typeof LayerListViewModel>
 const { getTargetName, setViewModel } = useMapGetter<Map>({ loaded, removed })
 const { isShow, parentIsWebMapOrMap } = useMapControl()
 const { t } = useLocale()
-const { headingTextColorStyle } = useTheme()
+const { textColorHeadingStyle } = useTheme(props)
 
 const sourceList = ref([])
 const attributesProps = ref<AttributesParams>({})
@@ -100,7 +106,6 @@ const displayAttributes = ref(false)
 const currentOpacity = ref(0)
 const attributesEl = useTemplateRef<HTMLElement>('attributes-el')
 const rootEl = useTemplateRef<HTMLElement>('root-el')
-
 
 // Computed
 const attributesStyle = computed(() => {
@@ -208,10 +213,7 @@ function toggleAttributesVisibility(e: MouseEvent & { target: Element }, item) {
   closeAttributesIconClass()
   removeAttributes()
   handleAttributesProps(item)
-  e.target.setAttribute(
-    'class',
-    `${attributesIconClass.value} sm-components-icon-attribute-open`
-  )
+  e.target.setAttribute('class', `${attributesIconClass.value} sm-components-icon-attribute-open`)
   attributesContainer.value.appendChild(attributesEl.value)
   displayAttributes.value = !displayAttributes.value
 }
@@ -224,7 +226,7 @@ async function handleAttributesProps(item: Record<string, any>) {
     }
   }
   const dataset = await viewModel.getLayerDatas(item)
-  attributesProps.value = { dataset: Object.freeze(dataset), title: item.title, ...propsClone };
+  attributesProps.value = { dataset: Object.freeze(dataset), title: item.title, ...propsClone }
 }
 
 function layerUpdate() {

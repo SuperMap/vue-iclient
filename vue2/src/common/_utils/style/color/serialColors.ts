@@ -1,5 +1,6 @@
-import colorPalette from 'vue-iclient-core/utils/style/color/colorPalette';
+import colorPalette from 'vue-iclient/src/common/_utils/style/color/colorPalette';
 import themeFactory from 'vue-iclient-core/utils/style/theme/theme';
+import { isNativeSupport, getRootStyleSelector as getRootStyleSelectorCommon } from 'vue-iclient-core/utils/style/theme/set-theme';
 import { getColorWithOpacity, getDarkenColor, getDataType } from 'vue-iclient-core/utils/util';
 import cssVars from 'css-vars-ponyfill';
 
@@ -48,9 +49,6 @@ const antdFunctionColors: FunctionColorParams = {
   warningColor: $glod6,
   dangerColor: $red6
 };
-
-const isBrowser = typeof window !== 'undefined';
-const isNativeSupport = isBrowser && window.CSS && window.CSS.supports && window.CSS.supports('(--a: 0)');
 
 export function getPrimarySerialColors(nextThemeInfo?: ThemeStyleParams | ColorGroupExtraColorParams): string[] {
   const series = [];
@@ -149,7 +147,7 @@ export function toStyleVariable(variable) {
 }
 
 export function getRootStyleSelector(themeStyle: ThemeStyleParams) {
-  return themeStyle.styleConfig?.className && isNativeSupport ? `.${themeStyle.styleConfig.className}` : ':root';
+  return getRootStyleSelectorCommon(themeStyle?.styleConfig?.className);
 }
 
 function setRootStyle(themeData: StyleReplacerParams): void {

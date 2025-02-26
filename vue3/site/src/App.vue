@@ -1,56 +1,76 @@
 <script setup>
 import { WebMapDemo, AttributesDemo, LayerListDemo } from './register-components'
-import { setTheme } from 'vue-iclient-core/utils/style/theme/set-theme'
-import { ref } from 'vue'
-import { Button } from 'ant-design-vue'
+import { setTheme } from '@supermapgis/common/components/theme/theme'
+import { ref, onBeforeMount } from 'vue'
+import Button from '@supermapgis/common/components/button/Button'
 
 const theme = ref('light')
-setTheme(theme)
+
+onBeforeMount(() => {
+  setTheme({ themeStyle: theme.value })
+})
 
 const changeStyle = () => {
-  setTheme('dark')
+  setTheme({ themeStyle: 'dark'})
 }
 const changeStyle1 = () => {
-  setTheme('light')
+  setTheme({ themeStyle: 'light' })
 }
 const changeStyle2 = () => {
   let transparent = {
-    style: 'light',
-    textColor: '#000',
-    background: 'transparent',
-    componentBackground: 'pink',
-    collapseCardHeaderBg: 'red',
-    collapseCardBackground: 'green',
-    hoverColor: 'blue',
-    clickColor: 'grey',
-    selectedColor: 'black'
+    themeType: 'dark',
+    blue: 'purple',
+    green: '#00bc00',
+    red: '#e41318',
+    gold: '#f2b200',
+    colorPrimary: 'purple',
+    colorSuccess: '#00bc00',
+    colorWarning: '#f2b200',
+    colorError: '#e41318',
+    colorInfo: 'purple',
+    colorTextBase: 'pink',
+    colorBgBase: 'orange',
+    gisControlBg: 'green',
+    gisControlHeaderBg: 'red',
+    // gisControlItemBgSelected: 'black',
+    gisControlItemBgHover: 'blue'
   }
-  setTheme(transparent)
-}
-const changeStyle3 = () => {
-  setTheme('warmGray')
+  setTheme({ themeStyle: transparent })
 }
 </script>
 
 <template>
-  <Fragement>
+  <div class="app-holder">
     <div class="changeTheme">
       <Button @click="changeStyle">深色主题</Button>
       <Button @click="changeStyle1">浅色主题</Button>
-      <Button @click="changeStyle3">暖灰色主题</Button>
-      <Button @click="changeStyle2">透明主题</Button>
+      <Button @click="changeStyle2" background="red">自定义主题</Button>
     </div>
-    <WebMapDemo server-url="http://172.16.14.44:8190/iportal" :map-id="692091022"></WebMapDemo>
+    <div class="map-holder">
+      <WebMapDemo server-url="http://172.16.14.44:8190/iportal" :map-id="692091022"></WebMapDemo>
+      <LayerListDemo></LayerListDemo>
+    </div>
     <AttributesDemo></AttributesDemo>
-    <LayerListDemo></LayerListDemo>
-  </Fragement>
+  </div>
 </template>
 
-<style scoped>
+<style>
 .changeTheme {
-  position: absolute;
-  left: 50%;
-  transform: translate(-100px);
-  z-index: 100;
+  padding: 8px;
+  background: #c8adad;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.app-holder > div{
+  position: relative;
+}
+
+.map-holder {
+  display: flex;
+}
+.map-holder > div {
+  flex: 1;
+  margin-right: 15px;
 }
 </style>

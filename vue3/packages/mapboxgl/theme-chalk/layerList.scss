@@ -1,2 +1,190 @@
-@use './base.scss';
-@use '@supermapgis/common/theme-chalk/collapseCard.scss'
+// @use './base.scss' as *;
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapseCard.scss';
+@use '@supermapgis/common/theme-chalk/card.scss';
+
+@include b(layer-list) {
+  $layer-list-prefix: &;
+
+  z-index: 10;
+  @include e(content) {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    >div {
+      min-width: 220px;
+      position: relative;
+    }
+    & .#{$ant-prefix}-tree {
+      border-radius: 0 0 2px 2px;
+      padding-bottom: 2px;
+      background: inherit;
+      .#{$ant-prefix}-tree-list-holder-inner {
+        .#{$ant-prefix}-tree-treenode {
+          padding: 4px 0;
+          position: relative;
+          &:hover {
+            background-color: $gis-control-item-bg-selected;
+          }
+        }
+        & > .#{$ant-prefix}-tree-treenode:not(:has(.#{$ant-prefix}-tree-indent-unit)) {
+          padding-left: 8px;
+        }
+        & > .#{$ant-prefix}-tree-treenode:has(.#{$ant-prefix}-tree-indent-unit) {
+          padding-left: 8px;
+          .#{$ant-prefix}-tree-switcher-noop {
+            & + .#{$ant-prefix}-tree-node-content-wrapper-normal {
+              color: $text-color-secondary;
+            }
+          }
+        }
+      }
+      .#{$ant-prefix}-tree-switcher {
+        width: 14px;
+        line-height: 22px;
+        margin-right: 4px;
+        i {
+          font-size: 14px !important;
+          font-weight: normal !important;
+        }
+        &.#{$ant-prefix}-tree-switcher_open {
+          rotate: 90deg;
+        }
+      }
+      .#{$ant-prefix}-tree-node-content-wrapper {
+        width: calc(100% - 20px);
+        height: auto;
+        padding: 0;
+        &:hover, &.#{$ant-prefix}-tree-node-selected {
+          background-color: transparent;
+        }
+      }
+    }
+    & .#{$ant-prefix}-tree-child-tree-open {
+      display: list-item;
+    }
+    & .#{$ant-prefix}-tree-title .header-text {
+      display: inline-flex;
+      width: 100%;
+      position: relative;
+      z-index: 1;
+    }
+    & .icon-buttons-hidden {
+      display: none !important;
+    }
+    & .#{$ant-prefix}-tree-title .header-text .icon-buttons{
+      display: flex;
+      justify-content: flex-end;
+      height: 20px;
+      margin-left: 16px;
+      & i {
+        margin-right: 0px;
+        font-size: 16px;
+      }
+      & div {
+        margin-right: 8px;
+      }
+      & .highlight-icon:hover {
+        color: $primary-color-hover;
+      }
+    }
+    & .opacity-style {
+      display:flex;
+      align-items:center;
+      width: 80%;
+      padding-left: 24px;
+      font-size: 12px;
+      height: 20px;
+      line-height: 20px;
+      position: relative;
+      margin-top: 8px;
+      &::before {
+        position: absolute;
+        left: 8px;
+        top: 0;
+        content: "";
+        height: 14px;
+        width: 8px;
+        border: 1px solid $border-color-split;
+        border-top: none;
+        border-right: none;
+      }
+    }
+  }
+  @include e(a-card) {
+    padding-top: 4px;
+    border-radius: 4px;
+    background: transparent;
+    > div.#{$ant-prefix}-card-body {
+      padding: 0;
+    }
+  }
+
+  @include e(collapse) {
+    .#{$iconfont-class-prefix}-hidden {
+      color: $text-color-disabled;
+    }
+    #{$layer-list-prefix}__sourcelayeritem,
+    .header-wrap {
+      display: flex;
+      align-items: center;
+      font-size: 12px;
+      line-height: 20px;
+      i {
+        font-size: 12px;
+        cursor: pointer;
+        &:first-child {
+          margin-right: 9px;
+          font-size: 14px;
+        }
+      }
+      .header-text {
+        & > i,
+        & > span {
+          vertical-align: middle;
+        }
+        & > span {
+          flex: 1;
+          display: inline-block;
+          font-size: 12px;
+        }
+      }
+    }
+
+    & .#{$ant-prefix}-tree-treenode-disabled {
+      > span, 
+      > .#{$ant-prefix}-tree-node-content-wrapper, 
+      > .#{$ant-prefix}-tree-node-content-wrapper span {
+        color: $text-color;
+        cursor: pointer;
+      }
+    }
+
+    &.draggable-tree {
+      .#{$ant-prefix}-tree-treenode-disabled {
+        > span:not(.#{$ant-prefix}-tree-switcher),
+        > .#{$ant-prefix}-tree-node-content-wrapper,
+        > .#{$ant-prefix}-tree-node-content-wrapper span {
+          cursor: not-allowed;
+        }
+      } 
+    }
+  }
+  @include e(disabled) {
+    &,
+    & span, 
+    & .sm-components-icon-not-active {
+      color: $text-color-disabled !important;
+    }
+  }
+  .sm-components-icon-attribute, .sm-components-icon-not-active {
+    color: $text-color;
+  }
+  .sm-components-icon-attribute-open, .sm-components-icon-active {
+    color: $primary-color-hover;
+  }
+  .#{$ant-prefix}-tree span[draggable=false] {
+    border: none;
+  }
+}

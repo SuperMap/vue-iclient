@@ -2,7 +2,7 @@
 import WebMap from '../webmap.vue'
 import '../style'
 import { ref } from 'vue'
-import { Button } from 'ant-design-vue';
+import Button from '@supermapgis/common/components/button/Button'
 
 const mapId = ref(692091022)
 const changeMapId = (id) => {
@@ -20,17 +20,6 @@ const handleMousedown = (params: Record<string, any>) => {
 </template>
 <style>
 #map, #map1 {
-  position: absolute;
-  top: 80px;
-  width: 48%;
-  height: 900px;
-  margin-top: 300px;
-}
-#map {
-  margin-right: 20px;
-  left: 0;
-}
-#map1 {
-  right: 0;
+  height: 500px;
 }
 </style>

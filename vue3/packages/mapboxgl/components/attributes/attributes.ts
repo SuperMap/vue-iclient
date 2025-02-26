@@ -1,5 +1,7 @@
+import type { PropType } from 'vue';
+import type { TableProps } from 'ant-design-vue'
 import type { ShortEmits } from '@supermapgis/common/utils/vue-types'
-import type { ThemeProps } from '@supermapgis/common/utils'
+import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle';
@@ -67,11 +69,11 @@ export const attributesProps = () => ({
     default: ''
   },
   customRow: {
-    type: Function,
+    type: Function as PropType<TableProps['customRow']>,
     default: () => () => { }
   },
   customHeaderRow: {
-    type: Function,
+    type: Function as PropType<TableProps['customHeaderRow']>,
     default: () => () => { }
   },
   title: {
@@ -155,8 +157,8 @@ export const attributesProps = () => ({
 // export type AttributesProps = ExtractPropTypes<typeof attributesProps>
 export interface AttributesProps extends ThemeProps {
   layerName?: string;
-  customRow?: Function;
-  customHeaderRow?: Function;
+  customRow?: TableProps['customRow'];
+  customHeaderRow?: TableProps['customHeaderRow'];
   title?: string;
   dataset?: Record<string, any>;
   lazy?: boolean;

@@ -92,6 +92,15 @@ export function getColorWithOpacity(color, opacity, isStack = true) {
   return nextColor;
 }
 
+export function toHex8String() {
+  const color = getColorWithOpacity(...arguments);
+  if (!color) {
+    return color;
+  }
+  const nextColor = tinyColor(color);
+  return nextColor.toHex8String();
+}
+
 export function getDerivedColorsByTextColor(textColor, opacity) {
   if (!textColor) {
     return textColor;

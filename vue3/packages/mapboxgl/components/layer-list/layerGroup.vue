@@ -1,6 +1,6 @@
 <template>
   <div>
-    <a-tree :class="['sm-component-layer-list__collapse', operations.draggable && 'draggable-tree']" blockNode
+    <sm-tree :class="['sm-component-layer-list__collapse', operations.draggable && 'draggable-tree']" blockNode
       :draggable="operations.draggable" :tree-data="treeData" @drop="dropHandler">
       <template #switcherIcon><i class="sm-components-icon-right" /></template>
       <template #title="item">
@@ -8,8 +8,8 @@
           'header-wrap': true,
           'sm-component-layer-list__disabled': !item.visible
         }">
-          <div class="header-text" @mouseenter="() => changeIconsStatus(item.id)"
-            @mouseleave="() => changeIconsStatus('')">
+          <div class="header-text" @mouseenter="changeIconsStatus(item.id)"
+            @mouseleave="changeIconsStatus('')">
             <span class="add-ellipsis">{{ item.title }}</span>
             <div :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']">
               <div v-if="operations.fitBounds" class="sm-component-layer-list__zoom">
@@ -42,18 +42,22 @@
         </div>
         <div v-show="operations.opacity && item.id === showOpacityItem" class="opacity-style">
           <div>{{ t('layerList.opacity') }}</div>
-          <a-slider :value="formatOpacity" :min="0" :max="100" :step="1" :style="{ width: '70%' }"
+          <sm-slider :value="formatOpacity" :min="0" :max="100" :step="1" :style="{ width: '70%' }"
             @change="changeOpacity" />
           <div>{{ formatOpacity + '%' }}</div>
         </div>
       </template>
-    </a-tree>
+    </sm-tree>
   </div>
 </template>
 
 <script lang="ts" setup>
+import type { PropType } from 'vue';
+import type { TreeProps } from 'ant-design-vue';
+import type { AttributesParams, Operations } from '@supermapgis/mapboxgl/components/layer-list/layerList'
 import { ref, computed, watch } from 'vue';
-import { Tree as ATree, Slider as ASlider } from 'ant-design-vue';
+import SmTree from '@supermapgis/common/components/tree/Tree'
+import SmSlider from '@supermapgis/common/components/slider/Slider'
 import { useLocale } from '@supermapgis/common/hooks/index.common';
 
 const { t } = useLocale()
@@ -67,7 +71,7 @@ const props = defineProps({
     default: () => []
   },
   operations: {
-    type: Object as () => { fitBounds: boolean; draggable: boolean; opacity: boolean },
+    type: Object as PropType<Operations>,
     default: () => ({
       fitBounds: true,
       draggable: false,
@@ -75,10 +79,10 @@ const props = defineProps({
     })
   },
   attributes: {
-    type: Object as () => Record<string, any>,
+    type: Object as PropType<AttributesParams>,
     default: () => ({})
   },
-  dropHandler: Function
+  dropHandler: Function as PropType<TreeProps['onDrop']>
 });
 
 const emit = defineEmits([

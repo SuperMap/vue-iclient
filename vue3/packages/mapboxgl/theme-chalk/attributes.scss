@@ -6,26 +6,27 @@
   height: 100%;
   width: 100%;
   overflow: hidden;
-  .sm-component-table {
+  .#{$ant-prefix}-table {
     color: inherit;
+    background: inherit;
   }
-  .sm-component-table-wrapper {
+  .#{$ant-prefix}-table-wrapper {
     overflow: auto;
     height: calc(100% - 46px);
     &::-webkit-scrollbar-thumb {
-      background: $scrollbar-background;
+      background: $scrollbar-bg;
     }
-    .sm-component-table-thead {
-      .sm-component-table-column-has-actions {
-        .sm-component-table-column-title {
+    .#{$ant-prefix}-table-thead {
+      .#{$ant-prefix}-table-column-has-actions {
+        .#{$ant-prefix}-table-column-title {
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
           display: block;
         }
-        .sm-component-table-column-sorters {
+        .#{$ant-prefix}-table-column-sorters {
           display: block;
-          .sm-component-table-column-sorter {
+          .#{$ant-prefix}-table-column-sorter {
             position: absolute;
             right: 4px;
             top: 50%;
@@ -37,54 +38,68 @@
         color: inherit;
         background: inherit;
         padding: 6px 6px;
-        &.sm-component-table-column-sort {
-          background: $select-item-hover-bg;
+        &.#{$ant-prefix}-table-column-sort {
+          background: $gis-control-item-bg-hover;
         }
-        &.sm-component-table-column-has-sorters {
+        &.#{$ant-prefix}-table-column-has-sorters {
           &:hover {
-            background: $select-item-hover-bg;
+            background: $gis-control-item-bg-hover;
           }
         }
       }
       tr > th .anticon-filter,
-      tr > th .sm-component-table-filter-icon {
+      tr > th .#{$ant-prefix}-table-filter-icon {
         right: 15px;
         display: flex;
         align-items: center;
       }
-      > tr > th.sm-component-table-column-has-actions {
-        &.sm-component-table-column-has-filters {
-          .anticon-filter.sm-component-table-filter-open,
-          .sm-component-table-filter-icon.sm-component-table-filter-open {
-            background: $select-item-hover-bg;
+      > tr > th.#{$ant-prefix}-table-column-has-actions {
+        &.#{$ant-prefix}-table-column-has-filters {
+          .anticon-filter.#{$ant-prefix}-table-filter-open,
+          .#{$ant-prefix}-table-filter-icon.#{$ant-prefix}-table-filter-open {
+            background: $gis-control-item-bg-hover;
           }
           &:hover {
-            .sm-component-table-filter-icon:hover {
-              background: $select-item-hover-bg;
+            .#{$ant-prefix}-table-filter-icon:hover {
+              background: $gis-control-item-bg-hover;
             }
           }
         }
-        &.sm-component-table-column-has-sorters:hover {
-          .sm-component-table-filter-icon {
+        &.#{$ant-prefix}-table-column-has-sorters:hover {
+          .#{$ant-prefix}-table-filter-icon {
             background: transparent;
           }
         }
-        .sm-components-icon-search:before {
+        .#{$ant-prefix}s-icon-search:before {
           padding: 7px;
         }
       }
     }
-    .sm-component-table-tbody {
-      > tr > td {
-        width: 128px;
-        padding: 6px 6px;
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
+    .#{$ant-prefix}-table-tbody {
+      > tr {
+        &:hover {
+          background: $gis-control-item-bg-hover;
+          & > td {
+            background: $gis-control-item-bg-hover;
+          }
+        }
+        & > td {
+          width: 128px;
+          padding: 6px 6px;
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          &.#{$ant-prefix}-table-column-sort {
+            background: inherit;
+          }
+        }
       }
     }
+    .#{$ant-prefix}-checkbox-inner {
+      background-color: inherit;
+    }
   }
-  .sm-component-table-custom-filter-dropdown {
+  .#{$ant-prefix}-table-custom-filter-dropdown {
     font-size: 0;
     padding: 8px;
   }
@@ -104,17 +119,17 @@
     }
   }
   @include e(menu) {
-    .sm-component-icon:hover {
+    .#{$ant-prefix}-icon:hover {
       color: $primary-color !important;
     }
     
   }
-  .sm-component-dropdown-link {
-    cursor: pointer;
+  @include e(dropdown-menu) {
+    .#{$ant-prefix}-dropdown-menu-submenu-title > span > .anticon:first-child {
+      margin-right: 0;
+    }
   }
-}
-.sm-component-attribute_dropdown-menu {
-  .sm-component-dropdown-menu-submenu-title > span > .anticon:first-child {
-    margin-right: 0;
+  .#{$ant-prefix}-dropdown-link {
+    cursor: pointer;
   }
 }

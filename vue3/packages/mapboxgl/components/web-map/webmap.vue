@@ -7,7 +7,8 @@ import { useVmProps, useLocale } from '@supermapgis/common/hooks/index.common'
 import { addListener, removeListener } from 'resize-detector'
 import { debounce, pick, cloneDeep } from 'lodash-es'
 import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useAttrs, getCurrentInstance } from 'vue'
-import { Spin as ASpin, message } from 'ant-design-vue'
+import { message } from 'ant-design-vue'
+import SmSpin from '@supermapgis/common/components/spin/Spin'
 import { webMapPropsDefault } from './webmap'
 
 const viewModelProps = [
@@ -236,6 +237,6 @@ onUnmounted(() => {
     <template v-for="(controlProps, controlName) in controlComponents" :key="controlName">
       <component :is="controlName" v-bind="controlProps"></component>
     </template>
-    <ASpin v-if="spinning" size="large" :spinning="spinning" :tip="t('webmap.loadingTip')" />
+    <sm-spin v-if="spinning" size="large" :spinning="spinning" :tip="t('webmap.loadingTip')" />
   </div>
 </template>

@@ -27,6 +27,7 @@ export default class MapWatcher extends Events {
   webmap: InstanceType<any>;
   viewModel: ViewModel;
   mapTarget: string;
+  currentBindTarget: string;
   firstDefaultTarget: string;
   private _parentTarget: string;
 
@@ -71,6 +72,7 @@ export default class MapWatcher extends Events {
     this.viewModel = viewModel;
     const targetName = this.targetName;
     this.firstDefaultTarget = targetName;
+    this.currentBindTarget = targetName;
     if (mapEvent.getMap(targetName)) {
       this.loadMap(targetName);
     }
@@ -93,7 +95,7 @@ export default class MapWatcher extends Events {
     prev: string | undefined | null
   ) {
     this.mapTarget = next;
-    const prevTarget = prev || this.firstDefaultTarget;
+    const prevTarget = prev || this.currentBindTarget;
     if (next && next !== prevTarget) {
       // 多个map切换的时候，需要删除该组件与前一个map的图层绑定
       const prevMap = mapEvent.getMap(prevTarget);
@@ -110,6 +112,7 @@ export default class MapWatcher extends Events {
     if (!this.firstDefaultTarget) {
       this.firstDefaultTarget = targetName;
     }
+    this.currentBindTarget = targetName;
     this.map = mapEvent.getMap(targetName);
     this.webmap = mapEvent.getWebMap(targetName);
     this.viewModel &&
@@ -132,7 +135,10 @@ export default class MapWatcher extends Events {
       this.triggerEvent('hook:removed', { map, mapTarget: target });
       this.map = null;
       this.webmap = null;
-      this.firstDefaultTarget = null;
+      this.currentBindTarget = null;
+      if (this.firstDefaultTarget === target) {
+        this.firstDefaultTarget = null;
+      }
     }
   }
 
