@@ -20,7 +20,7 @@ export type ShortEmits<T extends Record<string, any>> = UnionToIntersection<
   }>
 >
 
-type NativeTypeConstructor = StringConstructor | ObjectConstructor | BooleanConstructor | NumberConstructor | PropType<string[]>
+type NativeTypeConstructor = StringConstructor | ObjectConstructor | BooleanConstructor | NumberConstructor | PropType<string[] | number[]>
 
 type PropsDef = {
   [K: string]: { type: any; default?: NativeType } | NativeTypeConstructor

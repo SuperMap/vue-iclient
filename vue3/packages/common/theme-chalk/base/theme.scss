@@ -6,8 +6,10 @@ $ant-prefix: $sm-prefix;
 $iconfont-css-prefix: anticon;
 $iconfont-class-prefix: sm-components-icon;
 
+// 主色
 $primary-color: var(--color-primary);
 $primary-color-hover: var(--color-primary-hover);
+$error-color: var(--color-error);
 
 // 边框
 $border-color-split: var(--color-border);
@@ -19,11 +21,15 @@ $text-color-heading: var(--color-text-heading);
 $text-color-secondary: var(--color-text-secondary);
 $text-color-disabled: var(--color-text-quaternary);
 
+// 背景
+$color-fill-tertiary: var(--color-fill-tertiary);
+
 // 滚动条
 $scrollbar-bg: var(--scrollbar-bg);
 
 // gis 组件
 $gis-control-bg: var(--gis-control-bg);
+$gis-control-bg-secondary: var(--gis-control-bg-secondary);
 $gis-control-header-bg: var(--gis-control-header-bg);
 $gis-control-header-border: var(--gis-control-header-border);
 $gis-control-item-bg-selected: var(--gis-control-item-bg-selected);

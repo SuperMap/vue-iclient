@@ -1,0 +1,170 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@import '@supermapgis/common/theme-chalk/collapseCard.scss';
+@import '@supermapgis/common/theme-chalk/button.scss';
+@import '@supermapgis/common/theme-chalk/input.scss';
+@import '@supermapgis/common/theme-chalk/select.scss';
+@import '@supermapgis/mapboxgl/theme-chalk/layer-highlight.scss';
+
+@include b(query) {
+  $query-prefix: &;
+
+  @include e(body) {
+    min-width: 240px;
+    max-height: 400px;
+    transform-origin: top left;
+    transition: all 0.5s;
+    padding-top: 8px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    & > div {
+      width: 100%;
+    }
+  }
+  @include e(choose-panel) {
+    padding: 0 16px;
+    margin-bottom: 4px;
+  }
+  @include e((job-button, result-button)) {
+    padding-bottom: 7px;
+    text-align: center;
+    width: 50%;
+    border-bottom: 1px solid $border-color-split;
+    float: left;
+    cursor: pointer;
+    @include when(active) {
+      color: $primary-color;
+      border-bottom: 2px solid $primary-color;
+      padding-bottom: 6px;
+    }
+  }
+  @include e(job-info-panel) {
+    padding: 0 16px;
+    &:last-child {
+      #{$query-prefix}__job-info-header {
+        border-color: transparent;
+      }
+    }
+  }
+  @include e(job-info-header result-header) {
+    cursor: pointer;
+    padding: 6px 8px 6px 0;
+    border-bottom: 1px solid $border-color-split;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    & > #{$query-prefix}__job-info-name,
+    & > #{$query-prefix}__header-name {
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 85%;
+      line-height: 20px;
+    }
+  }
+  @include e(job-info-body) {
+    padding: 8px 16px 12px;
+    margin: 0 -16px;
+    background-color: $gis-control-bg-secondary;
+  }
+  @include e(item-holder) {
+    margin-top: 8px;
+    &:first-child {
+      margin-top: 0;
+    }
+    > div {
+      &:first-child {
+        line-height: 16px;
+      }
+    }
+    .#{$ant-prefix}-input {
+      font-size: 12px;
+      background: transparent;
+    }
+    .#{$ant-prefix}-input, .#{$ant-prefix}-input-suffix {
+      color: inherit;
+    }
+  }
+  @include e(item-config) {
+    margin-top: 8px;
+    font-size: 12px;
+    width: 100%;
+  }
+  @include e(query-button) {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid $border-color-split;
+  }
+
+  @include e(a-button) {
+    width: 100%;
+    height: 28px;
+  }
+
+  @include e(result-info) {
+    flex: 1;
+    overflow: auto;
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @include e(result-header) {
+    color: $text-color-heading;
+    > span {
+      cursor: default;
+    }
+    > i {
+      color: $error-color !important;
+    }
+  }
+  @include e(no-result result-loading result-body) {
+    flex: 1;
+    margin: 0 -16px;
+    background-color: $gis-control-bg-secondary;
+  }
+  @include e(no-result result-loading) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+  }
+  @include e(no-result) {
+    > div {
+      background-color: transparent;
+    }
+  }
+  @include e(result-body) {
+    padding: 4px 0 12px;
+    & > ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      & > li {
+        padding: 6px 16px 6px 24px;
+        line-height: 20px;
+        cursor: pointer;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        position: relative;
+        &:hover {
+          color: $primary-color-hover;
+          background: $color-fill-tertiary;
+        }
+        &[aria-selected='true'] {
+          color: $primary-color;
+          background-color: $color-fill-tertiary;
+        }
+        > i {
+          position: absolute;
+          right: 16px;
+          top: 0;
+        }
+      }
+    }
+  }
+}

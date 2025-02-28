@@ -1,0 +1,35 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/table-popup.scss';
+
+@include b(attribute-panel) {
+  min-width: 200px;
+  height: 100%;
+  overflow: auto;
+  border-radius: 4px;
+  border: 1px solid $border-color-split;
+  @include e(header) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    border-bottom: 1px solid $border-color-split;
+    .title {
+      padding: 8px 16px;
+    }
+    .ellipsis {
+      width: calc(100% - 80px);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  @include e(content) {
+    width: 100%;
+    height: auto;
+    padding-top: 5px;
+    .sm-component-table-content {
+      max-height: none !important;
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
+import vueJsx from '@vitejs/plugin-vue-jsx'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
@@ -9,7 +10,11 @@ export default defineConfig({
   define: {
     global: 'window'
   },
-  plugins: [vue(), vueDevTools()],
+  plugins: [
+    vue(),
+    vueJsx(),
+    vueDevTools()
+  ],
   resolve: {
     alias: {
       '@supermapgis/mapboxgl': fileURLToPath(new URL('../packages/mapboxgl', import.meta.url)),
@@ -23,7 +28,7 @@ export default defineConfig({
       allow: [
         // 添加包含字体文件的目录
         fileURLToPath(new URL('../../core/assets/iconfont', import.meta.url)),
-        fileURLToPath(new URL('../', import.meta.url)),
+        fileURLToPath(new URL('../', import.meta.url))
       ]
     }
   },

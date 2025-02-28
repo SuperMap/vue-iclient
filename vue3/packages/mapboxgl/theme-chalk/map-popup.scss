@@ -1,0 +1,30 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/attribute-panel.scss';
+
+@include b(map-popup) {
+  min-width: 200px;
+  height: auto;
+  padding: 10px;
+  border-radius: 4px;
+  .switchDataText {
+    display: inline-flex;
+    padding: 8px 0px;
+    margin-right: 10px;
+    span {
+      vertical-align: 3px;
+    }
+    .icon {
+      font-size: 16px;
+    }
+    .left-icon {
+      padding-right: 5px;
+    }
+    .right-icon {
+      padding-left: 5px;
+    }
+    .disabled {
+      color: $text-color-disabled;
+    }
+  }
+}

@@ -34,19 +34,13 @@ import { Component, Prop, Watch, Mixins } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import SmAttributePanel from 'vue-iclient/src/common/attribute-panel/AttributePanel.vue';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
-import MapPopupViewModel from './MapPopupViewModel';
+import MapPopupViewModel from 'vue-iclient-core/controllers/mapboxgl/MapPopupViewModel';
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util';
 import cloneDeep from 'lodash/cloneDeep';
 
 @Component({
   name: 'SmMapPopup',
-  components: { SmAttributePanel },
-  loaded() {
-    this.viewModel = new MapPopupViewModel(this.map);
-  },
-  beforeDestroy() {
-    this.viewModel && this.viewModel.removed();
-  }
+  components: { SmAttributePanel }
 })
 class SmMapPopup extends Mixins(MapGetter, Theme) {
   currentIndex = 0;
@@ -123,6 +117,10 @@ class SmMapPopup extends Mixins(MapGetter, Theme) {
 
   get paginationContent() {
     return `${this.currentIndex + 1}/${this.lnglats.length || this.data.length}`;
+  }
+
+  created() {
+    this.viewModel = new MapPopupViewModel();
   }
 
   removePopup() {

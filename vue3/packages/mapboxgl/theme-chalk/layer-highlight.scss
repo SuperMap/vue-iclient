@@ -1,0 +1,14 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/mapboxgl/theme-chalk/map-popup.scss';
+
+@include b(layer-highlight) {
+  border-radius: 4px;
+  .#{$sm-prefix}-table-popup__table {
+    &.#{$sm-prefix}-table-wrapper {
+      .#{$sm-prefix}-table-content {
+        overflow-x: hidden;
+      }
+    }
+  }
+}

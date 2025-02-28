@@ -1,0 +1,11 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(input) {
+  @include e(affix-wrapper, '-') {
+    box-shadow: none;
+    &:focus, &-focused {
+        box-shadow: none;
+    }
+  }
+}

@@ -1,3 +1,4 @@
+import type mapboxglTypes from 'mapbox-gl'
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
@@ -6,7 +7,13 @@ import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewMod
 import { getFeatureCenter, getValueCaseInsensitive } from 'vue-iclient-core/utils/util';
 import isEqual from 'lodash.isequal';
 
-interface HighlightStyle {
+interface SetMapParams {
+  map: mapboxglTypes.Map;
+  webmap: any;
+  mapTarget: string;
+}
+
+export interface HighlightStyle {
   circle: InstanceType<typeof CircleStyle>;
   line: InstanceType<typeof LineStyle>;
   fill: InstanceType<typeof FillStyle>;
@@ -15,18 +22,18 @@ interface HighlightStyle {
   stokeLine?: InstanceType<typeof LineStyle>;
 }
 
-interface FieldsDisplayInfo {
+export interface FieldsDisplayInfo {
   field: string;
   title: string;
   slotName?: string;
 }
 
-interface LayerEventCursorMap {
+export interface LayerEventCursorMap {
   mousemove: string;
   mouseleave: string;
 }
 
-interface HighlightLayerOptions {
+export interface HighlightLayerOptions {
   name: string;
   layerIds?: string[];
   style: HighlightStyle;
@@ -52,7 +59,7 @@ type LayerClickedFeature = mapboxglTypes.MapboxGeoJSONFeature & {
   };
 };
 
-interface PopupFieldsInfo {
+export interface PopupFieldsInfo {
   title: string;
   value: string;
   slotName?: string;
@@ -69,7 +76,7 @@ enum DataSelectorMode {
   ALL = 'ALL' // 全选
 }
 
-interface MapSelectionChangedEmit {
+export interface MapSelectionChangedEmit {
   features: LayerClickedFeature[];
   popupInfos: PopupFeatureInfo['info'][];
   lnglats: PopupFeatureInfo['coordinates'][];
@@ -202,7 +209,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
     };
   }
 
-  setMap({ map, webmap }: mapInfoType) {
+  setMap({ map, webmap }: SetMapParams) {
     this.map = map;
     this.webmap = webmap;
     this.registerMapClick();

@@ -58,7 +58,8 @@ import {
   onBeforeUnmount,
   nextTick,
   useTemplateRef,
-  onBeforeMount
+  onBeforeMount,
+  watchEffect
 } from 'vue'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import { useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
@@ -73,6 +74,10 @@ import omit from 'omit.js'
 import mapEvent from 'vue-iclient-core/types/map-event'
 import { layerListPropsDefault } from './layerList'
 
+defineOptions({
+  name: 'SmLayerList'
+})
+
 const ATTRIBUTES_NEEDED_PROPS = [
   'title',
   'iconClass',
@@ -85,10 +90,6 @@ const ATTRIBUTES_NEEDED_PROPS = [
   'customHeaderRow',
   'customRow'
 ]
-
-defineOptions({
-  name: 'SmLayerList'
-})
 
 const props = withDefaults(defineProps<LayerListProps>(), layerListPropsDefault)
 
@@ -164,6 +165,12 @@ watch(
   { deep: true }
 )
 
+watchEffect(() => {
+  if (!parentIsWebMapOrMap && rootEl.value?.classList && !rootEl.value.classList.contains('layer-list-container')) {
+    rootEl.value.classList.add('layer-list-container')
+  }
+})
+
 onBeforeMount(() => {
   viewModel = new LayerListViewModel()
   setViewModel(viewModel)
@@ -176,9 +183,6 @@ onBeforeUnmount(() => {
 })
 
 function loaded() {
-  if (!parentIsWebMapOrMap) {
-    rootEl.value.classList.add('layer-list-container')
-  }
   layerUpdate()
   viewModel.on('layersUpdated', layerUpdate)
 }

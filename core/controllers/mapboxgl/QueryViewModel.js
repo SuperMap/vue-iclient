@@ -1,5 +1,4 @@
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import { geti18n } from 'vue-iclient/src/common/_lang/index';
 import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
@@ -86,15 +85,15 @@ export default class QueryViewModel extends mapboxgl.Evented {
         }
         const res = await getFeatures({ ...queryParameter, ...queryOptions });
         if (res.type === 'featureisempty') {
-          this.fire('queryfailed', { message: geti18n().t('query.noResults') });
+          this.fire('queryfailed', { codeName: 'NO_RESULTS' });
           return;
         }
         this.queryResult = { name: queryParameter.name, result: res.features, fields: res.fields };
         this._addResultLayer(this.queryResult);
         this.fire('querysucceeded', { result: this.queryResult, layers: [this.layerID, this.strokeLayerID].filter(item => !!item) });
       } catch (error) {
-        const message = error.onlyService ? geti18n().t('query.seviceNotSupport') : geti18n().t('query.queryFailed');
-        this.fire('queryfailed', { message });
+        const codeName = error.onlyService ? 'SEVICE_NOT_SUPPORT' : 'QUREY_FAILED';
+        this.fire('queryfailed', { codeName });
       }
     }
   }

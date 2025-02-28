@@ -1,0 +1,8 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(btn) {
+  @include e(primary, '-') {
+    box-shadow: none;
+  }
+}

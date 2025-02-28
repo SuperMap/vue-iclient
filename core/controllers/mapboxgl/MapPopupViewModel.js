@@ -7,10 +7,13 @@ import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
  * @extends mapboxgl.Evented
  */
 export default class MapPopupViewModel extends mapboxgl.Evented {
-  constructor(map) {
+  constructor() {
     super();
-    this.map = map;
     this.popup = null;
+  }
+
+  setMap({ map }) {
+    this.map = map;
   }
 
   /**

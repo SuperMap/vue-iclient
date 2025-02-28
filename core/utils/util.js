@@ -232,11 +232,13 @@ export function setPopupArrowStyle(color) {
   const popup = document.querySelectorAll('.sm-mapboxgl-tabel-popup');
   if (popup) {
     popup.forEach(item => {
-      let position = item.className.replace(/.+mapboxgl-popup-anchor-([a-z]+)/, '$1');
-      if (ARROW_POSITION_MAP[position]) {
+      const position = item.className.replace(/.+mapboxgl-popup-anchor-([a-z]+)/, '$1');
+      const dir = position.split('-')[0];
+      const borderPosition = ARROW_POSITION_MAP[dir]
+      if (borderPosition) {
         const popupArrow = item.querySelector('.mapboxgl-popup-tip');
         if (popupArrow) {
-          popupArrow.style[`border${ARROW_POSITION_MAP[position]}Color`] = color;
+          popupArrow.style[`border${borderPosition}Color`] = color;
         }
       }
     });

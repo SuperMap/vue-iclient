@@ -1,0 +1,16 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(select) {
+  $parent-prefix: &;
+  
+  @include e(focused, '-') {
+    &:not(#{$parent-prefix}-disabled):not(#{$parent-prefix}customize-input):not(
+        .#{$ant-prefix}-pagination-size-changer
+      ) {
+      #{$parent-prefix}-selector {
+        box-shadow: none !important;
+      }
+    }
+  }
+}

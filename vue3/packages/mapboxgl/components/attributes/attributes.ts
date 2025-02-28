@@ -1,66 +1,67 @@
-import type { PropType } from 'vue';
+import type { PropType } from 'vue'
 import type { TableProps } from 'ant-design-vue'
-import type { ShortEmits } from '@supermapgis/common/utils/vue-types'
+import type { ShortEmits, MapGetterProps } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
-import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
-import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
-import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle';
-import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
+import { themeProps } from '@supermapgis/common/components/theme/theme'
+import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
+import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle'
+import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle'
+import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle'
 
 export interface PaginationParams {
-  defaultCurrent?: number;
-  current?: number;
-  pageSize?: number;
-  total?: number;
+  defaultCurrent?: number
+  current?: number
+  pageSize?: number
+  total?: number
 }
 
 export interface FieldConfigParams {
-  title?: string;
-  value: string;
-  visible?: boolean;
-  align?: string;
-  filterMultiple?: boolean;
-  onFilter?: Function;
-  onFilterDropdownVisibleChange?: Function;
-  sorter?: Function | boolean;
-  defaultSortOrder?: string;
-  width?: string | number;
-  search?: boolean;
-  customCell?: Function;
-  customHeaderCell?: Function;
+  title?: string
+  value: string
+  visible?: boolean
+  align?: string
+  filterMultiple?: boolean
+  onFilter?: Function
+  onFilterDropdownVisibleChange?: Function
+  sorter?: Function | boolean
+  defaultSortOrder?: string
+  width?: string | number
+  search?: boolean
+  customCell?: Function
+  customHeaderCell?: Function
 }
 
 export interface AssociateWithMapParams {
-  enabled?: boolean;
-  zoomToFeature?: boolean;
-  centerToFeature?: boolean;
+  enabled?: boolean
+  zoomToFeature?: boolean
+  centerToFeature?: boolean
 }
 
 export interface StatisticsParams {
-  showTotal?: boolean;
-  showSelect?: boolean;
+  showTotal?: boolean
+  showSelect?: boolean
 }
 
 export interface TableParams {
-  showBorder?: boolean;
-  showHeader?: boolean;
-  showRowSelection?: boolean;
-  pagination?: PaginationParams;
+  showBorder?: boolean
+  showHeader?: boolean
+  showRowSelection?: boolean
+  pagination?: PaginationParams
 }
 
 export interface ToolbarParams {
-  enabled?: boolean;
-  showZoomToFeature?: boolean;
-  showClearSelected?: boolean;
-  showColumnsControl?: boolean;
-  showRefresh?: boolean;
+  enabled?: boolean
+  showZoomToFeature?: boolean
+  showClearSelected?: boolean
+  showColumnsControl?: boolean
+  showRefresh?: boolean
 }
 
 export interface ColoumParams {
-  value?: string;
-  title?: string;
-  visible?: boolean;
-  dataIndex?: string;
+  value?: string
+  title?: string
+  visible?: boolean
+  dataIndex?: string
 }
 
 export const attributesProps = () => ({
@@ -70,11 +71,11 @@ export const attributesProps = () => ({
   },
   customRow: {
     type: Function as PropType<TableProps['customRow']>,
-    default: () => () => { }
+    default: () => () => {}
   },
   customHeaderRow: {
     type: Function as PropType<TableProps['customHeaderRow']>,
-    default: () => () => { }
+    default: () => () => {}
   },
   title: {
     type: String,
@@ -149,53 +150,53 @@ export const attributesProps = () => ({
   },
   statistics: {
     type: Object as () => StatisticsParams,
-    default: () => ( { showTotal: true, showSelect: true })
-  },
-  mapTarget: String
+    default: () => ({ showTotal: true, showSelect: true })
+  }
 })
 
-// export type AttributesProps = ExtractPropTypes<typeof attributesProps>
-export interface AttributesProps extends ThemeProps {
-  layerName?: string;
-  customRow?: TableProps['customRow'];
-  customHeaderRow?: TableProps['customHeaderRow'];
-  title?: string;
-  dataset?: Record<string, any>;
-  lazy?: boolean;
-  associateWithMap?: AssociateWithMapParams;
-  fieldConfigs?: FieldConfigParams[];
-  table?: TableParams;
-  toolbar?: ToolbarParams;
+
+// export type AttributesProps = Partial<ExtractPropTypes<ReturnType<typeof attributesProps>>>
+export interface AttributesProps extends ThemeProps, MapGetterProps {
+  layerName?: string
+  customRow?: TableProps['customRow']
+  customHeaderRow?: TableProps['customHeaderRow']
+  title?: string
+  dataset?: Record<string, any>
+  lazy?: boolean
+  associateWithMap?: AssociateWithMapParams
+  fieldConfigs?: FieldConfigParams[]
+  table?: TableParams
+  toolbar?: ToolbarParams
   layerStyle?: {
-    line: LineStyle;
-    circle: CircleStyle;
-    fill: FillStyle;
-    stokeLine: LineStyle;
-  };
-  statistics?: StatisticsParams;
+    line: LineStyle
+    circle: CircleStyle
+    fill: FillStyle
+    stokeLine: LineStyle
+  }
+  statistics?: StatisticsParams
   mapTarget?: string
 }
 
-export const attributesPropsDefault = getPropsDefaults<AttributesProps>(attributesProps())
+export const attributesPropsDefault = getPropsDefaults<AttributesProps>(
+  Object.assign(themeProps(), mapGetterProps(), attributesProps())
+)
 
 export type ChangeEvent = {
   pagination: any
 }
 
-type RowSelectParams = [newSelectedRowKeys: number[]];
+type RowSelectParams = [newSelectedRowKeys: number[]]
 type ChangeParams = [
-  pagination: any,
+  pagination: { current: number },
   filters: any,
   newSorter: any,
   currentDataSource: { currentDataSource: any }
-];
-type LoadedParams = [];
+]
 
 export type attributesEmitsMap = {
-  'rowSelect': RowSelectParams;
-  'change': ChangeParams;
-  'loaded': LoadedParams;
-};
+  rowSelect: RowSelectParams
+  change: ChangeParams
+  loaded: []
+}
 
 export type AttributesEmits = ShortEmits<attributesEmitsMap>
-

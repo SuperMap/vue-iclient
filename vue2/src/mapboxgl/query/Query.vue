@@ -160,7 +160,7 @@ import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle';
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
-import QueryViewModel from './QueryViewModel.js';
+import QueryViewModel from 'vue-iclient-core/controllers/mapboxgl/QueryViewModel';
 import SmInput from 'vue-iclient/src/common/input/Input.vue';
 import SmSelect from 'vue-iclient/src/common/select/Select.vue';
 import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
@@ -454,7 +454,7 @@ export default {
         this.isQuery = false;
         this.clearResult();
         // @ts-ignore
-        Message.warning(e.message.toString());
+        Message.warning(this.getFailedMessage(e));
         /**
          * @event queryFailed
          * @desc 查询失败后触发。
@@ -462,6 +462,16 @@ export default {
          */
         this.$emit('query-failed', e);
       });
+    },
+    getFailedMessage(e) {
+      switch (e.codeName) {
+        case 'NO_RESULTS':
+          return this.$t('query.noResults');
+        case 'SEVICE_NOT_SUPPORT':
+          return this.$t('query.seviceNotSupport');
+        default:
+          return this.$t('query.queryFailed');
+      }
     },
     getPopupContainer(triggerNode) {
       return triggerNode.parentNode;

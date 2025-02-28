@@ -5,7 +5,7 @@ import { getDerivedColorsByTextColor } from 'vue-iclient-core/utils/util';
 import globalEvent from '../global-event'
 import { themeTokenMapping } from '../colors'
 
-export function useTheme(props: ThemeProps, themeAliasToken?: AliasToken) {
+export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = globalEvent.theme) {
   const themePropKeys = ['background', 'textColor', 'colorGroup']
   const themeToken = ref<AliasToken>({
     ...themeTokenMapping[themeAliasToken?.themeType || 'light']
@@ -31,6 +31,12 @@ export function useTheme(props: ThemeProps, themeAliasToken?: AliasToken) {
 
   const containerBgStyle = computed(() => {
     return { background: themePropDatas.colorBgContainer }
+  })
+
+  const popupBgStyle = computed(() => {
+    return {
+      background: themePropDatas.colorBgElevated
+    }
   })
 
   const gisControlBgStyle = computed(() => {
@@ -64,6 +70,7 @@ export function useTheme(props: ThemeProps, themeAliasToken?: AliasToken) {
     return {
       colorPrimary: colorGroup?.[0] ?? themeToken.value.colorPrimary,
       colorBgContainer: background ?? themeToken.value.colorBgContainer,
+      colorBgElevated: background ?? themeToken.value.colorBgElevated,
       colorText: textColor ?? themeToken.value.colorText,
       colorTextHeading: textColor ? getDerivedColorsByTextColor(textColor, 0.85) : themeToken.value.colorTextHeading,
       gisControlBg: background ?? themeToken.value.gisControlBg,
@@ -114,6 +121,7 @@ export function useTheme(props: ThemeProps, themeAliasToken?: AliasToken) {
     textColorStyle,
     textColorHeadingStyle,
     containerBgStyle,
+    popupBgStyle,
     gisControlBgStyle,
     gisControlHeaderBgStyle
   }

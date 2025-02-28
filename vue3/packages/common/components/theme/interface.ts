@@ -10,6 +10,7 @@ export type CustonAliasToken = {
   themeType: keyof ThemeMapping
   // gis 组件
   gisControlBg: string
+  gisControlBgSecondary: string
   gisControlHeaderBg: string
   gisControlHeaderBorder: string
   gisControlItemBgSelected: string

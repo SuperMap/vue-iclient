@@ -287,7 +287,7 @@ const setZoomToFeature = () => {
 }
 
 const handleChange = (
-  pagination: { current: any },
+  pagination: { current: number },
   filters: {},
   newSorter: Object,
   { currentDataSource }: any

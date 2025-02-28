@@ -1,9 +1,9 @@
 import type { PropType } from 'vue'
 import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
-import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
+import type { MapGetterProps } from '@supermapgis/common/utils/index.common'
+import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 
 export const controlProps = () => ({
-  mapTarget: String,
   position: {
     type: String as PropType<ControlPosition>,
     default: 'top-left'
@@ -11,11 +11,10 @@ export const controlProps = () => ({
 })
 
 // export type ControlProps = Partial<ExtractPropTypes<ReturnType<typeof controlProps>>>
-export type ControlProps = {
-  mapTarget?: string
+export interface ControlProps extends MapGetterProps {
   position?: ControlPosition
 }
 
-export const controlPropsDefault = getPropsDefaults<ControlProps>(controlProps())
+export const controlPropsDefault = getPropsDefaults<ControlProps>(Object.assign(mapGetterProps(), controlProps()))
 
 export default controlProps

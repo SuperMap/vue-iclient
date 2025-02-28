@@ -102,7 +102,7 @@ export const layerListPropsDefault = getPropsDefaults<LayerListProps>(
 )
 
 export type layerListEmitsMap = {
-  loaded: () => void
+  loaded: []
 }
 
 export type LayerListEmits = ShortEmits<layerListEmitsMap>

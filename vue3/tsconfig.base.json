@@ -17,6 +17,9 @@
     "noImplicitAny": false,
     "pretty": true,
     "preserveSymlinks": true,
+    "jsx": "preserve",
+    "jsxFactory": "h",
+    "jsxFragmentFactory": "Fragment",
     "paths": {
       "*": [
         "node_modules/*",
@@ -26,7 +29,9 @@
     "types": [
       "mapbox-gl",
       "vite/client",
-      "vue"
+      "vue",
+      "@vue/runtime-dom",
+      "geojson"
     ]
   }
 }

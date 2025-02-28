@@ -1,5 +1,5 @@
 <script setup>
-import { WebMapDemo, AttributesDemo, LayerListDemo } from './register-components'
+import { WebMapDemo, AttributesDemo, LayerListDemo, QueryDemo } from './register-components'
 import { setTheme } from '@supermapgis/common/components/theme/theme'
 import { ref, onBeforeMount } from 'vue'
 import Button from '@supermapgis/common/components/button/Button'
@@ -48,7 +48,8 @@ const changeStyle2 = () => {
     </div>
     <div class="map-holder">
       <WebMapDemo server-url="http://172.16.14.44:8190/iportal" :map-id="692091022"></WebMapDemo>
-      <LayerListDemo></LayerListDemo>
+      <!-- <LayerListDemo></LayerListDemo> -->
+      <QueryDemo />
     </div>
     <AttributesDemo></AttributesDemo>
   </div>
@@ -60,6 +61,10 @@ const changeStyle2 = () => {
   background: #c8adad;
   text-align: center;
   margin-bottom: 20px;
+}
+
+.app-holder {
+  background: var(--color-bg-base)
 }
 
 .app-holder > div{

@@ -9,11 +9,11 @@ export interface MapGetterOptions<M> {
   removed?: (map: M, target: string) => void
 }
 
-interface MapGetterProps {
+export interface MapGetterProps {
   mapTarget: string
 }
 
-export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions<M>) {
+export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions<M> = {}) {
   const componentInstance = getCurrentInstance()
   const props = componentInstance.props as unknown as MapGetterProps
   const _mapWatcher = new MapWatcher(

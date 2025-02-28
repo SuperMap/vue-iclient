@@ -1,8 +1,8 @@
-// @use './base.scss' as *;
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/collapseCard.scss';
-@use '@supermapgis/common/theme-chalk/card.scss';
+@import '@supermapgis/common/theme-chalk/collapseCard.scss';
+@import '@supermapgis/common/theme-chalk/card.scss';
+@import '@supermapgis/mapboxgl/theme-chalk/attributes.scss';
 
 @include b(layer-list) {
   $layer-list-prefix: &;

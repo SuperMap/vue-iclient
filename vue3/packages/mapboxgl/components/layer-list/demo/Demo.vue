@@ -6,7 +6,7 @@ import { ref } from 'vue'
 import '../style'
 
 const position = ref('top-left')
-const mapTarget = ref(null)
+const mapTarget = ref('map1')
 const bgColor = ref()
 
 
@@ -29,9 +29,9 @@ const changeBg = () => {
       <Button type="primary" @click="changePosition('top-right')">切换位置</Button>
       <Button @click="changeMapTarget">切换绑定地图</Button>
     </div>
-    <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="331024164" target="map1">
-      <LayerList :position="position" :map-target="mapTarget" :background="bgColor" headerName="tuceng"></LayerList>
-    </WebMap>
+    <!-- <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="331024164" target="map1">
+    </WebMap> -->
+    <LayerList :position="position" :map-target="mapTarget" :background="bgColor" headerName="tuceng"></LayerList>
   </div>
 </template>
 <style>
