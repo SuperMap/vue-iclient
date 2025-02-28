@@ -20,13 +20,13 @@
 
 <script setup lang="tsx">
 import type { Map } from 'mapbox-gl'
-import type { LayerHighlightProps, LayerHighlightEmits, ColumnStyle, MapSelectionChangedEvent, ColumnCustomRenderParams } from './layer-highlight'
+import type { LayerHighlightProps, LayerHighlightEmits, ColumnStyle, MapSelectionChangedEvent, ColumnCustomRenderParams } from './types'
 import { ref, computed, watch, onUnmounted, onBeforeMount, getCurrentInstance } from 'vue'
 import { useMapGetter } from '@supermapgis/common/hooks/index.common'
 import LayerHighlightViewModel from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
-import SmMapPopup from '@supermapgis/mapboxgl/components/map-popup/MapPopup.vue'
+import SmMapPopup from '@supermapgis/mapboxgl/components/map-popup/map-popup.vue'
 import { isEqual } from 'lodash-es'
-import { layerHighlightPropsDefault } from './layer-highlight'
+import { layerHighlightPropsDefault } from './types'
 
 defineOptions({
   name: 'SmLayerHighlight'

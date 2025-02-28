@@ -186,7 +186,7 @@ import type {
   PopupFieldsInfo,
   QueryFailedEvent,
   QueryResultParams
-} from './query'
+} from './types'
 import { ref, computed, watch, onMounted, onUnmounted, useTemplateRef, useSlots } from 'vue'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import { useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
@@ -199,12 +199,12 @@ import SmSelect, { SmSelectOption } from '@supermapgis/common/components/select/
 import SmButton from '@supermapgis/common/components/button/Button'
 import SmEmpty from '@supermapgis/common/components/empty/Empty'
 import SmSpin from '@supermapgis/common/components/spin/Spin'
-import SmLayerHighlight from '@supermapgis/mapboxgl/components/layer-highlight/LayerHighlight.vue'
-import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapseCard.vue'
+import SmLayerHighlight from '@supermapgis/mapboxgl/components/layer-highlight/layer-highlight.vue'
+import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 import { getValueCaseInsensitive } from 'vue-iclient-core/utils/util'
 import { isEqual } from 'lodash-es'
 import omit from 'omit.js'
-import { queryPropsDefault } from './query'
+import { queryPropsDefault } from './types'
 
 defineOptions({
   name: 'SmQuery'

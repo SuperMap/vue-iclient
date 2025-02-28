@@ -16,11 +16,11 @@
 </template>
 
 <script setup lang="ts">
-import type { AttributePanelProps } from './attribute-panel'
+import type { AttributePanelProps } from './types'
 import { computed } from 'vue'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
-import SmTablePopup from '@supermapgis/common/components/table-popup/TablePopup.vue'
-import { attributePanelPropsDefault } from './attribute-panel'
+import SmTablePopup from '@supermapgis/common/components/table-popup/table-popup.vue'
+import { attributePanelPropsDefault } from './types'
 
 defineOptions({
   name: 'SmAttributePanel'

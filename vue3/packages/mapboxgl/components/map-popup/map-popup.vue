@@ -45,16 +45,16 @@
 </template>
 
 <script setup lang="ts">
-import type { MapPopupProps, MapPopupEmits } from './map-popup'
-import type { AttributeRecord } from '@supermapgis/common/components/attribute-panel/attribute-panel'
+import type { MapPopupProps, MapPopupEmits } from './types'
+import type { AttributeRecord } from '@supermapgis/common/components/attribute-panel/types'
 import { ref, computed, watch, useTemplateRef, watchEffect } from 'vue'
-import SmAttributePanel from '@supermapgis/common/components/attribute-panel/AttributePanel.vue'
+import SmAttributePanel from '@supermapgis/common/components/attribute-panel/attribute-panel.vue'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import { useMapGetter } from '@supermapgis/common/hooks/index.common'
 import MapPopupViewModel from 'vue-iclient-core/controllers/mapboxgl/MapPopupViewModel'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
 import { omit } from 'lodash-es'
-import { mapPopupPropsDefault } from './map-popup'
+import { mapPopupPropsDefault } from './types'
 
 defineOptions({
   name: 'SmMapPopup'

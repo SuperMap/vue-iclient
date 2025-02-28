@@ -7,7 +7,7 @@ import type {
   MapSelectionChangedEmit,
   PopupFieldsInfo
 } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
-import type { PopupStyle } from '@supermapgis/mapboxgl/components/layer-highlight/layer-highlight'
+import type { PopupStyle } from '@supermapgis/mapboxgl/components/layer-highlight/types'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 import { themeProps } from '@supermapgis/common/components/theme/theme'
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle'

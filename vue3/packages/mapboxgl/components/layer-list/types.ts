@@ -9,7 +9,7 @@ import type {
   StatisticsParams,
   TableParams,
   ToolbarParams
-} from '@supermapgis/mapboxgl/components/attributes/attributes.ts'
+} from '@supermapgis/mapboxgl/components/attributes/types'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
 import { themeProps } from '@supermapgis/common/components/theme/theme'

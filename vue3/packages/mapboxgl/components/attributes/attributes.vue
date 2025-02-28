@@ -131,8 +131,8 @@ import type {
   PaginationParams,
   FieldConfigParams,
   TableParams
-} from './attributes'
-import { attributesPropsDefault } from './attributes'
+} from './types'
+import { attributesPropsDefault } from './types'
 import { isEqual, cloneDeep } from 'lodash-es'
 import AttributesViewModel from 'vue-iclient-core/controllers/mapboxgl/AttributesViewModel'
 import { useTheme } from '@supermapgis/common/components/theme/theme'

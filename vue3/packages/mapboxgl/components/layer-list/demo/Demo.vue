@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
-import LayerList from '../layerList.vue'
+import LayerList from '../layer-list.vue'
 import Button from '@supermapgis/common/components/button/Button'
 import { ref } from 'vue'
 import '../style'

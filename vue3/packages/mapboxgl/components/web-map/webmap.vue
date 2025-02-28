@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { WebMapProps, WebMapEmits, ControlProps } from './webmap'
+import type { WebMapProps, WebMapEmits, ControlProps } from './types'
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
 import mapEvent from 'vue-iclient-core/types/map-event'
 import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
@@ -9,7 +9,7 @@ import { debounce, pick, cloneDeep } from 'lodash-es'
 import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useAttrs, getCurrentInstance } from 'vue'
 import { message } from 'ant-design-vue'
 import SmSpin from '@supermapgis/common/components/spin/Spin'
-import { webMapPropsDefault } from './webmap'
+import { webMapPropsDefault } from './types'
 
 const viewModelProps = [
   'mapId',

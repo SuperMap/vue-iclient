@@ -14,12 +14,12 @@
 </template>
 
 <script setup lang="ts">
-import type { TablePopupProps } from './table-popup'
+import type { TablePopupProps } from './types'
 import { watch, onMounted } from 'vue'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import SmTable from '@supermapgis/common/components/table/Table'
-import { tablePopupPropsDefault } from './table-popup'
+import { tablePopupPropsDefault } from './types'
 
 defineOptions({
   name: 'SmTablePopup'

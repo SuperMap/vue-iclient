@@ -1,9 +1,9 @@
 import type { SFCWithInstall } from '@supermapgis/common/utils/index.common'
 import { withInstall } from '@supermapgis/common/utils/index.common'
-import QueryComp from './Query.vue'
+import Query from './query.vue'
 
-export const Query: SFCWithInstall<typeof QueryComp> = withInstall(QueryComp)
-export default Query
+export const SmQuery: SFCWithInstall<typeof Query> = withInstall(Query)
+export default SmQuery
 
-export * from './query'
-export type { Query } from './instance'
+export * from './types'
+export type { QueryInstance } from './instance'

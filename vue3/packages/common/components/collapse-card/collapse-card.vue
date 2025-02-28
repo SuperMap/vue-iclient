@@ -49,10 +49,10 @@
 </template>
 
 <script setup lang="ts">
-import type { CollapseCardProps } from './collapse-card'
+import type { CollapseCardProps } from './types'
 import { ref, computed, watch, onMounted, nextTick } from 'vue'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
-import { collapaseCardPropsDefault } from './collapse-card'
+import { collapaseCardPropsDefault } from './types'
 
 const props = withDefaults(defineProps<CollapseCardProps>(), collapaseCardPropsDefault)
 

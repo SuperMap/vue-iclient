@@ -5,5 +5,5 @@ import type { SFCWithInstall } from '@supermapgis/common/utils/index.common'
 export const SmWebMap: SFCWithInstall<typeof webmap> = withInstall(webmap)
 export default SmWebMap
 
-export * from './webmap'
+export * from './types'
 export type { WebMapInstance } from './instance'

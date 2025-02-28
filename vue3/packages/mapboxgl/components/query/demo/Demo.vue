@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
 import Query from '../Query.vue'
-import LayerList from '../../layer-list/layerList.vue'
+import LayerList from '../../layer-list/layer-list.vue'
 import Button from '@supermapgis/common/components/button/Button'
 import { useParameter } from '@supermapgis/common/hooks/useParameter'
 import { ref, reactive } from 'vue'

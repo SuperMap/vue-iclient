@@ -54,7 +54,7 @@
 <script lang="ts" setup>
 import type { PropType } from 'vue';
 import type { TreeProps } from 'ant-design-vue';
-import type { AttributesParams, Operations } from '@supermapgis/mapboxgl/components/layer-list/layerList'
+import type { AttributesParams, Operations } from '@supermapgis/mapboxgl/components/layer-list/types'
 import { ref, computed, watch } from 'vue';
 import SmTree from '@supermapgis/common/components/tree/Tree'
 import SmSlider from '@supermapgis/common/components/slider/Slider'
