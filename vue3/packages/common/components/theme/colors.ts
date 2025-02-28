@@ -33,12 +33,12 @@ export const themeTokenMapping: ThemeMapping = {
     themeType: 'dark',
     // 覆盖 antd
     colorBgContainer: toHex8String('#fff', 0.04),
+    colorBgElevated: '#414141',
     controlItemBgActive: toHex8String('#3499E5', 0.15),
     colorText: toHex8String('#fff', 0.65),
     colorTextHeading: toHex8String('#fff', 0.85),
     colorBorder: toHex8String('#fff', 0.25),
     colorBorderSecondary: toHex8String('#fff', 0.15),
-    colorBgElevated: '#414141',
     // 自定义
     colorBorderEmphasis: toHex8String('#fff', 0.08),
     shadowColor: toHex8String('#000', 0.35),

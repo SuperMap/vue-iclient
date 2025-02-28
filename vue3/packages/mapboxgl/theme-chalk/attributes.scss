@@ -1,5 +1,6 @@
 @use '../../common/theme-chalk/mixins/mixins.scss' as *;
 @use '../../common/theme-chalk/base/theme.scss' as *;
+@import '@supermapgis/common/theme-chalk/table.scss';
 
 @include b(attributes) {
   $attributes-prefix: &;
@@ -77,21 +78,12 @@
     }
     .#{$ant-prefix}-table-tbody {
       > tr {
-        &:hover {
-          background: $gis-control-item-bg-hover;
-          & > td {
-            background: $gis-control-item-bg-hover;
-          }
-        }
         & > td {
           width: 128px;
           padding: 6px 6px;
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
-          &.#{$ant-prefix}-table-column-sort {
-            background: inherit;
-          }
         }
       }
     }

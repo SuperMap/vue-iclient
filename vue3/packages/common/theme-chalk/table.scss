@@ -1,0 +1,14 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(table-wrapper) {
+  $table-selector: #{$ant-prefix}-table;
+  
+  .#{$table-selector}-tbody > tr.#{$table-selector}-row:hover > td,
+  .#{$table-selector}-tbody > tr > td.#{$table-selector}-cell-row-hover {
+    background: $gis-control-item-bg-hover;
+  }
+  td.#{$table-selector}e-column-sort {
+    background: rgba(0,0,0,0.01);
+  }
+}

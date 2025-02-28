@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
-import Query from '../Query.vue'
+import Query from '../query.vue'
 import LayerList from '../../layer-list/layer-list.vue'
+import Identify from '../../identify/identify.vue'
 import Button from '@supermapgis/common/components/button/Button'
 import { useParameter } from '@supermapgis/common/hooks/useParameter'
 import { ref, reactive } from 'vue'
@@ -38,6 +39,10 @@ const queryProps = reactive({
     })
   ]
 })
+const identifyProps = reactive({
+  layers: ['ms_base_北京轨道交通分布.geojson_1731400350143_31', 'ms_composite_symbol_ms_base_北京轨道交通分布.geojson_1731400350143_31_1731400362150_59', 'ms_composite_symbol_ms_base_北京轨道交通分布.geojson_1731400350143_31_1731400362150_60', 'ms_composite_symbol_ms_base_北京轨道交通分布.geojson_1731400350143_31_1731400362150_61', '北京住宅小区分布.geojson'],
+  multiSelect: true
+})
 
 const changePosition = (pos: string) => {
   position.value = pos
@@ -64,11 +69,16 @@ const changeBg = () => {
         v-bind="queryProps"
         :position="position"
         :map-target="mapTarget"
-        target="map1"
         :background="bgColor"
         headerName="search"
       />
       <LayerList :position="position" :map-target="mapTarget" :background="bgColor" headerName="tuceng" />
+      <Identify
+        v-bind="identifyProps"
+        :map-target="mapTarget"
+        :background="bgColor"
+        headerName="identify"
+      />
     </WebMap>
   </div>
 </template>

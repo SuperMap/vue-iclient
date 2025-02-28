@@ -1,7 +1,7 @@
 import type { InputProps } from 'ant-design-vue'
-import { Input as AInput } from 'ant-design-vue'
+import { Input } from 'ant-design-vue'
 import { createWrappedComponent } from '@supermapgis/common/components/theme/antd-wrapper'
 
-const SmInput = createWrappedComponent<InputProps>(AInput)
+const SmInput = createWrappedComponent<InputProps>(Input)
 
 export default SmInput

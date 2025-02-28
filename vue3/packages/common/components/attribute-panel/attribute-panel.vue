@@ -4,7 +4,7 @@
     :style="[textColorStyle, !showBorder && { border: 'none' }]"
   >
     <div class="sm-component-attribute-panel__header">
-      <div v-if="!$slots.header && title !== undefined" class="title ellipsis" :title="title">
+      <div v-if="!slots.header && title !== undefined" class="title ellipsis" :title="title">
         {{ title }}
       </div>
       <slot name="header" />
@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import type { AttributePanelProps } from './types'
-import { computed } from 'vue'
+import { computed, useSlots } from 'vue'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import SmTablePopup from '@supermapgis/common/components/table-popup/table-popup.vue'
 import { attributePanelPropsDefault } from './types'
@@ -29,6 +29,7 @@ defineOptions({
 const props = withDefaults(defineProps<AttributePanelProps>(), attributePanelPropsDefault)
 
 const { textColorStyle } = useTheme(props)
+const slots = useSlots()
 
 const tablePopupProps = computed(() => {
   return {

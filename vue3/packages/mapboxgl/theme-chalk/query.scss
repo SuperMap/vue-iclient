@@ -87,6 +87,18 @@
     .#{$ant-prefix}-input, .#{$ant-prefix}-input-suffix {
       color: inherit;
     }
+    .#{$ant-prefix}-select-single {
+      .#{$ant-prefix}-select-selector {
+        color: inherit;
+        font-size: 12px;
+      }
+    }
+    .#{$ant-prefix}-select-dropdown {
+      .#{$ant-prefix}-select-item {
+        color: inherit;
+        font-size: 12px;
+      }
+    }
   }
   @include e(item-config) {
     margin-top: 8px;

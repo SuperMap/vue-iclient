@@ -15,7 +15,7 @@
       :valueRender="valueRender"
       :showHeader="showHeader"
     >
-      <template slot="header">
+      <template #header>
         <div class="title ellipsis" :title="title">{{ title }}</div>
         <div v-show="showIcon" class="switchDataText">
           <i
@@ -29,7 +29,6 @@
           />
           <span :title="paginationContent">{{ paginationContent }}</span>
           <i
-            type="caret-right"
             :class="[
               'icon',
               'right-icon',
@@ -47,7 +46,7 @@
 <script setup lang="ts">
 import type { MapPopupProps, MapPopupEmits } from './types'
 import type { AttributeRecord } from '@supermapgis/common/components/attribute-panel/types'
-import { ref, computed, watch, useTemplateRef, watchEffect } from 'vue'
+import { ref, computed, watch, useTemplateRef } from 'vue'
 import SmAttributePanel from '@supermapgis/common/components/attribute-panel/attribute-panel.vue'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import { useMapGetter } from '@supermapgis/common/hooks/index.common'
@@ -128,8 +127,4 @@ watch(
     }
   }
 )
-
-watchEffect(() => {
-  console.log('1: ', rootEl.value?.style.display)
-})
 </script>

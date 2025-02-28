@@ -26,5 +26,8 @@
     .disabled {
       color: $text-color-disabled;
     }
+    > i:not(.disabled) {
+      color: $primary-color;
+    }
   }
 }

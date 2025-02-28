@@ -122,7 +122,9 @@
         </div>
         <div v-show="isQuery && !queryResult" class="sm-component-query__result-loading">
           <sm-spin :tip="$t('query.querying')">
-            <LoadingOutlined slot="indicator" style="font-size: 24px"  />
+            <template #indicator>
+              <LoadingOutlined style="font-size: 24px"  />
+            </template>
           </sm-spin>
         </div>
         <template v-if="queryResult">
