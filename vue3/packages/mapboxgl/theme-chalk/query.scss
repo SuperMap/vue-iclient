@@ -1,10 +1,10 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@import '@supermapgis/common/theme-chalk/collapseCard.scss';
-@import '@supermapgis/common/theme-chalk/button.scss';
-@import '@supermapgis/common/theme-chalk/input.scss';
-@import '@supermapgis/common/theme-chalk/select.scss';
-@import '@supermapgis/mapboxgl/theme-chalk/layer-highlight.scss';
+@use '@supermapgis/common/theme-chalk/collapseCard.scss';
+@use '@supermapgis/common/theme-chalk/button.scss';
+@use '@supermapgis/common/theme-chalk/input.scss';
+@use '@supermapgis/common/theme-chalk/select.scss';
+@use '@supermapgis/mapboxgl/theme-chalk/layer-highlight.scss';
 
 @include b(query) {
   $query-prefix: &;

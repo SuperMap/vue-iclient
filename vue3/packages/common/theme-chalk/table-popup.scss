@@ -1,6 +1,6 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@import '@supermapgis/common/theme-chalk/table.scss';
+@use '@supermapgis/common/theme-chalk/table.scss';
 
 @include b(table-popup) {
   $table-prefix: #{$ant-prefix}-table;
