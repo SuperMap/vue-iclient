@@ -23,7 +23,8 @@
     "test:vue2": "npm run test --prefix vue2",
     "lint:vue2": "npm run lint --prefix vue2",
     "lint:fix:vue2": "npm run lint:fix --prefix vue2",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "typecheck:vue3": "pnpm --dir ./vue3 typecheck:web"
   },
   "browserslist": [
     "> 1%",
