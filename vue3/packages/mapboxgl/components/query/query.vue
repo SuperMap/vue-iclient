@@ -251,7 +251,6 @@ const jobInfos = ref<QueryJobItem[]>([])
 const resultLayers = ref<string[]>([])
 const highlightCompRef = useTemplateRef('query-highlight')
 
-// Computed
 const resultDisplayTitle = computed(() => {
   return (properties: any) => `SmID：${getValueCaseInsensitive(properties, 'smid')}`
 })
