@@ -35,7 +35,7 @@
           padding-left: 8px;
           .#{$ant-prefix}-tree-switcher-noop {
             & + .#{$ant-prefix}-tree-node-content-wrapper-normal {
-              color: $text-color-secondary;
+              color: $text-color;
             }
           }
         }

@@ -13,10 +13,9 @@ export type CustonAliasToken = {
   gisControlBgSecondary: string
   gisControlHeaderBg: string
   gisControlHeaderBorder: string
-  gisControlItemBgSelected: string
   gisControlItemBgHover: string
-  // border 自定义
-  colorBorderEmphasis: string
+  // 主色选中背景颜色 自定义
+  colorPrimarySelected: string
   // shadow 自定义
   shadowColor: string
   // 滚动条自定义

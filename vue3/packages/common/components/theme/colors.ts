@@ -32,6 +32,8 @@ export const themeTokenMapping: ThemeMapping = {
     ...globalSeed,
     themeType: 'dark',
     // 覆盖 antd
+    colorPrimaryHover: '#65C0FC',
+    colorPrimaryActive: '#0371C3',
     colorBgContainer: toHex8String('#fff', 0.04),
     colorBgElevated: '#414141',
     controlItemBgActive: toHex8String('#3499E5', 0.15),
@@ -40,7 +42,7 @@ export const themeTokenMapping: ThemeMapping = {
     colorBorder: toHex8String('#fff', 0.25),
     colorBorderSecondary: toHex8String('#fff', 0.15),
     // 自定义
-    colorBorderEmphasis: toHex8String('#fff', 0.08),
+    colorPrimarySelected: toHex8String('#3499E5', 0.15),
     shadowColor: toHex8String('#000', 0.35),
     scrollbarBg: toHex8String('#fff', 0.15),
     // gis
@@ -48,7 +50,6 @@ export const themeTokenMapping: ThemeMapping = {
     gisControlBgSecondary: toHex8String('#000', 0.08),
     gisControlHeaderBg: '#4a4a4a',
     gisControlHeaderBorder: '#4a4a4a',
-    gisControlItemBgSelected: toHex8String('#3499E5', 0.15),
     gisControlItemBgHover: toHex8String('#fff', 0.08)
   },
   light: {
@@ -70,6 +71,8 @@ export const themeTokenMapping: ThemeMapping = {
     ...globalSeed,
     themeType: 'light',
     // 覆盖 antd
+    colorPrimaryHover: '#008EF0',
+    colorPrimaryActive: '#006ECF',
     colorBgContainer: '#fff',
     controlItemBgActive: toHex8String('#0081E2', 0.08),
     colorText: toHex8String('#000', 0.65),
@@ -77,7 +80,7 @@ export const themeTokenMapping: ThemeMapping = {
     colorBorder: toHex8String('#000', 0.15),
     colorBorderSecondary: toHex8String('#000', 0.08),
     // 自定义
-    colorBorderEmphasis: toHex8String('#000', 0.25),
+    colorPrimarySelected: toHex8String('#0081E2', 0.08),
     shadowColor: toHex8String('#000', 0.15),
     scrollbarBg: toHex8String('#000', 0.15),
     // gis
@@ -85,7 +88,6 @@ export const themeTokenMapping: ThemeMapping = {
     gisControlBgSecondary: toHex8String('#000', 0.04),
     gisControlHeaderBg: '#fff',
     gisControlHeaderBorder: toHex8String('#000', 0.15),
-    gisControlItemBgSelected: toHex8String('#0081E2', 0.15),
     gisControlItemBgHover: toHex8String('#000', 0.08)
   }
 }
