@@ -2,10 +2,8 @@ import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
 import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
-import iPortalDataService from 'vue-iclient-core/utils/iPortalDataService';
 import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
 import getFeatures from 'vue-iclient-core/utils/get-features';
-import { geti18n } from 'vue-iclient/src/common/_lang/index';
 import { getFeatureCenter } from 'vue-iclient-core/utils/util';
 
 /**
@@ -127,11 +125,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
       pointData.coordinates = geometry.coordinates || geometry;
     }
     if (!pointData.coordinates || !pointData.coordinates.length || pointData.coordinates.find(item => isNaN(+item))) {
-      this.fire('addfeaturefailed' + this.searchTaskId, { error: geti18n().t('search.illegalFeature') });
+      this.fire('addfeaturefailed' + this.searchTaskId, { code_name: 'ILLEGAL_FEATURE' });
       return;
     }
     if (this.keyWord.indexOf('：') < 0) {
-      pointData.info.push({ attribute: geti18n().t('search.address'), attributeValue: propertiesValue });
+      pointData.info.push({ useDefaultAttribute: true, attributeValue: propertiesValue });
     } else {
       for (let key in properties) {
         properties[key] && pointData.info.push({ attribute: key, attributeValue: properties[key] });
@@ -204,7 +202,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       layerNames.forEach(sourceName => {
         let source = this.map.getSource(sourceName);
         if (source) {
-          let features = clonedeep(source._data.features);
+          let features = clonedeep(source._data ? source._data.features : []);
           let resultFeature = this._getFeaturesByKeyWord(this.keyWord, features);
           const results = resultFeature.slice(0, this.maxFeatures);
           this._searchFeaturesSucceed(results, sourceName);
@@ -401,10 +399,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
         },
         filterAttribute: {
           filterAttributeName: data[i].name || geoCodeParam.keyWords,
-          filterAttributeValue: data[i].formatedAddress || data[i].address || geti18n().t('search.null')
+          filterAttributeValue: data[i].formatedAddress || data[i].address || 'NUll'
         },
         filterVal: `${data[i].name || geoCodeParam.keyWords}：${
-          data[i].formatedAddress || data[i].address || geti18n().t('search.null')
+          data[i].formatedAddress || data[i].address || 'NUll'
         }`
       };
       features.push(feature);
@@ -433,7 +431,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       operatingAttributeNames.forEach(attributeName => {
         if (fAttr[attributeName] && keyReg.test(fAttr[attributeName].toString().toLowerCase())) {
           let filterAttributeName = attributeName;
-          let filterAttributeValue = fAttr[attributeName] || geti18n().t('search.null');
+          let filterAttributeValue = fAttr[attributeName] || 'NUll';
           if (!feature.filterAttribute) {
             feature.filterAttribute = {
               filterAttributeName: filterAttributeName,
@@ -450,7 +448,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
 
   _getAttributeNames(features) {
     let attributeNames = [];
-    let properties = features[0].properties;
+    let properties = features[0]?.properties;
     properties &&
       Object.keys(properties).forEach(field => {
         attributeNames.push(field);

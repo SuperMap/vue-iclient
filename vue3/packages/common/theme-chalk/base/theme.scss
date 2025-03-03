@@ -23,7 +23,11 @@ $shadow-color: var(--shadow-color);// @black 35% / @white 15%
 // 文字
 $text-color: var(--color-text);// @black 65% / @white 65%
 $text-color-heading: var(--color-text-heading);// @black 85% / @white 85%
-$text-color-disabled: var(--color-text-quaternary);// @black 45% / @white 45%
+// 一般用于描述性文本，例如表单的中的补充说明文本、列表的描述性文本等场景。
+$text-color-tertiary: var(--color-text-tertiary);// @black 45% / @white 45%
+// 表单的输入提示文本、禁用色文本
+$text-color-quaternary: var(--color-text-quaternary); // @black 25% / @white 25%
+$text-color-disabled: $text-color-quaternary;
 
 // 背景
 $color-fill-tertiary: var(--color-fill-tertiary); // @black 4% / @white 8%
@@ -38,3 +42,4 @@ $gis-control-header-bg: var(--gis-control-header-bg); // @white / #4a4a4a
 $gis-control-header-border: var(--gis-control-header-border);// @black 15% / #4a4a4a
 $gis-control-item-bg-selected: $primary-color-selected;
 $gis-control-item-bg-hover: var(--gis-control-item-bg-hover);// @black 8% / @white 8%
+$gis-control-suffix-bg: var(--gis-control-suffix-bg); // @black 8% / #414141

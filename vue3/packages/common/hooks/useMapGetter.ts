@@ -2,11 +2,12 @@
 import { onMounted, onUnmounted, watch, nextTick, getCurrentInstance } from 'vue'
 import MapWatcher from 'vue-iclient-core/mixin/MapWatcher'
 import { message } from 'ant-design-vue'
+import { useLocale } from './useLocale'
 
 export interface MapGetterOptions<M> {
   viewModel?: InstanceType<any>
   loaded?: (map: M, webmap: InstanceType<any>) => void
-  removed?: (map: M, target: string) => void
+  removed?: (map?: M, target?: string) => void
 }
 
 export interface MapGetterProps {
@@ -14,6 +15,7 @@ export interface MapGetterProps {
 }
 
 export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions<M> = {}) {
+  const { t } = useLocale()
   const componentInstance = getCurrentInstance()
   const props = componentInstance.props as unknown as MapGetterProps
   const _mapWatcher = new MapWatcher(
@@ -27,6 +29,8 @@ export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions
   function _onHookLoaded({ map: loadedMap, webmap: loadedWebmap }) {
     map = loadedMap
     webmap = loadedWebmap
+    // @ts-ignore
+    window[_mapWatcher.targetName] = map;
     loaded?.(map, webmap)
     nextTick(() => {
       componentInstance.emit('loaded')
@@ -41,7 +45,7 @@ export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions
   function mapNotLoadedTip() {
     if (!map) {
       message.destroy()
-      message.warning('warning.unassociatedMap')
+      message.warning(t('warning.unassociatedMap'))
       return true
     }
     return false

@@ -1,0 +1,187 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/input.scss';
+@use '@supermapgis/common/theme-chalk/table-popup.scss';
+
+@include b(search) {
+  $search-prefix: &;
+  $input-prefix: #{$ant-prefix}-input;
+  font-size: 12px;
+  @include e(toggle-icon) {
+    width: 32px;
+    height: 32px;
+    line-height: 32px;
+    border-radius: 4px;
+    font-size: 16px;
+    text-align: center;
+    display: inline-block;
+    box-shadow: 0 3px 13px 0px $shadow-color;
+    &:hover {
+      color: $primary-color;
+    }
+  }
+  @include e(search-icon arrow-icon) {
+    float: left;
+    height: 32px;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    > * {
+      &:hover {
+        color: $primary-color !important;
+      }
+    }
+  }
+  @include e(search-icon) {
+    width: 32px;
+    position: relative;
+    &::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      display: block;
+      height: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  @include e(arrow-icon) {
+    width: 16px;
+    background: $gis-control-suffix-bg;
+  }
+  @include e(content) {
+    transform-origin: top left;
+    overflow: hidden;
+    box-shadow: 0 3px 13px 0px $shadow-color;
+    border-radius: 4px;
+    &.sm-component-zoom-in-enter-active {
+      animation: zoom-in .5s;
+    }
+    &.sm-component-zoom-in-leave-active {
+      animation: zoom-in .5s reverse;
+    }
+    @keyframes zoom-in {
+      0% {
+        transform: scale(0);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+  }
+  @include e(input) {
+    overflow: hidden;
+    &.with-split-line {
+      + div {
+        border-top: 1px solid $gis-control-header-border
+      }
+    }
+    &[aria-orientation="left"] {
+      #{$search-prefix}__a-input {
+        &.toolBar-input {
+          margin-right: 0;
+        }
+      }
+      #{$search-prefix}__search-icon {
+        &::after {
+          right: 0;
+          border-right: 1px solid $border-color-split;
+        }
+      }
+      #{$search-prefix}__arrow-icon {
+        float: right;
+      }
+    }
+    &[aria-orientation="right"] {
+      #{$search-prefix}__search-icon {
+        float: right;
+        &::after {
+          left: 0;
+          border-left: 1px solid $border-color-split;
+        }
+      }
+    }
+    #{$search-prefix}__search-icon {
+      > * {
+        color: inherit;
+      }
+    }
+  }
+  @include e(a-input) {
+    &.#{$input-prefix}-affix-wrapper {
+      display: flex;
+      width: auto;
+      padding: 5px 13px 5px 11px;
+      color: inherit;
+      background-color: inherit;
+      border-radius: 0;
+      border-width: 0;
+      &:hover {
+        border-inline-end-width: 0;
+        .#{$input-prefix} {
+          border-color: transparent;
+        }
+      }
+      .#{$input-prefix} {
+        background: transparent;
+        border-color: transparent;
+        color: inherit;
+        &:focus {
+          box-shadow: none;
+        }
+      }
+      .#{$input-prefix}-suffix {
+        color: $text-color-quaternary;
+      }
+    }
+  }
+  @include e(result) {
+    overflow: auto;
+    max-width: 300px;
+    max-height: 500px;
+    padding-top: 4px;
+    
+    ul {
+      list-style: none;
+      padding: 4px 0;
+      margin: 0;
+      & > li {
+        padding: 6px 16px 6px 24px;
+        display: block;
+        cursor: pointer;
+        &:hover {
+          color: $primary-color;
+        }
+        &.active {
+          background: $gis-control-item-bg-selected;
+        }
+      }
+    }
+  }
+
+  @include e(panel-header-wrapper) {
+    padding: 0 16px;
+  }
+  @include e(panel-header) {
+    padding: 6px 0;
+    border-bottom: 1px solid $border-color-split;
+    display: flex;
+    align-items: center;
+    &:hover {
+      color: $primary-color;
+    }
+    > i {
+      margin-right: 3px;
+    }
+    > span {
+      display: block;
+      max-width: 200px;
+    }
+  }
+  @include e(panel-body) {
+    background-color: $gis-control-bg-secondary;
+  }
+}

@@ -85,15 +85,15 @@ export default class QueryViewModel extends mapboxgl.Evented {
         }
         const res = await getFeatures({ ...queryParameter, ...queryOptions });
         if (res.type === 'featureisempty') {
-          this.fire('queryfailed', { codeName: 'NO_RESULTS' });
+          this.fire('queryfailed', { code_name: 'NO_RESULTS' });
           return;
         }
         this.queryResult = { name: queryParameter.name, result: res.features, fields: res.fields };
         this._addResultLayer(this.queryResult);
         this.fire('querysucceeded', { result: this.queryResult, layers: [this.layerID, this.strokeLayerID].filter(item => !!item) });
       } catch (error) {
-        const codeName = error.onlyService ? 'SEVICE_NOT_SUPPORT' : 'QUREY_FAILED';
-        this.fire('queryfailed', { codeName });
+        const code_name = error.onlyService ? 'SEVICE_NOT_SUPPORT' : 'QUREY_FAILED';
+        this.fire('queryfailed', { code_name });
       }
     }
   }

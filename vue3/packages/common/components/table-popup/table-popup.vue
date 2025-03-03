@@ -1,5 +1,6 @@
 <template>
   <div
+    ref="root"
     :class="{ 'sm-component-table-popup': true, 'with-split-line': splitLine }"
     :style="[popupBgStyle, textColorStyle]"
   >
@@ -15,7 +16,7 @@
 
 <script setup lang="ts">
 import type { TablePopupProps } from './types'
-import { watch, onMounted } from 'vue'
+import { watch, onMounted, useTemplateRef } from 'vue'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import SmTable from '@supermapgis/common/components/table/Table'
@@ -26,7 +27,13 @@ defineOptions({
 })
 
 const props = withDefaults(defineProps<TablePopupProps>(), tablePopupPropsDefault)
+
+const root = useTemplateRef('root')
 const { popupBgStyle, textColorStyle, textColorHeadingStyle, gisControlHeaderBgStyle } = useTheme(props)
+
+defineExpose({
+  root
+})
 
 watch(
   () => gisControlHeaderBgStyle.value.background,

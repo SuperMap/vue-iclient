@@ -50,7 +50,8 @@ export const themeTokenMapping: ThemeMapping = {
     gisControlBgSecondary: toHex8String('#000', 0.08),
     gisControlHeaderBg: '#4a4a4a',
     gisControlHeaderBorder: '#4a4a4a',
-    gisControlItemBgHover: toHex8String('#fff', 0.08)
+    gisControlItemBgHover: toHex8String('#fff', 0.08),
+    gisControlSuffixBg: '#414141'
   },
   light: {
     // antd
@@ -88,6 +89,7 @@ export const themeTokenMapping: ThemeMapping = {
     gisControlBgSecondary: toHex8String('#000', 0.04),
     gisControlHeaderBg: '#fff',
     gisControlHeaderBorder: toHex8String('#000', 0.15),
-    gisControlItemBgHover: toHex8String('#000', 0.08)
+    gisControlItemBgHover: toHex8String('#000', 0.08),
+    gisControlSuffixBg: toHex8String('#000', 0.08)
   }
 }

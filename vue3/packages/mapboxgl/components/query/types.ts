@@ -165,7 +165,7 @@ export type QuerySucceededEvent = {
 }
 
 export type QueryFailedEvent = {
-  codeName: 'NO_RESULTS' | 'SEVICE_NOT_SUPPORT' | 'QUREY_FAILED'
+  code_name: 'NO_RESULTS' | 'SEVICE_NOT_SUPPORT' | 'QUREY_FAILED'
 }
 
 export interface DataChangeEvent extends MapSelectionChangedEmit {

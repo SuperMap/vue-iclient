@@ -8,6 +8,17 @@
   .#{$table-selector}-tbody > tr > td.#{$table-selector}-cell-row-hover {
     background: $gis-control-item-bg-hover;
   }
+  .#{$table-selector}-thead >tr>th, .#{$table-selector}-thead >tr>td {
+    background: $gis-control-item-bg-hover;
+  }
+  .#{$table-selector}-container table>thead>tr:first-child >*:first-child {
+    border-start-start-radius: 4px;
+    background: $gis-control-header-bg;
+  }
+  .#{$table-selector}-container table>thead>tr:first-child >*:last-child {
+    border-start-end-radius: 4px;
+    background: $gis-control-header-bg;
+  }
   td.#{$table-selector}e-column-sort {
     background: rgba(0,0,0,0.01);
   }

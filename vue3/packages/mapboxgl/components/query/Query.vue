@@ -376,7 +376,7 @@ function registerEvents() {
 }
 
 function getFailedMessage(e: QueryFailedEvent) {
-  switch (e.codeName) {
+  switch (e.code_name) {
     case 'NO_RESULTS':
       return $t('query.noResults')
     case 'SEVICE_NOT_SUPPORT':

@@ -107,7 +107,7 @@
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
-import SearchViewModel from './SearchViewModel';
+import SearchViewModel from 'vue-iclient-core/controllers/mapboxgl/SearchViewModel';
 import SmIcon from 'vue-iclient/src/common/icon/Icon.vue';
 import SmInput from 'vue-iclient/src/common/input/Input.vue';
 import Message from 'vue-iclient/src/common/message/Message.js';
@@ -378,7 +378,13 @@ export default {
       if (popupData && popupData.info.length) {
         let state = {
           columns: [
-            { title: this.$t('search.attribute'), dataIndex: 'attribute', width: 80 },
+            {
+              title: this.$t('search.attribute'),
+              dataIndex: 'attribute',
+              width: 80,
+              customRender: (text, record) =>
+                record.useDefaultAttribute ? this.$t('search.address') : text
+            },
             { title: this.$t('search.attributeValue'), dataIndex: 'attributeValue', width: 150 }
           ],
           data: popupData.info
@@ -391,11 +397,11 @@ export default {
         );
       });
     },
-    illegalFeatureTip({ error }) {
+    illegalFeatureTip() {
       // @ts-ignore
       Message.destroy();
       // @ts-ignore
-      Message.error(error);
+      Message.error(this.$t('search.illegalFeature'));
     },
     searchSelectedInfo({ data }) {
       this.prefixType = 'search';
