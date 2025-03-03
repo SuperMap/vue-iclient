@@ -18,7 +18,7 @@ import {
   getEpRoot
 } from '@supermapgis/build-utils'
 import { generateExternal, withTaskName, writeBundles } from '../utils'
-import { FullAlias } from '../plugins/alias'
+import { Alias, copyCoreLibs } from '../plugins/alias'
 import { buildConfigEntries, target } from '../build-info'
 import type { TaskFunction } from 'gulp'
 import type { OutputOptions, Plugin } from 'rollup'
@@ -29,7 +29,7 @@ const pkgCommonRoot = getPkgRoot('common')
 const epOutput = getEpOutput(pkgName)
 
 const plugins: Plugin[] = [
-  FullAlias(),
+  Alias(),
   replace({
     'vue3/packages/common/': ``,
     [`vue3/packages/${pkgName}/`]: ``,
@@ -93,44 +93,51 @@ async function buildModulesComponents(root = pkgRoot) {
         preserveModules: true,
         preserveModulesRoot: root,
         sourcemap: false,
-        entryFileNames: `[name].${config.ext}`
+        // entryFileNames: `[name].${config.ext}`,
+        entryFileNames: (chunkInfo) => {
+          // 使用 path.basename 去掉 .vue 后缀
+          const baseName = chunkInfo.name.replace('.vue', '');
+          console.log(chunkInfo.name, baseName)
+          return `${baseName}.${config.ext}`;
+        },
+        chunkFileNames: '[name].js'
       }
     })
   )
 }
 
-async function buildModulesTools({ input, externalsConfig, folder, preserveModulesRoot }) {
-  const bundle = await rollup({
-    input,
-    plugins,
-    external: await generateExternal({ full: false }),
-    treeshake: { moduleSideEffects: false },
-    onwarn(warning, warn) {
-      const { code, importer } = warning
-      if (code === 'CIRCULAR_DEPENDENCY' && importer.includes('ant-design-vue')) {
-        return
-      }
-      warn(warning)
-    }
-  })
-  await writeBundles(
-    bundle,
-    buildConfigEntries.map(([module, config]): OutputOptions => {
-      const dir =
-        folder !== 'components' ? path.resolve(config.output.path, folder) : config.output.path
-      const cfg: OutputOptions = {
-        format: config.format,
-        dir: dir,
-        exports: module === 'cjs' ? 'named' : undefined,
-        preserveModules: true,
-        preserveModulesRoot,
-        sourcemap: true,
-        entryFileNames: `[name].${config.ext}`
-      }
-      return cfg
-    })
-  )
-}
+// async function buildModulesTools({ input, externalsConfig, folder, preserveModulesRoot }) {
+//   const bundle = await rollup({
+//     input,
+//     plugins,
+//     external: await generateExternal({ full: false }),
+//     treeshake: { moduleSideEffects: false },
+//     onwarn(warning, warn) {
+//       const { code, importer } = warning
+//       if (code === 'CIRCULAR_DEPENDENCY' && importer.includes('ant-design-vue')) {
+//         return
+//       }
+//       warn(warning)
+//     }
+//   })
+//   await writeBundles(
+//     bundle,
+//     buildConfigEntries.map(([module, config]): OutputOptions => {
+//       const dir =
+//         folder !== 'components' ? path.resolve(config.output.path, folder) : config.output.path
+//       const cfg: OutputOptions = {
+//         format: config.format,
+//         dir: dir,
+//         exports: module === 'cjs' ? 'named' : undefined,
+//         preserveModules: true,
+//         preserveModulesRoot,
+//         sourcemap: true,
+//         entryFileNames: `[name].${config.ext}`
+//       }
+//       return cfg
+//     })
+//   )
+// }
 async function buildModulesStyles(rootDir, folder = 'components') {
   const root = path.resolve(rootDir, folder)
   const input = excludeFiles(
@@ -162,20 +169,7 @@ async function buildModulesStyles(rootDir, folder = 'components') {
 }
 
 export const copyCore = async () => {
-  const libs = {
-    mapboxgl: [
-      'Cesium',
-      'iclient-common',
-      'iclient-mapboxgl',
-      'mapboxgl',
-      'mapbox-gl-draw',
-      'deckgl',
-      'echarts-layer',
-      'geostats',
-      'json-sql'
-    ],
-    leaflet: ['iclient-leaflet', 'iclient-common']
-  }
+  const libs = copyCoreLibs
   const copyLibs = async () => {
     const getLibs = () => {
       return libs[pkgName].map(item => path.resolve(coreRoot, `libs/${item}`))
@@ -214,13 +208,6 @@ async function removeMoreModules() {
   await remove(path.join(epOutput, 'es', 'common'))
 }
 export const buildModules: TaskFunction = parallel(
-  // series(
-  //   withTaskName('buildModulesCore', () => buildModulesComponents(coreRoot, 'core')),
-  //   copyCore
-  // withTaskName('buildPkgModules', () => buildTool(pkgRoot)),
-  // withTaskName('buildModulesComponents', () => buildModulesComponents(pkgCommonRoot))
-  // withTaskName('buildCommonModules', () => buildTool())
-  // ),
   series(
     withTaskName('buildModulesComponents', () => buildModulesComponents(getEpRoot(pkgName))),
     withTaskName('buildPkgModules', () => buildModulesComponents(pkgRoot)),

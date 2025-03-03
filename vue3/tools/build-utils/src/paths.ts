@@ -17,7 +17,7 @@ export const coreRoot = resolve(rootDir, 'core')
 
 export const projRoot = resolve(__dirname, '..', '..', '..')
 export const getPkgRoot = (pkg: Pkg | 'common') => resolve(projRoot, 'packages', pkg)
-export const getLocaleRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'locale')
+export const getLocaleRoot = (pkg: Pkg | 'common') => resolve(getPkgRoot(pkg), 'locale')
 export const getCompRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'components')
 export const getUtilsRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'utils')
 export const getThemeRoot = (pkg: Pkg | 'common') => resolve(getPkgRoot(pkg), 'theme-chalk')
