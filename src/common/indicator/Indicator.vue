@@ -46,16 +46,10 @@ export default {
   mixins: [Theme, Timer],
   props: {
     title: {
-      type: String,
-      default() {
-        return this.$t('indicator.title');
-      }
+      type: String
     },
     unit: {
-      type: String,
-      default() {
-        return this.$t('indicator.unit');
-      }
+      type: String
     },
     indicatorColor: {
       type: String
@@ -72,8 +66,7 @@ export default {
       default: 'border'
     },
     num: {
-      type: [Number, String],
-      default: 0
+      type: [Number, String]
     },
     url: {
       type: String
