@@ -23,7 +23,6 @@ export const generateTypesDefinitions = async () => {
     absolute: true
   })
   filePaths.map(filePath => {
-    console.log(filePath)
     const basename = path.basename(filePath)
     const destDir = filePath.replace(basename, '').replace(`${pkgName}`, `all-${pkgName}`)
     src(filePath) // 文件匹配模式
@@ -60,7 +59,6 @@ async function generatePkgTypes(pkg = pkgName) {
     cwd: typesDir,
     absolute: true
   })
-  console.log(filePaths)
   const rewriteTasks = filePaths.map(async filePath => {
     const content = await readFile(filePath, 'utf8')
     await writeFile(filePath, pathRewriter('esm')(content), 'utf8')

@@ -97,7 +97,6 @@ async function buildModulesComponents(root = pkgRoot) {
         entryFileNames: (chunkInfo) => {
           // 使用 path.basename 去掉 .vue 后缀
           const baseName = chunkInfo.name.replace('.vue', '');
-          console.log(chunkInfo.name, baseName)
           return `${baseName}.${config.ext}`;
         },
         chunkFileNames: '[name].js'

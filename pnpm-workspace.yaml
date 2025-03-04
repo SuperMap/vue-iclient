@@ -1,2 +1,7 @@
 packages:
   - core
+  - vue3/packages/*/*
+  - vue3/packages/*/theme-chalk
+  - vue3/site
+  - vue3/tools/*
+  - vue3/

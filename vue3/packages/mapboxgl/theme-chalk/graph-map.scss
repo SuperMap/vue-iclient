@@ -1,0 +1,6 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+
+@include b(graph-map) {
+  width: 100%;
+  height: 100%;
+}

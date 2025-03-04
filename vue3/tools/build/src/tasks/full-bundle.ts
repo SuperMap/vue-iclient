@@ -136,7 +136,6 @@ async function buildFullLocale(minify: boolean, banner: string) {
     cwd: path.resolve(localeRoot, 'lang'),
     absolute: true
   })
-  console.log(files)
   return Promise.all(
     files.map(async file => {
       const filename = path.basename(file, '.ts')

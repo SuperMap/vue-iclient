@@ -36,7 +36,7 @@ export interface GraphEdgeStyle {
 }
 
 export interface GraphConfig {
-  container?: string | HTMLElement;
+  container?: string;
   width?: number;
   height?: number;
   layout?: GridLayout;

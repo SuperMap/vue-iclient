@@ -4,9 +4,7 @@
   "description": "SuperMap iClient for Vue.js",
   "homepage": "https://iclient.supermap.io",
   "scripts": {
-    "install:all": "npm run install:vue2 && npm run install:vue3",
     "install:vue2": "npm install --legacy-peer-deps --prefix vue2",
-    "install:vue3": "pnpm install -C vue3",
     "dev:vue2": "npm run dev --prefix vue2 --",
     "build:vue2": "npm run build --prefix vue2 --",
     "docs:dev:vue2": "npm run docs:dev --prefix vue2",
@@ -24,7 +22,9 @@
     "lint:vue2": "npm run lint --prefix vue2",
     "lint:fix:vue2": "npm run lint:fix --prefix vue2",
     "prepare": "husky install",
-    "typecheck:vue3": "pnpm --dir ./vue3 typecheck:web"
+    "dev:vue3": "pnpm --dir ./vue3 dev",
+    "typecheck:vue3": "pnpm --dir ./vue3 typecheck:web",
+    "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl"
   },
   "browserslist": [
     "> 1%",
@@ -57,6 +57,7 @@
     "vue-iclient-core": "workspace:*"
   },
   "lint-staged": {
+    "vue3/**/*.{vue,ts,tsx}": "pnpm typecheck:vue3",
     "vue3/**/*.{vue,js,ts,jsx,tsx,md,json}": "pnpm --dir ./vue3 lint"
   }
 }

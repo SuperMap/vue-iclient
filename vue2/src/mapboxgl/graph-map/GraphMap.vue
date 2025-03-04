@@ -9,7 +9,7 @@ import debounce from 'lodash.debounce';
 import cloneDeep from 'lodash.clonedeep';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';
-import GraphMapViewModel, { GraphConfig, EmitParams } from './GraphMapViewModel';
+import GraphMapViewModel, { GraphConfig, EmitParams } from 'vue-iclient-core/controllers/mapboxgl/GraphMapViewModel';
 
 @Component({
   name: 'SmGraphMap',

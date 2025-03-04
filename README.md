@@ -13,12 +13,10 @@ npm install  --legacy-peer-deps
 2. 脚本自动化安装
 
 ```bash
-# 安装vue2 和 vue3 的依赖
-npm run install:all
 
 # 仅安装 vue2 的依赖
 npm run install:vue2
 
-# 仅安装 vue3 的依赖
-npm run install:vue3
+# 安装 vue3 和 根路径下的依赖
+pnpm install
 ```
