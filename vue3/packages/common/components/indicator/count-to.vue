@@ -87,6 +87,9 @@ export default {
     decimals() {
       this.start();
     }
+  },
+  unmounted() {
+    this.$options.destroyed.call(this);
   }
 };
 </script>

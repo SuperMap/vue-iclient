@@ -1,16 +1,19 @@
+import type { TimerProps } from '@supermapgis/common/utils/index.common'
 import { ref, watch, onBeforeUnmount } from 'vue';
 
-export function useTimer(props, callback) {
-  const timer = ref<any>(null);
+export interface TimerCallback {
+  timing: () => void;
+  startTimer?: () => void;
+  closeTimer?: () => void;
+}
 
-  const startTimer = callback.startTimer || (() => { });
-  const timing = callback.timing || (() => { });
-  const closeTimer = callback.closeTimer || (() => { });
+export function useTimer(props: TimerProps & { [k: string]: any }, timerCallback: TimerCallback) {
+  const timer = ref<number>(null);
 
   const _start = () => {
     const time = 1000 * (Number(props.frequency) || 3);
-    startTimer();
-    timer.value = setInterval(timing, time);
+    timerCallback.startTimer?.();
+    timer.value = setInterval(timerCallback.timing, time);
   };
 
   const _close = () => {
@@ -18,7 +21,7 @@ export function useTimer(props, callback) {
       clearInterval(timer.value);
       timer.value = null;
     }
-    closeTimer();
+    timerCallback.closeTimer?.();
   };
 
   const resetTimer = () => {

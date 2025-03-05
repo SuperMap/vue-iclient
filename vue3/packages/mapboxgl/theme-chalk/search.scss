@@ -79,7 +79,7 @@
         border-top: 1px solid $gis-control-header-border
       }
     }
-    &[aria-orientation="left"] {
+    &[aria-position="left"] {
       #{$search-prefix}__a-input {
         &.toolBar-input {
           margin-right: 0;
@@ -95,7 +95,7 @@
         float: right;
       }
     }
-    &[aria-orientation="right"] {
+    &[aria-position="right"] {
       #{$search-prefix}__search-icon {
         float: right;
         &::after {

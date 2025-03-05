@@ -33,8 +33,11 @@ import type {
 import { timeSliderPropsDefault } from './types'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import interact from 'interactjs';
-import moment from 'moment';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration'
 import { uniqueId as UniqueId } from 'lodash-es';
+
+dayjs.extend(duration);
 
 const props = withDefaults(defineProps<TimeSliderProps>(), timeSliderPropsDefault)
 const emit = defineEmits(['timeplayerchanged', 'playing', 'pause', 'end', 'timeplayerplaychanged']) as unknown as TimeSliderEmits
@@ -98,10 +101,6 @@ const playbackRate = computed(() => {
   const totalInterval = props.playInterval * (length - 1);
   const rate = dataDuration.value / (totalInterval / UPDATE_REFRESH_INTERVAL.value);
   return rate * 1000;
-});
-const current = computed(() => {
-  const current = (isDataDuration.value ? currentTime.value / 1000 : currentTime.value) + startValue.value;
-  return formatTime(current);
 });
 const mouseCurrent = computed(() => {
   if (isDataDuration.value && (!props.data || props.data.length === 0)) {
@@ -313,25 +312,6 @@ const requestNamedAnimationFrame = (name: string, fn: Function) => {
   return name;
 };
 
-const cancelNamedAnimationFrame = (name: string) => {
-  if (!namedRafs_.value.has(name)) {
-    return;
-  }
-  cancelAnimationFrame(namedRafs_.value.get(name));
-  namedRafs_.value.delete(name);
-};
-
-const cancelAnimationFrame = (id: number) => {
-  if (!rafIds_.value) {
-    rafIds_.value = new Set();
-  }
-  if (Object.prototype.hasOwnProperty.call(rafIds_.value, id)) {
-    delete rafIds_.value[id];
-    window.cancelAnimationFrame(id);
-  }
-  return id;
-};
-
 const formatTime = (timestamp: number) => {
   if (formatter.value) return formatter.value(timestamp);
 
@@ -340,15 +320,15 @@ const formatTime = (timestamp: number) => {
     ? timestamp2Date(timestamp)
     : duration2Date(props.duration);
 
-  return moment(date, defaultFormat).isValid() ? date : timestamp;
+  return dayjs(date, defaultFormat).isValid() ? date : timestamp;
 };
 
 const timestamp2Date = (timestamp: number) => {
-  return timestamp ? moment(timestamp * 1000).format('YYYY-MM-DD HH:mm:ss') : '';
+  return timestamp ? dayjs(timestamp * 1000).format('YYYY-MM-DD HH:mm:ss') : '';
 };
 
 const duration2Date = (duration: number) => {
-  const $moment = moment.duration(duration, 'milliseconds');
+  const $moment = dayjs.duration(duration, 'milliseconds');
   const hours = getZeroPlaceholder($moment.hours());
   const minutes = getZeroPlaceholder($moment.minutes());
   const seconds = getZeroPlaceholder($moment.seconds());

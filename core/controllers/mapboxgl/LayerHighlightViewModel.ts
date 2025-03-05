@@ -672,7 +672,7 @@ export default class HighlightLayer extends mapboxgl.Evented {
   }
 
   private createFilterExps(params: CreateRelatedDatasParams) {
-    const { features, targetId, isMultiple } = params;
+    const { features, targetId } = params;
     return features.reduce(
       (filterExps: any[], feature) => {
         const filterExp = this.createFilterExp({ feature, targetId });

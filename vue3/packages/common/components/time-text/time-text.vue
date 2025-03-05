@@ -5,13 +5,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import type { TimeTextProps } from './types';
-import { timeTextPropsDefault } from './types'
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { getDateTime } from 'vue-iclient-core/utils/util';
 import { useTheme } from '@supermapgis/common/components/theme/theme'
+import { timeTextPropsDefault } from './types'
 
 const props = withDefaults(defineProps<TimeTextProps>(), timeTextPropsDefault)
+
 const { textColorStyle, gisControlBgStyle } = useTheme(props)
 
 const time = ref('');

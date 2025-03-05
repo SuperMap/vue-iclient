@@ -1,4 +1,4 @@
-import type { PropType } from 'vue';
+import type { PropType, CSSProperties } from 'vue';
 
 export type InferDefaults<T> = {
   [K in keyof T]?: InferDefault<T, T[K]>
@@ -20,7 +20,7 @@ export type ShortEmits<T extends Record<string, any>> = UnionToIntersection<
   }>
 >
 
-type NativeTypeConstructor = StringConstructor | ObjectConstructor | BooleanConstructor | NumberConstructor | PropType<string[] | number[]>
+type NativeTypeConstructor = StringConstructor | ObjectConstructor | BooleanConstructor | NumberConstructor | PropType<string[] | number[] | CSSProperties>
 
 type PropsDef = {
   [K: string]: { type: any; default?: NativeType } | NativeTypeConstructor

@@ -13,7 +13,7 @@ export const createWrappedComponent = <T>(
   const nextName = `Sm${componentName}`
   return defineComponent<T>({
     // 继承原组件的所有属性和方法
-    ...Component,
+    extends: Component,
     // 设置新的组件名称
     name: nextName,
     setup(props: T, ctx) {

@@ -2,18 +2,18 @@
 import AnimateMarkerLayer from '../animate-marker-layer.vue'
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance'
 import Button from '@supermapgis/common/components/button/Button'
-import { onBeforeMount, reactive, ref } from 'vue'
+import { onBeforeMount, reactive } from 'vue'
 import '../style'
 
 const breathingApertureParam = {
   width: 80
 }
-const haloRingParam = {
-  width: 44
-}
-const rotatingTextBorderParam = {
-  width: 120
-}
+// const haloRingParam = {
+//   width: 44
+// }
+// const rotatingTextBorderParam = {
+//   width: 120
+// }
 const animateMarkerProps = reactive({
   features: [],
   type: 'breathingAperture',

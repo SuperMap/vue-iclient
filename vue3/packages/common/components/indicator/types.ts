@@ -1,6 +1,5 @@
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
-import type { TimerProps } from '@supermapgis/common/utils/index.common'
-import type { ShortEmits } from '@supermapgis/common/utils/vue-types'
+import type { TimerProps, ShortEmits } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 import { themeProps } from '@supermapgis/common/components/theme/theme'
 import { timerProps } from '@supermapgis/common/utils/index.common'
@@ -103,12 +102,11 @@ export const indicatorPropsDefault = getPropsDefaults<IndicatorProps>(
   Object.assign(themeProps(), timerProps(), indicatorProps())
 )
 
-
-export interface IndicatorEmitsMap {
+export type IndicatorEvents = {
   click: [number | string],
   indicatorNumChange: [number | string]
 }
 
-export type IndicatorEmits = ShortEmits<IndicatorEmitsMap>
+export type IndicatorEmits = ShortEmits<IndicatorEvents>
 
 export default indicatorProps

@@ -60,7 +60,6 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
     super();
     const { layerId, features, fitBounds } = options;
     this.layerId = layerId;
-    this._pointFeatures = this._getPointFeatures(this.features);
     this.features = this._getPointFeatures(features);
     this.markers = [];
     this.fitBounds = fitBounds;
@@ -247,7 +246,7 @@ export default class AnimateMarkerLayerViewModel extends mapboxgl.Evented {
   }
 
   private _getMarkerElement(features: GeoJSON.FeatureCollection): void {
-    this._markersElement = [];
+    this.markersElement = [];
     this.marker = null;
     const { width, height, colors: colorsProp, textFontSize, textColor, textField } = this.options;
     const colors = <[string, string]>colorsProp;
