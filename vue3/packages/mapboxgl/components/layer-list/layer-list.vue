@@ -46,7 +46,7 @@
 import type { Map } from 'mapbox-gl'
 import type {
   LayerListProps,
-  LayerListEmits,
+  LayerListEvents,
   TreeNodeDropEvent,
   AttributesParams,
   LayerListItem
@@ -93,7 +93,7 @@ const ATTRIBUTES_NEEDED_PROPS = [
 
 const props = withDefaults(defineProps<LayerListProps>(), layerListPropsDefault)
 
-defineEmits(['loaded']) as unknown as LayerListEmits
+defineEmits<LayerListEvents>()
 
 let viewModel: InstanceType<typeof LayerListViewModel>
 const { getTargetName, setViewModel } = useMapGetter<Map>({ loaded, removed })

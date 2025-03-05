@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import type { WebMapProps, WebMapEmits, ControlProps } from './types'
+import type { Map } from 'mapbox-gl'
+import type { WebMapProps, WebMapEvents, ControlProps, MapEventHandler } from './types'
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
 import mapEvent from 'vue-iclient-core/types/map-event'
 import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
-import { useVmProps, useLocale } from '@supermapgis/common/hooks/index.common'
+import { useVmProps, useLocale, useEventListeners } from '@supermapgis/common/hooks/index.common'
 import { addListener, removeListener } from 'resize-detector'
-import { debounce, pick, cloneDeep } from 'lodash-es'
-import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useAttrs, getCurrentInstance } from 'vue'
+import { debounce, pick } from 'lodash-es'
+import { onBeforeUnmount, onMounted, onUnmounted, ref, watch, computed, useTemplateRef } from 'vue'
 import { message } from 'ant-design-vue'
 import SmSpin from '@supermapgis/common/components/spin/Spin'
 import { webMapPropsDefault } from './types'
@@ -31,14 +32,15 @@ const viewModelProps = [
 
 defineOptions({
   name: 'SmWebMap',
-});
+  inheritAttrs: false
+})
 
 const props = withDefaults(defineProps<WebMapProps>(), webMapPropsDefault)
 
-const emit = defineEmits(['load', 'getMapFailed', 'getLayerDatasourceFailed'].concat(MAP_EVENT_NAMES)) as unknown as WebMapEmits
+const emit = defineEmits</* @vue-ignore */WebMapEvents>()
 
-const el = ref<HTMLInputElement | null>(null)
-const spinning = ref(true)
+const el = useTemplateRef('el')
+const spinning = ref(props.defaultLoading)
 
 const controlComponents = computed(() => {
   const controls: ControlProps = {}
@@ -53,13 +55,11 @@ const controlComponents = computed(() => {
 })
 
 let viewModel: InstanceType<typeof WebMapViewModel>
-let mapEventsInstance: InstanceType<typeof MapEvents>
 let __resizeHandler: () => void
 
 const { t } = useLocale()
 const { setViewModel } = useVmProps(props, viewModelProps)
-const attrs = useAttrs();
-const componentInstance = getCurrentInstance();
+const { eventListenerNames } = useEventListeners()
 
 const resize = () => {
   if (viewModel && viewModel.resize) {
@@ -68,7 +68,6 @@ const resize = () => {
 }
 
 const initializeWebMap = () => {
-  mapEventsInstance = new MapEvents(cloneDeep(attrs));
   viewModel = new WebMapViewModel(
     props.mapId,
     pick(props, [
@@ -100,7 +99,7 @@ const registerEvents = () => {
       mapEvent.setMap(props.target, e.map, viewModel)
       e.map.resize()
       // 绑定map event
-      mapEventsInstance.bindMapEvents(e.map);
+      bindMapEvents(e.map)
       /**
        * @event load
        * @desc webmap 加载完成之后触发。
@@ -137,7 +136,10 @@ const registerEvents = () => {
       // ZXY_TILE与底图的分辨率、原点不匹配。
     },
     xyztilelayernotsupport: e => {
-      notifyErrorTip({ defaultTip: t(`webmap.xyztilelayernotsupport`, { title: e.layer.name }), showErrorMsg: false });
+      notifyErrorTip({
+        defaultTip: t(`webmap.xyztilelayernotsupport`, { title: e.layer.name }),
+        showErrorMsg: false
+      })
     },
     baidumapnotsupport: () => {
       notifyErrorTip({ defaultTip: 'baiduMapNotSupport', showErrorMsg: false })
@@ -149,14 +151,6 @@ const registerEvents = () => {
       mapEvent.deleteMap(props.target)
     }
   })
-  const builtInEvents = MAP_EVENT_NAMES.reduce((listeners, eventName) => {
-    listeners[eventName] = ({ mapParams }: { mapParams: Record<string, any> }) => {
-      // @ts-ignore
-      emit(eventName, { ...mapParams, component: componentInstance })
-    }
-    return listeners;
-  }, {} as Record<string , any>);
-  mapEventsInstance.on(builtInEvents);
   if (props.autoresize) {
     __resizeHandler = debounce(
       () => {
@@ -167,6 +161,23 @@ const registerEvents = () => {
     )
     addListener(el.value, __resizeHandler)
   }
+}
+
+const bindMapEvents = (map: Map) => {
+  const mapEvents = new MapEvents(eventListenerNames)
+  const builtInEvents = MAP_EVENT_NAMES.reduce(
+    (listeners, eventName) => {
+      listeners[eventName] = ({ mapParams }: { mapParams: MapEventHandler }) => {
+        // @ts-ignore
+        emit(eventName, mapParams)
+      }
+      return listeners
+    },
+    {} as Record<string, (params: { mapParams: MapEventHandler }) => void>
+  )
+  mapEvents.on(builtInEvents)
+  // @ts-ignore
+  mapEvents.bindMapEvents(map)
 }
 
 const notifyErrorTip = ({
@@ -186,7 +197,7 @@ const notifyErrorTip = ({
       msg = e.error
     }
   }
-  message.error(t(`webmap.${defaultTip}`) + msg);
+  message.error(t(`webmap.${defaultTip}`) + msg)
 }
 
 const destory = () => {
@@ -209,12 +220,6 @@ watch(
     spinning.value = newVal
   }
 )
-
-onBeforeUnmount(() => {
-  if (!props.defaultLoading) {
-    spinning.value = false
-  }
-})
 
 onMounted(() => {
   initializeWebMap()

@@ -1,5 +1,5 @@
 <script setup>
-import { WebMapDemo, AttributesDemo, LayerListDemo, QueryDemo, TimeSliderDemo, IndicatorDemo,TimeTextDemo, TextDemo } from './register-components'
+import { WebMapDemo, AttributesDemo, LayerListDemo, QueryDemo, IdentifyDemo, AnimateMarkerLayerDemo, TimeSliderDemo, IndicatorDemo,TimeTextDemo, TextDemo } from './register-components'
 import { setTheme } from '@supermapgis/common/components/theme/theme'
 import { ref, onBeforeMount } from 'vue'
 import Button from '@supermapgis/common/components/button/Button'
@@ -50,8 +50,10 @@ const changeStyle2 = () => {
       <WebMapDemo server-url="http://172.16.14.44:8190/iportal" :map-id="692091022"></WebMapDemo>
       <LayerListDemo></LayerListDemo>
       <QueryDemo />
-    </div>
-    <AttributesDemo></AttributesDemo>  -->
+      <IdentifyDemo />
+      <AttributesDemo></AttributesDemo>
+      <AnimateMarkerLayerDemo />
+    </div> -->
   </div>
   <TimeSliderDemo></TimeSliderDemo>
   <IndicatorDemo></IndicatorDemo>

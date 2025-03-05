@@ -44,7 +44,7 @@
 </template>
 
 <script setup lang="ts">
-import type { MapPopupProps, MapPopupEmits } from './types'
+import type { MapPopupProps, MapPopupEvents } from './types'
 import type { AttributeRecord } from '@supermapgis/common/components/attribute-panel/types'
 import { ref, computed, watch, useTemplateRef } from 'vue'
 import SmAttributePanel from '@supermapgis/common/components/attribute-panel/attribute-panel.vue'
@@ -56,12 +56,13 @@ import { omit } from 'lodash-es'
 import { mapPopupPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmMapPopup'
+  name: 'SmMapPopup',
+  inheritAttrs: false
 })
 
 const props = withDefaults(defineProps<MapPopupProps>(), mapPopupPropsDefault)
 
-const emit = defineEmits(['change', 'loaded']) as unknown as MapPopupEmits
+const emit = defineEmits<MapPopupEvents>()
 
 const viewModel = new MapPopupViewModel()
 const { textColorStyle, popupBgStyle } = useTheme(props)

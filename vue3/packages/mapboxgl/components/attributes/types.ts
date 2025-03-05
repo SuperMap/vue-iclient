@@ -1,6 +1,6 @@
 import type { PropType } from 'vue'
 import type { TableProps } from 'ant-design-vue'
-import type { ShortEmits, MapGetterProps } from '@supermapgis/common/utils/index.common'
+import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import { themeProps } from '@supermapgis/common/components/theme/theme'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
@@ -193,10 +193,9 @@ type ChangeParams = [
   currentDataSource: { currentDataSource: any }
 ]
 
-export type attributesEmitsMap = {
+export type AttributesEvents = {
   rowSelect: RowSelectParams
   change: ChangeParams
-  loaded: []
-}
+} & MapGetterEvents
 
-export type AttributesEmits = ShortEmits<attributesEmitsMap>
+export type AttributesEmits = ShortEmits<AttributesEvents>

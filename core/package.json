@@ -23,6 +23,7 @@
     "lodash.mergewith": "^4.6.2",
     "lodash.orderby": "^4.6.0",
     "lodash.tonumber": "^4.0.3",
+    "lodash.uniqueid": "^4.0.1",
     "omit.js": "^2.0.2",
     "proj4": "^2.15.0",
     "simple-statistics": "^7.8.7",

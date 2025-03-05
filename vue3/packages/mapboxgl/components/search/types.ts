@@ -1,9 +1,5 @@
 import type { PropType } from 'vue'
-import type {
-  ShortEmits,
-  MapGetterProps,
-  MapGetterEvents
-} from '@supermapgis/common/utils/index.common'
+import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import type { ControlProps } from '@supermapgis/mapboxgl/utils'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
@@ -134,12 +130,12 @@ export type SearchFailedEvent = {
   error: string
 }
 
-export interface SearchEvents extends MapGetterEvents {
+export type SearchEvents = {
   'search-succeeded': [SearchSucceededEvent]
   'search-failed': [SearchFailedEvent]
   'search-selected-info': [Record<string, any>]
   'clear-search-result': []
-}
+} & MapGetterEvents
 
 export type SearchEmits = ShortEmits<SearchEvents>
 

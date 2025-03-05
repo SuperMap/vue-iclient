@@ -1,6 +1,7 @@
 import type { PropType } from 'vue'
-import type { ShortEmits, MapGetterProps, MapGetterEvents } from '@supermapgis/common/utils/index.common'
+import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
+import type { AttributePanelProps } from '@supermapgis/common/components/attribute-panel/types'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 import { themeProps } from '@supermapgis/common/components/theme/theme'
 
@@ -34,10 +35,10 @@ export const mapPopupProps = () => ({
     default: () => []
   },
   titleRender: {
-    type: Function
+    type: Function as PropType<AttributePanelProps['titleRender']>
   },
   valueRender: {
-    type: Function
+    type: Function as PropType<AttributePanelProps['valueRender']>
   },
   showHeader: {
     type: Boolean,
@@ -63,9 +64,9 @@ export const mapPopupPropsDefault = getPropsDefaults<MapPopupProps>(
   Object.assign(themeProps(), mapGetterProps(), mapPopupProps())
 )
 
-export interface MapPopupEvents extends MapGetterEvents{
+export type MapPopupEvents = {
   change: [number]
-}
+} & MapGetterEvents
 
 export type MapPopupEmits = ShortEmits<MapPopupEvents>
 

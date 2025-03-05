@@ -1,82 +1,21 @@
 import Vue from 'vue';
 import { Component } from 'vue-property-decorator';
-
-const MAP_EVENT_NAMES: string[] = [
-  'resize',
-  'webglcontextlost',
-  'webglcontextrestored',
-  'remove',
-  'contextmenu',
-  'dblclick',
-  'click',
-  'touchcancel',
-  'touchmove',
-  'touchend',
-  'touchstart',
-  'dataloading',
-  'mousemove',
-  'mouseup',
-  'mousedown',
-  'mouseenter',
-  'mouseleave',
-  'mouseover',
-  'mouseout',
-  'sourcedataloading',
-  'error',
-  'data',
-  'styledata',
-  'sourcedata',
-  'styledataloading',
-  'styleimagemissing',
-  'movestart',
-  'moveend',
-  'move',
-  'render',
-  'zoom',
-  'zoomstart',
-  'zoomend',
-  'boxzoomstart',
-  'boxzoomcancel',
-  'boxzoomend',
-  'rotate',
-  'rotatestart',
-  'rotateend',
-  'dragend',
-  'drag',
-  'dragstart',
-  'pitch',
-  'pitchend',
-  'pitchstart',
-  'idle',
-  'wheel'
-];
+import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents';
 
 @Component
-export default class MapEvents extends Vue {
-  map: mapboxglTypes.Map;
-
-  private mapEventCallback(event, data = {}): void {
-    this.emitMapEvent(event.type, { mapboxEvent: event, ...data });
-  }
-
+export default class MapEventsMixin extends Vue {
   bindMapEvents(map?: mapboxglTypes.Map): void {
-    this.map = map;
-    Object.keys(this.$listeners).forEach(eventName => {
-      if (MAP_EVENT_NAMES.includes(eventName)) {
-        this.bindMapEvent(eventName, this.mapEventCallback.bind(this));
-      }
-    });
-  }
-
-  private emitMapEvent(name: string, data = {}): void {
-    this.$emit(name, {
-      map: this.map,
-      component: this,
-      ...data
-    });
-  }
-
-  private bindMapEvent(eventName: string, eventCallback) {
-    this.map.on(eventName, eventCallback);
+    const mapEvents = new MapEvents(Object.keys(this.$listeners));
+    const builtInEvents = MAP_EVENT_NAMES.reduce((listeners, eventName) => {
+      listeners[eventName] = ({ mapParams }: { mapParams: Record<string, any> }) => {
+        this.$emit(eventName, {
+          ...mapParams,
+          component: this
+        });
+      };
+      return listeners;
+    }, {} as Record<string, (params: { mapParams: Record<string, any> }) => void>);
+    mapEvents.on(builtInEvents);
+    mapEvents.bindMapEvents(map);
   }
 }

@@ -126,7 +126,7 @@
 import { computed, ref, watch, onBeforeMount, onBeforeUnmount } from 'vue'
 import type {
   AttributesProps,
-  AttributesEmits,
+  AttributesEvents,
   ColoumParams,
   PaginationParams,
   FieldConfigParams,
@@ -158,11 +158,12 @@ const viewModelProps = [
 ]
 
 defineOptions({
-  name: 'SmAttributes'
+  name: 'SmAttributes',
+  inheritAttrs: false
 })
 
 const props = withDefaults(defineProps<AttributesProps>(), attributesPropsDefault)
-const emit = defineEmits(['rowSelect', 'change', 'loaded']) as unknown as AttributesEmits
+const emit = defineEmits<AttributesEvents>()
 
 const tableData = ref<Array<Object>>([])
 const selectedRowKeys = ref<Array<number>>([])

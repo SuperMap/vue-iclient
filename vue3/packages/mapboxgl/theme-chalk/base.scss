@@ -1,3 +1,2 @@
-@use '@supermapgis/common/theme-chalk/base/common.scss' as *;
-@use '@supermapgis/mapboxgl/theme-chalk/common.scss' as *;
-@use 'vue-iclient-core/assets/iconfont/icon-sm-components.css';
+@use '@supermapgis/common/theme-chalk/base.scss' as *;
+@use '@supermapgis/mapboxgl/theme-chalk/mapboxgl-common.scss';

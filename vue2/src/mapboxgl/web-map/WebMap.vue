@@ -383,7 +383,7 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         e.map.resize();
         this.map = e.map;
         // 绑定map event
-        this.bindMapEvents();
+        this.bindMapEvents(e.map);
         /**
          * @event load
          * @desc webmap 加载完成之后触发。

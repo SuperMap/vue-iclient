@@ -110,7 +110,7 @@
 
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
-import type { SearchProps, SearchEmits, SearchResult, SearchFailedEvent, PointData } from './types'
+import type { SearchProps, SearchEvents, SearchResult, SearchFailedEvent, PointData } from './types'
 import type { TablePopupProps } from '@supermapgis/common/components/table-popup/types'
 import {
   ref,
@@ -133,18 +133,13 @@ import { isEqual } from 'lodash-es'
 import { searchPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmSearch'
+  name: 'SmSearch',
+  inheritAttrs: false
 })
 
 const props = withDefaults(defineProps<SearchProps>(), searchPropsDefault)
 
-const emit: SearchEmits = defineEmits([
-  'search-succeeded',
-  'search-failed',
-  'search-selected-info',
-  'clear-search-result',
-  'loaded'
-])
+const emit = defineEmits<SearchEvents>()
 
 const viewModel = new SearchViewModel({ ...props })
 

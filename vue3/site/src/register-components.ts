@@ -4,8 +4,9 @@ import LayerListDemo from '@supermapgis/mapboxgl/components/layer-list/demo/Demo
 import QueryDemo from '@supermapgis/mapboxgl/components/query/demo/Demo.vue'
 import SearchDemo from '@supermapgis/mapboxgl/components/search/demo/Demo.vue'
 import IdentifyDemo from '@supermapgis/mapboxgl/components/identify/demo/Demo.vue'
+import AnimateMarkerLayerDemo from '@supermapgis/mapboxgl/components/animate-marker-layer/demo/Demo.vue'
 import TimeSliderDemo from '@supermapgis/common/components/time-slider/demo/Demo.vue'
 import IndicatorDemo from '@supermapgis/common/components/indicator/demo/Demo.vue'
 import TimeTextDemo from '@supermapgis/common/components/time-text/demo/Demo.vue'
 import TextDemo from '@supermapgis/common/components/text/demo/Demo.vue'
-export { WebMapDemo, LayerListDemo, AttributesDemo, QueryDemo, IdentifyDemo, SearchDemo, TimeSliderDemo, IndicatorDemo, TimeTextDemo, TextDemo }
+export { WebMapDemo, LayerListDemo, AttributesDemo, QueryDemo, IdentifyDemo, SearchDemo, AnimateMarkerLayerDemo, TimeSliderDemo, IndicatorDemo, TimeTextDemo, TextDemo }

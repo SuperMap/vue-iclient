@@ -1,6 +1,5 @@
 import type { PropType, CSSProperties } from 'vue'
-import type { TableProps } from 'ant-design-vue'
-import type { ShortEmits, MapGetterProps, MapGetterEvents } from '@supermapgis/common/utils/index.common'
+import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { HighlightStyle, LayerEventCursorMap, FieldsDisplayInfo, MapSelectionChangedEmit } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
@@ -116,10 +115,10 @@ export interface MapSelectionChangedEvent extends MapSelectionChangedEmit {
   layerName: string
 }
 
-export interface layerHighlightEmits extends MapGetterEvents {
+export type LayerHighlightEvents = {
   mapselectionchanged: [MapSelectionChangedEvent]
-}
+} & MapGetterEvents
 
-export type LayerHighlightEmits = ShortEmits<layerHighlightEmits>
+export type LayerHighlightEmits = ShortEmits<LayerHighlightEvents>
 
 export default layerHighlightProps

@@ -133,6 +133,10 @@ export default class LayerMixin extends Vue {
     });
   }
 
+  loaded() {
+    this.$bindLayerEvents();
+  }
+
   removed() {
     this.remove();
   }

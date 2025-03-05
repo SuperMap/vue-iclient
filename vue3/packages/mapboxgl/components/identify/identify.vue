@@ -19,21 +19,25 @@
 
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
-import type { IdentifyProps, IdentifyEmits, FieldInfo, MapSelectionChangedEmit } from './types'
+import type { IdentifyProps, IdentifyEvents, FieldInfo, MapSelectionChangedEmit } from './types'
 import { computed } from 'vue';
 import { useMapGetter } from '@supermapgis/common/hooks/index.common'
 import SmLayerHighlight from '@supermapgis/mapboxgl/components/layer-highlight/layer-highlight.vue'
 import { identifyPropsDefault } from './types'
 
+defineOptions({
+  name: 'SmIdentify',
+  inheritAttrs: false
+})
+
 const props = withDefaults(defineProps<IdentifyProps>(), identifyPropsDefault)
 
-const emit: IdentifyEmits = defineEmits(['datachange', 'loaded'])
+const emit = defineEmits<IdentifyEvents>()
 
 const eventsCursor = { mousemove: 'mousemove', mouseleave: 'grab' };
 
 useMapGetter<Map>()
 
-// 计算属性
 const popupStyle = computed(() => {
   return {
     keyWidth: props.keyWidth,
@@ -74,7 +78,6 @@ const displayFieldsMap = computed(() => {
   return {};
 });
 
-// 方法
 function handleMapSelectionChanged(e: MapSelectionChangedEmit) {
   emit('datachange', { ...e, fields: displayFieldsMap.value[e.targetId] });
 }

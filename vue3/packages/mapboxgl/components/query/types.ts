@@ -1,5 +1,5 @@
 import type { PropType } from 'vue'
-import type { ShortEmits, MapGetterProps, MapGetterEvents } from '@supermapgis/common/utils/index.common'
+import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
 import type {
@@ -28,7 +28,7 @@ export interface QueryResultEvent {
   layers: string[]
 }
 
-export interface QueryResult extends Omit<QueryResultParams, 'result'>{
+export interface QueryResult extends Omit<QueryResultParams, 'result'> {
   result: GeoJSON.Feature['properties'][]
 }
 
@@ -173,11 +173,11 @@ export interface DataChangeEvent extends MapSelectionChangedEmit {
   fields: PopupFieldsInfo[]
 }
 
-export interface QueryEvents extends MapGetterEvents {
+export type QueryEvents = {
   'query-succeeded': [QueryResultEvent]
   'query-failed': [QueryFailedEvent]
   datachange: [DataChangeEvent]
-}
+} & MapGetterEvents
 
 export type QueryEmits = ShortEmits<QueryEvents>
 

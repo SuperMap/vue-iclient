@@ -42,7 +42,7 @@ interface RestParameter extends Omit<iServerBaseParameter, 'type' | 'queryMode'>
   type: 'rest'
 }
 
-export function useParameter() {
+export function useParameters() {
   const { t } = useLocale()
 
   function createAddressMatchParameter(

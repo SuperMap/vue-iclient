@@ -20,7 +20,7 @@
 
 <script setup lang="tsx">
 import type { Map } from 'mapbox-gl'
-import type { LayerHighlightProps, LayerHighlightEmits, ColumnStyle, MapSelectionChangedEvent, ColumnCustomRenderParams } from './types'
+import type { LayerHighlightProps, LayerHighlightEvents, ColumnStyle, MapSelectionChangedEvent, ColumnCustomRenderParams } from './types'
 import { ref, computed, watch, onUnmounted, onBeforeMount, getCurrentInstance } from 'vue'
 import { useMapGetter } from '@supermapgis/common/hooks/index.common'
 import LayerHighlightViewModel from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
@@ -29,12 +29,13 @@ import { isEqual } from 'lodash-es'
 import { layerHighlightPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmLayerHighlight'
+  name: 'SmLayerHighlight',
+  inheritAttrs: false
 })
 
 const props = withDefaults(defineProps<LayerHighlightProps>(), layerHighlightPropsDefault)
 
-const emit = defineEmits(['mapselectionchanged', 'loaded']) as unknown as LayerHighlightEmits
+const emit = defineEmits<LayerHighlightEvents>()
 
 const { setViewModel } = useMapGetter<Map>({ removed })
 

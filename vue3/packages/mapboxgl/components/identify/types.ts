@@ -1,14 +1,9 @@
 import type { PropType } from 'vue'
-import type {
-  ShortEmits,
-  MapGetterProps,
-  MapGetterEvents
-} from '@supermapgis/common/utils/index.common'
+import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import type {
   HighlightStyle,
-  MapSelectionChangedEmit,
-  PopupFieldsInfo
+  MapSelectionChangedEmit
 } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 import { themeProps } from '@supermapgis/common/components/theme/theme'
@@ -139,9 +134,9 @@ export interface DataChangeEvent extends MapSelectionChangedEmit {
   fields: FieldInfo[]
 }
 
-export interface IdentifyEvents extends MapGetterEvents {
+export type IdentifyEvents = {
   datachange: [DataChangeEvent]
-}
+} & MapGetterEvents
 
 export type IdentifyEmits = ShortEmits<IdentifyEvents>
 

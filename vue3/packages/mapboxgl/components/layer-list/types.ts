@@ -1,5 +1,5 @@
 import type { PropType, CSSProperties } from 'vue'
-import type { ShortEmits } from '@supermapgis/common/utils/index.common'
+import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
 import type {
@@ -11,7 +11,7 @@ import type {
   ToolbarParams
 } from '@supermapgis/mapboxgl/components/attributes/types'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
+import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 import { themeProps } from '@supermapgis/common/components/theme/theme'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 
@@ -92,19 +92,17 @@ export const layerListProps = () => ({
 })
 
 // export type LayerListProps = Partial<ExtractPropTypes<ReturnType<typeof layerListProps>>>
-export interface LayerListProps extends CardProps, ControlProps, ThemeProps {
+export interface LayerListProps extends CardProps, ControlProps, ThemeProps, MapGetterProps {
   attributes?: AttributesParams
   operations?: Operations
 }
 
 export const layerListPropsDefault = getPropsDefaults<LayerListProps>(
-  Object.assign(cardProps(), controlProps(), themeProps(), layerListProps())
+  Object.assign(cardProps(), controlProps(), themeProps(), mapGetterProps(), layerListProps())
 )
 
-export type layerListEmitsMap = {
-  loaded: []
-}
+export type LayerListEvents = MapGetterEvents
 
-export type LayerListEmits = ShortEmits<layerListEmitsMap>
+export type LayerListEmits = ShortEmits<LayerListEvents>
 
 export default layerListProps

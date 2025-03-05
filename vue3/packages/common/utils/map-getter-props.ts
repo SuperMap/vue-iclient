@@ -1,4 +1,3 @@
-import type { ShortEmits } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 
 export const mapGetterProps = () => ({
@@ -14,10 +13,10 @@ export type MapGetterProps = {
 
 export const mapGetterPropsDefault = getPropsDefaults<MapGetterProps>(mapGetterProps())
 
-export interface MapGetterEvents {
+export type MapGetterEvents = {
   loaded: []
 }
 
-export type MapGetterEmits = ShortEmits<MapGetterEvents>
+export type MapGetterEmits = MapGetterEvents
 
 export default mapGetterProps

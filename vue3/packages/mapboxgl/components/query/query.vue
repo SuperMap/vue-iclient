@@ -180,7 +180,7 @@
 import type { Map } from 'mapbox-gl'
 import type {
   QueryProps,
-  QueryEmits,
+  QueryEvents,
   QueryResult,
   QueryJobItem,
   QueryResultEvent,
@@ -209,12 +209,13 @@ import omit from 'omit.js'
 import { queryPropsDefault } from './types'
 
 defineOptions({
-  name: 'SmQuery'
+  name: 'SmQuery',
+  inheritAttrs: false
 })
 
 const props = withDefaults(defineProps<QueryProps>(), queryPropsDefault)
 
-const emit: QueryEmits = defineEmits(['query-succeeded', 'query-failed', 'datachange', 'loaded'])
+const emit = defineEmits<QueryEvents>()
 
 const { t: $t } = useLocale()
 const selectOptions = [
@@ -386,7 +387,7 @@ function getFailedMessage(e: QueryFailedEvent) {
 }
 
 function getPopupContainer(triggerNode: HTMLElement) {
-  return triggerNode.parentNode
+  return triggerNode.parentNode as HTMLElement
 }
 
 function clearResult() {

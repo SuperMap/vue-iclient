@@ -5,7 +5,7 @@ import LayerList from '../../layer-list/layer-list.vue'
 import Identify from '../../identify/identify.vue'
 import Search from '../../search/search.vue'
 import Button from '@supermapgis/common/components/button/Button'
-import { useParameter } from '@supermapgis/common/hooks/useParameter'
+import { useParameters } from '@supermapgis/common/hooks/useParameters'
 import { ref, reactive } from 'vue'
 import '../style'
 
@@ -14,7 +14,7 @@ const {
   createRestDataParameter,
   createRestMapParameter,
   createAddressMatchParameter
-} = useParameter()
+} = useParameters()
 const position = ref('top-left')
 const mapTarget = ref('map1')
 const bgColor = ref()
@@ -73,6 +73,9 @@ const changeMapTarget = () => {
 const changeBg = () => {
   bgColor.value = bgColor.value === '#d90f' ? '#f0f' : '#d90f'
 }
+const querySucceeded = (e: any) => {
+  console.log(e)
+}
 </script>
 <template>
   <div>
@@ -89,6 +92,7 @@ const changeBg = () => {
         :map-target="mapTarget"
         :background="bgColor"
         headerName="query"
+        @query-succeeded="querySucceeded"
       />
       <LayerList
         :position="position"
@@ -108,6 +112,7 @@ const changeBg = () => {
         :map-target="mapTarget"
         :background="bgColor"
         headerName="search"
+        @search-succeeded="querySucceeded"
       />
     </WebMap>
   </div>
