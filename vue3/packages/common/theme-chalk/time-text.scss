@@ -1,0 +1,14 @@
+@use './mixins/mixins.scss' as *;
+@use './base/theme.scss' as *;
+
+@include b(time-text) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-color;
+  background: $color-bg-container;
+  & > span {
+    padding: 10px;
+    vertical-align: middle;
+  }
+}

@@ -21,6 +21,7 @@ export type CustonAliasToken = {
   shadowColor: string
   // 滚动条自定义
   scrollbarBg: string;
+  tooltipColor: string;
 }
 
 export interface AliasToken extends AntdAliasToken, Partial<CustonAliasToken> {}

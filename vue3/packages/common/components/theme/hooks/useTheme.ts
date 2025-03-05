@@ -47,6 +47,10 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
     return { background: themePropDatas.gisControlHeaderBg }
   })
 
+  const colorPrimary = computed(() => {
+    return themePropDatas.colorPrimary
+  })
+
   function changeThemeCallback(changedTheme: { themeStyle?: AliasToken }) {
     const { themeStyle } = changedTheme
     if (themeStyle) {
@@ -123,6 +127,7 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
     containerBgStyle,
     popupBgStyle,
     gisControlBgStyle,
-    gisControlHeaderBgStyle
+    gisControlHeaderBgStyle,
+    colorPrimary
   }
 }

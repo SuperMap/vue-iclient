@@ -1,0 +1,52 @@
+@use './mixins/mixins.scss' as *;
+@use './base/theme.scss' as *;
+
+@include b(count-to) {
+  @include e(numItem) {
+    display: inline-block;
+  }
+}
+
+@include b(indicator) {
+  display: inline-flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  color: $text-color;
+  background: $color-bg-container;
+  @include e(content) {
+    display: flex;
+    align-items: flex-end;
+    font-weight: bolder;
+  }
+  @include e(content-vertical) {
+    flex-direction: column;
+    align-items: flex-start;
+    .sm-component-indicator__title {
+      margin-bottom: 8px;
+    }
+  }
+  @include e(content-horizontal) {
+    flex-flow: row nowrap;
+    width: 100%;
+    justify-content: space-around;
+    .sm-component-indicator__title {
+      line-height: 1.2;
+    }
+  }
+  @include e(title) {
+    font-size: 16px;
+    font-weight: bolder;
+  }
+  @include e(num) {
+    font-weight: bolder;
+    color: $primary-color;
+    font-size: 22px;
+    line-height: 1;
+  }
+  @include e(unit) {
+    text-indent: 5px;
+    font-size: 16px;
+    line-height: 1.2;
+  }
+}

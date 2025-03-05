@@ -45,6 +45,7 @@ export const themeTokenMapping: ThemeMapping = {
     colorPrimarySelected: toHex8String('#3499E5', 0.15),
     shadowColor: toHex8String('#000', 0.35),
     scrollbarBg: toHex8String('#fff', 0.15),
+    tooltipColor: toHex8String('#fff', 0.85),
     // gis
     gisControlBg: '#414141',
     gisControlBgSecondary: toHex8String('#000', 0.08),
@@ -84,6 +85,7 @@ export const themeTokenMapping: ThemeMapping = {
     colorPrimarySelected: toHex8String('#0081E2', 0.08),
     shadowColor: toHex8String('#000', 0.15),
     scrollbarBg: toHex8String('#000', 0.15),
+    tooltipColor: '#fff',
     // gis
     gisControlBg: '#fff',
     gisControlBgSecondary: toHex8String('#000', 0.04),

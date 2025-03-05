@@ -1,0 +1,23 @@
+@use './mixins/mixins.scss' as *;
+@use './base/theme.scss' as *;
+
+@include b(text) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.5;
+  padding: 4px;
+  color: $text-color;
+  background: $color-bg-container;
+  @include e(href) {
+    display: inline-block;
+    color: $text-color;
+    &:hover {
+      cursor: pointer;
+      color: $primary-color-hover !important;
+    }
+  }
+  @include e(span) {
+    white-space: pre-wrap;
+  }
+}

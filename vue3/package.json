@@ -41,6 +41,7 @@
     "colorcolor": "^1.1.1",
     "css-vars-ponyfill": "^2.2.1",
     "echarts": "^4.8.0",
+    "interactjs": "1.9.7",
     "lodash-es": "^4.17.21",
     "lodash.clonedeep": "^4.5.0",
     "lodash.difference": "^4.5.0",
@@ -50,12 +51,14 @@
     "lodash.mergewith": "^4.6.2",
     "lodash.orderby": "^4.6.0",
     "lodash.tonumber": "^4.0.3",
+    "moment": "2.30.1",
     "omit.js": "^2.0.2",
     "proj4": "^2.15.0",
     "resize-detector": "^0.2.2",
     "simple-statistics": "^7.8.7",
     "tinycolor2": "^1.6.0",
-    "vue": "3.5.12"
+    "vue": "3.5.12",
+    "vue-count-to": "^1.0.13"
   },
   "devDependencies": {
     "@pnpm/find-workspace-packages": "^4.0.16",

@@ -28,9 +28,13 @@ $text-color-tertiary: var(--color-text-tertiary);// @black 45% / @white 45%
 // 表单的输入提示文本、禁用色文本
 $text-color-quaternary: var(--color-text-quaternary); // @black 25% / @white 25%
 $text-color-disabled: $text-color-quaternary;
+$tooltip-color: var(--tooltip-color);// @black 0.85#fff / @white #fff
 
 // 背景
 $color-fill-tertiary: var(--color-fill-tertiary); // @black 4% / @white 8%
+$color-fill-secondary: var(--color-fill-secondary); // @black 12% / @white 6%
+$color-bg-spotlight: var(--color-bg-spotlight); // @black #424242 / @white rgba(0, 0, 0, 0.85)
+$color-bg-container: var(--color-bg-container); // @black 4% / @white #fff
 
 // 滚动条
 $scrollbar-bg: var(--scrollbar-bg); // @black 15% / @white 15%

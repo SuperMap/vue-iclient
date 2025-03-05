@@ -1,5 +1,5 @@
 <script setup>
-import { WebMapDemo, AttributesDemo, LayerListDemo, QueryDemo } from './register-components'
+import { WebMapDemo, AttributesDemo, LayerListDemo, QueryDemo, TimeSliderDemo, IndicatorDemo,TimeTextDemo, TextDemo } from './register-components'
 import { setTheme } from '@supermapgis/common/components/theme/theme'
 import { ref, onBeforeMount } from 'vue'
 import Button from '@supermapgis/common/components/button/Button'
@@ -46,13 +46,17 @@ const changeStyle2 = () => {
       <Button @click="changeStyle1">浅色主题</Button>
       <Button @click="changeStyle2" background="red">自定义主题</Button>
     </div>
-    <div class="map-holder">
+    <!-- <div class="map-holder">
       <WebMapDemo server-url="http://172.16.14.44:8190/iportal" :map-id="692091022"></WebMapDemo>
-      <!-- <LayerListDemo></LayerListDemo> -->
+      <LayerListDemo></LayerListDemo>
       <QueryDemo />
     </div>
-    <AttributesDemo></AttributesDemo>
+    <AttributesDemo></AttributesDemo>  -->
   </div>
+  <TimeSliderDemo></TimeSliderDemo>
+  <IndicatorDemo></IndicatorDemo>
+  <TimeTextDemo></TimeTextDemo>
+  <TextDemo></TextDemo>
 </template>
 
 <style>
