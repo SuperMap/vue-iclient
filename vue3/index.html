@@ -1,0 +1,28 @@
+<!DOCTYPE>
+<html>
+   <head>
+      <meta charset='utf-8'/>
+      <title>vue3 dist包</title>
+      <link rel="stylesheet" href="./index.css"></link>
+      <script src="//unpkg.com/vue@3"></script>
+      <script src='./index.js'></script>
+   </head>
+   <body>
+         <div id="app" style="height: 800px;">
+          {{message}}
+          <sm-web-map style="width:100%;height: 800px;" server-url="http://172.16.14.44:8190/iportal" :map-id="692091022" target="map" ></sm-web-map>
+         </div>
+         <script>
+          const App = {
+            data() {
+              return {
+                message: "Hello ",
+              };
+            },
+          };
+          const app = Vue.createApp(App);
+          app.use(VueiClientMapboxgl);
+          app.mount("#app");
+        </script>
+   </body>
+</html>

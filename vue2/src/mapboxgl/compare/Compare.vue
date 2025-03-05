@@ -2,10 +2,10 @@
 import Vue, { VNode } from 'vue';
 import { Component, Prop, Mixins, Watch } from 'vue-property-decorator';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import CompareViewModel, { mapType, orientationTypes, compareOptions } from './CompareViewModel';
+import CompareViewModel, { mapType, orientationTypes, compareOptions } from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel';
 import debounce from 'lodash.debounce';
 import { addListener, removeListener } from 'resize-detector';
-import 'mapbox-gl-compare/dist/mapbox-gl-compare.css';
+import 'mapbox-gl-compare-enhanced/dist/style.css';
 
 interface loadParams {
   map: mapType;

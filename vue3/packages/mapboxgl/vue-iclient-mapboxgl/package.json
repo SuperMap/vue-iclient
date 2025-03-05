@@ -35,6 +35,7 @@
     "lodash.tonumber": "^4.0.3",
     "lodash.orderby": "^4.6.0",
     "lodash.isequal": "^4.5.0",
+    "mapbox-gl-compare-enhanced": "^1.0.0",
     "omit.js": "^2.0.2",
     "proj4": "^2.15.0",
     "resize-detector": "^0.2.0",

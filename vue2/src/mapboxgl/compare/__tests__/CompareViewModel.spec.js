@@ -1,4 +1,4 @@
-import CompareViewModel from '../CompareViewModel';
+import CompareViewModel from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel';
 
 jest.mock('mapbox-gl-compare', () => require('@mocks/compare'));
 
@@ -7,7 +7,7 @@ describe('CompareViewModel', () => {
     jest.clearAllMocks();
     jest.resetAllMocks();
     jest.restoreAllMocks();
-  })
+  });
 
   it('refreshRect', () => {
     const viewModel = new CompareViewModel({

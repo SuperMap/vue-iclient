@@ -47,7 +47,7 @@
     "lodash.orderby": "^4.6.0",
     "lodash.tonumber": "^4.0.3",
     "lodash.uniqueid": "^4.0.1",
-    "mapbox-gl-compare": "^0.4.0",
+    "mapbox-gl-compare-enhanced": "^1.0.0",
     "mapv": "^2.0.34",
     "mux.js": "^5.6.7",
     "omit.js": "^2.0.2",

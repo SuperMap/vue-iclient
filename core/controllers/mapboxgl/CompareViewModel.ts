@@ -1,5 +1,5 @@
-import 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import 'mapbox-gl-compare';
+import Compare from 'mapbox-gl-compare-enhanced'
+import type mapboxglTypes from 'mapbox-gl'
 
 export type mapType = mapboxglTypes.Map;
 export type orientationTypes = 'vertical' | 'horizontal';
@@ -28,9 +28,7 @@ export default class CompareViewModel {
     this.removed();
     const { beforeMap, afterMap, target, options } = nextOptions;
     if (beforeMap && afterMap && target) {
-      const $window: any = window;
-      const mapboxgl: any = $window.mapboxgl;
-      this.compare = new mapboxgl.Compare(beforeMap, afterMap, `#${target}`, options);
+      this.compare = new Compare(beforeMap, afterMap, `#${target}`, options);
     }
   }
 
