@@ -29,8 +29,9 @@ const generageRoutes = async (pkgName: Pkg | 'common') => {
   const TEMPLATE = `
 export default [
   ${allPaths.map(item => {
-    const component = item.split('/')[7]
-    const pkg = item.split('/')[5]
+    const usedPath = item.split('vue3/packages/')[1]
+    const component = usedPath.split('/')[2]
+    const pkg = usedPath.split('/')[0]
     return `
         {
           path: '/${component}',
