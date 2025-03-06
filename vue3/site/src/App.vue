@@ -57,7 +57,11 @@ const changeStyle2 = () => {
       <Button @click="changeStyle2" background="red">自定义主题</Button>
     </div>
     <div class="view">
-      <RouterView />
+      <RouterView v-slot="{ Component, route }">
+        <keep-alive>
+          <component :is="Component" :key="route.path"></component>
+        </keep-alive>
+      </RouterView>
     </div>
   </main>
 </template>
