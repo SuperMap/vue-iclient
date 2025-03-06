@@ -1,3 +1,4 @@
+import type { Map, Popup } from 'mapbox-gl';
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
@@ -7,12 +8,10 @@ import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
  * @extends mapboxgl.Evented
  */
 export default class MapPopupViewModel extends mapboxgl.Evented {
-  constructor() {
-    super();
-    this.popup = null;
-  }
+  popup: Popup = null;
+  map: Map;
 
-  setMap({ map }) {
+  setMap({ map }: { map: Map }) {
     this.map = map;
   }
 
@@ -22,7 +21,7 @@ export default class MapPopupViewModel extends mapboxgl.Evented {
    * @param {Array} coordinates - 弹窗坐标。
    * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
    */
-  addPopup(coordinates, popupContainer) {
+  addPopup(coordinates: GeoJSON.Position, popupContainer: HTMLElement) {
     this.removePopup();
     if (popupContainer) {
       popupContainer.style.display = 'block';
@@ -48,7 +47,8 @@ export default class MapPopupViewModel extends mapboxgl.Evented {
 
   removePopup() {
     if (this.popup) {
-      this.popup.remove() && (this.popup = null);
+      this.popup.remove();
+      this.popup = null;
     }
   }
 }

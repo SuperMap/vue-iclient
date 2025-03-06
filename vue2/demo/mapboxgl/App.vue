@@ -12,8 +12,9 @@
       <sm-web-map
         v-if="show"
         server-url="http://172.16.14.44:8190/iportal"
-        :map-id="692091022"
+        :map-id="331024164"
         :pan-control="{ show: true, position: 'top-left' }"
+        @mousedown="mapMousedown"
         @load="mapLoaded"
       >
         <!-- server-url="http://192.168.11.94:8190/iportal"
@@ -29,7 +30,7 @@
       ></sm-web-map> -->
         <sm-pan />
         <sm-zoom :show-zoom-slider="true" />
-        <sm-layer-list position="top-right" />
+        <sm-layer-list :position="position" :map-target="mapTarget" />
         <sm-measure position="top-right" />
         <sm-legend :layerNames="['民航数据']" position="bottom-right" :collapsed="false" />
         <sm-query
@@ -64,9 +65,12 @@
         <sm-tdt-route position="top-left" :data="routeData" />
         <sm-tdt-map-switcher position="top-left" :data="mapSwitcherData" />
         <sm-mini-map position="bottom-right" />
-        <sm-identify :layers="inputLayers"></sm-identify>
+        <sm-identify :layers="inputLayers" :multiSelect="true"></sm-identify>
         <sm-input v-model="layerNamesInput" @blur="e => inputLayers = e.target.value.split(',')"></sm-input>
       </sm-web-map>
+      <sm-web-map server-url="http://172.16.14.44:8190/iportal" :map-id="1641486307" target='map1'></sm-web-map>
+      <sm-web-map server-url="https://www.supermapol.com/" :map-id="505367620" target='map2'></sm-web-map>
+      <sm-attributes layer-name="全国671个气象站观测数据" mapTarget='map2'></sm-attributes>
     </template>
 
     <template v-if="componentType === 'chart-components'">
@@ -236,14 +240,17 @@
       ></sm-time-slider>
       <sm-time-line v-bind="timeLine" style="position:absolute; top:300px;left:200px;z-index：100000"></sm-time-line>
       <sm-time-range v-bind="timeRange" style="position:absolute; top:500px;left:200px;z-index：100000"></sm-time-range>
+
     </template>
 
     <div class="changeTheme">
-      <!-- <sm-button @click="changeStyle">深色主题</sm-button>
+      <sm-button @click="changeStyle">深色主题</sm-button>
       <sm-button @click="changeStyle1">浅色主题</sm-button>
       <sm-button @click="changeStyle3">暖灰色主题</sm-button>
-      <sm-button @click="changeStyle2">透明主题</sm-button> -->
-      <sm-select :options="webMapSelection" v-model="mapIdSelected" style="width: 220px"></sm-select>
+      <sm-button @click="changeStyle2">透明主题</sm-button>
+      <sm-button @click="changePosition('bottom-right')">切换位置</sm-button>
+      <sm-button @click="changeMapTarget">切换绑定地图</sm-button>
+      <!-- <sm-select :options="webMapSelection" v-model="mapIdSelected" style="width: 220px"></sm-select> -->
     </div>
   </div>
 </template>
@@ -251,6 +258,7 @@
 <script lang="ts">
 import Vue from 'vue';
 import data from './data/data.js';
+import { map } from 'lodash';
 
 var host = 'http://support.supermap.com.cn:8090';
 export default Vue.extend({
@@ -259,7 +267,7 @@ export default Vue.extend({
   data() {
     return {
       layerNamesInput: '',
-      inputLayers: [],
+      inputLayers: ['ms_base_北京轨道交通分布.geojson_1731400350143_31', 'ms_composite_symbol_ms_base_北京轨道交通分布.geojson_1731400350143_31_1731400362150_59', 'ms_composite_symbol_ms_base_北京轨道交通分布.geojson_1731400350143_31_1731400362150_60', 'ms_composite_symbol_ms_base_北京轨道交通分布.geojson_1731400350143_31_1731400362150_61', '北京住宅小区分布.geojson'],
       webMapSelection: [
         { label: 'raster(png) 图层', value: '617580084'},
         { label: 'raster(webp) 图层', value: '1175084848'},
@@ -277,7 +285,21 @@ export default Vue.extend({
         { label: '空地图', value: '17311606'},
         { label: '相同source多layer', value: '1703080254'},
       ],
-      mapIdSelected: '617580084'
+      mapIdSelected: '617580084',
+      position: 'top-right',
+      mapTarget: null
+    }
+  },
+  methods: {
+    changePosition(pos) {
+      this.position = pos;
+    },
+    changeMapTarget() {
+      const target = this.mapTarget || 'map';
+      this.mapTarget = target === 'map1' ? 'map' : 'map1';
+    },
+    mapMousedown(e) {
+      console.log('mapMousedown11', e);
     }
   }
 });
@@ -297,10 +319,29 @@ body {
   width: 100%;
   height: 100%;
   padding-top: 70px;
-  .sm-component-web-map {
+  #map {
     position: absolute;
     left: 0;
     top: 0;
+    width: 48%;
+  }
+  #map1 {
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 48%;
+  }
+  #map2 {
+    position: absolute;
+    left: 0;
+    top: 100Vh;
+    width: 48%;
+  }
+  .sm-component-attributes {
+    position: absolute;
+    right: 0;
+    top: 100Vh;
+    width: 48%;
   }
   .sm-component-liquidFill,
   .sm-component-progress {
@@ -326,7 +367,8 @@ body {
   transform: translate(-100px);
   z-index: 100;
 }
-.display-diff-components {
+#app .display-diff-components {
+  left: 60%;
   top: 20px;
 }
 .changeTheme {

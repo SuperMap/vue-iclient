@@ -7,6 +7,7 @@ import type {
   MapSelectionChangedEmit,
   PopupFieldsInfo
 } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
+import type { QueryResultParams, QueryResultEvent, QueryBoundsType, QueryParameter } from 'vue-iclient-core/controllers/mapboxgl/QueryViewModel'
 import type { PopupStyle } from '@supermapgis/mapboxgl/components/layer-highlight/types'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 import { themeProps } from '@supermapgis/common/components/theme/theme'
@@ -15,27 +16,16 @@ import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle'
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 
-export { PopupStyle, PopupFieldsInfo, MapSelectionChangedEmit }
+export { PopupStyle, PopupFieldsInfo, MapSelectionChangedEmit, QueryResultParams, QueryResultEvent }
 
-export interface QueryResultParams {
-  name: string
-  result: GeoJSON.Feature[]
-  fields: string[]
-}
-
-export interface QueryResultEvent {
-  result: QueryResultParams
-  layers: string[]
-}
 
 export interface QueryResult extends Omit<QueryResultParams, 'result'> {
   result: GeoJSON.Feature['properties'][]
 }
 
 export interface QueryJobItem {
-  spaceFilter: 'currentMapBounds' | 'mapBounds'
-  queryParameter: {
-    queryMode: 'SQL' | 'KEYWORD'
+  spaceFilter: QueryBoundsType
+  queryParameter: QueryParameter & {
     fields?: PopupFieldsInfo[]
     [K: string]: any
   }

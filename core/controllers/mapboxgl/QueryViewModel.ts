@@ -1,9 +1,40 @@
+import type { GeoJSONSourceRaw, LngLatBounds, Map } from 'mapbox-gl';
+import type { HighlightStyle } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import bbox from '@turf/bbox';
 import envelope from '@turf/envelope';
 import transformScale from '@turf/transform-scale';
 import getFeatures from 'vue-iclient-core/utils/get-features';
+
+export interface QueryOptions {
+  maxFeatures?: number | string;
+  layerStyle?: HighlightStyle;
+}
+
+export interface QueryParameter {
+  name?: string;
+  maxFeatures?: number | string;
+  keyWord?: string;
+  bounds?: LngLatBounds;
+  queryMode?: 'KEYWORD' | 'SQL';
+  attributeFilter?: string;
+  onlyService?: boolean;
+  type?: 'iPortal';
+}
+
+export interface QueryResultParams {
+  name: string
+  result: GeoJSON.Feature[]
+  fields: string[]
+}
+
+export interface QueryResultEvent {
+  result: QueryResultParams
+  layers: string[]
+}
+
+export type QueryBoundsType = 'mapBounds' | 'currentMapBounds';
 
 /**
  * @class QueryViewModel
@@ -23,19 +54,34 @@ import getFeatures from 'vue-iclient-core/utils/get-features';
  * @fires QueryViewModel#getfeatureinfosucceeded
  */
 export default class QueryViewModel extends mapboxgl.Evented {
-  constructor(options) {
-    super({ name: 'query', style: options.highlightStyle });
+  map: Map;
+  layerStyle: Partial<HighlightStyle>;
+  maxFeatures: number | string;
+  queryResult: QueryResultParams;
+  bounds: LngLatBounds;
+  queryBounds: QueryBoundsType;
+  strokeLayerID: string;
+  layerID: string;
+  queryParameter: QueryParameter;
+  options: QueryOptions;
+
+  fire: ((name: 'queryfailed', data: { code_name: 'NO_RESULTS' | 'SEVICE_NOT_SUPPORT' | 'QUREY_FAILED' }) => void) & ((name: 'querysucceeded', data: QueryResultEvent) => void);
+  on: (name: string, data: (...rest: any) => void) => void;
+  off: (name: string, data?: (...rest: any) => void) => void;
+
+  constructor(options: QueryOptions) {
+    super();
     this.options = options || {};
     this.maxFeatures = this.options.maxFeatures || 200;
     this.layerStyle = options.layerStyle || {};
   }
 
-  setMap(mapInfo) {
+  setMap(mapInfo: { map: Map }) {
     const { map } = mapInfo;
     this.map = map;
   }
 
-  clearResultLayer(relatedLayerIds) {
+  clearResultLayer(relatedLayerIds: string[]) {
     if (this.map) {
       const layerIds = [this.strokeLayerID, this.layerID].concat(relatedLayerIds).filter(item => !!item);
       layerIds.forEach(item => {
@@ -51,7 +97,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
     }
   }
 
-  clear(layerIds) {
+  clear(layerIds?: string[]) {
     this.bounds = null;
     this.clearResultLayer(layerIds);
   }
@@ -62,7 +108,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
    * @param {iPortalDataParameter|RestDataParameter|RestMapParameter} parameter - 查询配置参数。
    * @param {String} [queryBounds='mapBounds'] - 查询范围，可选值为 mapBounds（地图全图范围），currentMapBounds（当前地图范围）。
    */
-  async query(queryParameter, queryBounds) {
+  async query(queryParameter: QueryParameter, queryBounds: QueryBoundsType) {
     if (!this.map) {
       return;
     }
@@ -75,7 +121,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
     this.queryResult = null;
     if (queryParameter) {
       try {
-        const queryOptions = {
+        const queryOptions: QueryParameter = {
           maxFeatures: queryParameter.maxFeatures || this.maxFeatures,
           keyWord: queryParameter.queryMode === 'KEYWORD' ? queryParameter.attributeFilter : '',
           bounds: this.bounds
@@ -89,7 +135,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
           return;
         }
         this.queryResult = { name: queryParameter.name, result: res.features, fields: res.fields };
-        this._addResultLayer(this.queryResult);
+        this._addResultLayer();
         this.fire('querysucceeded', { result: this.queryResult, layers: [this.layerID, this.strokeLayerID].filter(item => !!item) });
       } catch (error) {
         const code_name = error.onlyService ? 'SEVICE_NOT_SUPPORT' : 'QUREY_FAILED';
@@ -101,7 +147,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
   _addResultLayer() {
     this.layerID = `${this.queryParameter.name}-SM-query-result`;
     let type = this.queryResult.result[0].geometry.type;
-    let source = {
+    let source: GeoJSONSourceRaw = {
       type: 'geojson',
       data: {
         type: 'FeatureCollection',
@@ -109,6 +155,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
       }
     };
     this._addOverlayToMap(type, source, this.layerID);
+    // @ts-ignore
     const bounds = bbox(transformScale(envelope(source.data), 1.7));
     this.map.fitBounds(
       [
@@ -119,7 +166,7 @@ export default class QueryViewModel extends mapboxgl.Evented {
     );
   }
 
-  _addOverlayToMap(type, source, layerID) {
+  _addOverlayToMap(type: string, source: GeoJSONSourceRaw, layerID: string) {
     let mbglStyle = {
       circle: {
         'circle-color': '#409eff',
@@ -155,12 +202,13 @@ export default class QueryViewModel extends mapboxgl.Evented {
         type: type,
         source: source,
         paint: (layerStyle && layerStyle.paint) || mbglStyle[type],
+        // @ts-ignore
         layout: (layerStyle && layerStyle.layout) || {}
       });
     }
     if (type === 'fill') {
       this.strokeLayerID = layerID + '-StrokeLine';
-      let stokeLineStyle = this.layerStyle.stokeLine || {};
+      let stokeLineStyle = this.layerStyle.stokeLine || { paint: {} };
       let lineStyle = (stokeLineStyle && stokeLineStyle.paint) || {
         'line-width': 3,
         'line-color': '#409eff',

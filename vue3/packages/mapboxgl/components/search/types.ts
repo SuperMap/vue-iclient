@@ -2,15 +2,12 @@ import type { PropType } from 'vue'
 import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
 import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
 import type { ControlProps } from '@supermapgis/mapboxgl/utils'
+import type { RestMapInfo, RestDataInfo, FetchDataBase, OnlineLocalSearch } from 'vue-iclient-core/controllers/mapboxgl/SearchViewModel'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 import { themeProps } from '@supermapgis/common/components/theme/theme'
 import { controlProps } from '@supermapgis/mapboxgl/utils'
 
-export interface OnlineLocalSearch {
-  enable?: boolean
-  city?: string
-  key?: string
-}
+
 
 export interface PointInfo {
   useDefaultAttribute?: boolean
@@ -41,19 +38,19 @@ export const searchProps = () => ({
     }
   },
   restMap: {
-    type: Array as PropType<Record<string, any>[]>,
+    type: Array as PropType<RestMapInfo[]>,
     default: () => []
   },
   restData: {
-    type: Array as PropType<Record<string, any>[]>,
+    type: Array as PropType<RestDataInfo[]>,
     default: () => []
   },
   iportalData: {
-    type: Array as PropType<Record<string, any>[]>,
+    type: Array as PropType<FetchDataBase[]>,
     default: () => []
   },
   addressMatch: {
-    type: Array as PropType<Record<string, any>[]>,
+    type: Array as PropType<FetchDataBase[]>,
     default: () => []
   },
   mode: {
@@ -98,10 +95,10 @@ export interface SearchProps extends ControlProps, ThemeProps, MapGetterProps {
   maxFeatures?: number | string
   layerNames?: string[]
   onlineLocalSearch?: OnlineLocalSearch
-  restMap?: Record<string, any>[]
-  restData?: Record<string, any>[]
-  iportalData?: Record<string, any>[]
-  addressMatch?: Record<string, any>[]
+  restMap?: RestMapInfo[]
+  restData?: RestDataInfo[]
+  iportalData?: FetchDataBase[]
+  addressMatch?: FetchDataBase[]
   mode?: 'control' | 'toolBar'
   openSearchSuggestion?: boolean
   alwaysCenter?: boolean

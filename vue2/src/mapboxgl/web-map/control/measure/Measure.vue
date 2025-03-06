@@ -314,7 +314,7 @@ export default {
           });
         }
         setPopupArrowStyle(styleData.background);
-      })
+      });
     }
   }
 };

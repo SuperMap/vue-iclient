@@ -315,24 +315,24 @@ export default {
       },
       iportalDataQuery: [
         new smcomponents.commontypes.iPortalDataParameter({
-          url: 'http://192.168.11.94:8190/iportal/web/datas/3332747',
+          url: 'http://172.16.14.44:8190/iportal/web/datas/1087373639',
           attributeFilter: 'SmID>0'
         }),
         new smcomponents.commontypes.iPortalDataParameter({
-          url: 'http://192.168.11.94:8190/iportal/web/datas/1050165341',
+          url: 'http://172.16.14.44:8190/iportal/web/datas/568810783',
           attributeFilter: 'SmID>0'
         })
       ],
       restDataQuery: [
         new smcomponents.commontypes.RestDataParameter({
-          url: host + '/iserver/services/data-world/rest/data',
+          url: 'http://172.16.14.44:8090/iserver/services/data-world/rest/data',
           attributeFilter: "NAME='Huang He'",
           dataName: ['World:Countries']
         })
       ],
       restMapQuery: [
         new smcomponents.commontypes.RestMapParameter({
-          url: host + '/iserver/services/map-world/rest/maps/World',
+          url: 'http://172.16.14.44:8090/iserver/services/map-world-2/rest/maps/World',
           attributeFilter: 'SmID>0',
           layerName: 'Capitals@World.1'
         })

@@ -189,6 +189,7 @@ import type {
   QueryFailedEvent,
   QueryResultParams
 } from './types'
+import type { QueryParameter, QueryBoundsType } from 'vue-iclient-core/controllers/mapboxgl/QueryViewModel'
 import { ref, computed, watch, onMounted, onUnmounted, useTemplateRef, useSlots } from 'vue'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import { useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
@@ -229,7 +230,7 @@ const selectOptions = [
   }
 ]
 const viewModel = new QueryViewModel(props)
-let selectSpaceFilter: QueryJobItem['spaceFilter']
+let selectSpaceFilter: QueryBoundsType
 let resultFeatures: QueryResultParams['result']
 let highlightLayerIds: string[]
 
@@ -338,7 +339,7 @@ function queryButtonClicked(
   query(JSON.parse(JSON.stringify(jobInfo)), selectSpaceFilter)
 }
 
-function query(parameter: any, bounds: string = 'mapBounds') {
+function query(parameter: QueryParameter, bounds: QueryBoundsType = 'mapBounds') {
   viewModel.query(parameter, bounds)
 }
 

@@ -1,3 +1,4 @@
+import type { GeoJSONSource, LngLatLike, Map, Marker, Popup } from 'mapbox-gl';
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
@@ -5,6 +6,76 @@ import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
 import getFeatures from 'vue-iclient-core/utils/get-features';
 import { getFeatureCenter } from 'vue-iclient-core/utils/util';
+
+export interface SearchOptions {
+  maxFeatures?: number | string;
+  layerNames?: string[];
+  restMap?: RestMapInfo[];
+  restData?: RestDataInfo[];
+  iportalData?: FetchDataBase[];
+  addressMatch?: FetchDataBase[];
+  onlineLocalSearch?: OnlineLocalSearch;
+  alwaysCenter?: boolean;
+  resultRender?: (feature: any) => void;
+  cityGeoCodingConfig?: {
+    addressUrl?: string;
+    key?: string;
+  };
+  pageSize?: number;
+  pageNum?: number;
+}
+
+export interface OnlineLocalSearch {
+  enable?: boolean
+  city?: string
+  key?: string
+} 
+
+export interface FeatureResult extends GeoJSON.Feature<GeoJSON.Geometry> {
+  location: {
+    x: number;
+    y: number;
+  };
+  formatedAddress?: string;
+  address?: string;
+  name?: string;
+  filterAttribute?: {
+    filterAttributeName: string;
+    filterAttributeValue: any;
+  };
+  filterVal?: string;
+}
+
+export interface SearchResultItem { 
+  source: string; 
+  result: FeatureResult[] 
+}
+
+export interface FetchRequestOptions { 
+  proxy?: string; 
+  epsgCode?: string;
+}
+
+export interface FetchDataBase extends FetchRequestOptions {
+  url: string;
+  name?: string;
+  [k: string]: any;
+}
+
+export interface RestMapInfo extends FetchDataBase {
+  layerName: string;
+}
+
+export interface RestDataInfo extends FetchDataBase {
+  dataName: string[];
+}
+
+interface GeoCodeParam {
+  pageSize: number;
+  pageNum: number;
+  city: string;
+  keyWords?: string;
+}
 
 /**
  * @class SearchViewModel
@@ -34,21 +105,34 @@ import { getFeatureCenter } from 'vue-iclient-core/utils/util';
  * @fires SearchViewModel#searchfailed
  */
 export default class SearchViewModel extends mapboxgl.Evented {
-  constructor(options) {
+  options: SearchOptions;
+  searchTaskId = 0;
+  searchType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
+  markerList: Marker[] = [];
+  popupList: Popup[] = [];
+  errorSourceList: Record<string, string> = {}
+  map: Map;
+  maxFeatures: number;
+  keyWord: string;
+  searchCount: number;
+  searchResult: Record<string, SearchResultItem>;
+  addressMatchService: { code: (data: Record<string, any>, callback: (data: Record<string, any>) => void) => void };
+  geoCodeParam: GeoCodeParam;
+
+  fire: (name: string, data?: any) => void;
+  on: (name: string, data: (...rest: any) => void) => void;
+  off: (name: string, data?: (...rest: any) => void) => void;
+
+  constructor(options?: SearchOptions) {
     super();
     this.options = options || {};
-    this.searchTaskId = 0;
     this.options.cityGeoCodingConfig = {
       addressUrl: 'https://www.supermapol.com/iserver/services/localsearch/rest/searchdatas/China/poiinfos',
       key: options.onlineLocalSearch.key || 'fvV2osxwuZWlY0wJb8FEb2i5'
     };
-    this.searchtType = ['layerNames', 'onlineLocalSearch', 'restMap', 'restData', 'iportalData', 'addressMatch'];
-    this.markerList = [];
-    this.popupList = [];
-    this.errorSourceList = {};
   }
 
-  setMap(mapInfo) {
+  setMap(mapInfo: { map: Map }) {
     const { map } = mapInfo;
     this.map = map;
   }
@@ -58,13 +142,14 @@ export default class SearchViewModel extends mapboxgl.Evented {
    * @description 开始搜索。
    * @param {String} keyWord - 搜索关键字。
    */
-  search(keyWord) {
+  search(keyWord: string) {
     this.searchCount = 0;
     this.searchResult = {};
     this.errorSourceList = {};
     this.keyWord = keyWord;
-    this.maxFeatures = parseInt(this.options.maxFeatures) >= 100 ? 100 : parseInt(this.options.maxFeatures) || 8;
-    this.searchtType.forEach(item => {
+    const { maxFeatures } = this.options;
+    this.maxFeatures = +maxFeatures >= 100 ? 100 : Math.ceil(+maxFeatures) || 8;
+    this.searchType.forEach(item => {
       if (this.options[item]) {
         if (item === 'onlineLocalSearch' && this.options[item].enable) {
           this.searchCount += 1;
@@ -92,7 +177,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
    * @param {String} searchKey - 搜索关键字。
    * @param {String} data - 过滤数据。
    */
-  getFeatureInfo(searchKey, data) {
+  getFeatureInfo(searchKey: string, data: FeatureResult) {
     const { resultRender } = this.options;
     this.keyWord = searchKey;
     this._reset();
@@ -103,26 +188,27 @@ export default class SearchViewModel extends mapboxgl.Evented {
     this._showResultToMap(data);
   }
 
-  _showResultToMap(feature) {
-    const geometry = feature.geometry || {};
+  _showResultToMap(feature: FeatureResult) {
+    const geometry = (feature as GeoJSON.Feature).geometry || { type : null};
     if (!this.options.alwaysCenter && (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon')) {
-      this._addPolygon(feature);
+      this._addPolygon(feature as GeoJSON.Feature<GeoJSON.MultiPolygon | GeoJSON.Polygon>);
     } else if (!this.options.alwaysCenter && geometry.type === 'LineString') {
-      this._addLine(feature);
+      this._addLine();
     } else {
       this._addPoint(feature);
     }
   }
 
-  _addPoint(feature) {
+  _addPoint(feature: FeatureResult) {
     const properties = feature.properties || feature;
     const geometry = feature.geometry || [feature.location.x, feature.location.y];
     let pointData = { coordinates: null, info: [] };
     const propertiesValue = properties.address || feature.filterAttribute.filterAttributeValue || properties.name;
-    if (geometry.type === 'MultiPolygon' || geometry.type === 'Polygon' || geometry.type === 'LineString') {
+    const geoType = (geometry as GeoJSON.Geometry).type;
+    if (geoType === 'MultiPolygon' || geoType === 'Polygon' || geoType === 'LineString') {
       pointData.coordinates = getFeatureCenter(feature);
     } else {
-      pointData.coordinates = geometry.coordinates || geometry;
+      pointData.coordinates = (geometry as GeoJSON.Point).coordinates || geometry;
     }
     if (!pointData.coordinates || !pointData.coordinates.length || pointData.coordinates.find(item => isNaN(+item))) {
       this.fire('addfeaturefailed' + this.searchTaskId, { code_name: 'ILLEGAL_FEATURE' });
@@ -142,10 +228,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     console.log('draw line here');
   }
 
-  _addPolygon(feature) {
+  _addPolygon(feature: GeoJSON.Feature<GeoJSON.MultiPolygon | GeoJSON.Polygon>) {
     if (feature && this.map) {
       let center = turfCenter(feature).geometry.coordinates;
-      const source = this.map.getSource('searchResultLayer');
+      const source = this.map.getSource('searchResultLayer') as GeoJSONSource;
       const sourceData = feature;
       if (source) {
         source.setData(sourceData);
@@ -165,7 +251,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         });
       }
       this.map.easeTo({
-        center
+        center: center as LngLatLike
       });
     }
   }
@@ -177,7 +263,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
    * @param {HTMLElement} popupContainer - 弹窗 DOM 对象。
    * @param {Function} callback - 弹窗生成后的回调事件。
    */
-  setPopupContent(coordinates, popupContainer, callback) {
+  setPopupContent(coordinates: number[], popupContainer: HTMLElement, callback?: () => void) {
     popupContainer.style.display = 'block';
     const popup = new mapboxgl.Popup({
       className: 'sm-mapboxgl-tabel-popup sm-component-search-result-popup',
@@ -194,7 +280,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       callback && callback();
     });
     marker.setLngLat(coordinates).setPopup(popup).addTo(this.map);
-    this.map.flyTo({ center: coordinates });
+    this.map.flyTo({ center: coordinates as [number, number] });
   }
 
   _searchFromLayer(layerNames) {
@@ -202,6 +288,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
       layerNames.forEach(sourceName => {
         let source = this.map.getSource(sourceName);
         if (source) {
+          // @ts-ignore
           let features = clonedeep(source._data ? source._data.features : []);
           let resultFeature = this._getFeaturesByKeyWord(this.keyWord, features);
           const results = resultFeature.slice(0, this.maxFeatures);
@@ -213,7 +300,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     }, 0);
   }
 
-  _searchFeaturesFailed(error, sourceName) {
+  _searchFeaturesFailed(error: string, sourceName: string) {
     error && console.log(error);
     if (this.errorSourceList[sourceName]) return;
     this.searchCount--;
@@ -223,17 +310,18 @@ export default class SearchViewModel extends mapboxgl.Evented {
      * @description 搜索失败后触发。
      * @property {Object} e  - 事件对象。
      */
-    this.searchCount === 0 &&
-      this.fire('searchfailed' + this.searchTaskId, { error, sourceName }) &&
-      (this.searchTaskId += 1);
+    if (this.searchCount === 0) {
+      this.fire('searchfailed' + this.searchTaskId, { error, sourceName });
+      this.searchTaskId += 1;
+    }
   }
 
-  _searchFeaturesSucceed(resultFeature, sourceName) {
+  _searchFeaturesSucceed(resultFeature: FeatureResult[], sourceName: string) {
     if (this.errorSourceList[sourceName]) {
       delete this.errorSourceList[sourceName];
     }
     if (resultFeature.length > 0) {
-      let result = { source: sourceName, result: resultFeature };
+      let result: SearchResultItem = { source: sourceName, result: resultFeature };
       this.searchResult[sourceName] = result;
     }
     let resultList = [];
@@ -245,10 +333,11 @@ export default class SearchViewModel extends mapboxgl.Evented {
      * @description 搜索成功后触发。
      * @property {Object} e  - 事件对象。
      */
-    this.fire('searchsucceeded' + this.searchTaskId, { result: resultList }) && (this.searchTaskId += 1);
+    this.fire('searchsucceeded' + this.searchTaskId, { result: resultList })
+    this.searchTaskId += 1;
   }
 
-  _searchFromPOI(onlineLocalSearch) {
+  _searchFromPOI(onlineLocalSearch: OnlineLocalSearch) {
     const sourceName = 'Online 本地搜索';
     this.geoCodeParam = {
       pageSize: this.options.pageSize || 10,
@@ -257,7 +346,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     };
     this.geoCodeParam.keyWords = this.keyWord;
     let url = this._getSearchUrl(this.geoCodeParam);
-    SuperMap.FetchRequest.get(url)
+    mapboxgl.supermap.FetchRequest.get(url)
       .then(response => {
         return response.json();
       })
@@ -280,10 +369,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
       });
   }
 
-  _searchFromRestMap(restMaps) {
+  _searchFromRestMap(restMaps: RestMapInfo[]) {
     const sourceName = 'Rest Map Search';
     restMaps.forEach(restMap => {
-      const options = {};
+      const options: FetchRequestOptions = {};
       if (restMap.proxy) {
         options.proxy = restMap.proxy;
       }
@@ -310,10 +399,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     }, this);
   }
 
-  _searchFromRestData(restDatas) {
+  _searchFromRestData(restDatas: RestDataInfo[]) {
     const sourceName = 'Rest Data Search';
     restDatas.forEach(restData => {
-      const options = {};
+      const options: FetchRequestOptions = {};
       if (restData.proxy) {
         options.proxy = restData.proxy;
       }
@@ -342,7 +431,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     }, this);
   }
 
-  _searchFromIportal(iportalDatas) {
+  _searchFromIportal(iportalDatas: FetchDataBase[]) {
     const sourceName = 'Iportal Search';
     iportalDatas.forEach(iportal => {
       getFeatures({ ...iportal })
@@ -358,10 +447,10 @@ export default class SearchViewModel extends mapboxgl.Evented {
     }, this);
   }
 
-  _searchFromAddressMatch(addressMatches) {
+  _searchFromAddressMatch(addressMatches: FetchDataBase[]) {
     const sourceName = 'Address Match Search';
     addressMatches.forEach(addressMatch => {
-      const options = {};
+      const options: FetchRequestOptions = {};
       if (addressMatch.proxy) {
         options.proxy = addressMatch.proxy;
       }
@@ -373,7 +462,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
         maxReturn: this.maxFeatures,
         prjCoordSys: '{epsgcode:4326}'
       };
-      let geoCodeParam = new SuperMap.GeoCodingParameter(parm);
+      let geoCodeParam = new mapboxgl.supermap.GeoCodingParameter(parm);
       this.addressMatchService.code(geoCodeParam, e => {
         if (e.result) {
           this._searchFeaturesSucceed(e.result, addressMatch.name || sourceName);
@@ -384,7 +473,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     }, this);
   }
 
-  _dataToGeoJson(data, geoCodeParam) {
+  _dataToGeoJson(data: FeatureResult[], geoCodeParam: GeoCodeParam) {
     let features = [];
     for (let i = 0; i < data.length; i++) {
       let feature = {
@@ -410,7 +499,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     return features;
   }
 
-  _getSearchUrl(geoCodeParam) {
+  _getSearchUrl(geoCodeParam: GeoCodeParam) {
     let url =
       this.options.cityGeoCodingConfig.addressUrl +
       `.json?keywords=${geoCodeParam.keyWords}&city=${geoCodeParam.city || '北京市'}&pageSize=${
@@ -419,7 +508,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     return url;
   }
 
-  _getFeaturesByKeyWord(keyWord, features) {
+  _getFeaturesByKeyWord(keyWord: string, features: FeatureResult[]) {
     let resultFeatures = [];
     let keyReg = new RegExp(keyWord.toLowerCase());
     let operatingAttributeNames = this._getAttributeNames(features);
@@ -446,7 +535,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
     return resultFeatures;
   }
 
-  _getAttributeNames(features) {
+  _getAttributeNames(features: FeatureResult[]) {
     let attributeNames = [];
     let properties = features[0]?.properties;
     properties &&
@@ -483,7 +572,7 @@ export default class SearchViewModel extends mapboxgl.Evented {
 
   _resetSearchSourceData() {
     if (this.map && this.map.getSource('searchResultLayer')) {
-      this.map.getSource('searchResultLayer').setData({
+      (this.map.getSource('searchResultLayer') as GeoJSONSource).setData({
         type: 'FeatureCollection',
         features: []
       });

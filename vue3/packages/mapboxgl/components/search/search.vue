@@ -120,6 +120,7 @@ import {
   useTemplateRef,
   onBeforeUnmount
 } from 'vue'
+import type { FeatureResult } from 'vue-iclient-core/controllers/mapboxgl/SearchViewModel'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import { useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
@@ -258,7 +259,7 @@ function inputValueCleared(emitEvent = true) {
   emitEvent && emit('clear-search-result')
 }
 
-function searchResultListClicked(data: Record<string, any>, event: MouseEvent) {
+function searchResultListClicked(data: FeatureResult, event: MouseEvent) {
   const searchKey = (event.target as HTMLElement).innerHTML
   isSuggestion.value = false
   viewModel.getFeatureInfo(searchKey, data)

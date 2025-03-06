@@ -352,8 +352,7 @@ const handleSearchReset = (clearFilters: () => void) => {
 }
 
 const getPopupContainerFn = () => {
-  return tableInstance.value.$el.querySelector('.sm-attributes-table .ant-table-content')
-  // return tableInstance.value.$el.querySelector('.sm-attributes-table .sm-component-table-content');
+  return tableInstance.value.$el.querySelector('.sm-attributes-table .sm-component-table-content');
 }
 
 const removed = () => {
