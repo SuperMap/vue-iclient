@@ -9,7 +9,7 @@
     "allowJs": true,
     "checkJs": true,
     "strict": false,
-    "noUnusedLocals": false,
+    "noUnusedLocals": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,

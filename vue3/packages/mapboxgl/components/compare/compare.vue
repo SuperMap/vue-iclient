@@ -6,7 +6,7 @@
 </template>
 
 <script lang="ts" setup>
-import { h, watch, onMounted, onBeforeUnmount, computed } from 'vue'
+import { watch, onMounted, onBeforeUnmount, computed } from 'vue'
 import CompareViewModel from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import { debounce } from 'lodash-es'
@@ -37,12 +37,6 @@ let afterMapInstance: mapType
 let resizeHandler
 
 // 定义计算属性
-
-const isRenderWebMap = computed(() => {
-  return (
-    Object.keys(props.beforeMapOptions).length > 0 && Object.keys(props.afterMapOptions).length > 0
-  )
-})
 const additionalOptions = computed(() => ({
   orientation: props.orientation,
   mousemove: props.mousemove
@@ -150,9 +144,9 @@ const setAfterMap = (params: { map: mapType }) => {
   handleOptionsChange()
 }
 
-const refreshRect = () => {
-  viewModel?.refreshRect()
-}
+// const refreshRect = () => {
+//   viewModel?.refreshRect()
+// }
 
 // 监听属性变化
 watch(additionalOptions, () => {
