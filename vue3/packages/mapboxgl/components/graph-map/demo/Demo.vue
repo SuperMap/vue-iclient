@@ -10,6 +10,6 @@ const props = reactive({
 })
 </script>
 <template>
-  <GraphMap v-bind="props" />
+  <GraphMap v-bind="props" style="height:900px"/>
 </template>
 <style></style>

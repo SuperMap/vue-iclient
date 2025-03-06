@@ -9,7 +9,8 @@
     "start": "gulp --require @esbuild-kit/cjs-loader -f gulpfile.ts",
     "maxSize": "node --max-old-space-size=8192 --expose-gc --gc-global node_modules/rollup/dist/rollup.js -c && node --max-old-space-size=8192 --expose-gc --gc-global node_modules/rollup/dist/es/rollup.js -c",
     "dev": "pnpm run stub",
-    "stub": "unbuild --stub"
+    "stub": "unbuild --stub",
+    "build-routes": "gulp --require @esbuild-kit/cjs-loader -f gulp-demo-routes.ts"
   },
   "peerDependencies": {
     "vue": "^3.2.25"

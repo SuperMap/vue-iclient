@@ -8,6 +8,7 @@ import Button from '@supermapgis/common/components/button/Button'
 import { useParameters } from '@supermapgis/common/hooks/useParameters'
 import { ref, reactive } from 'vue'
 import '../style'
+import '@supermapgis/mapboxgl/components/web-map/style/index.ts'
 
 const {
   createiPortalDataParameter,
@@ -47,9 +48,11 @@ const queryProps = reactive({
 const searchProps = reactive({
   ...queryProps,
   layerNames: ['318218382'],
-  addressMatch: [createAddressMatchParameter({
-    url: 'http://172.16.14.44:8090/iserver/services/addressmatch-Address/restjsr/v1/address'
-  })]
+  addressMatch: [
+    createAddressMatchParameter({
+      url: 'http://172.16.14.44:8090/iserver/services/addressmatch-Address/restjsr/v1/address'
+    })
+  ]
 })
 const identifyProps = reactive({
   layers: [

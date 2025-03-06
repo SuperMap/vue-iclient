@@ -27,3 +27,5 @@ coverage
 *.tsbuildinfo
 .history
 node_modules
+
+site/src/router/demoRoutes.js

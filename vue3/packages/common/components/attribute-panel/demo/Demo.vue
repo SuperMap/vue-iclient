@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
-import Search from '../search.vue'
+import Search from '@supermapgis/mapboxgl/components/search/search.vue'
 import Button from '@supermapgis/common/components/button/Button'
 import { useParameters } from '@supermapgis/common/hooks/useParameters'
 import { ref, reactive } from 'vue'

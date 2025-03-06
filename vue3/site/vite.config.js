@@ -10,11 +10,8 @@ export default defineConfig({
   define: {
     global: 'window'
   },
-  plugins: [
-    vue(),
-    vueJsx(),
-    vueDevTools()
-  ],
+  plugins: [vue(), vueJsx(), vueDevTools()],
+
   resolve: {
     alias: {
       '@supermapgis/mapboxgl': fileURLToPath(new URL('../packages/mapboxgl', import.meta.url)),

@@ -1,9 +1,11 @@
 <script setup>
-import { WebMapDemo, AttributesDemo, LayerListDemo, QueryDemo, IdentifyDemo, AnimateMarkerLayerDemo, TimeSliderDemo, IndicatorDemo,TimeTextDemo, TextDemo } from './register-components'
+import { RouterLink, RouterView } from 'vue-router'
+import { ref, reactive, onBeforeMount } from 'vue'
+import demoRoutes from './router/demoRoutes'
 import { setTheme } from '@supermapgis/common/components/theme/theme'
-import { ref, onBeforeMount } from 'vue'
 import Button from '@supermapgis/common/components/button/Button'
 
+const routes = reactive(demoRoutes)
 const theme = ref('light')
 
 onBeforeMount(() => {
@@ -11,7 +13,7 @@ onBeforeMount(() => {
 })
 
 const changeStyle = () => {
-  setTheme({ themeStyle: 'dark'})
+  setTheme({ themeStyle: 'dark' })
 }
 const changeStyle1 = () => {
   setTheme({ themeStyle: 'light' })
@@ -40,48 +42,107 @@ const changeStyle2 = () => {
 </script>
 
 <template>
-  <div class="app-holder">
+  <header>
+    <nav>
+      <RouterLink v-for="(route, key) in routes" :to="route.path">
+        {{ key }}. {{ route.name }}
+      </RouterLink>
+    </nav>
+  </header>
+
+  <main>
     <div class="changeTheme">
       <Button @click="changeStyle">深色主题</Button>
       <Button @click="changeStyle1">浅色主题</Button>
       <Button @click="changeStyle2" background="red">自定义主题</Button>
     </div>
-    <!-- <div class="map-holder">
-      <WebMapDemo server-url="http://172.16.14.44:8190/iportal" :map-id="692091022"></WebMapDemo>
-      <LayerListDemo></LayerListDemo>
-      <QueryDemo />
-      <IdentifyDemo />
-      <AttributesDemo></AttributesDemo>
-      <AnimateMarkerLayerDemo />
-    </div> -->
-  </div>
-  <TimeSliderDemo></TimeSliderDemo>
-  <IndicatorDemo></IndicatorDemo>
-  <TimeTextDemo></TimeTextDemo>
-  <TextDemo></TextDemo>
+    <div class="view">
+      <RouterView />
+    </div>
+  </main>
 </template>
 
 <style>
+#app {
+  display: inline-flex;
+  width: 100%;
+}
+header {
+  line-height: 1.5;
+  max-height: 100vh;
+}
+
+main {
+  width: 100%;
+  height: 900px;
+}
 .changeTheme {
-  padding: 8px;
-  background: #c8adad;
-  text-align: center;
   margin-bottom: 20px;
 }
-
-.app-holder {
-  background: var(--color-bg-base)
+.view {
+  width: 100%;
+  height: 100%;
+  border: 1px solid;
+  padding: 20px;
+}
+.view > div {
+  width: 100%;
+  height: 100%;
 }
 
-.app-holder > div{
-  position: relative;
-}
-
-.map-holder {
+nav {
+  width: 250px;
+  height: 100%;
+  font-size: 12px;
+  text-align: center;
+  margin-top: 2rem;
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
-.map-holder > div {
-  flex: 1;
-  margin-right: 15px;
+
+nav a.router-link-exact-active {
+  color: var(--color-text);
+}
+
+nav a.router-link-exact-active:hover {
+  background-color: transparent;
+}
+
+nav a {
+  display: inline-block;
+  padding: 0 1rem;
+  border-left: 1px solid var(--color-border);
+}
+
+nav a:first-of-type {
+  border: 0;
+}
+
+@media (min-width: 1024px) {
+  header {
+    display: flex;
+    place-items: center;
+    padding-right: calc(var(--section-gap) / 2);
+  }
+
+  .logo {
+    margin: 0 2rem 0 0;
+  }
+
+  /* header .wrapper {
+    display: flex;
+    place-items: flex-start;
+    flex-wrap: wrap;
+  } */
+
+  nav {
+    text-align: left;
+    margin-left: -1rem;
+    font-size: 1rem;
+
+    padding: 1rem 0;
+    margin-top: 1rem;
+  }
 }
 </style>
