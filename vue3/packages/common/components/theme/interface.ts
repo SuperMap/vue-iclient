@@ -11,6 +11,7 @@ export type CustonAliasToken = {
   // gis 组件
   gisControlBg: string
   gisControlBgSecondary: string
+  gisControlBgTertiary: string
   gisControlHeaderBg: string
   gisControlHeaderBorder: string
   gisControlItemBgHover: string

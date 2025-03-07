@@ -43,6 +43,10 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
     return { background: themePropDatas.gisControlBg }
   })
 
+  const gisControlBgTertiaryStyle = computed(() => {
+    return { background: themePropDatas.gisControlBgTertiary }
+  })
+
   const gisControlHeaderBgStyle = computed(() => {
     return { background: themePropDatas.gisControlHeaderBg }
   })
@@ -78,6 +82,7 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
       colorText: textColor ?? themeToken.value.colorText,
       colorTextHeading: textColor ? getDerivedColorsByTextColor(textColor, 0.85) : themeToken.value.colorTextHeading,
       gisControlBg: background ?? themeToken.value.gisControlBg,
+      gisControlBgTertiary: background ?? themeToken.value.gisControlBgTertiary,
       gisControlHeaderBg: background ?? themeToken.value.gisControlHeaderBg
     }
   }
@@ -127,6 +132,7 @@ export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = global
     containerBgStyle,
     popupBgStyle,
     gisControlBgStyle,
+    gisControlBgTertiaryStyle,
     gisControlHeaderBgStyle,
     colorPrimary
   }

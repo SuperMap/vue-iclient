@@ -1,3 +1,5 @@
+import type { CircleLayout, CirclePaint } from 'mapbox-gl';
+
 /**
  * @class CircleStyle
  * @category BaseTypes Style
@@ -6,7 +8,9 @@
  * @param {mapboxgl.LayersCircle} layout - MapboxGL 点图层 Layout 配置。
  */
 export default class CircleStyle {
-  constructor(paint = {}, layout = {}) {
+  layout: CircleLayout;
+  paint: CirclePaint;
+  constructor(paint: Partial<CirclePaint> = {}, layout: Partial<CircleLayout> = {}) {
     this.layout = {
       visibility: 'visible'
     };

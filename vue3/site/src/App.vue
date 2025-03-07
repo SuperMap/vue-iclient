@@ -58,15 +58,17 @@ const changeStyle2 = () => {
     </div>
     <div class="view">
       <RouterView v-slot="{ Component, route }">
-        <keep-alive>
-          <component :is="Component" :key="route.path"></component>
-        </keep-alive>
+        <component :is="Component" :key="route.path"></component>
       </RouterView>
     </div>
   </main>
 </template>
 
 <style>
+body {
+  background-color: var(--color-bg-base);
+  color: var(--color-text);
+}
 #app {
   display: inline-flex;
   width: 100%;
@@ -117,6 +119,7 @@ nav a {
   display: inline-block;
   padding: 0 1rem;
   border-left: 1px solid var(--color-border);
+  color: var(--color-text);
 }
 
 nav a:first-of-type {

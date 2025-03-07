@@ -1,5 +1,5 @@
 import DrawViewModel from '../DrawViewModel';
-import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
+import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
 
 describe('DrawViewModel', () => {
   it('setMap', done => {
@@ -27,13 +27,13 @@ describe('DrawViewModel', () => {
       },
       mapTarget: 'map'
     };
-    jest.spyOn(drawEvent.$options, 'getDrawingState').mockReturnValue(true);
+    jest.spyOn(drawEvent, 'getDrawingState').mockReturnValue(true);
     const draw = {
-        changeMode: jest.fn(),
-        delete: jest.fn(),
-        getSelectedIds: jest.fn().mockReturnValue([1])
-      };
-    jest.spyOn(drawEvent.$options, 'getDraw').mockReturnValue(draw);
+      changeMode: jest.fn(),
+      delete: jest.fn(),
+      getSelectedIds: jest.fn().mockReturnValue([1])
+    };
+    jest.spyOn(drawEvent, 'getDraw').mockReturnValue(draw);
     viewModel.setMap(mapInfo);
     expect(viewModel.map).toEqual(mapInfo.map);
     expect(viewModel.mapTarget).toBe(mapInfo.mapTarget);
@@ -46,4 +46,3 @@ describe('DrawViewModel', () => {
     done();
   });
 });
-

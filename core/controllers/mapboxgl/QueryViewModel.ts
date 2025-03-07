@@ -1,4 +1,4 @@
-import type { GeoJSONSourceRaw, LngLatBounds, Map } from 'mapbox-gl';
+import type { CircleLayer, FillLayer, GeoJSONSourceRaw, LineLayer, LngLatBounds, Map } from 'mapbox-gl';
 import type { HighlightStyle } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
@@ -197,14 +197,14 @@ export default class QueryViewModel extends mapboxgl.Evented {
     type = mbglTypeMap[type];
     if (type === 'circle' || type === 'line' || type === 'fill') {
       let layerStyle = this.layerStyle[type];
-      this.map.addLayer({
+      const layerInfo = {
         id: layerID,
         type: type,
         source: source,
         paint: (layerStyle && layerStyle.paint) || mbglStyle[type],
-        // @ts-ignore
         layout: (layerStyle && layerStyle.layout) || {}
-      });
+      };
+      this.map.addLayer(layerInfo as CircleLayer | FillLayer | LineLayer);
     }
     if (type === 'fill') {
       this.strokeLayerID = layerID + '-StrokeLine';

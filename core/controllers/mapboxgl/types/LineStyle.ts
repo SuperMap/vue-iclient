@@ -1,3 +1,5 @@
+import type { LineLayout, LinePaint } from 'mapbox-gl';
+
 /**
  * @class LineStyle
  * @category BaseTypes Style
@@ -6,7 +8,10 @@
  * @param {mapboxgl.LayersLine} layout - MapboxGL 线图层 Layout 配置。
  */
 export default class LineStyle {
-  constructor(paint = {}, layout = {}) {
+  layout: LineLayout;
+  paint: LinePaint;
+
+  constructor(paint: Partial<LinePaint> = {}, layout: Partial<LineLayout> = {}) {
     this.layout = {
       visibility: 'visible',
       'line-cap': 'butt',

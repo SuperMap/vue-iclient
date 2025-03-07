@@ -69,12 +69,13 @@ import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import SmSelect from 'vue-iclient/src/common/select/Select.vue';
 import SmSelectOption from 'vue-iclient/src/common/select/Option.vue';
-import MeasureViewModel from './MeasureViewModel';
-import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
+import MeasureViewModel from 'vue-iclient-core/controllers/mapboxgl/MeasureViewModel';
+import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
 import uniqueId from 'lodash.uniqueid';
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util';
 import 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw.css';
 import Message from 'vue-iclient/src/common/message/Message.js';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 export default {
   name: 'SmMeasure',
@@ -210,23 +211,29 @@ export default {
     this.componentName = uniqueId(this.$options.name);
     this.viewModel = new MeasureViewModel({
       continueDraw: this.continueDraw,
-      componentName: this.componentName
+      componentName: this.componentName,
+      geti18n
     });
+    this.drawResetFn = this.drawResetFn.bind(this);
     this.viewModel.on('measure-finished', this.measureFinishedFn);
     this.viewModel.on('measure-start', this.measureStartFn);
     this.viewModel.on('update-unit', this.updateUnitFn);
   },
   mounted() {
-    drawEvent.$on('draw-reset', this.drawResetFn);
+    drawEvent.on({
+      'draw-reset': this.drawResetFn
+    });
   },
   beforeDestroy() {
     this.viewModel.off('measure-finished', this.measureFinishedFn);
     this.viewModel.off('measure-start', this.measureStartFn);
     this.viewModel.off('update-unit', this.updateUnitFn);
-    drawEvent.$off('draw-reset', this.drawResetFn);
+    drawEvent.un({
+      'draw-reset': this.drawResetFn
+    });
   },
   removed(map, target) {
-    drawEvent.$options.deleteDrawingState(target, this.componentName);
+    drawEvent.deleteDrawingState(target, this.componentName);
     this.resetData(target);
   },
   methods: {
@@ -271,7 +278,7 @@ export default {
           if (this.activeMode !== mode || !this.continueDraw) {
             this.viewModel.openDraw(mode, activeUnit, this.setPopupStyle);
             this.activeMode = mode;
-            this.continueDraw && drawEvent.$emit('draw-reset', { componentName: this.componentName });
+            this.continueDraw && drawEvent.notifyResetDraw(this.componentName);
           } else {
             this.viewModel.removeDraw(this.continueDraw);
             this.activeMode = null;
@@ -296,7 +303,7 @@ export default {
     resetData() {
       this.activeMode = null;
       this.result = '';
-      this.continueDraw && drawEvent.$emit('draw-reset', { componentName: this.componentName });
+      this.continueDraw && drawEvent.notifyResetDraw(this.componentName);
     },
     // 提供对外方法：清空features
     clear() {

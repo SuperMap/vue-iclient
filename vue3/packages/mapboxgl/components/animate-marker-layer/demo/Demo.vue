@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import AnimateMarkerLayer from '../animate-marker-layer.vue'
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance'
+import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
 import Button from '@supermapgis/common/components/button/Button'
+import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance'
 import { onBeforeMount, reactive } from 'vue'
-import '../style'
 
 const breathingApertureParam = {
   width: 80
@@ -20,12 +20,18 @@ const animateMarkerProps = reactive({
   ...breathingApertureParam
 })
 
+const mapOptions = {
+  center: [114.02621241568636, 21.408593120663514],
+  zoom: 4
+}
+
 onBeforeMount(() => {
   getFeatures()
 })
 
 const changeType = () => {
-  animateMarkerProps.type = animateMarkerProps.type === 'breathingAperture' ? 'haloRing' : 'breathingAperture'
+  animateMarkerProps.type =
+    animateMarkerProps.type === 'breathingAperture' ? 'haloRing' : 'breathingAperture'
   animateMarkerProps.width = animateMarkerProps.type === 'breathingAperture' ? 44 : 80
 }
 
@@ -61,16 +67,23 @@ function getFeatures() {
   })
 }
 const handleMousedown = (params: Record<string, any>) => {
-  console.log('layerclick', params);
+  console.log('layer-contextmenu', params)
 }
 </script>
 <template>
-  <AnimateMarkerLayer
-    map-target="map"
-    text-field="name"
-    :fit-bounds="false"
-    v-bind="animateMarkerProps"
-    @contextmenu="handleMousedown"
-  />
-  <Button @click="changeType">切换marker类型</Button>
+  <Button type="primary" @click="changeType">切换marker类型</Button>
+  <WebMap serverUrl="http://172.16.14.44:8190/iportal" :map-id="692091022" :mapOptions="mapOptions">
+    <AnimateMarkerLayer
+      text-field="name"
+      :fit-bounds="false"
+      v-bind="animateMarkerProps"
+      @contextmenu="handleMousedown"
+    />
+  </WebMap>
 </template>
+
+<style lang="scss">
+@use '@supermapgis/common/theme-chalk/button.scss';
+@use '@supermapgis/mapboxgl/theme-chalk/webmap.scss';
+@use '@supermapgis/mapboxgl/theme-chalk/animate-marker-layer.scss';
+</style>

@@ -104,6 +104,15 @@ export function toHex8String() {
   return nextColor.toHex8String();
 }
 
+export function removeColorOpacity(color) {
+  if (!color) {
+    return color;
+  }
+  const tColor = tinyColor(color);
+  tColor.setAlpha(1);
+  return tColor.toRgbString();
+}
+
 export function getDerivedColorsByTextColor(textColor, opacity) {
   if (!textColor) {
     return textColor;

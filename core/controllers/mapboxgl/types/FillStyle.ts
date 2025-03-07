@@ -1,3 +1,5 @@
+import type { FillLayout, FillPaint } from 'mapbox-gl';
+
 /**
  * @class FillStyle
  * @category BaseTypes Style
@@ -6,7 +8,10 @@
  * @param {mapboxgl.LayersFill} layout - MapboxGL 面图层 Layout 配置。
  */
 export default class FillStyle {
-  constructor(paint = {}, layout = {}) {
+  layout: FillLayout;
+  paint: FillPaint;
+  
+  constructor(paint: Partial<FillPaint> = {}, layout: Partial<FillLayout> = {}) {
     this.layout = {
       visibility: 'visible'
     };

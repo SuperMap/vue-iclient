@@ -1,8 +1,9 @@
+import type { DrawGetOptions } from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
 import turfLength from '@turf/length';
 import turfArea from '@turf/area';
 import { convertArea } from '@turf/helpers';
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
+import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
 import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 /**
@@ -23,9 +24,9 @@ export default class DrawViewModel extends mapboxgl.Evented {
   defaultStyle: any;
   fire: any;
   draw: any;
-  drawInitStyles: Object;
+  drawInitStyles: DrawGetOptions['styles'];
 
-  constructor(componentName: string, drawInitStyles: Object) {
+  constructor(componentName: string, drawInitStyles: DrawGetOptions['styles']) {
     super();
     this.componentName = componentName;
     this.featureIds = []; // 收集当前draw所画的点线面的id
@@ -43,10 +44,8 @@ export default class DrawViewModel extends mapboxgl.Evented {
   }
 
   _addDrawControl() {
-    // @ts-ignore
-    this.draw = drawEvent.$options.getDraw({ mapTarget: this.mapTarget, styles: this.drawInitStyles });
-    // @ts-ignore
-    drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
+    this.draw = drawEvent.getDraw({ mapTarget: this.mapTarget, styles: this.drawInitStyles });
+    drawEvent.setDrawingState(this.mapTarget, this.componentName, false);
     this.map.on('draw.create', this._drawCreate.bind(this));
     this.map.on('draw.selectionchange', this._selectionChange.bind(this));
     this.map.on('mouseover', 'draw-line-static.cold', e => {
@@ -142,8 +141,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
 
   // 开启绘制
   openDraw(mode: string) {
-    // @ts-ignore
-    drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, true);
+    drawEvent.setDrawingState(this.mapTarget, this.componentName, true);
     // 绘画线或面
     this.draw.changeMode(mode);
   }
@@ -296,7 +294,6 @@ export default class DrawViewModel extends mapboxgl.Evented {
   }
 
   _isDrawing() {
-    // @ts-ignore
-    return this.draw && drawEvent.$options.getDrawingState(this.mapTarget, this.componentName);
+    return this.draw && drawEvent.getDrawingState(this.mapTarget, this.componentName);
   }
 }

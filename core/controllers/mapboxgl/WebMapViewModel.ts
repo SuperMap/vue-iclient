@@ -90,7 +90,7 @@ export interface MapOptions {
   style?: any;
   rasterTileSize?: number;
   container?: string;
-  crs: string;
+  crs?: string;
   [key: string]: any;
 }
 
@@ -172,9 +172,7 @@ export default class WebMapViewModel extends Events {
   private _handler: MapHandler;
 
   triggerEvent: (name: string, ...rest: any) => any;
-
   on: (data: Record<string, (...rest: any) => void>) => void;
-
   un: (data: Record<string, (...rest: any) => void>) => void;
 
   constructor(

@@ -1,11 +1,33 @@
+import type { LngLat, LngLatLike, Map, Popup } from 'mapbox-gl';
+import type { Units } from '@turf/helpers';
+import type { Draw } from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
 import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
 import length from '@turf/length';
 import area from '@turf/area';
 import center from '@turf/center';
 import { convertLength, convertArea } from '@turf/helpers';
 import { reservedDecimal } from 'vue-iclient-core/utils/util';
-import { geti18n } from 'vue-iclient/src/common/_lang/index';
-import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
+import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
+
+export type { Units }
+
+export interface MeasureOptions {
+  componentName: string;
+  continueDraw: boolean;
+  geti18n: () => { t: (name: string) => string };
+}
+
+interface CacheNodeInfo {
+  value?: number | string;
+  unit?: Units;
+}
+
+interface DrawCreateEvent {
+  features: GeoJSON.Feature[];
+  lngLat: LngLat;
+}
+
+export type DrawMode = 'draw_line_string' | 'draw_polygon';
 
 /**
  * @class MeasureViewModel
@@ -14,17 +36,51 @@ import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
  * @extends mapboxgl.Evented
  */
 class MeasureViewModel extends mapboxgl.Evented {
-  constructor(options) {
+  map: Map;
+  mapTarget: string;
+  geti18n: MeasureOptions['geti18n'];
+  draw: Draw;
+  // 收集测量长度实时生成的popup，以方便后面销毁
+  lenTipNodesList: Record<string, Popup[]> = {};
+  // 收集多绘制情况下 测量面积最后生成的结果popup
+  areaTipNodesList: Record<string, Popup> = {};
+  // 缓存量算长度每个节点的值跟单位，在修改单位时使用
+  cacheLengthUnitList: Record<string, CacheNodeInfo[]> = {};
+  // 缓存量算长度每个节点的值跟单位，在修改单位时使用
+  cachePolygonUnit: CacheNodeInfo = {};
+  componentName: string;
+  continueDraw: boolean;
+  result: number;
+  activeMode: DrawMode;
+  activeUnit: Units;
+  ids: (string | number)[];
+  mode: DrawMode;
+  tipHoverDiv: Popup;
+  isEditing: boolean;
+  setPopupStyle: () => void;
+  measureNodes: number[][];
+  isOpenMoveEvent: boolean;
+  _finishDrawBind: (e: DrawCreateEvent) => void;
+  measureNodeDistanceBind: (e: DrawCreateEvent) => void;
+  popupFollowMouseBind: (e: DrawCreateEvent) => void;
+  _changeModeBind: () => void;
+  continueDrawBind: () => void;
+
+  
+  fire: ((name: 'measure-finished', data: { result: string }) => void) &
+    ((name: 'update-unit', data: { result: string; mode: DrawMode }) => void) &
+    ((name: 'measure-start', data: { result: string }) => void);
+  on: (name: string, data: (...rest: any) => void) => void;
+  off: (name: string, data?: (...rest: any) => void) => void;
+
+  constructor(options: MeasureOptions) {
     super();
-    this.lenTipNodesList = {}; // 收集测量长度实时生成的popup，以方便后面销毁
-    this.areaTipNodesList = {}; // 收集多绘制情况下 测量面积最后生成的结果popup
-    this.cacheLengthUnitList = {}; // 缓存量算长度每个节点的值跟单位，在修改单位时使用
-    this.cachePolygonUnit = {};
     this.componentName = options.componentName;
     this.continueDraw = options.continueDraw;
+    this.geti18n = options.geti18n;
   }
 
-  setMap(mapInfo) {
+  setMap(mapInfo: { map: Map; mapTarget: string }) {
     const { map, mapTarget } = mapInfo;
     this.map = map;
     this.mapTarget = mapTarget;
@@ -32,8 +88,8 @@ class MeasureViewModel extends mapboxgl.Evented {
   }
 
   _addDrawControl() {
-    this.draw = drawEvent.$options.getDraw({ mapTarget: this.mapTarget });
-    drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, false);
+    this.draw = drawEvent.getDraw({ mapTarget: this.mapTarget });
+    drawEvent.setDrawingState(this.mapTarget, this.componentName, false);
     this._finishDrawBind = this._finishDraw.bind(this);
     this._changeModeBind = this._changeMode.bind(this);
     this.map.on('draw.create', this._finishDrawBind);
@@ -41,12 +97,12 @@ class MeasureViewModel extends mapboxgl.Evented {
   }
 
   // 绘画结束后计算最后的结果
-  _finishDraw(e) {
+  _finishDraw(e: DrawCreateEvent) {
     if (this._isDrawing()) {
       this._resetEvent();
       switch (this.activeMode) {
         case 'draw_line_string':
-          let tempLength = length(e.features[0], 'kilometers');
+          let tempLength = length(e.features[0], { units: 'kilometers' });
           this.result = convertLength(tempLength, 'kilometers', this.activeUnit);
           // 将tipNodesList中key为“id”的字段替换成生成的id值
           this._updateLenPopupNodes(e.features[0].id);
@@ -56,7 +112,10 @@ class MeasureViewModel extends mapboxgl.Evented {
         case 'draw_polygon':
           let tempArea = area(e.features[0]);
           this.result = convertArea(tempArea, 'meters', this.activeUnit);
-          this._updateAreaPopupNodes(this.result, e.features[0]);
+          this._updateAreaPopupNodes(
+            this.result,
+            e.features[0] as GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>
+          );
           break;
       }
       this.ids = this.ids || [];
@@ -76,9 +135,9 @@ class MeasureViewModel extends mapboxgl.Evented {
   }
 
   // 开启绘制
-  openDraw(mode, activeUnit, setPopupStyle) {
+  openDraw(mode: DrawMode, activeUnit: Units, setPopupStyle: () => void) {
     this.setPopupStyle = setPopupStyle;
-    drawEvent.$options.setDrawingState(this.mapTarget, this.componentName, true);
+    drawEvent.setDrawingState(this.mapTarget, this.componentName, true);
     this._resetDraw();
     this._resetEvent();
     this.isEditing = true;
@@ -91,14 +150,14 @@ class MeasureViewModel extends mapboxgl.Evented {
     this.map.on('mousedown', this.measureNodeDistanceBind);
   }
 
-  updateUnit(unit) {
+  updateUnit(unit: Units) {
     if (Object.values(this.lenTipNodesList).length) {
       for (let id in this.lenTipNodesList) {
         const tipNodes = this.lenTipNodesList[id];
         if (tipNodes && tipNodes.length && ((this.continueDraw && id !== 'id') || id === 'id')) {
           for (let i = 1; i < tipNodes.length; i++) {
-            let transValue = convertLength(
-              this.cacheLengthUnitList[id][i - 1].value,
+            let transValue: number | string = convertLength(
+              +this.cacheLengthUnitList[id][i - 1].value,
               this.cacheLengthUnitList[id][i - 1].unit,
               unit
             );
@@ -106,7 +165,7 @@ class MeasureViewModel extends mapboxgl.Evented {
             this.cacheLengthUnitList[id][i - 1].value = transValue;
             this.cacheLengthUnitList[id][i - 1].unit = unit;
             if (this.activeMode === 'draw_line_string') {
-              let uniti18n = geti18n().t(`unit.${unit}`);
+              let uniti18n = this.geti18n().t(`unit.${unit}`);
               tipNodes[i] && tipNodes[i].setText(`${transValue} ${uniti18n}`);
             }
           }
@@ -114,17 +173,18 @@ class MeasureViewModel extends mapboxgl.Evented {
       }
       this.result && (this.result = convertLength(this.result, this.activeUnit, unit));
     } else if (this.cachePolygonUnit.value && this.cachePolygonUnit.unit) {
-      let transValue = convertArea(this.cachePolygonUnit.value, this.cachePolygonUnit.unit, unit);
-      let uniti18n = geti18n().t(`unit.square${unit}`);
+      let transValue = convertArea(+this.cachePolygonUnit.value, this.cachePolygonUnit.unit, unit);
+      let uniti18n = this.geti18n().t(`unit.square${unit}`);
       this.tipHoverDiv && this.tipHoverDiv.setText(`${transValue} ${uniti18n}`);
       this.result && (this.result = convertArea(this.result, this.activeUnit, unit));
     }
 
-    this.result && this.fire('update-unit', { result: this._getFormatResult(this.result), mode: this.mode });
+    this.result &&
+      this.fire('update-unit', { result: this._getFormatResult(this.result), mode: this.mode });
     this.activeUnit = unit;
   }
 
-  _resetDraw(continueDraw) {
+  _resetDraw(continueDraw?: boolean) {
     // 连续绘制情况下 根据ids只删除上一次量算的数据
     if (this.draw && this.continueDraw) {
       this.ids && this.draw.delete(this.ids);
@@ -152,7 +212,7 @@ class MeasureViewModel extends mapboxgl.Evented {
   }
 
   // 绘画每个点显示tip，同时监听鼠标move事件
-  _measureNodeDistance(e) {
+  _measureNodeDistance(e: DrawCreateEvent) {
     if (this._isDrawing()) {
       const {
         lngLat: { lng, lat }
@@ -171,14 +231,14 @@ class MeasureViewModel extends mapboxgl.Evented {
     }
   }
 
-  _popupFollowMouse(e) {
+  _popupFollowMouse(e: DrawCreateEvent) {
     if (this._isDrawing()) {
       const {
         // point,
         // originalEvent,
         lngLat: { lng, lat }
       } = e;
-      const lastPointPos = [lng, lat];
+      const lastPointPos: LngLatLike = [lng, lat];
       let popup = this.tipHoverDiv;
       // 实时显示popup只需要一个，如果没有再生成新popup
       if (!popup) {
@@ -190,16 +250,19 @@ class MeasureViewModel extends mapboxgl.Evented {
       }
       popup.setLngLat(lastPointPos);
       let measureNodeList = [].concat(this.measureNodes, [lastPointPos]);
-      let feature = {
+      let feature: GeoJSON.Feature<GeoJSON.LineString | GeoJSON.Polygon> = {
         type: 'Feature',
         geometry: {
-          type: `${this.activeMode === 'draw_line_string' ? 'LineString' : 'Polygon'}`,
+          type: `${this.activeMode === 'draw_line_string' ? 'LineString' : 'Polygon'}` as
+            | 'LineString'
+            | 'Polygon',
           coordinates: this.activeMode === 'draw_line_string' ? measureNodeList : [measureNodeList]
-        }
+        },
+        properties: {}
       };
       switch (this.activeMode) {
         case 'draw_line_string':
-          let tempLength = length(feature, 'kilometers');
+          let tempLength = length(feature, { units: 'kilometers' });
           this.result = convertLength(tempLength, 'kilometers', this.activeUnit);
           break;
         case 'draw_polygon':
@@ -209,9 +272,9 @@ class MeasureViewModel extends mapboxgl.Evented {
       }
       let uniti18n;
       if (this.activeMode === 'draw_line_string') {
-        uniti18n = geti18n().t(`unit.${this.activeUnit}`);
+        uniti18n = this.geti18n().t(`unit.${this.activeUnit}`);
       } else if (this.activeMode === 'draw_polygon') {
-        uniti18n = geti18n().t(`unit.square${this.activeUnit}`);
+        uniti18n = this.geti18n().t(`unit.square${this.activeUnit}`);
       }
       popup.setText(`${this._getFormatResult(this.result)} ${uniti18n}`);
       popup.addTo(this.map);
@@ -222,7 +285,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     }
   }
 
-  _renderPopupTip(e) {
+  _renderPopupTip(e: DrawCreateEvent) {
     const {
       // point,
       // originalEvent,
@@ -234,30 +297,34 @@ class MeasureViewModel extends mapboxgl.Evented {
       className: 'sm-component-measure__popup sm-mapboxgl-tabel-popup'
     });
     if (this.measureNodes.length > 1) {
-      let line = {
+      let line: GeoJSON.Feature = {
         type: 'Feature',
         geometry: {
           type: 'LineString',
           coordinates: this.measureNodes
-        }
+        },
+        properties: {}
       };
       // 修改单位
-      let tempLength = length(line, 'kilometers');
+      let tempLength = length(line, { units: 'kilometers' });
       let calcValue = convertLength(tempLength, 'kilometers', this.activeUnit);
 
       let uniti18n;
       if (this.activeMode === 'draw_line_string') {
-        uniti18n = geti18n().t(`unit.${this.activeUnit}`);
+        uniti18n = this.geti18n().t(`unit.${this.activeUnit}`);
       } else if (this.activeMode === 'draw_polygon') {
-        uniti18n = geti18n().t(`unit.square${this.activeUnit}`);
+        uniti18n = this.geti18n().t(`unit.square${this.activeUnit}`);
       }
       let renderText = `${this._getFormatResult(calcValue)} ${uniti18n}`;
 
       this.cacheLengthUnitList.id = this.cacheLengthUnitList.id || [];
-      this.cacheLengthUnitList.id.push({ value: this._getFormatResult(calcValue), unit: this.activeUnit });
+      this.cacheLengthUnitList.id.push({
+        value: this._getFormatResult(calcValue),
+        unit: this.activeUnit
+      });
       popup.setText(renderText);
     } else {
-      popup.setText(geti18n().t('measure.startingPoint'));
+      popup.setText(this.geti18n().t('measure.startingPoint'));
       this.cacheLengthUnitList.id = this.cacheLengthUnitList.id || [];
     }
     popup.setLngLat([lng, lat]);
@@ -268,16 +335,16 @@ class MeasureViewModel extends mapboxgl.Evented {
     this.lenTipNodesList.id.push(popup);
   }
 
-  _getFormatResult(result) {
+  _getFormatResult(result: number | string) {
     return reservedDecimal(result || this.result, 4);
   }
 
   _isDrawing() {
-    return drawEvent.$options.getDrawingState(this.mapTarget, this.componentName) && this.draw;
+    return drawEvent.getDrawingState(this.mapTarget, this.componentName) && this.draw;
     // return true;
   }
 
-  _updateLenPopupNodes(idValue) {
+  _updateLenPopupNodes(idValue: string | number) {
     this.cacheLengthUnitList[idValue] = this.cacheLengthUnitList.id || [];
     delete this.cacheLengthUnitList.id;
 
@@ -292,14 +359,19 @@ class MeasureViewModel extends mapboxgl.Evented {
     }
   }
 
-  _updateAreaPopupNodes(popupResult, feature) {
+  _updateAreaPopupNodes(
+    popupResult: number | string,
+    feature: GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon>
+  ) {
     // 如果是测量面积，直接利用实时计算生成的popup显示最后结果
     const centerResult = center(feature);
-    let uniti18n = geti18n().t(`unit.square${this.activeUnit}`);
+    let uniti18n = this.geti18n().t(`unit.square${this.activeUnit}`);
     const result = this._getFormatResult(popupResult);
     if (this.continueDraw) {
       this.tipHoverDiv &&
-        this.tipHoverDiv.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`);
+        this.tipHoverDiv
+          .setLngLat(centerResult.geometry.coordinates as LngLatLike)
+          .setText(`${result} ${uniti18n}`);
     } else {
       this._removeHoverPopup();
       const popup = new mapboxgl.Popup({
@@ -307,7 +379,10 @@ class MeasureViewModel extends mapboxgl.Evented {
         closeOnClick: false,
         className: 'sm-component-measure__popup sm-mapboxgl-tabel-popup'
       });
-      popup.setLngLat(centerResult.geometry.coordinates).setText(`${result} ${uniti18n}`).addTo(this.map);
+      popup
+        .setLngLat(centerResult.geometry.coordinates)
+        .setText(`${result} ${uniti18n}`)
+        .addTo(this.map);
       this.areaTipNodesList[feature.id] = popup;
     }
     this.setPopupStyle && setTimeout(this.setPopupStyle, 0);
@@ -346,7 +421,7 @@ class MeasureViewModel extends mapboxgl.Evented {
   }
 
   trash() {
-    const selectedIds = this.draw.getSelectedIds();
+    const selectedIds: string[] = this.draw.getSelectedIds();
     selectedIds.forEach(item => {
       const matchIndex = this.ids.findIndex(id => id === item);
       if (matchIndex > -1) {
@@ -358,7 +433,7 @@ class MeasureViewModel extends mapboxgl.Evented {
     });
   }
 
-  removeDraw(continueDraw) {
+  removeDraw(continueDraw?: boolean) {
     this.isEditing = false;
     this.draw.changeMode('simple_select');
     this.ids && this.draw.delete(this.ids);

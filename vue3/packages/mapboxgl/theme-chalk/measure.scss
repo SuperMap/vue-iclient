@@ -1,0 +1,93 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+@use '@supermapgis/common/theme-chalk/collapseCard.scss';
+@use '@supermapgis/common/theme-chalk/select.scss';
+@use '@supermapgis/common/theme-chalk/table-popup.scss';
+
+@include b(measure) {
+
+  @include e(panel) {
+    padding: 16px;
+    cursor: default;
+  }
+  @include e(panelContent) {
+    position: relative;
+    width: 100%;
+    display: flex;
+  }
+  @include e(modeWrap) {
+    text-align: left;
+    font-size: 0;
+    padding: 10px 0;
+  }
+
+  @include e(modeIcon) {
+    width: 40px;
+    height: 28px;
+    line-height: 25px;
+    text-align: center;
+    font-size: 22px;
+    &:hover {
+      color: $primary-color-hover;
+      cursor: pointer;
+    }
+    &:first-child {
+      border-radius: 4px 0px 0px 4px;
+      margin-right: 1px;
+    }
+    &:nth-child(2) {
+      border-radius: 0px 4px 4px 0px;
+      margin-right: 1px;
+    }
+    @include when(active) {
+      background: $primary-color !important;
+      color: #fff !important;
+    }
+    i {
+      cursor: pointer;
+      font-size: 14px;
+    }
+  }
+
+  @include e(unit) {
+    flex: 1;
+    position: relative;
+    margin-left: 8px;
+    &,
+    .#{$ant-prefix}-select-selection--single {
+      height: 28px;
+    }
+    .#{$ant-prefix}-select-selection__rendered {
+      line-height: 28px;
+      font-size: 12px;
+    }
+    &:not(.#{$ant-prefix}-select-customize-input) {
+        .#{$ant-prefix}-select-selector {
+            background-color: inherit;
+        }
+    }
+  }
+
+  @include e(default) {
+    display: inline-block;
+    height: 28px;
+    line-height: 28px;
+  }
+
+  @include e(calculateResult) {
+    border-top: 1px solid $border-color-split;
+    margin-top: 16px;
+  }
+
+  @include e(calcuTitle) {
+    padding: 12px 0;
+  }
+}
+.sm-component-measure__popup {
+  &.sm-mapboxgl-tabel-popup {
+    .mapboxgl-popup-content {
+      padding: 5px 16px;
+      border-radius: 4px;
+    }
+  }
+}

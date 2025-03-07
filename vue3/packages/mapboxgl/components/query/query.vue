@@ -3,7 +3,7 @@
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
-    :header-name="headerName || $t('query.query')"
+    :header-name="headerName ?? $t('query.query')"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     :background="background"

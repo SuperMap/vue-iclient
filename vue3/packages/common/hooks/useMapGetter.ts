@@ -73,8 +73,8 @@ export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions
   )
 
   return {
-    map,
-    webmap,
+    getMap: () => map,
+    getWebMap: () => webmap,
     getTargetName: () => _mapWatcher.targetName,
     setViewModel,
     mapNotLoadedTip

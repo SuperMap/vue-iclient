@@ -35,6 +35,14 @@
           }
         }
       }
+      tr:first-child {
+        > *:first-child {
+          background: inherit;
+        }
+        > *:last-child {
+          background: inherit;
+        }
+      }
       tr > th {
         color: inherit;
         background: inherit;

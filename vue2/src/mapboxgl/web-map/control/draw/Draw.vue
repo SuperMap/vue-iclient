@@ -28,7 +28,8 @@
 </template>
 
 <script lang="ts">
-import drawEvent from 'vue-iclient/src/mapboxgl/_types/draw-event';
+import type { DrawGetOptions } from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
+import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
@@ -43,8 +44,7 @@ import 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw.css';
   removed() {
     this.activeMode = null;
     const targetName = this.getTargetName();
-    // @ts-ignore
-    drawEvent.$options.deleteDrawingState(targetName, this.componentName);
+    drawEvent.deleteDrawingState(targetName, this.componentName);
   }
 })
 class Draw extends Mixins(MapGetter, Control, Theme, Card) {
@@ -65,7 +65,7 @@ class Draw extends Mixins(MapGetter, Control, Theme, Card) {
   })
   headerName: string;
 
-  @Prop() defaultLayerStyle: Object;
+  @Prop() defaultLayerStyle: DrawGetOptions['styles'];
 
   created() {
     this.componentName = uniqueId(this.$options.name);
@@ -99,7 +99,7 @@ class Draw extends Mixins(MapGetter, Control, Theme, Card) {
           return;
         }
         this.viewModel.openDraw(mode);
-        drawEvent.$emit('draw-reset', { componentName: this.$options.name });
+        drawEvent.notifyResetDraw(this.$options.name);
       }
     }, 0);
   }

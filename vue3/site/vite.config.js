@@ -43,7 +43,8 @@ export default defineConfig({
     include: [
       'vue-iclient-core/libs/iclient-common/iclient-common',
       'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance',
-      'vue-iclient-core/libs/echarts-layer/EchartsLayer'
+      'vue-iclient-core/libs/echarts-layer/EchartsLayer',
+      'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw'
     ]
   },
   build: {
@@ -51,7 +52,8 @@ export default defineConfig({
       include: [
         'vue-iclient-core/libs/iclient-common/iclient-common',
         'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance',
-        'vue-iclient-core/libs/echarts-layer/EchartsLayer'
+        'vue-iclient-core/libs/echarts-layer/EchartsLayer',
+        'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw'
       ]
     },
     rollupOptions: {

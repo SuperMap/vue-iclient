@@ -1,8 +1,18 @@
-import Vue from 'vue';
+import type { Map } from 'mapbox-gl';
+import { Events } from 'vue-iclient-core/types/event/Events';
 import MapboxDraw from 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw';
 import mapEvent from 'vue-iclient-core/types/map-event';
 import assignIn from 'lodash.assignin';
 import isEqual from 'lodash.isequal';
+
+export interface DrawGetOptions {
+    mapTarget: string;
+    create?: boolean;
+    styles?: Record<string, Record<string, any>>;
+}
+
+export type Draw = InstanceType<typeof MapboxDraw>;
+
 
 /**
  * drawList 结构为 { [mapTarget1]: [draw1], [mapTarget2]: [draw2] }
@@ -15,7 +25,7 @@ import isEqual from 'lodash.isequal';
 
 const mainColor = '#f75564';
 const haloColor = '#fff';
-export const defaultStyles = {
+export const defaultStyles: Record<string, Record<string, any>> = {
   'line-static': {
     'line-color': mainColor,
     'line-width': 3
@@ -62,11 +72,22 @@ export const defaultStyles = {
   }
 };
 
-export default new Vue({
-  mapList: {},
-  drawList: {},
-  drawStates: {},
-  _createDraw: function (mapTarget, styles = defaultStyles) {
+export class DrawEvent extends Events {
+  mapList: Record<string, Map> = {};
+  drawList: Record<string, InstanceType<typeof MapboxDraw>> = {};
+  drawStates: Record<string, Record<string, boolean>> = {};
+  eventTypes: string[];
+
+  triggerEvent: (name: string, ...rest: any) => any;
+  on: (data: Record<string, (...rest: any) => void>) => void;
+  un: (data: Record<string, (...rest: any) => void>) => void;
+
+  constructor() {
+    super();
+    this.eventTypes = ['draw-reset'];
+  }
+
+  private _createDraw(mapTarget: string, styles = defaultStyles) {
     const drawOptions = {
       displayControlsDefault: false,
       touchEnabled: false,
@@ -76,11 +97,11 @@ export default new Vue({
         simple_select: assignIn(MapboxDraw.modes.simple_select, {
           dragMove() {},
           clickOnVertex() {},
-          clickOnFeature(state, e) {
+          clickOnFeature(state: Record<string, any>, e: Record<string, any>) {
             this.stopExtendedInteractions(state);
 
             const isShiftClick = e.originalEvent && e.originalEvent.shiftKey;
-            const selectedFeatureIds = this.getSelectedIds();
+            const selectedFeatureIds: string[] = this.getSelectedIds();
             const featureId = e.featureTarget.properties.id;
             const isFeatureSelected = this.isSelected(featureId);
 
@@ -107,9 +128,7 @@ export default new Vue({
           filter: [
             'any',
             ['==', 'active', 'false'],
-            ['all', ['==', 'active', 'true'],
-              ['==', 'mode', 'simple_select']
-            ]
+            ['all', ['==', 'active', 'true'], ['==', 'mode', 'simple_select']]
           ],
           layout: {
             'line-cap': 'round',
@@ -123,9 +142,7 @@ export default new Vue({
         {
           id: 'draw-line-hover',
           type: 'line',
-          filter: ['all', ['==', '$type', 'LineString'],
-            ['==', 'id', '']
-          ],
+          filter: ['all', ['==', '$type', 'LineString'], ['==', 'id', '']],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
@@ -138,9 +155,7 @@ export default new Vue({
         {
           id: 'draw-line-drawing',
           type: 'line',
-          filter: ['all', ['==', 'active', 'true'],
-            ['!=', 'mode', 'simple_select']
-          ],
+          filter: ['all', ['==', 'active', 'true'], ['!=', 'mode', 'simple_select']],
           layout: {
             'line-cap': 'round',
             'line-join': 'round'
@@ -167,7 +182,9 @@ export default new Vue({
         {
           id: 'draw-polygon-active',
           type: 'fill',
-          filter: ['all', ['==', '$type', 'Polygon'],
+          filter: [
+            'all',
+            ['==', '$type', 'Polygon'],
             ['==', 'active', 'true'],
             ['!=', 'mode', 'simple_select']
           ],
@@ -179,13 +196,13 @@ export default new Vue({
         {
           id: 'draw-polygon-static',
           type: 'fill',
-          filter: ['all', ['==', '$type', 'Polygon'],
+          filter: [
+            'all',
+            ['==', '$type', 'Polygon'],
             [
               'any',
               ['==', 'active', 'false'],
-              ['all', ['==', 'active', 'true'],
-                ['==', 'mode', 'simple_select']
-              ]
+              ['all', ['==', 'active', 'true'], ['==', 'mode', 'simple_select']]
             ]
           ],
           paint: {
@@ -197,9 +214,7 @@ export default new Vue({
         {
           id: 'draw-vertex-halo-active',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'],
-            ['==', 'meta', 'vertex']
-          ],
+          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex']],
           paint: {
             ...defaultStyles['vertex-halo-static'],
             ...styles['vertex-halo-static']
@@ -209,9 +224,7 @@ export default new Vue({
         {
           id: 'draw-vertex-active',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'],
-            ['==', 'meta', 'vertex']
-          ],
+          filter: ['all', ['==', '$type', 'Point'], ['==', 'meta', 'vertex']],
           paint: {
             ...defaultStyles['vertex-static'],
             ...styles['vertex-static']
@@ -221,7 +234,9 @@ export default new Vue({
         {
           id: 'draw-point-static',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'],
+          filter: [
+            'all',
+            ['==', '$type', 'Point'],
             ['==', 'meta', 'feature'],
             ['==', 'active', 'false']
           ],
@@ -234,7 +249,9 @@ export default new Vue({
         {
           id: 'draw-point-halo-static-active',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'],
+          filter: [
+            'all',
+            ['==', '$type', 'Point'],
             ['==', 'meta', 'feature'],
             ['==', 'active', 'true']
           ],
@@ -246,7 +263,9 @@ export default new Vue({
         {
           id: 'draw-point-static-active',
           type: 'circle',
-          filter: ['all', ['==', '$type', 'Point'],
+          filter: [
+            'all',
+            ['==', '$type', 'Point'],
             ['==', 'meta', 'feature'],
             ['==', 'active', 'true']
           ],
@@ -260,14 +279,11 @@ export default new Vue({
     const draw = new MapboxDraw(drawOptions);
     this.drawList[mapTarget] = draw;
     return draw;
-  },
-  getDraw: function ({
-    mapTarget,
-    create = true,
-    styles = defaultStyles
-  }) {
+  }
+
+  getDraw({ mapTarget, create = true, styles = defaultStyles }: DrawGetOptions) {
     let draw = this.drawList[mapTarget];
-    const map = mapEvent.getMap(mapTarget);
+    const map = mapEvent.getMap(mapTarget) as Map;
     const prevMap = this.mapList[mapTarget];
     const isSame = isEqual(map, prevMap);
     if (map && !isSame && create) {
@@ -276,11 +292,13 @@ export default new Vue({
       this.mapList[mapTarget] = map;
     }
     return draw;
-  },
-  getDrawingState: function (mapTarget, componentName) {
+  }
+
+  getDrawingState(mapTarget: string, componentName: string) {
     return this.drawStates[mapTarget] && this.drawStates[mapTarget][componentName];
-  },
-  setDrawingState: function (mapTarget, componentName, drawing) {
+  }
+
+  setDrawingState(mapTarget: string, componentName: string, drawing: boolean) {
     this.drawStates[mapTarget] = this.drawStates[mapTarget] || {};
     if (drawing) {
       for (let key in this.drawStates[mapTarget]) {
@@ -288,8 +306,9 @@ export default new Vue({
       }
     }
     this.drawStates[mapTarget][componentName] = drawing;
-  },
-  deleteDrawingState: function (mapTarget, componentName) {
+  }
+
+  deleteDrawingState(mapTarget: string, componentName: string) {
     const mapDrawStates = this.drawStates[mapTarget];
     if (mapDrawStates) {
       if (componentName in mapDrawStates) {
@@ -301,8 +320,9 @@ export default new Vue({
         this.deleteDrawOfMap(mapTarget);
       }
     }
-  },
-  deleteDrawOfMap: function (mapTarget) {
+  }
+
+  deleteDrawOfMap(mapTarget: string) {
     const draw = this.getDraw({
       mapTarget,
       create: false
@@ -315,4 +335,10 @@ export default new Vue({
       delete this.drawStates[mapTarget];
     }
   }
-});
+
+  notifyResetDraw(componentName: string) {
+    this.triggerEvent('draw-reset', { componentName });
+  }
+}
+
+export default new DrawEvent();

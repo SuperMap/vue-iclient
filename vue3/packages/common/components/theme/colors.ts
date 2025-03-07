@@ -49,6 +49,7 @@ export const themeTokenMapping: ThemeMapping = {
     // gis
     gisControlBg: '#414141',
     gisControlBgSecondary: toHex8String('#000', 0.08),
+    gisControlBgTertiary: '#4a4a4a',
     gisControlHeaderBg: '#4a4a4a',
     gisControlHeaderBorder: '#4a4a4a',
     gisControlItemBgHover: toHex8String('#fff', 0.08),
@@ -91,6 +92,7 @@ export const themeTokenMapping: ThemeMapping = {
     // gis
     gisControlBg: '#fff',
     gisControlBgSecondary: toHex8String('#000', 0.04),
+    gisControlBgTertiary: toHex8String('#000', 0.04),
     gisControlHeaderBg: '#fff',
     gisControlHeaderBorder: toHex8String('#000', 0.15),
     gisControlItemBgHover: toHex8String('#000', 0.08),

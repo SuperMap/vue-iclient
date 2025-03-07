@@ -3,7 +3,7 @@
     v-show="isShow"
     :icon-class="iconClass"
     :icon-position="position"
-    :header-name="headerName || t('layerList.title')"
+    :header-name="headerName ?? t('layerList.title')"
     :auto-rotate="autoRotate"
     :collapsed="collapsed"
     :split-line="splitLine"
