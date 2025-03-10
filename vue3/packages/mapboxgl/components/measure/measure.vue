@@ -27,26 +27,25 @@
         >
           <i :class="group.iconClass"></i>
         </span>
-        <template v-if="showResultUnitsSelector">
-          <sm-select
-            v-model:value="unitSelected"
-            :placeholder="t('measure.selectPlaceholder')"
-            class="sm-component-measure__unit"
-            :style="[textColorStyle, unitSelectorDropdownStyle]"
-            :dropdownStyle="unitSelectorDropdownStyle"
-            :get-popup-container="getPopupContainer"
-            @change="updateUnit"
+        <sm-select
+          v-show="showResultUnitsSelector"
+          v-model:value="unitSelected"
+          :placeholder="t('measure.selectPlaceholder')"
+          class="sm-component-measure__unit"
+          :style="[textColorStyle, unitSelectorDropdownStyle]"
+          :dropdownStyle="unitSelectorDropdownStyle"
+          :get-popup-container="getPopupContainer"
+          @change="updateUnit"
+        >
+          <sm-select-option
+            v-for="(value, key) in unitSelectorOptions"
+            :key="key"
+            :title="value"
+            :value="key"
           >
-            <sm-select-option
-              v-for="(value, key) in unitSelectorOptions"
-              :key="key"
-              :title="value"
-              :value="key"
-            >
-              {{ value }}
-            </sm-select-option>
-          </sm-select>
-        </template>
+            {{ value }}
+          </sm-select-option>
+        </sm-select>
         <div
           v-show="!showUnitSelect && activeMode"
           class="sm-component-measure__unit sm-component-measure__default"

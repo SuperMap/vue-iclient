@@ -1,6 +1,6 @@
 import type { SelectProps } from 'ant-design-vue'
 import { defineComponent } from 'vue'
-import { Select, SelectOption, SelectOptGroup } from 'ant-design-vue'
+import { Select } from 'ant-design-vue'
 import { createWrappedComponent } from '@supermapgis/common/components/theme/antd-wrapper'
 
 interface SelectOptionProps {
@@ -17,15 +17,15 @@ interface SelectOptGroupProps {
   [prop: string]: any;
 }
 
-const SmSelect = createWrappedComponent<SelectProps>(Select)
+const SmSelect = createWrappedComponent<SelectProps>(Select, 'select')
 
 export const SmSelectOption = defineComponent<SelectOptionProps>({
-  ...SelectOption,
+  ...SmSelect.Option,
   name: 'SmSelectOption'
 })
 
 export const SmSelectOptGroup = defineComponent<SelectOptGroupProps>({
-  ...SelectOptGroup,
+  ...SmSelect.OptGroup,
   name: 'SmSelectOptGroup'
 })
 
