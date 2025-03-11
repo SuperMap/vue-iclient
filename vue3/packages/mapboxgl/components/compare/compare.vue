@@ -1,12 +1,17 @@
 <template>
   <div class="sm-component-compare" :id="target">
-    <SmWebMap v-bind="beforeMapOptions" @load="setBeforeMap"></SmWebMap>
-    <SmWebMap v-bind="afterMapOptions" @load="setAfterMap"></SmWebMap>
+    <template v-if="isRenderWebMap">
+      <SmWebMap v-bind="beforeMapOptions" @load="setBeforeMap"></SmWebMap>
+      <SmWebMap v-bind="afterMapOptions" @load="setAfterMap"></SmWebMap>
+    </template>
+    <template v-else-if="slots.beforeMap && slots.afterMap">
+      <SlotRender />
+    </template>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { watch, onMounted, onBeforeUnmount, computed } from 'vue'
+import { withCtx, useSlots, watch, onMounted, onBeforeUnmount, computed } from 'vue'
 import CompareViewModel from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel'
 import { useTheme } from '@supermapgis/common/components/theme/theme'
 import { debounce } from 'lodash-es'
@@ -19,14 +24,14 @@ import type {
   compareOptions
 } from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel'
 
-interface swipeStyle {
+interface SwipeStyle {
   backgroundColor?: string
   color?: string
   width?: string
   height?: string
   borderWidth?: string
 }
-
+const slots = useSlots()
 // 定义 props
 const props = withDefaults(defineProps<CompareProps>(), ComparePropsDefault)
 const { textColorStyle } = useTheme(props)
@@ -37,13 +42,18 @@ let afterMapInstance: mapType
 let resizeHandler
 
 // 定义计算属性
+const isRenderWebMap = computed(() => {
+  return (
+    Object.keys(props.beforeMapOptions).length > 0 && Object.keys(props.afterMapOptions).length > 0
+  )
+})
 const additionalOptions = computed(() => ({
   orientation: props.orientation,
   mousemove: props.mousemove
 }))
 
 const compareSwipeLineStyle = computed(() => {
-  const style: swipeStyle = {
+  const style: SwipeStyle = {
     backgroundColor: textColorStyle.value.color // 这里需要根据实际情况处理 textColor
   }
   let sizeFieldName = 'width'
@@ -63,8 +73,8 @@ const compareSwipeSlideStyle = computed(() => ({
 }))
 
 // 定义方法
-const diffStyle = (nextStyle: swipeStyle, prevStyle: swipeStyle): swipeStyle => {
-  let diff: swipeStyle = {}
+const diffStyle = (nextStyle: SwipeStyle, prevStyle: SwipeStyle): SwipeStyle => {
+  let diff: SwipeStyle = {}
   for (let key in nextStyle) {
     if (nextStyle[key] !== prevStyle[key]) {
       diff[key] = nextStyle[key]
@@ -73,8 +83,8 @@ const diffStyle = (nextStyle: swipeStyle, prevStyle: swipeStyle): swipeStyle => 
   return diff
 }
 
-const setSwipeStyle = (style: swipeStyle = compareSwipeSlideStyle.value) => {
-  const swipeDom = document.querySelector<HTMLElement>(`.mapboxgl-compare > div`)
+const setSwipeStyle = (style: SwipeStyle = compareSwipeSlideStyle.value) => {
+  const swipeDom = document.querySelector<HTMLElement>(`#${props.target} > .mapboxgl-compare > div`)
   if (swipeDom) {
     for (let key in style) {
       const value = style[key]
@@ -83,8 +93,8 @@ const setSwipeStyle = (style: swipeStyle = compareSwipeSlideStyle.value) => {
   }
 }
 
-const setSwipeLineStyle = (style: swipeStyle = compareSwipeSlideStyle.value) => {
-  const swipeLineDom = document.querySelector<HTMLElement>(`.mapboxgl-compare`)
+const setSwipeLineStyle = (style: SwipeStyle = compareSwipeSlideStyle.value) => {
+  const swipeLineDom = document.querySelector<HTMLElement>(`#${props.target} > .mapboxgl-compare`)
   if (swipeLineDom) {
     for (let key in style) {
       const value = style[key]
@@ -144,10 +154,6 @@ const setAfterMap = (params: { map: mapType }) => {
   handleOptionsChange()
 }
 
-// const refreshRect = () => {
-//   viewModel?.refreshRect()
-// }
-
 // 监听属性变化
 watch(additionalOptions, () => {
   handleOptionsChange()
@@ -180,4 +186,27 @@ onBeforeUnmount(() => {
     removeListener(document.getElementById(props.target), resizeHandler)
   }
 })
+
+const SlotRender = () => [
+  withCtx(() => {
+    const beforeMapVNode = slots.beforeMap?.()
+    if (beforeMapVNode && beforeMapVNode[0]) {
+      beforeMapVNode[0].props = {
+        ...beforeMapVNode[0].props,
+        onLoad: setBeforeMap
+      }
+    }
+    return beforeMapVNode
+  })(),
+  withCtx(() => {
+    const afterMapVNode = slots.afterMap?.()
+    if (afterMapVNode && afterMapVNode[0]) {
+      afterMapVNode[0].props = {
+        ...afterMapVNode[0].props,
+        onLoad: setAfterMap
+      }
+    }
+    return afterMapVNode
+  })()
+]
 </script>

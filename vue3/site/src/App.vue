@@ -80,7 +80,6 @@ header {
 
 main {
   width: 100%;
-  height: 900px;
 }
 .changeTheme {
   margin-bottom: 20px;
