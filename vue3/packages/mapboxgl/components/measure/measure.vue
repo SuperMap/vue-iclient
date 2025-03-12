@@ -77,7 +77,6 @@ import MeasureViewModel from 'vue-iclient-core/controllers/mapboxgl/MeasureViewM
 import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent'
 import { uniqueId } from 'lodash-es'
 import { setPopupArrowStyle, removeColorOpacity } from 'vue-iclient-core/utils/util'
-import 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw.css'
 import { message as Message } from 'ant-design-vue'
 import { measurePropsDefault } from './types'
 

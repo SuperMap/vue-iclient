@@ -24,7 +24,8 @@
     "prepare": "husky install",
     "dev:vue3": "pnpm --dir ./vue3 dev",
     "typecheck:vue3": "pnpm --dir ./vue3 typecheck:web",
-    "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl"
+    "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl",
+    "publish-mapboxgl:vue3": "pnpm publish ./vue3/dist/vue-iclient-mapboxgl --registry http://localhost:4873 --no-git-checks"
   },
   "browserslist": [
     "> 1%",

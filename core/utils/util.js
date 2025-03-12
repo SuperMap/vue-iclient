@@ -5,9 +5,6 @@ import omit from 'omit.js';
 import tinyColor from 'tinycolor2';
 import { min, max as statisticsMax, mean, sum, mode, median, variance, standardDeviation } from 'simple-statistics';
 
-export function getDateTime(timeType) {
-  return new Date();
-}
 // hex -> rgba
 export function hexToRgba(hex, opacity) {
   return (
