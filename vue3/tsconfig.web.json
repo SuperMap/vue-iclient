@@ -12,11 +12,13 @@
   },
   "include": [
     "packages",
+    "../core",
     "typings/**/*.d.ts",
     "env.d.ts"
   ],
   "exclude": [
     "node_modules",
+    "../core/libs/**",
     "**/dist",
     "**/__tests__/**/*",
     "**/gulpfile.ts",
