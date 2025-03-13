@@ -12,7 +12,6 @@
   },
   "include": [
     "packages",
-    "../core",
     "typings/**/*.d.ts",
     "env.d.ts"
   ],

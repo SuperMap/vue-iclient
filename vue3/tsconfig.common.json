@@ -12,12 +12,10 @@
   },
   "include": [
     "packages/common",
-    "../core",
     "typings/env.d.ts",
   ],
   "exclude": [
     "node_modules",
-    "../core/libs/**",
     "**/dist",
     "**/__tests__/**/*",
     "**/gulpfile.ts",

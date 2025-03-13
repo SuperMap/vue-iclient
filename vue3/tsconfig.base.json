@@ -23,12 +23,17 @@
     "paths": {
       "*": [
         "node_modules/*",
-        ".pnpm/*"
+        ".pnpm/*",
+      ],
+      "@supermapgis/": [
+        "packages/"
+      ],
+      "vue-iclient-core/": [
+        "../core/"
       ]
     },
     "types": [
       "mapbox-gl",
-      "vite/client",
       "vue",
       "@vue/runtime-dom",
       "geojson"

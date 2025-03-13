@@ -3,6 +3,8 @@ import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/c
 import type { LayerProps, LayerEvents } from '@supermapgis/mapboxgl/utils'
 import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
 import { layerProps } from '@supermapgis/mapboxgl/utils'
+import type { MapEventHandler } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents';
+export type { MapEventHandler };
 
 export const animateMarkerLayerProps = () => ({
   features: {

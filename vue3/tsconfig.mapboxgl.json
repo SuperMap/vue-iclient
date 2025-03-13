@@ -17,7 +17,6 @@
     },
     "types": [
       "mapbox-gl",
-      "vite/client",
       "vue"
     ]
   },
