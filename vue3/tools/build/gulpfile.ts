@@ -4,20 +4,19 @@ import { copy, remove } from 'fs-extra'
 import { parallel, series } from 'gulp'
 import {
   buildOutput,
-  setPkgName,
   getEpOutput,
-  getEpPackage,
+  getPackage,
   projRoot,
-  getPkgByCommand
+  getPkgByCommand,
+  getPKG_NAME
 } from '@supermapgis/build-utils'
 import { buildConfig, run, runTask, withTaskName } from './src'
 import type { TaskFunction } from 'gulp'
 import type { Module } from './src'
 
 const pkgName = getPkgByCommand(process.argv)
-setPkgName(pkgName)
 const epOutput = getEpOutput(pkgName)
-const epPackage = getEpPackage(pkgName)
+const epPackage = getPackage(pkgName)
 export const copyFiles = () =>
   Promise.all([
     copyFile(epPackage, path.join(epOutput, 'package.json')),
@@ -30,7 +29,7 @@ export const copyFiles = () =>
   ])
 
 export const copyTypesDefinitions: TaskFunction = done => {
-  const src = path.resolve(buildOutput, 'types', 'packages', `all-${pkgName}`)
+  const src = path.resolve(buildOutput, 'types', 'packages', `copy-${getPKG_NAME(pkgName)}`)
   const copyTypes = (module: Module) =>
     withTaskName(`copyTypes:${module}`, () =>
       copy(src, buildConfig[module].output.path, { recursive: true })
@@ -56,11 +55,11 @@ export default series(
   parallel(
     runTask(`buildModules`, pkgName),
     runTask('buildFullBundle', pkgName),
-    runTask('generateTypesDefinitions', pkgName),
+    // runTask('generateTypesDefinitions', pkgName),
     series(runTask('buildThemeChalk', pkgName), copyFullStyle, removeCommonIndexThemeChalk)
   ),
 
-  parallel(copyTypesDefinitions, copyFiles)
+  parallel(copyFiles)
 )
 
 export * from './src'

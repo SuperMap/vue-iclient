@@ -3,7 +3,6 @@ import glob from 'fast-glob'
 import path from 'path'
 import { projRoot, getPkgRoot, getPkgByCommand } from '@supermapgis/build-utils'
 import { series } from 'gulp'
-import { withTaskName } from '../utils'
 import type { TaskFunction } from 'gulp'
 import type { Pkg } from '@supermapgis/build-utils'
 

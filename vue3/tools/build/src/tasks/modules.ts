@@ -76,6 +76,7 @@ async function buildModulesComponents(root = pkgRoot) {
       onlyFiles: true
     })
   )
+  console.log(input)
   const bundle = await rollup({
     input,
     plugins,
@@ -198,18 +199,18 @@ async function buildStyles() {
 }
 
 async function removeMoreModules() {
-  await remove(path.join(epOutput, 'lib', `vue-iclient-${pkgName}`))
-  await remove(path.join(epOutput, 'es', `vue-iclient-${pkgName}`))
+  // await remove(path.join(epOutput, 'lib', `vue-iclient-${pkgName}`))
+  // await remove(path.join(epOutput, 'es', `vue-iclient-${pkgName}`))
   await remove(path.join(epOutput, 'lib', 'vue3'))
   await remove(path.join(epOutput, 'es', 'vue3'))
-  await remove(path.join(epOutput, 'lib', 'mapboxgl'))
-  await remove(path.join(epOutput, 'es', 'mapboxgl'))
-  await remove(path.join(epOutput, 'lib', 'common'))
-  await remove(path.join(epOutput, 'es', 'common'))
+  // await remove(path.join(epOutput, 'lib', 'mapboxgl'))
+  // await remove(path.join(epOutput, 'es', 'mapboxgl'))
+  // await remove(path.join(epOutput, 'lib', 'common'))
+  // await remove(path.join(epOutput, 'es', 'common'))
 }
 export const buildModules: TaskFunction = parallel(
   series(
-    withTaskName('buildModulesComponents', () => buildModulesComponents(getEpRoot(pkgName))),
+    // withTaskName('buildModulesComponents', () => buildModulesComponents(getEpRoot(pkgName))),
     withTaskName('buildPkgModules', () => buildModulesComponents(pkgRoot)),
     withTaskName('buildCommonModules', () => buildModulesComponents(pkgCommonRoot)),
     removeMoreModules,

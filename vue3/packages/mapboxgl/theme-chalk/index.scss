@@ -1,10 +1,14 @@
 @use '@supermapgis/common/theme-chalk/index.common.scss' ;
 @use './base.scss';
 // component styles
-@use './webmap.scss';
+@use './animate-marker-layer.scss';
 @use './attributes.scss';
+@use './compare.scss';
+@use './graph-map.scss';
+@use './identify.scss';
 @use './layer-list.scss';
+@use './measure.scss';
+@use './map-popup.scss';
 @use './query.scss';
 @use './search.scss';
-@use './identify.scss';
-@use './animate-marker-layer.scss';
+@use './webmap.scss';

@@ -10,7 +10,7 @@ import { series } from 'gulp'
 import {
   getPKG_BRAND_NAME,
   getEpOutput,
-  getEpRoot,
+  getPkgRoot,
   getPkgByCommand,
   getLocaleRoot
 } from '@supermapgis/build-utils'
@@ -25,7 +25,7 @@ import type { Plugin } from 'rollup'
 async function buildFullEntry(minify: boolean, banner: string) {
   const pkgName = getPkgByCommand(process.argv)
   const epOutput = getEpOutput(pkgName)
-  const epRoot = getEpRoot(pkgName)
+  const epRoot = getPkgRoot(pkgName)
   const PKG_BRAND_NAME = getPKG_BRAND_NAME(pkgName)
   const PKG_CAMELCASE_NAME = PKG_BRAND_NAME.replace(/\s/g, '')
 

@@ -1,9 +1,9 @@
-import { getEpPackage, getPackageDependencies, getPkgByCommand } from '@supermapgis/build-utils'
+import { getPackage, getPackageDependencies, getPkgByCommand } from '@supermapgis/build-utils'
 
 import type { OutputOptions, RollupBuild } from 'rollup'
 
 const pkgName = getPkgByCommand(process.argv)
-const epPackage = getEpPackage(pkgName)
+const epPackage = getPackage(pkgName)
 export const generateExternal = async (options: { full: boolean }, path = epPackage) => {
   const { dependencies, peerDependencies } = getPackageDependencies(path)
   return (id: string) => {

@@ -22,6 +22,7 @@
     "lint:vue2": "npm run lint --prefix vue2",
     "lint:fix:vue2": "npm run lint:fix --prefix vue2",
     "prepare": "husky install",
+    "test:vue3": "pnpm --dir ./vue3 test:unit",
     "dev:vue3": "pnpm --dir ./vue3 dev",
     "typecheck:vue3": "pnpm --dir ./vue3 typecheck:web",
     "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl",

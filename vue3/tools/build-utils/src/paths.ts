@@ -5,13 +5,6 @@ type Pkg = 'mapboxgl' | 'leaflet'
 let pkgName: Pkg = 'leaflet'
 
 export type { Pkg }
-const setPkgName = (val: Pkg) => {
-  pkgName = val
-}
-const getPkgName = () => {
-  return pkgName
-}
-export { setPkgName, getPkgName }
 export const rootDir = resolve(__dirname, '..', '..', '..', '..')
 export const coreRoot = resolve(rootDir, 'core')
 
@@ -31,6 +24,7 @@ export const buildOutput = resolve(projRoot, 'dist')
 export const getEpOutput = (pkg: Pkg) => resolve(buildOutput, `vue-iclient-${pkg}`)
 
 export const projPackage = resolve(projRoot, 'package.json')
+export const getPackage = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'package.json')
 export const getCompPackage = (pkg: Pkg) => resolve(getCompRoot(pkg), 'package.json')
 export const getThemePackage = (pkg: Pkg) => resolve(getThemeRoot(pkg), 'package.json')
 export const getEpPackage = (pkg: Pkg) => resolve(getEpRoot(pkg), 'package.json')
