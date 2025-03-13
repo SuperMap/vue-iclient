@@ -7,26 +7,32 @@ const relativePath = path => {
 }
 
 export default defineConfig({
+  define: {
+    global: 'window'
+  },
   plugins: [vue()],
   resolve: {
     alias: {
-      '@supermapgis/mapboxgl/utils': fileURLToPath(
-        new URL('./packages/mapboxgl/utils', import.meta.url)
-      ),
+      '@supermapgis/mapboxgl': fileURLToPath(new URL('./packages/mapboxgl', import.meta.url)),
+      '@supermapgis/common': fileURLToPath(new URL('./packages/common', import.meta.url)),
       'vue-iclient-core': fileURLToPath(new URL('../core', import.meta.url))
     }
   },
   optimizeDeps: {
     include: [
       'vue-iclient-core/libs/iclient-common/iclient-common',
-      'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance'
+      'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance',
+      'vue-iclient-core/libs/echarts-layer/EchartsLayer',
+      'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw'
     ]
   },
   build: {
     commonjsOptions: {
       include: [
         'vue-iclient-core/libs/iclient-common/iclient-common',
-        'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance'
+        'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance',
+        'vue-iclient-core/libs/echarts-layer/EchartsLayer',
+        'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw'
       ]
     }
   },
