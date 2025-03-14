@@ -1,5 +1,5 @@
 {
-  "name": "@supermapgis/vue-iclient-mapboxgl",
+  "name": "@supermapgis/vue3-iclient-mapboxgl",
   "description": "SuperMap iClient for Vue.js",
   "version": "12.0.3",
   "homepage": "http://iclient.supermap.io",
