@@ -26,7 +26,7 @@
     "dev:vue3": "pnpm --dir ./vue3 dev",
     "typecheck:vue3": "pnpm --dir ./vue3 typecheck:web",
     "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl",
-    "publish-mapboxgl:vue3": "pnpm publish ./vue3/dist/vue-iclient-mapboxgl --no-git-checks"
+    "publish-mapboxgl:vue3": "pnpm publish ./vue3/dist/vue3-iclient-mapboxgl"
   },
   "browserslist": [
     "> 1%",
@@ -56,7 +56,8 @@
   "devDependencies": {
     "husky": "^8.0.0",
     "lint-staged": "^15.4.3",
-    "vue-iclient-core": "workspace:*"
+    "vue-iclient-core": "workspace:*",
+    "vue-iclient-static": "workspace:*"
   },
   "lint-staged": {
     "vue3/**/*.{vue,ts,tsx}": "pnpm typecheck:vue3",
