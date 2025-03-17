@@ -29,7 +29,7 @@ export const copyFiles = () =>
   ])
 
 export const copyTypesDefinitions: TaskFunction = done => {
-  const src = path.resolve(buildOutput, 'types', 'packages', `copy-${getPKG_NAME(pkgName)}`)
+  const src = path.resolve(buildOutput, 'types', 'packages', `${getPKG_NAME(pkgName)}`)
   const copyTypes = (module: Module) =>
     withTaskName(`copyTypes:${module}`, () =>
       copy(src, buildConfig[module].output.path, { recursive: true })

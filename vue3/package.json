@@ -22,8 +22,7 @@
     "typecheck": "run-p typecheck:web typecheck:node",
     "typecheck:web": "vue-tsc -p tsconfig.web.json --composite false --noEmit",
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
-    "postinstall": "pnpm stub",
-    "publish-mapboxgl": "pnpm publish --registry http://localhost:4873 --no-git-checks"
+    "postinstall": "pnpm stub"
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
@@ -64,6 +63,7 @@
     "vue-count-to": "^1.0.13"
   },
   "devDependencies": {
+    "@chialab/esbuild-plugin-commonjs": "^0.18.0",
     "@pnpm/find-workspace-packages": "^4.0.16",
     "@supermapgis/build": "workspace:*",
     "@supermapgis/build-utils": "workspace:*",
@@ -87,6 +87,7 @@
     "@vue/test-utils": "^2.4.6",
     "@vue/tsconfig": "^0.1.3",
     "csstype": "3.1.3",
+    "esbuild-plugins-node-modules-polyfill": "^1.7.0",
     "eslint": "^9.14.0",
     "eslint-plugin-vue": "^9.30.0",
     "jsdom": "^25.0.1",
