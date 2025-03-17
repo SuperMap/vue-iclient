@@ -17,6 +17,12 @@ export const getPackageManifest = (pkgPath: string) => {
   return require(pkgPath) as ProjectManifest
 }
 
+export const getPackageName = (pkgPath: string): string => {
+  const manifest = getPackageManifest(pkgPath)
+  const { name } = manifest
+  return name
+}
+
 export const getPackageDependencies = (
   pkgPath: string
 ): Record<'dependencies' | 'peerDependencies', string[]> => {

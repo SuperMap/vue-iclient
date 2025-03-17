@@ -101,7 +101,7 @@ function buildTheme(filePath: string, distFolder: string) {
 // }
 
 /**
- * copy from packages/mapboxgl/theme-chalk/dist to dist/vue-iclient-mapboxgl/theme-chalk
+ * copy from packages/mapboxgl/theme-chalk/dist to dist/vue3-iclient-mapboxgl/theme-chalk
  */
 export function copyThemeChalkBundle(distFolder: string, distBundle: string) {
   return src(`${distFolder}/**`).pipe(dest(distBundle))

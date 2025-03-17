@@ -1,8 +1,7 @@
 import { resolve } from 'path'
+import { getPKG_NAME } from './repo'
 
 type Pkg = 'mapboxgl' | 'leaflet'
-
-let pkgName: Pkg = 'leaflet'
 
 export type { Pkg }
 export const rootDir = resolve(__dirname, '..', '..', '..', '..')
@@ -14,17 +13,15 @@ export const getLocaleRoot = (pkg: Pkg | 'common') => resolve(getPkgRoot(pkg), '
 export const getCompRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'components')
 export const getUtilsRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'utils')
 export const getThemeRoot = (pkg: Pkg | 'common') => resolve(getPkgRoot(pkg), 'theme-chalk')
-export const getEpRoot = (pkg: Pkg) => resolve(getPkgRoot(pkg), `vue-iclient-${pkg}`)
 
 export const buildRoot = resolve(projRoot, 'tools', 'build')
 
 /** `/dist` */
 export const buildOutput = resolve(projRoot, 'dist')
-/** `/dist/vue-iclient-mapboxgl` */
-export const getEpOutput = (pkg: Pkg) => resolve(buildOutput, `vue-iclient-${pkg}`)
+/** `/dist/vue3-iclient-mapboxgl` */
+export const getEpOutput = (pkg: Pkg) => resolve(buildOutput, getPKG_NAME(pkg))
 
 export const projPackage = resolve(projRoot, 'package.json')
 export const getPackage = (pkg: Pkg) => resolve(getPkgRoot(pkg), 'package.json')
 export const getCompPackage = (pkg: Pkg) => resolve(getCompRoot(pkg), 'package.json')
 export const getThemePackage = (pkg: Pkg) => resolve(getThemeRoot(pkg), 'package.json')
-export const getEpPackage = (pkg: Pkg) => resolve(getEpRoot(pkg), 'package.json')

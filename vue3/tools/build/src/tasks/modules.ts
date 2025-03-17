@@ -14,8 +14,7 @@ import {
   getPkgRoot,
   getPkgByCommand,
   coreRoot,
-  getEpOutput,
-  getEpRoot
+  getEpOutput
 } from '@supermapgis/build-utils'
 import { generateExternal, withTaskName, writeBundles } from '../utils'
 import { Alias, copyCoreLibs } from '../plugins/alias'
@@ -199,18 +198,13 @@ async function buildStyles() {
 }
 
 async function removeMoreModules() {
-  // await remove(path.join(epOutput, 'lib', `vue-iclient-${pkgName}`))
-  // await remove(path.join(epOutput, 'es', `vue-iclient-${pkgName}`))
+  // await remove(path.join(epOutput, 'lib', getPKG_NAME(pkgName)))
+  // await remove(path.join(epOutput, 'es', getPKG_NAME(pkgName)))
   await remove(path.join(epOutput, 'lib', 'vue3'))
   await remove(path.join(epOutput, 'es', 'vue3'))
-  // await remove(path.join(epOutput, 'lib', 'mapboxgl'))
-  // await remove(path.join(epOutput, 'es', 'mapboxgl'))
-  // await remove(path.join(epOutput, 'lib', 'common'))
-  // await remove(path.join(epOutput, 'es', 'common'))
 }
 export const buildModules: TaskFunction = parallel(
   series(
-    // withTaskName('buildModulesComponents', () => buildModulesComponents(getEpRoot(pkgName))),
     withTaskName('buildPkgModules', () => buildModulesComponents(pkgRoot)),
     withTaskName('buildCommonModules', () => buildModulesComponents(pkgCommonRoot)),
     removeMoreModules,
