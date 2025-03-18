@@ -10,6 +10,7 @@
     "dist",
     "lib",
     "es",
+    "static",
     "global.d.ts",
     "theme-chalk"
   ],
