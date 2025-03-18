@@ -12,8 +12,9 @@ export const setTheme = (options: SetThemeOptions) => {
     const nextThemeStyle = transformThemeToken(themeStyle)
     const { defaultAlgorithm, darkAlgorithm, defaultSeed } = themeConfig;
     const customStyle = { ...defaultSeed, ...nextThemeStyle };
-    const themeType = nextThemeStyle.themeType ?? 'light';
-    const customThemeToken = nextThemeStyle.themeType === 'dark' ? darkAlgorithm(customStyle) : defaultAlgorithm(customStyle);
+    const acceptedThemeType = nextThemeStyle.themeType;
+    const themeType = acceptedThemeType ?? 'light';
+    const customThemeToken = acceptedThemeType === 'dark' ? darkAlgorithm(customStyle) : defaultAlgorithm(customStyle);
     acceptedThemeStyle = Object.assign({}, themeTokenMapping[themeType], customThemeToken)
   }
   globalEvent.changeTheme(acceptedThemeStyle, triggerEvent !== false)

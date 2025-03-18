@@ -1,7 +1,7 @@
 import type { PropType } from 'vue'
 import type { ConfigProviderProps } from 'ant-design-vue'
 
-export type AntdAliasToken = ConfigProviderProps['theme']['token']
+export type AntdAliasToken = NonNullable<NonNullable<ConfigProviderProps['theme']>['token']>
 
 export type CustonAliasToken = {
   // 全局配置
@@ -48,9 +48,9 @@ export type ThemeProps = {
 }
 
 export interface SetThemeOptions {
-  themeStyle: keyof ThemeMapping | AliasToken
-  themeType?: keyof ThemeMapping
+  themeStyle: Partial<AliasToken>;
   triggerEvent?: boolean
+  styleConfig?: RootStyleOptions
 }
 
 export interface RootStyleOptions {
