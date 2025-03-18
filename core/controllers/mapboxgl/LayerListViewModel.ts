@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel';
 import { findLayerCatalog } from 'vue-iclient-core/controllers/mapboxgl/utils/layerCatalogGroupUtil';
 import type mapboxglTypes from 'mapbox-gl'

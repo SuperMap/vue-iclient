@@ -1,4 +1,4 @@
-import { FetchRequest, Util } from 'vue-iclient-core/libs/iclient-common/iclient-common';
+import { FetchRequest, Util } from 'vue-iclient-static/libs/iclient-common/iclient-common';
 import iServerRestService, { vertifyEpsgCode, transformFeatures } from 'vue-iclient-core/utils/iServerRestService';
 import { isXField, isYField, handleWithCredentials, handleDataParentRes } from 'vue-iclient-core/utils/util';
 import { Events } from 'vue-iclient-core/types/event/Events';

@@ -97,6 +97,7 @@
     "vitest": "^3.0.5",
     "vitest-sonar-reporter": "^2.0.0",
     "vue-iclient-core": "workspace:*",
+    "vue-iclient-static": "workspace:*",
     "vue-tsc": "^2.2.2"
   }
 }

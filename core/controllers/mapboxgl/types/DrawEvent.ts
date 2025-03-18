@@ -1,6 +1,6 @@
 import type { Map } from 'mapbox-gl';
 import { Events } from 'vue-iclient-core/types/event/Events';
-import MapboxDraw from 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw';
+import MapboxDraw from 'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw';
 import mapEvent from 'vue-iclient-core/types/map-event';
 import assignIn from 'lodash.assignin';
 import isEqual from 'lodash.isequal';

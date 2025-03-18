@@ -30,6 +30,9 @@
       ],
       "vue-iclient-core/": [
         "../core/"
+      ],
+      "vue-iclient-static/": [
+        "../static/"
       ]
     },
     "types": [

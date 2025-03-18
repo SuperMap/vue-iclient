@@ -2,7 +2,7 @@
 import AnimateMarkerLayer from '../animate-marker-layer.vue'
 import WebMap from '@supermapgis/mapboxgl/components/web-map/webmap.vue'
 import Button from '@supermapgis/common/components/button/Button'
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance'
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance'
 import { onBeforeMount, reactive } from 'vue'
 
 const breathingApertureParam = {

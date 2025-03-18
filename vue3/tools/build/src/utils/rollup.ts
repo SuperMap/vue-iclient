@@ -9,7 +9,7 @@ export const generateExternal = async (options: { full: boolean }, path = epPack
   return (id: string) => {
     const packages: string[] = [...peerDependencies]
     if (!options.full) {
-      packages.push('@vue', ...dependencies)
+      packages.push('@vue', 'vue-iclient-static', ...dependencies)
     }
     return [...new Set(packages)].some(pkg => id === pkg || id.startsWith(`${pkg}/`))
   }

@@ -52,16 +52,16 @@ async function buildFullEntry(minify: boolean, banner: string) {
       sourceMap: false,
       transformMixedEsModules: false,
       exclude: [
-        'vue-icliet-core/libs/iclient-leaflet/iclient-leaflet.min',
-        'vue-icliet-core/libs/iclient-mapboxgl/iclient-mapboxgl.min',
-        'vue-icliet-core/libs/mapboxgl/mapbox-gl-enhance.min',
-        'vue-icliet-core/libs/deckgl/deck.gl.min',
-        'vue-icliet-core/libs/echarts-layer/EchartsLayer',
-        'vue-icliet-core/libs/geostats/geostats',
-        'vue-icliet-core/libs/geostats/geostats',
-        'vue-icliet-core/libs/mapbox-gl-draw/mapbox-gl-draw',
-        'vue-icliet-core/libs/json-sql/json-sql',
-        'vue-icliet-core/libs/Cesium/*/*.js'
+        'vue-icliet-static/libs/iclient-leaflet/iclient-leaflet.min',
+        'vue-icliet-static/libs/iclient-mapboxgl/iclient-mapboxgl.min',
+        'vue-icliet-static/libs/mapboxgl/mapbox-gl-enhance.min',
+        'vue-icliet-static/libs/deckgl/deck.gl.min',
+        'vue-icliet-static/libs/echarts-layer/EchartsLayer',
+        'vue-icliet-static/libs/geostats/geostats',
+        'vue-icliet-static/libs/geostats/geostats',
+        'vue-icliet-static/libs/mapbox-gl-draw/mapbox-gl-draw',
+        'vue-icliet-static/libs/json-sql/json-sql',
+        'vue-icliet-static/libs/Cesium/*/*.js'
       ]
     }),
     esbuild({

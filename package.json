@@ -56,7 +56,8 @@
   "devDependencies": {
     "husky": "^8.0.0",
     "lint-staged": "^15.4.3",
-    "vue-iclient-core": "workspace:*"
+    "vue-iclient-core": "workspace:*",
+    "vue-iclient-static": "workspace:*"
   },
   "lint-staged": {
     "vue3/**/*.{vue,ts,tsx}": "pnpm typecheck:vue3",

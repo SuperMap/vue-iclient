@@ -16,7 +16,8 @@ export default defineConfig({
     alias: {
       '@supermapgis/mapboxgl': fileURLToPath(new URL('../packages/mapboxgl', import.meta.url)),
       '@supermapgis/common': fileURLToPath(new URL('../packages/common', import.meta.url)),
-      'vue-iclient-core': fileURLToPath(new URL('../../core', import.meta.url))
+      'vue-iclient-core': fileURLToPath(new URL('../../core', import.meta.url)),
+      'vue-iclient-static': fileURLToPath(new URL('../../static', import.meta.url))
       // node_modules: fileURLToPath(new URL('../node_modules', import.meta.url))
     }
   },
@@ -24,7 +25,7 @@ export default defineConfig({
     fs: {
       allow: [
         // 添加包含字体文件的目录
-        fileURLToPath(new URL('../../core/assets/iconfont', import.meta.url)),
+        fileURLToPath(new URL('../../static/assets/iconfont', import.meta.url)),
         fileURLToPath(new URL('../', import.meta.url))
       ]
     }
@@ -41,19 +42,19 @@ export default defineConfig({
   },
   optimizeDeps: {
     include: [
-      'vue-iclient-core/libs/iclient-common/iclient-common',
-      'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance',
-      'vue-iclient-core/libs/echarts-layer/EchartsLayer',
-      'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw'
+      'vue-iclient-static/libs/iclient-common/iclient-common',
+      'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance',
+      'vue-iclient-static/libs/echarts-layer/EchartsLayer',
+      'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
     ]
   },
   build: {
     commonjsOptions: {
       include: [
-        'vue-iclient-core/libs/iclient-common/iclient-common',
-        'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance',
-        'vue-iclient-core/libs/echarts-layer/EchartsLayer',
-        'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw'
+        'vue-iclient-static/libs/iclient-common/iclient-common',
+        'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance',
+        'vue-iclient-static/libs/echarts-layer/EchartsLayer',
+        'vue-iclient-static/libs/mapbox-gl-draw/mapbox-gl-draw'
       ]
     },
     rollupOptions: {

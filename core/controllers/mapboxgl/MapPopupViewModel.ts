@@ -1,5 +1,5 @@
 import type { Map, Popup } from 'mapbox-gl';
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 
 /**
  * @class MapPopupViewModel

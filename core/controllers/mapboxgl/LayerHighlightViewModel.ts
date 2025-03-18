@@ -1,5 +1,5 @@
 import type mapboxglTypes from 'mapbox-gl'
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle';
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle';
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle';

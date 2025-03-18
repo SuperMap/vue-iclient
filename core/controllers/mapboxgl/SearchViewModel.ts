@@ -1,8 +1,8 @@
 import type { GeoJSONSource, LngLatLike, Map, Marker, Popup } from 'mapbox-gl';
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import turfCenter from '@turf/center';
-import 'vue-iclient-core/libs/iclient-mapboxgl/iclient-mapboxgl.min';
+import 'vue-iclient-static/libs/iclient-mapboxgl/iclient-mapboxgl.min';
 import iServerRestService from 'vue-iclient-core/utils/iServerRestService';
 import getFeatures from 'vue-iclient-core/utils/get-features';
 import { getFeatureCenter } from 'vue-iclient-core/utils/util';

@@ -1,7 +1,7 @@
 import type { LngLat, LngLatLike, Map, Popup } from 'mapbox-gl';
 import type { Units } from '@turf/helpers';
 import type { Draw } from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import length from '@turf/length';
 import area from '@turf/area';
 import center from '@turf/center';

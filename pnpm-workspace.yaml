@@ -1,5 +1,6 @@
 packages:
   - core
+  - static
   - vue3/packages/*/*
   - vue3/packages/*/theme-chalk
   - vue3/site

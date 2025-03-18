@@ -36,5 +36,5 @@
     }
   },
   "include": ["./**/*"],
-  "exclude": ["libs", "node_modules"]
+  "exclude": ["node_modules"]
 }

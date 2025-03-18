@@ -14,7 +14,7 @@
     "tools/**/*",
     "tools/**/*.json",
     "packages/*/theme-chalk/*",
-    "packages/*/vue-iclient-mapboxgl/package.json"
+    "packages/mapboxgl/package.json"
   ],
   "exclude": [
     "**/__tests__/**",

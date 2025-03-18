@@ -13,11 +13,13 @@ import {
   excludeFiles,
   getPkgRoot,
   getPkgByCommand,
-  coreRoot,
-  getEpOutput
+  rootDir,
+  getEpOutput,
+  getPKG_NAME,
+  PKG_PREFIX
 } from '@supermapgis/build-utils'
 import { generateExternal, withTaskName, writeBundles } from '../utils'
-import { Alias, copyCoreLibs } from '../plugins/alias'
+import { Alias } from '../plugins/alias'
 import { buildConfigEntries, target } from '../build-info'
 import type { TaskFunction } from 'gulp'
 import type { OutputOptions, Plugin } from 'rollup'
@@ -43,6 +45,7 @@ const plugins: Plugin[] = [
         .replaceAll('./common/', './')
         .replaceAll(`./${pkgName}/`, './')
         .replaceAll('.scss', '.css')
+        .replaceAll('vue-iclient-static/', `${PKG_PREFIX}/${getPKG_NAME(pkgName)}/static/`)
     }
   },
   vue({
@@ -168,29 +171,10 @@ async function buildModulesStyles(rootDir, folder = 'components') {
   )
 }
 
-export const copyCore = async () => {
-  const libs = copyCoreLibs
-  const copyLibs = async () => {
-    const getLibs = () => {
-      return libs[pkgName].map(item => path.resolve(coreRoot, `libs/${item}`))
-    }
-    getLibs().map(async item => {
-      const filePath = path.basename(item)
-      const libPath = path.resolve(epOutput, 'lib/core/libs/', filePath)
-      const esPath = path.resolve(epOutput, 'es/core/libs/', filePath)
-      await copy(item, libPath)
-      await copy(item, esPath)
-    })
-  }
-  const copyAssets = async () => {
-    const root = path.resolve(coreRoot, `assets`)
-    const libPath = path.resolve(epOutput, 'lib/core/assets')
-    const esPath = path.resolve(epOutput, 'es/core/assets')
-    await copy(root, libPath)
-    await copy(root, esPath)
-  }
-  await copyLibs()
-  await copyAssets()
+async function copyStatic() {
+   copy(path.resolve(rootDir, 'static'), path.resolve(epOutput, 'static'))
+   await remove(path.join(epOutput, 'static', 'package.json'))
+
 }
 async function buildStyles() {
   await buildModulesStyles(pkgRoot)
@@ -198,16 +182,17 @@ async function buildStyles() {
 }
 
 async function removeMoreModules() {
-  // await remove(path.join(epOutput, 'lib', getPKG_NAME(pkgName)))
-  // await remove(path.join(epOutput, 'es', getPKG_NAME(pkgName)))
   await remove(path.join(epOutput, 'lib', 'vue3'))
   await remove(path.join(epOutput, 'es', 'vue3'))
+  await remove(path.join(epOutput, 'lib', 'static'))
+  await remove(path.join(epOutput, 'es', 'static'))
 }
 export const buildModules: TaskFunction = parallel(
   series(
     withTaskName('buildPkgModules', () => buildModulesComponents(pkgRoot)),
     withTaskName('buildCommonModules', () => buildModulesComponents(pkgCommonRoot)),
     removeMoreModules,
+    copyStatic,
     buildStyles
   )
 )
