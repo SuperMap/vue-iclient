@@ -128,11 +128,6 @@ const commonMap = {
   }
 };
 
-window.canvg = {
-  default: {
-    from: (ctx, url, callback) => Promise.resolve({ stop: jest.fn(), start: jest.fn() })
-  }
-};
 window.jsonsql.query = () => {
   return [{}];
 };
