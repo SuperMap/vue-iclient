@@ -14,7 +14,6 @@
     "@turf/helpers": "^6.1.4",
     "@turf/length": "^7.2.0",
     "@turf/transform-scale": "^7.2.0",
-    "colorcolor": "^1.1.1",
     "css-vars-ponyfill": "^2.2.1",
     "echarts": "^4.8.0",
     "lodash.assignin": "^4.2.0",

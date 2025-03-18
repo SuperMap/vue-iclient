@@ -1,5 +1,4 @@
 // 获取当前时间返回置顶格式
-import colorcolor from 'colorcolor';
 import getCenter from '@turf/center';
 import omit from 'omit.js';
 import tinyColor from 'tinycolor2';
@@ -24,8 +23,7 @@ export function formatFontSize(fontSize) {
 }
 
 export function isTransparent(color) {
-  const rgba = colorcolor(color, 'rgba');
-  return +rgba.match(/(\d(\.\d+)?)+/g)[3] === 0;
+  return tinyColor(color).getAlpha() === 0;
 }
 // 保留指定位数的小数
 export function reservedDecimal(val, precise) {

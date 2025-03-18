@@ -38,7 +38,6 @@
     "@types/lodash-es": "^4.17.6",
     "@types/mapbox-gl": "^3.4.1",
     "ant-design-vue": "^4.2.6",
-    "colorcolor": "^1.1.1",
     "css-vars-ponyfill": "^2.2.1",
     "dayjs": "^1.11.13",
     "echarts": "^4.8.0",

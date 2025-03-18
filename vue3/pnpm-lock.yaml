@@ -47,9 +47,6 @@ importers:
       ant-design-vue:
         specifier: ^4.2.6
         version: 4.2.6(vue@3.5.12(typescript@5.6.3))
-      colorcolor:
-        specifier: ^1.1.1
-        version: 1.1.1
       css-vars-ponyfill:
         specifier: ^2.2.1
         version: 2.4.9
@@ -219,12 +216,18 @@ importers:
       vue-iclient-core:
         specifier: workspace:*
         version: link:../core
+      vue-iclient-static:
+        specifier: workspace:*
+        version: link:../static
       vue-tsc:
         specifier: ^2.2.2
         version: 2.2.2(typescript@5.6.3)
 
   ../core:
     dependencies:
+      '@turf/area':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@turf/bbox':
         specifier: ^7.2.0
         version: 7.2.0
@@ -237,18 +240,21 @@ importers:
       '@turf/helpers':
         specifier: ^6.1.4
         version: 6.5.0
+      '@turf/length':
+        specifier: ^7.2.0
+        version: 7.2.0
       '@turf/transform-scale':
         specifier: ^7.2.0
         version: 7.2.0
-      colorcolor:
-        specifier: ^1.1.1
-        version: 1.1.1
       css-vars-ponyfill:
         specifier: ^2.2.1
         version: 2.4.9
       echarts:
         specifier: ^4.8.0
         version: 4.9.0
+      lodash.assignin:
+        specifier: ^4.2.0
+        version: 4.2.0
       lodash.clonedeep:
         specifier: ^4.5.0
         version: 4.5.0
@@ -299,6 +305,8 @@ importers:
         specifier: ^1.12.1
         version: 1.13.10
 
+  ../static: {}
+
   packages/common/components:
     dependencies:
       vue:
@@ -340,108 +348,6 @@ importers:
       vue:
         specifier: ^3.2.0
         version: 3.5.12(typescript@5.6.3)
-
-  packages/mapboxgl/vue-iclient-mapboxgl:
-    dependencies:
-      '@ant-design/icons-vue':
-        specifier: ^7.0.1
-        version: 7.0.1(vue@3.5.12(typescript@5.6.3))
-      '@turf/area':
-        specifier: ^7.2.0
-        version: 7.2.0
-      '@turf/bbox':
-        specifier: ^7.2.0
-        version: 7.2.0
-      '@turf/center':
-        specifier: ^7.2.0
-        version: 7.2.0
-      '@turf/envelope':
-        specifier: ^5.1.5
-        version: 5.1.5
-      '@turf/helpers':
-        specifier: ^6.1.4
-        version: 6.5.0
-      '@turf/length':
-        specifier: ^7.2.0
-        version: 7.2.0
-      '@turf/transform-scale':
-        specifier: ^7.2.0
-        version: 7.2.0
-      ant-design-vue:
-        specifier: ^4.2.6
-        version: 4.2.6(vue@3.5.12(typescript@5.6.3))
-      colorcolor:
-        specifier: ^1.1.1
-        version: 1.1.1
-      css-vars-ponyfill:
-        specifier: ^2.2.1
-        version: 2.4.9
-      dayjs:
-        specifier: ^1.11.13
-        version: 1.11.13
-      echarts:
-        specifier: ^4.8.0
-        version: 4.9.0
-      interactjs:
-        specifier: 1.9.7
-        version: 1.9.7
-      lodash-es:
-        specifier: ^4.17.21
-        version: 4.17.21
-      lodash.assignin:
-        specifier: ^4.2.0
-        version: 4.2.0
-      lodash.clonedeep:
-        specifier: ^4.5.0
-        version: 4.5.0
-      lodash.difference:
-        specifier: ^4.5.0
-        version: 4.5.0
-      lodash.isequal:
-        specifier: ^4.5.0
-        version: 4.5.0
-      lodash.max:
-        specifier: ^4.0.1
-        version: 4.0.1
-      lodash.merge:
-        specifier: ^4.6.1
-        version: 4.6.2
-      lodash.mergewith:
-        specifier: ^4.6.2
-        version: 4.6.2
-      lodash.orderby:
-        specifier: ^4.6.0
-        version: 4.6.0
-      lodash.tonumber:
-        specifier: ^4.0.3
-        version: 4.0.3
-      lodash.uniqueid:
-        specifier: ^4.0.1
-        version: 4.0.1
-      mapbox-gl-compare-enhanced:
-        specifier: ^1.0.0
-        version: 1.0.0
-      omit.js:
-        specifier: ^2.0.2
-        version: 2.0.2
-      proj4:
-        specifier: ^2.15.0
-        version: 2.15.0
-      resize-detector:
-        specifier: ^0.2.0
-        version: 0.2.2
-      simple-statistics:
-        specifier: ^7.8.7
-        version: 7.8.7
-      tinycolor2:
-        specifier: ^1.6.0
-        version: 1.6.0
-      vue:
-        specifier: 3.5.12
-        version: 3.5.12(typescript@5.6.3)
-      vue3-test:
-        specifier: ^0.0.1
-        version: 0.0.1(typescript@5.6.3)
 
   site:
     dependencies:
@@ -533,9 +439,6 @@ importers:
       gulp-rename:
         specifier: ^2.0.0
         version: 2.0.0
-      gulp-replace:
-        specifier: ^1.1.4
-        version: 1.1.4
       gulp-sass:
         specifier: ^6.0.0
         version: 6.0.0
@@ -2910,10 +2813,6 @@ packages:
     resolution: {integrity: sha512-Un7MIEDdUC5gNpcGDV97op1Ywk748MpHcFTHoYs6qnj1Z3j7I53VG3nwZhKzoBZmbdRNnb6WRdFlwl7tSDuZGw==}
     engines: {node: '>=0.10.0'}
 
-  binaryextensions@2.3.0:
-    resolution: {integrity: sha512-nAihlQsYGyc5Bwq6+EsubvANYGExeJKHDO3RjnvwU042fawQTQfM3Kxn7IHUXQOz4bzfwsGYYHGSvXyW4zOGLg==}
-    engines: {node: '>=0.8'}
-
   bindings@1.5.0:
     resolution: {integrity: sha512-p2q/t/mhvuOj/UeLlV6566GD/guowlr0hHxClI0W9m7MWYkL1F0hLo+0Aexs9HSPCtR1SXQ0TD3MMKrXZajbiQ==}
 
@@ -3176,9 +3075,6 @@ packages:
   color-support@1.1.3:
     resolution: {integrity: sha512-qiBjkpbMLO/HL68y+lh4q0/O1MZFj2RX6X/KmMa3+gJD3z+WwI1ZzDHysvqHGS3mP6mznPckpXmw1nI9cJjyRg==}
     hasBin: true
-
-  colorcolor@1.1.1:
-    resolution: {integrity: sha512-R7r3Ytefsgz6UZeCiVJEvbtT2yrDJU4plMXJSym4+Qfk3UItX06gI8Gs28tMDiBpUi+gBQhavf3L6g6GPOk/vQ==}
 
   colord@2.9.3:
     resolution: {integrity: sha512-jeC1axXpnb0/2nn/Y1LPuLdgXBLH7aDcHu4KEKfqw3CUhX7ZpfBSlPKyqXE6btIgEzfWtrX3/tyBCaCvXvMkOw==}
@@ -3572,9 +3468,6 @@ packages:
     resolution: {integrity: sha512-L9Qe08KWTlqYMVvMcTIvMAdl1cDUubzRNYL+WfA4bLDMHe4nemKkpmYzkznE1FwLKu0EEmy6obgQKzMJrg4x9Q==}
     engines: {node: '>=14'}
     hasBin: true
-
-  electron-is-dev@2.0.0:
-    resolution: {integrity: sha512-3X99K852Yoqu9AcW50qz3ibYBWY79/pBhlMCab8ToEWS48R0T9tyxRiQhwylE7zQdXrMnx2JKqUJyMPmt5FBqA==}
 
   electron-to-chromium@1.5.102:
     resolution: {integrity: sha512-eHhqaja8tE/FNpIiBrvBjFV/SSKpyWHLvxuR9dPTdo+3V9ppdLmFB7ZZQ98qNovcngPLYIz0oOBF9P0FfZef5Q==}
@@ -4308,10 +4201,6 @@ packages:
     resolution: {integrity: sha512-97Vba4KBzbYmR5VBs9mWmK+HwIf5mj+/zioxfZhOKeXtx5ZjBk57KFlePf5nxq9QsTtFl0ejnHE3zTC9MHXqyQ==}
     engines: {node: '>=4'}
 
-  gulp-replace@1.1.4:
-    resolution: {integrity: sha512-SVSF7ikuWKhpAW4l4wapAqPPSToJoiNKsbDoUnRrSgwZHH7lH8pbPeQj1aOVYQrbZKhfSVBxVW+Py7vtulRktw==}
-    engines: {node: '>=10'}
-
   gulp-sass@6.0.0:
     resolution: {integrity: sha512-FGb4Uab4jnH2GnSfBGd6uW3+imvNodAGfsjGcUhEtpNYPVx+TK2tp5uh7MO0sSR7aIf1Sm544werc+zV7ejHHw==}
     engines: {node: '>=12'}
@@ -4827,10 +4716,6 @@ packages:
 
   istanbul-reports@3.1.7:
     resolution: {integrity: sha512-BewmUXImeuRk2YY0PVbxgKAysvhRPUQE0h5QRM++nVWyubKGV0l8qQ5op8+B2DOmwSe63Jivj0BjkPQVf8fP5g==}
-    engines: {node: '>=8'}
-
-  istextorbinary@3.3.0:
-    resolution: {integrity: sha512-Tvq1W6NAcZeJ8op+Hq7tdZ434rqnMx4CCZ7H0ff83uEloDvVbqAwaMTZcafKGJT0VHkYzuXUiCY4hlXQg6WfoQ==}
     engines: {node: '>=8'}
 
   jackspeak@3.4.3:
@@ -5408,10 +5293,6 @@ packages:
 
   nwsapi@2.2.16:
     resolution: {integrity: sha512-F1I/bimDpj3ncaNDhfyMWuFqmQDBwDB0Fogc2qpL3BWvkQteFD/8BzWuIRl83rq0DXfm8SGt/HFhLXZyljTXcQ==}
-
-  object-assign@4.1.1:
-    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
-    engines: {node: '>=0.10.0'}
 
   object-copy@0.1.0:
     resolution: {integrity: sha512-79LYn6VAb63zgtmAteVOWo9Vdj71ZVBy3Pbse+VqxDpEP83XuujMrGqHIwAXJ5I/aM0zU7dIyIAhifVTPrNItQ==}
@@ -6268,9 +6149,6 @@ packages:
     resolution: {integrity: sha512-CHPV/GAglbIB1tnQgaiysb8H2yCy8WQ7lcEwQ/eT+kLj0QHV8LnJW0zpqpE7RSkrMSRoa+EBoag86clf7WAgSg==}
     engines: {node: '>= 0.10'}
 
-  replacestream@4.0.3:
-    resolution: {integrity: sha512-AC0FiLS352pBBiZhd4VXB1Ab/lh0lEgpP+GGvZqbQh8a5cmXVoTe5EX/YeTFArnp4SRGTHh1qCHu9lGs1qG8sA==}
-
   require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
     engines: {node: '>=0.10.0'}
@@ -6853,10 +6731,6 @@ packages:
     resolution: {integrity: sha512-pFYqmTw68LXVjeWJMST4+borgQP2AyMNbg1BpZh9LbyhUeNkeaPF9gzfPGUAnSMV3qPYdWUwDIjjCLiSDOl7vg==}
     engines: {node: '>=18'}
 
-  textextensions@3.3.0:
-    resolution: {integrity: sha512-mk82dS8eRABNbeVJrEiN5/UMSCliINAuz8mkUwH4SwslkNP//gbEzlWNS5au0z5Dpx40SQxzqZevZkn+WYJ9Dw==}
-    engines: {node: '>=8'}
-
   throttle-debounce@5.0.2:
     resolution: {integrity: sha512-B71/4oyj61iNH0KeCamLuE2rmKuTO5byTOSVwECM5FA7TiAiAW+UqTKZ9ERueC4qvgSttUhdmq1mXC3kJqGX7A==}
     engines: {node: '>=12.22'}
@@ -7298,9 +7172,6 @@ packages:
     engines: {node: '>=10.15.0'}
     peerDependencies:
       vue: ^3.0.0
-
-  vue3-test@0.0.1:
-    resolution: {integrity: sha512-W+hMcx5t35hVohWdcsEYiIW2Xq9ZiljAcpKEYUCYPr7YAyxgK/WJ14iY8V5qrOx+j+6/Hyi9IZJiqzADMZ3zWQ==}
 
   vue@3.5.12:
     resolution: {integrity: sha512-CLVZtXtn2ItBIi/zHZ0Sg1Xkb7+PU32bJJ8Bmy7ts3jxXTcbfsEfBivFYYWz1Hur+lalqGAh65Coin0r+HRUfg==}
@@ -10349,8 +10220,6 @@ snapshots:
 
   binary-extensions@1.13.1: {}
 
-  binaryextensions@2.3.0: {}
-
   bindings@1.5.0:
     dependencies:
       file-uri-to-path: 1.0.0
@@ -10677,10 +10546,6 @@ snapshots:
   color-name@1.1.4: {}
 
   color-support@1.1.3: {}
-
-  colorcolor@1.1.1:
-    dependencies:
-      color-name: 1.1.4
 
   colord@2.9.3: {}
 
@@ -11110,8 +10975,6 @@ snapshots:
       commander: 10.0.1
       minimatch: 9.0.1
       semver: 7.7.1
-
-  electron-is-dev@2.0.0: {}
 
   electron-to-chromium@1.5.102: {}
 
@@ -12082,14 +11945,6 @@ snapshots:
 
   gulp-rename@2.0.0: {}
 
-  gulp-replace@1.1.4:
-    dependencies:
-      '@types/node': 22.13.4
-      '@types/vinyl': 2.0.12
-      istextorbinary: 3.3.0
-      replacestream: 4.0.3
-      yargs-parser: 21.1.1
-
   gulp-sass@6.0.0:
     dependencies:
       lodash.clonedeep: 4.5.0
@@ -12575,11 +12430,6 @@ snapshots:
     dependencies:
       html-escaper: 2.0.2
       istanbul-lib-report: 3.0.1
-
-  istextorbinary@3.3.0:
-    dependencies:
-      binaryextensions: 2.3.0
-      textextensions: 3.3.0
 
   jackspeak@3.4.3:
     dependencies:
@@ -13199,8 +13049,6 @@ snapshots:
   number-is-nan@1.0.1: {}
 
   nwsapi@2.2.16: {}
-
-  object-assign@4.1.1: {}
 
   object-copy@0.1.0:
     dependencies:
@@ -14029,12 +13877,6 @@ snapshots:
       is-absolute: 1.0.0
       remove-trailing-separator: 1.1.0
 
-  replacestream@4.0.3:
-    dependencies:
-      escape-string-regexp: 1.0.5
-      object-assign: 4.1.1
-      readable-stream: 2.3.8
-
   require-directory@2.1.1: {}
 
   require-main-filename@1.0.1: {}
@@ -14681,8 +14523,6 @@ snapshots:
       glob: 10.4.5
       minimatch: 9.0.5
 
-  textextensions@3.3.0: {}
-
   throttle-debounce@5.0.2: {}
 
   through2-filter@3.0.0:
@@ -15206,13 +15046,6 @@ snapshots:
     dependencies:
       is-plain-object: 3.0.1
       vue: 3.5.12(typescript@5.6.3)
-
-  vue3-test@0.0.1(typescript@5.6.3):
-    dependencies:
-      electron-is-dev: 2.0.0
-      vue: 3.5.13(typescript@5.6.3)
-    transitivePeerDependencies:
-      - typescript
 
   vue@3.5.12(typescript@5.6.3):
     dependencies:

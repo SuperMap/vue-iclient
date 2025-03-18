@@ -1,5 +1,4 @@
 import { FeatureCollection } from 'geojson';
-import colorcolor from 'colorcolor';
 import Marker from './Marker';
 
 interface markerOptions {
@@ -65,19 +64,19 @@ export default class HaloRingMarker extends Marker {
       if (this.options.colors && this.options.colors.length && this.options.colors.length > 0) {
         markerContainer.style.setProperty(
           '--color-1',
-          this._getColorWithOpacity(colorcolor(this.options.colors[0], 'rgba', true), 0.3)
+          this._getColorWithOpacity(this.options.colors[0], 0.3)
         );
         markerContainer.style.setProperty(
           '--color-1-transparent',
-          this._getColorWithOpacity(colorcolor(this.options.colors[0], 'rgba', true), 0.1)
+          this._getColorWithOpacity(this.options.colors[0], 0.1)
         );
         markerContainer.style.setProperty(
           '--color-2',
-          this._getColorWithOpacity(colorcolor(this.options.colors[1], 'rgba', true), 0.3)
+          this._getColorWithOpacity(this.options.colors[0], 0.3)
         );
         markerContainer.style.setProperty(
           '--color-2-transparent',
-          this._getColorWithOpacity(colorcolor(this.options.colors[1], 'rgba', true), 0.1)
+          this._getColorWithOpacity(this.options.colors[1], 0.1)
         );
       }
       this.markersElement.push(markerContainer);
