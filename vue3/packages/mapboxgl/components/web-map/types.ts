@@ -67,7 +67,7 @@ export interface LayerManageParam {
   layers: Array<Object>
 }
 
-export interface ControlProps {
+export interface Control {
   panControl?: CommonControlParam
   scaleControl?: CommonControlParam
   zoomControl?: ZoomParam

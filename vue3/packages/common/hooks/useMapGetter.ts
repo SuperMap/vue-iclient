@@ -3,15 +3,12 @@ import { onMounted, onUnmounted, watch, nextTick, getCurrentInstance } from 'vue
 import MapWatcher from 'vue-iclient-core/mixin/MapWatcher'
 import { message } from 'ant-design-vue'
 import { useLocale } from './useLocale'
+import type { MapGetterProps } from '@supermapgis/common/utils/index.common'
 
 export interface MapGetterOptions<M> {
   viewModel?: InstanceType<any>
   loaded?: (map: M, webmap: InstanceType<any>) => void
   removed?: (map?: M, target?: string) => void
-}
-
-export interface MapGetterProps {
-  mapTarget: string
 }
 
 export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions<M> = {}) {
