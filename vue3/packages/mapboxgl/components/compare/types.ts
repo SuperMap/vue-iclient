@@ -1,6 +1,6 @@
 import { orientationTypes } from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel'
 import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
-import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
+import type { ThemeProps } from '@supermapgis/common/utils/index.common'
 
 export const compareProps = {
   target: {

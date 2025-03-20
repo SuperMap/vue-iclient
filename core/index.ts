@@ -11,6 +11,7 @@ export * from './utils/statistics';
 export * from './utils/util';
 
 export * from './types/map-event';
+export { default as mapEvent } from './types/map-event';
 export * from './types/event/BaseTypes';
 export * from './types/event/Event';
 export * from './types/event/Events';

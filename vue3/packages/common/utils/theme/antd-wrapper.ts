@@ -2,7 +2,7 @@ import type { ComponentObjectPropsOptions } from 'vue'
 import type { ConfigProviderProps } from 'ant-design-vue'
 import { defineComponent, h, computed } from 'vue'
 import { ConfigProvider } from 'ant-design-vue'
-import { useTheme } from './hooks/useTheme'
+import { useTheme } from '../../hooks/useTheme'
 
 // 定义需要特殊处理的 antd 组件列表
 const specialComponents = ['Select', 'Breadcrumb'] as const

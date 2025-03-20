@@ -1,6 +1,5 @@
 import type { PropType, CSSProperties } from 'vue'
-import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
-import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
+import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
 import type {
   PaginationParams,
@@ -11,8 +10,7 @@ import type {
   ToolbarParams
 } from '@supermapgis/mapboxgl/components/attributes/types'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
-import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
-import { themeProps } from '@supermapgis/common/components/theme/theme'
+import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import { cardProps, controlProps } from '@supermapgis/mapboxgl/utils'
 
 export interface AttributesParams {

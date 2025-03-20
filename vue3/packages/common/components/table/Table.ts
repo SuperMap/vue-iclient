@@ -1,6 +1,6 @@
 import type { TableProps } from 'ant-design-vue'
 import { Table } from 'ant-design-vue'
-import { createWrappedComponent } from '@supermapgis/common/components/theme/antd-wrapper'
+import { createWrappedComponent } from '@supermapgis/common/utils/index.common'
 
 const SmTable = createWrappedComponent<TableProps>(Table, 'table')
 

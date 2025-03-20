@@ -121,8 +121,7 @@ import {
   onBeforeUnmount
 } from 'vue'
 import type { FeatureResult } from 'vue-iclient-core/controllers/mapboxgl/SearchViewModel'
-import { useTheme } from '@supermapgis/common/components/theme/theme'
-import { useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
+import { useTheme,useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SearchViewModel from 'vue-iclient-core/controllers/mapboxgl/SearchViewModel'
 import { SearchOutlined, LoadingOutlined } from '@ant-design/icons-vue'

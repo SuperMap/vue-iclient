@@ -1,7 +1,7 @@
 import type { SelectProps } from 'ant-design-vue'
 import { defineComponent } from 'vue'
 import { Select } from 'ant-design-vue'
-import { createWrappedComponent } from '@supermapgis/common/components/theme/antd-wrapper'
+import { createWrappedComponent } from '@supermapgis/common/utils/index.common'
 
 interface SelectOptionProps {
   key?: string; 

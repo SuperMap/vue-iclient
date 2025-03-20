@@ -18,7 +18,7 @@
 import type { TablePopupProps } from './types'
 import { watch, onMounted, useTemplateRef } from 'vue'
 import { setPopupArrowStyle } from 'vue-iclient-core/utils/util'
-import { useTheme } from '@supermapgis/common/components/theme/theme'
+import { useTheme } from '@supermapgis/common/hooks/index.common'
 import SmTable from '@supermapgis/common/components/table/Table'
 import { tablePopupPropsDefault } from './types'
 

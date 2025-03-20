@@ -16,8 +16,7 @@
 import { ref, computed, watch, onBeforeUnmount } from 'vue';
 import type { TextProps } from './types'
 import { textPropsDefault } from './types'
-import { useTheme } from '@supermapgis/common/components/theme/theme';
-import { useTimer, useThirdService } from '@supermapgis/common/hooks/index.common'
+import { useTimer, useTheme, useThirdService } from '@supermapgis/common/hooks/index.common'
 
 const props = withDefaults(defineProps<TextProps>(), textPropsDefault)
 const finalValue = ref(props.title);

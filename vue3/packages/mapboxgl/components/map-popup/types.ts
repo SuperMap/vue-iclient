@@ -1,9 +1,7 @@
 import type { PropType } from 'vue'
-import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
-import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
+import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { AttributePanelProps } from '@supermapgis/common/components/attribute-panel/types'
-import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
-import { themeProps } from '@supermapgis/common/components/theme/theme'
+import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 
 export const mapPopupProps = () => ({
   lnglats: {

@@ -2,7 +2,7 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { ref, reactive, onBeforeMount } from 'vue'
 import demoRoutes from './router/demoRoutes'
-import { setTheme } from '@supermapgis/common/components/theme/theme'
+import { setTheme } from '@supermapgis/common/utils/index.common'
 import Button from '@supermapgis/common/components/button/Button'
 import dayjs from 'dayjs';
 import 'dayjs/locale/zh-cn';

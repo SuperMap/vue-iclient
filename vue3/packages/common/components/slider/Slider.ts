@@ -1,6 +1,6 @@
 import type { SliderProps } from 'ant-design-vue'
 import { Slider } from 'ant-design-vue'
-import { createWrappedComponent } from '@supermapgis/common/components/theme/antd-wrapper'
+import { createWrappedComponent } from '@supermapgis/common/utils/index.common'
 
 const SmSlider = createWrappedComponent<SliderProps>(Slider, 'slider')
 

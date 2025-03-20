@@ -1,6 +1,5 @@
 import type { PropType } from 'vue'
-import type { MapGetterProps, MapGetterEvents, ShortEmits } from '@supermapgis/common/utils/index.common'
-import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
+import type { MapGetterProps, MapGetterEvents, ShortEmits, ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { CardProps, ControlProps } from '@supermapgis/mapboxgl/utils'
 import type {
   HighlightStyle,
@@ -9,8 +8,7 @@ import type {
 } from 'vue-iclient-core/controllers/mapboxgl/LayerHighlightViewModel'
 import type { QueryResultParams, QueryResultEvent, QueryBoundsType, QueryParameter } from 'vue-iclient-core/controllers/mapboxgl/QueryViewModel'
 import type { PopupStyle } from '@supermapgis/mapboxgl/components/layer-highlight/types'
-import { getPropsDefaults, mapGetterProps } from '@supermapgis/common/utils/index.common'
-import { themeProps } from '@supermapgis/common/components/theme/theme'
+import { getPropsDefaults, mapGetterProps, themeProps } from '@supermapgis/common/utils/index.common'
 import LineStyle from 'vue-iclient-core/controllers/mapboxgl/types/LineStyle'
 import FillStyle from 'vue-iclient-core/controllers/mapboxgl/types/FillStyle'
 import CircleStyle from 'vue-iclient-core/controllers/mapboxgl/types/CircleStyle'

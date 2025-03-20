@@ -1,8 +1,7 @@
 import type { PropType } from 'vue'
 import type { TableProps } from 'ant-design-vue'
-import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
-import { themeProps } from '@supermapgis/common/components/theme/theme'
-import { getPropsDefaults } from '@supermapgis/common/utils/index.common'
+import type { ThemeProps } from '@supermapgis/common/utils/index.common'
+import { getPropsDefaults, themeProps } from '@supermapgis/common/utils/index.common'
 
 export interface AttributeRecord {
   title: string

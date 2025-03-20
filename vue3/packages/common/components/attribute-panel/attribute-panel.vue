@@ -18,7 +18,7 @@
 <script setup lang="ts">
 import type { AttributePanelProps } from './types'
 import { computed, useSlots } from 'vue'
-import { useTheme } from '@supermapgis/common/components/theme/theme'
+import { useTheme } from '@supermapgis/common/hooks/index.common'
 import SmTablePopup from '@supermapgis/common/components/table-popup/table-popup.vue'
 import { attributePanelPropsDefault } from './types'
 

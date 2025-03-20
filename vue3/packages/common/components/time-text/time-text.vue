@@ -7,7 +7,7 @@
 <script setup lang="ts">
 import type { TimeTextProps } from './types'
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue'
-import { useTheme } from '@supermapgis/common/components/theme/theme'
+import { useTheme } from '@supermapgis/common/hooks/index.common'
 import { timeTextPropsDefault } from './types'
 import dayjs from 'dayjs'
 import localizedFormat from 'dayjs/plugin/localizedFormat'
