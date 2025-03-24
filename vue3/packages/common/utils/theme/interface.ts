@@ -51,6 +51,7 @@ export interface SetThemeOptions {
   themeStyle: Partial<AliasToken>;
   triggerEvent?: boolean
   styleConfig?: RootStyleOptions
+  ignoreExtras?: boolean
 }
 
 export interface RootStyleOptions {

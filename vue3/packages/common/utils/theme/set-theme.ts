@@ -4,12 +4,12 @@ import globalEvent from './global-event'
 import { toStyleVariable, getRootStyleSelector } from 'vue-iclient-core/utils/style/theme/set-theme'
 
 export const setTheme = (options: SetThemeOptions) => {
-  const { themeStyle, triggerEvent } = options;
+  const { themeStyle, triggerEvent, ignoreExtras = true } = options;
   let acceptedThemeStyle: AliasToken
   if (typeof themeStyle === 'string') {
     acceptedThemeStyle = themeTokenMapping[themeStyle] || {}
   } else {
-    const nextThemeStyle = transformThemeToken(themeStyle)
+    const nextThemeStyle = ignoreExtras ? transformThemeToken(themeStyle) : themeStyle;
     const { defaultAlgorithm, darkAlgorithm, defaultSeed } = themeConfig;
     const customStyle = { ...defaultSeed, ...nextThemeStyle };
     const acceptedThemeType = nextThemeStyle.themeType;
@@ -21,7 +21,7 @@ export const setTheme = (options: SetThemeOptions) => {
   setRootStyle(acceptedThemeStyle);
 }
 
-function transformThemeToken(token: AliasToken) {
+export function transformThemeToken(token: AliasToken) {
   const lightMapToken = themeTokenMapping.light;
   const builtInKeys = Object.keys(token).filter(key => key in lightMapToken)
   return builtInKeys.reduce((mapToken, key) => {
@@ -30,7 +30,7 @@ function transformThemeToken(token: AliasToken) {
   }, {} as AliasToken)
 }
 
-function setRootStyle(themeStyle: AliasToken, rootStyleOptions?: RootStyleOptions): void {
+export function setRootStyle(themeStyle: AliasToken, rootStyleOptions?: RootStyleOptions): void {
   const variables: Record<string, string> = {}
   const themeKeys = Object.keys(themeStyle)
   themeKeys.forEach((key: string) => {
