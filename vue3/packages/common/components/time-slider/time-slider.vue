@@ -31,7 +31,7 @@ import type {
   TimeSliderEmits
 } from './types';
 import { timeSliderPropsDefault } from './types'
-import { useTheme } from '@supermapgis/common/components/theme/theme'
+import { useTheme } from '@supermapgis/common/hooks/index.common'
 import interact from 'interactjs';
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration'

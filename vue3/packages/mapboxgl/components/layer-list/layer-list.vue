@@ -61,8 +61,7 @@ import {
   onBeforeMount,
   watchEffect
 } from 'vue'
-import { useTheme } from '@supermapgis/common/components/theme/theme'
-import { useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
+import { useTheme, useMapGetter, useLocale } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SmAttributes from '@supermapgis/mapboxgl/components/attributes/attributes.vue'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'

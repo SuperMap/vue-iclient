@@ -1,9 +1,9 @@
-import type { AliasToken, ThemeProps, ThemeMapping } from '../interface'
+import type { AliasToken, ThemeProps, ThemeMapping } from '../utils/theme/interface'
 import { ref, reactive, watch, computed, onMounted, onBeforeUnmount } from 'vue'
 import { pick, isEqual } from 'lodash-es'
 import { getDerivedColorsByTextColor } from 'vue-iclient-core/utils/util';
-import globalEvent from '../global-event'
-import { themeTokenMapping } from '../colors'
+import globalEvent from '../utils/theme/global-event'
+import { themeTokenMapping } from '../utils/theme/colors'
 
 export function useTheme(props: ThemeProps, themeAliasToken: AliasToken = globalEvent.theme) {
   const themePropKeys = ['background', 'textColor', 'colorGroup']

@@ -1,6 +1,6 @@
-import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
+import type { ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { ShortEmits } from '@supermapgis/common/utils/vue-types'
-import { themeProps } from '@supermapgis/common/components/theme/theme'
+import { themeProps } from '@supermapgis/common/utils/index.common'
 import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
 
 type Label = {

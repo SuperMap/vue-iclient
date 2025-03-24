@@ -13,7 +13,7 @@
 <script lang="ts" setup>
 import { withCtx, useSlots, watch, onMounted, onBeforeUnmount, computed } from 'vue'
 import CompareViewModel from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel'
-import { useTheme } from '@supermapgis/common/components/theme/theme'
+import { useTheme } from '@supermapgis/common/hooks/index.common'
 import { debounce } from 'lodash-es'
 import { addListener, removeListener } from 'resize-detector'
 import { ComparePropsDefault } from './types'

@@ -172,9 +172,8 @@ async function buildModulesStyles(rootDir, folder = 'components') {
 }
 
 async function copyStatic() {
-   copy(path.resolve(rootDir, 'static'), path.resolve(epOutput, 'static'))
-   await remove(path.join(epOutput, 'static', 'package.json'))
-
+  await copy(path.resolve(rootDir, 'static'), path.resolve(epOutput, 'static'))
+  await remove(path.join(epOutput, 'static', 'package.json'))
 }
 async function buildStyles() {
   await buildModulesStyles(pkgRoot)

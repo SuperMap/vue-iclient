@@ -1,8 +1,8 @@
 import type { PropType } from 'vue'
-import type { ThemeProps } from '@supermapgis/common/components/theme/theme'
+import type { ThemeProps } from '@supermapgis/common/utils/index.common'
 import type { ControlPosition } from 'vue-iclient-core/controllers/mapboxgl/utils/MapControl'
 import { getPropsDefaults } from '@supermapgis/common/utils/vue-types'
-import { themeProps } from '@supermapgis/common/components/theme/theme'
+import { themeProps } from '@supermapgis/common/utils/index.common'
 
 export const collapseCardProps = () => ({
   iconPosition: {

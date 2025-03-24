@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Map } from 'mapbox-gl'
-import type { WebMapProps, WebMapEvents, ControlProps, MapEventHandler } from './types'
+import type { WebMapProps, WebMapEvents, Control, MapEventHandler } from './types'
 import WebMapViewModel from 'vue-iclient-core/controllers/mapboxgl/WebMapViewModel'
 import mapEvent from 'vue-iclient-core/types/map-event'
 import MapEvents, { MAP_EVENT_NAMES } from 'vue-iclient-core/controllers/mapboxgl/utils/MapEvents'
@@ -43,7 +43,7 @@ const el = useTemplateRef('el')
 const spinning = ref(props.defaultLoading)
 
 const controlComponents = computed(() => {
-  const controls: ControlProps = {}
+  const controls: Control = {}
   for (let key in props) {
     if (key.includes('Control') && props[key].show) {
       const controlName = key.replace('Control', '')

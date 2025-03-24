@@ -17,7 +17,9 @@ export default defineConfig({
       '@supermapgis/mapboxgl': fileURLToPath(new URL('../packages/mapboxgl', import.meta.url)),
       '@supermapgis/common': fileURLToPath(new URL('../packages/common', import.meta.url)),
       'vue-iclient-core': fileURLToPath(new URL('../../core', import.meta.url)),
-      'vue-iclient-static': fileURLToPath(new URL('../../static', import.meta.url))
+      'vue-iclient-static': fileURLToPath(new URL('../../static', import.meta.url)),
+      // static/libs/EchartsLayer.js  require('echarts) 找不到echarts
+      'echarts': fileURLToPath(new URL('../node_modules/echarts', import.meta.url))
       // node_modules: fileURLToPath(new URL('../node_modules', import.meta.url))
     }
   },

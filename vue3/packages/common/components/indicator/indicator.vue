@@ -40,8 +40,7 @@
 import type { IndicatorProps, IndicatorEvents } from './types'
 import { ref, computed, watch, onMounted, onBeforeUnmount, defineProps, defineEmits } from 'vue'
 import { indicatorPropsDefault } from './types'
-import { useTheme } from '@supermapgis/common/components/theme/theme'
-import { useTimer } from '@supermapgis/common/hooks/index.common'
+import { useTimer, useTheme } from '@supermapgis/common/hooks/index.common'
 import RestService from 'vue-iclient-core/utils/RestService'
 import CountTo from './count-to.vue'
 

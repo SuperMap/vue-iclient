@@ -1,7 +1,7 @@
 import type { MenuProps, MenuItemProps, SubMenuProps } from 'ant-design-vue'
 import { defineComponent } from 'vue'
 import { Menu, MenuItem, SubMenu } from 'ant-design-vue'
-import { createWrappedComponent } from '@supermapgis/common/components/theme/antd-wrapper'
+import { createWrappedComponent } from '@supermapgis/common/utils/index.common'
 
 const SmMenu = createWrappedComponent<MenuProps>(Menu, 'menu')
 
