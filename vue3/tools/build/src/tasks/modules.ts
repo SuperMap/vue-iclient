@@ -96,13 +96,11 @@ async function buildModulesComponents(root = pkgRoot) {
         preserveModules: true,
         preserveModulesRoot: root,
         sourcemap: false,
-        // entryFileNames: `[name].${config.ext}`,
         entryFileNames: chunkInfo => {
           // 使用 path.basename 去掉 .vue 后缀
           const baseName = chunkInfo.name.replace('.vue', '')
           return `${baseName}.${config.ext}`
-        },
-        chunkFileNames: '[name].js'
+        }
       }
     })
   )
