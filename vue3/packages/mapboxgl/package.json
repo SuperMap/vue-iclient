@@ -47,7 +47,8 @@
     "proj4": "^2.15.0",
     "resize-detector": "^0.2.0",
     "simple-statistics": "^7.8.7",
-    "tinycolor2": "^1.6.0"
+    "tinycolor2": "^1.6.0",
+    "vue-count-to": "^1.0.13"
   },
   "engines": {
     "node": ">= 6.0.0",

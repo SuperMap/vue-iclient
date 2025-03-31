@@ -4,13 +4,24 @@
 
 import { Util } from 'vue-iclient-core/types/event/Util';
 
-export let Event = {
+interface EventObserver {
+  element: HTMLElement;
+  name: string;
+  observer: (event: Event) => void;
+  useCapture: boolean;
+}
+
+interface EventCache {
+  [cacheID: string]: EventObserver[];
+}
+
+export const Event = {
   /**
    * @description  A hash table cache of the event observers. Keyed by element._eventCacheID
-   * @type {boolean}
-   * @default false
+   * @type {EventCache}
+   * @default {}
    */
-  observers: false,
+  observers: {} as EventCache,
 
   /**
    * @description KEY_SPACE
@@ -87,8 +98,8 @@ export let Event = {
    * @param {Event} event - The event
    * @returns {HTMLElement} The element that caused the event
    */
-  element: function(event) {
-    return event.target || event.srcElement;
+  element: function (event: Event): HTMLElement {
+    return (event.target as HTMLElement) || ((event as any).srcElement as HTMLElement);
   },
 
   /**
@@ -96,7 +107,7 @@ export let Event = {
    * @param {Event} event - The event
    * @returns {boolean}
    */
-  isSingleTouch: function(event) {
+  isSingleTouch: function (event: TouchEvent): boolean {
     return event.touches && event.touches.length === 1;
   },
 
@@ -105,56 +116,61 @@ export let Event = {
    * @param {Event} event - The event
    * @returns {boolean}
    */
-  isMultiTouch: function(event) {
+  isMultiTouch: function (event: TouchEvent): boolean {
     return event.touches && event.touches.length > 1;
   },
 
   /**
    * @description Determine whether event was caused by a left click.
-   * @param {Event} event - The event
+   * @param {MouseEvent} event - The event
    * @returns {boolean}
    */
-  isLeftClick: function(event) {
+  isLeftClick: function (event: MouseEvent): boolean {
     return (event.which && event.which === 1) || (event.button && event.button === 1);
   },
 
   /**
    * @description Determine whether event was caused by a right mouse click.
-   * @param {Event} event - The event
+   * @param {MouseEvent} event - The event
    * @returns {boolean}
    */
-  isRightClick: function(event) {
+  isRightClick: function (event: MouseEvent): boolean {
     return (event.which && event.which === 3) || (event.button && event.button === 2);
   },
 
   /**
    * @description Stops an event from propagating.
+   * @param {Event} event - The event
    * @param {boolean} allowDefault - If true, we stop the event chain but still allow the default browser  behaviour (text selection, radio-button clicking, etc) Default false
    */
-  stop: function(event, allowDefault) {
+  stop: function (event: Event, allowDefault: boolean = false): void {
     if (!allowDefault) {
       if (event.preventDefault) {
         event.preventDefault();
       } else {
-        event.returnValue = false;
+        (event as any).returnValue = false;
       }
     }
 
     if (event.stopPropagation) {
       event.stopPropagation();
     } else {
-      event.cancelBubble = true;
+      (event as any).cancelBubble = true;
     }
   },
 
   /**
+   * @param {Event} event - The event
    * @param {string} tagName - html 标签名。
    * @returns {HTMLElement} The first node with the given tagName, starting from the node the event was triggered on and traversing the DOM upwards
    */
-  findElement: function(event, tagName) {
+  findElement: function (event: Event, tagName: string): HTMLElement {
     let element = Event.element(event);
-    while (element.parentNode && (!element.tagName || element.tagName.toUpperCase() !== tagName.toUpperCase())) {
-      element = element.parentNode;
+    while (
+      element.parentNode &&
+      (!element.tagName || element.tagName.toUpperCase() !== tagName.toUpperCase())
+    ) {
+      element = element.parentNode as HTMLElement;
     }
     return element;
   },
@@ -163,29 +179,39 @@ export let Event = {
    * @description 监听事件，注册事件处理方法。
    * @param {(HTMLElement|string)} elementParam - 待监听的 DOM 对象或者其 ID 标识。
    * @param {string} name - 监听事件的类别名称。
-   * @param {function} observer - 注册的事件处理方法。
+   * @param {(event: Event) => void} observer - 注册的事件处理方法。
    * @param {boolean} [useCapture=false] - 是否捕获。
    */
-  observe: function(elementParam, name, observer, useCapture) {
-    let element = Util.getElement(elementParam);
+  observe: function (
+    elementParam: HTMLElement | string,
+    name: string,
+    observer: (event: Event) => void,
+    useCapture: boolean = false
+  ): void {
+    let element = Util.getElement(elementParam)[0] as HTMLElement;
     useCapture = useCapture || false;
 
-    if (name === 'keypress' && (navigator.appVersion.match(/Konqueror|Safari|KHTML/) || element.attachEvent)) {
+    if (
+      name === 'keypress' &&
+      // @ts-ignore
+      (navigator.userAgent.match(/Konqueror|Safari|KHTML/) || element.attachEvent)
+    ) {
       name = 'keydown';
     }
 
     if (!this.observers) {
-      this.observers = {};
+      this.observers = {} as EventCache;
     }
-
+    // @ts-ignore
     if (!element._eventCacheID) {
       let idPrefix = 'eventCacheID_';
       if (element.id) {
         idPrefix = element.id + '_' + idPrefix;
       }
+      // @ts-ignore
       element._eventCacheID = Util.createUniqueID(idPrefix);
     }
-
+    // @ts-ignore
     let cacheID = element._eventCacheID;
 
     if (!this.observers[cacheID]) {
@@ -201,12 +227,15 @@ export let Event = {
 
     if (element.addEventListener) {
       if (name === 'mousewheel') {
-        // https://www.chromestatus.com/features/6662647093133312
+        // @ts-ignore
         element.addEventListener(name, observer, { useCapture: useCapture, passive: false });
       } else {
         element.addEventListener(name, observer, useCapture);
       }
+      // @ts-ignore
     } else if (element.attachEvent) {
+      // @ts-ignore
+
       element.attachEvent('on' + name, observer);
     }
   },
@@ -218,19 +247,21 @@ export let Event = {
    *
    * @param {(HTMLElement|string)} elementParam -
    */
-  stopObservingElement: function(elementParam) {
-    let element = Util.getElement(elementParam);
+  stopObservingElement: function (elementParam: HTMLElement | string): void {
+    let element = Util.getElement(elementParam)[0] as HTMLElement;
+    // @ts-ignore
+
     let cacheID = element._eventCacheID;
 
     this._removeElementObservers(Event.observers[cacheID]);
   },
 
   /**
-   * @param {Array.<Object>} elementObservers - Array of (element, name,
+   * @param {Array.<EventObserver>} elementObservers - Array of (element, name,
    *                                         observer, usecapture) objects,
    *                                         taken directly from hashtable
    */
-  _removeElementObservers: function(elementObservers) {
+  _removeElementObservers: function (elementObservers: EventObserver[]): void {
     if (elementObservers) {
       for (let i = elementObservers.length - 1; i >= 0; i--) {
         let entry = elementObservers[i];
@@ -245,18 +276,27 @@ export let Event = {
    * 保持一致才能确保事件移除成功。
    * @param {(HTMLElement|string)} elementParam - 被监听的 DOM 元素或者其 ID。
    * @param {string} name - 需要移除的被监听事件名称。
-   * @param {function} observer - 需要移除的事件处理方法。
+   * @param {(event: Event) => void} observer - 需要移除的事件处理方法。
    * @param {boolean} [useCapture=false] - 是否捕获。
    * @returns {boolean} Whether or not the event observer was removed
    */
-  stopObserving: function(elementParam, name, observer, useCapture) {
+  stopObserving: function (
+    elementParam: HTMLElement | string,
+    name: string,
+    observer: (event: Event) => void,
+    useCapture: boolean = false
+  ): boolean {
     useCapture = useCapture || false;
 
-    let element = Util.getElement(elementParam);
+    let element = Util.getElement(elementParam)[0];
+    // @ts-ignore
+
     let cacheID = element._eventCacheID;
 
     if (name === 'keypress') {
-      if (navigator.appVersion.match(/Konqueror|Safari|KHTML/) || element.detachEvent) {
+      // @ts-ignore
+
+      if (navigator.userAgent.match(/Konqueror|Safari|KHTML/) || element.detachEvent) {
         name = 'keydown';
       }
     }
@@ -270,7 +310,11 @@ export let Event = {
       while (!foundEntry && i < elementObservers.length) {
         let cacheEntry = elementObservers[i];
 
-        if (cacheEntry.name === name && cacheEntry.observer === observer && cacheEntry.useCapture === useCapture) {
+        if (
+          cacheEntry.name === name &&
+          cacheEntry.observer === observer &&
+          cacheEntry.useCapture === useCapture
+        ) {
           elementObservers.splice(i, 1);
           if (elementObservers.length === 0) {
             delete Event.observers[cacheID];
@@ -286,7 +330,9 @@ export let Event = {
     if (foundEntry) {
       if (element.removeEventListener) {
         element.removeEventListener(name, observer, useCapture);
+        // @ts-ignore
       } else if (element && element.detachEvent) {
+        // @ts-ignore
         element.detachEvent('on' + name, observer);
       }
     }
@@ -297,14 +343,14 @@ export let Event = {
    * @description Cycle through all the element entries in the events cache and call
    *   stopObservingElement on each.
    */
-  unloadCache: function() {
+  unloadCache: function (): void {
     // created
     if (Event && Event.observers) {
       for (let cacheID in Event.observers) {
         let elementObservers = Event.observers[cacheID];
         Event._removeElementObservers.apply(this, [elementObservers]);
       }
-      Event.observers = false;
+      Event.observers = {} as EventCache;
     }
   },
 
@@ -312,4 +358,5 @@ export let Event = {
 };
 
 /* prevent memory leaks in IE */
+// @ts-ignore
 Event.observe(window, 'unload', Event.unloadCache, false);

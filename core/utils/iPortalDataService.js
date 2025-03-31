@@ -66,6 +66,7 @@ export default class iPortalDataService extends Events {
    * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
+   * @param {boolean} [queryInfo.onlyService]
    */
   getData(queryInfo = {}, preferContent = false) {
     if (this.dataType === 'STRUCTUREDDATA') {
@@ -337,7 +338,7 @@ export default class iPortalDataService extends Events {
             data.content = JSON.parse(data.content.trim());
             // 如果是json文件 data.content = {type:'fco', features},格式不固定
             if (!data.content.features) {
-              features = this._json2Feature(data.content, queryInfo);
+              features = this._json2Feature(data.content);
             }
             features = this._formatGeoJSON(features || data.content, queryInfo);
             type = data.content.type;

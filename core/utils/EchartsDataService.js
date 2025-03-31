@@ -34,21 +34,7 @@ export function sortData(features, datasetOptions, maxFeatures, xBar) {
 }
 
 /**
- * @class EchartsDataService
- * @classdesc 图表组件功能类
- * @param {Chart-dataset} dataset - 请求的参数
- * @param {Array.<Chart-datasetOption>} datasetOptions - 数据解析的配置。
- */
-
-/**
- * @typedef {Object} Chart-dataset  - 数据来源
- * @property {string} [type = 'iServer'] - 服务类型 iServer, iPortal。
- * @property {string} url - 服务url地址。
- * @property {boolean} [withCredentials = false] - 设置请求是否带cookie
- * @property {SuperMap.FilterParameter} queryInfo - 查询条件
- */
-/**
- * @typedef {Object} Chart-datasetOption  - 解析数据的配置
+ * @typedef {Object} datasetOption  - 解析数据的配置
  * @property {string} seriesType - 图表类型line, bar, scatter, pie, radar, gauge。
  * @property {boolean} [isStastic = false] - 是否统计数据。
  * @property {string|function} [statisticFunction = 'sum'] - 统计方式。
@@ -235,7 +221,7 @@ export default class EchartsDataService {
    * @function EchartsDataService.prototype.setDatasetOptions
    * @private
    * @description 设置datasetOptions
-   * @param {Array.<Chart-datasetOption>} datasetOptions - 数据解析的配置
+   * @param {Array.<datasetOption>} datasetOptions - 数据解析的配置
    */
 
   setDatasetOptions(datasetOptions) {
@@ -277,7 +263,7 @@ export default class EchartsDataService {
    * @private
    * @description 生成chart的serie。
    * @param {Object} fieldData - 解析后的数据{xData,yData}
-   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @param {datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  配置好的serieData
    */
   _createDataOption(fieldData, datasetOption) {
@@ -323,7 +309,7 @@ export default class EchartsDataService {
    * @private
    * @description 调整tooltip显示，Todo 考虑支持用户自定义tooltip内容
    * @param {Object} data - 数据
-   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @param {datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  tooltip
    */
   _fixToolTip(data, datasetOption) {
@@ -347,7 +333,7 @@ export default class EchartsDataService {
    * @private
    * @description 生成chart的serie。
    * @param {Object} fieldData - 解析后的数据{xData,yData}
-   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @param {datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  配置好的坐标data
    */
   _createAxisData(fieldData, datasetOption) {
@@ -395,7 +381,7 @@ export default class EchartsDataService {
    * @private
    * @description 将请求回来的数据，转换成适用于chart配置的数据-不统计图表的情况。
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据
-   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @param {datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  解析好的Ydata，xdata
    */
   _fieldsDataDefault(data, datasetOption) {
@@ -417,7 +403,7 @@ export default class EchartsDataService {
    * @private
    * @description 将请求回来的数据，转换成适用于chart配置的数据-统计图表的情况。
    * @param {Array} features - 统计后的数据
-   * @param {Chart-datasetOption} datasetOption - 数据解析的配置
+   * @param {datasetOption} datasetOption - 数据解析的配置
    * @returns {Object}  解析好的Ydata，xdata
    */
   _fieldsDataStatistic(features, datasetOption) {
@@ -493,7 +479,7 @@ export default class EchartsDataService {
    * @private
    * @description 获取x轴字段要统计的属性值
    * @param {Object} data - 从superMap的iserver,iportal中请求返回的数据的fieldValue
-   * @param {String} fieldIndexs - x字段索引值数组
+   * @param {String} fieldIndex - x字段索引值数组
    * @returns {Object}  返回x轴字段要统计的属性值，返回值为eg:[fieldIndex：1, statiscIndex:{浇水地：[5,2,5,4], 林地：[5,2,5,4]...}]。
    */
   _getUniqFieldDatas(data, fieldIndex) {

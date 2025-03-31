@@ -19,9 +19,10 @@
     "build-mapboxgl": "pnpm --dir tools/build start --pkg mapboxgl",
     "build-mapboxgl:theme": "pnpm --dir packages/mapboxgl/theme-chalk build",
     "stub": "pnpm run -r --parallel stub",
-    "typecheck": "run-p typecheck:web typecheck:node",
+    "typecheck": "run-p typecheck:web typecheck:core",
     "typecheck:web": "vue-tsc -p tsconfig.web.json --composite false --noEmit",
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
+    "typecheck:core": "tsc -p tsconfig.core.json --composite false --noEmit",
     "postinstall": "pnpm stub"
   },
   "dependencies": {

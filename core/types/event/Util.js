@@ -1,7 +1,3 @@
-/* Copyright© 2000 - 2024 SuperMap Software Co.Ltd. All rights reserved.
- * This program are made available under the terms of the Apache License, Version 2.0
- * which accompanies this distribution and is available at http://www.apache.org/licenses/LICENSE-2.0.html. */
-
 export let Util = {};
 /**
  * @name Util
@@ -32,6 +28,7 @@ Util.extend = function (destination, source) {
  * @param {Object} [des] - 目标对象。
  * @param {Object} soc - 源对象。
  */
+// @ts-ignore
 Util.copy = function (des, soc) {
   des = des || {};
   let v;
@@ -82,7 +79,7 @@ Util.getElement = function () {
       element = document.getElementById(element);
     }
     if (arguments.length === 1) {
-      return element;
+      return [element];
     }
     elements.push(element);
   }

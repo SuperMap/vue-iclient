@@ -4,12 +4,6 @@
 
 /**
  * @class Pixel
- * @category BaseTypes Geometry
- * @classdesc 此类用 x,y 坐标描绘屏幕坐标（像素点）。
- * @param {number} [x=0.0] - x 坐标。
- * @param {number} [y=0.0] - y 坐标。
- * @param {Pixel.Mode} [mode=Pixel.Mode.LeftTop] - 坐标模式。
- *
  * @example
  * //单独创建一个对象
  * var pixcel = new Pixel(100,50);
@@ -39,13 +33,7 @@ export class Pixel {
 
     this.mode = mode;
     this.CLASS_NAME = 'Pixel';
-    /**
-     * @enum Pixel.Mode
-     * @readonly
-     * @description 模式。
-     * @type {string}
-     */
-
+    // @ts-ignore
     Pixel.Mode = {
       /** 左上模式。 */
       LeftTop: 'lefttop',
@@ -69,7 +57,7 @@ export class Pixel {
    * @returns {string} 例如: "x=200.4,y=242.2"
    */
   toString() {
-    return ('x=' + this.x + ',y=' + this.y);
+    return 'x=' + this.x + ',y=' + this.y;
   }
 
   /**
@@ -98,8 +86,9 @@ export class Pixel {
   equals(px) {
     let equals = false;
     if (px != null) {
-      equals = ((this.x === px.x && this.y === px.y) ||
-        (isNaN(this.x) && isNaN(this.y) && isNaN(px.x) && isNaN(px.y)));
+      equals =
+        (this.x === px.x && this.y === px.y) ||
+        (isNaN(this.x) && isNaN(this.y) && isNaN(px.x) && isNaN(px.y));
     }
     return equals;
   }
@@ -113,29 +102,13 @@ export class Pixel {
    * var distance = pixcel.distanceTo(pixcel2);
    *
    * @param {Pixel} px - 用于计算的一个 pixel。
-   * @returns {float} 作为参数传入的像素与当前像素点的距离。
+   * @returns {number} 作为参数传入的像素与当前像素点的距离。
    */
   distanceTo(px) {
-    return Math.sqrt(
-      Math.pow(this.x - px.x, 2) +
-      Math.pow(this.y - px.y, 2)
-    );
+    return Math.sqrt(Math.pow(this.x - px.x, 2) + Math.pow(this.y - px.y, 2));
   }
-
-  /**
-   * @function Pixel.prototype.add
-   * @description 在原来像素坐标基础上，x 值加上传入的 x 参数，y 值加上传入的 y 参数。
-   * @example
-   * var pixcel = new Pixel(100,50);
-   * //pixcel2是新的对象
-   * var pixcel2 = pixcel.add(20,30);
-   *
-   * @param {number} x - 传入的 x 值。
-   * @param {number} y - 传入的 y 值。
-   * @returns {Pixel} 返回一个新的 pixel 对象，该 pixel 是由当前的 pixel 与传入的 x，y 相加得到。
-   */
   add(x, y) {
-    if ((x == null) || (y == null)) {
+    if (x == null || y == null) {
       throw new TypeError('Pixel.add cannot receive null values');
     }
     return new Pixel(this.x + x, this.y + y);

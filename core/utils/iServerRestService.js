@@ -173,6 +173,8 @@ export default class iServerRestService extends Events {
    * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
    * @param {Object} [queryInfo.keyWord] - 筛选关键字。
+   * @param {boolean} [queryInfo.withCredentials]
+   * @param {string} [queryInfo.name]
    */
   getMapFeatures(datasetInfo, queryInfo) {
     let { dataUrl, mapName } = datasetInfo;
@@ -203,7 +205,9 @@ export default class iServerRestService extends Events {
    * @param {Object} queryInfo - 可选参数。
    * @param {Object} [queryInfo.maxFeatures] - 最多可返回的要素数量。
    * @param {Object} [queryInfo.attributeFilter] - 属性过滤条件。
-   * @param {Object} [queryInfo.keyWord] - 筛选关键字。
+   * @param {Object} [queryInfo.keyWord] - 筛选关键字
+   * @param {string} [queryInfo.name]
+   * @param {string[]} [queryInfo.datasetNames]
    */
   getDataFeatures(datasetInfo, queryInfo) {
     let { datasetName, dataSourceName, dataUrl } = datasetInfo;

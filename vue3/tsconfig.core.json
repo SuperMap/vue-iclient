@@ -1,7 +1,10 @@
 {
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
+    "rootDir": "../",
     "composite": true,
+    // "declaration": false, 
+    "removeComments": true,
     "jsx": "preserve",
     "lib": [
       "ES2018",
@@ -9,27 +12,16 @@
       "DOM.Iterable"
     ],
     "skipLibCheck": true,
-    "paths": {
-      "*": [
-        "node_modules/*",
-        ".pnpm/*"
-      ]
-    },
     "types": [
       "mapbox-gl",
-      "vue"
+      "geojson"
     ]
   },
   "include": [
-    "packages/mapboxgl",
-    "typings/env.d.ts",
+    "../core/**/*"
   ],
   "exclude": [
-    "node_modules",
-    "**/dist",
-    "**/__tests__/**/*",
-    "**/demo/**/*",
-    "**/gulpfile.ts",
-    "**/*.md"
+    "../core/node_modules",
+    "../core/**/__tests__/**/*",
   ]
 }

@@ -112,6 +112,7 @@ export default class RestService extends Events {
       case '[object Object]':
         subData = data;
         if (limitLen && !isNaN(+limitLen) && limitLen < Object.keys(data).length) {
+          // @ts-ignore
           subData = Object.fromEntries(Object.entries(data).slice(0, limitLen));
         }
         if (!Object.prototype.hasOwnProperty.call(subData, 'properties') || getDataType(subData.properties) !== '[object Object]') {

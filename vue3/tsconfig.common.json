@@ -18,6 +18,7 @@
     "node_modules",
     "**/dist",
     "**/__tests__/**/*",
+    "**/demo/**/*",
     "**/gulpfile.ts",
     "**/*.md"
   ]

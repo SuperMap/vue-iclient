@@ -24,7 +24,7 @@
     "prepare": "husky install",
     "test:vue3": "pnpm --dir ./vue3 test:unit",
     "dev:vue3": "pnpm --dir ./vue3 dev",
-    "typecheck:vue3": "pnpm --dir ./vue3 typecheck:web",
+    "typecheck:vue3": "pnpm --dir ./vue3 typecheck",
     "build-mapboxgl:vue3": "pnpm --dir ./vue3 build-mapboxgl",
     "publish-mapboxgl:vue3": "pnpm publish ./vue3/dist/vue3-iclient-mapboxgl"
   },
@@ -54,6 +54,8 @@
   },
   "license": "Apache-2.0",
   "devDependencies": {
+    "@types/geojson": "^7946.0.16",
+    "@types/jest": "^29.5.14",
     "husky": "^8.0.0",
     "lint-staged": "^15.4.3",
     "vue-iclient-core": "workspace:*",

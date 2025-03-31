@@ -72,7 +72,7 @@ const plugins: Plugin[] = [
 ]
 async function buildModulesComponents(root = pkgRoot) {
   const input = excludeFiles(
-    await glob(['**/*.{js,ts,vue}', '!**/style/(index|css).{js,ts,vue}'], {
+    await glob(['**/*.{js,ts,vue}', '!**/demo/*.{js,ts,vue}', '!**/style/(index|css).{js,ts,vue}'], {
       cwd: root,
       absolute: true,
       onlyFiles: true
@@ -100,7 +100,9 @@ async function buildModulesComponents(root = pkgRoot) {
           // 使用 path.basename 去掉 .vue 后缀
           const baseName = chunkInfo.name.replace('.vue', '')
           return `${baseName}.${config.ext}`
-        }
+        },
+        // entryFileNames: `[name].${config.ext}`,
+        // chunkFileNames: '[name].[ext]'
       }
     })
   )

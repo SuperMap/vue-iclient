@@ -161,9 +161,12 @@ export function getFeatureCenter(feature) {
   let featureType = feature.geometry.type;
   let center;
   if (featureType === 'LineString') {
+    // @ts-ignore
     center = coordinates[parseInt(coordinates.length / 2)];
   } else if (featureType === 'MultiLineString') {
+    // @ts-ignore
     let coord = coordinates[parseInt(coordinates.length / 2)];
+    // @ts-ignore
     center = coord[parseInt(coord.length / 2)];
   } else {
     center = getCenter(feature).geometry.coordinates;
@@ -245,6 +248,7 @@ export function setPopupArrowStyle(color) {
       if (borderPosition) {
         const popupArrow = item.querySelector('.mapboxgl-popup-tip');
         if (popupArrow) {
+          // @ts-ignore
           popupArrow.style[`border${borderPosition}Color`] = color;
         }
       }

@@ -6,6 +6,20 @@ import { Event } from 'vue-iclient-core/types/event/Event';
 import { FunctionExt } from 'vue-iclient-core/types/event/BaseTypes';
 import { Util } from 'vue-iclient-core/types/event/Util';
 
+// 定义 Listener 接口
+interface Listener {
+  obj: any;
+  func: (evt: any) => any;
+}
+
+// 定义 Extensions 类型
+type Extensions = {
+  [key: string]: any;
+};
+
+// 定义 EventHandler 类型
+type EventHandler = (evt: Event) => void;
+
 /**
  * @class Events
  * @classdesc 事件类。
@@ -16,89 +30,90 @@ import { Util } from 'vue-iclient-core/types/event/Util';
  * @param {Object} options - 事件对象选项。
  */
 export class Events {
-  constructor(object, element, eventTypes, fallThrough, options) {
-    /**
-     * @member {Array.<string>} Events.prototype.BROWSER_EVENTS
-     * @description 支持的事件。
-     * @constant
-     * @default [
-     "mouseover", "mouseout","mousedown", "mouseup", "mousemove",
-     "click", "dblclick", "rightclick", "dblrightclick","resize",
-     "focus", "blur","touchstart", "touchmove", "touchend","keydown",
-     "MSPointerDown", "MSPointerUp", "pointerdown", "pointerup",
-     "MSGestureStart", "MSGestureChange", "MSGestureEnd","contextmenu"
-     ]
-     */
-    this.BROWSER_EVENTS = [
-      'mouseover', 'mouseout',
-      'mousedown', 'mouseup', 'mousemove',
-      'click', 'dblclick', 'rightclick', 'dblrightclick',
-      'resize', 'focus', 'blur',
-      'touchstart', 'touchmove', 'touchend',
-      'keydown', 'MSPointerDown', 'MSPointerUp', 'pointerdown', 'pointerup',
-      'MSGestureStart', 'MSGestureChange', 'MSGestureEnd',
-      'contextmenu'
-    ];
+  readonly BROWSER_EVENTS: string[] = [
+    'mouseover',
+    'mouseout',
+    'mousedown',
+    'mouseup',
+    'mousemove',
+    'click',
+    'dblclick',
+    'rightclick',
+    'dblrightclick',
+    'resize',
+    'focus',
+    'blur',
+    'touchstart',
+    'touchmove',
+    'touchend',
+    'keydown',
+    'MSPointerDown',
+    'MSPointerUp',
+    'pointerdown',
+    'pointerup',
+    'MSGestureStart',
+    'MSGestureChange',
+    'MSGestureEnd',
+    'contextmenu'
+  ];
+  listeners: { [key: string]: Listener[] } = {};
+  object: any;
+  element: HTMLElement | null = null;
+  eventTypes: string[] = [];
+  eventHandler: EventHandler | null = null;
+  fallThrough: boolean;
+  includeXY: boolean = false;
+  extensions: Extensions = {};
+  extensionCount: { [key: string]: number } = {};
+  clearMouseListener: (() => void) | null = null;
+  CLASS_NAME: string = 'Events';
 
-    this.listeners = {};
-
-    this.object = object;
-
-    this.element = null;
-
-    this.eventTypes = [];
-
-    this.eventHandler = null;
-
-    this.fallThrough = fallThrough;
-
-    this.includeXY = false;
-    this.extensions = {};
-
-    this.extensionCount = {};
-
-    this.clearMouseListener = null;
-
+  constructor(
+    object?: any,
+    element?: HTMLElement | null,
+    eventTypes?: string[] | null,
+    // @ts-ignore
+    fallThrough?: boolean = false,
+    options?: any = {}
+  ) {
     Util.extend(this, options);
 
-    if (eventTypes != null) {
+    if (eventTypes) {
       for (let i = 0, len = eventTypes.length; i < len; i++) {
         this.addEventType(eventTypes[i]);
       }
     }
 
-    if (element != null) {
+    if (element) {
       this.attachToElement(element);
     }
-
-    this.CLASS_NAME = 'Events';
   }
 
   /**
    * @function Events.prototype.destroy
    * @description 移除当前要素 element 上的所有事件监听和处理。
    */
-  destroy() {
+  destroy(): void {
     for (let e in this.extensions) {
       if (typeof this.extensions[e] !== 'boolean') {
         this.extensions[e].destroy();
       }
     }
-    this.extensions = null;
+    this.extensions = null as any;
     if (this.element) {
       Event.stopObservingElement(this.element);
+      // @ts-ignore
       if (this.element.hasScrollEvent) {
-        Event.stopObserving(
-          window, 'scroll', this.clearMouseListener
-        );
+        // @ts-ignore
+
+        Event.stopObserving(window, 'scroll', this.clearMouseListener as () => void);
       }
     }
     this.element = null;
-
-    this.listeners = null;
+    this.listeners = null as any;
     this.object = null;
-    this.eventTypes = null;
-    this.fallThrough = null;
+    this.eventTypes = null as any;
+    this.fallThrough = null as any;
     this.eventHandler = null;
   }
 
@@ -107,7 +122,7 @@ export class Events {
    * @description 在此事件对象中添加新的事件类型，如果这个事件类型已经添加过了，则不做任何事情。
    * @param {string} eventName - 事件名。
    */
-  addEventType(eventName) {
+  addEventType(eventName: string): void {
     if (!this.listeners[eventName]) {
       this.eventTypes.push(eventName);
       this.listeners[eventName] = [];
@@ -117,22 +132,21 @@ export class Events {
   /**
    * @function Events.prototype.attachToElement
    * @description 给 DOM 元素绑定浏览器事件。
-   * @param {HTMLDOMElement} element - 绑定浏览器事件的 DOM 元素。
+   * @param {HTMLElement} element - 绑定浏览器事件的 DOM 元素。
    */
-  attachToElement(element) {
+  attachToElement(element: HTMLElement): void {
     if (this.element) {
       Event.stopObservingElement(this.element);
     } else {
       // keep a bound copy of handleBrowserEvent() so that we can
       // pass the same function to both Event.observe() and .stopObserving()
       this.eventHandler = FunctionExt.bindAsEventListener(
-        this.handleBrowserEvent, this
-      );
+        this.handleBrowserEvent,
+        this
+      ) as EventHandler;
 
       // to be used with observe and stopObserving
-      this.clearMouseListener = FunctionExt.bind(
-        this.clearMouseCache, this
-      );
+      this.clearMouseListener = FunctionExt.bind(this.clearMouseCache, this);
     }
     this.element = element;
     for (let i = 0, len = this.BROWSER_EVENTS.length; i < len; i++) {
@@ -149,7 +163,7 @@ export class Events {
     Event.observe(element, 'dragstart', Event.stop);
   }
 
-  on(object) {
+  on(object: { [key: string]: (evt: any) => any; scope?: any }): void {
     for (let type in object) {
       if (type !== 'scope' && Object.prototype.hasOwnProperty.call(object, type)) {
         this.register(type, object.scope, object[type]);
@@ -157,12 +171,12 @@ export class Events {
     }
   }
 
-  register(type, obj, func, priority) {
+  register(type: string, obj: any | null, func: (evt: any) => any, priority: any = false): void {
     if (type in Events && !this.extensions[type]) {
-      this.extensions[type] = new Events[type](this);
+      this.extensions[type] = new (Events as any)[type](this);
     }
-    if ((func != null) && (Util.indexOf(this.eventTypes, type) !== -1)) {
-      if (obj == null) {
+    if (func && Util.indexOf(this.eventTypes, type) !== -1) {
+      if (obj === null) {
         obj = this.object;
       }
       let listeners = this.listeners[type];
@@ -171,7 +185,7 @@ export class Events {
         this.listeners[type] = listeners;
         this.extensionCount[type] = 0;
       }
-      let listener = { obj: obj, func: func };
+      let listener: Listener = { obj, func };
       if (priority) {
         listeners.splice(this.extensionCount[type], 0, listener);
         if (typeof priority === 'object' && priority.extension) {
@@ -183,11 +197,11 @@ export class Events {
     }
   }
 
-  registerPriority(type, obj, func) {
+  registerPriority(type: string, obj: any | null, func: (evt: any) => any): void {
     this.register(type, obj, func, true);
   }
 
-  un(object) {
+  un(object: { [key: string]: (evt: any) => any; scope?: any }): void {
     for (let type in object) {
       if (type !== 'scope' && Object.prototype.hasOwnProperty.call(object, type)) {
         this.unregister(type, object.scope, object[type]);
@@ -195,12 +209,12 @@ export class Events {
     }
   }
 
-  unregister(type, obj, func) {
-    if (obj == null) {
+  unregister(type: string, obj: any | null, func: (evt: any) => any): void {
+    if (obj === null) {
       obj = this.object;
     }
     let listeners = this.listeners[type];
-    if (listeners != null) {
+    if (listeners) {
       for (let i = 0, len = listeners.length; i < len; i++) {
         if (listeners[i].obj === obj && listeners[i].func === func) {
           listeners.splice(i, 1);
@@ -215,13 +229,13 @@ export class Events {
    * @description 删除某个事件类型的所有监听，如果该事件类型没有注册，则不做任何操作。
    * @param {string} type - 事件类型。
    */
-  remove(type) {
-    if (this.listeners[type] != null) {
+  remove(type: string): void {
+    if (this.listeners[type]) {
       this.listeners[type] = [];
     }
   }
 
-  triggerEvent(type, evt) {
+  triggerEvent(type: string, evt: any = {}): any {
     let listeners = this.listeners[type];
 
     // fast path
@@ -230,7 +244,7 @@ export class Events {
     }
 
     // prep evt object with object & div references
-    if (evt == null) {
+    if (!evt) {
       evt = {};
     }
     evt.object = this.object;
@@ -243,13 +257,13 @@ export class Events {
     // get a clone of the listeners array to
     // allow for splicing during callbacks
     listeners = listeners.slice();
-    let continueChain;
+    let continueChain: any;
     for (let i = 0, len = listeners.length; i < len; i++) {
       let callback = listeners[i];
       // bind the context to callback.obj
       continueChain = callback.func.apply(callback.obj, [evt]);
 
-      if ((continueChain !== undefined) && (continueChain === false)) {
+      if (continueChain !== undefined && continueChain === false) {
         // if callback returns false, execute no more callbacks.
         break;
       }
@@ -261,7 +275,7 @@ export class Events {
     return continueChain;
   }
 
-  handleBrowserEvent(evt) {
+  handleBrowserEvent(evt: any): void {
     let type = evt.type;
     let listeners = this.listeners[type];
     if (!listeners || listeners.length === 0) {
@@ -274,7 +288,7 @@ export class Events {
       let x = 0;
       let y = 0;
       let num = touches.length;
-      let touch;
+      let touch: any;
       for (let i = 0; i < num; ++i) {
         touch = touches[i];
         x += touch.clientX;
@@ -293,13 +307,20 @@ export class Events {
    * @function Events.prototype.clearMouseCache
    * @description 清除鼠标缓存。
    */
-  clearMouseCache() {
-    this.element.scrolls = null;
-    this.element.lefttop = null;
-    let body = document.body;
-    if (body && !((body.scrollTop !== 0 || body.scrollLeft !== 0) &&
-      navigator.userAgent.match(/iPhone/i))) {
-      this.element.offsets = null;
+  clearMouseCache(): void {
+    if (this.element) {
+      // @ts-ignore
+      this.element.scrolls = null;
+      // @ts-ignore
+      this.element.lefttop = null;
+      let body = document.body;
+      if (
+        body &&
+        !((body.scrollTop !== 0 || body.scrollLeft !== 0) && navigator.userAgent.match(/iPhone/i))
+      ) {
+        // @ts-ignore
+        this.element.offsets = null;
+      }
     }
   }
 
@@ -307,47 +328,46 @@ export class Events {
    * @function Events.prototype.getMousePosition
    * @returns {Pixel} 当前的鼠标的 xy 坐标点。
    */
-  getMousePosition(evt) {
+  getMousePosition(evt: any): Pixel {
     if (!this.includeXY) {
       this.clearMouseCache();
-    } else if (!this.element.hasScrollEvent) {
-      Event.observe(window, 'scroll', this.clearMouseListener);
+      // @ts-ignore
+    } else if (this.element && !this.element.hasScrollEvent) {
+      // @ts-ignore
+      Event.observe(window, 'scroll', this.clearMouseListener as () => void);
+      // @ts-ignore
       this.element.hasScrollEvent = true;
     }
 
-    if (!this.element.scrolls) {
-      let viewportElement = Util.getViewportElement();
-      this.element.scrolls = [
-        viewportElement.scrollLeft,
-        viewportElement.scrollTop
-      ];
-    }
+    if (this.element) {
+      // @ts-ignore
+      if (!this.element.scrolls) {
+        let viewportElement = Util.getViewportElement();
+        // @ts-ignore
+        this.element.scrolls = [viewportElement.scrollLeft, viewportElement.scrollTop];
+      }
 
-    if (!this.element.lefttop) {
-      this.element.lefttop = [
-        (document.documentElement.clientLeft || 0),
-        (document.documentElement.clientTop || 0)
-      ];
-    }
+      // @ts-ignore
+      if (!this.element.lefttop) {
+        // @ts-ignore
+        this.element.lefttop = [
+          document.documentElement.clientLeft || 0,
+          document.documentElement.clientTop || 0
+        ];
+      }
+      // @ts-ignore
+      if (!this.element.offsets) {
+        // @ts-ignore
+        this.element.offsets = Util.pagePosition(this.element);
+      }
 
-    if (!this.element.offsets) {
-      this.element.offsets = Util.pagePosition(this.element);
+      return new Pixel(
+        // @ts-ignore
+        evt.clientX + this.element.scrolls[0] - this.element.offsets[0] - this.element.lefttop[0],
+        // @ts-ignore
+        evt.clientY + this.element.scrolls[1] - this.element.offsets[1] - this.element.lefttop[1]
+      );
     }
-
-    return new Pixel(
-      (evt.clientX + this.element.scrolls[0]) - this.element.offsets[0] - this.element.lefttop[0],
-      (evt.clientY + this.element.scrolls[1]) - this.element.offsets[1] - this.element.lefttop[1]
-    );
+    return new Pixel(0, 0);
   }
 }
-
-Events.prototype.BROWSER_EVENTS = [
-  'mouseover', 'mouseout',
-  'mousedown', 'mouseup', 'mousemove',
-  'click', 'dblclick', 'rightclick', 'dblrightclick',
-  'resize', 'focus', 'blur',
-  'touchstart', 'touchmove', 'touchend',
-  'keydown', 'MSPointerDown', 'MSPointerUp', 'pointerdown', 'pointerup',
-  'MSGestureStart', 'MSGestureChange', 'MSGestureEnd',
-  'contextmenu'
-];

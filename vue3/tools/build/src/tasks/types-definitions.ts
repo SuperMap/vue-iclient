@@ -7,33 +7,29 @@ import { pathRewriter, run } from '../utils'
 
 const pkgName = getPkgByCommand(process.argv)
 export const generateTypesDefinitions = async () => {
-  await generateTypesPkg()
-  await generateTypesCommon()
+  await generateTypes(`tsconfig.${pkgName}.json`, `packages/${pkgName}`)
+  await generateTypes('tsconfig.common.json', 'packages/common')
+  await generateTypes('tsconfig.core.json', 'core')
   const distPackage = `${getPKG_NAME(pkgName)}`
   const typesDir = path.join(buildOutput, 'types', 'packages', `${distPackage}`)
-  const moveTo = async (pkg = 'common', targetDir = typesDir) => {
-    const sourceDir = path.join(buildOutput, 'types', 'packages', pkg)
+  const moveTo = async (pkg = 'packages/common', targetDir = typesDir) => {
+    const sourceDir = path.join(buildOutput, 'types', pkg)
     await copy(sourceDir, targetDir)
     await remove(sourceDir)
   }
-  await moveTo(pkgName)
-  await moveTo('common')
+  await moveTo(`packages/${pkgName}`)
+  await moveTo('packages/common')
+  await moveTo('core', path.join(typesDir, 'core'))
 }
-export const generateTypesCommon = async () => {
+export const generateTypes = async (tsconfig, pkgRoot) => {
   await run(
-    `npx vue-tsc -p tsconfig.common.json --declaration --emitDeclarationOnly --declarationDir dist/types`
+    `npx vue-tsc -p ${tsconfig} --declaration --emitDeclarationOnly --declarationDir dist/types`
   )
-  await generatePkgTypes('common')
-}
-export const generateTypesPkg = async () => {
-  await run(
-    `npx vue-tsc -p tsconfig.${pkgName}.json --declaration --emitDeclarationOnly --declarationDir dist/types`
-  )
-  await generatePkgTypes()
+  await generatePkgTypes(pkgRoot)
 }
 
-async function generatePkgTypes(pkg = pkgName) {
-  const typesDir = path.join(buildOutput, 'types', 'packages', `${pkg}`)
+async function generatePkgTypes(pkg) {
+  const typesDir = path.join(buildOutput, 'types', `${pkg}`)
   const filePaths = await glob(`**/*.d.ts`, {
     cwd: typesDir,
     absolute: true
