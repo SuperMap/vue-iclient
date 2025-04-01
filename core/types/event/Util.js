@@ -143,22 +143,6 @@ Util.indexOf = function (array, obj) {
   }
 };
 
-Util.getElement = function () {
-  let elements = [];
-
-  for (let i = 0, len = arguments.length; i < len; i++) {
-    let element = arguments[i];
-    if (typeof element === 'string') {
-      element = document.getElementById(element);
-    }
-    if (arguments.length === 1) {
-      return element;
-    }
-    elements.push(element);
-  }
-  return elements;
-};
-
 Util.lastSeqID = 0;
 
 Util.createUniqueID = function (prefix) {
