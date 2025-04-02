@@ -78,26 +78,26 @@
             @mouseleave="handleMouseLeaveFn(rowData, rowData['idx'], $event)"
           >
             <div
-              v-for="(items, key, itemIndex) in filterProperty(rowData, 'idx')"
-              :key="key"
-              :title="!getColumns[itemIndex].slots && items"
-              :class="getColumns[itemIndex].slots && 'sm-component-text-list__slot'"
+              v-for="(items, itemIndex) in getColumns"
+              :key="itemIndex"
+              :title="(!items.slots && items.field) ? rowData[items.field] : ''"
+              :class="items.slots && 'sm-component-text-list__slot'"
               :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
             >
-              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">
-                {{ getColumns[itemIndex].fixInfo.prefix }}
+              <span v-if="items && items.fixInfo">
+                {{ items.fixInfo.prefix }}
               </span>
-              <span v-if="!getColumns[itemIndex].slots"> {{ items }} </span>
+              <span v-if="!items.slots"> {{ rowData[items.field] }} </span>
               <slot
                 v-else
-                :name="getColumns[itemIndex].slots.customRender"
-                :text="items"
+                :name="items.slots.customRender"
+                :text="rowData[items.field]"
                 :record="rowData"
                 :rowIndex="index"
               >
               </slot>
-              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">{{
-                getColumns[itemIndex].fixInfo.suffix
+              <span v-if="items.fixInfo">{{
+                items.fixInfo.suffix
               }}</span>
             </div>
           </div>
@@ -643,13 +643,10 @@ class SmTextList extends Mixins(Theme, Timer) {
     if (content) {
       let listData = [];
       content.forEach((data, index) => {
-        let obj = {};
-        this.getColumns &&
-          this.getColumns.forEach((column, index) => {
-            obj[`${column.field}-${index}`] = (data[column.field] === null || data[column.field] === undefined) ? '-' : data[column.field];
-          });
-        // @ts-ignore
-        obj.idx = index;
+        const obj = { idx: index };
+        for (let key in data) {
+          obj[key] = (data[key] === null || data[key] === undefined) ? '-' : data[key];
+        }
         JSON.stringify(obj) !== '{}' && listData.push(obj);
       });
       return listData;
@@ -667,15 +664,9 @@ class SmTextList extends Mixins(Theme, Timer) {
         if (!properties) {
           return;
         }
-        let contentObj = {};
-        if (this.getColumns) {
-          this.getColumns.forEach((column, index) => {
-            contentObj[`${column.field}-${index}`] = (properties[column.field] === null || properties[column.field] === undefined) ? '-' : properties[column.field];
-          });
-          // @ts-ignore
-          contentObj.idx = index;
-        } else {
-          contentObj = properties;
+        const contentObj = { idx: index };
+        for (let key in properties) {
+          contentObj[key] = (properties[key] === null || properties[key] === undefined) ? '-' : properties[key];
         }
         JSON.stringify(contentObj) !== '{}' && content.push(contentObj);
       });

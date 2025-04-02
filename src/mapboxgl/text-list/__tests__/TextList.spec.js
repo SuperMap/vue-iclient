@@ -188,10 +188,10 @@ describe('TextList.vue', () => {
     }
   });
 
-  it('render default correctly', done => {
+  it('render default correctly', async done => {
     wrapper = mount(SmTextList, {
       propsData: {
-        content: content,
+        content: [],
         header: header,
         fields: fields
       }
@@ -284,9 +284,18 @@ describe('TextList.vue', () => {
       ],
       autoRolling: true
     });
+    wrapper.vm.$nextTick();
+    expect(wrapper.vm.animateContent[0]).toEqual({
+      idx: 0,
+      平均最低气温: '-47',
+      最热七天气温: '29',
+      海拔: '296',
+      省份: '黑龙江1',
+      站台: '漠河'
+    });
   });
 
-  it('change dataset', () => {
+  it('change dataset', async () => {
     const newDataset = {
       type: 'geoJSON',
       maxFeatures: 100,
@@ -373,9 +382,21 @@ describe('TextList.vue', () => {
       }
     });
     wrapper.vm.$nextTick();
-    wrapper.setProps({
+    await wrapper.setProps({
       dataset: newDataset,
       autoRolling: true
+    });
+    expect(wrapper.vm.animateContent[0]).toEqual({
+      SmGeoPosition: '393216',
+      SmGeometrySize: '20',
+      SmID: '1',
+      SmLibTileID: '1',
+      SmUserID: '0',
+      SmX: '1.295350519989875E7',
+      SmY: '4851338.019912067',
+      idx: 0,
+      index: 0,
+      标准名称: '长椿街站'
     });
   });
 
