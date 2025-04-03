@@ -33,7 +33,9 @@ export default {
     unassociatedMap: '您需要配置关联地图！',
     videojs:
       '请引入video.js插件: https://github.com/videojs/video.js',
-    flvPlayer: '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs'
+    flvPlayer: '请引入flv相关插件: https://github.com/bilibili/flv.js, https://github.com/mister-ben/videojs-flvjs',
+    treeDargTipLevel: "请在同级目录下拖拽",
+    treeDargTipImage: "仅支持影像图层调整顺序"
   },
   success: {
     copySucccess: '复制成功'
@@ -89,6 +91,23 @@ export default {
     attributes: '属性表',
     zoomToLayer: '缩放至图层',
     opacity: '不透明度'
+  },
+  sceneLayerList: {
+    title: "图层",
+    s3mLayer: "S3M图层",
+    imgLayer: "影像图层",
+    mvtLayer: "MVT图层",
+    terrainLayer: "地形图层",
+    lnglatMap: "经纬底图",
+    defaultImage: "默认影像",
+    stkTerrain: "STK地形",
+    superMapTerrain: "超图在线地形",
+    tiandituTerrain: "天地图地形",
+    LocalImage: "本地图片",
+    BingMap: "必应底图",
+    TIANDITU: "天地图",
+    OSM: "OSM底图",
+    GRIDIMAGERY: "经纬底图"
   },
   slideshow: {
     title: '幻灯片'

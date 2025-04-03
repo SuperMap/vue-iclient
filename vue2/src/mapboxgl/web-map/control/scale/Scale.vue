@@ -10,7 +10,7 @@
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
-import ScaleViewModel from './ScaleViewModel';
+import ScaleViewModel from 'vue-iclient-core/controllers/mapboxgl/ScaleViewModel';
 
 export default {
   name: 'SmScale',

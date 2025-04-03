@@ -267,3 +267,47 @@ export function numberEqual(num1, num2, precision = 10E-6) {
 }
 
 export const statisticFunctions = { min, max: statisticsMax, mean, sum, mode, median, variance, standardDeviation, count: fieldValues => fieldValues.length };
+
+export function loadSecureScript(url) {
+  const $script = document.createElement('script')
+  $script.src = url
+  // script.integrity = lib.sri
+  $script.crossOrigin = 'anonymous'
+  $script.referrerPolicy = 'no-referrer'
+
+  // // 3. 备用源加载
+  // script.onerror = () => {
+  //   console.warn('主CDN加载失败，启用备用源')
+  //   const fallbackScript = document.createElement('script')
+  //   fallbackScript.src = `https://backup.cdn.example/${libName}.min.js`
+  //   document.body.appendChild(fallbackScript)
+  // }
+
+  // 4. 沙箱化加载（现代浏览器）
+  if ('sandbox' in HTMLScriptElement.prototype) {
+    $script.sandbox = 'allow-scripts'
+  }
+
+  document.head.appendChild($script)
+  return new Promise((resolve, reject) => {
+    $script.onload = () => {
+      resolve(true);
+    }
+    $script.onerror = e => {
+      console.log(e)
+      reject()
+    }
+  })
+}
+
+export function loadLink(src) {
+  const $link = document.createElement('link');
+  $link.rel = 'stylesheet';
+  $link.href = src;
+  document.head.appendChild($link);
+  return new Promise((resolve, reject) => {
+    $link.onload = () => {
+      resolve(true);
+    };
+  });
+}

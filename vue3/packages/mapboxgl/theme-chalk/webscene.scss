@@ -1,0 +1,53 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(web-scene) {
+  overflow: hidden;
+  position: relative;
+
+  .scene-control-top-right,
+  .scene-control-top-left,
+  .scene-control-bottom-right,
+  .scene-control-bottom-left {
+    position: absolute;
+  }
+  .scene-ctrl{
+    clear: both;
+  }
+  .scene-control-top-right {
+    top: 0;
+    right: 0;
+    .scene-ctrl {
+      margin: 10px 10px 0 0;
+      float: right;
+    }
+    .supermap3d-viewer-navigationContainer {
+      z-index: 1;
+      position: relative;
+    }
+  }
+  .scene-control-top-left {
+    top: 0;
+    left: 0;
+    .scene-ctrl {
+      margin: 10px 0 0 10px;
+      float: left;
+    }
+  }
+  .scene-control-bottom-right {
+    bottom: 0;
+    right: 0;
+    .scene-ctrl {
+      margin: 0 10px 10px 0;
+      float: right;
+    }
+  }
+  .scene-control-bottom-left {
+    bottom: 0;
+    left: 0;
+    .scene-ctrl {
+      margin: 0 0 10px 10px;
+      float: left;
+    }
+  }
+}

@@ -53,8 +53,8 @@ export function useMapGetter<M>({ viewModel, loaded, removed }: MapGetterOptions
   }
 
   onMounted(() => {
-    _mapWatcher.onMounted({ viewModel: viewModelInstance })
     _mapWatcher.on({ 'hook:loaded': _onHookLoaded, 'hook:removed': _onHookRemoved })
+    _mapWatcher.onMounted({ viewModel: viewModelInstance })
   })
 
   onUnmounted(() => {

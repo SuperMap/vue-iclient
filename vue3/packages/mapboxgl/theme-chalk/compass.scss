@@ -1,0 +1,20 @@
+@use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
+@use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
+
+@include b(compass) {
+  font-size: 18px;
+  border-radius: 4px;
+  box-shadow: 0px 3px 13px 0px $shadow-color;
+  cursor: pointer;
+  @include e(content) {
+    width: 32px;
+    height: 32px;
+    font-size: inherit;
+    border: none;
+    padding: 0;
+    i {
+      display: block;
+      font-size: inherit;
+    }
+  }
+}

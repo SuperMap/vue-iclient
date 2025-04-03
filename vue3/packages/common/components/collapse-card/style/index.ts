@@ -1,1 +1,1 @@
-import '@supermapgis/common/theme-chalk/collapseCard.scss'
+import '@supermapgis/common/theme-chalk/collapse-card.scss'

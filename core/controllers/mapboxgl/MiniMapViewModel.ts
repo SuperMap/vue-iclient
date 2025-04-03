@@ -1,4 +1,4 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import clonedeep from 'lodash.clonedeep';
 import debounce from 'lodash.debounce';
 
@@ -14,6 +14,8 @@ import debounce from 'lodash.debounce';
  * @extends mapboxgl.Evented
  */
 export default class MiniMapViewModel extends mapboxgl.Evented {
+  on: (name: string, data: (...rest: any) => void) => void;
+  off: (name: string, data?: (...rest: any) => void) => void;
   constructor() {
     super();
     this.options = {
@@ -243,7 +245,7 @@ export default class MiniMapViewModel extends mapboxgl.Evented {
     trc[0][4][1] = ne.lat;
   }
 
-  _update(e) {
+  _update(e?) {
     if (this._isDragging) {
       return;
     }

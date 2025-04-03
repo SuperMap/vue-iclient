@@ -297,7 +297,7 @@ const handleChange = (
     paginationOptions.value.total = currentDataSource.length
   }
   getCurrentSelectedRowLength()
-  paginationOptions.value = { ...paginationOptions, current: pagination.current }
+  paginationOptions.value = pagination
   sorter.value = newSorter
   emit('change', pagination, filters, newSorter, { currentDataSource })
 }
@@ -337,7 +337,6 @@ const refreshData = () => {
 }
 
 const handleSearch = (selectedKeys: string[], confirm: () => void, dataIndex: string) => {
-  console.log('selectedKeys, confirm, dataIndex', selectedKeys, dataIndex)
   searchedColumn.value = dataIndex
   searchText.value = selectedKeys[0]
   viewModel.setSearchText(searchText.value, searchedColumn.value)
@@ -360,6 +359,10 @@ const removed = () => {
   viewModel.off('changeSelectLayer')
   viewModel = null
 }
+
+watch(() => fieldInfo, newVal => {
+  viewModel.setFieldInfo(newVal.value)
+}, { deep: true })
 
 watch(selectedRowKeys, newVal => {
   emit('rowSelect', newVal)

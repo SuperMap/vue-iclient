@@ -1,97 +1,89 @@
 <template>
-  <div class="sm-component-web-scene">
-    <vc-viewer
-      v-if="sceneUrl"
-      class="sm-component-web-scene__wrap"
-      :cesiumPath="cesiumPath"
-      @ready="ready"
-    ></vc-viewer>
-  </div>
+  <div :id="target" class="sm-component-web-scene"><slot></slot></div>
 </template>
-<script lang="ts">
-import Vue from 'vue';
-import { Component, Prop, Watch, Emit } from 'vue-property-decorator';
-import WebSceneViewModel from './WebSceneViewModel';
 
-@Component({
-  name: 'SmWebScene'
-})
-class SmWebScene extends Vue {
-  WebSceneViewModel: WebSceneViewModel;
-  viewFn: any;
-  scanFn: any;
-  @Prop() sceneUrl: string;
+<script>
+import WebSceneViewModel from 'vue-iclient-core/controllers/mapboxgl/WebSceneViewModel';
+import isEqual from 'lodash.isequal';
+import sceneEvent from 'vue-iclient-core/types/scene-event';
 
-  @Prop() cesiumPath: string;
-
-  @Prop() options: {
-    withCredentials: boolean;
-    position?: { x: number; y: number; z: number };
-    scanEffect?: {
-      status?: boolean;
-      type?: 'circle' | 'noScan' | 'line';
-      centerPostion?: { x: number; y: number; z: number };
-      period?: number;
-      speed?: number;
-    };
-  };
-
-  @Watch('sceneUrl')
-  sceneUrlChaned() {
-    this.WebSceneViewModel && this.WebSceneViewModel.setSceneUrl(this.sceneUrl);
-  }
-
-  @Watch('options.scanEffect')
-  scanEffectChaned() {
-    this.WebSceneViewModel && this.WebSceneViewModel.setScanEffect(this.options.scanEffect);
-  }
-
-  @Watch('options.position')
-  positionChaned() {
-    this.WebSceneViewModel && this.WebSceneViewModel.setPosition(this.options.position);
-  }
-
-  @Emit()
-  viewerPositionChanged(value) {
-    return value;
-  }
-
-  @Emit()
-  scanPositionChanged(value) {
-    return value;
-  }
-
-  @Emit()
-  cesiumInstanceDidLoad(instance) {
-    return instance;
-  }
-
-  ready(cesiumInstance) {
-    const { Cesium, viewer } = cesiumInstance;
-    this.cesiumInstanceDidLoad(cesiumInstance);
-    this.WebSceneViewModel = new WebSceneViewModel(Cesium, viewer, this.sceneUrl, this.options);
+export default {
+  name: 'SmWebScene',
+  props: {
+    sceneUrl: {
+      type: String
+    },
+    widgetsPath: {
+      type: String
+    },
+    cesiumPath: {
+      type: String
+    },
+    options: {
+      type: Object
+    },
+    target: {
+      type: String,
+      default: 'scene'
+    },
+    flyAnimation: {
+      type: Boolean
+    }
+  },
+  watch: {
+    sceneUrl() {
+      this.webSceneViewModel && this.webSceneViewModel.setSceneUrl(this.sceneUrl);
+    },
+    'options.scanEffect'(scanEffect) {
+      this.webSceneViewModel && this.webSceneViewModel.setScanEffect(scanEffect);
+    },
+    'options.position'(newVal, oldVal) {
+      if (this.webSceneViewModel) {
+        let position = null;
+        if (this.webSceneViewModel.viewer) {
+          const destination = this.webSceneViewModel.getPosition();
+          const orientation = this.webSceneViewModel.getOrientation();
+          position = { orientation, destination };
+        }
+        if (!isEqual(newVal, oldVal) && !isEqual(newVal, position)) {
+          this.webSceneViewModel.setPosition(newVal, this.flyAnimation);
+        }
+      }
+    },
+    'options.tiandituOptions'(newVal, oldVal) {
+      if (!isEqual(newVal, oldVal)) {
+        this.webSceneViewModel && this.webSceneViewModel.setTiandituOption(newVal);
+      }
+    }
+  },
+  mounted() {
+    sceneEvent.setScene(this.target, {});
+    this.webSceneViewModel = new WebSceneViewModel(this.target, this.sceneUrl, this.options, this.widgetsPath, this.cesiumPath);
     this.registerEvents();
-  }
-
-  registerEvents() {
-    this.viewFn = e => {
-      let position = e.position;
-      this.viewerPositionChanged(position);
-    };
-    this.scanFn = e => {
-      let position = e.position;
-      this.scanPositionChanged(position);
-    };
-    this.WebSceneViewModel.on('viewerpositionchanged', this.viewFn);
-    this.WebSceneViewModel.on('scanpositionchanged', this.scanFn);
-  }
-
+  },
+  methods: {
+    registerEvents() {
+      this.webSceneViewModel.on('viewerpositionchanged', this.changeViewerPositionFn);
+      this.webSceneViewModel.on('scanpositionchanged', this.changeScanPositionFn);
+      this.webSceneViewModel.on('instancedidload', this.instanceDidLoadFn);
+    },
+    changeViewerPositionFn(e) {
+      this.$emit('viewerPositionChanged', e.position);
+    },
+    changeScanPositionFn(e) {
+      this.$emit('scanpositionchanged', e.centerPosition);
+    },
+    instanceDidLoadFn(e) {
+      this.$emit('cesiumInstanceDidLoad', e.instance);
+    }
+  },
   beforeDestory() {
-    this.WebSceneViewModel.off('viewerpositionchanged', this.viewFn);
-    this.WebSceneViewModel.off('scanpositionchanged', this.scanFn);
-    this.WebSceneViewModel.removeInputAction();
-    this.WebSceneViewModel = null;
+    this.webSceneViewModel.off('viewerpositionchanged', this.changeViewerPositionFn);
+    this.webSceneViewModel.off('scanpositionchanged', this.changeScanPositionFn);
+    this.webSceneViewModel.off('instancedidload', this.instanceDidLoad);
+    this.webSceneViewModel.removeInputAction();
+    this.webSceneViewModel = null;
+    sceneEvent.$options.deleteScene(this.target);
   }
-}
-export default SmWebScene;
+};
 </script>

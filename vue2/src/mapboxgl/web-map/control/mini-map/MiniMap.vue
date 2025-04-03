@@ -20,7 +20,7 @@
 
 <script>
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
-import MiniMapViewModel from './MiniMapViewModel';
+import MiniMapViewModel from 'vue-iclient-core/controllers/mapboxgl/MiniMapViewModel';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Card from 'vue-iclient/src/common/_mixin/Card';

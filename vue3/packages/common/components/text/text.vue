@@ -18,6 +18,10 @@ import type { TextProps } from './types'
 import { textPropsDefault } from './types'
 import { useTimer, useTheme, useThirdService } from '@supermapgis/common/hooks/index.common'
 
+defineOptions({
+  name: 'SmText'
+})
+
 const props = withDefaults(defineProps<TextProps>(), textPropsDefault)
 const finalValue = ref(props.title);
 

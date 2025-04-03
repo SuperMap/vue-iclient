@@ -1,5 +1,6 @@
 export * from './useLocale'
 export * from './useMapGetter'
+export * from './useSceneGetter'
 export * from './useVmProps'
 export * from './useParameters'
 export * from './useEventListeners'

@@ -1,5 +1,5 @@
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
-
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import type mapboxglTypes from 'mapbox-gl';
 /**
  * @class CompassViewModel
  * @description compass viewModel（指南针vm层）.
@@ -26,7 +26,7 @@ export default class CompassViewModel extends mapboxgl.Evented {
     this.visualizePitch = options && options.visualizePitch;
   }
 
-  setMap(mapInfo: mapInfoType) {
+  setMap(mapInfo: { map: mapboxglTypes.Map }) {
     const { map } = mapInfo;
     this.map = map;
     this.map.on('rotate', this.rotateEventFn);

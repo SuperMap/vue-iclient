@@ -4,7 +4,7 @@ import '../style'
 import { ref } from 'vue'
 import Button from '@supermapgis/common/components/button/Button'
 
-const mapId = ref(692091022)
+const mapId = ref(1796367209)
 const changeMapId = (id) => {
   mapId.value = id;
 }

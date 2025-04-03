@@ -1,6 +1,6 @@
 @use '@supermapgis/common/theme-chalk/mixins/mixins' as *;
 @use '@supermapgis/common/theme-chalk/base/theme.scss' as *;
-@use '@supermapgis/common/theme-chalk/collapseCard.scss';
+@use '@supermapgis/common/theme-chalk/collapse-card.scss';
 @use '@supermapgis/common/theme-chalk/card.scss';
 @use '@supermapgis/mapboxgl/theme-chalk/attributes.scss';
 
@@ -156,7 +156,7 @@
       > span, 
       > .#{$ant-prefix}-tree-node-content-wrapper, 
       > .#{$ant-prefix}-tree-node-content-wrapper span {
-        color: $text-color;
+        color: $text-color !important;;
         cursor: pointer;
       }
     }

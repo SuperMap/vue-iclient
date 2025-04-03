@@ -237,7 +237,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div ref="el" :id="target" class="sm-component-web-map" :style="{ background: background }">
+  <div ref="el" :id="target" class="sm-component-web-map" :style="{ background: background, height: '100%', width:'100%', position: 'absolute' }">
     <slot></slot>
     <template v-for="(controlProps, controlName) in controlComponents" :key="controlName">
       <component :is="controlName" v-bind="controlProps"></component>

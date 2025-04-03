@@ -8,14 +8,17 @@ export function useVmProps(props: Record<string, any>, viewModelProps: string[])
 
   const watchViewModelOptions = (viewModelProps: string[]) => {
     watcherStops = viewModelProps.map(item => {
+      let subProps
+      if (item.includes('.')) {
+        const itemArr = item.split('.')
+        item = itemArr[itemArr.length - 1]
+        // 处理item为'mapOptions.xxx'类的情况，目前只有一个.的情况
+        subProps = itemArr[0]
+      }
       return watch(
-        () => props[item],
+        () => subProps ? props[subProps]?.[item] : props[item],
         (newVal: any, oldVal: any) => {
           if (!isEqual(newVal, oldVal)) {
-            if (item.includes('.')) {
-              const itemArr = item.split('.')
-              item = itemArr[itemArr.length - 1]
-            }
             const setFun = 'set' + item.replace(item[0], item[0].toUpperCase())
             // 调用 viewModel 中的设置方法
             viewModel[setFun]?.(newVal)

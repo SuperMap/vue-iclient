@@ -34,10 +34,11 @@ import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Card from 'vue-iclient/src/common/_mixin/Card';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
-import DrawViewModel from './DrawViewModel';
+import DrawViewModel from 'vue-iclient-core/controllers/mapboxgl/DrawViewModel';
 import uniqueId from 'lodash.uniqueid';
 import { Component, Prop, Mixins } from 'vue-property-decorator';
 import 'vue-iclient-core/libs/mapbox-gl-draw/mapbox-gl-draw.css';
+import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 @Component({
   name: 'SmDraw',
@@ -69,7 +70,7 @@ class Draw extends Mixins(MapGetter, Control, Theme, Card) {
 
   created() {
     this.componentName = uniqueId(this.$options.name);
-    this.viewModel = new DrawViewModel(this.componentName, this.defaultLayerStyle);
+    this.viewModel = new DrawViewModel(this.componentName, this.defaultLayerStyle, geti18n);
     this.initEvent();
   }
 

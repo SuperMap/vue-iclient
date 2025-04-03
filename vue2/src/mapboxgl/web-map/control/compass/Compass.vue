@@ -9,7 +9,7 @@
 import Theme from 'vue-iclient/src/common/_mixin/Theme';
 import Control from 'vue-iclient/src/mapboxgl/_mixin/control';
 import MapGetter from 'vue-iclient/src/common/_mixin/map-getter';
-import CompassViewModel from './CompassViewModel';
+import CompassViewModel from 'vue-iclient-core/controllers/mapboxgl/CompassViewModel';
 import SmButton from 'vue-iclient/src/common/button/Button.vue';
 import { Component, Prop, Mixins } from 'vue-property-decorator';
 import VmUpdater from 'vue-iclient/src/common/_mixin/VmUpdater';

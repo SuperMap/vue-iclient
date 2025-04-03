@@ -1,10 +1,10 @@
+import type { Map} from 'mapbox-gl';
 import type { DrawGetOptions } from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
 import turfLength from '@turf/length';
 import turfArea from '@turf/area';
 import { convertArea } from '@turf/helpers';
-import mapboxgl from 'vue-iclient-core/libs/mapboxgl/mapbox-gl-enhance';
+import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
 import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent';
-import { geti18n } from 'vue-iclient/src/common/_lang/index';
 
 /**
  * @class DrawViewModel
@@ -13,8 +13,9 @@ import { geti18n } from 'vue-iclient/src/common/_lang/index';
  * @extends mapboxgl.Evented
  */
 export default class DrawViewModel extends mapboxgl.Evented {
-  map: mapboxglTypes.Map;
+  map: Map;
   mapTarget: string;
+  geti18n: () => { t: (name: string) => string };
   componentName: string;
   featureIds: Array<string>;
   activeFeature: any;
@@ -25,8 +26,10 @@ export default class DrawViewModel extends mapboxgl.Evented {
   fire: any;
   draw: any;
   drawInitStyles: DrawGetOptions['styles'];
+  on: (name: string, data: (...rest: any) => void) => void;
+  off: (name: string, data?: (...rest: any) => void) => void;
 
-  constructor(componentName: string, drawInitStyles: DrawGetOptions['styles']) {
+  constructor(componentName: string, drawInitStyles: DrawGetOptions['styles'], geti18n: () => { t: (name: string) => string }) {
     super();
     this.componentName = componentName;
     this.featureIds = []; // 收集当前draw所画的点线面的id
@@ -34,9 +37,10 @@ export default class DrawViewModel extends mapboxgl.Evented {
     this.dashedLayerIds = []; // 收集虚线图层的id 信息
     this.layerStyleList = {}; // 收集虚线图层的修改的样式信息
     this.drawInitStyles = drawInitStyles;
+    this.geti18n = geti18n;
   }
 
-  setMap(mapInfo: mapInfoType) {
+  setMap(mapInfo: { map: Map; mapTarget: string }) {
     const { map, mapTarget } = mapInfo;
     this.map = map;
     this.mapTarget = mapTarget;
@@ -94,12 +98,12 @@ export default class DrawViewModel extends mapboxgl.Evented {
       coordinateOfMaxLatitude = coordinates;
     } else if (geometry.type === 'LineString') {
       result = turfLength(feature, { units: 'kilometers' });
-      unit = geti18n().t('unit.kilometers');
+      unit = this.geti18n().t('unit.kilometers');
       coordinateOfMaxLatitude = this._calcMaxLatitudeInCoordinate(coordinates);
     } else if (geometry.type === 'Polygon') {
       let area = turfArea(feature);
       result = convertArea(area, 'meters', 'kilometers');
-      unit = geti18n().t('unit.squarekilometers');
+      unit = this.geti18n().t('unit.squarekilometers');
       coordinateOfMaxLatitude = this._calcMaxLatitudeInCoordinate(coordinates[0]);
     }
     const layerStyle = this._getFetureStyle(feature.id);
@@ -146,7 +150,7 @@ export default class DrawViewModel extends mapboxgl.Evented {
     this.draw.changeMode(mode);
   }
 
-  trash(id: string) {
+  trash(id?: string) {
     if (id) {
       // 给外部调用的API 如天地图传入一个id 删除指定点线面
       this.draw.delete(id);
