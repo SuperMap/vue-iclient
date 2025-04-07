@@ -84,21 +84,9 @@
               :class="[items.slots && 'sm-component-text-list__slot', Object.keys(getCellStyle(rowData[items.field], itemIndex)).length && 'text-list_thresholds']"
               :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(rowData[items.field], itemIndex)]"
             >
-              <span v-if="items && items.fixInfo">
-                {{ items.fixInfo.prefix }}
-              </span>
-              <span v-if="!items.slots"> {{ rowData[items.field] }} </span>
-              <slot
-                v-else
-                :name="items.slots.customRender"
-                :text="rowData[items.field]"
-                :record="rowData"
-                :rowIndex="index"
-              >
+              <span v-if="!items.slots">{{ getText(items, rowData) }}></span>
+              <slot v-else :name="items.slots.customRender" :text="getText(items, rowData)" :record="rowData" :rowIndex="index">
               </slot>
-              <span v-if="items.fixInfo">{{
-                items.fixInfo.suffix
-              }}</span>
             </div>
           </div>
         </template>
@@ -555,6 +543,12 @@ class SmTextList extends Mixins(Theme, Timer) {
     }, 0);
 
     this.$on('theme-style-changed', this.handleThemeStyleChanged);
+  }
+
+  getText(items, rowData) {
+    const { fixInfo, field } = items;
+    const { prefix = '', suffix = '' } = fixInfo || { prefix: '', suffix: '' };
+    return rowData[field] ? prefix + rowData[field] + suffix : '';
   }
 
   handleThemeStyleChanged() {
