@@ -81,7 +81,7 @@
               v-for="(items, itemIndex) in getColumns"
               :key="itemIndex"
               :title="(!items.slots && items.field) ? rowData[items.field] : ''"
-              :class="[items.slots && 'sm-component-text-list__slot', Object.keys(getCellStyle(rowData[items.field], itemIndex)).length && 'text-list_thresholds']"
+              :class="[items.slots && 'sm-component-text-list__slot', getCellStyle(rowData[items.field], itemIndex)['color'] && 'text-list_thresholds']"
               :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(rowData[items.field], itemIndex)]"
             >
               <span v-if="!items.slots">{{ getText(items, rowData) }}></span>
