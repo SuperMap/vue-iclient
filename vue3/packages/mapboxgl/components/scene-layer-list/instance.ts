@@ -1,3 +1,3 @@
-import webscene from './webscene.vue'
+import SceneLayerList from './scene-layer-list.vue'
 
-export type WebSceneInstance = InstanceType<typeof webscene>
+export type SceneLayerListInstance = InstanceType<typeof SceneLayerList>
