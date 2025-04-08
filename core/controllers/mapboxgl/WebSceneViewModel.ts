@@ -3,6 +3,13 @@ import isEqual from 'lodash.isequal';
 import { loadSecureScript, loadLink } from 'vue-iclient-core/utils/util';
 import { openExistScene, openTianditu } from 'vue-iclient-core/utils/open-scene';
 
+declare global {
+  interface Window {
+    SuperMap3D: any;
+    openTianditu: any;
+    openExistScene: any;
+  }
+}
 interface scanEffect {
   status?: boolean;
   type?: 'circle' | 'noScan' | 'line';
@@ -19,9 +26,19 @@ interface cesiumOptions {
 }
 
 export default class WebSceneViewModel extends mapboxgl.Evented {
+  scene: any;
+  sceneUrl: string;
+  cesiumPath: string;
+  widgetsPath: string;
+  sceneParam: any;
+  options: cesiumOptions;
   viewer: any;
   target: any;
   scanEffect: scanEffect;
+  withCredentials: boolean;
+  handler: any;
+  position: any;
+  orientation: any;
   fire: any;
   on: (name: string, data: (...rest: any) => void) => void;
   off: (name: string, data?: (...rest: any) => void) => void;

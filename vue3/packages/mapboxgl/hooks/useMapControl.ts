@@ -22,7 +22,7 @@ export function useMapControl() {
   // const parentMapTarget = parentIsWebMapOrMap ? parentProps.target : undefined
   // todo
   const parentIsWebMapOrMap = ['smwebmap', 'smncpmap'].includes(parentVmName.toLowerCase()) || ['smwebmap', 'smncpmap'].includes(parentInstance.parent.type.name.toLowerCase())
-  const parentMapTarget = parentIsWebMapOrMap ? parentProps.target || parentInstance.parent.props.target : undefined
+  const parentMapTarget = parentIsWebMapOrMap ? parentProps.target || parentInstance.parent.props.target as string : undefined
   let _mapControl: InstanceType<typeof MapControl>
   let isDelayLoading = !['smwebmap', 'smminimap', 'smncpmap'].includes(componentName.toLowerCase())
 

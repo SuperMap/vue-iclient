@@ -1,4 +1,5 @@
 import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import type mapboxglTypes from 'mapbox-gl';
 
 /**
  * @class PanViewModel
@@ -8,6 +9,7 @@ import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
  */
 
 export default class PanViewModel extends mapboxgl.Evented {
+  map: mapboxglTypes.Map;
   setMap(mapInfo) {
     const { map } = mapInfo;
     this.map = map;

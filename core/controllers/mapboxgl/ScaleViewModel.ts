@@ -1,4 +1,5 @@
 import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import type mapboxglTypes from 'mapbox-gl';
 
 /**
  * @class ScaleViewModel
@@ -11,6 +12,9 @@ import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
  * @extends mapboxgl.Evented
  */
 export default class ScaleViewModel extends mapboxgl.Evented {
+  map: mapboxglTypes.Map;
+  options: any;
+  fire: (type: string, ...params: any) => void;
   on: (name: string, data: (...rest: any) => void) => void;
   off: (name: string, data?: (...rest: any) => void) => void;
   

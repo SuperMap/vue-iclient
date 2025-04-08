@@ -3,6 +3,7 @@
   "compilerOptions": {
     "rootDir": "../",
     "composite": true,
+    "checkJs": false,
     // "declaration": false, 
     "removeComments": true,
     "jsx": "preserve",

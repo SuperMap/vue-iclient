@@ -1,4 +1,5 @@
 import mapboxgl from 'vue-iclient-static/libs/mapboxgl/mapbox-gl-enhance';
+import type mapboxglTypes from 'mapbox-gl';
 import clonedeep from 'lodash.clonedeep';
 import debounce from 'lodash.debounce';
 
@@ -14,6 +15,26 @@ import debounce from 'lodash.debounce';
  * @extends mapboxgl.Evented
  */
 export default class MiniMapViewModel extends mapboxgl.Evented {
+  map: mapboxglTypes.Map;
+  _miniMap: mapboxglTypes.Map;
+  _parentMap: any;
+  _miniMapCanvas: any;
+  options: any;
+  _container: string;
+  _trackingRect: any;
+  _ticking: any;
+  _isDragging: boolean;
+  _isCursorOverFeature: boolean;
+  _trackingRectCoordinates: Array<any>;
+  _previousPoint: Array<any>;
+  _currentPoint: Array<any>;
+  _updateFn: () => void;
+  _setStyleFn: () => void;
+  _mouseMoveFn: () => void;
+  _mouseDownFn: () => void;
+  _mouseUpFn: () => void;
+  _lastMouseMoveEvent: () => void;
+  fire: (type: string, ...params: any) => void;
   on: (name: string, data: (...rest: any) => void) => void;
   off: (name: string, data?: (...rest: any) => void) => void;
   constructor() {

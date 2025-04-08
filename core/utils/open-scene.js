@@ -159,7 +159,7 @@ function openS3M(content, viewer) {
       let name = content.layers.s3mLayer[t].name;
       let promise = viewer.scene.addS3MTilesLayerByScp(url, { name: name });
       const target = sceneTarget;
-      SuperMap3D.when(promise, function () {
+      window.SuperMap3D.when(promise, function () {
         sceneEvent.triggerUpdateEvent(target);
       });
     }

@@ -1,7 +1,7 @@
 import type { TreeSelectProps } from 'ant-design-vue'
 import { defineComponent } from 'vue'
 import { TreeSelect } from 'ant-design-vue'
-import { createWrappedComponent } from '@supermapgis/common/components/theme/antd-wrapper'
+import { createWrappedComponent } from '@supermapgis/common/utils/index.common'
 
 const SmTreeSelect = createWrappedComponent<TreeSelectProps>(TreeSelect, 'treeSelect')
 

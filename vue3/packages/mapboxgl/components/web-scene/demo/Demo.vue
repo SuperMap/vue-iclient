@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import WebScene from '../webscene.vue'
 import '../style'
-import { ref } from 'vue'
-import Button from '@supermapgis/common/components/button/Button'
 
 const defaultProps = {
     "sceneUrl": "http://172.16.15.52:8080/iportal/web/scenes/491256644",
