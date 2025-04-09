@@ -242,6 +242,7 @@ describe('Chart Mixin Component', () => {
         maxLabels: 10,
         label: {
           normal: {
+            decimals: 1,
             show: true,
             position: 'center'
           },
@@ -297,6 +298,7 @@ describe('Chart Mixin Component', () => {
     });
     expect(wrapper.vm.parseOptions).not.toStrictEqual(options);
     expect(wrapper.vm.parseOptions.series[0].label.normal.formatter).not.toBeUndefined();
+    expect(wrapper.vm.parseOptions.series[0].label.normal.formatter({ dataIndex: 0, value: 1.2547, percent: 125.47 })).toEqual('1.3');
     const spyFn = jest.spyOn(wrapper.vm, '_handlePieAutoPlay');
     jest.useFakeTimers();
     await wrapper.setProps({
@@ -343,6 +345,7 @@ describe('Chart Mixin Component', () => {
             ...serieItem,
             label: {
               normal: {
+                decimals: 1,
                 show: true,
                 position: 'center',
                 smart: true
@@ -414,7 +417,60 @@ describe('Chart Mixin Component', () => {
       expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.rich[`color_${index}`]).not.toBeUndefined();
     });
     expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('1Thu', 5)).toEqual([`{color_4|2}  Thu`].join('\n'));
-    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('11.234', 1)).toEqual([`{color_1|2}  1.23`].join('\n'));
+    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('11.234', 1)).toEqual(
+      [`{color_1|2}  1.23`].join('\n')
+    );
+    done();
+  });
+
+  it('decimals smart label', async done => {
+    const serieItem = {
+      name: 'sale',
+      emphasis: {
+        itemStyle: {}
+      },
+      itemStyle: {
+        barBorderRadius: [0, 15, 15, 0]
+      },
+      stack: 0,
+      type: 'bar',
+      barWidth: 10,
+      data: [22, 65, 86, 48, 43, 53, 34, 33, 24]
+    };
+    const options = {
+      xAxis: yAxis,
+      yAxis: {
+        ...xAxis
+      },
+      legend,
+      series: [
+        {
+          ...serieItem,
+          label: {
+            normal: {
+              decimals: 1,
+              show: true,
+              position: 'center',
+              smart: true
+            }
+          }
+        }
+      ]
+    };
+    wrapper = factory({
+      options
+    });
+    await wrapper.setProps({
+      datasetOptions: [
+        {
+          ...datasetOptionsFactory(['bar'])[0],
+          rankLabel: true
+        }
+      ],
+      dataset: geoJSONDataset
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.echartOptions.series[0].label.normal.formatter({ dataIndex:0, value:1.234 })).toEqual('1.2');
     done();
   });
 
