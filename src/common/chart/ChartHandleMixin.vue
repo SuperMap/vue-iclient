@@ -212,7 +212,7 @@ export default {
               dataIndex === endDataIndex ||
               Math.max.apply(null, data) + '' === value + ''
         ) {
-          result = value;
+          result = getDecimalsFormatterVal(value, label.decimals);
         }
         return result;
       };
