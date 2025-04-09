@@ -1,5 +1,5 @@
 <template>
-  <div class="sm-component-collapse-card" :style="textColorStyle">
+  <div class="sm-component-collapse-card" :style="textColorStyle" ref="el">
     <div
       v-if="iconClass"
       :class="{
@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import type { CollapseCardProps } from './types'
-import { ref, computed, watch, onMounted, nextTick } from 'vue'
+import { ref, computed, watch, onMounted, nextTick, useTemplateRef } from 'vue'
 import { useTheme } from '@supermapgis/common/hooks/index.common'
 import { collapaseCardPropsDefault } from './types'
 
@@ -61,6 +61,7 @@ const { textColorStyle, textColorHeadingStyle, gisControlHeaderBgStyle, gisContr
 
 const isShow = ref(true)
 const transform = ref(null)
+const el = useTemplateRef('el')
 
 // 计算属性
 const getCardStyle = computed(() => {
@@ -132,7 +133,7 @@ function iconClicked() {
 
 function toggleTransition(type) {
   nextTick(() => {
-    const iconDom = document.querySelector('.sm-component-collapse-card__icon')
+    const iconDom = el.value.querySelector('.sm-component-collapse-card__icon')
     if (iconDom) {
       // @ts-ignore
       iconDom.style.position = type === 'leave' ? 'relative' : 'absolute'
