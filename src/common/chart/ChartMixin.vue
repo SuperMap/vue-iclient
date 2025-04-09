@@ -45,7 +45,7 @@ import {
   handleMultiGradient
 } from 'vue-iclient/src/common/_utils/style/theme/chart';
 import EchartsDataService from 'vue-iclient/src/common/_utils/EchartsDataService';
-import { getFeatureCenter, setPopupArrowStyle } from 'vue-iclient/src/common/_utils/util';
+import { getFeatureCenter, setPopupArrowStyle, getDecimalsFormatterVal } from 'vue-iclient/src/common/_utils/util';
 import { ColorsPickerUtil } from 'vue-iclient/static/libs/iclient-common/iclient-common';
 import TablePopup from 'vue-iclient/src/common/table-popup/TablePopup.vue';
 import Message from 'vue-iclient/src/common/message/index.js';
@@ -517,6 +517,8 @@ export default {
           formatMode = endNormalLabel.formatter;
         }
         endNormalLabel.formatter = function ({ dataIndex, value, name, percent }) {
+          value = getDecimalsFormatterVal(value, normalLabel.decimals);
+          percent = getDecimalsFormatterVal(percent, normalLabel.decimals);
           const FORMATTER_MAP = {
             '{b}: {c}': `${name}: ${value}`,
             '{b}': `${name}`,
