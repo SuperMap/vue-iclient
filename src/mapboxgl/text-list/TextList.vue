@@ -548,7 +548,7 @@ class SmTextList extends Mixins(Theme, Timer) {
   getText(items, rowData) {
     const { fixInfo, field } = items;
     const { prefix = '', suffix = '' } = fixInfo || { prefix: '', suffix: '' };
-    return rowData[field] ? prefix + rowData[field] + suffix : '';
+    return rowData[field] || rowData[field] === 0 ? prefix + rowData[field] + suffix : '';
   }
 
   handleThemeStyleChanged() {
