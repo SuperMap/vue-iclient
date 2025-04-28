@@ -17,16 +17,16 @@
               <div
                 @click="
                   sortByField(
-                    item.field + '-' + index,
+                    item.field,
                     index,
-                    !Number.isNaN(+listData[0][item.field + '-' + index]) && item.sort
+                    !Number.isNaN(+listData[0][item.field]) && item.sort
                   )
                 "
               >
                 {{ item.header }}
               </div>
               <div
-                v-if="!Number.isNaN(+listData[0][item.field + '-' + index]) && item.sort"
+                v-if="!Number.isNaN(+listData[0][item.field]) && item.sort"
                 class="arrow-wrap"
                 :style="{ borderColor: headerStyleData.sortBtnColor }"
               >
@@ -744,7 +744,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         return item === column.defaultSortType;
       });
       this.sortTypeIndex = index;
-      this.sortField = `${column.field}-${fieldIndex}`;
+      this.sortField = column.field;
       this.sortIndex = fieldIndex;
       return;
     }

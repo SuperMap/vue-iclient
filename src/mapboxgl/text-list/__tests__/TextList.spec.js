@@ -400,7 +400,6 @@ describe('TextList.vue', () => {
     });
     expect(wrapper.vm.getText(columns[0], newDataset.geoJSON.features[0].properties)).toBe('hello-1-hello');
     expect(wrapper.vm.getText(columns[0], {})).toBe('');
-
   });
   it('change dataset', async () => {
     const newDataset = {
@@ -677,6 +676,51 @@ describe('TextList.vue', () => {
     });
     await wrapper.vm.$nextTick();
     wrapper.find('.sm-component-text-list__header-title div').trigger('click');
+    done();
+  });
+
+  it('Sort columns by field real sort', async done => {
+    wrapper = mount(TextList, {
+      propsData: {
+        dataset: dataset,
+        columns: [
+          {
+            header: 'SmID',
+            field: 'SmID',
+            sort: true,
+            defaultSortType: 'descend'
+          }
+        ],
+        autoRolling: true,
+        animateContent: []
+      },
+      data() {
+        return {
+          rowStyleData: {
+            height: 5
+          },
+          headerStyleData: {
+            show: true
+          }
+        };
+      }
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.sortField).toBe('SmID');
+    expect(wrapper.vm.listData[0].SmID).toBe('5');
+    expect(wrapper.find('.arrow-wrap .down-triangle').exists()).toBe(true);
+    await wrapper.setProps({
+      columns: [
+        {
+          header: 'index',
+          field: 'index',
+          sort: true,
+          defaultSortType: 'ascend'
+        }
+      ],
+    })
+    expect(wrapper.vm.listData[0].index).toBe(0);
+    expect(wrapper.find('.arrow-wrap .up-triangle').exists()).toBe(true);
     done();
   });
 
