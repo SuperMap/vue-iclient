@@ -37,6 +37,13 @@ describe('set-theme test', () => {
     expect(nextTheme.collapseCardBackground).toBe('yellow');
     done();
   });
+  it('setTheme ignoreElements', done => {
+    setTheme({ componentBackground: 'red', textColor: '' }, { ignoreElements: ['textColor']});
+    const nextTheme = globalEvent.$options.theme;
+    expect(nextTheme.componentBackground).toBe('red');
+    expect(nextTheme.textColor).not.toBe('');
+    done();
+  });
 
   afterAll(() => {});
 });

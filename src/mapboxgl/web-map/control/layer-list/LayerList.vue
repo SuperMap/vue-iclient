@@ -19,6 +19,8 @@
           :attributes="attributes"
           :operations="operations"
           :dropHandler="onDropHanlder"
+          :background="background"
+          :textColor="textColor"
           @getLayerOpacityById="getLayerOpacityById"
           @changeOpacity="changeOpacity"
           @zoomToBounds="zoomToBounds"

@@ -403,4 +403,213 @@ describe('LayerList.vue', () => {
     expect(layerGroupVm.treeData.length).toBe(2);
     done();
   });
+
+  it('icons hover', async done => {
+    wrapper = mount(SmLayerList, {
+      propsData: {
+        attributes: {
+          position: 'top-right',
+          style: {
+            width: '500px'
+          }
+        },
+        operations: {
+          fitBounds: true,
+          draggable: false,
+          opacity: true
+        }
+      }
+    });
+    const layerCatalogs = [
+      {
+        children: [
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_C@China',
+            title: 'Xingkaihu_C_txt@China_L10-L10',
+            type: 'symbol',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_2',
+              type: 'vector',
+              sourceLayer: 'Xingkaihu_C_txt@China'
+            },
+            renderLayers: ['xingkaihu_C@China'],
+            themeSetting: {},
+            CLASS_INSTANCE: {},
+            layerOrder: 'auto'
+          },
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_B@China',
+            title: 'Xingkaihu_B_txt@China_L10-L10',
+            type: 'symbol',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_3',
+              type: 'vector',
+              sourceLayer: 'Xingkaihu_B_txt@China'
+            },
+            renderLayers: ['xingkaihu_B@China'],
+            themeSetting: {},
+            layerOrder: 'auto'
+          }
+        ],
+        id: 'ms_group_1715581133212_2',
+        title: '未命名分组',
+        type: 'group',
+        visible: true,
+        layerOrder: 'auto'
+      },
+      {
+        dataSource: {
+          serverId: '',
+          type: ''
+        },
+        id: 'ms-background',
+        title: 'ms-background',
+        type: 'background',
+        visible: true,
+        renderSource: {},
+        renderLayers: ['ms-background'],
+        themeSetting: {},
+        layerOrder: 'auto'
+      }
+    ];
+    let mockOnOptions;
+    const webmap = {
+      getLayerList: () => layerCatalogs,
+      un: jest.fn(),
+      on: jest.fn(options => {
+        mockOnOptions = options;
+      })
+    };
+    const callback = function () {
+      expect(wrapper.find('.header-text  .sm-components-icon-hidden').exists()).toBeTruthy();
+      expect(wrapper.find('.header-text  .sm-components-icon-hidden.highlight-icon').exists()).toBeFalsy();
+      done();
+    };
+    wrapper.vm.viewModel.on('layersUpdated', callback);
+    wrapper.vm.viewModel.setMap({
+      webmap
+    });
+    wrapper.vm.$options.loaded.call(wrapper.vm);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.sourceList).toEqual(wrapper.vm.transformLayerList(layerCatalogs));
+    console.log(wrapper.html());
+    expect(wrapper.find('.header-text  .sm-components-icon-visible').exists()).toBeTruthy();
+    expect(wrapper.find('.header-text  .sm-components-icon-visible.highlight-icon').exists()).toBeTruthy();
+    wrapper.vm.sourceList[1].visible = false;
+    mockOnOptions.layerupdatechanged();
+  });
+
+  it('treenode textcolor changed', async (done) => {
+    wrapper = mount(SmLayerList, {
+      propsData: {
+        textColor: 'red'
+      }
+    });
+    const layerCatalogs = [
+      {
+        children: [
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_C@China',
+            title: 'Xingkaihu_C_txt@China_L10-L10',
+            type: 'symbol',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_2',
+              type: 'vector',
+              sourceLayer: 'Xingkaihu_C_txt@China'
+            },
+            renderLayers: ['xingkaihu_C@China'],
+            themeSetting: {},
+            CLASS_INSTANCE: {}
+          },
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_B@China',
+            title: 'Xingkaihu_B_txt@China_L10-L10',
+            type: 'symbol',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_3',
+              type: 'vector',
+              sourceLayer: 'Xingkaihu_B_txt@China'
+            },
+            renderLayers: ['xingkaihu_B@China'],
+            themeSetting: {}
+          }
+        ],
+        id: 'ms_group_1715581133212_2',
+        title: '未命名分组',
+        type: 'group',
+        visible: true
+      },
+      {
+        dataSource: {
+          serverId: '',
+          type: ''
+        },
+        id: 'ms-background',
+        title: 'ms-background',
+        type: 'background',
+        visible: true,
+        renderSource: {},
+        renderLayers: ['ms-background'],
+        themeSetting: {}
+      }
+    ];
+    let mockOnOptions;
+    const webmap = {
+      getLayerList: () => layerCatalogs,
+      un: jest.fn(),
+      on: jest.fn(options => {
+        mockOnOptions = options;
+      })
+    };
+    const callback = function () {
+      expect(wrapper.find('.header-text  .sm-components-icon-hidden').exists()).toBeTruthy();
+      done();
+    };
+    wrapper.vm.viewModel.on('layersUpdated', callback);
+    wrapper.vm.viewModel.setMap({
+      webmap
+    });
+    wrapper.vm.$options.loaded.call(wrapper.vm);
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.sourceList).toEqual(wrapper.vm.transformLayerList(layerCatalogs));
+    expect(wrapper.find('.header-text  .sm-components-icon-visible').exists()).toBeTruthy();
+    expect(wrapper.find('.header-text  .sm-components-icon-visible.highlight-icon').exists()).toBeTruthy();
+    wrapper.vm.sourceList[1].visible = false;
+    mockOnOptions.layerupdatechanged();
+    let iconNodes = wrapper.findAll('.sm-components-icon-right');
+    let iconHtml = '<i class="sm-components-icon-right sm-component-tree-switcher-icon" style="color: rgba(255, 0, 0, 0.69);"></i>';
+    expect(iconNodes.at(0).html()).toBe(iconHtml);
+    iconNodes.at(0).trigger('click');
+    await wrapper.vm.$nextTick();
+    let rootTitleNodes = wrapper.findAll('.header-text .add-ellipsis');
+    console.log('rootTitleNodes,', rootTitleNodes.length);
+    expect(rootTitleNodes.at(0).html()).toBe(`<span class="add-ellipsis" style="color: rgb(255, 0, 0);">未命名分组</span>`);
+    wrapper.setProps({ textColor: 'blue' });
+    iconNodes = wrapper.findAll('.sm-components-icon-right');
+    iconHtml = '<i class="sm-components-icon-right sm-component-tree-switcher-icon" style="color: rgba(0, 0, 255, 0.69);"></i>';
+    expect(iconNodes.at(0).html()).toBe(iconHtml);
+    rootTitleNodes = wrapper.findAll('.header-text .add-ellipsis');
+    expect(rootTitleNodes.at(0).html()).toBe(`<span class="add-ellipsis" style="color: rgb(0, 0, 255);">未命名分组</span>`);
+    done();
+  });
 });

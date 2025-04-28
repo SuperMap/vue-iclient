@@ -21,6 +21,7 @@ export const setTheme = (themeStyle: any = {}, triggerInfo?: triggerParams) => {
       acceptedThemeStyle.collapseCardBackground = acceptedThemeStyle.componentBackground;
     }
   }
+  acceptedThemeStyle = objectWithoutProperties(acceptedThemeStyle, (triggerInfo || {}).ignoreElements || []);
   const nextThemeData = dealWithTheme(acceptedThemeStyle);
   const nextTheme = {
     ...nextThemeData.themeStyle
@@ -30,7 +31,7 @@ export const setTheme = (themeStyle: any = {}, triggerInfo?: triggerParams) => {
   }
   globalEvent.$options.theme = nextTheme;
   if (!triggerInfo || triggerInfo.triggerEvent === true) {
-    globalEvent.$emit('change-theme', objectWithoutProperties(nextTheme, (triggerInfo || {}).ignoreElements || []));
+    globalEvent.$emit('change-theme', nextTheme);
   }
   // @ts-ignore
   if (!Vue.iclient) {

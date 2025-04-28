@@ -1,7 +1,7 @@
 <template>
   <div>
     <sm-tree :class="['sm-component-layer-list__collapse', operations.draggable && 'draggable-tree']" blockNode :draggable="operations.draggable" :tree-data="treeData" @drop="dropHandler">
-      <i slot="switcherIcon" class="sm-components-icon-right" />
+      <i slot="switcherIcon" class="sm-components-icon-right" :style="secondaryTextColorStyle" />
       <template slot="custom" slot-scope="item">
         <div
           :class="{
@@ -14,13 +14,13 @@
             @mouseenter="() => changeIconsStatus(item.id)"
             @mouseleave="() => changeIconsStatus('')"
           >
-            <span class="add-ellipsis">{{ item.title }}</span>
+            <span class="add-ellipsis" :style="item.disabled ? disabledTextColorStyle : headingTextColorStyle">{{ item.title }}</span>
             <div
               :class="['icon-buttons', showIconsItem === item.id ? 'icon-buttons-visible' : 'icon-buttons-hidden']"
             >
               <div v-if="operations.fitBounds" class="sm-component-layer-list__zoom">
                 <i
-                  :class="['sm-components-icon-suofangzhituceng', (item.visible || !item.disabled) && 'highlight-icon']"
+                  :class="['sm-components-icon-suofangzhituceng', item.visible && !item.disabled && 'highlight-icon']"
                   :style="!item.visible && { cursor: 'not-allowed' }"
                   :title="$t('layerList.zoomToLayer')"
                   @click.stop="item.visible && zoomToBounds(item)"
@@ -28,7 +28,7 @@
               </div>
               <div v-if="(item && item.type) !== 'group' && attributesEnabled(item)" class="sm-component-layer-list__attributes">
                 <i
-                  :class="attributesIconClass"
+                  :class="[attributesIconClass, item.visible && !item.disabled && 'highlight-icon']"
                   :style="!item.visible && { cursor: 'not-allowed' }"
                   :title="$t('layerList.attributes')"
                   @click.stop="item.visible && toggleAttributesVisibility($event, item)"
@@ -39,7 +39,8 @@
                   :class="[
                     'sm-components-icon-tucengyangshi01',
                     'sm-components-icon-not-active',
-                    showOpacityItem === item.id && 'sm-components-icon-active'
+                    showOpacityItem === item.id && 'sm-components-icon-active',
+                    item.visible && !item.disabled && 'highlight-icon'
                   ]"
                   :style="!item.visible && { cursor: 'not-allowed' }"
                   :title="$t('layerList.layerStyle')"
@@ -48,7 +49,7 @@
               </div>
               <div>
                 <i
-                  :class="item.visible ? 'sm-components-icon-visible' : 'sm-components-icon-hidden'"
+                  :class="item.visible ? ['sm-components-icon-visible', !item.disabled && 'highlight-icon'] : 'sm-components-icon-hidden'"
                   @click.stop="toggleItemVisibility(item)"
                 />
               </div>
