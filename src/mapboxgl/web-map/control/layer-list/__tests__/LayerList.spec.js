@@ -8,6 +8,7 @@ import iportal_serviceProxy from 'vue-iclient/test/unit/mocks/data/iportal_servi
 import uniqueLayer_point from 'vue-iclient/test/unit/mocks/data/WebMap/uniqueLayer_point';
 import layerData from 'vue-iclient/test/unit/mocks/data/layerData';
 import webmap3Datas from 'vue-iclient/test/unit/mocks/data/WebMap/webmap3.json';
+import { findLayerCatalog } from 'vue-iclient/src/mapboxgl/web-map/GroupUtil';
 import flushPromises from 'flush-promises';
 
 describe('LayerList.vue', () => {
@@ -411,7 +412,8 @@ describe('LayerList.vue', () => {
           position: 'top-right',
           style: {
             width: '500px'
-          }
+          },
+          enabled: true
         },
         operations: {
           fitBounds: true,
@@ -423,6 +425,23 @@ describe('LayerList.vue', () => {
     const layerCatalogs = [
       {
         children: [
+          {
+            dataSource: {
+              serverId: '',
+              type: ''
+            },
+            id: 'xingkaihu_B@China',
+            title: 'Xingkaihu_B_txt@China_L10-L10',
+            type: 'line',
+            visible: true,
+            renderSource: {
+              id: 'ms_China_4610_1715416497380_3',
+              type: 'geojson'
+            },
+            renderLayers: ['xingkaihu_B@China'],
+            themeSetting: {},
+            layerOrder: 'auto'
+          },
           {
             dataSource: {
               serverId: '',
@@ -440,24 +459,6 @@ describe('LayerList.vue', () => {
             renderLayers: ['xingkaihu_C@China'],
             themeSetting: {},
             CLASS_INSTANCE: {},
-            layerOrder: 'auto'
-          },
-          {
-            dataSource: {
-              serverId: '',
-              type: ''
-            },
-            id: 'xingkaihu_B@China',
-            title: 'Xingkaihu_B_txt@China_L10-L10',
-            type: 'symbol',
-            visible: true,
-            renderSource: {
-              id: 'ms_China_4610_1715416497380_3',
-              type: 'vector',
-              sourceLayer: 'Xingkaihu_B_txt@China'
-            },
-            renderLayers: ['xingkaihu_B@China'],
-            themeSetting: {},
             layerOrder: 'auto'
           }
         ],
@@ -484,15 +485,30 @@ describe('LayerList.vue', () => {
     ];
     let mockOnOptions;
     const webmap = {
-      getLayerList: () => layerCatalogs,
+      getLayerList: () => {
+        return layerCatalogs;
+      },
       un: jest.fn(),
       on: jest.fn(options => {
         mockOnOptions = options;
-      })
+      }),
+      changeItemVisible: (layer, visible) => {
+        const matchLayer = findLayerCatalog(layerCatalogs, layer.id) 
+        matchLayer.visible = visible;
+        if (matchLayer.type === 'group' && !visible) {
+          matchLayer.children.forEach(child => {
+            child.visible = visible;
+          });
+        }
+      }
     };
-    const callback = function () {
+    const callback = async function () {
+      await wrapper.vm.$nextTick();
       expect(wrapper.find('.header-text  .sm-components-icon-hidden').exists()).toBeTruthy();
-      expect(wrapper.find('.header-text  .sm-components-icon-hidden.highlight-icon').exists()).toBeFalsy();
+      expect(wrapper.find('.header-text  .sm-components-icon-hidden').classes('highlight-icon')).toBeFalsy();
+      expect(wrapper.find('.header-text  .sm-components-icon-suofangzhituceng').classes('highlight-icon')).toBeFalsy();
+      expect(wrapper.find('.header-text  .sm-components-icon-attribute-table').classes('highlight-icon')).toBeFalsy();
+      expect(wrapper.find('.header-text  .sm-components-icon-tucengyangshi01').classes('highlight-icon')).toBeFalsy();
       done();
     };
     wrapper.vm.viewModel.on('layersUpdated', callback);
@@ -502,10 +518,16 @@ describe('LayerList.vue', () => {
     wrapper.vm.$options.loaded.call(wrapper.vm);
     await wrapper.vm.$nextTick();
     expect(wrapper.vm.sourceList).toEqual(wrapper.vm.transformLayerList(layerCatalogs));
-    console.log(wrapper.html());
-    expect(wrapper.find('.header-text  .sm-components-icon-visible').exists()).toBeTruthy();
-    expect(wrapper.find('.header-text  .sm-components-icon-visible.highlight-icon').exists()).toBeTruthy();
-    wrapper.vm.sourceList[1].visible = false;
+    let iconNodes = wrapper.findAll('.sm-components-icon-right');
+    expect(iconNodes.length).toBe(1);
+    iconNodes.at(0).trigger('click');
+    const firstIconVisibleNode = wrapper.find('.header-text  .sm-components-icon-visible');
+    expect(firstIconVisibleNode.exists()).toBeTruthy();
+    expect(wrapper.find('.header-text  .sm-components-icon-visible').classes('highlight-icon')).toBeTruthy();
+    expect(wrapper.find('.header-text  .sm-components-icon-suofangzhituceng').classes('highlight-icon')).toBeTruthy();
+    expect(wrapper.find('.header-text  .sm-components-icon-attribute-table').classes('highlight-icon')).toBeTruthy();
+    expect(wrapper.find('.header-text  .sm-components-icon-tucengyangshi01').classes('highlight-icon')).toBeTruthy();
+    firstIconVisibleNode.trigger('click');
     mockOnOptions.layerupdatechanged();
   });
 
@@ -602,7 +624,6 @@ describe('LayerList.vue', () => {
     iconNodes.at(0).trigger('click');
     await wrapper.vm.$nextTick();
     let rootTitleNodes = wrapper.findAll('.header-text .add-ellipsis');
-    console.log('rootTitleNodes,', rootTitleNodes.length);
     expect(rootTitleNodes.at(0).html()).toBe(`<span class="add-ellipsis" style="color: rgb(255, 0, 0);">未命名分组</span>`);
     wrapper.setProps({ textColor: 'blue' });
     iconNodes = wrapper.findAll('.sm-components-icon-right');
