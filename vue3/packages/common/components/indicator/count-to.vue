@@ -12,12 +12,12 @@
 </template>
 
 <script>
-import countTo from 'vue-count-to';
+import { CountTo } from 'vue3-count-to';
 import { isTransparent } from 'vue-iclient-core/utils/util';
 
 export default {
   name: 'SmCountTo',
-  extends: countTo,
+  extends: CountTo,
   props: {
     fontSize: {
       type: [String, Number]

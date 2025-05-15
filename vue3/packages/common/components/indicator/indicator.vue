@@ -44,6 +44,10 @@ import { useTimer, useTheme } from '@supermapgis/common/hooks/index.common'
 import RestService from 'vue-iclient-core/utils/RestService'
 import CountTo from './count-to.vue'
 
+defineOptions({
+  name: 'SmIndicator'
+})
+
 const props = withDefaults(defineProps<IndicatorProps>(), indicatorPropsDefault)
 const emit = defineEmits<IndicatorEvents>()
 
