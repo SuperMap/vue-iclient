@@ -218,9 +218,9 @@ importers:
       vue:
         specifier: 3.5.12
         version: 3.5.12(typescript@5.6.3)
-      vue-count-to:
-        specifier: ^1.0.13
-        version: 1.0.13
+      vue3-count-to:
+        specifier: ^1.1.2
+        version: 1.1.2(vue@3.5.12(typescript@5.6.3))
     devDependencies:
       '@pnpm/find-workspace-packages':
         specifier: ^4.0.16
@@ -7427,6 +7427,11 @@ packages:
     engines: {node: '>=10.15.0'}
     peerDependencies:
       vue: ^3.0.0
+
+  vue3-count-to@1.1.2:
+    resolution: {integrity: sha512-C5AvlcGfyM4XvFqPDkni94rqGd5K/+RB+B4xv/1NQx3RrdC+GvXPFzeXW5hWL/jh8ehWLm4LITyK0eMKf4iJbg==}
+    peerDependencies:
+      vue: '>= 3 < 4'
 
   vue@3.5.12:
     resolution: {integrity: sha512-CLVZtXtn2ItBIi/zHZ0Sg1Xkb7+PU32bJJ8Bmy7ts3jxXTcbfsEfBivFYYWz1Hur+lalqGAh65Coin0r+HRUfg==}
@@ -15553,6 +15558,12 @@ snapshots:
     dependencies:
       is-plain-object: 3.0.1
       vue: 3.5.12(typescript@5.6.3)
+
+  vue3-count-to@1.1.2(vue@3.5.12(typescript@5.6.3)):
+    dependencies:
+      core-js: 3.41.0
+      vue: 3.5.12(typescript@5.6.3)
+      vue-count-to: 1.0.13
 
   vue@3.5.12(typescript@5.6.3):
     dependencies:
