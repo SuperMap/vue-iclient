@@ -515,8 +515,11 @@ export default {
         let formatMode;
         if (endNormalLabel.formatter && typeof endNormalLabel.formatter === 'string') {
           formatMode = endNormalLabel.formatter;
+        } else if (endNormalLabel.originFormatter) {
+          formatMode = endNormalLabel.originFormatter;
         }
         endNormalLabel.formatter = function ({ dataIndex, value, name, percent }) {
+          name = getDecimalsFormatterVal(name, normalLabel.xFieldDecimals);
           value = getDecimalsFormatterVal(value, normalLabel.decimals);
           percent = getDecimalsFormatterVal(percent, normalLabel.decimals);
           const FORMATTER_MAP = {

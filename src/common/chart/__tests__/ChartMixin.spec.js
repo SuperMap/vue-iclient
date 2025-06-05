@@ -244,7 +244,9 @@ describe('Chart Mixin Component', () => {
           normal: {
             decimals: 1,
             show: true,
-            position: 'center'
+            position: 'center',
+            xFieldDecimals: 2,
+            originFormatter: "{b}: {c}"
           },
           emphasis: {
             show: true,
@@ -298,7 +300,7 @@ describe('Chart Mixin Component', () => {
     });
     expect(wrapper.vm.parseOptions).not.toStrictEqual(options);
     expect(wrapper.vm.parseOptions.series[0].label.normal.formatter).not.toBeUndefined();
-    expect(wrapper.vm.parseOptions.series[0].label.normal.formatter({ dataIndex: 0, value: 1.2547, percent: 125.47 })).toEqual('1.3');
+    expect(wrapper.vm.parseOptions.series[0].label.normal.formatter({ dataIndex: 0, name: 1, value: 1.2547, percent: 125.47 })).toEqual('1.00: 1.3');
     const spyFn = jest.spyOn(wrapper.vm, '_handlePieAutoPlay');
     jest.useFakeTimers();
     await wrapper.setProps({
