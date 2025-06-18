@@ -28,7 +28,7 @@ describe('TdtMapSwitcherViewModel', () => {
       addSource: jest.fn((sourceId, sourceData) => {
         sources[sourceId] = sourceData;
       }),
-      removeSource: jest.fn((sourceId) => {
+      removeSource: jest.fn(sourceId => {
         delete sources[sourceId];
       })
     };
@@ -97,4 +97,103 @@ describe('TdtMapSwitcherViewModel', () => {
     expect(viewModel.originMapData).toBeNull();
     done();
   });
+
+  it('toggle Label Layer visibility', done => {
+    const initLayers = [
+      {
+        id: '天地图影像底图',
+        type: 'raster',
+        source: '天地图影像底图',
+        minzoom: 0,
+        maxzoom: 18
+      },
+      {
+        id: '天地图影像注记',
+        type: 'raster',
+        source: '天地图影像注记',
+        minzoom: 0,
+        maxzoom: 18,
+        layout: {
+          visibility: 'visible'
+        }
+      }
+    ];
+    const initSources = {
+      天地图影像底图: {
+        type: 'raster',
+        tiles: [
+          'https://t0.tianditu.gov.cn/img_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=img&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t1.tianditu.gov.cn/img_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=img&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t2.tianditu.gov.cn/img_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=img&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t3.tianditu.gov.cn/img_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=img&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t4.tianditu.gov.cn/img_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=img&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t5.tianditu.gov.cn/img_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=img&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t6.tianditu.gov.cn/img_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=img&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t7.tianditu.gov.cn/img_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=img&tilematrix={z}&tilerow={y}&tilecol={x}'
+        ],
+        tileSize: 256
+      },
+      天地图影像注记: {
+        type: 'raster',
+        tiles: [
+          'https://t0.tianditu.gov.cn/cia_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=cia&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t1.tianditu.gov.cn/cia_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=cia&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t2.tianditu.gov.cn/cia_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=cia&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t3.tianditu.gov.cn/cia_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=cia&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t4.tianditu.gov.cn/cia_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=cia&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t5.tianditu.gov.cn/cia_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=cia&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t6.tianditu.gov.cn/cia_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=cia&tilematrix={z}&tilerow={y}&tilecol={x}',
+          'https://t7.tianditu.gov.cn/cia_w/wmts?tk=50599c913367188e6c94e872032f4cf1&service=WMTS&request=GetTile&version=1.0.0&style=default&tilematrixSet=w&format=tiles&width=256&height=256&layer=cia&tilematrix={z}&tilerow={y}&tilecol={x}'
+        ],
+        tileSize: 256
+      }
+    };
+    const appreciableLayers = [
+      {
+        id: '天地图影像底图',
+        title: '天地图影像底图',
+        type: 'raster',
+        visible: true,
+        renderSource: {
+          id: '天地图影像底图',
+          type: 'raster'
+        },
+        renderLayers: ['天地图影像底图'],
+        dataSource: {},
+        themeSetting: {},
+        layerOrder: 'auto'
+      },
+      {
+        id: '天地图影像注记',
+        title: '天地图影像注记',
+        type: 'raster',
+        visible: true,
+        renderSource: {
+          id: '天地图影像注记',
+          type: 'raster'
+        },
+        renderLayers: ['天地图影像注记'],
+        dataSource: {},
+        themeSetting: {},
+        layerOrder: 'auto'
+      }
+    ];
+    const webmap = {
+      getAppreciableLayers: () => appreciableLayers,
+      changeItemVisible: jest.fn(),
+      un: jest.fn(),
+      on: jest.fn()
+    };
+    viewModel.setMap({
+      map: mapMockFn(initLayers, initSources),
+      webmap
+    });
+    expect(viewModel.map.getStyle().layers).toEqual(initLayers);
+    expect(viewModel.map.getStyle().sources).toEqual(initSources);
+    viewModel.togglerLabelLayer(true);
+    expect(webmap.changeItemVisible.mock.calls).toHaveLength(1);
+    expect(webmap.changeItemVisible.mock.calls[0]).toEqual(appreciableLayers[1]);
+    done();
+  });
 });
+
