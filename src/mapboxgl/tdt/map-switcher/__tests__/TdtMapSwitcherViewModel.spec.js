@@ -1,4 +1,5 @@
 import TdtMapSwitcherViewModel from '../TdtMapSwitcherViewModel';
+import * as langUtil from 'vue-iclient/src/common/_lang/index';
 
 describe('TdtMapSwitcherViewModel', () => {
   let viewModel;
@@ -148,6 +149,13 @@ describe('TdtMapSwitcherViewModel', () => {
         tileSize: 256
       }
     };
+    const spyOnI18n = jest.spyOn(langUtil, 'geti18n').mockImplementation(() => {
+      return {
+        tc: (str) => {
+          return '天地图影像注记';
+        }
+      }
+    });
     const appreciableLayers = [
       {
         id: '天地图影像底图',
@@ -192,7 +200,9 @@ describe('TdtMapSwitcherViewModel', () => {
     expect(viewModel.map.getStyle().sources).toEqual(initSources);
     viewModel.togglerLabelLayer(true);
     expect(webmap.changeItemVisible.mock.calls).toHaveLength(1);
-    expect(webmap.changeItemVisible.mock.calls[0]).toEqual(appreciableLayers[1]);
+    expect(webmap.changeItemVisible.mock.calls[0][0]).toEqual(appreciableLayers[1]);
+    expect(webmap.changeItemVisible.mock.calls[0][1]).toBe(true);
+    expect(spyOnI18n).toBeCalled();
     done();
   });
 });
