@@ -15,6 +15,14 @@ import { SmLayerList } from '@supermapgis/mapboxgl/components/layer-list'
 import { SmMeasure } from '@supermapgis/mapboxgl/components/measure'
 import { SmQuery } from '@supermapgis/mapboxgl/components/query'
 import { SmSearch } from '@supermapgis/mapboxgl/components/search'
+import { SmZoom } from '@supermapgis/mapboxgl/components/zoom'
+import { SmDraw } from '@supermapgis/mapboxgl/components/draw'
+import { SmCompass } from '@supermapgis/mapboxgl/components/compass'
+import { SmMiniMap } from '@supermapgis/mapboxgl/components/mini-map'
+import { SmPan } from '@supermapgis/mapboxgl/components/pan'
+import { SmScale } from '@supermapgis/mapboxgl/components/scale'
+import { SmSceneLayerList } from '@supermapgis/mapboxgl/components/scene-layer-list'
+import { SmWebScene } from '@supermapgis/mapboxgl/components/web-scene'
 
 import type { Plugin } from 'vue'
 
@@ -34,5 +42,13 @@ export default [
   SmSearch,
   SmAttributePanel,
   SmIndicator,
-  SmText
+  SmText,
+  SmZoom,
+  SmDraw,
+  SmCompass,
+  SmMiniMap,
+  SmPan,
+  SmScale,
+  SmSceneLayerList,
+  SmWebScene
 ] as Plugin[]
