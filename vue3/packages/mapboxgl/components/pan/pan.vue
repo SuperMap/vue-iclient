@@ -35,6 +35,11 @@ import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import PanViewModel from 'vue-iclient-core/controllers/mapboxgl/PanViewModel'
 import { panPropsDefault } from './types'
 
+defineOptions({
+  name: 'SmPan',
+  inheritAttrs: false
+})
+
 const props = withDefaults(defineProps<PanProps>(), panPropsDefault)
 defineEmits<PanEvents>()
 

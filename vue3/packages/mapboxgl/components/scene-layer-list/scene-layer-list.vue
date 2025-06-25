@@ -85,6 +85,11 @@ import { sceneLayerListPropsDefault } from './types'
 import { message } from 'ant-design-vue'
 import sceneEvent from 'vue-iclient-core/types/scene-event';
 
+defineOptions({
+  name: 'SmSceneLayerList',
+  inheritAttrs: false
+})
+
 // Props
 const props = withDefaults(defineProps<SceneLayerListProps>(), sceneLayerListPropsDefault)
 

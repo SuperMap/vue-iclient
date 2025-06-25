@@ -24,6 +24,11 @@ import type {
   compareOptions
 } from 'vue-iclient-core/controllers/mapboxgl/CompareViewModel'
 
+defineOptions({
+  name: 'SmCompare',
+  inheritAttrs: false
+})
+
 interface SwipeStyle {
   backgroundColor?: string
   color?: string

@@ -19,6 +19,11 @@ import { useMapGetter, useTheme } from '@supermapgis/common/hooks/index.common'
 import { useMapControl } from '@supermapgis/mapboxgl/hooks'
 import SmButton from '@supermapgis/common/components/button/Button'
 
+defineOptions({
+  name: 'SmCompass',
+  inheritAttrs: false
+})
+
 const props = withDefaults(defineProps<CompassProps>(), compassPropsDefault)
 const { textColorStyle, gisControlHeaderBgStyle} = useTheme(props)
 

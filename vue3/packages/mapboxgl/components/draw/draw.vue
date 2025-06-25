@@ -39,6 +39,10 @@ import uniqueId from 'lodash.uniqueid';
 import drawEvent from 'vue-iclient-core/controllers/mapboxgl/types/DrawEvent'
 import SmCollapseCard from '@supermapgis/common/components/collapse-card/collapse-card.vue'
 
+defineOptions({
+  name: 'SmDraw',
+  inheritAttrs: false
+})
 const props = withDefaults(defineProps<DrawProps>(), drawPropsDefault)
 const emit = defineEmits<DrawEvents>()
 

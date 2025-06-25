@@ -13,6 +13,11 @@ import GraphMapViewModel, {
 import { GraphMapPropsDefault } from './types'
 import type { GraphMapEmits, GraphMapProps } from './types'
 
+defineOptions({
+  name: 'SmGraphMap',
+  inheritAttrs: false
+})
+
 const viewModelProps = ['serviceUrl', 'zoom', 'center']
 
 const props = withDefaults(defineProps<GraphMapProps>(), GraphMapPropsDefault)

@@ -47,6 +47,11 @@ import { zoomPropsDefault } from './types'
 import SmButton from '@supermapgis/common/components/button/Button'
 import SmSlider from '@supermapgis/common/components/slider/Slider'
 
+defineOptions({
+  name: 'SmZoom',
+  inheritAttrs: false
+})
+
 const props = withDefaults(defineProps<ZoomProps>(), zoomPropsDefault)
 defineEmits<ZoomEvents>()
 
