@@ -128,7 +128,7 @@ export const identifyPropsDefault = getPropsDefaults<IdentifyProps>(
   Object.assign(themeProps(), mapGetterProps(), identifyProps())
 )
 
-export interface DataChangeEvent extends MapSelectionChangedEmit {
+interface DataChangeEvent extends MapSelectionChangedEmit {
   fields: FieldInfo[]
 }
 
