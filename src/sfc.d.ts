@@ -24,7 +24,6 @@ interface Window {
   Vue: any;
   convert: any;
   jsonsql: any;
-  canvg: any;
   isLocal: boolean;
   server: string;
   CSS: any;

@@ -133,7 +133,8 @@ export default {
     drillLayersNotSupport: 'Drill-down layers are not supported yet!',
     mvtNotSupport: 'Vector tile layers is not supported yet!',
     mapCreatedFailed: 'Failed to load map!',
-    projectionnotmatch: '{title} does not match the current map projection!'
+    projectionnotmatch: '{title} does not match the current map projection!',
+    xyztilelayernotsupport: '{title} XYZ Tile layer does not match the resolution or origin of the current map!'
   },
   drillMap: {
     goBack: 'Go Back'

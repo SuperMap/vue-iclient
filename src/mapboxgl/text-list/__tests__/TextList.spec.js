@@ -188,10 +188,10 @@ describe('TextList.vue', () => {
     }
   });
 
-  it('render default correctly', done => {
+  it('render default correctly', async done => {
     wrapper = mount(SmTextList, {
       propsData: {
-        content: content,
+        content: [],
         header: header,
         fields: fields
       }
@@ -284,9 +284,124 @@ describe('TextList.vue', () => {
       ],
       autoRolling: true
     });
+    wrapper.vm.$nextTick();
+    expect(wrapper.vm.animateContent[0]).toEqual({
+      idx: 0,
+      平均最低气温: '-47',
+      最热七天气温: '29',
+      海拔: '296',
+      省份: '黑龙江1',
+      站台: '漠河'
+    });
   });
-
-  it('change dataset', () => {
+  it('fixinfo', async () => {
+    const newDataset = {
+      type: 'geoJSON',
+      maxFeatures: 100,
+      geoJSON: {
+        type: 'FeatureCollection',
+        features: [
+          {
+            geometry: {
+              type: 'Point',
+              coordinates: [116.36331703990744, 39.89942692791154]
+            },
+            properties: {
+              SmID: '1',
+              SmX: '1.295350519989875E7',
+              SmY: '4851338.019912067',
+              SmLibTileID: '1',
+              SmUserID: '0',
+              SmGeometrySize: '20',
+              SmGeoPosition: '393216',
+              标准名称: '长椿街站',
+              index: 0
+            },
+            type: 'Feature'
+          }
+        ]
+      }
+    };
+    const columns = [
+      {
+        header: 'SmID',
+        field: 'SmID',
+        slotConfig: {
+          type: 'text',
+          linkTitle: '',
+          linkTarget: '_blank',
+          imageRepeat: 'center'
+        },
+        sort: false,
+        defaultSortType: 'descend',
+        fixInfo: {
+          prefix: 'hello-',
+          suffix: '-hello'
+        },
+        width: 0
+      },
+      {
+        header: 'SmY',
+        field: '标准名称',
+        slotConfig: {
+          type: 'text',
+          linkTitle: '',
+          linkTarget: '_blank',
+          imageRepeat: 'center'
+        },
+        defaultSortType: 'none',
+        fixInfo: {
+          prefix: '',
+          suffix: ''
+        },
+        width: 0
+      },
+      {
+        header: 'SmY',
+        field: 'SmY',
+        sort: false,
+        slotConfig: {
+          type: 'text',
+          linkTitle: '',
+          linkTarget: '_blank',
+          imageRepeat: 'center'
+        },
+        defaultSortType: 'none',
+        fixInfo: {
+          prefix: '',
+          suffix: ''
+        },
+        width: 0
+      }
+    ];
+    wrapper = mount(TextList, {
+      propsData: {
+        dataset: dataset,
+        columns,
+        autoRolling: false
+      }
+    });
+    wrapper.vm.$nextTick();
+    await wrapper.setProps({
+      dataset: newDataset,
+      autoRolling: true
+    });
+    expect(wrapper.vm.animateContent[0]).toEqual({
+      SmGeoPosition: '393216',
+      SmGeometrySize: '20',
+      SmID: '1',
+      SmLibTileID: '1',
+      SmUserID: '0',
+      SmX: '1.295350519989875E7',
+      SmY: '4851338.019912067',
+      idx: 0,
+      index: 0,
+      标准名称: '长椿街站'
+    });
+    expect(wrapper.vm.getText(columns[0], newDataset.geoJSON.features[0].properties)).toBe('hello-1-hello');
+    expect(wrapper.vm.getText(columns[0], {})).toBe('');
+  });
+  it('change dataset', async () => {
     const newDataset = {
       type: 'geoJSON',
       maxFeatures: 100,
@@ -373,9 +488,21 @@ describe('TextList.vue', () => {
       }
     });
     wrapper.vm.$nextTick();
-    wrapper.setProps({
+    await wrapper.setProps({
       dataset: newDataset,
       autoRolling: true
+    });
+    expect(wrapper.vm.animateContent[0]).toEqual({
+      SmGeoPosition: '393216',
+      SmGeometrySize: '20',
+      SmID: '1',
+      SmLibTileID: '1',
+      SmUserID: '0',
+      SmX: '1.295350519989875E7',
+      SmY: '4851338.019912067',
+      idx: 0,
+      index: 0,
+      标准名称: '长椿街站'
     });
   });
 
@@ -549,6 +676,51 @@ describe('TextList.vue', () => {
     });
     await wrapper.vm.$nextTick();
     wrapper.find('.sm-component-text-list__header-title div').trigger('click');
+    done();
+  });
+
+  it('Sort columns by field real sort', async done => {
+    wrapper = mount(TextList, {
+      propsData: {
+        dataset: dataset,
+        columns: [
+          {
+            header: 'SmID',
+            field: 'SmID',
+            sort: true,
+            defaultSortType: 'descend'
+          }
+        ],
+        autoRolling: true,
+        animateContent: []
+      },
+      data() {
+        return {
+          rowStyleData: {
+            height: 5
+          },
+          headerStyleData: {
+            show: true
+          }
+        };
+      }
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.sortField).toBe('SmID');
+    expect(wrapper.vm.listData[0].SmID).toBe('5');
+    expect(wrapper.find('.arrow-wrap .down-triangle').exists()).toBe(true);
+    await wrapper.setProps({
+      columns: [
+        {
+          header: 'index',
+          field: 'index',
+          sort: true,
+          defaultSortType: 'ascend'
+        }
+      ],
+    })
+    expect(wrapper.vm.listData[0].index).toBe(0);
+    expect(wrapper.find('.arrow-wrap .up-triangle').exists()).toBe(true);
     done();
   });
 

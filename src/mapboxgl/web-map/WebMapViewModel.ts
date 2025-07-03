@@ -74,6 +74,7 @@ interface webMapOptions {
   checkSameLayer?: boolean;
   map?: mapboxglTypes.Map;
   layerFilter?: () => boolean;
+  tileTransformRequest?: (url?: string) => Object;
 }
 interface mapOptions {
   center?: [number, number] | mapboxglTypes.LngLatLike | { lon: number; lat: number } | number[];
@@ -99,7 +100,6 @@ interface CRSOptions {
 }
 
 interface MapHandler {
-  initializeMap: (mapInfo?: Record<string, any>, map?: mapboxglTypes.Map) => void;
   clean: () => void;
   cleanLayers: () => void;
   getLayerCatalog: () => any[];
@@ -211,6 +211,7 @@ export default class WebMapViewModel extends Events {
       'baidumapnotsupport',
       'layerorsourcenameduplicated',
       'projectionnotmatch',
+      'xyztilelayernotsupport',
       'mapbeforeremove'
     ];
     this.selfEventTypes = ['addlayerssucceeded'];

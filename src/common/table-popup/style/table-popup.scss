@@ -21,7 +21,7 @@
         overflow: auto;
         .#{$table-prefix}-placeholder {
           background: transparent;
-          border-top: none;
+          border: none;
           color: inherit;
           .#{$ant-prefix}-empty {
             background-color: transparent;

@@ -242,8 +242,11 @@ describe('Chart Mixin Component', () => {
         maxLabels: 10,
         label: {
           normal: {
+            decimals: 1,
             show: true,
-            position: 'center'
+            position: 'center',
+            xFieldDecimals: 2,
+            originFormatter: "{b}: {c}"
           },
           emphasis: {
             show: true,
@@ -297,6 +300,7 @@ describe('Chart Mixin Component', () => {
     });
     expect(wrapper.vm.parseOptions).not.toStrictEqual(options);
     expect(wrapper.vm.parseOptions.series[0].label.normal.formatter).not.toBeUndefined();
+    expect(wrapper.vm.parseOptions.series[0].label.normal.formatter({ dataIndex: 0, name: 1, value: 1.2547, percent: 125.47 })).toEqual('1.00: 1.3');
     const spyFn = jest.spyOn(wrapper.vm, '_handlePieAutoPlay');
     jest.useFakeTimers();
     await wrapper.setProps({
@@ -307,7 +311,7 @@ describe('Chart Mixin Component', () => {
     jest.useRealTimers();
   });
 
-  it('render rankBar chart', async (done) => {
+  it('render rankBar chart', async done => {
     const serieItem = {
       name: 'sale',
       emphasis: {
@@ -324,7 +328,10 @@ describe('Chart Mixin Component', () => {
     const series = [serieItem];
     const options = {
       xAxis: yAxis,
-      yAxis: xAxis,
+      yAxis: {
+        ...xAxis,
+        decimals: 2
+      },
       legend,
       series
     };
@@ -340,6 +347,7 @@ describe('Chart Mixin Component', () => {
             ...serieItem,
             label: {
               normal: {
+                decimals: 1,
                 show: true,
                 position: 'center',
                 smart: true
@@ -410,7 +418,61 @@ describe('Chart Mixin Component', () => {
     wrapper.vm.echartOptions.visualMap[0].pieces.forEach((item, index) => {
       expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.rich[`color_${index}`]).not.toBeUndefined();
     });
-    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('1Thu', 5)).toEqual([`{color_4|2}  Thu`].join('\n'))
+    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('1Thu', 5)).toEqual([`{color_4|2}  Thu`].join('\n'));
+    expect(wrapper.vm.echartOptions.yAxis[0].axisLabel.formatter('11.234', 1)).toEqual(
+      [`{color_1|2}  1.23`].join('\n')
+    );
+    done();
+  });
+
+  it('decimals smart label', async done => {
+    const serieItem = {
+      name: 'sale',
+      emphasis: {
+        itemStyle: {}
+      },
+      itemStyle: {
+        barBorderRadius: [0, 15, 15, 0]
+      },
+      stack: 0,
+      type: 'bar',
+      barWidth: 10,
+      data: [22, 65, 86, 48, 43, 53, 34, 33, 24]
+    };
+    const options = {
+      xAxis: yAxis,
+      yAxis: {
+        ...xAxis
+      },
+      legend,
+      series: [
+        {
+          ...serieItem,
+          label: {
+            normal: {
+              decimals: 1,
+              show: true,
+              position: 'center',
+              smart: true
+            }
+          }
+        }
+      ]
+    };
+    wrapper = factory({
+      options
+    });
+    await wrapper.setProps({
+      datasetOptions: [
+        {
+          ...datasetOptionsFactory(['bar'])[0],
+          rankLabel: true
+        }
+      ],
+      dataset: geoJSONDataset
+    });
+    await wrapper.vm.$nextTick();
+    expect(wrapper.vm.echartOptions.series[0].label.normal.formatter({ dataIndex:0, value:1.234 })).toEqual('1.2');
     done();
   });
 
@@ -489,7 +551,7 @@ describe('Chart Mixin Component', () => {
           sort: 'descending',
           seriesType: '2.5Bar'
         }
-      ]
+      ];
       wrapper = factory({
         options: {
           ...options,
@@ -533,7 +595,7 @@ describe('Chart Mixin Component', () => {
           sort: 'descending',
           seriesType: '2.5Bar'
         }
-      ]
+      ];
       const geoJSONDataset = {
         maxFeatures: 20,
         url: '',
@@ -545,14 +607,14 @@ describe('Chart Mixin Component', () => {
               properties: {
                 '0-num': 100,
                 '1-num': 160,
-                timestamp:"2020-10-01 12:45:02"
+                timestamp: '2020-10-01 12:45:02'
               }
             },
             {
               properties: {
                 '0-num': 120,
                 '1-num': 170,
-                timestamp:"2020-10-02 12:45:02"
+                timestamp: '2020-10-02 12:45:02'
               }
             }
           ]
@@ -580,9 +642,9 @@ describe('Chart Mixin Component', () => {
       const echartSeriesLen = wrapper.vm.echartOptions.series.length;
       expect(echartSeriesLen).toBeGreaterThan(options.series.length);
       expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].type).toBe('pictorialBar');
-      expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].symbolSize).toStrictEqual(["50%", 10]);
-      expect(wrapper.vm.echartOptions.series[0].barGap).toBe("0");
-      expect(wrapper.vm.echartOptions.series[1].barGap).toBe("0");
+      expect(wrapper.vm.echartOptions.series[echartSeriesLen - 1].symbolSize).toStrictEqual(['50%', 10]);
+      expect(wrapper.vm.echartOptions.series[0].barGap).toBe('0');
+      expect(wrapper.vm.echartOptions.series[1].barGap).toBe('0');
       expect(wrapper.vm.echartOptions.series[0].itemStyle.color).not.toBeUndefined;
       expect(wrapper.vm.echartOptions.series[1].itemStyle.color).not.toBeUndefined;
     });
@@ -742,12 +804,15 @@ describe('Chart Mixin Component', () => {
   });
 
   it('trigger echarts events', () => {
-    wrapper = factory({
-      options: optionFactory(),
-      datasetOptions: datasetOptionsFactory(['bar']),
-      dataset: geoJSONDataset,
-      associatedMap: true
-    }, { localVue });
+    wrapper = factory(
+      {
+        options: optionFactory(),
+        datasetOptions: datasetOptionsFactory(['bar']),
+        dataset: geoJSONDataset,
+        associatedMap: true
+      },
+      { localVue }
+    );
     const chartInstance = wrapper.vm._getEchart();
     expect(chartInstance).not.toBeUndefined();
     const params = { dataIndex: 0 };
@@ -755,5 +820,33 @@ describe('Chart Mixin Component', () => {
     expect(wrapper.emitted().click).toBeTruthy();
     expect(wrapper.emitted().click.length).toBe(1);
     expect(wrapper.emitted().click[0]).toEqual([params]);
+  });
+  it('radar decimals', () => {
+    wrapper = factory(
+      {
+        options: optionFactory(),
+        datasetOptions: datasetOptionsFactory(['radar']),
+        dataset: geoJSONDataset,
+        associatedMap: true
+      },
+      { localVue }
+    );
+    const chartInstance = wrapper.vm._getEchart();
+    expect(chartInstance).not.toBeUndefined();
+    const options = wrapper.vm._handleRadarAxisLabelFormatter({
+      radar: {
+        decimals: 1,
+        indicator: { 0: { text: '1.232', vlaue: 1.232 } }
+      }
+    });
+    expect(options.radar.indicator[0].text).toBe('1.2');
+    expect(options.radar.decimals).toBeUndefined();
+    const options1 = wrapper.vm._handleRadarAxisLabelFormatter({
+      radar: {
+        decimals: -1,
+        indicator: { 0: { text: '1.232', vlaue: 1.232 } }
+      }
+    });
+    expect(options1.radar.indicator[0].text).toBe('1.232');
   });
 });

@@ -17,16 +17,16 @@
               <div
                 @click="
                   sortByField(
-                    item.field + '-' + index,
+                    item.field,
                     index,
-                    !Number.isNaN(+listData[0][item.field + '-' + index]) && item.sort
+                    !Number.isNaN(+listData[0][item.field]) && item.sort
                   )
                 "
               >
                 {{ item.header }}
               </div>
               <div
-                v-if="!Number.isNaN(+listData[0][item.field + '-' + index]) && item.sort"
+                v-if="!Number.isNaN(+listData[0][item.field]) && item.sort"
                 class="arrow-wrap"
                 :style="{ borderColor: headerStyleData.sortBtnColor }"
               >
@@ -78,27 +78,15 @@
             @mouseleave="handleMouseLeaveFn(rowData, rowData['idx'], $event)"
           >
             <div
-              v-for="(items, key, itemIndex) in filterProperty(rowData, 'idx')"
-              :key="key"
-              :title="!getColumns[itemIndex].slots && items"
-              :class="getColumns[itemIndex].slots && 'sm-component-text-list__slot'"
-              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(items, itemIndex)]"
+              v-for="(items, itemIndex) in getColumns"
+              :key="itemIndex"
+              :title="(!items.slots && items.field) ? rowData[items.field] : ''"
+              :class="[items.slots && 'sm-component-text-list__slot', getCellStyle(rowData[items.field], itemIndex)['color'] && 'text-list_thresholds']"
+              :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(rowData[items.field], itemIndex)]"
             >
-              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">
-                {{ getColumns[itemIndex].fixInfo.prefix }}
-              </span>
-              <span v-if="!getColumns[itemIndex].slots"> {{ items }} </span>
-              <slot
-                v-else
-                :name="getColumns[itemIndex].slots.customRender"
-                :text="items"
-                :record="rowData"
-                :rowIndex="index"
-              >
+              <span v-if="!items.slots">{{ getText(items, rowData) }}></span>
+              <slot v-else :name="items.slots.customRender" :text="getText(items, rowData)" :record="rowData" :rowIndex="index">
               </slot>
-              <span v-if="getColumns[itemIndex] && getColumns[itemIndex].fixInfo">{{
-                getColumns[itemIndex].fixInfo.suffix
-              }}</span>
             </div>
           </div>
         </template>
@@ -557,6 +545,12 @@ class SmTextList extends Mixins(Theme, Timer) {
     this.$on('theme-style-changed', this.handleThemeStyleChanged);
   }
 
+  getText(items, rowData) {
+    const { fixInfo, field } = items;
+    const { prefix = '', suffix = '' } = fixInfo || { prefix: '', suffix: '' };
+    return rowData[field] || rowData[field] === 0 ? prefix + rowData[field] + suffix : '';
+  }
+
   handleThemeStyleChanged() {
     this.headerStyleData = merge(this.headerStyleData, {
       background: this.getColor(0),
@@ -643,13 +637,10 @@ class SmTextList extends Mixins(Theme, Timer) {
     if (content) {
       let listData = [];
       content.forEach((data, index) => {
-        let obj = {};
-        this.getColumns &&
-          this.getColumns.forEach((column, index) => {
-            obj[`${column.field}-${index}`] = (data[column.field] === null || data[column.field] === undefined) ? '-' : data[column.field];
-          });
-        // @ts-ignore
-        obj.idx = index;
+        const obj = { idx: index };
+        for (let key in data) {
+          obj[key] = (data[key] === null || data[key] === undefined) ? '-' : data[key];
+        }
         JSON.stringify(obj) !== '{}' && listData.push(obj);
       });
       return listData;
@@ -667,15 +658,9 @@ class SmTextList extends Mixins(Theme, Timer) {
         if (!properties) {
           return;
         }
-        let contentObj = {};
-        if (this.getColumns) {
-          this.getColumns.forEach((column, index) => {
-            contentObj[`${column.field}-${index}`] = (properties[column.field] === null || properties[column.field] === undefined) ? '-' : properties[column.field];
-          });
-          // @ts-ignore
-          contentObj.idx = index;
-        } else {
-          contentObj = properties;
+        const contentObj = { idx: index };
+        for (let key in properties) {
+          contentObj[key] = (properties[key] === null || properties[key] === undefined) ? '-' : properties[key];
         }
         JSON.stringify(contentObj) !== '{}' && content.push(contentObj);
       });
@@ -759,7 +744,7 @@ class SmTextList extends Mixins(Theme, Timer) {
         return item === column.defaultSortType;
       });
       this.sortTypeIndex = index;
-      this.sortField = `${column.field}-${fieldIndex}`;
+      this.sortField = column.field;
       this.sortIndex = fieldIndex;
       return;
     }

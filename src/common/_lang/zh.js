@@ -135,7 +135,8 @@ export default {
     drillLayersNotSupport: '暂不支持加载下钻图层！',
     mvtNotSupport: '暂不支持加载矢量瓦片图层！',
     mapCreatedFailed: '地图加载失败！',
-    projectionnotmatch: '{title}与当前地图投影不匹配！'
+    projectionnotmatch: '{title}与当前地图投影不匹配！',
+    xyztilelayernotsupport: '{title}瓦片图层与当前地图的分辨率或原点不匹配！'
   },
   videoPlus: {
     loadingTip: '视频加载中...'

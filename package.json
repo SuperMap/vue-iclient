@@ -1,6 +1,6 @@
 {
   "name": "@supermapgis/vue-iclient",
-  "version": "11.3.0",
+  "version": "12.0.0-r",
   "description": "SuperMap iClient for Vue.js",
   "homepage": "https://iclient.supermap.io",
   "scripts": {
@@ -210,6 +210,7 @@
     "sinon": "^7.1.1",
     "socks": "^2.1.6",
     "storybook-readme": "^5.0.8",
+    "terser-webpack-plugin": "^4.2.3",
     "through2": "^4.0.2",
     "ts-jest": "^26.5.1",
     "ts-loader": "^6.2.2",

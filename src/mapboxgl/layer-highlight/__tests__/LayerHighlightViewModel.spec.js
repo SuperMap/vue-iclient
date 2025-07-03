@@ -392,4 +392,31 @@ describe('LayerHighlightViewModel', () => {
     expect(canvaStyle.cursor).toBe('');
     done();
   });
+  
+  it('removeHighlightLayers with no map style', done => {
+    viewModel.once('mapselectionchanged', ({ features }) => {
+      expect(features.length).toBeGreaterThan(0);
+      const layers = map.getStyle().layers;
+      expect(layers.length).toBe(2);
+      expect(layers[0].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted`);
+      expect(layers[1].id).toBe(`${mockLayerName}-${uniqueName}-SM-highlighted-StrokeLine`);
+      expect(layers[0].filter[0]).toBe('any');
+      expect(layers[1].filter[0]).toBe('any');
+      expect(viewModel.highlightOptions.layerIds).toEqual([mockLayerName]);
+      viewModel.map.style = null;
+      viewModel.removeHighlightLayers();
+      expect(map.getStyle().layers.length).toBe(2);
+      expect(viewModel.highlightOptions.layerIds).toEqual([mockLayerName]);
+      viewModel.map = null;
+      viewModel.removeHighlightLayers();
+      expect(map.getStyle().layers.length).toBe(2);
+      expect(viewModel.highlightOptions.layerIds).toEqual([mockLayerName]);
+      done();
+    });
+    expect(viewModel.featureFields).toBeUndefined();
+    const featureFieldsMap = { [mockLayerName]: ['title', 'subtitle', 'imgUrl', 'description', 'index'] };
+    viewModel.setFeatureFieldsMap(featureFieldsMap);
+    expect(viewModel.highlightOptions.featureFieldsMap).toEqual(featureFieldsMap);
+    viewModel.map.fire('click', { target: map, point: { x: 10, y: 5 } });
+  });
 });

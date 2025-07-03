@@ -28,11 +28,6 @@ const commonOption = {
   tiandituKey: undefined,
   withCredentials: false
 };
-window.canvg = {
-  default: {
-    from: (ctx, url, callback) => Promise.resolve({ stop: jest.fn(), start: jest.fn() })
-  }
-};
 const commonMap = {
   resize: () => jest.fn(),
   getZoom: () => jest.fn(),

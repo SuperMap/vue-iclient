@@ -250,6 +250,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
   })
   layerManagerControl: layerManageParam;
 
+  @Prop() tileTransformRequest: (url: string) => Object;
+
   @Watch('mapId')
   mapIdChanged() {
     if (this.defaultLoading) {
@@ -332,7 +334,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
       isSuperMapOnline,
       proxy,
       mapOptions,
-      iportalServiceProxyUrlPrefix
+      iportalServiceProxyUrlPrefix,
+      tileTransformRequest
     } = this.$props;
     this.viewModel = new WebMapViewModel(
       this.mapId,
@@ -349,7 +352,8 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         excludePortalProxyUrl,
         isSuperMapOnline,
         proxy,
-        iportalServiceProxyUrlPrefix
+        iportalServiceProxyUrlPrefix,
+        tileTransformRequest
       },
       mapOptions
     );
@@ -416,6 +420,10 @@ class SmWebMap extends Mixins(VmUpdater, MapEvents) {
         } else {
           this.notifyErrorTip({ e, defaultTip: 'getLayerInfoFailed' });
         }
+        // ZXY_TILE与底图的分辨率、原点不匹配。
+      },
+      xyztilelayernotsupport: (e) => {
+        this.notifyErrorTip({ defaultTip: this.$t(`webmap.xyztilelayernotsupport`, { title: e.layer.name }), showErrorMsg: false });
       },
       baidumapnotsupport: () => {
         this.notifyErrorTip({ defaultTip: 'baiduMapNotSupport', showErrorMsg: false });

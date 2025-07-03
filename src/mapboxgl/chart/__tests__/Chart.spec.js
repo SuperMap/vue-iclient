@@ -1372,7 +1372,7 @@ describe('Chart', () => {
       }
     });
     let data=["四川","江苏","云南","江西","海南","台湾","上海","广东","福建","北京"]
-    wrapper.vm._initAxisLabel({}, data)
+    wrapper.vm._initAxisLabel({}, 1, data)
     await flushPromises();
     expect(data[0]).toBe('09四川')
     done();
