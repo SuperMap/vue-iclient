@@ -16,4 +16,5 @@ export * from './measure'
 export * from './mini-map'
 export * from './scene-layer-list'
 export * from './web-scene'
+export * from './text-list'
 

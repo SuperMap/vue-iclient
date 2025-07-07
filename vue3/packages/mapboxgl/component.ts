@@ -23,6 +23,7 @@ import { SmPan } from '@supermapgis/mapboxgl/components/pan'
 import { SmScale } from '@supermapgis/mapboxgl/components/scale'
 import { SmSceneLayerList } from '@supermapgis/mapboxgl/components/scene-layer-list'
 import { SmWebScene } from '@supermapgis/mapboxgl/components/web-scene'
+import { SmTextList } from '@supermapgis/mapboxgl/components/text-list'
 
 import type { Plugin } from 'vue'
 
@@ -50,5 +51,6 @@ export default [
   SmPan,
   SmScale,
   SmSceneLayerList,
-  SmWebScene
+  SmWebScene,
+  SmTextList
 ] as Plugin[]
