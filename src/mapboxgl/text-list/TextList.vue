@@ -84,7 +84,7 @@
               :class="[items.slots && 'sm-component-text-list__slot', getCellStyle(rowData[items.field], itemIndex)['color'] && 'text-list_thresholds']"
               :style="[listStyle.rowStyle, { flex: getColumnWidth(itemIndex) }, getCellStyle(rowData[items.field], itemIndex)]"
             >
-              <span v-if="!items.slots">{{ getText(items, rowData) }}></span>
+              <span v-if="!items.slots">{{ getText(items, rowData) }}</span>
               <slot v-else :name="items.slots.customRender" :text="getText(items, rowData)" :record="rowData" :rowIndex="index">
               </slot>
             </div>
