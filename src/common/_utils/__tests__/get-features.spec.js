@@ -103,6 +103,61 @@ describe('getFeatures test', () => {
     });
   });
 
+  it('getStructureddata transformedFeatures', done => {
+    const result = {
+      timeStamp: '2024-05-13T10:00:45Z',
+      features: [
+        {
+          geometry: {
+            coordinates: [
+              [13521469.93, 3649152.51],
+              [13521470.93, 3649152.51],
+              [13521480.93, 3649152.51]
+            ],
+            type: 'LineString'
+          },
+          id: '1',
+          type: 'Feature',
+          properties: {
+            SmID: 1,
+            标准名称: '地铁二号线',
+            smpid: 1
+          }
+        }
+      ],
+      numberReturned: 3,
+      numberMatched: 3,
+      type: 'FeatureCollection'
+    };
+    const fetchResource = {
+      'https://fakeiportal.supermap.io/web/datas/1832028287/structureddata/ogc-features/collections/all/items.json?limit=5000':
+        result
+    };
+    mockFetch(fetchResource);
+    const dataset = {
+      dataItemServices: [],
+      withCredentials: true,
+      displayName: 'ms_line-北京市轨道交通线路-打印',
+      serviceStatus: 'DOES_NOT_INVOLVE',
+      dataType: 'STRUCTUREDDATA',
+      name: '北京市轨道交通线路-打印',
+      preferContent: false,
+      updateTime: '2024-05-10 10:25:14',
+      id: '1832028287',
+      type: 'iPortal',
+      url: 'https://fakeiportal.supermap.io/web/datas/1832028287',
+      mapTarget: 'map_1715590875444',
+      maxFeatures: 8,
+      attributeFilter: 'SmID>0'
+    };
+    getFeatures(dataset).then(data => {
+      expect(data.features.length).toBe(1);
+      expect(Math.round(data.features[0].geometry.coordinates[0][0])).toBe(121);
+      expect(Math.round(data.features[0].geometry.coordinates[0][1])).toBe(31);
+      done();
+    });
+  });
+
   it('getStructureddata pagination', done => {
     const result1 = {
       timeStamp: '2024-05-13T10:00:45Z',
