@@ -154,6 +154,7 @@ export default class iPortalDataService extends Events {
       if (data) {
         featureResults = data.features;
         if (data.numberMatched < maxFeatures) {
+          featureResults = this._transformContentFeatures(featureResults);
           this.iserverService._getFeaturesSucceed({
             result: {
               features: {
@@ -177,6 +178,7 @@ export default class iPortalDataService extends Events {
           results.forEach((result) => {
             featureResults = featureResults.concat(result.features);
           });
+          featureResults = this._transformContentFeatures(featureResults);
           this.iserverService._getFeaturesSucceed({
             result: {
               features: {
