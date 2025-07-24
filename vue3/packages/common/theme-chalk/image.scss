@@ -16,6 +16,16 @@
     &:hover{
       cursor: pointer;
     }
+    .sm-component-image__content{
+      width: 100%;
+      height: 100%;
+      opacity: 1;
+      transform: translateZ(0px);
+    }
+    .sm-component-image__defaultImg {
+      color: $text-color;
+      font-size: 60px;
+    }
   }
   @include e(preview) {
     .ant-modal-content {
@@ -48,15 +58,5 @@
 
   @include e(noLink){
     pointer-events: none;
-  }
-  @include e(content) {
-    width: 100%;
-    height: 100%;
-    opacity: 1;
-    transform: translateZ(0px);
-  }
-  @include e(defaultImg) {
-    color: $text-color;
-    font-size: 60px;
   }
 }
