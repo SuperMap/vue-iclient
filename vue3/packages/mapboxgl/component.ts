@@ -4,6 +4,7 @@ import { SmTimeText } from '@supermapgis/common/components/time-text'
 import { SmAttributePanel } from '@supermapgis/common/components/attribute-panel'
 import { SmIndicator } from '@supermapgis/common/components/indicator'
 import { SmText } from '@supermapgis/common/components/text'
+import { SmImage } from '@supermapgis/common/components/image'
 
 import { SmAttributes } from '@supermapgis/mapboxgl/components/attributes'
 import { SmWebMap } from '@supermapgis/mapboxgl/components/web-map'
@@ -52,5 +53,6 @@ export default [
   SmScale,
   SmSceneLayerList,
   SmWebScene,
-  SmTextList
+  SmTextList,
+  SmImage
 ] as Plugin[]

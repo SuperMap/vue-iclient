@@ -1,0 +1,62 @@
+@use './mixins/mixins.scss' as *;
+@use './base/theme.scss' as *;
+
+@include b(image) {
+  width: 100%;
+  height: 100%;
+  background: $color-bg-container;
+  color: $text-color;
+  @include e(link) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    &:hover{
+      cursor: pointer;
+    }
+  }
+  @include e(preview) {
+    .ant-modal-content {
+      padding: 0;
+      .ant-modal-close {
+        width: 40px;
+        height: 40px;
+        .ant-modal-close-x {
+          font-size: 40px;
+        }
+      }
+     
+    }
+  }
+  @include e(full) {
+    width: 100% !important;
+    .ant-modal-content {
+      background-color: transparent !important;
+      box-shadow: none !important;
+      height: calc(100vh);
+      padding: 0;
+      .ant-modal-close {
+        display: none;
+      }
+    }
+    .ant-modal-body {
+      height: 100%;
+    }
+  }
+
+  @include e(noLink){
+    pointer-events: none;
+  }
+  @include e(content) {
+    width: 100%;
+    height: 100%;
+    opacity: 1;
+    transform: translateZ(0px);
+  }
+  @include e(defaultImg) {
+    color: $text-color;
+    font-size: 60px;
+  }
+}
