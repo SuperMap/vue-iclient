@@ -17,7 +17,7 @@ interface SelectOptGroupProps {
   [prop: string]: any;
 }
 
-const SmSelect = createWrappedComponent<SelectProps>(Select, 'select')
+export const SmSelect = createWrappedComponent<SelectProps>(Select, 'select')
 
 export const SmSelectOption = defineComponent<SelectOptionProps>({
   ...SmSelect.Option,
