@@ -5,6 +5,7 @@ import { SmAttributePanel } from '@supermapgis/common/components/attribute-panel
 import { SmIndicator } from '@supermapgis/common/components/indicator'
 import { SmText } from '@supermapgis/common/components/text'
 import { SmImage } from '@supermapgis/common/components/image'
+import { SmBorder } from '@supermapgis/common/components/border'
 
 import { SmAttributes } from '@supermapgis/mapboxgl/components/attributes'
 import { SmWebMap } from '@supermapgis/mapboxgl/components/web-map'
@@ -54,5 +55,6 @@ export default [
   SmSceneLayerList,
   SmWebScene,
   SmTextList,
-  SmImage
+  SmImage,
+  SmBorder
 ] as Plugin[]
