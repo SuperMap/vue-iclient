@@ -335,6 +335,9 @@ export default {
     realTime: 'real-time',
     errorCoordinate: 'invalid coordinate'
   },
+  baseLayerSwitcher: {
+    title: 'Base Map Switch'
+  },
   // layer
   dataFlow: {
     dataSubscriptionFailed: 'Data subscription failed!'

@@ -340,6 +340,9 @@ export default {
     realTime: '实时',
     errorCoordinate: '坐标格式不正确'
   },
+  baseLayerSwitcher: {
+    title: '底图切换'
+  },
   // layer
   dataFlow: {
     dataSubscriptionFailed: '数据订阅失败！'

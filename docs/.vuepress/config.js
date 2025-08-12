@@ -138,7 +138,8 @@ module.exports = {
                     'control/layer-manager',
                     'control/coordinate-conversion',
                     'control/fly-to',
-                    'control/layer-color'
+                    'control/layer-color',
+                    'control/base-layer-switcher'
                   ]
                 },
                 {

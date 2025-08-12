@@ -93,6 +93,7 @@ import { default as TdtRoute } from 'vue-iclient/src/mapboxgl/tdt/route/index.js
 import { default as TdtSearch } from 'vue-iclient/src/mapboxgl/tdt/search/index.js';
 
 import { default as Attributes } from 'vue-iclient/src/mapboxgl/attributes/index.js';
+import { default as BaseLayerSwitcher } from 'vue-iclient/src/mapboxgl/base-layer-switcher/index.js';
 import { default as Chart } from 'vue-iclient/src/mapboxgl/chart/index.js';
 import { default as Compare } from 'vue-iclient/src/mapboxgl/compare/index.js';
 import { default as NcpMap } from 'vue-iclient/src/mapboxgl/ncp-map/index.js';
@@ -163,6 +164,7 @@ const components = {
   TreeSelect,
   VideoPlayer,
   Attributes,
+  BaseLayerSwitcher,
   Chart,
   Compare,
   NcpMap,

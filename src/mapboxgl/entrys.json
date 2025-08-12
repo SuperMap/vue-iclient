@@ -48,6 +48,7 @@
   "tree-select": "vue-iclient/src/common/tree-select/index.js",
   "video-player": "vue-iclient/src/common/video-player/index.js",
   "attributes": "vue-iclient/src/mapboxgl/attributes/index.js",
+  "base-layer-switcher": "vue-iclient/src/mapboxgl/base-layer-switcher/index.js",
   "chart": "vue-iclient/src/mapboxgl/chart/index.js",
   "compare": "vue-iclient/src/mapboxgl/compare/index.js",
   "ncp-map": "vue-iclient/src/mapboxgl/ncp-map/index.js",
