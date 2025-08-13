@@ -99,6 +99,14 @@ interface CRSOptions {
   unit: string;
 }
 
+interface BaseLayerItem {
+  id: string;
+  title: string;
+  layers: mapboxglTypes.Layer[];
+  sources: Record<string, mapboxglTypes.RasterSource>;
+  [key: string]: any
+}
+
 interface MapHandler {
   initializeMap: (mapInfo?: Record<string, any>, map?: mapboxglTypes.Map) => void;
   clean: () => void;
@@ -129,6 +137,7 @@ interface MapHandler {
   setMaxZoom: (minZoom: number) => void;
   setProxy: (proxy: string) => void;
   setWithCredentials: (withCredentials: boolean) => void;
+  changeBaseLayer: (layer: BaseLayerItem) => Record<string, any> | undefined;
   on: (type: string, callback: () => void) => void;
 }
 
@@ -275,6 +284,10 @@ export default class WebMapViewModel extends Events {
 
   setMapId(mapId: string | number): void {
     this._handler.setMapId(mapId);
+  }
+
+  changeBaseLayer(layer: BaseLayerItem) {
+    return this._handler.changeBaseLayer(layer);
   }
 
   getAppreciableLayers() {

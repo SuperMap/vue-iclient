@@ -163,6 +163,8 @@ class WebMap extends Evented {
   setWithCredentials() {}
   setProxy() {}
 
+  changeBaseLayer() {}
+
   getLegends() {
     return [
       {
